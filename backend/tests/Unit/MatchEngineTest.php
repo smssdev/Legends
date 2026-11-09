@@ -47,6 +47,26 @@ class MatchEngineTest extends TestCase
         $this->assertGreaterThanOrEqual(93, count($ticksA));
     }
 
+    /**
+     * [Sprint 49] Engine 16 fights for the ball by zone; a match made before (its snapshot without the zone settings)
+     * plays as it did, so its replay does not change.
+     */
+    public function test_the_ball_is_fought_for_by_zone_and_an_older_match_keeps_its_way(): void
+    {
+        [$now] = Runner::toEnd($this->state(7));
+        $this->assertContains($now['zone'] ?? null, ['left', 'centre', 'right']);
+
+        $old = $this->state(7);
+        foreach (['zone_scale_cp', 'zone_weights', 'goal_logit', 'injury_tired_bp', 'plan_fit', 'captain_deficit_bp', 'set_piece_guide', 'corner_guide'] as $key) {
+            unset($old['cfg']['engine'][$key]);
+        }
+        [$a, $ticksA] = Runner::toEnd($old);
+        [$b, $ticksB] = Runner::toEnd($old);
+        $this->assertArrayNotHasKey('zone', $a);
+        $this->assertSame($ticksA, $ticksB);
+        $this->assertSame($a['score'], $b['score']);
+    }
+
     public function test_a_substitution_applies_at_the_next_minute_and_counts(): void
     {
         $state = Runner::tick($this->state(7));

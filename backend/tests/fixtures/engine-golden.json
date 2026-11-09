@@ -1,5 +1,5 @@
 {
-    "engine_version": 15,
+    "engine_version": 16,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -126,7 +126,127 @@
             }
         },
         "engine": {
-            "version": 15,
+            "version": 16,
+            "zone_scale_cp": 12000,
+            "zone_weights": {
+                "default": [
+                    30,
+                    40,
+                    30
+                ],
+                "wings": [
+                    45,
+                    10,
+                    45
+                ],
+                "passing": [
+                    20,
+                    60,
+                    20
+                ],
+                "shots": [
+                    20,
+                    60,
+                    20
+                ],
+                "long": [
+                    30,
+                    40,
+                    30
+                ],
+                "counter": [
+                    35,
+                    30,
+                    35
+                ]
+            },
+            "goal_logit": {
+                "big": -13863,
+                "normal": -29500,
+                "half": -38000,
+                "long": -21972,
+                "header": -30550
+            },
+            "goal_weights": {
+                "shot": 14,
+                "keep": 10,
+                "defence": 4,
+                "tempo": 50,
+                "morale": 70
+            },
+            "goal_ref_cp": {
+                "shot": 7800,
+                "keep": 8000,
+                "defence": 7750
+            },
+            "goal_min_bp": 150,
+            "goal_max_bp": 5500,
+            "injury_tired_bp": 350,
+            "plan_fit": {
+                "wings": {
+                    "lines": [
+                        "mid",
+                        "att"
+                    ],
+                    "wide": true,
+                    "need": {
+                        "dri": 70,
+                        "pac": 75
+                    }
+                },
+                "counter": {
+                    "lines": [
+                        "att"
+                    ],
+                    "need": {
+                        "pac": 75
+                    }
+                },
+                "passing": {
+                    "lines": [
+                        "mid"
+                    ],
+                    "need": {
+                        "pas": 75
+                    }
+                },
+                "long": {
+                    "lines": [
+                        "att"
+                    ],
+                    "need": {
+                        "phy": 75
+                    }
+                },
+                "shots": {
+                    "lines": [
+                        "mid",
+                        "att"
+                    ],
+                    "need": {
+                        "sho": 75
+                    }
+                }
+            },
+            "plan_fit_bp": 120,
+            "captain_deficit_bp": 1200,
+            "set_piece_guide": {
+                "pen_base_bp": 7600,
+                "pen_skill_bp": 1800,
+                "pen_keeper_bp": 1400,
+                "pen_morale_bp": 8,
+                "finisher_sho": 75,
+                "pen_forward_bp": 600,
+                "wrong_taker_sho": 60,
+                "pen_wrong_bp": 2500,
+                "pen_min_bp": 4500,
+                "pen_max_bp": 9400,
+                "fk_base_bp": 700,
+                "fk_slope_bp": 1400,
+                "fk_min_bp": 300,
+                "fk_max_bp": 2800
+            },
+            "corner_guide": 1,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,
@@ -320,58 +440,55 @@
             "competition": "league",
             "minutes": 94,
             "score": {
-                "home": 2,
-                "away": 1
+                "home": 4,
+                "away": 4
             },
             "shootout": null,
-            "sha256": "4cbf23f20057c0b85a142569c23e52f6e1a7cc5170c546159f8afb7b6258b305"
+            "sha256": "8be7fa038fbe85dabc76ccb553257ad93cc167e6124ad733f3485acc921b00fc"
         },
         {
             "seed": 42,
             "competition": "league",
-            "minutes": 94,
+            "minutes": 93,
             "score": {
-                "home": 0,
-                "away": 0
+                "home": 2,
+                "away": 2
             },
             "shootout": null,
-            "sha256": "5109956569a7930c2f7e80677471f34018f11c07143136b1d803f827611c5d8c"
+            "sha256": "5e76990be18988cd05cf3809a139504094b95c6ae1c968ebb7f04cb42f40e52c"
         },
         {
             "seed": 48213,
             "competition": "league",
             "minutes": 94,
             "score": {
-                "home": 2,
-                "away": 1
+                "home": 3,
+                "away": 2
             },
             "shootout": null,
-            "sha256": "e487e772e41e27035fcfd6331cdae1aacdad07ce2abf8b3f0b369bc7351e6a57"
+            "sha256": "373423c06d7b71d77ec3d80dd353907c04881252cf0787da2c60970594c559dd"
         },
         {
             "seed": 7,
             "competition": "cup",
-            "minutes": 127,
+            "minutes": 94,
             "score": {
-                "home": 1,
+                "home": 2,
                 "away": 1
             },
-            "shootout": {
-                "home": 3,
-                "away": 4
-            },
-            "sha256": "b542cee65596e715198d5ac0969907d201fd8739b2073cb08fe0d5d81c6207de"
+            "shootout": null,
+            "sha256": "8dfea3d4eb14841b45cfbbf3f3b7c82c6009bf3d35fa68bc380981ee41fdfca5"
         },
         {
             "seed": 99,
             "competition": "cup",
-            "minutes": 94,
+            "minutes": 95,
             "score": {
-                "home": 0,
-                "away": 1
+                "home": 1,
+                "away": 2
             },
             "shootout": null,
-            "sha256": "9ad120e76bd6424077199858082fe25c9ad0499aeb03c87e73dcf6b641680981"
+            "sha256": "ed398f2d8313ca53d4130e24e4753d3ae51884c93bdb0b670f4f946eec9326a2"
         }
     ]
 }

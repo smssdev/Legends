@@ -54,12 +54,12 @@ class MoraleTest extends TestCase
         $id = $this->league['my_club_id'];
         $this->assertSame(70, $this->morale($id));
         Morale::after($id, 2, 0);
-        $this->assertSame(76, $this->morale($id));
+        $this->assertSame(77, $this->morale($id));   // +6, and +1.5 (1) for the second goal of the margin [Sprint 49]
         Morale::after($id, 1, 1);
-        $this->assertSame(74, $this->morale($id));
+        $this->assertSame(75, $this->morale($id));
         // The second match without a win costs more.
         Morale::after($id, 0, 1);
-        $this->assertSame(66, $this->morale($id));
+        $this->assertSame(67, $this->morale($id));
         $this->assertSame(2, (int) DB::table('clubs')->where('id', $id)->value('winless_run'));
         Morale::after($id, 3, 1);
         $this->assertSame(0, (int) DB::table('clubs')->where('id', $id)->value('winless_run'));
@@ -71,6 +71,23 @@ class MoraleTest extends TestCase
         DB::table('clubs')->where('id', $id)->update(['morale' => 22, 'winless_run' => 5]);
         Morale::after($id, 0, 4);
         $this->assertSame(20, $this->morale($id));
+    }
+
+    /** [Sprint 49, the owner's guide 6.3b] The margin counts, and a draw against a much stronger side is a good point. */
+    public function test_the_margin_and_a_good_draw_move_morale(): void
+    {
+        $id = $this->league['my_club_id'];
+        Morale::after($id, 4, 0);
+        $this->assertSame(80, $this->morale($id));   // 70 + 6 + 4.5 (4): three goals past the first
+        Morale::after($id, 0, 3);
+        $this->assertSame(71, $this->morale($id));   // − 6 − 3
+        // A draw with a side 3 points stronger: +1, and the run without a win stays where it was.
+        Morale::after($id, 1, 1, 300);
+        $this->assertSame(72, $this->morale($id));
+        $this->assertSame(1, (int) DB::table('clubs')->where('id', $id)->value('winless_run'));
+        // Against an equal side the draw costs as before.
+        Morale::after($id, 1, 1, 0);
+        $this->assertSame(68, $this->morale($id));   // − 2 − 2 (the second match without a win)
     }
 
     public function test_the_mental_coach_softens_a_bad_result(): void
@@ -131,12 +148,19 @@ class MoraleTest extends TestCase
         $run = [];
         $order = DB::table('matches')->join('fixtures', 'fixtures.id', '=', 'matches.fixture_id')->where('fixtures.status', 'finished')
             ->orderBy('matches.id')->get(['fixtures.home_id', 'fixtures.away_id', 'fixtures.home_goals', 'fixtures.away_goals']);
+        $strength = DB::table('clubs')->pluck('strength_snapshot', 'id');
         foreach ($order as $m) {
-            foreach ([[$m->home_id, $m->home_goals, $m->away_goals], [$m->away_id, $m->away_goals, $m->home_goals]] as [$id, $for, $against]) {
+            foreach ([[$m->home_id, $m->away_id, $m->home_goals, $m->away_goals], [$m->away_id, $m->home_id, $m->away_goals, $m->home_goals]] as [$id, $other, $for, $against]) {
                 $expect[$id] ??= 70;
                 $run[$id] ??= 0;
-                $run[$id] = $for > $against ? 0 : $run[$id] + 1;
-                $change = $for > $against ? 6 : ($for === $against ? -2 : -6) - ($run[$id] >= 2 ? 2 : 0);
+                // [Sprint 49] 1.5 a goal of the margin past the first (up to 3), and a draw with a side 3 points stronger is +1.
+                $margin = max(0, intdiv(15 * min(abs($for - $against) - 1, 3), 10));
+                if ($for === $against && $strength[$other] - $strength[$id] >= 300) {
+                    $change = 1;
+                } else {
+                    $run[$id] = $for > $against ? 0 : $run[$id] + 1;
+                    $change = $for > $against ? 6 + $margin : ($for === $against ? -2 : -6 - $margin) - ($run[$id] >= 2 ? 2 : 0);
+                }
                 $expect[$id] = max(20, min(100, $expect[$id] + $change));
             }
         }

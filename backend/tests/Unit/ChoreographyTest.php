@@ -157,7 +157,8 @@ class ChoreographyTest extends TestCase
     public function test_the_named_shooter_has_the_ball(): void
     {
         $shots = $seen = 0;
-        foreach ([4, 8, 15] as $seed) {
+        // Six matches, so the share is not one match's luck [Sprint 49: three swung it under a quarter].
+        foreach ([4, 8, 15, 16, 23, 42] as $seed) {
             foreach ($this->minutes($seed) as [$out, $frames]) {
                 foreach ($out['events'] as $e) {
                     if ($e['type'] === 'attack' && isset($e['shooter']) && in_array('shot', array_column($e['phases'], 'n'), true)) {

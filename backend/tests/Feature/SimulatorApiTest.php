@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Engine\FloatGuard;
+use App\Simulator\MatchChoreographer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -110,7 +111,8 @@ class SimulatorApiTest extends TestCase
             ->assertStatus(202)->assertJsonPath('target_tick', 1);
         $a = $this->getJson("/api/v1/sim/matches/$id/live?since=0", $away_seat)->assertOk()->json();
         $this->assertSame([1, 2], array_column($a['ticks'], 'tick'));
-        $this->assertCount(6, $a['ticks'][0]['frames']);
+        // A quiet minute has its 6 frames, a busy one (a moment) its 10, whichever the seed gives [Sprint 32, Sprint 49].
+        $this->assertContains(count($a['ticks'][0]['frames']), [MatchChoreographer::FRAMES, MatchChoreographer::FRAMES_BUSY]);
         $this->assertSame(80, $a['ticks'][0]['teams']['away']['tactics']['style']);
         $this->assertSame(3000, $a['ticks'][0]['moment']['ms']);
         // Each minute carries its start on the server clock, so both screens play it together.
