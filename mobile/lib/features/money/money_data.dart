@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/intents.dart';
 
 /// [Sprint 18 F1] The club's money (`/leagues/{id}/team/finance`, Sprint 23): the balance, the ledger, the sponsors
 /// and the ticket price; and the stadium (`/leagues/{id}/stadium`, Sprint 29). The server decides every number.
@@ -142,8 +143,8 @@ class MoneyRepository {
   Future<void> setTickets(int league, String level) => _api.put('/leagues/$league/team/tickets', {'level': level});
 
   Future<StadiumView> stadium(int league) async => StadiumView.fromJson(await _api.get('/leagues/$league/stadium'));
-  Future<StadiumView> build(int league, String section) async => StadiumView.fromJson(
-      await _api.post('/leagues/$league/stadium', {'section': section, 'idempotency_key': 'app-${DateTime.now().microsecondsSinceEpoch}'}));
+  Future<StadiumView> build(int league, String section) async => StadiumView.fromJson(await Intents.run(
+      'stadium:$league:$section', (key) => _api.post('/leagues/$league/stadium', {'section': section, 'idempotency_key': key})));
   Future<StadiumView> finishNow(int league) async => StadiumView.fromJson(await _api.post('/leagues/$league/stadium/finish'));
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/config.dart';
@@ -81,5 +82,16 @@ class OfflineScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     return _Message(icon: Icons.wifi_off_rounded, title: l.offlineTitle, body: message, action: l.retry, onPressed: onRetry);
+  }
+}
+
+/// [2026-11-09] A broken link (a deep link or a notification with a wrong id): a page that says so, never a crash.
+class NotFoundScreen extends StatelessWidget {
+  const NotFoundScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    return _Message(icon: Icons.link_off_rounded, title: l.notFoundTitle, body: l.notFoundBody, action: l.home, onPressed: () => GoRouter.of(context).go('/'));
   }
 }

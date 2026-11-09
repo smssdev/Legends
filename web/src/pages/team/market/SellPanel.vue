@@ -5,6 +5,7 @@
 // Prices, fees and limits come from the API (GET /market's `mine`); buying stays in the market only.
 // [X84] A player is listed once: once listed, the panel offers only withdraw him (back to the choices) or keep him.
 import { computed, ref, watch } from 'vue'
+import { uuid } from '../../../lib/uuid'
 import { act, busy as isBusy } from '../../../lib/action'
 import { nm } from '../../../lib/names'
 import { api } from '../../../api/client'
@@ -46,7 +47,7 @@ async function run(call: () => Promise<unknown>, o: Parameters<typeof act>[2]) {
 }
 
 function sellNow() {
-  return run(() => api.POST('/leagues/{league}/market/sell', { params: { path: { league: props.leagueId } }, body: { player_id: p.id, idempotency_key: crypto.randomUUID() } }), {
+  return run(() => api.POST('/leagues/{league}/market/sell', { params: { path: { league: props.leagueId } }, body: { player_id: p.id, idempotency_key: uuid() } }), {
     confirm: { title: t('بيع {v0} الآن؟', { v0: nm(p.name) }), text: t('تحصل على {v0} مقابل {v1}، ولا تراجع بعد البيع.', { v0: money(p.quick.pays), v1: fee() }), action: t('بع الآن') },
     success: t('بِيع {v0} الآن.', { v0: nm(p.name) }),
   })

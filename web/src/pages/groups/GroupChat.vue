@@ -51,15 +51,24 @@ async function load() {
   }
 }
 
+// [2026-11-09] One page of older messages at a time: a fast scroll fires many events while the first is on its way.
+let loadingOlder = false
 async function older() {
-  if (!more.value || !messages.value.length) return
-  const el = list.value
-  const before = el?.scrollHeight ?? 0
-  const { data } = await api.GET('/groups/{group}/messages', { params: { path: { group: gid.value }, query: { before: messages.value[0].id } } })
-  more.value = data!.messages.length >= 50
-  messages.value = [...data!.messages, ...messages.value]
-  await nextTick()
-  if (el) el.scrollTop = el.scrollHeight - before
+  if (loadingOlder || !more.value || !messages.value.length) return
+  loadingOlder = true
+  try {
+    const el = list.value
+    const before = el?.scrollHeight ?? 0
+    const { data } = await api.GET('/groups/{group}/messages', { params: { path: { group: gid.value }, query: { before: messages.value[0].id } } })
+    more.value = data!.messages.length >= 50
+    // Never the same message twice (one that also arrived live meanwhile).
+    const have = new Set(messages.value.map((m) => m.id))
+    messages.value = [...data!.messages.filter((m) => !have.has(m.id)), ...messages.value]
+    await nextTick()
+    if (el) el.scrollTop = el.scrollHeight - before
+  } finally {
+    loadingOlder = false
+  }
 }
 
 function arrived(m: Message) {

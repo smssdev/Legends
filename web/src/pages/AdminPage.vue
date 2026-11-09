@@ -5,6 +5,7 @@
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
 // the alliances, the backups and the commentary templates.
 import { useAuth } from '../stores/auth'
+import { uuid } from '../lib/uuid'
 import { statusLabel } from '../lib/statuses'
 import DataEditor from './admin/DataEditor.vue'
 import StoreAdmin from './admin/StoreAdmin.vue'
@@ -201,7 +202,7 @@ function fillGift(no: number) {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 const giveCoins = () => run(async () => {
-  const { data } = await api.POST('/admin/coins', { body: { account_no: Number(gift.value.account), amount: gift.value.amount, reason: gift.value.reason.trim(), idempotency_key: crypto.randomUUID() } })
+  const { data } = await api.POST('/admin/coins', { body: { account_no: Number(gift.value.account), amount: gift.value.amount, reason: gift.value.reason.trim(), idempotency_key: uuid() } })
   notice.value = t('وصلت {v0} كوينز إلى {v1} (#{v2}). رصيده الآن {v3}.', { v0: gift.value.amount, v1: data!.user.name, v2: data!.user.account_no, v3: data!.balance })
   gift.value = { account: '', amount: 100, reason: '' }
 })

@@ -112,6 +112,13 @@ export class Commentator {
   /** Fetch the two clubs' names early, before their first line. */
   prepare(clubs: string[]) {
     this.wanted = clubs.map(slug)
+    // [2026-11-09] Only these two clubs' names stay in memory: another match's are let go.
+    for (const name of [...this.packs.keys()]) {
+      if (name.startsWith('clubs/') && !this.wanted.includes(name.slice(6))) {
+        this.packs.delete(name)
+        this.ready.delete(name)
+      }
+    }
     if (this.ctx) for (const c of this.wanted) this.pack('clubs/' + c)
   }
 
@@ -157,6 +164,23 @@ export class Commentator {
     this.sources = []
     this.utter = null
     this.synth?.cancel()
+  }
+
+  /**
+   * [2026-11-09] The page is gone: silence, then the audio device and the decoded clips let go. Browsers allow only a
+   * few AudioContexts at once, so each match page closes its own.
+   */
+  dispose() {
+    this.on = false
+    this.stop()
+    this.onTalk = null
+    this.packs.clear()
+    this.ready.clear()
+    const ctx = this.ctx
+    this.ctx = null
+    this.out = null
+    this.lineGain = null
+    if (ctx && ctx.state !== 'closed') void ctx.close().catch(() => {})
   }
 
   private next(): void {

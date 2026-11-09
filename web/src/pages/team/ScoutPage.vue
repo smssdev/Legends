@@ -3,6 +3,7 @@
 // way with its countdown, and the reports with their players to buy. No draft of its own: the market's table
 // and the design system's cards; the market's header links here ("اطلب تقرير الكشاف").
 import UiSelect from '../../components/ui/UiSelect.vue'
+import { uuid } from '../../lib/uuid'
 import { t } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
@@ -51,7 +52,7 @@ async function load() {
 // for coins asks once from COINS_ASK up; buying asks first (the money leaves now).
 async function ask() {
   if (!leagueId.value) return
-  const body: Record<string, unknown> = { min_overall: form.min_overall, max_overall: form.max_overall, max_age: form.max_age, idempotency_key: crypto.randomUUID() }
+  const body: Record<string, unknown> = { min_overall: form.min_overall, max_overall: form.max_overall, max_age: form.max_age, idempotency_key: uuid() }
   for (const k of ['line', 'position', 'nationality', 'league'] as const) if (form[k]) body[k] = form[k]
   if (form.max_value) body.max_value = form.max_value
   const r = await act('scout:ask', () => api.POST('/leagues/{league}/scout', { params: { path: { league: leagueId.value! } }, body: body as any }), {
@@ -71,7 +72,7 @@ async function finish() {
 
 async function buy(p: { id: number; name: string; price?: number | null; value: number }) {
   if (!leagueId.value) return
-  const r = await act(`scout:buy:${p.id}`, () => api.POST('/leagues/{league}/market/buy', { params: { path: { league: leagueId.value! } }, body: { player_id: p.id, idempotency_key: crypto.randomUUID() } }), {
+  const r = await act(`scout:buy:${p.id}`, () => api.POST('/leagues/{league}/market/buy', { params: { path: { league: leagueId.value! } }, body: { player_id: p.id, idempotency_key: uuid() } }), {
     confirm: { title: t('تشتري {v0}؟', { v0: nm(p.name) }), text: t('يُخصم {v0} من أموال النادي الآن.', { v0: money(p.price ?? p.value) }), action: t('شراء'), tone: 'gold' },
     success: t('انضم {v0} إلى فريقك.', { v0: nm(p.name) }),
   })

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/intents.dart';
 
 /// [Sprint 18 F1] The market (`/leagues/{id}/market`, UP11) and the deals between coaches (`/leagues/{id}/transfers`,
 /// Sprint 25): the server sets every price, floor, cap, wait and fee; the app shows them and sends the coach's choice.
@@ -188,8 +189,6 @@ class MarketRepository {
 
   final ApiClient _api;
 
-  String _key() => 'app-${DateTime.now().microsecondsSinceEpoch}';
-
   Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(int league, String line) async {
     final j = await _api.get('/leagues/$league/market', query: {'line': line});
     return (
@@ -199,8 +198,8 @@ class MarketRepository {
   }
 
   Future<BuyQuote> buyQuote(int league, int player) async => BuyQuote.fromJson(await _api.get('/leagues/$league/market/buy-quote', query: {'player_id': player}));
-  Future<void> buy(int league, int player, {bool compensate = false}) =>
-      _api.post('/leagues/$league/market/buy', {'player_id': player, 'idempotency_key': _key(), if (compensate) 'compensate': true});
+  Future<void> buy(int league, int player, {bool compensate = false}) => Intents.run('buy:$league:$player:$compensate',
+      (key) => _api.post('/leagues/$league/market/buy', {'player_id': player, 'idempotency_key': key, if (compensate) 'compensate': true}));
 
   /// My players with their ways to sell (the market's pool view carries them; one line keeps it small).
   Future<Selling> selling(int league) async => Selling.fromJson(await _api.get('/leagues/$league/market', query: {'source': 'pool', 'line': 'gk'}));
@@ -211,7 +210,8 @@ class MarketRepository {
 
   Future<void> listForSale(int league, int player, int price) => _api.post('/leagues/$league/transfers/listings', {'player_id': player, 'price': price});
   Future<void> unlist(int league, int player) => _api.delete('/leagues/$league/transfers/listings/$player');
-  Future<void> sellNow(int league, int player) => _api.post('/leagues/$league/market/sell', {'player_id': player, 'idempotency_key': _key()});
+  Future<void> sellNow(int league, int player) =>
+      Intents.run('sell:$league:$player', (key) => _api.post('/leagues/$league/market/sell', {'player_id': player, 'idempotency_key': key}));
 
   Future<Deals> deals(int league) async => Deals.fromJson(await _api.get('/leagues/$league/transfers'));
   Future<void> answer(int league, int offer, String action) => _api.post('/leagues/$league/transfers/offers/$offer/$action');
@@ -223,8 +223,10 @@ class MarketRepository {
 
   /// A new offer to a coach's club, or (counterOf) an answer with my own terms: `in` his players I want, `out` mine I give.
   Future<void> offer(int league, {int? to, int? counterOf, required int money, required List<int> want, required List<int> give}) {
-    final body = {'money': money, 'in': want, 'out': give, 'idempotency_key': _key(), 'to_club_id': ?to};
-    return counterOf == null ? _api.post('/leagues/$league/transfers/offers', body) : _api.post('/leagues/$league/transfers/offers/$counterOf/counter', body..remove('to_club_id'));
+    return Intents.run('offer:$league:$to:$counterOf:$money:$want:$give', (key) {
+      final body = {'money': money, 'in': want, 'out': give, 'idempotency_key': key, 'to_club_id': ?to};
+      return counterOf == null ? _api.post('/leagues/$league/transfers/offers', body) : _api.post('/leagues/$league/transfers/offers/$counterOf/counter', body..remove('to_club_id'));
+    });
   }
 
   Future<({List<Loan> loans, int maxRounds, int maxFeeBp})> loans(int league) async {

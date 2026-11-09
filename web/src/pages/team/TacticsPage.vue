@@ -8,7 +8,7 @@ import { REFEREE } from '../../lib/format'
 // [PLAN 2.14]. Only tackling, marking, plan and trap are ever shown to the opponent. [Sprint 27 W6, the owner asked
 // for OSM's ease] Every change saves itself a moment later: no «حفظ» to remember.
 import UiSlider from '../../components/ui/UiSlider.vue'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components, paths } from '../../api/schema'
 import TacticIcon from '../../components/tactics/TacticIcon.vue'
@@ -124,11 +124,24 @@ async function save() {
 }
 const saving = ref(false)
 let timer = 0
+let waiting = false
 watch(t, () => {
   if (!dirty.value) return
   window.clearTimeout(timer)
-  timer = window.setTimeout(save, 700)
+  waiting = true
+  timer = window.setTimeout(() => {
+    waiting = false
+    save()
+  }, 700)
 }, { deep: true })
+// [2026-11-09] Leaving the page before the save's moment: the change is saved now, not by a page that is gone.
+onBeforeUnmount(() => {
+  window.clearTimeout(timer)
+  if (waiting) {
+    waiting = false
+    void save()
+  }
+})
 onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (loaded.value = true))))
 </script>
 

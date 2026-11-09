@@ -12,7 +12,7 @@
 import { t } from '../../lib/i18n'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import UiSelect from '../../components/ui/UiSelect.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { nm } from '../../lib/names'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import UiButton from '../../components/ui/UiButton.vue'
@@ -33,6 +33,8 @@ const message = ref('')
 // [Sprint 27 W3] The saved states before each change, for «تراجع»; and the save waiting to go.
 const history = ref<string[]>([])
 let pending = 0
+// A save waiting for its moment (the timer has not fired yet).
+let waiting = false
 const queued = ref(false)
 const view = ref<'overall' | 'fitness' | 'age' | 'value'>('overall')
 const card = ref<SquadPlayer | null>(null)
@@ -182,12 +184,17 @@ function remember() {
 /** Save a moment after the last change, once the eleven is whole (an empty place waits for its player). */
 function later() {
   window.clearTimeout(pending)
+  waiting = false
   if (starters.value.some((x) => x === null)) {
     message.value = 'اختر لاعباً للخانة الفارغة، فتُحفظ التشكيلة.'
     return
   }
   queued.value = true
-  pending = window.setTimeout(save, 600)
+  waiting = true
+  pending = window.setTimeout(() => {
+    waiting = false
+    save()
+  }, 600)
 }
 function undo() {
   const back = history.value.pop()
@@ -304,9 +311,20 @@ function down(e: PointerEvent, s: Spot) {
 function cancelDrag() {
   window.removeEventListener('pointermove', follow)
   window.removeEventListener('pointerup', up)
+  window.removeEventListener('pointercancel', cancelDrag)
   edge = 0
   drag.value = null
 }
+// [2026-11-09] Leaving the page: a drag in the middle lets go of the window, and a change waiting for its save is
+// saved now (not lost, and not sent later by a page that is gone; a failure still shows in the app's toast).
+onBeforeUnmount(() => {
+  cancelDrag()
+  window.clearTimeout(pending)
+  if (waiting) {
+    waiting = false
+    void save()
+  }
+})
 function follow(e: PointerEvent) {
   if (!drag.value) return
   if (Math.hypot(e.clientX - drag.value.x, e.clientY - drag.value.y) > 8) drag.value.moved = true

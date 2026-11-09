@@ -6,6 +6,7 @@
 // withdraw it); the composer starts at the fair money for what is chosen, with chips for it, +10% and +25%, and says
 // at once whether the offer is in the allowed range. Every action through lib/action (its button waits, a toast).
 import UiSlider from '../../components/ui/UiSlider.vue'
+import { uuid } from '../../lib/uuid'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
@@ -79,7 +80,7 @@ watch(fair, (v) => { if (draft.open && !draft.touched) draft.money = v })
 const pick = (v: number) => { draft.money = v; draft.touched = true }
 const sendKey = computed(() => `offer:${draft.to}`)
 async function send() {
-  const body = { money: draft.money || 0, in: draft.in, out: draft.out, idempotency_key: crypto.randomUUID() }
+  const body = { money: draft.money || 0, in: draft.in, out: draft.out, idempotency_key: uuid() }
   const name = nm(draft.toName)
   const r = await run(sendKey.value, () => (draft.counterOf
     ? api.POST('/leagues/{league}/transfers/offers/{offer}/counter', { params: { path: { league: props.leagueId, offer: draft.counterOf } }, body })
@@ -93,7 +94,7 @@ type Listing = T['listings'][number]
 function quick(l: Listing) {
   let id = 0
   return run(`quick:${l.player.id}`, async () => {
-    const r = await api.POST('/leagues/{league}/transfers/offers', { params: path.value, body: { to_club_id: l.club.id, money: l.price, in: [l.player.id], out: [], sell_on_bp: 0, idempotency_key: crypto.randomUUID() } })
+    const r = await api.POST('/leagues/{league}/transfers/offers', { params: path.value, body: { to_club_id: l.club.id, money: l.price, in: [l.player.id], out: [], sell_on_bp: 0, idempotency_key: uuid() } })
     id = (r as { data?: { offer?: Offer } }).data?.offer?.id ?? 0
     return r
   }, {

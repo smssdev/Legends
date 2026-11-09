@@ -1,5 +1,6 @@
 // Simulator API client (docs/api/openapi.yaml, docs/api/match-events.md).
 import { api, asApiError, ensureCsrf } from './client'
+import { uuid } from '../lib/uuid'
 
 export type Side = 'home' | 'away'
 
@@ -205,7 +206,7 @@ export const sim = {
   order: (id: string, order: Record<string, unknown>) =>
     call<{ target_tick: number; duplicate: boolean }>('POST', `/matches/${id}/actions`, {
       ...order,
-      idempotency_key: crypto.randomUUID(),
+      idempotency_key: uuid(),
     }),
   room: (id: string) => call<Room>('GET', `/rooms/${id}`),
   openRoom: (name: string, clubId: number) => call<Room>('POST', '/rooms', { name, club_id: clubId }),
@@ -236,7 +237,7 @@ export const leagueMatch = {
     try {
       const { data } = await api.POST('/matches/{match}/actions', {
         params: { path: { match: Number(id) } },
-        body: { ...order, idempotency_key: crypto.randomUUID() } as any,
+        body: { ...order, idempotency_key: uuid() } as any,
       })
       return data!
     } catch (e) {

@@ -23,6 +23,8 @@ class SecurityHeadersTest extends TestCase
             $this->assertStringContainsString("object-src 'none'", $r->headers->get('Content-Security-Policy'));
             $this->assertStringContainsString("frame-ancestors 'self'", $r->headers->get('Content-Security-Policy'));
             $this->assertFalse($r->headers->has('Strict-Transport-Security'), 'HSTS only behind https');
+            // The groups' voice notes record from this site; the camera and the rest stay closed.
+            $r->assertHeader('Permissions-Policy', 'camera=(), microphone=(self), geolocation=(), payment=(), usb=()');
         }
         $this->get('https://localhost/api/v1/health')->assertHeader('Strict-Transport-Security');
     }

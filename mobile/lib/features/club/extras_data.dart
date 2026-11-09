@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/intents.dart';
 
 /// [Sprint 18 F1] The club's other screens: training (Sprint 27), the specialists (Sprint 31), the spy (Sprint 30),
 /// the weekly quests (Sprint 20 B5) and the league's honours. Every number and price comes from the server.
@@ -122,8 +123,8 @@ class ExtrasRepository {
     return (days: j['days'] as int? ?? 0, list: [for (final s in (j['specialists'] as List? ?? const [])) Specialist.fromJson(s as Map<String, dynamic>)]);
   }
 
-  Future<void> hire(int league, String type, int stars) =>
-      _api.post('/leagues/$league/specialists', {'type': type, 'stars': stars, 'idempotency_key': 'app-${DateTime.now().microsecondsSinceEpoch}'});
+  Future<void> hire(int league, String type, int stars) => Intents.run('specialist:$league:$type:$stars',
+      (key) => _api.post('/leagues/$league/specialists', {'type': type, 'stars': stars, 'idempotency_key': key}));
 
   Future<SpyView> spy(int league) async => SpyView.fromJson(await _api.get('/leagues/$league/spy'));
   Future<SpyView> sendSpy(int league) async => SpyView.fromJson(await _api.post('/leagues/$league/spy'));

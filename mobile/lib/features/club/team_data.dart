@@ -106,8 +106,11 @@ class TeamRepository {
 
   Future<TeamData> team(int league) async => TeamData.fromJson(await _api.get('/leagues/$league/team'));
   Future<List<Formation>> formations() async => [for (final f in (await _api.get('/data/formations'))['formations'] as List) Formation.fromJson(f as Map<String, dynamic>)];
-  Future<TeamData> saveLineup(int league, String formation, List<int> starters, List<int> bench) async =>
-      TeamData.fromJson(await _api.put('/leagues/$league/team/lineup', {'formation': formation, 'starters': starters, 'bench': bench}));
+  /// [positions] the ten outfield places [x, y] (the keeper stays in goal); without them the server goes back to the
+  /// formation's own places.
+  Future<TeamData> saveLineup(int league, String formation, List<int> starters, List<int> bench, {List<List<int>>? positions}) async =>
+      TeamData.fromJson(await _api.put('/leagues/$league/team/lineup',
+          {'formation': formation, 'starters': starters, 'bench': bench, 'positions': ?positions}));
   Future<TeamData> autoLineup(int league) async => TeamData.fromJson(await _api.delete('/leagues/$league/team/lineup'));
   Future<Tactics> tactics(int league) async => Tactics.fromJson(await _api.get('/leagues/$league/team/tactics'));
   Future<Tactics> saveTactics(int league, Map<String, Object> changes) async => Tactics.fromJson(await _api.put('/leagues/$league/team/tactics', changes));

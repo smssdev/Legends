@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/intents.dart';
 import 'frames.dart';
 
 /// [Sprint 17 F2] A league match as the server gives it (`GET /matches/{id}`, the simulator's shape): the clubs, both
@@ -301,7 +302,7 @@ class MatchRepository {
 
   /// An order for the next minute not yet made; only in a window (the server answers 409 otherwise, with why).
   Future<void> order(int id, Map<String, Object> order) =>
-      _api.post('/matches/$id/actions', {...order, 'idempotency_key': 'app-${DateTime.now().microsecondsSinceEpoch}'});
+      Intents.run('order:$id:$order', (key) => _api.post('/matches/$id/actions', {...order, 'idempotency_key': key}));
   Future<void> sub(int id, int out, int into) => order(id, {'type': 'sub', 'out': out, 'in': into});
   Future<void> tactics(int id, Map<String, Object> changes) => order(id, {'type': 'tactics', 'tactics': changes});
   Future<void> formation(int id, String formation) => order(id, {'type': 'formation', 'formation': formation});

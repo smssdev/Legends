@@ -122,6 +122,15 @@ class LEn extends L {
   String get offlineTitle => 'No connection';
 
   @override
+  String get notFoundTitle => 'Page not found';
+
+  @override
+  String get notFoundBody => 'This link is wrong or no longer exists.';
+
+  @override
+  String get keeperSlotOnly => 'The goal is for a goalkeeper only';
+
+  @override
   String get retry => 'Try again';
 
   @override

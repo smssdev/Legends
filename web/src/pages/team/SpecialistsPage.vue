@@ -3,6 +3,7 @@
 // each with 1 to 5 stars to choose (the price and the effect from the server), the contract working now with a countdown
 // on the server's clock, and the renewal in its last day. No draft of its own: the stadium's cards.
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { uuid } from '../../lib/uuid'
 import { useRoute } from 'vue-router'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -69,7 +70,7 @@ function hire(s: Spec) {
   const stars = chosen(s)
   const renewing = !!s.ends_at
   const o = offer(s)
-  return act(`hire:${s.type}`, () => api.POST('/leagues/{league}/specialists', { params: { path: { league: leagueId.value! } }, body: { type: s.type, stars, idempotency_key: crypto.randomUUID() } }), {
+  return act(`hire:${s.type}`, () => api.POST('/leagues/{league}/specialists', { params: { path: { league: leagueId.value! } }, body: { type: s.type, stars, idempotency_key: uuid() } }), {
     coins: o.currency === 'coins' ? o.cost : undefined, onError: (m) => (error.value = m),
     success: (r) => renewing ? t('جدّدت عقد {v0} ({v1} نجوم)، ويبدأ حين ينتهي الحالي.', { v0: t(s.name), v1: stars }) : t('تعاقدت مع {v0} ({v1} نجوم) لمدة {v2} أيام.', { v0: t(s.name), v1: stars, v2: r.data!.days }),
   }).then((r) => { if (r?.data) { v.value = r.data; useWallet().load() } })

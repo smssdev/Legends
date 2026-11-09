@@ -3,6 +3,7 @@
 // three sections with their 3 × 5 parts (done gold, building green), each stage's effect, and the next part's
 // start with its price. One part at a time; the countdown runs on the server's clock.
 import TicketPrices from '../../components/TicketPrices.vue'
+import { uuid } from '../../lib/uuid'
 import AdReward from '../../components/ads/AdReward.vue'
 import { intlLocale } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
@@ -64,7 +65,7 @@ async function load() {
 }
 
 // [X87] Through lib/action: only the pressed button waits, the result in a toast, coins asked once from 10 up.
-const start = (s: Section) => act(`start:${s.section}`, () => api.POST('/leagues/{league}/stadium', { params: { path: { league: leagueId.value! } }, body: { section: s.section, idempotency_key: crypto.randomUUID() } }), {
+const start = (s: Section) => act(`start:${s.section}`, () => api.POST('/leagues/{league}/stadium', { params: { path: { league: leagueId.value! } }, body: { section: s.section, idempotency_key: uuid() } }), {
   success: t('بدأ الجزء {v0} من المرحلة {v1} في {v2}.', { v0: s.next!.part, v1: s.next!.stage, v2: t(INFO[s.section]!.title) }), onError: (m) => (error.value = m),
 }).then((r) => { if (r?.data) v.value = r.data })
 

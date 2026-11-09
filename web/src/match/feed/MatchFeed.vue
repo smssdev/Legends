@@ -99,7 +99,7 @@ import { t as tr } from '../../lib/i18n'
 import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { theme } from '../../lib/theme'
-import { ICON, SCENES, crest, setKits, setLight, setRain, setRich, setSmooth, studio } from './art'
+import { ICON, SCENES, crest, esc, setKits, setLight, setRain, setRich, setSmooth, studio } from './art'
 import { noteFrame, smooth, tier } from '../perf'
 import { sample } from '../frames'
 import { SCENE_TIME, story } from './story'
@@ -155,7 +155,8 @@ const barKit = computed(() => {
   return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) > 150 ? '#3A5F9E' : k
 })
 // [UP3] The club's real logo where it has one, else its drawn badge.
-const crestOf = (s) => (props.logos?.[s] ? `<img src="${props.logos[s]}" alt="" decoding="async">` : crest([props.kits[s].kit, props.kits[s].trim, props.codes[s] || '']))
+// [2026-11-09] The logo's address escaped: a quote in it cannot add an attribute (onerror=…) to the markup.
+const crestOf = (s) => (props.logos?.[s] ? `<img src="${esc(props.logos[s])}" alt="" decoding="async">` : crest([props.kits[s].kit, props.kits[s].trim, props.codes[s] || '']))
 const coachLine = (s) => [props.coaches?.[s] ?? (props.mine === s ? tr('أنت') : props.live ? '' : props.mine ? tr('الحاسوب') : ''), props.teams?.[s]?.formation].filter(Boolean).join(' · ')
 watch(() => props.kits, (k) => setKits(k), { immediate: true, deep: true })
 // The smooth mode for weak phones [X30]: the scenes drawn from now on leave out the costly parts.
