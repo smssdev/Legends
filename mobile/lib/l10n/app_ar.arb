@@ -1789,5 +1789,147 @@
   "simDefence": "دفاع",
   "notFoundTitle": "الصفحة غير موجودة",
   "notFoundBody": "الرابط غير صحيح أو لم يعد موجوداً.",
-  "keeperSlotOnly": "خانة الحارس لحارس مرمى فقط"
+  "keeperSlotOnly": "خانة الحارس لحارس مرمى فقط",
+  "dailyTasks": "المهام اليومية",
+  "taskLineup": "اعتمد تشكيلتك أو تكتيكك",
+  "taskFriendly": "العب مباراة ودية",
+  "taskTraining": "ضع لاعباً في التدريب",
+  "taskChat": "اكتب في جروب",
+  "opsCenter": "مركز العمليات",
+  "clubAndCoach": "النادي والمدرب",
+  "setTeam": "إعداد الفريق",
+  "tacticsNow": "ضع التكتيك الآن",
+  "treasury": "الخزينة",
+  "playAsGuest": "العب كزائر",
+  "guestBanner": "تلعب كزائر: احفظ حسابك حتى لا يضيع بعد 30 يوماً.",
+  "keepAccount": "احفظ حسابك",
+  "keepWithGoogle": "احفظه بحساب Google",
+  "accountKept": "حُفظ حسابك.",
+  "reactBall": "كرة",
+  "reactFire": "نار",
+  "reactCup": "كأس",
+  "reactLaugh": "ضحك",
+  "reply": "رد",
+  "replyingTo": "رد على: {text}",
+  "@replyingTo": {
+    "placeholders": {
+      "text": {}
+    }
+  },
+  "channels": "المحادثات",
+  "pickChannel": "اختر محادثة",
+  "presets": "فلسفات جاهزة",
+  "presetTikiTaka": "تيكي تاكا",
+  "presetCounter": "مرتدات",
+  "presetHighPress": "ضغط عالٍ",
+  "presetLongBall": "كرات طويلة",
+  "mentality": "العقلية",
+  "suffocating": "خانق",
+  "slow": "بطيء",
+  "hiddenTactics": "تكتيكك لا يراه خصمك · يُحفظ وحده",
+  "timeout": "وقت مستقطع",
+  "timeoutTaken": "وقت مستقطع: التغيير مفتوح حتى تعود المباراة",
+  "timeoutUsed": "أخذت وقتك المستقطع",
+  "momentum": "موجة الزخم",
+  "momentumShare": "{club} {pct}%",
+  "@momentumShare": {
+    "placeholders": {
+      "club": {},
+      "pct": {}
+    }
+  },
+  "quickSub": "تبديل سريع",
+  "speed": "السرعة",
+  "passes": "التمريرات",
+  "bigChances": "فرص محققة",
+  "yourSide": "فريقك",
+  "theirSide": "الخصم",
+  "manOfTheMatch": "نجم المباراة",
+  "zoneControl": "السيطرة على المناطق",
+  "auctions": "المزادات",
+  "auctionEnds": "ينتهي بعد {time}",
+  "@auctionEnds": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "auctionTop": "أعلى مزايدة",
+  "auctionOpening": "سعر الافتتاح",
+  "bid": "زايد {amount}",
+  "@bid": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "yourBid": "مزايدتك",
+  "leading": "الأعلى",
+  "noAuctions": "لا مزادات الآن",
+  "listAsAuction": "اعرضه في مزاد",
+  "auctionMinutes": "{n} دقيقة",
+  "@auctionMinutes": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "releaseClause": "الشرط الجزائي",
+  "payRelease": "شراء فوري بالشرط الجزائي",
+  "negotiate": "تفاوض مع النادي",
+  "theyAsk": "يطلب النادي {amount}",
+  "@theyAsk": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "yourOffer": "عرضك",
+  "roundOf": "الجولة {n} من {of}",
+  "@roundOf": {
+    "placeholders": {
+      "n": {},
+      "of": {}
+    }
+  },
+  "talkClosed": "أنهى النادي التفاوض اليوم",
+  "marketValue": "القيمة السوقية",
+  "contractUntil": "العقد",
+  "chests": "صناديق المتجر",
+  "chestBronze": "الصندوق البرونزي",
+  "chestSilver": "الصندوق الفضي",
+  "chestLegend": "الخزنة الأسطورية",
+  "openFor": "افتح بـ {n} كوينز",
+  "@openFor": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "odds": "النسب",
+  "rewardCoins": "{n} كوينز",
+  "@rewardCoins": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "rewardFitness": "+{n} لياقة للفريق",
+  "@rewardFitness": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "rewardTraining": "تقدم في التدريب للفريق",
+  "rewardMorale": "+{n} معنويات",
+  "@rewardMorale": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "youGot": "حصلت على",
+  "facilities": "المرافق",
+  "medical": "المركز الطبي",
+  "offices": "مكاتب الإدارة",
+  "releaseClauseConfirm": "تدفع {amount} لـ {club} وينتقل اللاعب إليك فوراً دون موافقة مدربه.",
+  "@releaseClauseConfirm": {
+    "placeholders": {
+      "amount": {},
+      "club": {}
+    }
+  }
 }

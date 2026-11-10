@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../ui/widgets/console.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/sounds.dart';
@@ -102,7 +104,11 @@ class _PitchHead extends StatelessWidget {
                 ),
               ),
             ]),
-            if (tall) const SizedBox(height: 28) else const Spacer(),
+            // [Sprint 50 M4] The cinematic stage: our trophy in 3D turning under the floodlights (wide only).
+            if (tall)
+              SizedBox(height: 150, width: 150, child: GlmModel3D(model: 'trophy', label: 'GLM', orbit: '0deg 78deg 3.4m', fallback: Icon(Icons.emoji_events_rounded, size: 110, color: p.gold)))
+            else
+              const Spacer(),
             Text(title, textAlign: tall ? TextAlign.center : TextAlign.start, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 28, height: 1.25, color: p.text)),
             const SizedBox(height: 4),
             Text(lead, textAlign: tall ? TextAlign.center : TextAlign.start, style: TextStyle(fontSize: 15, color: p.textSoft)),
@@ -165,8 +171,9 @@ class _Tabs extends StatelessWidget {
           selected: on,
           button: true,
           child: Material(
-            color: on ? p.chrome : Colors.transparent,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+            // [Sprint 50] The site's tabs (UiTabs): the chosen one gold.
+            color: on ? p.gold : Colors.transparent,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: InkWell(
               customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
               onTap: on
@@ -177,7 +184,7 @@ class _Tabs extends StatelessWidget {
                     },
               child: SizedBox(
                 height: 44,
-                child: Center(child: Text(label, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: on ? p.onChrome : p.textMuted))),
+                child: Center(child: Text(label, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: on ? p.onGold : p.textSoft))),
               ),
             ),
           ),
@@ -187,7 +194,7 @@ class _Tabs extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: context.glm.day ? p.surfaceSunk : p.panel, borderRadius: BorderRadius.circular(12), border: Border.all(color: p.surfaceRaised)),
+      decoration: BoxDecoration(color: context.glm.day ? p.surfaceSunk : p.surface, borderRadius: BorderRadius.circular(15), border: Border.all(color: p.surfaceRaised)),
       child: Row(children: [one(AuthTab.signIn, l.signIn, '/login'), const SizedBox(width: 4), one(AuthTab.register, l.createAccount, '/register')]),
     );
   }

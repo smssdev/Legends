@@ -13,6 +13,7 @@ import '../../ui/widgets/glm_card.dart';
 import '../club/squad_screen.dart' show money;
 import 'finance_screen.dart' show confirm;
 import 'money_data.dart';
+import '../console/store_console.dart';
 import '../leagues/shell.dart';
 
 /// [Sprint 18 F1] The stadium (the web's StadiumPage, Sprint 29): seats, pitch and training, three stages of five
@@ -92,6 +93,9 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
                 return ref.read(stadiumProvider(widget.leagueId).future);
               },
               child: ListView(padding: const EdgeInsets.all(12), children: [
+                // [Sprint 50 M20] The stadium and its buildings in panorama, in 3D.
+                StadiumPanorama(capacity: '${s.capacity}'),
+                gap,
                 GlmCard(
                   gold: true,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -175,6 +179,9 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
                       ]),
                     ),
                   ),
+                // [Sprint 50 M21] The store's chests in a row, their odds shown.
+                gap,
+                ChestsRow(leagueId: widget.leagueId),
                 const SizedBox(height: 24),
               ]),
             );

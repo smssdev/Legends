@@ -20,6 +20,7 @@ import 'feed/director.dart';
 import 'feed/story.dart';
 import 'live_pitch.dart';
 import 'match_data.dart';
+import '../console/console_data.dart';
 import '../leagues/shell.dart';
 
 /// [Sprint 17 F2] The live match in the app (the web's /live/{id}): the score bug, the light pitch, the commentary
@@ -64,6 +65,12 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   MatchPause? _pause;
   int _tick = 0, _offset = 0, _minute = 0, _added = 0;
   bool _started = false, _busy = false;
+
+  /// [Sprint 50 M14, M15] The momentum wave (each minute's danger, the home side's share), and the timeout held.
+  final List<int> _wave = [];
+  int? _homePct;
+  int? _timeoutUntil;
+  late bool _timeoutUsed = widget.view.you != null && widget.view.timeoutsUsed.contains(widget.view.you);
 
   /// [Sprint 44 C1] The broadcast: the minutes waiting for their scene, and the minutes not yet told (in order), whose
   /// score and events show when their scene reaches its key moment, so the result never comes before the ball.
@@ -133,6 +140,9 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
       _minute = t.minute;
       _added = t.added;
       if (t.teams != null) _teams = t.teams!;
+      _wave.add(t.momentumNow);
+      if (_wave.length > 30) _wave.removeAt(0);
+      if (t.momentumPct != null) _homePct = t.momentumPct;
       _recent.add(t);
       // A minute with a scene waits for it (not the minutes already played when the page opened); the rest is told
       // in its turn.
@@ -224,6 +234,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
             ),
           );
           final controls = <Widget>[
+            if (_timeoutUntil != null && _timeoutUntil! > DateTime.now().millisecondsSinceEpoch + _offset && !_finished) _timeoutBar(l),
             if (_pause != null && _you != null && !_finished) _breakBar(l),
             if (_you != null && !_finished) _coachBar(l),
             if (_finished)
@@ -241,7 +252,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
                 flex: 6,
                 child: Column(children: [
                   bug,
-                  Expanded(child: Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 12), child: Center(child: pitch))),
+                  Expanded(child: Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 6), child: Center(child: pitch))),
+                  if (_started && _wave.isNotEmpty) Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 8), child: _MomentumStrip(wave: _wave, homePct: _homePct, view: v)),
                 ]),
               ),
               Expanded(
@@ -382,6 +394,41 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     );
   }
 
+  Future<void> _takeTimeout() async {
+    setState(() => _busy = true);
+    try {
+      final until = await ref.read(consoleRepositoryProvider).timeout(_id);
+      GameSounds.play(Sfx.whistle);
+      if (!mounted) return;
+      setState(() {
+        _timeoutUntil = until;
+        _timeoutUsed = true;
+      });
+      // The bar goes when play goes on.
+      Timer(Duration(milliseconds: (until - DateTime.now().millisecondsSinceEpoch - _offset).clamp(0, 600000)), () {
+        if (mounted) setState(() {});
+      });
+    } on ApiError catch (e) {
+      if (mounted) showGlmToast(context, e.message, error: true);
+      if (mounted) setState(() => _timeoutUsed = true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Widget _timeoutBar(L l) => Padding(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+        child: GlmCard(
+          gold: true,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(children: [
+            Icon(Icons.timer_rounded, color: context.palette.gold),
+            const SizedBox(width: 10),
+            Expanded(child: Text(l.timeoutTaken, style: const TextStyle(fontWeight: FontWeight.w700))),
+          ]),
+        ),
+      );
+
   Widget _coachBar(L l) {
     final team = _teams[_you]!;
     return Padding(
@@ -391,6 +438,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
           (Icons.swap_vert_rounded, '${l.substitute} ${team.subsMax - team.subsUsed}', _busy ? null : _subSheet),
           (Icons.tune_rounded, l.tactics, _busy ? null : _tacticsSheet),
           (Icons.grid_view_rounded, l.formation, _busy || widget.view.formations.isEmpty ? null : _formationSheet),
+          // [Sprint 50 M14] The one timeout: play waits, the changes open for both coaches.
+          (Icons.timer_rounded, _timeoutUsed ? l.timeoutUsed : l.timeout, _busy || _timeoutUsed || !_started ? null : _takeTimeout),
         ])
           Expanded(
             child: Padding(
@@ -576,6 +625,78 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
 /// The score bug: home on the right in Arabic (tokens.json match.homeSide), the minute or «نهاية المباراة» below.
 /// The score bar, as on a TV broadcast: each side in its kit's colour (the change kit on a clash), the score between them
 /// on a dark plate, and the minute (red while it plays) or «full time» under it. Home on the right in Arabic.
+/// [Sprint 50 M15] The momentum wave under the pitch: each minute's danger drawn as a wave (the home side above in its
+/// kit's colour, the away side below in its), and the share of the last minutes for the side on top.
+class _MomentumStrip extends StatelessWidget {
+  const _MomentumStrip({required this.wave, required this.homePct, required this.view});
+
+  final List<int> wave;
+  final int? homePct;
+  final MatchView view;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final pct = homePct ?? 50;
+    final lead = pct >= 50 ? view.home : view.away;
+    return Semantics(
+      label: '${l.momentum}: ${l.momentumShare(lead.name, pct >= 50 ? pct : 100 - pct)}',
+      excludeSemantics: true,
+      child: Container(
+        height: 34,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .7), borderRadius: BorderRadius.circular(8)),
+        child: Row(children: [
+          Text(l.momentum, style: TextStyle(color: p.textMuted, fontSize: 11)),
+          const SizedBox(width: 8),
+          Expanded(child: CustomPaint(painter: _Wave(wave, p.brandLight, p.warning), size: Size.infinite)),
+          const SizedBox(width: 8),
+          Text(l.momentumShare(lead.code, pct >= 50 ? pct : 100 - pct), style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: pct >= 50 ? p.brandLight : p.warning)),
+        ]),
+      ),
+    );
+  }
+}
+
+class _Wave extends CustomPainter {
+  _Wave(this.wave, this.home, this.away);
+
+  final List<int> wave;
+  final Color home, away;
+
+  @override
+  void paint(Canvas c, Size s) {
+    if (wave.isEmpty) return;
+    final mid = s.height / 2;
+    final step = s.width / (wave.length > 1 ? wave.length - 1 : 1);
+    Path side(bool up) {
+      final path = Path()..moveTo(0, mid);
+      var before = mid;
+      for (final (i, v) in wave.indexed) {
+        final h = (up ? v.clamp(0, 2) : -v.clamp(-2, 0)) / 2 * (mid - 2);
+        final x = i * step, y = up ? mid - h : mid + h;
+        if (i == 0) {
+          path.lineTo(x, y);
+        } else {
+          path.cubicTo(x - step / 2, before, x - step / 2, y, x, y);
+        }
+        before = y;
+      }
+      return path
+        ..lineTo(s.width, mid)
+        ..close();
+    }
+
+    c.drawPath(side(true), Paint()..color = home.withValues(alpha: .7));
+    c.drawPath(side(false), Paint()..color = away.withValues(alpha: .7));
+    c.drawLine(Offset(0, mid), Offset(s.width, mid), Paint()..color = Colors.white24..strokeWidth = 1);
+  }
+
+  @override
+  bool shouldRepaint(_Wave o) => true;
+}
+
 class _ScoreBug extends StatelessWidget {
   const _ScoreBug({required this.view, required this.score, this.minute, required this.finished});
 

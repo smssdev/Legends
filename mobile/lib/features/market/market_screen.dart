@@ -16,6 +16,7 @@ import '../club/squad_screen.dart' show money, lineColor;
 import '../leagues/widgets.dart' show when;
 import '../money/finance_screen.dart' show confirm;
 import 'market_data.dart';
+import '../console/market_console.dart';
 import 'offer_screen.dart';
 
 /// [Sprint 18 F1] The market in three tabs: buy (the transfer list by line, UP11), sell (my players: listed up to
@@ -28,12 +29,13 @@ class MarketScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
+    // [Sprint 50 M17, M18] The auctions are a tab of their own: the list and the picked player's card side by side.
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
-        appBar: gameTabsBar(context, title: l.market, tabs: [Tab(text: l.tabBuy), Tab(text: l.tabSell), Tab(text: l.tabOffers), Tab(text: l.academy)]),
+        appBar: gameTabsBar(context, title: l.market, tabs: [Tab(text: l.tabBuy), Tab(text: l.auctions), Tab(text: l.tabSell), Tab(text: l.tabOffers), Tab(text: l.academy)]),
         body: GlmBackground(
-          child: TabBarView(children: [_BuyTab(leagueId), _SellTab(leagueId), _OffersTab(leagueId), _AcademyTab(leagueId)]),
+          child: TabBarView(children: [_BuyTab(leagueId), AuctionsTab(leagueId: leagueId), _SellTab(leagueId), _OffersTab(leagueId), _AcademyTab(leagueId)]),
         ),
       ),
     );
@@ -226,6 +228,23 @@ class _BuySheetState extends State<BuySheet> {
                 onChanged: (v) => setState(() => _compensate = v),
               ),
             const SizedBox(height: 10),
+            // [Sprint 50 M19] A computer club's player: talk the price down; a coach's: take him at his release clause.
+            if (pl.sellerKind == 'bot') ...[
+              GlmButton(
+                label: l.negotiate,
+                variant: GlmButtonVariant.brand,
+                block: true,
+                onPressed: () async {
+                  final done = await showNegotiation(context, leagueId: widget.leagueId, playerId: pl.id, name: pl.name);
+                  if (done == true && context.mounted) Navigator.pop(context, true);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+            if (pl.sellerKind == 'coach') ...[
+              ReleaseClauseButton(leagueId: widget.leagueId, playerId: pl.id, onDone: () => Navigator.pop(context, true)),
+              const SizedBox(height: 8),
+            ],
             GlmButton(
               label: l.buyFor(money(context, q.price)),
               block: true,
@@ -387,6 +406,8 @@ class _SellSheetState extends State<_SellSheet> {
             if (_wait != null) Text(l.waitAbout(_wait!), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12)),
             const SizedBox(height: 10),
             GlmButton(label: l.listForSale, block: true, loading: _busy, onPressed: () => _do(() => widget.repo.listForSale(widget.leagueId, pl.id, _price.round()))),
+            // [Sprint 50 M18] Or at this price as an auction's opening bid.
+            AuctionListing(leagueId: widget.leagueId, playerId: pl.id, price: _price.round(), onListed: () => Navigator.pop(context, true)),
           ],
           const SizedBox(height: 10),
           GlmButton(

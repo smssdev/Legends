@@ -33,6 +33,17 @@ class AuthRepository {
     return _keep(data);
   }
 
+  /// [Sprint 50 M5] Playing as a guest: an account the server makes, kept on this phone by its token.
+  Future<Account> guest() async => _keep(await _api.post('/auth/guest', {'device_name': AppConfig.deviceName}));
+
+  /// [Sprint 50 M5] The guest keeps the account with a name, a username and a password (an email if typed).
+  Future<Account> keepGuest({required String name, required String username, String? email, required String password}) async {
+    final data = await _api.post('/auth/guest/keep', {
+      'name': name.trim(), 'username': username.trim().toLowerCase(), if (email != null && email.trim().isNotEmpty) 'email': email.trim(), 'password': password,
+    });
+    return Account.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
   Future<void> forgot(String email) => _api.post('/auth/forgot-password', {'email': email.trim()});
 
   Future<void> signOut() async {

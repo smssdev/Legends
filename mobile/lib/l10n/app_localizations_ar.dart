@@ -121,15 +121,6 @@ class LAr extends L {
   String get offlineTitle => 'لا اتصال';
 
   @override
-  String get notFoundTitle => 'الصفحة غير موجودة';
-
-  @override
-  String get notFoundBody => 'الرابط غير صحيح أو لم يعد موجوداً.';
-
-  @override
-  String get keeperSlotOnly => 'خانة الحارس لحارس مرمى فقط';
-
-  @override
   String get retry => 'إعادة المحاولة';
 
   @override
@@ -2531,4 +2522,274 @@ class LAr extends L {
 
   @override
   String get simDefence => 'دفاع';
+
+  @override
+  String get notFoundTitle => 'الصفحة غير موجودة';
+
+  @override
+  String get notFoundBody => 'الرابط غير صحيح أو لم يعد موجوداً.';
+
+  @override
+  String get keeperSlotOnly => 'خانة الحارس لحارس مرمى فقط';
+
+  @override
+  String get dailyTasks => 'المهام اليومية';
+
+  @override
+  String get taskLineup => 'اعتمد تشكيلتك أو تكتيكك';
+
+  @override
+  String get taskFriendly => 'العب مباراة ودية';
+
+  @override
+  String get taskTraining => 'ضع لاعباً في التدريب';
+
+  @override
+  String get taskChat => 'اكتب في جروب';
+
+  @override
+  String get opsCenter => 'مركز العمليات';
+
+  @override
+  String get clubAndCoach => 'النادي والمدرب';
+
+  @override
+  String get setTeam => 'إعداد الفريق';
+
+  @override
+  String get tacticsNow => 'ضع التكتيك الآن';
+
+  @override
+  String get treasury => 'الخزينة';
+
+  @override
+  String get playAsGuest => 'العب كزائر';
+
+  @override
+  String get guestBanner => 'تلعب كزائر: احفظ حسابك حتى لا يضيع بعد 30 يوماً.';
+
+  @override
+  String get keepAccount => 'احفظ حسابك';
+
+  @override
+  String get keepWithGoogle => 'احفظه بحساب Google';
+
+  @override
+  String get accountKept => 'حُفظ حسابك.';
+
+  @override
+  String get reactBall => 'كرة';
+
+  @override
+  String get reactFire => 'نار';
+
+  @override
+  String get reactCup => 'كأس';
+
+  @override
+  String get reactLaugh => 'ضحك';
+
+  @override
+  String get reply => 'رد';
+
+  @override
+  String replyingTo(Object text) {
+    return 'رد على: $text';
+  }
+
+  @override
+  String get channels => 'المحادثات';
+
+  @override
+  String get pickChannel => 'اختر محادثة';
+
+  @override
+  String get presets => 'فلسفات جاهزة';
+
+  @override
+  String get presetTikiTaka => 'تيكي تاكا';
+
+  @override
+  String get presetCounter => 'مرتدات';
+
+  @override
+  String get presetHighPress => 'ضغط عالٍ';
+
+  @override
+  String get presetLongBall => 'كرات طويلة';
+
+  @override
+  String get mentality => 'العقلية';
+
+  @override
+  String get suffocating => 'خانق';
+
+  @override
+  String get slow => 'بطيء';
+
+  @override
+  String get hiddenTactics => 'تكتيكك لا يراه خصمك · يُحفظ وحده';
+
+  @override
+  String get timeout => 'وقت مستقطع';
+
+  @override
+  String get timeoutTaken => 'وقت مستقطع: التغيير مفتوح حتى تعود المباراة';
+
+  @override
+  String get timeoutUsed => 'أخذت وقتك المستقطع';
+
+  @override
+  String get momentum => 'موجة الزخم';
+
+  @override
+  String momentumShare(Object club, Object pct) {
+    return '$club $pct%';
+  }
+
+  @override
+  String get quickSub => 'تبديل سريع';
+
+  @override
+  String get speed => 'السرعة';
+
+  @override
+  String get passes => 'التمريرات';
+
+  @override
+  String get bigChances => 'فرص محققة';
+
+  @override
+  String get yourSide => 'فريقك';
+
+  @override
+  String get theirSide => 'الخصم';
+
+  @override
+  String get manOfTheMatch => 'نجم المباراة';
+
+  @override
+  String get zoneControl => 'السيطرة على المناطق';
+
+  @override
+  String get auctions => 'المزادات';
+
+  @override
+  String auctionEnds(Object time) {
+    return 'ينتهي بعد $time';
+  }
+
+  @override
+  String get auctionTop => 'أعلى مزايدة';
+
+  @override
+  String get auctionOpening => 'سعر الافتتاح';
+
+  @override
+  String bid(Object amount) {
+    return 'زايد $amount';
+  }
+
+  @override
+  String get yourBid => 'مزايدتك';
+
+  @override
+  String get leading => 'الأعلى';
+
+  @override
+  String get noAuctions => 'لا مزادات الآن';
+
+  @override
+  String get listAsAuction => 'اعرضه في مزاد';
+
+  @override
+  String auctionMinutes(Object n) {
+    return '$n دقيقة';
+  }
+
+  @override
+  String get releaseClause => 'الشرط الجزائي';
+
+  @override
+  String get payRelease => 'شراء فوري بالشرط الجزائي';
+
+  @override
+  String get negotiate => 'تفاوض مع النادي';
+
+  @override
+  String theyAsk(Object amount) {
+    return 'يطلب النادي $amount';
+  }
+
+  @override
+  String get yourOffer => 'عرضك';
+
+  @override
+  String roundOf(Object n, Object of) {
+    return 'الجولة $n من $of';
+  }
+
+  @override
+  String get talkClosed => 'أنهى النادي التفاوض اليوم';
+
+  @override
+  String get marketValue => 'القيمة السوقية';
+
+  @override
+  String get contractUntil => 'العقد';
+
+  @override
+  String get chests => 'صناديق المتجر';
+
+  @override
+  String get chestBronze => 'الصندوق البرونزي';
+
+  @override
+  String get chestSilver => 'الصندوق الفضي';
+
+  @override
+  String get chestLegend => 'الخزنة الأسطورية';
+
+  @override
+  String openFor(Object n) {
+    return 'افتح بـ $n كوينز';
+  }
+
+  @override
+  String get odds => 'النسب';
+
+  @override
+  String rewardCoins(Object n) {
+    return '$n كوينز';
+  }
+
+  @override
+  String rewardFitness(Object n) {
+    return '+$n لياقة للفريق';
+  }
+
+  @override
+  String get rewardTraining => 'تقدم في التدريب للفريق';
+
+  @override
+  String rewardMorale(Object n) {
+    return '+$n معنويات';
+  }
+
+  @override
+  String get youGot => 'حصلت على';
+
+  @override
+  String get facilities => 'المرافق';
+
+  @override
+  String get medical => 'المركز الطبي';
+
+  @override
+  String get offices => 'مكاتب الإدارة';
+
+  @override
+  String releaseClauseConfirm(Object amount, Object club) {
+    return 'تدفع $amount لـ $club وينتقل اللاعب إليك فوراً دون موافقة مدربه.';
+  }
 }

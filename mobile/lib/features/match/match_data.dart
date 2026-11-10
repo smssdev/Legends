@@ -65,7 +65,7 @@ class MatchTeam {
 class MatchView {
   const MatchView({required this.id, required this.leagueId, required this.home, required this.away, required this.teams, this.you,
       required this.finished, required this.score, required this.tick, required this.tickMs, this.kickoffAt, this.formations = const [],
-      this.coaches = const {}, this.competition = 'league', this.round, this.seed});
+      this.coaches = const {}, this.competition = 'league', this.round, this.seed, this.timeoutsUsed = const [], this.timeoutSeconds = 0});
 
   factory MatchView.fromJson(Map<String, dynamic> j) {
     final clubs = j['clubs'] as Map<String, dynamic>? ?? const {};
@@ -82,8 +82,14 @@ class MatchView {
       formations: [for (final f in (j['formations'] as List? ?? const [])) '$f'],
       coaches: coaches is Map ? {for (final e in coaches.entries) '${e.key}': '${e.value}'} : const {},
       seed: (j['seed'] as num?)?.toInt(),
+      timeoutsUsed: [for (final t in (j['timeouts'] as List? ?? const [])) '${(t as Map)['side']}'],
+      timeoutSeconds: (j['timeout_seconds'] as num?)?.toInt() ?? 0,
     );
   }
+
+  /// [Sprint 50 M14] The sides that took their timeout, and how long one holds play.
+  final List<String> timeoutsUsed;
+  final int timeoutSeconds;
 
   /// [Sprint 44 C3] The match's seed: the rain (MomentClock::rainy) and the cartoon's own variety, as on the web.
   final int? seed;
@@ -126,7 +132,7 @@ class MatchEvent {
 /// A minute made by the server: its clock, score, events, both teams as they stand, and its Keyframes.
 class LiveTick {
   const LiveTick({required this.tick, required this.minute, this.added = 0, required this.score, required this.events, this.teams,
-      this.frames = const [], this.at, this.window = false, this.finished = false, this.period, this.moment, this.moods = const {}, this.how});
+      this.frames = const [], this.at, this.window = false, this.finished = false, this.period, this.moment, this.moods = const {}, this.how, this.momentumNow = 0, this.momentumPct});
 
   factory LiveTick.fromJson(Map<String, dynamic> j) {
     final m = j['minute'];
@@ -142,6 +148,8 @@ class LiveTick {
       moment: j['moment'] is Map ? Moment.fromJson(j['moment'] as Map<String, dynamic>) : null,
       moods: j['moods'] is Map ? {for (final e in (j['moods'] as Map).entries) '${e.key}': '${e.value}'} : const {},
       how: j['voice'] is Map ? (j['voice'] as Map)['how'] as String? : null,
+      momentumNow: ((j['momentum'] as Map?)?['now'] as num?)?.toInt() ?? 0,
+      momentumPct: ((j['momentum'] as Map?)?['home_pct'] as num?)?.toInt(),
     );
   }
 
@@ -156,6 +164,11 @@ class LiveTick {
   /// [Sprint 44 A1] How the server tells this minute on the broadcast (MomentClock::moment), and the coaches' moods.
   final Moment? moment;
   final Map<String, String> moods;
+
+  /// [Sprint 50 M15] The momentum after this minute (the server's): this minute's danger (+ home, - away) and the home
+  /// side's share of the last minutes.
+  final int momentumNow;
+  final int? momentumPct;
 
   /// Where a missed shot went (wide, over, the post): the server's, with its commentary line.
   final String? how;

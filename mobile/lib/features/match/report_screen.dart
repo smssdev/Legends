@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../ui/widgets/console.dart';
+
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
@@ -95,12 +97,17 @@ class _Report extends StatelessWidget {
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: Colors.black.withValues(alpha: .45), borderRadius: BorderRadius.circular(12)),
+                // [Sprint 50 M16] The man of the match's gold card.
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(begin: AlignmentDirectional.topStart, end: AlignmentDirectional.bottomEnd, colors: [p.goldLight, p.gold, p.goldDark]),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [BoxShadow(color: p.gold.withValues(alpha: .4), blurRadius: 16)],
+                ),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.star_rounded, color: p.gold, size: 18),
+                  Icon(Icons.star_rounded, color: p.onGold, size: 18),
                   const SizedBox(width: 6),
-                  Text('${l.manOfMatch}: ', style: const TextStyle(color: Colors.white70, fontSize: 13)),
-                  Flexible(child: Text(r.motm!, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800))),
+                  Text('${l.manOfMatch}: ', style: TextStyle(color: p.onGold, fontSize: 13)),
+                  Flexible(child: Text(r.motm!, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: TextStyle(color: p.onGold, fontWeight: FontWeight.w800))),
                 ]),
               ),
             ],
@@ -108,29 +115,13 @@ class _Report extends StatelessWidget {
         ),
       ),
     );
+    // [Sprint 50 M16] The report's two teams side by side: your side first (in mint), the opponent after (in orange),
+    // each figure on the site's two-colour bar.
+    final mine = r.side ?? 'home', theirs = mine == 'home' ? 'away' : 'home';
     Widget statRow(String key, String label) {
-      final h = r.stats['home']![key] ?? 0, a = r.stats['away']![key] ?? 0;
-      final sum = h + a == 0 ? 1 : h + a;
+      final h = r.stats[mine]![key] ?? 0, a = r.stats[theirs]![key] ?? 0;
       String v(num x) => '$x${key == 'possession' ? '%' : ''}';
-      final big = TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800, color: p.text);
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Column(children: [
-          Row(children: [
-            Text(v(h), textDirection: TextDirection.ltr, style: big),
-            Expanded(child: Text(label, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 13))),
-            Text(v(a), textDirection: TextDirection.ltr, style: big),
-          ]),
-          const SizedBox(height: 4),
-          // Two bars meeting in the middle: the bigger side lit.
-          Row(children: [
-            Expanded(child: Directionality(textDirection: Directionality.of(context) == TextDirection.rtl ? TextDirection.ltr : TextDirection.rtl,
-                child: LevelBar(h / sum, width: double.infinity, height: 6, color: h >= a ? p.gold : p.textMuted.withValues(alpha: .5)))),
-            const SizedBox(width: 6),
-            Expanded(child: LevelBar(a / sum, width: double.infinity, height: 6, color: a >= h ? p.brandLight : p.textMuted.withValues(alpha: .5))),
-          ]),
-        ]),
-      );
+      return Padding(padding: const EdgeInsets.symmetric(vertical: 7), child: GlmDualCompareBar(label: label, mine: h, theirs: a, mineText: v(h), theirsText: v(a)));
     }
 
     final start = <Widget>[
@@ -142,9 +133,13 @@ class _Report extends StatelessWidget {
       if (r.ratings.values.any((v) => v.isNotEmpty)) ...[
         title(l.bestPlayers, Icons.star_rounded),
         GlmCard(child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          for (final side in ['home', 'away'])
+          for (final side in [mine, theirs])
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              for (final pl in r.ratings[side]!.take(3))
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Text(side == mine ? l.yourSide : l.theirSide, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: side == mine ? p.brandLight : p.warning)),
+              ),
+              for (final pl in r.ratings[side]!.take(4))
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                   child: Row(children: [

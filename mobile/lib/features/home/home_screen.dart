@@ -25,6 +25,8 @@ import '../inbox/inbox_data.dart';
 import '../match/match_data.dart';
 import '../money/finance_screen.dart' show confirm;
 import 'settings_sheet.dart';
+import '../auth/auth_controller.dart';
+import '../auth/ui/keep_account.dart';
 
 /// [Sprint 15] The app's first screen after sign-in, as the web's home (MobileHome.dc.html): the coach's card with his
 /// rating, and his slots: each club with its league, place and next match, a free slot's two ways in, a locked one's
@@ -58,6 +60,8 @@ class _Home extends ConsumerWidget {
     final l = L.of(context);
     final p = context.palette;
     final extras = <Widget>[
+                // [Sprint 50 M5] A guest is asked to keep the account (it goes after 30 days otherwise).
+                if (ref.watch(authProvider).value?.guest == true) const Padding(padding: EdgeInsets.only(top: 12), child: KeepAccountCard()),
                 if (!h.starterClaimed && h.starterCoins > 0)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),

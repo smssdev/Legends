@@ -26,7 +26,7 @@ class FakeTeamRepository implements TeamRepository {
   @override
   Future<List<Formation>> formations() async => [Formation(name: sample.lineup.formation, label: sample.lineup.formation, slots: sample.lineup.slots)];
   @override
-  Future<TeamData> saveLineup(int league, String formation, List<int> starters, List<int> bench) async {
+  Future<TeamData> saveLineup(int league, String formation, List<int> starters, List<int> bench, {List<List<int>>? positions}) async {
     startersSent = starters;
     return sample;
   }

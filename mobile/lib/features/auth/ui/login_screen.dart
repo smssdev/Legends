@@ -52,6 +52,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  bool _guestBusy = false;
+
+  Future<void> _guest() async {
+    setState(() => _guestBusy = true);
+    try {
+      await ref.read(authProvider.notifier).guest();
+    } on ApiError catch (e) {
+      if (mounted) showGlmToast(context, e.message, error: true);
+    } finally {
+      if (mounted) setState(() => _guestBusy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
@@ -80,8 +93,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Expanded(child: Divider(color: p.surfaceRaised)),
           ]),
         ),
-        GlmButton(label: l.google, variant: GlmButtonVariant.outline, block: true, icon: const Text('G', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
-            onPressed: () => showGlmToast(context, l.googleSoon)),
+        // [Sprint 50 M4] The quick ways in, side by side: as a guest (an account at once, kept later) and Google.
+        Row(children: [
+          Expanded(
+            child: GlmButton(label: l.playAsGuest, variant: GlmButtonVariant.quiet, block: true, loading: _guestBusy, icon: const Icon(Icons.sports_esports_rounded, size: 18),
+                onPressed: _guest),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: GlmButton(label: l.google, variant: GlmButtonVariant.outline, block: true, icon: const Text('G', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+                onPressed: () => showGlmToast(context, l.googleSoon)),
+          ),
+        ]),
       ],
     );
   }

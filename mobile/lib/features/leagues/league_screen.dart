@@ -21,6 +21,9 @@ import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/stadium.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../club/club_data.dart';
+import '../club/squad_screen.dart' show money;
+import '../console/console_data.dart';
+import '../../ui/widgets/console.dart';
 import '../../core/api/api_client.dart';
 import '../account/account_screens.dart' show askHoliday;
 import '../club/extras_data.dart';
@@ -194,12 +197,156 @@ class _ClubTab extends ConsumerWidget {
                   }),
             ]);
           }
+          // [Sprint 50 M9] The console's office: three columns at a glance, no scrolling: the club and the coach, the
+          // next match on its stadium, and the operations (today's tasks, then what waits for the coach). The sections
+          // are the dock's; the tiles stay on a short screen only.
+          if (box.maxWidth >= 760) {
+            return Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Expanded(flex: 26, child: _ClubColumn(s: s, leagueId: lg.id)),
+                const SizedBox(width: 8),
+                Expanded(flex: 46, child: stage),
+                const SizedBox(width: 8),
+                Expanded(flex: 28, child: ListView(padding: EdgeInsets.zero, children: [
+                  ?contract,
+                  if (contract != null) const SizedBox(height: 8),
+                  DailyTasksCard(leagueId: lg.id),
+                  const SizedBox(height: 8),
+                  GlmSectionTitle(l.needsYou),
+                  const SizedBox(height: 6),
+                  _Needs(s: s, leagueId: lg.id),
+                ])),
+              ]),
+            );
+          }
           return Column(children: [
             Expanded(child: stage),
             SizedBox(height: math.min(250, box.maxHeight * .52), child: tiles),
           ]);
         }),
       ),
+    );
+  }
+}
+
+/// [Sprint 50 M9] The office's first column: the club's crest and its coach's place, the treasury, the way to set the
+/// team, and the table's top.
+class _ClubColumn extends StatelessWidget {
+  const _ClubColumn({required this.s, required this.leagueId});
+
+  final ClubSummary s;
+  final int leagueId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    return GlmCard(
+      padding: const EdgeInsets.all(10),
+      child: ListView(padding: EdgeInsets.zero, children: [
+        GlmSectionTitle(l.clubAndCoach),
+        const SizedBox(height: 8),
+        Row(children: [
+          ClubCrest(url: s.club.crestUrl, name: s.club.code, size: 42),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(s.club.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+              if (s.position != null && s.teams != null) Text(l.position(s.position!, s.teams!), style: TextStyle(color: p.goldLight, fontSize: 12)),
+            ]),
+          ),
+        ]),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(color: p.surfaceSunk, borderRadius: BorderRadius.circular(10)),
+          child: Row(children: [
+            Text(l.treasury, style: TextStyle(color: p.textMuted, fontSize: 12)),
+            const Spacer(),
+            Text(money(context, s.cash), textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 16, color: p.success)),
+          ]),
+        ),
+        const SizedBox(height: 8),
+        GlmButton(label: l.setTeam, variant: GlmButtonVariant.brand, block: true, onPressed: () => context.go('/leagues/$leagueId/lineup')),
+        if (s.top.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          Text(l.leagueTable, style: TextStyle(color: p.textMuted, fontSize: 12)),
+          const SizedBox(height: 4),
+          for (final r in s.top)
+            Container(
+              margin: const EdgeInsets.only(bottom: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              decoration: BoxDecoration(color: r.mine ? p.gold.withValues(alpha: .14) : null, borderRadius: BorderRadius.circular(6)),
+              child: Row(children: [
+                SizedBox(width: 20, child: Text('${r.position}', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700))),
+                Expanded(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(r.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: TextStyle(fontSize: 12, color: r.mine ? p.goldLight : p.text)),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text('${r.points}', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700)),
+              ]),
+            ),
+        ],
+      ]),
+    );
+  }
+}
+
+/// [Sprint 50 M10] Today's tasks (the server's): each done one claims its coins, and the bar fills as they are done.
+class DailyTasksCard extends ConsumerWidget {
+  const DailyTasksCard({super.key, required this.leagueId});
+
+  final int leagueId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = L.of(context);
+    final p = context.palette;
+    final tasks = ref.watch(dailyTasksProvider(leagueId)).value;
+    if (tasks == null) return const SizedBox.shrink();
+    String name(String t) => switch (t) { 'lineup' => l.taskLineup, 'friendly' => l.taskFriendly, 'training' => l.taskTraining, _ => l.taskChat };
+    return GlmCard(
+      padding: const EdgeInsets.all(10),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        GlmSectionTitle(l.dailyTasks, trailing: Text('${tasks.done}/${tasks.total}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.goldLight))),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(3),
+          child: LinearProgressIndicator(value: tasks.total == 0 ? 0 : tasks.done / tasks.total, minHeight: 5, color: p.gold, backgroundColor: p.surfaceRaised),
+        ),
+        const SizedBox(height: 4),
+        for (final t in tasks.tasks)
+          SizedBox(
+            height: 44,
+            child: Row(children: [
+              Icon(t.complete ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded, size: 18, color: t.complete ? p.success : p.textMuted),
+              const SizedBox(width: 8),
+              Expanded(child: Text(name(t.task), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
+              if (t.claimed)
+                Icon(Icons.done_all_rounded, size: 18, color: context.glm.successText)
+              else if (t.complete)
+                TextButton(
+                  style: TextButton.styleFrom(backgroundColor: p.gold, foregroundColor: p.onGold, minimumSize: const Size(64, 34), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                  onPressed: () async {
+                    try {
+                      await ref.read(consoleRepositoryProvider).claimTask(leagueId, t.task);
+                    } on ApiError catch (e) {
+                      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+                    }
+                    ref.invalidate(dailyTasksProvider(leagueId));
+                    ref.invalidate(clubSummaryProvider(leagueId));
+                  },
+                  child: Text('+${t.coins}', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800)),
+                )
+              else
+                Text('+${t.coins}', style: TextStyle(fontFamily: GlmFonts.numbers, color: p.textMuted)),
+            ]),
+          ),
+      ]),
     );
   }
 }
