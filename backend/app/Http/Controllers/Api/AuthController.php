@@ -7,6 +7,7 @@ use App\Auth\AccountHolidays;
 use App\Auth\AccountVerification;
 use App\Auth\GoogleLinker;
 use App\Auth\GoogleTokenVerifier;
+use App\Auth\GuestAccounts;
 use App\Auth\OfficialAccounts;
 use App\Auth\Referral;
 use App\Auth\Sessions;
@@ -326,6 +327,43 @@ class AuthController extends Controller
         }
 
         return response()->json($this->signIn($request, $linker->resolve($google), $data['device_name']));
+    }
+
+    /** [Sprint 50 M5] Playing as a guest: an account with no password, signed in by the app's token. */
+    public function guest(Request $request): JsonResponse
+    {
+        $data = $request->validate(['device_name' => ['required', 'string', 'max:100']]);
+
+        return response()->json($this->signIn($request, GuestAccounts::create(), $data['device_name']), 201);
+    }
+
+    /** [Sprint 50 M5] The guest keeps the account: a name, a username and a password, and an email if wanted. */
+    public function keepGuest(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        GuestAccounts::assertGuest($user);
+        $email = Str::lower(trim((string) $request->input('email')));
+        $request->merge(['email' => $email !== '' ? $email : null]);
+        $data = $request->validate([
+            'name' => ['required', 'string', 'min:2', 'max:40'],
+            'username' => ['required', 'string', Username::RULE, $this->usernameFree($user->id)],
+            'email' => ['nullable', 'string', 'email', 'max:190', 'unique:users,email'],
+            'password' => ['required', 'string', $this->passwordRule()],
+        ]);
+
+        return response()->json(['user' => GuestAccounts::keep($user, $data['name'], $data['username'], $data['password'], $data['email'] ?? null)->toAccount()]);
+    }
+
+    /** [Sprint 50 M5] The guest keeps the account with Google (GoogleLinker::attach). */
+    public function keepGuestWithGoogle(Request $request, GoogleTokenVerifier $verifier, GoogleLinker $linker): JsonResponse
+    {
+        $data = $request->validate(['id_token' => ['required', 'string']]);
+        $google = $verifier->verify($data['id_token']);
+        if (! $google) {
+            throw ValidationException::withMessages(['id_token' => 'تعذر التحقق من حساب جوجل. حاول مجدداً.']);
+        }
+
+        return response()->json(['user' => $linker->attach($request->user(), $google)->toAccount()]);
     }
 
     /** [Sprint 21 E2.4] Sends a one-time code to the account's email (or the one typed here, kept once verified). */

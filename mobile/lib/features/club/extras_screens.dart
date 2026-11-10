@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../ui/widgets/console.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
@@ -340,6 +342,9 @@ class HonoursScreen extends ConsumerWidget {
         value: ref.watch(honoursProvider(leagueId)),
         onRetry: () => ref.invalidate(honoursProvider(leagueId)),
         data: (seasons) => ListView(padding: const EdgeInsets.all(12), children: [
+          // [Sprint 50 M22] The trophy cabinet: our cup in 3D over the league's titles.
+          SizedBox(height: 170, child: GlmModel3D(model: 'trophy', label: l.honours, orbit: '0deg 78deg 3.4m', fallback: Icon(Icons.emoji_events_rounded, size: 110, color: context.palette.gold))),
+          const SizedBox(height: 8),
           for (final s in seasons)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),

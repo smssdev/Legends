@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../ui/widgets/console.dart';
+
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
@@ -72,6 +74,18 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
     }
   }
 
+  /// [Sprint 50 M12] A ready philosophy: the server sets its keys, and the screen takes what it answers.
+  Future<void> _preset(String preset) async {
+    _timer?.cancel();
+    await _flush();
+    try {
+      final t = await _repo.saveTactics(widget.leagueId, {'preset': preset});
+      if (mounted) setState(() => _t = t);
+    } on ApiError catch (e) {
+      if (mounted) showGlmToast(context, e.message, error: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
@@ -94,7 +108,35 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
             // [Sprint 46, the owner's screenshots] The tactics as the manager games set them: the next match first, then
             // each choice a card of its own, turned with its arrows and drawn (the plan on a little pitch, the lines on a
             // tall one), the three dials as sliders with their number, the trap and the marking.
-            return ListView(padding: const EdgeInsets.fromLTRB(16, 10, 16, 24), children: [
+            // [Sprint 50 M12] The console: the live preview on one half (the plan drawn, the trap's line, the ready
+            // philosophies) in front of the dials on the other, so a turn of a dial shows at once beside it.
+            return LayoutBuilder(builder: (context, box) {
+              if (box.maxWidth >= 760) {
+                return GlmSplitLayout(
+                  start: _Preview(t: t, onPreset: _preset),
+                  end: ListView(padding: EdgeInsets.zero, children: [
+                    Row(children: [
+                      for (final (key, title, lo, hi) in [('style', l.mentality, l.defensive, l.attacking), ('pressing', l.pressing, l.calm, l.suffocating), ('tempo', l.tempo, l.slow, l.fast)])
+                        Expanded(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 3), child: _RoundDial(title: title, value: t.get<num>(key).toInt(), low: lo, high: hi, onChanged: (v) => _set(key, v)))),
+                    ]),
+                    const SizedBox(height: 8),
+                    gap(_Lines(t: t, onSet: _set)),
+                    pair(
+                      _Carousel(title: l.marking, values: const ['zone', 'man'], value: '${t.values['marking']}', label: (v) => v == 'zone' ? l.markZone : l.markMan,
+                          picture: (v) => SizedBox(height: 90, child: CustomPaint(painter: _MarkArt(v), size: Size.infinite)), onChanged: (v) => _set('marking', v)),
+                      _Carousel(title: l.tackling, values: const [3, 2, 1, 0], value: (t.values['tackling'] as num).toInt(),
+                          label: (v) => {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3}[v]!,
+                          picture: (v) => SizedBox(height: 90, child: CustomPaint(painter: _TackleArt(v), size: Size.infinite)), onChanged: (v) => _set('tackling', v)),
+                    ),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Icon(Icons.lock_rounded, size: 15, color: context.palette.brandLight),
+                      const SizedBox(width: 6),
+                      Flexible(child: Text(l.hiddenTactics, style: TextStyle(color: context.palette.textMuted, fontSize: 12))),
+                    ]),
+                  ]),
+                );
+              }
+              return ListView(padding: const EdgeInsets.fromLTRB(16, 10, 16, 24), children: [
               if (summary != null) gap(_NextCard(s: summary)),
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -129,11 +171,160 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                     picture: (v) => SizedBox(height: 110, child: CustomPaint(painter: _TrapArt(v == 1), size: Size.infinite)), onChanged: (v) => _set('trap', v)),
               ),
             ]);
+            });
           },
         ),
       ),
     );
   }
+}
+
+/// [Sprint 50 M12] The preview half: the plan drawn large on its pitch (traced in again at each change), the offside
+/// trap's high line when it is set, and the ready philosophies under it (the one the tactics match lit in gold).
+class _Preview extends StatelessWidget {
+  const _Preview({required this.t, required this.onPreset});
+
+  final Tactics t;
+  final ValueChanged<String> onPreset;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final plan = '${t.values['plan']}';
+    final trap = (t.values['trap'] as num?)?.toInt() == 1;
+    String name(String x) => switch (x) { 'tiki_taka' => l.presetTikiTaka, 'counter' => l.presetCounter, 'high_press' => l.presetHighPress, _ => l.presetLongBall };
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Expanded(
+        child: Container(
+          decoration: ShapeDecoration(shape: GlmCut.shape(14, side: BorderSide(color: p.text.withValues(alpha: .25))), gradient: _cardFill),
+          clipBehavior: Clip.antiAlias,
+          child: Stack(children: [
+            Positioned.fill(
+              child: TweenAnimationBuilder<double>(
+                key: ValueKey('$plan:${t.values['style']}:${t.values['tempo']}'),
+                tween: Tween(begin: MediaQuery.of(context).disableAnimations ? 1 : 0, end: 1),
+                duration: const Duration(milliseconds: 900),
+                curve: Curves.easeInOutCubic,
+                builder: (_, v, _) => CustomPaint(painter: _PlanArt(plan, v)),
+              ),
+            ),
+            if (trap)
+              PositionedDirectional(
+                top: 0, bottom: 0, end: 0, start: 0,
+                child: Align(
+                  alignment: const AlignmentDirectional(-.18, 0),
+                  child: Column(mainAxisSize: MainAxisSize.max, children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                      decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .8), borderRadius: BorderRadius.circular(4)),
+                      child: Text(l.trap, style: TextStyle(color: p.goldLight, fontSize: 11)),
+                    ),
+                    Expanded(child: Container(width: 2, color: p.goldLight.withValues(alpha: .8))),
+                  ]),
+                ),
+              ),
+          ]),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Wrap(alignment: WrapAlignment.center, spacing: 6, runSpacing: 6, children: [
+        for (final x in t.presets)
+          ChoiceChip(
+            label: Text(name(x)),
+            selected: t.preset == x,
+            onSelected: (_) => onPreset(x),
+            showCheckmark: false,
+            selectedColor: p.gold,
+            labelStyle: TextStyle(fontWeight: FontWeight.w700, color: t.preset == x ? p.onGold : p.text),
+            side: BorderSide(color: t.preset == x ? p.gold : p.surfaceRaised),
+            shape: const StadiumBorder(),
+            materialTapTargetSize: MaterialTapTargetSize.padded,
+          ),
+      ]),
+    ]);
+  }
+}
+
+/// [Sprint 50 M12] A round dial: a half ring that fills from low to high, dragged sideways or stepped by the screen
+/// reader (a slider for it), its word under it.
+class _RoundDial extends StatelessWidget {
+  const _RoundDial({required this.title, required this.value, required this.low, required this.high, required this.onChanged});
+
+  final String title, low, high;
+  final int value;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final colour = value < 40 ? p.brandLight : value > 60 ? p.warning : p.goldLight;
+    return Semantics(
+      slider: true,
+      label: title,
+      value: '$value',
+      increasedValue: '${(value + 5).clamp(0, 100)}',
+      decreasedValue: '${(value - 5).clamp(0, 100)}',
+      onIncrease: () => onChanged((value + 5).clamp(0, 100)),
+      onDecrease: () => onChanged((value - 5).clamp(0, 100)),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+        decoration: ShapeDecoration(shape: GlmCut.shape(14), gradient: _cardFill),
+        child: Column(children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+          LayoutBuilder(builder: (context, box) {
+            final w = box.maxWidth;
+            final rtl = Directionality.of(context) == TextDirection.rtl;
+            void at(Offset o) {
+              final share = (o.dx / w).clamp(0.0, 1.0);
+              onChanged(((rtl ? 1 - share : share) * 100).round());
+            }
+            return GestureDetector(
+              onHorizontalDragUpdate: (d) => at(d.localPosition),
+              onTapDown: (d) => at(d.localPosition),
+              child: SizedBox(width: w, height: w * .55, child: CustomPaint(painter: _HalfRing(value / 100, colour, p.surfaceRaised, rtl))),
+            );
+          }),
+          Text('$value', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: colour)),
+          Row(children: [
+            Expanded(child: Text(low, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 10))),
+            Expanded(child: Text(high, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: TextStyle(color: p.textMuted, fontSize: 10))),
+          ]),
+        ]),
+      ),
+    );
+  }
+}
+
+class _HalfRing extends CustomPainter {
+  _HalfRing(this.share, this.colour, this.track, this.rtl);
+
+  final double share;
+  final Color colour, track;
+  final bool rtl;
+
+  @override
+  void paint(Canvas c, Size s) {
+    final stroke = s.width * .1;
+    final r = Rect.fromCircle(center: Offset(s.width / 2, s.height - stroke / 2), radius: s.width / 2 - stroke);
+    final base = Paint()..color = track..style = PaintingStyle.stroke..strokeWidth = stroke..strokeCap = StrokeCap.round;
+    c.drawArc(r, math.pi, math.pi, false, base);
+    final fill = Paint()..color = colour..style = PaintingStyle.stroke..strokeWidth = stroke..strokeCap = StrokeCap.round;
+    // In Arabic the dial fills from the right, as the page reads.
+    if (rtl) {
+      c.drawArc(r, 0, -math.pi * share, false, fill);
+    } else {
+      c.drawArc(r, math.pi, math.pi * share, false, fill);
+    }
+    final a = rtl ? -math.pi * share : math.pi + math.pi * share;
+    final knob = r.center + Offset(math.cos(a), math.sin(a)) * r.width / 2;
+    c.drawCircle(knob, stroke * .8, Paint()..color = Colors.white);
+    c.drawCircle(knob, stroke * .8, Paint()..color = colour..style = PaintingStyle.stroke..strokeWidth = 3);
+  }
+
+  @override
+  bool shouldRepaint(_HalfRing o) => o.share != share || o.colour != colour || o.rtl != rtl;
 }
 
 const _cardFill = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmStage.cardRaised, GlmStage.card]);

@@ -17,6 +17,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'ما نجمعه منك', p: [
         'بيانات الحساب: الاسم الظاهر، واسم المستخدم، وكلمة المرور (محفوظة مشفرة لا نراها)، والبريد إن أضفته، وصورتك إن رفعتها، ولغتك، وشكل مدربك على الخط الذي تختاره (يراه مدربو دوريك في المباريات).',
         'الدخول بحساب Google: نأخذ من Google اسمك وبريدك ومعرّف حسابك فقط، لتسجيل دخولك، ولا نصل إلى أي شيء آخر في حسابك.',
+        'اللعب كزائر في التطبيق: حساب بلا بريد ولا كلمة مرور، باسم مؤقت يصنعه الخادم، يدخل به جهازك برمز. وإن لم تحفظه باسم مستخدم وكلمة مرور أو بحساب Google خلال 30 يوماً يُحذف مع كل بياناته.',
         'بيانات اللعب: أنديتك ودورياتك وبطولاتك ومبارياتك وتكتيكاتك وصفقاتك ورسائلك داخل اللعبة وما تكتبه للدعم أو للمدرب المساعد.',
         'اقتراحاتك وأصواتك: ما ترسله في «اقتراحات التطوير» يقرؤه فريق التطوير، وصوتك في كل تصويت (لا يراه غيرنا، وتظهر للجميع الأعداد فقط). وإن أعجبنا اقتراحك يظهر اسمك وصورتك وعنوان اقتراحك في «قائمة الشرف» لكل المسجلين.',
         'رسائل الجروبات: ما تكتبه أو ترسله في جروب من نص وصور ورسائل صوتية يراه أعضاؤه كلهم ويُحفظ على خادمنا. تحذف رسالتك متى شئت فتظهر لهم «حُذفت» وتُمحى صورتها أو صوتها، وتحذف الإدارة الرسائل القديمة تلقائياً بعد مدة تحددها.',
@@ -79,6 +80,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'What we collect', p: [
         'Account data: your display name, username, password (stored hashed; we never see it), your email if you add one, your picture if you upload one, your language, and the look you pick for your coach on the touchline (the coaches of your leagues see it in matches).',
         'Google sign-in: we receive only your name, email and account id from Google, to sign you in, and nothing else in your Google account.',
+        'Playing as a guest in the app: an account with no email or password, under a temporary name the server makes, signed in on your device by a token. Unless you keep it with a username and password or a Google account within 30 days, it is deleted with all its data.',
         'Game data: your clubs, leagues, tournaments, matches, tactics, transfers, in-game messages, and what you write to support or to the Assistant Coach.',
         'Your suggestions and votes: what you send in «Development ideas» is read by the development team, and your vote in each poll (seen by nobody else; everyone sees only the counts). If we like your suggestion, your name, picture and its title appear on the «Honour roll» for every signed-up player.',
         'Group messages: the text, photos and voice notes you send in a group are seen by all its members and kept on our server. You can delete a message at any time: they then see it as deleted and its photo or sound is erased; and old messages are deleted automatically after a period the game\'s admins set.',

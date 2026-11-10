@@ -9,6 +9,7 @@ use App\Engine\Actions;
 use App\Engine\AutoPick;
 use App\Engine\Formations;
 use App\Engine\MatchSetup;
+use App\League\Momentum;
 use App\Models\MasterClub;
 use App\Models\SimMatch;
 use App\Models\SimRoom;
@@ -197,7 +198,9 @@ class Simulator
             $out[] = Commentary::annotate($state, $state['out']) + ['frames' => $choreo['frames'], 'teams' => self::teams($state), 'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1), (int) $state['seed']),
                 'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick']),
                 'window' => $match->live !== null && CoachWindows::window($state['out'], $state['cfg']['match']),
-                'moods' => Mood::forTick($state['out']['events'], $state['score'], $state['out']['minute'] ?? 0, (int) config('game.characters.late_minute'))];
+                'moods' => Mood::forTick($state['out']['events'], $state['score'], $state['out']['minute'] ?? 0, (int) config('game.characters.late_minute')),
+                // [Sprint 50 M15] The momentum wave after this minute.
+                'momentum' => Momentum::wave($state['momentum'] ?? [])];
         }
 
         $match->fill(compact('state', 'ball', 'pending', 'applied', 'ticks'))->save();

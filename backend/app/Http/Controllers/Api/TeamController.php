@@ -149,6 +149,9 @@ class TeamController extends Controller
         return response()->json(['tactics' => $t, 'tips' => Tactics::tips($t, $next?->referee_strictness), 'referee' => $next?->referee_strictness,
             'help' => app()->getLocale() === 'en' ? Tactics::HELP_EN : Tactics::HELP, 'scenarios' => Scenarios::of($club),
             'book' => TacticsBook::build(config('game.engine'), $t),
+            // [Sprint 50 M12] The ready philosophies, and the one the tactics match now (if any).
+            'presets' => array_keys(Tactics::PRESETS),
+            'preset' => collect(Tactics::PRESETS)->search(fn ($p) => array_intersect_assoc($p, $t) === $p) ?: null,
             'scenario_kinds' => collect(Scenarios::KINDS)->map(fn ($m, $kind) => ['kind' => $kind, 'minute' => $m ? ['default' => $m[0], 'min' => $m[1], 'max' => $m[2]] : null])->values()]);
     }
 
@@ -178,8 +181,12 @@ class TeamController extends Controller
         foreach (Tactics::RULES as $key => $rule) {
             $rules[$key] = is_int($rule[0]) ? ['sometimes', 'integer', "between:{$rule[0]},{$rule[1]}"] : ['sometimes', Rule::in($rule)];
         }
+        $rules['preset'] = ['sometimes', Rule::in(array_keys(Tactics::PRESETS))];
         $data = array_map(fn ($v) => is_numeric($v) ? (int) $v : $v, $request->validate($rules));
-        Tactics::save($club, $data);
+        // [Sprint 50 M12] A philosophy sets its keys; any key sent with it is the coach's own and wins.
+        $preset = Tactics::PRESETS[$data['preset'] ?? ''] ?? [];
+        unset($data['preset']);
+        Tactics::save($club, array_merge($preset, $data));
 
         return $this->tactics($request, $league);
     }

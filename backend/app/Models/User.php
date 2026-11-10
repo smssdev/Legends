@@ -43,6 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'account_verified_at' => 'datetime',
             'referral_paid_at' => 'datetime',
             'suspended_at' => 'datetime',
+            'guest_at' => 'datetime',
         ];
     }
 
@@ -117,6 +118,8 @@ class User extends Authenticatable implements MustVerifyEmail
             // [Sprint 21 E7.3] Suspended by the developers: the reason, shown to the coach.
             'suspended' => $this->suspended_at ? ['reason' => $this->suspended_reason] : null,
             'role' => $this->role,
+            // [Sprint 50 M5] A guest's account, until kept with a username and password or Google.
+            'guest' => $this->guest_at !== null,
             'has_password' => $this->hasPassword(),
             'google' => $this->google_id !== null,
             'created_at' => $this->created_at?->toIso8601ZuluString(),

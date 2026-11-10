@@ -54,6 +54,7 @@ dependencies:
   record: ^7.1.2
   audioplayers: ^6.8.1
   path_provider: ^2.1.6
+  model_viewer_plus: ^1.10.0
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +83,8 @@ flutter:
     - assets/sounds/
     # [Sprint 46] The opening's squad, rendered in Unity (unity/build.ps1 splash).
     - assets/splash/
+    # [Sprint 50 M23] The 3D models, made from code (tools/models/make_models.py).
+    - assets/models/
   # [Sprint 15 F1] The game's fonts, bundled (the web serves the same, X100): Tajawal for the words, Barlow Condensed for
   # the numbers. Both SIL Open Font License.
   fonts:

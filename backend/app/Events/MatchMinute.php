@@ -49,6 +49,8 @@ class MatchMinute implements ShouldBroadcastNow
             'voice' => LiveDegrade::voice() ? ($this->tick['voice'] ?? null) : null,
             // [Sprint 26 B1] How each side's coach feels after the minute; the screens and Unity only draw it.
             'moods' => $this->tick['moods'] ?? null,
+            // [Sprint 50 M15] The momentum wave (no tactics in it).
+            'momentum' => $this->tick['momentum'] ?? null,
         ];
     }
 

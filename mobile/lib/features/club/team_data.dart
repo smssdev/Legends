@@ -90,13 +90,18 @@ class Formation {
 /// The engine's own tactics keys (docs/ENGINE.md 5): the plan, the tackling, three sliders, the three lines, the trap
 /// and the marking.
 class Tactics {
-  const Tactics(this.values);
+  const Tactics(this.values, {this.preset, this.presets = const []});
 
-  factory Tactics.fromJson(Map<String, dynamic> j) => Tactics(Map<String, Object>.from(j['tactics'] as Map));
+  factory Tactics.fromJson(Map<String, dynamic> j) => Tactics(Map<String, Object>.from(j['tactics'] as Map),
+      preset: j['preset'] as String?, presets: [for (final p in (j['presets'] as List? ?? const [])) '$p']);
 
   final Map<String, Object> values;
+
+  /// [Sprint 50 M12] The ready philosophy the tactics match now (the server's), and the ones there are.
+  final String? preset;
+  final List<String> presets;
   T get<T>(String key) => values[key] as T;
-  Tactics set(String key, Object v) => Tactics({...values, key: v});
+  Tactics set(String key, Object v) => Tactics({...values, key: v}, presets: presets);
 }
 
 class TeamRepository {

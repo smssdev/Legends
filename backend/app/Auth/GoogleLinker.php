@@ -21,6 +21,27 @@ use Illuminate\Validation\ValidationException;
  */
 class GoogleLinker
 {
+    /**
+     * [Sprint 50 M5] A guest keeps the account with Google: the Google account must be verified and not ours already,
+     * and its email no other account's. The guest becomes the Google account, nothing lost.
+     */
+    public function attach(User $guest, GoogleIdentity $google): User
+    {
+        GuestAccounts::assertGuest($guest);
+        if (! $google->emailVerified) {
+            throw ValidationException::withMessages(['google' => 'بريدك في جوجل غير مؤكد، أكّده عند جوجل أولاً.']);
+        }
+        if (User::where('google_id', $google->sub)->orWhere('email', $google->email)->where('id', '!=', $guest->id)->exists()) {
+            throw ValidationException::withMessages(['google' => 'حساب جوجل هذا له حساب في اللعبة. ادخل به، أو احفظ حسابك باسم مستخدم.']);
+        }
+        $guest->forceFill(['google_id' => $google->sub, 'email' => $google->email, 'guest_at' => null,
+            'name' => $google->name !== '' ? mb_substr($google->name, 0, 40) : $guest->name,
+            'google_picture' => $google->picture !== null && str_starts_with($google->picture, 'https://') ? substr($google->picture, 0, 500) : null,
+            'email_verified_at' => $guest->email_verified_at ?? GameClock::now()])->save();
+
+        return $guest;
+    }
+
     public function resolve(GoogleIdentity $google): User
     {
         $user = User::where('google_id', $google->sub)->first();

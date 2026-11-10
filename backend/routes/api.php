@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\DataEditorController;
+use App\Http\Controllers\Api\DealsController;
 use App\Http\Controllers\Api\FriendlyController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\HomeController;
@@ -54,6 +55,8 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('login', 'login');
         Route::post('token', 'token');
         Route::post('google/token', 'googleToken');
+        // [Sprint 50 M5] Playing as a guest (the app), then keeping the account.
+        Route::post('guest', 'guest')->middleware('throttle:5,60,guest');
         Route::post('forgot-password', 'forgot');
         Route::post('reset-password', 'reset');
     });
@@ -76,6 +79,8 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
         // [Sprint 21 E2.4] The code by email: three a quarter-hour per account.
         Route::post('verify-account/send', 'sendVerificationCode')->middleware('throttle:3,15,verify-send');
         Route::delete('vacation', 'endVacation');
+        Route::post('guest/keep', 'keepGuest')->middleware('throttle:auth');
+        Route::post('guest/google', 'keepGuestWithGoogle')->middleware('throttle:auth');
     });
 });
 
@@ -125,6 +130,8 @@ Route::prefix('groups')->middleware(['auth:sanctum', 'throttle:240,1,groups'])->
     Route::post('{group}/media', 'sendMedia')->whereNumber('group')->middleware('throttle:20,1,group-media');
     Route::get('{group}/media/{message}', 'media')->whereNumber(['group', 'message'])->middleware('throttle:600,1,group-media-show');
     Route::delete('{group}/messages/{message}', 'destroyMessage')->whereNumber(['group', 'message']);
+    // [Sprint 50 M8] A quick reaction on a message.
+    Route::post('{group}/messages/{message}/reaction', 'react')->whereNumber(['group', 'message'])->middleware('throttle:60,1,chat-react');
     // [Sprint 30 G6] A report to the admins.
     Route::post('{group}/messages/{message}/report', 'reportMessage')->whereNumber(['group', 'message'])->middleware('throttle:20,1,chat-report');
     Route::post('{group}/read', 'read')->whereNumber('group');
@@ -292,6 +299,20 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     // [Sprint 20 B5] The weekly quests.
     Route::get('{league}/quests', [QuestController::class, 'show'])->whereNumber('league');
     Route::post('{league}/quests/claim', [QuestController::class, 'claim'])->whereNumber('league')->middleware('throttle:20,1,quests');
+    // [Sprint 50 M18, M19, M21] Auctions, the release clause, the talk with a computer club, and the store's chests.
+    Route::controller(DealsController::class)->whereNumber('league')->group(function () {
+        Route::get('{league}/auctions', 'auctions');
+        Route::post('{league}/auctions/{player}/bids', 'bid')->whereNumber('player')->middleware('throttle:60,1,auction-bid');
+        Route::get('{league}/release/{player}', 'releaseQuote')->whereNumber('player');
+        Route::post('{league}/release/{player}', 'release')->whereNumber('player')->middleware('throttle:10,1,release');
+        Route::get('{league}/negotiations/{player}', 'negotiation')->whereNumber('player');
+        Route::post('{league}/negotiations/{player}', 'negotiate')->whereNumber('player')->middleware('throttle:30,1,negotiate');
+        Route::get('{league}/chests', 'chests');
+        Route::post('{league}/chests/{chest}/open', 'openChest')->where('chest', '[a-z]{3,12}')->middleware('throttle:20,1,chests');
+    });
+    // [Sprint 50 M10] The daily tasks.
+    Route::get('{league}/daily-tasks', [QuestController::class, 'daily'])->whereNumber('league');
+    Route::post('{league}/daily-tasks/claim', [QuestController::class, 'claimDaily'])->whereNumber('league')->middleware('throttle:20,1,quests');
     // [Sprint 21 E9] A verified rewarded video cuts a training or stadium time (off until the owner picks a provider).
     Route::post('{league}/ads/reward', [AdController::class, 'reward'])->whereNumber('league')->middleware('throttle:20,1,ads');
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
@@ -308,6 +329,8 @@ Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchControll
     Route::get('{match}/scene', 'scene')->whereNumber('match')->middleware('throttle:60,1,match-scene');
     Route::post('{match}/actions', 'order')->whereNumber('match')->middleware('throttle:120,1,match-orders');
     Route::post('{match}/ready', 'ready')->whereNumber('match')->middleware('throttle:60,1,match-ready');
+    // [Sprint 50 M14] The coach's one timeout.
+    Route::post('{match}/timeout', 'timeout')->whereNumber('match')->middleware('throttle:10,1,match-timeout');
     // The broadcast's reactions and side chat [X24].
     Route::post('{match}/reactions', 'react')->whereNumber('match')->middleware('throttle:90,1,match-react');
     Route::post('{match}/chat', 'chat')->whereNumber('match')->middleware('throttle:60,1,match-chat');

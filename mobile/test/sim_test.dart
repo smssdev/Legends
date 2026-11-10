@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/core/api/api_error.dart';
 import 'package:glm/features/sim/sim_screens.dart';

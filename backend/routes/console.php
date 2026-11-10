@@ -39,6 +39,8 @@ Schedule::command('matches:prune-replays')->hourly()->withoutOverlapping();
 Schedule::command('db:backup')->dailyAt('04:00')->timezone('Africa/Cairo');
 // [UP13] The accounts unused for 12 days are warned, for 14 deleted.
 Schedule::command('accounts:inactive')->dailyAt('12:07')->timezone('Africa/Cairo')->withoutOverlapping();
+// [Sprint 50 M5] The guests never kept, deleted after game.account.guest_days.
+Schedule::command('guests:prune')->dailyAt('12:17')->timezone('Africa/Cairo')->withoutOverlapping();
 
 // docs/ENGINE.md 9: the full calibration runs every night on the home server (not on CI minutes).
 // The reports land in storage/app/balance/ for the next morning.

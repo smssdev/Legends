@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../ui/tokens.g.dart';
+import 'package:flutter/services.dart';
+import '../../ui/widgets/console.dart';
+import '../auth/auth_controller.dart';
+import '../console/console_data.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -40,7 +44,7 @@ class SocialRepository {
   Future<Map<String, dynamic>> decide(int league, int article, bool publish) => _api.post('/leagues/$league/newspaper/articles/$article/decide', {'publish': publish});
   Future<Map<String, dynamic>> groups() => _api.get('/groups');
   Future<List<Map<String, dynamic>>> messages(int group) async => [for (final m in ((await _api.get('/groups/$group/messages'))['messages'] as List? ?? const [])) m as Map<String, dynamic>];
-  Future<void> say(int group, String body) => _api.post('/groups/$group/messages', {'body': body});
+  Future<void> say(int group, String body, {int? replyTo}) => _api.post('/groups/$group/messages', {'body': body, 'reply_to': ?replyTo});
   Future<void> read(int group) => _api.post('/groups/$group/read');
 }
 
@@ -501,11 +505,11 @@ class GroupsScreen extends ConsumerWidget {
           members.dispose();
         },
       ),
-      body: GlmBackground(child: _groupsBody(context, ref, l)),
+      body: GlmBackground(child: _GroupsConsole(list: (onOpen, open) => _groupsBody(context, ref, l, onOpen: onOpen, open: open))),
     );
   }
 
-  Widget _groupsBody(BuildContext context, WidgetRef ref, L l) => AsyncView(
+  Widget _groupsBody(BuildContext context, WidgetRef ref, L l, {void Function(int id, String name)? onOpen, int? open}) => AsyncView(
         value: ref.watch(groupsProvider),
         onRetry: () => ref.invalidate(groupsProvider),
         data: (d) {
@@ -516,11 +520,17 @@ class GroupsScreen extends ConsumerWidget {
             child: ListView(children: [
               for (final g in groups)
                 ListTile(
-                  leading: CircleAvatar(backgroundColor: context.palette.brand, child: const Icon(Icons.groups_rounded, color: Colors.white)),
-                  title: Text('${(g as Map)['name']}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                  // [Sprint 50 M7] The open chat lit as the site's open page (the brand green).
+                  selected: open == (g as Map)['id'],
+                  selectedTileColor: context.palette.brand,
+                  selectedColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  leading: CircleAvatar(backgroundColor: open == g['id'] ? context.palette.brandDark : context.palette.brand, child: Icon(g['league_id'] != null ? Icons.emoji_events_rounded : Icons.groups_rounded, color: Colors.white)),
+                  title: Text('${g['name']}', style: const TextStyle(fontWeight: FontWeight.w700)),
                   subtitle: Text('${(g['last'] as Map?)?['body'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis),
-                  trailing: (g['unread'] as int? ?? 0) > 0 ? Badge(label: Text('${g['unread']}')) : null,
+                  trailing: (g['unread'] as int? ?? 0) > 0 ? Badge(backgroundColor: context.palette.gold, textColor: context.palette.onGold, label: Text('${g['unread']}')) : null,
                   onTap: () async {
+                    if (onOpen != null) return onOpen(g['id'] as int, '${g['name']}');
                     await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}')));
                     ref.invalidate(groupsProvider);
                   },
@@ -622,22 +632,77 @@ class _GroupVoiceState extends ConsumerState<_GroupVoice> {
 }
 
 /// A group's conversation: the latest page, asked again every few seconds while open, and a line to write.
-class ChatScreen extends ConsumerStatefulWidget {
+/// [Sprint 50 M7] The chats as the tablet and computer messengers: the list at the start (30%) and the open chat beside
+/// it (70%) on a wide screen; on a narrow one, the list, each chat opening on its own page.
+class _GroupsConsole extends ConsumerStatefulWidget {
+  const _GroupsConsole({required this.list});
+
+  final Widget Function(void Function(int id, String name)? onOpen, int? open) list;
+
+  @override
+  ConsumerState<_GroupsConsole> createState() => _GroupsConsoleState();
+}
+
+class _GroupsConsoleState extends ConsumerState<_GroupsConsole> {
+  (int, String)? _open;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, box) {
+        if (box.maxWidth < 760) return widget.list(null, null);
+        final l = L.of(context);
+        return GlmSplitLayout(
+          ratio: (30, 70),
+          start: GlmCard(padding: const EdgeInsets.all(6), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Padding(padding: const EdgeInsets.fromLTRB(6, 4, 6, 6), child: GlmSectionTitle(l.channels)),
+            Expanded(child: widget.list((id, name) {
+              setState(() => _open = (id, name));
+              ref.invalidate(groupsProvider);
+            }, _open?.$1)),
+          ])),
+          end: _open == null
+              ? Center(child: Text(l.pickChannel, style: TextStyle(color: context.palette.textMuted)))
+              : GlmCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Padding(padding: const EdgeInsets.fromLTRB(12, 10, 12, 4), child: GlmSectionTitle(_open!.$2)),
+                    Expanded(child: ChatRoom(key: ValueKey(_open!.$1), groupId: _open!.$1)),
+                  ]),
+                ),
+        );
+      });
+}
+
+class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key, required this.groupId, required this.name});
 
   final int groupId;
   final String name;
 
   @override
-  ConsumerState<ChatScreen> createState() => _ChatScreenState();
+  Widget build(BuildContext context) => Scaffold(appBar: GameBar(title: Text(name)), body: GlmBackground(child: ChatRoom(groupId: groupId)));
 }
 
-class _ChatScreenState extends ConsumerState<ChatScreen> {
+/// [Sprint 50 M7, M8] A chat's messages and its composer: my messages on the end side in the brand green, the others'
+/// on the start side with their name; a swipe or a long press answers one (its quote over the composer), and a long
+/// press gives the four quick reactions (the server counts them, one each).
+class ChatRoom extends ConsumerStatefulWidget {
+  const ChatRoom({super.key, required this.groupId});
+
+  final int groupId;
+
+  @override
+  ConsumerState<ChatRoom> createState() => _ChatRoomState();
+}
+
+const _reactions = {'ball': '⚽', 'fire': '🔥', 'cup': '🏆', 'laugh': '😂'};
+
+class _ChatRoomState extends ConsumerState<ChatRoom> {
   late final SocialRepository _repo = ref.read(socialRepositoryProvider);
   List<Map<String, dynamic>> _messages = const [];
   final _text = TextEditingController();
   Timer? _poll;
   bool _sending = false;
+  Map<String, dynamic>? _replyTo;
 
   @override
   void initState() {
@@ -703,8 +768,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (body.isEmpty || _sending) return;
     setState(() => _sending = true);
     try {
-      await _repo.say(widget.groupId, body);
+      await _repo.say(widget.groupId, body, replyTo: _replyTo?['id'] as int?);
       _text.clear();
+      _replyTo = null;
       await _load();
     } on ApiError catch (e) {
       if (mounted) showGlmToast(context, e.message, error: true);
@@ -713,74 +779,194 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  Future<void> _react(Map<String, dynamic> m, String key) async {
+    try {
+      await ref.read(consoleRepositoryProvider).react(widget.groupId, m['id'] as int, key);
+      HapticFeedback.selectionClick();
+      await _load();
+    } on ApiError catch (e) {
+      if (mounted) showGlmToast(context, e.message, error: true);
+    }
+  }
+
+  Future<void> _actions(Map<String, dynamic> m) async {
+    final l = L.of(context);
+    final pick = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+              for (final e in _reactions.entries)
+                Semantics(
+                  button: true,
+                  selected: m['my_reaction'] == e.key,
+                  label: {'ball': l.reactBall, 'fire': l.reactFire, 'cup': l.reactCup, 'laugh': l.reactLaugh}[e.key],
+                  child: InkResponse(
+                    onTap: () => Navigator.pop(ctx, e.key),
+                    radius: 28,
+                    child: Container(
+                      width: 52, height: 52, alignment: Alignment.center,
+                      decoration: BoxDecoration(shape: BoxShape.circle, color: m['my_reaction'] == e.key ? ctx.palette.brand : ctx.palette.surfaceRaised),
+                      child: Text(e.value, style: const TextStyle(fontSize: 26)),
+                    ),
+                  ),
+                ),
+            ]),
+            const SizedBox(height: 10),
+            ListTile(leading: const Icon(Icons.reply_rounded), title: Text(l.reply), onTap: () => Navigator.pop(ctx, 'reply')),
+          ]),
+        ),
+      ),
+    );
+    if (pick == null || !mounted) return;
+    if (pick == 'reply') return setState(() => _replyTo = m);
+    await _react(m, pick);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
     final p = context.palette;
-    return Scaffold(
-      appBar: GameBar(title: Text(widget.name)),
-      body: GlmBackground(
-        child: Column(children: [
-          Expanded(
-            child: ListView(reverse: true, padding: const EdgeInsets.all(12), children: [
-              for (final m in _messages.reversed)
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 6),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    constraints: const BoxConstraints(maxWidth: 300),
-                    decoration: BoxDecoration(color: p.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: p.surfaceRaised)),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('${(m['user'] as Map?)?['name'] ?? ''}', style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12)),
-                      if (m['deleted'] != true && m['kind'] == 'image')
-                        _GroupImage(path: '/groups/${widget.groupId}/media/${m['id']}')
-                      else if (m['deleted'] != true && m['kind'] == 'audio')
-                        _GroupVoice(path: '/groups/${widget.groupId}/media/${m['id']}', seconds: m['seconds'] as int? ?? 0)
-                      else
-                        Text(m['deleted'] == true ? l.messageDeleted : m['kind'] == 'text' ? '${m['body'] ?? ''}' : l.mediaOnWeb,
-                            style: TextStyle(fontStyle: m['deleted'] == true || m['kind'] != 'text' ? FontStyle.italic : null)),
-                      if (m['deleted'] != true && m['kind'] == 'image' && (m['body'] ?? '') != '') Text('${m['body']}'),
-                    ]),
-                  ),
-                ),
-            ]),
-          ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
-              child: Row(children: [
-                IconButton(
-                  tooltip: _recordingSince == null ? l.recordVoice : l.stopAndSend,
-                  icon: Icon(_recordingSince == null ? Icons.mic_rounded : Icons.stop_circle_rounded, color: _recordingSince == null ? p.gold : context.glm.liveText),
-                  onPressed: _sending ? null : _voice,
-                ),
-                IconButton(
-                  tooltip: l.sendPhoto,
-                  icon: Icon(Icons.image_rounded, color: p.gold),
-                  onPressed: _sending
-                      ? null
-                      : () async {
-                          final f = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1600, maxHeight: 1600, imageQuality: 80);
-                          if (f == null) return;
-                          setState(() => _sending = true);
-                          try {
-                            await ref.read(apiProvider).upload('/groups/${widget.groupId}/media', 'file', f.path, fields: {'kind': 'image'});
-                            await _load();
-                          } on ApiError catch (e) {
-                            if (mounted) showGlmToast(this.context, e.message, error: true);
-                          } finally {
-                            if (mounted) setState(() => _sending = false);
-                          }
-                        },
-                ),
-                Expanded(child: TextField(controller: _text, minLines: 1, maxLines: 4, decoration: InputDecoration(hintText: l.typeMessage), onSubmitted: (_) => _send())),
-                IconButton(tooltip: l.send, icon: Icon(Icons.send_rounded, color: p.gold), onPressed: _sending ? null : _send),
-              ]),
-            ),
-          ),
+    final me = ref.watch(authProvider).value?.id;
+    return Column(children: [
+      Expanded(
+        child: ListView(reverse: true, padding: const EdgeInsets.all(12), children: [
+          for (final m in _messages.reversed)
+            if (m['kind'] == 'note')
+              const SizedBox.shrink()
+            else
+              _bubble(context, l, p, m, mine: (m['user'] as Map?)?['id'] == me),
         ]),
+      ),
+      if (_replyTo != null)
+        Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 4),
+          padding: const EdgeInsetsDirectional.fromSTEB(10, 6, 4, 6),
+          decoration: BoxDecoration(color: p.surfaceRaised, borderRadius: BorderRadius.circular(10), border: BorderDirectional(start: BorderSide(color: p.brandLight, width: 3))),
+          child: Row(children: [
+            Expanded(child: Text(l.replyingTo('${_replyTo!['body'] ?? ''}'), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textSoft, fontSize: 12))),
+            IconButton(tooltip: l.cancel, icon: const Icon(Icons.close_rounded, size: 18), onPressed: () => setState(() => _replyTo = null)),
+          ]),
+        ),
+      SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+          child: Row(children: [
+            IconButton(
+              tooltip: _recordingSince == null ? l.recordVoice : l.stopAndSend,
+              icon: Icon(_recordingSince == null ? Icons.mic_rounded : Icons.stop_circle_rounded, color: _recordingSince == null ? p.gold : context.glm.liveText),
+              onPressed: _sending ? null : _voice,
+            ),
+            IconButton(
+              tooltip: l.sendPhoto,
+              icon: Icon(Icons.image_rounded, color: p.gold),
+              onPressed: _sending
+                  ? null
+                  : () async {
+                      final f = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1600, maxHeight: 1600, imageQuality: 80);
+                      if (f == null) return;
+                      setState(() => _sending = true);
+                      try {
+                        await ref.read(apiProvider).upload('/groups/${widget.groupId}/media', 'file', f.path, fields: {'kind': 'image'});
+                        await _load();
+                      } on ApiError catch (e) {
+                        if (mounted) showGlmToast(this.context, e.message, error: true);
+                      } finally {
+                        if (mounted) setState(() => _sending = false);
+                      }
+                    },
+            ),
+            Expanded(
+              child: TextField(
+                controller: _text, minLines: 1, maxLines: 3,
+                decoration: InputDecoration(hintText: l.typeMessage, isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(22))),
+                onSubmitted: (_) => _send(),
+              ),
+            ),
+            const SizedBox(width: 6),
+            Semantics(
+              button: true,
+              label: l.send,
+              child: InkResponse(
+                onTap: _sending ? null : _send,
+                radius: 24,
+                child: Container(
+                  width: 44, height: 44,
+                  decoration: BoxDecoration(color: p.gold, shape: BoxShape.circle),
+                  child: Icon(Icons.send_rounded, color: p.onGold, size: 20, textDirection: Directionality.of(context)),
+                ),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    ]);
+  }
+
+  Widget _bubble(BuildContext context, L l, GlmPalette p, Map<String, dynamic> m, {required bool mine}) {
+    final reactions = ((m['reactions'] as Map?) ?? const {}).entries.where((e) => (e.value as num) > 0).toList();
+    final reply = m['reply_to'] as Map?;
+    final bubble = Container(
+      margin: EdgeInsets.only(bottom: reactions.isEmpty ? 6 : 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      constraints: const BoxConstraints(maxWidth: 340),
+      decoration: BoxDecoration(
+        color: mine ? p.brandDark : p.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: mine ? null : Border.all(color: p.surfaceRaised),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        if (!mine) Text('${(m['user'] as Map?)?['name'] ?? ''}', style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12)),
+        if (reply != null)
+          Container(
+            margin: const EdgeInsets.only(top: 2, bottom: 4),
+            padding: const EdgeInsetsDirectional.only(start: 6),
+            decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: p.brandLight, width: 2))),
+            child: Text('${reply['body'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textSoft, fontSize: 11)),
+          ),
+        if (m['deleted'] != true && m['kind'] == 'image')
+          _GroupImage(path: '/groups/${widget.groupId}/media/${m['id']}')
+        else if (m['deleted'] != true && m['kind'] == 'audio')
+          _GroupVoice(path: '/groups/${widget.groupId}/media/${m['id']}', seconds: m['seconds'] as int? ?? 0)
+        else
+          Text(m['deleted'] == true ? l.messageDeleted : m['kind'] == 'text' ? '${m['body'] ?? ''}' : l.mediaOnWeb,
+              style: TextStyle(fontStyle: m['deleted'] == true || m['kind'] != 'text' ? FontStyle.italic : null)),
+        if (m['deleted'] != true && m['kind'] == 'image' && (m['body'] ?? '') != '') Text('${m['body']}'),
+      ]),
+    );
+    final withReactions = Stack(clipBehavior: Clip.none, children: [
+      bubble,
+      if (reactions.isNotEmpty)
+        PositionedDirectional(
+          bottom: 2, end: 8,
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            for (final e in reactions)
+              Container(
+                margin: const EdgeInsetsDirectional.only(start: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(color: m['my_reaction'] == e.key ? p.brand : p.surfaceRaised, borderRadius: BorderRadius.circular(8)),
+                child: Text('${_reactions[e.key] ?? ''} ${e.value}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+              ),
+          ]),
+        ),
+    ]);
+    // A swipe answers it (the bubble springs back), a long press opens the reactions and the reply.
+    return Align(
+      alignment: mine ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
+      child: Dismissible(
+        key: ValueKey('m${m['id']}'),
+        direction: m['deleted'] == true ? DismissDirection.none : DismissDirection.startToEnd,
+        confirmDismiss: (_) async {
+          HapticFeedback.selectionClick();
+          setState(() => _replyTo = m);
+          return false;
+        },
+        background: Align(alignment: AlignmentDirectional.centerStart, child: Icon(Icons.reply_rounded, color: p.brandLight)),
+        child: GestureDetector(onLongPress: m['deleted'] == true ? null : () => _actions(m), child: withReactions),
       ),
     );
   }

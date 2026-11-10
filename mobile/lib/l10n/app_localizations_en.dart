@@ -122,15 +122,6 @@ class LEn extends L {
   String get offlineTitle => 'No connection';
 
   @override
-  String get notFoundTitle => 'Page not found';
-
-  @override
-  String get notFoundBody => 'This link is wrong or no longer exists.';
-
-  @override
-  String get keeperSlotOnly => 'The goal is for a goalkeeper only';
-
-  @override
   String get retry => 'Try again';
 
   @override
@@ -2536,4 +2527,276 @@ class LEn extends L {
 
   @override
   String get simDefence => 'Defence';
+
+  @override
+  String get notFoundTitle => 'Page not found';
+
+  @override
+  String get notFoundBody => 'This link is wrong or no longer exists.';
+
+  @override
+  String get keeperSlotOnly => 'The goal is for a goalkeeper only';
+
+  @override
+  String get dailyTasks => 'Daily tasks';
+
+  @override
+  String get taskLineup => 'Set your lineup or tactics';
+
+  @override
+  String get taskFriendly => 'Play a friendly';
+
+  @override
+  String get taskTraining => 'Put a player in training';
+
+  @override
+  String get taskChat => 'Write in a group';
+
+  @override
+  String get opsCenter => 'Operations';
+
+  @override
+  String get clubAndCoach => 'Club and coach';
+
+  @override
+  String get setTeam => 'Set up the team';
+
+  @override
+  String get tacticsNow => 'Set the tactics now';
+
+  @override
+  String get treasury => 'Treasury';
+
+  @override
+  String get playAsGuest => 'Play as a guest';
+
+  @override
+  String get guestBanner =>
+      'You are playing as a guest: keep your account so it is not lost after 30 days.';
+
+  @override
+  String get keepAccount => 'Keep your account';
+
+  @override
+  String get keepWithGoogle => 'Keep it with Google';
+
+  @override
+  String get accountKept => 'Your account is kept.';
+
+  @override
+  String get reactBall => 'Ball';
+
+  @override
+  String get reactFire => 'Fire';
+
+  @override
+  String get reactCup => 'Cup';
+
+  @override
+  String get reactLaugh => 'Laugh';
+
+  @override
+  String get reply => 'Reply';
+
+  @override
+  String replyingTo(Object text) {
+    return 'Replying to: $text';
+  }
+
+  @override
+  String get channels => 'Chats';
+
+  @override
+  String get pickChannel => 'Pick a chat';
+
+  @override
+  String get presets => 'Ready philosophies';
+
+  @override
+  String get presetTikiTaka => 'Tiki-taka';
+
+  @override
+  String get presetCounter => 'Counter-attack';
+
+  @override
+  String get presetHighPress => 'High press';
+
+  @override
+  String get presetLongBall => 'Long balls';
+
+  @override
+  String get mentality => 'Mentality';
+
+  @override
+  String get suffocating => 'Suffocating';
+
+  @override
+  String get slow => 'Slow';
+
+  @override
+  String get hiddenTactics =>
+      'Your opponent never sees your tactics · saved by itself';
+
+  @override
+  String get timeout => 'Timeout';
+
+  @override
+  String get timeoutTaken => 'Timeout: changes are open until play resumes';
+
+  @override
+  String get timeoutUsed => 'You used your timeout';
+
+  @override
+  String get momentum => 'Momentum';
+
+  @override
+  String momentumShare(Object club, Object pct) {
+    return '$club $pct%';
+  }
+
+  @override
+  String get quickSub => 'Quick sub';
+
+  @override
+  String get speed => 'Speed';
+
+  @override
+  String get passes => 'Passes';
+
+  @override
+  String get bigChances => 'Big chances';
+
+  @override
+  String get yourSide => 'Your team';
+
+  @override
+  String get theirSide => 'Opponent';
+
+  @override
+  String get manOfTheMatch => 'Man of the match';
+
+  @override
+  String get zoneControl => 'Zone control';
+
+  @override
+  String get auctions => 'Auctions';
+
+  @override
+  String auctionEnds(Object time) {
+    return 'Ends in $time';
+  }
+
+  @override
+  String get auctionTop => 'Top bid';
+
+  @override
+  String get auctionOpening => 'Opening price';
+
+  @override
+  String bid(Object amount) {
+    return 'Bid $amount';
+  }
+
+  @override
+  String get yourBid => 'Your bid';
+
+  @override
+  String get leading => 'Leading';
+
+  @override
+  String get noAuctions => 'No auctions now';
+
+  @override
+  String get listAsAuction => 'List in an auction';
+
+  @override
+  String auctionMinutes(Object n) {
+    return '$n minutes';
+  }
+
+  @override
+  String get releaseClause => 'Release clause';
+
+  @override
+  String get payRelease => 'Buy now at the release clause';
+
+  @override
+  String get negotiate => 'Negotiate with the club';
+
+  @override
+  String theyAsk(Object amount) {
+    return 'The club asks $amount';
+  }
+
+  @override
+  String get yourOffer => 'Your offer';
+
+  @override
+  String roundOf(Object n, Object of) {
+    return 'Round $n of $of';
+  }
+
+  @override
+  String get talkClosed => 'The club ended the talk for today';
+
+  @override
+  String get marketValue => 'Market value';
+
+  @override
+  String get contractUntil => 'Contract';
+
+  @override
+  String get chests => 'Store chests';
+
+  @override
+  String get chestBronze => 'Bronze chest';
+
+  @override
+  String get chestSilver => 'Silver chest';
+
+  @override
+  String get chestLegend => 'Legend vault';
+
+  @override
+  String openFor(Object n) {
+    return 'Open for $n coins';
+  }
+
+  @override
+  String get odds => 'Odds';
+
+  @override
+  String rewardCoins(Object n) {
+    return '$n coins';
+  }
+
+  @override
+  String rewardFitness(Object n) {
+    return '+$n fitness for the squad';
+  }
+
+  @override
+  String get rewardTraining => 'Training progress for the squad';
+
+  @override
+  String rewardMorale(Object n) {
+    return '+$n morale';
+  }
+
+  @override
+  String get youGot => 'You got';
+
+  @override
+  String get facilities => 'Facilities';
+
+  @override
+  String get medical => 'Medical centre';
+
+  @override
+  String get offices => 'Offices';
+
+  @override
+  String releaseClauseConfirm(Object amount, Object club) {
+    return 'You pay $amount to $club and the player joins you at once, without his coach\'s answer.';
+  }
 }

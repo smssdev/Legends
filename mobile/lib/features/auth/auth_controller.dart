@@ -29,6 +29,16 @@ class AuthController extends AsyncNotifier<Account?> {
     state = AsyncData(await ref.read(authRepositoryProvider).register(name: name, username: username, email: email, password: password));
   }
 
+  /// [Sprint 50 M5] Play as a guest at once.
+  Future<void> guest() async {
+    state = AsyncData(await ref.read(authRepositoryProvider).guest());
+  }
+
+  /// [Sprint 50 M5] The guest keeps the account: the same account, now with its own name and password.
+  Future<void> keepGuest({required String name, required String username, String? email, required String password}) async {
+    state = AsyncData(await ref.read(authRepositoryProvider).keepGuest(name: name, username: username, email: email, password: password));
+  }
+
   Future<void> signOut() async {
     // [Sprint 19 F1] This phone stops getting the account's pushes (while the token is still good).
     await ref.read(pushProvider).forget();

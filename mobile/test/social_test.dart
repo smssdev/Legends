@@ -57,7 +57,7 @@ class FakeSocial implements SocialRepository {
         {'id': 2, 'kind': 'audio', 'deleted': false, 'body': '', 'user': {'id': 9, 'name': 'حمزة'}, 'seconds': 7, 'created_at': '2026-11-06T08:00:00Z'},
       ];
   @override
-  Future<void> say(int group, String body) async => sent.add('say $group $body');
+  Future<void> say(int group, String body, {int? replyTo}) async => sent.add('say $group $body');
   @override
   Future<void> read(int group) async {}
 }
