@@ -149,6 +149,13 @@ class MessageTextEn
                 'body' => sprintf('The manager of %s declined your holiday request. You can ask again with a clearer reason, or take a holiday for your whole account from your account page.', $league),
                 'link' => $leagueLink,
             ],
+            // [Sprint 50 M18, M19] The auctions and the release clause.
+            'auction_outbid' => ['title' => 'Outbid on '.($p['player'] ?? ''), 'body' => sprintf('A higher bid than yours on %s: %s. Bid again before the auction ends.', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))), 'link' => '/market?tab=auctions'],
+            'auction_won' => ['title' => 'Auction won: '.($p['player'] ?? ''), 'body' => sprintf('%s is in your squad now, for %s.', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))), 'link' => '/team'],
+            'auction_sold' => ($p['price'] ?? 0) > 0
+                ? ['title' => 'Auction over: '.($p['player'] ?? '').' sold', 'body' => sprintf('%s bought your %s for %s. The money is in your club\'s balance.', $p['to'] ?? '', $p['player'] ?? '', number_format((int) $p['price'])), 'link' => '/finance']
+                : ['title' => 'Auction over, no sale', 'body' => sprintf('No bid on %s could be completed, so he stays in your squad.', $p['player'] ?? ''), 'link' => '/market?tab=auctions'],
+            'release_clause' => ['title' => 'Release clause paid: '.($p['player'] ?? ''), 'body' => sprintf('%s paid %s\'s release clause (%s) and took him. The money is in your club\'s balance.', $p['to'] ?? '', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))), 'link' => '/finance'],
             'listing_sold' => [
                 'title' => 'Sold: '.($p['player'] ?? 'your player'),
                 'body' => sprintf('A club from outside the league bought %s at the price you asked: %s. The money is in your club\'s balance.', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))),

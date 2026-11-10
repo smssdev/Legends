@@ -230,6 +230,122 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/guest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 50 M5] Play as a guest (the app)
+         * @description An account with no email or password, under a name the server makes, signed in by the app's token. Kept with POST /auth/guest/keep or /auth/guest/google; deleted with everything after game.account.guest_days if never kept. Five an hour per address.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        device_name: string;
+                    };
+                };
+            };
+            responses: {
+                201: components["responses"]["AccountToken"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/guest/keep": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 50 M5] The guest keeps the account with a username and a password */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        username: string;
+                        password: string;
+                        email?: string | null;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Account"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/guest/google": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 50 M5] The guest keeps the account with Google
+         * @description Refused (422) when the Google account is already a game account, or its email not verified.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        id_token: string;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Account"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/forgot-password": {
         parameters: {
             query?: never;
@@ -2612,7 +2728,13 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["TacticsSet"];
+                    "application/json": components["schemas"]["TacticsSet"] & {
+                        /**
+                         * @description [Sprint 50 M12] A philosophy sets its keys; any key sent with it wins
+                         * @enum {string}
+                         */
+                        preset?: "tiki_taka" | "counter" | "high_press" | "long_ball";
+                    };
                 };
             };
             responses: {
@@ -3853,6 +3975,8 @@ export interface paths {
                     "application/json": {
                         player_id: number;
                         price: number;
+                        /** @description [Sprint 50 M18] An auction of these minutes (one of game.auctions.minutes): the price opens it, and no outside buyer takes him */
+                        auction_minutes?: number | null;
                     };
                 };
             };
@@ -5500,6 +5624,466 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/daily-tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [Sprint 50 M10] Today's tasks (midnight to midnight, Cairo): done, claimed, and their coins */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The tasks */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DailyTasks"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/daily-tasks/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 50 M10] Take a done task's coins, once a day */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        task: "lineup" | "friendly" | "training" | "chat";
+                    };
+                };
+            };
+            responses: {
+                /** @description The tasks after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DailyTasks"];
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/auctions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [Sprint 50 M18] The league's open auctions, the soonest ending first, with my club's place in each */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The auctions and the lengths a coach may list one for (minutes) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            auctions: components["schemas"]["Auction"][];
+                            minutes: number[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/auctions/{player}/bids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                player: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 50 M18] Bid on an auction
+         * @description At least its next (the opening price, or the top bid and a step), at most the coaches' highest fair price, and within the club's money. A bid in the last extend_seconds moves the end. The coach outbid is told in the inbox. At the end the highest bid that can still be paid becomes a deal between the coaches.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    player: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        amount: number;
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The auction after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            auction: components["schemas"]["Auction"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/release/{player}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                player: number;
+            };
+            cookie?: never;
+        };
+        /** [Sprint 50 M19] Another coach's player's release clause, and whether my club can pay it */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    player: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The clause */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            player_id: number;
+                            clause: number;
+                            club: {
+                                id?: number;
+                                name?: string;
+                            };
+                            can: boolean;
+                            why: string | null;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /**
+         * [Sprint 50 M19] Take him at once by paying his release clause, without his coach's answer
+         * @description A deal between coaches like any other, so every limit holds (the pair cap, the squads, a locked sheet, the money). His coach is told in the inbox.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    player: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            player_id: number;
+                            price: number;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/negotiations/{player}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                player: number;
+            };
+            cookie?: never;
+        };
+        /** [Sprint 50 M19] My talk with a computer club over one of its players */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    player: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The talk */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Negotiation"];
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /**
+         * [Sprint 50 M19] Offer a price
+         * @description At its ask or more buys him at the ask. Below it the club meets the coach halfway (never under its floor) for game.negotiation.rounds rounds; an offer far under its floor ends the talk for the day (status closed).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    player: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        amount: number;
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The talk after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Negotiation"] & {
+                            bought: boolean;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/chests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [Sprint 50 M21] The store's chests: their coins and their odds */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The chests */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            chests: components["schemas"]["Chest"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/chests/{chest}/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                chest: "bronze" | "silver" | "legend";
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 50 M21] Open a chest with coins
+         * @description One reward from its table (coins back, the squad's fitness or training, the club's morale; never club money or a player). One key opens one chest; a fair league spends no coins (409).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    chest: "bronze" | "silver" | "legend";
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description What it gave */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            opened: {
+                                chest: string;
+                                /** @enum {string} */
+                                reward: "coins" | "fitness" | "training" | "morale";
+                                amount: number;
+                            };
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/moves": {
         parameters: {
             query?: never;
@@ -5837,7 +6421,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The match, its clubs, teams (tactics only for your side), the slots of both formations, and kickoff_at: when it kicks off (UTC, Sprint 32 V3) */
+                /** @description The match, its clubs, teams (tactics only for your side), the slots of both formations, kickoff_at: when it kicks off (UTC, Sprint 32 V3), and [Sprint 50 M14] its timeouts (side, tick, until) with timeout_seconds */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -6365,6 +6949,53 @@ export interface paths {
                         "application/json": {
                             ready: ("home" | "away")[];
                             resume_at: number;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/timeout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 50 M14] The coach's one timeout in a live league match
+         * @description Play waits game.match.timeout_seconds more before the next minute, for every screen (the event `timeout` on the match's channel); the match itself is the same. While it holds, both coaches may give orders as in a window. Once a match a side (409 again).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The timeout */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            timeout: components["schemas"]["MatchTimeout"];
                         };
                     };
                 };
@@ -12495,6 +13126,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/groups/{group}/messages/{message}/reaction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+                message: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 50 M8] My reaction on a message (one each; the same again or null takes it back) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                    message: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string|null} */
+                        reaction: "ball" | "fire" | "cup" | "laugh" | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The message with its counts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: components["schemas"]["ChatMessage"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups/{group}/read": {
         parameters: {
             query?: never;
@@ -12907,6 +13591,12 @@ export interface components {
             media_url?: string | null;
             /** @description A voice note's length */
             seconds?: number | null;
+            /** @description [Sprint 50 M8] The count of each reaction (ball, fire, cup, laugh) */
+            reactions?: {
+                [key: string]: number;
+            };
+            /** @description The viewer's own (null on the channel) */
+            my_reaction?: string | null;
             /** Format: date-time */
             created_at: string;
         };
@@ -13371,6 +14061,76 @@ export interface components {
                 lock_from_round?: number;
                 join_open?: boolean;
             } | null;
+        };
+        DailyTasks: {
+            /** Format: date */
+            day: string;
+            /** Format: date-time */
+            renews_at: string;
+            done: number;
+            total: number;
+            tasks: {
+                /** @enum {string} */
+                task: "lineup" | "friendly" | "training" | "chat";
+                complete: boolean;
+                claimed: boolean;
+                coins: number;
+            }[];
+        };
+        Auction: {
+            player_id: number;
+            name: string;
+            position: string;
+            age: number;
+            overall: number;
+            value: number;
+            club_id: number;
+            club: string;
+            opening: number;
+            top: number | null;
+            bids: number;
+            /** @description The least the next bid may be */
+            next: number;
+            /** @description The most a bid may be */
+            max: number;
+            /** @description My club's highest bid */
+            mine: number | null;
+            leading: boolean;
+            /** Format: date-time */
+            ends_at: string;
+        };
+        Negotiation: {
+            player_id: number;
+            /** @description The club's fixed price */
+            price: number;
+            /** @description What it asks now */
+            ask: number;
+            round: number;
+            rounds: number;
+            /** @enum {string} */
+            status: "open" | "closed" | "done";
+            /** Format: date-time */
+            expires_at: string;
+        };
+        Chest: {
+            /** @enum {string} */
+            chest: "bronze" | "silver" | "legend";
+            coins: number;
+            odds: {
+                /** @enum {string} */
+                reward: "coins" | "fitness" | "training" | "morale";
+                amount: number;
+                /** @description The chance in basis points */
+                pct_bp: number;
+            }[];
+        };
+        MatchTimeout: {
+            /** @enum {string} */
+            side: "home" | "away";
+            tick: number;
+            /** @description When play goes on (ms) */
+            until: number;
+            seconds?: number;
         };
         /** @description The engine's own keys (docs/ENGINE.md 5) */
         TacticsSet: {
@@ -15082,6 +15842,8 @@ export interface components {
             role: "user" | "admin";
             /** @description False for an account made with Google only */
             has_password: boolean;
+            /** @description [Sprint 50 M5] A guest's account, until kept with a username and password or Google */
+            guest?: boolean;
             /** @description Linked to a Google account */
             google: boolean;
             /** Format: date-time */
@@ -15472,6 +16234,10 @@ export interface components {
                     tips: string[];
                     /** @enum {string|null} */
                     referee?: "very_lenient" | "lenient" | "medium" | "strict" | "very_strict" | null;
+                    /** @description [Sprint 50 M12] The ready philosophies */
+                    presets?: ("tiki_taka" | "counter" | "high_press" | "long_ball")[];
+                    /** @description The philosophy my tactics match now */
+                    preset?: string | null;
                     /** @description What each part does, for its "?": plan, pressing, style, tempo, tackling, lines, trap, marking, tips */
                     help: {
                         [key: string]: string;

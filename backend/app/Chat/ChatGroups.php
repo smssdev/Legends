@@ -299,7 +299,32 @@ class ChatGroups
                 ->where('last_read_id', '<', $rows->last()->id)->update(['last_read_id' => $rows->last()->id]);
         }
 
-        return self::views($rows);
+        return self::views($rows, $user->id);
+    }
+
+    /**
+     * [Sprint 50 M8] A member's reaction on a message: one each, a new one takes the old one's place, the same one or
+     * none takes it back. The message is sent again on the group's channel with its counts.
+     */
+    public static function react(int $groupId, User $user, int $messageId, ?string $reaction): array
+    {
+        self::assertMember($groupId, $user->id);
+        $m = DB::table('chat_group_messages')->where('id', $messageId)->where('chat_group_id', $groupId)->whereNull('deleted_at')->first();
+        if (! $m || $m->kind === 'note') {
+            throw new HttpException(404, __('الرسالة غير موجودة.'));
+        }
+        DB::transaction(function () use ($user, $messageId, $reaction) {
+            $old = DB::table('chat_group_reactions')->where('chat_group_message_id', $messageId)->where('user_id', $user->id)->value('reaction');
+            DB::table('chat_group_reactions')->where('chat_group_message_id', $messageId)->where('user_id', $user->id)->delete();
+            if ($reaction !== null && $reaction !== $old) {
+                DB::table('chat_group_reactions')->insert(['chat_group_message_id' => $messageId, 'user_id' => $user->id,
+                    'reaction' => $reaction, 'created_at' => GameClock::now()]);
+            }
+        });
+        $row = DB::table('chat_group_messages')->find($messageId);
+        ChatMessageSent::dispatch($groupId, self::views(collect([$row]))[0]);
+
+        return self::views(collect([$row]), $user->id)[0];
     }
 
     public static function read(int $groupId, User $user, int $lastId): void
@@ -350,13 +375,17 @@ class ChatGroups
     }
 
     /** Messages as the screens show them: who, what, when, and a short quote of what it answers. */
-    public static function views($rows): array
+    public static function views($rows, ?int $viewer = null): array
     {
+        // [Sprint 50 M8] The reactions' counts, and the viewer's own (none on the channel, where nobody is the viewer).
+        $reacts = DB::table('chat_group_reactions')->whereIn('chat_group_message_id', $rows->pluck('id')->all())->get(['chat_group_message_id', 'user_id', 'reaction'])
+            ->groupBy('chat_group_message_id');
         $users = DB::table('users')->whereIn('id', $rows->pluck('user_id')->filter()->unique()->all())->get(['id', 'name', 'username'])->keyBy('id');
         $replies = DB::table('chat_group_messages')->whereIn('id', $rows->pluck('reply_to_id')->filter()->unique()->all())->get()->keyBy('id');
         $media = DB::table('chat_media')->whereIn('chat_group_message_id', $rows->pluck('id')->all())->get(['chat_group_message_id', 'seconds'])->keyBy('chat_group_message_id');
 
-        return $rows->map(function ($m) use ($users, $replies, $media) {
+        return $rows->map(function ($m) use ($users, $replies, $media, $reacts, $viewer) {
+            $mine = $reacts[$m->id] ?? collect();
             $u = $m->user_id ? $users[$m->user_id] ?? null : null;
             $r = $m->reply_to_id ? $replies[$m->reply_to_id] ?? null : null;
 
@@ -367,6 +396,8 @@ class ChatGroups
                 // [X65] A picture's or voice note's address (members only) and a voice note's length.
                 'media_url' => ! $m->deleted_at && isset($media[$m->id]) ? url("/api/v1/groups/{$m->chat_group_id}/media/{$m->id}") : null,
                 'seconds' => isset($media[$m->id]) && $media[$m->id]->seconds !== null ? (int) $media[$m->id]->seconds : null,
+                'reactions' => $m->deleted_at ? [] : $mine->countBy('reaction')->map(fn ($n) => (int) $n)->all(),
+                'my_reaction' => $viewer && ! $m->deleted_at ? $mine->firstWhere('user_id', $viewer)?->reaction : null,
                 'created_at' => Carbon::parse($m->created_at, 'UTC')->toIso8601ZuluString()];
         })->values()->all();
     }

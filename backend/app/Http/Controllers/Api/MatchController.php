@@ -16,6 +16,7 @@ use App\League\Members;
 use App\League\MissedMatches;
 use App\League\ShotMap;
 use App\League\TeamSheet;
+use App\League\Timeouts;
 use App\Models\Club;
 use App\Simulator\CoachWindows;
 use App\Simulator\Simulator;
@@ -62,6 +63,8 @@ class MatchController extends Controller
             'control' => ['home' => $you === 'home' ? 'me' : 'cpu', 'away' => $you === 'away' ? 'me' : 'cpu'],
             // What the coach can switch to while it is played: the 24 and his own.
             'formations' => $you ? array_keys(TeamSheet::formations(Club::findOrFail($you === 'home' ? $f->home_id : $f->away_id))) : [],
+            // [Sprint 50 M14] The timeouts called (the replay shows them where they were), and how long one holds play.
+            'timeouts' => Timeouts::of($m->id), 'timeout_seconds' => (int) config('game.match.timeout_seconds'),
         ];
 
         return response()->json($view);
@@ -300,7 +303,8 @@ class MatchController extends Controller
             abort_unless($action['type'] === 'sub' && (int) ($action['out'] ?? 0) === $injured, 409, 'في التوقف الطارئ تبدّل اللاعب المصاب فقط.');
         } else {
             // [X42] Only in a window: before kick-off, at half-time, or the break after minutes 15, 30, 60 and 75.
-            abort_unless(CoachWindows::open($state), 409, 'التغيير في فترات التوقف فقط: قبل البداية، وفي الدقائق 15 و30 و45 و60 و75.');
+            // [Sprint 50 M14] Or while a timeout holds play.
+            abort_unless(CoachWindows::open($state) || Timeouts::active($m->id), 409, 'التغيير في فترات التوقف فقط: قبل البداية، وفي الدقائق 15 و30 و45 و60 و75.');
         }
         $tick = max((int) $m->tick, (int) ($state['tick'] ?? 0)) + 1;
         $new = MatchOrders::give($m->id, $you, $request->user()->id, $data['idempotency_key'], $action, $tick);
@@ -355,6 +359,15 @@ class MatchController extends Controller
     }
 
     /** The match, its fixture, and which side the asker coaches (null for the other members). 404 for outsiders. */
+    /** [Sprint 50 M14] The coach's one timeout in a live league match. */
+    public function timeout(Request $request, int $match): JsonResponse
+    {
+        [$m, , $you] = $this->load($request, $match);
+        abort_unless($you, 403, 'لا تدير أياً من الفريقين في هذه المباراة.');
+
+        return response()->json(['timeout' => Timeouts::call($m, $you)]);
+    }
+
     private function load(Request $request, int $id): array
     {
         $m = DB::table('matches')->where('id', $id)->first();

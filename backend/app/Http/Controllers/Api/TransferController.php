@@ -47,8 +47,8 @@ class TransferController extends Controller
     public function list(Request $request, League $league): JsonResponse
     {
         $club = $this->club($request, $league);
-        $data = $request->validate(['player_id' => 'required|integer', 'price' => 'required|integer|min:1']);
-        Transfers::list($club->id, $data['player_id'], $data['price']);
+        $data = $request->validate(['player_id' => 'required|integer', 'price' => 'required|integer|min:1', 'auction_minutes' => 'nullable|integer']);
+        Transfers::list($club->id, $data['player_id'], $data['price'], $data['auction_minutes'] ?? null);
 
         return $this->show($request, $league);
     }

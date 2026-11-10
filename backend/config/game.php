@@ -25,6 +25,8 @@ return [
         'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 30,
         'stoppage_first_half' => [1, 3], 'stoppage_second_half' => [2, 6], 'stoppage_extra_time' => [0, 2],
         'lock_minutes_before' => 5, 'referee_minutes_before' => 30,
+        // [Sprint 50 M14] A coach's one timeout in a live league match holds play this long.
+        'timeout_seconds' => 45,
         'subs' => 3, 'extra_time_subs' => 1,
         // [X42] The coach's windows, the owner's (2026-10-26): play stops this long after these minutes, and only then
         // (and before kick-off and at half-time) may a coach change his line-up, tactics or players (CoachWindows).
@@ -133,6 +135,8 @@ return [
         'buy_from_pool_bp' => 10000, 'sell_to_pool_bp' => 7000,
         'buy_from_bot_bp' => 12500,
         'human_trade_min_bp' => 5000, 'human_trade_max_bp' => 20000,
+        // [Sprint 50 M19] A coach's player taken at once at this share of his value (the pair cap still holds).
+        'release_clause_bp' => 15000,
         'pair_net_transfer_cap_bp' => 2500,   // من ميزانية البداية، لكل ناديين في الموسم
         'same_pair_player_moves_per_season' => 1,
         'offer_hours' => 48,                // an offer between coaches waits this long for an answer
@@ -518,7 +522,8 @@ return [
     // verifies, up to referral_max.
     // [Sprint 30 P6] starter_coins: a new coach's first coins, claimed once from the home screen (apart from the
     // verification reward).
-    'account' => ['welcome_coins' => 1000, 'starter_coins' => 25, 'password_min' => 8, 'verify_code_days' => 7, 'verify_code_minutes' => 15, 'verify_code_attempts' => 5,
+    // [Sprint 50 M5] guest_days: a guest's account never kept is deleted after these days.
+    'account' => ['guest_days' => 30, 'welcome_coins' => 1000, 'starter_coins' => 25, 'password_min' => 8, 'verify_code_days' => 7, 'verify_code_minutes' => 15, 'verify_code_attempts' => 5,
         'referral_coins' => 100, 'referral_max' => 10, 'auto_vacation_days' => 5, 'auto_vacations_per_season' => 2,
         'vacation_cooldown_days' => 3, 'long_vacation_max_days' => 60, 'vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
         // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with
@@ -574,6 +579,24 @@ return [
     // least target matches without a defeat) pays money_bp of the league's money scale to the club.
     'quests' => ['friendly' => ['target' => 1, 'coins' => 10], 'wins' => ['target' => 2, 'coins' => 20], 'stadium' => ['target' => 1, 'coins' => 15],
         'training' => ['target' => 1, 'coins' => 10], 'unbeaten' => ['target' => 2, 'money_bp' => 50]],
+    // [Sprint 50 M18] Timed auctions: the lengths a coach may pick (minutes), each bid at least step_bp of the
+    // player's value (min_step at least) above the top one, and a bid in the last extend_seconds moves the end that far.
+    'auctions' => ['minutes' => [30, 60, 180, 720], 'step_bp' => 200, 'min_step' => 10000, 'extend_seconds' => 120],
+    // [Sprint 50 M19] Negotiating with a computer club: it never goes under floor_bp of the value, meets the coach
+    // halfway for `rounds` rounds, and ends the talk for the day on an offer under insult_bp of its floor.
+    'negotiation' => ['floor_bp' => 10500, 'rounds' => 3, 'insult_bp' => 8500],
+    // [Sprint 50 M21] The store chests: the coins each costs, and its table (reward, amount, weight; the odds shown on
+    // the chest are the weights' shares). fitness and morale are points (up to 100), training is progress steps.
+    'chests' => [
+        'bronze' => ['coins' => 30, 'table' => [['reward' => 'fitness', 'amount' => 5, 'weight' => 40], ['reward' => 'training', 'amount' => 150, 'weight' => 30],
+            ['reward' => 'morale', 'amount' => 3, 'weight' => 20], ['reward' => 'coins', 'amount' => 60, 'weight' => 10]]],
+        'silver' => ['coins' => 80, 'table' => [['reward' => 'fitness', 'amount' => 10, 'weight' => 35], ['reward' => 'training', 'amount' => 400, 'weight' => 30],
+            ['reward' => 'morale', 'amount' => 6, 'weight' => 25], ['reward' => 'coins', 'amount' => 160, 'weight' => 10]]],
+        'legend' => ['coins' => 200, 'table' => [['reward' => 'fitness', 'amount' => 20, 'weight' => 30], ['reward' => 'training', 'amount' => 1000, 'weight' => 30],
+            ['reward' => 'morale', 'amount' => 12, 'weight' => 30], ['reward' => 'coins', 'amount' => 450, 'weight' => 10]]],
+    ],
+    // [Sprint 50 M10] The daily tasks (midnight to midnight, Cairo): the coins of each, claimed once a day.
+    'daily_tasks' => ['lineup' => 2, 'friendly' => 3, 'training' => 2, 'chat' => 1],
     // [X54] An announcement's picture: at most image_max_kb uploaded, kept as a JPEG at most image_width wide and
     // image_max_height high (a wide banner, as the owner's picture).
     'announcements' => ['image_max_kb' => 4096, 'image_width' => 1200, 'image_max_height' => 600],
@@ -735,7 +758,9 @@ return [
     'chat' => ['max_members' => 256, 'max_length' => 1000, 'page' => 50, 'per_minute' => 20, 'max_groups' => 50,
         // [X65] A picture is kept at most image_px on its long side (a JPEG); a voice note up to audio_kb and audio_seconds.
         'image_max_kb' => 8192, 'image_px' => 1280, 'audio_kb' => 1500, 'audio_seconds' => 120,
-        'audio_mimes' => ['audio/webm', 'audio/ogg', 'audio/mp4', 'audio/mpeg', 'audio/aac', 'audio/x-m4a', 'video/webm']],
+        'audio_mimes' => ['audio/webm', 'audio/ogg', 'audio/mp4', 'audio/mpeg', 'audio/aac', 'audio/x-m4a', 'video/webm'],
+        // [Sprint 50 M8] The quick reactions on a message (one each, the screens draw them: ⚽ 🔥 🏆 😂).
+        'reactions' => ['ball', 'fire', 'cup', 'laugh']],
     // [X65] The settings the admin changes from the panel (App\Support\GameSettings), with their defaults: the chat's
     // messages older than chat.retention_days are deleted every hour (0: kept), and pictures and voice notes allowed.
     'settings' => ['chat.retention_days' => 0, 'chat.media' => true],

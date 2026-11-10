@@ -32,7 +32,7 @@ class Transfers
      * (App\Market\Buyer): the dearer, the longer the wait. [X84] Once only: a player listed already is refused (the
      * owner's report 2026-11-02, the screens let him be listed again and again); a new price is withdraw, then list.
      */
-    public static function list(int $clubId, int $playerId, int $price): void
+    public static function list(int $clubId, int $playerId, int $price, ?int $auctionMinutes = null): void
     {
         Integrity::assertMarket($clubId);
         MatchPrep::assertFree([$playerId]);
@@ -54,9 +54,14 @@ class Transfers
             throw new HttpException(422, sprintf('سعر البيع من %s إلى سقف هذا اللاعب %s.', number_format($floor), number_format($cap)));
         }
         $m = DB::table('master_players')->where('id', $p->master_player_id)->first(['age']);
+        // [Sprint 50 M18] An auction: the price opens it, it ends after its minutes, and no outside buyer takes him.
+        if ($auctionMinutes !== null && ! in_array($auctionMinutes, config('game.auctions.minutes'), true)) {
+            throw new HttpException(422, __('مدة المزاد غير مسموحة.'));
+        }
         // insertOrIgnore: two taps at once list him once (the row is unique by player).
         $listed = DB::table('transfer_listings')->insertOrIgnore(['club_id' => $clubId, 'player_id' => $playerId, 'price' => $price,
-            'sells_at' => Buyer::sellsAt($price, (int) $p->value, $leagueId, (int) $m->age, (int) $p->overall + (int) $p->training_bonus),
+            'sells_at' => $auctionMinutes ? null : Buyer::sellsAt($price, (int) $p->value, $leagueId, (int) $m->age, (int) $p->overall + (int) $p->training_bonus),
+            'auction_ends_at' => $auctionMinutes ? GameClock::now()->addMinutes($auctionMinutes) : null,
             'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
         if ($listed === 0) {
             throw new HttpException(409, 'هذا اللاعب معروض للبيع بالفعل. اسحبه من قائمة الانتقالات أولاً إن أردت سعراً آخر.');
@@ -65,6 +70,10 @@ class Transfers
 
     public static function unlist(int $clubId, int $playerId): void
     {
+        // [Sprint 50 M18] An auction with bids runs to its end.
+        if (DB::table('auction_bids')->where('player_id', $playerId)->exists() && DB::table('transfer_listings')->where('club_id', $clubId)->where('player_id', $playerId)->exists()) {
+            throw new HttpException(409, __('على هذا اللاعب مزايدات: المزاد يكمل إلى نهايته.'));
+        }
         DB::table('transfer_listings')->where('club_id', $clubId)->where('player_id', $playerId)->delete();
     }
 
@@ -194,6 +203,7 @@ class Transfers
     public static function left(int $playerId, ?int $fromClub = null, ?int $except = null): void
     {
         DB::table('transfer_listings')->where('player_id', $playerId)->delete();
+        DB::table('auction_bids')->where('player_id', $playerId)->delete();
         $offers = DB::table('transfer_offers')->join('offer_items', 'offer_items.offer_id', '=', 'transfer_offers.id')
             ->where('offer_items.player_id', $playerId)->where('transfer_offers.status', 'pending')
             ->when($except, fn ($q) => $q->where('transfer_offers.id', '!=', $except))->select('transfer_offers.*')->distinct()->get();

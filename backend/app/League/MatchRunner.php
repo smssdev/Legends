@@ -209,6 +209,8 @@ class MatchRunner
         if ($resume && $resume['tick'] === $live['state']['tick'] && $resume['at'] < $live['next_at']) {
             $live['next_at'] = $resume['at'];
         }
+        // [Sprint 50 M14] A coach's timeout holds the next minute (after the ready button, which it outlasts).
+        $live['next_at'] = Timeouts::hold($id, (int) $live['state']['tick'], (int) $live['next_at']);
         $n = 0;
         $timing = $live['state']['cfg']['match'];
         $fixture = self::fixtureOf($id);
@@ -322,7 +324,9 @@ class MatchRunner
             // [X42] Play stops after this minute: the coach's window.
             'window' => CoachWindows::window($state['out'], $state['cfg']['match']),
             // [Sprint 26 B1] How each side's coach feels after it; the screens only draw it.
-            'moods' => Mood::forTick($state['out']['events'], $state['score'], $state['out']['minute'] ?? 0, (int) config('game.characters.late_minute'))];
+            'moods' => Mood::forTick($state['out']['events'], $state['score'], $state['out']['minute'] ?? 0, (int) config('game.characters.late_minute')),
+            // [Sprint 50 M15] The momentum wave after this minute.
+            'momentum' => Momentum::wave($state['momentum'] ?? [])];
 
         return [$state, $choreo['ball'], $tick];
     }

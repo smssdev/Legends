@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\League\DailyTasks;
 use App\League\WeeklyQuests;
 use App\Models\Club;
 use App\Models\League;
@@ -23,6 +24,19 @@ class QuestController extends Controller
         $quest = $request->validate(['quest' => ['required', 'string', Rule::in(WeeklyQuests::QUESTS)]])['quest'];
 
         return response()->json(WeeklyQuests::claim($this->club($request, $league), $request->user()->id, $quest));
+    }
+
+    /** [Sprint 50 M10] Today's tasks, and a finished one's coins. */
+    public function daily(Request $request, League $league): JsonResponse
+    {
+        return response()->json(DailyTasks::view($this->club($request, $league), $request->user()->id));
+    }
+
+    public function claimDaily(Request $request, League $league): JsonResponse
+    {
+        $task = $request->validate(['task' => ['required', 'string', Rule::in(DailyTasks::TASKS)]])['task'];
+
+        return response()->json(DailyTasks::claim($this->club($request, $league), $request->user()->id, $task));
     }
 
     private function club(Request $request, League $league): Club

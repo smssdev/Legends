@@ -143,6 +143,50 @@ paths:
         '200': { $ref: '#/components/responses/AccountToken' }
         '422': { $ref: '#/components/responses/ValidationError' }
         '429': { $ref: '#/components/responses/Error' }
+  /auth/guest:
+    post:
+      tags: [auth]
+      summary: '[Sprint 50 M5] Play as a guest (the app)'
+      description: An account with no email or password, under a name the server makes, signed in by the app's token. Kept with POST /auth/guest/keep or /auth/guest/google; deleted with everything after game.account.guest_days if never kept. Five an hour per address.
+      security: []
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [device_name], properties: { device_name: { type: string, maxLength: 100 } } } } }
+      responses:
+        '201': { $ref: '#/components/responses/AccountToken' }
+        '429': { $ref: '#/components/responses/Error' }
+  /auth/guest/keep:
+    post:
+      tags: [auth]
+      summary: '[Sprint 50 M5] The guest keeps the account with a username and a password'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, username, password]
+              properties:
+                name: { type: string, minLength: 2, maxLength: 40 }
+                username: { type: string }
+                password: { type: string }
+                email: { type: string, nullable: true }
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /auth/guest/google:
+    post:
+      tags: [auth]
+      summary: '[Sprint 50 M5] The guest keeps the account with Google'
+      description: Refused (422) when the Google account is already a game account, or its email not verified.
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [id_token], properties: { id_token: { type: string } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /auth/forgot-password:
     post:
       tags: [auth]
@@ -1159,7 +1203,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/TacticsSet' }
+            schema: { allOf: [{ $ref: '#/components/schemas/TacticsSet' }, { type: object, properties: { preset: { type: string, enum: [tiki_taka, counter, high_press, long_ball], description: '[Sprint 50 M12] A philosophy sets its keys; any key sent with it wins' } } }] }
       responses:
         '200': { $ref: '#/components/responses/Tactics' }
         '403': { $ref: '#/components/responses/Error' }
@@ -1572,7 +1616,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, required: [player_id, price], properties: { player_id: { type: integer }, price: { type: integer } } }
+            schema: { type: object, required: [player_id, price], properties: { player_id: { type: integer }, price: { type: integer }, auction_minutes: { type: integer, nullable: true, description: '[Sprint 50 M18] An auction of these minutes (one of game.auctions.minutes): the price opens it, and no outside buyer takes him' } } }
       responses:
         '200': { description: The market between coaches, content: { application/json: { schema: { $ref: '#/components/schemas/Transfers' } } } }
         '422': { $ref: '#/components/responses/Error' }
@@ -2118,6 +2162,114 @@ paths:
       responses:
         '200': { description: The quests after it, content: { application/json: { schema: { $ref: '#/components/schemas/Quests' } } } }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/daily-tasks:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: '[Sprint 50 M10] Today''s tasks (midnight to midnight, Cairo): done, claimed, and their coins'
+      responses:
+        '200': { description: The tasks, content: { application/json: { schema: { $ref: '#/components/schemas/DailyTasks' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/daily-tasks/claim:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: '[Sprint 50 M10] Take a done task''s coins, once a day'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [task], properties: { task: { type: string, enum: [lineup, friendly, training, chat] } } } } }
+      responses:
+        '200': { description: The tasks after it, content: { application/json: { schema: { $ref: '#/components/schemas/DailyTasks' } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/auctions:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [market]
+      summary: '[Sprint 50 M18] The league''s open auctions, the soonest ending first, with my club''s place in each'
+      responses:
+        '200':
+          description: The auctions and the lengths a coach may list one for (minutes)
+          content: { application/json: { schema: { type: object, required: [auctions, minutes], properties: { auctions: { type: array, items: { $ref: '#/components/schemas/Auction' } }, minutes: { type: array, items: { type: integer } } } } } }
+  /leagues/{league}/auctions/{player}/bids:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: player, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: '[Sprint 50 M18] Bid on an auction'
+      description: At least its next (the opening price, or the top bid and a step), at most the coaches' highest fair price, and within the club's money. A bid in the last extend_seconds moves the end. The coach outbid is told in the inbox. At the end the highest bid that can still be paid becomes a deal between the coaches.
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [amount, idempotency_key], properties: { amount: { type: integer }, idempotency_key: { type: string, maxLength: 64 } } } } }
+      responses:
+        '200': { description: The auction after it, content: { application/json: { schema: { type: object, required: [auction], properties: { auction: { $ref: '#/components/schemas/Auction' } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/release/{player}:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: player, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [market]
+      summary: '[Sprint 50 M19] Another coach''s player''s release clause, and whether my club can pay it'
+      responses:
+        '200':
+          description: The clause
+          content: { application/json: { schema: { type: object, required: [player_id, clause, club, can, why], properties: { player_id: { type: integer }, clause: { type: integer }, club: { type: object, properties: { id: { type: integer }, name: { type: string } } }, can: { type: boolean }, why: { type: string, nullable: true } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [market]
+      summary: '[Sprint 50 M19] Take him at once by paying his release clause, without his coach''s answer'
+      description: A deal between coaches like any other, so every limit holds (the pair cap, the squads, a locked sheet, the money). His coach is told in the inbox.
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [idempotency_key], properties: { idempotency_key: { type: string, maxLength: 64 } } } } }
+      responses:
+        '200': { description: Done, content: { application/json: { schema: { type: object, required: [player_id, price], properties: { player_id: { type: integer }, price: { type: integer } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/negotiations/{player}:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: player, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [market]
+      summary: '[Sprint 50 M19] My talk with a computer club over one of its players'
+      responses:
+        '200': { description: The talk, content: { application/json: { schema: { $ref: '#/components/schemas/Negotiation' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [market]
+      summary: '[Sprint 50 M19] Offer a price'
+      description: At its ask or more buys him at the ask. Below it the club meets the coach halfway (never under its floor) for game.negotiation.rounds rounds; an offer far under its floor ends the talk for the day (status closed).
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [amount, idempotency_key], properties: { amount: { type: integer }, idempotency_key: { type: string, maxLength: 64 } } } } }
+      responses:
+        '200':
+          description: The talk after it
+          content: { application/json: { schema: { allOf: [{ $ref: '#/components/schemas/Negotiation' }, { type: object, required: [bought], properties: { bought: { type: boolean } } }] } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/chests:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [store]
+      summary: '[Sprint 50 M21] The store''s chests: their coins and their odds'
+      responses:
+        '200':
+          description: The chests
+          content: { application/json: { schema: { type: object, required: [chests], properties: { chests: { type: array, items: { $ref: '#/components/schemas/Chest' } } } } } }
+  /leagues/{league}/chests/{chest}/open:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: chest, in: path, required: true, schema: { type: string, enum: [bronze, silver, legend] } }]
+    post:
+      tags: [store]
+      summary: '[Sprint 50 M21] Open a chest with coins'
+      description: One reward from its table (coins back, the squad's fitness or training, the club's morale; never club money or a player). One key opens one chest; a fair league spends no coins (409).
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [idempotency_key], properties: { idempotency_key: { type: string, maxLength: 64 } } } } }
+      responses:
+        '200':
+          description: What it gave
+          content: { application/json: { schema: { type: object, required: [opened], properties: { opened: { type: object, required: [chest, reward, amount], properties: { chest: { type: string }, reward: { type: string, enum: [coins, fitness, training, morale] }, amount: { type: integer } } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/moves:
     parameters: [{ $ref: '#/components/parameters/League' }]
     post:
@@ -2254,7 +2406,7 @@ paths:
       summary: A league match for the viewer
       description: The same shape as the simulator's live match (docs/api/match-events.md). The league's members only (404 otherwise). Each side's tactics reach only its own coach (`you`).
       responses:
-        '200': { description: 'The match, its clubs, teams (tactics only for your side), the slots of both formations, and kickoff_at: when it kicks off (UTC, Sprint 32 V3)' }
+        '200': { description: 'The match, its clubs, teams (tactics only for your side), the slots of both formations, kickoff_at: when it kicks off (UTC, Sprint 32 V3), and [Sprint 50 M14] its timeouts (side, tick, until) with timeout_seconds' }
         '404': { $ref: '#/components/responses/Error' }
   /matches/{match}/scene:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
@@ -2466,6 +2618,18 @@ paths:
           content:
             application/json:
               schema: { type: object, required: [ready, resume_at], properties: { ready: { type: array, items: { type: string, enum: [home, away] } }, resume_at: { type: integer } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /matches/{match}/timeout:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [matches]
+      summary: '[Sprint 50 M14] The coach''s one timeout in a live league match'
+      description: Play waits game.match.timeout_seconds more before the next minute, for every screen (the event `timeout` on the match's channel); the match itself is the same. While it holds, both coaches may give orders as in a window. Once a match a side (409 again).
+      responses:
+        '200':
+          description: The timeout
+          content: { application/json: { schema: { type: object, required: [timeout], properties: { timeout: { $ref: '#/components/schemas/MatchTimeout' } } } } }
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
   /matches/{match}/reactions:
@@ -4481,6 +4645,18 @@ paths:
       responses:
         '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
         '403': { $ref: '#/components/responses/Error' }
+  /groups/{group}/messages/{message}/reaction:
+    parameters: [{ $ref: '#/components/parameters/Group' }, { name: message, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [groups]
+      summary: '[Sprint 50 M8] My reaction on a message (one each; the same again or null takes it back)'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [reaction], properties: { reaction: { type: string, nullable: true, enum: [ball, fire, cup, laugh] } } } } }
+      responses:
+        '200': { description: The message with its counts, content: { application/json: { schema: { type: object, required: [message], properties: { message: { $ref: '#/components/schemas/ChatMessage' } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /groups/{group}/read:
     parameters: [{ $ref: '#/components/parameters/Group' }]
     post:
@@ -4702,6 +4878,8 @@ components:
                   mine: { type: string, nullable: true, enum: [high, mid, low, null], description: The shape my saved tactics make }
               tips: { type: array, items: { type: string } }
               referee: { type: string, nullable: true, enum: [very_lenient, lenient, medium, strict, very_strict, null] }
+              presets: { type: array, description: '[Sprint 50 M12] The ready philosophies', items: { type: string, enum: [tiki_taka, counter, high_press, long_ball] } }
+              preset: { type: string, nullable: true, description: The philosophy my tactics match now }
               help:
                 type: object
                 description: 'What each part does, for its "?": plan, pressing, style, tempo, tackling, lines, trap, marking, tips'
@@ -5085,6 +5263,8 @@ components:
         reply_to: { type: object, nullable: true, required: [id, kind, body], properties: { id: { type: integer }, kind: { type: string }, body: { type: string } } }
         media_url: { type: string, nullable: true, description: 'A picture''s or voice note''s address, for the members only [X65]' }
         seconds: { type: integer, nullable: true, description: A voice note's length }
+        reactions: { type: object, additionalProperties: { type: integer }, description: '[Sprint 50 M8] The count of each reaction (ball, fire, cup, laugh)' }
+        my_reaction: { type: string, nullable: true, description: 'The viewer''s own (null on the channel)' }
         created_at: { type: string, format: date-time }
     AssistantQuestion:
       type: object
@@ -5449,6 +5629,61 @@ components:
             rounds_played: { type: integer }
             lock_from_round: { type: integer, description: No new coach from this round on (the last 25%) }
             join_open: { type: boolean }
+    DailyTasks:
+      type: object
+      required: [day, renews_at, done, total, tasks]
+      properties:
+        day: { type: string, format: date }
+        renews_at: { type: string, format: date-time }
+        done: { type: integer }
+        total: { type: integer }
+        tasks: { type: array, items: { type: object, required: [task, complete, claimed, coins], properties: { task: { type: string, enum: [lineup, friendly, training, chat] }, complete: { type: boolean }, claimed: { type: boolean }, coins: { type: integer } } } }
+    Auction:
+      type: object
+      required: [player_id, name, position, age, overall, value, club_id, club, opening, top, bids, next, max, mine, leading, ends_at]
+      properties:
+        player_id: { type: integer }
+        name: { type: string }
+        position: { type: string }
+        age: { type: integer }
+        overall: { type: integer }
+        value: { type: integer }
+        club_id: { type: integer }
+        club: { type: string }
+        opening: { type: integer }
+        top: { type: integer, nullable: true }
+        bids: { type: integer }
+        next: { type: integer, description: The least the next bid may be }
+        max: { type: integer, description: The most a bid may be }
+        mine: { type: integer, nullable: true, description: My club's highest bid }
+        leading: { type: boolean }
+        ends_at: { type: string, format: date-time }
+    Negotiation:
+      type: object
+      required: [player_id, price, ask, round, rounds, status, expires_at]
+      properties:
+        player_id: { type: integer }
+        price: { type: integer, description: The club's fixed price }
+        ask: { type: integer, description: What it asks now }
+        round: { type: integer }
+        rounds: { type: integer }
+        status: { type: string, enum: [open, closed, done] }
+        expires_at: { type: string, format: date-time }
+    Chest:
+      type: object
+      required: [chest, coins, odds]
+      properties:
+        chest: { type: string, enum: [bronze, silver, legend] }
+        coins: { type: integer }
+        odds: { type: array, items: { type: object, required: [reward, amount, pct_bp], properties: { reward: { type: string, enum: [coins, fitness, training, morale] }, amount: { type: integer }, pct_bp: { type: integer, description: The chance in basis points } } } }
+    MatchTimeout:
+      type: object
+      required: [side, tick, until]
+      properties:
+        side: { type: string, enum: [home, away] }
+        tick: { type: integer }
+        until: { type: integer, description: When play goes on (ms) }
+        seconds: { type: integer }
     TacticsSet:
       type: object
       description: The engine's own keys (docs/ENGINE.md 5)
@@ -6772,6 +7007,7 @@ components:
             waiting: { type: integer, description: Friends signed up and not verified yet }
         role: { type: string, enum: [user, admin] }
         has_password: { type: boolean, description: False for an account made with Google only }
+        guest: { type: boolean, description: '[Sprint 50 M5] A guest''s account, until kept with a username and password or Google' }
         google: { type: boolean, description: Linked to a Google account }
         created_at: { type: string, format: date-time }
         locale: { type: string, enum: [ar, en], nullable: true, description: 'The coach''s language [UP2]; null until chosen' }

@@ -29,6 +29,17 @@ class Tactics
         'marking' => ['zone', 'man'],
     ];
 
+    /**
+     * [Sprint 50 M12] The ready philosophies on the tactics screen: one tap sets these keys (the rest stay the coach's),
+     * and the coach changes any of them after. Behaviour only, never strength [ENGINE 1, 5].
+     */
+    public const PRESETS = [
+        'tiki_taka' => ['plan' => 'passing', 'style' => 60, 'tempo' => 35, 'pressing' => 60, 'mid' => 'stay', 'att' => 'support'],
+        'counter' => ['plan' => 'counter', 'style' => 30, 'tempo' => 80, 'pressing' => 30, 'mid' => 'def', 'att' => 'only'],
+        'high_press' => ['plan' => 'passing', 'style' => 70, 'pressing' => 90, 'tempo' => 70, 'trap' => 1, 'mid' => 'push', 'att' => 'back'],
+        'long_ball' => ['plan' => 'long', 'style' => 55, 'tempo' => 65, 'pressing' => 45, 'mid' => 'stay', 'att' => 'only'],
+    ];
+
     /** What the opponent may see once the sides are locked. */
     public const PUBLIC = ['tackling', 'marking', 'plan', 'trap'];
 

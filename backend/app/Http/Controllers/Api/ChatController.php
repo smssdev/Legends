@@ -56,6 +56,14 @@ class ChatController extends Controller
         return response()->json(['message' => ChatGroups::send($group, $request->user(), $data['body'], $data['reply_to'] ?? null)], 201);
     }
 
+    /** [Sprint 50 M8] A member's reaction on a message (null takes it back). */
+    public function react(Request $request, int $group, int $message): JsonResponse
+    {
+        $data = $request->validate(['reaction' => ['present', 'nullable', 'string', 'in:'.implode(',', config('game.chat.reactions'))]]);
+
+        return response()->json(['message' => ChatGroups::react($group, $request->user(), $message, $data['reaction'])]);
+    }
+
     /** [X65] A picture or a voice note, with an optional caption. */
     public function sendMedia(Request $request, int $group): JsonResponse
     {

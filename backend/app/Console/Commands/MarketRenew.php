@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Market\Auctions;
 use App\Market\Buyer;
 use App\Market\Pool;
 use App\Market\Transfers;
@@ -20,6 +21,8 @@ class MarketRenew extends Command
         // Offers between coaches past their time, and the listed players whose buyer has come [X6].
         Transfers::expire();
         Buyer::due();
+        // [Sprint 50 M18] The auctions that ended become deals.
+        Auctions::settle();
         if ($n) {
             $this->line("تجددت مجموعة السوق في {$n} نافذة.");
         }

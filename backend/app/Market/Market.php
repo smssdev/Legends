@@ -138,11 +138,11 @@ class Market
      * deal's registration in coins; with $compensate and a short club (half the price at least in cash), all its
      * cash goes and the coins pay the rest.
      */
-    public static function buy(int $clubId, int $playerId, string $key, bool $compensate = false): int
+    public static function buy(int $clubId, int $playerId, string $key, bool $compensate = false, ?int $agreed = null): int
     {
         Integrity::assertMarket($clubId);
 
-        return DB::transaction(function () use ($clubId, $playerId, $key, $compensate) {
+        return DB::transaction(function () use ($clubId, $playerId, $key, $compensate, $agreed) {
             $done = DB::table('club_transactions')->where('idempotency_key', $key)->first();
             if ($done) {
                 return (int) $done->balance_after;
@@ -160,6 +160,10 @@ class Market
             // [X61 E1] The wage cap.
             Contracts::assertRoom($clubId, (int) $p->value);
             $price = self::price($p, $clubId);
+            // [Sprint 50 M19] A price agreed with a computer club (BotNegotiation): his, never below its floor.
+            if ($agreed !== null && $price !== null && $p->club_id !== null) {
+                $price = max($agreed, BotNegotiation::floor($p));
+            }
             if ($price === null) {
                 throw new HttpException(409, 'هذا اللاعب ليس للبيع هنا.');
             }

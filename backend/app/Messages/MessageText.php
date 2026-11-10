@@ -13,7 +13,7 @@ class MessageText
 
     private const TIER = ['beginner' => 'المبتدئ', 'intermediate' => 'المتوسط', 'pro' => 'المحترف'];
 
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team', 'achievement', 'draw_entry', 'league_owner'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team', 'achievement', 'draw_entry', 'league_owner', 'auction_outbid', 'auction_won', 'auction_sold', 'release_clause'];
 
     private const STRICTNESS = ['very_lenient' => 'متساهل جداً', 'lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم', 'very_strict' => 'صارم جداً'];
 
@@ -156,6 +156,13 @@ class MessageText
                 'body' => sprintf('رفض مسؤول %s طلب إجازتك. يمكنك أن تطلبها من جديد بسبب أوضح، أو تأخذ إجازة لحسابك كله من صفحة حسابك.', $league),
                 'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}" : '/leagues',
             ],
+            // [Sprint 50 M18, M19] The auctions and the release clause.
+            'auction_outbid' => ['title' => 'زايد مدرب على '.($p['player'] ?? ''), 'body' => sprintf('مزايدة أعلى من مزايدتك على %s: %s. زايد قبل نهاية المزاد.', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))), 'link' => '/market?tab=auctions'],
+            'auction_won' => ['title' => 'ربحت المزاد: '.($p['player'] ?? ''), 'body' => sprintf('%s في فريقك الآن بـ %s.', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))), 'link' => '/team'],
+            'auction_sold' => ($p['price'] ?? 0) > 0
+                ? ['title' => 'انتهى المزاد: بِيع '.($p['player'] ?? ''), 'body' => sprintf('اشترى %s لاعبك %s بـ %s. المبلغ في رصيد ناديك.', $p['to'] ?? '', $p['player'] ?? '', number_format((int) $p['price'])), 'link' => '/finance']
+                : ['title' => 'انتهى المزاد بلا بيع', 'body' => sprintf('لم تصل مزايدة تتم على %s، فبقي في فريقك.', $p['player'] ?? ''), 'link' => '/market?tab=auctions'],
+            'release_clause' => ['title' => 'دُفع الشرط الجزائي: '.($p['player'] ?? ''), 'body' => sprintf('دفع %s الشرط الجزائي لـ %s (%s)، فانتقل إليه. المبلغ في رصيد ناديك.', $p['to'] ?? '', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))), 'link' => '/finance'],
             'listing_sold' => [
                 'title' => 'بِيع '.($p['player'] ?? 'لاعبك'),
                 'body' => sprintf('اشترى نادٍ من خارج الدوري %s بالسعر الذي طلبته: %s. المبلغ في رصيد ناديك.', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))),
