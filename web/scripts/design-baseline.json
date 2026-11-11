@@ -260,8 +260,8 @@
     "card": 1
   },
   "src/pages/team/Lineup.vue": {
-    "card": 5,
-    "px-text": 9
+    "card": 1,
+    "px-text": 3
   },
   "src/pages/team/Market.vue": {
     "button": 5,

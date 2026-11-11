@@ -330,19 +330,22 @@ function follow(e: PointerEvent) {
   if (Math.hypot(e.clientX - drag.value.x, e.clientY - drag.value.y) > 8) drag.value.moved = true
   drag.value.x = e.clientX
   drag.value.y = e.clientY
-  // On a phone the bench and the top of the pitch are not on one screen: near an edge, the page scrolls.
-  edge = e.clientY < 80 ? -14 : e.clientY > window.innerHeight - 80 ? 14 : 0
+  // [Sprint 56 W3] The pitch and the bench share one screen now; near the list column's top or bottom edge, that list
+  // scrolls (the page itself does not).
+  const box = listBox.value?.getBoundingClientRect()
+  edge = !box || e.clientX < box.left || e.clientX > box.right ? 0 : e.clientY < box.top + 50 ? -14 : e.clientY > box.bottom - 50 ? 14 : 0
   if (edge && !scrolling) scroll()
 }
 let edge = 0
 let scrolling = false
+const listBox = ref<HTMLElement | null>(null)
 function scroll() {
   if (!drag.value || !edge) {
     scrolling = false
     return
   }
   scrolling = true
-  window.scrollBy(0, edge)
+  listBox.value?.scrollBy(0, edge)
   requestAnimationFrame(scroll)
 }
 function up(e: PointerEvent) {
@@ -481,72 +484,55 @@ async function saveCustom() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 pb-6">
+  <div class="lineup-root">
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <div v-else-if="loaded && !team" class="rounded-xl bg-surface p-8 text-center">
       <p class="mb-3 text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
       <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
     </div>
     <template v-else-if="team && current">
-      <header class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 class="font-display text-3xl font-extrabold">{{ $t('التشكيلة') }}</h1>
-          <p class="text-sm text-text-muted">{{ $nm(team.club.name) }}<template v-if="team.lineup.auto && !dirty"> {{ $t('· تلقائية («تحسين»)') }}</template></p>
-        </div>
-        <!-- [Sprint 27 W3] No lock: saved by itself, and «تراجع» for the last change. -->
-        <div class="flex items-center gap-2">
-          <span class="text-xs text-text-muted" role="status">{{ saving || queued ? $t('يحفظ…') : dirty ? '' : $t('محفوظة ✓') }}</span>
-          <UiButton variant="outline" :disabled="!history.length || saving" @click="undo">{{ $t('تراجع') }}</UiButton>
-        </div>
-      </header>
-
-      <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
-
-      <!-- [Sprint 48 T3] The owner's screenshots, our own look: the pitch in the middle with its tools in two rails, the
-           bench under it, and the players outside the lineup in a panel at its side, by line. -->
-      <div class="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_19rem]">
-        <div class="flex min-w-0 flex-col gap-3">
-          <div class="flex flex-wrap items-center gap-2">
-            <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="flex h-10 items-center gap-2 rounded-xl bg-surface px-3 text-sm">
-              <span class="size-2.5 rounded-full" :class="{ def: 'bg-line-def', mid: 'bg-line-mid', att: 'bg-line-att' }[l]" />{{ $t(label) }}
-              <span class="font-numbers text-base font-bold">{{ current.lines[l] }}</span>
-            </span>
-            <div v-if="chemistry" class="flex h-10 min-w-48 flex-1 items-center gap-2 rounded-xl bg-surface px-3" :title="dirty ? $t('احفظ التشكيلة لتُحسب الكيمياء وروابطها من جديد.') : undefined">
-              <span class="text-sm font-bold">{{ $t('الكيمياء') }}</span>
-              <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="chemistry.score" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('الكيمياء')">
-                <span class="block h-full rounded-full" :style="{ width: `${chemistry.score}%`, background: chemColor(chemistry.score) }" />
-              </span>
-              <span class="font-numbers text-lg font-bold" :style="{ color: chemColor(chemistry.score) }">{{ chemistry.score }}</span>
-            </div>
+      <h1 class="sr-only">{{ $t('التشكيلة') }}</h1>
+      <!-- [Sprint 56 W3] Lineup.html: three columns on one screen. The formation, the chemistry and the tools; the pitch
+           at the screen's height in the middle; the bench and the players outside the lineup, scrolling inside their
+           column, with «تحسين» at its foot. A drag from the list to any place on the pitch needs no scroll. -->
+      <div class="lineup">
+        <section class="lineup-side" :aria-label="$t('أدوات التشكيلة')">
+          <div class="flex items-center gap-2">
+            <span class="min-w-0 flex-1 truncate text-caption text-text-muted" role="status">{{ saving || queued ? $t('يحفظ…') : dirty ? '' : $t('محفوظة ✓') }}<template v-if="team.lineup.auto && !dirty"> {{ $t('· تلقائية («تحسين»)') }}</template></span>
+            <UiButton size="sm" variant="outline" class="!px-3" :disabled="!history.length || saving" @click="undo">{{ $t('تراجع') }}</UiButton>
           </div>
+          <button type="button" class="side-row" :aria-label="$t('الطريقة')" @click="formationsOpen = true">
+            <span class="text-caption text-text-muted">{{ $t('الطريقة') }}</span>
+            <b class="flex-1 text-end font-numbers text-title text-gold" :dir="formation.startsWith('custom:') ? undefined : 'ltr'">{{ $t(all.find((f) => f.name === formation)?.label ?? formation) }}</b><span class="text-gold" aria-hidden="true">▾</span>
+          </button>
+          <div class="flex gap-1">
+            <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-lg bg-surface-sunk py-1 text-caption">
+              <span class="size-2 rounded-full" :class="{ def: 'bg-line-def', mid: 'bg-line-mid', att: 'bg-line-att' }[l]" />{{ $t(label) }}<b class="font-numbers">{{ current.lines[l] }}</b>
+            </span>
+          </div>
+          <div v-if="chemistry" class="flex items-center gap-2" :title="dirty ? $t('احفظ التشكيلة لتُحسب الكيمياء وروابطها من جديد.') : undefined">
+            <span class="text-caption font-bold">{{ $t('الكيمياء') }}</span>
+            <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="chemistry.score" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('الكيمياء')">
+              <span class="block h-full rounded-full" :style="{ width: `${chemistry.score}%`, background: chemColor(chemistry.score) }" />
+            </span>
+            <b class="font-numbers text-body-lg" :style="{ color: chemColor(chemistry.score) }">{{ chemistry.score }}</b>
+          </div>
+          <span class="text-caption text-text-muted">{{ $t('العرض') }}</span>
+          <div class="grid grid-cols-2 gap-1" role="group" :aria-label="$t('العرض')">
+            <button v-for="(label, v) in { overall: 'القوة', fitness: 'اللياقة', age: 'السن', value: 'القيمة' }" :key="v" type="button" class="view-btn" :class="view === v ? 'is-on' : ''" :aria-pressed="view === v" @click="view = v">{{ $t(label) }}</button>
+          </div>
+          <div class="mt-auto grid grid-cols-2 gap-1">
+            <UiButton :to="{ name: 'tactics' }" size="sm" variant="quiet">{{ $t('التكتيك') }}</UiButton>
+            <UiButton :to="{ name: 'takers' }" size="sm" variant="quiet">{{ $t('المتخصصون') }}</UiButton>
+          </div>
+        </section>
 
-          <div class="flex items-stretch gap-2">
-            <!-- The rail at the start: the formation, the best eleven, and the screens next to this one. -->
-            <nav class="rail flex w-20 shrink-0 flex-col gap-2" :aria-label="$t('أدوات التشكيلة')">
-              <button type="button" class="rail-btn" :aria-label="$t('الطريقة')" @click="formationsOpen = true">
-                <svg viewBox="0 0 24 24" class="size-6" fill="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="2" /><circle cx="12" cy="6" r="2" /><circle cx="18" cy="6" r="2" /><circle cx="8" cy="12" r="2" /><circle cx="16" cy="12" r="2" /><circle cx="12" cy="18" r="2" /></svg>
-                <b class="font-numbers text-sm" :dir="formation.startsWith('custom:') ? undefined : 'ltr'">{{ $t(all.find((f) => f.name === formation)?.label ?? formation) }}</b>
-              </button>
-              <button type="button" class="rail-btn rail-gold" :title="$t('أفضل اللاعبين المناسبين للطريقة المختارة')" @click="improve">
-                <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 14l6-6 6 6M6 20l6-6 6 6" /></svg>
-                <b class="text-sm">{{ $t('تحسين') }}</b>
-              </button>
-              <RouterLink :to="{ name: 'tactics' }" class="rail-btn">
-                <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5" /><path d="M16 4l4 4M20 4l-4 4M6 10c0 6 4 8 10 8M13 15l3 3-3 3" /></svg>
-                <b class="text-sm">{{ $t('التكتيك') }}</b>
-              </RouterLink>
-              <RouterLink :to="{ name: 'takers' }" class="rail-btn">
-                <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.4 6.7 19.1l1-5.8-4.2-4.1 5.9-.9z" /></svg>
-                <b class="text-sm">{{ $t('المتخصصون') }}</b>
-              </RouterLink>
-            </nav>
-
-            <div class="min-w-0 flex-1">
+        <div class="lineup-field">
           <!-- [X32] The pitch under floodlights: mown stripes, a light pool in the middle and a dark edge, framed in emerald. -->
-          <div ref="pitch" class="lineup-pitch relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl sm:aspect-[4/3] sm:max-w-none">
+          <div ref="pitch" class="lineup-pitch relative select-none overflow-hidden rounded-xxl">
             <div class="pointer-events-none absolute inset-3 rounded-md border-2 border-white/40" />
             <div class="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/40" />
-            <div class="pointer-events-none absolute left-1/2 top-1/2 size-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/40" />
+            <div class="pointer-events-none absolute left-1/2 top-1/2 size-[26%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/40" style="aspect-ratio: 1; height: auto" />
             <div class="pointer-events-none absolute inset-x-[28%] bottom-3 h-[13%] border-2 border-b-0 border-white/40" />
             <div class="pointer-events-none absolute inset-x-[28%] top-3 h-[13%] border-2 border-t-0 border-white/40" />
             <div v-if="band" class="pointer-events-none absolute inset-x-0 border-y-2 border-dashed border-gold/70 bg-gold/15" :style="band" />
@@ -558,7 +544,7 @@ async function saveCustom() {
               :key="i"
               type="button"
               :data-spot="`slot:${i}`"
-              class="absolute flex w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 transition-[top,left] duration-300 ease-out motion-reduce:transition-none"
+              class="pitch-spot absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 transition-[top,left] duration-300 ease-out motion-reduce:transition-none"
               :class="editing ? 'touch-none' : ''"
               :style="place(slot)"
               :aria-label="$t('{v0}: {v1}', { v0: slot.role, v1: starters[i] ? players.get(starters[i]!)?.name : $t('فارغة') })"
@@ -570,95 +556,70 @@ async function saveCustom() {
               <template v-if="starters[i] && players.get(starters[i]!)">
                 <!-- A mini card [X29]: gold, silver or bronze by rating, its line's colour on top, the number and the slot's role. -->
                 <span
-                  class="mini-card relative flex h-[4.5rem] w-14 flex-col items-center justify-center overflow-hidden rounded-lg border-2 bg-gradient-to-b shadow-lg shadow-shade/50"
+                  class="mini-card relative flex flex-col items-center justify-center overflow-hidden rounded-lg border-2 bg-gradient-to-b shadow-lg shadow-shade/50"
                   :class="[MINI[tier(players.get(starters[i]!)!.overall)], isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '', players.get(starters[i]!)!.available ? '' : 'opacity-60']"
                 >
                   <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${slot.line})` }" aria-hidden="true" />
-                  <b class="font-numbers text-lg leading-none">{{ shown(players.get(starters[i]!)!) }}</b>
+                  <b class="font-numbers text-body-lg leading-none">{{ shown(players.get(starters[i]!)!) }}</b>
                   <!-- [Sprint 27 W4] Out of his lines: he plays at the engine's lower share. -->
-                  <span v-if="offLine(i)" class="absolute end-0.5 top-1.5 rounded bg-warning px-0.5 font-numbers text-[9px] font-bold leading-tight text-on-gold" :title="$t('خارج مركزه: {v0}% من مستواه', { v0: shareAt(players.get(starters[i]!)!, slot.line) })">{{ shareAt(players.get(starters[i]!)!, slot.line) }}%</span>
-                  <span class="mt-0.5 font-numbers text-[10px] leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
+                  <span v-if="offLine(i)" class="mini-flag end-0.5 bg-warning text-on-gold" :title="$t('خارج مركزه: {v0}% من مستواه', { v0: shareAt(players.get(starters[i]!)!, slot.line) })">{{ shareAt(players.get(starters[i]!)!, slot.line) }}%</span>
+                  <span class="mini-role font-numbers leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
                   <!-- [Sprint 30 Q7] Why he cannot play, on the card itself: injured or suspended, and for how many matches. -->
-                  <span v-if="players.get(starters[i]!)!.injured_matches" class="absolute start-0.5 top-1.5 rounded bg-live px-0.5 font-numbers text-[9px] font-bold leading-tight text-white" :title="$t('مصاب: {v0} مباراة', { v0: players.get(starters[i]!)!.injured_matches })">✚{{ players.get(starters[i]!)!.injured_matches }}</span>
-                  <span v-else-if="players.get(starters[i]!)!.suspended_matches" class="absolute start-0.5 top-1.5 rounded bg-live px-0.5 font-numbers text-[9px] font-bold leading-tight text-white" :title="$t('موقوف: {v0} مباراة', { v0: players.get(starters[i]!)!.suspended_matches })">▮{{ players.get(starters[i]!)!.suspended_matches }}</span>
+                  <span v-if="players.get(starters[i]!)!.injured_matches" class="mini-flag start-0.5 bg-live text-white" :title="$t('مصاب: {v0} مباراة', { v0: players.get(starters[i]!)!.injured_matches })">✚{{ players.get(starters[i]!)!.injured_matches }}</span>
+                  <span v-else-if="players.get(starters[i]!)!.suspended_matches" class="mini-flag start-0.5 bg-live text-white" :title="$t('موقوف: {v0} مباراة', { v0: players.get(starters[i]!)!.suspended_matches })">▮{{ players.get(starters[i]!)!.suspended_matches }}</span>
                 </span>
-                <span class="max-w-full truncate rounded bg-chrome px-1.5 text-xs font-extrabold text-on-chrome shadow" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
-                <span class="h-1 w-10 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(players.get(starters[i]!)!.fitness)" :style="{ width: `${players.get(starters[i]!)!.fitness}%` }" /></span>
+                <span class="mini-name max-w-full truncate rounded bg-chrome px-1 font-extrabold text-on-chrome shadow" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
               </template>
-              <span v-else class="flex size-12 items-center justify-center rounded-full border-2 border-dashed border-white/70 text-2xl text-white">+</span>
+              <span v-else class="mini-empty flex items-center justify-center rounded-full border-2 border-dashed border-white/70 text-white">+</span>
             </button>
           </div>
-            </div>
-
-            <!-- The rail at the end: what the cards show. -->
-            <div class="rail flex w-20 shrink-0 flex-col gap-2" role="group" :aria-label="$t('العرض')">
-              <button v-for="(label, v) in { overall: 'القوة', fitness: 'اللياقة', age: 'السن', value: 'القيمة' }" :key="v" type="button" class="rail-btn" :class="view === v ? 'rail-on' : ''" :aria-pressed="view === v" @click="view = v">
-                <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path :d="{ overall: 'M5 20V10M12 20V4M19 20v-7', fitness: 'M3 12h4l2-5 4 10 2-5h6', age: 'M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', value: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM15 9c-.5-1-1.6-1.5-3-1.5-1.8 0-3 .8-3 2s1.2 1.6 3 2 3 1 3 2.2-1.3 2.3-3 2.3c-1.5 0-2.6-.6-3.1-1.6M12 6v1.5M12 16.5V18' }[v]" /></svg>
-                <b class="text-sm">{{ $t(label) }}</b>
-              </button>
-            </div>
-          </div>
-
-          <section aria-labelledby="h-bench" class="flex flex-col gap-2 rounded-2xl bg-surface p-3">
-            <div class="flex items-center justify-between">
-              <h2 id="h-bench" class="font-display text-lg font-extrabold">{{ $t('الاحتياط') }} <span class="font-numbers text-base text-text-muted">{{ bench.length }}/7</span></h2>
-              <span class="text-xs text-text-muted">{{ $t('اضغط لاعباً لتختار من مكانه، أو اسحبه') }}</span>
-            </div>
-            <div class="grid grid-cols-4 gap-2 sm:grid-cols-7">
-              <button
-                v-for="(id, i) in bench"
-                :key="id"
-                type="button"
-                :data-spot="`bench:${i}`"
-                class="bench-card flex h-24 min-w-0 flex-col justify-between rounded-xl p-2 text-start"
-                :class="[isSelected({ zone: 'bench', index: i }) ? 'ring-2 ring-gold' : '', editing ? 'touch-none' : '']"
-                :style="{ '--line': `var(--color-line-${players.get(id)!.line})` }"
-                @touchmove="editing && $event.preventDefault()"
-                @pointerdown="down($event, { zone: 'bench', index: i })"
-                @click="click({ zone: 'bench', index: i })"
-              >
-                <span class="flex items-center justify-between"><span class="font-numbers text-xl font-bold text-gold">{{ shown(players.get(id)!) }}</span><span class="text-xs text-text-muted" dir="ltr">{{ players.get(id)!.position }}</span></span>
-                <span class="truncate text-sm font-bold">{{ short(players.get(id)!.name) }}</span>
-                <span v-if="!players.get(id)!.available" class="truncate text-[11px] font-bold text-danger">{{ unavailable(players.get(id)!) }}</span>
-                <span v-else class="h-1 w-full rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(players.get(id)!.fitness)" :style="{ width: `${players.get(id)!.fitness}%` }" /></span>
-              </button>
-              <button
-                v-if="bench.length < 7"
-                type="button"
-                :data-spot="`bench:${bench.length}`"
-                class="flex h-24 min-w-0 items-center justify-center rounded-xl border-2 border-dashed border-text/20 text-sm text-text-muted"
-                @click="click({ zone: 'bench', index: bench.length })"
-              >{{ $t('مكان فارغ') }}</button>
-            </div>
-          </section>
         </div>
 
-        <!-- Outside the lineup, by line: strength, fitness, position; a tap chooses where he plays, a double tap his card. -->
-        <section aria-labelledby="h-rest" class="flex flex-col gap-3 rounded-2xl bg-surface p-3 lg:sticky lg:top-3" data-spot="reserve:-1">
-          <h2 id="h-rest" class="font-display text-lg font-extrabold">{{ $t('خارج التشكيلة') }} <span class="font-numbers text-base text-text-muted">{{ reserves.length }}</span></h2>
-          <p v-if="!reserves.length" class="text-sm text-text-muted">{{ $t('كل الفريق في التشكيلة أو على الدكة.') }}</p>
-          <div v-for="grp in reserveGroups" :key="grp.line" class="flex flex-col gap-1">
-            <h3 class="flex items-center gap-2 text-xs font-bold text-text-soft"><span class="size-2.5 rounded-full" :style="{ background: `var(--color-line-${grp.line})` }" />{{ $t(LINE_PLURAL[grp.line]) }}</h3>
+        <section ref="listBox" class="lineup-list" data-spot="reserve:-1" :aria-label="$t('الاحتياط وخارج التشكيلة')">
+          <h2 id="h-bench" class="flex items-center gap-2 text-body font-extrabold">{{ $t('الاحتياط') }} <span class="font-numbers text-text-muted">{{ bench.length }}/7</span></h2>
+          <button
+            v-for="(id, i) in bench"
+            :key="id"
+            type="button"
+            :data-spot="`bench:${i}`"
+            class="list-row bench-row"
+            :class="[isSelected({ zone: 'bench', index: i }) ? 'ring-2 ring-gold' : '', editing ? 'touch-none' : '', players.get(id)!.available ? '' : 'opacity-60']"
+            :style="{ '--line': `var(--color-line-${players.get(id)!.line})` }"
+            @touchmove="editing && $event.preventDefault()"
+            @pointerdown="down($event, { zone: 'bench', index: i })"
+            @click="click({ zone: 'bench', index: i })"
+          >
+            <span class="w-8 font-numbers text-body-lg font-bold text-gold">{{ shown(players.get(id)!) }}</span>
+            <span class="min-w-0 flex-1 truncate font-bold">{{ short(players.get(id)!.name) }}<span v-if="!players.get(id)!.available" class="block truncate text-caption font-bold text-danger">{{ unavailable(players.get(id)!) }}</span></span>
+            <span class="text-caption text-text-muted" dir="ltr">{{ players.get(id)!.position }}</span>
+          </button>
+          <button v-if="bench.length < 7" type="button" :data-spot="`bench:${bench.length}`" class="list-row justify-center border-2 border-dashed border-text/20 text-caption text-text-muted" @click="click({ zone: 'bench', index: bench.length })">{{ $t('مكان فارغ') }}</button>
+
+          <h2 id="h-rest" class="mt-2 flex items-center gap-2 text-body font-extrabold">{{ $t('خارج التشكيلة') }} <span class="font-numbers text-text-muted">{{ reserves.length }}</span></h2>
+          <p v-if="!reserves.length" class="text-caption text-text-muted">{{ $t('كل الفريق في التشكيلة أو على الدكة.') }}</p>
+          <template v-for="grp in reserveGroups" :key="grp.line">
+            <h3 class="flex items-center gap-2 text-caption font-bold text-text-soft"><span class="size-2 rounded-full" :style="{ background: `var(--color-line-${grp.line})` }" />{{ $t(LINE_PLURAL[grp.line]) }}</h3>
             <button
               v-for="x in grp.items"
               :key="x.p.id"
               type="button"
               :data-spot="`reserve:${x.i}`"
-              class="flex min-h-touch items-center gap-2 rounded-lg border border-text/10 bg-surface-sunk/60 px-2 text-start text-sm"
+              class="list-row"
               :class="[isSelected({ zone: 'reserve', index: x.i }) ? 'ring-2 ring-gold' : '', x.p.available ? '' : 'opacity-60', editing ? 'touch-none' : '']"
               @touchmove="editing && $event.preventDefault()"
               @pointerdown="down($event, { zone: 'reserve', index: x.i })"
               @click="click({ zone: 'reserve', index: x.i })"
               @dblclick="card = x.p"
             >
-              <span class="w-8 font-numbers text-lg font-bold text-gold">{{ shown(x.p) }}</span>
-              <span class="min-w-0 flex-1 truncate font-bold">{{ $nm(x.p.name) }}<span v-if="!x.p.available" class="block text-[11px] font-bold text-danger">{{ unavailable(x.p) }}</span></span>
-              <span class="h-1.5 w-8 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(x.p.fitness)" :style="{ width: `${x.p.fitness}%` }" /></span>
-              <span class="w-8 text-end text-xs text-text-muted" dir="ltr">{{ x.p.position }}</span>
+              <span class="w-8 font-numbers text-body-lg font-bold text-gold">{{ shown(x.p) }}</span>
+              <span class="min-w-0 flex-1 truncate font-bold">{{ $nm(x.p.name) }}<span v-if="!x.p.available" class="block text-caption font-bold text-danger">{{ unavailable(x.p) }}</span></span>
+              <span class="text-caption text-text-muted" dir="ltr">{{ x.p.position }}</span>
             </button>
-          </div>
+          </template>
         </section>
+        <UiButton class="lineup-improve" size="sm" :title="$t('أفضل اللاعبين المناسبين للطريقة المختارة')" @click="improve">{{ $t('تحسين') }}</UiButton>
       </div>
+      <p v-if="message" class="lineup-message" role="status">{{ $t(message) }}</p>
 
       <!-- [Sprint 48 T3] The formations, behind the rail's first button. -->
       <UiDialog :open="formationsOpen" :title="$t('الطريقة')" @close="formationsOpen = false">
@@ -787,12 +748,42 @@ async function saveCustom() {
 </template>
 
 <style scoped>
-.rail-btn { display: flex; min-height: 4.25rem; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; border-radius: 1rem; background: var(--color-surface); color: var(--color-text-soft); border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent); text-align: center; transition: color .15s, border-color .15s; }
-.rail-btn:hover { color: var(--color-text); border-color: color-mix(in srgb, var(--color-gold) 45%, transparent); }
-.rail-on { color: var(--color-gold); border-color: var(--color-gold); background: var(--color-surface-raised); }
-.rail-gold { background: linear-gradient(180deg, var(--color-gold-light), var(--color-gold)); color: var(--color-on-gold); border-color: transparent; }
-.rail-gold:hover { color: var(--color-on-gold); }
-.bench-card { background: var(--color-surface-sunk); box-shadow: inset 0 3px 0 var(--line); }
+/* [Sprint 56 W3] Lineup.html: the side, the pitch at the screen's height, and the list; «تحسين» under the list. */
+.lineup-root { position: relative; display: flex; flex-direction: column; }
+.lineup-root > .lineup { flex: 1; min-height: 0; }
+.lineup {
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: minmax(8.5rem, 1fr) auto minmax(9.5rem, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: "side field list" "side field improve";
+}
+@media (min-width: 1200px) { .lineup { gap: var(--space-lg); grid-template-columns: minmax(12rem, 1fr) auto minmax(14rem, 1fr); } }
+.lineup-side { position: relative; grid-area: side; display: flex; min-height: 0; flex-direction: column; gap: var(--space-sm); overflow-y: auto; padding: var(--space-sm); border-radius: var(--radius-xl); background: var(--color-surface); }
+.lineup-list { position: relative; grid-area: list; display: flex; min-height: 0; flex-direction: column; gap: 3px; overflow-y: auto; overscroll-behavior: contain; padding: var(--space-sm); border-radius: var(--radius-xl); background: var(--color-surface); }
+.lineup-improve { grid-area: improve; }
+.lineup-field { grid-area: field; display: flex; min-height: 0; justify-content: center; }
+.lineup-pitch { height: 100%; aspect-ratio: 68 / 90; max-width: 100%; }
+.lineup-message { position: absolute; inset-inline: 25%; bottom: 0.5rem; z-index: 5; padding: 0.4rem 0.75rem; border-radius: var(--radius-lg); text-align: center; font-size: var(--text-caption); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); }
+.side-row { display: flex; min-height: var(--spacing-touch); align-items: center; gap: var(--space-sm); padding: 0 var(--space-sm); border-radius: var(--radius-lg); background: var(--color-surface-sunk); }
+.view-btn { min-height: var(--spacing-touch); border-radius: var(--radius-md); font-size: var(--text-caption); font-weight: 800; color: var(--color-text-soft); background: var(--color-surface-sunk); }
+.view-btn.is-on { color: var(--color-on-gold); background: var(--color-gold); }
+.list-row { display: flex; min-height: var(--spacing-touch); flex: none; align-items: center; gap: var(--space-sm); padding: 0 var(--space-sm); border-radius: var(--radius-lg); text-align: start; font-size: var(--text-body); background: var(--color-surface-sunk); }
+.bench-row { box-shadow: inset -3px 0 0 var(--line); }
+:dir(ltr) .bench-row { box-shadow: inset 3px 0 0 var(--line); }
+/* The pitch's cards grow with the screen: small on a phone held sideways, full on a computer. */
+.pitch-spot { width: 3.5rem; }
+.mini-card { width: 2.5rem; height: 3rem; }
+.mini-role, .mini-flag { font-size: 9px; }
+.mini-flag { position: absolute; top: 0.3rem; padding: 0 2px; border-radius: 3px; font-family: var(--font-numbers); font-weight: 700; line-height: 1.2; }
+.mini-name { font-size: 10px; line-height: 1.3; }
+.mini-empty { width: 2.25rem; height: 2.25rem; font-size: var(--text-title); }
+@media (min-height: 600px) {
+  .pitch-spot { width: 5rem; }
+  .mini-card { width: 3.5rem; height: 4.5rem; }
+  .mini-role { font-size: 10px; } .mini-name { font-size: var(--text-caption); }
+  .mini-empty { width: 3rem; height: 3rem; }
+}
 .lineup-pitch {
   background:
     radial-gradient(ellipse 70% 45% at 50% 50%, rgb(255 255 255 / 0.12), transparent 70%),

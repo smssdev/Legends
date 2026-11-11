@@ -25,7 +25,7 @@ const wide = (c: string) => (c === 'الجنسية' ? 'max-xl:hidden' : c === '�
 </script>
 
 <template>
-  <div class="squad-table overflow-auto overscroll-contain rounded-xl bg-surface">
+  <div class="squad-table relative overflow-auto overscroll-contain rounded-xl bg-surface">
     <table class="w-full border-collapse text-body">
       <tbody v-for="grp in groups" :key="grp.line">
         <tr class="line-head" :style="{ '--line': `var(--color-line-${grp.line})`, '--line-fg': `var(--color-line-${grp.line}-fg)` }">

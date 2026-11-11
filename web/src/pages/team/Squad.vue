@@ -162,7 +162,7 @@ function status(p: SquadPlayer) {
 <style scoped>
 .squad { display: grid; gap: var(--space-md); grid-template-columns: minmax(0, 1fr); }
 .squad-main { display: flex; min-height: 0; flex-direction: column; gap: var(--space-sm); }
-.squad-scroll { flex: 1; min-height: 0; }
+.squad-scroll { position: relative; flex: 1; min-height: 0; }
 .squad-side { display: none; }
 @media (min-width: 1200px) { .squad { grid-template-columns: minmax(0, 1fr) 21rem; } .squad-side { display: block; min-height: 0; overflow-y: auto; } }
 /* [Sprint 39 S2] A line's divider: its colour first, then a hairline across to the end. */

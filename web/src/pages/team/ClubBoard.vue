@@ -125,7 +125,7 @@ const waiting = computed(() => b.value?.pending.length ?? 0)
 .office-todo { grid-area: todo; min-height: 0; }
 .office-clocks { grid-area: clocks; min-height: 0; }
 .office-table { display: none; min-height: 0; overflow-y: auto; }
-.office-todo, .office-clocks { overflow: hidden; }
+.office-todo, .office-clocks { position: relative; overflow: hidden; }
 @media (min-width: 900px) {
   .office { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "next table todo" "clocks table todo"; }
   .office-table { display: flex; grid-area: table; }
