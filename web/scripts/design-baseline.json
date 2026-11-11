@@ -213,10 +213,6 @@
   "src/pages/leagues/DrawPage.vue": {
     "card": 5
   },
-  "src/pages/leagues/FixturesPage.vue": {
-    "button": 1,
-    "card": 4
-  },
   "src/pages/leagues/JoinLeague.vue": {
     "button": 1,
     "card": 2

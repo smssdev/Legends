@@ -125,6 +125,8 @@ export const EN: Record<string, string> = {
   'النزاهة': 'Integrity',
   'جهّز التشكيلة': 'Set the lineup',
   'تقرير الخصم يظهر هنا بعد القفل، أو قبله بجاسوس.': "The opponent's report shows here after the lock, or before it with a spy.",
+  'شاهد': 'Watch',
+  'ج {v0}': 'R{v0}',
   'إغلاق': 'Close',
   'ترتيب المدربين': 'Coaches ranking',
   'م{n}': 'L{n}',
