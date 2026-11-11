@@ -441,6 +441,29 @@ paths:
                 required: [terms]
                 properties:
                   terms: { type: object, additionalProperties: { type: string } }
+  /data/quick-orders:
+    get:
+      tags: [data]
+      summary: '[Sprint 57 B3] The coach''s quick orders in a match (config/game.php quick_orders)'
+      security: []
+      responses:
+        '200':
+          description: 'Each order: its name and line (Arabic, the screens translate them), and the tactics it sets; null tactics is «عودة للخطة», the coach''s own pre-match tactics'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [orders]
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      type: object
+                      required: [label, hint, tactics]
+                      properties:
+                        label: { type: string }
+                        hint: { type: string }
+                        tactics: { type: [object, 'null'], additionalProperties: true }
   /data/templates:
     get:
       tags: [data]

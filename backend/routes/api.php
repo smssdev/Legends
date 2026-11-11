@@ -102,6 +102,7 @@ Route::prefix('data')->controller(DataController::class)->middleware(['throttle:
     Route::get('clubs/{club}', 'show')->whereNumber('club');
     Route::get('clubs/{club}/crest.svg', 'crest')->whereNumber('club');
     Route::get('glossary', 'glossary');
+    Route::get('quick-orders', 'quickOrders');
 });
 Route::get('data/formations', [TeamController::class, 'formations'])->middleware(['throttle:120,1,data', 'cache.headers:private;max_age=3600;etag']);
 

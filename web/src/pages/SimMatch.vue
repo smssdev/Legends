@@ -276,6 +276,7 @@
 </template>
 
 <script setup lang="ts">
+import { api } from '../api/client'
 import { scoreText } from '../lib/format'
 import { uuid } from '../lib/uuid'
 import FirstMatchTips from '../components/match/FirstMatchTips.vue'
@@ -543,14 +544,12 @@ const positioning = {
   def: [{ v: 'stay', label: 'بقاء' }, { v: 'fullbacks', label: 'هجوم الظهيرين' }, { v: 'mid', label: 'مساندة الوسط' }],
 }
 const initial = ref<Tactics | null>(null)
-const quickOrders = computed<{ label: string; hint: string; tactics: Partial<Tactics> }[]>(() => [
-  { label: 'هجوم كامل', hint: 'أسلوب هجومي، إيقاع عالٍ، الظهيران يتقدمان', tactics: { style: 85, tempo: 70, def: 'fullbacks', att: 'only' } },
-  { label: 'تأمين النتيجة', hint: 'دفاع متأخر، إيقاع هادئ، مهاجمون يرتدون', tactics: { style: 25, tempo: 30, mid: 'def', att: 'back', def: 'stay' } },
-  { label: 'ضغط عالٍ', hint: 'الضغط 85 ومصيدة التسلل: لياقة أسرع', tactics: { pressing: 85, trap: 1 } },
-  { label: 'إبطاء اللعب', hint: 'إيقاع 25 وتمريرات: نحتفظ بالكرة', tactics: { tempo: 25, plan: 'passing' } },
-  { label: 'استغلال الأطراف', hint: 'خطة الأجنحة وهجوم الظهيرين', tactics: { plan: 'wings', def: 'fullbacks' } },
-  { label: 'عودة للخطة', hint: 'تكتيك ما قبل المباراة', tactics: initial.value ?? {} },
-])
+// [Sprint 57 B3, W7] The quick orders from the server (config/game.php); null tactics is «عودة للخطة», the coach's own
+// pre-match tactics, which only this screen holds.
+const serverOrders = ref<{ label: string; hint: string; tactics: Partial<Tactics> | null }[]>([])
+api.GET('/data/quick-orders').then((r) => { serverOrders.value = (r.data?.orders ?? []) as typeof serverOrders.value }).catch(() => {})
+const quickOrders = computed<{ label: string; hint: string; tactics: Partial<Tactics> }[]>(() =>
+  serverOrders.value.map((o) => ({ label: o.label, hint: o.hint, tactics: o.tactics ?? initial.value ?? {} })))
 const draft = reactive<Tactics>({} as Tactics)
 const draftTrap = computed({ get: () => draft.trap === 1, set: (v) => (draft.trap = v ? 1 : 0) })
 const draftMan = computed({ get: () => draft.marking === 'man', set: (v) => (draft.marking = v ? 'man' : 'zone') })

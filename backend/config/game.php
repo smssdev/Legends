@@ -5,6 +5,18 @@
 // config_snapshot, so editing this file never changes a running match.
 
 return [
+    // [Sprint 57 B3] The coach's quick orders in a match (GET /data/quick-orders): each a name, a line on what it does,
+    // and the tactics it sets (only the keys it changes). «عودة للخطة» has no tactics here: it is the coach's own
+    // pre-match tactics, which only the screen holds. Drawing and sending only: the server checks every order as before.
+    'quick_orders' => [
+        ['label' => 'هجوم كامل', 'hint' => 'أسلوب هجومي، إيقاع عالٍ، الظهيران يتقدمان', 'tactics' => ['style' => 85, 'tempo' => 70, 'def' => 'fullbacks', 'att' => 'only']],
+        ['label' => 'تأمين النتيجة', 'hint' => 'دفاع متأخر، إيقاع هادئ، مهاجمون يرتدون', 'tactics' => ['style' => 25, 'tempo' => 30, 'mid' => 'def', 'att' => 'back', 'def' => 'stay']],
+        ['label' => 'ضغط عالٍ', 'hint' => 'الضغط 85 ومصيدة التسلل: لياقة أسرع', 'tactics' => ['pressing' => 85, 'trap' => 1]],
+        ['label' => 'إبطاء اللعب', 'hint' => 'إيقاع 25 وتمريرات: نحتفظ بالكرة', 'tactics' => ['tempo' => 25, 'plan' => 'passing']],
+        ['label' => 'استغلال الأطراف', 'hint' => 'خطة الأجنحة وهجوم الظهيرين', 'tactics' => ['plan' => 'wings', 'def' => 'fullbacks']],
+        ['label' => 'عودة للخطة', 'hint' => 'تكتيك ما قبل المباراة', 'tactics' => null],
+    ],
+
     'match' => [
         'half_length' => 45, 'extra_half_length' => 15,
         'tick_ms' => 3000, 'halftime_seconds' => 30,

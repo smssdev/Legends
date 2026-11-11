@@ -975,6 +975,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/data/quick-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 57 B3] The coach's quick orders in a match (config/game.php quick_orders) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Each order: its name and line (Arabic, the screens translate them), and the tactics it sets; null tactics is «عودة للخطة», the coach's own pre-match tactics */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            orders: {
+                                label: string;
+                                hint: string;
+                                tactics: {
+                                    [key: string]: unknown;
+                                } | null;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/data/templates": {
         parameters: {
             query?: never;
