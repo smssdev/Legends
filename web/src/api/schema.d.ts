@@ -1340,6 +1340,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/csp-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A Content-Security-Policy violation, from the browser [Sprint 51]
+         * @description The browser posts here what the report-only policy would have blocked (report-uri). Logged in one short line; no session, 30 a minute per address.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/csp-report": Record<string, never>;
+                    "application/reports+json": Record<string, never>[];
+                };
+            };
+            responses: {
+                /** @description Received */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues": {
         parameters: {
             query?: never;

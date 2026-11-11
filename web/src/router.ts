@@ -139,6 +139,8 @@ router.beforeEach(async (to) => {
   }
   const auth = useAuth()
   await auth.ready()
+  // [Sprint 51 W3] Unknown (the server did not answer) is not signed out: the page stays, App.vue offers to try again.
+  if (auth.unreachable) return
   if (to.meta.auth && !auth.signedIn) return { name: 'login', query: { next: to.fullPath } }
   // [Sprint 30 P4] The developers' pages: «الصفحة غير موجودة» for anyone else on the server.
   if (to.meta.admin && !import.meta.env.DEV && auth.user?.role !== 'admin') {

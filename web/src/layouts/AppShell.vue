@@ -21,6 +21,7 @@ import SoundToggle from '../components/shell/SoundToggle.vue'
 import PublicFooter from '../components/PublicFooter.vue'
 import SoundPrompt from '../components/shell/SoundPrompt.vue'
 import { playTone } from '../lib/tone'
+import { t } from '../lib/i18n'
 import { useToast } from '../stores/toast'
 import { money } from '../lib/format'
 import { useAuth } from '../stores/auth'
@@ -85,7 +86,7 @@ watch(() => board.board?.match && board.board.match.status !== 'live' ? board.bo
   window.clearTimeout(kickoff)
   const wait = at ? new Date(at).getTime() - Date.now() : -1
   if (wait > 0 && wait < 6 * 3600_000) {
-    kickoff = window.setTimeout(() => { playTone(); toast.show('بدأت مباراتك الآن') }, wait)
+    kickoff = window.setTimeout(() => { playTone(); toast.show(t('بدأت مباراتك الآن')) }, wait)
   }
 }, { immediate: true })
 onBeforeUnmount(() => window.clearTimeout(kickoff))
@@ -104,7 +105,8 @@ onBeforeUnmount(() => sizer?.disconnect())
 </script>
 
 <template>
-  <div class="min-h-dvh" :style="{ '--shell-header': headerHeight + 'px' }">
+  <!-- [Sprint 51 W1] Nothing may scroll the page sideways (clip, not hidden: the sticky header keeps working). -->
+  <div class="min-h-dvh overflow-x-clip" :style="{ '--shell-header': headerHeight + 'px' }">
     <ToastHost />
     <!-- [Sprint 39 N1] Asked once a device: the game's sound and notifications. -->
     <SoundPrompt v-if="auth.user" />
@@ -228,7 +230,7 @@ onBeforeUnmount(() => sizer?.disconnect())
     <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->
     <div v-if="broadcast.away && broadcast.path" class="on-air flex items-center gap-2 px-3 py-2 md:px-6" role="status">
       <RouterLink :to="broadcast.path" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 font-bold" :aria-label="$t('العودة إلى المباراة')">
-        <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-white"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ $t(broadcast.live ? $t('على الهواء') : $t('انتهت')) }}</span>
+        <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-white"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ broadcast.live ? $t('على الهواء') : $t('انتهت') }}</span>
         <span class="min-w-0 truncate text-sm">{{ $t(broadcast.title) }}</span>
         <b class="shrink-0 font-numbers text-lg" dir="ltr">{{ broadcast.score }}</b>
         <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
@@ -343,7 +345,10 @@ onBeforeUnmount(() => sizer?.disconnect())
   background: color-mix(in srgb, var(--color-success) 18%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-success) 35%, transparent);
 }
-.bar-icon {
+/* [Sprint 51 W1] Global: the timers' and to-do's buttons are Headless UI's PopoverButton, which the scoped attribute
+   never reached, so they were drawn 22px wide and unrounded and their badge, positioned against the whole bar, hung off
+   the screen's edge (a 2px sideways scroll on every club screen). */
+:global(.bar-icon) {
   position: relative;
   display: flex;
   width: 2.75rem;
@@ -354,8 +359,8 @@ onBeforeUnmount(() => sizer?.disconnect())
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-text) 10%, transparent);
 }
-.bar-icon:hover { background: color-mix(in srgb, var(--color-text) 20%, transparent); }
-.bar-badge {
+:global(.bar-icon:hover) { background: color-mix(in srgb, var(--color-text) 20%, transparent); }
+:global(.bar-badge) {
   position: absolute;
   top: -0.15rem;
   inset-inline-end: -0.15rem;

@@ -272,6 +272,7 @@ import UiToggle from '../components/ui/UiToggle.vue'
 import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import { useBroadcast } from '../stores/broadcast'
 import { nm } from '../lib/names'
+import { t } from '../lib/i18n'
 import { useRoute, useRouter } from 'vue-router'
 import MatchFeed from '../match/feed/MatchFeed.vue'
 import Character from '../components/characters/Character.vue'
@@ -1120,7 +1121,7 @@ watch(() => [view.value, score.value.home, score.value.away, minuteText.value, f
     path: ownPath,
     title: `${nm(view.value.clubs.home.name)} - ${nm(view.value.clubs.away.name)}`,
     score: scoreText(score.value.home, score.value.away),
-    minute: finished.value ? 'نهاية المباراة' : minuteText.value,
+    minute: finished.value ? t('نهاية المباراة') : minuteText.value,
     live: !finished.value,
   })
   if (finished.value) window.setTimeout(() => { if (broadcast.away && finished.value) broadcast.end() }, 20000)

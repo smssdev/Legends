@@ -39,7 +39,8 @@ RUN apk add --no-cache libpng libjpeg-turbo libwebp freetype libpq \
 # of on every request. The code never changes inside the container, so files are not checked again.
 RUN { echo 'opcache.enable=1'; echo 'opcache.enable_cli=1'; echo 'opcache.memory_consumption=96'; \
       echo 'opcache.interned_strings_buffer=16'; echo 'opcache.max_accelerated_files=20000'; \
-      echo 'opcache.validate_timestamps=0'; echo 'realpath_cache_size=4096K'; echo 'realpath_cache_ttl=600'; } \
+      echo 'opcache.validate_timestamps=0'; echo 'realpath_cache_size=4096K'; echo 'realpath_cache_ttl=600'; \
+      echo 'expose_php=Off'; } \
       > /usr/local/etc/php/conf.d/zz-legends-speed.ini
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY backend ./

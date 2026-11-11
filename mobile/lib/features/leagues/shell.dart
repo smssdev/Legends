@@ -85,7 +85,9 @@ class GameBar extends ConsumerWidget implements PreferredSizeWidget {
     return AppBar(
       toolbarHeight: height,
       titleSpacing: titleSpacing,
-      titleTextStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white),
+      // [Sprint 51 F1] The game's font: AppBar replaces the theme's title style instead of merging into it, so without its
+      // family the title fell back to the system's.
+      titleTextStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white),
       title: title,
       bottom: bottom,
       flexibleSpace: const _TopBarGround(),

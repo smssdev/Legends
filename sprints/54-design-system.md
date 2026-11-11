@@ -14,7 +14,7 @@
 
 ## لماذا (رموز الملاحظات من [تقرير الويب](../audit-2026-11-10/01-web-audit.md) و[تقرير التطبيق](../audit-2026-11-10/02-mobile-audit.md))
 
-W-D13، W-D14، W-D15، W-D16، W-D17، W-D18، W-D19، W-D11، W-P12، W-F02، W-F03، M-D02، M-D03، M-F02.
+W-D13، W-D14، W-D15، W-D16، W-D17، W-D18، W-D19، W-D11، W-D24، W-P12، W-F02، W-F03، M-D02، M-D03، M-F02.
 
 ## المهام
 
@@ -35,6 +35,7 @@ W-D13، W-D14، W-D15، W-D16، W-D17، W-D18، W-D19، W-D11، W-P12، W-F02، 
 | W3 | **مكونات ناقصة:** `PageTitle`، و`AsyncState` (تحميل بهيكل، وخطأ بزر إعادة، وفراغ)، و`Skeleton` (بأشكال: سطر، وبطاقة، وصف جدول)، و`UiInput` (من `TextField`)، و`MoneyPill`، و`CountdownChip`، و`NavItem` | `components/ui/` |
 | W4 | **مكتبة عناصر واحدة:** reka-ui لكل شيء. Headless UI يُستبدل في ملفاته التسعة (`Popover` في `AppShell`…) ويُحذف من `package.json` | `package.json`، 9 ملفات |
 | W5 | **ترحيل الأساس:** `AppShell`، والرئيسية، ولوحة النادي إلى المكونات (الباقي يُرحَّل مع إعادة بنائه في Sprint 56) | `layouts/`، `pages/Home.vue`، `pages/team/ClubBoard.vue` |
+| W7 | **`rem` بحجمه الصحيح (W-D24، وُجد في Sprint 51):** خط `html` 16px وخط `body` 14px، حتى لا يصغر كل مقاس بـ `rem` بـ 12.5%. ثم قياس أهداف اللمس على الشاشات المرحّلة | `style.css` |
 | W6 | **الفحص:** قاعدة ESLint محلية ترفض في `pages/` و`components/` (عدا `ui/`): `bg-gold`/`bg-brand` على `<button>` أو `<a>` خام، و`rounded-(xl\|2xl) bg-surface`، و`text-[Npx]`، وألوان `#hex` خارج قائمة استثناء (الأعلام، والشعارات الاجتماعية) | `web/eslint.config.js` |
 
 ### التطبيق

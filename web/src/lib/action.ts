@@ -45,7 +45,7 @@ export async function act<T>(key: string, run: () => Promise<T>, o: ActOptions<T
     const text = typeof o.success === 'function' ? o.success(r) : o.success
     if (text) {
       // One toast per thing: a new one about the same key (the same player, the same slot) replaces the one before.
-      useToast().show(text, 'success', 3200, o.undo ? { label: 'تراجع', run: () => act(`${key}:undo`, o.undo!, { success: t('تراجعت عنه.'), onError: o.onError }) } : undefined, key)
+      useToast().show(text, 'success', 3200, o.undo ? { label: t('تراجع'), run: () => act(`${key}:undo`, o.undo!, { success: t('تراجعت عنه.'), onError: o.onError }) } : undefined, key)
     }
     return r
   } catch (e) {

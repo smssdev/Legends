@@ -26,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // The web app signs in with Sanctum's session cookie; the app sends a Bearer token.
         $middleware->statefulApi();
+        // [Sprint 51 B2] The browser's CSP reports carry no XSRF token.
+        $middleware->validateCsrfTokens(except: ['api/v1/csp-report']);
         $middleware->alias(['simulator' => SimulatorEnabled::class, 'league.activity' => LeagueActivity::class, 'admin' => AdminOnly::class]);
         // Every signed-in request counts for the activity indicators of the admin panel [Sprint 37].
         $middleware->appendToGroup('api', RecordActivity::class);

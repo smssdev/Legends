@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\AssistantController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ClubBoardController;
+use App\Http\Controllers\Api\CspReportController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\DataEditorController;
 use App\Http\Controllers\Api\DealsController;
@@ -46,6 +47,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('health', [HealthController::class, 'show']);
 Route::post('health/ping', [HealthController::class, 'ping'])->middleware('throttle:10,1,ping');
+// [Sprint 51 B2] The report-only Content-Security-Policy's violations, from the browser (App\Http\Security\SecurityPolicy).
+Route::post('csp-report', [CspReportController::class, 'store'])->middleware('throttle:30,1,csp-report');
 
 // Accounts [PLAN 2.17]: the web by session cookie, the app by token. Login attempts are limited
 // per email and per address (AppServiceProvider, "auth").
