@@ -9,11 +9,9 @@
 // - The screen in what is left, scrolling inside itself (the frame never moves), the footer at its end.
 // - Held upright on a phone (the coach chose «تابع عمودياً», TurnPhone): the same dock along the bottom.
 // Signed out (the landing, the sign-in) only a slim bar with the brand and the two doors.
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import Icon from '../components/Icon.vue'
 import BrandMark from '../components/BrandMark.vue'
-import AgendaPanel from '../components/shell/AgendaPanel.vue'
 import ShellBar from '../components/shell/ShellBar.vue'
 import ShellDock, { type DockEntry } from '../components/shell/ShellDock.vue'
 import type { MoreGroup } from '../components/shell/ShellMore.vue'
@@ -69,8 +67,6 @@ const unread = computed(() => (inbox.unread > 99 ? '99+' : inbox.unread ? String
 // [Sprint 20 B1] The board of the slot: the money, the timers and the to-do list.
 const board = useBoard()
 watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as const, ([inside, league]) => inside && board.load(league ?? null), { immediate: true })
-const running = computed(() => board.board?.timers.filter((t) => ['training', 'stadium', 'scout'].includes(t.kind)).length ?? 0)
-const waiting = computed(() => (board.board?.pending.length ?? 0) + (inbox.unread ? 1 : 0))
 
 // [Sprint 55 W1, D2] The dock's sections: in a club the six (each lit when one of its pages is open), outside the five.
 const entries = computed<DockEntry[]>(() => {
@@ -95,29 +91,9 @@ const title = computed(() => {
   return [...DOCK_OUTSIDE, ...MORE_ALWAYS].find((l) => route.path === l.path)?.label ?? ''
 })
 
-// [Sprint 54 W4] The timers and what waits: a window under the bar (Esc and the veil close it, the focus goes into it
-// and back to its button after). [Sprint 55] Kept on the bar until Sprint 56 rebuilds the office with them inside.
-const agenda = ref<'timers' | 'pending' | null>(null)
-let agendaButton: HTMLElement | null = null
-async function toggleAgenda(k: 'timers' | 'pending', e: MouseEvent) {
-  if (agenda.value === k) return closeAgenda()
-  agendaButton = e.currentTarget as HTMLElement
-  agenda.value = k
-  await nextTick()
-  document.querySelector<HTMLElement>('.agenda button, .agenda a')?.focus()
-}
-function closeAgenda() {
-  if (!agenda.value) return
-  agenda.value = null
-  agendaButton?.focus()
-}
-const onAgendaKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeAgenda() }
-watch(agenda, (k) => (k ? window.addEventListener('keydown', onAgendaKey) : window.removeEventListener('keydown', onAgendaKey)))
-onBeforeUnmount(() => window.removeEventListener('keydown', onAgendaKey))
-
 // The screen scrolls inside the frame: back to its top on a new page.
 const main = ref<HTMLElement | null>(null)
-watch(() => route.path, () => { agenda.value = null; main.value?.scrollTo({ top: 0 }) })
+watch(() => route.path, () => main.value?.scrollTo({ top: 0 }))
 
 // [X85] The screens where the club's money matters (spent or earned there): the money shows on the bar only on them.
 const MONEY_PAGES = new Set(['club', 'team', 'market', 'training', 'specialists', 'stadium', 'finance', 'scout', 'friendlies'])
@@ -158,18 +134,7 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
     <!-- [Sprint 39 N1] Asked once a device: the game's sound and notifications. -->
     <SoundPrompt />
     <ShellDock :entries="entries" :more="more" :in-slot="inSlot" :bot-open="bot.open" :bot-dot="hello && !bot.open" @bot="bot.open = !bot.open" />
-    <ShellBar :title="title" :in-slot="inSlot" :next="next" :coins="wallet.view?.balance ?? 0" :cash="cash" :unread="unread" :avatar="auth.user.avatar_url" :initial="initial" :unverified="!auth.user.verification?.verified">
-      <template v-if="inSlot">
-        <button v-for="k in (['timers', 'pending'] as const)" :key="k" type="button" class="bar-icon" :aria-expanded="agenda === k" aria-haspopup="dialog"
-          :aria-label="k === 'timers' ? $t('المؤقتات') : waiting ? $t('ما ينتظرك: {n}', { n: waiting }) : $t('ما ينتظرك')" @click="toggleAgenda(k, $event)">
-          <template v-if="k === 'timers'"><Icon name="clock" /><span v-if="running" class="bar-badge bg-gold text-on-gold">{{ running }}</span></template>
-          <template v-else><Icon name="todo" /><span v-if="waiting" class="bar-badge animate-pulse-ring bg-live text-white">{{ waiting }}</span></template>
-        </button>
-        <Transition name="drop">
-          <AgendaPanel v-if="agenda" :key="agenda" :kind="agenda" @close="closeAgenda" />
-        </Transition>
-      </template>
-    </ShellBar>
+    <ShellBar :title="title" :in-slot="inSlot" :next="next" :coins="wallet.view?.balance ?? 0" :cash="cash" :unread="unread" :avatar="auth.user.avatar_url" :initial="initial" :unverified="!auth.user.verification?.verified" />
 
     <main ref="main" class="shell-main">
       <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->
@@ -188,15 +153,17 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
       <RouterLink v-if="auth.user.suspended" to="/support" class="flex min-h-touch items-center justify-center bg-live/25 px-4 py-2 text-center text-sm font-bold" role="alert">
         {{ $t('حسابك معلّق من فريق التطوير') }}<template v-if="auth.user.suspended.reason">: {{ auth.user.suspended.reason }}</template>. <span class="text-gold">{{ $t('راسل الفريق') }}</span>
       </RouterLink>
-      <div class="shell-page mx-auto w-full max-w-7xl" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
+      <!-- [Sprint 56] A screen built to fit (route meta `fit`) fills what is left of the frame and scrolls inside its own
+           lists; the older screens scroll inside the frame with the footer at their end. -->
+      <div class="shell-page mx-auto w-full max-w-7xl" :class="[route.meta.wide ? 'xl:max-w-[96rem]' : '', route.meta.fit ? 'is-fit' : '']">
         <RouterView v-slot="{ Component, route: r }">
           <Transition name="page">
             <component :is="Component" :key="r.path" />
           </Transition>
         </RouterView>
       </div>
-      <!-- [X90] The game's footer, at the end of every screen. -->
-      <PublicFooter />
+      <!-- [X90] The game's footer, at the end of every screen that scrolls. -->
+      <PublicFooter v-if="!route.meta.fit" />
     </main>
 
     <!-- [W7] The matches missed since the last visit: one window, once. -->
@@ -232,9 +199,9 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
 <style>
 /* [Sprint 55 W1] The frame (LandscapeShell.html): a grid of the dock at the line's start, the bar above the screen, and
    the screen scrolling inside itself. Global, because the dock's lists and the bar's windows are carried to the body. */
+:root { --bar-h: 42px; }
 .shell {
   --dock-w: 72px;
-  --bar-h: 42px;
   display: grid;
   grid-template-columns: var(--dock-w) minmax(0, 1fr);
   grid-template-rows: var(--bar-h) minmax(0, 1fr);
@@ -301,7 +268,10 @@ html.light .dock-item.is-active { color: var(--color-text); background: color-mi
   .dock-badge { position: static; margin-inline-start: auto; }
   .dock-crest { justify-content: flex-start; padding-inline: var(--space-sm); }
   .dock-wide-only { display: block; }
-  .dock-brand .brand-words { display: flex; }
+  .dock-brand .brand-words { display: flex; min-width: 0; }
+  /* The game's name in the 200px dock: a size smaller, so it fits beside the emblem. */
+  .dock-brand .brand-words > span:first-child { font-size: 0.7rem; }
+  .dock-brand .brand-words > span:last-child { white-space: normal; }
 }
 
 .shell-bar {
@@ -332,8 +302,10 @@ html.light .dock-item.is-active { color: var(--color-text); background: color-mi
 
 .shell-main { position: relative; min-height: 0; overflow-x: clip; overflow-y: auto; overscroll-behavior: contain; --shell-header: 0px; }
 .shell-page { padding: var(--space-sm) var(--space-sm) var(--space-xl); }
-@media (min-width: 900px) { .shell-page { padding: var(--space-md) var(--space-lg) var(--space-xl); } }
-@media (min-width: 1200px) { .shell-page { padding: var(--space-lg) var(--space-xl) var(--space-xxl); } }
+.shell-page.is-fit { display: flex; flex-direction: column; height: 100%; padding-bottom: var(--space-sm); }
+.shell-page.is-fit > * { flex: 1; min-height: 0; }
+@media (min-width: 900px) { .shell-page { padding: var(--space-md) var(--space-lg) var(--space-xl); } .shell-page.is-fit { padding-bottom: var(--space-md); } }
+@media (min-width: 1200px) { .shell-page { padding: var(--space-lg) var(--space-xl) var(--space-xxl); } .shell-page.is-fit { padding-bottom: var(--space-lg); } }
 
 /* [Sprint 55 W4] Held upright on a phone (the coach chose to follow upright): the same dock, along the bottom. */
 @media (orientation: portrait) and (max-width: 820px) {

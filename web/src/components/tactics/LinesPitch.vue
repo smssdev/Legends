@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // [Sprint 20 S1] The three lines' positioning on a pitch seen from above (attacking upwards): an arrow for each line
 // shows where its players go: forward, stay, back, or out to the wings. Drawn here, ours alone.
-defineProps<{ att: string; mid: string; def: string }>()
+// [Sprint 56 W4] `fill`: the tactics screen's big pitch, at the lineup pitch's size.
+defineProps<{ att: string; mid: string; def: string; fill?: boolean }>()
 // Arrows from each line's spot (y: forwards 34, midfield 70, defence 104), in the line's colour (the midfield in white, on the green).
 const ARROWS: Record<string, string> = {
   att_only: 'M60 34 V12 M54 18 L60 11 L66 18',
@@ -17,7 +18,7 @@ const ARROWS: Record<string, string> = {
 </script>
 
 <template>
-  <svg viewBox="0 0 120 140" class="h-auto w-full max-w-48" aria-hidden="true">
+  <svg viewBox="0 0 120 140" :class="fill ? 'size-full' : 'h-auto w-full max-w-48'" aria-hidden="true">
     <rect x="2" y="2" width="116" height="136" rx="4" fill="var(--color-pitch-dark)" stroke="var(--color-brand-light)" stroke-width="1.5" />
     <path d="M2 70 H118" stroke="rgba(255,255,255,.35)" />
     <circle cx="60" cy="70" r="14" fill="none" stroke="rgba(255,255,255,.35)" />

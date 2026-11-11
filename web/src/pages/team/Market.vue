@@ -83,6 +83,9 @@ const shown = computed(() => {
   const by = { overall: (a: Row, b: Row) => b.overall - a.overall, age: (a: Row, b: Row) => a.age - b.age, price: (a: Row, b: Row) => a.price - b.price }
   return sortBy.value === 'default' ? rows : [...rows].sort(by[sortBy.value])
 })
+const filtersOpen = ref(false)
+// [Sprint 56 W5] How many filters are on, on the drawer's button.
+const filterCount = computed(() => [query.value, maxAge.value, minOvr.value, maxPrice.value, onlyFits.value].filter(Boolean).length)
 const filtering = computed(() => !!(query.value || maxAge.value || minOvr.value || maxPrice.value || onlyFits.value))
 function clearFilters() {
   query.value = ''
@@ -193,24 +196,18 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <header class="flex flex-wrap items-center gap-3">
-      <div class="flex-[1_1_240px]">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('السوق') }}</h1><!-- [Sprint 20 W12] --> <RouterLink :to="{ name: 'scout' }" class="ms-2 flex h-9 items-center rounded-pill bg-surface px-3 text-xs font-bold text-brand-light">{{ $t('الكشاف ›') }}</RouterLink></span>
-        <p class="mt-1 text-sm text-text-muted">
-          <template v-if="m?.closed">{{ m.closed }}</template>
-          <template v-else-if="m">{{ $t('مفتوح حتى الجولة {v0} · صفقات جديدة كل بضع ساعات، من كل الدوريات وبقوة دوريك', { v0: m.open_until_round }) }}</template>
-        </p>
-      </div>
-      <!-- [X85] The club's money is on the top bar, for this slot's club only. -->
-    </header>
+  <!-- [Sprint 56 W5] Market.html: one row of tabs, the players first (the line, the clock and the filters in one row
+       above them, the filters in a drawer), and every tab's content scrolling inside the screen. -->
+  <div class="market">
+    <h1 class="sr-only">{{ $t('السوق') }}</h1>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="m">
-      <UiTabs v-model="tab" :items="tabs.map((t) => ({ key: t.id, label: t.label, n: t.n }))" label="مصادر اللاعبين" class="self-start max-w-full" />
+      <UiTabs v-model="tab" :items="tabs.map((t) => ({ key: t.id, label: t.label, n: t.n }))" label="مصادر اللاعبين" size="sm" class="max-w-full self-start" />
+      <div v-if="tab !== 'sell'" class="market-body">
 
       <Trades v-if="tab === 'offers'" :league-id="leagueId" view="offers" :mine="m.mine" @changed="load" />
       <LoansPanel v-else-if="tab === 'loans' && leagueId" :league-id="leagueId" @changed="load" />
@@ -229,27 +226,37 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
       </section>
 
       <template v-else-if="tab === 'list'">
-        <div class="flex flex-wrap items-center gap-2">
-          <UiTabs v-model="line" :items="LINES.map((l) => ({ key: l.id, label: l.label }))" label="المراكز" tone="brand" size="sm" fill class="flex-1" />
-          <span v-if="list?.renews_at" class="flex h-11 items-center gap-2 rounded-lg border border-gold/40 bg-surface px-3 text-sm">{{ $t('الصفقات التالية بعد') }} <b class="font-numbers text-lg text-gold" dir="ltr">{{ renewsIn }}</b></span>
+        <div class="flex items-center gap-2">
+          <UiTabs v-model="line" :items="LINES.map((l) => ({ key: l.id, label: l.label }))" label="المراكز" tone="brand" size="sm" class="min-w-0 flex-1" />
+          <span v-if="list?.renews_at" class="flex h-touch shrink-0 items-center gap-1.5 rounded-lg border border-gold/40 bg-surface px-2 text-caption" :title="$t('الصفقات التالية بعد')"><span class="max-lg:hidden">{{ $t('الصفقات التالية بعد') }}</span><span aria-hidden="true" class="lg:hidden">⏱</span> <b class="font-numbers text-body-lg text-gold" dir="ltr">{{ renewsIn }}</b></span>
+          <UiButton size="sm" :variant="filtering ? 'primary' : 'quiet'" class="shrink-0" :aria-expanded="filtersOpen" @click="filtersOpen = true">⚙ {{ $t('الفلاتر') }}<span v-if="filterCount" class="font-numbers">({{ filterCount }})</span></UiButton>
         </div>
         <!-- [Sprint 23] The admin's events running in this league. -->
         <EventsBar :events="list?.events" @ended="loadList" />
-        <!-- [Sprint 30 Q6] Search, filters and order (the owner's report: the market is a table to search, not a scroll). -->
-        <form class="grid grid-cols-2 gap-2 rounded-xl bg-surface p-2 sm:grid-cols-6" role="search" @submit.prevent>
-          <input v-model="query" type="search" dir="auto" :placeholder="$t('ابحث بالاسم')" :aria-label="$t('ابحث بالاسم')" class="col-span-2 h-touch rounded-md bg-surface-sunk px-3" />
-          <select v-model.number="minOvr" :aria-label="$t('القوة من')" class="h-touch rounded-md bg-surface-sunk px-2 text-sm">
-            <option v-for="o in OVRS" :key="o" :value="o">{{ o ? $t('القوة {v0}+', { v0: o }) : $t('كل القوى') }}</option></select>
-          <select v-model.number="maxAge" :aria-label="$t('العمر حتى')" class="h-touch rounded-md bg-surface-sunk px-2 text-sm">
-            <option v-for="a in AGES" :key="a" :value="a">{{ a ? $t('حتى {v0} سنة', { v0: a }) : $t('كل الأعمار') }}</option></select>
-          <select v-model.number="maxPrice" :aria-label="$t('السعر حتى')" class="h-touch rounded-md bg-surface-sunk px-2 text-sm">
-            <option v-for="x in PRICES" :key="x" :value="x">{{ x ? $t('حتى {v0}', { v0: money(x) }) : $t('كل الأسعار') }}</option></select>
-          <select v-model="sortBy" :aria-label="$t('الترتيب')" class="h-touch rounded-md bg-surface-sunk px-2 text-sm">
-            <option value="default">{{ $t('الترتيب: المميزون أولاً') }}</option><option value="overall">{{ $t('الأقوى أولاً') }}</option>
-            <option value="age">{{ $t('الأصغر أولاً') }}</option><option value="price">{{ $t('الأرخص أولاً') }}</option></select>
-          <label class="col-span-2 flex min-h-touch items-center gap-2 text-sm sm:col-span-6"><input v-model="onlyFits" type="checkbox" class="size-5 accent-gold" />{{ $t('من يناسب تشكيلتك فقط') }}
-            <button v-if="filtering" type="button" class="ms-auto min-h-touch font-bold text-gold" @click="clearFilters">{{ $t('امسح البحث') }}</button></label>
-        </form>
+        <!-- [Sprint 30 Q6] Search, filters and order; [Sprint 56 W5] in a drawer at the side, the players first. -->
+        <UiDialog :open="filtersOpen" side closable title="الفلاتر" @close="filtersOpen = false">
+          <form class="flex flex-col gap-2" role="search" @submit.prevent="filtersOpen = false">
+            <p class="text-caption text-text-muted">
+              <template v-if="m?.closed">{{ m.closed }}</template>
+              <template v-else-if="m">{{ $t('مفتوح حتى الجولة {v0} · صفقات جديدة كل بضع ساعات، من كل الدوريات وبقوة دوريك', { v0: m.open_until_round }) }}</template>
+            </p>
+            <input v-model="query" type="search" dir="auto" :placeholder="$t('ابحث بالاسم')" :aria-label="$t('ابحث بالاسم')" class="h-touch rounded-md bg-surface-sunk px-3" />
+            <select v-model.number="minOvr" :aria-label="$t('القوة من')" class="h-touch rounded-md bg-surface-sunk px-2 text-body">
+              <option v-for="o in OVRS" :key="o" :value="o">{{ o ? $t('القوة {v0}+', { v0: o }) : $t('كل القوى') }}</option></select>
+            <select v-model.number="maxAge" :aria-label="$t('العمر حتى')" class="h-touch rounded-md bg-surface-sunk px-2 text-body">
+              <option v-for="a in AGES" :key="a" :value="a">{{ a ? $t('حتى {v0} سنة', { v0: a }) : $t('كل الأعمار') }}</option></select>
+            <select v-model.number="maxPrice" :aria-label="$t('السعر حتى')" class="h-touch rounded-md bg-surface-sunk px-2 text-body">
+              <option v-for="x in PRICES" :key="x" :value="x">{{ x ? $t('حتى {v0}', { v0: money(x) }) : $t('كل الأسعار') }}</option></select>
+            <select v-model="sortBy" :aria-label="$t('الترتيب')" class="h-touch rounded-md bg-surface-sunk px-2 text-body">
+              <option value="default">{{ $t('الترتيب: المميزون أولاً') }}</option><option value="overall">{{ $t('الأقوى أولاً') }}</option>
+              <option value="age">{{ $t('الأصغر أولاً') }}</option><option value="price">{{ $t('الأرخص أولاً') }}</option></select>
+            <label class="flex min-h-touch items-center gap-2 text-body"><input v-model="onlyFits" type="checkbox" class="size-5 accent-gold" />{{ $t('من يناسب تشكيلتك فقط') }}</label>
+            <div class="mt-2 grid grid-cols-2 gap-2">
+              <UiButton type="submit" size="sm">{{ $t('اعرض اللاعبين') }}</UiButton>
+              <UiButton size="sm" variant="quiet" :disabled="!filtering" @click="clearFilters">{{ $t('امسح البحث') }}</UiButton>
+            </div>
+          </form>
+        </UiDialog>
         <!-- The comparison under the filters, never over the Assistant Coach's button. -->
         <div v-if="comparing.length" class="flex items-center gap-2">
           <button type="button" class="flex h-12 min-w-0 flex-1 items-center justify-center rounded-pill px-4 font-bold" :class="comparing.length === 2 ? 'bg-gold text-on-gold' : 'bg-surface text-text-muted'"
@@ -258,14 +265,14 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
           </button>
           <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface" :aria-label="$t('ابدأ مقارنة جديدة')" @click="comparing = []">✕</button>
         </div>
-        <section :aria-label="$t('قائمة الانتقالات')" class="rounded-xl bg-surface p-2">
+        <section :aria-label="$t('قائمة الانتقالات')" class="market-list rounded-xl bg-surface p-2">
           <p v-if="!list" class="p-4 text-sm text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
           <p v-else-if="!list.players.length" class="p-4 text-sm text-text-muted">{{ $t('لا لاعبين في هذا المركز الآن.') }}</p>
           <p v-else-if="!shown.length" class="flex flex-wrap items-center gap-2 p-4 text-sm text-text-muted">{{ $t('لا لاعب يطابق البحث.') }}
             <button type="button" class="min-h-touch font-bold text-gold" @click="clearFilters">{{ $t('امسح البحث') }}</button></p>
           <!-- [Sprint 30 Q6] Fixed columns: their names stay over the list while it scrolls. -->
           <!-- [Sprint 48 T5] The columns' bar in the line's colour, as the squad's tables (the owner's screenshots, our own look). -->
-          <div v-if="shown.length" class="market-head sticky top-[var(--shell-header,4.25rem)] z-10 flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-bold sm:gap-3" aria-hidden="true"
+          <div v-if="shown.length" class="market-head sticky top-0 z-10 max-md:hidden flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-bold sm:gap-3" aria-hidden="true"
             :style="{ '--line': `var(--color-line-${list!.line})`, '--line-fg': `var(--color-line-${list!.line}-fg)` }">
             <span class="w-8 text-center sm:w-10">{{ $t('القوة') }}</span><span class="flex-1">{{ $t('اللاعب') }}</span>
             <span class="hidden w-12 text-center sm:block">{{ $t('المركز') }}</span><span class="hidden w-10 text-center sm:block">{{ $t('العمر') }}</span>
@@ -273,11 +280,11 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
           </div>
           <ul v-if="shown.length" class="flex flex-col">
             <li v-for="p in shown.slice(page * PAGE, (page + 1) * PAGE)" :key="p.id" class="v-row">
-              <button type="button" class="flex w-full items-center gap-2 border-t border-text/5 px-2 py-2 text-start transition-transform first:border-0 hover:bg-surface-raised sm:gap-3" @click="pick(p)">
+              <button type="button" class="flex min-h-touch w-full items-center gap-2 border-t border-text/5 px-2 py-1 text-start transition-transform first:border-0 hover:bg-surface-raised sm:gap-3" @click="pick(p)">
                 <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
                 <span class="min-w-0 flex-1">
-                  <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">⭐ {{ $t('نجم') }}</span><span v-if="p.special" class="shrink-0 rounded-pill bg-brand px-1.5 text-[11px] font-bold text-white">{{ $t(SPECIAL[p.special]) }}</span></b>
-                  <span v-if="p.fits" class="me-1 inline-block rounded-pill bg-success/15 px-1.5 text-[11px] font-bold text-success">{{ $t('يناسب تشكيلتك') }}</span>
+                  <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-caption font-bold text-on-gold">⭐ {{ $t('نجم') }}</span><span v-if="p.special" class="shrink-0 rounded-pill bg-brand px-1.5 text-caption font-bold text-white">{{ $t(SPECIAL[p.special]) }}</span></b>
+                  <span v-if="p.fits" class="me-1 inline-block rounded-pill bg-success/15 px-1.5 text-caption font-bold text-success">{{ $t('يناسب تشكيلتك') }}</span>
                   <span class="block text-xs text-text-muted"><span class="sm:hidden">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · </template></span><template v-if="p.nationality">{{ $nm(p.nationality) }}</template></span>
                 </span>
                 <span class="hidden w-12 text-center text-sm text-text-soft sm:block" dir="ltr">{{ p.position }}</span>
@@ -298,6 +305,7 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
           </nav>
         </section>
       </template>
+      </div>
 
       <!-- The player's card and the deal. -->
       <UiDialog :open="!!picked" bare @close="picked = null"><template v-if="picked">
@@ -356,7 +364,7 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
       </div>
 
       <!-- [X61] Its own tab only (it hung off the celebration's v-else, so it showed under every tab). -->
-      <section v-if="tab === 'sell'" :aria-label="$t('بيع لاعبيّ')" class="flex flex-col gap-2 rounded-xl bg-surface p-2">
+      <section v-if="tab === 'sell'" :aria-label="$t('بيع لاعبيّ')" class="market-sell flex flex-col gap-2 rounded-xl bg-surface p-2">
         <!-- [Sprint 23] How many may be listed at once, and what outside buyers may still pay above the value this season. -->
         <p v-if="m.selling" class="flex flex-wrap gap-x-4 gap-y-1 px-2 pt-1 text-xs text-text-muted">
           <span>{{ $t('المعروضون: {v0} من {v1}', { v0: m.selling.listed, v1: m.selling.max_listings }) }}</span>
@@ -386,6 +394,10 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
 </template>
 
 <style scoped>
+.market { display: flex; flex-direction: column; gap: var(--space-sm); }
+.market-body { position: relative; display: flex; flex: 1; min-height: 0; flex-direction: column; gap: var(--space-sm); overflow-y: auto; overscroll-behavior: contain; }
+.market-list { flex: 1; }
+.market-sell { position: relative; flex: 1; min-height: 0; overflow-y: auto; }
 .market-head { background: linear-gradient(90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); color: var(--line-fg); }
 :dir(rtl) .market-head { background: linear-gradient(-90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); }
 /* [UP11] The deal done: the card pops in, on the GPU only. */

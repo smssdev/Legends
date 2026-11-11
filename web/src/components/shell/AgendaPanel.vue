@@ -16,9 +16,11 @@ import { act, busy } from '../../lib/action'
 import { t } from '../../lib/i18n'
 import { LINE_NAMES, PENDING, SECTION_NAMES, SEVERITY, TIMER } from './agenda'
 
-const props = defineProps<{ kind: 'timers' | 'pending' }>()
+// [Sprint 56 W1] `inline`: the same list inside the office's cards (Office.html), no window, no veil, no heading (the
+// card has its own), scrolling inside its card.
+const props = defineProps<{ kind: 'timers' | 'pending'; inline?: boolean }>()
 const emit = defineEmits<{ close: [] }>()
-useEscape(() => emit('close'))
+if (!props.inline) useEscape(() => emit('close'))
 const store = useBoard()
 const inbox = useInbox()
 const router = useRouter()
@@ -46,9 +48,9 @@ const fillTraining = () => act('fill-training', async () => {
 
 <template>
   <div class="contents">
-  <div class="agenda-veil fixed inset-0 z-40 bg-black/55 md:bg-transparent" @click="emit('close')" />
-  <section class="agenda" :aria-label="$t(kind === 'timers' ? 'المؤقتات' : 'ما ينتظرك')">
-    <h2 class="mb-2 flex items-center gap-2 font-display text-base font-extrabold">
+  <div v-if="!inline" class="agenda-veil fixed inset-0 z-40 bg-black/55 md:bg-transparent" @click="emit('close')" />
+  <section :class="inline ? 'agenda-inline' : 'agenda'" :aria-label="$t(kind === 'timers' ? 'المؤقتات' : 'ما ينتظرك')">
+    <h2 v-if="!inline" class="mb-2 flex items-center gap-2 font-display text-base font-extrabold">
       <Icon :name="kind === 'timers' ? 'clock' : 'todo'" :size="18" />{{ $t(kind === 'timers' ? 'المؤقتات' : 'ما ينتظرك') }}
     </h2>
     <p v-if="!b" class="py-4 text-center text-sm text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
@@ -86,7 +88,7 @@ const fillTraining = () => act('fill-training', async () => {
             <Icon name="more" :size="16" class="shrink-0 text-text-muted rtl:rotate-180" />
           </button>
         </li>
-        <li v-for="(p, i) in b.pending" :key="i" class="flex items-center gap-1.5">
+        <li v-for="(p, i) in b.pending" :key="i" class="flex gap-1.5" :class="inline ? 'flex-col items-stretch' : 'items-center'">
           <button type="button" class="agenda-row min-w-0 flex-1" :style="{ boxShadow: `inset -3px 0 0 ${SEVERITY[p.severity]}` }" @click="go(PENDING[p.kind].to(p, store.league))">
             <span class="min-w-0 flex-1 text-start">
               <b class="block truncate text-sm">{{ $t(PENDING[p.kind].label) }}<template v-if="p.count"> ({{ p.count }})</template></b>
@@ -128,6 +130,7 @@ const fillTraining = () => act('fill-training', async () => {
 @media (min-width: 768px) {
   .agenda { inset-inline-start: auto; inset-inline-end: 1rem; width: 24rem; }
 }
+.agenda-inline { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; }
 .agenda-row {
   display: flex;
   width: 100%;

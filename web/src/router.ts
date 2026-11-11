@@ -37,14 +37,14 @@ export const router = createRouter({
         { path: 'leagues/:id(\\d+)/pick', name: 'pick-team', component: () => import('./pages/leagues/PickTeam.vue'), props: true, meta: { auth: true } },
         // Sprint 16: my club in the current league
         // [Sprint 20] The club board, the friendlies and the weekly quests.
-        { path: 'club', name: 'club', component: () => import('./pages/team/ClubBoard.vue'), meta: { auth: true } },
+        { path: 'club', name: 'club', component: () => import('./pages/team/ClubBoard.vue'), meta: { auth: true, fit: true } },
         { path: 'friendlies', name: 'friendlies', component: () => import('./pages/team/FriendliesPage.vue'), meta: { auth: true } },
         { path: 'quests', name: 'quests', component: () => import('./pages/team/QuestsPage.vue'), meta: { auth: true } },
-        { path: 'team', name: 'team', component: () => import('./pages/team/Squad.vue'), meta: { auth: true } },
+        { path: 'team', name: 'team', component: () => import('./pages/team/Squad.vue'), meta: { auth: true, fit: true } },
         // Sprint 17: tactics and the next match (the live match comes in Sprints 18 to 20)
-        { path: 'tactics', name: 'tactics', component: () => import('./pages/team/TacticsPage.vue'), meta: { auth: true } },
-        { path: 'match', name: 'match', component: () => import('./pages/team/NextMatch.vue'), meta: { auth: true } },
-        { path: 'lineup', name: 'lineup', component: () => import('./pages/team/Lineup.vue'), meta: { auth: true } },
+        { path: 'tactics', name: 'tactics', component: () => import('./pages/team/TacticsPage.vue'), meta: { auth: true, fit: true } },
+        { path: 'match', name: 'match', component: () => import('./pages/team/NextMatch.vue'), meta: { auth: true, fit: true } },
+        { path: 'lineup', name: 'lineup', component: () => import('./pages/team/Lineup.vue'), meta: { auth: true, fit: true } },
         // Sprint 26: the scout
         { path: 'scout', name: 'scout', component: () => import('./pages/team/ScoutPage.vue'), meta: { auth: true } },
         // Sprint 27: training
@@ -56,7 +56,7 @@ export const router = createRouter({
         // Sprint 29: the stadium
         { path: 'stadium', name: 'stadium', component: () => import('./pages/team/StadiumPage.vue'), meta: { auth: true } },
         // Sprint 24: the market
-        { path: 'market', name: 'market', component: () => import('./pages/team/Market.vue'), meta: { auth: true } },
+        { path: 'market', name: 'market', component: () => import('./pages/team/Market.vue'), meta: { auth: true, fit: true } },
         // Sprint 23: the club's money
         { path: 'finance', name: 'finance', component: () => import('./pages/team/Finance.vue'), meta: { auth: true } },
         { path: 'stats', name: 'stats', component: () => import('./pages/team/StatsPage.vue'), meta: { auth: true } },

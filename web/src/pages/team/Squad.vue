@@ -5,6 +5,9 @@
 // opponent, and «فريق نادٍ آخر» opens any club's squad of the league (without its tactics).
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
+import AsyncState from '../../components/ui/AsyncState.vue'
+import UiTabs from '../../components/ui/UiTabs.vue'
+import UiSelect from '../../components/ui/UiSelect.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
 import { LINES, money, strength, type Line } from '../../lib/format'
 import TeamCard from './squad/TeamCard.vue'
@@ -42,8 +45,13 @@ async function load() {
   }
 }
 // [Sprint 48 T2] The three tabs of the owner's screenshots: the players, the league's transfers, the ratings by round.
-const TABS = [{ id: 'players', label: 'قائمة اللاعبين' }, { id: 'transfers', label: 'الانتقالات' }, { id: 'ratings', label: 'تقييمات اللاعبين' }] as const
-const tab = ref<(typeof TABS)[number]['id']>('players')
+// [Sprint 56 W2] Plus the season's numbers as their own columns («الأداء»), as Squad.html.
+const TABS = [{ key: 'players', label: 'اللاعبون' }, { key: 'stats', label: 'الأداء' }, { key: 'ratings', label: 'التقييمات' }, { key: 'transfers', label: 'الانتقالات' }]
+type Tab = 'players' | 'stats' | 'ratings' | 'transfers'
+const tab = ref<Tab>('players')
+// The line as text for the phone's list (UiSelect's value).
+const lineKey = computed({ get: () => line.value as string, set: (v: string) => (line.value = (v || 'all') as 'all' | Line) })
+const LINE_TABS = computed(() => (['all', 'gk', 'def', 'mid', 'att'] as const).map((l) => ({ key: l, label: l === 'all' ? 'الكل' : LINES[l].plural, n: l === 'all' ? team.value?.players.length ?? 0 : count(l) })))
 const line = ref<'all' | Line>('all')
 const open = ref<SquadPlayer | null>(null)
 // The list or the cards, remembered on this device [X29].
@@ -93,89 +101,70 @@ function status(p: SquadPlayer) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <div v-else-if="loaded && !team" class="flex flex-col items-center gap-3 rounded-xl bg-surface p-8 text-center">
-      <h1 class="font-display text-2xl font-extrabold">{{ $t('ليس لديك فريق بعد') }}</h1>
-      <p class="text-text-muted">{{ $t('انضم لدوري أو أنشئ دورياً واختر فريقك.') }}</p>
-      <RouterLink :to="{ name: 'leagues' }" class="flex h-12 items-center rounded-lg bg-gold px-5 font-display font-extrabold text-on-gold">{{ $t('دورياتي') }}</RouterLink>
-    </div>
-    <template v-else-if="team">
-      <header class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 class="font-display text-3xl font-extrabold">{{ $t('الفريق') }}</h1>
-          <p class="text-text-muted">
-            <span class="font-numbers">{{ team.players.length }}</span> {{ $t('لاعباً · القوة') }} <span class="font-numbers text-gold">{{ strength(team.club.strength_cp) }}</span> {{ $t('· القيمة') }}
-            <span class="font-numbers">{{ money(team.squad_value) }}</span>
-          </p>
-        </div>
-        <div class="flex items-center gap-2">
+  <!-- [Sprint 56 W2] Squad.html: the table fills the screen and scrolls inside itself under its tabs; the player's card a
+       panel at the side; the team's card beside the table on a computer. -->
+  <div class="squad">
+    <h1 class="sr-only">{{ $t('الفريق') }}</h1>
+    <AsyncState v-if="error || !team" :loading="!loaded && !error" :error="error || null" :empty="loaded && !team && !error" skeleton="row" :rows="6"
+      empty-icon="team" empty-title="ليس لديك فريق بعد" empty-text="انضم لدوري أو أنشئ دورياً واختر فريقك." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" @retry="load" />
+    <template v-else>
+      <div class="squad-main">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <UiTabs v-model="tab" :items="TABS" label="الفريق" size="sm" />
+          <!-- The lines: tabs where there is room, one list on a phone and a tablet (the table keeps its rows). -->
+          <UiTabs v-if="tab !== 'transfers'" v-model="line" :items="LINE_TABS" label="الخطوط" tone="brand" size="sm" class="min-w-0 max-w-full max-xl:hidden" />
+          <div v-if="tab !== 'transfers'" class="w-28 xl:hidden"><UiSelect v-model="lineKey" label="الخطوط" :options="LINE_TABS.map((l) => ({ value: l.key, label: `${$t(l.label)} ${l.n}` }))" /></div>
+          <span class="flex-1" />
+          <span class="text-caption text-text-muted max-lg:hidden"><span class="font-numbers">{{ team.players.length }}</span> {{ $t('لاعباً · القوة') }} <b class="font-numbers text-gold">{{ strength(team.club.strength_cp) }}</b> {{ $t('· القيمة') }} <span class="font-numbers">{{ money(team.squad_value) }}</span></span>
           <label>
             <span class="sr-only">{{ $t('فريق نادٍ آخر') }}</span>
-            <select class="h-11 rounded-lg bg-surface px-2 text-sm" :value="''" @focus="loadOthers" @pointerdown="loadOthers" @change="otherClub = Number(($event.target as HTMLSelectElement).value) || null; ($event.target as HTMLSelectElement).value = ''">
+            <select class="h-touch w-28 rounded-lg bg-surface px-1 text-caption" :value="''" @focus="loadOthers" @pointerdown="loadOthers" @change="otherClub = Number(($event.target as HTMLSelectElement).value) || null; ($event.target as HTMLSelectElement).value = ''">
               <option value="">{{ $t('فريق نادٍ آخر ▾') }}</option>
               <option v-for="c in others" :key="c.id" :value="c.id">{{ $nm(c.name) }}</option>
             </select>
           </label>
-          <RouterLink :to="{ name: 'lineup' }" class="flex h-11 shrink-0 items-center rounded-lg bg-gold px-4 font-display font-extrabold text-on-gold">{{ $t('التشكيلة') }}</RouterLink>
-        </div>
-      </header>
-
-      <!-- [Sprint 48 T2] The squad's tables, the team's card at their side (the owner's screenshots, our own look). -->
-      <div class="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_21rem]">
-        <div class="flex min-w-0 flex-col gap-3">
-          <div class="flex flex-wrap items-center gap-2">
-            <div class="flex gap-1 rounded-xl bg-surface p-1" role="tablist" :aria-label="$t('الفريق')">
-              <button v-for="t in TABS" :key="t.id" type="button" role="tab" :aria-selected="tab === t.id" class="h-10 rounded-lg px-4 font-display text-sm font-extrabold transition-colors" :class="tab === t.id ? 'bg-gold text-on-gold' : 'text-text-soft hover:text-text'" @click="tab = t.id">{{ $t(t.label) }}</button>
-            </div>
-            <template v-if="tab !== 'transfers'">
-              <div class="flex min-w-0 gap-1 overflow-x-auto" role="group" :aria-label="$t('الخطوط')">
-                <button v-for="l in ['all', 'gk', 'def', 'mid', 'att'] as const" :key="l" type="button" class="h-10 shrink-0 rounded-lg px-3 text-sm font-bold" :class="line === l ? 'bg-surface-raised text-gold' : 'bg-surface text-text-soft'" :aria-pressed="line === l" @click="line = l">
-                  {{ l === 'all' ? $t('الكل') : $t(LINES[l].plural) }} <span class="font-numbers">{{ l === 'all' ? team.players.length : count(l) }}</span>
-                </button>
-              </div>
-              <div v-if="tab === 'players'" class="ms-auto flex shrink-0 gap-1 rounded-xl bg-surface p-1" role="group" :aria-label="$t('طريقة العرض')">
-                <button v-for="[k, label, icon] in ([['list', 'جدول', 'M4 6h16M4 12h16M4 18h16'], ['cards', 'بطاقات', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z']] as const)" :key="k" type="button" class="grid size-10 place-items-center rounded-lg" :class="view === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="view === k" :aria-label="$t(label)" @click="setView(k)">
-                  <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path :d="icon" /></svg>
-                </button>
-              </div>
-            </template>
+          <div v-if="tab === 'players'" class="flex shrink-0 gap-1 rounded-xl bg-surface p-1 max-md:hidden" role="group" :aria-label="$t('طريقة العرض')">
+            <button v-for="[k, label, icon] in ([['list', 'جدول', 'M4 6h16M4 12h16M4 18h16'], ['cards', 'بطاقات', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z']] as const)" :key="k" type="button" class="grid size-touch place-items-center rounded-lg" :class="view === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="view === k" :aria-label="$t(label)" @click="setView(k)">
+              <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path :d="icon" /></svg>
+            </button>
           </div>
-
-          <template v-if="tab === 'players'">
-            <PlayersTable v-if="view === 'list'" :groups="groups" :season="season?.players ?? null" :status="status" @open="open = $event" @sale="openSale" />
-            <!-- The cards, by line like the table. -->
-            <div v-else class="flex flex-col gap-5">
-              <section v-for="grp in groups" :key="grp.line" class="flex flex-col gap-2" :aria-label="$t(LINES[grp.line].plural)">
-                <h2 class="line-divider flex items-center gap-2 text-sm font-bold" :style="{ '--line': `var(--color-line-${grp.line})` }">
-                  <LineBadge :line="grp.line" />{{ $t(LINE_TITLE[grp.line]) }}
-                  <span class="font-numbers text-text-muted">{{ grp.players.length }}</span>
-                </h2>
-                <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-                  <li v-for="p in grp.players" :key="p.id" class="v-card">
-                    <button type="button" class="block w-full text-start" :aria-label="p.name" @click="open = p">
-                      <PlayerTile :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :fitness="p.fitness" :status="status(p).text" :status-tone="status(p).tone" :attributes="p.attributes as Record<string, number | null>" />
-                    </button>
-                  </li>
-                </ul>
-              </section>
-            </div>
-          </template>
-          <TransfersTable v-else-if="tab === 'transfers'" :transfers="season?.transfers ?? []" :club="team.club.name" />
-          <RatingsTable v-else-if="season" :groups="groups" :season="season" @open="open = $event" />
-          <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
         </div>
 
-        <TeamCard :team="team" :board="board.board" :season="season" class="lg:sticky lg:top-3" @open="open = $event" />
+        <PlayersTable v-if="(tab === 'players' && view === 'list') || tab === 'stats'" :groups="groups" :season="season?.players ?? null" :status="status" :cols="tab === 'stats' ? 'stats' : 'list'" class="squad-scroll" @open="open = $event" @sale="openSale" />
+        <!-- The cards, by line like the table. -->
+        <div v-else-if="tab === 'players'" class="squad-scroll flex flex-col gap-5 overflow-y-auto overscroll-contain">
+          <section v-for="grp in groups" :key="grp.line" class="flex flex-col gap-2" :aria-label="$t(LINES[grp.line].plural)">
+            <h2 class="line-divider flex items-center gap-2 text-body font-bold" :style="{ '--line': `var(--color-line-${grp.line})` }">
+              <LineBadge :line="grp.line" />{{ $t(LINE_TITLE[grp.line]) }}
+              <span class="font-numbers text-text-muted">{{ grp.players.length }}</span>
+            </h2>
+            <ul class="grid grid-cols-3 gap-3 xl:grid-cols-4">
+              <li v-for="p in grp.players" :key="p.id" class="v-card">
+                <button type="button" class="block w-full text-start" :aria-label="p.name" @click="open = p">
+                  <PlayerTile :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :fitness="p.fitness" :status="status(p).text" :status-tone="status(p).tone" :attributes="p.attributes as Record<string, number | null>" />
+                </button>
+              </li>
+            </ul>
+          </section>
+        </div>
+        <TransfersTable v-else-if="tab === 'transfers'" :transfers="season?.transfers ?? []" :club="team.club.name" class="squad-scroll overflow-y-auto" />
+        <RatingsTable v-else-if="season" :groups="groups" :season="season" class="squad-scroll overflow-y-auto" @open="open = $event" />
+        <AsyncState v-else loading skeleton="row" :rows="6" />
       </div>
+
+      <TeamCard :team="team" :board="board.board" :season="season" class="squad-side" @open="open = $event" />
     </template>
-    <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
     <PlayerCard v-if="open" :player="open" :sell="saleOpen" @close="open = null; saleOpen = false" @sold="sold" />
     <ClubSquadDialog v-if="otherClub && board.league" :league-id="board.league" :club-id="otherClub" @close="otherClub = null" />
   </div>
 </template>
 
 <style scoped>
+.squad { display: grid; gap: var(--space-md); grid-template-columns: minmax(0, 1fr); }
+.squad-main { display: flex; min-height: 0; flex-direction: column; gap: var(--space-sm); }
+.squad-scroll { position: relative; flex: 1; min-height: 0; }
+.squad-side { display: none; }
+@media (min-width: 1200px) { .squad { grid-template-columns: minmax(0, 1fr) 21rem; } .squad-side { display: block; min-height: 0; overflow-y: auto; } }
 /* [Sprint 39 S2] A line's divider: its colour first, then a hairline across to the end. */
 .line-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to left, transparent, var(--line)); opacity: 0.5; }
 :dir(rtl) .line-divider::after { background: linear-gradient(to right, transparent, var(--line)); }

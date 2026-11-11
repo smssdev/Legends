@@ -260,13 +260,12 @@
     "card": 1
   },
   "src/pages/team/Lineup.vue": {
-    "card": 5,
-    "px-text": 9
+    "card": 1,
+    "px-text": 3
   },
   "src/pages/team/Market.vue": {
     "button": 5,
-    "card": 7,
-    "px-text": 3,
+    "card": 6,
     "hex": 2
   },
   "src/pages/team/MovePanel.vue": {
@@ -275,9 +274,7 @@
   },
   "src/pages/team/NextMatch.vue": {
     "button": 1,
-    "card": 5,
-    "px-text": 1,
-    "hex": 1
+    "card": 1
   },
   "src/pages/team/PlayerCard.vue": {
     "button": 1,
@@ -302,8 +299,8 @@
     "card": 2
   },
   "src/pages/team/Squad.vue": {
-    "button": 4,
-    "card": 3
+    "button": 1,
+    "card": 1
   },
   "src/pages/team/StadiumPage.vue": {
     "button": 1,
@@ -349,7 +346,6 @@
   },
   "src/pages/team/squad/PlayersTable.vue": {
     "card": 1,
-    "px-text": 1,
     "hex": 2
   },
   "src/pages/team/squad/RatingsTable.vue": {
