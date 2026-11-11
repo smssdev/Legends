@@ -3,6 +3,7 @@
 export const EN: Record<string, string> = {
   'حدث خطأ غير متوقع، حاول مجدداً.': 'An unexpected error occurred. Try again.',
   'تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مجدداً.': 'Could not reach the server. Check your internet and try again.',
+  'حاول مجدداً': 'Try again',
   'اللغة': 'Language',
   'لعبة المدرب الأسطورة': 'Game Legend Manager',
   'المدرب الأسطورة': 'GLM',

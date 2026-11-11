@@ -612,6 +612,20 @@ paths:
                   sent: { type: boolean }
                   at: { type: string, format: date-time }
         '429': { $ref: '#/components/responses/Error' }
+  /csp-report:
+    post:
+      tags: [system]
+      summary: A Content-Security-Policy violation, from the browser [Sprint 51]
+      description: The browser posts here what the report-only policy would have blocked (report-uri). Logged in one short line; no session, 30 a minute per address.
+      requestBody:
+        content:
+          application/csp-report:
+            schema: { type: object }
+          application/reports+json:
+            schema: { type: array, items: { type: object } }
+      responses:
+        '204': { description: Received }
+        '429': { $ref: '#/components/responses/Error' }
   /leagues:
     get:
       tags: [leagues]

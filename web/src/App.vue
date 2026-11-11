@@ -13,6 +13,11 @@
   </RouterView>
   <!-- [UP4] The splash, once per visit, over the game until the server answers. -->
   <SplashScreen v-if="splash" @done="splash = false" />
+  <!-- [Sprint 51 W3] The server did not say who is signed in: say so and try again, never a trip to the login. -->
+  <div v-if="auth.unreachable" class="fixed inset-x-0 top-0 z-50 flex items-center justify-center gap-3 bg-warning/95 px-4 py-2 text-sm font-bold text-on-gold" role="alert">
+    {{ $t('تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مجدداً.') }}
+    <button type="button" class="min-h-touch rounded-lg bg-bg-deep/15 px-4" :disabled="retrying" @click="retry">{{ $t('حاول مجدداً') }}</button>
+  </div>
   <!-- [Sprint 30 Q2] The one «are you sure» window (stores/confirm). -->
   <ConfirmHost />
   <!-- [Sprint 48 L1] The whole game is played sideways (the owner's decision 2026-11-08): upright on a phone, the
@@ -29,7 +34,7 @@ import { locale } from './lib/i18n'
 import SplashScreen from './components/SplashScreen.vue'
 import ConfirmHost from './components/shell/ConfirmHost.vue'
 import TurnPhone from './components/match/TurnPhone.vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from './stores/auth'
 import { useBroadcast } from './stores/broadcast'
 
@@ -37,4 +42,16 @@ const splash = ref(true)
 const broadcast = useBroadcast()
 const auth = useAuth()
 const route = useRoute()
+const router = useRouter()
+const retrying = ref(false)
+async function retry() {
+  retrying.value = true
+  try {
+    await auth.retry()
+    // Back: the page asks again with the coach known (or goes to the login if the session really ended).
+    if (!auth.unreachable) await router.replace({ path: route.fullPath, force: true })
+  } finally {
+    retrying.value = false
+  }
+}
 </script>

@@ -78,6 +78,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   final List<(LiveTick, bool)> _untold = [];
   bool _synced = false;
   Timer? _timer;
+  /// [Sprint 51 F2] The timeout bar's end, cancelled with the screen.
+  Timer? _timeoutEnd;
 
   int get _id => widget.view.id;
   String? get _you => widget.view.you;
@@ -94,6 +96,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
+    _timeoutEnd?.cancel();
     unawaited(WakelockPlus.disable().catchError((_) {}));
     super.dispose();
   }
@@ -405,7 +408,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
         _timeoutUsed = true;
       });
       // The bar goes when play goes on.
-      Timer(Duration(milliseconds: (until - DateTime.now().millisecondsSinceEpoch - _offset).clamp(0, 600000)), () {
+      _timeoutEnd?.cancel();
+      _timeoutEnd = Timer(Duration(milliseconds: (until - DateTime.now().millisecondsSinceEpoch - _offset).clamp(0, 600000)), () {
         if (mounted) setState(() {});
       });
     } on ApiError catch (e) {

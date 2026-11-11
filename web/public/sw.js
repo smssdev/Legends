@@ -1,7 +1,7 @@
 // Legends service worker (Sprint 9): makes the site installable as an app (PWA) and opens it
 // without a network. The API is never cached: game data always comes live from the server.
 // Sprint 36: the game's notifications (Web Push), and a tap opens the screen they are about.
-const VERSION = 'legends-v7'
+const VERSION = 'legends-v8'
 const SHELL = ['/', '/site.webmanifest', '/icon-192.png', '/icon-512.png']
 
 self.addEventListener('install', (e) => {
@@ -69,6 +69,8 @@ self.addEventListener('notificationclick', (e) => {
   const link = new URL(e.notification.data?.link || '/', location.origin).href
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((tabs) => {
     const tab = tabs.find((t) => t.url.startsWith(location.origin))
-    return tab ? tab.navigate(link).then((t) => t?.focus()) : self.clients.openWindow(link)
+    // [Sprint 51 W2] A tab the worker does not control refuses navigate(): a new window then, never a dead tap.
+    if (!tab) return self.clients.openWindow(link)
+    return tab.navigate(link).then((t) => (t ? t.focus() : self.clients.openWindow(link))).catch(() => self.clients.openWindow(link))
   }))
 })

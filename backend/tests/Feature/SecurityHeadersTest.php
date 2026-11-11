@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
 
@@ -25,8 +26,70 @@ class SecurityHeadersTest extends TestCase
             $this->assertFalse($r->headers->has('Strict-Transport-Security'), 'HSTS only behind https');
             // The groups' voice notes record from this site; the camera and the rest stay closed.
             $r->assertHeader('Permissions-Policy', 'camera=(), microphone=(self), geolocation=(), payment=(), usb=()');
+            // [Sprint 51 B2] The full policy, report-only for now, with its reports' address.
+            $full = (string) $r->headers->get('Content-Security-Policy-Report-Only');
+            $this->assertStringContainsString("default-src 'self'", $full);
+            $this->assertStringContainsString('script-src ', $full);
+            $this->assertStringNotContainsString("'unsafe-inline' https://www.googletagmanager", $full, 'scripts by hash, never unsafe-inline');
+            $this->assertStringContainsString('report-uri /api/v1/csp-report', $full);
+            $this->assertFalse($r->headers->has('X-Powered-By'));
         }
         $this->get('https://localhost/api/v1/health')->assertHeader('Strict-Transport-Security');
+    }
+
+    /** [Sprint 51 B1] The web server's router sends the game's page before Laravel: the same headers, by hash for its inline scripts. */
+    public function test_the_router_serves_the_page_with_the_security_headers(): void
+    {
+        $root = sys_get_temp_dir().'/glm-router-'.uniqid();
+        mkdir($root.'/public', 0777, true);
+        mkdir($root.'/app/Http/Security', 0777, true);
+        copy(app_path('Http/Security/SecurityPolicy.php'), $root.'/app/Http/Security/SecurityPolicy.php');
+        copy(base_path('../deploy/docker/router.php'), $root.'/router.php');
+        $theme = "try { document.documentElement.classList.add('x') } catch (e) {}";
+        file_put_contents($root.'/public/index.html', "<!doctype html><html><head><script>{$theme}</script><script type=\"application/ld+json\">{}</script></head><body></body></html>");
+        file_put_contents($root.'/public/app.js', 'console.log(1)');
+
+        $port = 18000 + random_int(0, 999);
+        $server = proc_open([PHP_BINARY, '-S', "127.0.0.1:{$port}", '-t', $root.'/public', $root.'/router.php'], [['pipe', 'r'], ['file', '/dev/null', 'w'], ['file', '/dev/null', 'w']], $pipes);
+        try {
+            $headers = null;
+            for ($i = 0; $i < 50 && $headers === null; $i++) {
+                usleep(100_000);
+                $headers = @get_headers("http://127.0.0.1:{$port}/club", true, stream_context_create(['http' => ['header' => "X-Forwarded-Proto: https\r\n"]])) ?: null;
+            }
+            $this->assertNotNull($headers, 'the router answered');
+            $this->assertSame('nosniff', $headers['X-Content-Type-Options']);
+            $this->assertSame('SAMEORIGIN', $headers['X-Frame-Options']);
+            $this->assertStringContainsString('max-age=31536000', $headers['Strict-Transport-Security']);
+            $this->assertStringContainsString('microphone=(self)', $headers['Permissions-Policy']);
+            $this->assertArrayNotHasKey('X-Powered-By', $headers);
+            $hash = 'sha256-'.base64_encode(hash('sha256', $theme, true));
+            $this->assertStringContainsString("'{$hash}'", $headers['Content-Security-Policy-Report-Only'], 'the theme script by its hash');
+            $this->assertSame(1, substr_count($headers['Content-Security-Policy-Report-Only'], "'sha256-"), 'not the JSON-LD block');
+
+            $file = get_headers("http://127.0.0.1:{$port}/app.js", true);
+            $this->assertSame('nosniff', $file['X-Content-Type-Options'], 'the built files too');
+        } finally {
+            proc_terminate($server);
+            proc_close($server);
+            array_map('unlink', glob($root.'/{,public/,app/Http/Security/}*.*', GLOB_BRACE));
+        }
+    }
+
+    public function test_the_browser_reports_a_csp_violation_without_a_session(): void
+    {
+        $report = ['csp-report' => ['document-uri' => 'https://example.test/club?secret=1', 'effective-directive' => 'script-src-elem', 'blocked-uri' => 'https://evil.test/x.js?q=1']];
+        Log::shouldReceive('warning')->once()->withArgs(fn ($m, $c) => $m === 'csp' && $c['blocked'] === 'https://evil.test/x.js' && $c['page'] === 'https://example.test/club' && $c['directive'] === 'script-src-elem');
+        $this->call('POST', '/api/v1/csp-report', [], [], [], ['CONTENT_TYPE' => 'application/csp-report', 'HTTP_ORIGIN' => config('app.url')], json_encode($report))->assertNoContent();
+    }
+
+    public function test_the_api_is_not_open_to_other_sites(): void
+    {
+        $r = $this->get('/api/v1/health', ['Origin' => 'https://example.com']);
+        $this->assertNotSame('*', $r->headers->get('Access-Control-Allow-Origin'));
+        $this->assertNotSame('https://example.com', $r->headers->get('Access-Control-Allow-Origin'));
+        $own = $this->get('/api/v1/health', ['Origin' => rtrim((string) config('app.url'), '/')]);
+        $this->assertSame(rtrim((string) config('app.url'), '/'), $own->headers->get('Access-Control-Allow-Origin'));
     }
 
     public function test_big_json_is_gzipped_when_asked_and_small_json_is_not(): void

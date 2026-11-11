@@ -43,6 +43,30 @@ for (const f of files) {
     }
   }
 }
+// [Sprint 51 W4] An Arabic sentence in a .ts file (a label a screen shows later through $t, a toast, a broadcast line) needs
+// its English too, or it shows in Arabic in the English game. Not checked: the files below, each with its reason; a new
+// .ts file is checked from its first line.
+const TS_ARABIC_ONLY = {
+  'content/legal.ts': 'the policy and terms carry their English in the same file',
+  'content/seo.ts': 'the search tags, written per language in the same file',
+  'lib/format.ts': "Arabic plural words, used only when the locale is 'ar'",
+  'lib/clock.ts': "Arabic plural words, used only when the locale is 'ar'",
+  'lib/dates.ts': 'the Arabic list separator',
+  'match/commentary.ts': "the simulator's Arabic lines; English has its own table (voice.json)",
+  // Known gaps, closed by their sprints (each removes its line here):
+  'content/leagueAtlas.ts': 'Sprint 56: the countries on the league picker',
+  'components/characters/art.ts': "Sprint 63: the characters' names and descriptions",
+  'match/feed/art.ts': 'Sprint 57: the broadcast words come from the server',
+  'match/feed/story.ts': 'Sprint 57: the moment story comes from the server',
+}
+for (const f of files) {
+  const rel = f.slice(4).split('\\').join('/')
+  if (!f.endsWith('.ts') || rel === 'i18n/en.ts' || rel.endsWith('.d.ts') || TS_ARABIC_ONLY[rel]) continue
+  for (const lit of readFileSync(f, 'utf8').matchAll(/'((?:[^'\\\n]|\\.)*)'/g)) {
+    const k = unq(lit[1])
+    if (ARABIC.test(k) && !en.has(k) && !lost.includes(`${f}: ${k}`)) missing(k, f)
+  }
+}
 if (lost.length) {
   console.error(`${lost.length} sentence(s) without English in src/i18n/en.ts:\n` + lost.join('\n'))
   process.exit(1)

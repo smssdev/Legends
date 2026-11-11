@@ -10,6 +10,21 @@
 // - Everything else is Laravel (public/index.php), as Laravel's own server.php does.
 
 $public = realpath(__DIR__.'/public') ?: __DIR__.'/public';
+
+// [Sprint 51 B1] The same security headers as Laravel's answers (App\Http\Security\SecurityPolicy, plain PHP): the
+// game's page and its files leave from here, before Laravel, and went out without them.
+require_once __DIR__.'/app/Http/Security/SecurityPolicy.php';
+
+/** The security headers, HSTS when the request came over HTTPS (nginx in front sets X-Forwarded-Proto). */
+function security_headers(?string $html = null): void
+{
+    $secure = ($_SERVER['HTTPS'] ?? '') === 'on' || strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+    $hashes = $html === null ? [] : App\Http\Security\SecurityPolicy::inlineScriptHashes($html);
+    foreach (App\Http\Security\SecurityPolicy::headers($secure, $hashes) as $name => $value) {
+        header($name.': '.$value);
+    }
+    header_remove('X-Powered-By');
+}
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/');
 
 // [X70] One address for the game: a request on another public name (the old srv2100776.hstgr.cloud, www.gamelegendmanager.online)
@@ -42,6 +57,7 @@ const LASTING = ['/assets/', '/logos/', '/brand/', '/art/', '/unity/'];
 function send(string $path, string $cache): void
 {
     $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    security_headers($ext === 'html' ? (string) file_get_contents($path) : null);
     header('Content-Type: '.(TYPES[$ext] ?? (mime_content_type($path) ?: 'application/octet-stream')));
     header('Cache-Control: '.$cache);
     header('Vary: Accept-Encoding');
@@ -65,6 +81,7 @@ function send(string $path, string $cache): void
 // No broadcasting server here (BROADCAST_CONNECTION=log): the browsers' WebSocket tries (/app/<key>) get a quick no,
 // never Laravel or the app's page, and fall back to asking the API.
 if (str_starts_with($uri, '/app/')) {
+    security_headers();
     http_response_code(404);
 
     return true;
@@ -105,6 +122,7 @@ if (! $laravel && in_array($_SERVER['REQUEST_METHOD'], ['GET', 'HEAD'], true) &&
         $html = str_replace('</head>', '<meta name="google-adsense-account" content="'.$client.'" />'
             .'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='.$client.'" crossorigin="anonymous" data-ad-frequency-hint="30s"'.$test.'></script></head>',
             (string) file_get_contents($page));
+        security_headers($html);
         header('Content-Type: text/html; charset=utf-8');
         header('Cache-Control: no-cache');
         header('Content-Length: '.strlen($html));

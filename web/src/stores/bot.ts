@@ -45,9 +45,15 @@ export const useBot = defineStore('bot', () => {
   function resume() {
     if (saved.value) messages.value = [...saved.value.messages]
   }
-  function forget() {
+  /** Forgets the saved conversation; at sign-out (all: true, Sprint 51 W5) the one on screen too. */
+  function forget(all = false) {
     try { localStorage.removeItem(SAVED) } catch {}
     saved.value = null
+    if (all) {
+      messages.value = []
+      open.value = false
+      closing.value = null
+    }
   }
 
   /** The page's quick questions (and, the first time, who he is). */
