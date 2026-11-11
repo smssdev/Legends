@@ -85,7 +85,7 @@ async function save() {
     </div>
     <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
 
-    <article v-for="k in kinds" :key="k.kind" class="flex flex-col gap-3 rounded-xl bg-surface p-4" :class="rows[k.kind].on ? 'ring-1 ring-gold/40' : ''">
+    <article v-for="k in kinds" :key="k.kind" class="flex flex-col gap-3 rounded-xl ui-card p-4" :class="rows[k.kind].on ? 'ring-1 ring-gold/40' : ''">
       <div class="flex items-center justify-between gap-3">
         <span class="flex items-center gap-2 font-bold"><span aria-hidden="true">{{ KIND[k.kind].icon }}</span>{{ $t(KIND[k.kind].title) }}</span>
         <UiToggle :id="`sc-${k.kind}`" tone="success" :label="KIND[k.kind].title" class="[&_label]:sr-only" :model-value="rows[k.kind].on" @update:model-value="(on: boolean) => (rows[k.kind].on = on)" />

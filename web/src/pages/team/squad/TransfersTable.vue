@@ -13,8 +13,8 @@ const when = (iso: string) => {
 </script>
 
 <template>
-  <p v-if="!transfers.length" class="rounded-2xl bg-surface px-4 py-10 text-center text-text-muted">{{ $t('لا انتقالات في الدوري هذا الموسم بعد.') }}</p>
-  <div v-else class="overflow-x-auto rounded-2xl bg-surface">
+  <p v-if="!transfers.length" class="rounded-2xl ui-card px-4 py-10 text-center text-text-muted">{{ $t('لا انتقالات في الدوري هذا الموسم بعد.') }}</p>
+  <div v-else class="overflow-x-auto rounded-2xl ui-card">
     <table class="w-full min-w-[46rem] border-collapse text-sm">
       <thead>
         <tr class="head">
@@ -43,6 +43,6 @@ const when = (iso: string) => {
 </template>
 
 <style scoped>
-.head { background: linear-gradient(90deg, var(--color-brand-dark), var(--color-brand)); color: #fff; font-size: 0.75rem; }
+.head { background: linear-gradient(90deg, var(--color-brand-dark), var(--color-brand)); color: var(--color-broadcast-white); font-size: 0.75rem; }
 .mine { background: color-mix(in srgb, var(--color-gold) 12%, transparent); }
 </style>

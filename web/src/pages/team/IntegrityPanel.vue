@@ -2,6 +2,7 @@
 // The integrity system [X28], only in a league whose owner switched it on: paying the next match's referee
 // (the VAR catches it one time in five), a security check that shows the spies on me and turning one into a
 // double agent, and taking my spy's proof of a bribe to the FA. A market ban shows here while it lasts.
+import UiButton from '../../components/ui/UiButton.vue'
 import { intlLocale } from '../../lib/i18n'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -52,7 +53,7 @@ const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
 </script>
 
 <template>
-  <section v-if="view?.on" class="flex flex-col gap-3 rounded-xl border border-live/30 bg-surface p-4" aria-labelledby="h-integrity">
+  <section v-if="view?.on" class="flex flex-col gap-3 rounded-xl border border-live/30 ui-card p-4" aria-labelledby="h-integrity">
     <div>
       <h2 id="h-integrity" class="font-display text-xl font-extrabold">{{ $t('ما وراء الكواليس') }}</h2>
     </div>
@@ -81,9 +82,9 @@ const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
           <div v-for="s in view.spies_on_me" :key="s.id" class="flex items-center justify-between gap-2 text-sm">
             <span>{{ $t('جاسوس من') }} <b>{{ s.club }}</b></span>
             <span v-if="s.turned" class="text-gold">{{ $t('مزدوج ✓') }}</span>
-            <button v-else type="button" class="h-touch rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-50" :disabled="busy" @click="turn(s.id)">
+            <UiButton size="sm" v-else :disabled="busy" @click="turn(s.id)">
               {{ $t('اجعله مزدوجاً ·') }} <PriceTag :amount="view.double_agent.amount" :currency="view.double_agent.currency" />
-            </button>
+            </UiButton>
           </div>
         </template>
         <template v-else>

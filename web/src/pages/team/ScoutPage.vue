@@ -2,6 +2,7 @@
 // The scout (Sprint 26 W1, docs/features/scout.md): the criteria with the cost and the time, the search under
 // way with its countdown, and the reports with their players to buy. No draft of its own: the market's table
 // and the design system's cards; the market's header links here ("اطلب تقرير الكشاف").
+import UiButton from '../../components/ui/UiButton.vue'
 import UiSelect from '../../components/ui/UiSelect.vue'
 import { uuid } from '../../lib/uuid'
 import { t } from '../../lib/i18n'
@@ -96,17 +97,17 @@ onBeforeUnmount(() => clearInterval(tick))
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
+    <p v-else-if="!leagueId" class="rounded-xl ui-card p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="v">
-      <section v-if="searching" :aria-label="$t('الكشاف يبحث')" class="flex flex-wrap items-center gap-4 rounded-xl border border-gold/40 bg-surface p-4">
+      <section v-if="searching" :aria-label="$t('الكشاف يبحث')" class="flex flex-wrap items-center gap-4 rounded-xl border border-gold/40 ui-card p-4">
         <div class="flex-1"><b class="block">{{ $t('الكشاف يبحث') }}</b><span class="text-sm text-text-muted">{{ describe(searching.criteria) }}</span></div>
         <span class="font-numbers text-3xl text-gold" dir="ltr" aria-live="off">{{ left }}</span>
         <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy('scout:finish')" @click="finish">
           {{ $t('أنهِ الآن ·') }} <PriceTag :amount="wallet.price('finish_scout')" currency="coins" /></button>
       </section>
 
-      <section v-else :aria-label="$t('طلب جديد')" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
+      <section v-else :aria-label="$t('طلب جديد')" class="flex flex-col gap-3 rounded-xl ui-card p-4">
         <h2 class="font-display text-lg font-bold">{{ $t('طلب جديد') }}</h2>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <!-- [X61] Headless UI's Listbox and Combobox in place of the browser's selects. -->
@@ -130,12 +131,12 @@ onBeforeUnmount(() => clearInterval(tick))
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-          <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy('scout:ask') || v.balance < v.cost" @click="ask">{{ busy('scout:ask') ? '...' : $t('اطلب التقرير ·') }} <span class="font-numbers" dir="ltr">{{ money(v.cost) }}</span></button>
+          <UiButton :disabled="busy('scout:ask') || v.balance < v.cost" @click="ask">{{ busy('scout:ask') ? '...' : $t('اطلب التقرير ·') }} <span class="font-numbers" dir="ltr">{{ money(v.cost) }}</span></UiButton>
           <span class="text-sm text-text-muted">{{ $t('رحلة {v0} ساعة، ثم 5 خيارات مطابقة لطلبك كرسالة، ولو لم يجد أحداً يُرد لك المبلغ.', { v0: v.hours }) }}</span>
         </div>
       </section>
 
-      <section v-for="r in v.requests.filter((r) => r.status !== 'searching')" :key="r.id" :aria-label="$t('تقرير الكشاف')" class="flex flex-col gap-2 rounded-xl bg-surface p-3">
+      <section v-for="r in v.requests.filter((r) => r.status !== 'searching')" :key="r.id" :aria-label="$t('تقرير الكشاف')" class="flex flex-col gap-2 rounded-xl ui-card p-3">
         <div class="flex flex-wrap items-center gap-2 px-1"><b>{{ $t('تقرير') }}</b><span class="text-sm text-text-muted">{{ describe(r.criteria) }}</span><span class="ms-auto font-numbers text-sm text-text-muted" dir="ltr">−{{ count(r.cost) }}</span></div>
         <p v-if="r.status === 'empty'" class="px-1 text-sm text-text-muted">{{ $t('لم يجد أحداً بهذه المعايير، فرُد المبلغ.') }}</p>
         <div v-for="p in r.players" :key="p.id" class="flex items-center gap-3 rounded-lg bg-surface-sunk px-2 py-2">
@@ -143,7 +144,7 @@ onBeforeUnmount(() => clearInterval(tick))
           <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(p.name) }}</b><span class="text-xs text-text-muted">{{ $t('{v0} · {v1} سنة · {v2} · إمكانية {v3}', { v0: p.position, v1: p.age, v2: $nm(p.nationality), v3: p.potential }) }}</span></span>
           <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
           <span class="w-20 text-end font-numbers text-lg" dir="ltr">{{ money(p.value) }}</span>
-          <button v-if="p.state === 'available'" type="button" class="h-touch min-w-20 rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="busy(`scout:buy:${p.id}`) || (p.price ?? 0) > v.balance" @click="buy(p)">{{ busy(`scout:buy:${p.id}`) ? '...' : $t('شراء') }}</button>
+          <UiButton size="sm" v-if="p.state === 'available'" class="min-w-20" :disabled="busy(`scout:buy:${p.id}`) || (p.price ?? 0) > v.balance" @click="buy(p)">{{ busy(`scout:buy:${p.id}`) ? '...' : $t('شراء') }}</UiButton>
           <span v-else class="min-w-20 text-center text-sm text-text-muted">{{ p.state === 'mine' ? $t('في فريقك') : $t('ذهب') }}</span>
         </div>
       </section>

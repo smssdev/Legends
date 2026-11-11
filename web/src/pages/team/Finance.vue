@@ -76,7 +76,7 @@ onMounted(load)
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
+    <p v-else-if="!leagueId" class="rounded-xl ui-card p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="f">
       <div v-if="!f.can_spend" class="rounded-xl border border-warning/50 bg-warning/10 p-4 text-sm" role="alert">
@@ -84,7 +84,7 @@ onMounted(load)
       </div>
 
       <section :aria-label="$t('الملخص')" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <div v-for="k in kpis" :key="k.label" class="flex flex-col gap-1.5 rounded-xl border border-text/10 bg-surface p-4">
+        <div v-for="k in kpis" :key="k.label" class="flex flex-col gap-1.5 rounded-xl border border-text/10 ui-card p-4">
           <span class="text-sm text-text-muted">{{ $t(k.label) }}</span>
           <span class="font-numbers text-3xl leading-none" :class="k.tone" dir="ltr">{{ k.v }}</span>
           <span class="text-xs text-text-muted">{{ $t(k.sub) }}</span>
@@ -93,7 +93,7 @@ onMounted(load)
 
       <div class="flex flex-wrap items-start gap-5">
         <div class="order-2 flex min-w-0 flex-[3_1_520px] flex-col gap-5 lg:order-none">
-          <section v-if="bars.length" :aria-label="$t('الدخل والمصاريف لكل جولة')" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
+          <section v-if="bars.length" :aria-label="$t('الدخل والمصاريف لكل جولة')" class="flex flex-col gap-3 rounded-xl ui-card p-4">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <h2 class="font-display text-lg font-bold">{{ $t('الدخل والمصاريف لكل جولة') }}</h2>
               <div class="flex gap-3 text-xs text-text-soft"><span class="flex items-center gap-1.5"><i class="size-2.5 rounded-sm bg-success" />{{ $t('دخل') }}</span><span class="flex items-center gap-1.5"><i class="size-2.5 rounded-sm bg-warning" />{{ $t('مصاريف') }}</span></div>
@@ -107,7 +107,7 @@ onMounted(load)
             <div class="flex gap-2 px-1"><span v-for="b in bars" :key="b.round" class="flex-1 text-center font-numbers text-xs text-text-muted">{{ $t('ج{v0}', { v0: b.round }) }}</span></div>
           </section>
 
-          <section :aria-label="$t('سجل الحركات')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+          <section :aria-label="$t('سجل الحركات')" class="flex flex-col gap-2 rounded-xl ui-card p-4">
             <div class="flex items-center justify-between"><h2 class="font-display text-lg font-bold">{{ $t('سجل الحركات') }}</h2><span class="text-xs text-text-muted">{{ $t('لا يُعدَّل · الرصيد = مجموع الحركات') }}</span></div>
             <div class="overflow-x-auto">
               <table class="w-full text-sm">
@@ -126,7 +126,7 @@ onMounted(load)
         </div>
 
         <aside class="order-1 flex min-w-0 flex-[1_1_320px] flex-col gap-4 lg:order-none">
-          <section :aria-label="$t('رعاة القطاعات')" class="flex flex-col gap-2.5 rounded-xl bg-surface p-4">
+          <section :aria-label="$t('رعاة القطاعات')" class="flex flex-col gap-2.5 rounded-xl ui-card p-4">
             <div class="flex items-center justify-between"><h2 class="font-display text-lg font-bold">{{ $t('رعاة القطاعات') }}</h2><span class="text-xs text-text-muted">{{ $t('لكل مباراة على أرضك') }}</span></div>
             <div v-for="s in f.sponsors" :key="s.sector" class="flex flex-col gap-2 rounded-lg border p-3" :class="s.chosen ? 'border-text/10 bg-surface-sunk' : 'border-dashed border-gold/50 bg-surface-sunk'">
               <div class="flex items-center gap-3">
@@ -148,7 +148,7 @@ onMounted(load)
             </div>
           </section>
 
-          <section :aria-label="$t('التذاكر')" class="flex flex-col gap-2 rounded-xl bg-surface p-4 text-sm">
+          <section :aria-label="$t('التذاكر')" class="flex flex-col gap-2 rounded-xl ui-card p-4 text-sm">
             <h2 class="font-display text-lg font-bold">{{ $t('التذاكر') }}</h2>
             <div class="flex justify-between"><span class="text-text-muted">{{ $t('المقاعد') }}</span><b class="font-numbers" dir="ltr">{{ count(f.stadium.capacity) }}</b></div>
             <div class="flex justify-between"><span class="text-text-muted">{{ $t('الحضور المتوقع') }}</span><b class="font-numbers" dir="ltr">{{ Math.round(f.stadium.attendance_bp / 100) }}%</b></div>

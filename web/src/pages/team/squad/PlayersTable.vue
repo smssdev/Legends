@@ -25,7 +25,7 @@ const wide = (c: string) => (c === 'الجنسية' ? 'max-xl:hidden' : c === '�
 </script>
 
 <template>
-  <div class="squad-table relative overflow-auto overscroll-contain rounded-xl bg-surface">
+  <div class="squad-table relative overflow-auto overscroll-contain rounded-xl ui-card">
     <table class="w-full border-collapse text-body">
       <tbody v-for="grp in groups" :key="grp.line">
         <tr class="line-head" :style="{ '--line': `var(--color-line-${grp.line})`, '--line-fg': `var(--color-line-${grp.line}-fg)` }">
@@ -74,8 +74,8 @@ const wide = (c: string) => (c === 'الجنسية' ? 'max-xl:hidden' : c === '�
 <style scoped>
 /* A line's header: its colour, the columns' names on it, held at the top while its line scrolls by. */
 .line-head th { position: sticky; top: 0; z-index: 1; background: var(--line); }
-.line-head { background: linear-gradient(90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); color: var(--line-fg); }
-:dir(rtl) .line-head { background: linear-gradient(-90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); }
+.line-head { background: linear-gradient(90deg, color-mix(in srgb, var(--line) 82%, var(--color-shade)), var(--line)); color: var(--line-fg); }
+:dir(rtl) .line-head { background: linear-gradient(-90deg, color-mix(in srgb, var(--line) 82%, var(--color-shade)), var(--line)); }
 /* The eleven: a gold thread at the start of the row. */
 .starter td:first-child { box-shadow: inset 3px 0 0 var(--color-gold); }
 :dir(rtl) .starter td:first-child { box-shadow: inset -3px 0 0 var(--color-gold); }

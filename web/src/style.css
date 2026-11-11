@@ -500,3 +500,23 @@ input[type="radio"] {
 @media (max-height: 520px) and (min-width: 768px) {
   .ui-nav-item { min-height: var(--spacing-touch); font-size: var(--text-caption); padding: 0 0.6rem; }
 }
+
+/* [Sprint 56 W10] A choice among a few (an hour, a line, an order, an amount, a view): the component's own look, quiet
+   until chosen, gold once chosen (emerald with .brand). The state comes from the button's own aria (pressed, selected,
+   checked) or .is-on, so a screen never paints a chosen button itself (scripts/design.mjs). */
+.ui-choice {
+  display: inline-flex;
+  min-height: var(--spacing-touch);
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  color: var(--color-text-soft);
+  background: var(--color-surface-raised);
+  transition: background-color var(--duration-fast) var(--ease-soft), color var(--duration-fast) var(--ease-soft);
+}
+.ui-choice:hover { color: var(--color-text); }
+.ui-choice.is-on, .ui-choice[aria-pressed='true'], .ui-choice[aria-selected='true'], .ui-choice[aria-checked='true'] { color: var(--color-on-gold); background: var(--color-gold); }
+.ui-choice.brand.is-on, .ui-choice.brand[aria-pressed='true'], .ui-choice.brand[aria-selected='true'], .ui-choice.brand[aria-checked='true'] { color: var(--color-broadcast-white); background: var(--color-brand); }
+.ui-choice:disabled { opacity: 0.4; }

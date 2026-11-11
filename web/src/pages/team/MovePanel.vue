@@ -2,6 +2,7 @@
 // [Sprint 27 B2, the owner's request 2026-10-30] Moving the next match on its own day: the hours the server allows now
 // as chips (earlier or later), one tap to ask and one to confirm; the other coach sees the request here and accepts or
 // declines it; whoever asked may take it back. Every rule is the server's (App\League\FixtureMoves).
+import UiButton from '../../components/ui/UiButton.vue'
 import { computed, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -41,7 +42,7 @@ const cancel = () => run(() => api.DELETE('/leagues/{league}/team/moves/{move}',
 </script>
 
 <template>
-  <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" :aria-label="$t('موعد المباراة')">
+  <section class="flex flex-col gap-3 rounded-xl ui-card p-4" :aria-label="$t('موعد المباراة')">
     <!-- The other coach asks me. -->
     <template v-if="move.pending && !move.pending.mine">
       <h2 class="font-display text-lg font-bold">{{ $t('طلب تغيير الموعد') }}</h2>
@@ -68,16 +69,15 @@ const cancel = () => run(() => api.DELETE('/leagues/{league}/team/moves/{move}',
               v-for="h in list"
               :key="h"
               type="button"
-              class="h-touch min-w-20 rounded-lg px-3 font-numbers font-bold"
-              :class="chosen === h ? 'bg-gold text-on-gold' : 'bg-surface-raised'"
+              class="ui-choice min-w-20 px-3 font-numbers"
               :aria-pressed="chosen === h"
               @click="chosen = chosen === h ? null : h"
             >{{ time(at(h)) }}</button>
           </div>
         </div>
-        <button v-if="chosen !== null" type="button" class="h-12 rounded-lg bg-brand font-display font-bold text-white disabled:opacity-40" :disabled="busy" @click="ask">
+        <UiButton variant="brand" v-if="chosen !== null" :disabled="busy" @click="ask">
           {{ $t('اطلب النقل إلى {v0}', { v0: time(at(chosen)) }) }}
-        </button>
+        </UiButton>
       </template>
     </template>
     <p v-if="message" class="text-sm text-text-soft" role="status">{{ $t(message) }}</p>

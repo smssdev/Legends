@@ -2,6 +2,7 @@
 // [Sprint 48 T4] The specialists (the owner's screenshots, our own look): the captain and the penalty, free-kick and
 // corner takers, a big card each with the player, his strength and his skill at it, and «تبديل اللاعب» to choose from
 // the whole squad (or leave it to the server: the best of the eleven). Was a row at the foot of the lineup (Sprint 27 W5).
+import UiButton from '../../components/ui/UiButton.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import UiDialog from '../../components/ui/UiDialog.vue'
@@ -45,7 +46,7 @@ async function setTaker(role: Role, value: number | null) {
 <template>
   <div class="flex flex-col gap-4 pb-6">
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <div v-else-if="loaded && !team" class="rounded-xl bg-surface p-8 text-center">
+    <div v-else-if="loaded && !team" class="rounded-xl ui-card p-8 text-center">
       <p class="mb-3 text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
       <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
     </div>
@@ -87,7 +88,7 @@ async function setTaker(role: Role, value: number | null) {
             <p v-else class="px-4 py-16 text-center text-white/80">{{ $t('لا أحد بعد') }}</p>
           </div>
           </div>
-          <button type="button" class="h-12 w-full max-w-[15rem] rounded-xl bg-brand font-display font-extrabold text-white shadow hover:bg-brand-dark" @click="choosing = r">{{ $t('تبديل اللاعب') }}</button>
+          <UiButton variant="brand" block class="max-w-[15rem]" @click="choosing = r">{{ $t('تبديل اللاعب') }}</UiButton>
         </section>
       </div>
     </template>
@@ -117,7 +118,7 @@ async function setTaker(role: Role, value: number | null) {
 <style scoped>
 /* A tall card cut like a shield: the night's blue with a floodlight at its top and a silver rim; gold when chosen. */
 .taker-card {
-  color: #fff;
+  color: var(--color-broadcast-white);
   clip-path: polygon(0 6%, 50% 0, 100% 6%, 100% 86%, 50% 100%, 0 86%);
   background:
     radial-gradient(90% 45% at 50% 0%, rgb(255 255 255 / 0.28), transparent 70%),

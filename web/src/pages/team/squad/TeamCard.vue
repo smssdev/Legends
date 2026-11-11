@@ -34,7 +34,7 @@ const moraleColor = (v: number) => (v >= 75 ? 'var(--color-success)' : v < 50 ? 
       </div>
       <!-- The eleven's average in the big dial. -->
       <div v-if="average" class="grid size-20 shrink-0 place-items-center rounded-full border-4 border-gold bg-bg-deep text-center shadow-lg" role="meter" :aria-label="$t('معدل الفريق')" :aria-valuenow="average" aria-valuemin="0" aria-valuemax="99">
-        <span class="leading-none"><small class="block text-[10px] font-bold text-white/75">{{ $t('المعدل') }}</small><b class="font-numbers text-3xl text-gold">{{ average }}</b></span>
+        <span class="leading-none"><small class="block text-caption font-bold text-white/75">{{ $t('المعدل') }}</small><b class="font-numbers text-3xl text-gold">{{ average }}</b></span>
       </div>
     </header>
 
@@ -86,8 +86,8 @@ const moraleColor = (v: number) => (v >= 75 ? 'var(--color-success)' : v < 50 ? 
 /* A slab of pitch seen a little from above: stripes and a chalk line round it. */
 .pitch-slab {
   background: repeating-linear-gradient(90deg, var(--color-pitch) 0 22px, var(--color-pitch-dark) 22px 44px);
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, #fff 35%, transparent), 0 10px 0 -4px color-mix(in srgb, var(--color-pitch-dark) 70%, #000);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-broadcast-white) 35%, transparent), 0 10px 0 -4px color-mix(in srgb, var(--color-pitch-dark) 70%, var(--color-shade));
   transform: perspective(500px) rotateX(14deg);
 }
-.pitch-slab :deep(span.text-xs) { color: #fff; text-shadow: 0 1px 2px #0008; }
+.pitch-slab :deep(span.text-xs) { color: var(--color-broadcast-white); text-shadow: 0 1px 2px color-mix(in srgb, var(--color-shade) 53%, transparent); }
 </style>

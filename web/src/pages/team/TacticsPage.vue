@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AsyncState from '../../components/ui/AsyncState.vue'
 import { REFEREE } from '../../lib/format'
 // Tactics (Sprint 17 W1). [Sprint 20 S1] Laid out as the owner's picture, in our colours and drawings: the match on
 // top (both sides, their strength and last five, the formations and the referee), then a board of cards: the three
@@ -144,10 +145,8 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
 
 <template>
   <div class="tactics-root">
-    <div v-if="loaded && !leagueId" class="rounded-xl bg-surface p-8 text-center">
-      <p class="mb-3 text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
-      <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
-    </div>
+    <!-- [Sprint 56 W11] The states as every screen's. -->
+    <AsyncState v-if="loaded && !leagueId" empty empty-icon="tactics" empty-title="ليس لديك فريق بعد." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" />
     <template v-else-if="t">
       <h1 class="sr-only">{{ $t('التكتيك') }}</h1>
       <!-- [Sprint 56 W4] Tactics.html: the pitch in the same place and at the same size as the lineup's, so moving between
@@ -156,25 +155,25 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       <div class="tactics">
         <section class="tactics-side" :aria-label="$t('خطة اللعب')">
           <div class="flex flex-col gap-3">
-            <section class="flex flex-col gap-2 rounded-xl border border-text/10 bg-surface p-3">
+            <section class="flex flex-col gap-2 rounded-xl border border-text/10 ui-card p-3">
               <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring">{{ $t('خطة اللعب') }}</span>
               <TacticCycler v-model="t.plan" :options="PLAN_OPTS" :label="$t('خطة اللعب')" />
               <PlanPitch :plan="t.plan" />
             </section>
-            <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 bg-surface p-3">
+            <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 ui-card p-3">
               <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('قطع الكرة') }}</span>
               <TacticCycler v-model="t.tackling" :options="TACKLING_OPTS" :label="$t('قطع الكرة')" class="w-full" />
               <TacticIcon :name="`tackle_${t.tackling}`" :active="true" class="!size-20 flex-1" />
             </section>
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 bg-surface p-3">
+            <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 ui-card p-3">
               <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('مصيدة التسلل') }}</span>
               <TacticCycler v-model="t.trap" :options="TRAP_OPTS" :label="$t('مصيدة التسلل')" class="w-full" />
               <TacticIcon :name="t.trap === 1 ? 'trap_on' : 'trap_off'" :active="true" class="!size-14" />
               <span class="text-xs text-text-muted">{{ $t('يراها الخصم بعد القفل') }}</span>
             </section>
-            <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 bg-surface p-3">
+            <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 ui-card p-3">
               <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('الرقابة') }}</span>
               <TacticCycler v-model="t.marking" :options="MARKING_OPTS" :label="$t('الرقابة')" class="w-full" />
               <TacticIcon :name="t.marking" :active="true" class="!size-14" />
@@ -193,7 +192,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
             <span role="status">{{ saving || dirty ? $t('يحفظ…') : $t('محفوظ ✓') }}</span>
           </div>
           <p v-if="message" class="rounded-lg bg-surface-raised px-3 py-2 text-caption" role="status">{{ $t(message) }}</p>
-          <section v-for="sl in SLIDERS" :key="sl.key" class="flex flex-col gap-2 rounded-xl border border-text/10 bg-surface p-4">
+          <section v-for="sl in SLIDERS" :key="sl.key" class="flex flex-col gap-2 rounded-xl border border-text/10 ui-card p-4">
             <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring"><label :for="`t-${sl.key}`">{{ $t(sl.label) }}</label></span>
             <b class="text-center font-display text-lg">{{ $t(band(sl.key, t[sl.key])) }}</b>
             <div class="flex items-center gap-3">
@@ -202,7 +201,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
               <UiSlider :id="`t-${sl.key}`" v-model="t[sl.key]" :step="5" :label="sl.label" :value-text="$t(band(sl.key, t[sl.key]))" class="flex-1" />
             </div>
           </section>
-          <section class="flex flex-col gap-3 rounded-xl border border-text/10 bg-surface p-4">
+          <section class="flex flex-col gap-3 rounded-xl border border-text/10 ui-card p-4">
             <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring">{{ $t('التمركز') }}</span>
             <div class="flex min-w-0 flex-col gap-2">
               <div class="contents">
@@ -213,7 +212,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
               </div>
             </div>
           </section>
-      <section class="flex flex-col gap-2 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-tips">
+      <section class="flex flex-col gap-2 rounded-xl border border-gold/30 ui-card p-4" aria-labelledby="h-tips">
         <div class="flex flex-wrap items-center justify-between gap-x-2">
           <h2 id="h-tips" class="text-sm text-text-muted">{{ $t('الأثر المتوقع في المباراة{v0}', { v0: dirty ? $t(' (يتحدث بعد الحفظ)') : '' }) }}</h2>
         </div>
@@ -222,7 +221,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         </ul>
       </section>
       <!-- Quick presets [UP16]: each sets the knobs above. -->
-      <details class="rounded-xl bg-surface p-4">
+      <details class="rounded-xl ui-card p-4">
         <summary class="min-h-touch cursor-pointer content-center font-bold">{{ $t('قوالب سريعة') }}</summary>
         <div class="mt-3 flex flex-col gap-4">
       <fieldset class="flex flex-col gap-2">
@@ -255,7 +254,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         </div>
       </details>
       <!-- [Sprint 21 E5.4] The tactics book: each plan against each defensive shape, and the answer to each shape. -->
-      <section v-if="book" class="flex flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-book">
+      <section v-if="book" class="flex flex-col gap-3 rounded-xl border border-gold/30 ui-card p-4" aria-labelledby="h-book">
         <button type="button" class="flex min-h-touch items-center justify-between gap-2 text-start" :aria-expanded="bookOpen" aria-controls="book-body" @click="bookOpen = !bookOpen">
           <span>
             <h2 id="h-book" class="font-display text-xl font-extrabold">{{ $t('كتاب التكتيك') }}</h2>
@@ -301,7 +300,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         </section>
       </div>
     </template>
-    <p v-else class="text-text-muted">{{ message || $t('جارٍ التحميل…') }}</p>
+    <AsyncState v-else :loading="!loaded" :error="loaded ? message || null : null" skeleton="card" :rows="3" @retry="load" />
   </div>
 </template>
 

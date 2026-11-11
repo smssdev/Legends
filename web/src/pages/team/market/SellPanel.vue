@@ -4,6 +4,7 @@
 // him at his value; or at my price on a slider between his floor and his cap, with the server's estimate of the wait.
 // Prices, fees and limits come from the API (GET /market's `mine`); buying stays in the market only.
 // [X84] A player is listed once: once listed, the panel offers only withdraw him (back to the choices) or keep him.
+import UiButton from '../../../components/ui/UiButton.vue'
 import { computed, ref, watch } from 'vue'
 import { uuid } from '../../../lib/uuid'
 import { act, busy as isBusy } from '../../../lib/action'
@@ -100,7 +101,7 @@ const unlist = () => {
       </div>
       <div class="flex justify-between text-xs text-text-muted" dir="ltr"><span class="font-numbers">{{ money(player.floor) }}</span><span class="font-numbers">{{ money(player.cap) }}</span></div>
       <div class="flex flex-wrap items-center gap-2">
-        <button type="submit" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy || !quote?.ok">{{ $t('اعرضه بهذا السعر') }}</button>
+        <UiButton size="sm" type="submit" :disabled="busy || !quote?.ok">{{ $t('اعرضه بهذا السعر') }}</UiButton>
         <span v-if="quote" class="text-xs" :class="quote.ok ? 'text-text-muted' : 'text-danger'">{{ quote.ok ? $t('يُباع خلال {v0}', { v0: hours(quote.wait_hours) }) : $t('خارج حدود سعره') }}</span>
       </div>
     </form>

@@ -13,8 +13,8 @@ const r1 = (v: number) => (v / 100).toFixed(1)
 </script>
 
 <template>
-  <p v-if="!season.rounds" class="rounded-2xl bg-surface px-4 py-10 text-center text-text-muted">{{ $t('لم تُلعب جولة في الدوري بعد: التقييمات تظهر هنا بعد أول مباراة.') }}</p>
-  <div v-else class="overflow-x-auto rounded-2xl bg-surface">
+  <p v-if="!season.rounds" class="rounded-2xl ui-card px-4 py-10 text-center text-text-muted">{{ $t('لم تُلعب جولة في الدوري بعد: التقييمات تظهر هنا بعد أول مباراة.') }}</p>
+  <div v-else class="overflow-x-auto rounded-2xl ui-card">
     <table class="w-full border-collapse text-sm" :style="{ minWidth: `${14 + rounds.length * 3 + 4}rem` }">
       <tbody v-for="grp in groups" :key="grp.line">
         <tr class="line-head" :style="{ '--line': `var(--color-line-${grp.line})`, '--line-fg': `var(--color-line-${grp.line}-fg)` }">
@@ -38,7 +38,7 @@ const r1 = (v: number) => (v / 100).toFixed(1)
 </template>
 
 <style scoped>
-.line-head { background: linear-gradient(90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); color: var(--line-fg); }
-:dir(rtl) .line-head { background: linear-gradient(-90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); }
-.line-head th.sticky { background: color-mix(in srgb, var(--line) 82%, #000); }
+.line-head { background: linear-gradient(90deg, color-mix(in srgb, var(--line) 82%, var(--color-shade)), var(--line)); color: var(--line-fg); }
+:dir(rtl) .line-head { background: linear-gradient(-90deg, color-mix(in srgb, var(--line) 82%, var(--color-shade)), var(--line)); }
+.line-head th.sticky { background: color-mix(in srgb, var(--line) 82%, var(--color-shade)); }
 </style>

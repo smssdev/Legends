@@ -32,7 +32,7 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
 </script>
 
 <template>
-  <section v-if="data && data.fixtures.length" class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-tickets">
+  <section v-if="data && data.fixtures.length" class="flex flex-col gap-3 rounded-xl ui-card p-4" aria-labelledby="h-tickets">
     <div>
       <h2 id="h-tickets" class="font-display text-xl font-extrabold">{{ $t('التذاكر') }}</h2>
       <p class="text-sm text-text-muted">{{ $t('المعنويات') }} <b class="font-numbers text-gold">+{{ data.boost }}</b> · <span dir="ltr">{{ money(data.price) }}</span></p>

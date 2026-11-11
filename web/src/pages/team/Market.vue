@@ -4,6 +4,7 @@
 // few hours with a countdown, each player with his seller: a club and its coach, a computer's club, or his own club
 // outside the league. A tap opens his card and the deal: the price and 1 or 2 coins to register it, or, short of cash
 // with half the price at least, the cash and coins for the rest. Prices and rules come from the API.
+import AsyncState from '../../components/ui/AsyncState.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import { uuid } from '../../lib/uuid'
 import { useEscape } from '../../lib/escape'
@@ -201,9 +202,10 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
   <div class="market">
     <h1 class="sr-only">{{ $t('السوق') }}</h1>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
+    <!-- [Sprint 56 W11] The states as every screen's: a skeleton in the list's shape, the error with a retry, no team. -->
+    <p v-if="error && loaded && m" class="rounded-lg bg-live/15 px-4 py-2 text-caption text-danger" role="alert">{{ $t(error) }}</p>
+    <AsyncState v-if="!loaded || (!m && error)" :loading="!loaded" :error="error || null" skeleton="row" :rows="6" @retry="load" />
+    <AsyncState v-else-if="!leagueId" empty empty-icon="market" empty-title="ليس لديك فريق بعد." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" />
 
     <template v-else-if="m">
       <UiTabs v-model="tab" :items="tabs.map((t) => ({ key: t.id, label: t.label, n: t.n }))" label="مصادر اللاعبين" size="sm" class="max-w-full self-start" />
@@ -214,7 +216,7 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
       <AcademyPanel v-else-if="tab === 'academy' && leagueId" :league-id="leagueId" @changed="load" />
       <ScoutPage v-else-if="tab === 'scout'" />
 
-      <section v-else-if="tab === 'done'" :aria-label="$t('الانتقالات التي تمت')" class="rounded-xl bg-surface p-2">
+      <section v-else-if="tab === 'done'" :aria-label="$t('الانتقالات التي تمت')" class="rounded-xl ui-card p-2">
         <EmptyState v-if="!done.length" icon="market" title="لا انتقالات بعد هذا الموسم." text="كل صفقة تتم في دوريك تظهر هنا." />
         <ul class="flex flex-col">
           <li v-for="(t, i) in done" :key="i" class="v-row flex flex-wrap items-center gap-2 border-t border-text/5 px-2 py-2 text-sm first:border-0">
@@ -259,14 +261,14 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
         </UiDialog>
         <!-- The comparison under the filters, never over the Assistant Coach's button. -->
         <div v-if="comparing.length" class="flex items-center gap-2">
-          <button type="button" class="flex h-12 min-w-0 flex-1 items-center justify-center rounded-pill px-4 font-bold" :class="comparing.length === 2 ? 'bg-gold text-on-gold' : 'bg-surface text-text-muted'"
+          <UiButton :variant="comparing.length === 2 ? 'primary' : 'quiet'" class="min-w-0 flex-1"
             :disabled="comparing.length < 2" @click="compareOpen = true">
             <span class="truncate">{{ comparing.length === 2 ? $t('قارن بين {v0} و{v1}', { v0: comparing[0].name, v1: comparing[1].name }) : $t('اختر لاعباً آخر للمقارنة مع {v0}', { v0: comparing[0].name }) }}</span>
-          </button>
+          </UiButton>
           <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface" :aria-label="$t('ابدأ مقارنة جديدة')" @click="comparing = []">✕</button>
         </div>
-        <section :aria-label="$t('قائمة الانتقالات')" class="market-list rounded-xl bg-surface p-2">
-          <p v-if="!list" class="p-4 text-sm text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+        <section :aria-label="$t('قائمة الانتقالات')" class="market-list rounded-xl ui-card p-2">
+          <AsyncState v-if="!list" loading skeleton="row" :rows="5" />
           <p v-else-if="!list.players.length" class="p-4 text-sm text-text-muted">{{ $t('لا لاعبين في هذا المركز الآن.') }}</p>
           <p v-else-if="!shown.length" class="flex flex-wrap items-center gap-2 p-4 text-sm text-text-muted">{{ $t('لا لاعب يطابق البحث.') }}
             <button type="button" class="min-h-touch font-bold text-gold" @click="clearFilters">{{ $t('امسح البحث') }}</button></p>
@@ -309,11 +311,11 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
 
       <!-- The player's card and the deal. -->
       <UiDialog :open="!!picked" bare @close="picked = null"><template v-if="picked">
-        <div class="flex w-full max-w-md flex-col gap-3 rounded-2xl border border-gold/30 bg-surface p-4">
+        <div class="flex w-full max-w-md flex-col gap-3 rounded-2xl border border-gold/30 ui-card p-4">
           <PlayerTile :name="picked.name" :line="picked.line as Line" :position="picked.position" :overall="picked.overall" :value="picked.value" :price="picked.price"
             :attributes="picked.attributes" :status="$t('{v0} سنة · {v1}{v2}', { v0: picked.age, v1: picked.seller.club ? $nm(picked.seller.club) : '', v2: picked.seller.coach ? ' · ' + picked.seller.coach : '' })" status-tone="text-text-muted" />
           <template v-if="picked.seller.kind === 'coach'">
-            <button type="button" class="h-12 rounded-lg bg-gold font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null || !!list?.closed" @click="buy(false)">{{ $t('قدّم عرضاً بـ') }} <span dir="ltr" class="font-numbers">{{ money(picked.price) }}</span></button>
+            <UiButton :disabled="busy !== null || !!list?.closed" @click="buy(false)">{{ $t('قدّم عرضاً بـ') }} <span dir="ltr" class="font-numbers">{{ money(picked.price) }}</span></UiButton>
           </template>
           <template v-else-if="deal">
             <dl class="flex flex-col divide-y divide-text/5 text-sm">
@@ -322,10 +324,10 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
               <div v-if="deal.doc_coins" class="flex justify-between py-1.5"><dt class="text-text-muted">{{ $t('توثيق الصفقة') }}</dt><dd><img src="/brand/coin.svg" alt="" class="inline size-4" /> <span class="font-numbers">{{ deal.doc_coins }}</span></dd></div>
             </dl>
             <p v-if="deal.why" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="alert">{{ deal.why }}</p>
-            <button v-if="!deal.short" type="button" class="h-12 rounded-lg bg-brand font-bold text-white disabled:opacity-40" :disabled="busy !== null || !!list?.closed" @click="buy(false)">
-              {{ $t('شراء ·') }} <span dir="ltr" class="font-numbers">{{ money(deal.price) }}</span><template v-if="deal.doc_coins"> + <img src="/brand/coin.svg" alt="" class="inline size-4" /> {{ deal.doc_coins }}</template></button>
-            <button v-else-if="deal.compensate" type="button" class="h-12 rounded-lg bg-gold font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null || !!list?.closed" @click="buy(true)">
-              <span dir="ltr" class="font-numbers">{{ money(deal.compensate.cash) }}</span> + <img src="/brand/coin.svg" alt="" class="inline size-4" /> <span class="font-numbers">{{ deal.compensate.coins + deal.doc_coins }}</span> {{ $t('كوينز') }}</button>
+            <UiButton variant="brand" v-if="!deal.short" :disabled="busy !== null || !!list?.closed" @click="buy(false)">
+              {{ $t('شراء ·') }} <span dir="ltr" class="font-numbers">{{ money(deal.price) }}</span><template v-if="deal.doc_coins"> + <img src="/brand/coin.svg" alt="" class="inline size-4" /> {{ deal.doc_coins }}</template></UiButton>
+            <UiButton v-else-if="deal.compensate" :disabled="busy !== null || !!list?.closed" @click="buy(true)">
+              <span dir="ltr" class="font-numbers">{{ money(deal.compensate.cash) }}</span> + <img src="/brand/coin.svg" alt="" class="inline size-4" /> <span class="font-numbers">{{ deal.compensate.coins + deal.doc_coins }}</span> {{ $t('كوينز') }}</UiButton>
           </template>
           <button type="button" class="h-11 rounded-lg border border-gold/40 font-bold text-gold" @click="toggleCompare(picked)">
             {{ comparing.some((x) => x.id === picked!.id) ? $t('أزله من المقارنة') : $t('أضفه للمقارنة') }}</button>
@@ -355,16 +357,16 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
 
       <!-- The celebration. -->
       <div v-if="celebrate" class="fixed inset-0 z-50 flex items-center justify-center bg-bg-deep/85 p-4" role="alertdialog" :aria-label="$t('تمت الصفقة')" @click="celebrate = ''">
-        <div class="celebrate flex max-w-sm flex-col items-center gap-3 rounded-2xl border border-gold/50 bg-surface p-6 text-center">
+        <div class="celebrate flex max-w-sm flex-col items-center gap-3 rounded-2xl border border-gold/50 ui-card p-6 text-center">
           <span class="text-5xl" aria-hidden="true">🎉</span>
           <b class="font-display text-2xl text-gold"><bdi>{{ $nm(celebrate) }}</bdi></b>
           <p>{{ $t('تم شراء هذا اللاعب وإضافته للفريق بنجاح') }}</p>
-          <button type="button" class="h-12 rounded-lg bg-gold px-6 font-bold text-on-gold" @click="celebrate = ''">{{ $t('رائع') }}</button>
+          <UiButton @click="celebrate = ''">{{ $t('رائع') }}</UiButton>
         </div>
       </div>
 
       <!-- [X61] Its own tab only (it hung off the celebration's v-else, so it showed under every tab). -->
-      <section v-if="tab === 'sell'" :aria-label="$t('بيع لاعبيّ')" class="market-sell flex flex-col gap-2 rounded-xl bg-surface p-2">
+      <section v-if="tab === 'sell'" :aria-label="$t('بيع لاعبيّ')" class="market-sell flex flex-col gap-2 rounded-xl ui-card p-2">
         <!-- [Sprint 23] How many may be listed at once, and what outside buyers may still pay above the value this season. -->
         <p v-if="m.selling" class="flex flex-wrap gap-x-4 gap-y-1 px-2 pt-1 text-xs text-text-muted">
           <span>{{ $t('المعروضون: {v0} من {v1}', { v0: m.selling.listed, v1: m.selling.max_listings }) }}</span>
@@ -398,8 +400,8 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
 .market-body { position: relative; display: flex; flex: 1; min-height: 0; flex-direction: column; gap: var(--space-sm); overflow-y: auto; overscroll-behavior: contain; }
 .market-list { flex: 1; }
 .market-sell { position: relative; flex: 1; min-height: 0; overflow-y: auto; }
-.market-head { background: linear-gradient(90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); color: var(--line-fg); }
-:dir(rtl) .market-head { background: linear-gradient(-90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); }
+.market-head { background: linear-gradient(90deg, color-mix(in srgb, var(--line) 82%, var(--color-shade)), var(--line)); color: var(--line-fg); }
+:dir(rtl) .market-head { background: linear-gradient(-90deg, color-mix(in srgb, var(--line) 82%, var(--color-shade)), var(--line)); }
 /* [UP11] The deal done: the card pops in, on the GPU only. */
 .celebrate { animation: pop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1.2) both }
 @keyframes pop { from { transform: scale(0.8); opacity: 0 } to { transform: scale(1); opacity: 1 } }

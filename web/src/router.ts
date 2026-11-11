@@ -65,7 +65,7 @@ export const router = createRouter({
         { path: 'support', name: 'support', component: () => import('./pages/SupportPage.vue'), meta: { auth: true } },
         // [Sprint 28] The development ideas: suggestions, polls and the honour roll.
         { path: 'ideas', name: 'ideas', component: () => import('./pages/IdeasPage.vue'), meta: { auth: true } },
-        { path: 'fixtures', name: 'fixtures', component: () => import('./pages/leagues/FixturesPage.vue'), meta: { auth: true } },
+        { path: 'fixtures', name: 'fixtures', component: () => import('./pages/leagues/FixturesPage.vue'), meta: { auth: true, fit: true } },
         { path: 'league', name: 'league', redirect: '/leagues' },
         // Sprint 22: the inbox
         // [Sprint 29] The chat groups and the tournaments (the draw fills the screen, below).

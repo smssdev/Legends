@@ -123,8 +123,8 @@ function status(p: SquadPlayer) {
               <option v-for="c in others" :key="c.id" :value="c.id">{{ $nm(c.name) }}</option>
             </select>
           </label>
-          <div v-if="tab === 'players'" class="flex shrink-0 gap-1 rounded-xl bg-surface p-1 max-md:hidden" role="group" :aria-label="$t('طريقة العرض')">
-            <button v-for="[k, label, icon] in ([['list', 'جدول', 'M4 6h16M4 12h16M4 18h16'], ['cards', 'بطاقات', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z']] as const)" :key="k" type="button" class="grid size-touch place-items-center rounded-lg" :class="view === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="view === k" :aria-label="$t(label)" @click="setView(k)">
+          <div v-if="tab === 'players'" class="flex shrink-0 gap-1 rounded-xl ui-card p-1 max-md:hidden" role="group" :aria-label="$t('طريقة العرض')">
+            <button v-for="[k, label, icon] in ([['list', 'جدول', 'M4 6h16M4 12h16M4 18h16'], ['cards', 'بطاقات', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z']] as const)" :key="k" type="button" class="ui-choice size-touch" :aria-pressed="view === k" :aria-label="$t(label)" @click="setView(k)">
               <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path :d="icon" /></svg>
             </button>
           </div>

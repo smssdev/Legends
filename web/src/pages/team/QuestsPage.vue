@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // [Sprint 20 B5] The weekly quests (the owner's approved draft): five, renewed every Monday in Cairo, each with its
 // bar and reward; a finished one is claimed once. The big one pays the club's money.
+import UiButton from '../../components/ui/UiButton.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -57,11 +58,11 @@ async function claim(quest: View['quests'][number]['quest']) {
       </div>
       <span v-if="v" class="flex items-center gap-1 rounded-pill bg-gold px-3 py-1 text-sm font-bold text-on-gold"><img src="/brand/coin.svg" alt="" class="size-4" /><span class="font-numbers" dir="ltr">+{{ coins }}</span> {{ $t('كوينز') }}</span>
     </header>
-    <p v-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-center text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
+    <p v-if="loaded && !leagueId" class="rounded-xl ui-card p-6 text-center text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
     <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm text-warning" role="status">{{ $t(message) }}</p>
-    <div v-if="!v && leagueId" class="flex flex-col gap-2" aria-hidden="true"><div v-for="n in 5" :key="n" class="h-20 animate-pulse rounded-xl bg-surface" /></div>
+    <div v-if="!v && leagueId" class="flex flex-col gap-2" aria-hidden="true"><div v-for="n in 5" :key="n" class="h-20 animate-pulse rounded-xl ui-card" /></div>
     <ul v-else-if="v" class="flex flex-col gap-2">
-      <li v-for="q in v.quests" :key="q.quest" class="grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl bg-surface p-3" :class="q.quest === 'unbeaten' ? 'border border-gold/45' : ''">
+      <li v-for="q in v.quests" :key="q.quest" class="grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl ui-card p-3" :class="q.quest === 'unbeaten' ? 'border border-gold/45' : ''">
         <span class="grid size-10 place-items-center rounded-lg bg-surface-raised" :class="q.claimed ? 'text-success' : q.quest === 'unbeaten' ? 'text-gold' : ''"><Icon :name="(q.claimed ? 'todo' : QUEST[q.quest].icon) as never" :size="20" /></span>
         <span class="min-w-0">
           <b class="block text-sm">{{ $t(QUEST[q.quest].title) }}</b>
@@ -72,7 +73,7 @@ async function claim(quest: View['quests'][number]['quest']) {
           <!-- [X61] Each reward says its currency: coins (the wallet) or the club's money. -->
           <span v-if="q.reward.coins" class="flex items-center gap-1 rounded-pill bg-gold px-2 text-xs font-bold text-on-gold"><img src="/brand/coin.svg" alt="" class="size-3.5" /><span class="font-numbers" dir="ltr">{{ q.reward.coins }}</span> {{ $t('كوينز') }}</span>
           <span v-else class="flex items-center gap-1 rounded-pill bg-success/20 px-2 text-xs font-bold text-success"><span aria-hidden="true">💵</span><span class="font-numbers" dir="ltr">{{ money(q.reward.money ?? 0) }}</span> {{ $t('أموال النادي') }}</span>
-          <button v-if="q.complete && !q.claimed" type="button" class="h-10 rounded-lg bg-gold px-3 text-sm font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="claim(q.quest)">{{ $t('خذها') }}</button>
+          <UiButton size="sm" v-if="q.complete && !q.claimed" :disabled="busy" @click="claim(q.quest)">{{ $t('خذها') }}</UiButton>
           <span v-else-if="q.claimed" class="text-xs text-success">{{ $t('أُخذت') }}</span>
         </span>
       </li>

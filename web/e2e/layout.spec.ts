@@ -5,7 +5,7 @@ import { ready, signUp } from './helpers'
 
 // [Sprint 56 T1] The screens rebuilt to fit one phone held sideways: they do not scroll inside the frame either, every
 // target answers a 44px touch (its own box, or the 44px area its ::after spreads around it) and no text is under 12px.
-const FIT = new Set(['/club', '/team', '/lineup', '/tactics', '/market', '/match'])
+const FIT = new Set(['/club', '/team', '/lineup', '/tactics', '/market', '/match', '/fixtures'])
 const SCREENS = ['/club', '/team', '/lineup', '/tactics', '/market', '/match', '/training', '/stadium', '/finance', '/stats', '/scout',
   '/specialists', '/takers', '/friendlies', '/quests', '/fixtures', '/', '/leagues', '/inbox', '/profile']
 

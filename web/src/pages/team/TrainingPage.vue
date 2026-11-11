@@ -4,6 +4,7 @@
 // the server; the countdown reloads when a session is due. "Finish now" waits for the premium coins.
 // [X83] A slot's «اختر لاعباً» or «استبدل اللاعب» opens the picker (TrainingPicker.vue): its line's players with a search,
 // four orders and a filter, one tap to train; a taken slot is replaced in the same tap, the other keeping his progress.
+import UiButton from '../../components/ui/UiButton.vue'
 import { t } from '../../lib/i18n'
 import AdReward from '../../components/ads/AdReward.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
@@ -135,7 +136,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
+    <p v-else-if="!leagueId" class="rounded-xl ui-card p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="v">
       <p v-if="v.balance < v.cost" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t('رصيد النادي لا يكفي جلسة، فالجلسات تفوت حتى يرجع الرصيد.') }}</p>
@@ -179,7 +180,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
           <template v-else>
             <div class="flex items-center justify-between gap-3">
               <p class="text-sm text-text-muted">{{ $t('الخانة فارغة.') }}</p>
-              <button type="button" class="h-touch rounded-md bg-brand px-4 font-bold" @click="pick(s.line as Line)">{{ $t('اختر لاعباً') }}</button>
+              <UiButton variant="brand" size="sm" @click="pick(s.line as Line)">{{ $t('اختر لاعباً') }}</UiButton>
             </div>
           </template>
           <!-- [X61] Who trains the line: the free basic coach until one is signed, and the way straight to the staff. -->
@@ -195,7 +196,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
         </article>
       </section>
 
-      <section :aria-label="$t('مرشحون للتدريب')" class="flex flex-col gap-2 rounded-xl bg-surface p-3">
+      <section :aria-label="$t('مرشحون للتدريب')" class="flex flex-col gap-2 rounded-xl ui-card p-3">
         <div class="flex flex-wrap items-center gap-2 px-1">
           <span class="flex flex-wrap items-center gap-1"><h2 class="font-display text-lg font-bold">{{ $t('مرشحون للتدريب') }}</h2></span>
           <span class="text-sm text-text-muted">{{ $t('الأصغر سناً يتطور أسرع وسقفه أعلى') }}</span>
@@ -208,7 +209,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
           <span>{{ $t('اللاعب') }}</span><span class="text-center">{{ $t('السن') }}</span><span class="text-center">{{ $t('القوة') }}</span><span class="text-center">{{ $t('السقف') }}</span><span class="text-center">{{ $t('جلسات للـ +1') }}</span><span />
         </div>
         <div v-for="p in candidates" :key="p.id" class="grid grid-cols-[1fr_3rem_6rem] items-center gap-2 rounded-lg bg-surface-sunk px-2 py-2 sm:grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem]">
-          <span class="min-w-0"><b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi><span v-if="isRecommended(p.id)" class="ms-1 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">{{ $t('الموصى به') }}</span></b><span class="text-xs text-text-muted">{{ p.position }}<template v-if="p.progress"> {{ $t('· التقدم {v0}%', { v0: p.progress }) }}</template><template v-if="p.injured"> {{ $t('· مصاب') }}</template><span class="sm:hidden"> {{ $t('· {v0} سنة · الإمكانية {v1}', { v0: p.age, v1: p.potential }) }}</span></span></span>
+          <span class="min-w-0"><b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi><span v-if="isRecommended(p.id)" class="ms-1 rounded-pill bg-gold px-1.5 text-caption font-bold text-on-gold">{{ $t('الموصى به') }}</span></b><span class="text-xs text-text-muted">{{ p.position }}<template v-if="p.progress"> {{ $t('· التقدم {v0}%', { v0: p.progress }) }}</template><template v-if="p.injured"> {{ $t('· مصاب') }}</template><span class="sm:hidden"> {{ $t('· {v0} سنة · الإمكانية {v1}', { v0: p.age, v1: p.potential }) }}</span></span></span>
           <!-- [Sprint 23] Age, the strongest factor: green for the young who train faster, orange from 29. -->
           <span class="hidden text-center font-numbers sm:block" :class="(p.age_bp ?? 10000) > 10000 ? 'text-success' : (p.age_bp ?? 10000) < 10000 ? 'text-warning' : ''"
             :title="$t('سرعة التدريب في عمره {v0}%', { v0: Math.round((p.age_bp ?? 10000) / 100) })">{{ p.age }}</span>
@@ -216,8 +217,8 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
           <span class="hidden text-center font-numbers sm:block" :class="p.over_potential ? 'text-warning' : 'text-success'" :title="p.over_potential ? $t('تجاوز إمكانيته: يتطور أبطأ، حتى 99') : undefined">{{ p.potential }}</span>
           <span class="hidden text-center font-numbers text-text-muted sm:block">~{{ p.sessions }}</span>
           <!-- [X83] A taken slot no longer blocks: the player takes its place in one tap (the other keeps his progress). -->
-          <button v-if="!p.maxed" type="button" class="h-touch rounded-md px-3 text-sm font-bold disabled:opacity-40" :class="lineBusy ? 'bg-gold text-on-gold' : 'bg-brand'" :disabled="isBusy(`train:${p.line}`)"
-            :title="lineBusy ? $t('يأخذ مكان من يتدرب الآن، ويحتفظ ذاك بتقدمه') : undefined" @click="train(p.id, p.name, lineBusy)">{{ lineBusy ? $t('استبدل به') : $t('درّب') }}</button>
+          <UiButton v-if="!p.maxed" size="sm" :variant="lineBusy ? 'primary' : 'brand'" :disabled="isBusy(`train:${p.line}`)"
+            :title="lineBusy ? $t('يأخذ مكان من يتدرب الآن، ويحتفظ ذاك بتقدمه') : undefined" @click="train(p.id, p.name, lineBusy)">{{ lineBusy ? $t('استبدل به') : $t('درّب') }}</UiButton>
           <span v-else class="text-center text-xs text-text-muted">{{ $t('بلغ سقفه') }}</span>
         </div>
         <p v-if="!candidates.length" class="px-1 text-sm text-text-muted">{{ $t('لا لاعبين آخرين في هذا الخط.') }}</p>
@@ -225,7 +226,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
 
       <TrainingPicker v-if="picking" :view="v" :line="picking" :busy="isBusy(`train:${picking}`)" :error="error" @close="picking = null" @line="(l: Line) => pick(l)" @pick="(p, replace) => train(p.id, p.name, replace)" />
 
-      <section :aria-label="$t('منشأة التدريب')" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4">
+      <section :aria-label="$t('منشأة التدريب')" class="flex flex-wrap items-center gap-3 rounded-xl ui-card p-4">
         <div class="flex-1"><b class="block">{{ $t('منشأة التدريب') }}</b><span class="text-sm text-text-muted">{{ $t('كل مرحلة منها تسرّع التقدم في كل الخانات، وتُطوَّر من صفحة الملعب.') }}</span></div>
         <RouterLink :to="{ name: 'stadium' }" class="grid h-touch place-items-center rounded-md bg-surface-sunk px-4 font-bold text-gold">{{ $t('إلى الملعب') }}</RouterLink>
       </section>

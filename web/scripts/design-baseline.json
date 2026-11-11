@@ -213,10 +213,6 @@
   "src/pages/leagues/DrawPage.vue": {
     "card": 5
   },
-  "src/pages/leagues/FixturesPage.vue": {
-    "button": 1,
-    "card": 4
-  },
   "src/pages/leagues/JoinLeague.vue": {
     "button": 1,
     "card": 2
@@ -244,121 +240,6 @@
     "button": 1,
     "card": 2,
     "px-text": 1
-  },
-  "src/pages/team/ContractsPanel.vue": {
-    "card": 1
-  },
-  "src/pages/team/Finance.vue": {
-    "card": 6
-  },
-  "src/pages/team/FriendliesPage.vue": {
-    "button": 1,
-    "card": 4
-  },
-  "src/pages/team/IntegrityPanel.vue": {
-    "button": 1,
-    "card": 1
-  },
-  "src/pages/team/Lineup.vue": {
-    "card": 1,
-    "px-text": 3
-  },
-  "src/pages/team/Market.vue": {
-    "button": 5,
-    "card": 6,
-    "hex": 2
-  },
-  "src/pages/team/MovePanel.vue": {
-    "button": 2,
-    "card": 1
-  },
-  "src/pages/team/NextMatch.vue": {
-    "button": 1,
-    "card": 1
-  },
-  "src/pages/team/PlayerCard.vue": {
-    "button": 1,
-    "card": 4
-  },
-  "src/pages/team/PressPanel.vue": {
-    "card": 1
-  },
-  "src/pages/team/QuestsPage.vue": {
-    "button": 1,
-    "card": 3
-  },
-  "src/pages/team/ScenariosPanel.vue": {
-    "card": 1
-  },
-  "src/pages/team/ScoutPage.vue": {
-    "button": 2,
-    "card": 4
-  },
-  "src/pages/team/SpecialistsPage.vue": {
-    "button": 1,
-    "card": 2
-  },
-  "src/pages/team/Squad.vue": {
-    "button": 1,
-    "card": 1
-  },
-  "src/pages/team/StadiumPage.vue": {
-    "button": 1,
-    "card": 8
-  },
-  "src/pages/team/StatsPage.vue": {
-    "card": 13
-  },
-  "src/pages/team/TacticsPage.vue": {
-    "card": 10
-  },
-  "src/pages/team/TakersPage.vue": {
-    "button": 1,
-    "card": 1,
-    "hex": 1
-  },
-  "src/pages/team/TicketsPanel.vue": {
-    "card": 1
-  },
-  "src/pages/team/Trades.vue": {
-    "button": 4,
-    "card": 3
-  },
-  "src/pages/team/TrainingPage.vue": {
-    "button": 2,
-    "card": 3,
-    "px-text": 1
-  },
-  "src/pages/team/TrainingPicker.vue": {
-    "button": 3,
-    "card": 3,
-    "px-text": 1
-  },
-  "src/pages/team/market/AcademyPanel.vue": {
-    "card": 2
-  },
-  "src/pages/team/market/LoansPanel.vue": {
-    "button": 1,
-    "card": 2
-  },
-  "src/pages/team/market/SellPanel.vue": {
-    "button": 1
-  },
-  "src/pages/team/squad/PlayersTable.vue": {
-    "card": 1,
-    "hex": 2
-  },
-  "src/pages/team/squad/RatingsTable.vue": {
-    "card": 2,
-    "hex": 3
-  },
-  "src/pages/team/squad/TeamCard.vue": {
-    "px-text": 1,
-    "hex": 4
-  },
-  "src/pages/team/squad/TransfersTable.vue": {
-    "card": 2,
-    "hex": 1
   },
   "src/pages/tournaments/CreateTournament.vue": {
     "button": 4,

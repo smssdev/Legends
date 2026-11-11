@@ -4,6 +4,7 @@
 // The closest in strength recommended; the report at once. [Sprint 24 B2] Five coins each, with no limit, in every
 // league: the first tap asks to confirm with the price, and the coins go with the match. [Sprint 27 B3] Then the quick
 // simulation plays in the page (QuickMatch, from the server's timeline) before the result shows.
+import UiButton from '../../components/ui/UiButton.vue'
 import { scoreText } from '../../lib/format'
 import { uuid } from '../../lib/uuid'
 import { computed, onMounted, ref } from 'vue'
@@ -65,7 +66,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
         <span class="text-xs text-text-muted">{{ $t('رصيدك') }}: <b class="font-numbers" dir="ltr">{{ v.balance }}</b></span>
       </span>
     </header>
-    <p v-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-center text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
+    <p v-if="loaded && !leagueId" class="rounded-xl ui-card p-6 text-center text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
     <p v-if="v && v.balance < v.coins" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="status">{{ $t('رصيدك لا يكفي لودية. الكوينز تُكسب من المهام والفوز.') }}</p>
     <p v-if="v?.blocked" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="status">
       {{ v.blocked.reason === 'live' ? $t('مباراتك تُلعب الآن: الوديات بعدها.') : $t('مباراتك بعد قليل: الوديات تعود بعدها ({v0}).', { v0: countdown(v.blocked.until, now) }) }}
@@ -80,7 +81,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
       @done="watching = false"
     />
     <!-- The friendly just played. -->
-    <section v-else-if="last" class="flex flex-col gap-3 rounded-xl border border-gold/40 bg-surface p-4" :aria-label="$t('نتيجة الودية')" aria-live="polite">
+    <section v-else-if="last" class="flex flex-col gap-3 rounded-xl border border-gold/40 ui-card p-4" :aria-label="$t('نتيجة الودية')" aria-live="polite">
       <div class="flex items-center gap-3">
         <img :src="last.opponent.crest_url" alt="" class="size-10" />
         <span class="min-w-0 flex-1"><b class="block">{{ $t('ضد {v0}', { v0: $nm(last.opponent.name) }) }}</b><span class="text-xs text-text-muted">{{ $t(result(last)) }}</span></span>
@@ -93,18 +94,18 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
       <p class="text-xs text-text-muted">{{ $t('الأفضل') }}: <template v-for="(p, i) in last.report.best" :key="p.id"><bdi>{{ $nm(p.name ?? '') }}</bdi> <span class="font-numbers text-gold">{{ (p.rating / 100).toFixed(1) }}</span><template v-if="i < last.report.best.length - 1">، </template></template> · {{ $t('{v0} لاعباً زاد تدريبهم ولياقتهم (+{v1})', { v0: last.report.played, v1: v?.fitness ?? 0 }) }}</p>
     </section>
 
-    <div v-if="!v && leagueId" class="flex flex-col gap-2" aria-hidden="true"><div v-for="n in 4" :key="n" class="h-16 animate-pulse rounded-xl bg-surface" /></div>
+    <div v-if="!v && leagueId" class="flex flex-col gap-2" aria-hidden="true"><div v-for="n in 4" :key="n" class="h-16 animate-pulse rounded-xl ui-card" /></div>
     <ul v-else-if="v" class="flex flex-col gap-2">
-      <li v-for="o in v.opponents" :key="o.id" class="flex min-h-touch items-center gap-3 rounded-xl bg-surface p-3" :class="o.recommended ? 'border border-brand-light/40' : ''">
+      <li v-for="o in v.opponents" :key="o.id" class="flex min-h-touch items-center gap-3 rounded-xl ui-card p-3" :class="o.recommended ? 'border border-brand-light/40' : ''">
         <img :src="o.crest_url" alt="" class="size-10 shrink-0" />
         <span class="min-w-0 flex-1">
           <b class="block truncate">{{ $nm(o.name) }} · <span class="font-numbers text-brand-light">{{ Math.round(o.strength_cp / 100) }}</span></b>
           <span class="block truncate text-xs text-text-muted">{{ o.recommended ? $t('موصى به: الأقرب إلى قوتك') : o.coach ? $t('مدرب: {v0}', { v0: o.coach }) : $t('الكمبيوتر') }}</span>
         </span>
         <button v-if="confirming === o.id" type="button" class="h-touch shrink-0 rounded-lg px-3 text-sm text-text-muted" @click="confirming = null">{{ $t('إلغاء') }}</button>
-        <button type="button" class="h-touch shrink-0 rounded-lg px-4 font-bold disabled:opacity-40" :class="confirming === o.id ? 'bg-success text-white' : o.recommended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" :disabled="busy || watching || !canPay || !!v.blocked || o.played_today" @click="play(o.id)">
+        <UiButton size="sm" class="shrink-0" :variant="confirming === o.id ? 'brand' : o.recommended ? 'primary' : 'quiet'" :disabled="busy || watching || !canPay || !!v.blocked || o.played_today" @click="play(o.id)">
           {{ o.played_today ? $t('لُعبت اليوم') : confirming === o.id ? (v.first_free ? $t('العب مجاناً') : $t('أكّد: {v0} كوينز', { v0: v.coins })) : $t('العب') }}
-        </button>
+        </UiButton>
       </li>
     </ul>
 

@@ -9,6 +9,7 @@
 // on any player opens the list to choose who goes there instead, the best for that place first. An outfield player
 // may stand in any line, out of his own at the engine's lower share (shown on his card). The specialists are cards,
 // each chosen from the whole squad by the role's skill.
+import AsyncState from '../../components/ui/AsyncState.vue'
 import { t } from '../../lib/i18n'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import UiSelect from '../../components/ui/UiSelect.vue'
@@ -18,6 +19,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 import UiButton from '../../components/ui/UiButton.vue'
 import { money } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
+import { useLineupDrag, type Spot } from './useLineupDrag'
 import { barColor, useTeam, type Formation, type SquadPlayer } from './team'
 
 const { leagueId, team, error, loaded, load } = useTeam()
@@ -127,7 +129,6 @@ const MINI = {
 } as const
 
 // Moving players: a "spot" is a slot on the pitch, a place on the bench, or the rest of the squad.
-type Spot = { zone: 'slot' | 'bench' | 'reserve'; index: number }
 
 function playerAt(s: Spot): number | null {
   if (s.zone === 'slot') return starters.value[s.index] ?? null
@@ -297,24 +298,9 @@ const offLine = (i: number) => {
   return i > 0 && !!p && !!slot && shareAt(p, slot.line) < 100
 }
 
-// Dragging with pointer events: a ghost follows the finger; on release, the spot under it receives.
-const drag = ref<{ from: Spot; id: number; x: number; y: number; moved: boolean } | null>(null)
-function down(e: PointerEvent, s: Spot) {
-  const id = playerAt(s)
-  if (id === null || !editing.value) return
-  drag.value = { from: s, id, x: e.clientX, y: e.clientY, moved: false }
-  window.addEventListener('pointermove', follow)
-  window.addEventListener('pointerup', up, { once: true })
-  // [Sprint 30 Q7] A touch the phone takes back (a call, a system gesture) drops nothing anywhere: the drag ends.
-  window.addEventListener('pointercancel', cancelDrag, { once: true })
-}
-function cancelDrag() {
-  window.removeEventListener('pointermove', follow)
-  window.removeEventListener('pointerup', up)
-  window.removeEventListener('pointercancel', cancelDrag)
-  edge = 0
-  drag.value = null
-}
+// Dragging: useLineupDrag.ts (Sprint 56 W3: moved out as it was).
+const listBox = ref<HTMLElement | null>(null)
+const { drag, down, cancel: cancelDrag, justDragged } = useLineupDrag({ editing, listBox, playerAt, move, remember, later, dropOnGrass: (slot, e) => place_(slot, e) })
 // [2026-11-09] Leaving the page: a drag in the middle lets go of the window, and a change waiting for its save is
 // saved now (not lost, and not sent later by a page that is gone; a failure still shows in the app's toast).
 onBeforeUnmount(() => {
@@ -325,51 +311,6 @@ onBeforeUnmount(() => {
     void save()
   }
 })
-function follow(e: PointerEvent) {
-  if (!drag.value) return
-  if (Math.hypot(e.clientX - drag.value.x, e.clientY - drag.value.y) > 8) drag.value.moved = true
-  drag.value.x = e.clientX
-  drag.value.y = e.clientY
-  // [Sprint 56 W3] The pitch and the bench share one screen now; near the list column's top or bottom edge, that list
-  // scrolls (the page itself does not).
-  const box = listBox.value?.getBoundingClientRect()
-  edge = !box || e.clientX < box.left || e.clientX > box.right ? 0 : e.clientY < box.top + 50 ? -14 : e.clientY > box.bottom - 50 ? 14 : 0
-  if (edge && !scrolling) scroll()
-}
-let edge = 0
-let scrolling = false
-const listBox = ref<HTMLElement | null>(null)
-function scroll() {
-  if (!drag.value || !edge) {
-    scrolling = false
-    return
-  }
-  scrolling = true
-  listBox.value?.scrollBy(0, edge)
-  requestAnimationFrame(scroll)
-}
-function up(e: PointerEvent) {
-  window.removeEventListener('pointermove', follow)
-  window.removeEventListener('pointercancel', cancelDrag)
-  edge = 0
-  const d = drag.value
-  drag.value = null
-  if (!d?.moved) return
-  const el = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>('[data-spot]')
-  if (el) {
-    const [zone, index] = el.dataset.spot!.split(':')
-    move(d.from, { zone: zone as Spot['zone'], index: Number(index) })
-  } else if (d.from.zone === 'slot' && d.from.index > 0) {
-    remember()
-    place_(d.from.index, e)
-  }
-  later()
-  // The click that follows a drag must not also select.
-  suppress = true
-  window.setTimeout(() => (suppress = false), 0)
-}
-let suppress = false
-
 // A starter dropped on open grass stays there, held inside his line's band [X5].
 const pitch = ref<HTMLElement | null>(null)
 function place_(slot: number, e: PointerEvent) {
@@ -391,7 +332,7 @@ const band = computed(() => {
   const [from, to] = bands.value[current.value?.slots[d.from.index].line ?? ''] ?? []
   return from === undefined ? null : { top: `${100 - (to / 720) * 100}%`, height: `${((to - from) / 720) * 100}%` }
 })
-const click = (s: Spot) => !suppress && tap(s)
+const click = (s: Spot) => !justDragged() && tap(s)
 const isSelected = (s: Spot) => (choosing.value?.zone === s.zone && choosing.value.index === s.index) || (picking.value?.mode === 'player' && playerAt(s) === picking.value.id)
 
 async function improve() {
@@ -485,11 +426,8 @@ async function saveCustom() {
 
 <template>
   <div class="lineup-root">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <div v-else-if="loaded && !team" class="rounded-xl bg-surface p-8 text-center">
-      <p class="mb-3 text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
-      <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
-    </div>
+    <!-- [Sprint 56 W11] The states as every screen's: the error with a retry, no team with the way to one. -->
+    <AsyncState v-if="error || (loaded && !team)" :error="error || null" :empty="!error" empty-icon="lineup" empty-title="ليس لديك فريق بعد." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" @retry="load" />
     <template v-else-if="team && current">
       <h1 class="sr-only">{{ $t('التشكيلة') }}</h1>
       <!-- [Sprint 56 W3] Lineup.html: three columns on one screen. The formation, the chemistry and the tools; the pitch
@@ -639,7 +577,7 @@ async function saveCustom() {
       </UiDialog>
 
     </template>
-    <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
+    <AsyncState v-else loading skeleton="card" :rows="3" />
 
     <div
       v-if="drag?.moved && players.get(drag.id)"
@@ -663,7 +601,7 @@ async function saveCustom() {
             <button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-lg bg-surface px-3 py-2 text-start active:bg-surface-raised" :class="o.p.available ? '' : 'opacity-60'" @click="choose(o.p.id)">
               <span class="flex w-12 shrink-0 flex-col items-center leading-none">
                 <b class="font-numbers text-2xl" :class="o.share < 100 ? 'text-warning' : 'text-gold'">{{ o.rating }}</b>
-                <span v-if="o.share < 100" class="font-numbers text-[10px] text-text-muted"><s>{{ o.p.overall }}</s> · {{ o.share }}%</span>
+                <span v-if="o.share < 100" class="font-numbers text-caption text-text-muted"><s>{{ o.p.overall }}</s> · {{ o.share }}%</span>
               </span>
               <span class="min-w-0 flex-1"><b class="block truncate">{{ $nm(o.p.name) }}</b>
                 <span class="text-xs text-text-muted" dir="ltr">{{ o.p.position }}</span>
@@ -671,8 +609,8 @@ async function saveCustom() {
                 <span v-if="!o.p.available" class="ms-1 text-xs text-danger">{{ $t('غير متاح') }}</span></span>
               <span class="flex shrink-0 flex-col items-end gap-1">
                 <span class="h-1 w-10 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(o.p.fitness)" :style="{ width: `${o.p.fitness}%` }" /></span>
-                <span v-if="o.from.zone === 'slot'" class="text-[10px] text-text-muted">{{ $t('يتبادل مع {v0}', { v0: slotLabel(o.from.index) }) }}</span>
-                <span v-else-if="WHERE[o.from.zone]" class="text-[10px] text-text-muted">{{ $t(WHERE[o.from.zone]) }}</span>
+                <span v-if="o.from.zone === 'slot'" class="text-caption text-text-muted">{{ $t('يتبادل مع {v0}', { v0: slotLabel(o.from.index) }) }}</span>
+                <span v-else-if="WHERE[o.from.zone]" class="text-caption text-text-muted">{{ $t(WHERE[o.from.zone]) }}</span>
               </span>
             </button>
           </li>
