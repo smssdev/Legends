@@ -985,6 +985,15 @@ const quickPoll = () => !started.value || halftime.value || windowOn.value || !!
 watch(() => sync.connected.value, (on) => { if (!on && live.value && !finished.value) poll() })
 
 // Countdown to the kick-off and to the second half, on the shared clock.
+// [Sprint 57 W6, W-P14] The countdowns change once a second: the clock ticks once a second (it was every 250 ms the
+// whole match), on the second's turn so a countdown never shows a second late.
+function startClock() {
+  clockTick()
+  clockTimer = window.setTimeout(() => {
+    clockTick()
+    clockTimer = window.setInterval(clockTick, 1000)
+  }, 1000 - (serverNow() % 1000))
+}
 function clockTick() {
   const now = serverNow()
   countdown.value = kickoffAt > now ? Math.ceil((kickoffAt - now) / 1000) : 0
@@ -1143,7 +1152,7 @@ onMounted(async () => {
       // [X93] Back on the page (closed by mistake, reloaded): from the first minute, so the screen comes back where the
       // match is (the minute, the half-time or a window, the feed with what was missed), not at a kick-off.
       seen = 0
-      clockTimer = window.setInterval(clockTick, 250)
+      startClock()
       keepAwake()
       return poll()
     }
@@ -1160,6 +1169,7 @@ onMounted(async () => {
 const broadcast = useBroadcast()
 // This page's own address, taken now: the route object follows the coach to the other screens.
 const ownPath = route.path
+let endTimer = 0
 watch(() => [view.value, score.value.home, score.value.away, minuteText.value, finished.value] as const, () => {
   if (!view.value) return
   broadcast.update({
@@ -1169,8 +1179,11 @@ watch(() => [view.value, score.value.home, score.value.away, minuteText.value, f
     minute: finished.value ? t('نهاية المباراة') : minuteText.value,
     live: !finished.value,
   })
-  if (finished.value) window.setTimeout(() => { if (broadcast.away && finished.value) broadcast.end() }, 20000)
+  // [Sprint 57 W6, W-B07] One timer for the end of the broadcast: each change after the whistle used to add another.
+  window.clearTimeout(endTimer)
+  if (finished.value) endTimer = window.setTimeout(() => { if (broadcast.away && finished.value) broadcast.end() }, 20000)
 }, { immediate: true })
+onBeforeUnmount(() => window.clearTimeout(endTimer))
 // [X74] Kept behind the other screens only while live (and until closed from the bar); a recorded match closes on leaving.
 watch(live, (on) => { broadcast.keep = on }, { immediate: true })
 // [2026-11-09] Behind the other screens the broadcast keeps polling (the bar's score), but the screen may sleep: the
