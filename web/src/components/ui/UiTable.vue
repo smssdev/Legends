@@ -6,7 +6,7 @@ defineProps<{ rows: T[]; columns: { key: string; label: string; numeric?: boolea
 
 <template>
   <div class="overflow-x-auto">
-    <table class="w-full border-separate border-spacing-y-1 text-sm">
+    <table class="ui-table w-full border-separate border-spacing-y-1 text-body">
       <caption v-if="caption" class="sr-only">{{ caption }}</caption>
       <thead>
         <tr>

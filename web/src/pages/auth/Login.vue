@@ -5,7 +5,7 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { asApiError } from '../../api/client'
 import GoogleButton from '../../components/GoogleButton.vue'
-import TextField from '../../components/TextField.vue'
+import UiInput from '../../components/ui/UiInput.vue'
 import SupportLinks from '../../components/SupportLinks.vue'
 import { useAuth } from '../../stores/auth'
 import { t } from '../../lib/i18n'
@@ -60,10 +60,10 @@ async function submit() {
   <GoogleButton :label="$t('المتابعة بحساب Google')" />
   <div class="flex items-center gap-3 text-sm text-text-muted"><span class="h-px flex-1 bg-text/10" />{{ $t('أو بالبريد') }}<span class="h-px flex-1 bg-text/10" /></div>
   <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-    <TextField v-model="email" :label="$t('البريد أو اسم المستخدم')" type="username" autocomplete="username" placeholder="you@example.com" :error="errors.email" />
-    <TextField v-model="password" :label="$t('كلمة المرور')" type="password" autocomplete="current-password" :error="errors.password">
+    <UiInput v-model="email" :label="$t('البريد أو اسم المستخدم')" type="username" autocomplete="username" placeholder="you@example.com" :error="errors.email" />
+    <UiInput v-model="password" :label="$t('كلمة المرور')" type="password" autocomplete="current-password" :error="errors.password">
       <template #aside><RouterLink to="/forgot-password" class="text-sm text-gold">{{ $t('نسيت كلمة المرور؟') }}</RouterLink></template>
-    </TextField>
+    </UiInput>
     <UiToggle v-model="remember" :label="$t('تذكرني على هذا الجهاز')" />
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الدخول…') : $t('دخول') }}</button>

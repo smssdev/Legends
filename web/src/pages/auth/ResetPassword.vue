@@ -3,7 +3,7 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
-import TextField from '../../components/TextField.vue'
+import UiInput from '../../components/ui/UiInput.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -36,7 +36,7 @@ async function submit() {
   </div>
   <p v-if="!token || !email" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t('الرابط ناقص. افتحه من رسالة البريد كما هو، أو اطلب رابطاً جديداً.') }}</p>
   <form v-else class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-    <TextField v-model="password" :label="$t('كلمة المرور الجديدة')" type="password" autocomplete="new-password" :error="errors.password" :hint="$t('8 أحرف على الأقل، فيها حروف وأرقام')" />
+    <UiInput v-model="password" :label="$t('كلمة المرور الجديدة')" type="password" autocomplete="new-password" :error="errors.password" :hint="$t('8 أحرف على الأقل، فيها حروف وأرقام')" />
     <p v-if="errors.other" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">
       {{ errors.other }} <RouterLink to="/forgot-password" class="font-bold text-gold">{{ $t('اطلب رابطاً جديداً') }}</RouterLink>
     </p>

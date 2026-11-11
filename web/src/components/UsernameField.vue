@@ -3,7 +3,7 @@
 // the last key, with free names to pick when it is taken or refused.
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { api } from '../api/client'
-import TextField from './TextField.vue'
+import UiInput from './ui/UiInput.vue'
 
 const props = defineProps<{ error?: string; current?: string }>()
 const model = defineModel<string>({ default: '' })
@@ -59,7 +59,7 @@ defineExpose({ settle })
 
 <template>
   <div class="flex flex-col gap-2">
-    <TextField :model-value="model" :label="$t('اسم المستخدم')" type="username" autocomplete="username" placeholder="hamza10" :error="error || warn || reason" :hint="ok ? $t('متاح ✓') : $t('حروف إنجليزية وأرقام، من 3 إلى 20، ويبدأ بحرف')" @update:model-value="clean" />
+    <UiInput :model-value="model" :label="$t('اسم المستخدم')" type="username" autocomplete="username" placeholder="hamza10" :error="error || warn || reason" :hint="ok ? $t('متاح ✓') : $t('حروف إنجليزية وأرقام، من 3 إلى 20، ويبدأ بحرف')" @update:model-value="clean" />
     <div v-if="suggestions.length" class="flex flex-wrap items-center gap-2 text-sm">
       <span class="text-text-muted">{{ $t('جرّب:') }}</span>
       <button v-for="s in suggestions" :key="s" type="button" class="h-touch rounded-pill bg-surface-raised px-4 font-bold" dir="ltr" @click="model = s">{{ s }}</button>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// A labelled input with its Arabic error under it. Email, password and codes are left to right [CLAUDE.md].
+// [Sprint 54 W3] UiInput (it was components/TextField.vue): a labelled input with its Arabic error under it. Email, password and codes are left to right [CLAUDE.md].
 // A password has an eye button that shows or hides what was typed [X7].
 import { computed, ref, useId } from 'vue'
 

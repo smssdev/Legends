@@ -1,0 +1,115 @@
+{
+  "lib/features/account/account_screens.dart": {
+    "font-size": 6
+  },
+  "lib/features/auth/ui/auth_layout.dart": {
+    "font-size": 4
+  },
+  "lib/features/auth/ui/login_screen.dart": {
+    "font-size": 2
+  },
+  "lib/features/auth/ui/register_screen.dart": {
+    "font-size": 2
+  },
+  "lib/features/club/extras_screens.dart": {
+    "font-size": 9
+  },
+  "lib/features/club/lineup_screen.dart": {
+    "color": 6,
+    "font-size": 10
+  },
+  "lib/features/club/matchday_screens.dart": {
+    "font-size": 7
+  },
+  "lib/features/club/squad_screen.dart": {
+    "color": 16,
+    "font-size": 20
+  },
+  "lib/features/club/tactics_screen.dart": {
+    "color": 33,
+    "font-size": 22
+  },
+  "lib/features/console/market_console.dart": {
+    "font-size": 11
+  },
+  "lib/features/console/store_console.dart": {
+    "font-size": 4
+  },
+  "lib/features/health/intro_screen.dart": {
+    "color": 2,
+    "font-size": 4
+  },
+  "lib/features/home/home_screen.dart": {
+    "font-size": 36
+  },
+  "lib/features/home/settings_sheet.dart": {
+    "font-size": 1
+  },
+  "lib/features/inbox/inbox_screen.dart": {
+    "font-size": 1
+  },
+  "lib/features/leagues/league_screen.dart": {
+    "font-size": 26
+  },
+  "lib/features/leagues/my_leagues_screen.dart": {
+    "font-size": 2
+  },
+  "lib/features/leagues/shell.dart": {
+    "font-size": 7
+  },
+  "lib/features/leagues/widgets.dart": {
+    "font-size": 4
+  },
+  "lib/features/market/market_screen.dart": {
+    "font-size": 15
+  },
+  "lib/features/market/offer_screen.dart": {
+    "font-size": 1
+  },
+  "lib/features/market/scout_screen.dart": {
+    "font-size": 3
+  },
+  "lib/features/match/feed/art.dart": {
+    "color": 29,
+    "font-size": 1
+  },
+  "lib/features/match/feed/broadcast.dart": {
+    "font-size": 6
+  },
+  "lib/features/match/feed/clips.dart": {
+    "color": 44
+  },
+  "lib/features/match/live_pitch.dart": {
+    "color": 6,
+    "font-size": 1
+  },
+  "lib/features/match/live_screen.dart": {
+    "color": 7,
+    "font-size": 13
+  },
+  "lib/features/match/report_screen.dart": {
+    "font-size": 6
+  },
+  "lib/features/money/finance_screen.dart": {
+    "font-size": 4
+  },
+  "lib/features/money/stadium_screen.dart": {
+    "font-size": 6
+  },
+  "lib/features/notifications/notifications_screen.dart": {
+    "font-size": 1
+  },
+  "lib/features/sim/sim_screens.dart": {
+    "color": 4,
+    "font-size": 23
+  },
+  "lib/features/social/social_screens.dart": {
+    "font-size": 12
+  },
+  "lib/features/tournaments/tournament_screens.dart": {
+    "font-size": 5
+  },
+  "lib/features/wallet/wallet_screen.dart": {
+    "font-size": 5
+  }
+}

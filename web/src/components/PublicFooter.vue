@@ -102,7 +102,7 @@ const LEGAL = [
 .foot-line { position: absolute; inset-inline: 0; top: -1px; height: 2px; background: linear-gradient(90deg, transparent, var(--color-gold), transparent); opacity: 0.7; }
 .foot-head { font-family: var(--font-display, inherit); font-size: 0.95rem; font-weight: 800; color: var(--color-text); position: relative; padding-bottom: 0.5rem; }
 .foot-head::after { content: ''; position: absolute; inset-inline-start: 0; bottom: 0; width: 2rem; height: 2px; border-radius: 2px; background: var(--color-gold); }
-.foot-link { display: inline-flex; min-height: 2.75rem; align-items: center; font-size: 0.9rem; color: var(--color-text-soft); transition: color 0.15s, transform 0.15s; border-radius: 0.375rem; }
+.foot-link { display: inline-flex; min-width: 2.75rem; min-height: 2.75rem; align-items: center; font-size: 0.9rem; color: var(--color-text-soft); transition: color 0.15s, transform 0.15s; border-radius: 0.375rem; }
 .foot-link-sm { min-height: 2.75rem; font-size: 0.8rem; }
 .foot-link:hover { color: var(--color-gold); transform: translateX(-3px); }
 :dir(ltr) .foot-link:hover { transform: translateX(3px); }
@@ -110,7 +110,7 @@ const LEGAL = [
 /* [X98] Each account its own coloured tile (SocialIcon.vue), lifted a little under the finger or the mouse. */
 .social { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; transition: transform 0.15s, filter 0.15s; }
 .social:hover { transform: translateY(-2px); filter: brightness(1.08) drop-shadow(0 4px 8px rgb(0 0 0 / 0.3)); }
-.team { font-weight: 800; background: linear-gradient(90deg, var(--color-gold), var(--color-brand-light, var(--color-gold))); -webkit-background-clip: text; background-clip: text; color: transparent;
+.team { display: inline-flex; min-height: 2.75rem; align-items: center; margin-block: -0.9rem; font-weight: 800; background: linear-gradient(90deg, var(--color-gold), var(--color-brand-light, var(--color-gold))); -webkit-background-clip: text; background-clip: text; color: transparent;
   border-radius: 0.25rem; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--color-gold) 40%, transparent); text-underline-offset: 3px; }
 .team:hover { text-decoration-color: var(--color-gold); }
 .copy { font-family: Arial, Helvetica, sans-serif; }

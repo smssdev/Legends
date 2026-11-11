@@ -116,7 +116,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
       </button>
       <div v-if="hello" class="bot-hello">
         <button type="button" class="bot-hello-x" :aria-label="$t('إغلاق')" @click="quiet">✕</button>
-        <button type="button" class="text-start" @click="show">
+        <button type="button" class="min-h-touch text-start" @click="show">
           <b class="block text-sm">{{ $t('أهلاً كوتش!') }}</b>
           <span class="text-xs">{{ $t('أنا المدرب المساعد، اسألني عن أي شيء') }}</span>
         </button>
@@ -223,7 +223,9 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
   background: var(--color-chrome);
   box-shadow: 0 8px 22px color-mix(in srgb, var(--color-shade) 45%, transparent);
 }
-.bot-hello-x { position: absolute; top: -0.6rem; inset-inline-start: -0.6rem; display: grid; width: 1.6rem; height: 1.6rem; place-items: center; border-radius: 999px; font-size: 0.7rem; color: var(--color-text); background: var(--color-surface-raised); }
+/* [Sprint 54] The small ✕ keeps its look; its target is 44px all the same. */
+.bot-hello-x::after { content: ""; position: absolute; inset: -0.6rem; }
+.bot-hello-x { position: absolute; top: -0.6rem; inset-inline-start: -0.6rem; display: grid; width: 1.6rem; height: 1.6rem; place-items: center; border-radius: 999px; font-size: var(--text-caption); color: var(--color-text); background: var(--color-surface-raised); }
 /* [X67] The window: a chat card above the round close button, never the page's whole height (the owner's picture,
    2026-10-30), the same on the phone and the computer. */
 .bot-open { display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; }

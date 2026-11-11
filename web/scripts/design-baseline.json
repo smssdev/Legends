@@ -1,0 +1,389 @@
+{
+  "src/components/AnnouncementCard.vue": {
+    "hex": 1
+  },
+  "src/components/ClubSquadDialog.vue": {
+    "button": 2,
+    "card": 1
+  },
+  "src/components/Crest.vue": {
+    "hex": 2
+  },
+  "src/components/GoogleButton.vue": {
+    "hex": 2
+  },
+  "src/components/InstallPrompt.vue": {
+    "card": 1
+  },
+  "src/components/LanguageSwitch.vue": {
+    "button": 1
+  },
+  "src/components/NotificationsCard.vue": {
+    "button": 2,
+    "card": 1
+  },
+  "src/components/OnboardingChecklist.vue": {
+    "card": 1
+  },
+  "src/components/PublicHeader.vue": {
+    "button": 1
+  },
+  "src/components/RatingBadge.vue": {
+    "hex": 4
+  },
+  "src/components/SocialIcon.vue": {
+    "hex": 21
+  },
+  "src/components/SplashScreen.vue": {
+    "button": 1
+  },
+  "src/components/SupportLinks.vue": {
+    "hex": 3
+  },
+  "src/components/ThemeSwitch.vue": {
+    "button": 1
+  },
+  "src/components/ads/AdReward.vue": {
+    "button": 1,
+    "card": 1
+  },
+  "src/components/ads/AdSlot.vue": {
+    "px-text": 1
+  },
+  "src/components/assistant/BotClosing.vue": {
+    "button": 2,
+    "card": 1
+  },
+  "src/components/assistant/ManagerBot.vue": {
+    "hex": 1
+  },
+  "src/components/league/ContractDialog.vue": {
+    "hex": 1
+  },
+  "src/components/league/LeagueFlag.vue": {
+    "hex": 139
+  },
+  "src/components/league/LeaguePicker.vue": {
+    "card": 1,
+    "hex": 4
+  },
+  "src/components/league/RestDaysPicker.vue": {
+    "button": 1
+  },
+  "src/components/match/ShotMap.vue": {
+    "card": 1,
+    "hex": 2
+  },
+  "src/components/match/TurnPhone.vue": {
+    "button": 1
+  },
+  "src/components/shell/AfterRound.vue": {
+    "button": 1,
+    "card": 1
+  },
+  "src/components/shell/AgendaPanel.vue": {
+    "button": 1
+  },
+  "src/components/shell/ClubSwitcher.vue": {
+    "card": 1
+  },
+  "src/components/shell/MatchRecap.vue": {
+    "button": 2,
+    "card": 1
+  },
+  "src/components/shell/SoundPrompt.vue": {
+    "button": 1,
+    "card": 1
+  },
+  "src/components/store/StoreCard.vue": {
+    "button": 1,
+    "card": 1
+  },
+  "src/pages/AdminPage.vue": {
+    "button": 18,
+    "card": 38,
+    "px-text": 1
+  },
+  "src/pages/AnnouncementsPage.vue": {
+    "card": 2,
+    "hex": 1
+  },
+  "src/pages/ComingSoon.vue": {
+    "card": 1
+  },
+  "src/pages/DevStatus.vue": {
+    "button": 1,
+    "card": 4
+  },
+  "src/pages/DownloadPage.vue": {
+    "button": 1,
+    "card": 2
+  },
+  "src/pages/GuidePage.vue": {
+    "button": 1,
+    "card": 2
+  },
+  "src/pages/IdeasPage.vue": {
+    "button": 2,
+    "card": 8
+  },
+  "src/pages/Inbox.vue": {
+    "card": 1
+  },
+  "src/pages/Landing.vue": {
+    "button": 2,
+    "card": 4
+  },
+  "src/pages/NotFound.vue": {
+    "button": 1,
+    "card": 1
+  },
+  "src/pages/Profile.vue": {
+    "button": 5,
+    "card": 8
+  },
+  "src/pages/SimMatch.vue": {
+    "button": 13,
+    "card": 8,
+    "hex": 7
+  },
+  "src/pages/SimReport.vue": {
+    "button": 4,
+    "card": 10,
+    "hex": 2
+  },
+  "src/pages/SimRoom.vue": {
+    "button": 3,
+    "card": 3
+  },
+  "src/pages/SimSetup.vue": {
+    "button": 3,
+    "card": 2
+  },
+  "src/pages/SupportPage.vue": {
+    "button": 1,
+    "card": 1,
+    "px-text": 1
+  },
+  "src/pages/UiLibrary.vue": {
+    "button": 2
+  },
+  "src/pages/WalletPage.vue": {
+    "button": 1,
+    "card": 4
+  },
+  "src/pages/admin/AppReleasesAdmin.vue": {
+    "card": 2,
+    "px-text": 1
+  },
+  "src/pages/admin/DataEditor.vue": {
+    "card": 2
+  },
+  "src/pages/admin/StoreAdmin.vue": {
+    "button": 1,
+    "card": 2
+  },
+  "src/pages/auth/ForgotPassword.vue": {
+    "button": 1
+  },
+  "src/pages/auth/Login.vue": {
+    "button": 1
+  },
+  "src/pages/auth/Register.vue": {
+    "button": 1
+  },
+  "src/pages/auth/ResetPassword.vue": {
+    "button": 1
+  },
+  "src/pages/groups/GroupChat.vue": {
+    "button": 3,
+    "px-text": 2
+  },
+  "src/pages/groups/GroupsPage.vue": {
+    "button": 2,
+    "card": 1
+  },
+  "src/pages/leagues/AlliancePage.vue": {
+    "card": 5
+  },
+  "src/pages/leagues/CoachProfile.vue": {
+    "card": 4
+  },
+  "src/pages/leagues/CreateLeague.vue": {
+    "button": 2,
+    "card": 7
+  },
+  "src/pages/leagues/DrawPage.vue": {
+    "card": 5
+  },
+  "src/pages/leagues/FixturesPage.vue": {
+    "button": 1,
+    "card": 4
+  },
+  "src/pages/leagues/JoinLeague.vue": {
+    "button": 1,
+    "card": 2
+  },
+  "src/pages/leagues/LeagueHome.vue": {
+    "button": 3,
+    "card": 8
+  },
+  "src/pages/leagues/LeagueTabs.vue": {
+    "card": 1,
+    "hex": 1
+  },
+  "src/pages/leagues/MyLeagues.vue": {
+    "button": 1,
+    "card": 2
+  },
+  "src/pages/leagues/NewspaperPage.vue": {
+    "button": 1,
+    "card": 5
+  },
+  "src/pages/leagues/PickTeam.vue": {
+    "card": 1
+  },
+  "src/pages/leagues/PredictionsPage.vue": {
+    "button": 1,
+    "card": 2,
+    "px-text": 1
+  },
+  "src/pages/team/ContractsPanel.vue": {
+    "card": 1
+  },
+  "src/pages/team/Finance.vue": {
+    "card": 6
+  },
+  "src/pages/team/FriendliesPage.vue": {
+    "button": 1,
+    "card": 4
+  },
+  "src/pages/team/IntegrityPanel.vue": {
+    "button": 1,
+    "card": 1
+  },
+  "src/pages/team/Lineup.vue": {
+    "card": 5,
+    "px-text": 9
+  },
+  "src/pages/team/Market.vue": {
+    "button": 5,
+    "card": 7,
+    "px-text": 3,
+    "hex": 2
+  },
+  "src/pages/team/MovePanel.vue": {
+    "button": 2,
+    "card": 1
+  },
+  "src/pages/team/NextMatch.vue": {
+    "button": 1,
+    "card": 5,
+    "px-text": 1,
+    "hex": 1
+  },
+  "src/pages/team/PlayerCard.vue": {
+    "button": 1,
+    "card": 4
+  },
+  "src/pages/team/PressPanel.vue": {
+    "card": 1
+  },
+  "src/pages/team/QuestsPage.vue": {
+    "button": 1,
+    "card": 3
+  },
+  "src/pages/team/ScenariosPanel.vue": {
+    "card": 1
+  },
+  "src/pages/team/ScoutPage.vue": {
+    "button": 2,
+    "card": 4
+  },
+  "src/pages/team/SpecialistsPage.vue": {
+    "button": 1,
+    "card": 2
+  },
+  "src/pages/team/Squad.vue": {
+    "button": 4,
+    "card": 3
+  },
+  "src/pages/team/StadiumPage.vue": {
+    "button": 1,
+    "card": 8
+  },
+  "src/pages/team/StatsPage.vue": {
+    "card": 13
+  },
+  "src/pages/team/TacticsPage.vue": {
+    "card": 10
+  },
+  "src/pages/team/TakersPage.vue": {
+    "button": 1,
+    "card": 1,
+    "hex": 1
+  },
+  "src/pages/team/TicketsPanel.vue": {
+    "card": 1
+  },
+  "src/pages/team/Trades.vue": {
+    "button": 4,
+    "card": 3
+  },
+  "src/pages/team/TrainingPage.vue": {
+    "button": 2,
+    "card": 3,
+    "px-text": 1
+  },
+  "src/pages/team/TrainingPicker.vue": {
+    "button": 3,
+    "card": 3,
+    "px-text": 1
+  },
+  "src/pages/team/market/AcademyPanel.vue": {
+    "card": 2
+  },
+  "src/pages/team/market/LoansPanel.vue": {
+    "button": 1,
+    "card": 2
+  },
+  "src/pages/team/market/SellPanel.vue": {
+    "button": 1
+  },
+  "src/pages/team/squad/PlayersTable.vue": {
+    "card": 1,
+    "px-text": 1,
+    "hex": 2
+  },
+  "src/pages/team/squad/RatingsTable.vue": {
+    "card": 2,
+    "hex": 3
+  },
+  "src/pages/team/squad/TeamCard.vue": {
+    "px-text": 1,
+    "hex": 4
+  },
+  "src/pages/team/squad/TransfersTable.vue": {
+    "card": 2,
+    "hex": 1
+  },
+  "src/pages/tournaments/CreateTournament.vue": {
+    "button": 4,
+    "card": 4
+  },
+  "src/pages/tournaments/DrawChatPanel.vue": {
+    "button": 1
+  },
+  "src/pages/tournaments/TournamentDraw.vue": {
+    "button": 2,
+    "card": 1
+  },
+  "src/pages/tournaments/TournamentPage.vue": {
+    "button": 3,
+    "card": 9
+  },
+  "src/pages/tournaments/TournamentsPage.vue": {
+    "button": 2,
+    "card": 1
+  }
+}

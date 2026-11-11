@@ -1,31 +1,35 @@
 <script setup lang="ts">
-// [X61] Every window over a screen on Headless UI's Dialog: the focus stays inside, Esc and the veil close it, the
-// page behind does not scroll. It drops from the top (under the top bar on a phone, never a sheet from the bottom),
-// and scrolls inside itself when long.
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+// [X61] Every window over a screen: the focus stays inside, Esc and the veil close it, the page behind does not
+// scroll. It drops from the top (under the top bar on a phone, never a sheet from the bottom), and scrolls inside
+// itself when long. [Sprint 54 W4] On reka-ui's Dialog (Headless UI is gone); the animation is the `ui-veil` and
+// `ui-window` classes in style.css, read from the open/closed state reka puts on them.
+import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle, VisuallyHidden } from 'reka-ui'
 
-// `bare`: the content brings its own card (a screen's existing window moved here as it was).
-withDefaults(defineProps<{ open: boolean; title?: string; wide?: boolean; bare?: boolean }>(), { wide: false, bare: false })
+// `bare`: the content brings its own card (a screen's existing window moved here as it was). `closable`: a ✕ by the
+// title (44px), for a long window whose foot is out of sight.
+const props = withDefaults(defineProps<{ open: boolean; title?: string; wide?: boolean; bare?: boolean; closable?: boolean }>(), { wide: false, bare: false, closable: false })
 const emit = defineEmits<{ close: [] }>()
+const onOpen = (o: boolean) => { if (!o && props.open) emit('close') }
 </script>
 
 <template>
-  <TransitionRoot :show="open" as="template">
-    <Dialog class="relative z-[65]" @close="emit('close')">
-      <TransitionChild as="template" enter="transition-opacity duration-200" enter-from="opacity-0" leave="transition-opacity duration-150" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-black/60" aria-hidden="true" />
-      </TransitionChild>
-      <div class="fixed inset-0 overflow-y-auto overscroll-contain">
+  <DialogRoot :open="open" @update:open="onOpen">
+    <DialogPortal>
+      <DialogOverlay class="ui-veil fixed inset-0 z-[65] overflow-y-auto overscroll-contain bg-black/60">
         <div class="flex min-h-full items-start justify-center p-3 pt-[max(1rem,env(safe-area-inset-top))] md:items-center md:p-6">
-          <TransitionChild as="template" enter="transition duration-300 ease-soft" enter-from="opacity-0 -translate-y-4 scale-[0.98]" leave="transition duration-150 ease-soft" leave-to="opacity-0 -translate-y-2">
-            <DialogPanel v-if="bare" class="flex w-full origin-top justify-center"><slot /></DialogPanel>
-            <DialogPanel v-else class="w-full origin-top rounded-2xl border border-text/10 bg-bg p-4 shadow-2xl" :class="wide ? 'max-w-2xl' : 'max-w-md'">
-              <DialogTitle v-if="title" class="mb-3 font-display text-2xl font-extrabold">{{ $t(title) }}</DialogTitle>
-              <slot />
-            </DialogPanel>
-          </TransitionChild>
+          <DialogContent v-if="bare" class="ui-window flex w-full origin-top justify-center" :aria-describedby="undefined">
+            <VisuallyHidden v-if="title"><DialogTitle>{{ $t(title) }}</DialogTitle></VisuallyHidden>
+            <slot />
+          </DialogContent>
+          <DialogContent v-else class="ui-window flex max-h-[88dvh] w-full origin-top flex-col overflow-y-auto overscroll-contain rounded-2xl border border-text/10 bg-bg p-4 shadow-overlay" :class="wide ? 'max-w-2xl' : 'max-w-md'" :aria-describedby="undefined">
+            <div v-if="title || closable" class="mb-3 flex items-center gap-2">
+              <DialogTitle v-if="title" class="flex-1 font-display text-headline">{{ $t(title) }}</DialogTitle>
+              <DialogClose v-if="closable" class="ms-auto grid size-touch shrink-0 place-items-center rounded-md bg-surface-raised" :aria-label="$t('إغلاق')">✕</DialogClose>
+            </div>
+            <slot />
+          </DialogContent>
         </div>
-      </div>
-    </Dialog>
-  </TransitionRoot>
+      </DialogOverlay>
+    </DialogPortal>
+  </DialogRoot>
 </template>

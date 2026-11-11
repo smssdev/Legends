@@ -7,14 +7,16 @@
 //   club board) first, then the four portals, each opening its short list. One way to each place, no duplicate menu.
 // - [Sprint 22] The Assistant Coach's button on every screen, fixed on the left in Arabic and the right in English (above the bottom bar inside a slot).
 // - Outside a slot (the home screen, my leagues, the account, the inbox) only the top bar.
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '../components/Icon.vue'
 import ClubSwitcher from '../components/shell/ClubSwitcher.vue'
 import AgendaPanel from '../components/shell/AgendaPanel.vue'
 import ToastHost from '../components/shell/ToastHost.vue'
-import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-import CountUp from '../components/ui/CountUp.vue'
+import { DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuRoot, DropdownMenuTrigger } from 'reka-ui'
+import MoneyPill from '../components/ui/MoneyPill.vue'
+import NavItem from '../components/ui/NavItem.vue'
+import UiButton from '../components/ui/UiButton.vue'
 import AfterRound from '../components/shell/AfterRound.vue'
 import ManagerBot from '../components/assistant/ManagerBot.vue'
 import SoundToggle from '../components/shell/SoundToggle.vue'
@@ -73,7 +75,28 @@ const board = useBoard()
 watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as const, ([inside, league]) => inside && board.load(league ?? null), { immediate: true })
 const running = computed(() => board.board?.timers.filter((t) => ['training', 'stadium', 'scout'].includes(t.kind)).length ?? 0)
 const waiting = computed(() => (board.board?.pending.length ?? 0) + (inbox.unread ? 1 : 0))
-watch(() => route.fullPath, () => { portal.value = null })
+watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
+
+// [Sprint 54 W4] The timers and what waits: a window under the top bar that the panel lays out itself (spanning the
+// bar on a phone, at its end on a computer). Headless UI's Popover is gone; its three duties are here: Esc and the
+// veil close it, the focus goes into it and back to its button after.
+const agenda = ref<'timers' | 'pending' | null>(null)
+let agendaButton: HTMLElement | null = null
+async function toggleAgenda(k: 'timers' | 'pending', e: MouseEvent) {
+  if (agenda.value === k) return closeAgenda()
+  agendaButton = e.currentTarget as HTMLElement
+  agenda.value = k
+  await nextTick()
+  document.querySelector<HTMLElement>('.agenda button, .agenda a')?.focus()
+}
+function closeAgenda() {
+  if (!agenda.value) return
+  agenda.value = null
+  agendaButton?.focus()
+}
+const onAgendaKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeAgenda() }
+watch(agenda, (k) => (k ? window.addEventListener('keydown', onAgendaKey) : window.removeEventListener('keydown', onAgendaKey)))
+onBeforeUnmount(() => window.removeEventListener('keydown', onAgendaKey))
 // [X85] The screens where the club's money matters (spent or earned there): the money shows on the top bar only on them.
 const MONEY_PAGES = new Set(['club', 'team', 'market', 'training', 'specialists', 'stadium', 'finance', 'scout', 'friendlies'])
 const showMoney = computed(() => inSlot.value && MONEY_PAGES.has(String(route.name)))
@@ -118,36 +141,28 @@ onBeforeUnmount(() => sizer?.disconnect())
           <RouterLink v-else to="/" :aria-label="$t('الرئيسية')" class="shrink-0 md:py-2"><BrandMark size="sm" /></RouterLink>
           <div class="flex-1" />
           <!-- [Sprint 48 D2] The game's emblem in the middle of the bar, as a manager game's crest over its stadium. -->
-          <RouterLink v-if="inSlot" to="/" :aria-label="$t('الرئيسية')" class="shell-brand absolute inset-x-0 mx-auto hidden w-fit xl:flex"><BrandMark size="sm" /></RouterLink>
+          <RouterLink v-if="inSlot" to="/" :aria-label="$t('الرئيسية')" class="shell-brand absolute inset-x-0 mx-auto hidden min-h-touch w-fit items-center xl:flex"><BrandMark size="sm" /></RouterLink>
 
           <template v-if="auth.user">
             <div class="flex shrink-0 items-center gap-1 md:gap-2">
               <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 xl:flex">{{ $t('لوحة الإدارة') }}</RouterLink>
-              <RouterLink v-if="!inSlot" to="/leagues" class="hidden h-9 items-center gap-1.5 rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
-              <RouterLink to="/wallet" class="pill-coins" :aria-label="$t('المحفظة')">
-                <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-base" dir="ltr"><CountUp :value="wallet.view?.balance ?? 0" /></b>
-              </RouterLink>
+              <RouterLink v-if="!inSlot" to="/leagues" class="hidden h-touch items-center gap-1.5 rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
+              <MoneyPill kind="coins" to="/wallet" :value="wallet.view?.balance ?? 0" :label="$t('المحفظة')" />
               <!-- [X85] The money of the club of this slot only (the board of its league), in one place: the top bar, on the
                    screens where money is spent or earned, and refreshed after every tap that changes it. -->
-              <RouterLink v-if="showMoney && board.board" to="/finance" class="pill-money flex-col !gap-0 leading-none" :title="$t('أموال {v0}', { v0: $nm(board.board.club.name) })"
-                :aria-label="$t('أموال {v0}: {v1}', { v0: $nm(board.board.club.name), v1: money(board.board.money.cash) })">
-                <span class="hidden text-[10px] font-bold opacity-80 md:block">{{ $t('أموال النادي') }}</span>
-                <b class="font-numbers text-base" dir="ltr"><CountUp :value="board.board.money.cash" :format="money" /></b>
-              </RouterLink>
+              <MoneyPill v-if="showMoney && board.board" kind="cash" to="/finance" :value="board.board.money.cash" caption="أموال النادي" :title="$t('أموال {v0}', { v0: $nm(board.board.club.name) })"
+                :label="$t('أموال {v0}: {v1}', { v0: $nm(board.board.club.name), v1: money(board.board.money.cash) })" />
               <template v-if="inSlot">
-                <!-- [X61] Headless UI's Popover: the panel drops from the top bar under its button (Esc and the tap
-                     outside close it); not relative itself, so the panel spans the bar on a phone. -->
-                <Popover v-for="k in (['timers', 'pending'] as const)" :key="k">
-                  <PopoverButton class="bar-icon" :aria-label="k === 'timers' ? $t('المؤقتات') : waiting ? $t('ما ينتظرك: {n}', { n: waiting }) : $t('ما ينتظرك')">
-                    <template v-if="k === 'timers'"><Icon name="clock" /><span v-if="running" class="bar-badge bg-gold text-on-gold">{{ running }}</span></template>
-                    <template v-else><Icon name="todo" /><span v-if="waiting" class="bar-badge animate-pulse-ring bg-live text-white">{{ waiting }}</span></template>
-                  </PopoverButton>
-                  <Transition name="drop">
-                    <PopoverPanel v-slot="{ close }" class="contents">
-                      <AgendaPanel :kind="k" @close="close()" />
-                    </PopoverPanel>
-                  </Transition>
-                </Popover>
+                <!-- [X61] The panel drops from the top bar under its button (Esc and the veil close it); not relative
+                     itself, so the panel spans the bar on a phone. [Sprint 54 W4] Its own state, no Headless UI. -->
+                <button v-for="k in (['timers', 'pending'] as const)" :key="k" type="button" class="bar-icon" :aria-expanded="agenda === k" aria-haspopup="dialog"
+                  :aria-label="k === 'timers' ? $t('المؤقتات') : waiting ? $t('ما ينتظرك: {n}', { n: waiting }) : $t('ما ينتظرك')" @click="toggleAgenda(k, $event)">
+                  <template v-if="k === 'timers'"><Icon name="clock" /><span v-if="running" class="bar-badge bg-gold text-on-gold">{{ running }}</span></template>
+                  <template v-else><Icon name="todo" /><span v-if="waiting" class="bar-badge animate-pulse-ring bg-live text-white">{{ waiting }}</span></template>
+                </button>
+                <Transition name="drop">
+                  <AgendaPanel v-if="agenda" :key="agenda" :kind="agenda" @close="closeAgenda" />
+                </Transition>
               </template>
               <!-- [Sprint 39 N2] The notification sound: on or muted, one tap. -->
               <SoundToggle :class="inSlot ? 'max-sm:hidden' : ''" />
@@ -171,7 +186,7 @@ onBeforeUnmount(() => sizer?.disconnect())
             </RouterLink>
           </template>
           <template v-else-if="auth.loaded">
-            <RouterLink to="/login" class="flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">{{ $t('دخول') }}</RouterLink>
+            <UiButton to="/login" size="sm">{{ $t('دخول') }}</UiButton>
             <RouterLink to="/register" class="hidden h-touch items-center rounded-lg border border-text/25 px-4 font-bold sm:flex">{{ $t('إنشاء حساب') }}</RouterLink>
           </template>
         </div>
@@ -182,36 +197,37 @@ onBeforeUnmount(() => sizer?.disconnect())
       <nav v-if="auth.user" class="shell-nav hidden md:block" :aria-label="inSlot ? $t('أقسام النادي') : $t('أقسام اللعبة')">
         <div class="mx-auto flex max-w-7xl items-stretch gap-1 px-6" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
           <template v-if="inSlot">
-            <RouterLink v-for="s in clubSections.filter((x) => !x.group)" :key="s.name" :to="pathOf(s)" class="nav-item" :class="active(pathOf(s)) ? 'is-active' : ''" :aria-current="active(pathOf(s)) ? 'page' : undefined">
-              <Icon :name="s.icon" :size="20" class="nav-icon" />{{ $t(s.label) }}
-            </RouterLink>
-            <Popover v-for="g in groups" :key="g.key" class="relative flex">
-              <PopoverButton class="nav-item" :class="groupActive(g.key) ? 'is-active' : ''">
-                <Icon :name="g.icon" :size="20" class="nav-icon" />{{ $t(g.label) }}<span class="text-xs text-gold" aria-hidden="true">▾</span>
-              </PopoverButton>
-              <Transition name="drop">
-                <PopoverPanel v-slot="{ close }" class="nav-panel">
-                  <RouterLink v-for="s in g.items" :key="s.name" :to="pathOf(s)" class="nav-link" :class="route.path === pathOf(s) ? 'is-active' : ''" :aria-current="route.path === pathOf(s) ? 'page' : undefined" @click="close()">
-                    <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
-                  </RouterLink>
-                </PopoverPanel>
-              </Transition>
-            </Popover>
+            <NavItem v-for="s in clubSections.filter((x) => !x.group)" :key="s.name" :to="pathOf(s)" :icon="s.icon" :label="s.label" :active="active(pathOf(s))" />
+            <!-- [Sprint 54 W4] Each portal's list on reka-ui's DropdownMenu: the arrows walk it, Esc and the tap outside close it. -->
+            <DropdownMenuRoot v-for="g in groups" :key="g.key" :modal="false">
+              <DropdownMenuTrigger class="ui-nav-item" :class="groupActive(g.key) ? 'is-active' : ''">
+                <Icon :name="g.icon" :size="20" class="ui-nav-icon" />{{ $t(g.label) }}<span class="text-xs text-gold" aria-hidden="true">▾</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuContent align="start" :side-offset="6" class="nav-panel drop-panel">
+                  <DropdownMenuItem v-for="s in g.items" :key="s.name" as-child>
+                    <RouterLink :to="pathOf(s)" class="nav-link" :class="route.path === pathOf(s) ? 'is-active' : ''" :aria-current="route.path === pathOf(s) ? 'page' : undefined">
+                      <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
+                    </RouterLink>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenuPortal>
+            </DropdownMenuRoot>
           </template>
           <template v-else>
-            <RouterLink v-for="s in OUTSIDE" :key="s.path" :to="s.path" class="nav-item" :class="route.path === s.path ? 'is-active' : ''" :aria-current="route.path === s.path ? 'page' : undefined">
-              <Icon :name="s.icon" :size="20" class="nav-icon" />{{ $t(s.label) }}
-            </RouterLink>
+            <NavItem v-for="s in OUTSIDE" :key="s.path" :to="s.path" :icon="s.icon" :label="s.label" :active="route.path === s.path" />
           </template>
           <div class="flex-1" />
-          <Popover class="relative flex">
-            <PopoverButton class="nav-item"><Icon name="chat" :size="20" class="nav-icon" />{{ $t('المجتمع') }}<span class="text-xs text-gold" aria-hidden="true">▾</span></PopoverButton>
-            <Transition name="drop">
-              <PopoverPanel v-slot="{ close }" class="nav-panel end-0 start-auto">
-                <RouterLink v-for="s in COMMUNITY" :key="s.path" :to="s.path" class="nav-link" :class="active(s.path) ? 'is-active' : ''" @click="close()"><Icon :name="s.icon" :size="18" />{{ $t(s.label) }}</RouterLink>
-              </PopoverPanel>
-            </Transition>
-          </Popover>
+          <DropdownMenuRoot :modal="false">
+            <DropdownMenuTrigger class="ui-nav-item"><Icon name="chat" :size="20" class="ui-nav-icon" />{{ $t('المجتمع') }}<span class="text-xs text-gold" aria-hidden="true">▾</span></DropdownMenuTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuContent align="end" :side-offset="6" class="nav-panel drop-panel">
+                <DropdownMenuItem v-for="s in COMMUNITY" :key="s.path" as-child>
+                  <RouterLink :to="s.path" class="nav-link" :class="active(s.path) ? 'is-active' : ''"><Icon :name="s.icon" :size="18" />{{ $t(s.label) }}</RouterLink>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenuPortal>
+          </DropdownMenuRoot>
         </div>
       </nav>
 
@@ -243,7 +259,7 @@ onBeforeUnmount(() => sizer?.disconnect())
     <RouterLink v-if="auth.user?.suspended" to="/support" class="block bg-live/25 px-4 py-2 text-center text-sm font-bold" role="alert">
       {{ $t('حسابك معلّق من فريق التطوير') }}<template v-if="auth.user.suspended.reason">: {{ auth.user.suspended.reason }}</template>. <span class="text-gold">{{ $t('راسل الفريق') }}</span>
     </RouterLink>
-    <RouterLink v-else-if="auth.user && !auth.user.verification?.verified && route.name !== 'profile'" to="/profile" class="block bg-warning/20 px-4 py-2 text-center text-sm">
+    <RouterLink v-else-if="auth.user && !auth.user.verification?.verified && route.name !== 'profile'" to="/profile" class="flex min-h-touch items-center justify-center bg-warning/20 px-4 py-2 text-center text-sm">
       {{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }} <span class="font-bold text-gold">{{ $t('وثّق حسابك من صفحة حسابي') }}</span>
     </RouterLink>
 
@@ -321,32 +337,9 @@ onBeforeUnmount(() => sizer?.disconnect())
 }
 :global(.chrome-tab:hover),
 .coach-tab:hover { border-color: color-mix(in srgb, var(--color-gold) 45%, transparent); background: color-mix(in srgb, var(--color-surface-raised) 90%, transparent); }
-/* The coins: an orange pill as in every manager game's corner. */
-.pill-coins {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  height: 2.25rem;
-  padding: 0 0.7rem 0 0.4rem;
-  border-radius: 999px;
-  color: var(--color-on-gold);
-  background: linear-gradient(180deg, var(--color-gold-light), var(--color-gold) 60%, var(--color-gold-dark));
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.45) inset, 0 4px 12px -6px color-mix(in srgb, var(--color-shade) 60%, transparent);
-}
-/* [Sprint 20 W2] The club's money: an emerald pill beside the coins; the timers', to-do and messages' icons. */
-.pill-money {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.25rem;
-  padding: 0 0.7rem;
-  border-radius: 999px;
-  color: var(--color-success);
-  background: color-mix(in srgb, var(--color-success) 18%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-success) 35%, transparent);
-}
-/* [Sprint 51 W1] Global: the timers' and to-do's buttons are Headless UI's PopoverButton, which the scoped attribute
-   never reached, so they were drawn 22px wide and unrounded and their badge, positioned against the whole bar, hung off
+/* The coins and the club's money: components/ui/MoneyPill.vue (Sprint 54 W5). */
+/* [Sprint 51 W1] Global: the timers' and to-do's buttons were Headless UI's PopoverButton, which the scoped attribute
+   never reached (kept global after Sprint 54 W4), so they were drawn 22px wide and unrounded and their badge, positioned against the whole bar, hung off
    the screen's edge (a 2px sideways scroll on every club screen). */
 :global(.bar-icon) {
   position: relative;
@@ -371,8 +364,6 @@ onBeforeUnmount(() => sizer?.disconnect())
   font-size: 0.75rem;
   text-align: center;
 }
-/* [X85] Always in sight on its screens, narrow phones too: only tighter. */
-@media (max-width: 380px) { .pill-money { padding: 0 0.45rem } }
 /* [Sprint 48 D2] The computer's menu row: night glass over the stadium, each section an icon over its name as in the
    manager games' bars, the current one lit in gold, and the gold seam under the row (the bar's own seam is emerald). */
 .shell-nav {
@@ -382,49 +373,21 @@ onBeforeUnmount(() => sizer?.disconnect())
   border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
   box-shadow: 0 10px 24px -18px var(--color-shade);
 }
-.nav-item {
-  position: relative;
-  display: flex;
-  min-height: 3rem;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0 0.85rem;
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--color-text);
-  white-space: nowrap;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-.nav-item .nav-icon { color: var(--color-gold); filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35)); transition: transform 0.15s ease; }
-.nav-item:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
-.nav-item:hover .nav-icon { transform: translateY(-2px) scale(1.08); }
-.nav-item.is-active { color: var(--color-gold-light); }
-.nav-item.is-active::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0.6rem;
-  bottom: -1px;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
-  background: linear-gradient(90deg, var(--color-gold-dark), var(--color-gold-light), var(--color-gold-dark));
-}
-.nav-panel {
-  position: absolute;
-  top: 100%;
-  inset-inline-start: 0;
+:global(.nav-panel) {
+  /* [Sprint 54 W4] Placed by reka-ui under its name and carried to the body (so global: the scoped mark does not
+     follow a portal's content). */
   z-index: 40;
   display: flex;
   min-width: 14rem;
   flex-direction: column;
   gap: 0.15rem;
-  margin-top: 0.35rem;
   padding: 0.4rem;
   border-radius: 0.9rem;
   background: var(--color-surface);
   border: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
-  box-shadow: 0 18px 40px -16px var(--color-shade);
+  box-shadow: var(--shadow-overlay);
 }
-.nav-link {
+:global(.nav-link) {
   display: flex;
   min-height: 2.75rem;
   align-items: center;
@@ -433,12 +396,12 @@ onBeforeUnmount(() => sizer?.disconnect())
   border-radius: 0.6rem;
   font-weight: 700;
   color: var(--color-text-soft);
+  outline: none;
 }
-.nav-link:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
-.nav-link.is-active { color: #fff; background: var(--color-brand); }
+:global(.nav-link:hover), :global(.nav-link[data-highlighted]) { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
+:global(.nav-link.is-active) { color: var(--color-broadcast-white); background: var(--color-brand); }
 /* [Sprint 48 L1] A phone turned sideways is short: the bar and the menu row tighten so the page keeps its room. */
 @media (max-height: 520px) and (min-width: 768px) {
-  .nav-item { min-height: 2.4rem; font-size: 0.85rem; padding: 0 0.6rem; }
   .shell-brand { display: none; }
   :global(.chrome-tab), .coach-tab { min-height: 2.6rem; margin-block: 0.25rem; }
 }
@@ -472,7 +435,7 @@ onBeforeUnmount(() => sizer?.disconnect())
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .portal-item:hover { transform: scale(1.03); box-shadow: 0 6px 16px -10px color-mix(in srgb, var(--color-shade) 70%, transparent); color: var(--color-text); }
-.portal-item.is-active { color: #fff; background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand)); }
+.portal-item.is-active { color: var(--color-broadcast-white); background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand)); }
 /* [X41] The broadcast's bar: a strip in the emerald of the shell, under the header. */
 .on-air {
   background: linear-gradient(90deg, color-mix(in srgb, var(--color-live) 25%, var(--color-panel)), var(--color-panel));
@@ -506,7 +469,7 @@ onBeforeUnmount(() => sizer?.disconnect())
 }
 .tab-item.is-active {
   position: relative;
-  color: #fff;
+  color: var(--color-broadcast-white);
   background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand));
   box-shadow: 0 6px 14px -8px var(--color-brand);
 }

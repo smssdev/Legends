@@ -5058,6 +5058,18 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'تدفع {amount} لـ {club} وينتقل اللاعب إليك فوراً دون موافقة مدربه.'**
   String releaseClauseConfirm(Object amount, Object club);
+
+  /// No description provided for @nothingYet.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا شيء هنا بعد'**
+  String get nothingYet;
+
+  /// No description provided for @loading.
+  ///
+  /// In ar, this message translates to:
+  /// **'جارٍ التحميل'**
+  String get loading;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // [X61] The first steps of a new coach, on the home screen: seven steps, each a button to the right screen. [X75] A step
-// is done only when the server says it is done in the game (home.onboarding), never by tapping it. Folds away (Headless UI's Disclosure), and goes once every step is done. [Sprint 26 W4] The falcon (A1)
+// is done only when the server says it is done in the game (home.onboarding), never by tapping it. Folds away (reka-ui's Collapsible, Sprint 54 W4), and goes once every step is done. [Sprint 26 W4] The falcon (A1)
 // cheers each step.
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
+import { CollapsibleContent, CollapsibleRoot, CollapsibleTrigger } from 'reka-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../stores/auth'
@@ -40,10 +40,10 @@ function hide() {
 </script>
 
 <template>
-  <Disclosure v-if="!hidden && count < STEPS.length" v-slot="{ open }" as="section" class="animate-fade-up rounded-xl border border-gold/30 bg-surface p-3" :aria-label="$t('خطواتك الأولى')">
+  <CollapsibleRoot v-if="!hidden && count < STEPS.length" v-slot="{ open }" as="section" class="animate-fade-up rounded-xl border border-gold/30 bg-surface p-3" :aria-label="$t('خطواتك الأولى')">
     <div class="flex items-center gap-2">
       <Character model="A1" :mood="count ? 'cheer' : 'joy'" class="w-12 shrink-0" />
-      <DisclosureButton class="flex min-h-touch flex-1 items-center gap-3 text-start">
+      <CollapsibleTrigger class="flex min-h-touch flex-1 items-center gap-3 text-start">
         <span class="relative grid size-11 shrink-0 place-items-center">
           <svg viewBox="0 0 36 36" class="absolute inset-0 -rotate-90" aria-hidden="true">
             <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" stroke-width="3" class="text-surface-sunk" />
@@ -55,11 +55,10 @@ function hide() {
         <span class="min-w-0 flex-1"><b class="block font-display text-base">{{ $t('خطواتك الأولى') }}</b>
           <span class="text-xs text-text-muted">{{ open || !next ? $t('سبع خطوات تجهّز ناديك لأول مباراة') : $t('التالية: {v0}', { v0: $t(next.label) }) }}</span></span>
         <span class="text-gold transition-transform duration-200" :class="open ? 'rotate-180' : ''" aria-hidden="true">▾</span>
-      </DisclosureButton>
+      </CollapsibleTrigger>
       <button type="button" class="grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إخفاء')" @click="hide">✕</button>
     </div>
-    <Transition name="drop">
-      <DisclosurePanel as="ol" class="drop-panel mt-2 flex flex-col gap-1.5">
+    <CollapsibleContent as="ol" class="drop-panel mt-2 flex flex-col gap-1.5">
         <li v-for="(s, i) in STEPS" :key="s.key">
           <button type="button" class="flex min-h-touch w-full items-center gap-3 rounded-lg px-3 py-2 text-start transition-colors" :class="done(s) ? 'bg-success/10' : 'bg-surface-sunk hover:bg-surface-raised'" @click="go(s)">
             <span class="grid size-7 shrink-0 place-items-center rounded-full font-numbers text-sm font-bold" :class="done(s) ? 'bg-success text-white' : 'bg-gold/15 text-gold'">
@@ -70,7 +69,6 @@ function hide() {
             <span v-if="!done(s)" aria-hidden="true" class="text-gold rtl:rotate-180">→</span>
           </button>
         </li>
-      </DisclosurePanel>
-    </Transition>
-  </Disclosure>
+    </CollapsibleContent>
+  </CollapsibleRoot>
 </template>

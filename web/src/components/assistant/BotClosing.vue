@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// [X61] The Assistant Coach's end: a card over the conversation, dropping from the top (Headless UI's Dialog keeps
+// [X61] The Assistant Coach's end: a card over the conversation, dropping from the top (reka-ui's Dialog, Sprint 54 W4, keeps
 // the focus inside and closes on Esc). What was done, what is next (the most urgent thing waiting, from the club
 // board), the coins and the club's money; the next step, the lineup, or keep it for later; and 👍/👎 with a note.
-import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
+import { DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { computed, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import { money } from '../../lib/format'
@@ -59,10 +59,11 @@ async function rate(helpful: boolean, withNote = false) {
 </script>
 
 <template>
-  <Dialog :open="!!bot.closing" class="relative z-[70]" @close="close">
-    <div class="fixed inset-0 bg-black/55" aria-hidden="true" />
-    <div class="fixed inset-x-0 top-0 flex justify-center p-3 pt-[max(0.75rem,env(safe-area-inset-top))] md:inset-x-auto md:end-0 md:w-[23rem]">
-      <DialogPanel class="closing relative w-full max-w-md overflow-hidden rounded-2xl p-[1.5px] shadow-2xl">
+  <DialogRoot :open="!!bot.closing" @update:open="(o: boolean) => { if (!o) close() }">
+    <DialogPortal>
+    <DialogOverlay class="ui-veil fixed inset-0 z-[70] bg-black/55" />
+    <div class="pointer-events-none fixed inset-x-0 top-0 z-[70] flex justify-center p-3 pt-[max(0.75rem,env(safe-area-inset-top))] md:inset-x-auto md:end-0 md:w-[23rem]">
+      <DialogContent class="closing pointer-events-auto relative w-full max-w-md overflow-hidden rounded-2xl p-[1.5px] shadow-overlay" :aria-describedby="undefined">
         <div class="relative flex max-h-[85dvh] flex-col gap-3 overflow-y-auto overscroll-contain rounded-2xl bg-surface p-4">
           <button type="button" class="absolute end-2 top-2 grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إغلاق')" @click="close">✕</button>
           <header class="flex items-center gap-3 pe-10">
@@ -118,9 +119,10 @@ async function rate(helpful: boolean, withNote = false) {
 
           <button type="button" class="min-h-touch text-sm font-bold text-brand-light" @click="close">{{ $t('العودة للمحادثة') }}</button>
         </div>
-      </DialogPanel>
+      </DialogContent>
     </div>
-  </Dialog>
+    </DialogPortal>
+  </DialogRoot>
 </template>
 
 <style scoped>

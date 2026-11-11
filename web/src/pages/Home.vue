@@ -5,6 +5,7 @@
 import InstallPrompt from '../components/InstallPrompt.vue'
 import ReminderPrompt from '../components/ReminderPrompt.vue'
 import UiDialog from '../components/ui/UiDialog.vue'
+import UiTabs from '../components/ui/UiTabs.vue'
 import { countdown, useNow } from '../lib/clock'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -156,6 +157,9 @@ function openSlot(s: Home['slots'][number]) {
   router.push('/club')
 }
 
+// [Sprint 54 W5] The three orders as the design system's tabs.
+const RANK_TABS: { key: By; label: string }[] = [{ key: 'rating', label: 'بالنقاط' }, { key: 'trophies', label: 'بالكؤوس' }, { key: 'level', label: 'بالمستوى' }]
+
 async function openRanking(by: By) {
   rankingBusy.value = true
   try {
@@ -195,11 +199,11 @@ async function openRanking(by: By) {
             <RatingBadge :tier="home.coach.rating.tier.key" :division="home.coach.rating.tier.division" :size="22" />
             <span class="truncate text-xs font-extrabold">{{ tierName(home.coach.rating.tier.key) }} <span class="font-numbers" dir="ltr">{{ divisionName(home.coach.rating.tier.division) }}</span></span>
             <b class="font-numbers text-xs text-gold" dir="ltr">{{ home.coach.rating.points }}</b>
-            <span v-if="home.coach.rating.recent[0]" class="font-numbers text-[11px] font-bold" :class="home.coach.rating.recent[0].delta >= 0 ? 'text-success' : 'text-danger'" dir="ltr">{{ signed(home.coach.rating.recent[0].delta) }}</span>
+            <span v-if="home.coach.rating.recent[0]" class="font-numbers text-caption font-bold" :class="home.coach.rating.recent[0].delta >= 0 ? 'text-success' : 'text-danger'" dir="ltr">{{ signed(home.coach.rating.recent[0].delta) }}</span>
           </button>
         </div>
         <div class="flex shrink-0 flex-col items-end gap-1.5">
-          <RouterLink to="/wallet" class="flex items-center gap-1 rounded-pill bg-gold/15 px-2.5 py-1 text-sm font-bold" :aria-label="$t('الكوينز')">
+          <RouterLink to="/wallet" class="flex min-h-touch items-center gap-1 rounded-pill bg-gold/15 px-2.5 py-1 text-sm font-bold" :aria-label="$t('الكوينز')">
             <img src="/brand/coin.svg" alt="" class="size-4" /><span class="font-numbers" dir="ltr">{{ home.coach.coins }}</span>
           </RouterLink>
         </div>
@@ -251,30 +255,30 @@ async function openRanking(by: By) {
           <template v-for="s in shownSlots" :key="s.slot">
           <!-- [Sprint 20 W1] An empty slot: «أنشئ دورياً» at once, and «انضم بكود». -->
           <div v-if="s.state === 'free'" class="slot-card is-free" :class="opened.includes(s.slot) ? 'is-opened' : ''" role="group" :aria-label="$t('الفتحة {n}: دوري جديد', { n: s.slot })">
-            <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">{{ $t('فتحة فارغة') }}</span></span>
+            <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-caption font-bold">{{ $t('فتحة فارغة') }}</span></span>
             <span class="flex flex-1 flex-col justify-center gap-1.5 p-2">
-              <RouterLink to="/leagues/new" class="flex min-h-10 items-center justify-center rounded-lg bg-gold text-sm font-bold text-on-gold">{{ $t('أنشئ دورياً') }}</RouterLink>
-              <RouterLink to="/join" class="flex min-h-10 items-center justify-center rounded-lg bg-surface-raised text-sm font-bold">{{ $t('انضم بكود') }}</RouterLink>
+              <UiButton to="/leagues/new" size="sm" block>{{ $t('أنشئ دورياً') }}</UiButton>
+              <UiButton to="/join" variant="quiet" size="sm" block>{{ $t('انضم بكود') }}</UiButton>
             </span>
           </div>
           <!-- [Sprint 24 B3] A locked slot: it opens with the account's age (the countdown and the bar of the wait), or
                the first one at once for coins. -->
           <div v-else-if="s.state === 'locked'" class="slot-card is-locked" :class="s.unlock_coins ? 'is-next' : ''" role="group" :aria-label="$t('الفتحة {n}: مقفلة', { n: s.slot })">
-            <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">🔒 {{ $t('مقفلة') }}</span></span>
+            <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-caption font-bold">🔒 {{ $t('مقفلة') }}</span></span>
             <span class="flex flex-1 flex-col items-center justify-center gap-1 p-2 text-center">
-              <span class="text-[11px] text-text-muted">{{ $t('تُفتح مجاناً بعد') }}</span>
+              <span class="text-caption text-text-muted">{{ $t('تُفتح مجاناً بعد') }}</span>
               <b class="font-numbers text-sm" dir="ltr">{{ countdown(s.opens_at, now) || $t('الآن') }}</b>
               <span class="h-1 w-full overflow-hidden rounded-pill bg-surface-sunk" aria-hidden="true"><span class="block h-full bg-brand-light" :style="{ width: (s.progress_bp ?? 0) / 100 + '%' }" /></span>
-              <button v-if="s.unlock_coins" type="button" class="mt-1 min-h-10 w-full rounded-lg bg-gold px-2 text-xs font-bold text-on-gold" @click="buying = s">{{ $t('فتح فوري ({v0} كوينز)', { v0: s.unlock_coins }) }}</button>
+              <UiButton v-if="s.unlock_coins" size="sm" block class="mt-1 !px-2 !text-xs" @click="buying = s">{{ $t('فتح فوري ({v0} كوينز)', { v0: s.unlock_coins }) }}</UiButton>
             </span>
           </div>
           <button v-else type="button" class="slot-card group" :class="`is-${s.state}`"
             :aria-label="$t('الفتحة {n}: {league}', { n: s.slot, league: s.league?.name ?? '' }) + (s.pending ? ' · ' + $t('ما ينتظرك: {n}', { n: s.pending }) : '')" @click="openSlot(s)">
             <span class="slot-band">
               <b class="font-numbers text-sm">{{ s.slot }}</b>
-              <span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">{{ s.league!.name }}</span>
-              <span v-if="s.position" class="rounded bg-shade/30 px-1 font-numbers text-[11px]" dir="ltr">{{ s.position }}/{{ s.teams }}</span>
-              <span v-if="s.pending" class="min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-[11px] text-white" :title="$t('ما ينتظرك')">{{ s.pending }}</span>
+              <span class="min-w-0 flex-1 truncate text-start text-caption font-bold">{{ s.league!.name }}</span>
+              <span v-if="s.position" class="rounded bg-shade/30 px-1 font-numbers text-caption" dir="ltr">{{ s.position }}/{{ s.teams }}</span>
+              <span v-if="s.pending" class="min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-caption text-white" :title="$t('ما ينتظرك')">{{ s.pending }}</span>
             </span>
             <span class="flex flex-1 items-center justify-center gap-2 px-2 py-1.5">
               <template v-if="s.state === 'club'">
@@ -283,7 +287,7 @@ async function openRanking(by: By) {
               </template>
               <template v-else-if="s.state === 'waiting'">
                 <span class="text-xl" aria-hidden="true">⏳</span>
-                <span class="text-[11px] text-text-muted">{{ $t('ينتظر موافقة المنشئ') }}</span>
+                <span class="text-caption text-text-muted">{{ $t('ينتظر موافقة المنشئ') }}</span>
               </template>
             </span>
             <span v-if="s.state === 'club'" class="slot-foot" :class="s.next_match?.live ? 'is-live' : ''">
@@ -302,7 +306,7 @@ async function openRanking(by: By) {
       </div>
 
       <details class="home-more" :open="moreOpen" @toggle="(e: Event) => setMore((e.target as HTMLDetailsElement).open)">
-        <summary class="flex min-h-touch cursor-pointer list-none items-center justify-between gap-2 rounded-xl bg-surface px-4 font-bold">
+        <summary class="ui-card flex min-h-touch cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-4 font-bold">
           <span>{{ $t('المزيد') }} <span class="text-xs font-normal text-text-muted">{{ $t('الإعلانات والأوسمة والترتيب') }}</span></span>
           <span class="more-chevron text-text-muted" aria-hidden="true">▾</span>
         </summary>
@@ -332,7 +336,7 @@ async function openRanking(by: By) {
         </section>
 
         <!-- [Sprint 30 G4] The badges: earned ones lit, the rest with how far there is to go. -->
-        <section v-if="badges.length" class="flex flex-col gap-2 rounded-xl bg-surface p-3" :aria-label="$t('أوسمتي')">
+        <section v-if="badges.length" class="ui-card flex flex-col gap-2 rounded-xl p-3" :aria-label="$t('أوسمتي')">
           <h2 class="flex items-center justify-between px-1 font-display text-base font-extrabold">{{ $t('أوسمتي') }}
             <span class="font-numbers text-sm text-gold">{{ badges.filter((b) => b.earned).length }}/{{ badges.length }}</span></h2>
           <div v-for="tier in byTier" :key="tier.key" class="flex flex-col gap-1.5">
@@ -342,7 +346,7 @@ async function openRanking(by: By) {
             <li v-for="b in tier.badges" :key="b.key" class="flex flex-col items-center gap-1 rounded-lg p-1.5 text-center" :class="b.earned ? 'bg-gold/15' : 'bg-surface-sunk opacity-70'"
               :title="$t(BADGES[b.key][1]) + ' · ' + b.progress + '/' + b.goal">
               <span class="text-2xl" :class="b.earned ? '' : 'grayscale'" aria-hidden="true">{{ BADGES[b.key][0] }}</span>
-              <span class="line-clamp-2 text-[11px] font-bold leading-tight">{{ $t(BADGES[b.key][1]) }}</span>
+              <span class="line-clamp-2 text-caption font-bold leading-tight">{{ $t(BADGES[b.key][1]) }}</span>
               <span v-if="!b.earned" class="h-1 w-full overflow-hidden rounded-pill bg-bg/50" role="progressbar" :aria-valuenow="b.progress" :aria-valuemax="b.goal" :aria-label="$t(BADGES[b.key][1])">
                 <span class="block h-full rounded-pill bg-gold" :style="{ width: `${Math.round((b.progress / b.goal) * 100)}%` }" /></span>
             </li>
@@ -360,23 +364,23 @@ async function openRanking(by: By) {
         <div class="grid grid-cols-4 gap-2 xl:grid-cols-2">
           <div class="home-tile">
             <b class="font-numbers text-xl" dir="ltr">{{ home.coach.record.won }}<span class="text-xs text-text-muted">/{{ home.coach.record.played }}</span></b>
-            <span class="text-[11px] text-text-muted">{{ $t('فوز') }}</span>
+            <span class="text-caption text-text-muted">{{ $t('فوز') }}</span>
           </div>
           <button type="button" class="home-tile" @click="openRanking('trophies')">
             <b class="font-numbers text-xl text-gold">{{ home.trophies.total }}</b>
-            <span class="text-[11px] text-text-muted">{{ $t('الكؤوس') }}</span>
+            <span class="text-caption text-text-muted">{{ $t('الكؤوس') }}</span>
           </button>
           <button type="button" class="home-tile" @click="openRanking('trophies')">
             <svg viewBox="0 0 24 24" class="size-6 text-gold" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4ZM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4" /></svg>
-            <span class="text-[11px] font-bold">{{ $t('لوحة الشرف') }}</span>
+            <span class="text-caption font-bold">{{ $t('لوحة الشرف') }}</span>
           </button>
           <button type="button" class="home-tile" @click="openRanking('rating')">
             <RatingBadge :tier="home.coach.rating.tier.key" :division="home.coach.rating.tier.division" :size="22" />
-            <span class="text-[11px] font-bold">{{ $t('ترتيب النقاط') }}</span>
+            <span class="text-caption font-bold">{{ $t('ترتيب النقاط') }}</span>
           </button>
           <button type="button" class="home-tile" @click="openRanking('level')">
             <svg viewBox="0 0 24 24" class="size-6 text-gold" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
-            <span class="text-[11px] font-bold">{{ $t('المستويات') }}</span>
+            <span class="text-caption font-bold">{{ $t('المستويات') }}</span>
           </button>
         </div>
         <!-- Quick ways in. -->
@@ -394,17 +398,10 @@ async function openRanking(by: By) {
     <AdSlot v-if="home" class="relative mt-4" />
 
     <!-- The global ranking [X18]. -->
-    <UiDialog :open="!!(ranking || rankingBusy)" bare @close="ranking = null"><template v-if="ranking || rankingBusy">
-      <div class="flex max-h-[85dvh] w-full max-w-lg flex-col gap-3 overflow-y-auto rounded-xl bg-surface p-4">
-        <div class="flex items-center gap-2">
-          <h2 class="flex-1 font-display text-xl font-extrabold">{{ ranking?.by === 'level' ? $t('ترتيب المستويات') : ranking?.by === 'rating' ? $t('ترتيب النقاط') : $t('لوحة شرف المدربين') }}</h2>
-          <button type="button" class="size-touch rounded-md bg-surface-raised" :aria-label="$t('إغلاق')" @click="ranking = null">✕</button>
-        </div>
+    <UiDialog :open="!!(ranking || rankingBusy)" wide closable :title="ranking?.by === 'level' ? 'ترتيب المستويات' : ranking?.by === 'rating' ? 'ترتيب النقاط' : 'لوحة شرف المدربين'" @close="ranking = null"><div v-if="ranking || rankingBusy" class="flex flex-col gap-3">
         <p v-if="rankingBusy" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
         <template v-else-if="ranking">
-          <div class="flex gap-2">
-            <button v-for="[k, l] in ([['rating', 'بالنقاط'], ['trophies', 'بالكؤوس'], ['level', 'بالمستوى']] as const)" :key="k" type="button" class="h-touch rounded-pill px-4 text-sm font-bold" :class="ranking.by === k ? 'bg-gold text-on-gold' : 'bg-surface-raised'" @click="openRanking(k)">{{ $t(l) }}</button>
-          </div>
+          <UiTabs :model-value="ranking.by" :items="RANK_TABS" label="ترتيب المدربين" fill size="sm" @update:model-value="openRanking" />
           <div v-for="r in ranking.coaches" :key="r.coach.id" class="flex min-h-touch items-center gap-3 border-t border-text/5" :class="r.coach.id === auth.user?.id ? 'text-gold' : ''">
             <span class="w-7 text-center font-numbers text-text-muted">{{ r.position }}</span>
             <RouterLink :to="{ name: 'coach', params: { id: r.coach.id } }" class="min-w-0 flex-1 truncate font-bold">{{ r.coach.name }} <OfficialBadge v-if="r.coach.official" /><VerifiedBadge v-else-if="r.coach.verified" /></RouterLink>
@@ -420,17 +417,11 @@ async function openRanking(by: By) {
           <p v-if="ranking.me && ranking.me.position > 50" class="border-t border-gold/40 pt-2 text-sm">{{ $t('مركزك:') }} <b class="font-numbers">{{ ranking.me.position }}</b></p>
           <p v-if="!ranking.coaches.length" class="text-text-muted">{{ $t('لا مدربين بعد.') }}</p>
         </template>
-      </div>
-    </template></UiDialog>
+    </div></UiDialog>
 
     <!-- [Sprint 25] The rating's sheet: the emblem and the points, the way to the next division, the seven tiers, and
          the latest changes. How the points are counted is in the assistant's guide. -->
-    <UiDialog :open="!!(ratingOpen && rating && home)" bare @close="ratingOpen = false"><template v-if="ratingOpen && rating && home">
-      <div class="flex max-h-[88dvh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-xl bg-surface p-4">
-        <div class="flex items-center gap-2">
-          <h2 class="flex-1 font-display text-xl font-extrabold">{{ $t('نقاط المدرب ودرجته') }}</h2>
-          <button type="button" class="size-touch rounded-md bg-surface-raised" :aria-label="$t('إغلاق')" @click="ratingOpen = false">✕</button>
-        </div>
+    <UiDialog :open="!!(ratingOpen && rating && home)" wide closable title="نقاط المدرب ودرجته" @close="ratingOpen = false"><div v-if="ratingOpen && rating && home" class="flex flex-col gap-4">
         <div class="rating-hero" :class="`is-${rating.tier.key}`">
           <RatingBadge :tier="rating.tier.key" :division="rating.tier.division" :size="72" />
           <div class="flex min-w-0 flex-1 flex-col gap-1">
@@ -440,12 +431,12 @@ async function openRanking(by: By) {
               <div class="h-2 overflow-hidden rounded-pill bg-surface-sunk" role="progressbar" :aria-valuenow="rating.tier.progress_bp / 100" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('التقدم إلى الدرجة التالية')">
                 <div class="h-full rounded-pill bg-gold" :style="{ width: rating.tier.progress_bp / 100 + '%' }" />
               </div>
-              <span class="text-[11px] text-text-muted">{{ $t('{n} نقطة للمستوى التالي', { n: rating.tier.next - rating.points }) }}</span>
+              <span class="text-caption text-text-muted">{{ $t('{n} نقطة للمستوى التالي', { n: rating.tier.next - rating.points }) }}</span>
             </template>
             <span v-else class="text-xs font-bold text-gold">{{ $t('بلغت القمة') }}</span>
           </div>
         </div>
-        <p class="text-[11px] text-text-muted">{{ $t('أعلى ما بلغت: {n} نقطة', { n: rating.peak }) }}</p>
+        <p class="text-caption text-text-muted">{{ $t('أعلى ما بلغت: {n} نقطة', { n: rating.peak }) }}</p>
 
         <!-- The ladder, top tier first: those reached in colour, the current one marked. -->
         <ol class="flex flex-col gap-1.5" :aria-label="$t('الدرجات')">
@@ -467,26 +458,23 @@ async function openRanking(by: By) {
               <span class="min-w-0 flex-1 truncate">{{ $t(c.result === 'win' ? 'فوز على {o}' : c.result === 'draw' ? 'تعادل مع {o}' : 'خسارة أمام {o}', { o: c.opponent ?? '' }) }}</span>
               <b class="font-numbers" dir="ltr">{{ c.for }}-{{ c.against }}</b>
             </template>
-            <span v-if="c.competition === 'cup' && c.kind === 'match'" class="text-[11px] text-text-muted">{{ $t('الكأس') }}</span>
+            <span v-if="c.competition === 'cup' && c.kind === 'match'" class="text-caption text-text-muted">{{ $t('الكأس') }}</span>
           </div>
         </div>
-      </div>
-    </template></UiDialog>
+    </div></UiDialog>
 
     <!-- [Sprint 24 B3] The confirmation before the coins go, or the way to more coins when they are short. -->
-    <div v-if="buying && home" class="fixed inset-0 z-50 grid place-items-center bg-bg-deep/80 p-4" role="dialog" aria-modal="true" :aria-label="$t('فتح فوري')">
-      <div class="flex w-full max-w-sm flex-col gap-4 rounded-2xl border border-gold/40 bg-surface p-5 text-center shadow-2xl">
-        <span class="text-4xl" aria-hidden="true">🔓</span>
-        <p class="font-bold">{{ $t('هل أنت متأكد من فتح الفتحة رقم {v0} فوراً مقابل {v1} كوينز؟', { v0: buying.slot, v1: buying.unlock_coins }) }}</p>
-        <p class="text-sm text-text-muted">{{ $t('رصيدك') }}: <b class="font-numbers" dir="ltr">{{ home.coach.coins }}</b></p>
-        <p v-if="buyError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">{{ $t(buyError) }}</p>
-        <div class="flex gap-2">
-          <button v-if="home.coach.coins >= (buying.unlock_coins ?? 0)" type="button" class="h-touch flex-1 rounded-lg bg-gold font-bold text-on-gold disabled:opacity-50" :disabled="buyBusy" @click="unlock">{{ $t('افتحها الآن') }}</button>
-          <RouterLink v-else to="/wallet" class="flex h-touch flex-1 items-center justify-center rounded-lg bg-gold font-bold text-on-gold">{{ $t('رصيدك لا يكفي: اشحن الكوينز') }}</RouterLink>
-          <button type="button" class="h-touch flex-1 rounded-lg bg-surface-raised font-bold" @click="buying = null">{{ $t('إلغاء') }}</button>
-        </div>
+    <UiDialog :open="!!(buying && home)" title="فتح فوري" @close="buying = null"><div v-if="buying && home" class="flex flex-col gap-4 text-center">
+      <span class="text-4xl" aria-hidden="true">🔓</span>
+      <p class="font-bold">{{ $t('هل أنت متأكد من فتح الفتحة رقم {v0} فوراً مقابل {v1} كوينز؟', { v0: buying.slot, v1: buying.unlock_coins }) }}</p>
+      <p class="text-sm text-text-muted">{{ $t('رصيدك') }}: <b class="font-numbers" dir="ltr">{{ home.coach.coins }}</b></p>
+      <p v-if="buyError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">{{ $t(buyError) }}</p>
+      <div class="flex gap-2">
+        <UiButton v-if="home.coach.coins >= (buying.unlock_coins ?? 0)" class="flex-1" :loading="buyBusy" @click="unlock">{{ $t('افتحها الآن') }}</UiButton>
+        <UiButton v-else to="/wallet" class="flex-1">{{ $t('رصيدك لا يكفي: اشحن الكوينز') }}</UiButton>
+        <UiButton variant="quiet" class="flex-1" @click="buying = null">{{ $t('إلغاء') }}</UiButton>
       </div>
-    </div>
+    </div></UiDialog>
   </div>
 </template>
 
@@ -560,7 +548,7 @@ async function openRanking(by: By) {
   color: var(--color-text);
   background: color-mix(in srgb, var(--color-text) 10%, transparent);
 }
-.slot-card.is-club .slot-band { color: #fff; background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark)); background-blend-mode: soft-light, normal; }
+.slot-card.is-club .slot-band { color: var(--color-broadcast-white); background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark)); background-blend-mode: soft-light, normal; }
 .slot-card.is-waiting .slot-band { background: color-mix(in srgb, var(--color-warning) 35%, transparent); }
 .slot-disc {
   display: grid;
@@ -569,20 +557,20 @@ async function openRanking(by: By) {
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 999px;
-  background: radial-gradient(circle at 50% 30%, #ffffff, var(--color-chrome) 55%, var(--color-chrome-dark));
+  background: radial-gradient(circle at 50% 30%, var(--color-broadcast-white), var(--color-chrome) 55%, var(--color-chrome-dark));
   box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--color-shade) 80%, transparent);
 }
 .slot-foot {
   padding: 0.35rem 0.5rem;
-  font-size: 0.7rem;
+  font-size: var(--text-caption);
   font-weight: 700;
   color: var(--color-on-chrome);
-  background: linear-gradient(180deg, #ffffff, var(--color-chrome));
+  background: linear-gradient(180deg, var(--color-broadcast-white), var(--color-chrome));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.slot-foot.is-live { color: #fff; background: var(--color-live); }
+.slot-foot.is-live { color: var(--color-broadcast-white); background: var(--color-live); }
 .coach-card {
   position: relative;
   overflow: hidden;
