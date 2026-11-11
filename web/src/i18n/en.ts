@@ -118,6 +118,8 @@ export const EN: Record<string, string> = {
   'العدّادات': 'Clocks',
   'الاحتياط وخارج التشكيلة': 'Bench and the rest of the squad',
   'الإيقاع والضغط': 'Tempo and pressing',
+  'الفلاتر': 'Filters',
+  'اعرض اللاعبين': 'Show the players',
   'إغلاق': 'Close',
   'ترتيب المدربين': 'Coaches ranking',
   'م{n}': 'L{n}',
