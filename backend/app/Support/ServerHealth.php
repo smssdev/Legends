@@ -116,9 +116,10 @@ class ServerHealth
 
     private static function live(): array
     {
-        $host = config('reverb.servers.reverb.host');
-        $host = $host === '0.0.0.0' ? '127.0.0.1' : $host;
-        $port = (int) config('reverb.servers.reverb.port');
+        // [Sprint 52] Where the game publishes to Reverb (its own service on our server, REVERB_HOST), else this machine.
+        $host = (string) (config('broadcasting.connections.reverb.options.host') ?: config('reverb.servers.reverb.host'));
+        $host = in_array($host, ['', '0.0.0.0'], true) ? '127.0.0.1' : $host;
+        $port = (int) (config('broadcasting.connections.reverb.options.port') ?: config('reverb.servers.reverb.port'));
         $socket = @fsockopen($host, $port, $errno, $error, 3);
         if ($socket) {
             fclose($socket);

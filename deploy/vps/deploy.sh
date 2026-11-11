@@ -30,6 +30,9 @@ ssh_ 'free=$(df -Pm / | awk "NR==2 {print \$4}"); echo "Disk: ${free} MB free"; 
   echo "Under 2 GB free: clean up first (docker image prune -a, docker builder prune). The pgdata volume is never touched."; exit 1; }'
 
 # Only what the image is built from (Dockerfile), not the audio, Unity and logo sources (hundreds of MB).
+# [Sprint 52 B7] Once: the Android app that shipped inside the image (web/public/downloads, out of the repository since)
+# moves to the downloads volume, where the new image's public/downloads points. Nothing to do when it is there already.
+ssh_ 'docker exec -u root legends-app-1 sh -c "[ -d storage/app/downloads/bundled ] || { [ -f public/downloads/android.json ] && mkdir -p storage/app/downloads/bundled && cp public/downloads/* storage/app/downloads/bundled/ && chown -R www-data:www-data storage/app/downloads && echo \"The Android app moved to the downloads volume.\"; }" 2>/dev/null' || true
 git archive --format=tar.gz HEAD Dockerfile .dockerignore backend data web docs/design docs/api/frame-golden.json deploy | ssh_ 'rm -rf /opt/legends/src.new && mkdir -p /opt/legends/src.new && tar -xz -C /opt/legends/src.new \
   && rm -rf /opt/legends/src && mv /opt/legends/src.new /opt/legends/src'
 
@@ -39,7 +42,8 @@ ssh_ 'test -f /opt/legends/.env || { umask 077; {
   echo "DB_PASSWORD=$(openssl rand -hex 24)"
   echo "APP_KEY_SEED=$(openssl rand -hex 32)"
 } > /opt/legends/.env; echo "Made /opt/legends/.env"; }
-grep -q "^REVERB_APP_SECRET=" /opt/legends/.env || echo "REVERB_APP_SECRET=$(openssl rand -hex 24)" >> /opt/legends/.env'
+grep -q "^REVERB_APP_SECRET=" /opt/legends/.env || echo "REVERB_APP_SECRET=$(openssl rand -hex 24)" >> /opt/legends/.env
+grep -q "^REDIS_PASSWORD=" /opt/legends/.env || echo "REDIS_PASSWORD=$(openssl rand -hex 24)" >> /opt/legends/.env'
 
 # The server's tools: legends-set (a secret, typed on the server), legends-deploy (a deploy from the server itself, X64)
 # and legends-backup (daily at 03:00 Cairo, 01:00 UTC); legends-reset (the game from zero, by hand only, X95).
@@ -52,7 +56,10 @@ ssh_ 'install -m 755 /opt/legends/src/deploy/vps/set.sh /usr/local/bin/legends-s
   && echo "*/5 * * * * root docker exec legends-app-1 php artisan server:health --notify > /dev/null 2>&1" > /etc/cron.d/legends-health'
 # [Sprint 21 E8.7] Every 5 minutes the health check (the disk among it) alerts the phones by ntfy when NTFY_TOPIC is set.
 
-ssh_ 'cd /opt/legends/src/deploy/vps && docker compose --env-file /opt/legends/.env up -d --build && docker image prune -f > /dev/null'
+# [Sprint 52] The services (site, queue, scheduler, matches, Reverb, Redis) from one image, built once; --wait returns
+# when the site answers its health check (it migrates first), and fails the deploy if it does not within 5 minutes.
+ssh_ 'cd /opt/legends/src/deploy/vps && docker compose --env-file /opt/legends/.env up -d --build --remove-orphans --wait --wait-timeout 300 && docker image prune -f > /dev/null && docker network prune -f > /dev/null'
 # The backups volume is made by Docker as root: the game (www-data) writes its copies there before each migrate.
-ssh_ 'docker exec -u root legends-app-1 chown www-data:www-data /app/backend/database/backups'
+# [Sprint 52] The volumes are made by root: the game (www-data) writes its backups and the admin's app uploads there.
+ssh_ 'docker exec -u root legends-app-1 chown www-data:www-data /app/backend/database/backups /app/backend/storage/app/downloads'
 ssh_ 'sleep 20; docker logs --tail 30 legends-app-1'

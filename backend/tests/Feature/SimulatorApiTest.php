@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Engine\FloatGuard;
+use App\Models\User;
 use App\Simulator\MatchChoreographer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -77,6 +78,22 @@ class SimulatorApiTest extends TestCase
         $this->assertArrayNotHasKey('tactics', $report);
         $this->assertNotEmpty($report['reasons']);
         $this->assertNotNull($report['man_of_the_match']);
+    }
+
+    /** [Sprint 52 B9] A visitor without an account: guest_matches_per_day trial matches a day per address; a coach is not counted. */
+    public function test_a_visitor_has_a_daily_limit_of_trial_matches_and_a_coach_does_not(): void
+    {
+        config(['game.simulator.guest_matches_per_day' => 2]);
+        $home = $this->club('Alpha', 82);
+        $away = $this->club('Beta', 79);
+        $body = ['home_id' => $home, 'away_id' => $away];
+        $this->postJson('/api/v1/sim/matches', $body)->assertCreated();
+        $this->postJson('/api/v1/sim/matches', $body)->assertCreated();
+        $this->postJson('/api/v1/sim/matches', $body)->assertStatus(429);
+        // Another address is not counted with this one.
+        $this->withServerVariables(['REMOTE_ADDR' => '10.9.8.7'])->postJson('/api/v1/sim/matches', $body)->assertCreated();
+        // A signed-in coach from the same address plays on.
+        $this->actingAs(User::factory()->create(), 'sanctum')->postJson('/api/v1/sim/matches', $body)->assertCreated();
     }
 
     public function test_the_simulator_is_hidden_when_disabled(): void

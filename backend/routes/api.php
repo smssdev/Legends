@@ -509,7 +509,7 @@ Route::prefix('sim')->middleware('simulator')->controller(SimulatorController::c
     Route::get('leagues', 'leagues');
     Route::get('clubs', 'clubs');
     Route::get('clubs/{club}', 'club');
-    Route::post('matches', 'store')->middleware('throttle:20,1,sim-store');
+    Route::post('matches', 'store')->middleware(['throttle:20,1,sim-store', 'throttle:sim-guest']);
     Route::get('matches/{match}', 'show');
     Route::post('matches/{match}/actions', 'order')->middleware('throttle:120,1,sim-orders');
     Route::post('matches/{match}/ticks', 'ticks')->middleware('throttle:60,1,sim-ticks');

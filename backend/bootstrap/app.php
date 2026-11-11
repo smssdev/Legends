@@ -38,10 +38,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('api', CompressJson::class);
         // [Sprint 21 E7.3] A suspended account is told why and kept out.
         $middleware->appendToGroup('api', NotSuspended::class);
-        // The public link (Tailscale Funnel) reaches the game through tailscaled on this machine: trust only
-        // that local hop's X-Forwarded-* headers, so links and cookies are https on the public address.
-        // A Codespace sets TRUSTED_PROXIES=* (.devcontainer/env.sh): there only GitHub's forwarding reaches the game.
-        $middleware->trustProxies(at: env('TRUSTED_PROXIES') === '*' ? '*' : ['127.0.0.1', '::1']);
+        // Whose X-Forwarded-* headers count (https, the public host, the player's address): this machine by default; on
+        // our server Docker's network, where the server's nginx comes from [Sprint 52 B8] (start.sh, compose.yml), as a
+        // comma list of addresses or ranges. A Codespace sets TRUSTED_PROXIES=* (.devcontainer/env.sh).
+        $proxies = (string) env('TRUSTED_PROXIES', '');
+        $middleware->trustProxies(at: $proxies === '*' ? '*' : (array_values(array_filter(array_map('trim', explode(',', $proxies)))) ?: ['127.0.0.1', '::1']));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(fn (Throwable $e, Request $request) => ApiErrors::render($e, $request));

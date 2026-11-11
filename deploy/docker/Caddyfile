@@ -1,0 +1,65 @@
+# [Sprint 52 B3] The game's web server in the container: FrankenPHP (Caddy with PHP inside). The server's nginx
+# (CloudPanel, deploy/vps/nginx-site.conf) sends HTTPS here on port 8000.
+# - The built files (/assets, the logos, the fonts, the sounds, the APK...) leave from Caddy itself, with their Brotli or
+#   gzip copy made at build time, their cache time and the security headers: no PHP thread is held by a download.
+# - Everything else (the API, the pages of the Vue app, Google's sign-in...) goes to deploy/docker/router.php, as with
+#   PHP's own server before: it sends a page with its scripts' hashes in the CSP, or hands the request to Laravel.
+{
+	admin off
+	auto_https off
+	persist_config off
+	frankenphp {
+		# Threads that wait on the database or Redis cost little memory: a few always, more under load.
+		num_threads {$PHP_THREADS:6}
+		max_threads {$PHP_MAX_THREADS:24}
+	}
+	servers {
+		timeouts {
+			read_body 60s
+			idle 120s
+		}
+	}
+}
+
+# (security_headers), written at start from App\Http\Security\SecurityPolicy (deploy/docker/caddy-headers.php).
+import {$XDG_CONFIG_HOME:/config}/caddy/security-headers.caddy
+
+:{$PORT:8000} {
+	root * /app/backend/public
+	# No server name on any answer.
+	header -Server
+
+	# A real file under public/, but never a page (HTML goes through router.php for its hashes), PHP, or a hidden one.
+	@static {
+		file {path}
+		not path / */ *.html *.php */.*
+	}
+	handle @static {
+		import security_headers
+		# Names that change with their content: a year. The fonts a month. The rest five minutes.
+		@lasting path /assets/* /logos/* /brand/* /art/* /unity/*
+		header @lasting Cache-Control "public, max-age=31536000, immutable"
+		@fonts path /fonts/*
+		header @fonts Cache-Control "public, max-age=2592000"
+		@other not path /assets/* /logos/* /brand/* /art/* /unity/* /fonts/*
+		header @other Cache-Control "public, max-age=300"
+		# [Sprint 15 D1] The Android app downloads as a file.
+		@apk path *.apk
+		header @apk {
+			Content-Type "application/vnd.android.package-archive"
+			Content-Disposition "attachment"
+		}
+		@manifest path *.webmanifest
+		header @manifest Content-Type "application/manifest+json"
+		file_server {
+			precompressed br gzip
+		}
+	}
+
+	handle {
+		rewrite * /router.php
+		php {
+			root /app/backend
+		}
+	}
+}

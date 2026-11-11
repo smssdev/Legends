@@ -26,22 +26,21 @@ WORKDIR /app/backend
 COPY backend/composer.json backend/composer.lock ./
 RUN composer install --no-dev --no-interaction --prefer-dist --no-progress --no-scripts --no-autoloader
 
-FROM php:8.4-cli-alpine
+# [Sprint 52 B3] FrankenPHP (Caddy with PHP inside, free and open source) in place of PHP's development server: Caddy
+# sends the built files itself (no PHP worker held by a 200 KB script or a 23 MB APK, their Brotli and gzip copies
+# made below), and PHP takes every other request on as many threads as it needs instead of 4 fixed workers.
+FROM dunglas/frankenphp:1-php8.4-alpine
 WORKDIR /app/backend
-# GD makes the accounts' pictures small squares (App\Support\Avatar).
-# pdo_pgsql: the game's database (PostgreSQL) [X43, X48]. pcntl: Reverb, the live updates on our server [X48].
-RUN apk add --no-cache libpng libjpeg-turbo libwebp freetype libpq \
- && apk add --no-cache --virtual .gd-build libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev postgresql-dev \
- && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
- && docker-php-ext-install -j"$(nproc)" gd pdo_pgsql pcntl opcache \
- && apk del .gd-build
-# [X45] OPcache, for the web server too (it runs as php -S, a CLI process): Laravel is compiled once per start instead
-# of on every request. The code never changes inside the container, so files are not checked again.
-RUN { echo 'opcache.enable=1'; echo 'opcache.enable_cli=1'; echo 'opcache.memory_consumption=96'; \
+# GD makes the accounts' pictures small squares (App\Support\Avatar). pdo_pgsql: the game's database (PostgreSQL)
+# [X43, X48]. pcntl: Reverb [X48]. redis: the cache, the sessions and the queue [Sprint 52 B4].
+RUN install-php-extensions gd pdo_pgsql pcntl opcache redis
+# [X45] OPcache: Laravel compiled once per start. The code never changes inside the container, so files are not
+# checked again. [Sprint 51 B5] And PHP never says its version.
+RUN { echo 'opcache.enable=1'; echo 'opcache.enable_cli=1'; echo 'opcache.memory_consumption=128'; \
       echo 'opcache.interned_strings_buffer=16'; echo 'opcache.max_accelerated_files=20000'; \
       echo 'opcache.validate_timestamps=0'; echo 'realpath_cache_size=4096K'; echo 'realpath_cache_ttl=600'; \
-      echo 'expose_php=Off'; } \
-      > /usr/local/etc/php/conf.d/zz-legends-speed.ini
+      echo 'expose_php=Off'; echo 'memory_limit=256M'; echo 'upload_max_filesize=20M'; echo 'post_max_size=24M'; } \
+      > "$PHP_INI_DIR/conf.d/zz-legends-speed.ini"
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY backend ./
 COPY data /app/data
@@ -49,6 +48,7 @@ COPY --from=vendor /app/backend/vendor ./vendor
 COPY --from=web /app/web/dist ./public-web
 RUN composer dump-autoload --optimize --no-dev \
  && cp -r public-web/. public/ && rm -rf public-web \
+ && rm -rf public/downloads && ln -s ../storage/app/downloads/bundled public/downloads && mkdir -p storage/app/downloads \
  && find public -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.html' -o -name '*.wasm' -o -name '*.data' \) -size +1k -exec gzip -k -9 {} \; \
  && apk add --no-cache --virtual .brotli brotli \
  && find public -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.html' -o -name '*.wasm' -o -name '*.data' \) -size +1k -exec brotli -k -q 11 {} \; \
@@ -59,13 +59,22 @@ RUN composer dump-autoload --optimize --no-dev \
  && php artisan key:generate --force \
  && php artisan migrate --force \
  && php artisan data:import \
- && chown -R www-data:www-data storage database bootstrap/cache
+ && chown -R www-data:www-data storage database bootstrap/cache \
+ && mkdir -p /data/caddy /config/caddy && chown -R www-data:www-data /data /config
+
+# [Sprint 52 B7] public/downloads is a link into the downloads volume (deploy/vps/compose.yml): the Android app that
+# ships with the site lives on the server (deploy.sh moved it there once), not in the repository and the image (44 MB).
+# Caddy follows the link and sends the file itself. A newer app comes through the admin panel's upload (AppReleases).
 
 # The start script: the public address, sign-in, email and Google from the run-time variables, the configuration
 # cached then (not here, before they are known), and the queue, scheduler, live matches and Reverb.
 COPY deploy/docker/start.sh /app/start.sh
 COPY deploy/docker/router.php /app/backend/router.php
-ENV PORT=8000 PHP_CLI_SERVER_WORKERS=4
+COPY deploy/docker/Caddyfile /etc/caddy/Caddyfile
+COPY deploy/docker/caddy-headers.php /app/caddy-headers.php
+# [Sprint 52 B5] One image, several services (deploy/vps/compose.yml): ROLE says which (web, queue, scheduler,
+# matches, reverb). Caddy keeps its own files where www-data may write.
+ENV PORT=8000 ROLE=web XDG_DATA_HOME=/data XDG_CONFIG_HOME=/config
 EXPOSE 8000
 USER www-data
 CMD ["sh", "/app/start.sh"]

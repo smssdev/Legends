@@ -11,5 +11,6 @@ f=/opt/legends/.env
 grep -v "^$key=" "$f" > "$f.tmp" || true
 printf "%s=%s\n" "$key" "$value" >> "$f.tmp"
 chmod 600 "$f.tmp"; mv "$f.tmp" "$f"
-cd /opt/legends/src/deploy/vps && docker compose --env-file "$f" up -d app > /dev/null 2>&1
+# [Sprint 52] Every service reads the secrets: each one whose settings changed restarts.
+cd /opt/legends/src/deploy/vps && docker compose --env-file "$f" up -d > /dev/null 2>&1
 echo "Saved $key. The game is restarting (about 30 seconds)."

@@ -2,8 +2,14 @@
 # The container's start (Dockerfile CMD), on our server (deploy/vps/compose.yml) or anywhere with docker run.
 # PUBLIC_URL is the site's address, so the settings that depend on it are made here, not when the image is built.
 # Exported variables win over backend/.env (Laravel never overwrites a variable that is already set).
+#
+# [Sprint 52 B5] One image, a service per job (compose.yml): ROLE=web (the site and the API: the only one that
+# migrates and imports), queue, scheduler, matches or reverb. Each runs in the foreground, so Docker restarts the one
+# that stops and keeps its log. Without Redis (REDIS_HOST unset: a plain docker run, CI's try-out) the web container
+# runs the four others beside it, as before.
 set -e
 cd /app/backend
+ROLE="${ROLE:-web}"
 
 if [ -n "${PUBLIC_URL:-}" ]; then
   host="${PUBLIC_URL#https://}"
@@ -13,8 +19,9 @@ if [ -n "${PUBLIC_URL:-}" ]; then
   # Sign-in: the session cookie counts only for these hosts (without it the web signs in, then is a guest).
   export SANCTUM_STATEFUL_DOMAINS="${host},localhost,localhost:8000,127.0.0.1,127.0.0.1:8000"
   export SESSION_SECURE_COOKIE=true
-  # Only the server's nginx reaches the container: trust its X-Forwarded-* headers (https and the public host).
-  export TRUSTED_PROXIES='*'
+  # [Sprint 52 B8] Only the server's nginx reaches the container (through Docker's network): trust its X-Forwarded-*
+  # headers (https, the public host, the player's address), and nobody else's. compose.yml sets the network's range.
+  export TRUSTED_PROXIES="${TRUSTED_PROXIES:-127.0.0.1,::1}"
 fi
 
 # Real emails [X8]. [X89] The game's own Gmail only (the owner's decision 2026-11-02: "we do not use Brevo"): every email
@@ -52,6 +59,28 @@ fi
 
 mkdir -p storage/logs
 
+# [Sprint 52 B4] Redis (compose.yml) for the cache, the sessions and the queue: in memory, shared by every service.
+if [ -n "${REDIS_HOST:-}" ]; then
+  export CACHE_STORE=redis SESSION_DRIVER=redis QUEUE_CONNECTION=redis REDIS_CLIENT=phpredis
+fi
+
+# The other services: the settings cached for this container, then their one job in the foreground. The web service
+# has migrated the database before they start (compose.yml waits for it to be healthy).
+if [ "$ROLE" != web ]; then
+  php artisan config:cache > /dev/null
+  php artisan event:cache > /dev/null
+  case "$ROLE" in
+    queue)
+      # The jobs still waiting in the old database queue (before Redis) run first, once.
+      php artisan queue:work database --stop-when-empty --tries=1 || true
+      exec php artisan queue:work --tries=1 --sleep=3 ;;
+    scheduler) exec php artisan schedule:work ;;
+    matches) exec php artisan matches:run ;;
+    reverb) exec php artisan reverb:start ;;
+    *) echo "Unknown ROLE: $ROLE"; exit 1 ;;
+  esac
+fi
+
 # A copy of the game as it is before this deploy's migrations [X33], kept in the backups volume and downloadable from
 # the admin panel (النسخ). The migrations only add (tests/Feature/MigrationSafetyTest.php), but a copy costs nothing.
 if [ -n "$pg" ]; then
@@ -71,9 +100,9 @@ fi
 php artisan data:import --add
 # [Sprint 29] The national teams from the players' nationalities (adds new countries, refreshes their strength).
 php artisan data:nations || echo "National teams: failed, continuing"
-# [X45] The sessions in the server's own SQLite file beside the cache: no database trip on every request. A restart
-# signs nobody out for long: the remember-me cookie (on by default) signs them back in.
-export SESSION_DRIVER=database SESSION_CONNECTION=cache_db
+# [X45] Without Redis, the sessions in the container's own SQLite file beside the cache: no database trip on every
+# request. A restart signs nobody out for long: the remember-me cookie (on by default) signs them back in.
+[ -n "${REDIS_HOST:-}" ] || export SESSION_DRIVER=database SESSION_CONNECTION=cache_db
 php artisan config:cache
 php artisan route:cache
 php artisan event:cache
@@ -90,13 +119,17 @@ keep() {
     sleep 5
   done
 }
-keep queue.log php artisan queue:work --tries=1 --sleep=3 &
-keep schedule.log php artisan schedule:work &
-keep matches.log php artisan matches:run &
-# [X48] Live updates: Reverb beside the game (the server's nginx sends /app and /apps to it).
-if [ "${BROADCAST_CONNECTION:-}" = reverb ]; then
-  keep reverb.log php artisan reverb:start &
-  echo "Live updates: Reverb on port ${REVERB_SERVER_PORT:-8080}"
+if [ -z "${REDIS_HOST:-}" ]; then
+  keep queue.log php artisan queue:work --tries=1 --sleep=3 &
+  keep schedule.log php artisan schedule:work &
+  keep matches.log php artisan matches:run &
+  # [X48] Live updates: Reverb beside the game (the server's nginx sends /app and /apps to it).
+  if [ "${BROADCAST_CONNECTION:-}" = reverb ]; then
+    keep reverb.log php artisan reverb:start &
+    echo "Live updates: Reverb on port ${REVERB_SERVER_PORT:-8080}"
+  fi
+else
+  echo "Services: queue, scheduler, matches and Reverb in their own containers; cache, sessions and queue in Redis"
 fi
 
 echo "Legends: ${APP_URL:-http://localhost:${PORT}}"
@@ -108,6 +141,7 @@ esac
 if [ -n "${GOOGLE_CLIENT_ID:-}" ]; then echo "Google sign-in: on"; else echo "Google sign-in: off"; fi
 if [ -n "$pg" ]; then echo "Saved game: in PostgreSQL, kept across every restart and deploy"; else echo "Saved game: off, the SQLite file is wiped on every restart (DATABASE_URL for a real game)"; fi
 
-# The web server [X45]: PHP's own, PHP_CLI_SERVER_WORKERS (Dockerfile) at once, with router.php sending the built
-# files and the app's pages without Laravel.
-exec php -S 0.0.0.0:"${PORT}" -t public router.php
+# [Sprint 52 B3] The web server: FrankenPHP (deploy/docker/Caddyfile). Caddy sends the built files, router.php the
+# pages and Laravel the rest; the security headers of the files from the one policy (App\Http\Security\SecurityPolicy).
+php /app/caddy-headers.php > "${XDG_CONFIG_HOME:-/config}/caddy/security-headers.caddy"
+exec frankenphp run --config /etc/caddy/Caddyfile

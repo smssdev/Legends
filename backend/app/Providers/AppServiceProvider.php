@@ -74,6 +74,10 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('league-code', fn (Request $request) => Limit::perMinute(config('game.league.join_attempts_per_minute'))
             ->by('league-code:'.($request->user()?->id ?? $request->ip())));
         // Named, so it counts apart from the general limit on the same routes.
+        // [Sprint 52 B9] Trial matches without an account: a daily limit per address (config game.simulator).
+        RateLimiter::for('sim-guest', fn (Request $request) => $request->user('sanctum')
+            ? Limit::none()
+            : Limit::perDay((int) config('game.simulator.guest_matches_per_day'))->by('sim-guest:'.$request->ip()));
         RateLimiter::for('league-create', fn (Request $request) => Limit::perMinute(10)->by('league-create:'.($request->user()?->id ?? $request->ip())));
     }
 
