@@ -6,11 +6,14 @@
 </template>
 
 <script setup lang="ts">
-// @ts-nocheck
 // The goal again, in a small frame while play goes on (docs/MATCH_VIEW.md 4.2): the last seconds of its scene,
 // up to the ball in the net, at half speed. Drawn from the same minute and seed, so it is the goal as it was.
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { SCENES } from './art'
+
+// [Sprint 57 W3] A scene as art.ts makes it: its picture and its clock (art.ts is still untyped).
+type Scene = { svg: SVGElement; update: (t: number) => void }
+const scenes = SCENES as unknown as Record<string, (data: Record<string, unknown>) => Scene>
 import { SCENE_TIME, story } from './story'
 
 // tag: what the label says before the scorer (the missed goals on a return say so, X94).
@@ -24,15 +27,15 @@ const LENGTH = 2.2, RATE = 0.5
 let raf = 0
 
 onMounted(() => {
-  if (!s.scene || !SCENES[s.scene]) return emit('done')
-  let scene
+  if (!s.scene || !scenes[s.scene] || !stage.value) return emit('done')
+  let scene: Scene
   // A scene that breaks ends the replay instead of stopping the match.
-  try { scene = SCENES[s.scene]({ ...s.data, side: s.side }) } catch (e) { console.error(e); return emit('done') }
+  try { scene = scenes[s.scene]({ ...s.data, side: s.side }) } catch (e) { console.error(e); return emit('done') }
   stage.value.replaceChildren(scene.svg)
   const key = s.keyAt * SCENE_TIME[s.scene][0]
   const from = Math.max(0, key - 1.8)
   const start = performance.now()
-  const frame = (now) => {
+  const frame = (now: number) => {
     const t = from + ((now - start) / 1000) * RATE
     try { scene.update(t) } catch (e) { console.error(e); return emit('done') }
     if (t < from + LENGTH) raf = requestAnimationFrame(frame)
