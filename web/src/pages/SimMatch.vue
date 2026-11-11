@@ -1,20 +1,24 @@
 <template>
-  <main class="mx-auto flex min-h-dvh max-w-[1500px] flex-col gap-3 px-3 py-3 md:px-5">
+  <!-- [Sprint 56 W7] Match.html: the picture fills the screen and the score shows once (on the picture); a thin bar over
+       it with the way back, the live state and ⚙ (the view's settings); the coach's commands in a drawer from one edge,
+       the chat, the reactions, the momentum and the stats in a drawer from the other. The logic is untouched (Sprint 57
+       takes it apart). -->
+  <main class="match-root">
     <!-- [Sprint 43 W3] Sideways on a phone: upright, it asks to turn (and locks it on Android). -->
     <TurnPhone v-if="view" />
-    <header class="flex flex-wrap items-center gap-2">
+    <header class="match-top">
       <RouterLink :to="league ? '/match' : '/sim'" class="flex items-center gap-2">
         <BrandMark size="sm" />
       </RouterLink>
-      <span v-if="!league" class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">{{ $t('المحاكي · بذرة') }} <span class="font-numbers">{{ view?.seed }}</span></span>
+      <span v-if="!league" class="match-seed rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">{{ $t('المحاكي · بذرة') }} <span class="font-numbers">{{ view?.seed }}</span></span>
       <span v-if="rerun" class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">{{ $t('إعادة المباراة كاملة') }}</span>
       <div class="flex-1" />
       <template v-if="live">
         <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-danger"><!-- [Sprint 53 W2] The dot says how the minutes arrive: pushed (it beats), or asked for while the channel comes back (amber, still). --><span class="size-2 rounded-full" :class="props.league && !sync.connected.value ? 'bg-warning' : 'bg-live'" :title="props.league ? (sync.connected.value ? $t('متصل بالبث المباشر') : $t('نعيد الاتصال بالبث... المباراة مستمرة')) : undefined" role="img" :aria-label="props.league ? (sync.connected.value ? $t('متصل بالبث المباشر') : $t('نعيد الاتصال بالبث... المباراة مستمرة')) : undefined" />{{ $t('مباشر · {v0}', { v0: mine ? $t('تدير ') + view?.clubs[mine].name : $t('مشاهدة') }) }}</span>
         <button v-if="friendLink" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="share">{{ copied ? $t('نُسخ الرابط') : $t('رابط الصديق') }}</button>
       </template>
-      <div v-else class="flex items-center gap-1 rounded-lg bg-surface p-1" role="group" :aria-label="$t('سرعة المحاكاة')">
-        <button type="button" class="size-10 rounded-sm bg-surface-raised" :aria-label="playing ? $t('إيقاف مؤقت') : $t('تشغيل')" @click="togglePlay">
+      <div v-if="!live" class="flex items-center gap-1 rounded-lg bg-surface p-1" role="group" :aria-label="$t('سرعة المحاكاة')">
+        <button type="button" class="size-touch rounded-sm bg-surface-raised" :aria-label="playing ? $t('إيقاف مؤقت') : $t('تشغيل')" @click="togglePlay">
           <svg v-if="playing" viewBox="0 0 24 24" class="mx-auto size-4" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
           <svg v-else viewBox="0 0 24 24" class="mx-auto size-4" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z" /></svg>
         </button>
@@ -22,51 +26,19 @@
         <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="finished" @click="skipMoment">{{ $t('تخطَّ اللقطة') }}</button>
         <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="skipping" @click="skip">{{ skipping ? '...' : $t('تخطٍّ للنهاية') }}</button>
       </div>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? $t('الصوت: يعمل') : $t('تشغيل الصوت') }}</button>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">{{ $t('التعليق: {v0}', { v0: commentary === 'off' ? $t('متوقف') : 'English' }) }}</button>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">{{ $t('العرض: {v0}', { v0: viewing.chosenView.value === 'unity' ? $t('المطوّر') : $t('الكرتوني') }) }}</button>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :title="PERF_HINT" @click="nextPerf">{{ $t('الأداء: {v0}{v1}', { v0: PERF_NAMES[perfPref], v1: perfPref === 'auto' ? (tier === 'low' ? $t(' (سلس)') : tier === 'mid' ? $t(' (متوازن)') : $t(' (كامل)')) : '' }) }}</button>
-      <a v-if="mine && !rerun" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">{{ $t('لوحة المدرب') }}</a>
-      <!-- [Sprint 30 Q8] The developers' panel: the admins' only. -->
-      <button v-if="!league && auth.user?.role === 'admin'" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">{{ $t('لوحة المطور') }}</button>
+      <button type="button" class="match-btn" :aria-label="$t('إعدادات العرض')" :aria-expanded="settingsOpen" @click="settingsOpen = true">⚙</button>
     </header>
-
-    <nav v-if="others.length > 1" class="flex flex-wrap items-center gap-2" :aria-label="$t('مبارياتك المباشرة')">
-      <span class="text-sm text-text-muted">{{ $t('مبارياتك الآن:') }}</span>
-      <RouterLink v-for="o in others" :key="o.id" :to="{ name: 'league-match', params: { id: o.id } }" class="flex h-touch items-center rounded-md px-3 font-numbers text-sm" :class="String(o.id) === id ? 'bg-gold text-on-gold' : 'bg-surface'" :aria-current="String(o.id) === id ? 'page' : undefined" dir="ltr">{{ o.home }} - {{ o.away }}</RouterLink>
-    </nav>
-
+    <div class="match-notices">
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
     <p v-if="oldEngine" class="flex flex-wrap items-center gap-2 rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">
       <span class="flex-1">{{ replayExpired ? $t('بدأت جولة جديدة، فلم تعد إعادة هذه المباراة متاحة. تبقى نتيجتها وملخصها السريع.') : $t('لُعبت هذه المباراة بنسخة أقدم من المحرك، فلا تُعاد محاكاتها. شاهد ملخصها السريع.') }}</span>
       <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold" @click="recapOpen = true">⚡ {{ $t('الملخص السريع') }}</button>
     </p>
     <p v-if="viewing.chosenView.value === 'unity' && viewing.playing.value === 'cartoon'" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">{{ $t('المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.') }}</p>
+    </div>
 
-    <div v-if="view" class="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <div class="flex min-w-0 flex-col gap-3 lg:col-start-1">
-        <section v-if="live && !started && mine" :aria-label="$t('بدء المباراة المباشرة')" class="flex flex-col items-center gap-3 rounded-xl border border-gold/40 bg-surface p-4 text-center">
-          <span class="font-display text-2xl font-extrabold">{{ $t('مباراة مباشرة مع صديق') }}</span>
-          <p class="max-w-md text-sm text-text-soft">{{ $t('أرسل الرابط لصديقك ليدير {v0} من جهازه، ثم ابدأ حين يكون جاهزاً.', { v0: $nm(view?.clubs[other].name) }) }}</p>
-          <div v-if="friendLink" class="flex w-full max-w-md gap-2">
-            <input :value="friendLink" readonly dir="ltr" :aria-label="$t('رابط الصديق')" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 text-xs" @focus="($event.target as HTMLInputElement).select()" />
-            <button type="button" class="h-touch rounded-md bg-surface-raised px-4 text-sm" @click="share">{{ copied ? $t('نُسخ') : $t('نسخ') }}</button>
-          </div>
-          <button type="button" class="h-12 rounded-md bg-gold px-8 font-display font-bold text-on-gold disabled:opacity-50" :disabled="starting" @click="startLive">{{ starting ? '...' : $t('ابدأ المباراة') }}</button>
-          <span class="text-xs text-text-muted">{{ $t('أي من المدربين يستطيع البدء.') }}</span>
-        </section>
-
-        <!-- [Sprint 26 W6] The coaches on the touchline, each in his own look, feeling the minute as the server says. -->
-        <div v-if="view.coach_looks && Object.keys(view.coach_looks).length" class="flex items-end justify-between gap-2 px-1" :aria-label="$t('المدربان على الخط')">
-          <template v-for="s in (['home', 'away'] as const)" :key="s">
-            <span v-if="view.coach_looks[s]" class="flex items-end gap-1" :class="s === 'away' ? 'flex-row-reverse text-end' : ''">
-              <Character :model="view.coach_looks[s]!" :mood="moods[s]" three class="w-16 md:w-20" :label="$t('مدرب {v0}', { v0: $nm(view.clubs[s].name) })" />
-              <small class="max-w-[8rem] truncate pb-2 text-xs text-text-muted"><bdi>{{ view.coaches?.[s] ?? $nm(view.clubs[s].name) }}</bdi></small>
-            </span>
-            <span v-else />
-          </template>
-        </div>
-        <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="height: min(80dvh, 780px); min-height: 460px" :aria-label="$t('المباراة')">
+    <div v-if="view" class="match-stage">
+        <section class="relative size-full overflow-hidden bg-bg-deep" style="height: 100%" :aria-label="$t('المباراة')">
           <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :logos="{ home: view.clubs.home.logo, away: view.clubs.away.logo }" :strength="{ home: view.clubs.home.strength ?? 0, away: view.clubs.away.strength ?? 0 }" :coaches="view.coaches" :countdown="countdown" :teams="teams" :seed="view.seed" :kickoff="view.kickoff_at" :looks="view.coach_looks" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @near="(c) => sound.near(c)" @intro-done="endIntro" />
 
                     <!-- [UP17] The emergency substitution: my injured player, 15 seconds to pick who comes on. -->
@@ -88,7 +60,7 @@
               <button v-if="(halftime || windowOn) && live && league && mine" type="button" class="h-12 rounded-md px-6 font-display font-bold disabled:opacity-60"
                 :class="iAmReady ? 'bg-success/20 text-success' : 'bg-brand text-white'" :disabled="iAmReady || readyBusy" @click="sayReady">
                 {{ iAmReady ? $t('مستعد ✓ بانتظار الخصم') : $t('أنا مستعد') }}</button>
-              <a v-if="(halftime || windowOn) && live && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold lg:hidden">{{ $t('لوحة المدرب') }}</a>
+              <a v-if="(halftime || windowOn) && live && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold" @click.prevent="drawer = 'coach'">{{ $t('لوحة المدرب') }}</a>
               <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">{{ $t('ابدأ الشوط الثاني') }} <span class="font-numbers">({{ halftimeLeft }})</span></button>
               <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">{{ $t('ملخص المباراة · {v0} لقطة', { v0: keyTicks.length }) }}</button>
               <RouterLink v-if="finished && !league" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">{{ $t('تقرير المباراة') }}</RouterLink>
@@ -114,44 +86,36 @@
           </button>
           <p v-if="offline" class="absolute inset-x-3 top-24 z-30 rounded-lg bg-warning/90 px-3 py-2 text-center text-sm font-bold text-bg-deep" role="status">{{ $t('انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء') }}</p>
         </section>
-
-        <!-- Live: the two coaches cheer and tease each other; every screen sees it at once. In a league every member who
-             watches may react, and cheer or boo one side once in half a minute [X24]. -->
-        <section v-if="live && (mine || league) && !finished" class="flex flex-col gap-2 rounded-xl bg-surface p-2" :aria-label="$t('تفاعل مع المباراة')">
-          <div class="flex gap-1.5 overflow-x-auto">
-            <button v-for="r in REACTIONS" :key="r.key" type="button" class="flex h-touch shrink-0 items-center gap-1 rounded-pill bg-surface-sunk px-3 text-sm font-bold hover:bg-surface-raised disabled:opacity-40" :disabled="reactWait" :aria-label="r.label" @click="react(r.key)">
-              <span class="text-lg" aria-hidden="true">{{ r.emoji }}</span><span v-if="r.text">{{ $t(r.text) }}</span>
-            </button>
+        <!-- [Sprint 26 W6] The coaches on the touchline, each in his own look, feeling the minute as the server says. -->
+        <div v-if="view.coach_looks && Object.keys(view.coach_looks).length" class="match-looks pointer-events-none flex items-end justify-between gap-2 px-1" :aria-label="$t('المدربان على الخط')">
+          <template v-for="s in (['home', 'away'] as const)" :key="s">
+            <span v-if="view.coach_looks[s]" class="flex items-end gap-1" :class="s === 'away' ? 'flex-row-reverse text-end' : ''">
+              <Character :model="view.coach_looks[s]!" :mood="moods[s]" three class="w-16 md:w-20" :label="$t('مدرب {v0}', { v0: $nm(view.clubs[s].name) })" />
+              <small class="max-w-[8rem] truncate pb-2 text-xs text-text-muted"><bdi>{{ view.coaches?.[s] ?? $nm(view.clubs[s].name) }}</bdi></small>
+            </span>
+            <span v-else />
+          </template>
+        </div>
+      <div v-if="live && !started && mine" class="absolute inset-0 z-40 grid place-items-center bg-bg-deep/80 p-4">
+        <section v-if="live && !started && mine" :aria-label="$t('بدء المباراة المباشرة')" class="flex flex-col items-center gap-3 rounded-xl border border-gold/40 bg-surface p-4 text-center">
+          <span class="font-display text-2xl font-extrabold">{{ $t('مباراة مباشرة مع صديق') }}</span>
+          <p class="max-w-md text-sm text-text-soft">{{ $t('أرسل الرابط لصديقك ليدير {v0} من جهازه، ثم ابدأ حين يكون جاهزاً.', { v0: $nm(view?.clubs[other].name) }) }}</p>
+          <div v-if="friendLink" class="flex w-full max-w-md gap-2">
+            <input :value="friendLink" readonly dir="ltr" :aria-label="$t('رابط الصديق')" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 text-xs" @focus="($event.target as HTMLInputElement).select()" />
+            <button type="button" class="h-touch rounded-md bg-surface-raised px-4 text-sm" @click="share">{{ copied ? $t('نُسخ') : $t('نسخ') }}</button>
           </div>
-          <div v-if="league" class="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
-            <template v-for="s in (['home', 'away'] as const)" :key="s">
-              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-success/15 px-2 text-sm font-bold text-success disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('cheer', s)">📣 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
-              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-danger disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('boo', s)">👎 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
-            </template>
-          </div>
-          <p v-if="league && cheerLeft > 0" class="text-center text-xs text-text-muted">{{ $t('التشجيع والاستهجان بعد') }} <span class="font-numbers">{{ cheerLeft }}</span> {{ $t('ثانية') }}</p>
+          <button type="button" class="h-12 rounded-md bg-gold px-8 font-display font-bold text-on-gold disabled:opacity-50" :disabled="starting" @click="startLive">{{ starting ? '...' : $t('ابدأ المباراة') }}</button>
+          <span class="text-xs text-text-muted">{{ $t('أي من المدربين يستطيع البدء.') }}</span>
         </section>
       </div>
+    </div>
 
-      <div class="flex min-w-0 flex-col gap-3 lg:col-start-1 lg:row-start-2">
-        <section class="rounded-xl bg-surface px-4 py-3" :aria-label="$t('الزخم')">
-          <div class="mb-1 flex justify-between text-xs text-text-muted"><span class="font-display text-sm font-bold text-text">{{ $t('الزخم') }}</span><span>{{ $t('أعلى: {v0} · أسفل: {v1}', { v0: $nm(view.clubs.home.name), v1: $nm(view.clubs.away.name) }) }}</span></div>
-          <div class="h-20"><Momentum :values="momentum" :home-color="kits.home" /></div>
-        </section>
-
-        <section class="rounded-xl bg-surface p-4" :aria-label="$t('الإحصائيات')">
-          <StatsGrid :home="teams.home.stats" :away="teams.away.stats" :home-color="kits.home" />
-        </section>
-
-        <section v-if="dev" class="rounded-xl border border-gold/40 bg-surface-sunk p-4 font-mono text-xs leading-6" dir="ltr" :aria-label="$t('لوحة المطور')">
-          <div>tick {{ last?.tick }} · period {{ last?.period }} · danger {{ last?.danger }} · rate {{ last?.debug?.initiative?.rate }} · home share {{ last?.debug?.initiative?.home_share }}</div>
-          <div v-for="(a, i) in lastAttacks" :key="i">{{ a.team }} {{ a.plan }}{{ a.counter ? ' (counter)' : '' }} → {{ a.result }} · {{ a.phases.map((p: any) => `${p.n}:${p.p ?? '-'}${p.ok ? '✓' : '✗'}`).join(' ') }}</div>
-          <div>home tactics {{ JSON.stringify(teams.home.tactics) }}</div>
-          <div>away tactics {{ JSON.stringify(teams.away.tactics) }}</div>
-        </section>
-      </div>
-
-      <aside class="row-start-2 flex min-w-0 flex-col gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+    <!-- The two drawers, each from its edge, over the picture (never moving it). -->
+    <template v-if="view">
+      <button v-if="!rerun" type="button" class="match-edge is-end" :aria-expanded="drawer === 'coach'" @click="drawer = drawer === 'coach' ? null : 'coach'">📋<span>{{ $t('الأوامر') }}</span></button>
+      <button type="button" class="match-edge is-start" :aria-expanded="drawer === 'more'" @click="drawer = drawer === 'more' ? null : 'more'">💬<span>{{ $t('الدردشة') }}</span><i v-if="chat.length" class="match-dot" /></button>
+      <aside id="coach" class="match-drawer is-end" :class="drawer === 'coach' ? 'is-open' : ''" :aria-label="$t('لوحة المدرب')" :inert="drawer !== 'coach'">
+        <button type="button" class="match-close" :aria-label="$t('إغلاق')" @click="drawer = null">✕</button>
         <section v-if="!rerun" id="coach" class="flex scroll-mt-3 flex-col gap-3 rounded-xl bg-surface p-3" :aria-label="$t('لوحة المدرب')">
           <div class="flex items-center gap-2">
             <h2 class="flex-1 font-display text-base font-bold">{{ $t('لوحة المدرب') }}<span v-if="mine"> · {{ $nm(view.clubs[mine].name) }}</span></h2>
@@ -220,7 +184,6 @@
             <div v-for="r in rejected" :key="r" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">{{ r }}</div>
           </template>
         </section>
-
         <section v-if="league && mine && !rerun" class="flex max-h-[260px] flex-col gap-2 overflow-y-auto rounded-xl bg-surface p-3" :aria-label="$t('قراءة المساعد')" aria-live="polite">
           <h2 class="flex items-center gap-2 font-display text-base font-bold"><Character model="B2" :mood="mine ? moods[mine] : 'idle'" class="w-10" />{{ $t('قراءة المساعد') }}</h2>
           <p v-if="!readings.length" class="text-sm text-text-muted">{{ $t('يكتب لك المساعد ملاحظة كل ربع ساعة تقريباً، وبعد كل لحظة كبيرة.') }}</p>
@@ -229,6 +192,31 @@
             <span>{{ $t(r.text) }}</span>
           </div>
         </section>
+      </aside>
+      <aside class="match-drawer is-start" :class="drawer === 'more' ? 'is-open' : ''" :aria-label="$t('الدردشة والمجريات')" :inert="drawer !== 'more'">
+        <button type="button" class="match-close" :aria-label="$t('إغلاق')" @click="drawer = null">✕</button>
+    <nav v-if="others.length > 1" class="flex flex-wrap items-center gap-2" :aria-label="$t('مبارياتك المباشرة')">
+      <span class="text-sm text-text-muted">{{ $t('مبارياتك الآن:') }}</span>
+      <RouterLink v-for="o in others" :key="o.id" :to="{ name: 'league-match', params: { id: o.id } }" class="flex h-touch items-center rounded-md px-3 font-numbers text-sm" :class="String(o.id) === id ? 'bg-gold text-on-gold' : 'bg-surface'" :aria-current="String(o.id) === id ? 'page' : undefined" dir="ltr">{{ o.home }} - {{ o.away }}</RouterLink>
+    </nav>
+        <!-- Live: the two coaches cheer and tease each other; every screen sees it at once. In a league every member who
+             watches may react, and cheer or boo one side once in half a minute [X24]. -->
+        <section v-if="live && (mine || league) && !finished" class="flex flex-col gap-2 rounded-xl bg-surface p-2" :aria-label="$t('تفاعل مع المباراة')">
+          <div class="flex gap-1.5 overflow-x-auto">
+            <button v-for="r in REACTIONS" :key="r.key" type="button" class="flex h-touch shrink-0 items-center gap-1 rounded-pill bg-surface-sunk px-3 text-sm font-bold hover:bg-surface-raised disabled:opacity-40" :disabled="reactWait" :aria-label="r.label" @click="react(r.key)">
+              <span class="text-lg" aria-hidden="true">{{ r.emoji }}</span><span v-if="r.text">{{ $t(r.text) }}</span>
+            </button>
+          </div>
+          <div v-if="league" class="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+            <template v-for="s in (['home', 'away'] as const)" :key="s">
+              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-success/15 px-2 text-sm font-bold text-success disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('cheer', s)">📣 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
+              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-danger disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('boo', s)">👎 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
+            </template>
+          </div>
+          <p v-if="league && cheerLeft > 0" class="text-center text-xs text-text-muted">{{ $t('التشجيع والاستهجان بعد') }} <span class="font-numbers">{{ cheerLeft }}</span> {{ $t('ثانية') }}</p>
+        </section>
+
+
 
         <section v-if="league && !rerun" class="flex flex-col gap-2 rounded-xl bg-surface p-3" :aria-label="$t('دردشة المشاهدين')">
           <h2 class="font-display text-base font-bold">{{ $t('دردشة المشاهدين') }}</h2>
@@ -252,8 +240,34 @@
             <span :class="f.important ? 'font-bold' : ''">{{ $t(f.text) }}</span>
           </div>
         </section>
+        <section class="rounded-xl bg-surface px-4 py-3" :aria-label="$t('الزخم')">
+          <div class="mb-1 flex justify-between text-xs text-text-muted"><span class="font-display text-sm font-bold text-text">{{ $t('الزخم') }}</span><span>{{ $t('أعلى: {v0} · أسفل: {v1}', { v0: $nm(view.clubs.home.name), v1: $nm(view.clubs.away.name) }) }}</span></div>
+          <div class="h-20"><Momentum :values="momentum" :home-color="kits.home" /></div>
+        </section>
+
+        <section class="rounded-xl bg-surface p-4" :aria-label="$t('الإحصائيات')">
+          <StatsGrid :home="teams.home.stats" :away="teams.away.stats" :home-color="kits.home" />
+        </section>
+
+        <section v-if="dev" class="rounded-xl border border-gold/40 bg-surface-sunk p-4 font-mono text-xs leading-6" dir="ltr" :aria-label="$t('لوحة المطور')">
+          <div>tick {{ last?.tick }} · period {{ last?.period }} · danger {{ last?.danger }} · rate {{ last?.debug?.initiative?.rate }} · home share {{ last?.debug?.initiative?.home_share }}</div>
+          <div v-for="(a, i) in lastAttacks" :key="i">{{ a.team }} {{ a.plan }}{{ a.counter ? ' (counter)' : '' }} → {{ a.result }} · {{ a.phases.map((p: any) => `${p.n}:${p.p ?? '-'}${p.ok ? '✓' : '✗'}`).join(' ') }}</div>
+          <div>home tactics {{ JSON.stringify(teams.home.tactics) }}</div>
+          <div>away tactics {{ JSON.stringify(teams.away.tactics) }}</div>
+        </section>
       </aside>
-    </div>
+    </template>
+
+    <UiDialog :open="settingsOpen" side closable title="إعدادات العرض" @close="settingsOpen = false">
+      <div class="flex flex-col gap-2">
+      <button type="button" class="ui-choice px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? $t('الصوت: يعمل') : $t('تشغيل الصوت') }}</button>
+      <button type="button" class="ui-choice px-3 text-sm" @click="toggleCommentary">{{ $t('التعليق: {v0}', { v0: commentary === 'off' ? $t('متوقف') : 'English' }) }}</button>
+      <button type="button" class="ui-choice px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">{{ $t('العرض: {v0}', { v0: viewing.chosenView.value === 'unity' ? $t('المطوّر') : $t('الكرتوني') }) }}</button>
+      <button type="button" class="ui-choice px-3 text-sm" :title="PERF_HINT" @click="nextPerf">{{ $t('الأداء: {v0}{v1}', { v0: PERF_NAMES[perfPref], v1: perfPref === 'auto' ? (tier === 'low' ? $t(' (سلس)') : tier === 'mid' ? $t(' (متوازن)') : $t(' (كامل)')) : '' }) }}</button>
+      <!-- [Sprint 30 Q8] The developers' panel: the admins' only. -->
+      <button v-if="!league && auth.user?.role === 'admin'" type="button" class="ui-choice px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">{{ $t('لوحة المطور') }}</button>
+      </div>
+    </UiDialog>
     <MatchRecap v-if="recapOpen" :match-id="Number(id)" :watch="false" @close="recapOpen = false" />
     <!-- [Sprint 30 G3] The first live matches, taught as they happen by the Assistant Coach. -->
     <FirstMatchTips :active="!!(live && league && mine)" :started="started && minute[0] > 0" :window-on="windowOn" :halftime="halftime"
@@ -269,6 +283,7 @@ import TurnPhone from '../components/match/TurnPhone.vue'
 import { useAuth } from '../stores/auth'
 import UiSlider from '../components/ui/UiSlider.vue'
 import UiToggle from '../components/ui/UiToggle.vue'
+import UiDialog from '../components/ui/UiDialog.vue'
 import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import { useBroadcast } from '../stores/broadcast'
 import { nm } from '../lib/names'
@@ -529,6 +544,9 @@ const mine = computed<Side | null>(() => {
 })
 const tabs = [{ id: 'quick', label: 'سريع' }, { id: 'subs', label: 'تبديل' }, { id: 'tactics', label: 'تكتيك' }, { id: 'shape', label: 'الطريقة' }] as const
 const tab = ref<(typeof tabs)[number]['id']>('quick')
+// [Sprint 56 W7] The two drawers over the picture (the coach's commands, the chat and the rest) and the view's settings.
+const drawer = ref<'coach' | 'more' | null>(null)
+const settingsOpen = ref(false)
 const plans = [{ v: 'passing', label: 'تمريرات' }, { v: 'wings', label: 'الأجنحة' }, { v: 'counter', label: 'هجوم مرتد' }, { v: 'long', label: 'كرات طويلة' }, { v: 'shots', label: 'تسديد من بعيد' }]
 const tackles = ['قانوني', 'عادي', 'حماس', 'خشونة']
 const sliderLabels = { pressing: 'الضغط على الخصم', style: 'الأسلوب (دفاعي إلى هجومي)', tempo: 'إيقاع اللعب' }
@@ -1197,3 +1215,29 @@ onBeforeUnmount(() => {
 
 const lastAttacks = computed(() => (last.value?.events ?? []).filter((e) => e.type === 'attack'))
 </script>
+
+<style scoped>
+/* [Sprint 56 W7] The match fills the screen: the picture under a thin bar, the drawers over it. */
+.match-root { position: relative; display: grid; height: 100dvh; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; background: var(--color-broadcast-tv-deep); }
+.match-top { position: relative; z-index: 45; display: flex; min-height: 2.75rem; align-items: center; gap: var(--space-sm); padding: 2px var(--space-sm); background: color-mix(in srgb, var(--color-broadcast-tv) 92%, transparent); }
+.match-top :deep(.brand-words) { white-space: nowrap; }
+@media (max-width: 900px) { .match-top :deep(.brand-words), .match-seed { display: none !important; } }
+.match-top :deep(button) { white-space: nowrap; }
+.match-btn { display: grid; width: var(--spacing-touch); height: var(--spacing-touch); place-items: center; border-radius: var(--radius-lg); font-size: var(--text-title); background: color-mix(in srgb, var(--color-text) 10%, transparent); }
+.match-notices { position: absolute; inset-inline: var(--space-sm); top: 3rem; z-index: 44; display: flex; flex-direction: column; gap: var(--space-xs); }
+.match-stage { position: relative; min-height: 0; }
+.match-looks { position: absolute; inset-inline: 3.5rem; bottom: var(--space-xs); z-index: 5; }
+.match-edge { position: absolute; z-index: 46; top: 50%; display: flex; width: var(--spacing-touch); flex-direction: column; align-items: center; gap: 2px; padding: var(--space-sm) 0; transform: translateY(-50%); font-size: var(--text-title); color: var(--color-broadcast-white); background: color-mix(in srgb, var(--color-broadcast-tv) 88%, transparent); }
+.match-edge span { font-size: var(--text-caption); writing-mode: vertical-rl; }
+.match-edge.is-end { inset-inline-end: 0; border-start-start-radius: var(--radius-lg); border-end-start-radius: var(--radius-lg); }
+.match-edge.is-start { inset-inline-start: 0; border-start-end-radius: var(--radius-lg); border-end-end-radius: var(--radius-lg); }
+.match-dot { position: absolute; top: 4px; width: 8px; height: 8px; border-radius: 50%; background: var(--color-live); }
+.match-drawer { position: absolute; z-index: 47; top: 2.75rem; bottom: 0; display: flex; width: min(22rem, 46vw); flex-direction: column; gap: var(--space-sm); padding: var(--space-sm); overflow-y: auto; overscroll-behavior: contain; background: color-mix(in srgb, var(--color-bg) 96%, transparent); box-shadow: var(--shadow-overlay); transition: transform var(--duration-base) var(--ease-soft), visibility var(--duration-base); visibility: hidden; }
+.match-drawer.is-end { inset-inline-end: 0; border-inline-start: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent); transform: translateX(-100%); }
+.match-drawer.is-start { inset-inline-start: 0; border-inline-end: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent); transform: translateX(100%); }
+[dir='ltr'] .match-drawer.is-end { transform: translateX(100%); }
+[dir='ltr'] .match-drawer.is-start { transform: translateX(-100%); }
+.match-drawer.is-open { visibility: visible; transform: none !important; }
+.match-close { align-self: flex-end; display: grid; width: var(--spacing-touch); height: var(--spacing-touch); flex: none; place-items: center; border-radius: var(--radius-lg); background: var(--color-surface-raised); }
+@media (max-width: 560px) { .match-drawer { width: 100%; } }
+</style>
