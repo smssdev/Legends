@@ -3,13 +3,17 @@
 // two taps from any screen, and «فرقي كلها» to the home screen.
 // [X61] A menu: the keyboard, Esc and the tap outside are its own; the list drops from the top bar.
 // [Sprint 54 W4] On reka-ui's DropdownMenu (Headless UI is gone).
+// [Sprint 55 W1] It heads the dock now: the crest alone on the narrow dock, the name and the place beside it on the
+// computer's wide one (.shell-dock-wide), and its list opens beside the dock.
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRoot, DropdownMenuTrigger } from 'reka-ui'
 import { computed } from 'vue'
+import { dockSide } from './dockSide'
 import { useRouter } from 'vue-router'
 import Icon from '../Icon.vue'
 import { rememberLeague } from '../../lib/currentLeague'
 import { useSlot } from '../../stores/slot'
 
+defineProps<{ inBar?: boolean }>()
 const slot = useSlot()
 const router = useRouter()
 const clubs = computed(() => slot.slots.filter((s) => s.state === 'club'))
@@ -21,23 +25,17 @@ function pick(leagueId: number) {
 </script>
 
 <template>
-  <div class="relative min-w-[7rem] flex-1 md:w-80 md:flex-none">
   <DropdownMenuRoot :modal="false">
-    <DropdownMenuTrigger v-if="slot.current?.club" class="chrome-tab chrome-start w-full" :aria-label="$t('بدّل النادي: {name}', { name: slot.current.club.name })">
-      <img :src="slot.current.club.crest_url" alt="" class="size-9 shrink-0 drop-shadow md:size-11" />
-      <span class="min-w-0 flex-1 text-start leading-tight">
-        <b class="block truncate font-display text-base md:text-lg">{{ $nm(slot.current.club.name) }}</b>
-        <span class="flex items-center gap-1.5 truncate text-xs font-semibold opacity-75">
-          <span class="truncate">{{ $nm(slot.current.league?.name) }}</span>
-          <!-- [Sprint 30 Q10] «4 من 20», not «4/20»: the place in the table said in words (the place alone on a narrow phone). -->
-          <span v-if="slot.current.position" class="shrink-0 rounded bg-brand px-1.5 text-white" :aria-label="$t('المركز {v0} من {v1}', { v0: slot.current.position, v1: slot.current.teams })"><span class="font-numbers sm:hidden">{{ slot.current.position }}</span><span class="hidden sm:inline">{{ $t('{v0} من {v1}', { v0: slot.current.position, v1: slot.current.teams }) }}</span></span>
-        </span>
+    <DropdownMenuTrigger v-if="slot.current?.club" class="dock-crest" :aria-label="$t('بدّل النادي: {name}', { name: slot.current.club.name })">
+      <img :src="slot.current.club.crest_url" alt="" class="size-9 shrink-0 drop-shadow" />
+      <span class="dock-wide-only min-w-0 flex-1 text-start leading-tight">
+        <b class="block truncate text-body">{{ $nm(slot.current.club.name) }}</b>
+        <span v-if="slot.current.position" class="block truncate text-caption text-text-muted">{{ $t('المركز {v0} من {v1}', { v0: slot.current.position, v1: slot.current.teams }) }}</span>
       </span>
-      <span class="shrink-0 text-gold" aria-hidden="true">▾</span>
     </DropdownMenuTrigger>
-    <span v-else class="chrome-tab chrome-start block w-full animate-pulse" aria-hidden="true" />
+    <span v-else class="dock-crest animate-pulse" aria-hidden="true"><span class="size-9 rounded-full bg-surface-raised" /></span>
     <DropdownMenuPortal>
-      <DropdownMenuContent align="start" :side-offset="8" class="drop-panel z-50 flex max-h-[70vh] w-72 max-w-[calc(100vw-1.5rem)] flex-col gap-1.5 overflow-y-auto overscroll-contain rounded-xl border border-text/10 bg-surface p-2 shadow-overlay focus:outline-none">
+      <DropdownMenuContent :side="inBar ? 'bottom' : dockSide" align="start" :side-offset="8" class="drop-panel z-50 flex max-h-[70vh] w-72 max-w-[calc(100vw-1.5rem)] flex-col gap-1.5 overflow-y-auto overscroll-contain rounded-xl border border-text/10 bg-surface p-2 shadow-overlay focus:outline-none">
         <DropdownMenuLabel class="px-2 text-xs text-text-muted">{{ $t('فرقي') }}</DropdownMenuLabel>
         <DropdownMenuItem v-for="s in clubs" :key="s.slot" class="flex min-h-touch cursor-pointer items-center gap-2 rounded-lg bg-surface-sunk px-2 py-1.5 text-start outline-none data-[highlighted]:bg-surface-raised" @select="pick(s.league!.id)">
           <img :src="s.club!.crest_url" alt="" class="size-8 shrink-0" />
@@ -52,5 +50,4 @@ function pick(leagueId: number) {
       </DropdownMenuContent>
     </DropdownMenuPortal>
   </DropdownMenuRoot>
-  </div>
 </template>

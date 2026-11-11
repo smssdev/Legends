@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D4 · الفريق (Sprint 55)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+<!-- [Sprint 55 D4] A draft for the owner's approval (D12): nothing is built from it before he signs it off. -->
+<header class="top">
+  <h1>D4 · الفريق</h1>
+  <nav aria-label="المسودات"><a href="index.html">كل المسودات</a> <a href="LandscapeShell.html">الإطار</a> <a href="Office.html">المكتب</a> <a href="Squad.html">الفريق</a> <a href="Lineup.html">التشكيلة</a> <a href="Tactics.html">التكتيك</a> <a href="Market.html">السوق</a> <a href="NextMatch.html">المباراة القادمة</a> <a href="Match.html">المباراة</a> <a href="Home.html">الرئيسية</a></nav>
+  <p>الجدول يملأ الشاشة وأعمدته حسب التبويب (عام، والمهارات، والعقود، واللياقة)، والصفوف تتمرر تحت رأس ثابت. <b>بطاقة اللاعب لوحة جانبية لا نافذة:</b> الجدول يبقى ظاهراً، ويُبدَّل اللاعب بنقرة على صف آخر.</p>
+</header>
+<div class="opts">
+  <span>الشكل: <button data-opt="theme" data-val="night" aria-pressed="true">الليل</button><button data-opt="theme" data-val="day" aria-pressed="false">النهار</button></span>
+  <span>الحالة: <button data-opt="state" data-val="normal" aria-pressed="true">عادي</button><button data-opt="state" data-val="loading" aria-pressed="false">تحميل</button><button data-opt="state" data-val="empty" aria-pressed="false">فراغ</button><button data-opt="state" data-val="error" aria-pressed="false">خطأ</button><button data-opt="state" data-val="offline" aria-pressed="false">بلا اتصال</button></span>
+  <span>الكمبيوتر: <button data-opt="desk" data-val="a" aria-pressed="true">أ. رصيف 200px</button><button data-opt="desk" data-val="b" aria-pressed="false">ب. الصف العلوي</button></span>
+  <span>الاتجاه: <button data-opt="dir" data-val="rtl" aria-pressed="true">العربية</button><button data-opt="dir" data-val="ltr" aria-pressed="false">English</button></span>
+  <span>الشرح: <button data-opt="notes" data-val="on" aria-pressed="true">ظاهر</button><button data-opt="notes" data-val="off" aria-pressed="false">مخفي</button></span>
+</div>
+<div id="frames"></div>
+
+<template id="screen" data-title="الفريق" data-section="team" data-empty="لا لاعبين بعد" data-empty-text="فريقك يصلك حين تختار نادياً" data-css="css">
+<div class="squad">
+  <div class="tabs"><b class="on">عام</b><b>المهارات</b><b>العقود</b><b>اللياقة</b><b>المتخصصون</b></div>
+  <div class="scroll grid"><table class="tbl"><thead><tr><th>الخط</th><th>اللاعب</th><th class="n">القوة</th><th>اللياقة</th><th class="n">العمر</th><th class="n wide-col">العقد</th><th class="n wide-col">القيمة</th></tr></thead><tbody><tr><td><span class="lb gk">ح</span></td><td dir="ltr" style="text-align:start">Courtois</td><td class="n"><span class="rate">85</span></td><td><span class="bar-fit"><i style="width:96%"></i></span></td><td class="n num">32</td><td class="n num wide-col">2027</td><td class="n num wide-col">94M</td></tr><tr><td><span class="lb def">د</span></td><td dir="ltr" style="text-align:start">Carvajal</td><td class="n"><span class="rate">84</span></td><td><span class="bar-fit"><i style="width:88%"></i></span></td><td class="n num">31</td><td class="n num wide-col">2026</td><td class="n num wide-col">92M</td></tr><tr><td><span class="lb def">د</span></td><td dir="ltr" style="text-align:start">Rüdiger</td><td class="n"><span class="rate">86</span></td><td><span class="bar-fit"><i style="width:92%"></i></span></td><td class="n num">30</td><td class="n num wide-col">2026</td><td class="n num wide-col">95M</td></tr><tr><td><span class="lb def">د</span></td><td dir="ltr" style="text-align:start">Militão</td><td class="n"><span class="rate">84</span></td><td><span class="bar-fit"><i style="width:74%"></i></span></td><td class="n num">26</td><td class="n num wide-col">2028</td><td class="n num wide-col">92M</td></tr><tr><td><span class="lb def">د</span></td><td dir="ltr" style="text-align:start">Mendy</td><td class="n"><span class="rate">82</span></td><td><span class="bar-fit"><i style="width:90%"></i></span></td><td class="n num">29</td><td class="n num wide-col">2027</td><td class="n num wide-col">90M</td></tr><tr><td><span class="lb mid">و</span></td><td dir="ltr" style="text-align:start">Valverde</td><td class="n"><span class="rate">88</span></td><td><span class="bar-fit"><i style="width:97%"></i></span></td><td class="n num">25</td><td class="n num wide-col">2029</td><td class="n num wide-col">97M</td></tr><tr class="on"><td><span class="lb mid">و</span></td><td dir="ltr" style="text-align:start">Bellingham</td><td class="n"><span class="rate">90</span></td><td><span class="bar-fit"><i style="width:95%"></i></span></td><td class="n num">21</td><td class="n num wide-col">2029</td><td class="n num wide-col">99M</td></tr><tr><td><span class="lb mid">و</span></td><td dir="ltr" style="text-align:start">Modrić</td><td class="n"><span class="rate">85</span></td><td><span class="bar-fit"><i style="width:70%"></i></span></td><td class="n num">38</td><td class="n num wide-col">2025</td><td class="n num wide-col">94M</td></tr><tr><td><span class="lb att">هـ</span></td><td dir="ltr" style="text-align:start">Vinícius</td><td class="n"><span class="rate">90</span></td><td><span class="bar-fit"><i style="width:93%"></i></span></td><td class="n num">23</td><td class="n num wide-col">2027</td><td class="n num wide-col">99M</td></tr><tr><td><span class="lb att">هـ</span></td><td dir="ltr" style="text-align:start">Mbappé</td><td class="n"><span class="rate">91</span></td><td><span class="bar-fit"><i style="width:99%"></i></span></td><td class="n num">25</td><td class="n num wide-col">2029</td><td class="n num wide-col">100M</td></tr><tr><td><span class="lb att">هـ</span></td><td dir="ltr" style="text-align:start">Rodrygo</td><td class="n"><span class="rate">86</span></td><td><span class="bar-fit"><i style="width:81%"></i></span></td><td class="n num">23</td><td class="n num wide-col">2028</td><td class="n num wide-col">95M</td></tr></tbody></table></div>
+  <aside class="drawer">
+    <header style="display:flex;align-items:center;gap:8px"><span class="crest-l" style="--c:#fff;width:44px;height:44px"></span><div style="flex:1;min-width:0"><b class="title" dir="ltr" style="display:block">Jude Bellingham</b><div class="caption">وسط · 21 سنة · إنجلترا</div></div><span class="rate" style="height:30px;min-width:40px;font-size:18px">90</span><button class="ib" aria-label="إغلاق">✕</button></header>
+    <div class="scroll" style="flex:1;display:flex;flex-direction:column;gap:6px">
+      <div class="row"><span class="grow">اللياقة</span><span class="bar-fit"><i style="width:95%"></i></span><b class="num">95%</b></div>
+      <div class="row"><span class="grow">العقد</span><b class="num">2029</b></div>
+      <div class="row"><span class="grow">القيمة</span><b class="num">99M</b></div>
+      <div class="row"><span class="grow">الأهداف هذا الموسم</span><b class="num">4</b></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><a class="btn quiet" href="#">جدّد العقد</a><a class="btn outline needs-net" href="#">اعرضه للبيع</a></div>
+  </aside>
+  <span class="note" style="top:44px;inset-inline-start:30%">على 667: عمودا العقد والقيمة في تبويب «العقود»</span>
+</div>
+</template>
+<style id="css">
+.squad { position: relative; display: flex; flex-direction: column; gap: 6px; height: 100%; }
+.squad .grid { flex: 1; padding-inline-end: min(320px, 46%); }
+.wide-col { display: none; }
+@media (min-width: 900px) { .wide-col { display: table-cell; } }
+</style>
+<script src="frames.js"></script>
+</body>
+</html>

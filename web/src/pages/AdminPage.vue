@@ -4,6 +4,7 @@
 // the activity day by day, the accounts (admins apart, search by number, suspend, delete), the leagues, the
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
 // the alliances, the backups and the commentary templates.
+import { scrollToTop } from '../lib/scroll'
 import { useAuth } from '../stores/auth'
 import { uuid } from '../lib/uuid'
 import { statusLabel } from '../lib/statuses'
@@ -199,7 +200,7 @@ async function loadUsers(page = 1) {
 const gift = ref({ account: '', amount: 100, reason: '' })
 function fillGift(no: number) {
   gift.value.account = String(no)
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  scrollToTop(true)
 }
 const giveCoins = () => run(async () => {
   const { data } = await api.POST('/admin/coins', { body: { account_no: Number(gift.value.account), amount: gift.value.amount, reason: gift.value.reason.trim(), idempotency_key: uuid() } })

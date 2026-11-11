@@ -1,25 +1,26 @@
 <script setup lang="ts">
-// The frame around every game screen (Sprint 9 W1, X29, X32, UP7; rebuilt by Sprint 20 W2 and W6, the owner's approved
-// drafts, docs/design/legends-ui/Sprint20Drafts.html):
-// - The top bar, one in every screen: inside a slot the club (a tap opens the club switcher), the coins and the
-//   club's money, the timers and what waits for the coach (each opening its window), and the messages; the coach's tab.
-// - Inside a slot, on the computer, a fixed side menu with every section; on the phone a bottom bar: «النادي» (the
-//   club board) first, then the four portals, each opening its short list. One way to each place, no duplicate menu.
-// - [Sprint 22] The Assistant Coach's button on every screen, fixed on the left in Arabic and the right in English (above the bottom bar inside a slot).
-// - Outside a slot (the home screen, my leagues, the account, the inbox) only the top bar.
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+// The frame around every game screen. [Sprint 55 W1] Rebuilt on the approved landscape drafts
+// (docs/design/legends-ui/landscape/LandscapeShell.html, the owner's sign-off 2026-11-11, option A on the computer):
+// - The dock (ShellDock): 72px at the line's start, 200px with the names on the computer. The club at its head (a tap
+//   switches clubs), the six sections by their one name (nav.ts DOCK), «المزيد», and the Assistant Coach at its foot.
+//   Outside a club: the home screen, my leagues, a new league, the tournaments and the messages.
+// - The bar (ShellBar), 42px: the screen's name, the next match's countdown, the coins and the club's money, the
+//   messages and the account (a dot when it is not verified).
+// - The screen in what is left, scrolling inside itself (the frame never moves), the footer at its end.
+// - Held upright on a phone (the coach chose «تابع عمودياً», TurnPhone): the same dock along the bottom.
+// Signed out (the landing, the sign-in) only a slim bar with the brand and the two doors.
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '../components/Icon.vue'
-import ClubSwitcher from '../components/shell/ClubSwitcher.vue'
+import BrandMark from '../components/BrandMark.vue'
 import AgendaPanel from '../components/shell/AgendaPanel.vue'
+import ShellBar from '../components/shell/ShellBar.vue'
+import ShellDock, { type DockEntry } from '../components/shell/ShellDock.vue'
+import type { MoreGroup } from '../components/shell/ShellMore.vue'
 import ToastHost from '../components/shell/ToastHost.vue'
-import { DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuRoot, DropdownMenuTrigger } from 'reka-ui'
-import MoneyPill from '../components/ui/MoneyPill.vue'
-import NavItem from '../components/ui/NavItem.vue'
 import UiButton from '../components/ui/UiButton.vue'
 import AfterRound from '../components/shell/AfterRound.vue'
 import ManagerBot from '../components/assistant/ManagerBot.vue'
-import SoundToggle from '../components/shell/SoundToggle.vue'
 import PublicFooter from '../components/PublicFooter.vue'
 import SoundPrompt from '../components/shell/SoundPrompt.vue'
 import { playTone } from '../lib/tone'
@@ -28,25 +29,24 @@ import { useToast } from '../stores/toast'
 import { money } from '../lib/format'
 import { useAuth } from '../stores/auth'
 import { useBoard } from '../stores/board'
+import { useBot } from '../stores/bot'
 import { useInbox } from '../stores/inbox'
 import { useSlot } from '../stores/slot'
 import { useWallet } from '../stores/wallet'
 import { useBroadcast } from '../stores/broadcast'
-import { COMMUNITY, GROUPS, OUTSIDE, SECTIONS, type Group, type Section } from './nav'
+import { DOCK, DOCK_OUTSIDE, MORE_ALWAYS, MORE_IN_SLOT, SECTIONS, type Section } from './nav'
 
 const route = useRoute()
 const broadcast = useBroadcast()
 const auth = useAuth()
 const initial = computed(() => auth.user?.name.trim().charAt(0) ?? '')
-// The portal whose list is open (phone), and the top bar's open window.
-const portal = ref<Group | null>(null)
 // The unread messages on the inbox's entry [Sprint 22].
 const inbox = useInbox()
 watch(() => auth.user?.id ?? null, (id) => inbox.follow(id), { immediate: true })
 // The coins balance on the shell [Sprint 34].
 const wallet = useWallet()
 watch(() => auth.user?.id ?? null, (id) => id && wallet.load(), { immediate: true })
-// The slot the coach is in: its club heads the menu.
+// The slot the coach is in: its club heads the dock.
 const slot = useSlot()
 // Fetched again on a new account and on the home screen (a club claimed or left since), else only re-picked.
 watch(() => [auth.user?.id ?? 0, route.fullPath] as const, ([id], before) => id && slot.load(id, !before || before[0] !== id || route.name === 'home'), { immediate: true })
@@ -61,25 +61,42 @@ const pathOf = (s: Section) => {
   return s.path
 }
 const clubSections = computed(() => SECTIONS.filter((s) => s.club && (!s.dev || auth.user?.role === 'admin')))
+const byName = (n: string) => clubSections.value.find((s) => s.name === n)
 // '/league' must not light up on '/leagues': a section owns its path and what is under it.
 const active = (path: string) => (path === '/' ? route.path === '/' : route.path === path || route.path.startsWith(path + '/'))
 const inSlot = computed(() => clubSections.value.some((s) => active(pathOf(s))))
-const groups = computed(() => GROUPS.map((g) => ({ ...g, items: clubSections.value.filter((s) => s.group === g.key) })))
-const groupActive = (g: Group) => clubSections.value.some((s) => s.group === g && route.path === pathOf(s))
-const openGroup = computed(() => groups.value.find((g) => g.key === portal.value) ?? null)
-const togglePortal = (g: Group) => (portal.value = portal.value === g ? null : g)
-const level = computed(() => slot.coach?.level ?? null)
 const unread = computed(() => (inbox.unread > 99 ? '99+' : inbox.unread ? String(inbox.unread) : ''))
-// [Sprint 20 B1] The board of the slot: the money, the timers and the to-do list on the top bar.
+// [Sprint 20 B1] The board of the slot: the money, the timers and the to-do list.
 const board = useBoard()
 watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as const, ([inside, league]) => inside && board.load(league ?? null), { immediate: true })
 const running = computed(() => board.board?.timers.filter((t) => ['training', 'stadium', 'scout'].includes(t.kind)).length ?? 0)
 const waiting = computed(() => (board.board?.pending.length ?? 0) + (inbox.unread ? 1 : 0))
-watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
 
-// [Sprint 54 W4] The timers and what waits: a window under the top bar that the panel lays out itself (spanning the
-// bar on a phone, at its end on a computer). Headless UI's Popover is gone; its three duties are here: Esc and the
-// veil close it, the focus goes into it and back to its button after.
+// [Sprint 55 W1, D2] The dock's sections: in a club the six (each lit when one of its pages is open), outside the five.
+const entries = computed<DockEntry[]>(() => {
+  if (!inSlot.value) return DOCK_OUTSIDE.map((d) => ({ key: d.path, label: d.label, icon: d.icon, active: route.path === d.path, links: [{ to: d.path, label: d.label, icon: d.icon, active: route.path === d.path }], badge: d.path === '/inbox' ? unread.value : null }))
+  return DOCK.map((d) => {
+    const links = d.items.map(byName).filter((s): s is Section => !!s).map((s) => ({ to: pathOf(s), label: s.label, icon: s.icon, active: active(pathOf(s)) }))
+    return { key: d.key, label: d.label, icon: d.icon, links, active: links.some((l) => l.active), badge: d.key === 'office' && board.board?.pending.length ? board.board.pending.length : d.key === 'match' && board.board?.match?.status === 'live' ? '●' : null }
+  })
+})
+const more = computed<MoreGroup[]>(() => {
+  const groups: MoreGroup[] = []
+  if (inSlot.value) groups.push({ label: 'الدوري', links: MORE_IN_SLOT.map(byName).filter((s): s is Section => !!s).map((s) => ({ to: pathOf(s), label: s.label, icon: s.icon, active: active(pathOf(s)) })) })
+  groups.push({ label: 'المجتمع', links: MORE_ALWAYS.map((l) => ({ to: l.path, label: l.label, icon: l.icon, active: route.path === l.path })) })
+  const admin = auth.user?.role === 'admin'
+  if (admin) groups.push({ label: 'إدارة اللعبة', links: [{ to: '/admin', label: 'لوحة الإدارة', icon: 'staff' }, ...SECTIONS.filter((s) => s.dev).map((s) => ({ to: s.path, label: s.label, icon: s.icon }))] })
+  return groups
+})
+// The screen's name on the bar: its section's page, else the dock's or «المزيد»'s link that is open.
+const title = computed(() => {
+  const s = SECTIONS.find((x) => (x.club || x.path !== '/') && active(pathOf(x)) && (x.path !== '/leagues' || route.path === '/leagues'))
+  if (s) return s.label
+  return [...DOCK_OUTSIDE, ...MORE_ALWAYS].find((l) => route.path === l.path)?.label ?? ''
+})
+
+// [Sprint 54 W4] The timers and what waits: a window under the bar (Esc and the veil close it, the focus goes into it
+// and back to its button after). [Sprint 55] Kept on the bar until Sprint 56 rebuilds the office with them inside.
 const agenda = ref<'timers' | 'pending' | null>(null)
 let agendaButton: HTMLElement | null = null
 async function toggleAgenda(k: 'timers' | 'pending', e: MouseEvent) {
@@ -97,9 +114,28 @@ function closeAgenda() {
 const onAgendaKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeAgenda() }
 watch(agenda, (k) => (k ? window.addEventListener('keydown', onAgendaKey) : window.removeEventListener('keydown', onAgendaKey)))
 onBeforeUnmount(() => window.removeEventListener('keydown', onAgendaKey))
-// [X85] The screens where the club's money matters (spent or earned there): the money shows on the top bar only on them.
+
+// The screen scrolls inside the frame: back to its top on a new page.
+const main = ref<HTMLElement | null>(null)
+watch(() => route.path, () => { agenda.value = null; main.value?.scrollTo({ top: 0 }) })
+
+// [X85] The screens where the club's money matters (spent or earned there): the money shows on the bar only on them.
 const MONEY_PAGES = new Set(['club', 'team', 'market', 'training', 'specialists', 'stadium', 'finance', 'scout', 'friendlies'])
-const showMoney = computed(() => inSlot.value && MONEY_PAGES.has(String(route.name)))
+const cash = computed(() => (inSlot.value && MONEY_PAGES.has(String(route.name)) && board.board
+  ? { value: board.board.money.cash, title: t('أموال {v0}', { v0: board.board.club.name }), label: t('أموال {v0}: {v1}', { v0: board.board.club.name, v1: money(board.board.money.cash) }) }
+  : null))
+const next = computed(() => {
+  const m = board.board?.match
+  if (!inSlot.value || !m) return null
+  return { at: m.scheduled_at, live: m.status === 'live', opponent: m.opponent?.name ?? '' }
+})
+
+// [Sprint 55 W2] The Assistant Coach answers from the dock; the dock's own dot greets once a day until it is opened.
+const bot = useBot()
+const HELLO = 'glm.bot.hello'
+const today = new Date().toDateString()
+const hello = ref((() => { try { return localStorage.getItem(HELLO) !== today } catch { return false } })())
+watch(() => bot.open, (o) => { if (o) hello.value = false })
 
 // [Sprint 39 N1] The tone when the coach's next match kicks off while the game is open (its end comes as the match
 // report's message, stores/inbox.ts). Only within the next hours; a new board moves the timer.
@@ -113,235 +149,204 @@ watch(() => board.board?.match && board.board.match.status !== 'live' ? board.bo
   }
 }, { immediate: true })
 onBeforeUnmount(() => window.clearTimeout(kickoff))
-
-// [Sprint 30 P7] The header's real height (it grows with the club's tabs and wraps on narrow screens), so the side
-// menu sits right under it and fills the rest of the screen exactly, scrolling inside.
-const header = ref<HTMLElement | null>(null)
-const headerHeight = ref(68)
-let sizer: ResizeObserver | null = null
-onMounted(() => {
-  if (!header.value || typeof ResizeObserver === 'undefined') return
-  sizer = new ResizeObserver(([e]) => { headerHeight.value = Math.round(e.target.getBoundingClientRect().height) })
-  sizer.observe(header.value)
-})
-onBeforeUnmount(() => sizer?.disconnect())
 </script>
 
 <template>
-  <!-- [Sprint 51 W1] Nothing may scroll the page sideways (clip, not hidden: the sticky header keeps working). -->
-  <div class="min-h-dvh overflow-x-clip" :style="{ '--shell-header': headerHeight + 'px' }">
+  <!-- The coach's frame. -->
+  <div v-if="auth.user" class="shell" :class="route.meta.wide ? 'is-wide' : ''">
     <ToastHost />
     <!-- [Sprint 39 N1] Asked once a device: the game's sound and notifications. -->
-    <SoundPrompt v-if="auth.user" />
-    <header ref="header" class="sticky top-0 z-30">
-      <div class="shell-top relative border-b border-shade/30">
-        <div class="relative mx-auto flex max-w-7xl items-center gap-1.5 px-3 py-2 md:gap-3 md:px-6 md:py-0" :class="inSlot ? 'md:max-w-none' : route.meta.wide ? 'xl:max-w-[96rem]' : ''">
-          <!-- The club (inside a slot: a tap switches clubs), the brand outside. -->
-          <ClubSwitcher v-if="inSlot" />
-          <RouterLink v-else to="/" :aria-label="$t('الرئيسية')" class="shrink-0 md:py-2"><BrandMark size="sm" /></RouterLink>
-          <div class="flex-1" />
-          <!-- [Sprint 48 D2] The game's emblem in the middle of the bar, as a manager game's crest over its stadium. -->
-          <RouterLink v-if="inSlot" to="/" :aria-label="$t('الرئيسية')" class="shell-brand absolute inset-x-0 mx-auto hidden min-h-touch w-fit items-center xl:flex"><BrandMark size="sm" /></RouterLink>
+    <SoundPrompt />
+    <ShellDock :entries="entries" :more="more" :in-slot="inSlot" :bot-open="bot.open" :bot-dot="hello && !bot.open" @bot="bot.open = !bot.open" />
+    <ShellBar :title="title" :in-slot="inSlot" :next="next" :coins="wallet.view?.balance ?? 0" :cash="cash" :unread="unread" :avatar="auth.user.avatar_url" :initial="initial" :unverified="!auth.user.verification?.verified">
+      <template v-if="inSlot">
+        <button v-for="k in (['timers', 'pending'] as const)" :key="k" type="button" class="bar-icon" :aria-expanded="agenda === k" aria-haspopup="dialog"
+          :aria-label="k === 'timers' ? $t('المؤقتات') : waiting ? $t('ما ينتظرك: {n}', { n: waiting }) : $t('ما ينتظرك')" @click="toggleAgenda(k, $event)">
+          <template v-if="k === 'timers'"><Icon name="clock" /><span v-if="running" class="bar-badge bg-gold text-on-gold">{{ running }}</span></template>
+          <template v-else><Icon name="todo" /><span v-if="waiting" class="bar-badge animate-pulse-ring bg-live text-white">{{ waiting }}</span></template>
+        </button>
+        <Transition name="drop">
+          <AgendaPanel v-if="agenda" :key="agenda" :kind="agenda" @close="closeAgenda" />
+        </Transition>
+      </template>
+    </ShellBar>
 
-          <template v-if="auth.user">
-            <div class="flex shrink-0 items-center gap-1 md:gap-2">
-              <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 xl:flex">{{ $t('لوحة الإدارة') }}</RouterLink>
-              <RouterLink v-if="!inSlot" to="/leagues" class="hidden h-touch items-center gap-1.5 rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
-              <MoneyPill kind="coins" to="/wallet" :value="wallet.view?.balance ?? 0" :label="$t('المحفظة')" />
-              <!-- [X85] The money of the club of this slot only (the board of its league), in one place: the top bar, on the
-                   screens where money is spent or earned, and refreshed after every tap that changes it. -->
-              <MoneyPill v-if="showMoney && board.board" kind="cash" to="/finance" :value="board.board.money.cash" caption="أموال النادي" :title="$t('أموال {v0}', { v0: $nm(board.board.club.name) })"
-                :label="$t('أموال {v0}: {v1}', { v0: $nm(board.board.club.name), v1: money(board.board.money.cash) })" />
-              <template v-if="inSlot">
-                <!-- [X61] The panel drops from the top bar under its button (Esc and the veil close it); not relative
-                     itself, so the panel spans the bar on a phone. [Sprint 54 W4] Its own state, no Headless UI. -->
-                <button v-for="k in (['timers', 'pending'] as const)" :key="k" type="button" class="bar-icon" :aria-expanded="agenda === k" aria-haspopup="dialog"
-                  :aria-label="k === 'timers' ? $t('المؤقتات') : waiting ? $t('ما ينتظرك: {n}', { n: waiting }) : $t('ما ينتظرك')" @click="toggleAgenda(k, $event)">
-                  <template v-if="k === 'timers'"><Icon name="clock" /><span v-if="running" class="bar-badge bg-gold text-on-gold">{{ running }}</span></template>
-                  <template v-else><Icon name="todo" /><span v-if="waiting" class="bar-badge animate-pulse-ring bg-live text-white">{{ waiting }}</span></template>
-                </button>
-                <Transition name="drop">
-                  <AgendaPanel v-if="agenda" :key="agenda" :kind="agenda" @close="closeAgenda" />
-                </Transition>
-              </template>
-              <!-- [Sprint 39 N2] The notification sound: on or muted, one tap. -->
-              <SoundToggle :class="inSlot ? 'max-sm:hidden' : ''" />
-              <!-- Inside a slot on a narrow phone the messages sit in «ما ينتظرك», so the club keeps its room. -->
-              <RouterLink to="/inbox" class="bar-icon" :class="inSlot ? 'max-sm:hidden' : ''" :aria-label="unread ? $t('الرسائل: {n} غير مقروءة', { n: inbox.unread }) : $t('الرسائل')">
-                <Icon name="inbox" /><span v-if="unread" class="bar-badge bg-live text-white">{{ unread }}</span>
-              </RouterLink>
-            </div>
-            <!-- The coach's tab. -->
-            <RouterLink to="/profile" class="coach-tab chrome-end shrink-0" :class="inSlot ? 'in-slot' : ''" :aria-label="$t('حسابي')">
-              <span class="relative grid size-9 place-items-center overflow-hidden rounded-full bg-brand font-display text-lg font-extrabold text-white ring-2 ring-gold/70 md:size-10">
-                <img v-if="auth.user.avatar_url" :src="auth.user.avatar_url" alt="" class="size-full object-cover" /><template v-else>{{ initial }}</template>
-              </span>
-              <span class="hidden leading-tight md:block">
-                <b class="block max-w-32 truncate text-sm">{{ auth.user.name }}</b>
-                <span v-if="level" class="flex items-center gap-1.5 text-xs font-semibold">
-                  <span class="rounded bg-gold px-1.5 font-numbers text-on-gold">{{ level.level }}</span>
-                  <span class="h-1.5 w-14 overflow-hidden rounded-full bg-surface-sunk" aria-hidden="true"><span class="block h-full bg-brand" :style="{ width: `${level.progress_bp / 100}%` }" /></span>
-                </span>
-              </span>
-            </RouterLink>
-          </template>
-          <template v-else-if="auth.loaded">
-            <UiButton to="/login" size="sm">{{ $t('دخول') }}</UiButton>
-            <RouterLink to="/register" class="hidden h-touch items-center rounded-lg border border-text/25 px-4 font-bold sm:flex">{{ $t('إنشاء حساب') }}</RouterLink>
-          </template>
-        </div>
+    <main ref="main" class="shell-main">
+      <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->
+      <div v-if="broadcast.away && broadcast.path" class="on-air flex items-center gap-2 px-3 py-1.5" role="status">
+        <RouterLink :to="broadcast.path" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 font-bold" :aria-label="$t('العودة إلى المباراة')">
+          <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-white"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ broadcast.live ? $t('على الهواء') : $t('انتهت') }}</span>
+          <span class="min-w-0 truncate text-sm">{{ $t(broadcast.title) }}</span>
+          <b class="shrink-0 font-numbers text-lg" dir="ltr">{{ broadcast.score }}</b>
+          <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
+        </RouterLink>
+        <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('كتم صوت المباراة')" @click="broadcast.muteAsk++">🔇</button>
+        <!-- [X74] Close the broadcast: the match page behind is let go, its sound and commentary with it. -->
+        <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('أغلق البث')" :title="$t('أغلق البث')" @click="broadcast.close()">✕</button>
       </div>
-
-      <!-- [Sprint 48 D2] The computer's menu: one row of sections under the bar (it was a side menu), each portal a list
-           that drops under its name, and a gold seam under the row. -->
-      <nav v-if="auth.user" class="shell-nav hidden md:block" :aria-label="inSlot ? $t('أقسام النادي') : $t('أقسام اللعبة')">
-        <div class="mx-auto flex max-w-7xl items-stretch gap-1 px-6" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
-          <template v-if="inSlot">
-            <NavItem v-for="s in clubSections.filter((x) => !x.group)" :key="s.name" :to="pathOf(s)" :icon="s.icon" :label="s.label" :active="active(pathOf(s))" />
-            <!-- [Sprint 54 W4] Each portal's list on reka-ui's DropdownMenu: the arrows walk it, Esc and the tap outside close it. -->
-            <DropdownMenuRoot v-for="g in groups" :key="g.key" :modal="false">
-              <DropdownMenuTrigger class="ui-nav-item" :class="groupActive(g.key) ? 'is-active' : ''">
-                <Icon :name="g.icon" :size="20" class="ui-nav-icon" />{{ $t(g.label) }}<span class="text-xs text-gold" aria-hidden="true">▾</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuContent align="start" :side-offset="6" class="nav-panel drop-panel">
-                  <DropdownMenuItem v-for="s in g.items" :key="s.name" as-child>
-                    <RouterLink :to="pathOf(s)" class="nav-link" :class="route.path === pathOf(s) ? 'is-active' : ''" :aria-current="route.path === pathOf(s) ? 'page' : undefined">
-                      <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
-                    </RouterLink>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenuPortal>
-            </DropdownMenuRoot>
-          </template>
-          <template v-else>
-            <NavItem v-for="s in OUTSIDE" :key="s.path" :to="s.path" :icon="s.icon" :label="s.label" :active="route.path === s.path" />
-          </template>
-          <div class="flex-1" />
-          <DropdownMenuRoot :modal="false">
-            <DropdownMenuTrigger class="ui-nav-item"><Icon name="chat" :size="20" class="ui-nav-icon" />{{ $t('المجتمع') }}<span class="text-xs text-gold" aria-hidden="true">▾</span></DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent align="end" :side-offset="6" class="nav-panel drop-panel">
-                <DropdownMenuItem v-for="s in COMMUNITY" :key="s.path" as-child>
-                  <RouterLink :to="s.path" class="nav-link" :class="active(s.path) ? 'is-active' : ''"><Icon :name="s.icon" :size="18" />{{ $t(s.label) }}</RouterLink>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
-          </DropdownMenuRoot>
-        </div>
-      </nav>
-
-      <!-- A portal's list on the phone: a sheet over the bottom bar. -->
-      <div v-if="inSlot && openGroup" class="fixed inset-0 z-20 bg-black/50 md:hidden" @click="portal = null" />
-      <section v-if="inSlot && openGroup" id="portal-list" class="portal-list md:hidden" :aria-label="$t(openGroup.label)">
-        <h2 class="mb-2 flex items-center gap-2 font-display text-base font-extrabold"><Icon :name="openGroup.icon" :size="18" />{{ $t(openGroup.label) }}</h2>
-        <div class="grid grid-cols-3 gap-2">
-          <RouterLink v-for="s in openGroup.items" :key="s.name" :to="pathOf(s)" class="portal-item" :class="route.path === pathOf(s) ? 'is-active' : ''" :aria-current="route.path === pathOf(s) ? 'page' : undefined">
-            <Icon :name="s.icon" />{{ $t(s.label) }}
-          </RouterLink>
-        </div>
-      </section>
-    </header>
-
-    <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->
-    <div v-if="broadcast.away && broadcast.path" class="on-air flex items-center gap-2 px-3 py-2 md:px-6" role="status">
-      <RouterLink :to="broadcast.path" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 font-bold" :aria-label="$t('العودة إلى المباراة')">
-        <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-white"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ broadcast.live ? $t('على الهواء') : $t('انتهت') }}</span>
-        <span class="min-w-0 truncate text-sm">{{ $t(broadcast.title) }}</span>
-        <b class="shrink-0 font-numbers text-lg" dir="ltr">{{ broadcast.score }}</b>
-        <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
+      <!-- [Sprint 21 E7.3] A suspended account: why, and the way to ask the developers. -->
+      <RouterLink v-if="auth.user.suspended" to="/support" class="flex min-h-touch items-center justify-center bg-live/25 px-4 py-2 text-center text-sm font-bold" role="alert">
+        {{ $t('حسابك معلّق من فريق التطوير') }}<template v-if="auth.user.suspended.reason">: {{ auth.user.suspended.reason }}</template>. <span class="text-gold">{{ $t('راسل الفريق') }}</span>
       </RouterLink>
-      <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('كتم صوت المباراة')" @click="broadcast.muteAsk++">🔇</button>
-      <!-- [X74] Close the broadcast: the match page behind is let go, its sound and commentary with it. -->
-      <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('أغلق البث')" :title="$t('أغلق البث')" @click="broadcast.close()">✕</button>
-    </div>
-    <!-- [Sprint 21 E7.3] A suspended account: why, and the way to ask the developers. -->
-    <RouterLink v-if="auth.user?.suspended" to="/support" class="block bg-live/25 px-4 py-2 text-center text-sm font-bold" role="alert">
-      {{ $t('حسابك معلّق من فريق التطوير') }}<template v-if="auth.user.suspended.reason">: {{ auth.user.suspended.reason }}</template>. <span class="text-gold">{{ $t('راسل الفريق') }}</span>
-    </RouterLink>
-    <RouterLink v-else-if="auth.user && !auth.user.verification?.verified && route.name !== 'profile'" to="/profile" class="flex min-h-touch items-center justify-center bg-warning/20 px-4 py-2 text-center text-sm">
-      {{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }} <span class="font-bold text-gold">{{ $t('وثّق حسابك من صفحة حسابي') }}</span>
-    </RouterLink>
-
-    <div>
-      <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'shell-main-slot' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
+      <div class="shell-page mx-auto w-full max-w-7xl" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
         <RouterView v-slot="{ Component, route: r }">
           <Transition name="page">
             <component :is="Component" :key="r.path" />
           </Transition>
         </RouterView>
-      </main>
-    </div>
-    <!-- [X90] The game's footer on every screen of the frame (the owner's request 2026-11-02); inside a slot on the phone
-         it keeps clear of the bottom bar. -->
-    <PublicFooter :class="inSlot ? 'shell-foot-slot' : ''" />
-
-    <!-- [W6] Inside a slot on the phone: «النادي» first, then the four portals. -->
-    <nav v-if="inSlot" class="shell-tabs fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden" :aria-label="$t('أقسام النادي')">
-      <RouterLink to="/club" class="tab-item" :class="route.path === '/club' && !portal ? 'is-active' : ''" :aria-current="route.path === '/club' ? 'page' : undefined">
-        <Icon name="club" /><span class="line-clamp-2 max-w-full leading-tight">{{ $t('النادي') }}</span>
-      </RouterLink>
-      <button v-for="g in groups" :key="g.key" type="button" class="tab-item" :class="groupActive(g.key) || portal === g.key ? 'is-active' : ''" :aria-expanded="portal === g.key" aria-controls="portal-list" @click="togglePortal(g.key)">
-        <Icon :name="g.icon" /><span class="line-clamp-2 max-w-full leading-tight">{{ $t(g.label) }}</span>
-      </button>
-    </nav>
+      </div>
+      <!-- [X90] The game's footer, at the end of every screen. -->
+      <PublicFooter />
+    </main>
 
     <!-- [W7] The matches missed since the last visit: one window, once. -->
     <AfterRound v-if="inSlot && board.board?.missed && board.league" :league-id="board.league" />
+    <!-- [Sprint 22, Sprint 55 W2] The Assistant Coach, opened from the dock, its window beside it. -->
+    <ManagerBot docked />
+  </div>
 
-    <!-- [Sprint 22] The Assistant Coach: every explanation of the game, on every screen. -->
-    <ManagerBot v-if="auth.user" :raised="inSlot" />
+  <!-- Signed out: the brand, the two doors, the page and the footer. -->
+  <div v-else class="min-h-dvh overflow-x-clip">
+    <ToastHost />
+    <header class="public-bar sticky top-0 z-30 border-b border-text/10">
+      <div class="mx-auto flex max-w-7xl items-center gap-2 px-3 py-1.5 md:px-6">
+        <RouterLink to="/" :aria-label="$t('الرئيسية')" class="flex min-h-touch shrink-0 items-center"><BrandMark size="sm" /></RouterLink>
+        <span class="flex-1" />
+        <template v-if="auth.loaded">
+          <UiButton to="/login" size="sm">{{ $t('دخول') }}</UiButton>
+          <UiButton to="/register" size="sm" variant="outline" class="max-sm:hidden">{{ $t('إنشاء حساب') }}</UiButton>
+        </template>
+      </div>
+    </header>
+    <main class="mx-auto w-full max-w-7xl px-3 py-5 pb-10 md:px-6" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
+      <RouterView v-slot="{ Component, route: r }">
+        <Transition name="page">
+          <component :is="Component" :key="r.path" />
+        </Transition>
+      </RouterView>
+    </main>
+    <PublicFooter />
   </div>
 </template>
 
-<style scoped>
-/* [X32] The header's first row: night ink lit from above with Legends' star lattice faint over it, and under it the
-   signature seam, emerald fading into gold. */
-.shell-top {
-  background:
-    url("/art/pattern-star.svg") center / 40px 40px repeat,
-    linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 22%, var(--color-panel)) 0%, var(--color-panel) 55%, var(--color-bg-deep) 100%);
-  background-blend-mode: soft-light, normal;
+<style>
+/* [Sprint 55 W1] The frame (LandscapeShell.html): a grid of the dock at the line's start, the bar above the screen, and
+   the screen scrolling inside itself. Global, because the dock's lists and the bar's windows are carried to the body. */
+.shell {
+  --dock-w: 72px;
+  --bar-h: 42px;
+  display: grid;
+  grid-template-columns: var(--dock-w) minmax(0, 1fr);
+  grid-template-rows: var(--bar-h) minmax(0, 1fr);
+  height: 100dvh;
+  overflow: hidden;
 }
-.shell-top::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  bottom: -1px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-brand-light) 25%, var(--color-gold) 75%, transparent);
-  opacity: 0.85;
+@media (min-width: 1200px) { .shell { --dock-w: 200px; } }
+
+.shell-dock {
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  padding: var(--space-xs);
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: var(--color-bg-deep);
+  border-inline-end: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
 }
-/* [Sprint 21 E3.4] The club's and the coach's tabs: modern glass cards on the night bar (they were ivory tabs cut at an
-   angle), the same look as every card under them. */
-:global(.chrome-tab),
-.coach-tab {
+.shell-dock::-webkit-scrollbar { display: none; }
+.dock-crest { display: flex; flex: none; align-items: center; justify-content: center; gap: var(--space-sm); min-height: var(--spacing-touch); margin-bottom: var(--space-xs); border-radius: var(--radius-lg); }
+.dock-crest:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+.dock-wide-only, .dock-brand .brand-words { display: none; }
+.dock-item {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-height: var(--spacing-touch);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-text-soft);
+  transition: color var(--duration-fast) var(--ease-soft), background-color var(--duration-fast) var(--ease-soft);
+}
+.dock-item:hover { color: var(--color-text); background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+.dock-item:focus-visible { outline: 2px solid var(--color-ring); outline-offset: -2px; }
+.dock-item.is-active { color: var(--color-gold-light); background: color-mix(in srgb, var(--color-gold) 14%, transparent); }
+html.light .dock-item.is-active { color: var(--color-text); background: color-mix(in srgb, var(--color-gold) 30%, transparent); }
+.dock-item.is-active::before { content: ""; position: absolute; inset-block: 10px; inset-inline-start: calc(-1 * var(--space-xs)); width: 3px; border-radius: 3px; background: var(--color-gold); }
+.dock-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-inline: 2px; }
+.dock-badge { position: absolute; top: 4px; inset-inline-end: 10px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 99px; font-family: var(--font-numbers); font-size: 11px; line-height: 16px; text-align: center; color: var(--color-broadcast-white); background: var(--color-live); }
+.dock-dot { min-width: 10px; width: 10px; height: 10px; padding: 0; background: var(--color-ring); }
+.dock-bot { color: var(--color-brand-light); }
+/* A phone held sideways is short: six sections, «المزيد» and the assistant (8 × 44px) fit 375px only without the
+   crest's margin. */
+@media (max-height: 440px) { .shell-dock { gap: 0; padding-block: 2px; } .dock-crest { margin-bottom: 0; } }
+/* Under 400px of height the eight don't fit with the club too: the club goes to the bar's start (as the approved
+   draft). */
+.bar-club { display: none; }
+.bar-club .dock-crest { min-height: 2.125rem; margin: 0; padding: 0; }
+.bar-club .dock-crest img { width: 1.75rem; height: 1.75rem; }
+@media (max-height: 400px) and (orientation: landscape) { .shell-dock > .dock-crest { display: none; } .bar-club { display: flex; } }
+/* The computer (option A): the names beside the icons. */
+@media (min-width: 1200px) {
+  .shell-dock { padding: var(--space-sm); }
+  .dock-item { flex-direction: row; justify-content: flex-start; gap: var(--space-md); padding-inline: var(--space-md); font-size: var(--text-body); }
+  .dock-item.is-active::before { inset-inline-start: calc(-1 * var(--space-sm)); }
+  .dock-badge { position: static; margin-inline-start: auto; }
+  .dock-crest { justify-content: flex-start; padding-inline: var(--space-sm); }
+  .dock-wide-only { display: block; }
+  .dock-brand .brand-words { display: flex; }
+}
+
+.shell-bar {
+  position: relative;
+  z-index: 30;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  min-height: 2.75rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: 0.9rem;
-  color: var(--color-text);
-  background: color-mix(in srgb, var(--color-surface-raised) 70%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
-  box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--color-shade) 80%, transparent);
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  gap: var(--space-sm);
+  min-width: 0;
+  padding-inline: var(--space-md);
+  background: color-mix(in srgb, var(--color-bg-deep) 70%, var(--color-bg));
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
 }
-.coach-tab { padding: 0.25rem; border-radius: 999px; }
-/* [Sprint 20 W2] Inside a slot the phone's bar keeps its room for the club: the account is on the home screen. */
-@media (max-width: 767px) { .coach-tab.in-slot { display: none; } }
-@media (min-width: 768px) {
-  :global(.chrome-tab) { min-height: 3.25rem; margin-block: 0.5rem; padding: 0.35rem 1rem; }
-  .coach-tab { min-height: 3.25rem; margin-block: 0.5rem; padding: 0.3rem 1rem 0.3rem 0.35rem; border-radius: 999px; }
+.shell-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--text-body-lg); font-weight: 800; }
+.bar-next { display: flex; align-items: center; gap: var(--space-xs); max-width: 14rem; height: 2.125rem; padding: 0 var(--space-md); border-radius: 99px; font-size: var(--text-caption); font-weight: 700; background: color-mix(in srgb, var(--color-text) 8%, transparent); }
+.bar-live { padding: 2px 8px; border-radius: 99px; color: var(--color-broadcast-white); background: var(--color-live); }
+@media (max-width: 760px) { .bar-wide { display: none !important; } }
+/* The money's caption is the bar's title's job (and the pill's label for a screen reader): the value alone here. */
+.shell-bar .ui-money-pill .text-caption { display: none !important; }
+/* The bar is 42px: its buttons are drawn 34px, and each still answers a 44px touch. */
+.shell-bar .bar-icon, .bar-avatar { position: relative; width: 2.125rem; height: 2.125rem; }
+.shell-bar .bar-icon::after, .bar-avatar::after, .shell-bar .ui-money-pill::after, .bar-next::after { content: ""; position: absolute; inset: -5px; }
+.shell-bar .ui-money-pill, .bar-next { position: relative; min-height: 2.125rem; white-space: nowrap; }
+/* A phone upright is narrow: the countdown leaves the bar (the office and the dock's «المباراة» keep it). */
+@media (max-width: 480px) { .bar-next { display: none; } .shell-bar { gap: var(--space-xs); padding-inline: var(--space-sm); } }
+.bar-avatar { display: grid; flex: none; place-items: center; border-radius: 99px; font-weight: 800; color: var(--color-broadcast-white); background: var(--color-brand); box-shadow: 0 0 0 2px var(--color-gold); }
+.bar-avatar-dot { position: absolute; top: -2px; inset-inline-end: -2px; width: 10px; height: 10px; border-radius: 99px; background: var(--color-warning); box-shadow: 0 0 0 2px var(--color-bg-deep); }
+
+.shell-main { position: relative; min-height: 0; overflow-x: clip; overflow-y: auto; overscroll-behavior: contain; --shell-header: 0px; }
+.shell-page { padding: var(--space-sm) var(--space-sm) var(--space-xl); }
+@media (min-width: 900px) { .shell-page { padding: var(--space-md) var(--space-lg) var(--space-xl); } }
+@media (min-width: 1200px) { .shell-page { padding: var(--space-lg) var(--space-xl) var(--space-xxl); } }
+
+/* [Sprint 55 W4] Held upright on a phone (the coach chose to follow upright): the same dock, along the bottom. */
+@media (orientation: portrait) and (max-width: 820px) {
+  .shell { grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--bar-h) minmax(0, 1fr) auto; }
+  .shell-dock { grid-row: 3; flex-direction: row; gap: 0; padding: 2px 2px max(2px, env(safe-area-inset-bottom)); overflow-x: auto; overflow-y: hidden; border-inline-end: 0; border-top: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent); }
+  .shell-dock > .flex-1 { display: none; }
+  .dock-crest { display: none; }
+  .dock-item { flex: 1 0 3.5rem; }
+  .dock-item.is-active::before { inset: auto 10px -2px; width: auto; height: 3px; }
 }
-:global(.chrome-tab:hover),
-.coach-tab:hover { border-color: color-mix(in srgb, var(--color-gold) 45%, transparent); background: color-mix(in srgb, var(--color-surface-raised) 90%, transparent); }
-/* The coins and the club's money: components/ui/MoneyPill.vue (Sprint 54 W5). */
-/* [Sprint 51 W1] Global: the timers' and to-do's buttons were Headless UI's PopoverButton, which the scoped attribute
-   never reached (kept global after Sprint 54 W4), so they were drawn 22px wide and unrounded and their badge, positioned against the whole bar, hung off
-   the screen's edge (a 2px sideways scroll on every club screen). */
-:global(.bar-icon) {
+
+/* [Sprint 51 W1] The bar's round buttons and their counts. */
+.bar-icon {
   position: relative;
   display: flex;
   width: 2.75rem;
@@ -352,8 +357,8 @@ onBeforeUnmount(() => sizer?.disconnect())
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-text) 10%, transparent);
 }
-:global(.bar-icon:hover) { background: color-mix(in srgb, var(--color-text) 20%, transparent); }
-:global(.bar-badge) {
+.bar-icon:hover { background: color-mix(in srgb, var(--color-text) 20%, transparent); }
+.bar-badge {
   position: absolute;
   top: -0.15rem;
   inset-inline-end: -0.15rem;
@@ -361,21 +366,11 @@ onBeforeUnmount(() => sizer?.disconnect())
   padding: 0 0.25rem;
   border-radius: 999px;
   font-family: var(--font-numbers);
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
   text-align: center;
 }
-/* [Sprint 48 D2] The computer's menu row: night glass over the stadium, each section an icon over its name as in the
-   manager games' bars, the current one lit in gold, and the gold seam under the row (the bar's own seam is emerald). */
-.shell-nav {
-  position: relative;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 92%, transparent), color-mix(in srgb, var(--color-panel) 88%, transparent));
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
-  box-shadow: 0 10px 24px -18px var(--color-shade);
-}
-:global(.nav-panel) {
-  /* [Sprint 54 W4] Placed by reka-ui under its name and carried to the body (so global: the scoped mark does not
-     follow a portal's content). */
+/* [Sprint 54 W4] A section's list beside the dock and «المزيد»: placed by reka-ui and carried to the body. */
+.nav-panel {
   z-index: 40;
   display: flex;
   min-width: 14rem;
@@ -387,7 +382,7 @@ onBeforeUnmount(() => sizer?.disconnect())
   border: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
   box-shadow: var(--shadow-overlay);
 }
-:global(.nav-link) {
+.nav-link {
   display: flex;
   min-height: 2.75rem;
   align-items: center;
@@ -398,88 +393,11 @@ onBeforeUnmount(() => sizer?.disconnect())
   color: var(--color-text-soft);
   outline: none;
 }
-:global(.nav-link:hover), :global(.nav-link[data-highlighted]) { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
-:global(.nav-link.is-active) { color: var(--color-broadcast-white); background: var(--color-brand); }
-/* [Sprint 48 L1] A phone turned sideways is short: the bar and the menu row tighten so the page keeps its room. */
-@media (max-height: 520px) and (min-width: 768px) {
-  .shell-brand { display: none; }
-  :global(.chrome-tab), .coach-tab { min-height: 2.6rem; margin-block: 0.25rem; }
-}
-/* [UP7] A portal's list: a sheet above the phone's bottom bar, a panel under the portals on the computer. */
-.portal-list {
-  position: fixed;
-  inset-inline: 0;
-  bottom: calc(4.6rem + env(safe-area-inset-bottom));
-  z-index: 25;
-  max-height: calc(100dvh - 9rem - env(safe-area-inset-bottom));
-  overflow-y: auto;
-  margin: 0 0.5rem;
-  padding: 0.85rem;
-  border-radius: 1rem;
-  background: var(--color-surface);
-  border: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
-  box-shadow: 0 12px 28px -14px color-mix(in srgb, var(--color-shade) 80%, transparent);
-}
-.portal-item {
-  display: flex;
-  min-height: 4.25rem;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  border-radius: 0.75rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--color-text-soft);
-  background: var(--color-surface-sunk);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.portal-item:hover { transform: scale(1.03); box-shadow: 0 6px 16px -10px color-mix(in srgb, var(--color-shade) 70%, transparent); color: var(--color-text); }
-.portal-item.is-active { color: var(--color-broadcast-white); background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand)); }
-/* [X41] The broadcast's bar: a strip in the emerald of the shell, under the header. */
+.nav-link:hover, .nav-link[data-highlighted] { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
+.nav-link.is-active { color: var(--color-broadcast-white); background: var(--color-brand); }
 .on-air {
   background: linear-gradient(90deg, color-mix(in srgb, var(--color-live) 25%, var(--color-panel)), var(--color-panel));
   border-bottom: 1px solid color-mix(in srgb, var(--color-live) 40%, transparent);
 }
-/* [Sprint 30 P8] Inside a slot on the phone the page ends above the bottom bar and the Assistant Coach's button, the
-   phone's home bar included (safe area); on the computer as before. */
-.shell-main-slot { padding-bottom: 2.5rem; }
-/* [X90] The footer ends the page above the phone's bottom bar. */
-.shell-foot-slot { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
-@media (min-width: 768px) { .shell-foot-slot { padding-bottom: 0; } }
-/* The phone's bottom bar: night ink, the current tab in emerald with a gold mark. */
-.shell-tabs {
-  background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));
-  border-top: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
-}
-.tab-item {
-  display: flex;
-  min-width: 0;
-  min-height: 3.5rem;
-  padding-inline: 0.15rem;
-  text-align: center;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.2rem;
-  border-radius: 0.75rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--color-text-soft);
-}
-.tab-item.is-active {
-  position: relative;
-  color: var(--color-broadcast-white);
-  background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand));
-  box-shadow: 0 6px 14px -8px var(--color-brand);
-}
-.tab-item.is-active::before {
-  content: "";
-  position: absolute;
-  top: -0.4rem;
-  width: 1.5rem;
-  height: 3px;
-  border-radius: 3px;
-  background: var(--color-gold);
-}
+.public-bar { background: color-mix(in srgb, var(--color-bg-deep) 85%, transparent); backdrop-filter: blur(8px); }
 </style>

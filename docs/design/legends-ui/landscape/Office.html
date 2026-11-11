@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D3 · المكتب (Sprint 55)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+<!-- [Sprint 55 D3] A draft for the owner's approval (D12): nothing is built from it before he signs it off. -->
+<header class="top">
+  <h1>D3 · المكتب</h1>
+  <nav aria-label="المسودات"><a href="index.html">كل المسودات</a> <a href="LandscapeShell.html">الإطار</a> <a href="Office.html">المكتب</a> <a href="Squad.html">الفريق</a> <a href="Lineup.html">التشكيلة</a> <a href="Tactics.html">التكتيك</a> <a href="Market.html">السوق</a> <a href="NextMatch.html">المباراة القادمة</a> <a href="Match.html">المباراة</a> <a href="Home.html">الرئيسية</a></nav>
+  <p>لوحة النادي في شاشة واحدة: المباراة القادمة أولاً (بأزرارها الثلاثة)، وما ينتظرك قائمة تتمرر داخلها، والترتيب حول مركزك، والعدّادات. لا تمرير للصفحة على 667×375.</p>
+</header>
+<div class="opts">
+  <span>الشكل: <button data-opt="theme" data-val="night" aria-pressed="true">الليل</button><button data-opt="theme" data-val="day" aria-pressed="false">النهار</button></span>
+  <span>الحالة: <button data-opt="state" data-val="normal" aria-pressed="true">عادي</button><button data-opt="state" data-val="loading" aria-pressed="false">تحميل</button><button data-opt="state" data-val="empty" aria-pressed="false">فراغ</button><button data-opt="state" data-val="error" aria-pressed="false">خطأ</button><button data-opt="state" data-val="offline" aria-pressed="false">بلا اتصال</button></span>
+  <span>الكمبيوتر: <button data-opt="desk" data-val="a" aria-pressed="true">أ. رصيف 200px</button><button data-opt="desk" data-val="b" aria-pressed="false">ب. الصف العلوي</button></span>
+  <span>الاتجاه: <button data-opt="dir" data-val="rtl" aria-pressed="true">العربية</button><button data-opt="dir" data-val="ltr" aria-pressed="false">English</button></span>
+  <span>الشرح: <button data-opt="notes" data-val="on" aria-pressed="true">ظاهر</button><button data-opt="notes" data-val="off" aria-pressed="false">مخفي</button></span>
+</div>
+<div id="frames"></div>
+
+<template id="screen" data-title="المكتب" data-section="office" data-empty="ناديك جديد" data-empty-text="أول مباراة تُجدول حين يكتمل الدوري" data-empty-cta="ادعُ صديقاً" data-css="css">
+<div class="office">
+  <section class="card hero next">
+    <header>المباراة القادمة <span class="caption">الدوري · الجولة 1 · على أرضك</span></header>
+    <div class="vs"><span class="crest-l" style="--c:#fff"></span><b class="title">ريال مدريد</b><span class="num cd">06:45:12</span><b class="title">إلتشي</b><span class="crest-l" style="--c:#1E9E4A"></span></div>
+    <div class="acts"><a class="btn primary" href="#">التشكيلة</a><a class="btn quiet" href="#">التكتيك</a><a class="btn quiet needs-net" href="#">تقرير الخصم</a></div>
+  </section>
+  <section class="card todo"><header>ما ينتظرك <span class="caption">3</span></header>
+    <div class="scroll list">
+      <a class="row" href="#"><span>✉️</span><span class="grow">عرض لشراء فينيسيوس: 82M</span><span class="caption">قبل 12 د</span></a>
+      <a class="row" href="#"><span>🏋️</span><span class="grow">التدريب جاهز: ضع لاعبين</span></a>
+      <a class="row" href="#"><span>📝</span><span class="grow">عقد مودريتش ينتهي هذا الموسم</span></a>
+      <a class="row" href="#"><span>🎁</span><span class="grow">المكافأة اليومية: 25 كوينز</span><span class="btn sm primary">خذها</span></a>
+    </div></section>
+  <section class="card table"><header>الترتيب <span class="caption">الكل ‹</span></header>
+    <table class="tbl"><tbody>
+      <tr class="on"><td class="n num">1</td><td>ريال مدريد</td><td class="num">9</td></tr>
+      <tr><td class="n num">2</td><td>برشلونة</td><td class="num">7</td></tr>
+      <tr><td class="n num">3</td><td>أتلتيكو</td><td class="num">6</td></tr>
+    </tbody></table></section>
+  <section class="card counters"><header>العدّادات</header>
+    <div class="cnt"><span>🏋️ التدريب</span><b class="num">01:12:00</b></div>
+    <div class="cnt"><span>🏟️ توسعة الملعب</span><b class="num">2d 04:10</b></div>
+    <div class="cnt"><span>💸 السوق يتجدد</span><b class="num">00:41:09</b></div></section>
+</div>
+</template>
+<style id="css">
+.office { display: grid; height: 100%; gap: 8px; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+.next { grid-column: 1; } .todo { grid-column: 2; grid-row: 1 / 3; } .table, .counters { min-height: 0; }
+.office > .table { grid-column: 1; grid-row: 2; display: none; }
+.office .counters { grid-column: 1; grid-row: 2; }
+.vs { display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto; align-items: center; gap: 8px; text-align: center; }
+.vs .crest-l { width: 40px; height: 40px; } @media (min-width: 1200px) { .vs .crest-l { width: 64px; height: 64px; } }
+.cd { font-size: 30px; color: var(--color-gold); }
+.acts { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 6px; }
+.list { display: flex; flex-direction: column; gap: 4px; }
+.cnt { display: flex; justify-content: space-between; align-items: center; min-height: 32px; font-size: var(--text-caption); }
+@media (min-width: 900px) { .office { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); } .todo { grid-column: 3; } .office > .table { display: flex; grid-column: 2; grid-row: 1 / 3; } .office .counters { grid-column: 1; } }
+@media (min-width: 1200px) { .cd { font-size: 48px; } .office { gap: 16px; } }
+</style>
+<script src="frames.js"></script>
+</body>
+</html>

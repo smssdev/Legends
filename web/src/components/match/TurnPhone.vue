@@ -4,11 +4,21 @@
 // browser allows the lock only full screen, after a tap); Safari on the iPhone never locks, so the message stays until
 // the phone is turned. Leaving the match lets the phone turn freely again.
 import { onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
+import UiButton from '../ui/UiButton.vue'
 
 // [Sprint 48 L1] On every game screen too (App.vue), with the game's own words.
 const props = withDefaults(defineProps<{ game?: boolean }>(), { game: false })
 
 const query = '(orientation: portrait) and (pointer: coarse) and (max-width: 820px)'
+// [Sprint 55 W4, the plan's decision 3] Sideways is the game's way, but on the site whoever wants carries on upright:
+// the frame then lays its dock along the bottom (AppShell). Remembered on this device; the match asks again (it is
+// watched sideways).
+const UPRIGHT = 'glm.upright'
+const chose = ref((() => { try { return localStorage.getItem(UPRIGHT) === '1' } catch { return false } })())
+function stayUpright() {
+  chose.value = true
+  try { localStorage.setItem(UPRIGHT, '1') } catch {}
+}
 const upright = ref(false)
 const lockable = ref(typeof screen !== 'undefined' && 'orientation' in screen && typeof (screen.orientation as any)?.lock === 'function'
   && typeof document.documentElement.requestFullscreen === 'function')
@@ -43,12 +53,13 @@ onBeforeUnmount(() => { media?.removeEventListener('change', update); release() 
 </script>
 
 <template>
-  <div v-if="upright" class="turn fixed inset-0 z-[60] grid place-items-center p-6 text-center" role="dialog" aria-modal="true" :aria-label="$t('لفّ جوالك')">
+  <div v-if="upright && !(props.game && chose)" class="turn fixed inset-0 z-[60] grid place-items-center p-6 text-center" role="dialog" aria-modal="true" :aria-label="$t('لفّ جوالك')">
     <div class="flex max-w-xs flex-col items-center gap-4">
       <div class="device" aria-hidden="true" />
       <b class="font-display text-2xl">{{ $t('لفّ جوالك') }} 🔄</b>
       <span class="text-sm leading-relaxed text-text-muted">{{ props.game ? $t('اللعبة تُلعب بالعرض. أدر الجوال وتكمل فوراً.') : $t('المباراة تُلعب بالعرض. أدر الجوال وتبدأ فوراً.') }}</span>
-      <button v-if="lockable" type="button" class="min-h-touch rounded-xl bg-gold px-6 font-bold text-on-gold" @click="turn">{{ props.game ? $t('العب بالعرض وملء الشاشة') : $t('شاهد بالعرض وملء الشاشة') }}</button>
+      <UiButton v-if="lockable" @click="turn">{{ props.game ? $t('العب بالعرض وملء الشاشة') : $t('شاهد بالعرض وملء الشاشة') }}</UiButton>
+      <UiButton v-if="props.game" variant="quiet" size="sm" @click="stayUpright">{{ $t('تابع عمودياً') }}</UiButton>
     </div>
   </div>
 </template>

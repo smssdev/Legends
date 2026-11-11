@@ -30,6 +30,8 @@ export const PATHS = {
   league: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4ZM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4',
   inbox: 'M3 6h18v12H3zM3 7l9 6 9-6',
   more: 'M5 12h.01M12 12h.01M19 12h.01',
+  // [Sprint 55 W2] The assistant's place in the dock: a whistle-and-headset coach's face, simplified.
+  bot: 'M12 3a7 7 0 0 0-7 7v4a3 3 0 0 0 3 3h1v-6H7v-1a5 5 0 0 1 10 0v1h-2v6h1a3 3 0 0 0 3-3v-4a7 7 0 0 0-7-7ZM10 20h4',
   sim: 'M5 4h14v10H5zM9 20h6M12 14v6M10 7.5v3l3-1.5z',
   bell: 'M6 16V11a6 6 0 1 1 12 0v5l2 2H4zM10 21h4',
   close: 'M6 6l12 12M18 6 6 18',
