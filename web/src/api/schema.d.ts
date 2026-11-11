@@ -975,6 +975,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/data/quick-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 57 B3] The coach's quick orders in a match (config/game.php quick_orders) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Each order: its name and line (Arabic, the screens translate them), and the tactics it sets; null tactics is «عودة للخطة», the coach's own pre-match tactics */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            orders: {
+                                label: string;
+                                hint: string;
+                                tactics: {
+                                    [key: string]: unknown;
+                                } | null;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/data/templates": {
         parameters: {
             query?: never;
@@ -6572,6 +6616,7 @@ export interface paths {
                                 home?: components["schemas"]["SceneClub"];
                                 away?: components["schemas"]["SceneClub"];
                             };
+                            kits?: components["schemas"]["MatchKits"];
                             players: {
                                 home?: components["schemas"]["ScenePlayer"][];
                                 away?: components["schemas"]["ScenePlayer"][];
@@ -16107,6 +16152,24 @@ export interface components {
             formation?: "4-2-3-1" | "4-3-3" | "4-4-2" | "4-1-4-1" | "3-5-2" | "5-3-2";
             tactics?: components["schemas"]["Tactics"];
         };
+        /** @description [Sprint 57 B1] Both sides' final kits, worked out on the server (App\Data\MatchKits): the away side changes on a clash. Every screen draws these as they are. */
+        MatchKits: {
+            home: components["schemas"]["MatchKit"];
+            away: components["schemas"]["MatchKit"];
+        };
+        MatchKit: {
+            /** @description #RRGGBB */
+            shirt: string;
+            trim: string;
+            shorts: string;
+            socks: string;
+            /** @description The ink on the shirt (dark on a light shirt, white on a dark one) */
+            text: string;
+            /** @description The goalkeeper's shirt */
+            gk: string;
+            /** @enum {string|null} */
+            pattern: "stripes" | "hoops" | "halves" | "sash" | null;
+        };
         MatchView: {
             id?: string;
             seed?: number;
@@ -16137,6 +16200,7 @@ export interface components {
             timing?: Record<string, never>;
             /** @description home and away: the club (id, name, code, primary, secondary, logo) and [X76] its kit pattern (pattern: stripes, hoops, halves, sash, or null for plain), and [Sprint 34 V1] its change kit (away_kit: {color, pattern}, or null) */
             clubs?: Record<string, never>;
+            kits?: components["schemas"]["MatchKits"];
             /** @description The coaches' names in a match between friends: {home, away} */
             coaches?: Record<string, never>;
             /** @description [Sprint 26] Each human coach's look on the touchline (C1 to C3): {home?, away?} */

@@ -276,6 +276,7 @@
 </template>
 
 <script setup lang="ts">
+import { api } from '../api/client'
 import { scoreText } from '../lib/format'
 import { uuid } from '../lib/uuid'
 import FirstMatchTips from '../components/match/FirstMatchTips.vue'
@@ -295,7 +296,7 @@ import GoalReplay from '../match/feed/GoalReplay.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
 import MatchRecap from '../components/shell/MatchRecap.vue'
-import { clubColors, leagueMatch, seats, sim, type ChatLine, type LiveSync, type LiveSummary, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
+import { leagueMatch, seats, sim, type ChatLine, type LiveSync, type LiveSummary, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { Commentator, type Lang } from '../match/voice'
@@ -412,27 +413,13 @@ const feedKits = computed(() => ({
 }))
 // Score bug and stats colours follow the kits (with the away change kit on a clash).
 const kits = computed(() => ({ home: bkits.value.home.shirt, homeText: bkits.value.home.text, away: bkits.value.away.shirt, awayText: bkits.value.away.text }))
-// Kits for the 3D broadcast: shirt and trim from the club colours, shorts from the trim when it contrasts.
+// [Sprint 57 B1, W7] The kits come worked out from the server (App\Data\MatchKits: the away side changes on a clash),
+// the same as the app's and Unity's; the names stay the clubs'.
+const NO_KIT = { shirt: '#163360', trim: '#F7F4EA', shorts: '#163360', socks: '#163360', text: '#FFFFFF', gk: '#2E8B57', pattern: null }
 const bkits = computed(() => {
-  const lum = (hex: string) => (parseInt(hex.slice(1, 3), 16) * 299 + parseInt(hex.slice(3, 5), 16) * 587 + parseInt(hex.slice(5, 7), 16) * 114) / 1000
-  const make = (side: Side, shirt: string, trim: string, gk: string) => {
-    const club = view.value?.clubs[side]
-    const shorts = Math.abs(lum(shirt) - lum(trim)) > 60 ? trim : shirt
-    return { shirt, trim, shorts, socks: shirt, text: lum(shirt) > 150 ? '#0A1F42' : '#FFFFFF', gk, name: club?.name ?? '', coach: 'مدرب ' + (club?.name ?? '') }
-  }
-  const h = clubColors(view.value?.clubs.home ?? ({} as any)), a = clubColors(view.value?.clubs.away ?? ({} as any))
-  // Two similar shirts (Arsenal and Liverpool are both red): the away side changes to its second colour, or to white or navy.
-  const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
-  const far = (x: string, y: string) => rgb(x).reduce((d, v, i) => d + Math.abs(v - rgb(y)[i]), 0) > 160
-  let away = a.primary, awayTrim = a.secondary, awayPattern = view.value?.clubs.away.pattern ?? null
-  if (!far(h.primary, away)) {
-    // [Sprint 34 V1] Its own change kit first, when the data editor has one far enough from the home shirt.
-    const alt = view.value?.clubs.away.away_kit
-    away = alt && far(h.primary, alt.color) ? alt.color : far(h.primary, a.secondary) ? a.secondary : far(h.primary, '#F3F0E6') ? '#F3F0E6' : '#1C2333'
-    awayTrim = a.primary
-    awayPattern = alt && away === alt.color ? alt.pattern ?? null : null
-  }
-  return { home: { ...make('home', h.primary, h.secondary, '#2E8B57'), pattern: view.value?.clubs.home.pattern ?? null }, away: { ...make('away', away, awayTrim, '#E9D70B'), pattern: awayPattern } }
+  const k = view.value?.kits
+  const named = (side: Side) => ({ ...(k?.[side] ?? NO_KIT), name: view.value?.clubs[side].name ?? '', coach: 'مدرب ' + (view.value?.clubs[side].name ?? '') })
+  return { home: named('home'), away: named('away') }
 })
 let pendingScore: Record<Side, number> | null = null
 function onCue(name: string) {
@@ -557,14 +544,12 @@ const positioning = {
   def: [{ v: 'stay', label: 'بقاء' }, { v: 'fullbacks', label: 'هجوم الظهيرين' }, { v: 'mid', label: 'مساندة الوسط' }],
 }
 const initial = ref<Tactics | null>(null)
-const quickOrders = computed<{ label: string; hint: string; tactics: Partial<Tactics> }[]>(() => [
-  { label: 'هجوم كامل', hint: 'أسلوب هجومي، إيقاع عالٍ، الظهيران يتقدمان', tactics: { style: 85, tempo: 70, def: 'fullbacks', att: 'only' } },
-  { label: 'تأمين النتيجة', hint: 'دفاع متأخر، إيقاع هادئ، مهاجمون يرتدون', tactics: { style: 25, tempo: 30, mid: 'def', att: 'back', def: 'stay' } },
-  { label: 'ضغط عالٍ', hint: 'الضغط 85 ومصيدة التسلل: لياقة أسرع', tactics: { pressing: 85, trap: 1 } },
-  { label: 'إبطاء اللعب', hint: 'إيقاع 25 وتمريرات: نحتفظ بالكرة', tactics: { tempo: 25, plan: 'passing' } },
-  { label: 'استغلال الأطراف', hint: 'خطة الأجنحة وهجوم الظهيرين', tactics: { plan: 'wings', def: 'fullbacks' } },
-  { label: 'عودة للخطة', hint: 'تكتيك ما قبل المباراة', tactics: initial.value ?? {} },
-])
+// [Sprint 57 B3, W7] The quick orders from the server (config/game.php); null tactics is «عودة للخطة», the coach's own
+// pre-match tactics, which only this screen holds.
+const serverOrders = ref<{ label: string; hint: string; tactics: Partial<Tactics> | null }[]>([])
+api.GET('/data/quick-orders').then((r) => { serverOrders.value = (r.data?.orders ?? []) as typeof serverOrders.value }).catch(() => {})
+const quickOrders = computed<{ label: string; hint: string; tactics: Partial<Tactics> }[]>(() =>
+  serverOrders.value.map((o) => ({ label: o.label, hint: o.hint, tactics: o.tactics ?? initial.value ?? {} })))
 const draft = reactive<Tactics>({} as Tactics)
 const draftTrap = computed({ get: () => draft.trap === 1, set: (v) => (draft.trap = v ? 1 : 0) })
 const draftMan = computed({ get: () => draft.marking === 'man', set: (v) => (draft.marking = v ? 'man' : 'zone') })
@@ -1000,6 +985,15 @@ const quickPoll = () => !started.value || halftime.value || windowOn.value || !!
 watch(() => sync.connected.value, (on) => { if (!on && live.value && !finished.value) poll() })
 
 // Countdown to the kick-off and to the second half, on the shared clock.
+// [Sprint 57 W6, W-P14] The countdowns change once a second: the clock ticks once a second (it was every 250 ms the
+// whole match), on the second's turn so a countdown never shows a second late.
+function startClock() {
+  clockTick()
+  clockTimer = window.setTimeout(() => {
+    clockTick()
+    clockTimer = window.setInterval(clockTick, 1000)
+  }, 1000 - (serverNow() % 1000))
+}
 function clockTick() {
   const now = serverNow()
   countdown.value = kickoffAt > now ? Math.ceil((kickoffAt - now) / 1000) : 0
@@ -1158,7 +1152,7 @@ onMounted(async () => {
       // [X93] Back on the page (closed by mistake, reloaded): from the first minute, so the screen comes back where the
       // match is (the minute, the half-time or a window, the feed with what was missed), not at a kick-off.
       seen = 0
-      clockTimer = window.setInterval(clockTick, 250)
+      startClock()
       keepAwake()
       return poll()
     }
@@ -1175,6 +1169,7 @@ onMounted(async () => {
 const broadcast = useBroadcast()
 // This page's own address, taken now: the route object follows the coach to the other screens.
 const ownPath = route.path
+let endTimer = 0
 watch(() => [view.value, score.value.home, score.value.away, minuteText.value, finished.value] as const, () => {
   if (!view.value) return
   broadcast.update({
@@ -1184,8 +1179,11 @@ watch(() => [view.value, score.value.home, score.value.away, minuteText.value, f
     minute: finished.value ? t('نهاية المباراة') : minuteText.value,
     live: !finished.value,
   })
-  if (finished.value) window.setTimeout(() => { if (broadcast.away && finished.value) broadcast.end() }, 20000)
+  // [Sprint 57 W6, W-B07] One timer for the end of the broadcast: each change after the whistle used to add another.
+  window.clearTimeout(endTimer)
+  if (finished.value) endTimer = window.setTimeout(() => { if (broadcast.away && finished.value) broadcast.end() }, 20000)
 }, { immediate: true })
+onBeforeUnmount(() => window.clearTimeout(endTimer))
 // [X74] Kept behind the other screens only while live (and until closed from the bar); a recorded match closes on leaving.
 watch(live, (on) => { broadcast.keep = on }, { immediate: true })
 // [2026-11-09] Behind the other screens the broadcast keeps polling (the bar's score), but the screen may sleep: the

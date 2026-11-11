@@ -169,8 +169,13 @@ class MatchRunnerTest extends TestCase
         fclose($closed);   // a port nobody listens on
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'k', 'broadcasting.connections.reverb.secret' => 's',
             'broadcasting.connections.reverb.app_id' => 'a', 'broadcasting.connections.reverb.options' => ['host' => '127.0.0.1', 'port' => $port, 'scheme' => 'http', 'useTLS' => false]]);
+        // The automatic easing measures each step on the real clock, and a refused connection costs real time: it could
+        // ease the load (longer minutes) now and then. This test is about the minutes going on, not the easing.
+        config(['game.live.degrade.auto.enabled' => false]);
         $match = $this->kickOff();
-        for ($i = 0; $i < 20; $i++) {
+        // A hundred seconds of the game's clock: a minute's length follows its moment (a goal or a card holds it longer),
+        // and each run is a new match, so ten seconds gave anything from one minute to five.
+        for ($i = 0; $i < 200; $i++) {
             $this->step(500);
         }
         $this->assertGreaterThan(3, (int) DB::table('matches')->where('id', $match->id)->value('tick'), 'the minutes go on without the live server');

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // [Sprint 37 R1] The director (Sprint 35 C1): which cutaways follow a scene, as a pure function of the minute's story,
 // the device's tier and the time left, so the node check (scripts/feed.mjs) runs it without a screen.
 import { SCENE_TIME } from './timing.ts'
@@ -6,6 +5,10 @@ import { SCENE_TIME } from './timing.ts'
 export type Tier = 'low' | 'mid' | 'high'
 export type Cut = { name: string; data: Record<string, any>; dur: number }
 export type DirectorCtx = { tier: Tier; looks?: Record<string, string> | null; seed?: number }
+type Side = 'home' | 'away'
+/** [Sprint 57 W3] What the director reads of a minute's story (story.ts) and of the minute itself. */
+export type StoryView = { scene: string | null; side: Side; goal: boolean; data: Record<string, any> }
+export type TickView = { tick: number; moods?: Record<string, string> | null }
 
 const MOODS = ['joy', 'cheer', 'angry', 'worried', 'sad', 'surprise']
 
@@ -16,12 +19,12 @@ const MOODS = ['joy', 'cheer', 'angry', 'worried', 'sad', 'surprise']
  * s: the minute's story (story.ts). total: the minute's length in seconds. sceneT: the scene's own length.
  * Returns the cutaways that fit after the scene: none on 'low', one on 'mid', up to three on 'high'.
  */
-export function director(s, tick, total: number, sceneT: number, ctx: DirectorCtx): Cut[] {
+export function director(s: StoryView | null | undefined, tick: TickView, total: number, sceneT: number, ctx: DirectorCtx): Cut[] {
   if (!s?.scene || ctx.tier === 'low') return []
-  const other = s.side === 'home' ? 'away' : 'home', moods = tick.moods ?? {}, seed = ctx.seed || 1
-  const look = (side) => ctx.looks?.[side] ?? (side === 'home' ? 'C1' : 'C2')
-  const felt = (side, fallback) => (MOODS.includes(moods[side]) ? moods[side] : fallback)
-  const coach = (side, fallback): Cut => ({ name: 'coachReact', data: { side, look: look(side), mood: felt(side, fallback) }, dur: SCENE_TIME.coachReact[0] })
+  const other: Side = s.side === 'home' ? 'away' : 'home', moods: Record<string, string> = tick.moods ?? {}, seed = ctx.seed || 1
+  const look = (side: Side) => ctx.looks?.[side] ?? (side === 'home' ? 'C1' : 'C2')
+  const felt = (side: Side, fallback: string) => (MOODS.includes(moods[side]) ? moods[side] : fallback)
+  const coach = (side: Side, fallback: string): Cut => ({ name: 'coachReact', data: { side, look: look(side), mood: felt(side, fallback) }, dur: SCENE_TIME.coachReact[0] })
   const crowdCut = (): Cut => ({ name: 'crowd', data: { side: s.side, v: seed * 7 + tick.tick, count: ctx.tier === 'high' ? 110 : 60, flares: ctx.tier === 'high' }, dur: SCENE_TIME.crowd[0] })
   let list: Cut[] = []
   if (s.goal) list = [crowdCut(), coach(s.side, 'joy'), coach(other, 'angry')]

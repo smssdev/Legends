@@ -89,6 +89,15 @@ class DataController extends Controller
         ];
     }
 
+    /**
+     * [Sprint 57 B3] The coach's quick orders in a match, from config/game.php (they were written in SimMatch.vue, and
+     * again in the app): the screens show them and send their tactics as any order.
+     */
+    public function quickOrders(): JsonResponse
+    {
+        return response()->json(['orders' => config('game.quick_orders')]);
+    }
+
     /** The game's words explained, behind each "?" [X19]. */
     public function glossary(): JsonResponse
     {

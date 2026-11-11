@@ -236,8 +236,8 @@ export function player(p, kit, no, s = 1, o = {}) {
     <path d="M-15 -9 Q0 -15 15 -9 L14.5 21 Q0 24 -14.5 21 Z" fill="${kit}"/>${kitPatternSvg(kit, o)}
     <path d="M-6 21 Q0 -2 6 21" fill="rgba(0,0,0,.08)"/>
     <path d="M-15 -9 Q0 -15 15 -9" fill="none" stroke="${o.trim ?? shade(kit, light ? -45 : 45)}" stroke-width="2"/>
-    <text data-back="1" x="0" y="12" text-anchor="middle" font-family="Barlow Condensed, Tajawal, sans-serif" font-weight="800" font-size="18" fill="${ink}">${no ?? ''}</text>
-    <text data-front="1" x="6" y="4" text-anchor="middle" font-family="Barlow Condensed, Tajawal, sans-serif" font-weight="800" font-size="8" fill="${ink}" display="none">${no ?? ''}</text>`
+    <text data-back="1" x="0" y="12" text-anchor="middle" font-family="Barlow Condensed, Tajawal, sans-serif" font-weight="800" font-size="18" fill="${ink}">${esc(no)}</text>
+    <text data-front="1" x="6" y="4" text-anchor="middle" font-family="Barlow Condensed, Tajawal, sans-serif" font-weight="800" font-size="8" fill="${ink}" display="none">${esc(no)}</text>`
   const back = body.querySelector('[data-back]'), chest = body.querySelector('[data-front]')
   const arm = `<rect x="-4" y="0" width="8" height="12" rx="3.5" fill="${kit}"/><rect x="-3.4" y="10" width="6.8" height="13" rx="3.4" fill="${o.gloves ? kit : skin}"/>${o.gloves ? `<rect x="-5" y="20" width="10" height="9" rx="3.5" fill="${o.gloves}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>` : ''}`
   // [Sprint 35 C2] The right hand can hold a card up (the referee's).
@@ -431,7 +431,7 @@ function confetti(svg, n = 46) {
 function boom(svg, p = svg.world, word = 'POW!', fill = '#FFD400', ink = '#B91C1C') {
   const g = el('g', { opacity: 0 }, p)
   const pts = Array.from({ length: 18 }, (_, i) => { const r = i % 2 ? 15 : 31, a = (i * Math.PI) / 9; return `${(Math.cos(a) * r).toFixed(1)},${(Math.sin(a) * r).toFixed(1)}` }).join(' ')
-  g.innerHTML = `<polygon points="${pts}" fill="${fill}" stroke="#E2531F" stroke-width="3" stroke-linejoin="round"/><text y="5" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-style="italic" font-size="15" fill="${ink}">${word}</text>`
+  g.innerHTML = `<polygon points="${pts}" fill="${fill}" stroke="#E2531F" stroke-width="3" stroke-linejoin="round"/><text y="5" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-style="italic" font-size="15" fill="${ink}">${esc(word)}</text>`
   return (x, y, f) => { const on = f > 0 && f < 1; sa(g, 'opacity', on ? 1 - seg(f, 0.6, 1) : 0); if (on) sa(g, 'transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(0.3 + ease(Math.min(1, f * 2.2)) * 0.9).toFixed(2)}) rotate(${Math.round(f * 20)})`) }
 }
 // A puff of dust on the grass (a slide, a fall, the medics' sprint).
@@ -459,7 +459,7 @@ function popEyes(svg, p = svg.world) {
 // A speech bubble of comic swearing (or a scream); k scales it.
 function bubbleOf(svg, p = svg.world, text = '#@!%&!', ink = '#D21F1F') {
   const g = el('g', { opacity: 0 }, p)
-  g.innerHTML = `<path d="M-32 -14 Q-32 -27 -18 -27 H18 Q32 -27 32 -14 V-3 Q32 8 18 8 H-2 L-12 19 L-9 8 H-18 Q-32 8 -32 -3 Z" fill="#fff" stroke="#0A1F42" stroke-width="2"/><text y="-4" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-size="16" fill="${ink}">${text}</text>`
+  g.innerHTML = `<path d="M-32 -14 Q-32 -27 -18 -27 H18 Q32 -27 32 -14 V-3 Q32 8 18 8 H-2 L-12 19 L-9 8 H-18 Q-32 8 -32 -3 Z" fill="#fff" stroke="#0A1F42" stroke-width="2"/><text y="-4" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-size="16" fill="${ink}">${esc(text)}</text>`
   return (x, y, f, k = 1, wob = 0) => { sa(g, 'opacity', Math.max(0, f)); if (f > 0) sa(g, 'transform', `translate(${(x + wob).toFixed(1)} ${y.toFixed(1)}) scale(${(k * (0.7 + 0.3 * ease(Math.min(1, f)))).toFixed(2)})`) }
 }
 // The anger mark over a head, throbbing.
@@ -1661,7 +1661,7 @@ export const SCENES = {
     const dots = [[-110, 0], [-70, -50], [-70, -17], [-70, 17], [-70, 50], [-20, -35], [-20, 0], [-20, 35], [35, -50], [45, 0], [35, 50]].map(([x, y]) => { const d = el('circle', { r: 8, fill: kit, stroke: '#071733', 'stroke-width': 2 }, tab); d.dataset.x = x; d.dataset.y = y; return d })
     const ar = el('g', { fill: 'none', stroke: '#FFD36B', 'stroke-width': 3, 'stroke-linecap': 'round', filter: ref(svg, 'glow') }, tab)
     const A = [[-20, -35, 30, -60], [-20, 35, 30, 60], [-70, -50, -30, -75], [-70, 50, -30, 75]].map(([a, b, c, d]) => el('path', { d: `M${a} ${b} L${c} ${d}`, 'stroke-dasharray': 80, 'stroke-dashoffset': 80 }, ar))
-    const chip = el('g', { opacity: 0 }, svg); chip.innerHTML = `<rect x="-150" y="-20" width="300" height="40" rx="20" fill="${ref(svg, 'gold')}"/><text y="7" text-anchor="middle" font-family="Tajawal, sans-serif" font-weight="800" font-size="18" fill="#071733">${e.tactic ?? ''}</text>`
+    const chip = el('g', { opacity: 0 }, svg); chip.innerHTML = `<rect x="-150" y="-20" width="300" height="40" rx="20" fill="${ref(svg, 'gold')}"/><text y="7" text-anchor="middle" font-family="Tajawal, sans-serif" font-weight="800" font-size="18" fill="#071733">${esc(e.tactic)}</text>`
     return { dur: 4.6, svg, update(t) {
       sa(tab, 'transform', `translate(320 ${lerp(380, 158, ease(seg(t, 0, 0.6)))}) scale(.9)`)
       const push = ease(seg(t, 1, 2)); dots.forEach((d) => { sa(d, 'cx', +d.dataset.x + (+d.dataset.x > -100 ? push * 26 : 0)); sa(d, 'cy', d.dataset.y) })
@@ -1826,7 +1826,7 @@ export const SCENES = {
     const svg = stage('home'), w = svg.world
     const fo = player(w, officialKit(), '', 1.5, { look: 9, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
     const bd = el('g', {}, w)
-    bd.innerHTML = `<rect x="-62" y="-40" width="124" height="64" rx="6" fill="#05080F" stroke="#3A4256" stroke-width="2"/><text y="12" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="46" fill="#3BFF8A" filter="${ref(svg, 'glow')}">+${e.plus ?? ''}</text><rect x="-6" y="24" width="12" height="22" rx="3" fill="#1B2233"/>`
+    bd.innerHTML = `<rect x="-62" y="-40" width="124" height="64" rx="6" fill="#05080F" stroke="#3A4256" stroke-width="2"/><text y="12" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="46" fill="#3BFF8A" filter="${ref(svg, 'glow')}">+${esc(e.plus)}</text><rect x="-6" y="24" width="12" height="22" rx="3" fill="#1B2233"/>`
     const tt = title(svg, tr('الوقت بدل الضائع'), '#2BB673')
     return { dur: 3, svg, update(t) {
       cam(svg, 1.05, 320, 200)
@@ -1867,7 +1867,7 @@ function vary(name, make) {
     const fx = el('g', { opacity: 0, 'pointer-events': 'none' }, svg)
     if (acc === 1) fx.innerHTML = Array.from({ length: 14 }, (_, i) => `<polygon points="0,-6 1.6,-1.6 6,0 1.6,1.6 0,6 -1.6,1.6 -6,0 -1.6,-1.6" fill="${i % 2 ? '#FFD36B' : '#FFFFFF'}" transform="translate(${60 + ((i * 97) % 520)} ${40 + ((i * 53) % 240)})"/>`).join('')
     if (acc === 2) fx.innerHTML = Array.from({ length: 28 }, (_, i) => { const a = (i / 28) * Math.PI * 2, r0 = 150 + (i % 3) * 20; return `<path d="M${(320 + Math.cos(a) * r0).toFixed(0)} ${(170 + Math.sin(a) * r0 * 0.6).toFixed(0)} L${(320 + Math.cos(a) * 420).toFixed(0)} ${(170 + Math.sin(a) * 260).toFixed(0)}" stroke="#fff" stroke-width="${1.5 + (i % 3)}" opacity=".7"/>` }).join('')
-    if (acc === 3) fx.innerHTML = `<g transform="translate(520 280) rotate(-8)"><rect x="-74" y="-24" width="148" height="44" rx="8" fill="#FFD400" stroke="#071733" stroke-width="4"/><text y="9" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-style="italic" font-size="26" fill="#071733">${word}</text></g>`
+    if (acc === 3) fx.innerHTML = `<g transform="translate(520 280) rotate(-8)"><rect x="-74" y="-24" width="148" height="44" rx="8" fill="#FFD400" stroke="#071733" stroke-width="4"/><text y="9" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-style="italic" font-size="26" fill="#071733">${esc(word)}</text></g>`
     if (acc === 4) fx.innerHTML = '<rect width="640" height="340" fill="#FFFFFF"/>'
     if (acc === 5) fx.innerHTML = `<radialGradient id="vg${svg.dataset.id}" cx=".5" cy=".5" r=".7"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></radialGradient><rect width="640" height="340" fill="url(#vg${svg.dataset.id})"/>`
     const update = sc.update

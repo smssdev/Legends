@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Data\ClubLogo;
 use App\Data\KitPattern;
+use App\Data\MatchKits;
 use App\Engine\MatchSetup;
 use App\Http\Controllers\Controller;
 use App\League\LiveDegrade;
@@ -50,8 +51,10 @@ class MatchController extends Controller
                 'halftime_seconds' => (int) $state['cfg']['match']['halftime_seconds'],
                 'windows' => $state['cfg']['match']['windows'] ?? [], 'window_seconds' => (int) ($state['cfg']['match']['window_seconds'] ?? 0)],
             // [X76, Sprint 34 V1] Each club with its kit pattern and change kit (its data club's).
-            'clubs' => ['home' => ClubLogo::with($state['teams']['home']['club']) + KitPattern::kits($f->home_id, true),
+            'clubs' => $clubs = ['home' => ClubLogo::with($state['teams']['home']['club']) + KitPattern::kits($f->home_id, true),
                 'away' => ClubLogo::with($state['teams']['away']['club']) + KitPattern::kits($f->away_id, true)],
+            // [Sprint 57 B1] Both sides' final kits, the same on every screen.
+            'kits' => MatchKits::of($clubs['home'], $clubs['away']),
             'coaches' => DB::table('clubs')->leftJoin('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', [$f->home_id, $f->away_id])
                 ->pluck('users.name', 'clubs.id')->mapWithKeys(fn ($n, $id) => [$id === $f->home_id ? 'home' : 'away' => $n])->filter(),
             // [Sprint 26 B3] Each human coach's look on the touchline (C1 to C3); a club without a coach has none.
@@ -91,7 +94,9 @@ class MatchController extends Controller
 
         return response()->json([
             'id' => $m->id,
-            'clubs' => ['home' => $club('home', $f->home_id), 'away' => $club('away', $f->away_id)],
+            'clubs' => $clubs = ['home' => $club('home', $f->home_id), 'away' => $club('away', $f->away_id)],
+            // [Sprint 57 B1] Unity's kits from the server (KitColours reads them instead of working them out).
+            'kits' => MatchKits::of($clubs['home'], $clubs['away']),
             'players' => ['home' => $players('home'), 'away' => $players('away')],
             'captains' => ['home' => $state['teams']['home']['takers']['captain'] ?? null, 'away' => $state['teams']['away']['takers']['captain'] ?? null],
             'coach_looks' => ['home' => $looks[$f->home_id] ?? null, 'away' => $looks[$f->away_id] ?? null],
