@@ -10,7 +10,7 @@ withDefaults(defineProps<{ size?: 'sm' | 'md' }>(), { size: 'md' })
 <template>
   <span class="inline-flex items-center gap-2.5" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
     <img :src="locale === 'ar' ? emblemSrc : '/brand/emblem.svg'" alt="" :class="size === 'sm' ? 'size-9' : 'size-11'" />
-    <span class="flex flex-col leading-tight">
+    <span class="brand-words flex flex-col leading-tight">
       <span class="whitespace-nowrap font-display font-extrabold uppercase tracking-wide text-text" :class="size === 'sm' ? 'text-sm' : 'text-base'" dir="ltr">
         Game Legend <span class="text-gold">Manager</span>
       </span>

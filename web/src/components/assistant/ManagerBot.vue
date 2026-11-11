@@ -15,7 +15,9 @@ import BotClosing from './BotClosing.vue'
 import Character from '../characters/Character.vue'
 
 // Raised above the phone's bottom bar inside a slot.
-const props = defineProps<{ raised?: boolean }>()
+// [Sprint 55 W2] `docked`: opened from the dock's «المساعد» (no button floating over the page, no greeting bubble: the
+// dock's dot greets), and its window stands beside the dock.
+const props = defineProps<{ raised?: boolean; docked?: boolean }>()
 
 const bot = useBot()
 const slot = useSlot()
@@ -50,6 +52,15 @@ async function show() {
   scroll()
 }
 watch(page, (p) => bot.open && bot.start(p))
+watch(() => bot.open, async (o) => {
+  if (!o || !props.docked) return
+  quiet()
+  if (bot.followed) bot.closing = 'done'
+  await bot.start(page.value)
+  await nextTick()
+  input.value?.focus()
+  scroll()
+})
 watch(locale, () => { bot.messages = []; bot.open && bot.start(page.value) })
 watch(() => bot.messages.length, scroll)
 async function scroll() {
@@ -105,9 +116,9 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 </script>
 
 <template>
-  <div class="bot-root" :class="props.raised ? 'raised' : ''">
+  <div class="bot-root" :class="[props.raised ? 'raised' : '', props.docked ? 'docked' : '']">
     <!-- W1: the button, and the day's greeting beside it. -->
-    <div v-if="!bot.open" class="bot-fab-row">
+    <div v-if="!bot.open && !props.docked" class="bot-fab-row">
       <!-- [Sprint 26 W5] The owner's decision (2026-10-30): the button is the gold face B3 of the characters, calm, and
            glad on the day's greeting (X62's eyes replaced); still with reduced motion. -->
       <button type="button" class="bot-fab face" :aria-label="$t('افتح المدرب المساعد')" @click="show">
@@ -124,7 +135,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
     </div>
 
     <!-- W2: the window. -->
-    <div v-else class="bot-open">
+    <div v-else-if="bot.open" class="bot-open">
     <section class="bot-panel" role="dialog" :aria-label="bot.name || $t('المدرب المساعد')" @keydown.esc="bot.open = false">
       <header class="bot-head">
         <!-- [Sprint 26 W5] The robot B1 in the window: thinking while he writes, calm otherwise. -->
@@ -190,6 +201,11 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 /* Fixed on the left in Arabic and on the right in English (the line's end), above the phone's bottom bar inside a slot. */
 .bot-root { position: fixed; z-index: 40; inset-inline-end: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); }
 .bot-root.raised { bottom: calc(5.25rem + env(safe-area-inset-bottom)); }
+/* [Sprint 55 W2] Docked: the window opens beside the dock, at its foot (or above the dock along a phone's bottom). */
+.bot-root.docked { inset-inline-end: auto; inset-inline-start: calc(var(--dock-w, 72px) + 0.5rem); bottom: 0.5rem; }
+.bot-root.docked .bot-x { display: none; }
+.bot-root.docked .bot-panel { height: min(36rem, calc(100dvh - var(--bar-h, 42px) - 1rem)); }
+@media (orientation: portrait) and (max-width: 820px) { .bot-root.docked { inset-inline-start: 0.5rem; bottom: calc(4.25rem + env(safe-area-inset-bottom)); } .bot-root.docked .bot-panel { height: min(36rem, calc(100dvh - 7rem)); } }
 @media (min-width: 768px) { .bot-root.raised { bottom: 1.25rem; } }
 .bot-fab-row { display: flex; align-items: center; gap: 0.5rem; flex-direction: row-reverse; }
 .bot-fab {

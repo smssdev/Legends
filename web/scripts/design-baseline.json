@@ -74,9 +74,6 @@
     "card": 1,
     "hex": 2
   },
-  "src/components/match/TurnPhone.vue": {
-    "button": 1
-  },
   "src/components/shell/AfterRound.vue": {
     "button": 1,
     "card": 1

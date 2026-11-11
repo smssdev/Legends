@@ -243,6 +243,13 @@ async function openRanking(by: By) {
       </section>
 
       <!-- [X61] A new coach's first steps, until they are all done (or hidden). -->
+      <!-- [Sprint 55 W3] The verification: a card here (and a dot on the account), no longer a strip across every screen. -->
+      <RouterLink v-if="auth.user && !auth.user.verification?.verified" to="/profile" class="ui-card verify-card flex min-h-touch items-center gap-3 rounded-xl px-4 py-3">
+        <span class="text-2xl" aria-hidden="true">🎁</span>
+        <span class="min-w-0 flex-1"><b class="block">{{ $t('وثّق حسابك') }}</b>
+          <span class="text-caption text-text-muted">{{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }}</span></span>
+        <span class="font-bold text-gold">{{ $t('وثّق') }} ›</span>
+      </RouterLink>
       <OnboardingChecklist :has-club="home.slots.some((s) => s.state === 'club')" :steps="home.onboarding" />
 
       <!-- The slots, the screen's heart, right under the card: all eight without scrolling. -->
@@ -479,6 +486,7 @@ async function openRanking(by: By) {
 </template>
 
 <style scoped>
+.verify-card { border: 1px solid color-mix(in srgb, var(--color-warning) 45%, transparent); }
 /* [X86] «المزيد»: its arrow turns when open. */
 .home-more summary::-webkit-details-marker { display: none; }
 .more-chevron { transition: transform 0.2s; }

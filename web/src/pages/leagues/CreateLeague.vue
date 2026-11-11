@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { scrollToTop } from '../../lib/scroll'
 import Icon from '../../components/Icon.vue'
 // Make a league (Sprint 13 W1), after the drafts WebCreateLeague and MobileCreateLeague, then choose the owner's club.
 // [UP9] The owner's spec (4, 2026-10-26): the standard league is free (every club of the real league, two days to get
@@ -72,7 +73,7 @@ const place = computed(() => placeOf(template.value))
 function chooseLeague(name: string) {
   template.value = name
   step.value = 'settings'
-  window.scrollTo({ top: 0 })
+  scrollToTop()
 }
 const clubs = ref<Club[]>([])
 const club = ref<Club | null>(null)
@@ -159,7 +160,7 @@ async function toClubs() {
     picked.value = all.slice(0, count.value).map((c) => c.id)
     club.value = null
     step.value = 'club'
-    window.scrollTo({ top: 0 })
+    scrollToTop()
   } catch (e) {
     error.value = asApiError(e)
   }

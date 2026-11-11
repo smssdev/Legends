@@ -5,6 +5,7 @@
 // [UP7] A club's sections fall in four portals, each an icon that opens its own list; the side menu holds them all.
 import type { PATHS } from '../components/Icon.vue'
 
+// [Sprint 55] `group` is the old frame's portal (kept on the sections as their family); the dock is DOCK below.
 export type Group = 'team' | 'club' | 'comps' | 'media'
 export interface Section { name: string; path: string; label: string; icon: keyof typeof PATHS; sprint?: number; dev?: boolean; club?: boolean; group?: Group; inLeague?: boolean }
 
@@ -42,29 +43,37 @@ export const SECTIONS: Section[] = [
   { name: 'sim', path: '/sim', label: 'المحاكي', icon: 'sim', dev: true },
 ]
 
-/** The four portals inside a slot [UP7]. */
-export const GROUPS: { key: Group; label: string; icon: keyof typeof PATHS }[] = [
-  { key: 'team', label: 'إدارة الفريق', icon: 'team' },
-  { key: 'club', label: 'النادي والمالية', icon: 'finance' },
-  { key: 'comps', label: 'المنافسات', icon: 'league' },
-  { key: 'media', label: 'الإعلام والتفاعل', icon: 'news' },
+// ── [Sprint 55 W1, D2] The one frame: six sections by one name on the web and in the app, «المزيد» for the rest ──
+// (sprints/55-landscape-design.md, docs/design/legends-ui/landscape/LandscapeShell.html, approved 2026-11-11).
+// Each dock section is a list of SECTIONS names (or extra links): one opens its page, several open a list beside the
+// dock. The first is where a tap on the section goes on the computer's wide dock as well.
+export type DockKey = 'office' | 'team' | 'tactics' | 'match' | 'market' | 'club'
+export interface DockSection { key: DockKey; label: string; icon: keyof typeof PATHS; items: string[] }
+export const DOCK: DockSection[] = [
+  { key: 'office', label: 'المكتب', icon: 'club', items: ['club'] },
+  { key: 'team', label: 'الفريق', icon: 'team', items: ['team', 'lineup', 'takers', 'training', 'specialists'] },
+  { key: 'tactics', label: 'التكتيك', icon: 'tactics', items: ['tactics'] },
+  { key: 'match', label: 'المباراة', icon: 'match', items: ['match', 'league', 'fixtures', 'friendlies'] },
+  { key: 'market', label: 'السوق', icon: 'market', items: ['market', 'scout'] },
+  { key: 'club', label: 'النادي', icon: 'stadium', items: ['finance', 'stadium', 'quests'] },
 ]
-
-/** [Sprint 48 D2] The computer's menu row outside a slot, and the community's list at its end (in and out of a slot). */
-export const OUTSIDE: { path: string; label: string; icon: keyof typeof PATHS }[] = [
+/** «المزيد» inside a slot: the league's pages (by SECTIONS name), then the links the frame keeps for everyone. */
+export const MORE_IN_SLOT = ['stats', 'newspaper', 'predictions']
+/** Outside a slot (the home screen, my leagues, the account…): the dock's own five. */
+export const DOCK_OUTSIDE: { path: string; label: string; icon: keyof typeof PATHS }[] = [
   { path: '/', label: 'الرئيسية', icon: 'home' },
   { path: '/leagues', label: 'دورياتي', icon: 'leagues' },
   { path: '/leagues/new', label: 'أنشئ دورياً', icon: 'league' },
   { path: '/tournaments', label: 'البطولات', icon: 'trophy' },
-  { path: '/store', label: 'العروض', icon: 'megaphone' },
+  { path: '/inbox', label: 'الرسائل', icon: 'inbox' },
 ]
-export const COMMUNITY: { path: string; label: string; icon: keyof typeof PATHS }[] = [
+/** «المزيد» for everyone: the community, the shop, the account. */
+export const MORE_ALWAYS: { path: string; label: string; icon: keyof typeof PATHS }[] = [
   { path: '/', label: 'فرقي', icon: 'home' },
-  { path: '/leagues', label: 'دورياتي', icon: 'leagues' },
   { path: '/groups', label: 'الجروبات', icon: 'chat' },
   { path: '/tournaments', label: 'البطولات', icon: 'trophy' },
+  { path: '/wallet', label: 'المحفظة', icon: 'finance' },
   { path: '/store', label: 'العروض', icon: 'megaphone' },
   { path: '/ideas', label: 'اقتراحات التطوير', icon: 'idea' },
-  { path: '/inbox', label: 'الرسائل', icon: 'inbox' },
   { path: '/profile', label: 'حسابي', icon: 'team' },
 ]
