@@ -2,6 +2,7 @@
 // The staff (Sprint 31 W1, docs/features/specialists.md, X20): the line coaches, then the medical and the admin staff,
 // each with 1 to 5 stars to choose (the price and the effect from the server), the contract working now with a countdown
 // on the server's clock, and the renewal in its last day. No draft of its own: the stadium's cards.
+import UiButton from '../../components/ui/UiButton.vue'
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { uuid } from '../../lib/uuid'
 import { useRoute } from 'vue-router'
@@ -106,13 +107,13 @@ onBeforeUnmount(() => clearInterval(tick))
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
+    <p v-else-if="!leagueId" class="rounded-xl ui-card p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="v">
       <section v-for="grp in GROUPS" :key="grp.title" :aria-label="grp.title" class="flex flex-col gap-3">
         <div class="flex items-baseline gap-2"><h2 class="font-display text-xl font-extrabold">{{ $t(grp.title) }}</h2><span class="text-sm text-text-muted">{{ $t(grp.hint) }}</span></div>
         <div class="grid gap-3 sm:grid-cols-2">
-          <article v-for="s in v.specialists.filter((x) => grp.types.includes(x.type))" :id="`spec-${s.type}`" :key="s.type" class="flex flex-col gap-3 rounded-xl bg-surface p-4 transition-shadow duration-500" :class="focus === s.type ? 'ring-2 ring-gold animate-pulse-ring' : s.ends_at ? 'ring-1 ring-success/50' : ''">
+          <article v-for="s in v.specialists.filter((x) => grp.types.includes(x.type))" :id="`spec-${s.type}`" :key="s.type" class="flex flex-col gap-3 rounded-xl ui-card p-4 transition-shadow duration-500" :class="focus === s.type ? 'ring-2 ring-gold animate-pulse-ring' : s.ends_at ? 'ring-1 ring-success/50' : ''">
             <div class="flex items-start gap-3">
               <span class="grid size-12 shrink-0 place-items-center rounded-xl" :class="s.ends_at ? 'bg-success/20 text-success' : 'bg-gold/15 text-gold'">
                 <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path :d="ICON[s.type]" /></svg>
@@ -132,8 +133,8 @@ onBeforeUnmount(() => clearInterval(tick))
               <div class="flex items-center gap-1" role="radiogroup" :aria-label="$t('نجوم {v0}', { v0: s.name })">
                 <button v-for="n in 5" :key="n" type="button" role="radio" :aria-checked="chosen(s) === n" :aria-label="$t('{v0} نجوم', { v0: n })" class="grid h-touch flex-1 place-items-center rounded-lg text-xl transition-colors" :class="n <= chosen(s) ? 'bg-gold/15 text-gold' : 'bg-surface-sunk text-text/25'" @click="pick[s.type] = n">★</button>
               </div>
-              <button type="button" class="h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40" :disabled="isBusy(`hire:${s.type}`) || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
-                {{ s.ends_at ? $t('جدّد العقد') : $t('تعاقد') }} · {{ chosen(s) }} ★ · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></button>
+              <UiButton variant="brand" :disabled="isBusy(`hire:${s.type}`) || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
+                {{ s.ends_at ? $t('جدّد العقد') : $t('تعاقد') }} · {{ chosen(s) }} ★ · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></UiButton>
             </template>
           </article>
         </div>

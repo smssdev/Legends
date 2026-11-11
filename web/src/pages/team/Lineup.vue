@@ -486,7 +486,7 @@ async function saveCustom() {
 <template>
   <div class="lineup-root">
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <div v-else-if="loaded && !team" class="rounded-xl bg-surface p-8 text-center">
+    <div v-else-if="loaded && !team" class="rounded-xl ui-card p-8 text-center">
       <p class="mb-3 text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
       <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
     </div>
@@ -663,7 +663,7 @@ async function saveCustom() {
             <button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-lg bg-surface px-3 py-2 text-start active:bg-surface-raised" :class="o.p.available ? '' : 'opacity-60'" @click="choose(o.p.id)">
               <span class="flex w-12 shrink-0 flex-col items-center leading-none">
                 <b class="font-numbers text-2xl" :class="o.share < 100 ? 'text-warning' : 'text-gold'">{{ o.rating }}</b>
-                <span v-if="o.share < 100" class="font-numbers text-[10px] text-text-muted"><s>{{ o.p.overall }}</s> · {{ o.share }}%</span>
+                <span v-if="o.share < 100" class="font-numbers text-caption text-text-muted"><s>{{ o.p.overall }}</s> · {{ o.share }}%</span>
               </span>
               <span class="min-w-0 flex-1"><b class="block truncate">{{ $nm(o.p.name) }}</b>
                 <span class="text-xs text-text-muted" dir="ltr">{{ o.p.position }}</span>
@@ -671,8 +671,8 @@ async function saveCustom() {
                 <span v-if="!o.p.available" class="ms-1 text-xs text-danger">{{ $t('غير متاح') }}</span></span>
               <span class="flex shrink-0 flex-col items-end gap-1">
                 <span class="h-1 w-10 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(o.p.fitness)" :style="{ width: `${o.p.fitness}%` }" /></span>
-                <span v-if="o.from.zone === 'slot'" class="text-[10px] text-text-muted">{{ $t('يتبادل مع {v0}', { v0: slotLabel(o.from.index) }) }}</span>
-                <span v-else-if="WHERE[o.from.zone]" class="text-[10px] text-text-muted">{{ $t(WHERE[o.from.zone]) }}</span>
+                <span v-if="o.from.zone === 'slot'" class="text-caption text-text-muted">{{ $t('يتبادل مع {v0}', { v0: slotLabel(o.from.index) }) }}</span>
+                <span v-else-if="WHERE[o.from.zone]" class="text-caption text-text-muted">{{ $t(WHERE[o.from.zone]) }}</span>
               </span>
             </button>
           </li>

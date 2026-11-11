@@ -84,7 +84,7 @@ function exportCsv() {
       <h1 class="font-display text-3xl font-extrabold">{{ $t('جدول الدوري') }}</h1>
     </div>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
-    <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('انضم إلى دوري واستلم فريقاً لترى إحصائياته.') }}</p>
+    <p v-else-if="loaded && !leagueId" class="rounded-xl ui-card p-4 text-text-muted">{{ $t('انضم إلى دوري واستلم فريقاً لترى إحصائياته.') }}</p>
     <p v-else-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
 
     <template v-if="s">
@@ -92,7 +92,7 @@ function exportCsv() {
       <EmptyState v-if="empty && tab !== 'value'" icon="league" title="لم تُلعب مباريات في هذا الموسم بعد." text="تمتلئ الأرقام بعد أول جولة." :cta="{ label: 'المباراة القادمة', to: '/match' }" />
       <!-- [Sprint 21 E4.2] The season's leaders at a glance. -->
       <section v-else-if="tab === 'table'" class="grid grid-cols-2 gap-2 lg:grid-cols-4" :aria-label="$t('المتصدرون')">
-        <div v-for="card in leaders" :key="card.label" class="flex flex-col gap-0.5 rounded-xl bg-surface p-3">
+        <div v-for="card in leaders" :key="card.label" class="flex flex-col gap-0.5 rounded-xl ui-card p-3">
           <span class="text-xs text-text-muted">{{ $t(card.label) }}</span>
           <b class="truncate font-display text-base"><bdi>{{ card.name }}</bdi></b>
           <span class="font-numbers text-sm text-gold">{{ card.value }}</span>
@@ -105,7 +105,7 @@ function exportCsv() {
         <button type="button" class="flex min-h-touch items-center gap-1.5 rounded-lg px-3 text-sm font-bold text-brand-light hover:bg-surface" @click="exportCsv">{{ $t('تصدير CSV') }}</button>
       </div>
       <TransitionGroup v-if="tab === 'table'" tag="ol" name="flip" class="flex flex-col gap-1.5 md:hidden" :aria-label="$t('الترتيب المفصل')">
-        <li v-for="r in s.table" :key="r.club.id" class="flex items-center gap-3 rounded-xl bg-surface p-2.5" :class="mine(r.club.id)">
+        <li v-for="r in s.table" :key="r.club.id" class="flex items-center gap-3 rounded-xl ui-card p-2.5" :class="mine(r.club.id)">
           <span class="w-6 text-center font-numbers text-lg text-text-muted">{{ r.position }}</span>
           <button type="button" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 text-start font-bold" @click="openSquad(r.club)">
             <img :src="r.club.crest_url" alt="" class="size-7 shrink-0" />
@@ -116,7 +116,7 @@ function exportCsv() {
           <b class="w-9 text-center font-numbers text-xl text-gold">{{ r.points }}</b>
         </li>
       </TransitionGroup>
-      <section v-if="tab === 'table'" class="hidden overflow-x-auto rounded-xl bg-surface p-3 md:block" :aria-label="$t('الترتيب المفصل')">
+      <section v-if="tab === 'table'" class="hidden overflow-x-auto rounded-xl ui-card p-3 md:block" :aria-label="$t('الترتيب المفصل')">
         <table class="w-full min-w-[640px] text-sm">
           <thead class="text-text-muted"><tr><th class="py-2">#</th><th class="text-start">{{ $t('النادي') }}</th><th>{{ $t('لعب') }}</th><th>{{ $t('فاز') }}</th><th>{{ $t('تعادل') }}</th><th>{{ $t('خسر') }}</th><th>{{ $t('له') }}</th><th>{{ $t('عليه') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('معدل التسجيل') }}</th><th>{{ $t('معدل الاستقبال') }}</th><th>{{ $t('النقاط') }}</th></tr></thead>
           <tbody class="font-numbers">
@@ -131,7 +131,7 @@ function exportCsv() {
         </table>
       </section>
 
-      <section v-for="list in (['scorers', 'assists'] as const)" v-show="tab === list" :key="list" class="flex flex-col gap-1 rounded-xl bg-surface p-3" :aria-label="TABS[list]">
+      <section v-for="list in (['scorers', 'assists'] as const)" v-show="tab === list" :key="list" class="flex flex-col gap-1 rounded-xl ui-card p-3" :aria-label="TABS[list]">
         <div v-for="(p, i) in s[list]" :key="p.player.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 first:border-0">
           <span class="w-6 text-center font-numbers text-text-muted">{{ i + 1 }}</span>
           <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ $nm(p.player.name) }}</bdi></b><button type="button" class="text-xs text-text-muted hover:text-gold" @click="openSquad(p.club)">{{ $nm(p.club.name) }}</button></span>
@@ -142,7 +142,7 @@ function exportCsv() {
       </section>
 
       <template v-if="tab === 'cards'">
-        <section class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('بطاقات الأندية')">
+        <section class="overflow-x-auto rounded-xl ui-card p-3" :aria-label="$t('بطاقات الأندية')">
           <h2 class="mb-2 font-display text-lg font-bold">{{ $t('الأندية') }}</h2>
           <table class="w-full text-sm">
             <thead class="text-text-muted"><tr><th class="py-2 text-start">{{ $t('النادي') }}</th><th>{{ $t('صفراء') }}</th><th>{{ $t('حمراء') }}</th></tr></thead>
@@ -152,7 +152,7 @@ function exportCsv() {
             </tr></tbody>
           </table>
         </section>
-        <section v-for="[key, title] in ([['players', 'أكثر اللاعبين طرداً'], ['bookings', 'أكثر اللاعبين إنذاراً']] as const)" :key="key" class="flex flex-col gap-1 rounded-xl bg-surface p-3" :aria-label="title">
+        <section v-for="[key, title] in ([['players', 'أكثر اللاعبين طرداً'], ['bookings', 'أكثر اللاعبين إنذاراً']] as const)" :key="key" class="flex flex-col gap-1 rounded-xl ui-card p-3" :aria-label="title">
           <h2 class="mb-1 font-display text-lg font-bold">{{ $t(title) }}</h2>
           <div v-for="p in s.discipline[key]" :key="p.player.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 first:border-0">
             <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ $nm(p.player.name) }}</bdi></b><span class="text-xs text-text-muted">{{ $nm(p.club.name) }}</span></span>
@@ -162,7 +162,7 @@ function exportCsv() {
         </section>
       </template>
 
-      <section v-if="tab === 'money'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('التقرير المالي')">
+      <section v-if="tab === 'money'" class="overflow-x-auto rounded-xl ui-card p-3" :aria-label="$t('التقرير المالي')">
         <table class="w-full min-w-[520px] text-sm">
           <thead class="text-text-muted"><tr><th class="py-2 text-start">{{ $t('النادي') }}</th><th>{{ $t('اشترى') }}</th><th>{{ $t('صفقات') }}</th><th>{{ $t('باع') }}</th><th>{{ $t('صفقات') }}</th><th>{{ $t('الصافي') }}</th></tr></thead>
           <tbody class="font-numbers"><tr v-for="f in s.finance" :key="f.club.id" class="border-t border-text/5 text-center" :class="mine(f.club.id)">
@@ -173,7 +173,7 @@ function exportCsv() {
         </table>
       </section>
 
-      <section v-if="tab === 'value'" class="flex flex-col gap-1 rounded-xl bg-surface p-3" :aria-label="$t('القيمة السوقية')">
+      <section v-if="tab === 'value'" class="flex flex-col gap-1 rounded-xl ui-card p-3" :aria-label="$t('القيمة السوقية')">
         <div v-for="r in s.value" :key="r.club.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 first:border-0">
           <span class="w-6 text-center font-numbers text-text-muted">{{ r.position }}</span>
           <img :src="r.club.crest_url" alt="" class="size-7" />
@@ -184,7 +184,7 @@ function exportCsv() {
       </section>
 
       <!-- [X61 E12] Each club at home and away. -->
-      <section v-if="tab === 'split'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('أرض وخارج')">
+      <section v-if="tab === 'split'" class="overflow-x-auto rounded-xl ui-card p-3" :aria-label="$t('أرض وخارج')">
         <table class="w-full min-w-[520px] text-sm">
           <thead class="text-text-muted"><tr><th class="py-2 text-start">{{ $t('النادي') }}</th><th colspan="3">{{ $t('على أرضه') }}</th><th colspan="3">{{ $t('خارج أرضه') }}</th></tr>
             <tr class="text-xs"><th /><th>{{ $t('لعب') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('النقاط') }}</th><th>{{ $t('لعب') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('النقاط') }}</th></tr></thead>
@@ -203,7 +203,7 @@ function exportCsv() {
         <p v-if="!awards" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
         <template v-else>
           <article v-for="[key, title, icon] in ([['mvp', 'أفضل لاعب', '🏆'], ['young', 'أفضل لاعب شاب', '🌱'], ['of_the_round', 'نجم الجولة', '⭐'], ['scorer', 'الهداف', '⚽'], ['assister', 'صانع الألعاب', '🎯']] as const)" :key="key"
-            class="flex animate-pop-in items-center gap-3 rounded-xl border border-gold/25 bg-surface p-3">
+            class="flex animate-pop-in items-center gap-3 rounded-xl border border-gold/25 ui-card p-3">
             <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true">{{ icon }}</span>
             <span class="min-w-0 flex-1">
               <span class="block text-xs text-text-muted">{{ $t(title) }}<template v-if="key === 'of_the_round' && awards.of_the_round"> · {{ $t('الجولة {v0}', { v0: awards.of_the_round.round }) }}</template></span>
@@ -215,7 +215,7 @@ function exportCsv() {
             </span>
             <b v-if="awards[key]" class="font-numbers text-xl text-gold" dir="ltr">{{ key === 'scorer' ? awards.scorer!.goals : key === 'assister' ? awards.assister!.assists : key === 'of_the_round' ? rating(awards.of_the_round!.rating_x10 ?? 0) : rating(awards[key]!.average_x10) }}</b>
           </article>
-          <article class="flex items-center gap-3 rounded-xl border border-gold/25 bg-surface p-3">
+          <article class="flex items-center gap-3 rounded-xl border border-gold/25 ui-card p-3">
             <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true">🔥</span>
             <span class="min-w-0 flex-1"><span class="block text-xs text-text-muted">{{ $t('أطول سلسلة انتصارات') }}</span>
               <b v-if="awards.run" class="block truncate">{{ $nm(awards.run.club.name) }}</b><span v-else class="text-sm text-text-muted">{{ $t('لم يُحسم بعد') }}</span></span>
@@ -224,7 +224,7 @@ function exportCsv() {
         </template>
       </section>
 
-      <section v-if="tab === 'runs'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('سلاسل النتائج')">
+      <section v-if="tab === 'runs'" class="overflow-x-auto rounded-xl ui-card p-3" :aria-label="$t('سلاسل النتائج')">
         <table class="w-full min-w-[560px] text-sm">
           <thead class="text-text-muted"><tr><th class="py-2 text-start">{{ $t('النادي') }}</th><th>{{ $t('آخر 5') }}</th><th>{{ $t('الحالية') }}</th><th>{{ $t('أطول فوز') }}</th><th>{{ $t('أطول تعادل') }}</th><th>{{ $t('أطول خسارة') }}</th></tr></thead>
           <tbody class="font-numbers"><tr v-for="r in s.streaks" :key="r.club.id" class="border-t border-text/5 text-center" :class="mine(r.club.id)">

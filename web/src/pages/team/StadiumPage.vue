@@ -2,6 +2,7 @@
 // The stadium (Sprint 29 W1, PLAN 2.9), per the WebStadium and MobileStadium drafts: the facts on top, then the
 // three sections with their 3 × 5 parts (done gold, building green), each stage's effect, and the next part's
 // start with its price. One part at a time; the countdown runs on the server's clock.
+import UiButton from '../../components/ui/UiButton.vue'
 import TicketPrices from '../../components/TicketPrices.vue'
 import { uuid } from '../../lib/uuid'
 import AdReward from '../../components/ads/AdReward.vue'
@@ -95,21 +96,21 @@ onBeforeUnmount(() => clearInterval(tick))
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
+    <p v-else-if="!leagueId" class="rounded-xl ui-card p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="v">
       <section :aria-label="$t('الملعب الآن')" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('السعة') }}</span><b class="font-numbers text-2xl" dir="ltr">{{ count(v.facts.capacity) }}</b></div>
-        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('ميزة الأرض') }}</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ pct(v.facts.home_bp) }}</b></div>
-        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('دخل التذاكر للمباراة') }}</span><b class="font-numbers text-2xl" dir="ltr">{{ money(v.facts.tickets_per_match) }}</b></div>
-        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('الأجزاء المكتملة') }}</span><b class="font-numbers text-2xl text-gold" dir="ltr">{{ v.facts.parts_done }} / {{ v.parts_total }}</b></div>
+        <div class="rounded-xl ui-card p-3"><span class="block text-xs text-text-muted">{{ $t('السعة') }}</span><b class="font-numbers text-2xl" dir="ltr">{{ count(v.facts.capacity) }}</b></div>
+        <div class="rounded-xl ui-card p-3"><span class="block text-xs text-text-muted">{{ $t('ميزة الأرض') }}</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ pct(v.facts.home_bp) }}</b></div>
+        <div class="rounded-xl ui-card p-3"><span class="block text-xs text-text-muted">{{ $t('دخل التذاكر للمباراة') }}</span><b class="font-numbers text-2xl" dir="ltr">{{ money(v.facts.tickets_per_match) }}</b></div>
+        <div class="rounded-xl ui-card p-3"><span class="block text-xs text-text-muted">{{ $t('الأجزاء المكتملة') }}</span><b class="font-numbers text-2xl text-gold" dir="ltr">{{ v.facts.parts_done }} / {{ v.parts_total }}</b></div>
       </section>
       <!-- [X61] The ticket price, here as in the finance screen. -->
-      <section :aria-label="$t('التذاكر')" class="rounded-xl bg-surface p-4">
+      <section :aria-label="$t('التذاكر')" class="rounded-xl ui-card p-4">
         <TicketPrices :league-id="leagueId" :tickets="v.facts.tickets" @changed="(t) => { v!.facts.tickets = t; v!.facts.tickets_per_match = t.per_match }" />
       </section>
 
-      <section v-if="v.building" :aria-label="$t('يُبنى الآن')" class="flex flex-wrap items-center gap-3 rounded-xl border border-success/40 bg-surface p-4">
+      <section v-if="v.building" :aria-label="$t('يُبنى الآن')" class="flex flex-wrap items-center gap-3 rounded-xl border border-success/40 ui-card p-4">
         <span class="flex-1"><b class="block">{{ $t('يُبنى الآن: {v0}', { v0: INFO[v.building.section]!.title }) }}</b>
           <span class="text-sm text-text-muted">{{ $t('الجزء {v0} من 5 في المرحلة {v1}', { v0: v.building.part, v1: v.building.stage }) }}</span></span>
         <span class="text-end"><span class="block text-xs text-text-muted">{{ $t('يكتمل بعد') }}</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ left }}</b></span>
@@ -120,7 +121,7 @@ onBeforeUnmount(() => clearInterval(tick))
       </section>
 
       <section :aria-label="$t('أقسام الملعب')" class="grid gap-3 lg:grid-cols-3">
-        <article v-for="s in v.sections" :key="s.section" class="flex flex-col gap-3 rounded-xl bg-surface p-4"
+        <article v-for="s in v.sections" :key="s.section" class="flex flex-col gap-3 rounded-xl ui-card p-4"
           :class="v.building?.section === s.section ? 'border border-success/50' : ''">
           <div class="flex items-start gap-3">
             <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold">
@@ -136,9 +137,9 @@ onBeforeUnmount(() => clearInterval(tick))
             <span class="w-20 text-end font-numbers text-sm" :class="s.stage >= st ? 'text-gold' : 'text-text-muted'" dir="ltr">{{ effect(s, st) }}</span>
           </div>
           <p class="text-sm text-text-muted">{{ $t('{v0} من 3 مراحل · {v1} من 15 جزءاً', { v0: s.stage, v1: s.done }) }}</p>
-          <button v-if="s.next" type="button" class="mt-auto h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40"
+          <UiButton variant="brand" v-if="s.next" class="mt-auto"
             :disabled="isBusy(`start:${s.section}`) || !!v.building || s.next.cost > v.balance" @click="start(s)">
-            {{ $t('ابدأ الجزء التالي ·') }} <span class="font-numbers" dir="ltr">{{ money(s.next.cost) }}</span></button>
+            {{ $t('ابدأ الجزء التالي ·') }} <span class="font-numbers" dir="ltr">{{ money(s.next.cost) }}</span></UiButton>
           <p v-else class="mt-auto rounded-md bg-gold/15 py-3 text-center font-bold text-gold">{{ $t('القسم مكتمل') }}</p>
         </article>
       </section>

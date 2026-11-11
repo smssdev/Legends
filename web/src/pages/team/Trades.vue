@@ -5,6 +5,7 @@
 // [X91] Simpler (the owner's request): «عرض سريع» from the list sends his asking price in one tap (with «تراجع» to
 // withdraw it); the composer starts at the fair money for what is chosen, with chips for it, +10% and +25%, and says
 // at once whether the offer is in the allowed range. Every action through lib/action (its button waits, a toast).
+import UiButton from '../../components/ui/UiButton.vue'
 import UiSlider from '../../components/ui/UiSlider.vue'
 import { uuid } from '../../lib/uuid'
 import UiDialog from '../../components/ui/UiDialog.vue'
@@ -124,7 +125,7 @@ onMounted(load)
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <template v-if="t && view === 'list'">
-      <section :aria-label="$t('قائمة الانتقالات')" class="rounded-xl bg-surface p-2">
+      <section :aria-label="$t('قائمة الانتقالات')" class="rounded-xl ui-card p-2">
         <h2 class="px-2 pt-2 font-display text-lg font-bold">{{ $t('المعروضون للبيع') }}</h2>
         <p v-if="!t.listings.filter((l) => !l.mine).length" class="p-3 text-sm text-text-muted">{{ $t('لم يعرض مدرب لاعباً بعد.') }}</p>
         <ul>
@@ -134,14 +135,14 @@ onMounted(load)
             <span class="w-10 text-center font-numbers text-xl">{{ l.player.overall }}</span>
             <span class="w-20 text-end font-numbers text-lg font-bold" dir="ltr">{{ money(l.price) }}</span>
             <span class="flex flex-col gap-1 sm:flex-row">
-              <button type="button" class="h-touch rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="!!t.closed || busy(`quick:${l.player.id}`)" :title="$t('عرض بسعره مباشرة')" @click="quick(l)">{{ busy(`quick:${l.player.id}`) ? '...' : $t('اشترِه بسعره') }}</button>
+              <UiButton size="sm" :disabled="!!t.closed || busy(`quick:${l.player.id}`)" :title="$t('عرض بسعره مباشرة')" @click="quick(l)">{{ busy(`quick:${l.player.id}`) ? '...' : $t('اشترِه بسعره') }}</UiButton>
               <button type="button" class="h-touch rounded-md border border-gold/60 px-3 text-sm font-bold text-gold disabled:opacity-40" :disabled="!!t.closed" @click="compose(l.club.id, l.club.name, { in: [l.player.id], money: l.price })">{{ $t('فاوض') }}</button>
             </span>
           </li>
         </ul>
       </section>
       <!-- [X84] Listing a player is in «بيع لاعبيّ» only (once, with withdraw or keep): one way to do one thing. -->
-      <p class="rounded-xl bg-surface px-4 py-3 text-sm text-text-muted">{{ $t('لعرض لاعب للبيع: تبويب «بيع لاعبيّ» في السوق، أو بطاقة اللاعب في صفحة الفريق.') }}</p>
+      <p class="rounded-xl ui-card px-4 py-3 text-sm text-text-muted">{{ $t('لعرض لاعب للبيع: تبويب «بيع لاعبيّ» في السوق، أو بطاقة اللاعب في صفحة الفريق.') }}</p>
     </template>
 
     <!-- [Sprint 48 T6] The negotiations (the owner's screenshots, our own look): the offers in the middle, and at the side
@@ -160,7 +161,7 @@ onMounted(load)
         <p class="font-display text-xl font-extrabold text-white">{{ $t('هنا تظهر مفاوضاتك الجارية') }}</p>
         <p class="max-w-sm text-sm text-white/80">{{ $t('اختر مدرباً من القائمة أعلاه وابدأ أول عرض.') }}</p>
       </div>
-      <article v-for="o in [...pending, ...done]" :key="o.id" class="flex flex-col gap-2 rounded-xl border bg-surface p-4" :class="o.status === 'pending' && o.incoming ? 'border-gold/50' : 'border-transparent'">
+      <article v-for="o in [...pending, ...done]" :key="o.id" class="flex flex-col gap-2 rounded-xl border ui-card p-4" :class="o.status === 'pending' && o.incoming ? 'border-gold/50' : 'border-transparent'">
         <div class="flex flex-wrap items-center gap-2 text-sm">
           <b>{{ o.incoming ? $t('عرض وارد من {v0}', { v0: o.from.name }) : $t('عرضك إلى {v0}', { v0: o.to.name }) }}</b>
           <span class="rounded-pill bg-text/10 px-2 py-0.5 text-xs">{{ $t(STATUS[o.status]) }}</span>
@@ -179,7 +180,7 @@ onMounted(load)
         </div>
         <div v-if="o.status === 'pending'" class="flex flex-wrap gap-2">
           <template v-if="o.incoming">
-            <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy(`deal:${o.id}`) || !!t.closed" @click="decide(o, 'accept')">{{ $t('قبول') }}</button>
+            <UiButton size="sm" :disabled="busy(`deal:${o.id}`) || !!t.closed" @click="decide(o, 'accept')">{{ $t('قبول') }}</UiButton>
             <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold" :disabled="busy(`deal:${o.id}`)" @click="counter(o)">{{ $t('تفاوض') }}</button>
             <button type="button" class="h-touch rounded-md bg-surface-raised px-4" :disabled="busy(`deal:${o.id}`)" @click="decide(o, 'reject')">{{ $t('رفض') }}</button>
           </template>
@@ -221,8 +222,7 @@ onMounted(load)
             <input v-model.number="draft.money" type="number" min="0" inputmode="numeric" class="h-touch rounded-md bg-surface px-3 font-numbers" dir="ltr" @input="draft.touched = true" />
           </label>
           <div v-if="draft.in.length" class="flex flex-wrap gap-2" role="group" :aria-label="$t('مبالغ جاهزة')">
-            <button v-for="x in presets" :key="x.label" type="button" class="h-9 rounded-pill px-3 text-xs font-bold"
-              :class="draft.money === x.v ? 'bg-gold text-on-gold' : 'bg-surface text-text-soft hover:bg-surface-raised'" @click="pick(x.v)">
+            <button v-for="x in presets" :key="x.label" type="button" class="ui-choice rounded-pill px-3 text-xs" :aria-pressed="draft.money === x.v" @click="pick(x.v)">
               {{ $t(x.label) }} <bdi dir="ltr" class="font-numbers">{{ money(x.v) }}</bdi>
             </button>
           </div>
@@ -236,7 +236,7 @@ onMounted(load)
         </label>
         <p class="text-xs text-text-muted">{{ $t('تطلب لاعبين قيمتهم {v0}، وتعطي {v1}.', { v0: money(wantValue), v1: money(giveValue + (draft.money || 0)) }) }}</p>
         <div class="flex gap-2">
-          <button type="button" class="h-12 flex-1 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy(sendKey) || !draft.in.length || !inRange" @click="send">{{ draft.counterOf ? $t('أرسل الرد') : $t('أرسل العرض') }}</button>
+          <UiButton class="flex-1" :disabled="busy(sendKey) || !draft.in.length || !inRange" @click="send">{{ draft.counterOf ? $t('أرسل الرد') : $t('أرسل العرض') }}</UiButton>
           <button type="button" class="h-12 rounded-md bg-surface-raised px-5" @click="draft.open = false">{{ $t('إلغاء') }}</button>
         </div>
       </section>

@@ -116,7 +116,7 @@ const INFO = computed(() => [
     <template v-else>
       <!-- [X32] The VS card: the competition's band, both clubs on ivory discs with their strength in a ring, the
            countdown to the lock between them, then the facts. -->
-      <section class="nm-hero overflow-hidden rounded-xl bg-surface">
+      <section class="nm-hero overflow-hidden rounded-xl ui-card">
         <div class="vs-band flex items-center justify-center gap-2 px-3 py-1.5 text-caption font-extrabold text-white">
           {{ match.competition === 'cup' ? $t('الكأس') : match.competition === 'alliance' ? $t('بطولة التحالفات · الدور {v0}', { v0: match.round }) : $t('الجولة {v0}', { v0: match.round }) }}{{ match.slot === 2 ? $t(' · السهرة') : '' }}
           <span class="rounded bg-black/25 px-2 py-0.5">{{ match.venue === 'home' ? $t('على أرضك') : $t('خارج أرضك') }}</span>
@@ -183,8 +183,8 @@ const INFO = computed(() => [
           <span v-if="spy.report" class="text-xs text-text-muted">{{ $t('كما كانت الساعة') }} <span class="font-numbers" dir="ltr">{{ spiedAt(spy.report.at) }}</span>{{ $t('، وقد يغيّرها الخصم') }}</span>
         </div>
         <template v-if="!spy.report">
-          <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40" :disabled="spying || locked" @click="sendSpy">
-            {{ $t('أرسل جاسوساً ·') }} <PriceTag :amount="spy.cost" :currency="spy.currency" /></button>
+          <UiButton :disabled="spying || locked" @click="sendSpy">
+            {{ $t('أرسل جاسوساً ·') }} <PriceTag :amount="spy.cost" :currency="spy.currency" /></UiButton>
         </template>
         <template v-else>
           <div class="flex flex-wrap items-center gap-2">

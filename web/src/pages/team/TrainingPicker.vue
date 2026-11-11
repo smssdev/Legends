@@ -4,6 +4,7 @@
 // and a filter for the injured and those at 99; each with his age, rating, potential, the sessions a +1 takes and his
 // progress. One tap trains him; when the slot is taken, one tap puts him in its place (the other keeps his progress).
 // Every number comes from the server (GET /training); the order only sorts what it sent.
+import UiButton from '../../components/ui/UiButton.vue'
 import { computed, ref } from 'vue'
 import type { components } from '../../api/schema'
 import UiDialog from '../../components/ui/UiDialog.vue'
@@ -63,9 +64,8 @@ const growth = (p: Player) => Math.max(0, p.potential - p.overall)
           <h2 class="flex-1 font-display text-xl font-extrabold">{{ $t('من يتدرب في خانة {v0}؟', { v0: $t(LINE_NAMES[line]) }) }}</h2>
           <button type="button" class="grid size-touch place-items-center rounded-lg bg-surface" :aria-label="$t('إغلاق')" @click="emit('close')"><Icon name="close" /></button>
         </div>
-        <div class="flex gap-1 rounded-xl bg-surface p-1" role="tablist" :aria-label="$t('الخط')">
-          <button v-for="l in LINES" :key="l" type="button" role="tab" :aria-selected="l === line" class="h-10 flex-1 rounded-lg text-sm font-bold"
-            :class="l === line ? 'bg-gold text-on-gold' : 'text-text-soft hover:bg-surface-raised'" @click="emit('line', l)">{{ $t(LINE_NAMES[l]) }}</button>
+        <div class="flex gap-1 rounded-xl ui-card p-1" role="tablist" :aria-label="$t('الخط')">
+          <button v-for="l in LINES" :key="l" type="button" role="tab" :aria-selected="l === line" class="ui-choice flex-1 text-sm" @click="emit('line', l)">{{ $t(LINE_NAMES[l]) }}</button>
         </div>
         <p v-if="current" class="flex flex-wrap items-center gap-x-2 rounded-lg bg-surface px-3 py-2 text-sm">
           <span class="text-text-muted">{{ $t('يتدرب الآن:') }}</span>
@@ -76,8 +76,7 @@ const growth = (p: Player) => Math.max(0, p.potential - p.overall)
         <!-- The search and the orders. -->
         <input v-model="query" type="search" class="h-touch rounded-lg bg-surface-sunk px-3 text-sm" :placeholder="$t('ابحث بالاسم أو المركز')" :aria-label="$t('ابحث بالاسم أو المركز')" />
         <div class="flex flex-wrap items-center gap-2" role="radiogroup" :aria-label="$t('الترتيب')">
-          <button v-for="s in SORTS" :key="s.key" type="button" role="radio" :aria-checked="sort === s.key" class="h-9 rounded-pill px-3 text-xs font-bold"
-            :class="sort === s.key ? 'bg-brand text-white' : 'bg-surface text-text-soft hover:bg-surface-raised'" @click="sort = s.key">{{ $t(s.label) }}</button>
+          <button v-for="s in SORTS" :key="s.key" type="button" role="radio" :aria-checked="sort === s.key" class="ui-choice brand rounded-pill px-3 text-xs" @click="sort = s.key">{{ $t(s.label) }}</button>
           <label v-if="hidden" class="ms-auto flex min-h-touch items-center gap-2 text-xs text-text-muted">
             <input v-model="all" type="checkbox" class="size-4 accent-[var(--color-gold)]" />{{ $t('أظهر المصابين ومن بلغ 99 ({v0})', { v0: hidden }) }}
           </label>
@@ -87,13 +86,13 @@ const growth = (p: Player) => Math.max(0, p.potential - p.overall)
       <p v-if="error" class="mx-3 mt-3 rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(error) }}</p>
       <!-- The line's players. -->
       <ul class="flex flex-col gap-2 overflow-y-auto p-3">
-        <li v-for="p in players" :key="p.id" class="flex items-center gap-3 rounded-xl border bg-surface px-3 py-2.5"
+        <li v-for="p in players" :key="p.id" class="flex items-center gap-3 rounded-xl border ui-card px-3 py-2.5"
           :class="p.id === recommended ? 'border-gold/50' : 'border-transparent'">
           <span class="grid size-12 shrink-0 place-items-center rounded-lg bg-surface-sunk font-numbers text-xl font-bold" :class="p.overall >= 85 ? 'text-gold' : ''">{{ p.overall }}</span>
           <span class="min-w-0 flex-1">
             <span class="flex items-center gap-1.5">
               <b class="truncate"><bdi>{{ $nm(p.name) }}</bdi></b>
-              <span v-if="p.id === recommended" class="shrink-0 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">{{ $t('الموصى به') }}</span>
+              <span v-if="p.id === recommended" class="shrink-0 rounded-pill bg-gold px-1.5 text-caption font-bold text-on-gold">{{ $t('الموصى به') }}</span>
             </span>
             <span class="flex flex-wrap gap-x-2 text-xs text-text-muted">
               <span dir="ltr">{{ p.position }}</span>
@@ -107,12 +106,11 @@ const growth = (p: Player) => Math.max(0, p.potential - p.overall)
             </span>
           </span>
           <span v-if="p.maxed" class="shrink-0 text-xs text-text-muted">{{ $t('بلغ 99') }}</span>
-          <button v-else type="button" class="h-touch shrink-0 rounded-md px-4 text-sm font-bold disabled:opacity-40"
-            :class="current ? 'bg-gold text-on-gold' : 'bg-brand text-white'" :disabled="busy" @click="emit('pick', p, !!current)">
+          <UiButton v-else size="sm" :variant="current ? 'primary' : 'brand'" class="shrink-0" :disabled="busy" @click="emit('pick', p, !!current)">
             {{ current ? $t('استبدل به') : $t('درّب') }}
-          </button>
+          </UiButton>
         </li>
-        <li v-if="!players.length" class="rounded-xl bg-surface p-4 text-center text-sm text-text-muted">
+        <li v-if="!players.length" class="rounded-xl ui-card p-4 text-center text-sm text-text-muted">
           {{ query ? $t('لا لاعب بهذا الاسم في هذا الخط.') : $t('لا لاعبين آخرين في هذا الخط يمكن تدريبهم الآن.') }}
         </li>
       </ul>

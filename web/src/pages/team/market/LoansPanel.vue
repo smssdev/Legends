@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // [X61 E2] Loans this season: the requests for my players (accept or turn down) and mine, and the loans running with
 // the round each player goes home. A loan is asked from another coach's squad (its window, from a club's name).
+import UiButton from '../../../components/ui/UiButton.vue'
 import { onMounted, ref } from 'vue'
 import { api, asApiError } from '../../../api/client'
 import { act, busy } from '../../../lib/action'
@@ -31,18 +32,18 @@ onMounted(load)
 
 <template>
   <section class="flex flex-col gap-2" :aria-label="$t('الإعارات')">
-    <p class="rounded-xl bg-surface p-3 text-sm text-text-muted">{{ $t('اطلب لاعباً معاراً من تشكيلة أي مدرب في دوريك (اضغط اسم ناديه)، حتى {v0} جولات.', { v0: v?.max_rounds ?? 6 }) }}</p>
+    <p class="rounded-xl ui-card p-3 text-sm text-text-muted">{{ $t('اطلب لاعباً معاراً من تشكيلة أي مدرب في دوريك (اضغط اسم ناديه)، حتى {v0} جولات.', { v0: v?.max_rounds ?? 6 }) }}</p>
     <p v-if="!v" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <EmptyState v-else-if="!v.loans.length" icon="market" title="لا إعارات الآن" />
     <ul v-else class="flex flex-col gap-2">
-      <li v-for="l in v.loans" :key="l.id" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-3">
+      <li v-for="l in v.loans" :key="l.id" class="flex flex-wrap items-center gap-3 rounded-xl ui-card p-3">
         <span class="min-w-0 flex-1">
           <b class="block truncate"><bdi>{{ $nm(l.player.name) }}</bdi> <span class="font-numbers text-xs text-text-muted" dir="ltr">{{ l.player.position }}</span></b>
           <span class="text-xs text-text-muted">{{ l.mine ? $t('يطلبه {v0}', { v0: $nm(l.borrower) }) : $t('من {v0}', { v0: $nm(l.owner) }) }} · {{ $t('{v0} جولات', { v0: l.rounds }) }} · <span class="font-numbers" dir="ltr">{{ money(l.fee) }}</span></span>
         </span>
         <span v-if="l.status === 'active'" class="rounded-pill bg-success/15 px-3 py-1 text-xs font-bold text-success">{{ $t('معار حتى الجولة {v0}', { v0: l.until_round ?? '' }) }}</span>
         <template v-else-if="l.mine">
-          <button type="button" class="h-11 rounded-lg bg-gold px-4 text-sm font-bold text-on-gold disabled:opacity-40" :disabled="busy(`loan:${l.id}`)" @click="answer(l.id, true)">{{ $t('اقبل') }}</button>
+          <UiButton size="sm" :disabled="busy(`loan:${l.id}`)" @click="answer(l.id, true)">{{ $t('اقبل') }}</UiButton>
           <button type="button" class="h-11 rounded-lg bg-surface-raised px-4 text-sm font-bold disabled:opacity-40" :disabled="busy(`loan:${l.id}`)" @click="answer(l.id, false)">{{ $t('ارفض') }}</button>
         </template>
         <span v-else class="rounded-pill bg-warning/15 px-3 py-1 text-xs font-bold text-warning">{{ $t('بانتظار رده') }}</span>

@@ -3,6 +3,7 @@
 // fitness, room to grow and value. [Sprint 20 W9] A sheet from the bottom on the phone, a panel from the side on the
 // computer, so the list behind stays where it was; and its actions: train him, or sell him. [Sprint 39 S1] Selling is
 // right here (the market's own panel, market/SellPanel.vue), without going to the market; buying stays in the market.
+import UiButton from '../../components/ui/UiButton.vue'
 import { onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -75,7 +76,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
         </div>
       </header>
 
-      <div class="flex flex-col gap-4 rounded-xl border border-gold/30 bg-surface p-4">
+      <div class="flex flex-col gap-4 rounded-xl border border-gold/30 ui-card p-4">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <p class="font-display text-2xl font-extrabold">{{ $nm(player.name) }}</p>
@@ -98,9 +99,9 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       </div>
 
       <dl class="grid grid-cols-3 gap-2 text-center">
-        <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('اللياقة') }}</dt><dd class="font-numbers text-2xl" :class="fitnessTone(player.fitness, 'text')">{{ player.fitness }}%</dd></div>
-        <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('سقف التطور') }}</dt><dd class="font-numbers text-2xl">{{ player.potential }}</dd></div>
-        <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('القيمة') }}</dt><dd class="font-numbers text-2xl">{{ money(player.value) }}</dd></div>
+        <div class="rounded-xl ui-card p-3"><dt class="text-sm text-text-muted">{{ $t('اللياقة') }}</dt><dd class="font-numbers text-2xl" :class="fitnessTone(player.fitness, 'text')">{{ player.fitness }}%</dd></div>
+        <div class="rounded-xl ui-card p-3"><dt class="text-sm text-text-muted">{{ $t('سقف التطور') }}</dt><dd class="font-numbers text-2xl">{{ player.potential }}</dd></div>
+        <div class="rounded-xl ui-card p-3"><dt class="text-sm text-text-muted">{{ $t('القيمة') }}</dt><dd class="font-numbers text-2xl">{{ money(player.value) }}</dd></div>
       </dl>
       <p v-if="!player.available" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">
         {{ player.injured_matches ? $t('مصاب: يغيب {v0} مباريات', { v0: player.injured_matches }) : $t('موقوف: {v0} مباريات', { v0: player.suspended_matches }) }}
@@ -108,8 +109,8 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       <!-- Selling one's own players [X6]: at once, at his value, or at my price up to his cap, here on the card [Sprint 39 S1]. -->
       <div class="grid grid-cols-2 gap-2">
         <!-- [X88] Trained from here: in his line's slot at once (in place of whoever was there, «تراجع» puts him back). -->
-        <button type="button" class="flex h-12 items-center justify-center rounded-lg bg-gold font-bold text-on-gold disabled:opacity-40" :disabled="isBusy(`train-card:${player.id}`)" @click="trainNow">
-          {{ isBusy(`train-card:${player.id}`) ? '...' : $t('درّبه الآن') }}</button>
+        <UiButton :disabled="isBusy(`train-card:${player.id}`)" @click="trainNow">
+          {{ isBusy(`train-card:${player.id}`) ? '...' : $t('درّبه الآن') }}</UiButton>
         <button type="button" class="flex h-12 items-center justify-center rounded-lg font-bold disabled:opacity-40" :class="player.listed ? 'bg-gold/15 text-gold' : 'border border-warning/60 text-warning'" :aria-expanded="!!selling" :disabled="loadingSale" @click="openSale">{{ loadingSale ? '...' : player.listed ? $t('معروض للبيع ✓') : $t('بيع اللاعب') }}</button>
       </div>
       <p v-if="sellError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(sellError) }}</p>

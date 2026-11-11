@@ -67,7 +67,7 @@ onMounted(load)
 </script>
 
 <template>
-  <section :aria-label="$t('العقود والرواتب')" class="flex flex-col gap-2 rounded-xl bg-surface p-4 text-sm">
+  <section :aria-label="$t('العقود والرواتب')" class="flex flex-col gap-2 rounded-xl ui-card p-4 text-sm">
     <h2 class="font-display text-lg font-bold">{{ $t('العقود والرواتب') }}</h2>
     <template v-if="c">
       <div class="flex justify-between"><span class="text-text-muted">{{ $t('الرواتب كل جولة') }}</span><b class="font-numbers" dir="ltr">{{ money(c.wages_per_round) }}</b></div>
