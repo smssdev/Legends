@@ -9,6 +9,7 @@
 // on any player opens the list to choose who goes there instead, the best for that place first. An outfield player
 // may stand in any line, out of his own at the engine's lower share (shown on his card). The specialists are cards,
 // each chosen from the whole squad by the role's skill.
+import AsyncState from '../../components/ui/AsyncState.vue'
 import { t } from '../../lib/i18n'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import UiSelect from '../../components/ui/UiSelect.vue'
@@ -485,11 +486,8 @@ async function saveCustom() {
 
 <template>
   <div class="lineup-root">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <div v-else-if="loaded && !team" class="rounded-xl ui-card p-8 text-center">
-      <p class="mb-3 text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
-      <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
-    </div>
+    <!-- [Sprint 56 W11] The states as every screen's: the error with a retry, no team with the way to one. -->
+    <AsyncState v-if="error || (loaded && !team)" :error="error || null" :empty="!error" empty-icon="lineup" empty-title="ليس لديك فريق بعد." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" @retry="load" />
     <template v-else-if="team && current">
       <h1 class="sr-only">{{ $t('التشكيلة') }}</h1>
       <!-- [Sprint 56 W3] Lineup.html: three columns on one screen. The formation, the chemistry and the tools; the pitch
@@ -639,7 +637,7 @@ async function saveCustom() {
       </UiDialog>
 
     </template>
-    <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
+    <AsyncState v-else loading skeleton="card" :rows="3" />
 
     <div
       v-if="drag?.moved && players.get(drag.id)"

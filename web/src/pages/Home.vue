@@ -2,6 +2,7 @@
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
 // cash and coins) and the eight club slots right under it, all in one screen without scrolling; the announcements, the
 // record, the trophies and the rankings below. A guest sees the way in ([X59] the landing page).
+import AsyncState from '../components/ui/AsyncState.vue'
 import InstallPrompt from '../components/InstallPrompt.vue'
 import ReminderPrompt from '../components/ReminderPrompt.vue'
 import UiDialog from '../components/ui/UiDialog.vue'
@@ -178,7 +179,8 @@ async function openRanking(by: By) {
   <div v-else class="flex flex-col gap-4">
     <!-- [Sprint 21 E3.4] The coach's chalkboard behind the home screen. -->
     <ChalkBackdrop />
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
+    <AsyncState v-if="error && !home" :error="error" @retry="load" />
+    <p v-else-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <!-- [Sprint 21 E3.4] On a computer two columns fill the screen: the card and the slots, and beside them the
          announcements, the record and quick ways in. On a phone the same in one column. -->
     <!-- [X86] The home screen simplified (the owner's request 2026-11-02): the coach, the next match and the slots; the
@@ -404,7 +406,8 @@ async function openRanking(by: By) {
       </details>
       </div>
     </div>
-    <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+    <!-- [Sprint 56 W11] The slots' shape while the home screen loads. -->
+    <AsyncState v-else-if="!error" loading skeleton="card" :rows="2" />
     <!-- [X57] One Google ad at the bottom of the home screen, away from the slots' buttons. -->
     <AdSlot v-if="home" class="relative mt-4" />
 

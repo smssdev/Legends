@@ -4,6 +4,7 @@
 // few hours with a countdown, each player with his seller: a club and its coach, a computer's club, or his own club
 // outside the league. A tap opens his card and the deal: the price and 1 or 2 coins to register it, or, short of cash
 // with half the price at least, the cash and coins for the rest. Prices and rules come from the API.
+import AsyncState from '../../components/ui/AsyncState.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import { uuid } from '../../lib/uuid'
 import { useEscape } from '../../lib/escape'
@@ -201,9 +202,10 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
   <div class="market">
     <h1 class="sr-only">{{ $t('السوق') }}</h1>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-    <p v-else-if="!leagueId" class="rounded-xl ui-card p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
+    <!-- [Sprint 56 W11] The states as every screen's: a skeleton in the list's shape, the error with a retry, no team. -->
+    <p v-if="error && loaded && m" class="rounded-lg bg-live/15 px-4 py-2 text-caption text-danger" role="alert">{{ $t(error) }}</p>
+    <AsyncState v-if="!loaded || (!m && error)" :loading="!loaded" :error="error || null" skeleton="row" :rows="6" @retry="load" />
+    <AsyncState v-else-if="!leagueId" empty empty-icon="market" empty-title="ليس لديك فريق بعد." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" />
 
     <template v-else-if="m">
       <UiTabs v-model="tab" :items="tabs.map((t) => ({ key: t.id, label: t.label, n: t.n }))" label="مصادر اللاعبين" size="sm" class="max-w-full self-start" />
@@ -266,7 +268,7 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
           <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface" :aria-label="$t('ابدأ مقارنة جديدة')" @click="comparing = []">✕</button>
         </div>
         <section :aria-label="$t('قائمة الانتقالات')" class="market-list rounded-xl ui-card p-2">
-          <p v-if="!list" class="p-4 text-sm text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+          <AsyncState v-if="!list" loading skeleton="row" :rows="5" />
           <p v-else-if="!list.players.length" class="p-4 text-sm text-text-muted">{{ $t('لا لاعبين في هذا المركز الآن.') }}</p>
           <p v-else-if="!shown.length" class="flex flex-wrap items-center gap-2 p-4 text-sm text-text-muted">{{ $t('لا لاعب يطابق البحث.') }}
             <button type="button" class="min-h-touch font-bold text-gold" @click="clearFilters">{{ $t('امسح البحث') }}</button></p>

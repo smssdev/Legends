@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AsyncState from '../../components/ui/AsyncState.vue'
 import { REFEREE } from '../../lib/format'
 // Tactics (Sprint 17 W1). [Sprint 20 S1] Laid out as the owner's picture, in our colours and drawings: the match on
 // top (both sides, their strength and last five, the formations and the referee), then a board of cards: the three
@@ -144,10 +145,8 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
 
 <template>
   <div class="tactics-root">
-    <div v-if="loaded && !leagueId" class="rounded-xl ui-card p-8 text-center">
-      <p class="mb-3 text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
-      <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
-    </div>
+    <!-- [Sprint 56 W11] The states as every screen's. -->
+    <AsyncState v-if="loaded && !leagueId" empty empty-icon="tactics" empty-title="ليس لديك فريق بعد." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" />
     <template v-else-if="t">
       <h1 class="sr-only">{{ $t('التكتيك') }}</h1>
       <!-- [Sprint 56 W4] Tactics.html: the pitch in the same place and at the same size as the lineup's, so moving between
@@ -301,7 +300,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         </section>
       </div>
     </template>
-    <p v-else class="text-text-muted">{{ message || $t('جارٍ التحميل…') }}</p>
+    <AsyncState v-else :loading="!loaded" :error="loaded ? message || null : null" skeleton="card" :rows="3" @retry="load" />
   </div>
 </template>
 
