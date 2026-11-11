@@ -2474,6 +2474,7 @@ paths:
                     properties:
                       home: { $ref: '#/components/schemas/SceneClub' }
                       away: { $ref: '#/components/schemas/SceneClub' }
+                  kits: { $ref: '#/components/schemas/MatchKits' }
                   players:
                     type: object
                     properties:
@@ -7175,6 +7176,24 @@ components:
       properties:
         formation: { type: string, enum: ['4-2-3-1', '4-3-3', '4-4-2', '4-1-4-1', '3-5-2', '5-3-2'] }
         tactics: { $ref: '#/components/schemas/Tactics' }
+    MatchKits:
+      type: object
+      description: '[Sprint 57 B1] Both sides'' final kits, worked out on the server (App\Data\MatchKits): the away side changes on a clash. Every screen draws these as they are.'
+      required: [home, away]
+      properties:
+        home: { $ref: '#/components/schemas/MatchKit' }
+        away: { $ref: '#/components/schemas/MatchKit' }
+    MatchKit:
+      type: object
+      required: [shirt, trim, shorts, socks, text, gk, pattern]
+      properties:
+        shirt: { type: string, description: '#RRGGBB' }
+        trim: { type: string }
+        shorts: { type: string }
+        socks: { type: string }
+        text: { type: string, description: 'The ink on the shirt (dark on a light shirt, white on a dark one)' }
+        gk: { type: string, description: "The goalkeeper's shirt" }
+        pattern: { type: [string, 'null'], enum: [stripes, hoops, halves, sash, null] }
     MatchView:
       type: object
       properties:
@@ -7195,6 +7214,7 @@ components:
         formations: { type: array, items: { type: string } }
         timing: { type: object }
         clubs: { type: object, description: 'home and away: the club (id, name, code, primary, secondary, logo) and [X76] its kit pattern (pattern: stripes, hoops, halves, sash, or null for plain), and [Sprint 34 V1] its change kit (away_kit: {color, pattern}, or null)' }
+        kits: { $ref: '#/components/schemas/MatchKits' }
         coaches: { type: object, description: "The coaches' names in a match between friends: {home, away}" }
         coach_looks: { type: object, description: "[Sprint 26] Each human coach's look on the touchline (C1 to C3): {home?, away?}" }
         teams: { type: object, description: 'home and away: formation, tactics (your side only), subs, stats, captain (the armband, Sprint 34 V3) and players (each with fit and pac, his pace for the drawing, Sprint 34 K4)' }

@@ -1,3 +1,4 @@
+import type { components } from './schema'
 // Simulator API client (docs/api/openapi.yaml, docs/api/match-events.md).
 import { api, asApiError, ensureCsrf } from './client'
 import { uuid } from '../lib/uuid'
@@ -163,6 +164,8 @@ export interface MatchView {
   coaches?: Partial<Record<Side, string>>
   /** [Sprint 26] Each human coach's look on the touchline. */
   coach_looks?: Partial<Record<Side, 'C1' | 'C2' | 'C3'>>
+  /** [Sprint 57 B1] Both sides' final kits from the server (App\\Data\\MatchKits): drawn as they are. */
+  kits: components['schemas']['MatchKits']
   teams: Record<Side, TeamSnapshot>
 }
 

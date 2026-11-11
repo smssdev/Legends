@@ -295,7 +295,7 @@ import GoalReplay from '../match/feed/GoalReplay.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
 import MatchRecap from '../components/shell/MatchRecap.vue'
-import { clubColors, leagueMatch, seats, sim, type ChatLine, type LiveSync, type LiveSummary, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
+import { leagueMatch, seats, sim, type ChatLine, type LiveSync, type LiveSummary, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { Commentator, type Lang } from '../match/voice'
@@ -412,27 +412,13 @@ const feedKits = computed(() => ({
 }))
 // Score bug and stats colours follow the kits (with the away change kit on a clash).
 const kits = computed(() => ({ home: bkits.value.home.shirt, homeText: bkits.value.home.text, away: bkits.value.away.shirt, awayText: bkits.value.away.text }))
-// Kits for the 3D broadcast: shirt and trim from the club colours, shorts from the trim when it contrasts.
+// [Sprint 57 B1, W7] The kits come worked out from the server (App\Data\MatchKits: the away side changes on a clash),
+// the same as the app's and Unity's; the names stay the clubs'.
+const NO_KIT = { shirt: '#163360', trim: '#F7F4EA', shorts: '#163360', socks: '#163360', text: '#FFFFFF', gk: '#2E8B57', pattern: null }
 const bkits = computed(() => {
-  const lum = (hex: string) => (parseInt(hex.slice(1, 3), 16) * 299 + parseInt(hex.slice(3, 5), 16) * 587 + parseInt(hex.slice(5, 7), 16) * 114) / 1000
-  const make = (side: Side, shirt: string, trim: string, gk: string) => {
-    const club = view.value?.clubs[side]
-    const shorts = Math.abs(lum(shirt) - lum(trim)) > 60 ? trim : shirt
-    return { shirt, trim, shorts, socks: shirt, text: lum(shirt) > 150 ? '#0A1F42' : '#FFFFFF', gk, name: club?.name ?? '', coach: 'مدرب ' + (club?.name ?? '') }
-  }
-  const h = clubColors(view.value?.clubs.home ?? ({} as any)), a = clubColors(view.value?.clubs.away ?? ({} as any))
-  // Two similar shirts (Arsenal and Liverpool are both red): the away side changes to its second colour, or to white or navy.
-  const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
-  const far = (x: string, y: string) => rgb(x).reduce((d, v, i) => d + Math.abs(v - rgb(y)[i]), 0) > 160
-  let away = a.primary, awayTrim = a.secondary, awayPattern = view.value?.clubs.away.pattern ?? null
-  if (!far(h.primary, away)) {
-    // [Sprint 34 V1] Its own change kit first, when the data editor has one far enough from the home shirt.
-    const alt = view.value?.clubs.away.away_kit
-    away = alt && far(h.primary, alt.color) ? alt.color : far(h.primary, a.secondary) ? a.secondary : far(h.primary, '#F3F0E6') ? '#F3F0E6' : '#1C2333'
-    awayTrim = a.primary
-    awayPattern = alt && away === alt.color ? alt.pattern ?? null : null
-  }
-  return { home: { ...make('home', h.primary, h.secondary, '#2E8B57'), pattern: view.value?.clubs.home.pattern ?? null }, away: { ...make('away', away, awayTrim, '#E9D70B'), pattern: awayPattern } }
+  const k = view.value?.kits
+  const named = (side: Side) => ({ ...(k?.[side] ?? NO_KIT), name: view.value?.clubs[side].name ?? '', coach: 'مدرب ' + (view.value?.clubs[side].name ?? '') })
+  return { home: named('home'), away: named('away') }
 })
 let pendingScore: Record<Side, number> | null = null
 function onCue(name: string) {

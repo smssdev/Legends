@@ -5,6 +5,7 @@ namespace App\Simulator;
 use App\Characters\Mood;
 use App\Data\ClubLogo;
 use App\Data\KitPattern;
+use App\Data\MatchKits;
 use App\Engine\Actions;
 use App\Engine\AutoPick;
 use App\Engine\Formations;
@@ -351,8 +352,10 @@ class Simulator
                 'windows' => $live ? ($s['cfg']['match']['windows'] ?? []) : [], 'window_seconds' => (int) ($s['cfg']['match']['window_seconds'] ?? 0),
             ],
             // [X76, Sprint 34 V1] Each club with its kit pattern and change kit (the data club's).
-            'clubs' => ['home' => ClubLogo::with($s['teams']['home']['club']) + KitPattern::kits($s['teams']['home']['club']['id'] ?? null, false),
+            'clubs' => $clubs = ['home' => ClubLogo::with($s['teams']['home']['club']) + KitPattern::kits($s['teams']['home']['club']['id'] ?? null, false),
                 'away' => ClubLogo::with($s['teams']['away']['club']) + KitPattern::kits($s['teams']['away']['club']['id'] ?? null, false)],
+            // [Sprint 57 B1] Both sides' final kits, the same on every screen.
+            'kits' => MatchKits::of($clubs['home'], $clubs['away']),
             'coaches' => (object) ($match->setup['names'] ?? []),
             'teams' => $live ? self::redact(['teams' => self::teams($s)], $you)['teams'] : self::teams($s),
             'slots' => [
