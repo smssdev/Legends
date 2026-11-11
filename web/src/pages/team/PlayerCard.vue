@@ -64,8 +64,9 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
 </script>
 
 <template>
-  <UiDialog :open="true" bare @close="$emit('close')">
-    <section class="flex max-h-[92dvh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-t-xxl bg-bg p-4 md:max-h-none md:w-[28rem] md:rounded-none md:border-s md:border-text/10" :aria-label="player.name">
+  <!-- [Sprint 56 W2] A side panel beside the squad's table (Squad.html), not a window over it. -->
+  <UiDialog :open="true" side @close="$emit('close')">
+    <section class="flex flex-col gap-4" :aria-label="player.name">
       <header class="flex items-center justify-between gap-3">
         <h2 class="font-display text-2xl font-extrabold">{{ $t('بطاقة اللاعب') }}</h2>
         <div class="flex items-center gap-2">

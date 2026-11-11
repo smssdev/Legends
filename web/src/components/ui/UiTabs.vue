@@ -16,7 +16,7 @@ const ON = { gold: 'data-[state=active]:bg-gold data-[state=active]:text-on-gold
     <TabsList class="ui-tabs rounded-xl bg-surface p-1" :class="fill ? 'grid auto-cols-fr grid-flow-col' : 'flex snap-x overflow-x-auto'" :aria-label="label ? $t(label) : undefined">
       <TabsTrigger v-for="t in items" :key="t.key" :value="t.key"
         class="group flex shrink-0 snap-start items-center justify-center gap-1.5 rounded-lg px-4 font-bold transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 data-[state=inactive]:text-text-soft data-[state=inactive]:hover:bg-text/5"
-        :class="[size === 'sm' ? 'h-10 text-xs sm:text-sm' : 'min-h-touch text-sm', ON[tone]]">
+        :class="[size === 'sm' ? 'min-h-touch px-3 text-xs sm:text-sm' : 'min-h-touch text-sm', ON[tone]]">
         {{ $t(t.label) }}<span v-if="t.n !== undefined && t.n !== null" class="min-w-6 rounded-pill bg-text/10 px-1.5 font-numbers group-data-[state=active]:bg-on-gold/15">{{ t.n }}</span>
       </TabsTrigger>
     </TabsList>

@@ -199,9 +199,9 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
 <style>
 /* [Sprint 55 W1] The frame (LandscapeShell.html): a grid of the dock at the line's start, the bar above the screen, and
    the screen scrolling inside itself. Global, because the dock's lists and the bar's windows are carried to the body. */
+:root { --bar-h: 42px; }
 .shell {
   --dock-w: 72px;
-  --bar-h: 42px;
   display: grid;
   grid-template-columns: var(--dock-w) minmax(0, 1fr);
   grid-template-rows: var(--bar-h) minmax(0, 1fr);
