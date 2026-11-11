@@ -40,6 +40,7 @@ use App\Http\Controllers\Api\TournamentController;
 use App\Http\Controllers\Api\TrainingController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\WalletController;
+use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Support\Facades\Route;
 
 // Every route here is served under /api/v1 (see bootstrap/app.php) and is
@@ -47,6 +48,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('health', [HealthController::class, 'show']);
 Route::post('health/ping', [HealthController::class, 'ping'])->middleware('throttle:10,1,ping');
+// [Sprint 53 F1] The app's private channels (a live match, a club, a chat group, the inbox): signed with its token. The
+// web signs them with its session at /broadcasting/auth; the same rules (routes/channels.php) decide.
+Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate'])->middleware(['auth:sanctum', 'throttle:240,1,broadcast-auth']);
 // [Sprint 51 B2] The report-only Content-Security-Policy's violations, from the browser (App\Http\Security\SecurityPolicy).
 Route::post('csp-report', [CspReportController::class, 'store'])->middleware('throttle:30,1,csp-report');
 

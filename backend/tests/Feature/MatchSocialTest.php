@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Events\MatchSocialPosted;
 use App\League\MatchRunner;
 use App\Models\User;
 use App\Support\GameClock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
 
@@ -89,5 +91,17 @@ class MatchSocialTest extends TestCase
         $this->later(3000);
         $this->postJson("{$url}/chat", ['body' => 'بعد النهاية'])->assertStatus(409);
         $this->postJson("{$url}/reactions", ['key' => 'fire'])->assertStatus(409);
+    }
+
+    /** [Sprint 53 B3] A chat line and a reaction go out on the match's channel at once, as the poll gives them. */
+    public function test_the_chat_and_the_reactions_are_pushed_on_the_match_channel(): void
+    {
+        Event::fake([MatchSocialPosted::class]);
+        $url = "/api/v1/matches/{$this->match->id}";
+        $line = $this->postJson("{$url}/chat", ['body' => 'هيا'])->assertCreated()->json();
+        $this->postJson("{$url}/reactions", ['key' => 'fire'])->assertCreated();
+        Event::assertDispatched(MatchSocialPosted::class, fn ($e) => $e->broadcastAs() === 'chat' && $e->item === $line
+            && $e->broadcastOn()->name === "private-match.{$this->match->id}");
+        Event::assertDispatched(MatchSocialPosted::class, fn ($e) => $e->broadcastAs() === 'reaction' && $e->item['key'] === 'fire');
     }
 }

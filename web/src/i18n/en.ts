@@ -4,6 +4,8 @@ export const EN: Record<string, string> = {
   'حدث خطأ غير متوقع، حاول مجدداً.': 'An unexpected error occurred. Try again.',
   'تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مجدداً.': 'Could not reach the server. Check your internet and try again.',
   'حاول مجدداً': 'Try again',
+  'متصل بالبث المباشر': 'Connected to the live broadcast',
+  'نعيد الاتصال بالبث... المباراة مستمرة': 'Reconnecting to the broadcast... the match goes on',
   'اللغة': 'Language',
   'لعبة المدرب الأسطورة': 'Game Legend Manager',
   'المدرب الأسطورة': 'GLM',

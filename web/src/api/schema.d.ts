@@ -1340,6 +1340,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/broadcasting/auth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign a private channel for the app [Sprint 53]
+         * @description The app (a token, not the web's session) subscribes to a private channel (`private-match.{id}`, `private-club.{id}`, `private-chat.{group}`, `private-App.Models.User.{id}`) through Reverb; this signs it under the same rules as the web's /broadcasting/auth (routes/channels.php). 240 a minute.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        socket_id: string;
+                        channel_name: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The signature for Pusher's protocol */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            auth?: string;
+                        };
+                    };
+                };
+                401: components["responses"]["Error"];
+                403: components["responses"]["Error"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/csp-report": {
         parameters: {
             query?: never;
@@ -6572,8 +6623,12 @@ export interface paths {
         };
         /**
          * The minutes made after `since`, with their frames
-         * @description The server keeps the clock (each minute carries `at`, its start in server ms); minutes are announced on the private
-         *     channel `match.{id}` (event `minute`) and fetched here. No hidden tactics of either side, except your own. Every
+         * @description The server keeps the clock (each minute carries `at`, its start in server ms). [Sprint 53] Each minute is pushed
+         *     whole on the private channel `match.{id}` (event `minute`: its field `live` is the minute as given here to a
+         *     member who coaches neither side, without any tactics key, and `next_at` when the next one starts), with the
+         *     side chat and the reactions (events `chat` and `reaction`, `{match_id, item}`, the items of `chat` and
+         *     `reactions` below). A screen on the channel asks here only when it joins, after a gap (`since`), during a
+         *     break (the ready buttons), and every few seconds as a safety net. No hidden tactics of either side, except your own. Every
          *     event carries its Arabic commentary line in `text` (the same for everyone). After a gap (the last 20 minutes are
          *     kept whole), `missed` gives the events of the minutes in between, at most `game.live.missed_max_minutes` of
          *     them (the latest), and `summary` the whole gap: one path for a hidden tab, a lost connection and joining late,

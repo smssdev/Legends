@@ -13,6 +13,7 @@ use App\Simulator\Runner;
 use App\Simulator\Simulator;
 use App\Simulator\Voice;
 use App\Support\GameClock;
+use App\Support\LiveEvents;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -236,7 +237,7 @@ class MatchRunner
             $live['next_at'] += $tick['moment']['ms'] + $pause;
             $live['pause']['until'] = $live['next_at'];
             $n++;
-            MatchMinute::dispatch($fixture, $id, Simulator::redact($tick, null));
+            LiveEvents::send(new MatchMinute($fixture, $id, Simulator::redact($tick, null), (int) $live['next_at']));
             $live['said'] = self::readings($id, $fixture, $state, $tick, $live['control'], $live['said'] ?? null);
             $halftime = collect($tick['events'])->contains(fn ($e) => $e['type'] === 'period' && $e['name'] === 'halftime');
             if ($halftime || $state['finished']) {
@@ -280,7 +281,7 @@ class MatchRunner
             $new = DB::table('match_readings')->insertOrIgnore(['match_id' => $id, 'club_id' => $club, 'tick' => $reading['tick'],
                 'minute' => min(255, $reading['minute']), 'kind' => $reading['kind'], 'text' => $reading['text'], 'created_at' => GameClock::now()]);
             if ($new) {
-                ClubReading::dispatch($club, $id, $reading);
+                LiveEvents::send(new ClubReading($club, $id, $reading));
             }
         }
 

@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
+import '../../core/live/live_channels.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/intents.dart';
 import '../../core/api/api_error.dart';
@@ -704,22 +705,34 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
   bool _sending = false;
   Map<String, dynamic>? _replyTo;
 
+  /// [Sprint 53 F2] The group's channel: a new message (or one changed) comes at once, and the 4-second poll runs only
+  /// while the channel is down; with it, a check every 30 seconds as a safety net.
+  LiveSubscription? _channel;
+  DateTime _loadedAt = DateTime.fromMillisecondsSinceEpoch(0);
+
   @override
   void initState() {
     super.initState();
     _load();
-    _poll = Timer.periodic(const Duration(seconds: 4), (_) => _load());
+    _channel = ref.read(liveFeedProvider).join('chat.${widget.groupId}', {'chat': (_) => _load()});
+    _channel!.subscribed.addListener(_load);
+    _poll = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (_channel?.subscribed.value != true || DateTime.now().difference(_loadedAt).inSeconds >= 30) _load();
+    });
   }
 
   @override
   void dispose() {
     _poll?.cancel();
+    _channel?.subscribed.removeListener(_load);
+    _channel?.leave();
     _recorder.dispose();
     _text.dispose();
     super.dispose();
   }
 
   Future<void> _load() async {
+    _loadedAt = DateTime.now();
     try {
       final m = await _repo.messages(widget.groupId);
       if (mounted) setState(() => _messages = m);

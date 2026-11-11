@@ -158,6 +158,44 @@ class MatchRunnerTest extends TestCase
         $this->assertTrue(MatchRunner::claim('fourth'));
     }
 
+    /**
+     * [Sprint 53] Reverb down (a restart, a deploy): the live events cannot be sent, and the matches play on. The runner
+     * sent each minute at once, and the failure stopped the minute from being kept, so every live match stood still.
+     */
+    public function test_the_matches_play_on_when_the_live_server_is_down(): void
+    {
+        $closed = stream_socket_server('tcp://127.0.0.1:0');
+        $port = (int) explode(':', stream_socket_get_name($closed, false))[1];
+        fclose($closed);   // a port nobody listens on
+        config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'k', 'broadcasting.connections.reverb.secret' => 's',
+            'broadcasting.connections.reverb.app_id' => 'a', 'broadcasting.connections.reverb.options' => ['host' => '127.0.0.1', 'port' => $port, 'scheme' => 'http', 'useTLS' => false]]);
+        $match = $this->kickOff();
+        for ($i = 0; $i < 20; $i++) {
+            $this->step(500);
+        }
+        $this->assertGreaterThan(3, (int) DB::table('matches')->where('id', $match->id)->value('tick'), 'the minutes go on without the live server');
+        $this->assertSame(0, MatchRunner::$failures);
+    }
+
+    /** [Sprint 53 F1] The app signs a match's channel with its token: its league's members only. */
+    public function test_the_app_signs_the_match_channel_with_its_token(): void
+    {
+        config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'k', 'broadcasting.connections.reverb.secret' => 's',
+            'broadcasting.connections.reverb.app_id' => 'a', 'broadcasting.connections.reverb.options' => ['host' => '127.0.0.1', 'port' => 1, 'scheme' => 'http', 'useTLS' => false]]);
+        // The channels' rules belong to the broadcaster of the boot (null in tests): given again to Reverb's.
+        require base_path('routes/channels.php');
+        $match = $this->kickOff();
+        $body = ['socket_id' => '123.456', 'channel_name' => "private-match.{$match->id}"];
+        $token = $this->owner->createToken('GLM Android')->plainTextToken;
+        $this->app['auth']->forgetGuards();
+        $this->withToken($token)->postJson('/api/v1/broadcasting/auth', $body)->assertOk()->assertJsonStructure(['auth']);
+        $this->app['auth']->forgetGuards();
+        $outsider = User::factory()->create()->createToken('GLM Android')->plainTextToken;
+        $this->withToken($outsider)->postJson('/api/v1/broadcasting/auth', $body)->assertForbidden();
+        $this->app['auth']->forgetGuards();
+        $this->withToken('nope')->postJson('/api/v1/broadcasting/auth', $body)->assertUnauthorized();
+    }
+
     public function test_the_broadcast_never_carries_hidden_tactics(): void
     {
         Event::fake([MatchMinute::class]);
@@ -168,6 +206,12 @@ class MatchRunnerTest extends TestCase
         }
         $payloads = Event::dispatched(MatchMinute::class)->map(fn ($e) => json_encode($e[0]->broadcastWith()))->implode("\n");
         $this->assertNotEmpty($payloads);
+        // [Sprint 53 B1] The minute goes out whole (the line-ups, the frames, when the next one starts): the screens on
+        // the channel need no poll for it. Still without a single hidden setting.
+        $first = Event::dispatched(MatchMinute::class)->first()[0]->broadcastWith();
+        $this->assertArrayHasKey('teams', $first['live']);
+        $this->assertNotEmpty($first['live']['frames']);
+        $this->assertGreaterThan($first['live']['at'], $first['next_at']);
         foreach (['pressing', 'tempo', 'style', 'tactics', 'debug', '"att":', 'marking'] as $hidden) {
             $this->assertStringNotContainsString($hidden, $payloads, $hidden);
         }

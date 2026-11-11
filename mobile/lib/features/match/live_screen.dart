@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../core/api/api_error.dart';
+import '../../core/live/live_channels.dart';
 import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
@@ -80,6 +81,11 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   Timer? _timer;
   /// [Sprint 51 F2] The timeout bar's end, cancelled with the screen.
   Timer? _timeoutEnd;
+  /// [Sprint 53 F2] The match's channel: the minutes, the chat and the reactions pushed. While it is subscribed the poll
+  /// only checks now and then (every [_pushedPollMs], or [_breakPollMs] in a break, for who is ready); without it the
+  /// poll runs as before.
+  LiveSubscription? _channel;
+  static const _pushedPollMs = 12000, _breakPollMs = 2000;
 
   int get _id => widget.view.id;
   String? get _you => widget.view.you;
@@ -90,6 +96,50 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     unawaited(WakelockPlus.enable().catchError((_) {}));
     _poll();
+    if (!widget.view.finished) {
+      _channel = ref.read(liveFeedProvider).join('match.$_id', {'minute': _pushed, 'chat': _pushedChat, 'reaction': _pushedReaction});
+      _channel!.subscribed.addListener(_channelChanged);
+    }
+  }
+
+  /// The channel came (ask once for what it may have missed) or went (back to the poll's own pace at once).
+  void _channelChanged() {
+    if (!mounted || _finished) return;
+    _timer?.cancel();
+    _poll();
+  }
+
+  /// [Sprint 53 F2] A minute pushed whole (App\Events\MatchMinute's `live`): told as if the poll had brought it.
+  void _pushed(Map<String, dynamic> e) {
+    final raw = e['live'];
+    if (!mounted || _finished || raw is! Map<String, dynamic>) return;
+    final t = LiveTick.fromJson(raw);
+    if (t.tick <= _tick) return;
+    // A minute missing in between (a message lost): the poll brings everything after the last one told.
+    if (t.tick > _tick + 1) {
+      _timer?.cancel();
+      _poll();
+      return;
+    }
+    setState(() => _apply(LiveSync(finished: t.finished, tick: t.tick, serverNow: DateTime.now().millisecondsSinceEpoch + _offset,
+        nextAt: (e['next_at'] as num?)?.toInt(), ticks: [t], pause: _pause, chat: _chat, reactions: _reactions)));
+    // A break opens or the match ends: the details (who is ready, the window) from the poll, now.
+    if (t.window || t.finished || t.period != null && t.events.any((x) => x.type == 'period')) {
+      _timer?.cancel();
+      _poll();
+    }
+  }
+
+  void _pushedChat(Map<String, dynamic> e) {
+    final c = e['item'];
+    if (!mounted || c is! Map || _chat.any((x) => x.id == c['id'])) return;
+    setState(() => _chat = [..._chat, (id: c['id'] as int, who: '${c['who']}', body: '${c['body']}', side: c['side'] as String?)].take(50).toList());
+  }
+
+  void _pushedReaction(Map<String, dynamic> e) {
+    final r = e['item'];
+    if (!mounted || r is! Map || _reactions.any((x) => x.id == r['id'])) return;
+    setState(() => _reactions = [..._reactions, (id: r['id'] as int, who: '${r['who']}', key: '${r['key']}', target: r['target'] as String?)]);
   }
 
   @override
@@ -97,6 +147,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     _timeoutEnd?.cancel();
+    _channel?.subscribed.removeListener(_channelChanged);
+    _channel?.leave();
     unawaited(WakelockPlus.disable().catchError((_) {}));
     super.dispose();
   }
@@ -119,6 +171,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
       if (!mounted) return;
       setState(() => _apply(s));
       wait = s.pollMs ?? wait;
+      // [Sprint 53 F2] On the channel the minutes come by themselves.
+      if (_channel?.subscribed.value == true && _started) wait = wait > (_pause != null ? _breakPollMs : _pushedPollMs) ? wait : (_pause != null ? _breakPollMs : _pushedPollMs);
     } on ApiError {
       wait = 4000;
     } catch (_) {

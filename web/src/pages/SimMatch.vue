@@ -10,7 +10,7 @@
       <span v-if="rerun" class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">{{ $t('إعادة المباراة كاملة') }}</span>
       <div class="flex-1" />
       <template v-if="live">
-        <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-danger"><span class="size-2 rounded-full bg-live" />{{ $t('مباشر · {v0}', { v0: mine ? $t('تدير ') + view?.clubs[mine].name : $t('مشاهدة') }) }}</span>
+        <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-danger"><!-- [Sprint 53 W2] The dot says how the minutes arrive: pushed (it beats), or asked for while the channel comes back (amber, still). --><span class="size-2 rounded-full" :class="props.league && !sync.connected.value ? 'bg-warning' : 'bg-live'" :title="props.league ? (sync.connected.value ? $t('متصل بالبث المباشر') : $t('نعيد الاتصال بالبث... المباراة مستمرة')) : undefined" role="img" :aria-label="props.league ? (sync.connected.value ? $t('متصل بالبث المباشر') : $t('نعيد الاتصال بالبث... المباراة مستمرة')) : undefined" />{{ $t('مباشر · {v0}', { v0: mine ? $t('تدير ') + view?.clubs[mine].name : $t('مشاهدة') }) }}</span>
         <button v-if="friendLink" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="share">{{ copied ? $t('نُسخ الرابط') : $t('رابط الصديق') }}</button>
       </template>
       <div v-else class="flex items-center gap-1 rounded-lg bg-surface p-1" role="group" :aria-label="$t('سرعة المحاكاة')">
@@ -286,6 +286,7 @@ import { MatchSound } from '../match/sound'
 import { Commentator, type Lang } from '../match/voice'
 import { useViewing } from '../match/viewing'
 import { perfPref, setPerfPref, tier, type PerfPref } from '../match/perf'
+import { useLiveSync } from '../match/useLiveSync'
 
 // league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
 // the server's commentary, his assistant's readings, and catching up after a lost connection.
@@ -832,6 +833,8 @@ async function poll() {
     sample(sent, r.server_now)
     offline.value = false
     wait = handleSync(r)
+    // [Sprint 53] On the channel the minutes come by themselves: the poll only checks now and then.
+    if (props.league && sync.connected.value) wait = Math.max(wait, quickPoll() ? (started.value ? 2000 : wait) : PUSHED_POLL_MS)
   } catch (e: any) {
     // A lost connection: keep asking. The server keeps every minute, so coming back loses nothing (Sprint 20 W2).
     if (navigator.onLine === false || e instanceof TypeError) { offline.value = true; wait = 2000 }
@@ -911,7 +914,21 @@ function handleSync(r: LiveSync): number {
     }
   }
   for (const x of r.readings ?? []) if (!readings.value.some((y) => y.id === x.id)) readings.value.unshift(x)
-  const fresh = r.ticks.filter((t) => t.tick > seen)
+  const fresh = takeTicks(r.ticks, r.next_at)
+  if (r.tick === 0 && !fresh.length && seen === 0) kickoffAt = r.next_at ?? 0
+  for (const x of r.reactions ?? []) receive(x)
+  for (const c of r.chat ?? []) hear(c)
+  const left = r.next_at === null ? 1500 : r.next_at - r.server_now - 1100
+  // [E8.7] A server under load asks for fewer polls.
+  return Math.max(r.poll_ms ?? 0, Math.min(1000, Math.max(250, left)))
+}
+
+/**
+ * The new minutes on the shared clock, from the poll or pushed on the channel [Sprint 53]: each plays when its time
+ * comes (`at`), one already over is told at once. Returns those taken.
+ */
+function takeTicks(ticks: Tick[], nextAt: number | null): Tick[] {
+  const fresh = ticks.filter((t) => t.tick > seen)
   fresh.forEach((t, i) => {
     seen = t.tick
     // The second half starts with the first minute after the break.
@@ -929,15 +946,40 @@ function handleSync(r: LiveSync): number {
     const id = window.setTimeout(() => { playTimers.delete(id); show(t, true, startAt) }, delay)
     playTimers.set(id, { t, startAt })
   })
-  if (r.tick === 0 && !fresh.length && seen === 0) kickoffAt = r.next_at ?? 0
-  else if (fresh.length && fresh[0].tick === 1) kickoffAt = fresh[0].at ?? 0
-  if (breakAhead && r.next_at) resumeAt = r.next_at
-  for (const x of r.reactions ?? []) receive(x)
-  for (const c of r.chat ?? []) hear(c)
-  const left = r.next_at === null ? 1500 : r.next_at - r.server_now - 1100
-  // [E8.7] A server under load asks for fewer polls.
-  return Math.max(r.poll_ms ?? 0, Math.min(1000, Math.max(250, left)))
+  if (fresh.length && fresh[0].tick === 1) kickoffAt = fresh[0].at ?? 0
+  if (breakAhead && nextAt) resumeAt = nextAt
+  return fresh
 }
+
+// ---------------------------------------------------------------- the channel [Sprint 53]
+// A live league match on its channel: the minutes, the chat and the reactions pushed. The poll then only joins, catches
+// up after a gap, follows a break (the ready buttons), and checks every PUSHED_POLL_MS; without the channel it runs as
+// before, about once a second.
+const PUSHED_POLL_MS = 12_000
+const channelMatch = computed(() => (props.league && live.value && !finished.value ? Number(props.id) : null))
+const sync = useLiveSync(channelMatch, {
+  minute(e) {
+    if (finished.value || rerun.value) return
+    const t = e.live
+    if (t.tick <= seen) return
+    // A minute missing in between (a dropped message): the poll brings everything from `seen`.
+    if (t.tick > seen + 1) return void poll()
+    // The channel carries no tactics: my own stay as the last poll gave them.
+    const own = mine.value ? teams.value[mine.value]?.tactics : null
+    if (own && t.teams?.[mine.value as Side]) t.teams[mine.value as Side] = { ...t.teams[mine.value as Side], tactics: own }
+    started.value = true
+    takeTicks([t], e.next_at)
+    // A break opens (half-time, a coach's window) or the match ends: its details (who is ready, an injury) from the poll.
+    if (t.finished || t.window || t.events.some((x) => x.type === 'period' && x.name === 'halftime')) poll()
+  },
+  chat: (c) => hear(c),
+  reaction: (x) => receive(x),
+  rejoined: () => { if (live.value && !finished.value) poll() },
+})
+/** A break under way or the kick-off still to come: the poll keeps its quick pace. */
+const quickPoll = () => !started.value || halftime.value || windowOn.value || !!pause.value
+// [Sprint 53 W1] The channel lost: back to the poll's own pace at once.
+watch(() => sync.connected.value, (on) => { if (!on && live.value && !finished.value) poll() })
 
 // Countdown to the kick-off and to the second half, on the shared clock.
 function clockTick() {
