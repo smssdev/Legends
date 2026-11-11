@@ -183,8 +183,10 @@ async function openRanking(by: By) {
          announcements, the record and quick ways in. On a phone the same in one column. -->
     <!-- [X86] The home screen simplified (the owner's request 2026-11-02): the coach, the next match and the slots; the
          rest (the news, the badges, the poll, the ranking, the ways in, the install and the reminder) under «المزيد». -->
-    <div v-if="home" class="relative mx-auto flex w-full max-w-4xl flex-col gap-4">
-      <div class="flex min-w-0 flex-col gap-4">
+    <!-- [Sprint 56 W8] The slots first, each with its club's next match (Home.html); on a computer two columns: the
+         coach, the slots and the next match, and beside them the gift, the verification, the first steps and «المزيد». -->
+    <div v-if="home" class="home-grid relative mx-auto w-full">
+      <div class="home-main flex min-w-0 flex-col gap-4">
       <!-- [UP7] The coach's card on top: the picture, the name, the level, the club's cash and the coins. -->
       <section class="coach-card" :aria-label="$t('ملف المدرب')">
         <RouterLink to="/profile" class="shrink-0" :aria-label="$t('حسابي')">
@@ -209,48 +211,7 @@ async function openRanking(by: By) {
         </div>
       </section>
 
-      <!-- [Sprint 30 Q9] The next match on top: who, when (counting down), and the way to get ready. -->
-      <section v-if="nextUp?.next_match" class="next-hero flex flex-col gap-3 rounded-2xl border border-gold/30 p-4" :aria-label="$t('مباراتك القادمة')">
-        <div class="flex items-center justify-between gap-2 text-sm">
-          <b class="text-gold">{{ nextUp.next_match.live ? '● ' + $t('مباشر الآن') : $t('مباراتك القادمة') }}</b>
-          <span class="text-text-muted">{{ when(nextUp.next_match.scheduled_at) }}</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <img v-if="nextUp.club" :src="nextUp.club.crest_url" alt="" class="size-12 shrink-0" />
-          <span class="min-w-0 flex-1">
-            <b class="block truncate font-display text-lg">{{ $nm(nextUp.club?.name) }}</b>
-            <span class="block truncate text-sm text-text-muted">{{ $t(nextUp.next_match.venue === 'home' ? 'ضد' : 'عند') }} {{ $nm(nextUp.next_match.opponent) }}</span>
-          </span>
-          <b v-if="!nextUp.next_match.live" class="shrink-0 font-numbers text-3xl text-gold" dir="ltr">{{ countdown(nextUp.next_match.scheduled_at, now) || $t('الآن') }}</b>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <UiButton @click="goClub(nextUp, '/lineup')">{{ $t('التشكيلة') }}</UiButton>
-          <UiButton variant="outline" @click="goClub(nextUp, '/tactics')">{{ $t('التكتيك') }}</UiButton>
-        </div>
-      </section>
-
-
       <!-- [X86] «المطلوب منك اليوم» is gone: each slot's card counts what waits in it. -->
-
-      <!-- [Sprint 30 P6] The starter coins, until claimed; and the first friendly is free. -->
-      <section v-if="!home.starter_gift.claimed" class="flex animate-fade-up items-center gap-3 rounded-2xl border border-gold/40 bg-gold/10 p-4" :aria-label="$t('هدية البداية')">
-        <img src="/brand/coin.svg" alt="" class="size-12 shrink-0 animate-pulse-ring rounded-full" />
-        <span class="min-w-0 flex-1">
-          <b class="block font-display text-lg">{{ $t('هدية البداية: {v0} كوينز', { v0: home.starter_gift.coins }) }}</b>
-          <span class="text-sm text-text-muted">{{ $t('وأول ودية لك مجانية. استلمها وابدأ.') }}</span>
-        </span>
-        <UiButton :loading="claiming" @click="claimStarter">{{ $t('استلم مكافأتك') }}</UiButton>
-      </section>
-
-      <!-- [X61] A new coach's first steps, until they are all done (or hidden). -->
-      <!-- [Sprint 55 W3] The verification: a card here (and a dot on the account), no longer a strip across every screen. -->
-      <RouterLink v-if="auth.user && !auth.user.verification?.verified" to="/profile" class="ui-card verify-card flex min-h-touch items-center gap-3 rounded-xl px-4 py-3">
-        <span class="text-2xl" aria-hidden="true">🎁</span>
-        <span class="min-w-0 flex-1"><b class="block">{{ $t('وثّق حسابك') }}</b>
-          <span class="text-caption text-text-muted">{{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }}</span></span>
-        <span class="font-bold text-gold">{{ $t('وثّق') }} ›</span>
-      </RouterLink>
-      <OnboardingChecklist :has-club="home.slots.some((s) => s.state === 'club')" :steps="home.onboarding" />
 
       <!-- The slots, the screen's heart, right under the card: all eight without scrolling. -->
       <section class="flex flex-col gap-2" :aria-label="$t('فتحات المدرب')">
@@ -310,7 +271,49 @@ async function openRanking(by: By) {
           🔒 {{ $t('و{v0} فتحات مقفلة أخرى', { v0: lockedHidden }) }} <span aria-hidden="true">▾</span>
         </button>
       </section>
+      <!-- [Sprint 30 Q9, Sprint 56 W8] The next match, under the slots: who, when (counting down), and the way to get ready. -->
+      <section v-if="nextUp?.next_match" class="next-hero flex flex-col gap-3 rounded-2xl border border-gold/30 p-4" :aria-label="$t('مباراتك القادمة')">
+        <div class="flex items-center justify-between gap-2 text-sm">
+          <b class="text-gold">{{ nextUp.next_match.live ? '● ' + $t('مباشر الآن') : $t('مباراتك القادمة') }}</b>
+          <span class="text-text-muted">{{ when(nextUp.next_match.scheduled_at) }}</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <img v-if="nextUp.club" :src="nextUp.club.crest_url" alt="" class="size-12 shrink-0" />
+          <span class="min-w-0 flex-1">
+            <b class="block truncate font-display text-lg">{{ $nm(nextUp.club?.name) }}</b>
+            <span class="block truncate text-sm text-text-muted">{{ $t(nextUp.next_match.venue === 'home' ? 'ضد' : 'عند') }} {{ $nm(nextUp.next_match.opponent) }}</span>
+          </span>
+          <b v-if="!nextUp.next_match.live" class="shrink-0 font-numbers text-3xl text-gold" dir="ltr">{{ countdown(nextUp.next_match.scheduled_at, now) || $t('الآن') }}</b>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <UiButton @click="goClub(nextUp, '/lineup')">{{ $t('التشكيلة') }}</UiButton>
+          <UiButton variant="outline" @click="goClub(nextUp, '/tactics')">{{ $t('التكتيك') }}</UiButton>
+        </div>
+      </section>
+
+
       </div>
+
+      <div class="home-side flex min-w-0 flex-col gap-4">
+      <!-- [Sprint 30 P6] The starter coins, until claimed; and the first friendly is free. -->
+      <section v-if="!home.starter_gift.claimed" class="flex animate-fade-up items-center gap-3 rounded-2xl border border-gold/40 bg-gold/10 p-4" :aria-label="$t('هدية البداية')">
+        <img src="/brand/coin.svg" alt="" class="size-12 shrink-0 animate-pulse-ring rounded-full" />
+        <span class="min-w-0 flex-1">
+          <b class="block font-display text-lg">{{ $t('هدية البداية: {v0} كوينز', { v0: home.starter_gift.coins }) }}</b>
+          <span class="text-sm text-text-muted">{{ $t('وأول ودية لك مجانية. استلمها وابدأ.') }}</span>
+        </span>
+        <UiButton :loading="claiming" @click="claimStarter">{{ $t('استلم مكافأتك') }}</UiButton>
+      </section>
+
+      <!-- [X61] A new coach's first steps, until they are all done (or hidden). -->
+      <!-- [Sprint 55 W3] The verification: a card here (and a dot on the account), no longer a strip across every screen. -->
+      <RouterLink v-if="auth.user && !auth.user.verification?.verified" to="/profile" class="ui-card verify-card flex min-h-touch items-center gap-3 rounded-xl px-4 py-3">
+        <span class="text-2xl" aria-hidden="true">🎁</span>
+        <span class="min-w-0 flex-1"><b class="block">{{ $t('وثّق حسابك') }}</b>
+          <span class="text-caption text-text-muted">{{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }}</span></span>
+        <span class="font-bold text-gold">{{ $t('وثّق') }} ›</span>
+      </RouterLink>
+      <OnboardingChecklist :has-club="home.slots.some((s) => s.state === 'club')" :steps="home.onboarding" />
 
       <details class="home-more" :open="moreOpen" @toggle="(e: Event) => setMore((e.target as HTMLDetailsElement).open)">
         <summary class="ui-card flex min-h-touch cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-4 font-bold">
@@ -399,6 +402,7 @@ async function openRanking(by: By) {
         </nav>
       </aside>
       </details>
+      </div>
     </div>
     <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <!-- [X57] One Google ad at the bottom of the home screen, away from the slots' buttons. -->
@@ -486,6 +490,8 @@ async function openRanking(by: By) {
 </template>
 
 <style scoped>
+.home-grid { display: grid; gap: var(--space-lg); grid-template-columns: minmax(0, 1fr); max-width: 56rem; }
+@media (min-width: 1200px) { .home-grid { max-width: none; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
 .verify-card { border: 1px solid color-mix(in srgb, var(--color-warning) 45%, transparent); }
 /* [X86] «المزيد»: its arrow turns when open. */
 .home-more summary::-webkit-details-marker { display: none; }

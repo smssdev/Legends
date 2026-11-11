@@ -268,7 +268,10 @@ html.light .dock-item.is-active { color: var(--color-text); background: color-mi
   .dock-badge { position: static; margin-inline-start: auto; }
   .dock-crest { justify-content: flex-start; padding-inline: var(--space-sm); }
   .dock-wide-only { display: block; }
-  .dock-brand .brand-words { display: flex; }
+  .dock-brand .brand-words { display: flex; min-width: 0; }
+  /* The game's name in the 200px dock: a size smaller, so it fits beside the emblem. */
+  .dock-brand .brand-words > span:first-child { font-size: 0.7rem; }
+  .dock-brand .brand-words > span:last-child { white-space: normal; }
 }
 
 .shell-bar {
