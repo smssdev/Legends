@@ -43,7 +43,7 @@ export const router = createRouter({
         { path: 'team', name: 'team', component: () => import('./pages/team/Squad.vue'), meta: { auth: true, fit: true } },
         // Sprint 17: tactics and the next match (the live match comes in Sprints 18 to 20)
         { path: 'tactics', name: 'tactics', component: () => import('./pages/team/TacticsPage.vue'), meta: { auth: true, fit: true } },
-        { path: 'match', name: 'match', component: () => import('./pages/team/NextMatch.vue'), meta: { auth: true } },
+        { path: 'match', name: 'match', component: () => import('./pages/team/NextMatch.vue'), meta: { auth: true, fit: true } },
         { path: 'lineup', name: 'lineup', component: () => import('./pages/team/Lineup.vue'), meta: { auth: true, fit: true } },
         // Sprint 26: the scout
         { path: 'scout', name: 'scout', component: () => import('./pages/team/ScoutPage.vue'), meta: { auth: true } },

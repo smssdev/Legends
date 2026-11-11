@@ -274,9 +274,7 @@
   },
   "src/pages/team/NextMatch.vue": {
     "button": 1,
-    "card": 5,
-    "px-text": 1,
-    "hex": 1
+    "card": 1
   },
   "src/pages/team/PlayerCard.vue": {
     "button": 1,
