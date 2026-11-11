@@ -19,6 +19,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 import UiButton from '../../components/ui/UiButton.vue'
 import { money } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
+import { useLineupDrag, type Spot } from './useLineupDrag'
 import { barColor, useTeam, type Formation, type SquadPlayer } from './team'
 
 const { leagueId, team, error, loaded, load } = useTeam()
@@ -128,7 +129,6 @@ const MINI = {
 } as const
 
 // Moving players: a "spot" is a slot on the pitch, a place on the bench, or the rest of the squad.
-type Spot = { zone: 'slot' | 'bench' | 'reserve'; index: number }
 
 function playerAt(s: Spot): number | null {
   if (s.zone === 'slot') return starters.value[s.index] ?? null
@@ -298,24 +298,9 @@ const offLine = (i: number) => {
   return i > 0 && !!p && !!slot && shareAt(p, slot.line) < 100
 }
 
-// Dragging with pointer events: a ghost follows the finger; on release, the spot under it receives.
-const drag = ref<{ from: Spot; id: number; x: number; y: number; moved: boolean } | null>(null)
-function down(e: PointerEvent, s: Spot) {
-  const id = playerAt(s)
-  if (id === null || !editing.value) return
-  drag.value = { from: s, id, x: e.clientX, y: e.clientY, moved: false }
-  window.addEventListener('pointermove', follow)
-  window.addEventListener('pointerup', up, { once: true })
-  // [Sprint 30 Q7] A touch the phone takes back (a call, a system gesture) drops nothing anywhere: the drag ends.
-  window.addEventListener('pointercancel', cancelDrag, { once: true })
-}
-function cancelDrag() {
-  window.removeEventListener('pointermove', follow)
-  window.removeEventListener('pointerup', up)
-  window.removeEventListener('pointercancel', cancelDrag)
-  edge = 0
-  drag.value = null
-}
+// Dragging: useLineupDrag.ts (Sprint 56 W3: moved out as it was).
+const listBox = ref<HTMLElement | null>(null)
+const { drag, down, cancel: cancelDrag, justDragged } = useLineupDrag({ editing, listBox, playerAt, move, remember, later, dropOnGrass: (slot, e) => place_(slot, e) })
 // [2026-11-09] Leaving the page: a drag in the middle lets go of the window, and a change waiting for its save is
 // saved now (not lost, and not sent later by a page that is gone; a failure still shows in the app's toast).
 onBeforeUnmount(() => {
@@ -326,51 +311,6 @@ onBeforeUnmount(() => {
     void save()
   }
 })
-function follow(e: PointerEvent) {
-  if (!drag.value) return
-  if (Math.hypot(e.clientX - drag.value.x, e.clientY - drag.value.y) > 8) drag.value.moved = true
-  drag.value.x = e.clientX
-  drag.value.y = e.clientY
-  // [Sprint 56 W3] The pitch and the bench share one screen now; near the list column's top or bottom edge, that list
-  // scrolls (the page itself does not).
-  const box = listBox.value?.getBoundingClientRect()
-  edge = !box || e.clientX < box.left || e.clientX > box.right ? 0 : e.clientY < box.top + 50 ? -14 : e.clientY > box.bottom - 50 ? 14 : 0
-  if (edge && !scrolling) scroll()
-}
-let edge = 0
-let scrolling = false
-const listBox = ref<HTMLElement | null>(null)
-function scroll() {
-  if (!drag.value || !edge) {
-    scrolling = false
-    return
-  }
-  scrolling = true
-  listBox.value?.scrollBy(0, edge)
-  requestAnimationFrame(scroll)
-}
-function up(e: PointerEvent) {
-  window.removeEventListener('pointermove', follow)
-  window.removeEventListener('pointercancel', cancelDrag)
-  edge = 0
-  const d = drag.value
-  drag.value = null
-  if (!d?.moved) return
-  const el = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>('[data-spot]')
-  if (el) {
-    const [zone, index] = el.dataset.spot!.split(':')
-    move(d.from, { zone: zone as Spot['zone'], index: Number(index) })
-  } else if (d.from.zone === 'slot' && d.from.index > 0) {
-    remember()
-    place_(d.from.index, e)
-  }
-  later()
-  // The click that follows a drag must not also select.
-  suppress = true
-  window.setTimeout(() => (suppress = false), 0)
-}
-let suppress = false
-
 // A starter dropped on open grass stays there, held inside his line's band [X5].
 const pitch = ref<HTMLElement | null>(null)
 function place_(slot: number, e: PointerEvent) {
@@ -392,7 +332,7 @@ const band = computed(() => {
   const [from, to] = bands.value[current.value?.slots[d.from.index].line ?? ''] ?? []
   return from === undefined ? null : { top: `${100 - (to / 720) * 100}%`, height: `${((to - from) / 720) * 100}%` }
 })
-const click = (s: Spot) => !suppress && tap(s)
+const click = (s: Spot) => !justDragged() && tap(s)
 const isSelected = (s: Spot) => (choosing.value?.zone === s.zone && choosing.value.index === s.index) || (picking.value?.mode === 'player' && playerAt(s) === picking.value.id)
 
 async function improve() {
