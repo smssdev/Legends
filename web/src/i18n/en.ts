@@ -112,6 +112,7 @@ export const EN: Record<string, string> = {
   'وثّق': 'Verify',
   'إدارة اللعبة': 'Game admin',
   'تابع عمودياً': 'Continue upright',
+  'الخصم': 'Opponent',
   'إغلاق': 'Close',
   'ترتيب المدربين': 'Coaches ranking',
   'م{n}': 'L{n}',
