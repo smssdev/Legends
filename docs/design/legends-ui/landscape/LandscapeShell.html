@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D1، D2 · الإطار (Sprint 55)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+<!-- [Sprint 55 D1، D2] A draft for the owner's approval (D12): nothing is built from it before he signs it off. -->
+<header class="top">
+  <h1>D1، D2 · الإطار</h1>
+  <nav aria-label="المسودات"><a href="index.html">كل المسودات</a> <a href="LandscapeShell.html">الإطار</a> <a href="Office.html">المكتب</a> <a href="Squad.html">الفريق</a> <a href="Lineup.html">التشكيلة</a> <a href="Tactics.html">التكتيك</a> <a href="Market.html">السوق</a> <a href="NextMatch.html">المباراة القادمة</a> <a href="Match.html">المباراة</a> <a href="Home.html">الرئيسية</a></nav>
+  <p>إطار واحد للموقع والتطبيق: <b>رصيف 72px</b> على جانب البداية (ستة أقسام، و«المزيد»، والمدرب المساعد في أسفله لا زراً عائماً)، و<b>شريط 42px</b> فوقه (اسم الشاشة، وعدّاد المباراة القادمة، والعملتان، والرسائل، والحساب بنقطة التوثيق). حصته من ارتفاع الشاشة 11% على 667×375 و10% على 915×412 (كانت 35%). <b>على الكمبيوتر خياران، والقرار لك:</b> (أ) الرصيف يتسع إلى 200px بالأسماء بجانب الأيقونات، أو (ب) صف الأقسام العلوي من Sprint 48 تحت الشريط (والرصيف على الجوال واللوحي وحدهما). بدّل بينهما من «الكمبيوتر» أعلاه.</p>
+</header>
+<div class="opts">
+  <span>الشكل: <button data-opt="theme" data-val="night" aria-pressed="true">الليل</button><button data-opt="theme" data-val="day" aria-pressed="false">النهار</button></span>
+  <span>الحالة: <button data-opt="state" data-val="normal" aria-pressed="true">عادي</button><button data-opt="state" data-val="loading" aria-pressed="false">تحميل</button><button data-opt="state" data-val="empty" aria-pressed="false">فراغ</button><button data-opt="state" data-val="error" aria-pressed="false">خطأ</button><button data-opt="state" data-val="offline" aria-pressed="false">بلا اتصال</button></span>
+  <span>الكمبيوتر: <button data-opt="desk" data-val="a" aria-pressed="true">أ. رصيف 200px</button><button data-opt="desk" data-val="b" aria-pressed="false">ب. الصف العلوي</button></span>
+  <span>الاتجاه: <button data-opt="dir" data-val="rtl" aria-pressed="true">العربية</button><button data-opt="dir" data-val="ltr" aria-pressed="false">English</button></span>
+  <span>الشرح: <button data-opt="notes" data-val="on" aria-pressed="true">ظاهر</button><button data-opt="notes" data-val="off" aria-pressed="false">مخفي</button></span>
+</div>
+<div id="frames"></div>
+<section class="decide"><h2>D2: أسماء الأقسام، واحدة في الموقع والتطبيق</h2>
+<table><thead><tr><th>الاسم الموحد</th><th>ما فيه</th><th>الموقع اليوم</th><th>التطبيق اليوم</th></tr></thead><tbody>
+<tr><td><b>المكتب</b></td><td>لوحة النادي، وما ينتظرك، والمؤقتات</td><td>لوحة النادي</td><td>المكتب</td></tr>
+<tr><td><b>الفريق</b></td><td>اللاعبون، والتشكيلة، والمتخصصون، والتدريب، والجهاز الفني، والعقود</td><td>إدارة الفريق ▾</td><td>الفريق</td></tr>
+<tr><td><b>التكتيك</b></td><td>الخطة والأسلوب والضغط</td><td>داخل إدارة الفريق</td><td>التكتيك</td></tr>
+<tr><td><b>المباراة</b></td><td>المباراة القادمة ويوم المباراة، والجدول، والترتيب، والوديات</td><td>المنافسات ▾</td><td>المنافسة</td></tr>
+<tr><td><b>السوق</b></td><td>السوق، والكشاف، والمزادات، وعروضي</td><td>داخل النادي والمالية</td><td>الصفقات</td></tr>
+<tr><td><b>النادي</b></td><td>المالية، والملعب، والمهام، والمحفظة</td><td>النادي والمالية ▾</td><td>المال والملعب</td></tr>
+<tr><td><b>المزيد</b></td><td>الدوري (الأخبار والتوقعات وجدول الدوري)، والإعلام، والمجتمع (الجروبات والبطولات والاقتراحات)، وحسابي</td><td>الإعلام والتفاعل ▾ والمجتمع ▾</td><td>المجتمع</td></tr>
+</tbody></table>
+<p>خارج النادي (الرئيسية): الرئيسية، ودورياتي، وأنشئ دورياً، والبطولات، والرسائل، والمزيد. و<b>القراران المطلوبان منك:</b> خيار الكمبيوتر (أ أو ب)، والأسماء أعلاه.</p></section>
+<template id="screen" data-title="الإطار" data-section="office" data-empty="هذه شاشة فارغة" data-css="css">
+<div class="demo">
+  <div class="card"><header>مساحة الشاشة</header><p class="caption">كل ما خارج الرصيف والشريط للشاشة نفسها. الصفحة لا تتمرر، والقوائم داخلها تتمرر.</p></div>
+  <div class="card"><header>الفعل الأساسي</header><p class="caption">في مكان ثابت: أسفل نهاية الشاشة، دائماً هناك.</p></div>
+  <a class="btn primary act" href="#">الفعل الأساسي</a>
+  <span class="note" style="top:6px;inset-inline-end:8px">النقطة الحمراء على «المكتب»: ما ينتظرك (بدل نافذة «ما ينتظرك» في الشريط)</span>
+  <span class="note" style="bottom:60px;inset-inline-start:8px">شريط التوثيق صار نقطة برتقالية على الحساب وبطاقة في الرئيسية (W3)</span>
+</div>
+</template>
+<style id="css">
+.demo { position: relative; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr; gap: 8px; height: 100%; }
+.demo .act { grid-column: 2; align-self: end; justify-self: end; }
+</style>
+<script src="frames.js"></script>
+</body>
+</html>

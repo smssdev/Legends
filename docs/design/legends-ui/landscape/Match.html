@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D9 · المباراة (Sprint 55)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+<!-- [Sprint 55 D9] A draft for the owner's approval (D12): nothing is built from it before he signs it off. -->
+<header class="top">
+  <h1>D9 · المباراة</h1>
+  <nav aria-label="المسودات"><a href="index.html">كل المسودات</a> <a href="LandscapeShell.html">الإطار</a> <a href="Office.html">المكتب</a> <a href="Squad.html">الفريق</a> <a href="Lineup.html">التشكيلة</a> <a href="Tactics.html">التكتيك</a> <a href="Market.html">السوق</a> <a href="NextMatch.html">المباراة القادمة</a> <a href="Match.html">المباراة</a> <a href="Home.html">الرئيسية</a></nav>
+  <p><b>الصورة ملء الشاشة</b> بلا إطار، و<b>النتيجة مرة واحدة</b> في أعلاها، و<b>درجان</b> على الحافتين: الأوامر (التبديل والتكتيك والوقت المستقطع) والدردشة، كلاهما يدخل فوق الصورة ولا يزيحها. الخروج زر صغير في الزاوية.</p>
+</header>
+<div class="opts">
+  <span>الشكل: <button data-opt="theme" data-val="night" aria-pressed="true">الليل</button><button data-opt="theme" data-val="day" aria-pressed="false">النهار</button></span>
+  <span>الحالة: <button data-opt="state" data-val="normal" aria-pressed="true">عادي</button><button data-opt="state" data-val="loading" aria-pressed="false">تحميل</button><button data-opt="state" data-val="empty" aria-pressed="false">فراغ</button><button data-opt="state" data-val="error" aria-pressed="false">خطأ</button><button data-opt="state" data-val="offline" aria-pressed="false">بلا اتصال</button></span>
+  <span>الكمبيوتر: <button data-opt="desk" data-val="a" aria-pressed="true">أ. رصيف 200px</button><button data-opt="desk" data-val="b" aria-pressed="false">ب. الصف العلوي</button></span>
+  <span>الاتجاه: <button data-opt="dir" data-val="rtl" aria-pressed="true">العربية</button><button data-opt="dir" data-val="ltr" aria-pressed="false">English</button></span>
+  <span>الشرح: <button data-opt="notes" data-val="on" aria-pressed="true">ظاهر</button><button data-opt="notes" data-val="off" aria-pressed="false">مخفي</button></span>
+</div>
+<div id="frames"></div>
+
+<template id="screen" data-title="المباراة" data-bare data-empty="المباراة لم تبدأ بعد" data-css="css">
+<div class="match">
+  <div class="stage"><div class="pitch wide"><span class="pl" style="left:8%;top:50%"><i>1</i></span><span class="pl" style="left:28%;top:18%"><i>2</i></span><span class="pl" style="left:24%;top:39%"><i>22</i></span><span class="pl" style="left:24%;top:61%"><i>3</i></span><span class="pl" style="left:28%;top:82%"><i>23</i></span><span class="pl" style="left:48%;top:30%"><i>15</i></span><span class="pl" style="left:42%;top:50%"><i>10</i></span><span class="pl" style="left:48%;top:70%"><i>5</i></span><span class="pl" style="left:74%;top:20%"><i>7</i></span><span class="pl" style="left:82%;top:50%"><i>9</i></span><span class="pl" style="left:74%;top:80%"><i>11</i></span></div></div>
+  <div class="score"><span class="crest-s" style="--c:#fff"></span><b>RMA</b><b class="num sc">2 - 1</b><b>ELC</b><span class="crest-s" style="--c:#1E9E4A"></span><span class="chip live num">67'</span></div>
+  <a class="ib exit" href="#" aria-label="خروج">✕</a>
+  <button class="edge cmd">⚙<span>الأوامر</span></button>
+  <button class="edge chat">💬<span>الدردشة</span><i class="dot"></i></button>
+  <aside class="drawer cmdd"><header class="title">الأوامر</header>
+    <a class="row" href="#"><span class="grow">تبديل</span><span class="caption">3 متبقية</span></a>
+    <a class="row" href="#"><span class="grow">التكتيك</span><span class="caption">متوازن</span></a>
+    <a class="row" href="#"><span class="grow">وقت مستقطع</span><span class="caption">1 متبقٍ</span></a>
+    <span class="caption" style="margin-top:auto">الأمر يصل في الدقيقة التالية</span></aside>
+  <div class="feed"><span class="chip">⚽ 63' Vinícius</span></div>
+</div>
+</template>
+<style id="css">
+.match { position: relative; height: 100vh; background: var(--color-broadcast-tv-deep); overflow: hidden; }
+.stage { position: absolute; inset: 0; display: grid; place-items: center; padding: 4px; }
+.stage .pitch.wide { max-height: 100%; width: auto; height: 100%; }
+.score { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px; border-radius: 10px; color: var(--color-broadcast-white); background: color-mix(in srgb, var(--color-broadcast-tv) 90%, transparent); box-shadow: 0 6px 20px -8px #000; }
+.sc { font-size: 22px; color: var(--color-broadcast-gold-light); }
+.exit { position: absolute; top: 6px; inset-inline-start: 6px; z-index: 3; }
+.edge { position: absolute; z-index: 3; top: 50%; display: flex; flex-direction: column; align-items: center; gap: 2px; width: 44px; padding: 10px 0; font-size: 18px; color: var(--color-broadcast-white); background: color-mix(in srgb, var(--color-broadcast-tv) 88%, transparent); }
+.edge span { font-size: 11px; writing-mode: vertical-rl; }
+.edge .dot { position: absolute; top: 4px; width: 8px; height: 8px; border-radius: 50%; background: var(--color-live); }
+.cmd { inset-inline-end: 0; transform: translateY(-50%); border-start-start-radius: 10px; border-end-start-radius: 10px; }
+.chat { inset-inline-start: 0; transform: translateY(-50%); border-start-end-radius: 10px; border-end-end-radius: 10px; }
+.cmdd { inset-inline-end: 44px; width: min(260px, 40%); background: color-mix(in srgb, var(--color-surface) 96%, transparent); }
+.feed { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 3; }
+</style>
+<script src="frames.js"></script>
+</body>
+</html>
