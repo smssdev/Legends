@@ -20,7 +20,23 @@ for (const [name, { family }] of Object.entries(t.font).filter(([k]) => !k.start
   vars.push(`--font-${name}: '${family}', sans-serif;`);
 }
 for (const [name, px] of Object.entries(t.size.radius)) vars.push(`--radius-${name}: ${px}px;`);
-vars.push(`--spacing-touch: ${t.size.touchMin}px;`);
+// [Sprint 54 D1] The touch target in px (never rem: W-D24), the type scale's six
+// roles (text-caption ... text-display-lg, each with its line height and weight), the spacing steps as --space-*, the three shadows, the motion, and
+// the broadcast's colours.
+vars.push(`--spacing-touch: ${t.touch.web}px;`);
+const own0 = (o) => Object.entries(o).filter(([k]) => !k.startsWith('$'));
+// Plain variables (var(--space-md)), not Tailwind's spacing namespace: --spacing-md would turn max-w-md into 12px.
+for (const [name, px] of own0(t.spacing)) vars.push(`--space-${name}: ${px}px;`);
+for (const [name, r] of own0(t.type)) {
+  const k = kebab(name);
+  vars.push(`--text-${k}: ${r.size}px;`, `--text-${k}--line-height: ${r.line};`, `--text-${k}--font-weight: ${r.weight};`);
+}
+for (const [name, s] of own0(t.shadow)) {
+  vars.push(`--shadow-${name}: 0 ${s.y}px ${s.blur}px ${s.spread}px color-mix(in srgb, var(--color-shade) ${Math.round(s.alpha * 100)}%, transparent);`);
+}
+vars.push(`--ease-soft: cubic-bezier(${t.motion.easeSoft.join(', ')});`, `--ease-spring: cubic-bezier(${t.motion.easeSpring.join(', ')});`);
+for (const d of ['fast', 'base', 'slow']) vars.push(`--duration-${d}: ${t.motion[d]}ms;`);
+for (const [name, value] of own0(t.broadcast)) vars.push(`--color-broadcast-${kebab(name)}: ${value};`);
 
 const own = (o) => Object.entries(o).filter(([k]) => !k.startsWith('$'));
 const day = own(t.colorLight).map(([name, value]) => `--color-${kebab(name)}: ${value};`);

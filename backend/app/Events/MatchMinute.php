@@ -21,7 +21,10 @@ class MatchMinute implements ShouldBroadcastNow
 {
     use Dispatchable;
 
-    public function __construct(public object $fixture, public int $matchId, public array $tick) {}
+    /**
+     * [Sprint 53 B1] $nextAt: when the next minute starts (the screens wait for it, as with the poll's next_at).
+     */
+    public function __construct(public object $fixture, public int $matchId, public array $tick, public ?int $nextAt = null) {}
 
     public function broadcastOn(): PrivateChannel
     {
@@ -51,7 +54,30 @@ class MatchMinute implements ShouldBroadcastNow
             'moods' => $this->tick['moods'] ?? null,
             // [Sprint 50 M15] The momentum wave (no tactics in it).
             'momentum' => $this->tick['momentum'] ?? null,
+            // [Sprint 53 B1] The whole minute as GET /matches/{id}/live gives it to a member who coaches neither side
+            // (both sides' tactics taken out, Simulator::redact), so a screen on the channel needs no poll for it: the
+            // frames, the line-ups, the window. The voice under the same load rule. About 10 KB (Reverb's
+            // max_request_size is raised for it in config/reverb.php).
+            'live' => self::live($this->tick),
+            'next_at' => $this->nextAt,
         ];
+    }
+
+    /**
+     * [Sprint 53 B1] The whole minute for the channel: no debug, the voice under the load rule, and the line-ups without
+     * any tactics key (Simulator::redact already emptied them; the key goes too, so nothing on this channel is named
+     * after a hidden setting, as MatchRunnerTest checks).
+     */
+    private static function live(array $tick): array
+    {
+        $tick = ['voice' => LiveDegrade::voice() ? ($tick['voice'] ?? null) : null] + array_diff_key($tick, ['debug' => 1]);
+        foreach (['home', 'away'] as $side) {
+            if (isset($tick['teams'][$side]) && is_array($tick['teams'][$side])) {
+                unset($tick['teams'][$side]['tactics']);
+            }
+        }
+
+        return $tick;
     }
 
     /**

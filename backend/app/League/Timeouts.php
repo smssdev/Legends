@@ -4,6 +4,7 @@ namespace App\League;
 
 use App\Events\MatchTimeout;
 use App\Support\GameClock;
+use App\Support\LiveEvents;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -38,7 +39,7 @@ class Timeouts
         $hold = Cache::get("match-hold:{$match->id}");
         Cache::put("match-hold:{$match->id}", ['tick' => $tick, 'until' => max($until, (int) ($hold['until'] ?? 0))], 7200);
         $view = ['side' => $side, 'tick' => $tick, 'until' => $until, 'seconds' => (int) config('game.match.timeout_seconds')];
-        MatchTimeout::dispatch($match->id, $view);
+        LiveEvents::send(new MatchTimeout($match->id, $view));
 
         return $view;
     }

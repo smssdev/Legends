@@ -2792,4 +2792,10 @@ class LAr extends L {
   String releaseClauseConfirm(Object amount, Object club) {
     return 'تدفع $amount لـ $club وينتقل اللاعب إليك فوراً دون موافقة مدربه.';
   }
+
+  @override
+  String get nothingYet => 'لا شيء هنا بعد';
+
+  @override
+  String get loading => 'جارٍ التحميل';
 }

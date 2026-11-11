@@ -4,11 +4,16 @@
 // [X61] Every state of a button: a press that gives, a ring for the keyboard, a ripple from the finger, a shine across
 // gold on hover; `loading` keeps its size with a spinner (aria-busy), `success` draws a tick and buzzes the phone once.
 // All of it stops with reduced motion.
+// [Sprint 54 W5] `to` makes it a link (RouterLink) drawn the same, and `size: 'sm'` the 44px row button, so a screen
+// never paints its own gold or emerald button (scripts/design.mjs refuses that).
 import { ref, watch } from 'vue'
+import type { RouteLocationRaw } from 'vue-router'
+import { RouterLink } from 'vue-router'
 
-const props = withDefaults(defineProps<{ variant?: 'primary' | 'brand' | 'outline' | 'quiet' | 'danger'; type?: 'button' | 'submit'; block?: boolean; disabled?: boolean; loading?: boolean; success?: boolean }>(), {
+const props = withDefaults(defineProps<{ variant?: 'primary' | 'brand' | 'outline' | 'quiet' | 'danger'; type?: 'button' | 'submit'; block?: boolean; disabled?: boolean; loading?: boolean; success?: boolean; to?: RouteLocationRaw; size?: 'md' | 'sm' }>(), {
   variant: 'primary',
   type: 'button',
+  size: 'md',
 })
 
 const ripples = ref<{ id: number; x: number; y: number; size: number }[]>([])
@@ -25,13 +30,16 @@ watch(() => props.success, (ok) => ok && navigator.vibrate?.(10))
 </script>
 
 <template>
-  <button
-    :type="type"
-    :disabled="disabled || loading"
+  <component
+    :is="to ? RouterLink : 'button'"
+    :to="to"
+    :type="to ? undefined : type"
+    :disabled="to ? undefined : disabled || loading"
     :aria-busy="loading || undefined"
-    class="ui-btn group relative inline-flex h-12 min-w-touch items-center justify-center gap-2 overflow-hidden rounded-lg px-5 font-display text-base font-extrabold transition duration-150 ease-soft active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:active:scale-100"
+    class="ui-btn group relative inline-flex min-w-touch items-center justify-center gap-2 overflow-hidden rounded-lg font-display font-extrabold transition duration-150 ease-soft active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:active:scale-100"
     :class="[
       block ? 'w-full' : '',
+      size === 'sm' ? 'h-touch px-4 text-sm' : 'h-12 px-5 text-base',
       {
         primary: 'bg-gold text-on-gold hover:bg-gold-light',
         brand: 'bg-brand text-white',
@@ -51,7 +59,7 @@ watch(() => props.success, (ok) => ok && navigator.vibrate?.(10))
       </svg>
       <slot />
     </span>
-  </button>
+  </component>
 </template>
 
 <style scoped>

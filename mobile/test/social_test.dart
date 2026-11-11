@@ -11,6 +11,9 @@ import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:glm/core/live/live_channels.dart';
+
+import 'fakes/live_feed.dart';
 
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
@@ -51,8 +54,10 @@ class FakeSocial implements SocialRepository {
 
   @override
   Future<Map<String, dynamic>> groups() async => json('groups');
+  int loads = 0;
   @override
   Future<List<Map<String, dynamic>>> messages(int group) async => [
+        if (++loads < 0) <String, dynamic>{},
         for (final m in json('group_messages')['messages'] as List) m as Map<String, dynamic>,
         {'id': 2, 'kind': 'audio', 'deleted': false, 'body': '', 'user': {'id': 9, 'name': 'حمزة'}, 'seconds': 7, 'created_at': '2026-11-06T08:00:00Z'},
       ];
@@ -62,7 +67,7 @@ class FakeSocial implements SocialRepository {
   Future<void> read(int group) async {}
 }
 
-Future<void> pump(WidgetTester t, Widget screen, FakeSocial social) async {
+Future<void> pump(WidgetTester t, Widget screen, FakeSocial social, {FakeFeed? feed}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   t.view.physicalSize = const Size(360 * 3, 3000 * 3);
@@ -70,7 +75,7 @@ Future<void> pump(WidgetTester t, Widget screen, FakeSocial social) async {
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;
   await t.pumpWidget(ProviderScope(
-    overrides: [preferencesProvider.overrideWithValue(prefs), socialRepositoryProvider.overrideWithValue(social)],
+    overrides: [preferencesProvider.overrideWithValue(prefs), socialRepositoryProvider.overrideWithValue(social), liveFeedProvider.overrideWithValue(feed ?? FakeFeed())],
     child: MaterialApp(
       theme: glmTheme(day: false),
       locale: const Locale('ar'),
@@ -127,5 +132,28 @@ void main() {
     await t.pump(const Duration(milliseconds: 500));
     expect(s.sent, ['say 8 مباراة قوية الليلة']);
     await t.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('[Sprint 53] the group on its channel: a message asks at once, and the 4-second poll rests', (t) async {
+    final s = FakeSocial();
+    final feed = FakeFeed();
+    await pump(t, const GroupsScreen(), s, feed: feed);
+    await t.tap(find.textContaining('Premier League'));
+    for (var i = 0; i < 6; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+    expect(feed.channels, ['chat.8']);
+    feed.sub.on = true;
+    await t.pump(const Duration(milliseconds: 100));
+    final loads = s.loads;
+    // On the channel: no poll for the next 20 seconds (it was every 4)...
+    await t.pump(const Duration(seconds: 20));
+    expect(s.loads, loads);
+    // ...and a new message is fetched as soon as it is announced.
+    feed.push('chat', {'message': {'id': 3}});
+    await t.pump(const Duration(milliseconds: 100));
+    expect(s.loads, loads + 1);
+    await t.pumpWidget(const SizedBox());
+    expect(feed.sub.left, isTrue);
   });
 }

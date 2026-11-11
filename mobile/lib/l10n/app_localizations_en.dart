@@ -2799,4 +2799,10 @@ class LEn extends L {
   String releaseClauseConfirm(Object amount, Object club) {
     return 'You pay $amount to $club and the player joins you at once, without his coach\'s answer.';
   }
+
+  @override
+  String get nothingYet => 'Nothing here yet';
+
+  @override
+  String get loading => 'Loading';
 }

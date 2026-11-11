@@ -26,8 +26,10 @@ class ServerHealthTest extends TestCase
         Cache::flush();
         // Reverb: a real socket listening on a free port.
         $this->reverb = stream_socket_server('tcp://127.0.0.1:0');
-        config(['reverb.servers.reverb.host' => '127.0.0.1',
-            'reverb.servers.reverb.port' => (int) explode(':', stream_socket_get_name($this->reverb, false))[1],
+        // [Sprint 52] The game publishes to Reverb at REVERB_HOST (its own service on our server): that is where it is asked.
+        $port = (int) explode(':', stream_socket_get_name($this->reverb, false))[1];
+        config(['reverb.servers.reverb.host' => '0.0.0.0', 'reverb.servers.reverb.port' => 1,
+            'broadcasting.connections.reverb.options.host' => '127.0.0.1', 'broadcasting.connections.reverb.options.port' => $port,
             'game.monitoring.ntfy_topic' => 'legends-test-topic', 'game.monitoring.web_url' => 'http://127.0.0.1:8000']);
         Http::fake(fn (Request $r) => str_contains($r->url(), '127.0.0.1:8000')
             ? ($this->webUp ? Http::response(['status' => 'ok']) : Http::response('', 500))

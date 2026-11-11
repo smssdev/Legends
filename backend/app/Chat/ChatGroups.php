@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Support\Avatar;
 use App\Support\GameClock;
 use App\Support\GameSettings;
+use App\Support\LiveEvents;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -270,7 +271,7 @@ class ChatGroups
         DB::table('chat_group_members')->where('chat_group_id', $groupId)->where('user_id', $user->id)->update(['last_read_id' => $id]);
         DB::table('chat_groups')->where('id', $groupId)->update(['updated_at' => GameClock::now()]);
         $view = self::views(collect([DB::table('chat_group_messages')->find($id)]))[0];
-        ChatMessageSent::dispatch($groupId, $view);
+        LiveEvents::send(new ChatMessageSent($groupId, $view));
 
         return $view;
     }
@@ -285,7 +286,7 @@ class ChatGroups
         DB::table('chat_group_messages')->where('id', $messageId)->update(['deleted_at' => GameClock::now()]);
         // A deleted picture or voice note is gone, not hidden.
         DB::table('chat_media')->where('chat_group_message_id', $messageId)->delete();
-        ChatMessageSent::dispatch($groupId, self::views(collect([DB::table('chat_group_messages')->find($messageId)]))[0]);
+        LiveEvents::send(new ChatMessageSent($groupId, self::views(collect([DB::table('chat_group_messages')->find($messageId)]))[0]));
     }
 
     /** A page of messages, oldest first, before a message id (the latest without it); reading it marks it read. */
@@ -322,7 +323,7 @@ class ChatGroups
             }
         });
         $row = DB::table('chat_group_messages')->find($messageId);
-        ChatMessageSent::dispatch($groupId, self::views(collect([$row]))[0]);
+        LiveEvents::send(new ChatMessageSent($groupId, self::views(collect([$row]))[0]));
 
         return self::views(collect([$row]), $user->id)[0];
     }
@@ -407,7 +408,7 @@ class ChatGroups
     {
         $id = DB::table('chat_group_messages')->insertGetId(['chat_group_id' => $groupId, 'user_id' => null, 'kind' => 'note',
             'body' => json_encode(['what' => $what] + $data, JSON_UNESCAPED_UNICODE), 'created_at' => GameClock::now()]);
-        ChatMessageSent::dispatch($groupId, self::views(collect([DB::table('chat_group_messages')->find($id)]))[0]);
+        LiveEvents::send(new ChatMessageSent($groupId, self::views(collect([DB::table('chat_group_messages')->find($id)]))[0]));
     }
 
     /** True when the account was not a member before. */

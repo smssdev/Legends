@@ -459,7 +459,9 @@ return [
         'bot_personalities' => ['giants', 'defenders', 'pressers', 'hard', 'wingers', 'adaptive'],
     ],
     'clock' => ['dev_round_minutes' => 1, 'file' => env('GAME_CLOCK_FILE', storage_path('app/game-clock.json'))],
-    'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production')],
+    // [Sprint 52 B9] A visitor without an account makes at most guest_matches_per_day trial matches a day per address
+    // (each one is the engine's work for the whole match); a signed-in coach keeps the per-minute limit alone.
+    'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production'), 'guest_matches_per_day' => 30],
     // The game's names (owner's decision, 2026-10-26, X44): لعبة المدرب الأسطورة (GLM, Game Legend Manager), and its premium currency الكوينز.
     // [Sprint 39 B1] The official name everywhere is Game Legend Manager (the owner's request, 2026-11-02); in Arabic
     // «المدرب الأسطورة» follows it.

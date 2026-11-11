@@ -2,9 +2,11 @@
 @import "./styles/tokens.css";
 
 /* [UP7] A tighter type scale (the spec: 20-30% smaller, the big titles most), over Tailwind's own. The spacing stays,
-   so every touch target keeps its 44px. */
+   so every touch target keeps its 44px. [Sprint 54 W7] With the root back at 16px these are their true sizes, and the
+   smallest is the caption role (12px, the floor for any text; W-D24): text-xs was 11px. New code uses the roles
+   (text-caption, text-body, text-body-lg, text-title, text-headline, text-display). */
 @theme {
-  --text-xs: 0.6875rem;
+  --text-xs: 0.75rem;
   --text-sm: 0.8125rem;
   --text-base: 0.875rem;
   --text-lg: 1rem;
@@ -13,13 +15,8 @@
   --text-3xl: 1.5rem;
   --text-4xl: 1.75rem;
 
-  /* [X61] One motion system: two curves and three durations (a press, an appearance, a number or a big change), and
-     the ready animations as utilities (animate-pop-in, animate-fade-up, animate-shimmer...). Transform and opacity only. */
-  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --duration-fast: 120ms;
-  --duration-base: 220ms;
-  --duration-slow: 420ms;
+  /* [X61] The ready animations as utilities (animate-pop-in, animate-fade-up, animate-shimmer...). The curves and the
+     durations they use come from docs/design/tokens.json (motion, Sprint 54). Transform and opacity only. */
   --animate-pop-in: pop-in var(--duration-base) var(--ease-spring);
   --animate-fade-up: fade-up var(--duration-base) var(--ease-soft);
   --animate-shimmer: shimmer 1.6s linear infinite;
@@ -55,6 +52,17 @@
 .drop-enter-from .agenda-veil,
 .drop-leave-to .agenda-veil { opacity: 0; }
 .drop-panel { transform-origin: top; }
+
+/* [Sprint 54 W4] What reka-ui opens (lists, windows, the bar's panels) animates from the state reka puts on it, so
+   it leaves softly as well as arriving. */
+@keyframes drop-in { from { opacity: 0; transform: translateY(-0.5rem) scale(0.97); } }
+@keyframes drop-out { to { opacity: 0; transform: translateY(-0.5rem) scale(0.97); } }
+@keyframes veil-in { from { opacity: 0; } }
+@keyframes veil-out { to { opacity: 0; } }
+.drop-panel[data-state='open'], .ui-window[data-state='open'] { animation: drop-in var(--duration-base) var(--ease-soft); }
+.drop-panel[data-state='closed'], .ui-window[data-state='closed'] { animation: drop-out var(--duration-fast) var(--ease-soft); }
+.ui-veil[data-state='open'] { animation: veil-in var(--duration-base) var(--ease-soft); }
+.ui-veil[data-state='closed'] { animation: veil-out var(--duration-fast) var(--ease-soft); }
 
 /* [X61] Between screens: the new one rises in softly (the old one leaves at once, so nothing waits). */
 .page-enter-active { transition: opacity var(--duration-base) var(--ease-soft), transform var(--duration-base) var(--ease-soft); }
@@ -126,13 +134,22 @@
   html {
     background: var(--color-bg);
   }
+  /* [Sprint 54 W7, W-D24] The root stays at the browser's 16px, so a rem is a rem: it was set to --text-base (0.875rem,
+     14px) and every size written in rem came out an eighth smaller (a 44px button drew 38.5, the body text 12.25px).
+     The body text is the scale's body role (14px, docs/design/tokens.json type). */
+  html {
+    font-size: 16px;
+  }
   html,
   body {
     color: var(--color-text);
     font-family: var(--font-body);
-    font-size: var(--text-base);
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
   }
 
   /* [X32] Our own stadium at night, blurred once beforehand (tools/web/stadium_bg.py), behind every screen under a
@@ -215,7 +232,12 @@
  * purpose, so it sits over the utilities it refines; each rule matches only the classes it is for.
  */
 
+/* [Sprint 54 W2] The components carry the game's look by their own class (.ui-card, .ui-page-title, .ui-table); the
+   class combinations after each of them are the screens not yet moved to the components (Sprint 56 moves them and
+   these selectors go). A new screen uses the component: the lint (eslint.config.js) refuses the combinations. */
+
 /* Panels [X32]: deep navy over the stadium, a bright blue edge at the top like a broadcast card, depth below. */
+.ui-card,
 .rounded-xl.bg-surface,
 .rounded-2xl.bg-surface,
 .rounded-xxl.bg-surface,
@@ -238,6 +260,7 @@ html.light :is(input, select, textarea):focus-visible:not(:where(.theme-night, .
   outline-offset: 1px;
 }
 /* [X56] The day's cards: white paper, a lighter emerald wash at the top. */
+html.light .ui-card,
 html.light .rounded-xl.bg-surface,
 html.light .rounded-2xl.bg-surface,
 html.light .rounded-xxl.bg-surface,
@@ -253,6 +276,7 @@ html.light .rounded-t-xxl.bg-surface {
   border: 1px solid color-mix(in srgb, var(--color-text) 5%, transparent);
 }
 /* The smooth mode on weak phones [X30]: the same cards, solid instead of blurred (no blur to redo on every scroll). */
+html.smooth .ui-card,
 html.smooth .rounded-xl.bg-surface,
 html.smooth .rounded-2xl.bg-surface,
 html.smooth .rounded-xxl.bg-surface,
@@ -312,6 +336,7 @@ a.bg-brand:hover {
 }
 
 /* Page titles: the cream turning gold, and a short gold bar under them. */
+.ui-page-title,
 main h1.font-display {
   background-image: linear-gradient(90deg, var(--color-gold-light), var(--color-text) 70%);
   -webkit-background-clip: text;
@@ -321,9 +346,11 @@ main h1.font-display {
   position: relative;
 }
 /* [X56] On paper the title starts from the deep gold, the light gold would fade into it. */
+html.light .ui-page-title,
 html.light main h1.font-display {
   background-image: linear-gradient(90deg, var(--color-gold-dark), var(--color-text) 70%);
 }
+.ui-page-title::after,
 main h1.font-display::after {
   content: "";
   position: absolute;
@@ -353,8 +380,9 @@ main section > div > h2.font-display::before {
 
 /* Tables [X32]: a solid blue header like a broadcast's league table, the rows striped, the coach's own row in gold
    (UiTable's highlight, or any row marked .is-mine). */
+.ui-table thead th,
 main table thead th {
-  font-size: 0.75rem;
+  font-size: var(--text-caption);
   font-weight: 800;
   letter-spacing: 0.02em;
   color: #fff;
@@ -439,4 +467,36 @@ input[type="radio"] {
   background: linear-gradient(90deg, color-mix(in srgb, var(--color-text) 5%, transparent), color-mix(in srgb, var(--color-text) 11%, transparent), color-mix(in srgb, var(--color-text) 5%, transparent));
   background-size: 200% 100%;
   animation: var(--animate-shimmer);
+}
+
+/* [Sprint 54 W3] One section of the menu row (components/ui/NavItem.vue, and the row's dropdown names). */
+.ui-nav-item {
+  position: relative;
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-md);
+  font-size: var(--text-body);
+  font-weight: 800;
+  color: var(--color-text);
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-soft), background-color var(--duration-fast) var(--ease-soft);
+}
+.ui-nav-icon { color: var(--color-gold); filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35)); transition: transform var(--duration-fast) var(--ease-soft); }
+.ui-nav-item:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+.ui-nav-item:hover .ui-nav-icon { transform: translateY(-2px) scale(1.08); }
+.ui-nav-item.is-active { color: var(--color-gold-light); }
+.ui-nav-item.is-active::after {
+  content: "";
+  position: absolute;
+  inset-inline: var(--space-sm);
+  bottom: -1px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(90deg, var(--color-gold-dark), var(--color-gold-light), var(--color-gold-dark));
+}
+/* [Sprint 48 L1] A phone turned sideways is short: the menu row tightens so the page keeps its room. */
+@media (max-height: 520px) and (min-width: 768px) {
+  .ui-nav-item { min-height: var(--spacing-touch); font-size: var(--text-caption); padding: 0 0.6rem; }
 }

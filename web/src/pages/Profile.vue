@@ -9,7 +9,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import NotificationsCard from '../components/NotificationsCard.vue'
-import TextField from '../components/TextField.vue'
+import UiInput from '../components/ui/UiInput.vue'
 import UsernameField from '../components/UsernameField.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
@@ -296,14 +296,14 @@ async function remove() {
       <p class="text-sm text-text-soft">{{ $t('نرسل لك كوداً من 6 أرقام على بريدك، صالحاً {v0} دقيقة ولمرة واحدة.', { v0: user.verification?.code_minutes ?? 15 }) }}</p>
       <form class="flex flex-wrap items-end gap-2" novalidate @submit.prevent="sendCode">
         <div class="min-w-60 flex-1">
-          <TextField v-model="verifyEmail" :label="$t('بريدك')" type="email" autocomplete="email" dir="ltr" :readonly="!!user.email" :error="sendErr" />
+          <UiInput v-model="verifyEmail" :label="$t('بريدك')" type="email" autocomplete="email" dir="ltr" :readonly="!!user.email" :error="sendErr" />
         </div>
         <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold disabled:opacity-60" :disabled="sendBusy || !verifyEmail.trim()">{{ sentTo ? $t('أرسل كوداً جديداً') : $t('أرسل الكود') }}</button>
       </form>
       <!-- [X89] Where the code went, and how to find it out of spam. -->
       <MailSentNote v-if="sentTo" :to="sentTo" />
       <form class="flex flex-wrap items-end gap-2" novalidate @submit.prevent="verifyAccount">
-        <div class="min-w-40 flex-1"><TextField v-model="verifyCode" :label="$t('كود التوثيق')" inputmode="numeric" autocomplete="one-time-code" maxlength="6" dir="ltr" :error="verifyErr" /></div>
+        <div class="min-w-40 flex-1"><UiInput v-model="verifyCode" :label="$t('كود التوثيق')" inputmode="numeric" autocomplete="one-time-code" maxlength="6" dir="ltr" :error="verifyErr" /></div>
         <button type="submit" class="h-12 rounded-lg bg-gold px-5 font-bold text-on-gold disabled:opacity-60" :disabled="verifyBusy || verifyCode.trim().length < 6">{{ $t('تأكيد وتفعيل') }}</button>
       </form>
     </section>
@@ -346,7 +346,7 @@ async function remove() {
         <p v-else-if="resendMsg" role="alert">{{ $t(resendMsg) }}</p>
       </div>
       <form class="flex flex-col gap-3 sm:flex-row sm:items-end" novalidate @submit.prevent="saveName">
-        <div class="flex-1"><TextField v-model="name" :label="$t('اسمك في اللعبة')" autocomplete="nickname" :error="nameErr" /></div>
+        <div class="flex-1"><UiInput v-model="name" :label="$t('اسمك في اللعبة')" autocomplete="nickname" :error="nameErr" /></div>
         <div class="flex-1"><UsernameField v-model="username" :error="userErr" :current="user.username" /></div>
         <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold">{{ $t('احفظ') }}</button>
       </form>
@@ -357,8 +357,8 @@ async function remove() {
       <h2 id="h-password" class="font-display text-xl font-extrabold">{{ user.has_password ? $t('تغيير كلمة المرور') : $t('أضف كلمة مرور') }}</h2>
       <p v-if="!user.has_password" class="text-sm text-text-muted">{{ $t('حسابك بجوجل فقط. أضف كلمة مرور لتدخل بالبريد أيضاً.') }}</p>
       <form class="grid gap-3 sm:grid-cols-2" novalidate @submit.prevent="savePassword">
-        <TextField v-if="user.has_password" v-model="current" :label="$t('كلمة المرور الحالية')" type="password" autocomplete="current-password" :error="pwErrors.current" />
-        <TextField v-model="next" :label="$t('كلمة المرور الجديدة')" type="password" autocomplete="new-password" :error="pwErrors.next" :hint="$t('8 أحرف أو أرقام على الأقل')" />
+        <UiInput v-if="user.has_password" v-model="current" :label="$t('كلمة المرور الحالية')" type="password" autocomplete="current-password" :error="pwErrors.current" />
+        <UiInput v-model="next" :label="$t('كلمة المرور الجديدة')" type="password" autocomplete="new-password" :error="pwErrors.next" :hint="$t('8 أحرف أو أرقام على الأقل')" />
         <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold sm:col-span-2 sm:justify-self-start">{{ $t('احفظ كلمة المرور') }}</button>
       </form>
       <p v-if="pwMsg" class="text-sm text-success" role="status">{{ $t(pwMsg) }}</p>
@@ -472,8 +472,8 @@ async function remove() {
       </div>
       <form v-else class="flex flex-col gap-3" novalidate @submit.prevent="remove">
         <b class="text-sm">{{ $t('الخطوة 2 من 2: التأكيد الأخير') }}</b>
-        <TextField v-model="phrase" :label="$t('اكتب كلمة «احذف»')" autocomplete="off" :error="phraseErr" />
-        <TextField
+        <UiInput v-model="phrase" :label="$t('اكتب كلمة «احذف»')" autocomplete="off" :error="phraseErr" />
+        <UiInput
           v-model="confirmText"
           :label="user.has_password ? $t('وكلمة المرور') : $t('وبريدك كما هو')"
           :type="user.has_password ? 'password' : 'email'"

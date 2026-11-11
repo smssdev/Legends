@@ -16,6 +16,17 @@ import UiSlider from '../components/ui/UiSlider.vue'
 import UiTooltip from '../components/ui/UiTooltip.vue'
 import UiSelect from '../components/ui/UiSelect.vue'
 import ConfirmDangerDialog from '../components/patterns/ConfirmDangerDialog.vue'
+import AsyncState from '../components/ui/AsyncState.vue'
+import CountdownChip from '../components/ui/CountdownChip.vue'
+import MoneyPill from '../components/ui/MoneyPill.vue'
+import NavItem from '../components/ui/NavItem.vue'
+import PageTitle from '../components/ui/PageTitle.vue'
+import Skeleton from '../components/ui/Skeleton.vue'
+import UiDialog from '../components/ui/UiDialog.vue'
+import UiInput from '../components/ui/UiInput.vue'
+import UiTabs from '../components/ui/UiTabs.vue'
+import UiToggle from '../components/ui/UiToggle.vue'
+import { setThemePref, theme } from '../lib/theme'
 import { useToast } from '../stores/toast'
 import { LINES, money, strength, type Line } from '../lib/format'
 
@@ -28,6 +39,15 @@ const sliderValue = ref(3)
 const pickedLeague = ref('')
 const dangerOpen = ref(false)
 const toast = useToast()
+// [Sprint 54 D3] Every component in every state, by night and by day, in both directions: the owner signs this page
+// off before the screens move to it (Sprint 56).
+const ltr = ref(false)
+const typed = ref('')
+const on = ref(true)
+const segment = ref<'a' | 'b' | 'c'>('a')
+const shortPick = ref('')
+const dialogOpen = ref(false)
+const soon = new Date(Date.now() + 3 * 3600_000 + 125_000).toISOString()
 const templates = ref<Template[]>([])
 const league = ref('Premier League')
 const clubs = ref<Club[]>([])
@@ -75,6 +95,58 @@ const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
     </div>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
+    <!-- [Sprint 54 D3] The binding design system, each component in each of its states. -->
+    <div class="flex flex-wrap gap-2">
+      <UiToggle :model-value="theme === 'light'" label="النهار" @update:model-value="(v: boolean) => setThemePref(v ? 'light' : 'dark')" />
+      <UiToggle v-model="ltr" label="من اليسار إلى اليمين" />
+    </div>
+    <div class="flex flex-col gap-5" :dir="ltr ? 'ltr' : undefined">
+      <PageTitle title="عنوان الصفحة" subtitle="سطر تحته يشرح ما فيها">
+        <UiButton size="sm" variant="outline">{{ $t('إجراء') }}</UiButton>
+      </PageTitle>
+      <UiCard title="الأزرار بكل حالاتها">
+        <div class="flex flex-wrap gap-2">
+          <UiButton>primary</UiButton><UiButton variant="brand">brand</UiButton><UiButton variant="outline">outline</UiButton>
+          <UiButton variant="quiet">quiet</UiButton><UiButton variant="danger">danger</UiButton>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <UiButton disabled>{{ $t('معطّل') }}</UiButton><UiButton loading>{{ $t('جارٍ التحميل') }}</UiButton>
+          <UiButton success>{{ $t('حُفظ.') }}</UiButton><UiButton size="sm">sm</UiButton><UiButton to="/dev/ui" variant="brand" size="sm">{{ $t('رابط') }}</UiButton>
+        </div>
+      </UiCard>
+      <UiCard title="الحقول والاختيار">
+        <div class="grid gap-4 md:grid-cols-2">
+          <UiInput v-model="typed" label="الاسم" placeholder="اكتب هنا" hint="سطر مساعد تحت الحقل" />
+          <UiInput model-value="x" label="البريد" type="email" error="البريد غير صالح" />
+          <UiSelect v-model="shortPick" label="الخط" none="أي خط" :options="lines.map((l) => ({ value: l, label: $t(LINES[l].name) }))" />
+          <UiToggle v-model="on" label="الإشعارات" hint="تصلك قبل المباراة بساعة" tone="success" />
+        </div>
+        <UiTabs v-model="segment" :items="[{ key: 'a', label: 'الأول', n: 3 }, { key: 'b', label: 'الثاني' }, { key: 'c', label: 'الثالث' }]" label="تبويبات" />
+        <UiTabs v-model="segment" :items="[{ key: 'a', label: 'الأول' }, { key: 'b', label: 'الثاني' }, { key: 'c', label: 'الثالث' }]" label="تبويبات" tone="brand" fill size="sm" />
+        <div><UiButton variant="outline" @click="dialogOpen = true">UiDialog</UiButton></div>
+        <UiDialog :open="dialogOpen" title="نافذة" closable @close="dialogOpen = false">
+          <p class="text-body">{{ $t('مكونات نظام التصميم على نادٍ حقيقي من البيانات.') }}</p>
+          <div class="mt-4 flex gap-2"><UiButton class="flex-1" @click="dialogOpen = false">{{ $t('حُفظ.') }}</UiButton><UiButton class="flex-1" variant="quiet" @click="dialogOpen = false">{{ $t('إلغاء') }}</UiButton></div>
+        </UiDialog>
+      </UiCard>
+      <UiCard title="الانتظار والفراغ والخطأ">
+        <div class="grid gap-4 md:grid-cols-3">
+          <AsyncState loading skeleton="row" :rows="3" />
+          <AsyncState empty empty-title="لا شيء هنا بعد" empty-text="سطر يشرح ما سيأتي" />
+          <AsyncState error="تعذّر الاتصال بالخادم." />
+        </div>
+        <div class="grid gap-4 md:grid-cols-3"><Skeleton /><Skeleton kind="card" :count="1" /><Skeleton kind="hero" :count="1" /></div>
+      </UiCard>
+      <UiCard title="الشريط العلوي">
+        <div class="flex flex-wrap items-center gap-3">
+          <MoneyPill kind="coins" to="/wallet" :value="1250" label="المحفظة" />
+          <MoneyPill kind="cash" to="/finance" :value="3_400_000" caption="أموال النادي" label="أموال النادي" />
+          <CountdownChip :to="soon" /><CountdownChip :to="soon" size="lg" /><CountdownChip :to="null" />
+        </div>
+        <nav class="flex flex-wrap" :aria-label="$t('أقسام')"><NavItem to="/dev/ui" icon="home" label="الرئيسية" active /><NavItem to="/club" icon="team" label="الفريق" /></nav>
+      </UiCard>
+    </div>
+
     <UiCard :title="$t('الأزرار والشارات')">
       <div class="flex flex-wrap gap-2">
         <UiButton>{{ $t('احفظ التشكيلة') }}</UiButton>
@@ -96,7 +168,7 @@ const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
       </div>
     </UiCard>
 
-    <!-- [Sprint 30 Q1] The headless primitives: Headless UI (Dialog, Combobox, Tabs) and reka-ui (Slider, Tooltip). -->
+    <!-- [Sprint 30 Q1] The headless primitives, all on reka-ui since Sprint 54 W4. -->
     <UiCard :title="$t('المكونات الموحّدة')">
       <div class="grid gap-4 md:grid-cols-2">
         <div class="flex flex-col gap-1"><span class="text-sm font-bold">UiSlider</span>

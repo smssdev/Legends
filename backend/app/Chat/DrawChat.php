@@ -6,6 +6,7 @@ use App\Events\DrawChatSent;
 use App\Models\League;
 use App\Models\User;
 use App\Support\GameClock;
+use App\Support\LiveEvents;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -62,7 +63,7 @@ class DrawChat
         $id = DB::table('draw_chat')->insertGetId(['league_id' => $league->id, 'user_id' => $user->id, 'kind' => $kind, 'body' => $body,
             'created_at' => GameClock::now()]);
         $view = self::views(collect([DB::table('draw_chat')->find($id)]))[0];
-        DrawChatSent::dispatch($league->id, $view);
+        LiveEvents::send(new DrawChatSent($league->id, $view));
 
         return $view;
     }
@@ -83,7 +84,7 @@ class DrawChat
             throw new HttpException(403, __('تحذف رسائلك فقط.'));
         }
         DB::table('draw_chat')->where('id', $id)->update(['deleted_at' => GameClock::now()]);
-        DrawChatSent::dispatch($league->id, self::views(collect([DB::table('draw_chat')->find($id)]))[0]);
+        LiveEvents::send(new DrawChatSent($league->id, self::views(collect([DB::table('draw_chat')->find($id)]))[0]));
     }
 
     /** With the chat groups' messages: everything older than the admin's retention goes. */

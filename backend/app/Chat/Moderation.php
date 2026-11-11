@@ -5,6 +5,7 @@ namespace App\Chat;
 use App\Events\ChatMessageSent;
 use App\Models\User;
 use App\Support\GameClock;
+use App\Support\LiveEvents;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -68,7 +69,7 @@ class Moderation
             }
         });
         if ($action !== 'leave') {
-            ChatMessageSent::dispatch((int) $m->chat_group_id, ChatGroups::views(collect([DB::table('chat_group_messages')->find($m->id)]))[0]);
+            LiveEvents::send(new ChatMessageSent((int) $m->chat_group_id, ChatGroups::views(collect([DB::table('chat_group_messages')->find($m->id)]))[0]));
         }
     }
 

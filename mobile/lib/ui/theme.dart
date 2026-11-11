@@ -29,6 +29,39 @@ abstract final class GlmFonts {
   static const numbers = 'BarlowCondensed';
 }
 
+/// [Sprint 54 F2] The type scale as styles, by the web's role names (text-caption … text-display): `context.type.body`.
+/// The theme's textTheme is built from the same roles, so a Text with no style is already on the scale.
+class GlmTypeStyles extends ThemeExtension<GlmTypeStyles> {
+  GlmTypeStyles(Color text, Color muted)
+      : caption = glmStyle(GlmType.caption, muted),
+        body = glmStyle(GlmType.body, text),
+        bodyLg = glmStyle(GlmType.bodyLg, text),
+        title = glmStyle(GlmType.title, text),
+        headline = glmStyle(GlmType.headline, text),
+        display = glmStyle(GlmType.display, text),
+        displayLg = glmStyle(GlmType.displayLg, text);
+
+  final TextStyle caption, body, bodyLg, title, headline, display, displayLg;
+
+  /// The numbers' face (scores, money, countdowns) on a role.
+  TextStyle numbers(TextStyle role) => role.copyWith(fontFamily: GlmFonts.numbers);
+
+  @override
+  GlmTypeStyles copyWith() => this;
+
+  @override
+  GlmTypeStyles lerp(ThemeExtension<GlmTypeStyles>? other, double t) => t < .5 || other is! GlmTypeStyles ? this : other;
+}
+
+/// One role of the scale as a TextStyle.
+TextStyle glmStyle(GlmTypeRole r, Color color) => TextStyle(
+      fontFamily: GlmFonts.body,
+      fontSize: r.size,
+      height: r.height,
+      fontWeight: FontWeight.values[(r.weight ~/ 100).clamp(1, 9) - 1],
+      color: color,
+    );
+
 ThemeData glmTheme({required bool day}) {
   // [Sprint 47] The approved design: the app at night takes the web's own night colours (tokens.json «color»).
   final p = day ? glmDay : glmNight;
@@ -44,18 +77,28 @@ ThemeData glmTheme({required bool day}) {
   );
   final base = ThemeData(useMaterial3: true, colorScheme: scheme, fontFamily: GlmFonts.body, scaffoldBackgroundColor: p.bg);
   final text = base.textTheme.apply(bodyColor: p.text, displayColor: p.text, fontFamily: GlmFonts.body);
+  // [Sprint 54 F2] Material's roles mapped onto ours, so the app's sizes are the web's.
+  final type = GlmTypeStyles(p.text, p.textMuted);
+  TextStyle bold(TextStyle s, FontWeight w) => s.copyWith(fontWeight: w);
 
   return base.copyWith(
-    extensions: [GlmColors(p, day: day)],
+    extensions: [GlmColors(p, day: day), type],
     textTheme: text.copyWith(
-      displaySmall: text.displaySmall?.copyWith(fontWeight: FontWeight.w800),
-      headlineMedium: text.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
-      headlineSmall: text.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-      titleLarge: text.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-      titleMedium: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-      bodyMedium: text.bodyMedium?.copyWith(height: 1.55),
-      bodySmall: text.bodySmall?.copyWith(color: p.textMuted, height: 1.5),
-      labelLarge: text.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+      displayLarge: type.displayLg,
+      displayMedium: type.display,
+      displaySmall: type.display,
+      headlineLarge: type.headline,
+      headlineMedium: type.headline,
+      headlineSmall: type.headline,
+      titleLarge: type.title,
+      titleMedium: bold(type.bodyLg, FontWeight.w700),
+      titleSmall: bold(type.body, FontWeight.w700),
+      bodyLarge: type.bodyLg,
+      bodyMedium: type.body,
+      bodySmall: type.caption,
+      labelLarge: bold(type.body, FontWeight.w800),
+      labelMedium: bold(type.caption.copyWith(color: p.text), FontWeight.w700),
+      labelSmall: type.caption,
     ),
     // [2026-11-06] Screens fade through into each other, as in a game's menus.
     pageTransitionsTheme: const PageTransitionsTheme(builders: {
@@ -124,4 +167,7 @@ extension GlmContext on BuildContext {
   GlmColors get glm => Theme.of(this).extension<GlmColors>()!;
   GlmPalette get palette => glm.p;
   TextTheme get text => Theme.of(this).textTheme;
+
+  /// [Sprint 54 F2] The type roles by the web's names: context.type.caption … context.type.displayLg.
+  GlmTypeStyles get type => Theme.of(this).extension<GlmTypeStyles>()!;
 }

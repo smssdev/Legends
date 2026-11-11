@@ -2,7 +2,9 @@
 
 namespace App\League;
 
+use App\Events\MatchSocialPosted;
 use App\Support\GameClock;
+use App\Support\LiveEvents;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
@@ -51,7 +53,7 @@ class MatchSocial
 
     private static function push(int $matchId, string $list, array $item, int $keep): array
     {
-        return Cache::lock("match-social:{$matchId}", 5)->block(3, function () use ($matchId, $list, $item, $keep) {
+        $item = Cache::lock("match-social:{$matchId}", 5)->block(3, function () use ($matchId, $list, $item, $keep) {
             $key = "match-social:{$matchId}:{$list}";
             $items = Cache::get($key, []);
             $item = ['id' => ($items ? end($items)['id'] : 0) + 1] + $item + ['at' => GameClock::nowMs()];
@@ -59,5 +61,9 @@ class MatchSocial
 
             return $item;
         });
+        // [Sprint 53 B3] On every watching screen at once (the poll keeps it too, for one that missed it).
+        LiveEvents::send(new MatchSocialPosted($matchId, $list, $item));
+
+        return $item;
     }
 }

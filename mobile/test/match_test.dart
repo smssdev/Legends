@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/core/live/live_channels.dart';
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/match/frames.dart';
 import 'package:glm/features/match/live_screen.dart';
@@ -13,6 +14,8 @@ import 'package:glm/features/match/report_screen.dart';
 import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'fakes/live_feed.dart';
 
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
@@ -26,8 +29,14 @@ class FakeMatchRepository implements MatchRepository {
 
   @override
   Future<MatchView> show(int id) async => MatchView.fromJson({...json('match'), 'finished': finished});
+  int polls = 0;
+  /// The sample is in a coach's window; false answers with play going on.
+  bool paused = true;
   @override
-  Future<LiveSync> live(int id, int since) async => LiveSync.fromJson({...json('live'), 'finished': finished, 'server_now': DateTime.now().millisecondsSinceEpoch});
+  Future<LiveSync> live(int id, int since) async {
+    polls++;
+    return LiveSync.fromJson({...json('live'), 'finished': finished, 'server_now': DateTime.now().millisecondsSinceEpoch, if (!paused) 'pause': null});
+  }
   @override
   Future<void> order(int id, Map<String, Object> order) async => orders.add(order);
   @override
@@ -55,14 +64,14 @@ class FakeMatchRepository implements MatchRepository {
   Future<List<({int id, String home, String away})>> mine() async => const [];
 }
 
-Future<void> pump(WidgetTester t, Widget screen, FakeMatchRepository repo) async {
+Future<void> pump(WidgetTester t, Widget screen, FakeMatchRepository repo, {FakeFeed? feed}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   t.view.physicalSize = const Size(420 * 3, 1600 * 3);
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
   await t.pumpWidget(ProviderScope(
-    overrides: [preferencesProvider.overrideWithValue(prefs), matchRepositoryProvider.overrideWithValue(repo)],
+    overrides: [preferencesProvider.overrideWithValue(prefs), matchRepositoryProvider.overrideWithValue(repo), liveFeedProvider.overrideWithValue(feed ?? FakeFeed())],
     child: MaterialApp(
       theme: glmTheme(day: false),
       locale: const Locale('ar'),
@@ -156,6 +165,42 @@ void main() {
     await wait(t);
     expect(repo.orders.last, {'react': 'fire'});
     await leave(t);
+  });
+
+  testWidgets('[Sprint 53] on the channel a minute and a chat line arrive pushed, and the poll slows', (t) async {
+    final repo = FakeMatchRepository();
+    final feed = FakeFeed();
+    await pump(t, const LiveMatchScreen(matchId: 77), repo, feed: feed);
+    expect(feed.channels, ['match.77']);
+    expect(find.text('1 - 1'), findsOneWidget);
+    // Play goes on (no break), and the channel is up: the screen asks once for what it may have missed.
+    repo.paused = false;
+    feed.sub.on = true;
+    await t.pump(const Duration(milliseconds: 300));
+    final next = Map<String, dynamic>.from((json('live')['ticks'] as List).last as Map)
+      ..['tick'] = 27
+      ..['minute'] = [27, 0]
+      ..['score'] = {'home': 2, 'away': 1}
+      ..['events'] = []
+      ..['window'] = false;
+    final polls = repo.polls;
+    feed.push('minute', {'match_id': 77, 'live': next, 'next_at': DateTime.now().millisecondsSinceEpoch + 3000});
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.text('2 - 1'), findsOneWidget);
+    final chats = (json('live')['chat'] as List).length;
+    expect(find.textContaining('الدردشة $chats'), findsOneWidget);
+    feed.push('chat', {'match_id': 77, 'item': {'id': 99, 'who': 'حمزة', 'body': 'هدف!', 'side': 'away', 'user_id': 3, 'at': 0}});
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('الدردشة ${chats + 1}'), findsOneWidget);
+    // On the channel the poll waits about 12 s: none in the next 5 (it was about every 1.5 s).
+    await t.pump(const Duration(seconds: 5));
+    expect(repo.polls, polls);
+    // The channel lost: the poll at once, then at its own pace.
+    feed.sub.on = false;
+    await t.pump(const Duration(milliseconds: 300));
+    expect(repo.polls, polls + 1);
+    await leave(t);
+    expect(feed.sub.left, isTrue);
   });
 
   testWidgets('a played match: full time and its report', (t) async {

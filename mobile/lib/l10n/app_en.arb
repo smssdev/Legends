@@ -839,5 +839,7 @@
       "amount": {},
       "club": {}
     }
-  }
+  },
+  "nothingYet": "Nothing here yet",
+  "loading": "Loading"
 }

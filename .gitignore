@@ -10,3 +10,6 @@ unity/Assets/Legends/Art/People/
 
 # MPFB2 and MakeHuman CC0 asset packs for tools/unity/players (downloaded by setup_blender.py, not ours to keep)
 tools/unity/players/downloads/
+
+# [Sprint 52 B7] The Android app lives on the server (the downloads volume), never in the repository.
+web/public/downloads/

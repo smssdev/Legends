@@ -5,6 +5,7 @@
 // the stadium, the money, the friendlies and the quests. Every number from GET /team/summary (B1).
 import { computed, onMounted } from 'vue'
 import Icon from '../../components/Icon.vue'
+import Skeleton from '../../components/ui/Skeleton.vue'
 import { countdown, useNow } from '../../lib/clock'
 import { REFEREE, money } from '../../lib/format'
 import { useBoard } from '../../stores/board'
@@ -36,7 +37,7 @@ const leagueId = computed(() => store.league)
     <h1 class="sr-only">{{ $t('لوحة النادي') }}</h1>
     <!-- Its frame held while it loads, so nothing jumps. -->
     <div v-if="!b" class="grid gap-4 md:grid-cols-3" aria-hidden="true">
-      <div class="h-56 animate-pulse rounded-2xl bg-surface md:col-span-3" /><div class="h-40 animate-pulse rounded-xl bg-surface" /><div class="h-40 animate-pulse rounded-xl bg-surface" /><div class="h-40 animate-pulse rounded-xl bg-surface" />
+      <Skeleton kind="hero" :count="1" class="md:col-span-3" /><Skeleton v-for="i in 3" :key="i" kind="card" :count="1" />
     </div>
     <template v-else>
       <!-- The next match. -->
@@ -53,7 +54,7 @@ const leagueId = computed(() => store.league)
                 <b class="max-w-full truncate font-display text-base md:text-lg">{{ $nm(side.name) }}</b>
                 <span class="font-numbers text-xl text-brand-light">{{ strength(side.strength_cp) }}</span>
                 <span class="flex gap-0.5" :aria-label="$t('آخر النتائج')">
-                  <span v-for="(r, i) in side.form" :key="i" class="grid size-5 place-items-center rounded-full text-[10px] font-bold" :class="FORM[r][1]">{{ $t(FORM[r][0]) }}</span>
+                  <span v-for="(r, i) in side.form" :key="i" class="grid size-5 place-items-center rounded-full text-caption font-bold leading-none" :class="FORM[r][1]">{{ $t(FORM[r][0]) }}</span>
                 </span>
               </div>
               <div class="order-1 flex flex-col items-center gap-0.5">

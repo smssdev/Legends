@@ -13,7 +13,7 @@ import { track } from '../../lib/analytics'
 import { api, asApiError, ensureCsrf, type ApiError } from '../../api/client'
 import { budget, END_MODES, lockFromRound, roundsFor } from '../../api/leagues'
 import type { components } from '../../api/schema'
-import TextField from '../../components/TextField.vue'
+import UiInput from '../../components/ui/UiInput.vue'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import { strength } from '../../lib/format'
@@ -229,7 +229,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
       <div class="flex flex-col gap-4">
         <section class="flex flex-col gap-4 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-basics">
           <h2 id="h-basics" class="font-display text-xl font-extrabold">{{ $t('الأساسيات') }}</h2>
-          <TextField v-model="name" :label="$t('اسم الدوري')" :placeholder="$t('فارغ: اسم الدوري والكود')" :error="field('name')" />
+          <UiInput v-model="name" :label="$t('اسم الدوري')" :placeholder="$t('فارغ: اسم الدوري والكود')" :error="field('name')" />
           <div class="grid gap-4 md:grid-cols-2">
             <div class="flex flex-col gap-1.5">
               <span class="text-sm font-bold">{{ $t('الدوري') }}</span>
