@@ -37,7 +37,7 @@ export const router = createRouter({
         { path: 'leagues/:id(\\d+)/pick', name: 'pick-team', component: () => import('./pages/leagues/PickTeam.vue'), props: true, meta: { auth: true } },
         // Sprint 16: my club in the current league
         // [Sprint 20] The club board, the friendlies and the weekly quests.
-        { path: 'club', name: 'club', component: () => import('./pages/team/ClubBoard.vue'), meta: { auth: true } },
+        { path: 'club', name: 'club', component: () => import('./pages/team/ClubBoard.vue'), meta: { auth: true, fit: true } },
         { path: 'friendlies', name: 'friendlies', component: () => import('./pages/team/FriendliesPage.vue'), meta: { auth: true } },
         { path: 'quests', name: 'quests', component: () => import('./pages/team/QuestsPage.vue'), meta: { auth: true } },
         { path: 'team', name: 'team', component: () => import('./pages/team/Squad.vue'), meta: { auth: true } },

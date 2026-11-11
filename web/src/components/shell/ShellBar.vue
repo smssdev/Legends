@@ -2,8 +2,8 @@
 // [Sprint 55 W1] The frame's bar, 42px (LandscapeShell.html): the screen's name, the countdown to the club's next match
 // (a tap opens it), the coins and, on the screens where it is spent or earned, the club's money (X85), the messages,
 // and the coach's account. [W3] The verification is a dot on the account (and a card on the home screen), not a strip
-// across every screen. The default slot holds what a screen of the old frame still needs here (the timers and what
-// waits, until the office is rebuilt in Sprint 56).
+// across every screen. [Sprint 56 W1] The timers and what waits left the bar for the office (Office.html); the dock's
+// «المكتب» carries their count.
 import Icon from '../Icon.vue'
 import ClubSwitcher from './ClubSwitcher.vue'
 import CountdownChip from '../ui/CountdownChip.vue'
@@ -34,7 +34,6 @@ defineProps<{
     </RouterLink>
     <MoneyPill kind="coins" to="/wallet" :value="coins" :label="$t('المحفظة')" />
     <MoneyPill v-if="cash" kind="cash" to="/finance" :value="cash.value" caption="أموال النادي" :title="cash.title" :label="cash.label" />
-    <slot />
     <RouterLink to="/inbox" class="bar-icon" :aria-label="unread ? $t('الرسائل: {n} غير مقروءة', { n: unread }) : $t('الرسائل')">
       <Icon name="inbox" /><span v-if="unread" class="bar-badge bg-live text-white">{{ unread }}</span>
     </RouterLink>
