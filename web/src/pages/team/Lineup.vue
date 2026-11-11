@@ -772,16 +772,16 @@ async function saveCustom() {
 .bench-row { box-shadow: inset -3px 0 0 var(--line); }
 :dir(ltr) .bench-row { box-shadow: inset 3px 0 0 var(--line); }
 /* The pitch's cards grow with the screen: small on a phone held sideways, full on a computer. */
-.pitch-spot { width: 3.5rem; }
-.mini-card { width: 2.5rem; height: 3rem; }
-.mini-role, .mini-flag { font-size: 9px; }
+.pitch-spot { width: 4rem; }
+.mini-card { width: 2.75rem; height: 3.25rem; }
+/* No text under 12px (the design system's floor), the small cards too. */
+.mini-role, .mini-flag { font-size: var(--text-caption); }
 .mini-flag { position: absolute; top: 0.3rem; padding: 0 2px; border-radius: 3px; font-family: var(--font-numbers); font-weight: 700; line-height: 1.2; }
-.mini-name { font-size: 10px; line-height: 1.3; }
+.mini-name { font-size: var(--text-caption); line-height: 1.25; }
 .mini-empty { width: 2.25rem; height: 2.25rem; font-size: var(--text-title); }
 @media (min-height: 600px) {
   .pitch-spot { width: 5rem; }
   .mini-card { width: 3.5rem; height: 4.5rem; }
-  .mini-role { font-size: 10px; } .mini-name { font-size: var(--text-caption); }
   .mini-empty { width: 3rem; height: 3rem; }
 }
 .lineup-pitch {
