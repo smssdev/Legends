@@ -147,7 +147,12 @@ class TransfersTest extends TestCase
         $this->assertSame($id, $counter['counter_of']);
         $this->assertSame(1, DB::table('messages')->where('type', 'offer_countered')->where('user_id', $this->owner->id)->count());
         // The owner sees it as incoming and turns it down.
-        $seen = collect($this->actingAs($this->owner)->getJson($this->url())->assertOk()->json('offers'))->firstWhere('id', $counter['id']);
+        $seen = collect($this->actingAs($this->owner)->getJson($this->url())->assertOk()
+            // [Sprint 59 F1] Every field Transfers and TransferOffer require in openapi.yaml (the app reads them through it).
+            ->assertJsonStructure(['closed', 'fair' => ['min_bp', 'max_bp'], 'pair_cap', 'listings', 'clubs' => ['*' => ['id', 'name', 'code']],
+                'offers' => ['*' => ['id', 'status', 'money', 'from' => ['id', 'name'], 'to' => ['id', 'name'], 'incoming', 'expires_at',
+                    'in' => ['*' => ['id', 'name', 'position', 'line', 'age', 'overall', 'value']], 'out']]])
+            ->json('offers'))->firstWhere('id', $counter['id']);
         $this->assertTrue($seen['incoming']);
         $this->postJson($this->url("/offers/{$counter['id']}/reject"))->assertOk()->assertJsonPath('offer.status', 'rejected');
         $this->assertSame(1, DB::table('messages')->where('type', 'offer_rejected')->where('user_id', $this->coach->id)->count());

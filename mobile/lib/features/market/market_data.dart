@@ -4,7 +4,8 @@ import '../../core/api/api_client.dart';
 import '../../core/api/intents.dart';
 
 // [Sprint 59 F1] The buy quote is the generated model (docs/api/openapi.yaml → lib/api/gen/models.g.dart).
-import '../../api/gen/models.g.dart' show BuyQuote, TransferList, TransferListPlayer;
+import '../../api/gen/models.g.dart'
+    show BuyQuote, Market, MarketMineItem, TradePlayer, TransferList, TransferListPlayer, TransferOffer, Transfers;
 export '../../api/gen/models.g.dart' show BuyQuote, BuyQuoteCompensate;
 
 /// [Sprint 18 F1] The market (`/leagues/{id}/market`, UP11) and the deals between coaches (`/leagues/{id}/transfers`,
@@ -106,29 +107,24 @@ class MyPlayer {
     this.sellsAt,
   });
 
-  factory MyPlayer.fromJson(Map<String, dynamic> j) {
-    final quick = j['quick'] as Map<String, dynamic>? ?? const {};
-    final fee = quick['fee'] as Map<String, dynamic>? ?? const {};
-    final wait = j['wait_hours'] as Map<String, dynamic>? ?? const {};
-    final listed = j['listed'] as Map<String, dynamic>?;
-    return MyPlayer(
-      id: j['id'] as int,
-      name: '${j['name']}',
-      position: '${j['position'] ?? ''}',
-      line: '${j['line'] ?? 'mid'}',
-      overall: j['overall'] as int? ?? 0,
-      value: (j['value'] as num?)?.toInt() ?? 0,
-      cost: (j['cost'] as num?)?.toInt() ?? 0,
-      floor: (j['floor'] as num?)?.toInt() ?? 0,
-      cap: (j['cap'] as num?)?.toInt() ?? 0,
-      quickPays: (quick['pays'] as num?)?.toInt() ?? 0,
-      quickFee: (currency: '${fee['currency'] ?? 'coins'}', amount: (fee['amount'] as num?)?.toInt() ?? 0),
-      waitValue: wait['value'] as int? ?? 0,
-      waitCap: wait['cap'] as int? ?? 0,
-      listedPrice: (listed?['price'] as num?)?.toInt(),
-      sellsAt: DateTime.tryParse('${listed?['sells_at'] ?? ''}'),
-    );
-  }
+  /// [Sprint 59 F1] From the generated model (`Market.mine`).
+  factory MyPlayer.of(MarketMineItem p) => MyPlayer(
+    id: p.id,
+    name: p.name,
+    position: p.position,
+    line: p.line,
+    overall: p.overall,
+    value: p.value,
+    cost: p.cost ?? 0,
+    floor: p.floor,
+    cap: p.cap,
+    quickPays: p.quick.pays,
+    quickFee: (currency: p.quick.fee.currency, amount: p.quick.fee.amount),
+    waitValue: p.waitHours.value,
+    waitCap: p.waitHours.cap,
+    listedPrice: p.listed?.price,
+    sellsAt: DateTime.tryParse(p.listed?.sellsAt ?? ''),
+  );
 
   final int id, overall, value, cost, floor, cap, quickPays, waitValue, waitCap;
   final String name, position, line;
@@ -142,13 +138,14 @@ class MyPlayer {
 class Selling {
   const Selling({required this.mine, required this.maxListings, required this.listed, this.closed});
 
-  factory Selling.fromJson(Map<String, dynamic> j) {
-    final s = j['selling'] as Map<String, dynamic>? ?? const {};
+  /// [Sprint 59 F1] The market's pool answer (`Market`), read through its generated model.
+  factory Selling.fromJson(Object? json) {
+    final m = Market.fromJson(json);
     return Selling(
-      mine: [for (final p in (j['mine'] as List<dynamic>? ?? const [])) MyPlayer.fromJson(p as Map<String, dynamic>)],
-      maxListings: s['max_listings'] as int? ?? 4,
-      listed: s['listed'] as int? ?? 0,
-      closed: j['closed'] as String?,
+      mine: [for (final p in m.mine) MyPlayer.of(p)],
+      maxListings: m.selling?.maxListings ?? 4,
+      listed: m.selling?.listed ?? 0,
+      closed: m.closed,
     );
   }
 
@@ -160,6 +157,10 @@ class Selling {
 class OfferPlayer {
   const OfferPlayer({required this.id, required this.name, required this.position, required this.overall, required this.value});
 
+  /// [Sprint 59 F1] From the generated model (an offer's or a listing's player).
+  factory OfferPlayer.of(TradePlayer p) => OfferPlayer(id: p.id, name: p.name, position: p.position, overall: p.overall, value: p.value);
+
+  /// A club's players (`/clubs/{id}`, not yet in the contract's models).
   factory OfferPlayer.fromJson(Map<String, dynamic> j) => OfferPlayer(
     id: j['id'] as int,
     name: '${j['name']}',
@@ -187,18 +188,19 @@ class Offer {
     this.toId = 0,
   });
 
-  factory Offer.fromJson(Map<String, dynamic> j) => Offer(
-    id: j['id'] as int,
-    status: '${j['status']}',
-    money: (j['money'] as num?)?.toInt() ?? 0,
-    from: '${(j['from'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-    to: '${(j['to'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-    incoming: j['incoming'] == true,
-    fromId: (j['from'] as Map<dynamic, dynamic>?)?['id'] as int? ?? 0,
-    toId: (j['to'] as Map<dynamic, dynamic>?)?['id'] as int? ?? 0,
-    players: [for (final p in (j['in'] as List<dynamic>? ?? const [])) OfferPlayer.fromJson(p as Map<String, dynamic>)],
-    give: [for (final p in (j['out'] as List<dynamic>? ?? const [])) OfferPlayer.fromJson(p as Map<String, dynamic>)],
-    expiresAt: DateTime.tryParse('${j['expires_at'] ?? ''}'),
+  /// [Sprint 59 F1] From the generated model.
+  factory Offer.of(TransferOffer o) => Offer(
+    id: o.id,
+    status: o.status,
+    money: o.money,
+    from: o.from.name,
+    to: o.to.name,
+    incoming: o.incoming,
+    fromId: o.from.id,
+    toId: o.to.id,
+    players: [for (final p in o.in_) OfferPlayer.of(p)],
+    give: [for (final p in o.out) OfferPlayer.of(p)],
+    expiresAt: DateTime.tryParse(o.expiresAt),
   );
 
   final int id, money, fromId, toId;
@@ -222,24 +224,18 @@ class Deals {
     this.fairMaxBp = 20000,
   });
 
-  factory Deals.fromJson(Map<String, dynamic> j) => Deals(
-    offers: [for (final o in (j['offers'] as List<dynamic>? ?? const [])) Offer.fromJson(o as Map<String, dynamic>)],
-    listings: [
-      for (final l in (j['listings'] as List<dynamic>? ?? const []))
-        (
-          player: OfferPlayer.fromJson((l as Map<dynamic, dynamic>)['player'] as Map<String, dynamic>),
-          price: (l['price'] as num).toInt(),
-          club: '${(l['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-          mine: l['mine'] == true,
-        ),
-    ],
-    closed: j['closed'] as String?,
-    clubs: [
-      for (final c in (j['clubs'] as List<dynamic>? ?? const [])) (id: (c as Map<dynamic, dynamic>)['id'] as int, name: '${c['name']}'),
-    ],
-    fairMinBp: ((j['fair'] as Map<dynamic, dynamic>?)?['min_bp'] as num?)?.toInt() ?? 5000,
-    fairMaxBp: ((j['fair'] as Map<dynamic, dynamic>?)?['max_bp'] as num?)?.toInt() ?? 20000,
-  );
+  /// [Sprint 59 F1] The market between coaches (`Transfers`), read through its generated model.
+  factory Deals.fromJson(Object? json) {
+    final t = Transfers.fromJson(json);
+    return Deals(
+      offers: [for (final o in t.offers) Offer.of(o)],
+      listings: [for (final l in t.listings) (player: OfferPlayer.of(l.player), price: l.price, club: l.club.name, mine: l.mine)],
+      closed: t.closed,
+      clubs: [for (final c in t.clubs) (id: c.id, name: c.name)],
+      fairMinBp: t.fair.minBp,
+      fairMaxBp: t.fair.maxBp,
+    );
+  }
 
   /// The coaches' clubs an offer can go to, and the fair range of a deal (its money and players against the values).
   final List<({int id, String name})> clubs;

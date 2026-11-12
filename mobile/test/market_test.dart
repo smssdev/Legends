@@ -141,9 +141,14 @@ void main() {
   test('the market, my players for sale and the offers from the API', () {
     final s = Selling.fromJson(json('market_pool'));
     expect(s.mine, isNotEmpty);
+    // [Sprint 59 F1] Every one of my players reads through the generated model.
+    expect(s.mine, hasLength((json('market_pool')['mine'] as List<dynamic>).length));
     expect(s.mine.first.cap, greaterThan(s.mine.first.floor));
     expect(s.mine.first.quickFee.currency, 'coins');
     final d = Deals.fromJson(json('offers'));
+    // [Sprint 59 F1] Every offer and listing reads through the generated model.
+    expect(d.offers, hasLength((json('offers')['offers'] as List<dynamic>).length));
+    expect(d.listings, hasLength((json('offers')['listings'] as List<dynamic>).length));
     expect(d.offers.first.incoming, isTrue);
     expect(d.offers.first.players.single.name, 'Florian Wirtz');
   });
