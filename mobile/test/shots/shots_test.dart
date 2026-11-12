@@ -141,13 +141,15 @@ Future<void> shot(
   if (at != null) {
     // A moment of an animation (the opening): its pictures first, then the clock moved to [at].
     for (final e in find.byType(Image).evaluate()) {
-      await t.runAsync(() => precacheImage((e.widget as Image).image, e));
+      // [Sprint 59 F8] A picture from the network (a store item) is not there in a test: it stays blank, not an error.
+    await t.runAsync(() => precacheImage((e.widget as Image).image, e, onError: (_, _) {}));
     }
     for (var ms = 0; ms < at.inMilliseconds; ms += 50) {
       await t.pump(const Duration(milliseconds: 50));
     }
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/$name.png'));
     await t.pumpWidget(const SizedBox());
+    await t.pump(const Duration(seconds: 1));
     return;
   }
   for (var i = 0; i < 10; i++) {
@@ -155,7 +157,8 @@ Future<void> shot(
   }
   // Let the images decode (the emblem, the coin) before the picture is taken.
   for (final e in find.byType(Image).evaluate()) {
-    await t.runAsync(() => precacheImage((e.widget as Image).image, e));
+    // [Sprint 59 F8] A picture from the network (a store item) is not there in a test: it stays blank, not an error.
+    await t.runAsync(() => precacheImage((e.widget as Image).image, e, onError: (_, _) {}));
   }
   await t.pump(const Duration(milliseconds: 100));
   if (tap != null || tapIcon != null) {
@@ -172,6 +175,8 @@ Future<void> shot(
   }
   await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/$name.png'));
   await t.pumpWidget(const SizedBox());
+  // [Sprint 59 F8] The requests still answering when the screen goes (a refused one schedules its error) end here.
+  await t.pump(const Duration(seconds: 1));
 }
 
 void main() {
@@ -223,7 +228,7 @@ void main() {
       teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
       leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
-    ], tapIcon: Icons.menu_rounded),
+    ], tap: 'الفريق'), // [Sprint 59 F8] The dock's team section opens its pages (the old menu button is gone).
   );
   testWidgets('login', (t) => shot(t, 'login', const LoginScreen(), []));
   testWidgets(
