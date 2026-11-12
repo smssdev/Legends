@@ -24,6 +24,8 @@
     <link rel="preload" href="/fonts/tajawal-400-arabic.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/tajawal-700-arabic.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/barlow-condensed-700-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- [Sprint 58 T2] The splash's emblem is the first screen's largest picture (its LCP): asked at once, not after the app starts. -->
+    <link rel="preload" href="/brand/emblem-loader-ar.svg" as="image" fetchpriority="high" />
     <!-- [X56] The day look before the first paint (src/lib/theme.ts keeps it after), so the page never flashes. -->
     <script>
       try {
@@ -112,7 +114,16 @@
     <!-- [X97] The page's own words, written into #app by the build for the crawlers (seoBody in src/content/seo.ts): a
          calm loading screen for the instant before the app replaces them. -->
     <style>
-      .seo-static { max-width: 36rem; margin: 14vh auto 0; padding: 0 1rem; text-align: center; line-height: 1.7; color: #C9D2E1; }
+      /* [Sprint 58] Padding, not margin: a top margin collapsed through <body> and moved it when the app took over (CLS). */
+      .seo-static { max-width: 36rem; margin: 0 auto; padding: 14vh 1rem 0; text-align: center; line-height: 1.7; color: #C9D2E1; }
+      /* The boot splash: the colours of SplashScreen.vue's (color-mix of --color-brand 30% into --color-bg-deep). */
+      #boot { position: fixed; inset: 0; z-index: 99; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 50% 40%, #0A3C3B, #06111E 70%); transition: opacity 0.35s ease; animation: boot-out 0s 15s forwards; }
+      html.light #boot { background: radial-gradient(circle at 50% 40%, #A4C9B4, #E2DBCB 70%); }
+      #boot.is-gone { opacity: 0; pointer-events: none; }
+      .boot-mark { width: min(11rem, 45vw); height: auto; animation: boot-turn 1.6s ease-in-out infinite; }
+      @keyframes boot-turn { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+      @keyframes boot-out { to { opacity: 0; visibility: hidden; } }
+      @media (prefers-reduced-motion: reduce) { .boot-mark { animation: none; } }
       .seo-static h1 { margin: 0.75rem 0; font-size: 1.5rem; font-weight: 800; }
       .seo-static nav { margin-top: 1rem; font-size: 0.9rem; }
       .seo-static a { color: #F5B82E; }
@@ -121,6 +132,13 @@
     </style>
   </head>
   <body>
+    <!-- [Sprint 58 T2] The splash before any script runs: the first screen's largest picture (its LCP) painted with the
+         page, not after the app starts. SplashScreen.vue takes over in the same place and lets it go (on failure it shows
+         its own emblem with the message); if the app never starts, it hides by itself after 15 seconds. -->
+    <div id="boot" aria-hidden="true"><img class="boot-mark" src="/brand/emblem-loader-ar.svg" alt="" fetchpriority="high" /></div>
+    <script>
+      try { if (localStorage.getItem('glm.locale') === 'en') document.querySelector('#boot img').src = '/brand/emblem-loader.svg'; } catch (e) {}
+    </script>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

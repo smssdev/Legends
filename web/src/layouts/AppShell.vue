@@ -303,6 +303,9 @@ html.light .dock-item.is-active { color: var(--color-text); background: color-mi
 
 .shell-main { position: relative; min-height: 0; overflow-x: clip; overflow-y: auto; overscroll-behavior: contain; --shell-header: 0px; }
 .shell-page { padding: var(--space-sm) var(--space-sm) var(--space-xl); }
+/* [Sprint 58] At least the frame's height: the footer starts below the fold, so a screen whose data arrives late never
+   pushes a footer already in view out of it (Lighthouse: a shift of 0.4 on the home screen). */
+.shell-page:not(.is-fit) { min-height: 100%; }
 .shell-page.is-fit { display: flex; flex-direction: column; height: 100%; padding-bottom: var(--space-sm); }
 .shell-page.is-fit > * { flex: 1; min-height: 0; }
 @media (min-width: 900px) { .shell-page { padding: var(--space-md) var(--space-lg) var(--space-xl); } .shell-page.is-fit { padding-bottom: var(--space-md); } }
