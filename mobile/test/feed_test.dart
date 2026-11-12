@@ -38,37 +38,38 @@ void main() {
     expect('${cut(goal, 30, 6, Tier.high, seed: 9)}', '${cut(goal, 30, 6, Tier.high, seed: 9)}', reason: 'the same seed, the same cutaways');
   });
 
-  LiveTick tick(Map<String, dynamic> moment, List<Map<String, dynamic>> events, {Map<String, dynamic>? voice}) =>
-      LiveTick.fromJson({'tick': 30, 'minute': [30, 0], 'score': {'home': 1, 'away': 0}, 'events': events, 'moment': moment, 'voice': ?voice});
+  LiveTick tick(Map<String, dynamic>? story) =>
+      LiveTick.fromJson({'tick': 30, 'minute': [30, 0], 'score': {'home': 1, 'away': 0}, 'events': const [], 'moment': {'kind': 'quiet', 'ms': 3000}, 'story': ?story});
   const cast = <String, CastMember>{'9': (name: 'Salah', no: 11, side: 'home'), '4': (name: 'Saliba', no: 2, side: 'away'), '1': (name: 'Raya', no: 1, side: 'away'), '7': (name: 'Szoboszlai', no: 8, side: 'home')};
   const clubs = {'home': 'Liverpool', 'away': 'Arsenal'};
 
-  test('the story: the server\'s moment becomes the scene, who is in it, and what is hidden until the ball arrives', () {
-    final g = feedStory(tick({'kind': 'goal', 'ms': 12000}, [
-      {'type': 'attack', 'team': 'home', 'shooter': 9, 'defender': 4, 'keeper': 1, 'quality': 'header', 'lane': 'left'},
-      {'type': 'goal', 'team': 'home', 'scorer': 9, 'assist': 7},
-    ]), cast: cast, clubs: clubs, seed: 5);
-    expect((g.scene, g.side, g.goal, g.who, g.data['no'], g.data['passNo']), ('goal', 'home', true, 'Salah', '11', '8'));
-    expect(g.pre!.head, 'عرضية', reason: 'a header: «a cross» until the ball arrives');
+  // [Sprint 57 F1] The story is the server's (App\Simulator\MomentStory, as MomentStoryTest keeps it): the app writes it.
+  test('the story: the server\'s scene, who is in it, and what is hidden until the ball arrives', () {
+    final g = feedStory(tick({
+      'scene': 'goal', 'side': 'home', 'goal': true, 'minute': "30'",
+      'data': {'side': 'home', 'no': 11, 'passNo': 8, 'defNo': 2, 'lane': 'left', 'quality': 'header', 'v': 42},
+      'head': 'هدف', 'who': {'p': 9}, 'sub': {'t': 'صناعة {v0}', 'v': [{'p': 7}]},
+      'pre': {'head': 'عرضية', 'who': {'p': 9}, 'sub': {'c': 'home'}},
+    }), cast: cast, clubs: clubs);
+    expect((g.scene, g.side, g.goal, g.who, g.sub, g.data['no'], g.data['passNo']), ('goal', 'home', true, 'Salah', 'صناعة Szoboszlai', '11', '8'));
+    expect((g.pre!.head, g.pre!.sub), ('عرضية', 'Liverpool'), reason: 'a header: «a cross» until the ball arrives');
     expect(g.keyAt, 3.0);
 
-    final red = feedStory(tick({'kind': 'red', 'ms': 9000, 'drama': 'brawl'}, [
-      {'type': 'foul', 'team': 'away', 'player': 4, 'victim': 9},
-      {'type': 'card', 'team': 'away', 'player': 4},
-    ]), cast: cast, clubs: clubs, ar: false);
-    expect((red.scene, red.data['type'], red.data['drama'], red.data['victimNo'], red.head), ('card', 'red', 'brawl', '11', 'Red card'));
+    final red = feedStory(tick({
+      'scene': 'card', 'side': 'away', 'goal': false, 'data': {'side': 'away', 'no': 2, 'victimNo': 11, 'type': 'red', 'drama': 'brawl', 'v': 7},
+      'head': 'بطاقة حمراء', 'who': {'p': 4}, 'sub': {'c': 'away'}, 'pre': null,
+    }), cast: cast, clubs: clubs, ar: false);
+    expect((red.scene, red.data['type'], red.data['drama'], red.data['victimNo'], red.head, red.who), ('card', 'red', 'brawl', '11', 'Red card', 'Saliba'));
 
-    final over = feedStory(tick({'kind': 'miss', 'ms': 7000}, [{'type': 'attack', 'team': 'home', 'shooter': 9, 'result': 'wide'}], voice: {'how': 'over'}), cast: cast, clubs: clubs);
-    expect((over.scene, over.data['how']), ('miss', 'over'), reason: 'where it went is the server\'s');
+    final end = feedStory(tick({
+      'scene': 'whistle', 'side': 'home', 'goal': false,
+      'data': {'side': 'home', 'big': 'نهاية الشوط الأول', 'score': [1, 0], 'name': 'halftime', 'stats': [['التسديدات', 5, 2]]},
+      'head': 'استراحة', 'who': '', 'sub': {'j': [{'c': 'home'}, {'r': '1 - 0'}, {'c': 'away'}], 'by': {'r': ' '}}, 'pre': null,
+    }), cast: cast, clubs: clubs, ar: false);
+    expect((end.data['big'], end.data['home'], end.data['away'], end.sub, end.head), ('Half-time', 1, 0, 'Liverpool 1 - 0 Arsenal', 'Rest'));
+    expect(end.data['stats'], [('Shots', 5, 2)]);
 
-    final trap = feedStory(tick({'kind': 'offside', 'ms': 5000, 'drama': 'trap'}, [{'type': 'attack', 'team': 'home', 'receiver': 9}]), cast: cast, clubs: clubs);
-    expect(trap.scene, 'trap');
-
-    final brief = feedStory(tick({'kind': 'offside', 'ms': 2000, 'brief': true}, [{'type': 'attack', 'team': 'home', 'receiver': 9}]), cast: cast, clubs: clubs);
-    expect(brief.scene, isNull, reason: 'a brief moment is only its card');
-
-    final quiet = feedStory(tick({'kind': 'quiet', 'ms': 3000}, []), cast: cast, clubs: clubs);
-    expect(quiet.scene, isNull);
+    expect(feedStory(tick(null), cast: cast, clubs: clubs).scene, isNull, reason: 'a minute sent without its story: nothing to play');
   });
 
   test('the rain follows the match seed as the server decides it', () {

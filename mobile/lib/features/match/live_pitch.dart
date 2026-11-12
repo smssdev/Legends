@@ -160,22 +160,13 @@ Color hexColor(String? hex, [Color fallback = Colors.white]) {
 /// Black or white numbers, whichever reads on the shirt.
 Color inkOn(Color shirt) => shirt.computeLuminance() > .5 ? const Color(0xFF111111) : Colors.white;
 
-/// [2026-11-06] Both sides' shirts and numbers, as the site draws them (SimMatch.vue bkits): two similar shirts and the
-/// away side changes to its own change kit, else its second colour, else white or navy.
+/// [2026-11-06, Sprint 57 F1] Both sides' shirts and numbers, as the server decided them (MatchKits) for every screen.
 Map<String, (Color, Color)> matchKits(MatchView v) {
-  int far(Color a, Color b) => ((a.r - b.r).abs() + (a.g - b.g).abs() + (a.b - b.b).abs()) * 255 ~/ 1;
-  final home = hexColor(v.home.primary);
-  var away = hexColor(v.away.primary);
-  if (far(home, away) <= 160) {
-    final alt = v.away.awayKit == null ? null : hexColor(v.away.awayKit);
-    final second = hexColor(v.away.secondary);
-    away = alt != null && far(home, alt) > 160
-        ? alt
-        : far(home, second) > 160
-            ? second
-            : far(home, const Color(0xFFF3F0E6)) > 160
-                ? const Color(0xFFF3F0E6)
-                : const Color(0xFF1C2333);
+  // [Sprint 57 F1] The server's kits (MatchKits); a match view from before them, each club's own colours.
+  final k = v.kits;
+  if (k != null && k['home'] != null && k['away'] != null) {
+    return {for (final side in ['home', 'away']) side: (hexColor(k[side]!.shirt), hexColor(k[side]!.text))};
   }
+  final home = hexColor(v.home.primary), away = hexColor(v.away.primary);
   return {'home': (home, inkOn(home)), 'away': (away, inkOn(away))};
 }
