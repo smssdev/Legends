@@ -29,6 +29,30 @@ class League {
     this.locked = true,
   });
 
+  /// [Sprint 59 F1] A league from the generated model (`GET /leagues`, `GET /leagues/{id}`).
+  factory League.of(api.League l) => League(
+    id: l.id,
+    name: l.name,
+    code: l.code ?? '',
+    status: l.status,
+    isOwner: l.isOwner,
+    myClubId: l.myClubId,
+    myRequest: l.myRequest,
+    freeClubs: l.freeClubs ?? 0,
+    pendingRequests: l.pendingRequests ?? 0,
+    inviteUrl: l.inviteUrl,
+    startsAt: date(l.startsAt),
+    teamCount: l.teamCount,
+    coaches: l.coaches,
+    members: [for (final m in l.members) Member.of(m)],
+    seasonNumber: l.season?.number,
+    roundsPlayed: l.season?.roundsPlayed,
+    rounds: l.season?.rounds,
+    contract: l.me?.contract,
+    locked: l.locked,
+  );
+
+  /// A league in a smaller answer (a new league, a join), not yet in the contract's models.
   factory League.fromJson(Map<String, dynamic> j) {
     final season = j['season'] as Map<String, dynamic>?;
     final me = j['me'] as Map<String, dynamic>?;
@@ -50,7 +74,7 @@ class League {
       seasonNumber: season?['number'] as int?,
       roundsPlayed: season?['rounds_played'] as int?,
       rounds: season?['rounds'] as int?,
-      contract: me?['contract'] as Map<String, dynamic>?,
+      contract: me?['contract'] == null ? null : api.LeagueMeContract.fromJson(me!['contract']),
       locked: j['locked'] != false,
     );
   }
@@ -67,7 +91,9 @@ class League {
   final DateTime? startsAt;
   final List<Member> members;
   final int? seasonNumber, roundsPlayed, rounds;
-  final Map<String, dynamic>? contract;
+
+  /// [Sprint 43 W1] The contract waiting for my signature this season.
+  final api.LeagueMeContract? contract;
 
   bool get canPick => myClubId == null && (isOwner || myRequest == 'approved') && freeClubs > 0;
 }
@@ -83,6 +109,18 @@ class Member {
     this.userId,
     this.vacationRequest,
   });
+
+  /// [Sprint 59 F1] From the generated model.
+  factory Member.of(api.LeagueMembersItem m) => Member(
+    id: m.id,
+    name: m.user.name,
+    username: m.user.username,
+    club: m.club?.name,
+    isOwner: m.isOwner,
+    onHoliday: m.onHoliday,
+    userId: m.user.id,
+    vacationRequest: m.vacationRequest == null ? null : (days: m.vacationRequest!.days ?? 0, reason: m.vacationRequest!.reason ?? ''),
+  );
 
   factory Member.fromJson(Map<String, dynamic> j) {
     final u = j['user'] as Map<String, dynamic>? ?? const {};

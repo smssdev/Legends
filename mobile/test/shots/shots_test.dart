@@ -193,7 +193,7 @@ void main() {
   testWidgets(
     'league',
     (t) => shot(t, 'league', const LeagueShell(leagueId: 8, location: '/leagues/8', child: LeagueScreen(id: 8)), [
-      leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+      leagueProvider.overrideWith((ref, id) async => League.of(api.League.fromJson(json('league')['league']))),
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
     ], h: 1400),
   );
@@ -209,7 +209,7 @@ void main() {
           child: LeagueScreen(id: 8, tab: {'league-team': 'team', 'league-matches': 'matches', 'league-more': 'more'}[name]),
         ),
         [
-          leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+          leagueProvider.overrideWith((ref, id) async => League.of(api.League.fromJson(json('league')['league']))),
           clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
           standingsProvider.overrideWith(
             (ref, id) async => [
@@ -227,7 +227,7 @@ void main() {
     'menu',
     (t) => shot(t, 'menu', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [
       teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
-      leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+      leagueProvider.overrideWith((ref, id) async => League.of(api.League.fromJson(json('league')['league']))),
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
     ], tap: 'الفريق'), // [Sprint 59 F8] The dock's team section opens its pages (the old menu button is gone).
   );
@@ -236,7 +236,7 @@ void main() {
     'squad',
     (t) => shot(t, 'squad', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [
       teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
-      leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+      leagueProvider.overrideWith((ref, id) async => League.of(api.League.fromJson(json('league')['league']))),
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
     ]),
   );
@@ -244,7 +244,7 @@ void main() {
     'squad-rows',
     (t) => shot(t, 'squad-rows', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [
       teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
-      leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+      leagueProvider.overrideWith((ref, id) async => League.of(api.League.fromJson(json('league')['league']))),
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
     ], scroll: 300),
   );
@@ -252,7 +252,7 @@ void main() {
     'lineup',
     (t) => shot(t, 'lineup', const LeagueShell(leagueId: 8, location: '/leagues/8/lineup', child: LineupScreen(leagueId: 8)), [
       teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
-      leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+      leagueProvider.overrideWith((ref, id) async => League.of(api.League.fromJson(json('league')['league']))),
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
     ]),
   );

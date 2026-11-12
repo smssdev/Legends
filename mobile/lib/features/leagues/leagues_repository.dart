@@ -13,9 +13,10 @@ class LeaguesRepository {
   final ApiClient _api;
 
   Future<List<League>> mine() async => [
-    for (final l in (await _api.get('/leagues'))['leagues'] as List<dynamic>) League.fromJson(l as Map<String, dynamic>),
+    for (final l in JsonReader(await _api.get('/leagues'), 'Leagues').list('leagues', api.League.fromJson)) League.of(l),
   ];
-  Future<League> show(int id) async => League.fromJson((await _api.get('/leagues/$id'))['league'] as Map<String, dynamic>);
+  Future<League> show(int id) async =>
+      League.of(JsonReader(await _api.get('/leagues/$id'), 'LeagueAnswer').object('league', api.League.fromJson));
 
   Future<List<({String name, int clubs})>> templates() async => [
     for (final t in (await _api.get('/data/templates'))['templates'] as List<dynamic>)

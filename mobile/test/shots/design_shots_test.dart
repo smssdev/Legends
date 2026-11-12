@@ -6,6 +6,7 @@ library;
 // flutter test test/shots/design_shots_test.dart --tags shots --run-skipped --update-goldens
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 import 'package:glm/features/auth/ui/login_screen.dart';
 import 'package:glm/features/health/intro_screen.dart';
 import 'package:glm/features/home/home_data.dart';
@@ -42,7 +43,7 @@ void main() {
   testWidgets(
     'wide league',
     (t) => shot(t, 'wide-league', const LeagueShell(leagueId: 8, location: '/leagues/8', child: LeagueScreen(id: 8)), [
-      leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+      leagueProvider.overrideWith((ref, id) async => League.of(api.League.fromJson(json('league')['league']))),
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
     ]),
   );

@@ -53,7 +53,10 @@ class LeaguePresenceTest extends TestCase
 
     private function me(User $user): array
     {
-        return $this->actingAs($user)->getJson("/api/v1/leagues/{$this->league['id']}")->assertOk()->json('league');
+        return $this->actingAs($user)->getJson("/api/v1/leagues/{$this->league['id']}")->assertOk()
+            // [Sprint 59 F1] Every field League requires in openapi.yaml (the app reads the league through it).
+            ->assertJsonStructure(['league' => ['id', 'name', 'template', 'team_count', 'rounds_per_day', 'round_times', 'prep_days', 'season_end_mode',
+                'starts_at', 'starting_budget', 'fair_league', 'is_dev', 'status', 'locked', 'is_owner', 'coaches', 'members', 'departures']])->json('league');
     }
 
     private function membershipId(User $user): int
@@ -110,7 +113,9 @@ class LeaguePresenceTest extends TestCase
         $this->passTime('2 days');
         $this->passTime('2 days');
         // Busy elsewhere does not count here.
-        $this->actingAs($this->coach)->getJson('/api/v1/leagues')->assertOk();
+        $this->actingAs($this->coach)->getJson('/api/v1/leagues')->assertOk()
+            // [Sprint 59 F1] The list's leagues have the same shape (the app reads them through League too).
+            ->assertJsonStructure(['leagues' => ['*' => ['id', 'name', 'template', 'team_count', 'status', 'locked', 'is_owner', 'coaches', 'members', 'departures']]]);
         $this->actingAs($this->coach)->getJson("/api/v1/leagues/{$other['id']}")->assertNotFound();
         $this->passTime('1 day');
         $this->assertSame('absent', $this->coachLeft());
