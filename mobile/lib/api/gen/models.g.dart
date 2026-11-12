@@ -3737,6 +3737,162 @@ class LeagueHeadlinesItem {
   final String text;
 }
 
+/// [Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model
+class LeagueMatch {
+  const LeagueMatch({
+    required this.clubs,
+    this.coaches,
+    this.competition,
+    required this.finished,
+    this.formations,
+    required this.id,
+    this.kickoffAt,
+    this.kits,
+    this.leagueId,
+    this.round,
+    required this.score,
+    this.seed,
+    required this.teams,
+    required this.tick,
+    this.timeoutSeconds,
+    this.timeouts,
+    required this.timing,
+    this.you,
+  });
+
+  factory LeagueMatch.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeagueMatch');
+    return LeagueMatch(
+      clubs: r.object('clubs', LeagueMatchClubs.fromJson),
+      coaches: r.any('coaches'),
+      competition: r.stringOrNull('competition'),
+      finished: r.bool_('finished'),
+      formations: r.listOrNull('formations', JsonReader.stringOf),
+      id: r.int_('id'),
+      kickoffAt: r.stringOrNull('kickoff_at'),
+      kits: r.objectOrNull('kits', LeagueMatchKits.fromJson),
+      leagueId: r.intOrNull('league_id'),
+      round: r.intOrNull('round'),
+      score: r.object('score', LeagueMatchScore.fromJson),
+      seed: r.intOrNull('seed'),
+      teams: r.object('teams', LeagueMatchTeams.fromJson),
+      tick: r.int_('tick'),
+      timeoutSeconds: r.intOrNull('timeout_seconds'),
+      timeouts: r.listOrNull('timeouts', LeagueMatchTimeoutsItem.fromJson),
+      timing: r.object('timing', LeagueMatchTiming.fromJson),
+      you: r.stringOrNull('you'),
+    );
+  }
+
+  final LeagueMatchClubs clubs;
+
+  /// Each human coach's name by side (an empty list when neither side has one)
+  final Object? coaches;
+  final String? competition;
+  final bool finished;
+
+  /// What the viewer's side can switch to
+  final List<String>? formations;
+  final int id;
+  final String? kickoffAt;
+
+  /// [Sprint 57 B1] Both sides' final kits
+  final LeagueMatchKits? kits;
+  final int? leagueId;
+  final int? round;
+  final LeagueMatchScore score;
+  final int? seed;
+  final LeagueMatchTeams teams;
+  final int tick;
+  final int? timeoutSeconds;
+  final List<LeagueMatchTimeoutsItem>? timeouts;
+  final LeagueMatchTiming timing;
+
+  /// The side the viewer manages
+  final String? you;
+}
+
+class LeagueMatchClubs {
+  const LeagueMatchClubs({required this.away, required this.home});
+
+  factory LeagueMatchClubs.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeagueMatchClubs');
+    return LeagueMatchClubs(away: r.object('away', MatchViewClub.fromJson), home: r.object('home', MatchViewClub.fromJson));
+  }
+
+  final MatchViewClub away;
+  final MatchViewClub home;
+}
+
+/// [Sprint 57 B1] Both sides' final kits
+class LeagueMatchKits {
+  const LeagueMatchKits({this.away, this.home});
+
+  factory LeagueMatchKits.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeagueMatchKits');
+    return LeagueMatchKits(away: r.objectOrNull('away', MatchKit.fromJson), home: r.objectOrNull('home', MatchKit.fromJson));
+  }
+
+  final MatchKit? away;
+  final MatchKit? home;
+}
+
+class LeagueMatchScore {
+  const LeagueMatchScore({required this.away, required this.home});
+
+  factory LeagueMatchScore.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeagueMatchScore');
+    return LeagueMatchScore(away: r.int_('away'), home: r.int_('home'));
+  }
+
+  final int away;
+  final int home;
+}
+
+class LeagueMatchTeams {
+  const LeagueMatchTeams({required this.away, required this.home});
+
+  factory LeagueMatchTeams.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeagueMatchTeams');
+    return LeagueMatchTeams(away: r.object('away', MatchViewTeam.fromJson), home: r.object('home', MatchViewTeam.fromJson));
+  }
+
+  final MatchViewTeam away;
+  final MatchViewTeam home;
+}
+
+class LeagueMatchTimeoutsItem {
+  const LeagueMatchTimeoutsItem({required this.side, this.tick, this.until});
+
+  factory LeagueMatchTimeoutsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeagueMatchTimeoutsItem');
+    return LeagueMatchTimeoutsItem(side: r.string('side'), tick: r.intOrNull('tick'), until: r.intOrNull('until'));
+  }
+
+  final String side;
+  final int? tick;
+  final int? until;
+}
+
+class LeagueMatchTiming {
+  const LeagueMatchTiming({this.extraTimeTickMs, this.halftimeSeconds, required this.tickMs, this.windowSeconds});
+
+  factory LeagueMatchTiming.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeagueMatchTiming');
+    return LeagueMatchTiming(
+      extraTimeTickMs: r.intOrNull('extra_time_tick_ms'),
+      halftimeSeconds: r.intOrNull('halftime_seconds'),
+      tickMs: r.int_('tick_ms'),
+      windowSeconds: r.intOrNull('window_seconds'),
+    );
+  }
+
+  final int? extraTimeTickMs;
+  final int? halftimeSeconds;
+  final int tickMs;
+  final int? windowSeconds;
+}
+
 /// My place this season, when I coach here
 class LeagueMe {
   const LeagueMe({
@@ -5158,6 +5314,117 @@ class MatchView {
 
   /// Live: the side the request's seat manages; null for a viewer. In a live match the other side's tactics are null
   final String? you;
+}
+
+class MatchViewClub {
+  const MatchViewClub({this.awayKit, required this.code, required this.id, this.logo, required this.name, this.primary, this.secondary});
+
+  factory MatchViewClub.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchViewClub');
+    return MatchViewClub(
+      awayKit: r.objectOrNull('away_kit', MatchViewClubAwayKit.fromJson),
+      code: r.string('code'),
+      id: r.int_('id'),
+      logo: r.stringOrNull('logo'),
+      name: r.string('name'),
+      primary: r.stringOrNull('primary'),
+      secondary: r.stringOrNull('secondary'),
+    );
+  }
+
+  /// [Sprint 34 V1] Its change kit, worn on a clash
+  final MatchViewClubAwayKit? awayKit;
+  final String code;
+  final int id;
+  final String? logo;
+  final String name;
+  final String? primary;
+  final String? secondary;
+}
+
+/// [Sprint 34 V1] Its change kit, worn on a clash
+class MatchViewClubAwayKit {
+  const MatchViewClubAwayKit({this.color});
+
+  factory MatchViewClubAwayKit.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchViewClubAwayKit');
+    return MatchViewClubAwayKit(color: r.stringOrNull('color'));
+  }
+
+  final String? color;
+}
+
+class MatchViewPlayer {
+  const MatchViewPlayer({
+    this.fit,
+    required this.id,
+    required this.line,
+    required this.name,
+    required this.no,
+    required this.on_,
+    this.out,
+    required this.pos,
+    this.rating,
+    this.yc,
+  });
+
+  factory MatchViewPlayer.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchViewPlayer');
+    return MatchViewPlayer(
+      fit: r.intOrNull('fit'),
+      id: r.int_('id'),
+      line: r.string('line'),
+      name: r.string('name'),
+      no: r.int_('no'),
+      on_: r.bool_('on'),
+      out: r.stringOrNull('out'),
+      pos: r.string('pos'),
+      rating: r.intOrNull('rating'),
+      yc: r.intOrNull('yc'),
+    );
+  }
+
+  final int? fit;
+  final int id;
+  final String line;
+  final String name;
+  final int no;
+
+  /// On the pitch now
+  final bool on_;
+
+  /// Why he left for good (red, injury, sub), empty while he plays
+  final String? out;
+  final String pos;
+
+  /// The match rating ×100
+  final int? rating;
+  final int? yc;
+}
+
+class MatchViewTeam {
+  const MatchViewTeam({this.formation, required this.players, this.stats, this.subsMax, this.subsUsed, this.tactics});
+
+  factory MatchViewTeam.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchViewTeam');
+    return MatchViewTeam(
+      formation: r.stringOrNull('formation'),
+      players: r.list('players', MatchViewPlayer.fromJson),
+      stats: r.mapOrNull('stats', JsonReader.intOrNullOf),
+      subsMax: r.intOrNull('subs_max'),
+      subsUsed: r.intOrNull('subs_used'),
+      tactics: r.mapOrNull('tactics', JsonReader.anyOf),
+    );
+  }
+
+  final String? formation;
+  final List<MatchViewPlayer> players;
+  final Map<String, int?>? stats;
+  final int? subsMax;
+  final int? subsUsed;
+
+  /// Only for the viewer's own side
+  final Map<String, Object?>? tactics;
 }
 
 class Message {

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
+import '../../api/gen/models.g.dart' show LeagueMatch, LeagueMatchTimeoutsItem, MatchKit, MatchViewClub, MatchViewPlayer, MatchViewTeam;
 import 'frames.dart';
 
 part 'match_event.dart';
@@ -10,6 +11,10 @@ part 'match_report.dart';
 /// teams (the tactics only for your own side, `you`), and the minute's length. The app only draws it.
 class MatchClub {
   const MatchClub({required this.id, required this.name, required this.code, this.primary, this.secondary, this.logo, this.awayKit});
+
+  /// [Sprint 59 F1] From the generated model.
+  factory MatchClub.of(MatchViewClub c) =>
+      MatchClub(id: c.id, name: c.name, code: c.code, primary: c.primary, secondary: c.secondary, logo: c.logo, awayKit: c.awayKit?.color);
 
   factory MatchClub.fromJson(Map<String, dynamic>? j) => MatchClub(
     id: j?['id'] as int? ?? 0,
@@ -43,6 +48,21 @@ class MatchPlayer {
     this.rating,
   });
 
+  /// [Sprint 59 F1] From the generated model.
+  factory MatchPlayer.of(MatchViewPlayer p) => MatchPlayer(
+    id: p.id,
+    name: p.name,
+    no: p.no,
+    pos: p.pos,
+    line: p.line,
+    on: p.on_,
+    out: p.out ?? '',
+    fit: p.fit ?? 100,
+    yc: p.yc ?? 0,
+    rating: p.rating,
+  );
+
+  /// A minute's teams as the live sync sends them (not yet in the contract's models).
   factory MatchPlayer.fromJson(Map<String, dynamic> j) => MatchPlayer(
     id: j['id'] as int,
     name: '${j['name']}',
@@ -67,6 +87,21 @@ class MatchPlayer {
 
 class MatchTeam {
   const MatchTeam({this.formation, this.tactics, this.subsUsed = 0, this.subsMax = 3, this.players = const [], this.stats = const {}});
+
+  /// [Sprint 59 F1] From the generated model.
+  factory MatchTeam.of(MatchViewTeam t) => MatchTeam(
+    formation: t.formation,
+    tactics: t.tactics == null
+        ? null
+        : {
+            for (final e in t.tactics!.entries)
+              if (e.value != null) e.key: e.value!,
+          },
+    subsUsed: t.subsUsed ?? 0,
+    subsMax: t.subsMax ?? 3,
+    players: [for (final p in t.players) MatchPlayer.of(p)],
+    stats: {for (final e in (t.stats ?? const <String, int?>{}).entries) e.key: e.value ?? 0},
+  );
 
   factory MatchTeam.fromJson(Map<String, dynamic>? j) => MatchTeam(
     formation: j?['formation'] as String?,
@@ -116,44 +151,32 @@ class MatchView {
     this.kits,
   });
 
-  factory MatchView.fromJson(Map<String, dynamic> j) {
-    final clubs = j['clubs'] as Map<String, dynamic>? ?? const {};
-    final teams = j['teams'] as Map<String, dynamic>? ?? const {};
-    final timing = j['timing'] as Map<String, dynamic>? ?? const {};
-    final coaches = j['coaches'];
+  /// [Sprint 59 F1] A league match (`GET /matches/{match}`), read through its generated model (`LeagueMatch`).
+  factory MatchView.fromJson(Object? json) {
+    final m = LeagueMatch.fromJson(json);
+    final coaches = m.coaches;
+    ({String shirt, String text, String gk}) kit(MatchKit k) => (shirt: k.shirt, text: k.text, gk: k.gk);
     return MatchView(
-      id: j['id'] as int,
-      leagueId: j['league_id'] as int? ?? 0,
-      competition: '${j['competition'] ?? 'league'}',
-      round: j['round'] as int?,
-      home: MatchClub.fromJson(clubs['home'] as Map<String, dynamic>?),
-      away: MatchClub.fromJson(clubs['away'] as Map<String, dynamic>?),
-      teams: {
-        'home': MatchTeam.fromJson(teams['home'] as Map<String, dynamic>?),
-        'away': MatchTeam.fromJson(teams['away'] as Map<String, dynamic>?),
-      },
-      you: j['you'] as String?,
-      finished: j['finished'] == true,
-      score: _score(j['score']),
-      tick: j['tick'] as int? ?? 0,
-      tickMs: timing['tick_ms'] as int? ?? 3000,
-      kickoffAt: DateTime.tryParse('${j['kickoff_at'] ?? ''}'),
-      formations: [for (final f in (j['formations'] as List<dynamic>? ?? const [])) '$f'],
+      id: m.id,
+      leagueId: m.leagueId ?? 0,
+      competition: m.competition ?? 'league',
+      round: m.round,
+      home: MatchClub.of(m.clubs.home),
+      away: MatchClub.of(m.clubs.away),
+      teams: {'home': MatchTeam.of(m.teams.home), 'away': MatchTeam.of(m.teams.away)},
+      you: m.you,
+      finished: m.finished,
+      score: (m.score.home, m.score.away),
+      tick: m.tick,
+      tickMs: m.timing.tickMs,
+      kickoffAt: DateTime.tryParse(m.kickoffAt ?? ''),
+      formations: m.formations ?? const [],
+      // An empty list when neither side has a coach; a map of names by side otherwise.
       coaches: coaches is Map<dynamic, dynamic> ? {for (final e in coaches.entries) '${e.key}': '${e.value}'} : const {},
-      seed: (j['seed'] as num?)?.toInt(),
-      timeoutsUsed: [for (final t in (j['timeouts'] as List<dynamic>? ?? const [])) '${(t as Map<dynamic, dynamic>)['side']}'],
-      timeoutSeconds: (j['timeout_seconds'] as num?)?.toInt() ?? 0,
-      kits: j['kits'] is Map<dynamic, dynamic>
-          ? {
-              for (final e in (j['kits'] as Map<dynamic, dynamic>).entries)
-                if (e.value is Map<dynamic, dynamic>)
-                  '${e.key}': (
-                    shirt: '${(e.value as Map<dynamic, dynamic>)['shirt']}',
-                    text: '${(e.value as Map<dynamic, dynamic>)['text']}',
-                    gk: '${(e.value as Map<dynamic, dynamic>)['gk']}',
-                  ),
-            }
-          : null,
+      seed: m.seed,
+      timeoutsUsed: [for (final t in m.timeouts ?? const <LeagueMatchTimeoutsItem>[]) t.side],
+      timeoutSeconds: m.timeoutSeconds ?? 0,
+      kits: m.kits == null ? null : {if (m.kits!.home case final h?) 'home': kit(h), if (m.kits!.away case final a?) 'away': kit(a)},
     );
   }
 

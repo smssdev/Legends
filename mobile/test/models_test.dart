@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glm/api/gen/models.g.dart';
+import 'package:glm/api/gen/models.g.dart' hide MatchView;
 import 'package:glm/api/read.dart';
 import 'package:glm/features/club/team_data.dart';
+import 'package:glm/features/match/match_data.dart';
 
 // [Sprint 59 F1, F2] The generated models read tolerantly: a new field the app does not know changes nothing, a
 // missing optional one reads as null, and a missing required one is one clear error naming the model and the field.
@@ -61,5 +62,13 @@ void main() {
       ..['overall'] = 80
       ..['training_bonus'] = 3;
     expect(Player.of(SquadPlayer.fromJson(first)).overall, 80, reason: 'overall already has the training in it');
+  });
+
+  test('a league match: the captured answer reads through LeagueMatch with nothing left out', () {
+    final raw = jsonDecode(File('test/fixtures/match.json').readAsStringSync()) as Map<String, dynamic>;
+    final m = MatchView.fromJson(raw);
+    expect(m.teams['home']!.players, hasLength((((raw['teams'] as Map)['home'] as Map)['players'] as List).length));
+    expect(m.home.name, isNotEmpty);
+    expect(modelErrors.where((e) => e.contains('LeagueMatch') || e.contains('MatchView')), isEmpty);
   });
 }

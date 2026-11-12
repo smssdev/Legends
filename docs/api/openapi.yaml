@@ -2490,7 +2490,11 @@ paths:
       summary: A league match for the viewer
       description: The same shape as the simulator's live match (docs/api/match-events.md). The league's members only (404 otherwise). Each side's tactics reach only its own coach (`you`).
       responses:
-        '200': { description: 'The match, its clubs, teams (tactics only for your side), the slots of both formations, kickoff_at: when it kicks off (UTC, Sprint 32 V3), and [Sprint 50 M14] its timeouts (side, tick, until) with timeout_seconds' }
+        '200':
+          description: 'The match, its clubs, teams (tactics only for your side), the slots of both formations, kickoff_at: when it kicks off (UTC, Sprint 32 V3), and [Sprint 50 M14] its timeouts (side, tick, until) with timeout_seconds'
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LeagueMatch' }
         '404': { $ref: '#/components/responses/Error' }
   /matches/{match}/scene:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
@@ -7313,6 +7317,71 @@ components:
       properties:
         home: { $ref: '#/components/schemas/MatchKit' }
         away: { $ref: '#/components/schemas/MatchKit' }
+    LeagueMatch:
+      type: object
+      description: '[Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model'
+      required: [id, finished, score, tick, timing, clubs, teams]
+      properties:
+        id: { type: integer }
+        league_id: { type: integer }
+        competition: { type: string }
+        round: { type: integer, nullable: true }
+        you: { type: string, nullable: true, enum: [home, away, null], description: The side the viewer manages }
+        finished: { type: boolean }
+        score: { type: object, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
+        tick: { type: integer }
+        seed: { type: integer }
+        kickoff_at: { type: string, format: date-time }
+        timing:
+          type: object
+          required: [tick_ms]
+          properties:
+            tick_ms: { type: integer }
+            extra_time_tick_ms: { type: integer }
+            halftime_seconds: { type: integer }
+            window_seconds: { type: integer }
+        clubs: { type: object, required: [home, away], properties: { home: { $ref: '#/components/schemas/MatchViewClub' }, away: { $ref: '#/components/schemas/MatchViewClub' } } }
+        kits: { type: object, properties: { home: { $ref: '#/components/schemas/MatchKit' }, away: { $ref: '#/components/schemas/MatchKit' } }, description: '[Sprint 57 B1] Both sides'' final kits' }
+        coaches: { description: 'Each human coach''s name by side (an empty list when neither side has one)' }
+        teams: { type: object, required: [home, away], properties: { home: { $ref: '#/components/schemas/MatchViewTeam' }, away: { $ref: '#/components/schemas/MatchViewTeam' } } }
+        formations: { type: array, items: { type: string }, description: What the viewer's side can switch to }
+        timeouts: { type: array, items: { type: object, required: [side], properties: { side: { type: string, enum: [home, away] }, tick: { type: integer }, until: { type: integer } } } }
+        timeout_seconds: { type: integer }
+    MatchViewClub:
+      type: object
+      required: [id, name, code]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        primary: { type: string, nullable: true }
+        secondary: { type: string, nullable: true }
+        logo: { type: string, nullable: true }
+        away_kit: { type: object, nullable: true, properties: { color: { type: string } }, description: '[Sprint 34 V1] Its change kit, worn on a clash' }
+    MatchViewTeam:
+      type: object
+      required: [players]
+      properties:
+        formation: { type: string, nullable: true }
+        tactics: { type: object, nullable: true, additionalProperties: true, description: Only for the viewer's own side }
+        subs_used: { type: integer }
+        subs_max: { type: integer }
+        stats: { type: object, additionalProperties: { type: integer, nullable: true } }
+        players: { type: array, items: { $ref: '#/components/schemas/MatchViewPlayer' } }
+    MatchViewPlayer:
+      type: object
+      required: [id, name, no, pos, line, on]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        no: { type: integer }
+        pos: { type: string }
+        line: { type: string, enum: [gk, def, mid, att] }
+        on: { type: boolean, description: On the pitch now }
+        out: { type: string, description: 'Why he left for good (red, injury, sub), empty while he plays' }
+        fit: { type: integer }
+        yc: { type: integer }
+        rating: { type: integer, nullable: true, description: The match rating ×100 }
     MatchKit:
       type: object
       required: [shirt, trim, shorts, socks, text, gk, pattern]
