@@ -354,7 +354,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         <ul class="flex flex-col gap-2">
           <li v-for="m in league.members" :key="m.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
             <div class="flex min-h-touch flex-wrap items-center gap-3">
-              <img v-if="m.user.avatar_url" :src="m.user.avatar_url" alt="" class="size-10 rounded-full object-cover" />
+              <AppImage v-if="m.user.avatar_url" :src="m.user.avatar_url" alt="" class="size-10 rounded-full object-cover" :size="40" />
               <span v-else class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
               <span class="min-w-0 flex-1">
                 <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <OfficialBadge v-if="m.user.official" /><VerifiedBadge v-else-if="m.user.verified" /> <UiChip v-if="m.is_owner" tone="gold">{{ $t('المنشئ') }}</UiChip> <UiChip v-if="m.on_holiday" tone="warning">{{ $t('في إجازة') }}</UiChip></span>

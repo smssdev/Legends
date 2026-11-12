@@ -19,7 +19,7 @@ function dismiss() {
 
 <template>
   <section v-if="show" class="flex flex-wrap items-center gap-3 rounded-2xl border border-gold/30 bg-surface p-4" :aria-label="$t('ثبّت اللعبة')">
-    <img src="/icon-192.png" alt="" class="size-12 shrink-0 rounded-xl" />
+    <AppImage src="/icon-192.png" alt="" class="size-12 shrink-0 rounded-xl" :size="48" />
     <span class="min-w-0 flex-1">
       <b class="block">{{ $t('ثبّت اللعبة على جوالك') }}</b>
       <span class="text-sm text-text-muted">{{ ios ? $t('من زر المشاركة اختر «إضافة إلى الشاشة الرئيسية»، فتفتح كتطبيق وتصلك التذكيرات.') : $t('تفتح من الشاشة الرئيسية كتطبيق، أسرع وبلا شريط المتصفح.') }}</span>

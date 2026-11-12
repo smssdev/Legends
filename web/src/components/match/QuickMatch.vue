@@ -70,7 +70,7 @@ const sideName = (s?: string) => (s === 'away' ? props.away.name : props.home.na
 <template>
   <section class="flex flex-col gap-3 rounded-xl border border-gold/40 bg-panel p-4" :aria-label="$t('الودية تُلعب الآن')" aria-live="polite">
     <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-      <span class="flex min-w-0 items-center gap-2"><img :src="home.crest" alt="" class="size-10 shrink-0" /><b class="truncate text-sm">{{ $nm(home.name) }}</b></span>
+      <span class="flex min-w-0 items-center gap-2"><AppImage :src="home.crest" alt="" class="size-10 shrink-0" :size="40" crest /><b class="truncate text-sm">{{ $nm(home.name) }}</b></span>
       <span class="relative grid size-20 place-items-center" role="timer" :aria-label="$t('الدقيقة {v0}', { v0: minute })">
         <svg viewBox="0 0 80 80" class="absolute inset-0 size-full -rotate-90" aria-hidden="true">
           <circle cx="40" cy="40" :r="R" fill="none" stroke="var(--color-surface-sunk)" stroke-width="6" />
@@ -81,7 +81,7 @@ const sideName = (s?: string) => (s === 'away' ? props.away.name : props.home.na
           <span class="font-numbers text-xs text-text-muted" dir="ltr">{{ shownMinute(now) }}'</span>
         </span>
       </span>
-      <span class="flex min-w-0 items-center justify-end gap-2"><b class="truncate text-sm">{{ $nm(away.name) }}</b><img :src="away.crest" alt="" class="size-10 shrink-0" /></span>
+      <span class="flex min-w-0 items-center justify-end gap-2"><b class="truncate text-sm">{{ $nm(away.name) }}</b><AppImage :src="away.crest" alt="" class="size-10 shrink-0" :size="40" crest /></span>
     </div>
 
     <!-- The little pitch: my goal on the left, theirs on the right, whatever the language. -->

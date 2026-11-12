@@ -262,7 +262,7 @@ async function remove() {
       <div class="pointer-events-none absolute -end-16 -top-16 size-56 rounded-full bg-gold/10" aria-hidden="true" />
       <div class="relative flex flex-wrap items-center gap-4 sm:gap-6">
         <label class="group relative size-24 shrink-0 cursor-pointer sm:size-28" :title="$t('غيّر الصورة')">
-          <img v-if="user.avatar_url" :src="user.avatar_url" :alt="$t('صورتك')" class="size-full rounded-full object-cover ring-4 ring-gold/40" />
+          <img v-if="user.avatar_url" :src="user.avatar_url" :alt="$t('صورتك')" class="size-full rounded-full object-cover ring-4 ring-gold/40" loading="lazy" decoding="async" />
           <span v-else class="flex size-full items-center justify-center rounded-full bg-gold font-display text-4xl font-extrabold text-on-gold ring-4 ring-gold/40">{{ user.name.trim().charAt(0) }}</span>
           <span class="absolute inset-x-0 bottom-0 rounded-b-full bg-black/55 py-1 text-center text-xs font-bold opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">{{ picBusy ? $t('جارٍ الرفع…') : $t('غيّر') }}</span>
           <input ref="picture" type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="sr-only" :disabled="picBusy" @change="upload" />

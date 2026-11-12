@@ -392,7 +392,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
         </dl>
         <p v-if="short" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="alert">{{ $t('رصيدك {v0} كوينز، والدوري المخصص يحتاج {v1}.', { v0: wallet.view?.balance ?? 0, v1: coins }) }}</p>
         <UiButton type="submit" block :disabled="!template || short">
-          <template v-if="customized">{{ $t('إنشاء الدوري المخصص ·') }} <img src="/brand/coin.svg" alt="" class="inline size-5 align-[-4px]" /> <span class="font-numbers">{{ coins }}</span> {{ $t('كوينز') }}</template>
+          <template v-if="customized">{{ $t('إنشاء الدوري المخصص ·') }} <AppImage src="/brand/coin.svg" alt="" class="inline size-5 align-[-4px]" :size="20" /> <span class="font-numbers">{{ coins }}</span> {{ $t('كوينز') }}</template>
           <template v-else>{{ drawMode ? $t('أنشئ الدوري واختر فرقه') : $t('أنشئ الدوري واختر فريقك') }}</template>
         </UiButton>
       </aside>

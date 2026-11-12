@@ -9,7 +9,7 @@ defineProps<{ kind: 'coins' | 'cash'; value: number; to: string; label: string; 
 
 <template>
   <RouterLink :to="to" class="ui-money-pill" :class="kind" :aria-label="label">
-    <img v-if="kind === 'coins'" src="/brand/coin.svg" alt="" class="size-5" />
+    <AppImage v-if="kind === 'coins'" src="/brand/coin.svg" alt="" class="size-5" :size="20" />
     <span class="flex flex-col leading-none">
       <span v-if="caption" class="hidden text-caption font-bold opacity-80 md:block">{{ $t(caption) }}</span>
       <b class="font-numbers text-body-lg" dir="ltr"><CountUp :value="value" :format="kind === 'cash' ? money : undefined" /></b>

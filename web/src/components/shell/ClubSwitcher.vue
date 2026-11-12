@@ -27,7 +27,7 @@ function pick(leagueId: number) {
 <template>
   <DropdownMenuRoot :modal="false">
     <DropdownMenuTrigger v-if="slot.current?.club" class="dock-crest" :aria-label="$t('بدّل النادي: {name}', { name: slot.current.club.name })">
-      <img :src="slot.current.club.crest_url" alt="" class="size-9 shrink-0 drop-shadow" />
+      <AppImage :src="slot.current.club.crest_url" alt="" class="size-9 shrink-0 drop-shadow" :size="36" crest eager />
       <span class="dock-wide-only min-w-0 flex-1 text-start leading-tight">
         <b class="block truncate text-body">{{ $nm(slot.current.club.name) }}</b>
         <span v-if="slot.current.position" class="block truncate text-caption text-text-muted">{{ $t('المركز {v0} من {v1}', { v0: slot.current.position, v1: slot.current.teams }) }}</span>
@@ -38,7 +38,7 @@ function pick(leagueId: number) {
       <DropdownMenuContent :side="inBar ? 'bottom' : dockSide" align="start" :side-offset="8" class="drop-panel z-50 flex max-h-[70vh] w-72 max-w-[calc(100vw-1.5rem)] flex-col gap-1.5 overflow-y-auto overscroll-contain rounded-xl border border-text/10 bg-surface p-2 shadow-overlay focus:outline-none">
         <DropdownMenuLabel class="px-2 text-xs text-text-muted">{{ $t('فرقي') }}</DropdownMenuLabel>
         <DropdownMenuItem v-for="s in clubs" :key="s.slot" class="flex min-h-touch cursor-pointer items-center gap-2 rounded-lg bg-surface-sunk px-2 py-1.5 text-start outline-none data-[highlighted]:bg-surface-raised" @select="pick(s.league!.id)">
-          <img :src="s.club!.crest_url" alt="" class="size-8 shrink-0" />
+          <AppImage :src="s.club!.crest_url" alt="" class="size-8 shrink-0" :size="32" crest eager />
           <span class="min-w-0 flex-1"><b class="block truncate text-sm">{{ $nm(s.club!.name) }}</b>
             <span class="block truncate text-xs text-text-muted">{{ $nm(s.league!.name) }}<template v-if="s.position"> · {{ $t('المركز {v0}', { v0: s.position }) }}</template></span></span>
           <span v-if="s.league!.id === slot.current?.league?.id" class="text-gold" aria-hidden="true">✓</span>

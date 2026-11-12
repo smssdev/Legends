@@ -122,7 +122,7 @@ const INFO = computed(() => [
           <span class="rounded bg-black/25 px-2 py-0.5">{{ match.venue === 'home' ? $t('على أرضك') : $t('خارج أرضك') }}</span>
         </div>
         <div class="relative isolate flex flex-1 flex-col justify-center px-3 py-1">
-          <img src="/art/stadium-banner.svg" alt="" aria-hidden="true" class="absolute inset-0 -z-10 size-full object-cover object-[50%_75%] opacity-40" />
+          <img src="/art/stadium-banner.svg" alt="" aria-hidden="true" class="absolute inset-0 -z-10 size-full object-cover object-[50%_75%] opacity-40" loading="lazy" decoding="async" />
           <div class="absolute inset-0 -z-10 bg-gradient-to-b from-transparent to-panel" aria-hidden="true" />
           <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
             <div v-for="(side, i) in [match.club, match.opponent]" :key="i" class="flex min-w-0 flex-col items-center gap-1 text-center" :class="i === 1 ? 'order-last' : ''">

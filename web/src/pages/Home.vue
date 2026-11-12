@@ -192,7 +192,7 @@ async function openRanking(by: By) {
       <!-- [UP7] The coach's card on top: the picture, the name, the level, the club's cash and the coins. -->
       <section class="coach-card" :aria-label="$t('ملف المدرب')">
         <RouterLink to="/profile" class="shrink-0" :aria-label="$t('حسابي')">
-          <img v-if="home.coach.avatar_url" :src="home.coach.avatar_url" alt="" class="size-14 rounded-full border-2 border-gold object-cover md:size-20" />
+          <AppImage v-if="home.coach.avatar_url" :src="home.coach.avatar_url" alt="" class="size-14 rounded-full border-2 border-gold object-cover md:size-20" :size="80" />
           <span v-else class="grid size-14 place-items-center rounded-full border-2 border-gold bg-surface-raised font-display text-2xl font-extrabold md:size-20 md:text-3xl">{{ home.coach.name.charAt(0) }}</span>
         </RouterLink>
         <div class="flex min-w-0 flex-1 flex-col gap-1">
@@ -208,7 +208,7 @@ async function openRanking(by: By) {
         </div>
         <div class="flex shrink-0 flex-col items-end gap-1.5">
           <RouterLink to="/wallet" class="flex min-h-touch items-center gap-1 rounded-pill bg-gold/15 px-2.5 py-1 text-sm font-bold" :aria-label="$t('الكوينز')">
-            <img src="/brand/coin.svg" alt="" class="size-4" /><span class="font-numbers" dir="ltr">{{ home.coach.coins }}</span>
+            <AppImage src="/brand/coin.svg" alt="" class="size-4" :size="16" /><span class="font-numbers" dir="ltr">{{ home.coach.coins }}</span>
           </RouterLink>
         </div>
       </section>
@@ -252,7 +252,7 @@ async function openRanking(by: By) {
             </span>
             <span class="flex flex-1 items-center justify-center gap-2 px-2 py-1.5">
               <template v-if="s.state === 'club'">
-                <span class="slot-disc"><img :src="s.club!.crest_url" alt="" class="size-8" /></span>
+                <span class="slot-disc"><AppImage :src="s.club!.crest_url" alt="" class="size-8" :size="32" crest /></span>
                 <b class="line-clamp-2 min-w-0 text-start font-display text-sm leading-tight">{{ $nm(s.club!.name) }}</b>
               </template>
               <template v-else-if="s.state === 'waiting'">
@@ -280,7 +280,7 @@ async function openRanking(by: By) {
           <span class="text-text-muted">{{ when(nextUp.next_match.scheduled_at) }}</span>
         </div>
         <div class="flex items-center gap-3">
-          <img v-if="nextUp.club" :src="nextUp.club.crest_url" alt="" class="size-12 shrink-0" />
+          <AppImage v-if="nextUp.club" :src="nextUp.club.crest_url" alt="" class="size-12 shrink-0" :size="48" crest />
           <span class="min-w-0 flex-1">
             <b class="block truncate font-display text-lg">{{ $nm(nextUp.club?.name) }}</b>
             <span class="block truncate text-sm text-text-muted">{{ $t(nextUp.next_match.venue === 'home' ? 'ضد' : 'عند') }} {{ $nm(nextUp.next_match.opponent) }}</span>
@@ -299,7 +299,7 @@ async function openRanking(by: By) {
       <div class="home-side flex min-w-0 flex-col gap-4">
       <!-- [Sprint 30 P6] The starter coins, until claimed; and the first friendly is free. -->
       <section v-if="!home.starter_gift.claimed" class="flex animate-fade-up items-center gap-3 rounded-2xl border border-gold/40 bg-gold/10 p-4" :aria-label="$t('هدية البداية')">
-        <img src="/brand/coin.svg" alt="" class="size-12 shrink-0 animate-pulse-ring rounded-full" />
+        <span class="pulse-ring size-12 shrink-0 rounded-full"><AppImage src="/brand/coin.svg" alt="" class="size-12" :size="48" /></span>
         <span class="min-w-0 flex-1">
           <b class="block font-display text-lg">{{ $t('هدية البداية: {v0} كوينز', { v0: home.starter_gift.coins }) }}</b>
           <span class="text-sm text-text-muted">{{ $t('وأول ودية لك مجانية. استلمها وابدأ.') }}</span>
@@ -399,7 +399,7 @@ async function openRanking(by: By) {
         <nav class="grid grid-cols-2 gap-2" :aria-label="$t('اختصارات')">
           <RouterLink to="/leagues/new" class="home-tile"><span class="text-xl" aria-hidden="true">🏟️</span><span class="text-xs font-bold">{{ $t('أنشئ دورياً') }}</span></RouterLink>
           <RouterLink :to="{ name: 'join' }" class="home-tile"><span class="text-xl" aria-hidden="true">🔑</span><span class="text-xs font-bold">{{ $t('انضم بكود') }}</span></RouterLink>
-          <RouterLink to="/wallet" class="home-tile"><img src="/brand/coin.svg" alt="" class="size-6" /><span class="text-xs font-bold">{{ $t('المحفظة') }}</span></RouterLink>
+          <RouterLink to="/wallet" class="home-tile"><AppImage src="/brand/coin.svg" alt="" class="size-6" :size="24" /><span class="text-xs font-bold">{{ $t('المحفظة') }}</span></RouterLink>
           <RouterLink to="/profile" class="home-tile"><span class="text-xl" aria-hidden="true">🎁</span><span class="text-xs font-bold">{{ $t('ادعُ أصدقاءك') }}</span></RouterLink>
         </nav>
       </aside>

@@ -8,7 +8,7 @@ defineProps<{ amount: number; currency: 'coins' | 'money' }>()
 
 <template>
   <span v-if="currency === 'coins'" class="inline-flex items-center gap-1 font-numbers" dir="ltr">
-    <img src="/brand/coin.svg" alt="" class="size-4" />{{ count(amount) }}<span class="sr-only">{{ $t('كوينز') }}</span>
+    <AppImage src="/brand/coin.svg" alt="" class="size-4" :size="16" />{{ count(amount) }}<span class="sr-only">{{ $t('كوينز') }}</span>
   </span>
   <span v-else class="font-numbers" dir="ltr">{{ money(amount) }}</span>
 </template>

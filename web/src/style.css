@@ -507,6 +507,7 @@ input[type="radio"] {
   animation: var(--animate-shimmer);
 }
 /* A ring that grows out of the element and fades (the Assistant's call to look). */
+.pulse-ring { position: relative; }
 .pulse-ring::after {
   content: "";
   position: absolute;

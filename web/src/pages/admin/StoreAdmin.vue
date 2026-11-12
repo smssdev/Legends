@@ -96,7 +96,7 @@ const field = 'min-h-touch rounded-lg border border-surface-raised bg-surface-su
           {{ k === 'package' ? $t('باقة ثابتة') : $t('عرض لمدة محددة') }}</button>
       </div>
       <label class="flex aspect-video cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border-2 border-dashed border-gold text-center text-sm text-text-soft">
-        <img v-if="card.image_url" :src="card.image_url" alt="" class="size-full object-cover" />
+        <img v-if="card.image_url" :src="card.image_url" alt="" class="size-full object-cover" loading="lazy" decoding="async" />
         <template v-else><b class="text-gold">📷 {{ $t('ارفع صورة من جهازك') }}</b>{{ $t('تُقصّ بنسبة 16:9 تلقائياً') }}</template>
         <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="sr-only" @change="pick" />
       </label>
@@ -122,7 +122,7 @@ const field = 'min-h-touch rounded-lg border border-surface-raised bg-surface-su
       <h2 class="font-display text-xl font-bold">{{ $t('المتجر') }} <span class="font-numbers text-text-muted">{{ items.length }}</span></h2>
       <p v-if="!items.length" class="text-text-muted">{{ $t('لا شيء بعد.') }}</p>
       <div v-for="i in items" :key="i.id" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-3">
-        <img v-if="i.image_url" :src="i.image_url" alt="" class="aspect-video w-28 rounded-lg object-cover" />
+        <img v-if="i.image_url" :src="i.image_url" alt="" class="aspect-video w-28 rounded-lg object-cover" loading="lazy" decoding="async" />
         <div class="min-w-0 flex-1">
           <b>{{ i.title }}</b>
           <span class="block text-xs text-text-muted">{{ i.kind === 'offer' ? (i.ended ? $t('عرض منتهٍ') : $t('عرض حتى {d}', { d: new Date(i.ends_at).toLocaleString() })) : $t('باقة ثابتة') }}

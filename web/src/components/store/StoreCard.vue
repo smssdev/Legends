@@ -15,7 +15,7 @@ const until = computed(() => props.item.ends_at
 <template>
   <article class="flex flex-col overflow-hidden rounded-2xl border border-surface-raised bg-surface">
     <div class="relative aspect-video w-full overflow-hidden bg-surface-sunk">
-      <img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="size-full object-cover" loading="lazy" />
+      <img v-if="item.image_url" :src="item.image_url" :alt="item.title" class="size-full object-cover" loading="lazy" decoding="async" />
       <span v-if="item.discount" class="absolute start-2 top-2 rounded-full bg-live px-3 py-1 text-xs font-extrabold text-white" dir="ltr">-{{ item.discount }}%</span>
       <span v-if="until && !small" class="absolute bottom-2 end-2 rounded-full bg-shade/70 px-3 py-1 text-xs font-bold text-gold-light">{{ $t('حتى {d}', { d: until }) }}</span>
     </div>

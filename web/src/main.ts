@@ -5,6 +5,7 @@ import { createPinia } from 'pinia'
 import './style.css'
 import App from './App.vue'
 import BrandMark from './components/BrandMark.vue'
+import AppImage from './components/ui/AppImage.vue'
 import { router } from './router'
 import { useSeo } from './lib/seo'
 import { useAnalytics } from './lib/analytics'
@@ -16,7 +17,7 @@ import './lib/theme'   // the night or the day look [X56]
 loadNames()
 const app = createApp(App)
 Object.assign(app.config.globalProperties, { $pn: pn, $cn: cn, $ln: ln, $nm: nm, $t: t })
-app.component('BrandMark', BrandMark).use(createPinia()).use(router)
+app.component('BrandMark', BrandMark).component('AppImage', AppImage).use(createPinia()).use(router)
 useSeo(router)   // each page's title, description and keywords for Google [SEO]
 useAnalytics(router)   // [X81] Google Analytics 4 and the Meta Pixel, with Google's Consent Mode
 // [E1.4] In English, once the dictionary is here (it loads on its own, only for English).

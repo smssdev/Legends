@@ -108,7 +108,7 @@ function exportCsv() {
         <li v-for="r in s.table" :key="r.club.id" class="flex items-center gap-3 rounded-xl ui-card p-2.5" :class="mine(r.club.id)">
           <span class="w-6 text-center font-numbers text-lg text-text-muted">{{ r.position }}</span>
           <button type="button" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 text-start font-bold" @click="openSquad(r.club)">
-            <img :src="r.club.crest_url" alt="" class="size-7 shrink-0" />
+            <AppImage :src="r.club.crest_url" alt="" class="size-7 shrink-0" :size="28" crest />
             <span class="min-w-0"><span class="block truncate">{{ $nm(r.club.name) }}</span>
               <span class="block font-numbers text-xs font-normal text-text-muted">{{ $t('لعب {v0} · له {v1} · عليه {v2}', { v0: r.played, v1: r.goals_for, v2: r.goals_against }) }}</span></span>
           </button>
@@ -122,7 +122,7 @@ function exportCsv() {
           <tbody class="font-numbers">
             <tr v-for="r in s.table" :key="r.club.id" class="border-t border-text/5 text-center" :class="mine(r.club.id)">
               <td class="py-2">{{ r.position }}</td>
-              <td class="text-start font-sans"><button type="button" class="flex min-h-touch items-center gap-2 font-bold hover:text-gold" @click="openSquad(r.club)"><img :src="r.club.crest_url" alt="" class="size-6" />{{ $nm(r.club.name) }}</button></td>
+              <td class="text-start font-sans"><button type="button" class="flex min-h-touch items-center gap-2 font-bold hover:text-gold" @click="openSquad(r.club)"><AppImage :src="r.club.crest_url" alt="" class="size-6" :size="24" crest />{{ $nm(r.club.name) }}</button></td>
               <td>{{ r.played }}</td><td>{{ r.won }}</td><td>{{ r.drawn }}</td><td>{{ r.lost }}</td><td>{{ r.goals_for }}</td><td>{{ r.goals_against }}</td>
               <td dir="ltr">{{ r.goal_difference > 0 ? '+' : '' }}{{ r.goal_difference }}</td><td>{{ avg(r.goals_per_match_x100) }}</td><td>{{ avg(r.conceded_per_match_x100) }}</td>
               <td class="font-bold text-gold">{{ r.points }}</td>
@@ -176,7 +176,7 @@ function exportCsv() {
       <section v-if="tab === 'value'" class="flex flex-col gap-1 rounded-xl ui-card p-3" :aria-label="$t('القيمة السوقية')">
         <div v-for="r in s.value" :key="r.club.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 first:border-0">
           <span class="w-6 text-center font-numbers text-text-muted">{{ r.position }}</span>
-          <img :src="r.club.crest_url" alt="" class="size-7" />
+          <AppImage :src="r.club.crest_url" alt="" class="size-7" :size="28" crest />
           <button type="button" class="min-w-0 flex-1 truncate text-start font-bold hover:text-gold" @click="openSquad(r.club)">{{ $nm(r.club.name) }}</button>
           <span class="text-xs text-text-muted">{{ $t('{v0} لاعباً', { v0: r.players }) }}</span>
           <b class="font-numbers text-gold" dir="ltr">{{ money(r.value) }}</b>
@@ -190,7 +190,7 @@ function exportCsv() {
             <tr class="text-xs"><th /><th>{{ $t('لعب') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('النقاط') }}</th><th>{{ $t('لعب') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('النقاط') }}</th></tr></thead>
           <tbody class="font-numbers">
             <tr v-for="r in s.split" :key="r.club.id" class="border-t border-text/5 text-center" :class="mine(r.club.id)">
-              <td class="py-2 text-start font-sans font-bold"><span class="flex items-center gap-2"><img :src="r.club.crest_url" alt="" class="size-5" />{{ $nm(r.club.name) }}</span></td>
+              <td class="py-2 text-start font-sans font-bold"><span class="flex items-center gap-2"><AppImage :src="r.club.crest_url" alt="" class="size-5" :size="20" crest />{{ $nm(r.club.name) }}</span></td>
               <td>{{ r.home.played }}</td><td dir="ltr">{{ r.home.goals_for - r.home.goals_against }}</td><td class="font-bold text-gold">{{ r.home.points }}</td>
               <td>{{ r.away.played }}</td><td dir="ltr">{{ r.away.goals_for - r.away.goals_against }}</td><td class="font-bold text-gold">{{ r.away.points }}</td>
             </tr>

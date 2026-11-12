@@ -83,7 +83,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
     <!-- The friendly just played. -->
     <section v-else-if="last" class="flex flex-col gap-3 rounded-xl border border-gold/40 ui-card p-4" :aria-label="$t('نتيجة الودية')" aria-live="polite">
       <div class="flex items-center gap-3">
-        <img :src="last.opponent.crest_url" alt="" class="size-10" />
+        <AppImage :src="last.opponent.crest_url" alt="" class="size-10" :size="40" crest />
         <span class="min-w-0 flex-1"><b class="block">{{ $t('ضد {v0}', { v0: $nm(last.opponent.name) }) }}</b><span class="text-xs text-text-muted">{{ $t(result(last)) }}</span></span>
         <b class="font-numbers text-4xl" dir="ltr">{{ scoreText(last.goals_for, last.goals_against) }}</b>
       </div>
@@ -97,7 +97,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
     <div v-if="!v && leagueId" class="flex flex-col gap-2" aria-hidden="true"><div v-for="n in 4" :key="n" class="h-16 animate-pulse rounded-xl ui-card" /></div>
     <ul v-else-if="v" class="flex flex-col gap-2">
       <li v-for="o in v.opponents" :key="o.id" class="flex min-h-touch items-center gap-3 rounded-xl ui-card p-3" :class="o.recommended ? 'border border-brand-light/40' : ''">
-        <img :src="o.crest_url" alt="" class="size-10 shrink-0" />
+        <AppImage :src="o.crest_url" alt="" class="size-10 shrink-0" :size="40" crest />
         <span class="min-w-0 flex-1">
           <b class="block truncate">{{ $nm(o.name) }} · <span class="font-numbers text-brand-light">{{ Math.round(o.strength_cp / 100) }}</span></b>
           <span class="block truncate text-xs text-text-muted">{{ o.recommended ? $t('موصى به: الأقرب إلى قوتك') : o.coach ? $t('مدرب: {v0}', { v0: o.coach }) : $t('الكمبيوتر') }}</span>
@@ -112,7 +112,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
     <section v-if="v?.recent.length" class="flex flex-col gap-2">
       <h2 class="font-display text-lg font-bold">{{ $t('آخر الوديات') }}</h2>
       <div v-for="f in v.recent" :key="f.id" class="flex items-center gap-2 rounded-lg bg-surface px-3 py-2 text-sm">
-        <img :src="f.opponent.crest_url" alt="" class="size-7" /><span class="min-w-0 flex-1 truncate">{{ $nm(f.opponent.name) }}</span>
+        <AppImage :src="f.opponent.crest_url" alt="" class="size-7" :size="28" crest /><span class="min-w-0 flex-1 truncate">{{ $nm(f.opponent.name) }}</span>
         <b class="font-numbers text-base" dir="ltr">{{ scoreText(f.goals_for, f.goals_against) }}</b>
       </div>
     </section>

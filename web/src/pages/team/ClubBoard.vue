@@ -49,7 +49,7 @@ const waiting = computed(() => b.value?.pending.length ?? 0)
           </div>
           <div class="office-vs">
             <div v-for="(side, i) in [b.match.club, b.match.opponent]" :key="side.id" class="flex min-w-0 flex-col items-center gap-0.5" :style="{ order: i * 2 }">
-              <img :src="side.crest_url" alt="" class="office-crest drop-shadow" />
+              <img :src="side.crest_url" alt="" class="office-crest drop-shadow" loading="lazy" decoding="async" />
               <b class="max-w-full truncate text-body-lg">{{ $nm(side.name) }}</b>
               <span class="flex items-center gap-1.5"><span class="font-numbers text-title text-brand-light">{{ strength(side.strength_cp) }}</span>
                 <span class="flex gap-0.5 max-md:hidden" :aria-label="$t('آخر النتائج')">

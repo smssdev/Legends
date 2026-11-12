@@ -27,7 +27,7 @@ const moraleColor = (v: number) => (v >= 75 ? 'var(--color-success)' : v < 50 ? 
 <template>
   <aside class="team-card flex flex-col overflow-hidden rounded-2xl" :aria-label="$t('بطاقة الفريق')">
     <header class="flex items-center gap-3 px-4 pt-4">
-      <img :src="team.club.crest_url" :alt="team.club.name" width="48" height="54" class="shrink-0" />
+      <AppImage :src="team.club.crest_url" :alt="team.club.name" :width="48" :height="54" class="shrink-0" crest />
       <div class="min-w-0 flex-1">
         <h2 class="truncate font-display text-xl font-extrabold">{{ $nm(team.club.name) }}</h2>
         <p v-if="board?.match?.club.coach" class="truncate text-sm text-text-soft"><bdi>{{ board.match.club.coach }}</bdi></p>
@@ -72,7 +72,7 @@ const moraleColor = (v: number) => (v >= 75 ? 'var(--color-success)' : v < 50 ? 
       </li>
       <li v-if="board?.match" class="flex min-h-11 items-center gap-2 px-3">
         <span class="w-20 shrink-0 text-text-muted">{{ $t('المباراة القادمة') }}</span>
-        <img :src="board.match.opponent.crest_url" alt="" width="20" height="22" />
+        <AppImage :src="board.match.opponent.crest_url" alt="" :width="20" :height="22" crest />
         <b class="min-w-0 flex-1 truncate">{{ $nm(board.match.opponent.name) }}</b>
         <span class="font-numbers font-bold text-gold">{{ Math.round(board.match.opponent.strength_cp / 100) }}</span>
       </li>
