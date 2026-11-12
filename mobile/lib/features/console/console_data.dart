@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' as api;
+import '../../api/read.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/intents.dart';
 
@@ -10,12 +12,7 @@ import '../../core/api/intents.dart';
 class DailyTask {
   const DailyTask({required this.task, required this.complete, required this.claimed, required this.coins});
 
-  factory DailyTask.fromJson(Map<String, dynamic> j) => DailyTask(
-    task: '${j['task']}',
-    complete: j['complete'] == true,
-    claimed: j['claimed'] == true,
-    coins: (j['coins'] as num?)?.toInt() ?? 0,
-  );
+  factory DailyTask.of(api.DailyTasksTasksItem t) => DailyTask(task: t.task, complete: t.complete, claimed: t.claimed, coins: t.coins);
 
   final String task;
   final bool complete, claimed;
@@ -25,12 +22,16 @@ class DailyTask {
 class DailyTasks {
   const DailyTasks({required this.done, required this.total, required this.tasks, this.renewsAt});
 
-  factory DailyTasks.fromJson(Map<String, dynamic> j) => DailyTasks(
-    done: (j['done'] as num?)?.toInt() ?? 0,
-    total: (j['total'] as num?)?.toInt() ?? 0,
-    renewsAt: DateTime.tryParse('${j['renews_at'] ?? ''}'),
-    tasks: [for (final t in (j['tasks'] as List<dynamic>? ?? const [])) DailyTask.fromJson(t as Map<String, dynamic>)],
-  );
+  /// [Sprint 59 F1] Today's tasks (`DailyTasks`), read through the generated model.
+  factory DailyTasks.fromJson(Object? json) {
+    final d = api.DailyTasks.fromJson(json);
+    return DailyTasks(
+      done: d.done,
+      total: d.total,
+      renewsAt: DateTime.tryParse(d.renewsAt),
+      tasks: [for (final t in d.tasks) DailyTask.of(t)],
+    );
+  }
 
   final int done, total;
   final DateTime? renewsAt;
@@ -57,25 +58,26 @@ class Auction {
     required this.endsAt,
   });
 
-  factory Auction.fromJson(Map<String, dynamic> j) {
-    int n(String k) => (j[k] as num?)?.toInt() ?? 0;
+  /// [Sprint 59 F1] An auction (`Auction`), read through the generated model.
+  factory Auction.fromJson(Object? json) {
+    final a = api.Auction.fromJson(json);
     return Auction(
-      playerId: n('player_id'),
-      name: '${j['name']}',
-      position: '${j['position'] ?? ''}',
-      age: n('age'),
-      overall: n('overall'),
-      value: n('value'),
-      clubId: n('club_id'),
-      club: '${j['club'] ?? ''}',
-      opening: n('opening'),
-      top: (j['top'] as num?)?.toInt(),
-      bids: n('bids'),
-      next: n('next'),
-      max: n('max'),
-      mine: (j['mine'] as num?)?.toInt(),
-      leading: j['leading'] == true,
-      endsAt: DateTime.tryParse('${j['ends_at'] ?? ''}') ?? DateTime.now(),
+      playerId: a.playerId,
+      name: a.name,
+      position: a.position,
+      age: a.age,
+      overall: a.overall,
+      value: a.value,
+      clubId: a.clubId,
+      club: a.club,
+      opening: a.opening,
+      top: a.top,
+      bids: a.bids,
+      next: a.next,
+      max: a.max,
+      mine: a.mine,
+      leading: a.leading,
+      endsAt: DateTime.parse(a.endsAt),
     );
   }
 
@@ -97,16 +99,17 @@ class Negotiation {
     this.bought = false,
   });
 
-  factory Negotiation.fromJson(Map<String, dynamic> j) {
-    int n(String k) => (j[k] as num?)?.toInt() ?? 0;
+  /// [Sprint 59 F1] The talk with a computer club (`Negotiation`), read through the generated model.
+  factory Negotiation.fromJson(Object? json) {
+    final n = api.Negotiation.fromJson(json);
     return Negotiation(
-      playerId: n('player_id'),
-      price: n('price'),
-      ask: n('ask'),
-      round: n('round'),
-      rounds: n('rounds'),
-      status: '${j['status']}',
-      bought: j['bought'] == true,
+      playerId: n.playerId,
+      price: n.price,
+      ask: n.ask,
+      round: n.round,
+      rounds: n.rounds,
+      status: n.status,
+      bought: n.bought ?? false,
     );
   }
 
@@ -125,18 +128,15 @@ class ChestOdds {
 class Chest {
   const Chest({required this.chest, required this.coins, required this.odds});
 
-  factory Chest.fromJson(Map<String, dynamic> j) => Chest(
-    chest: '${j['chest']}',
-    coins: (j['coins'] as num?)?.toInt() ?? 0,
-    odds: [
-      for (final o in (j['odds'] as List<dynamic>? ?? const []))
-        ChestOdds(
-          reward: '${(o as Map<dynamic, dynamic>)['reward']}',
-          amount: (o['amount'] as num?)?.toInt() ?? 0,
-          pctBp: (o['pct_bp'] as num?)?.toInt() ?? 0,
-        ),
-    ],
-  );
+  /// [Sprint 59 F1] A chest and its odds (`Chest`), read through the generated model.
+  factory Chest.fromJson(Object? json) {
+    final c = api.Chest.fromJson(json);
+    return Chest(
+      chest: c.chest,
+      coins: c.coins,
+      odds: [for (final o in c.odds) ChestOdds(reward: o.reward, amount: o.amount, pctBp: o.pctBp)],
+    );
+  }
 
   final String chest;
   final int coins;
@@ -153,16 +153,13 @@ class ConsoleRepository {
       DailyTasks.fromJson(await _api.post('/leagues/$league/daily-tasks/claim', {'task': task}));
 
   Future<({List<Auction> auctions, List<int> minutes})> auctions(int league) async {
-    final j = await _api.get('/leagues/$league/auctions');
-    return (
-      auctions: [for (final a in (j['auctions'] as List<dynamic>? ?? const [])) Auction.fromJson(a as Map<String, dynamic>)],
-      minutes: [for (final m in (j['minutes'] as List<dynamic>? ?? const [])) (m as num).toInt()],
-    );
+    final r = JsonReader(await _api.get('/leagues/$league/auctions'), 'Auctions');
+    return (auctions: r.list('auctions', Auction.fromJson), minutes: r.list('minutes', JsonReader.intOf));
   }
 
   Future<Auction> bid(int league, int player, int amount) => Intents.run('bid:$league:$player:$amount', (key) async {
     final j = await _api.post('/leagues/$league/auctions/$player/bids', {'amount': amount, 'idempotency_key': key});
-    return Auction.fromJson(j['auction'] as Map<String, dynamic>);
+    return JsonReader(j, 'Bid').object('auction', Auction.fromJson);
   });
 
   Future<void> listAuction(int league, int player, int price, int minutes) =>
@@ -191,8 +188,7 @@ class ConsoleRepository {
   );
 
   Future<List<Chest>> chests(int league) async => [
-    for (final c in ((await _api.get('/leagues/$league/chests'))['chests'] as List<dynamic>? ?? const []))
-      Chest.fromJson(c as Map<String, dynamic>),
+    ...JsonReader(await _api.get('/leagues/$league/chests'), 'Chests').list('chests', Chest.fromJson),
   ];
 
   /// Opens a chest: what it gave ({reward, amount}).

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/api/gen/models.g.dart' hide MatchView, TrainingView;
 import 'package:glm/api/read.dart';
 import 'package:glm/features/club/extras_data.dart';
+import 'package:glm/features/console/console_data.dart' as console;
 import 'package:glm/features/club/team_data.dart';
 import 'package:glm/features/match/match_data.dart';
 
@@ -93,5 +94,14 @@ void main() {
     expect(r.reasons, isNotEmpty);
     expect(r.ratings['home'], isNotEmpty);
     expect(modelErrors.where((e) => e.contains('MatchCoachReport') || e.contains('ReportNote') || e.contains('ReportPlayer')), isEmpty);
+  });
+
+  test('the console: the captured daily tasks, auctions, talk and chests read through their models', () {
+    Map<String, dynamic> j(String n) => jsonDecode(File('test/fixtures/$n.json').readAsStringSync()) as Map<String, dynamic>;
+    expect(console.DailyTasks.fromJson(j('daily_tasks')).tasks, hasLength(4));
+    expect(console.Auction.fromJson((j('auctions')['auctions'] as List<dynamic>).first).leading, isTrue);
+    expect(console.Negotiation.fromJson(j('negotiation')).status, 'open');
+    expect(console.Chest.fromJson((j('chests')['chests'] as List<dynamic>).first).odds, isNotEmpty);
+    expect(modelErrors.where((e) => RegExp('DailyTasks|Auction|Negotiation|Chest').hasMatch(e)), isEmpty);
   });
 }

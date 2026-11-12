@@ -5741,6 +5741,7 @@ class MomentStoryLinesItem {
 class Negotiation {
   const Negotiation({
     required this.ask,
+    this.bought,
     required this.expiresAt,
     required this.playerId,
     required this.price,
@@ -5753,6 +5754,7 @@ class Negotiation {
     final r = JsonReader(json, 'Negotiation');
     return Negotiation(
       ask: r.int_('ask'),
+      bought: r.boolOrNull('bought'),
       expiresAt: r.string('expires_at'),
       playerId: r.int_('player_id'),
       price: r.int_('price'),
@@ -5764,6 +5766,9 @@ class Negotiation {
 
   /// What it asks now
   final int ask;
+
+  /// After an offer: the club took it and the player is mine
+  final bool? bought;
   final String expiresAt;
   final int playerId;
 

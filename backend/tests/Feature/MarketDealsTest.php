@@ -73,7 +73,10 @@ class MarketDealsTest extends TestCase
         $bid($this->coach, $value)->assertOk()->assertJsonPath('auction.leading', true);
         $next = Auctions::next($value, $value, $value);
         $bid($this->coach, $next)->assertConflict();                     // he leads already
-        $this->assertSame($next, $this->actingAs($this->coach)->getJson($this->url('/auctions'))->json('auctions.0.next'));
+        $this->assertSame($next, $this->actingAs($this->coach)->getJson($this->url('/auctions'))
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['minutes', 'auctions' => ['*' => ['player_id', 'name', 'position', 'age', 'overall', 'value', 'club_id', 'club', 'opening', 'top', 'bids', 'next', 'max', 'mine', 'leading', 'ends_at']]])
+            ->json('auctions.0.next'));
         $bid($this->coach, $value * 3)->assertConflict();
 
         // The end comes; the deal goes through the coaches' path.
@@ -121,7 +124,9 @@ class MarketDealsTest extends TestCase
         DB::table('players')->where('league_id', $this->league['id'])->whereNull('club_id')->orderBy('id')->limit(2)->update(['club_id' => $bot, 'in_pool' => false]);
         $p = $this->cheapest($bot);
         $url = $this->url("/negotiations/{$p->id}");
-        $ask = $this->actingAs($this->owner)->getJson($url)->assertOk()->json('ask');
+        $ask = $this->actingAs($this->owner)->getJson($url)->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['player_id', 'price', 'ask', 'round', 'rounds', 'status', 'expires_at'])->json('ask');
         $floor = intdiv((int) $p->value * (int) config('game.negotiation.floor_bp'), 10000);
         $offer = $floor;
         $res = $this->postJson($url, ['amount' => $offer, 'idempotency_key' => 'n1'])->assertOk()->json();
@@ -139,7 +144,9 @@ class MarketDealsTest extends TestCase
 
     public function test_a_chest_shows_its_odds_costs_its_coins_and_gives_one_reward(): void
     {
-        $chests = $this->actingAs($this->owner)->getJson($this->url('/chests'))->assertOk()->json('chests');
+        $chests = $this->actingAs($this->owner)->getJson($this->url('/chests'))->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['chests' => ['*' => ['chest', 'coins', 'odds' => ['*' => ['reward', 'amount', 'pct_bp']]]]])->json('chests');
         $this->assertSame(['bronze', 'silver', 'legend'], array_column($chests, 'chest'));
         $this->assertSame(10000, array_sum(array_column($chests[0]['odds'], 'pct_bp')));
         // Coins are spent outside a fair league only.
