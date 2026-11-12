@@ -5,7 +5,11 @@
 import 'dart:io';
 
 final _arabic = RegExp('[؀-ۿ]');
-final _literal = RegExp(r"'(?:[^'\\]|\\.)*'" '|' r'"(?:[^"\\]|\\.)*"');
+final _literal = RegExp(
+  r"'(?:[^'\\]|\\.)*'"
+  '|'
+  r'"(?:[^"\\]|\\.)*"',
+);
 const _allowed = ['المدرب الأسطورة', 'العربية'];
 const _generated = ['lib/l10n/', 'lib/features/match/feed/story_words.dart'];
 

@@ -9,22 +9,78 @@ import 'package:yaml/yaml.dart';
 
 const _out = 'lib/api/gen/models.g.dart';
 const _keywords = {
-  'abstract', 'as', 'assert', 'async', 'await', 'base', 'break', 'case', 'catch', 'class', 'const', 'continue', 'default',
-  'deferred', 'do', 'dynamic', 'else', 'enum', 'export', 'extends', 'extension', 'external', 'factory', 'false', 'final',
-  'finally', 'for', 'get', 'if', 'implements', 'import', 'in', 'interface', 'is', 'late', 'library', 'mixin', 'new',
-  'null', 'on', 'operator', 'part', 'required', 'rethrow', 'return', 'sealed', 'set', 'static', 'super', 'switch', 'this',
-  'throw', 'true', 'try', 'typedef', 'var', 'void', 'when', 'while', 'with', 'yield', 'hashCode', 'runtimeType',
-  'toString', 'noSuchMethod',
+  'abstract',
+  'as',
+  'assert',
+  'async',
+  'await',
+  'base',
+  'break',
+  'case',
+  'catch',
+  'class',
+  'const',
+  'continue',
+  'default',
+  'deferred',
+  'do',
+  'dynamic',
+  'else',
+  'enum',
+  'export',
+  'extends',
+  'extension',
+  'external',
+  'factory',
+  'false',
+  'final',
+  'finally',
+  'for',
+  'get',
+  'if',
+  'implements',
+  'import',
+  'in',
+  'interface',
+  'is',
+  'late',
+  'library',
+  'mixin',
+  'new',
+  'null',
+  'on',
+  'operator',
+  'part',
+  'required',
+  'rethrow',
+  'return',
+  'sealed',
+  'set',
+  'static',
+  'super',
+  'switch',
+  'this',
+  'throw',
+  'true',
+  'try',
+  'typedef',
+  'var',
+  'void',
+  'when',
+  'while',
+  'with',
+  'yield',
+  'hashCode',
+  'runtimeType',
+  'toString',
+  'noSuchMethod',
 };
 
 late Map<dynamic, dynamic> _schemas;
 final _classes = <String, String>{};
 
-String _pascal(String s) => s
-    .split(RegExp(r'[^A-Za-z0-9]+'))
-    .where((p) => p.isNotEmpty)
-    .map((p) => p[0].toUpperCase() + p.substring(1))
-    .join();
+String _pascal(String s) =>
+    s.split(RegExp(r'[^A-Za-z0-9]+')).where((p) => p.isNotEmpty).map((p) => p[0].toUpperCase() + p.substring(1)).join();
 
 String _field(String s) {
   final p = _pascal(s);

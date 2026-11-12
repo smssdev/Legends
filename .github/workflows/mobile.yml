@@ -44,6 +44,8 @@ jobs:
       # [Sprint 59 F9] No Arabic word in the code outside lib/l10n/.
       - name: Words in the arb files
         run: dart run tool/arabic.dart
+      # [Sprint 59 F3] The code formatted at 140 (analysis_options.yaml).
+      - run: dart format --set-exit-if-changed lib test tool
       - run: flutter analyze
       - run: flutter test
       # [Sprint 59 F8] The screenshots draw without an error (written, not compared to a reference yet).
