@@ -18,6 +18,8 @@ import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../leagues/widgets.dart' show when;
 import '../leagues/shell.dart';
+import '../../api/gen/models.g.dart' as api;
+import '../../api/read.dart';
 
 part 'tournament_screen.dart';
 part 'tournament_screens_alliance_screen.dart';
@@ -25,11 +27,9 @@ part 'tournament_screens_alliance_screen.dart';
 /// [Sprint 18 G] Tournaments (Sprint 29) and the alliance tournament (X27) in the app: my tournaments, a new one from
 /// a template, its page (code, entry, groups), and its draw replayed on the server's clock, one ball every reveal_ms
 /// from drawn_at, so every screen shows the same ball at the same moment. Picking teams one by one stays on the site.
-final tournamentsProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>(
-  (ref) async => [
-    for (final t in (await ref.read(apiProvider).get('/tournaments'))['tournaments'] as List<dynamic>? ?? const [])
-      t as Map<String, dynamic>,
-  ],
+/// [Sprint 59 F1] The tournaments through the generated model (`Tournament`).
+final tournamentsProvider = FutureProvider.autoDispose<List<api.Tournament>>(
+  (ref) async => JsonReader(await ref.read(apiProvider).get('/tournaments'), 'Tournaments').list('tournaments', api.Tournament.fromJson),
 );
 final catalogProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) => ref.read(apiProvider).get('/tournaments/catalog'));
 final tournamentProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
@@ -96,7 +96,7 @@ class TournamentsScreen extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: GlmCard(
-                        onTap: () => context.push('/tournaments/${(t as Map<dynamic, dynamic>)['id']}'),
+                        onTap: () => context.push('/tournaments/${t.id}'),
                         child: Row(
                           children: [
                             Icon(Icons.emoji_events_rounded, color: context.palette.gold),
@@ -105,9 +105,9 @@ class TournamentsScreen extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('${t['name']}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                                  Text(t.name, style: const TextStyle(fontWeight: FontWeight.w800)),
                                   Text(
-                                    '${templateName(l, '${t['template']}')} · ${l.teamsCount(t['team_count'] as int? ?? 0)}',
+                                    '${templateName(l, t.template ?? '')} · ${l.teamsCount(t.teamCount)}',
                                     style: TextStyle(color: context.palette.textMuted, fontSize: 12),
                                   ),
                                 ],

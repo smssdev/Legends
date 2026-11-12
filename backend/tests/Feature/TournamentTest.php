@@ -131,6 +131,11 @@ class TournamentTest extends TestCase
         $this->assertSame($tables[2][1]['id'], (int) $sf[0]->away_id);
         $this->assertSame((int) $sf[0]->home_id, (int) DB::table('fixtures')->where('id', $sf[0]->fixture_id)->value('home_id'));
 
+        // [Sprint 59 F1] In its owner's list, with the fields the app reads through Tournament (openapi.yaml).
+        $this->actingAs($this->owner)->getJson('/api/v1/tournaments')->assertOk()
+            ->assertJsonStructure(['tournaments' => ['*' => ['id', 'name', 'code', 'template', 'format', 'group_count', 'advance_per_group', 'legs',
+                'team_count', 'status', 'owner', 'starts_at', 'draw_at', 'drawn_at', 'coaches', 'entry_mode', 'entrants']]]);
+
         // Its page: the groups and the bracket.
         $page = $this->actingAs(User::factory()->create())->getJson("/api/v1/tournaments/{$league->id}")->assertOk()->json('tournament');
         $this->assertSame(['A', 'B'], array_column($page['groups'], 'group'));
