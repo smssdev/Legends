@@ -159,9 +159,8 @@ function move(from: Spot, to: Spot) {
     message.value = 'الاحتياط 7 لاعبين على الأكثر.'
     return
   }
-  // [Sprint 27 W4] Any outfield player in any outfield place; the goal only for a goalkeeper, and he only in goal.
-  const keeper = (id: number | null) => id !== null && players.value.get(id)?.line === 'gk'
-  const wrong = (id: number | null, slot: number) => id !== null && (slot === 0 ? !keeper(id) : keeper(id))
+  // [Sprint 59 F6] The server's rule for each slot (any outfield player in any outfield place, the goal for a keeper).
+  const wrong = (id: number | null, slot: number) => id !== null && !takes(players.value.get(id)?.line, slot)
   if ((to.zone === 'slot' && wrong(a, to.index)) || (from.zone === 'slot' && wrong(b, from.index))) {
     message.value = 'خانة الحارس لحارس مرمى، والحارس مكانه في المرمى أو على الدكة.'
     return
@@ -234,8 +233,9 @@ function spotOf(id: number): Spot {
 const ratingAt = (p: SquadPlayer, line: string | undefined) =>
   line ? Math.floor((p.overall * ((p.place_bp as Record<string, number> | undefined)?.[line] ?? 10000)) / 10000) : p.overall
 const shareAt = (p: SquadPlayer, line: string | undefined) => (line ? ((p.place_bp as Record<string, number> | undefined)?.[line] ?? 10000) / 100 : 100)
-/** The goal for a goalkeeper, and a goalkeeper for the goal (the server's rule). */
-const allowed = (p: SquadPlayer, slot: number) => (slot === 0 ? p.line === 'gk' : p.line !== 'gk')
+/** [Sprint 59 F6] The lines a slot takes, as the server sends them with each slot (the rule the save enforces). */
+const takes = (line: string | undefined, slot: number) => !!line && (current.value?.slots[slot]?.allowed ?? []).includes(line as 'gk')
+const allowed = (p: SquadPlayer, slot: number) => takes(p.line, slot)
 const LINES = { gk: 'حراس', def: 'دفاع', mid: 'وسط', att: 'هجوم' } as const
 const slotLabel = (i: number) => current.value?.slots[i]?.role ?? ''
 

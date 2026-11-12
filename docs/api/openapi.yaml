@@ -5814,6 +5814,10 @@ components:
         line: { type: string, enum: [gk, def, mid, att] }
         x: { type: integer, description: Depth towards the opponent's goal, decimetres (0 to 1050) }
         y: { type: integer, description: Across the pitch, decimetres (0 far touchline, 680 near); right-sided roles sit high }
+        allowed:
+          type: array
+          items: { type: string, enum: [gk, def, mid, att] }
+          description: "[Sprint 59 F6] The player lines this slot takes (sent with the team's lineup and formations): the screens apply it, the save enforces it."
     Formation:
       type: object
       required: [name, label, slots, lines]

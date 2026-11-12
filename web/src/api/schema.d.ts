@@ -14371,6 +14371,8 @@ export interface components {
             x: number;
             /** @description Across the pitch */
             y: number;
+            /** @description [Sprint 59 F6] The player lines this slot takes (sent with the team's lineup and formations): the screens apply it, the save enforces it. */
+            allowed?: ("gk" | "def" | "mid" | "att")[];
         };
         Formation: {
             /** @example 4-3-3A */

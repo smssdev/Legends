@@ -33,6 +33,23 @@ class TeamSheet
         'LW' => 'att', 'RW' => 'att', 'ST' => 'att', 'CF' => 'att',
     ];
 
+    /**
+     * [Sprint 59 F6] The lines a slot takes, the rule save() enforces, sent with each slot so no screen keeps its own:
+     * the goal for a goalkeeper, and any outfield line in an outfield place (out of his line at the engine's share).
+     *
+     * @return list<string>
+     */
+    public static function allowed(string $slotLine): array
+    {
+        return $slotLine === 'gk' ? ['gk'] : ['def', 'mid', 'att'];
+    }
+
+    /** The slots with the lines each one takes. */
+    public static function withAllowed(array $slots): array
+    {
+        return array_map(fn ($s) => $s + ['allowed' => self::allowed($s['line'])], $slots);
+    }
+
     public const LINE_NAME = ['gk' => 'حراسة المرمى', 'def' => 'الدفاع', 'mid' => 'الوسط', 'att' => 'الهجوم'];
 
     /** The lines a player may stand in: his position's, and his other positions' (a CB who also plays CDM). */
@@ -260,14 +277,15 @@ class TeamSheet
                 throw ValidationException::withMessages(['starters' => __('كل اللاعبين يجب أن يكونوا من فريقك.')]);
             }
         }
-        if ($squad[$starters[0]]['line'] !== 'gk') {
+        // [Sprint 59 F6] The one rule, allowed(), that the screens read with each slot.
+        if (! in_array($squad[$starters[0]]['line'], self::allowed($slots[0]['line']), true)) {
             throw ValidationException::withMessages(['starters' => __('خانة الحارس لحارس مرمى.')]);
         }
         // [Sprint 27 W4, the owner's request 2026-10-30: as flexible as OSM] Any outfield player in any outfield place:
         // out of his lines he plays at the engine's own out-of-position share (App\Engine\Ability::position), and the
         // screen says so. Only the goal is kept for a goalkeeper, and a goalkeeper for the goal.
         foreach ($starters as $i => $id) {
-            if ($i > 0 && $squad[$id]['line'] === 'gk') {
+            if ($i > 0 && ! in_array($squad[$id]['line'], self::allowed($slots[$i]['line']), true)) {
                 throw ValidationException::withMessages(['starters' => sprintf(__('%s حارس مرمى: مكانه في المرمى أو على الدكة.'), $squad[$id]['name'])]);
             }
         }

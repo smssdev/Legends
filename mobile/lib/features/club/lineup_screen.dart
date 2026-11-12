@@ -60,12 +60,11 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
       ? t.lineup.slots
       : formations.where((f) => f.name == _formation).firstOrNull?.slots ?? t.lineup.slots;
 
-  /// [2026-11-09] The server's rule, before it is asked: the goal for a goalkeeper, and a goalkeeper only in goal or on
-  /// the bench.
-  bool _keepersRight(List<int> starters, TeamData t) {
+  /// [Sprint 59 F6] The server's rule, read from each slot before it is asked (`allowed`, the rule the save enforces).
+  bool _fits(List<int> starters, TeamData t, List<Slot> slots) {
     String? line(int id) => t.players.where((p) => p.id == id).firstOrNull?.line;
-    for (var i = 0; i < starters.length; i++) {
-      if ((i == 0) != (line(starters[i]) == 'gk')) return false;
+    for (var i = 0; i < starters.length && i < slots.length; i++) {
+      if (!slots[i].takes(line(starters[i]))) return false;
     }
     return true;
   }
@@ -100,7 +99,8 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     }
     final t = ref.read(teamProvider(widget.leagueId)).value;
     // Only a swap that breaks it is refused (a sheet already wrong on the server stays editable).
-    if (t != null && !_keepersRight(starters, t) && _keepersRight(_starters!, t)) {
+    final slots = t == null ? const <Slot>[] : _slots(t, ref.read(formationsProvider).value ?? const []);
+    if (t != null && !_fits(starters, t, slots) && _fits(_starters!, t, slots)) {
       setState(() => _picked = null);
       showGlmToast(context, L.of(context).keeperSlotOnly, error: true);
       return;

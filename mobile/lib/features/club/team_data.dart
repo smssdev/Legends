@@ -57,12 +57,23 @@ class Player {
 }
 
 class Slot {
-  const Slot({required this.role, required this.line, required this.x, required this.y});
+  const Slot({required this.role, required this.line, required this.x, required this.y, this.allowed = const []});
 
-  factory Slot.fromJson(Map<String, dynamic> j) =>
-      Slot(role: '${j['role']}', line: '${j['line']}', x: (j['x'] as num).toInt(), y: (j['y'] as num).toInt());
+  factory Slot.fromJson(Map<String, dynamic> j) => Slot(
+    role: '${j['role']}',
+    line: '${j['line']}',
+    x: (j['x'] as num).toInt(),
+    y: (j['y'] as num).toInt(),
+    allowed: [for (final l in j['allowed'] as List<dynamic>? ?? const []) '$l'],
+  );
 
   final String role, line;
+
+  /// [Sprint 59 F6] The player lines this slot takes, the server's rule (empty from an older server: nothing refused).
+  final List<String> allowed;
+
+  /// Whether a player of [playerLine] may stand here.
+  bool takes(String? playerLine) => allowed.isEmpty || allowed.contains(playerLine);
 
   /// On the pitch: x along its length from my goal (0) forward, y across (0 to 680).
   final int x, y;

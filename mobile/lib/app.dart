@@ -86,9 +86,8 @@ class _GlmAppState extends ConsumerState<GlmApp> {
       ],
       routerConfig: ref.watch(routerProvider),
       // [Sprint 18 H] The assistant coach over every screen.
-      builder: (context, child) => update
-          ? const UpdateRequiredScreen()
-          : AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
+      builder: (context, child) =>
+          update ? const UpdateRequiredScreen() : AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
     );
   }
 }
