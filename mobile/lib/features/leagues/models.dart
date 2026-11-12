@@ -230,9 +230,6 @@ class Side {
   /// [Sprint 59 F1] From the generated model (a fixture's club; none for a rest).
   factory Side.of(api.FixtureClub? c) => Side(id: c?.id ?? 0, name: c?.name ?? '', code: c?.code ?? '', crestUrl: c?.crestUrl);
 
-  factory Side.fromJson(Map<String, dynamic>? j) =>
-      Side(id: j?['id'] as int? ?? 0, name: '${j?['name'] ?? ''}', code: '${j?['code'] ?? ''}', crestUrl: j?['crest_url'] as String?);
-
   final int id;
   final String name, code;
   final String? crestUrl;

@@ -7035,59 +7035,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {string} */
-                            side: "home" | "away";
-                            /** @description [X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal */
-                            shots?: {
-                                /** @enum {string} */
-                                team: "home" | "away";
-                                minute: number;
-                                /** @enum {string} */
-                                result: "goal" | "saved" | "blocked" | "missed";
-                                quality: string;
-                                shooter?: number | null;
-                                x: number;
-                                y: number;
-                            }[];
-                            /** @enum {string} */
-                            result: "win" | "draw" | "loss";
-                            score: {
-                                [key: string]: number;
-                            };
-                            shootout?: {
-                                [key: string]: number;
-                            } | null;
-                            reasons: {
-                                [key: string]: unknown;
-                            }[];
-                            improve?: {
-                                [key: string]: unknown;
-                            } | null;
-                            verdict: {
-                                [key: string]: unknown;
-                            }[];
-                            man_of_the_match?: {
-                                [key: string]: unknown;
-                            } | null;
-                            ratings: {
-                                [key: string]: unknown;
-                            };
-                            stats: {
-                                [key: string]: unknown;
-                            };
-                            thirds?: number[];
-                            momentum?: number[];
-                            /** @description [Sprint 30 G5] Both shapes as they ended (never the tactics) */
-                            formations?: {
-                                home?: string | null;
-                                away?: string | null;
-                            };
-                            timeline: {
-                                [key: string]: unknown;
-                            }[];
-                            readings: components["schemas"]["MatchReading"][];
-                        };
+                        "application/json": components["schemas"]["MatchCoachReport"];
                     };
                 };
                 403: components["responses"]["Error"];
@@ -16325,6 +16273,83 @@ export interface components {
         MatchKits: {
             home: components["schemas"]["MatchKit"];
             away: components["schemas"]["MatchKit"];
+        };
+        /** @description [Sprint 59 F1] A coach's report of a finished match (GET /matches/{match}/report) */
+        MatchCoachReport: {
+            /** @enum {string} */
+            side: "home" | "away";
+            /** @description [X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal */
+            shots?: {
+                /** @enum {string} */
+                team: "home" | "away";
+                minute: number;
+                /** @enum {string} */
+                result: "goal" | "saved" | "blocked" | "missed";
+                quality: string;
+                shooter?: number | null;
+                x: number;
+                y: number;
+            }[];
+            /** @enum {string} */
+            result: "win" | "draw" | "loss";
+            score: {
+                [key: string]: number;
+            };
+            shootout?: {
+                [key: string]: number;
+            } | null;
+            reasons: components["schemas"]["ReportNote"][];
+            improve?: components["schemas"]["ReportNote"] | null;
+            verdict: {
+                tag: string;
+                text: string;
+            }[];
+            man_of_the_match?: components["schemas"]["ReportPlayer"] | null;
+            ratings: {
+                home: components["schemas"]["ReportPlayer"][];
+                away: components["schemas"]["ReportPlayer"][];
+            };
+            /** @description Each side's numbers (xg ×10000) */
+            stats: {
+                home: {
+                    [key: string]: number;
+                };
+                away: {
+                    [key: string]: number;
+                };
+            };
+            thirds?: number[];
+            momentum?: number[];
+            /** @description [Sprint 30 G5] Both shapes as they ended (never the tactics) */
+            formations?: {
+                home?: string | null;
+                away?: string | null;
+            };
+            timeline: {
+                [key: string]: unknown;
+            }[];
+            /** @description The readings during the match (a report stored before they existed has none: optional) */
+            readings?: components["schemas"]["MatchReading"][];
+        };
+        /** @description A reason for the result, or the one thing to improve */
+        ReportNote: {
+            title: string;
+            text: string;
+            /** @description The number in large type */
+            big: string;
+            unit?: string | null;
+        };
+        ReportPlayer: {
+            /** @enum {string} */
+            team: "home" | "away";
+            id: number;
+            name: string;
+            no?: number;
+            /** @description The match rating ×100 */
+            rating: number;
+            goals?: number;
+            assists?: number;
+            shots?: number;
         };
         /** @description [Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model */
         LeagueMatch: {

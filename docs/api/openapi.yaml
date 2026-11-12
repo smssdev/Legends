@@ -2673,29 +2673,7 @@ paths:
           description: Your report
           content:
             application/json:
-              schema:
-                type: object
-                required: [side, result, score, reasons, verdict, ratings, stats, timeline, readings]
-                properties:
-                  side: { type: string, enum: [home, away] }
-                  shots:
-                    type: array
-                    description: '[X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal'
-                    items: { type: object, required: [team, minute, result, quality, x, y], properties: { team: { type: string, enum: [home, away] }, minute: { type: integer }, result: { type: string, enum: [goal, saved, blocked, missed] }, quality: { type: string }, shooter: { type: integer, nullable: true }, x: { type: integer }, y: { type: integer } } }
-                  result: { type: string, enum: [win, draw, loss] }
-                  score: { type: object, additionalProperties: { type: integer } }
-                  shootout: { type: object, nullable: true, additionalProperties: { type: integer } }
-                  reasons: { type: array, items: { type: object, additionalProperties: true } }
-                  improve: { type: object, nullable: true, additionalProperties: true }
-                  verdict: { type: array, items: { type: object, additionalProperties: true } }
-                  man_of_the_match: { type: object, nullable: true, additionalProperties: true }
-                  ratings: { type: object, additionalProperties: true }
-                  stats: { type: object, additionalProperties: true }
-                  thirds: { type: array, items: { type: integer } }
-                  momentum: { type: array, items: { type: integer } }
-                  formations: { type: object, description: '[Sprint 30 G5] Both shapes as they ended (never the tactics)', properties: { home: { type: [string, 'null'] }, away: { type: [string, 'null'] } } }
-                  timeline: { type: array, items: { type: object, additionalProperties: true } }
-                  readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
+              schema: { $ref: '#/components/schemas/MatchCoachReport' }
         '403': { $ref: '#/components/responses/Error' }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
@@ -7317,6 +7295,51 @@ components:
       properties:
         home: { $ref: '#/components/schemas/MatchKit' }
         away: { $ref: '#/components/schemas/MatchKit' }
+    MatchCoachReport:
+      description: '[Sprint 59 F1] A coach''s report of a finished match (GET /matches/{match}/report)'
+      type: object
+      required: [side, result, score, reasons, verdict, ratings, stats, timeline]
+      properties:
+        side: { type: string, enum: [home, away] }
+        shots:
+          type: array
+          description: '[X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal'
+          items: { type: object, required: [team, minute, result, quality, x, y], properties: { team: { type: string, enum: [home, away] }, minute: { type: integer }, result: { type: string, enum: [goal, saved, blocked, missed] }, quality: { type: string }, shooter: { type: integer, nullable: true }, x: { type: integer }, y: { type: integer } } }
+        result: { type: string, enum: [win, draw, loss] }
+        score: { type: object, additionalProperties: { type: integer } }
+        shootout: { type: object, nullable: true, additionalProperties: { type: integer } }
+        reasons: { type: array, items: { $ref: '#/components/schemas/ReportNote' } }
+        improve: { allOf: [{ $ref: '#/components/schemas/ReportNote' }], nullable: true }
+        verdict: { type: array, items: { type: object, required: [tag, text], properties: { tag: { type: string }, text: { type: string } } } }
+        man_of_the_match: { allOf: [{ $ref: '#/components/schemas/ReportPlayer' }], nullable: true }
+        ratings: { type: object, required: [home, away], properties: { home: { type: array, items: { $ref: '#/components/schemas/ReportPlayer' } }, away: { type: array, items: { $ref: '#/components/schemas/ReportPlayer' } } } }
+        stats: { type: object, required: [home, away], properties: { home: { type: object, additionalProperties: { type: integer } }, away: { type: object, additionalProperties: { type: integer } } }, description: 'Each side''s numbers (xg ×10000)' }
+        thirds: { type: array, items: { type: integer } }
+        momentum: { type: array, items: { type: integer } }
+        formations: { type: object, description: '[Sprint 30 G5] Both shapes as they ended (never the tactics)', properties: { home: { type: [string, 'null'] }, away: { type: [string, 'null'] } } }
+        timeline: { type: array, items: { type: object, additionalProperties: true } }
+        readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' }, description: 'The readings during the match (a report stored before they existed has none: optional)' }
+    ReportNote:
+      type: object
+      description: A reason for the result, or the one thing to improve
+      required: [title, text, big]
+      properties:
+        title: { type: string }
+        text: { type: string }
+        big: { type: string, description: The number in large type }
+        unit: { type: string, nullable: true }
+    ReportPlayer:
+      type: object
+      required: [team, id, name, rating]
+      properties:
+        team: { type: string, enum: [home, away] }
+        id: { type: integer }
+        name: { type: string }
+        no: { type: integer }
+        rating: { type: integer, description: The match rating ×100 }
+        goals: { type: integer }
+        assists: { type: integer }
+        shots: { type: integer }
     LeagueMatch:
       type: object
       description: '[Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model'

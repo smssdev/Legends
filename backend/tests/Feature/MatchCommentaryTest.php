@@ -105,7 +105,11 @@ class MatchCommentaryTest extends TestCase
         $this->assertSame($readings->count(), DB::table('match_readings')->where('match_id', $match->id)->count());
 
         // The report: for the coach, his side's; the rows for both clubs.
-        $report = $this->getJson("/api/v1/matches/{$match->id}/report")->assertOk()->json();
+        $report = $this->getJson("/api/v1/matches/{$match->id}/report")->assertOk()
+            // [Sprint 59 F1] The fields the app reads through MatchCoachReport (openapi.yaml).
+            ->assertJsonStructure(['side', 'result', 'score', 'verdict' => ['*' => ['tag', 'text']], 'timeline',
+                'reasons' => ['*' => ['title', 'text', 'big']], 'ratings' => ['home' => ['*' => ['team', 'id', 'name', 'rating']], 'away'],
+                'stats' => ['home', 'away']])->json();
         $this->assertSame($side, $report['side']);
         $this->assertNotEmpty($report['reasons']);
         $this->assertCount($readings->count(), $report['readings']);

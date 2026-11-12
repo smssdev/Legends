@@ -85,4 +85,13 @@ void main() {
           ..['training_bonus'] = 3;
     expect(Trainee.of(TrainingPlayer.fromJson(raw)).rating, 80);
   });
+
+  test('a coach report stored before the readings existed still reads', () {
+    final raw = jsonDecode(File('test/fixtures/report.json').readAsStringSync()) as Map<String, dynamic>;
+    expect(raw.containsKey('readings'), isFalse);
+    final r = MatchReport.fromReport(raw);
+    expect(r.reasons, isNotEmpty);
+    expect(r.ratings['home'], isNotEmpty);
+    expect(modelErrors.where((e) => e.contains('MatchCoachReport') || e.contains('ReportNote') || e.contains('ReportPlayer')), isEmpty);
+  });
 }

@@ -12,6 +12,8 @@ import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'home_answer.dart';
+
 Future<Widget> app(Widget screen, {List<Override> overrides = const [], String language = 'ar', bool day = false}) async {
   SharedPreferences.setMockInitialValues({'glm.language': language});
   final prefs = await SharedPreferences.getInstance();
@@ -83,7 +85,9 @@ void main() {
 
   testWidgets('the home: the coach, his rating, and each kind of slot', (t) async {
     await t.binding.setSurfaceSize(const Size(420, 1600));
-    await t.pumpWidget(await app(const HomeScreen(), overrides: [homeProvider.overrideWith((ref) async => HomeData.fromJson(homeJson))]));
+    await t.pumpWidget(
+      await app(const HomeScreen(), overrides: [homeProvider.overrideWith((ref) async => HomeData.fromJson(homeAnswer(homeJson)))]),
+    );
     await t.pumpAndSettle();
     expect(find.text('حمزة'), findsOneWidget);
     expect(find.text('1250'), findsOneWidget);

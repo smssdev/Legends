@@ -44,6 +44,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../market_test.dart' show FakeMarket;
 import '../match_test.dart' show FakeMatchRepository;
 import '../team_test.dart' show FakeTeamRepository;
+import '../home_answer.dart';
 
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
@@ -189,7 +190,10 @@ void main() {
       await shot(t, name, const IntroScreen(), [], at: Duration(milliseconds: ms));
     });
   }
-  testWidgets('home', (t) => shot(t, 'home', const HomeScreen(), [homeProvider.overrideWith((ref) async => HomeData.fromJson(homeJson))]));
+  testWidgets(
+    'home',
+    (t) => shot(t, 'home', const HomeScreen(), [homeProvider.overrideWith((ref) async => HomeData.fromJson(homeAnswer(homeJson)))]),
+  );
   testWidgets(
     'league',
     (t) => shot(t, 'league', const LeagueShell(leagueId: 8, location: '/leagues/8', child: LeagueScreen(id: 8)), [
