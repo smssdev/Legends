@@ -24,7 +24,7 @@ const internal = computed(() => !!props.cta && props.cta.url.startsWith('/'))
       <time v-if="at" :datetime="at" class="shrink-0 pt-1 font-numbers text-sm opacity-70" dir="ltr">{{ when }}</time>
     </header>
     <!-- A banner's shape held before the picture comes, so nothing under it moves. -->
-    <img v-if="imageUrl" :src="imageUrl" alt="" class="aspect-[16/5] w-full rounded-lg object-cover" loading="lazy" />
+    <img v-if="imageUrl" :src="imageUrl" alt="" class="aspect-[16/5] w-full rounded-lg object-cover" loading="lazy" decoding="async" />
     <p v-for="(p, i) in paragraphs" :key="i" class="whitespace-pre-line text-base leading-relaxed">{{ p }}</p>
     <template v-if="cta">
       <RouterLink v-if="internal" :to="cta.url" class="ann-cta">{{ cta.label }}</RouterLink>

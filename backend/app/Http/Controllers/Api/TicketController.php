@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\Crests;
 use App\Http\Controllers\Controller;
 use App\League\Morale;
 use App\Models\Club;
@@ -28,7 +29,7 @@ class TicketController extends Controller
         $clubs = DB::table('clubs')->whereIn('id', $fixtures->pluck('home_id')->merge($fixtures->pluck('away_id')))->get(['id', 'name', 'code', 'master_club_id'])->keyBy('id');
         $tickets = DB::table('match_tickets')->whereIn('fixture_id', $fixtures->pluck('id'))->get();
         $card = fn ($id) => ['id' => (int) $id, 'name' => $clubs[$id]->name, 'code' => $clubs[$id]->code,
-            'crest_url' => url("/api/v1/data/clubs/{$clubs[$id]->master_club_id}/crest.svg")];
+            'crest_url' => Crests::url($clubs[$id]->master_club_id)];
 
         return response()->json([
             'price' => Morale::ticketPrice($league->id),

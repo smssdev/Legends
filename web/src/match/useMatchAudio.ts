@@ -1,14 +1,15 @@
 // [Sprint 57 W1] The match's sound: the stadium (MatchSound) and the English commentator (Commentator), each turned on
 // from the view's settings. The crowd steps back under the commentator's voice [Sprint 35].
+import { storage } from '../lib/storage'
 import { ref } from 'vue'
 import { MatchSound } from './sound'
 import { Commentator, type Lang } from './voice'
 
-const PREF = 'legends.commentary'
+const PREF = 'commentary'
 
 /** English unless the coach turned it off on this device. */
 function readPref(): Lang | 'off' {
-  try { return localStorage.getItem(PREF) === 'off' ? 'off' : 'en' } catch { return 'en' }
+  try { return storage.get(PREF) === 'off' ? 'off' : 'en' } catch { return 'en' }
 }
 
 export function useMatchAudio() {
@@ -30,7 +31,7 @@ export function useMatchAudio() {
   function toggleCommentary() {
     commentary.value = commentary.value === 'off' ? 'en' : 'off'
     voice.setOn(soundOn.value && commentary.value !== 'off')
-    try { localStorage.setItem(PREF, commentary.value) } catch {}
+    try { storage.set(PREF, commentary.value) } catch {}
   }
 
   /** A sound the scene asks for (MatchFeed's cues). */

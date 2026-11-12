@@ -3,6 +3,7 @@
 namespace App\League;
 
 use App\Characters\Mood;
+use App\Data\Crests;
 use App\Models\Club;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
@@ -42,7 +43,7 @@ class MissedMatches
         }
         $names = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->whereIn('players.id', array_filter(array_unique($names)))->pluck('master_players.name', 'players.id');
         $coins = DB::table('wallet_transactions')->where('user_id', $userId)->whereIn('reference', $rows->map(fn ($r) => "fixture:{$r->fixture_id}"))->pluck('amount', 'reference');
-        $card = fn ($id) => ['id' => (int) $id, 'name' => $clubs[$id]->name, 'code' => $clubs[$id]->code, 'crest_url' => url("/api/v1/data/clubs/{$clubs[$id]->master_club_id}/crest.svg")];
+        $card = fn ($id) => ['id' => (int) $id, 'name' => $clubs[$id]->name, 'code' => $clubs[$id]->code, 'crest_url' => Crests::url($clubs[$id]->master_club_id)];
 
         return $rows->map(function ($r) use ($club, $events, $stats, $names, $coins, $card) {
             $home = (int) $r->home_id === $club->id;

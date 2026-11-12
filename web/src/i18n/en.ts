@@ -2981,4 +2981,6 @@ export const EN: Record<string, string> = {
   'رأسية!': 'Header!',
   'تصدٍّ!': 'Saved!',
   'صمت في المدرجات...': 'Silence in the stands...',
+  // [Sprint 58 W7] A balance that could not be loaded.
+  '{v0}: غير معروف الآن': '{v0}: unknown right now',
 }

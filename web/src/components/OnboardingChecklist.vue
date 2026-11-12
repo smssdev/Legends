@@ -2,6 +2,7 @@
 // [X61] The first steps of a new coach, on the home screen: seven steps, each a button to the right screen. [X75] A step
 // is done only when the server says it is done in the game (home.onboarding), never by tapping it. Folds away (reka-ui's Collapsible, Sprint 54 W4), and goes once every step is done. [Sprint 26 W4] The falcon (A1)
 // cheers each step.
+import { storage } from '../lib/storage'
 import { CollapsibleContent, CollapsibleRoot, CollapsibleTrigger } from 'reka-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -11,7 +12,7 @@ import Character from './characters/Character.vue'
 const props = defineProps<{ hasClub: boolean; steps: Record<string, boolean> }>()
 const auth = useAuth()
 const router = useRouter()
-const KEY = computed(() => `glm.onboarding.${auth.user?.id ?? 0}`)
+const KEY = computed(() => `onboarding.${auth.user?.id ?? 0}`)
 
 type Step = { key: string; label: string; to: string; club?: boolean }
 const STEPS: Step[] = [
@@ -28,14 +29,14 @@ const done = (s: Step) => !!props.steps[s.key]
 const count = computed(() => STEPS.filter(done).length)
 // [X86] Closed by default: the next step under its title, the seven when opened.
 const next = computed(() => STEPS.find((s) => !done(s)) ?? null)
-const hidden = ref((() => { try { return localStorage.getItem(`${KEY.value}.hidden`) === '1' } catch { return false } })())
+const hidden = ref((() => { try { return storage.get(`${KEY.value}.hidden`) === '1' } catch { return false } })())
 
 function go(s: Step) {
   void router.push(s.club && !props.hasClub ? '/leagues' : s.to)
 }
 function hide() {
   hidden.value = true
-  try { localStorage.setItem(`${KEY.value}.hidden`, '1') } catch {}
+  try { storage.set(`${KEY.value}.hidden`, '1') } catch {}
 }
 </script>
 

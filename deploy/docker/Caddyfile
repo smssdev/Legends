@@ -36,12 +36,15 @@ import {$XDG_CONFIG_HOME:/config}/caddy/security-headers.caddy
 	}
 	handle @static {
 		import security_headers
-		# Names that change with their content: a year. The fonts a month. The rest five minutes.
-		@lasting path /assets/* /logos/* /brand/* /art/* /unity/*
+		# Names that change with their content: a year. [Sprint 58 B3] Fixed names whose content may change: an hour, then
+		# asked again with their ETag (Caddy sends it). The fonts a month. The rest five minutes.
+		@lasting path /assets/* /unity/* /crests/*
 		header @lasting Cache-Control "public, max-age=31536000, immutable"
 		@fonts path /fonts/*
 		header @fonts Cache-Control "public, max-age=2592000"
-		@other not path /assets/* /logos/* /brand/* /art/* /unity/* /fonts/*
+		@hourly path /logos/* /brand/* /art/* /characters/* /sounds/* /commentary/*
+		header @hourly Cache-Control "public, max-age=3600"
+		@other not path /assets/* /unity/* /crests/* /fonts/* /logos/* /brand/* /art/* /characters/* /sounds/* /commentary/*
 		header @other Cache-Control "public, max-age=300"
 		# [Sprint 15 D1] The Android app downloads as a file.
 		@apk path *.apk

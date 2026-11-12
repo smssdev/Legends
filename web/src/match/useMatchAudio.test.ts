@@ -19,7 +19,7 @@ describe('useMatchAudio', () => {
     a.toggleSound()
     expect(calls).toEqual(['start', 'muted:false', 'voice:true', 'whistle'])
     a.toggleCommentary()
-    expect([a.commentary.value, calls[calls.length - 1], localStorage.getItem('legends.commentary')]).toEqual(['off', 'voice:false', 'off'])
+    expect([a.commentary.value, calls[calls.length - 1], localStorage.getItem('glm.commentary')]).toEqual(['off', 'voice:false', 'off'])
     expect(useMatchAudio().commentary.value).toBe('off')
   })
 

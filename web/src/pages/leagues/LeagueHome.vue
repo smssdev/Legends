@@ -298,8 +298,8 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('المدربون') }}</dt><dd class="font-bold"><span class="font-numbers">{{ league.coaches }}</span> {{ $t('من') }} <span class="font-numbers">{{ league.team_count }}</span></dd></div>
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ $t(END_MODES[league.season_end_mode]) }}</dd></div>
             <div class="col-span-2 flex items-center gap-2 rounded-lg bg-surface-sunk p-3">
-              <span class="flex-1"><dt class="text-text-muted">{{ $t('أيام الإجازة') }}</dt>
-                <dd class="font-bold">{{ league.rest_days?.length ? league.rest_days.map((d) => $t(DAY_NAMES[d])).join('، ') : $t('لا إجازة: مباراة كل يوم') }}</dd></span>
+              <div class="flex-1"><dt class="text-text-muted">{{ $t('أيام الإجازة') }}</dt>
+                <dd class="font-bold">{{ league.rest_days?.length ? league.rest_days.map((d) => $t(DAY_NAMES[d])).join('، ') : $t('لا إجازة: مباراة كل يوم') }}</dd></div>
               <button v-if="league.is_owner && !league.locked && !restEdit" type="button" class="h-10 rounded-lg bg-surface-raised px-3 text-sm font-bold" @click="restEdit = [...(league.rest_days ?? [])]">{{ $t('تعديل') }}</button>
             </div>
           </dl>
@@ -354,7 +354,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         <ul class="flex flex-col gap-2">
           <li v-for="m in league.members" :key="m.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
             <div class="flex min-h-touch flex-wrap items-center gap-3">
-              <img v-if="m.user.avatar_url" :src="m.user.avatar_url" alt="" class="size-10 rounded-full object-cover" />
+              <AppImage v-if="m.user.avatar_url" :src="m.user.avatar_url" alt="" class="size-10 rounded-full object-cover" :size="40" />
               <span v-else class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
               <span class="min-w-0 flex-1">
                 <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <OfficialBadge v-if="m.user.official" /><VerifiedBadge v-else-if="m.user.verified" /> <UiChip v-if="m.is_owner" tone="gold">{{ $t('المنشئ') }}</UiChip> <UiChip v-if="m.on_holiday" tone="warning">{{ $t('في إجازة') }}</UiChip></span>

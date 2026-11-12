@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Data\ClubLogo;
 use App\Data\Crest;
+use App\Data\Crests;
 use App\Http\Controllers\Controller;
 use App\Models\MasterClub;
 use App\Support\Glossary;
@@ -84,7 +85,7 @@ class DataController extends Controller
         return [
             'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'league' => $c->league_name,
             'strength_cp' => (int) $c->strength_cp, 'colors' => [$c->color_primary, $c->color_secondary],
-            'crest_url' => url("/api/v1/data/clubs/{$c->id}/crest.svg"),
+            'crest_url' => Crests::url($c->id),
             'logo' => ClubLogo::path($c->league_name, $c->name),
         ];
     }

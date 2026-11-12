@@ -37,7 +37,7 @@ const FAQ = [
     <!-- The hero: the stadium at night, the promise and the two ways in. -->
     <section class="hero theme-night relative overflow-hidden px-4 py-14 text-center md:py-24">
       <div class="relative mx-auto flex max-w-3xl flex-col items-center gap-5">
-        <img :src="emblemSrc" alt="Game Legend Manager" class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36" />
+        <AppImage :src="emblemSrc" alt="Game Legend Manager" class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36" :size="144" eager />
         <!-- [Sprint 39 B1] The official name over the promise, the Arabic one under it in Arabic. [X97] The name is the
              page's heading (what Google weighs most), the promise under it a paragraph: the same look. -->
         <h1 class="flex flex-col items-center leading-tight">

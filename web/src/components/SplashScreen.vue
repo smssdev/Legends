@@ -1,10 +1,23 @@
 <script setup lang="ts">
-// The splash screen [UP4]: GLM's emblem (its ball spins in the SVG itself) breathes while the server is reached (/health); then the game fades in. If the
+// The splash screen [UP4]: GLM's emblem (its ball spins in the SVG itself) breathes while the server is reached (/bootstrap); then the game fades in. If the
 // server does not answer, the message and a retry, and the game stays behind until it does.
 import { onMounted, ref } from 'vue'
 import { loaderSrc } from '../lib/i18n'
+import { ApiError } from '../api/client'
+import { boot, rebootSession } from '../lib/session'
 
 const emit = defineEmits<{ done: [] }>()
+// [Sprint 58 T2] The page's own splash (index.html #boot) already shows the emblem: this one draws over it without its
+// own while it checks, takes it away on failure (then shows its own with the message), and lets it go with itself.
+const bootEl = typeof document === 'undefined' ? null : document.getElementById('boot')
+const overBoot = ref(!!bootEl)
+function dropBoot(fade: boolean) {
+  if (!bootEl) return
+  overBoot.value = false
+  if (!fade) return void bootEl.remove()
+  bootEl.classList.add('is-gone')
+  setTimeout(() => bootEl.remove(), 400)
+}
 const state = ref<'checking' | 'failed' | 'leaving'>('checking')
 const MIN_MS = 900   // long enough to see the emblem, short enough not to wait for it
 
@@ -12,18 +25,23 @@ async function check() {
   state.value = 'checking'
   const started = performance.now()
   let ok = false
+  // [Sprint 58 W1] The visit's start (GET /bootstrap) tells the server is up: the same request the stores wait on.
+  // Signed out (401, 419) is the server answering; only no answer in 12 s (or a server error) is a failure.
   try {
-    const r = await fetch('/api/v1/health', { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(12000) })
-    ok = r.ok
-  } catch {
-    ok = false
+    await Promise.race([boot(), new Promise((_, no) => setTimeout(() => no(new Error('timeout')), 12000))])
+    ok = true
+  } catch (e) {
+    ok = e instanceof ApiError && e.status > 0 && e.status < 500
+    if (!ok) rebootSession()
   }
   const rest = MIN_MS - (performance.now() - started)
   if (rest > 0) await new Promise((r) => setTimeout(r, rest))
   if (!ok) {
+    dropBoot(false)
     state.value = 'failed'
     return
   }
+  dropBoot(true)
   state.value = 'leaving'
   setTimeout(() => emit('done'), 350)
 }
@@ -31,8 +49,8 @@ onMounted(check)
 </script>
 
 <template>
-  <div class="splash" :class="state === 'leaving' ? 'is-leaving' : ''" role="status" aria-live="polite">
-    <img :src="loaderSrc" alt="Game Legend Manager" class="splash-mark" :class="state === 'checking' ? 'is-turning' : ''" />
+  <div class="splash" :class="[state === 'leaving' ? 'is-leaving' : '', overBoot ? 'over-boot' : '']" role="status" aria-live="polite">
+    <img v-if="!overBoot" :src="loaderSrc" alt="Game Legend Manager" class="splash-mark" :class="state === 'checking' ? 'is-turning' : ''" fetchpriority="high" />
     <template v-if="state === 'failed'">
       <p class="max-w-xs text-center text-sm leading-relaxed text-text-soft">{{ $t('تعذر الاتصال بالخادم، يرجى التحقق من اتصالك بالإنترنت') }}</p>
       <button type="button" class="h-touch rounded-lg bg-gold px-6 font-bold text-on-gold" @click="check">{{ $t('إعادة المحاولة') }}</button>
@@ -56,6 +74,8 @@ onMounted(check)
   transition: opacity 0.35s ease, transform 0.35s ease;
 }
 .splash.is-leaving { opacity: 0; transform: scale(1.06); pointer-events: none; }
+/* Over the page's own splash (#boot): its background and emblem show through. */
+.splash.over-boot { background: transparent; }
 .splash-mark { width: min(11rem, 45vw); height: auto; }
 .splash-mark.is-turning { animation: splash-turn 1.6s ease-in-out infinite; }
 @keyframes splash-turn {

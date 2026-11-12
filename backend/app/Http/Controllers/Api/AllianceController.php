@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\Crests;
 use App\Http\Controllers\Controller;
 use App\League\Alliance;
 use App\League\Members;
@@ -81,7 +82,7 @@ class AllianceController extends Controller
         $clubs = DB::table('clubs')->leftJoin('users', 'users.id', '=', 'clubs.user_id')->where('clubs.league_id', $league->id)
             ->get(['clubs.id', 'clubs.name', 'clubs.code', 'clubs.master_club_id', 'users.name as coach'])->keyBy('id');
         $card = fn ($id) => $id && isset($clubs[$id]) ? ['id' => (int) $id, 'name' => $clubs[$id]->name, 'code' => $clubs[$id]->code, 'coach' => $clubs[$id]->coach,
-            'crest_url' => url("/api/v1/data/clubs/{$clubs[$id]->master_club_id}/crest.svg")] : null;
+            'crest_url' => Crests::url($clubs[$id]->master_club_id)] : null;
         $members = DB::table('alliance_members')->where('tournament_id', $t->id)->get();
         $captains = DB::table('users')->whereIn('id', [$t->captain_a, $t->captain_b])->pluck('name', 'id');
         $fixtures = DB::table('fixtures')->whereIn('id', DB::table('alliance_ties')->where('tournament_id', $t->id)->whereNotNull('fixture_id')->pluck('fixture_id'))

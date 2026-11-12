@@ -2,15 +2,16 @@
 // The dictionary is written at build time (scripts/names.mjs) and loaded once; a name it does not have stays as it
 // is. The choice is the coach's, on this device (Profile). The English commentary always says the Latin names.
 // [Sprint 21 E3.2] The game in English is English throughout: its names are the Latin ones, whatever the switch.
+import { storage } from './storage'
 import { computed, ref } from 'vue'
 import { locale } from './i18n'
 
 export type NamesLang = 'ar' | 'en'
-const KEY = 'legends.names'
+const KEY = 'names'
 type Dict = { leagues: Record<string, string>; clubs: Record<string, string>; players: Record<string, string>; nations?: Record<string, string> }
 
 function readPref(): NamesLang {
-  try { return localStorage.getItem(KEY) === 'en' ? 'en' : 'ar' } catch { return 'ar' }
+  try { return storage.get(KEY) === 'en' ? 'en' : 'ar' } catch { return 'ar' }
 }
 
 export const namesLang = ref<NamesLang>(readPref())
@@ -30,7 +31,7 @@ export function loadNames(): Promise<void> {
 
 export function setNamesLang(l: NamesLang) {
   namesLang.value = l
-  try { localStorage.setItem(KEY, l) } catch { /* private mode: this visit only */ }
+  try { storage.set(KEY, l) } catch { /* private mode: this visit only */ }
 }
 
 /** The names actually shown: Latin in the English game, else the coach's choice. */

@@ -36,7 +36,7 @@ export async function act<T>(key: string, run: () => Promise<T>, o: ActOptions<T
   const confirm = useConfirm()
   if (o.confirm && !(await confirm.ask(o.confirm))) return undefined
   if (!o.confirm && o.coins && o.coins >= COINS_ASK && !(await confirm.ask({
-    title: t('تدفع {v0} كوينز؟', { v0: o.coins }), text: t('تُخصم من كوينزك الآن.'), action: t('ادفع {v0} كوينز', { v0: o.coins }), tone: 'gold', remember: 'glm.ask.coins',
+    title: t('تدفع {v0} كوينز؟', { v0: o.coins }), text: t('تُخصم من كوينزك الآن.'), action: t('ادفع {v0} كوينز', { v0: o.coins }), tone: 'gold', remember: 'ask.coins',
   }))) return undefined
   running.add(key)
   try {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Chat\ChatGroups;
 use App\Chat\DrawChat;
+use App\Data\Crests;
 use App\Http\Controllers\Controller;
 use App\League\CupBracket;
 use App\League\LeagueTiers;
@@ -249,7 +250,7 @@ class TournamentController extends Controller
     {
         return Club::where('league_id', $league->id)->with('user')->get()->mapWithKeys(fn (Club $c) => [$c->id => [
             'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'strength_cp' => (int) $c->strength_snapshot, 'group' => $c->group_no ? TournamentPlan::letter((int) $c->group_no) : null,
-            'colors' => [$c->color_primary, $c->color_secondary], 'crest_url' => url("/api/v1/data/clubs/{$c->master_club_id}/crest.svg"), 'coach' => $c->user?->name,
+            'colors' => [$c->color_primary, $c->color_secondary], 'crest_url' => Crests::url($c->master_club_id), 'coach' => $c->user?->name,
         ]])->all();
     }
 }

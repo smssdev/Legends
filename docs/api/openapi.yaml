@@ -568,6 +568,36 @@ paths:
                   across: { type: array, items: { type: integer }, description: 'The width (y) a player may be dragged to, [from, to]' }
                   off_line_bp: { type: integer, description: '[Sprint 27 W4] What an outfield player gives one line away from his own (bp of his ability), as the engine plays him (7000 since Sprint 39 E1)' }
                   far_line_bp: { type: integer, description: '[Sprint 39 E1] What an outfield player gives two lines away (a defender up front), bp' }
+  /bootstrap:
+    get:
+      tags: [system]
+      summary: Everything the web asks when it opens, in one reply (Sprint 58 B1)
+      description: >-
+        Who is signed in (as GET /auth/me), the coins wallet (GET /wallet), the coach and his slots (GET /home's coach and
+        slots), the unread count (GET /messages/unread) and the site's settings from GET /health (support, adsense,
+        analytics, broadcast, version, time, clock_offset). Each part is its own route's, which stays. Open to a guest:
+        user, wallet and home are then null. Under 5 KB. A bearer token that no longer works gets 401.
+      responses:
+        '200':
+          description: The web's start
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user, wallet, home, unread, config]
+                properties:
+                  user: { allOf: [{ $ref: '#/components/schemas/Account' }], nullable: true }
+                  wallet: { allOf: [{ $ref: '#/components/schemas/WalletView' }], nullable: true }
+                  home:
+                    type: object
+                    nullable: true
+                    required: [coach, slots]
+                    properties:
+                      coach: { type: object, additionalProperties: true, description: "GET /home's coach" }
+                      slots: { type: array, items: { type: object, additionalProperties: true }, description: "GET /home's slots" }
+                  unread: { type: integer }
+                  config: { type: object, additionalProperties: true, description: "GET /health's version, time, clock_offset, broadcast, support, adsense and analytics" }
+        '401': { $ref: '#/components/responses/Error' }
   /health:
     get:
       tags: [system]

@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Data\Crests;
 use App\Models\League;
 use App\Models\LeagueMembership;
 use App\Support\GameClock;
@@ -29,7 +30,7 @@ class Contract
         $goal = $objectives['league'] ?? null;
 
         return ['club' => ['id' => (int) $club->id, 'name' => $club->name, 'code' => $club->code,
-            'colors' => [$club->color_primary, $club->color_secondary], 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
+            'colors' => [$club->color_primary, $club->color_secondary], 'crest_url' => Crests::url($club->master_club_id)],
             'league' => $league->name, 'season' => (int) $league->season->number,
             'objective' => $goal ? ['kind' => $goal->kind, 'target' => (int) $goal->target] : null,
             'cup' => isset($objectives['cup']) ? $objectives['cup']->target : null,

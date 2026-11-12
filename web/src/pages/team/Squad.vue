@@ -3,6 +3,7 @@
 // each player with his line, status, fitness, value and rating. A tap opens his card. [Sprint 20 W11] Its header also
 // says the eleven's average, the place against the objective, the formation, the strongest player and the next
 // opponent, and «فريق نادٍ آخر» opens any club's squad of the league (without its tactics).
+import { storage } from '../../lib/storage'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import AsyncState from '../../components/ui/AsyncState.vue'
@@ -55,10 +56,10 @@ const LINE_TABS = computed(() => (['all', 'gk', 'def', 'mid', 'att'] as const).m
 const line = ref<'all' | Line>('all')
 const open = ref<SquadPlayer | null>(null)
 // The list or the cards, remembered on this device [X29].
-const view = ref<'list' | 'cards'>((() => { try { return localStorage.getItem('legends.squadView') === 'cards' ? 'cards' : 'list' } catch { return 'list' } })())
+const view = ref<'list' | 'cards'>((() => { try { return storage.get('squadView') === 'cards' ? 'cards' : 'list' } catch { return 'list' } })())
 function setView(v: 'list' | 'cards') {
   view.value = v
-  try { localStorage.setItem('legends.squadView', v) } catch {}
+  try { storage.set('squadView', v) } catch {}
 }
 onMounted(load)
 // [X87] A change made elsewhere on the screen (an undo from the toast, after the card closed): the squad again.

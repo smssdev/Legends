@@ -67,8 +67,8 @@ async function rate(helpful: boolean, withNote = false) {
         <div class="relative flex max-h-[85dvh] flex-col gap-3 overflow-y-auto overscroll-contain rounded-2xl bg-surface p-4">
           <button type="button" class="absolute end-2 top-2 grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إغلاق')" @click="close">✕</button>
           <header class="flex items-center gap-3 pe-10">
-            <span class="relative grid size-14 shrink-0 animate-pulse-ring place-items-center rounded-full bg-gold/15">
-              <img :src="slot.current?.club?.crest_url ?? '/brand/emblem-loader.svg'" alt="" class="size-11 animate-pop-in drop-shadow-[0_0_10px_var(--color-gold)]" />
+            <span class="relative grid size-14 shrink-0 pulse-ring place-items-center rounded-full bg-gold/15">
+              <AppImage :src="slot.current?.club?.crest_url ?? '/brand/emblem-loader.svg'" alt="" class="size-11 animate-pop-in drop-shadow-[0_0_10px_var(--color-gold)]" :size="44" crest />
             </span>
             <span class="min-w-0">
               <DialogTitle class="flex items-center gap-1.5 font-display text-lg font-extrabold text-gold">
@@ -88,7 +88,7 @@ async function rate(helpful: boolean, withNote = false) {
               <dd class="min-w-0 flex-1">{{ next ? next.label : $t('لا شيء ينتظرك. أحسنت!') }}</dd></div>
             <div class="flex gap-2"><dt class="w-20 shrink-0 text-text-muted">{{ $t('رصيدك') }}</dt>
               <dd class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 font-numbers" dir="ltr">
-                <span class="flex items-center gap-1"><img src="/brand/coin.svg" alt="" class="size-4" />{{ wallet.view?.balance ?? 0 }}</span>
+                <span class="flex items-center gap-1"><AppImage src="/brand/coin.svg" alt="" class="size-4" :size="16" />{{ wallet.view?.balance ?? 0 }}</span>
                 <span v-if="board.board" class="text-success">💵 {{ money(board.board.money.cash) }}</span>
               </dd></div>
           </dl>

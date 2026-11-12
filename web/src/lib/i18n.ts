@@ -5,14 +5,15 @@
 // Accept-Language, so the server's messages come in the same language.
 // The English dictionary (100 KB) loads only for a coach who plays in English [E1.4]: the Arabic majority never
 // downloads it, and the app mounts once it is here (i18nReady), so English never flashes Arabic.
+import { storage } from './storage'
 import { computed, ref, shallowRef } from 'vue'
 
 export type Locale = 'ar' | 'en'
-const KEY = 'glm.locale'
+const KEY = 'locale'
 
 function stored(): Locale | null {
   try {
-    const v = localStorage.getItem(KEY)
+    const v = storage.get(KEY)
     return v === 'ar' || v === 'en' ? v : null
   } catch {
     return null
@@ -23,7 +24,7 @@ function fromLink(): Locale | null {
   try {
     const v = new URLSearchParams(location.search).get('lang')
     if (v !== 'ar' && v !== 'en') return null
-    localStorage.setItem(KEY, v)
+    storage.set(KEY, v)
     return v
   } catch {
     return null
@@ -51,7 +52,7 @@ export const i18nReady: Promise<void> = locale.value === 'en' ? loadEnglish().ca
 export function setLocale(l: Locale) {
   locale.value = l
   try {
-    localStorage.setItem(KEY, l)
+    storage.set(KEY, l)
   } catch {
     // a private window: the choice lasts this visit
   }

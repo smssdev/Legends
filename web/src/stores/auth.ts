@@ -1,10 +1,12 @@
 // The signed-in account for the web (Sanctum session cookie) [PLAN 2.17].
+import { storage } from '../lib/storage'
 import { defineStore } from 'pinia'
-import { track } from '../lib/analytics'
+import { track } from '../lib/track'
 import { computed, ref } from 'vue'
 import { api, ApiError, ensureCsrf, type Account } from '../api/client'
 import { adoptLocale } from '../lib/i18n'
-import { useBot } from './bot'
+import { boot, rebootSession } from '../lib/session'
+import { useBoard } from './board'
 
 export const useAuth = defineStore('auth', () => {
   const user = ref<Account | null>(null)
@@ -19,8 +21,9 @@ export const useAuth = defineStore('auth', () => {
   async function load() {
     for (let attempt = 0; ; attempt++) {
       try {
-        const { data } = await api.GET('/auth/me')
-        user.value = data?.user ?? null
+        // [Sprint 58 W1] From the visit's start (GET /bootstrap), shared with the shell's stores.
+        const data = await boot()
+        user.value = (data.user ?? null) as Account | null
         unreachable.value = false
         adoptLocale(user.value?.locale)
         break
@@ -45,6 +48,7 @@ export const useAuth = defineStore('auth', () => {
   const ready = () => (first ??= load())
   /** «حاول مجدداً» after the server did not answer. */
   async function retry() {
+    rebootSession()
     first = load()
     await first
   }
@@ -54,6 +58,7 @@ export const useAuth = defineStore('auth', () => {
     const { data } = await api.POST('/auth/login', { body: { email, password, remember } })
     user.value = data!.user!
     adoptLocale(user.value.locale)
+    rebootSession()
     track('login')
   }
   /** [UP5] The name, the username and the password; the session stays until the coach signs out. */
@@ -62,10 +67,11 @@ export const useAuth = defineStore('auth', () => {
     // [Sprint 21 E2.3] The inviter's number from an invite link opened on this device.
     let ref: number | undefined
     try {
-      ref = Number(localStorage.getItem('glm.ref')) || undefined
+      ref = Number(storage.get('ref')) || undefined
     } catch {}
     const { data } = await api.POST('/auth/register', { body: { name, username, password, ref } })
     user.value = data!.user
+    rebootSession()
     track('sign_up')
     return data!.verification_sent !== false
   }
@@ -73,8 +79,11 @@ export const useAuth = defineStore('auth', () => {
     await ensureCsrf()
     await api.POST('/auth/logout')
     user.value = null
+    rebootSession()
+    // [Sprint 58 W6] The club board's refresh stops with the account.
+    useBoard().pause()
     // [Sprint 51 W5] The Assistant Coach's conversation stays with the account, not on a shared device.
-    useBot().forget(true)
+    void import('./bot').then((m) => m.useBot().forget(true))
   }
   const set = (u: Account | null) => (user.value = u)
 

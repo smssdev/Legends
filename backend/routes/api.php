@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AppReleaseController;
 use App\Http\Controllers\Api\AssistantController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BootstrapController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\CspReportController;
@@ -47,6 +48,8 @@ use Illuminate\Support\Facades\Route;
 // documented in docs/api/openapi.yaml in the same PR.
 
 Route::get('health', [HealthController::class, 'show']);
+// [Sprint 58 B1] Everything the web asks when it opens, in one reply.
+Route::get('bootstrap', [BootstrapController::class, 'show'])->middleware('throttle:60,1,bootstrap');
 Route::post('health/ping', [HealthController::class, 'ping'])->middleware('throttle:10,1,ping');
 // [Sprint 53 F1] The app's private channels (a live match, a club, a chat group, the inbox): signed with its token. The
 // web signs them with its session at /broadcasting/auth; the same rules (routes/channels.php) decide.

@@ -71,7 +71,7 @@ function go(to: string) {
       <template v-if="r">
         <!-- The board: the crests and the score as it moved. -->
         <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-center">
-          <span class="flex min-w-0 flex-col items-center gap-1"><img :src="r.home.crest_url" alt="" class="size-12" /><b class="max-w-full truncate text-sm">{{ $nm(r.home.name) }}</b></span>
+          <span class="flex min-w-0 flex-col items-center gap-1"><AppImage :src="r.home.crest_url" alt="" class="size-12" :size="48" crest /><b class="max-w-full truncate text-sm">{{ $nm(r.home.name) }}</b></span>
           <span class="flex flex-col items-center gap-1">
             <!-- Each number beside its own crest, in the page's direction (home on the right in Arabic). -->
             <b class="flex gap-2 font-numbers text-5xl leading-none" aria-live="polite"><span>{{ score.home }}</span><span>-</span><span>{{ score.away }}</span></b>
@@ -79,7 +79,7 @@ function go(to: string) {
             <span v-if="ended && r.side" class="rounded-pill px-2 py-0.5 text-xs font-bold" :class="RESULT[r.result][1]">{{ $t(RESULT[r.result][0]) }}</span>
             <span v-else class="font-numbers text-xs text-text-muted" dir="ltr">{{ seen.length ? seen[seen.length - 1].minute + "'" : "0'" }}</span>
           </span>
-          <span class="flex min-w-0 flex-col items-center gap-1"><img :src="r.away.crest_url" alt="" class="size-12" /><b class="max-w-full truncate text-sm">{{ $nm(r.away.name) }}</b></span>
+          <span class="flex min-w-0 flex-col items-center gap-1"><AppImage :src="r.away.crest_url" alt="" class="size-12" :size="48" crest /><b class="max-w-full truncate text-sm">{{ $nm(r.away.name) }}</b></span>
         </div>
         <div v-if="!ended" class="h-1 overflow-hidden rounded-pill bg-surface-sunk" aria-hidden="true"><span class="block h-full bg-gold transition-all" :style="{ width: progress + '%' }" /></div>
 

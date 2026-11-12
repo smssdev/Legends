@@ -2,14 +2,14 @@
 // Support by WhatsApp and Telegram [X13]: account and sign-up problems, and ideas. The links come from the server
 // (/health), and a channel without a number or username has no button.
 import { onMounted, ref } from 'vue'
-import { api } from '../api/client'
+import { siteConfig } from '../lib/session'
 
 // [X90] noWhatsapp: the footer shows the other ways only (the owner's request 2026-11-02).
 defineProps<{ compact?: boolean; noWhatsapp?: boolean }>()
 const links = ref<{ whatsapp: string | null; telegram: string | null } | null>(null)
 onMounted(async () => {
   try {
-    links.value = (await api.GET('/health')).data?.support ?? null
+    links.value = (await siteConfig())?.support ?? null
   } catch {}
 })
 </script>

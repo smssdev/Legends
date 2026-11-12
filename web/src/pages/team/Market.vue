@@ -292,7 +292,7 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
                 <span class="hidden w-12 text-center text-sm text-text-soft sm:block" dir="ltr">{{ p.position }}</span>
                 <span class="hidden w-10 text-center font-numbers text-text-soft sm:block">{{ p.age }}</span>
                 <span class="hidden w-48 min-w-0 items-center gap-1.5 text-xs sm:flex">
-                  <img v-if="p.seller.logo" :src="p.seller.logo" alt="" class="size-6 object-contain" loading="lazy" />
+                  <AppImage v-if="p.seller.logo" :src="p.seller.logo" alt="" class="size-6 object-contain" :size="24" />
                   <span class="min-w-0"><span class="block truncate">{{ p.seller.club ? $nm(p.seller.club) : '' }}</span><span v-if="p.seller.coach" class="block truncate text-brand-light">{{ p.seller.coach }}</span></span>
                 </span>
                 <span class="flex w-16 flex-col items-end sm:w-20"><s v-if="p.was_price" class="font-numbers text-xs text-text-muted" dir="ltr">{{ money(p.was_price) }}</s><span class="font-numbers text-base font-bold sm:text-lg" :class="p.was_price ? 'text-success' : ''" dir="ltr">{{ money(p.price) }}</span></span>
@@ -321,13 +321,13 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
             <dl class="flex flex-col divide-y divide-text/5 text-sm">
               <div class="flex justify-between py-1.5"><dt class="text-text-muted">{{ $t('قيمة الصفقة') }}</dt><dd dir="ltr" class="font-numbers font-bold">{{ money(deal.price) }}</dd></div>
               <div class="flex justify-between py-1.5"><dt class="text-text-muted">{{ $t('أموال ناديك') }}</dt><dd dir="ltr" class="font-numbers">{{ money(deal.cash) }}</dd></div>
-              <div v-if="deal.doc_coins" class="flex justify-between py-1.5"><dt class="text-text-muted">{{ $t('توثيق الصفقة') }}</dt><dd><img src="/brand/coin.svg" alt="" class="inline size-4" /> <span class="font-numbers">{{ deal.doc_coins }}</span></dd></div>
+              <div v-if="deal.doc_coins" class="flex justify-between py-1.5"><dt class="text-text-muted">{{ $t('توثيق الصفقة') }}</dt><dd><AppImage src="/brand/coin.svg" alt="" class="inline size-4" :size="16" /> <span class="font-numbers">{{ deal.doc_coins }}</span></dd></div>
             </dl>
             <p v-if="deal.why" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="alert">{{ deal.why }}</p>
             <UiButton variant="brand" v-if="!deal.short" :disabled="busy !== null || !!list?.closed" @click="buy(false)">
-              {{ $t('شراء ·') }} <span dir="ltr" class="font-numbers">{{ money(deal.price) }}</span><template v-if="deal.doc_coins"> + <img src="/brand/coin.svg" alt="" class="inline size-4" /> {{ deal.doc_coins }}</template></UiButton>
+              {{ $t('شراء ·') }} <span dir="ltr" class="font-numbers">{{ money(deal.price) }}</span><template v-if="deal.doc_coins"> + <AppImage src="/brand/coin.svg" alt="" class="inline size-4" :size="16" /> {{ deal.doc_coins }}</template></UiButton>
             <UiButton v-else-if="deal.compensate" :disabled="busy !== null || !!list?.closed" @click="buy(true)">
-              <span dir="ltr" class="font-numbers">{{ money(deal.compensate.cash) }}</span> + <img src="/brand/coin.svg" alt="" class="inline size-4" /> <span class="font-numbers">{{ deal.compensate.coins + deal.doc_coins }}</span> {{ $t('كوينز') }}</UiButton>
+              <span dir="ltr" class="font-numbers">{{ money(deal.compensate.cash) }}</span> + <AppImage src="/brand/coin.svg" alt="" class="inline size-4" :size="16" /> <span class="font-numbers">{{ deal.compensate.coins + deal.doc_coins }}</span> {{ $t('كوينز') }}</UiButton>
           </template>
           <button type="button" class="h-11 rounded-lg border border-gold/40 font-bold text-gold" @click="toggleCompare(picked)">
             {{ comparing.some((x) => x.id === picked!.id) ? $t('أزله من المقارنة') : $t('أضفه للمقارنة') }}</button>

@@ -9,6 +9,7 @@
 // - The screen in what is left, scrolling inside itself (the frame never moves), the footer at its end.
 // - Held upright on a phone (the coach chose «تابع عمودياً», TurnPhone): the same dock along the bottom.
 // Signed out (the landing, the sign-in) only a slim bar with the brand and the two doors.
+import { storage } from '../lib/storage'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BrandMark from '../components/BrandMark.vue'
@@ -43,7 +44,7 @@ const inbox = useInbox()
 watch(() => auth.user?.id ?? null, (id) => inbox.follow(id), { immediate: true })
 // The coins balance on the shell [Sprint 34].
 const wallet = useWallet()
-watch(() => auth.user?.id ?? null, (id) => id && wallet.load(), { immediate: true })
+watch(() => auth.user?.id ?? null, (id) => id && wallet.load(id), { immediate: true })
 // The slot the coach is in: its club heads the dock.
 const slot = useSlot()
 // Fetched again on a new account and on the home screen (a club claimed or left since), else only re-picked.
@@ -51,7 +52,7 @@ watch(() => [auth.user?.id ?? 0, route.fullPath] as const, ([id], before) => id 
 
 // "الدوري والكأس" is the slot's own league page, and the media live under the league.
 // Before the slots come, the league remembered on this device stands in [Sprint 21 E3.3].
-const remembered = (() => { try { return Number(localStorage.getItem('legends.league')) || null } catch { return null } })()
+const remembered = (() => { try { return Number(storage.get('league')) || null } catch { return null } })()
 const pathOf = (s: Section) => {
   const league = slot.current?.league?.id ?? (slot.slots.length ? null : remembered)
   if (s.name === 'league' && league) return `/leagues/${league}`
@@ -66,7 +67,7 @@ const inSlot = computed(() => clubSections.value.some((s) => active(pathOf(s))))
 const unread = computed(() => (inbox.unread > 99 ? '99+' : inbox.unread ? String(inbox.unread) : ''))
 // [Sprint 20 B1] The board of the slot: the money, the timers and the to-do list.
 const board = useBoard()
-watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as const, ([inside, league]) => inside && board.load(league ?? null), { immediate: true })
+watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as const, ([inside, league]) => (inside ? board.load(league ?? null) : board.pause()), { immediate: true })
 
 // [Sprint 55 W1, D2] The dock's sections: in a club the six (each lit when one of its pages is open), outside the five.
 const entries = computed<DockEntry[]>(() => {
@@ -108,9 +109,9 @@ const next = computed(() => {
 
 // [Sprint 55 W2] The Assistant Coach answers from the dock; the dock's own dot greets once a day until it is opened.
 const bot = useBot()
-const HELLO = 'glm.bot.hello'
+const HELLO = 'bot.hello'
 const today = new Date().toDateString()
-const hello = ref((() => { try { return localStorage.getItem(HELLO) !== today } catch { return false } })())
+const hello = ref((() => { try { return storage.get(HELLO) !== today } catch { return false } })())
 watch(() => bot.open, (o) => { if (o) hello.value = false })
 
 // [Sprint 39 N1] The tone when the coach's next match kicks off while the game is open (its end comes as the match
@@ -134,7 +135,7 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
     <!-- [Sprint 39 N1] Asked once a device: the game's sound and notifications. -->
     <SoundPrompt />
     <ShellDock :entries="entries" :more="more" :in-slot="inSlot" :bot-open="bot.open" :bot-dot="hello && !bot.open" @bot="bot.open = !bot.open" />
-    <ShellBar :title="title" :in-slot="inSlot" :next="next" :coins="wallet.view?.balance ?? 0" :cash="cash" :unread="unread" :avatar="auth.user.avatar_url" :initial="initial" :unverified="!auth.user.verification?.verified" />
+    <ShellBar :title="title" :in-slot="inSlot" :next="next" :coins="wallet.view?.balance ?? (wallet.error ? null : 0)" :cash="cash" :unread="unread" :avatar="auth.user.avatar_url" :initial="initial" :unverified="!auth.user.verification?.verified" />
 
     <main ref="main" class="shell-main">
       <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->
@@ -302,6 +303,9 @@ html.light .dock-item.is-active { color: var(--color-text); background: color-mi
 
 .shell-main { position: relative; min-height: 0; overflow-x: clip; overflow-y: auto; overscroll-behavior: contain; --shell-header: 0px; }
 .shell-page { padding: var(--space-sm) var(--space-sm) var(--space-xl); }
+/* [Sprint 58] At least the frame's height: the footer starts below the fold, so a screen whose data arrives late never
+   pushes a footer already in view out of it (Lighthouse: a shift of 0.4 on the home screen). */
+.shell-page:not(.is-fit) { min-height: 100%; }
 .shell-page.is-fit { display: flex; flex-direction: column; height: 100%; padding-bottom: var(--space-sm); }
 .shell-page.is-fit > * { flex: 1; min-height: 0; }
 @media (min-width: 900px) { .shell-page { padding: var(--space-md) var(--space-lg) var(--space-xl); } .shell-page.is-fit { padding-bottom: var(--space-md); } }

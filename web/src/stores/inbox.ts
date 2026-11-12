@@ -7,6 +7,7 @@ import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
 import { live } from '../lib/echo'
 import { playTone } from '../lib/tone'
+import { takeBoot } from '../lib/session'
 
 export type Message = components['schemas']['Message']
 
@@ -16,6 +17,8 @@ export const useInbox = defineStore('inbox', () => {
   const more = ref(false)
   const loaded = ref(false)
   const error = ref('')
+  /** [Sprint 58 W7] The unread count could not be asked. */
+  const countError = ref(false)
   let userId: number | null = null
   let timer = 0
 
@@ -23,8 +26,10 @@ export const useInbox = defineStore('inbox', () => {
     try {
       const { data } = await api.GET('/messages/unread')
       unread.value = data!.unread
+      countError.value = false
     } catch {
-      /* the badge keeps its last number */
+      // The badge keeps its last number, with a warning that it may be old.
+      countError.value = true
     }
   }
 
@@ -80,8 +85,12 @@ export const useInbox = defineStore('inbox', () => {
     loaded.value = false
     unread.value = 0
     if (!id) return
-    count()
-    timer = window.setInterval(count, 60_000)
+    // [Sprint 58 W1] The first count from the visit's start (GET /bootstrap).
+    const start = takeBoot('unread', id)
+    if (start !== undefined) unread.value = start
+    else count()
+    // [Sprint 58 W6] Not while the page is hidden: the channel brings what comes, and a return asks again.
+    timer = window.setInterval(() => document.visibilityState === 'visible' && count(), 60_000)
     try {
       live().private(`App.Models.User.${id}`)
         .listen('.message', (e: { message: Message; unread: number }) => {

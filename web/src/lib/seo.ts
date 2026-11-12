@@ -3,7 +3,7 @@
 // match) is noindex, since it is the coach's own.
 import { watch } from 'vue'
 import type { RouteLocationNormalized, Router } from 'vue-router'
-import { BRAND, PAGES, keywordsOf, urlOf } from '../content/seo'
+import type * as Seo from '../content/seo'
 import { locale } from './i18n'
 
 function meta(attr: 'name' | 'property', key: string, content: string) {
@@ -23,7 +23,14 @@ function link(rel: string, href: string) {
   el.setAttribute('href', href)
 }
 
+// [Sprint 58 T1] The pages' words load after the first paint (they were 13 KB of the entry script): the public pages
+// already carry their tags in their own HTML (scripts/seo.mjs), so the tab's title only follows a moment later.
+let content: typeof Seo | null = null
+const loading = import('../content/seo').then((m) => (content = m))
+
 function apply(to: RouteLocationNormalized) {
+  if (!content) return void loading.then(() => apply(to))
+  const { BRAND, PAGES, keywordsOf, urlOf } = content
   const l = locale.value
   const page = PAGES[String(to.name)]
   if (!page) {

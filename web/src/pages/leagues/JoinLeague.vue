@@ -5,7 +5,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
-import { track } from '../../lib/analytics'
+import { track } from '../../lib/track'
 import { budget, END_MODES, when, type League } from '../../api/leagues'
 import Icon from '../../components/Icon.vue'
 import UiButton from '../../components/ui/UiButton.vue'

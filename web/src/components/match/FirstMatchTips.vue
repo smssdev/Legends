@@ -3,19 +3,20 @@
 // bubble): at kick-off, at the first tactical window («بدّل الآن» opens the coach's panel), at half-time and at the
 // first goal against. Each tip once on this device; three matches and they stop. The game's rules stay in his guide
 // (Sprint 22): these are only «now is the moment» nudges.
+import { storage } from '../../lib/storage'
 import { computed, ref, watch } from 'vue'
 import Character from '../characters/Character.vue'
 import UiButton from '../ui/UiButton.vue'
 
 const props = defineProps<{ active: boolean; started: boolean; windowOn: boolean; halftime: boolean; conceded: number; finished: boolean }>()
-const KEY = 'glm.tutorial.match'
+const KEY = 'tutorial.match'
 type Tip = 'kickoff' | 'window' | 'halftime' | 'conceded'
 type Seen = { tips: Tip[]; matches: number }
 function read(): Seen {
-  try { return { tips: [], matches: 0, ...JSON.parse(localStorage.getItem(KEY) ?? '{}') } } catch { return { tips: [], matches: 0 } }
+  try { return { tips: [], matches: 0, ...JSON.parse(storage.get(KEY) ?? '{}') } } catch { return { tips: [], matches: 0 } }
 }
 const seen = ref<Seen>(read())
-const write = () => { try { localStorage.setItem(KEY, JSON.stringify(seen.value)) } catch { /* private mode */ } }
+const write = () => { try { storage.set(KEY, JSON.stringify(seen.value)) } catch { /* private mode */ } }
 const learning = computed(() => props.active && seen.value.matches < 3)
 const current = ref<Tip | null>(null)
 const TEXT: Record<Tip, { title: string; text: string; go?: string }> = {

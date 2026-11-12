@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\Crests;
 use App\Http\Controllers\Controller;
 use App\League\ClubAgenda;
 use App\League\Integrity;
@@ -35,7 +36,7 @@ class ClubBoardController extends Controller
         [$table, $played] = $season ? $this->table($season) : [[], 0];
         $position = ($i = array_search($club->id, array_column($table, 'id'), true)) === false ? null : $i + 1;
         $card = fn (Club $c) => ['id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'strength_cp' => (int) $c->strength_snapshot,
-            'crest_url' => url("/api/v1/data/clubs/{$c->master_club_id}/crest.svg"), 'form' => Spy::form($c->id)];
+            'crest_url' => Crests::url($c->master_club_id), 'form' => Spy::form($c->id)];
         $match = null;
         if ($f) {
             $opp = Club::with('user')->find($f->home_id === $club->id ? $f->away_id : $f->home_id);
@@ -52,7 +53,7 @@ class ClubBoardController extends Controller
         }
 
         return response()->json([
-            'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
+            'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'crest_url' => Crests::url($club->master_club_id)],
             'money' => ['cash' => (int) $club->fresh()->balance, 'coins' => Wallet::balance($user->id)],
             'match' => $match,
             'lineup' => ['formation' => $sheet['formation'], 'auto' => (bool) $sheet['auto'], 'ready' => ! collect($pending)->contains('kind', 'lineup')],

@@ -61,7 +61,7 @@ onMounted(async () => {
       <p v-else-if="!squad" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
       <template v-else>
         <div class="flex items-center gap-3">
-          <img :src="squad.crest_url" alt="" class="size-10" />
+          <AppImage :src="squad.crest_url" alt="" class="size-10" :size="40" crest />
           <div class="min-w-0 flex-1"><h2 class="truncate font-display text-xl font-extrabold">{{ $nm(squad.name) }}</h2><p class="text-xs text-text-muted">{{ $t('{v0} · {v1} لاعباً', { v0: squad.coach?.name ?? $t('الحاسوب'), v1: count(squad.players.length) }) }}</p></div>
           <button type="button" class="size-touch rounded-md bg-surface-raised" :aria-label="$t('إغلاق')" @click="emit('close')">✕</button>
         </div>

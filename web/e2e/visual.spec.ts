@@ -33,7 +33,7 @@ test('the rebuilt screens keep their shape', async ({ page }) => {
   for (const [width, height, scheme] of SIZES) {
     await page.setViewportSize({ width, height })
     await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' })
-    await page.evaluate((s) => localStorage.setItem('legends.theme', s), scheme)
+    await page.evaluate((s) => localStorage.setItem('glm.theme', s), scheme)
     for (const [path, name] of SCREENS) {
       await page.goto(path)
       await ready(page)

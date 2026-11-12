@@ -35,7 +35,7 @@ watch(mood, (m) => {
 </script>
 
 <template>
-  <img v-if="use3d" :src="`/characters/${model.toLowerCase()}-${mood}.webp`" :alt="label ?? ''" class="lgc-3d" draggable="false" />
+  <img v-if="use3d" :src="`/characters/${model.toLowerCase()}-${mood}.webp`" :alt="label ?? ''" class="lgc-3d" draggable="false" loading="lazy" decoding="async" />
   <span v-else ref="host" class="lgc" :role="label ? 'img' : undefined" :aria-label="label" :aria-hidden="label ? undefined : 'true'" />
 </template>
 

@@ -272,7 +272,7 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
           <span v-if="m.deleted" class="italic text-text-muted">{{ $t('هذه الرسالة حُذفت') }}</span>
           <template v-else>
             <img v-if="m.kind === 'image' && m.media_url" :src="m.media_url" :alt="m.body || $t('صورة')" loading="lazy"
-              class="mb-1 max-h-72 w-full rounded-xl object-cover" @click.stop="lightbox = m.media_url" />
+              class="mb-1 max-h-72 w-full rounded-xl object-cover" @click.stop="lightbox = m.media_url" decoding="async" />
             <span v-if="m.kind === 'audio' && m.media_url" class="mb-1 flex items-center gap-2" @click.stop>
               <span aria-hidden="true">🎤</span><audio :src="m.media_url" controls preload="none" class="h-10 max-w-[230px]" />
               <span v-if="m.seconds" class="font-numbers text-xs opacity-80" dir="ltr">{{ mmss(m.seconds) }}</span>
@@ -312,7 +312,7 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
       </template>
     </form>
     <UiDialog :open="!!lightbox" bare @close="lightbox = null">
-      <img v-if="lightbox" :src="lightbox" :alt="$t('صورة')" class="max-h-[85vh] w-full rounded-xl object-contain" @click="lightbox = null" />
+      <img v-if="lightbox" :src="lightbox" :alt="$t('صورة')" class="max-h-[85vh] w-full rounded-xl object-contain" @click="lightbox = null" loading="lazy" decoding="async" />
     </UiDialog>
 
     <UiDialog :open="!!picked" :title="$t('الرسالة')" @close="picked = null">

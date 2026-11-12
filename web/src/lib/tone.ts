@@ -4,12 +4,13 @@
 // [Sprint 39 N1] Browsers play no sound before the coach's first tap on the page (their autoplay policy): the first tap
 // anywhere, or «فعّلها» in the activation card (components/shell/SoundPrompt.vue), unlocks it; until then it stays silent
 // and nothing fails. The card asks once; the top bar's speaker (SoundToggle.vue) mutes or unmutes it at any time.
+import { storage } from './storage'
 import { ref } from 'vue'
 
-const KEY = 'glm.tone'
-const ASKED = 'glm.tone.asked'
-const read = (k: string) => { try { return localStorage.getItem(k) } catch { return null } }
-const write = (k: string, v: string) => { try { localStorage.setItem(k, v) } catch {} }
+const KEY = 'tone'
+const ASKED = 'tone.asked'
+const read = (k: string) => { try { return storage.get(k) } catch { return null } }
+const write = (k: string, v: string) => { try { storage.set(k, v) } catch {} }
 
 export const toneOn = ref(read(KEY) !== 'off')
 /** The coach answered the activation card (or chose in the account page), so it is not shown again. */

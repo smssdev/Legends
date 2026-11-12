@@ -238,7 +238,7 @@ const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
         :highlight="(r) => r.id === clubId"
       >
         <template #name="{ row }">
-          <span class="flex items-center gap-2"><img :src="row.crest_url" alt="" width="24" height="27" loading="lazy" />{{ row.name }}</span>
+          <span class="flex items-center gap-2"><AppImage :src="row.crest_url" alt="" :width="24" :height="27" crest />{{ row.name }}</span>
         </template>
         <template #strength_cp="{ row }"><span class="text-gold">{{ strength(row.strength_cp) }}</span></template>
       </UiTable>

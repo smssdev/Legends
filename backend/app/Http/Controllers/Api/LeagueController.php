@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Auth\Username;
 use App\Chat\ChatGroups;
+use App\Data\Crests;
 use App\Http\Controllers\Controller;
 use App\League\Alliance;
 use App\League\CoachSlots;
@@ -570,7 +571,7 @@ class LeagueController extends Controller
     {
         return Club::where('league_id', $league->id)->with('user')->get()->mapWithKeys(fn (Club $c) => [$c->id => [
             'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'strength_cp' => (int) $c->strength_snapshot,
-            'crest_url' => url("/api/v1/data/clubs/{$c->master_club_id}/crest.svg"), 'coach' => $c->user?->name,
+            'crest_url' => Crests::url($c->master_club_id), 'coach' => $c->user?->name,
         ]])->all();
     }
 
@@ -734,7 +735,7 @@ class LeagueController extends Controller
     {
         return [
             'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'colors' => [$c->color_primary, $c->color_secondary],
-            'crest_url' => url("/api/v1/data/clubs/{$c->master_club_id}/crest.svg"),
+            'crest_url' => Crests::url($c->master_club_id),
             'strength_cp' => (int) $c->strength_snapshot,
             'coach' => $c->user ? ['id' => $c->user->id, 'name' => $c->user->name, 'official' => Username::official($c->user->username), 'verified' => $c->user->account_verified_at !== null] : null,
             'bot' => $c->isBot(),

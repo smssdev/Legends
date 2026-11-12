@@ -111,9 +111,9 @@ const lastRound = computed(() => {
             <h2 class="text-body font-extrabold">{{ $t('آخر مباراة لك') }}</h2>
             <div class="fx-row ring-1 ring-gold/50">
               <span class="flex min-w-0 flex-1 items-center gap-2 font-bold">
-                <img :src="lastMine.home!.crest_url" alt="" class="size-6 shrink-0" /><bdi class="truncate">{{ $nm(lastMine.home!.name) }}</bdi>
+                <AppImage :src="lastMine.home!.crest_url" alt="" class="size-6 shrink-0" :size="24" crest /><bdi class="truncate">{{ $nm(lastMine.home!.name) }}</bdi>
                 <span class="flex gap-1 font-numbers text-gold"><span>{{ lastMine.home_goals }}</span><span>-</span><span>{{ lastMine.away_goals }}</span></span>
-                <bdi class="truncate">{{ $nm(lastMine.away!.name) }}</bdi><img :src="lastMine.away!.crest_url" alt="" class="size-6 shrink-0" />
+                <bdi class="truncate">{{ $nm(lastMine.away!.name) }}</bdi><AppImage :src="lastMine.away!.crest_url" alt="" class="size-6 shrink-0" :size="24" crest />
               </span>
               <UiButton size="sm" variant="quiet" @click="recapOf = lastMine.match_id!">⚡ {{ $t('ملخص') }}</UiButton>
               <UiButton size="sm" :to="{ name: 'league-match', params: { id: lastMine.match_id! } }">▶ {{ $t('شاهد المحاكاة') }}</UiButton>
@@ -125,9 +125,9 @@ const lastRound = computed(() => {
           </h2>
           <div v-for="f in lastRound.items" :key="f.id" class="fx-row" :class="(f.home?.id === mine || f.away?.id === mine) ? 'ring-1 ring-gold/50' : ''">
             <span class="flex min-w-0 flex-1 items-center gap-2 font-bold">
-              <img :src="f.home!.crest_url" alt="" class="size-6 shrink-0" /><bdi class="truncate">{{ $nm(f.home!.name) }}</bdi>
+              <AppImage :src="f.home!.crest_url" alt="" class="size-6 shrink-0" :size="24" crest /><bdi class="truncate">{{ $nm(f.home!.name) }}</bdi>
               <span class="flex gap-1 font-numbers text-gold"><span>{{ f.home_goals }}</span><span>-</span><span>{{ f.away_goals }}</span></span>
-              <bdi class="truncate">{{ $nm(f.away!.name) }}</bdi><img :src="f.away!.crest_url" alt="" class="size-6 shrink-0" />
+              <bdi class="truncate">{{ $nm(f.away!.name) }}</bdi><AppImage :src="f.away!.crest_url" alt="" class="size-6 shrink-0" :size="24" crest />
             </span>
             <UiButton size="sm" variant="quiet" @click="recapOf = f.match_id!">⚡ <span class="max-md:hidden">{{ $t('ملخص') }}</span></UiButton>
             <UiButton size="sm" variant="quiet" :to="{ name: 'league-match', params: { id: f.match_id! } }">▶ <span class="max-md:hidden">{{ $t('شاهد المحاكاة') }}</span></UiButton>
@@ -147,14 +147,14 @@ const lastRound = computed(() => {
             </template>
             <template v-else>
               <button type="button" class="flex min-h-touch min-w-0 items-center gap-2 text-start font-bold hover:text-gold" :class="f.home?.id === mine ? 'text-gold' : ''" @click="f.home && (squadOf = f.home.id)">
-                <img v-if="f.home" :src="f.home.crest_url" alt="" class="size-6 shrink-0" /><span class="truncate">{{ f.home ? $nm(f.home.name) : $t('يُحدد لاحقاً') }}</span>
+                <AppImage v-if="f.home" :src="f.home.crest_url" alt="" class="size-6 shrink-0" :size="24" crest /><span class="truncate">{{ f.home ? $nm(f.home.name) : $t('يُحدد لاحقاً') }}</span>
               </button>
               <button v-if="f.match_id && played(f)" type="button" class="min-h-touch min-w-14 rounded-md bg-surface px-2 text-center font-numbers font-bold text-gold" dir="ltr"
                 :aria-label="$t('الملخص السريع')" @click="recapOf = f.match_id">{{ scoreText(f.home_goals, f.away_goals) }}</button>
               <UiButton v-else-if="f.match_id && f.status === 'live'" size="sm" variant="danger" :to="{ name: 'league-match', params: { id: f.match_id } }">{{ $t('مباشر') }}</UiButton>
               <span v-else class="min-w-14 text-center font-numbers text-caption text-text-muted" dir="ltr">{{ new Date(f.scheduled_at).toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' }) }}</span>
               <button type="button" class="flex min-h-touch min-w-0 items-center justify-end gap-2 text-end font-bold hover:text-gold" :class="f.away?.id === mine ? 'text-gold' : ''" @click="f.away && (squadOf = f.away.id)">
-                <span class="truncate">{{ f.away ? $nm(f.away.name) : $t('يُحدد لاحقاً') }}</span><img v-if="f.away" :src="f.away.crest_url" alt="" class="size-6 shrink-0" />
+                <span class="truncate">{{ f.away ? $nm(f.away.name) : $t('يُحدد لاحقاً') }}</span><AppImage v-if="f.away" :src="f.away.crest_url" alt="" class="size-6 shrink-0" :size="24" crest />
               </button>
             </template>
           </div>

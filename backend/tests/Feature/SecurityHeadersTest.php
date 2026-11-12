@@ -48,6 +48,10 @@ class SecurityHeadersTest extends TestCase
         $theme = "try { document.documentElement.classList.add('x') } catch (e) {}";
         file_put_contents($root.'/public/index.html', "<!doctype html><html><head><script>{$theme}</script><script type=\"application/ld+json\">{}</script></head><body></body></html>");
         file_put_contents($root.'/public/app.js', 'console.log(1)');
+        @mkdir($root.'/public/logos');
+        @mkdir($root.'/public/assets');
+        file_put_contents($root.'/public/logos/club.svg', '<svg/>');
+        file_put_contents($root.'/public/assets/index-abc123.js', 'console.log(2)');
 
         $port = 18000 + random_int(0, 999);
         $server = proc_open([PHP_BINARY, '-S', "127.0.0.1:{$port}", '-t', $root.'/public', $root.'/router.php'], [['pipe', 'r'], ['file', '/dev/null', 'w'], ['file', '/dev/null', 'w']], $pipes);
@@ -69,10 +73,17 @@ class SecurityHeadersTest extends TestCase
 
             $file = get_headers("http://127.0.0.1:{$port}/app.js", true);
             $this->assertSame('nosniff', $file['X-Content-Type-Options'], 'the built files too');
+
+            // [Sprint 58 B3] A hashed name a year; a fixed name whose content may change an hour, then its ETag (a 304).
+            $this->assertSame('public, max-age=31536000, immutable', get_headers("http://127.0.0.1:{$port}/assets/index-abc123.js", true)['Cache-Control']);
+            $logo = get_headers("http://127.0.0.1:{$port}/logos/club.svg", true);
+            $this->assertSame('public, max-age=3600', $logo['Cache-Control']);
+            $again = get_headers("http://127.0.0.1:{$port}/logos/club.svg", true, stream_context_create(['http' => ['header' => "If-None-Match: {$logo['ETag']}\r\n"]]));
+            $this->assertStringContainsString('304', $again[0]);
         } finally {
             proc_terminate($server);
             proc_close($server);
-            array_map('unlink', glob($root.'/{,public/,app/Http/Security/}*.*', GLOB_BRACE));
+            array_map('unlink', glob($root.'/{,public/,public/logos/,public/assets/,app/Http/Security/}*.*', GLOB_BRACE));
         }
     }
 

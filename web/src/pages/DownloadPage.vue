@@ -30,7 +30,7 @@ onMounted(async () => {
     <PublicHeader />
     <main class="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8">
       <header class="flex flex-col items-center gap-3 text-center">
-        <img src="/icon-192.png" alt="" class="size-24 rounded-3xl shadow-lg" />
+        <AppImage src="/icon-192.png" alt="" class="size-24 rounded-3xl shadow-lg" :size="96" />
         <h1 class="font-display text-3xl font-extrabold md:text-4xl">{{ $t('حمّل اللعبة على جوالك') }}</h1>
         <p class="max-w-xl leading-relaxed text-text-soft">{{ $t('نفس حسابك ونفس دورياتك في الموقع والتطبيق: ادخل بحسابك وتكمل من حيث توقفت.') }}</p>
       </header>

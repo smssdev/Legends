@@ -1,3 +1,4 @@
+import { storage } from '../lib/storage'
 import type { components } from './schema'
 // Simulator API client (docs/api/openapi.yaml, docs/api/match-events.md).
 import { api, asApiError, ensureCsrf } from './client'
@@ -176,8 +177,8 @@ export type Room = { id: string; host: { name: string; club: Club }; guest: { na
 
 // A live match's seat: the secret that lets this device manage its side. Kept per match in the browser.
 export const seats = {
-  get: (match: string) => { try { return localStorage.getItem(`legends.seat.${match}`) } catch { return null } },
-  set: (match: string, seat: string) => { try { localStorage.setItem(`legends.seat.${match}`, seat) } catch {} },
+  get: (match: string) => { try { return storage.get(`seat.${match}`) } catch { return null } },
+  set: (match: string, seat: string) => { try { storage.set(`seat.${match}`, seat) } catch {} },
 }
 
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {

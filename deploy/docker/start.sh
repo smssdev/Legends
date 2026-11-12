@@ -100,6 +100,8 @@ fi
 php artisan data:import --add
 # [Sprint 29] The national teams from the players' nationalities (adds new countries, refreshes their strength).
 php artisan data:nations || echo "National teams: failed, continuing"
+# [Sprint 58 B2] The clubs' crests as static files (public/crests, a year's cache): no crest goes through Laravel.
+php artisan data:crests || echo "Crests: failed, continuing (the old crest route still answers)"
 # [X45] Without Redis, the sessions in the container's own SQLite file beside the cache: no database trip on every
 # request. A restart signs nobody out for long: the remember-me cookie (on by default) signs them back in.
 [ -n "${REDIS_HOST:-}" ] || export SESSION_DRIVER=database SESSION_CONNECTION=cache_db

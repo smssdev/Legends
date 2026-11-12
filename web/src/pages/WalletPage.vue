@@ -32,7 +32,7 @@ onMounted(() => wallet.load())
     <p v-if="!wallet.view" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <template v-else>
       <section :aria-label="$t('الرصيد')" class="flex flex-wrap items-center gap-4 rounded-xl border border-gold/30 bg-surface p-5">
-        <img src="/brand/coin.svg" alt="" class="size-14" />
+        <AppImage src="/brand/coin.svg" alt="" class="size-14" :size="56" />
         <div class="flex-1">
           <span class="block text-sm text-text-muted">{{ $t('رصيدك من الكوينز') }}</span>
           <b class="font-numbers text-4xl text-gold" dir="ltr">{{ wallet.view.balance }}</b>
@@ -58,7 +58,7 @@ onMounted(() => wallet.load())
         <h2 class="font-display text-lg font-bold">{{ $t('المتجر') }}</h2>
         <div class="grid gap-2 sm:grid-cols-3">
           <div v-for="p in wallet.view.shop" :key="p.coins" class="flex flex-col items-center gap-2 rounded-lg bg-surface-sunk p-4">
-            <img src="/brand/coin.svg" alt="" class="size-10" />
+            <AppImage src="/brand/coin.svg" alt="" class="size-10" :size="40" />
             <b class="font-numbers text-2xl" dir="ltr">{{ p.coins }}</b>
             <span class="text-sm text-text-muted">{{ $t(p.label) }}</span>
             <button type="button" disabled class="h-touch w-full rounded-md bg-surface-raised font-bold text-text-muted">{{ $t('قريباً') }}</button>

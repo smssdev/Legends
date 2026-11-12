@@ -113,7 +113,7 @@ onBeforeUnmount(() => clearInterval(tick))
       <section v-for="grp in GROUPS" :key="grp.title" :aria-label="grp.title" class="flex flex-col gap-3">
         <div class="flex items-baseline gap-2"><h2 class="font-display text-xl font-extrabold">{{ $t(grp.title) }}</h2><span class="text-sm text-text-muted">{{ $t(grp.hint) }}</span></div>
         <div class="grid gap-3 sm:grid-cols-2">
-          <article v-for="s in v.specialists.filter((x) => grp.types.includes(x.type))" :id="`spec-${s.type}`" :key="s.type" class="flex flex-col gap-3 rounded-xl ui-card p-4 transition-shadow duration-500" :class="focus === s.type ? 'ring-2 ring-gold animate-pulse-ring' : s.ends_at ? 'ring-1 ring-success/50' : ''">
+          <article v-for="s in v.specialists.filter((x) => grp.types.includes(x.type))" :id="`spec-${s.type}`" :key="s.type" class="flex flex-col gap-3 rounded-xl ui-card p-4 transition-shadow duration-500" :class="focus === s.type ? 'ring-2 ring-gold pulse-ring' : s.ends_at ? 'ring-1 ring-success/50' : ''">
             <div class="flex items-start gap-3">
               <span class="grid size-12 shrink-0 place-items-center rounded-xl" :class="s.ends_at ? 'bg-success/20 text-success' : 'bg-gold/15 text-gold'">
                 <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path :d="ICON[s.type]" /></svg>

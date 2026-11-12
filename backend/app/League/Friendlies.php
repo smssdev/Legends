@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Data\Crests;
 use App\Database\Sql;
 use App\Models\Club;
 use App\Simulator\Runner;
@@ -43,12 +44,12 @@ class Friendlies
         // [Sprint 27 X1] One friendly a day against each club (the Cairo day).
         $today = DB::table('friendlies')->where('club_id', $club->id)->where('day', self::cairoDay())->pluck('opponent_id')->map(fn ($v) => (int) $v)->all();
 
-        return ['club' => ['name' => $club->name, 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
+        return ['club' => ['name' => $club->name, 'crest_url' => Crests::url($club->master_club_id)],
             'coins' => self::price($club->user_id ? (int) $club->user_id : null), 'first_free' => self::price($club->user_id ? (int) $club->user_id : null) === 0, 'balance' => $club->user_id ? Wallet::balance((int) $club->user_id) : 0, 'blocked' => self::blocked($club),
             'fitness' => (int) $cfg['fitness'],
             'training_progress_pct' => intdiv((int) $cfg['training_progress'] * 100, (int) config('game.training.progress_scale')),
             'opponents' => $opponents->sortByDesc('strength_snapshot')->values()->map(fn ($o) => ['id' => (int) $o->id, 'name' => $o->name, 'code' => $o->code,
-                'crest_url' => url("/api/v1/data/clubs/{$o->master_club_id}/crest.svg"), 'strength_cp' => (int) $o->strength_snapshot, 'coach' => $o->coach, 'recommended' => $o->id === $closest,
+                'crest_url' => Crests::url($o->master_club_id), 'strength_cp' => (int) $o->strength_snapshot, 'coach' => $o->coach, 'recommended' => $o->id === $closest,
                 'played_today' => in_array((int) $o->id, $today, true)])->all(),
             'recent' => DB::table('friendlies')->where('club_id', $club->id)->orderByDesc('id')->limit(5)->get()->map(fn ($f) => self::row($f))->all()];
     }
@@ -175,7 +176,7 @@ class Friendlies
     {
         $opp = DB::table('clubs')->where('id', $f->opponent_id)->first(['id', 'name', 'code', 'master_club_id']);
 
-        return ['id' => (int) $f->id, 'opponent' => ['id' => (int) $opp->id, 'name' => $opp->name, 'code' => $opp->code, 'crest_url' => url("/api/v1/data/clubs/{$opp->master_club_id}/crest.svg")],
+        return ['id' => (int) $f->id, 'opponent' => ['id' => (int) $opp->id, 'name' => $opp->name, 'code' => $opp->code, 'crest_url' => Crests::url($opp->master_club_id)],
             'goals_for' => (int) $f->goals_for, 'goals_against' => (int) $f->goals_against, 'report' => json_decode($f->report, true),
             'at' => Carbon::parse($f->created_at, 'UTC')->toIso8601ZuluString()];
     }

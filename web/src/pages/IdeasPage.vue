@@ -149,7 +149,7 @@ const vote = (p: S['Poll'], option: number) => run(async () => {
         <ol class="flex flex-col gap-2">
           <li v-for="h in page.honours" :key="h.user.id" class="flex items-center gap-3 rounded-xl bg-surface-sunk p-3">
             <span class="w-7 shrink-0 text-center font-numbers text-lg font-extrabold" :class="h.rank <= 3 ? 'text-gold' : 'text-text-muted'">{{ h.rank }}</span>
-            <img v-if="h.user.avatar_url" :src="h.user.avatar_url" alt="" class="size-10 shrink-0 rounded-full object-cover" />
+            <AppImage v-if="h.user.avatar_url" :src="h.user.avatar_url" alt="" class="size-10 shrink-0 rounded-full object-cover" :size="40" />
             <span v-else class="flex size-10 shrink-0 items-center justify-center rounded-full bg-gold font-bold text-on-gold" aria-hidden="true">{{ h.user.name.slice(0, 1) }}</span>
             <div class="min-w-0 flex-1">
               <RouterLink :to="{ name: 'coach', params: { id: h.user.id } }" class="flex items-center gap-1 font-bold">{{ h.user.name }} <OfficialBadge v-if="h.user.official" /></RouterLink>

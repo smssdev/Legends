@@ -4,6 +4,7 @@
 // English (the owner, 2026-10-29), still, never dragged; once a day a greeting beside it. Its window is a chat card above
 // the button, never the page's whole height, on the phone and the computer (the owner, 2026-10-30): who he is, the page's
 // quick questions, the conversation, and a line to the platform's support. Every explanation of the game lives here, not on the screens.
+import { storage } from '../../lib/storage'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { SECTIONS } from '../../layouts/nav'
@@ -30,12 +31,12 @@ const leagueId = computed(() => slot.current?.league?.id ?? null)
 const page = computed(() => String(route.name ?? 'home'))
 
 // The greeting: the first visit of the day, until closed.
-const HELLO = 'glm.bot.hello'
+const HELLO = 'bot.hello'
 const today = new Date().toDateString()
-const hello = ref((() => { try { return localStorage.getItem(HELLO) !== today } catch { return false } })())
+const hello = ref((() => { try { return storage.get(HELLO) !== today } catch { return false } })())
 function quiet() {
   hello.value = false
-  try { localStorage.setItem(HELLO, today) } catch {}
+  try { storage.set(HELLO, today) } catch {}
 }
 // [Sprint 30 G8] The greeting leaves by itself after a few seconds: on a phone it sat over the page's bottom buttons
 // («أنشئ الدوري…»), which the end-to-end test found.

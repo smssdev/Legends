@@ -78,6 +78,7 @@
 // A match between two friends (docs/MATCH_VIEW.md 8): the host opens a room with
 // a name and a club and shares the link; the friend opens it, writes a name and
 // picks another club, and the live match starts on both screens.
+import { storage } from '../lib/storage'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Crest from '../components/Crest.vue'
@@ -86,7 +87,7 @@ import { clubColors, seats, sim, type Club, type Room } from '../api/sim'
 const props = defineProps<{ room?: string }>()
 const router = useRouter()
 const room = ref<Room | null>(null)
-const name = ref(read('legends.name') ?? '')
+const name = ref(read('name') ?? '')
 const q = ref('')
 const results = ref<Club[]>([])
 const club = ref<Club | null>(null)
@@ -96,13 +97,13 @@ const copied = ref(false)
 let timer = 0
 
 // Which seat this device has in which room: kept in the browser, so a refresh keeps the seat.
-const seat = computed(() => (props.room ? read(`legends.room.${props.room}`) : null))
+const seat = computed(() => (props.room ? read(`room.${props.room}`) : null))
 const isHost = computed(() => seat.value === 'host')
 const ready = computed(() => name.value.trim().length >= 2 && !!club.value)
 const link = computed(() => `${location.origin}/sim/room/${props.room}`)
 
-function read(k: string) { try { return localStorage.getItem(k) } catch { return null } }
-function write(k: string, v: string) { try { localStorage.setItem(k, v) } catch {} }
+function read(k: string) { try { return storage.get(k) } catch { return null } }
+function write(k: string, v: string) { try { storage.set(k, v) } catch {} }
 
 let searchTimer = 0
 function search() {
@@ -113,16 +114,16 @@ function search() {
 async function go() {
   busy.value = true
   error.value = ''
-  write('legends.name', name.value.trim())
+  write('name', name.value.trim())
   try {
     if (!room.value) {
       const r = await sim.openRoom(name.value.trim(), club.value!.id)
-      write(`legends.room.${r.id}`, 'host')
-      write(`legends.roomseat.${r.id}`, r.seat!)
+      write(`room.${r.id}`, 'host')
+      write(`roomseat.${r.id}`, r.seat!)
       await router.replace({ name: 'sim-room', params: { room: r.id } })
     } else {
       const r = await sim.joinRoom(room.value.id, name.value.trim(), club.value!.id)
-      write(`legends.room.${r.id}`, 'guest')
+      write(`room.${r.id}`, 'guest')
       seats.set(r.match_id!, r.seat!)
       await router.replace({ name: 'sim-match', params: { id: r.match_id! } })
     }
@@ -140,7 +141,7 @@ async function load() {
     room.value = await sim.room(props.room)
     // Both go to the match once it exists, each with his own seat: the host manages home, the guest away.
     if (room.value.match_id && seat.value) {
-      const mine = read(`legends.roomseat.${props.room}`)
+      const mine = read(`roomseat.${props.room}`)
       if (seat.value === 'host' && mine && !seats.get(room.value.match_id)) seats.set(room.value.match_id, mine)
       return router.replace({ name: 'sim-match', params: { id: room.value.match_id } })
     }

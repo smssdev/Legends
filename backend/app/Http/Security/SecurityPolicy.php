@@ -60,9 +60,9 @@ final class SecurityPolicy
             "default-src 'self'",
             // Unity's WebGL build compiles WebAssembly; the Vue templates are compiled at build time (no eval).
             trim("script-src 'self' 'wasm-unsafe-eval' {$hashes} https://www.googletagmanager.com https://connect.facebook.net ".self::GOOGLE),
-            // Tailwind's build and the components' inline style attributes; Barlow Condensed until Sprint 58 serves it.
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "font-src 'self' https://fonts.gstatic.com",
+            // Tailwind's build and the components' inline style attributes. [Sprint 58 W2] Every font is our own (no Google Fonts).
+            "style-src 'self' 'unsafe-inline'",
+            "font-src 'self'",
             "img-src 'self' data: blob: https:",
             "media-src 'self' blob:",
             // Reverb's WebSocket on the site's own host, and the measurement hosts.

@@ -12,7 +12,7 @@ import MoneyPill from '../ui/MoneyPill.vue'
 defineProps<{
   title: string
   next?: { at: string | null; live: boolean; opponent: string } | null
-  coins: number
+  coins: number | null
   cash?: { value: number; label: string; title: string } | null
   unread: string
   avatar?: string | null
@@ -38,7 +38,7 @@ defineProps<{
       <Icon name="inbox" /><span v-if="unread" class="bar-badge bg-live text-white">{{ unread }}</span>
     </RouterLink>
     <RouterLink to="/profile" class="bar-avatar" :aria-label="unverified ? $t('حسابي: وثّق حسابك') : $t('حسابي')">
-      <img v-if="avatar" :src="avatar" alt="" class="size-full rounded-full object-cover" /><template v-else>{{ initial }}</template>
+      <img v-if="avatar" :src="avatar" alt="" class="size-full rounded-full object-cover" decoding="async" /><template v-else>{{ initial }}</template>
       <span v-if="unverified" class="bar-avatar-dot" aria-hidden="true" />
     </RouterLink>
   </header>

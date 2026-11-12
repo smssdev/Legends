@@ -59,12 +59,12 @@ const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 
         <span v-if="matches.length > 1" class="font-numbers" dir="ltr">{{ at + 1 }} / {{ matches.length }}</span>
       </div>
       <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-center">
-        <span class="flex min-w-0 flex-col items-center gap-1"><img :src="m.home.crest_url" alt="" class="size-12" /><b class="max-w-full truncate text-sm">{{ $nm(m.home.name) }}</b></span>
+        <span class="flex min-w-0 flex-col items-center gap-1"><AppImage :src="m.home.crest_url" alt="" class="size-12" :size="48" crest /><b class="max-w-full truncate text-sm">{{ $nm(m.home.name) }}</b></span>
         <span class="flex flex-col items-center gap-1">
           <b class="font-numbers text-5xl leading-none" dir="ltr">{{ scoreText(m.home_goals, m.away_goals) }}</b>
           <span class="rounded-pill px-2 py-0.5 text-xs font-bold" :class="RESULT[m.result as 1 | 0 | -1][1]">{{ $t(RESULT[m.result as 1 | 0 | -1][0]) }}{{ m.result === 1 && m.venue === 'away' ? ' ' + $t('خارج أرضك') : '' }}</span>
         </span>
-        <span class="flex min-w-0 flex-col items-center gap-1"><img :src="m.away.crest_url" alt="" class="size-12" /><b class="max-w-full truncate text-sm">{{ $nm(m.away.name) }}</b></span>
+        <span class="flex min-w-0 flex-col items-center gap-1"><AppImage :src="m.away.crest_url" alt="" class="size-12" :size="48" crest /><b class="max-w-full truncate text-sm">{{ $nm(m.away.name) }}</b></span>
       </div>
       <ul v-if="m.goals.length" class="flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm">
         <li v-for="(g, i) in m.goals" :key="i" :class="(g.side === 'home') === (m.venue === 'home') ? 'text-text' : 'text-text-muted'"><span class="font-numbers text-text-muted" dir="ltr">{{ g.minute }}'</span> <bdi>{{ $nm(g.scorer ?? '') }}</bdi></li>
