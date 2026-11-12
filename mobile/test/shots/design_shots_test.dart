@@ -19,6 +19,7 @@ import 'package:glm/features/leagues/shell.dart';
 import 'package:glm/features/sim/sim_screens.dart';
 
 import 'shots_test.dart' show homeJson, json, shot;
+import '../home_answer.dart';
 
 const wide = Size(844, 390);
 
@@ -27,7 +28,7 @@ void main() {
   testWidgets('wide login', (t) => shot(t, 'wide-login', const LoginScreen(), []));
   testWidgets(
     'wide home',
-    (t) => shot(t, 'wide-home', const HomeScreen(), [homeProvider.overrideWith((ref) async => HomeData.fromJson(homeJson))]),
+    (t) => shot(t, 'wide-home', const HomeScreen(), [homeProvider.overrideWith((ref) async => HomeData.fromJson(homeAnswer(homeJson)))]),
   );
   const clubs = [
     SimClub(id: 1, name: 'Liverpool', code: 'LIV', league: 'Premier League', strength: 86),

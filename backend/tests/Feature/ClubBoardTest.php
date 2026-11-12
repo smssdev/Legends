@@ -75,7 +75,11 @@ class ClubBoardTest extends TestCase
         $this->assertSame('lineup', $board['pending'][0]['kind']);
         $this->assertSame('injured', $board['pending'][0]['players'][0]['why']);
         $this->assertFalse($board['lineup']['ready']);
-        $slot = collect($this->getJson('/api/v1/home')->assertOk()->json('slots'))->firstWhere('state', 'club');
+        $slot = collect($this->getJson('/api/v1/home')->assertOk()
+            // [Sprint 59 F1] The fields the app reads through HomeScreen (openapi.yaml).
+            ->assertJsonStructure(['coach' => ['name', 'coins', 'account_no', 'rating' => ['points', 'tier' => ['key', 'division']], 'record' => ['won', 'drawn', 'lost']],
+                'slots_open', 'starter_gift' => ['coins', 'claimed'], 'slots' => ['*' => ['slot', 'state', 'pending']]])
+            ->json('slots'))->firstWhere('state', 'club');
         $this->assertSame(count($board['pending']), $slot['pending']);
 
         // Someone else's club: no board.

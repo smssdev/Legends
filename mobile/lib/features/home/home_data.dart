@@ -1,18 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 
 /// [Sprint 15] The coach's home (`/home`, X18): his card, his coins and rating, and his eight club slots.
 class HomeData {
   const HomeData({required this.coach, required this.slots, required this.slotsOpen, this.starterCoins = 0, this.starterClaimed = true});
 
-  factory HomeData.fromJson(Map<String, dynamic> j) => HomeData(
-    coach: Coach.fromJson(j['coach'] as Map<String, dynamic>),
-    slots: [for (final s in j['slots'] as List<dynamic>) Slot.fromJson(s as Map<String, dynamic>)],
-    slotsOpen: j['slots_open'] as int? ?? 0,
-    starterCoins: (j['starter_gift'] as Map<dynamic, dynamic>?)?['coins'] as int? ?? 0,
-    starterClaimed: (j['starter_gift'] as Map<dynamic, dynamic>?)?['claimed'] != false,
-  );
+  /// [Sprint 59 F1] The coach's home (`HomeScreen`), read through its generated model.
+  factory HomeData.fromJson(Object? json) {
+    final h = api.HomeScreen.fromJson(json);
+    return HomeData(
+      coach: Coach.of(h.coach),
+      slots: [for (final s in h.slots) Slot.of(s)],
+      slotsOpen: h.slotsOpen,
+      starterCoins: h.starterGift.coins,
+      starterClaimed: h.starterGift.claimed,
+    );
+  }
 
   final Coach coach;
   final List<Slot> slots;
@@ -36,22 +41,17 @@ class Coach {
     this.lost = 0,
   });
 
-  factory Coach.fromJson(Map<String, dynamic> j) {
-    final rating = j['rating'] as Map<String, dynamic>? ?? const {};
-    final tier = rating['tier'] as Map<String, dynamic>? ?? const {};
-    final record = j['record'] as Map<String, dynamic>? ?? const {};
-    return Coach(
-      name: '${j['name'] ?? ''}',
-      coins: j['coins'] as int? ?? 0,
-      accountNo: j['account_no'] as int?,
-      tierKey: '${tier['key'] ?? 'prospect'}',
-      division: tier['division'] as int?,
-      points: rating['points'] as int? ?? 0,
-      won: record['won'] as int? ?? 0,
-      drawn: record['drawn'] as int? ?? 0,
-      lost: record['lost'] as int? ?? 0,
-    );
-  }
+  factory Coach.of(api.HomeScreenCoach c) => Coach(
+    name: c.name,
+    coins: c.coins,
+    accountNo: c.accountNo,
+    tierKey: c.rating.tier.key,
+    division: c.rating.tier.division,
+    points: c.rating.points,
+    won: c.record.won,
+    drawn: c.record.drawn,
+    lost: c.record.lost,
+  );
 
   final String name;
   final int coins;
@@ -83,27 +83,24 @@ class Slot {
     this.unlockCoins,
   });
 
-  factory Slot.fromJson(Map<String, dynamic> j) {
-    final league = j['league'] as Map<String, dynamic>?;
-    final club = j['club'] as Map<String, dynamic>?;
-    final next = j['next_match'] as Map<String, dynamic>?;
-    DateTime? at(Object? v) => v is String ? DateTime.tryParse(v)?.toLocal() : null;
+  factory Slot.of(api.HomeScreenSlotsItem s) {
+    DateTime? at(String? v) => v == null ? null : DateTime.tryParse(v)?.toLocal();
     return Slot(
-      number: j['slot'] as int,
-      state: SlotState.values.byName('${j['state']}'),
-      leagueId: league?['id'] as int?,
-      leagueName: league?['name'] as String?,
-      clubName: club?['name'] as String?,
-      crestUrl: club?['crest_url'] as String?,
-      position: j['position'] as int?,
-      teams: j['teams'] as int?,
-      pending: j['pending'] as int? ?? 0,
-      opponent: next?['opponent'] as String?,
-      home: next?['venue'] != 'away',
-      live: next?['live'] == true,
-      matchAt: at(next?['scheduled_at']),
-      opensAt: at(j['opens_at']),
-      unlockCoins: j['unlock_coins'] as int?,
+      number: s.slot,
+      state: SlotState.values.byName(s.state),
+      leagueId: s.league?.id,
+      leagueName: s.league?.name,
+      clubName: s.club?.name,
+      crestUrl: s.club?.crestUrl,
+      position: s.position,
+      teams: s.teams,
+      pending: s.pending,
+      opponent: s.nextMatch?.opponent,
+      home: s.nextMatch?.venue != 'away',
+      live: s.nextMatch?.live ?? false,
+      matchAt: at(s.nextMatch?.scheduledAt),
+      opensAt: at(s.opensAt),
+      unlockCoins: s.unlockCoins,
     );
   }
 
