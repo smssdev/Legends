@@ -9,6 +9,7 @@ import 'package:glm/core/settings.dart';
 import 'package:glm/features/club/club_data.dart';
 import 'package:glm/features/leagues/league_screen.dart';
 import 'package:glm/features/leagues/leagues_repository.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 import 'package:glm/features/leagues/models.dart';
 import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
@@ -22,7 +23,7 @@ void main() {
   setUpAll(() => ClubCrest.loadFromNetwork = false);
   final league = League.fromJson(fixture('league')['league'] as Map<String, dynamic>);
   final table = [for (final r in fixture('standings')['table'] as List<dynamic>) StandingRow.fromJson(r as Map<String, dynamic>)];
-  final fixtures = [for (final f in fixture('fixtures')['fixtures'] as List<dynamic>) Fixture.fromJson(f as Map<String, dynamic>)];
+  final fixtures = [for (final f in fixture('fixtures')['fixtures'] as List<dynamic>) Fixture.of(api.Fixture.fromJson(f))];
   final summary = ClubSummary.fromJson(fixture('summary'));
 
   test('a league, its table, its matches and my club read from the API as it answers', () {

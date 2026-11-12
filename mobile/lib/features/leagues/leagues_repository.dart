@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
+import '../../api/gen/models.g.dart' as api;
+import '../../api/read.dart';
 import 'models.dart';
 
 /// [Sprint 16 F1] The leagues on the API: mine, making the free one, joining with a code, a club taken, the table,
@@ -55,7 +57,8 @@ class LeaguesRepository {
       StandingRow.fromJson(r as Map<String, dynamic>),
   ];
   Future<List<Fixture>> fixtures(int league) async => [
-    for (final f in (await _api.get('/leagues/$league/fixtures'))['fixtures'] as List<dynamic>) Fixture.fromJson(f as Map<String, dynamic>),
+    for (final f in JsonReader(await _api.get('/leagues/$league/fixtures'), 'Fixtures').list('fixtures', api.Fixture.fromJson))
+      Fixture.of(f),
   ];
 
   Future<List<JoinRequest>> requests(int league) async => [

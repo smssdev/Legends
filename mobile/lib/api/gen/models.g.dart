@@ -941,7 +941,7 @@ class ChatGroupItem {
       id: r.int_('id'),
       inviteUrl: r.stringOrNull('invite_url'),
       isAdmin: r.bool_('is_admin'),
-      last: r.objectOrNull('last', ChatGroupItemLast.fromJson),
+      last: r.objectOrNull('last', ChatMessage.fromJson),
       leagueId: r.intOrNull('league_id'),
       members: r.listOrNull('members', ChatGroupItemMembersItem.fromJson),
       membersCount: r.int_('members_count'),
@@ -957,93 +957,12 @@ class ChatGroupItem {
   /// For the admins of a group that is not a league's
   final String? inviteUrl;
   final bool isAdmin;
-  final ChatGroupItemLast? last;
+  final ChatMessage? last;
   final int? leagueId;
   final List<ChatGroupItemMembersItem>? members;
   final int membersCount;
   final String name;
   final int unread;
-}
-
-class ChatGroupItemLast {
-  const ChatGroupItemLast({
-    required this.body,
-    required this.createdAt,
-    required this.deleted,
-    required this.id,
-    required this.kind,
-    this.mediaUrl,
-    this.myReaction,
-    this.reactions,
-    this.replyTo,
-    this.seconds,
-    this.user,
-  });
-
-  factory ChatGroupItemLast.fromJson(Object? json) {
-    final r = JsonReader(json, 'ChatGroupItemLast');
-    return ChatGroupItemLast(
-      body: r.string('body'),
-      createdAt: r.string('created_at'),
-      deleted: r.bool_('deleted'),
-      id: r.int_('id'),
-      kind: r.string('kind'),
-      mediaUrl: r.stringOrNull('media_url'),
-      myReaction: r.stringOrNull('my_reaction'),
-      reactions: r.mapOrNull('reactions', JsonReader.intOf),
-      replyTo: r.objectOrNull('reply_to', ChatGroupItemLastReplyTo.fromJson),
-      seconds: r.intOrNull('seconds'),
-      user: r.objectOrNull('user', ChatGroupItemLastUser.fromJson),
-    );
-  }
-
-  final String body;
-  final String createdAt;
-  final bool deleted;
-  final int id;
-
-  /// A note is the group's own, its body JSON: {what: created|added|joined|left|removed|renamed, by?, name?}. A picture or voice note has its caption as body [X65]
-  final String kind;
-
-  /// A picture's or voice note's address, for the members only [X65]
-  final String? mediaUrl;
-
-  /// The viewer's own (null on the channel)
-  final String? myReaction;
-
-  /// [Sprint 50 M8] The count of each reaction (ball, fire, cup, laugh)
-  final Map<String, int>? reactions;
-  final ChatGroupItemLastReplyTo? replyTo;
-
-  /// A voice note's length
-  final int? seconds;
-  final ChatGroupItemLastUser? user;
-}
-
-class ChatGroupItemLastReplyTo {
-  const ChatGroupItemLastReplyTo({required this.body, required this.id, required this.kind});
-
-  factory ChatGroupItemLastReplyTo.fromJson(Object? json) {
-    final r = JsonReader(json, 'ChatGroupItemLastReplyTo');
-    return ChatGroupItemLastReplyTo(body: r.string('body'), id: r.int_('id'), kind: r.string('kind'));
-  }
-
-  final String body;
-  final int id;
-  final String kind;
-}
-
-class ChatGroupItemLastUser {
-  const ChatGroupItemLastUser({required this.id, required this.name, required this.username});
-
-  factory ChatGroupItemLastUser.fromJson(Object? json) {
-    final r = JsonReader(json, 'ChatGroupItemLastUser');
-    return ChatGroupItemLastUser(id: r.int_('id'), name: r.string('name'), username: r.string('username'));
-  }
-
-  final int id;
-  final String name;
-  final String username;
 }
 
 class ChatGroupItemMembersItem {
@@ -2432,10 +2351,10 @@ class Fixture {
   factory Fixture.fromJson(Object? json) {
     final r = JsonReader(json, 'Fixture');
     return Fixture(
-      away: r.objectOrNull('away', FixtureAway.fromJson),
+      away: r.objectOrNull('away', FixtureClub.fromJson),
       awayGoals: r.intOrNull('away_goals'),
       competition: r.string('competition'),
-      home: r.objectOrNull('home', FixtureHome.fromJson),
+      home: r.objectOrNull('home', FixtureClub.fromJson),
       homeGoals: r.intOrNull('home_goals'),
       id: r.int_('id'),
       isBye: r.bool_('is_bye'),
@@ -2449,10 +2368,10 @@ class Fixture {
     );
   }
 
-  final FixtureAway? away;
+  final FixtureClub? away;
   final int? awayGoals;
   final String competition;
-  final FixtureHome? home;
+  final FixtureClub? home;
   final int? homeGoals;
   final int id;
 
@@ -2475,36 +2394,6 @@ class Fixture {
   final String status;
 }
 
-class FixtureAway {
-  const FixtureAway({
-    this.coach,
-    required this.code,
-    required this.crestUrl,
-    required this.id,
-    required this.name,
-    required this.strengthCp,
-  });
-
-  factory FixtureAway.fromJson(Object? json) {
-    final r = JsonReader(json, 'FixtureAway');
-    return FixtureAway(
-      coach: r.stringOrNull('coach'),
-      code: r.string('code'),
-      crestUrl: r.string('crest_url'),
-      id: r.int_('id'),
-      name: r.string('name'),
-      strengthCp: r.int_('strength_cp'),
-    );
-  }
-
-  final String? coach;
-  final String code;
-  final String crestUrl;
-  final int id;
-  final String name;
-  final int strengthCp;
-}
-
 class FixtureClub {
   const FixtureClub({
     this.coach,
@@ -2518,36 +2407,6 @@ class FixtureClub {
   factory FixtureClub.fromJson(Object? json) {
     final r = JsonReader(json, 'FixtureClub');
     return FixtureClub(
-      coach: r.stringOrNull('coach'),
-      code: r.string('code'),
-      crestUrl: r.string('crest_url'),
-      id: r.int_('id'),
-      name: r.string('name'),
-      strengthCp: r.int_('strength_cp'),
-    );
-  }
-
-  final String? coach;
-  final String code;
-  final String crestUrl;
-  final int id;
-  final String name;
-  final int strengthCp;
-}
-
-class FixtureHome {
-  const FixtureHome({
-    this.coach,
-    required this.code,
-    required this.crestUrl,
-    required this.id,
-    required this.name,
-    required this.strengthCp,
-  });
-
-  factory FixtureHome.fromJson(Object? json) {
-    final r = JsonReader(json, 'FixtureHome');
-    return FixtureHome(
       coach: r.stringOrNull('coach'),
       code: r.string('code'),
       crestUrl: r.string('crest_url'),
@@ -7926,7 +7785,7 @@ class TrainingViewSlotsItem {
       coach: r.object('coach', TrainingViewSlotsItemCoach.fromJson),
       line: r.string('line'),
       nextAt: r.stringOrNull('next_at'),
-      player: r.objectOrNull('player', TrainingViewSlotsItemPlayer.fromJson),
+      player: r.objectOrNull('player', TrainingPlayer.fromJson),
       sessionsDone: r.int_('sessions_done'),
     );
   }
@@ -7937,7 +7796,7 @@ class TrainingViewSlotsItem {
   final TrainingViewSlotsItemCoach coach;
   final String line;
   final String? nextAt;
-  final TrainingViewSlotsItemPlayer? player;
+  final TrainingPlayer? player;
   final int sessionsDone;
 }
 
@@ -7967,72 +7826,6 @@ class TrainingViewSlotsItemCoach {
   final String name;
   final int stars;
   final String type;
-}
-
-class TrainingViewSlotsItemPlayer {
-  const TrainingViewSlotsItemPlayer({
-    required this.age,
-    this.ageBp,
-    required this.id,
-    required this.injured,
-    required this.line,
-    required this.maxed,
-    required this.name,
-    this.overPotential,
-    required this.overall,
-    required this.position,
-    required this.potential,
-    required this.progress,
-    required this.sessions,
-    required this.trainingBonus,
-  });
-
-  factory TrainingViewSlotsItemPlayer.fromJson(Object? json) {
-    final r = JsonReader(json, 'TrainingViewSlotsItemPlayer');
-    return TrainingViewSlotsItemPlayer(
-      age: r.int_('age'),
-      ageBp: r.intOrNull('age_bp'),
-      id: r.int_('id'),
-      injured: r.bool_('injured'),
-      line: r.string('line'),
-      maxed: r.bool_('maxed'),
-      name: r.string('name'),
-      overPotential: r.boolOrNull('over_potential'),
-      overall: r.int_('overall'),
-      position: r.string('position'),
-      potential: r.int_('potential'),
-      progress: r.int_('progress'),
-      sessions: r.int_('sessions'),
-      trainingBonus: r.int_('training_bonus'),
-    );
-  }
-
-  final int age;
-
-  /// [Sprint 23] How big his sessions are at his age, in bp (10000 = the average)
-  final int? ageBp;
-  final int id;
-  final bool injured;
-  final String line;
-
-  /// At 99, training adds nothing [X16]
-  final bool maxed;
-  final String name;
-
-  /// At or past his potential: training goes on, much slower [X16]
-  final bool? overPotential;
-
-  /// With the training on top
-  final int overall;
-  final String position;
-  final int potential;
-
-  /// The bar
-  final int progress;
-
-  /// About how many sessions a +1 takes at his rating and age [Sprint 23]
-  final int sessions;
-  final int trainingBonus;
 }
 
 /// [UP11, Sprint 59 F1] The transfer list of one line (GET /leagues/{league}/market, source=list): the app reads it through its generated model

@@ -25,6 +25,7 @@ import 'package:glm/features/auth/ui/login_screen.dart';
 import 'package:glm/features/home/home_screen.dart';
 import 'package:glm/features/leagues/league_screen.dart';
 import 'package:glm/features/leagues/leagues_repository.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 import 'package:glm/features/leagues/models.dart';
 import 'package:glm/features/leagues/shell.dart';
 import 'package:glm/features/match/live_screen.dart';
@@ -216,7 +217,7 @@ void main() {
             ],
           ),
           fixturesProvider.overrideWith(
-            (ref, id) async => [for (final f in json('fixtures')['fixtures'] as List<dynamic>) Fixture.fromJson(f as Map<String, dynamic>)],
+            (ref, id) async => [for (final f in json('fixtures')['fixtures'] as List<dynamic>) Fixture.of(api.Fixture.fromJson(f))],
           ),
         ],
       ),

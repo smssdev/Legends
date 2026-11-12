@@ -1,3 +1,5 @@
+import '../../api/gen/models.g.dart' as api;
+
 /// [Sprint 16] The leagues as the API gives them (only what the app shows).
 DateTime? date(Object? v) => v is String ? DateTime.tryParse(v)?.toLocal() : null;
 
@@ -187,6 +189,9 @@ class StandingRow {
 class Side {
   const Side({required this.id, required this.name, required this.code, this.crestUrl});
 
+  /// [Sprint 59 F1] From the generated model (a fixture's club; none for a rest).
+  factory Side.of(api.FixtureClub? c) => Side(id: c?.id ?? 0, name: c?.name ?? '', code: c?.code ?? '', crestUrl: c?.crestUrl);
+
   factory Side.fromJson(Map<String, dynamic>? j) =>
       Side(id: j?['id'] as int? ?? 0, name: '${j?['name'] ?? ''}', code: '${j?['code'] ?? ''}', crestUrl: j?['crest_url'] as String?);
 
@@ -211,19 +216,20 @@ class Fixture {
     this.matchId,
   });
 
-  factory Fixture.fromJson(Map<String, dynamic> j) => Fixture(
-    id: j['id'] as int,
-    competition: '${j['competition']}',
-    round: j['round'] as int?,
-    stage: j['stage'] as String?,
-    at: date(j['scheduled_at']),
-    home: Side.fromJson(j['home'] as Map<String, dynamic>?),
-    away: Side.fromJson(j['away'] as Map<String, dynamic>?),
-    status: '${j['status']}',
-    homeGoals: j['home_goals'] as int?,
-    awayGoals: j['away_goals'] as int?,
-    isBye: j['is_bye'] == true,
-    matchId: j['match_id']?.toString(),
+  /// [Sprint 59 F1] From the generated model.
+  factory Fixture.of(api.Fixture f) => Fixture(
+    id: f.id,
+    competition: f.competition,
+    round: f.round,
+    stage: f.stage,
+    at: date(f.scheduledAt),
+    home: Side.of(f.home),
+    away: Side.of(f.away),
+    status: f.status,
+    homeGoals: f.homeGoals,
+    awayGoals: f.awayGoals,
+    isBye: f.isBye,
+    matchId: f.matchId?.toString(),
   );
 
   final int id;
