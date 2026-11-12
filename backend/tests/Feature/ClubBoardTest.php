@@ -45,7 +45,10 @@ class ClubBoardTest extends TestCase
 
     public function test_the_board_says_everything_in_one_request_and_nothing_of_the_opponents_tactics(): void
     {
-        $board = $this->getJson($this->url('summary'))->assertOk()->json();
+        $board = $this->getJson($this->url('summary'))->assertOk()
+            // [Sprint 59 F1] The fields the app reads through ClubBoard (openapi.yaml).
+            ->assertJsonStructure(['club' => ['id', 'name', 'code', 'crest_url'], 'money' => ['cash', 'coins'], 'lineup' => ['auto', 'ready', 'formation'],
+                'standings' => ['position', 'teams', 'top'], 'board', 'missed', 'pending', 'timers', 'match'])->json();
         $this->assertSame($this->mine, $board['club']['id']);
         $this->assertNotNull($board['match']);
         $this->assertSame('scheduled', $board['match']['status']);
