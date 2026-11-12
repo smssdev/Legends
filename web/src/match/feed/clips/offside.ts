@@ -1,14 +1,13 @@
-// @ts-nocheck
 // [Sprint 57 W4] The offside scene (art.ts's SCENES.offside).
 import { t as tr } from '../../../lib/i18n'
 import { ball, player, put, title } from '../figures'
-import { K, ease, el, lerp, officialKit, other, rnd, sa, seg } from '../kit'
+import { K, type SceneData, ease, el, lerp, officialKit, other, rnd, sa, seg } from '../kit'
 import { cam, persp, stage } from '../stage'
 
 // [Sprint 38 S1] Offside, as on TV: the pass is played, the attacker is a step beyond the last defender, the assistant
 // on the touchline raises his flag, and the picture freezes with the line drawn across the defence.
-export function offside(e) {
-  const svg = stage(e.side), w = svg.world, R = rnd((e.no || 7) * 37)
+export function offside(e: SceneData) {
+  const svg = stage(e.side), w = svg.world, R = rnd(Number(e.no || 7) * 37)
   const defs = [0, 1, 2, 3].map(() => player(w, K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }))
   const rn = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), ps = player(w, K(e.side).kit, '', 1, { look: Math.floor(R() * 40) })
   const ar = player(w, officialKit(), '', 1, { look: 20, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
@@ -20,7 +19,7 @@ export function offside(e) {
   el('line', { x1: -40, y1: lineY, x2: 680, y2: lineY, stroke: '#EF4444', 'stroke-width': 2.4, 'stroke-dasharray': '10 7' }, line)
   const fr = el('rect', { width: 640, height: 340, fill: 'rgba(30,70,160,.18)', opacity: 0 }, svg)
   const tt = title(svg, tr('تسلل'), '#EF4444')
-  return { dur: 4.2, svg, update(t) {
+  return { dur: 4.2, svg, update(t: number) {
     // The picture freezes at the pass's arrival (1.5 s) until 2.6 s.
     const T = t > 1.5 && t < 2.6 ? 1.5 : t < 2.6 ? t : t - 1.1
     cam(svg, 1.08, 340, 200)

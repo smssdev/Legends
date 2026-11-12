@@ -1,17 +1,16 @@
-// @ts-nocheck
 // [Sprint 57 W4] The injury scene (art.ts's SCENES.injury).
 import { t as tr } from '../../../lib/i18n'
 import { bubbleOf, dizzy, dust, speedLines } from '../effects'
 import { player, title } from '../figures'
-import { K, ease, el, inout, lerp, rnd, sa, seg } from '../kit'
+import { K, type SceneData, ease, el, inout, lerp, rnd, sa, seg } from '../kit'
 import { cam, stage } from '../stage'
 
 // [Sprint 37 N3] The injury: he lies down, a team-mate waves to the bench, the medical staff run on with the
 // stretcher and carry him off (an injured player leaves the match, the engine's rule).
 // [Sprint 42 D3] As a cartoon: stars and little birds circle his head, and the two medics come on and go off at a
 // comic sprint, legs a blur, with speed lines and a trail of dust.
-export function injury(e) {
-  const svg = stage(e.side), w = svg.world, R = rnd((e.no || 4) * 29)
+export function injury(e: SceneData) {
+  const svg = stage(e.side), w = svg.world, R = rnd(Number(e.no || 4) * 29)
   const pl = player(w, K(e.side).kit, e.no, 1.3, { look: Math.floor(R() * 40) }), mate = player(w, K(e.side).kit, '', 1.3, { look: Math.floor(R() * 40) })
   const medic = () => player(w, '#1FA463', '+', 1.25, { look: Math.floor(R() * 40), shorts: '#F4F6FA', socks: '#1FA463', trim: '#F4F6FA' })
   const m1 = medic(), m2 = medic()
@@ -20,14 +19,14 @@ export function injury(e) {
   sa(bed, 'transform', 'translate(-200 0)')
   const stars = dizzy(svg), lines = speedLines(svg, w, 7), trailD = dust(svg, w, 6), ouch = bubbleOf(svg, w, '!!!')
   const tt = title(svg, tr('إصابة'), '#EF4444')
-  return { dur: 5.6, svg, update(t) {
+  return { dur: 5.6, svg, update(t: number) {
     cam(svg, 1.06, 320, 210)
     // The stretcher: in at a sprint (1.0 to 1.5), down by him, loaded, then off to the right even faster (3.0 on).
     const inn = ease(seg(t, 1.0, 1.5)), off = inout(seg(t, 3.0, 3.6)), lift = seg(t, 1.9, 2.5)
     const sx = t < 3.0 ? lerp(-140, 300, inn) : lerp(300, 820, off), sy = lerp(lerp(214, 230, seg(t, 1.5, 1.8)), 232, lift)
     sa(bed, 'transform', `translate(${sx.toFixed(1)} ${sy.toFixed(1)})`)
     const sprint = (t > 0.95 && t < 1.5) || (t > 3.0 && t < 3.6), carrying = t < 1.5 || t > 3.0
-    for (const [m, dx] of [[m1, -86], [m2, 86]]) {
+    for (const [m, dx] of [[m1, -86], [m2, 86]] as const) {
       m.face?.('side', 1); m.mood(sprint ? 'focus' : 'idle'); m.at(sx + dx, sy - 24 + (carrying ? 0 : 6) - (sprint ? Math.abs(Math.sin(t * 30)) * 3 : 0), sprint ? 8 : 0, 1.25)
       carrying ? m.run(t * (sprint ? 34 : 9) + dx, sprint ? 1 : 0.45) : m.pose(30, -30, 40, -40, 0.4, 0.4)
     }

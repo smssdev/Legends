@@ -1,14 +1,14 @@
-// @ts-nocheck
 // [Sprint 57 W4] The corner scene (art.ts's SCENES.corner).
 import { t as tr } from '../../../lib/i18n'
 import { ball, dive, drawTrail, keeper, player, put, ready, title, trail } from '../figures'
-import { K, bez, ease, el, lerp, other, rnd, sa, seg } from '../kit'
+import { K, type SceneData, bez, ease, el, lerp, other, rnd, sa, seg } from '../kit'
 import { LINE, cam, goalFrame, stage } from '../stage'
 
 // [Sprint 37 N1] The corner, one of three when it is won (from the scene's seed): a header at the far post, a flick at
 // the near one, or played short to a team-mate who crosses; the taker stands at the flag. A claimed one: the keeper.
-export function corner(e) {
-  const R = rnd(e.v ?? (e.no ?? 9) * 71), svg = stage(e.side), w = svg.world, G = goalFrame(svg)
+export function corner(e: SceneData) {
+  const R = rnd(e.v ?? Number(e.no ?? 9) * 71), svg = stage(e.side), w = svg.world
+  goalFrame(svg)
   const kp = keeper(svg, other(e.side), Math.floor(R() * 40))
   const pack = [0, 1, 2].map((i) => player(w, i % 2 ? K(e.side).kit : K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }))
   const df = player(w, K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }), hd = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) })
@@ -21,7 +21,7 @@ export function corner(e) {
   const t0 = short ? 1.0 : 0.6, dt = t0 - 0.6, head = style === 'near' ? [284, 192] : [326, 186]
   const path = [from, [style === 'near' ? 420 : 470, style === 'near' ? 50 : 20], [head[0], head[1] - 44]]
   const tt = title(svg, e.claim ? tr('الحارس يمسكها') : tr('رأسية!'), e.claim ? '#2BB673' : '#C9D2E1')
-  return { dur: 4.6, svg, update(t) {
+  return { dur: 4.6, svg, update(t: number) {
     cam(svg, 1.06, 400, 170)
     // The taker at the flag, and the team-mate who comes short for it.
     put(tk, 606, 218); if (t < 0.62 && t > 0.3) tk.kick(seg(t, 0.3, 0.62)); else tk.pose()

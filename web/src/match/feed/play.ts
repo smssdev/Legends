@@ -1,18 +1,17 @@
-// @ts-nocheck
 // [Sprint 57 W4] Open play: the build-up and the shot that most scenes (goal, save, miss, VAR) share.
 import { dizzy, popEyes } from './effects'
 import { ball, dive, drawTrail, keeper, player, put, ready, trail } from './figures'
-import { K, bez, clamp, ease, el, inout, lerp, other, rnd, sa, seg } from './kit'
+import { K, type SceneData, bez, clamp, ease, el, inout, lerp, other, rnd, sa, seg } from './kit'
 import { LINE, POSTS, cam, goalFrame, persp, ref, stage } from './stage'
 
-export function openPlay(e, outcome, KT) {
-  const R = rnd(e.v ?? (e.no ?? 9) * 977), pick = (a) => a[Math.floor(R() * a.length)]
+export function openPlay(e: SceneData, outcome: string, KT: number) {
+  const R = rnd(e.v ?? Number(e.no ?? 9) * 977), pick = <T>(a: T[]): T => a[Math.floor(R() * a.length)]
   const svg = stage(e.side), w = svg.world, atk = K(e.side).kit, dfk = K(other(e.side)).kit
-  const q = ['big', 'normal', 'half', 'long', 'header'].includes(e.quality) ? e.quality : pick(['normal', 'normal', 'half', 'long', 'big'])
-  const lane = ['left', 'center', 'right'].includes(e.lane) ? e.lane : pick(['left', 'center', 'right'])
-  const lx = { left: 248, center: 320, right: 392 }[lane] + (R() - 0.5) * 26, side = lx < 320 ? -1 : 1
+  const q = e.quality && ['big', 'normal', 'half', 'long', 'header'].includes(e.quality) ? e.quality : pick(['normal', 'normal', 'half', 'long', 'big'])
+  const lane = e.lane && ['left', 'center', 'right'].includes(e.lane) ? e.lane : pick(['left', 'center', 'right'])
+  const lx = ({ left: 248, center: 320, right: 392 } as Record<string, number>)[lane] + (R() - 0.5) * 26, side = lx < 320 ? -1 : 1
   const spot = q === 'header' ? [320 + side * 18 + (R() - 0.5) * 20, 194] : q === 'big' ? [lerp(lx, 320, 0.4), 198] : q === 'long' ? [lx, 292] : q === 'half' ? [lx + side * 22, 226] : [lx, 250]
-  const F = { big: 0.36, header: 0.4, normal: 0.5, half: 0.46, long: 0.72 }[q], tS = KT - F
+  const F = ({ big: 0.36, header: 0.4, normal: 0.5, half: 0.46, long: 0.72 } as Record<string, number>)[q], tS = KT - F
   const tP0 = 0.45, tP1 = q === 'big' ? 0.9 : tS - 0.6
 
   const G = goalFrame(svg)
@@ -35,7 +34,7 @@ export function openPlay(e, outcome, KT) {
   const recv = q === 'header' ? spot : q === 'big' ? [lerp(sFrom[0], spot[0], 0.35), lerp(sFrom[1], spot[1], 0.35)] : [spot[0] + side * 6, spot[1] + 10]
 
   // Where the ball ends: chosen from the outcome, then the keeper's answer to it.
-  const corner = (far) => [side * (far ? -1 : 1) > 0 ? POSTS[1] - 9 - R() * 10 : POSTS[0] + 9 + R() * 10, pick([84, 92, 136, 142, 140])]
+  const corner = (far: boolean) => [side * (far ? -1 : 1) > 0 ? POSTS[1] - 9 - R() * 10 : POSTS[0] + 9 + R() * 10, pick([84, 92, 136, 142, 140])]
   let target, kGoal, kWrong = false, after = 'net'
   // [Sprint 35 C2] How a one-on-one ends: a chip over the keeper coming out, or round him into the empty net.
   const finish = outcome === 'goal' && q === 'big' ? pick(['shot', 'shot', 'chip', 'round']) : 'shot'
@@ -72,9 +71,9 @@ export function openPlay(e, outcome, KT) {
     kGoal = [320, 120]
   }
   const strike = [spot[0] - 3, spot[1] + 2]
-  const loft = finish === 'chip' ? 110 : { big: 28, normal: 48, half: 34, long: 70, header: 14 }[q] + (target[1] < 100 ? 22 : 0)
+  const loft = finish === 'chip' ? 110 : ({ big: 28, normal: 48, half: 34, long: 70, header: 14 } as Record<string, number>)[q] + (target[1] < 100 ? 22 : 0)
   const path = [strike, [(strike[0] + target[0]) / 2 + side * (R() - 0.3) * 40, Math.min(strike[1], target[1]) - loft], target]
-  const groundOf = (f) => lerp(strike[1], outcome === 'blocked' ? target[1] + 6 : LINE + 2, f)
+  const groundOf = (f: number) => lerp(strike[1], outcome === 'blocked' ? target[1] + 6 : LINE + 2, f)
   const kRush = q === 'big' ? (finish === 'shot' ? 22 : 46) : 0, kx0 = () => 320 + (lx - 320) * 0.18
   // [Sprint 42 H2] Ten celebrations: the five before, and a jump with a spin, the aeroplane, a backflip, a dance, and
   // a finger to the lips towards the other side's fans.
@@ -90,7 +89,7 @@ export function openPlay(e, outcome, KT) {
   const out = side > 0 ? 1 : -1
   let landed = null
 
-  return { svg, go: (t) => {
+  return { svg, go: (t: number) => {
     // The camera closes in as the chance builds, and stays on the goal for the outcome.
     cam(svg, 1.02 + 0.16 * inout(seg(t, tP0, tS + 0.1)) - (outcome === 'goal' ? 0.08 * inout(seg(t, KT + 0.9, KT + 2)) : 0), 320, 168)
 
@@ -168,15 +167,15 @@ export function openPlay(e, outcome, KT) {
     else { outcome === 'blocked' && t > tS - 0.3 ? marker.pose(30, -30, 80, -40) : marker.run(t * 12.5, mk < 1 ? 1 : 0.3) }
     if (outcome === 'goal' && t > KT + 0.4 && !nut) marker.despair()
     if (nut) {
-      daze(mx + side * 14 * persp(my), my - 20 * persp(my), t, t > tN + 0.5)
+      daze!(mx + side * 14 * persp(my), my - 20 * persp(my), t, t > tN + 0.5)
       const on = seg(t, tN - 0.05, tN + 0.1) * (1 - seg(t, tS - 0.1, tS + 0.2)), s0 = persp(sy)
-      sa(aura, 'opacity', on); if (on > 0) sa(aura, 'transform', `translate(${sx.toFixed(1)} ${(sy - 30 * s0).toFixed(1)}) scale(${(s0 * (1.6 + 0.15 * Math.sin(t * 16))).toFixed(2)} ${(s0 * 2.4).toFixed(2)})`)
+      sa(aura!, 'opacity', on); if (on > 0) sa(aura!, 'transform', `translate(${sx.toFixed(1)} ${(sy - 30 * s0).toFixed(1)}) scale(${(s0 * (1.6 + 0.15 * Math.sin(t * 16))).toFixed(2)} ${(s0 * 2.4).toFixed(2)})`)
     }
     // The no-look pass: both defenders' eyes pop out on stalks, following the ball the wrong way.
     if (look) {
       const f = seg(t, tP0, tP0 + 0.12) * (1 - seg(t, tP0 + 0.85, tP0 + 1.0)), dir = recv[0] > pFrom[0] ? 1 : -1
       const cx = lerp(320 - side * 40, lerp(spot[0], 320, 0.55), ease(seg(t, 0.3, tS))), cy = lerp(204, 196, ease(seg(t, 0.3, tS)))
-      pop[0](cx, cy - 80 * persp(cy), f, dir); pop[1](mx, my - 80 * persp(my), f, dir)
+      pop![0](cx, cy - 80 * persp(cy), f, dir); pop![1](mx, my - 80 * persp(my), f, dir)
     }
 
     // The keeper: on his line (or rushing out one on one), then the dive.

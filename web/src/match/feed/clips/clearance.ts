@@ -1,16 +1,16 @@
-// @ts-nocheck
 // [Sprint 57 W4] The clearance scene (art.ts's SCENES.clearance).
 import { t as tr } from '../../../lib/i18n'
 import { boom, dust, shakeIt, speedLines } from '../effects'
 import { ball, dive, keeper, player, put, ready, title } from '../figures'
-import { K, bez, ease, el, lerp, other, rnd, sa, seg } from '../kit'
+import { K, type SceneData, bez, ease, el, lerp, other, rnd, sa, seg } from '../kit'
 import { LINE, cam, goalFrame, persp, stage } from '../stage'
 
 // [Sprint 42 F1] Cleared off the line: the shot beats the diving keeper and rolls slowly towards the empty net; a
 // defender comes from nowhere in a slide and a cloud of dust and kicks it off the line. A "!" over the striker,
 // and the camera pulls back on his team-mates' despair.
-export function clearance(e) {
-  const R = rnd(e.v ?? (e.no ?? 9) * 53), svg = stage(e.side), w = svg.world, G = goalFrame(svg), atk = K(e.side).kit, dfk = K(other(e.side)).kit
+export function clearance(e: SceneData) {
+  const R = rnd(e.v ?? Number(e.no ?? 9) * 53), svg = stage(e.side), w = svg.world, atk = K(e.side).kit, dfk = K(other(e.side)).kit
+  goalFrame(svg)
   const kp = keeper(svg, other(e.side), Math.floor(R() * 40))
   const mates = [0, 1].map(() => player(w, atk, '', 1, { look: Math.floor(R() * 40) }))
   const sh = player(w, atk, e.no, 1, { look: Math.floor(R() * 40) }), df = player(w, dfk, e.defNo ?? '', 1, { look: Math.floor(R() * 40) })
@@ -18,7 +18,7 @@ export function clearance(e) {
   const bang = el('text', { 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 34, fill: '#FFD400', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, w); bang.textContent = '!'
   const tt = title(svg, tr('أنقذها من على الخط!'), '#7FB4FF')
   const KT = 2.4, dir = R() < 0.5 ? -1 : 1, from = [320 + dir * 30, 236], line = [320 - dir * 20, LINE + 4], away = [320 + dir * 230, 120]
-  return { dur: 4.2, svg, update(t) {
+  return { dur: 4.2, svg, update(t: number) {
     // The camera on the goal, then pulled back for the despair.
     const back = ease(seg(t, KT + 0.2, KT + 1.2)); cam(svg, lerp(1.22, 0.96, back), 320, lerp(170, 200, back))
     // The striker shoots past the keeper (0.5), then stands there, hands on his head.

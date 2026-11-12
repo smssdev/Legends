@@ -1,23 +1,22 @@
-// @ts-nocheck
 // [Sprint 57 W4] The foul scene (art.ts's SCENES.foul).
 import { t as tr } from '../../../lib/i18n'
 import { bubbleOf, burst, dust, headOf, referee, tackle } from '../effects'
-import { dive, player, title } from '../figures'
-import { K, ease, el, lerp, other, rnd, sa, seg } from '../kit'
+import { player, title } from '../figures'
+import { K, type SceneData, ease, el, lerp, other, rnd, sa, seg } from '../kit'
 import { cam, stage } from '../stage'
 
 // [Sprint 42 D2] A foul as its own scene (tick.moment.drama). tackle: the slide, the flip, the dust, the agony, the
 // referee's whistle and his arm out for the free kick. dive: he runs past the defender untouched, takes off like a
 // diver, rolls five times screaming, opens one eye to see, and the referee gives it all the same.
-export function foul(e) {
-  const svg = stage(e.side), w = svg.world, R = rnd(e.v ?? (e.no ?? 5) * 41), k = 1.4, dive = e.drama === 'dive'
+export function foul(e: SceneData) {
+  const svg = stage(e.side), w = svg.world, R = rnd(e.v ?? Number(e.no ?? 5) * 41), k = 1.4, dive = e.drama === 'dive'
   const vi = player(w, K(other(e.side)).kit, e.victimNo ?? '', k, { look: Math.floor(R() * 40) })
   const pl = player(w, K(e.side).kit, e.no, k, { look: Math.floor(R() * 40) }), rf = referee(w, k)
   const fx = { dust: dust(svg), slide: dust(svg, w, 5), ouch: bubbleOf(svg, w, '!!!') }
   const scream = bubbleOf(svg, w, 'AAAAH!'), huh = bubbleOf(svg, w, '?!', '#0A1F42'), blow = burst(svg, w), roll = dust(svg, w, 6)
   const q = el('text', { 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 18, fill: '#FFD400', stroke: '#040B1C', 'stroke-width': 3, 'paint-order': 'stroke', opacity: 0 }, w); q.textContent = '?'
   const tt = title(svg, dive ? tr('سقوط مثير!') : tr('خطأ'), '#F2994A')
-  return { dur: 5.2, svg, update(t) {
+  return { dur: 5.2, svg, update(t: number) {
     roll(0, 0, 0)
     let zoom = 0, zx = 320, zy = 205
     if (!dive) {

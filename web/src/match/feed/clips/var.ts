@@ -1,14 +1,13 @@
-// @ts-nocheck
 // [Sprint 57 W4] The var scene (art.ts's SCENES.var).
 import { t as tr } from '../../../lib/i18n'
 import { title } from '../figures'
-import { ease, el, sa, seg, shade } from '../kit'
+import { type SceneData, ease, el, sa, seg } from '../kit'
 import { openPlay } from '../play'
 
 // [Sprint 35 C3] A goal ruled out by VAR: the move and the ball in the net (the scorer away to celebrate), then
 // the referee's hand to his ear, the screen drawn in the air, the check (the offside lines, or the foul ringed),
 // and «لا هدف».
-export function varCheck(e) {
+export function varCheck(e: SceneData) {
   const KT = 3.0, { svg, go } = openPlay({ ...e, quality: e.quality ?? 'big' }, 'goal', KT)
   const shade = el('rect', { width: 640, height: 340, fill: 'rgba(8,18,40,.55)', opacity: 0 }, svg)
   const badge = el('g', { opacity: 0 }, svg)
@@ -24,7 +23,7 @@ export function varCheck(e) {
   const no = title(svg, tr('لا هدف'), '#EF4444')
   const sub = el('text', { x: 320, y: 86, 'text-anchor': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 800, 'font-size': 20, fill: '#fff', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, svg)
   sub.textContent = e.reason === 'foul' ? tr('خطأ قبل الهدف') : tr('تسلل')
-  return { dur: 8.2, svg, update(t) {
+  return { dur: 8.2, svg, update(t: number) {
     // The goal as it seemed, then the frame stays as the check runs.
     go(Math.min(t, 3.9))
     const c = seg(t, 4.0, 4.4) * (1 - seg(t, 7.8, 8.2))

@@ -1,5 +1,3 @@
-// @ts-nocheck: the drawing is the owner's approved draft (docs/design/legends-ui/CharactersDraft.html) ported as it is,
-// string templates of SVG with no types to check; Character.vue is the typed door to it.
 /**
  * [Sprint 26 W1] The nine characters of the game (README section 0, 2026-10-30) in their nine moods: the mascots A1 to
  * A3, the assistant's faces B1 to B3 and the touchline coaches C1 to C3. Drawn as SVG with soft gradients and moved by
@@ -24,18 +22,21 @@ export function ensureDefs(): void {
 
 /* Volume: every cloth and skin colour is a soft radial gradient (light from the top left), and its outline is a darker shade of itself. */
 const SHADED = ['gold', 'goldD', 'goldL', 'em', 'emD', 'navy', 'navyD', 'chrome', 'chromeD', 'skin', 'bronze', 'orange', 'white', 'silver', 'night'];
-const st = (c, o = true, w = 3) => `style="fill:${SHADED.includes(c) ? `url(#lgc-g-${c})` : `var(--${c})`}${o ? `;stroke:color-mix(in srgb, var(--${c}) 38%, var(--k));stroke-width:${(w * .8).toFixed(1)};stroke-linejoin:round` : ''}"`;
-const ln = (c, w = 3) => `style="fill:none;stroke:var(--${c});stroke-width:${w};stroke-linecap:round;stroke-linejoin:round"`;
+const st = (c: string, o = true, w = 3) => `style="fill:${SHADED.includes(c) ? `url(#lgc-g-${c})` : `var(--${c})`}${o ? `;stroke:color-mix(in srgb, var(--${c}) 38%, var(--k));stroke-width:${(w * .8).toFixed(1)};stroke-linejoin:round` : ''}"`;
+const ln = (c: string, w = 3) => `style="fill:none;stroke:var(--${c});stroke-width:${w};stroke-linecap:round;stroke-linejoin:round"`;
 
-function face(m, o = {}) {
+/** How a face is drawn: a glowing screen face (B), a beak (A1), the iris colour of real eyes. */
+type FaceLook = { glow?: boolean; iris?: string; beak?: boolean }
+
+function face(m: Mood, o: FaceLook = {}) {
   const ink = o.glow ? 'emL' : 'k';
-  const S = (d, w = 3.4) => `<path d="${d}" ${ln(ink, w)}/>`;
-  const dot = (x, y, rx, ry) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" ${st(ink, false)}/>`;
-  const shine = (x, y) => o.glow ? '' : `<circle cx="${x}" cy="${y}" r="1.8" style="fill:#fff"/>`;
+  const S = (d: string, w = 3.4) => `<path d="${d}" ${ln(ink, w)}/>`;
+  const dot = (x: number, y: number, rx: number, ry: number) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" ${st(ink, false)}/>`;
+  const shine = (x: number, y: number) => o.glow ? '' : `<circle cx="${x}" cy="${y}" r="1.8" style="fill:#fff"/>`;
   const E = [-16, 16];
   let eyes = '', brows = '', mouth = '', cheeks = '', fx = '';
   /* People get real eyes: white, a coloured iris, a pupil and two glints. */
-  const real = (x, y, look = 0, ry = 7.5) => `<ellipse cx="${x}" cy="${y}" rx="6.5" ry="${ry}" style="fill:#fff;stroke:var(--k);stroke-width:2"/>`
+  const real = (x: number, y: number, look = 0, ry = 7.5) => `<ellipse cx="${x}" cy="${y}" rx="6.5" ry="${ry}" style="fill:#fff;stroke:var(--k);stroke-width:2"/>`
     + `<circle cx="${x + look}" cy="${y + 1}" r="4.4" style="fill:var(--${o.iris})"/><circle cx="${x + look}" cy="${y + 1}" r="2.2" style="fill:var(--k)"/>`
     + `<circle cx="${x + look + 1.6}" cy="${y - 1}" r="1.3" style="fill:#fff"/><circle cx="${x + look - 1.4}" cy="${y + 2.6}" r=".7" style="fill:#fff"/>`;
   let realEyes = '';
@@ -87,10 +88,10 @@ function face(m, o = {}) {
       default: mouth = S('M-8 16 Q0 22 8 16');
     }
   }
-  const blush = { idle: .3, joy: .4, cheer: .4, angry: .6, sleep: .25 }[m];
+  const blush = ({ idle: .3, joy: .4, cheer: .4, angry: .6, sleep: .25 } as Partial<Record<Mood, number>>)[m];
   if (blush && !o.glow) cheeks = [-25, 25].map(x => `<ellipse cx="${x}" cy="11" rx="5.5" ry="3.2" style="fill:var(--red);opacity:${blush}"/>`).join('');
-  const drop = (x, y, cls) => `<path class="${cls}" d="M${x} ${y} q-4.5 7 0 10 q4.5 -3 0 -10z" ${st('emL', true, 1.6)}/>`;
-  const star = (x, y, d) => `<g transform="translate(${x} ${y})"><path class="fx-spark" style="animation-delay:${d}s" d="M0 -8 L2.2 -2.2 L8 0 L2.2 2.2 L0 8 L-2.2 2.2 L-8 0 L-2.2 -2.2Z" ${st('goldL', true, 1.6)}/></g>`;
+  const drop = (x: number, y: number, cls: string) => `<path class="${cls}" d="M${x} ${y} q-4.5 7 0 10 q4.5 -3 0 -10z" ${st('emL', true, 1.6)}/>`;
+  const star = (x: number, y: number, d: number) => `<g transform="translate(${x} ${y})"><path class="fx-spark" style="animation-delay:${d}s" d="M0 -8 L2.2 -2.2 L8 0 L2.2 2.2 L0 8 L-2.2 2.2 L-8 0 L-2.2 -2.2Z" ${st('goldL', true, 1.6)}/></g>`;
   switch (m) {
     case 'sad': fx = drop(-19, 6, 'fx-tear'); break;
     case 'worried': fx = drop(30, -24, 'fx-sweat'); break;
@@ -103,35 +104,37 @@ function face(m, o = {}) {
   return brows + eyes + cheeks + mouth + fx;
 }
 
-const pent = (cx, cy, r) => Array.from({ length: 5 }, (_, i) => {
+const pent = (cx: number, cy: number, r: number) => Array.from({ length: 5 }, (_, i) => {
   const a = -Math.PI / 2 + i * 2 * Math.PI / 5;
   return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
 }).join(' ');
 
 /* Arms are drawn hanging down from the shoulder (sx, sy); the mood rotates them. */
-const arm = (side, sx, sy, draw) => `<g class="arm arm${side}" style="transform-origin:${sx}px ${sy}px">${draw(sx, sy)}</g>`;
-const arms = (l, r, sy, draw) => arm('L', l, sy, draw) + arm('R', r, sy, draw);
-const sleeveArm = (cloth, skin, len = 38, cuff) => (x, y) =>
-  `<rect x="${x - 8}" y="${y - 4}" width="16" height="${len}" rx="8" ${st(cloth)}/>`
-  + (cuff ? `<rect x="${x - 7}" y="${y + len - 8}" width="14" height="5" ${st(cuff, false)}/>` : '')
-  + `<circle cx="${x}" cy="${y + len + 2}" r="7.5" ${st(skin)}/>`;
-const legs = (cloth, shoe, shoeO = false) =>
+type Draw = (x: number, y: number) => string
+const arm = (side: string, sx: number, sy: number, draw: Draw) => `<g class="arm arm${side}" style="transform-origin:${sx}px ${sy}px">${draw(sx, sy)}</g>`;
+const arms = (l: number, r: number, sy: number, draw: Draw) => arm('L', l, sy, draw) + arm('R', r, sy, draw);
+const legs = (cloth: string, shoe: string, shoeO = false) =>
   `<rect x="82" y="180" width="15" height="22" ${st(cloth)}/><rect x="103" y="180" width="15" height="22" ${st(cloth)}/>`
   + `<ellipse cx="88" cy="204" rx="12" ry="5" ${st(shoe, shoeO)}/><ellipse cx="112" cy="204" rx="12" ry="5" ${st(shoe, shoeO)}/>`;
 
 
 /* The touchline coaches are drawn closer to life: a head a sixth of the body, long legs, and arms with an elbow. */
-const coachArm = (side, x, y, o) => {
+const coachArm = (side: string, x: number, y: number, o: CoachLook) => {
   const s = side === 'L' ? 'L' : 'R';
-  const stripe = o.stripe ? (yy, h) => `<rect x="${x - 1.2}" y="${yy}" width="2.4" height="${h}" ${st(o.stripe, false)}/>` : () => '';
+  const stripe = o.stripe ? (yy: number, h: number) => `<rect x="${x - 1.2}" y="${yy}" width="2.4" height="${h}" ${st(o.stripe!, false)}/>` : () => '';
   return `<g class="up up${s}" style="transform-origin:${x}px ${y}px"><rect x="${x - 7}" y="${y - 3}" width="14" height="31" rx="7" ${st(o.sleeve)}/>${stripe(y, 24)}
     <path class="rich" d="M${x - 5} ${y + 20} q5 3 10 0" style="fill:none;stroke:var(--k);stroke-opacity:.22;stroke-width:1.2;stroke-linecap:round"/>
     <g class="fo fo${s}" style="transform-origin:${x}px ${y + 26}px"><rect x="${x - 6}" y="${y + 22}" width="12" height="28" rx="6" ${st(o.sleeve)}/>${stripe(y + 26, 20)}
     ${o.cuff ? `<rect x="${x - 6}" y="${y + 45}" width="12" height="4" ${st(o.cuff, false)}/>` : ''}
     <ellipse cx="${x}" cy="${y + 54}" rx="6" ry="7" ${st(o.skin, true, 2.4)}/><ellipse cx="${x + (s === 'L' ? 4 : -4)}" cy="${y + 51}" rx="2.4" ry="3.6" ${st(o.skin, true, 1.8)}/></g></g>`;
 };
-function coach(o) {
-  const shoe = (d) => `<path d="${d}" ${st(o.shoe, o.shoeO !== undefined ? o.shoeO : false)}/>`;
+/** A touchline coach's looks: his words, skin, eyes, sleeves and cuffs, legs and shoes, and the drawn parts. */
+type CoachLook = {
+  name: string; desc: string; tags: string[]; skin: string; iris: string; sleeve: string; cuff?: string; stripe?: string; strands?: string
+  legs: string; legStripe?: string; shoe: string; shoeO?: boolean; torso: string; hair?: string; hijab?: string; hijabFront?: string; face?: number[]
+}
+function coach(o: CoachLook): Char {
+  const shoe = (d: string) => `<path d="${d}" ${st(o.shoe, o.shoeO !== undefined ? o.shoeO : false)}/>`;
   return {
     group: 'C', name: o.name, desc: o.desc, tags: o.tags, neck: '100px 92px', f: o.face || [100, 63, .62], fo: { iris: o.iris }, shadow: 40,
     body: () => `<g class="cloth"><path d="M75 150 H99 L97 199 H83 Z" ${st(o.legs)}/><path d="M101 150 H125 L117 199 H103 Z" ${st(o.legs)}/>
@@ -150,7 +153,13 @@ function coach(o) {
   };
 }
 
-const CHARS = {
+/** A character: its words, where its neck turns, its face's place and looks, and its drawn parts (a part may take the drawing's id). */
+type Part = string | ((id: number) => string)
+type Char = {
+  group: string; name: string; desc: string; tags: string[]; neck: string; f: number[]; fo?: FaceLook; chin?: string; shadow?: number
+  body: Part; head: Part; after?: Part; arms?: Part
+}
+const CHARS: Record<Model, Char> = {
   A1: {
     group: 'A', name: 'صقر', desc: 'صقر ذهبي بوشاح أخضر. رمز عربي للسرعة والطموح، وجناحاه يصفقان ويلوّحان.',
     tags: ['الترحيب', 'الشارات'], neck: '100px 128px', f: [100, 86, 1], fo: { beak: true }, chin: '112deg',
@@ -260,7 +269,7 @@ let uid = 0;
 export function drawCharacter(code: Model, mood: Mood): string {
   const c = CHARS[code];
   const id = ++uid;
-  const part = (v: any) => typeof v === 'function' ? v(id) : v;
+  const part = (v: Part | undefined) => typeof v === 'function' ? v(id) : v ?? '';
   return `<svg class="char m-${mood}" viewBox="0 0 200 220" style="--chin:${c.chin || '120deg'}" aria-hidden="true">
     <ellipse class="shadow" cx="100" cy="208" rx="${c.shadow || 46}" ry="7"/>
     <g class="rig">${part(c.body)}<g class="head" style="transform-origin:${c.neck}">${part(c.head)}<g class="face" transform="translate(${c.f[0]} ${c.f[1]}) scale(${c.f[2]})">${face(mood, c.fo)}</g></g>${part(c.after || '')}${part(c.arms)}</g>
