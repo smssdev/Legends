@@ -69,7 +69,7 @@ extension _LiveSheets on _LiveState {
                         : () {
                             final o = out!.id, i = into!.id;
                             Navigator.pop(ctx);
-                            _send(() => _repo.sub(_id, o, i));
+                            unawaited(_order((orders) => orders.sub(o, i)));
                           },
                   ),
                 ],
@@ -173,7 +173,7 @@ extension _LiveSheets on _LiveState {
                         ? null
                         : () {
                             Navigator.pop(ctx);
-                            _send(() => _repo.tactics(_id, Map.of(changes)));
+                            unawaited(_order((orders) => orders.tactics(Map.of(changes))));
                           },
                   ),
                 ],
@@ -204,6 +204,6 @@ extension _LiveSheets on _LiveState {
         ),
       ),
     );
-    if (picked != null && picked != now) await _send(() => _repo.formation(_id, picked));
+    if (picked != null && picked != now) await _order((orders) => orders.formation(picked));
   }
 }

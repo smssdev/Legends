@@ -20,6 +20,7 @@ import '../../ui/widgets/game_icons.dart';
 import '../../ui/widgets/stadium.dart';
 import '../leagues/models.dart';
 import 'club_data.dart';
+import 'tactics_controller.dart';
 import 'team_data.dart';
 import '../leagues/shell.dart';
 
@@ -39,55 +40,15 @@ class TacticsScreen extends ConsumerStatefulWidget {
 }
 
 class _TacticsScreenState extends ConsumerState<TacticsScreen> {
-  Tactics? _t;
-  final Map<String, Object> _pending = {};
-  Timer? _timer;
-  late final TeamRepository _repo = ref.read(teamRepositoryProvider);
+  // [Sprint 59 F5] The edit lives in TacticsEditor; the screen draws it and says what failed.
+  TacticsEditor get _editor => ref.read(tacticsEditorProvider(widget.leagueId).notifier);
 
-  @override
-  void initState() {
-    super.initState();
-    _repo; // taken now: a change still unsaved is sent on the way out, when ref can no longer be read
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    if (_pending.isNotEmpty) unawaited(_repo.saveTactics(widget.leagueId, Map.of(_pending)).catchError((_) => const Tactics({})));
-    super.dispose();
-  }
-
-  void _set(String key, Object v) {
-    setState(() => _t = _t!.set(key, v));
-    _pending[key] = v;
-    _timer?.cancel();
-    _timer = Timer(const Duration(milliseconds: 700), _flush);
-  }
-
-  Future<void> _flush() async {
-    if (_pending.isEmpty) return;
-    final changes = Map.of(_pending);
-    _pending.clear();
-    try {
-      await _repo.saveTactics(widget.leagueId, changes);
-    } on ApiError catch (e) {
-      if (mounted) showGlmToast(context, e.message, error: true);
-      ref.invalidate(tacticsProvider(widget.leagueId));
-      if (mounted) setState(() => _t = null);
-    }
+  void _failed(ApiError? e) {
+    if (e != null && mounted) showGlmToast(context, e.message, error: true);
   }
 
   /// [Sprint 50 M12] A ready philosophy: the server sets its keys, and the screen takes what it answers.
-  Future<void> _preset(String preset) async {
-    _timer?.cancel();
-    await _flush();
-    try {
-      final t = await _repo.saveTactics(widget.leagueId, {'preset': preset});
-      if (mounted) setState(() => _t = t);
-    } on ApiError catch (e) {
-      if (mounted) showGlmToast(context, e.message, error: true);
-    }
-  }
+  Future<void> _preset(String preset) async => _failed(await _editor.preset(preset));
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +61,9 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
           value: ref.watch(tacticsProvider(widget.leagueId)),
           onRetry: () => ref.invalidate(tacticsProvider(widget.leagueId)),
           data: (loaded) {
-            final t = _t ??= loaded;
+            final t = ref.watch(tacticsEditorProvider(widget.leagueId)) ?? loaded;
+            _editor.onError = _failed;
+            void set(String key, Object v) => _editor.set(key, v, t);
             final l = L.of(context);
             final summary = ref.watch(clubSummaryProvider(widget.leagueId)).value;
             Widget gap(Widget w) => Padding(padding: const EdgeInsets.only(bottom: 12), child: w);
@@ -153,14 +116,14 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                                     value: t.get<num>(key).toInt(),
                                     low: lo,
                                     high: hi,
-                                    onChanged: (v) => _set(key, v),
+                                    onChanged: (v) => set(key, v),
                                   ),
                                 ),
                               ),
                           ],
                         ),
                         const SizedBox(height: 8),
-                        gap(_Lines(t: t, onSet: _set)),
+                        gap(_Lines(t: t, onSet: set)),
                         pair(
                           _Carousel(
                             title: l.marking,
@@ -171,7 +134,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                               height: 90,
                               child: CustomPaint(painter: _MarkArt(v), size: Size.infinite),
                             ),
-                            onChanged: (v) => _set('marking', v),
+                            onChanged: (v) => set('marking', v),
                           ),
                           _Carousel(
                             title: l.tackling,
@@ -182,7 +145,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                               height: 90,
                               child: CustomPaint(painter: _TackleArt(v), size: Size.infinite),
                             ),
-                            onChanged: (v) => _set('tackling', v),
+                            onChanged: (v) => set('tackling', v),
                           ),
                         ),
                         Row(
@@ -239,7 +202,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                             builder: (_, t, _) => CustomPaint(painter: _PlanArt(v, t), size: Size.infinite),
                           ),
                         ),
-                        onChanged: (v) => _set('plan', v),
+                        onChanged: (v) => set('plan', v),
                       ),
                       _Carousel(
                         title: l.tackling,
@@ -250,10 +213,10 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                           height: 120,
                           child: CustomPaint(painter: _TackleArt(v), size: Size.infinite),
                         ),
-                        onChanged: (v) => _set('tackling', v),
+                        onChanged: (v) => set('tackling', v),
                       ),
                     ),
-                    gap(_Lines(t: t, onSet: _set)),
+                    gap(_Lines(t: t, onSet: set)),
                     for (final (key, title, lo, hi) in [
                       ('pressing', l.pressing, l.low, l.high),
                       ('style', l.style, l.defensive, l.attacking),
@@ -266,7 +229,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                           word: level(t.get<num>(key)),
                           low: lo,
                           high: hi,
-                          onChanged: (v) => _set(key, v),
+                          onChanged: (v) => set(key, v),
                         ),
                       ),
                     pair(
@@ -279,7 +242,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                           height: 110,
                           child: CustomPaint(painter: _MarkArt(v), size: Size.infinite),
                         ),
-                        onChanged: (v) => _set('marking', v),
+                        onChanged: (v) => set('marking', v),
                       ),
                       _Carousel(
                         title: l.trap,
@@ -290,7 +253,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                           height: 110,
                           child: CustomPaint(painter: _TrapArt(v == 1), size: Size.infinite),
                         ),
-                        onChanged: (v) => _set('trap', v),
+                        onChanged: (v) => set('trap', v),
                       ),
                     ),
                   ],

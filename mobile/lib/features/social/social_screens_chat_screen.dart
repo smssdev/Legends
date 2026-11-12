@@ -28,11 +28,13 @@ class ChatRoom extends ConsumerStatefulWidget {
 const _reactions = {'ball': '⚽', 'fire': '🔥', 'cup': '🏆', 'laugh': '😂'};
 
 class _ChatRoomState extends ConsumerState<ChatRoom> {
-  late final SocialRepository _repo = ref.read(socialRepositoryProvider);
-  List<Map<String, dynamic>> _messages = const [];
+  // [Sprint 59 F5] The messages and the send live in ChatController.
+  ChatController get _chat => ref.read(chatControllerProvider(widget.groupId).notifier);
+  late ChatState _state;
+  List<Map<String, dynamic>> get _messages => _state.messages;
+  bool get _sending => _state.sending;
   final _text = TextEditingController();
   Timer? _poll;
-  bool _sending = false;
   Map<String, dynamic>? _replyTo;
 
   /// [Sprint 53 F2] The group's channel: a new message (or one changed) comes at once, and the 4-second poll runs only
@@ -63,13 +65,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
 
   Future<void> _load() async {
     _loadedAt = DateTime.now();
-    try {
-      final m = await _repo.messages(widget.groupId);
-      if (mounted) setState(() => _messages = m);
-      unawaited(_repo.read(widget.groupId).catchError((_) {}));
-    } on ApiError {
-      // Asked again in a moment.
-    }
+    await _chat.load();
   }
 
   /// A voice note: the first tap records (AAC, up to the server's two minutes), the second stops and sends it.
@@ -92,10 +88,8 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
     }
     final seconds = DateTime.now().difference(_recordingSince!).inSeconds.clamp(1, 120);
     final path = await _recorder.stop();
-    setState(() {
-      _recordingSince = null;
-      _sending = true;
-    });
+    setState(() => _recordingSince = null);
+    _chat.busy(true);
     try {
       if (path != null) {
         await ref
@@ -106,23 +100,18 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
     } on ApiError catch (e) {
       if (mounted) showGlmToast(context, e.message, error: true);
     } finally {
-      if (mounted) setState(() => _sending = false);
+      _chat.busy(false);
     }
   }
 
   Future<void> _send() async {
-    final body = _text.text.trim();
-    if (body.isEmpty || _sending) return;
-    setState(() => _sending = true);
-    try {
-      await _repo.say(widget.groupId, body, replyTo: _replyTo?['id'] as int?);
+    final sent = await _chat.send(_text.text, replyTo: _replyTo?['id'] as int?);
+    if (!mounted) return;
+    if (sent) {
       _text.clear();
-      _replyTo = null;
-      await _load();
-    } on ApiError catch (e) {
-      if (mounted) showGlmToast(context, e.message, error: true);
-    } finally {
-      if (mounted) setState(() => _sending = false);
+      setState(() => _replyTo = null);
+    } else if (ref.read(chatControllerProvider(widget.groupId)).error case final error?) {
+      showGlmToast(context, error, error: true);
     }
   }
 
@@ -186,6 +175,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
 
   @override
   Widget build(BuildContext context) {
+    _state = ref.watch(chatControllerProvider(widget.groupId));
     final l = L.of(context);
     final p = context.palette;
     final me = ref.watch(authProvider).value?.id;
@@ -258,7 +248,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                             imageQuality: 80,
                           );
                           if (f == null) return;
-                          setState(() => _sending = true);
+                          _chat.busy(true);
                           try {
                             await ref
                                 .read(apiProvider)
@@ -267,7 +257,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                           } on ApiError catch (e) {
                             if (mounted) showGlmToast(this.context, e.message, error: true);
                           } finally {
-                            if (mounted) setState(() => _sending = false);
+                            _chat.busy(false);
                           }
                         },
                 ),

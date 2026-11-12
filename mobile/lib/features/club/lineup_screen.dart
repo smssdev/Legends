@@ -1,13 +1,13 @@
+import 'dart:async';
+
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
@@ -21,6 +21,7 @@ import '../../ui/widgets/glm_card.dart';
 import '../../ui/widgets/kit.dart';
 import '../../ui/widgets/motion.dart';
 import 'squad_screen.dart';
+import 'lineup_controller.dart';
 import 'team_data.dart';
 import '../leagues/shell.dart';
 
@@ -40,21 +41,19 @@ class LineupScreen extends ConsumerStatefulWidget {
 }
 
 class _LineupScreenState extends ConsumerState<LineupScreen> {
-  String? _formation;
-  List<int>? _starters, _bench;
+  // [Sprint 59 F5] The draft lives in LineupEditor; the screen keeps only which player is picked.
   int? _picked;
-  bool _busy = false;
+  LineupDraft? _draft;
 
-  void _load(TeamData t) {
-    _formation ??= t.lineup.formation;
-    _starters ??= [...t.lineup.starters];
-    _bench ??= [...t.lineup.bench];
-  }
-
+  LineupEditor get _editor => ref.read(lineupEditorProvider(widget.leagueId).notifier);
+  TeamData? get _team => ref.read(teamProvider(widget.leagueId)).value;
+  String? get _formation => _draft?.formation;
+  List<int>? get _starters => _draft?.starters;
+  List<int>? get _bench => _draft?.bench;
+  bool get _busy => _draft?.busy ?? false;
   bool get _dirty {
-    final t = ref.read(teamProvider(widget.leagueId)).value;
-    return t != null &&
-        (_formation != t.lineup.formation || !listEquals(_starters, t.lineup.starters) || !listEquals(_bench, t.lineup.bench));
+    final t = _team;
+    return t != null && _draft != null && _draft!.changedFrom(t.lineup);
   }
 
   /// [2026-11-09] The places on the pitch: the saved formation at the places the coach dragged it to (on the site), or
@@ -63,13 +62,9 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
       ? t.lineup.slots
       : formations.where((f) => f.name == _formation).firstOrNull?.slots ?? t.lineup.slots;
 
-  /// [Sprint 59 F6] The server's rule, read from each slot before it is asked (`allowed`, the rule the save enforces).
-  bool _fits(List<int> starters, TeamData t, List<Slot> slots) {
-    String? line(int id) => t.players.where((p) => p.id == id).firstOrNull?.line;
-    for (var i = 0; i < starters.length && i < slots.length; i++) {
-      if (!slots[i].takes(line(starters[i]))) return false;
-    }
-    return true;
+  void _pickFormation(String? f) {
+    final t = _team;
+    if (f != null && t != null) _editor.formation(f, t.lineup);
   }
 
   /// [Sprint 45 M4] A player dropped on another: the two swap (as two taps would).
@@ -80,74 +75,32 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
   }
 
   void _tap(int id) {
-    HapticFeedback.selectionClick();
+    unawaited(HapticFeedback.selectionClick());
     if (_picked == null) return setState(() => _picked = id);
     if (_picked == id) return setState(() => _picked = null);
-    final starters = [..._starters!], bench = [..._bench!];
-    final a = _picked!, b = id;
-    List<int>? where(int x) => starters.contains(x)
-        ? starters
-        : bench.contains(x)
-        ? bench
-        : null;
-    final la = where(a), lb = where(b);
-    if (la != null && lb != null) {
-      final ia = la.indexOf(a), ib = lb.indexOf(b);
-      la[ia] = b;
-      lb[ib] = a;
-    } else if (la != null) {
-      la[la.indexOf(a)] = b; // a reserve comes in for a
-    } else if (lb != null) {
-      lb[lb.indexOf(b)] = a;
-    }
-    final t = ref.read(teamProvider(widget.leagueId)).value;
-    // Only a swap that breaks it is refused (a sheet already wrong on the server stays editable).
-    final slots = t == null ? const <Slot>[] : _slots(t, ref.read(formationsProvider).value ?? const []);
-    if (t != null && !_fits(starters, t, slots) && _fits(_starters!, t, slots)) {
-      setState(() => _picked = null);
-      showGlmToast(context, L.of(context).keeperSlotOnly, error: true);
-      return;
-    }
-    setState(() {
-      _starters = starters;
-      _bench = bench;
-      _picked = null;
-    });
+    final t = _team;
+    final a = _picked!;
+    setState(() => _picked = null);
+    if (t == null) return;
+    final slots = _slots(t, ref.read(formationsProvider).value ?? const []);
+    final done = _editor.swap(a, id, t.lineup, slots, (x) => t.players.where((p) => p.id == x).firstOrNull?.line);
+    if (!done) showGlmToast(context, L.of(context).keeperSlotOnly, error: true);
   }
 
   Future<void> _save({bool auto = false}) async {
-    setState(() => _busy = true);
-    final repo = ref.read(teamRepositoryProvider);
-    try {
-      final t = ref.read(teamProvider(widget.leagueId)).value;
-      final formations = ref.read(formationsProvider).value ?? const <Formation>[];
-      // [2026-11-09] The ten outfield places go with the lineup, as the site sends them: without them the server would
-      // forget the places the coach dragged his players to on the site.
-      final positions = t == null
-          ? null
-          : [
-              for (final s in _slots(t, formations).skip(1)) [s.x, s.y],
-            ];
-      final team = auto
-          ? await repo.autoLineup(widget.leagueId)
-          : await repo.saveLineup(
-              widget.leagueId,
-              _formation!,
-              _starters!,
-              _bench!,
-              positions: positions != null && positions.length == 10 ? positions : null,
-            );
-      setState(() {
-        _formation = team.lineup.formation;
-        _starters = [...team.lineup.starters];
-        _bench = [...team.lineup.bench];
-      });
-      ref.invalidate(teamProvider(widget.leagueId));
-      if (mounted) showGlmToast(context, L.of(context).saved);
-    } on ApiError catch (e) {
-      if (mounted) showGlmToast(context, e.fields.values.firstOrNull ?? e.message, error: true);
-    } finally {
-      if (mounted) setState(() => _busy = false);
+    final t = _team;
+    if (t == null) return;
+    // [2026-11-09] The ten outfield places go with the lineup, as the site sends them: without them the server would
+    // forget the places the coach dragged his players to on the site.
+    final positions = [
+      for (final s in _slots(t, ref.read(formationsProvider).value ?? const <Formation>[]).skip(1)) [s.x, s.y],
+    ];
+    final e = await _editor.save(t.lineup, auto: auto, positions: positions.length == 10 ? positions : null);
+    if (!mounted) return;
+    if (e == null) {
+      showGlmToast(context, L.of(context).saved);
+    } else {
+      showGlmToast(context, e.fields.values.firstOrNull ?? e.message, error: true);
     }
   }
 
@@ -155,6 +108,8 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final team = ref.watch(teamProvider(widget.leagueId));
+    final edited = ref.watch(lineupEditorProvider(widget.leagueId));
+    _draft = edited ?? (team.value == null ? null : LineupDraft.of(team.value!.lineup));
     final formations = ref.watch(formationsProvider).value ?? const <Formation>[];
     final save = GlmButton(
       label: l.save,
@@ -187,7 +142,6 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
           data: (t) => LayoutBuilder(
             builder: (context, box) {
               final wide = box.maxWidth >= 560;
-              _load(t);
               final slots = _slots(t, formations);
               final others = t.players.where((p) => !_starters!.contains(p.id) && !_bench!.contains(p.id)).toList();
               final formation = GlmCard(
@@ -221,7 +175,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                               ),
                             ),
                         ],
-                        onChanged: (v) => setState(() => _formation = v),
+                        onChanged: _pickFormation,
                       ),
                     ),
                   ],
@@ -292,7 +246,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                 onDrop: _drop,
                 formations: formations,
                 formation: _formation,
-                onFormation: (f) => setState(() => _formation = f),
+                onFormation: _pickFormation,
                 leagueId: widget.leagueId,
                 save: _formation != null && _dirty ? _save : null,
                 busy: _busy,

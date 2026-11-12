@@ -44,14 +44,13 @@ class FakeMatchRepository implements MatchRepository {
     });
   }
 
+  final List<String> keys = [];
   @override
-  Future<void> order(int id, Map<String, Object> order) async => orders.add(order);
-  @override
-  Future<void> sub(int id, int out, int into) => order(id, {'type': 'sub', 'out': out, 'in': into});
-  @override
-  Future<void> tactics(int id, Map<String, Object> changes) => order(id, {'type': 'tactics', 'tactics': changes});
-  @override
-  Future<void> formation(int id, String formation) => order(id, {'type': 'formation', 'formation': formation});
+  Future<void> order(int id, Map<String, Object> order, {required String key}) async {
+    keys.add(key);
+    orders.add(order);
+  }
+
   @override
   Future<void> ready(int id) async => readies++;
   @override

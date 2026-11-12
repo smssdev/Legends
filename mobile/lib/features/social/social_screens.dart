@@ -32,6 +32,8 @@ import '../club/squad_screen.dart' show money;
 import '../leagues/widgets.dart' show when;
 import '../leagues/shell.dart';
 
+import 'chat_controller.dart';
+
 part 'social_screens_quick_match_screen.dart';
 part 'social_screens_newspaper_screen.dart';
 part 'social_screens_groups_screen.dart';

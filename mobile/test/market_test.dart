@@ -35,7 +35,7 @@ class FakeMarket implements MarketRepository {
   Future<BuyQuote> buyQuote(int league, int player) async =>
       BuyQuote.fromJson({'price': 530000, 'cash': 2971870, 'doc_coins': 1, 'short': 0, 'compensate': null, 'can': true, 'why': null});
   @override
-  Future<void> buy(int league, int player, {bool compensate = false}) async => sent.add('buy $player');
+  Future<void> buy(int league, int player, {bool compensate = false, required String key}) async => sent.add('buy $player');
   @override
   Future<Selling> selling(int league) async => Selling.fromJson(json('market_pool'));
   @override

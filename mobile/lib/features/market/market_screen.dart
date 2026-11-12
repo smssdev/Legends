@@ -15,6 +15,7 @@ import '../../ui/widgets/glm_card.dart';
 import '../club/squad_screen.dart' show money, lineColor;
 import '../leagues/widgets.dart' show when;
 import '../money/finance_screen.dart' show confirm;
+import 'buy_controller.dart';
 import 'market_data.dart';
 import '../console/market_console.dart';
 import 'offer_screen.dart';

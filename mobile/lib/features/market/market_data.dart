@@ -336,10 +336,10 @@ class MarketRepository {
 
   Future<BuyQuote> buyQuote(int league, int player) async =>
       BuyQuote.fromJson(await _api.get('/leagues/$league/market/buy-quote', query: {'player_id': player}));
-  Future<void> buy(int league, int player, {bool compensate = false}) => Intents.run(
-    'buy:$league:$player:$compensate',
-    (key) => _api.post('/leagues/$league/market/buy', {'player_id': player, 'idempotency_key': key, if (compensate) 'compensate': true}),
-  );
+
+  /// [Sprint 59 F5] With the key BuyController holds for this purchase (the same on a retry).
+  Future<void> buy(int league, int player, {bool compensate = false, required String key}) =>
+      _api.post('/leagues/$league/market/buy', {'player_id': player, 'idempotency_key': key, if (compensate) 'compensate': true});
 
   /// My players with their ways to sell (the market's pool view carries them; one line keeps it small).
   Future<Selling> selling(int league) async =>

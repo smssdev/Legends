@@ -142,7 +142,7 @@ Future<void> shot(
     // A moment of an animation (the opening): its pictures first, then the clock moved to [at].
     for (final e in find.byType(Image).evaluate()) {
       // [Sprint 59 F8] A picture from the network (a store item) is not there in a test: it stays blank, not an error.
-    await t.runAsync(() => precacheImage((e.widget as Image).image, e, onError: (_, _) {}));
+      await t.runAsync(() => precacheImage((e.widget as Image).image, e, onError: (_, _) {}));
     }
     for (var ms = 0; ms < at.inMilliseconds; ms += 50) {
       await t.pump(const Duration(milliseconds: 50));

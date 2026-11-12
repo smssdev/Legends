@@ -226,6 +226,19 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     }
   }
 
+  /// [Sprint 59 F5] An order through LiveOrders (its key kept for a retry), and the screen says how it went.
+  Future<void> _order(Future<bool> Function(LiveOrders orders) send) async {
+    final orders = ref.read(liveOrdersProvider(_id).notifier);
+    final ok = await send(orders);
+    if (!mounted) return;
+    final error = ref.read(liveOrdersProvider(_id)).error;
+    if (ok) {
+      showGlmToast(context, L.of(context).orderSent);
+    } else if (error != null) {
+      showGlmToast(context, error, error: true);
+    }
+  }
+
   Future<void> _send(Future<void> Function() order, {bool quiet = false}) async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -243,6 +256,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final v = widget.view;
+    // LiveOrders lives while the screen is open.
+    ref.watch(liveOrdersProvider(_id));
     final kits = matchKits(v);
     final numbers = {
       for (final side in ['home', 'away'])
@@ -428,15 +443,17 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   );
 
   Widget _coachBar(L l) {
+    // An order in flight keeps the buttons still.
+    final busy = _busy || ref.watch(liveOrdersProvider(_id)).busy;
     final team = _teams[_you]!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
       child: Row(
         children: [
           for (final (icon, label, onTap) in [
-            (Icons.swap_vert_rounded, '${l.substitute} ${team.subsMax - team.subsUsed}', _busy ? null : _subSheet),
-            (Icons.tune_rounded, l.tactics, _busy ? null : _tacticsSheet),
-            (Icons.grid_view_rounded, l.formation, _busy || widget.view.formations.isEmpty ? null : _formationSheet),
+            (Icons.swap_vert_rounded, '${l.substitute} ${team.subsMax - team.subsUsed}', busy ? null : _subSheet),
+            (Icons.tune_rounded, l.tactics, busy ? null : _tacticsSheet),
+            (Icons.grid_view_rounded, l.formation, busy || widget.view.formations.isEmpty ? null : _formationSheet),
             // [Sprint 50 M14] The one timeout: play waits, the changes open for both coaches.
             (Icons.timer_rounded, _timeoutUsed ? l.timeoutUsed : l.timeout, _busy || _timeoutUsed || !_started ? null : _takeTimeout),
           ])

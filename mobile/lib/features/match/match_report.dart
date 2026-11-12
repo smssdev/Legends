@@ -127,11 +127,9 @@ class MatchRepository {
   Future<LiveSync> live(int id, int since) async => LiveSync.fromJson(await _api.get('/matches/$id/live', query: {'since': since}));
 
   /// An order for the next minute not yet made; only in a window (the server answers 409 otherwise, with why).
-  Future<void> order(int id, Map<String, Object> order) =>
-      Intents.run('order:$id:$order', (key) => _api.post('/matches/$id/actions', {...order, 'idempotency_key': key}));
-  Future<void> sub(int id, int out, int into) => order(id, {'type': 'sub', 'out': out, 'in': into});
-  Future<void> tactics(int id, Map<String, Object> changes) => order(id, {'type': 'tactics', 'tactics': changes});
-  Future<void> formation(int id, String formation) => order(id, {'type': 'formation', 'formation': formation});
+  /// [Sprint 59 F5] With the key LiveOrders holds for this order (the same on a retry).
+  Future<void> order(int id, Map<String, Object> order, {required String key}) =>
+      _api.post('/matches/$id/actions', {...order, 'idempotency_key': key});
   Future<void> ready(int id) => _api.post('/matches/$id/ready');
   Future<void> react(int id, String key, {String? target}) => _api.post('/matches/$id/reactions', {'key': key, 'target': ?target});
   Future<void> say(int id, String body) => _api.post('/matches/$id/chat', {'body': body});

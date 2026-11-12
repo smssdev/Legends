@@ -1,6 +1,6 @@
 part of 'market_screen.dart';
 
-class BuySheet extends StatefulWidget {
+class BuySheet extends ConsumerStatefulWidget {
   const BuySheet({super.key, required this.player, required this.leagueId, required this.repo});
 
   final MarketPlayer player;
@@ -8,13 +8,13 @@ class BuySheet extends StatefulWidget {
   final MarketRepository repo;
 
   @override
-  State<BuySheet> createState() => _BuySheetState();
+  ConsumerState<BuySheet> createState() => _BuySheetState();
 }
 
-class _BuySheetState extends State<BuySheet> {
+class _BuySheetState extends ConsumerState<BuySheet> {
   BuyQuote? _q;
   String? _error;
-  bool _busy = false, _compensate = false;
+  bool _compensate = false;
 
   @override
   void initState() {
@@ -33,6 +33,8 @@ class _BuySheetState extends State<BuySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final buying = ref.watch(buyControllerProvider(widget.leagueId));
+    final error = _error ?? buying.error;
     final l = L.of(context);
     final p = context.palette;
     final pl = widget.player;
@@ -83,7 +85,7 @@ class _BuySheetState extends State<BuySheet> {
               ],
             ),
             const SizedBox(height: 12),
-            if (_error != null) Text(_error!, style: TextStyle(color: context.glm.liveText)),
+            if (error != null) Text(error, style: TextStyle(color: context.glm.liveText)),
             if (q == null && _error == null)
               const Center(
                 child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator()),
@@ -127,18 +129,12 @@ class _BuySheetState extends State<BuySheet> {
               GlmButton(
                 label: l.buyFor(money(context, q.price)),
                 block: true,
-                loading: _busy,
+                loading: buying.busy,
                 onPressed: q.can || (q.compensate != null && _compensate)
                     ? () async {
-                        setState(() => _busy = true);
-                        try {
-                          await widget.repo.buy(widget.leagueId, pl.id, compensate: _compensate);
-                          if (context.mounted) Navigator.pop(context, true);
-                        } on ApiError catch (e) {
-                          if (mounted) setState(() => _error = e.message);
-                        } finally {
-                          if (mounted) setState(() => _busy = false);
-                        }
+                        // [Sprint 59 F5] BuyController keeps the purchase's key and its refusal.
+                        final bought = await ref.read(buyControllerProvider(widget.leagueId).notifier).buy(pl.id, compensate: _compensate);
+                        if (bought && context.mounted) Navigator.pop(context, true);
                       }
                     : null,
               ),
