@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/api/api_error.dart';
 import 'core/settings.dart';
 import 'core/sounds.dart';
 import 'features/assistant/assistant.dart';
@@ -69,6 +70,7 @@ class _GlmAppState extends ConsumerState<GlmApp> {
     final settings = ref.watch(settingsProvider);
     GameSounds.enabled = settings.sounds;
     final update = ref.watch(updateRequiredProvider).value ?? false;
+    ApiError.locale = settings.locale;
     // [Sprint 59 F12] One MaterialApp: an update the server requires replaces the routed screens, not the app.
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,

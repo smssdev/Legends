@@ -519,9 +519,8 @@ class _Versus extends StatelessWidget {
     final left = s.matchAt?.difference(DateTime.now());
     String? countdown;
     if (left != null && !left.isNegative) {
-      final ar = Localizations.localeOf(context).languageCode == 'ar';
       final (d, h, m) = (left.inDays, left.inHours % 24, left.inMinutes % 60);
-      countdown = ar ? '${d > 0 ? '$dي ' : ''}$hس $mد' : '${d > 0 ? '${d}d ' : ''}${h}h ${m}m';
+      countdown = d > 0 ? l.leftDaysHoursMinutes(d, h, m) : l.leftHoursMinutes(h, m);
     }
     final home = s.venue != 'away';
     final (homeSide, awaySide) = home ? (s.club, s.next ?? s.club) : (s.next ?? s.club, s.club);
@@ -706,10 +705,8 @@ class _HubTiles extends StatelessWidget {
       if (at == null) return '';
       final d = at.difference(DateTime.now());
       if (d.isNegative) return '';
-      final ar = Localizations.localeOf(context).languageCode == 'ar';
-      return d.inDays > 0
-          ? (ar ? '${d.inDays}ي' : '${d.inDays}d')
-          : (ar ? '${d.inHours}س ${d.inMinutes % 60}د' : '${d.inHours}h ${d.inMinutes % 60}m');
+      final l = L.of(context);
+      return d.inDays > 0 ? l.leftDays(d.inDays) : l.leftHoursMinutes(d.inHours, d.inMinutes % 60);
     }
 
     final table = _HubTile(
@@ -945,7 +942,6 @@ class _Form extends StatelessWidget {
         style: TextStyle(color: p.textMuted, fontWeight: FontWeight.w800),
       );
     }
-    final ar = Localizations.localeOf(context).languageCode == 'ar';
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -964,7 +960,7 @@ class _Form extends StatelessWidget {
                   : p.textMuted,
             ),
             child: Text(
-              ar ? {'W': 'ف', 'D': 'ت', 'L': 'خ'}[r] ?? r : r,
+              {'W': L.of(context).formWin, 'D': L.of(context).formDraw, 'L': L.of(context).formLoss}[r] ?? r,
               style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11, height: 1),
             ),
           ),

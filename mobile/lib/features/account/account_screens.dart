@@ -378,7 +378,7 @@ class ProfileScreen extends ConsumerWidget {
             Text(l.deleteAccountLead),
             TextField(
               controller: phrase,
-              decoration: const InputDecoration(labelText: 'احذف'),
+              decoration: const InputDecoration(labelText: 'احذف'), // l10n-ok: the server's own word to type (AuthController)
             ),
             TextField(
               controller: secret,

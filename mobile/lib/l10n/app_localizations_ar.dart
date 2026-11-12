@@ -2785,4 +2785,46 @@ class LAr extends L {
 
   @override
   String get loading => 'جارٍ التحميل';
+
+  @override
+  String get errorUnknown => 'حدث خطأ، حاول مرة أخرى.';
+
+  @override
+  String get errorServer => 'حدث خطأ في الخادم، حاول بعد قليل.';
+
+  @override
+  String get errorOffline => 'تعذر الاتصال بالخادم، تحقق من اتصالك بالإنترنت.';
+
+  @override
+  String get introTagline => 'فريقك. قراراتك. أسطورتك.';
+
+  @override
+  String get introLoading => 'نجهّز غرفة الملابس…';
+
+  @override
+  String get goalShout => 'هدف!';
+
+  @override
+  String leftDays(int d) {
+    return '$dي';
+  }
+
+  @override
+  String leftHoursMinutes(int h, int m) {
+    return '$hس $mد';
+  }
+
+  @override
+  String leftDaysHoursMinutes(int d, int h, int m) {
+    return '$dي $hس $mد';
+  }
+
+  @override
+  String get formWin => 'ف';
+
+  @override
+  String get formDraw => 'ت';
+
+  @override
+  String get formLoss => 'خ';
 }

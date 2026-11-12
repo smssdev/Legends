@@ -1,4 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
+
+import '../../l10n/app_localizations.dart';
 
 /// [Sprint 15 F1] The API's errors as one shape: `{message, code, errors?}` with an Arabic message (README «الأخطاء»),
 /// or the network's own failure in the app's words.
@@ -15,6 +18,11 @@ class ApiError implements Exception {
   bool get offline => status == null;
   bool get unauthorized => status == 401;
 
+  /// [Sprint 59 F9] The app's language for the network's own failures (no screen at hand): the app sets it with its
+  /// locale, and Arabic before that.
+  static Locale locale = const Locale('ar');
+  static L get _words => lookupL(locale);
+
   static ApiError from(Object e) {
     if (e is ApiError) return e;
     if (e is DioException) {
@@ -28,14 +36,14 @@ class ApiError implements Exception {
           });
         }
         return ApiError(
-          '${data['message'] ?? 'حدث خطأ، حاول مرة أخرى.'}',
+          '${data['message'] ?? _words.errorUnknown}',
           status: e.response?.statusCode,
           code: data['code'] as String?,
           fields: errors,
         );
       }
-      if (e.response != null) return ApiError('حدث خطأ في الخادم، حاول بعد قليل.', status: e.response!.statusCode);
-      return const ApiError('تعذر الاتصال بالخادم، تحقق من اتصالك بالإنترنت.');
+      if (e.response != null) return ApiError(_words.errorServer, status: e.response!.statusCode);
+      return ApiError(_words.errorOffline);
     }
     return ApiError('$e');
   }

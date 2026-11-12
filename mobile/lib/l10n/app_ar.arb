@@ -1933,5 +1933,47 @@
     }
   },
   "nothingYet": "لا شيء هنا بعد",
-  "loading": "جارٍ التحميل"
+  "loading": "جارٍ التحميل",
+  "errorUnknown": "حدث خطأ، حاول مرة أخرى.",
+  "errorServer": "حدث خطأ في الخادم، حاول بعد قليل.",
+  "errorOffline": "تعذر الاتصال بالخادم، تحقق من اتصالك بالإنترنت.",
+  "introTagline": "فريقك. قراراتك. أسطورتك.",
+  "introLoading": "نجهّز غرفة الملابس…",
+  "goalShout": "هدف!",
+  "leftDays": "{d}ي",
+  "@leftDays": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      }
+    }
+  },
+  "leftHoursMinutes": "{h}س {m}د",
+  "@leftHoursMinutes": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "leftDaysHoursMinutes": "{d}ي {h}س {m}د",
+  "@leftDaysHoursMinutes": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "formWin": "ف",
+  "formDraw": "ت",
+  "formLoss": "خ"
 }

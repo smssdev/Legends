@@ -48,7 +48,7 @@ class HomeScreen extends ConsumerWidget {
 }
 
 /// The game writes its numbers in Western digits in every language (as the web, Sprint 30), dates included.
-String latinDigits(String v) => v.replaceAllMapped(RegExp('[٠-٩]'), (m) => '${m[0]!.codeUnitAt(0) - 0x0660}');
+String latinDigits(String v) => v.replaceAllMapped(RegExp('[\u0660-\u0669]'), (m) => '${m[0]!.codeUnitAt(0) - 0x0660}');
 
 Future<void> openSite(String path) => launchUrl(Uri.parse('${AppConfig.siteUrl}$path'), mode: LaunchMode.externalApplication);
 

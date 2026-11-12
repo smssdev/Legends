@@ -8,6 +8,7 @@ import '../../ui/theme.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/legend_crest.dart';
 import '../../ui/widgets/motion.dart';
+import '../../l10n/app_localizations.dart';
 
 /// [2026-11-06] Whether the opening has played (once a launch): the router holds the start page until it has.
 final introDoneProvider = NotifierProvider<IntroDone, bool>(IntroDone.new);
@@ -196,10 +197,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with TickerProviderSt
                       );
                       final motto = _Rise(
                         t: r2,
-                        child: Text(
-                          ar ? 'فريقك. قراراتك. أسطورتك.' : 'Your team. Your calls. Your legend.',
-                          style: TextStyle(fontSize: 15, color: p.textSoft),
-                        ),
+                        child: Text(L.of(context).introTagline, style: TextStyle(fontSize: 15, color: p.textSoft)),
                       );
                       final barRow = _Rise(
                         t: r3,
@@ -240,10 +238,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with TickerProviderSt
                       );
                       final loading = _Rise(
                         t: r3,
-                        child: Text(
-                          ar ? 'نجهّز غرفة الملابس…' : 'Getting the dressing room ready…',
-                          style: TextStyle(fontSize: 14, color: p.textMuted),
-                        ),
+                        child: Text(L.of(context).introLoading, style: TextStyle(fontSize: 14, color: p.textMuted)),
                       );
                       if (box.maxWidth > box.maxHeight) {
                         return Center(

@@ -2786,4 +2786,46 @@ class LEn extends L {
 
   @override
   String get loading => 'Loading';
+
+  @override
+  String get errorUnknown => 'Something went wrong, try again.';
+
+  @override
+  String get errorServer => 'The server had a problem, try again shortly.';
+
+  @override
+  String get errorOffline => 'Can\'t reach the server, check your internet connection.';
+
+  @override
+  String get introTagline => 'Your team. Your calls. Your legend.';
+
+  @override
+  String get introLoading => 'Getting the dressing room ready…';
+
+  @override
+  String get goalShout => 'GOAL!';
+
+  @override
+  String leftDays(int d) {
+    return '${d}d';
+  }
+
+  @override
+  String leftHoursMinutes(int h, int m) {
+    return '${h}h ${m}m';
+  }
+
+  @override
+  String leftDaysHoursMinutes(int d, int h, int m) {
+    return '${d}d ${h}h ${m}m';
+  }
+
+  @override
+  String get formWin => 'W';
+
+  @override
+  String get formDraw => 'D';
+
+  @override
+  String get formLoss => 'L';
 }

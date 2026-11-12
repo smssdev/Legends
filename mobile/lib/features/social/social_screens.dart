@@ -758,7 +758,7 @@ class GroupsScreen extends ConsumerWidget {
           );
           if (ok == true && context.mounted) {
             final usernames = [
-              for (final u in members.text.split(RegExp(r'[,،\s]+')))
+              for (final u in members.text.split(RegExp('[,\u060C\\s]+')))
                 if (u.trim().isNotEmpty) u.trim().replaceFirst('@', ''),
             ];
             final r = await _try(context, () => ref.read(apiProvider).post('/groups', {'name': name.text.trim(), 'usernames': usernames}));

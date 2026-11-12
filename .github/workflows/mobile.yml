@@ -38,6 +38,9 @@ jobs:
       # [Sprint 54 F4] No colour or font size of a screen's own outside lib/ui/ (the baseline only shrinks).
       - name: Design system binds
         run: dart run tool/design.dart
+      # [Sprint 59 F9] No Arabic word in the code outside lib/l10n/.
+      - name: Words in the arb files
+        run: dart run tool/arabic.dart
       - run: flutter analyze
       - run: flutter test
       # Phones only (arm64 and arm32: every Android phone), not the emulators' x86_64: a smaller download.

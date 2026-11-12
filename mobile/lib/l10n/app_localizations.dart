@@ -5065,6 +5065,78 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'جارٍ التحميل'**
   String get loading;
+
+  /// No description provided for @errorUnknown.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدث خطأ، حاول مرة أخرى.'**
+  String get errorUnknown;
+
+  /// No description provided for @errorServer.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدث خطأ في الخادم، حاول بعد قليل.'**
+  String get errorServer;
+
+  /// No description provided for @errorOffline.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر الاتصال بالخادم، تحقق من اتصالك بالإنترنت.'**
+  String get errorOffline;
+
+  /// No description provided for @introTagline.
+  ///
+  /// In ar, this message translates to:
+  /// **'فريقك. قراراتك. أسطورتك.'**
+  String get introTagline;
+
+  /// No description provided for @introLoading.
+  ///
+  /// In ar, this message translates to:
+  /// **'نجهّز غرفة الملابس…'**
+  String get introLoading;
+
+  /// No description provided for @goalShout.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدف!'**
+  String get goalShout;
+
+  /// No description provided for @leftDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'{d}ي'**
+  String leftDays(int d);
+
+  /// No description provided for @leftHoursMinutes.
+  ///
+  /// In ar, this message translates to:
+  /// **'{h}س {m}د'**
+  String leftHoursMinutes(int h, int m);
+
+  /// No description provided for @leftDaysHoursMinutes.
+  ///
+  /// In ar, this message translates to:
+  /// **'{d}ي {h}س {m}د'**
+  String leftDaysHoursMinutes(int d, int h, int m);
+
+  /// No description provided for @formWin.
+  ///
+  /// In ar, this message translates to:
+  /// **'ف'**
+  String get formWin;
+
+  /// No description provided for @formDraw.
+  ///
+  /// In ar, this message translates to:
+  /// **'ت'**
+  String get formDraw;
+
+  /// No description provided for @formLoss.
+  ///
+  /// In ar, this message translates to:
+  /// **'خ'**
+  String get formLoss;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

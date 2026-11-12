@@ -12,6 +12,7 @@ import 'art.dart';
 import 'clips.dart';
 import 'director.dart';
 import 'story.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// [Sprint 44 C1] One minute to play on the broadcast: its story, how long the scene runs within the minute, and the
 /// director's cutaways after it. Built by [BroadcastPlay.of] as the web's MatchFeed.vue play() builds its plan.
@@ -391,7 +392,7 @@ class _GoalBanner extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      ar ? 'هدف!' : 'GOAL!',
+                      L.of(context).goalShout,
                       style: TextStyle(
                         fontFamily: ar ? GlmFonts.body : GlmFonts.numbers,
                         fontWeight: FontWeight.w800,
