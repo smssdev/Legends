@@ -2,6 +2,7 @@ import type { components } from './schema'
 // Simulator API client (docs/api/openapi.yaml, docs/api/match-events.md).
 import { api, asApiError, ensureCsrf } from './client'
 import { uuid } from '../lib/uuid'
+import type { ServerStory } from '../match/feed/told'
 
 export type Side = 'home' | 'away'
 
@@ -92,6 +93,8 @@ export interface Tick {
   finished: boolean
   frames: Frame[]
   moment?: { kind: string; ms: number }
+  /** [Sprint 57 B2] The minute's story, told by the server (App\Simulator\MomentStory). */
+  story?: ServerStory
   /** [X42] Play stops after this minute: the coach's window. */
   window?: boolean
   /** Live matches: when this minute starts, on the server clock (ms). */
