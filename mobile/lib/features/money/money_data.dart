@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 import '../../core/api/intents.dart';
 
@@ -8,13 +9,8 @@ import '../../core/api/intents.dart';
 class Txn {
   const Txn({required this.label, required this.amount, required this.balanceAfter, this.at, this.round});
 
-  factory Txn.fromJson(Map<String, dynamic> j) => Txn(
-    label: '${j['label'] ?? j['type']}',
-    amount: (j['amount'] as num).toInt(),
-    balanceAfter: (j['balance_after'] as num?)?.toInt() ?? 0,
-    at: DateTime.tryParse('${j['created_at'] ?? ''}'),
-    round: j['round'] as int?,
-  );
+  factory Txn.of(api.ClubFinanceTransactionsItem t) =>
+      Txn(label: t.label, amount: t.amount, balanceAfter: t.balanceAfter, at: DateTime.tryParse(t.createdAt), round: t.round);
 
   final String label;
   final int amount, balanceAfter;
@@ -25,13 +21,8 @@ class Txn {
 class TicketLevel {
   const TicketLevel({required this.level, required this.name, required this.price, required this.attendanceBp, required this.perMatch});
 
-  factory TicketLevel.fromJson(Map<String, dynamic> j) => TicketLevel(
-    level: '${j['level']}',
-    name: '${j['name']}',
-    price: (j['price'] as num?)?.toInt() ?? 0,
-    attendanceBp: (j['attendance_bp'] as num?)?.toInt() ?? 10000,
-    perMatch: (j['per_match'] as num?)?.toInt() ?? 0,
-  );
+  factory TicketLevel.of(api.TicketLevelsLevelsItem l) =>
+      TicketLevel(level: l.level, name: l.name, price: l.price, attendanceBp: l.attendanceBp, perMatch: l.perMatch);
 
   final String level, name;
   final int price, attendanceBp, perMatch;
@@ -40,10 +31,7 @@ class TicketLevel {
 class Tickets {
   const Tickets({required this.level, required this.levels});
 
-  factory Tickets.fromJson(Map<String, dynamic>? j) => Tickets(
-    level: '${j?['level'] ?? 'normal'}',
-    levels: [for (final l in (j?['levels'] as List<dynamic>? ?? const [])) TicketLevel.fromJson(l as Map<String, dynamic>)],
-  );
+  factory Tickets.of(api.TicketLevels t) => Tickets(level: t.level, levels: [for (final l in t.levels) TicketLevel.of(l)]);
 
   final String level;
   final List<TicketLevel> levels;
@@ -52,12 +40,8 @@ class Tickets {
 class SponsorOffer {
   const SponsorOffer({required this.offer, required this.name, required this.perMatch, required this.perWin});
 
-  factory SponsorOffer.fromJson(Map<String, dynamic> j) => SponsorOffer(
-    offer: '${j['offer']}',
-    name: '${j['name']}',
-    perMatch: (j['per_match'] as num?)?.toInt() ?? 0,
-    perWin: (j['per_win'] as num?)?.toInt() ?? 0,
-  );
+  factory SponsorOffer.of(api.ClubFinanceSponsorsItemOffersItem o) =>
+      SponsorOffer(offer: o.offer, name: o.name, perMatch: o.perMatch, perWin: o.perWin);
 
   final String offer, name;
   final int perMatch, perWin;
@@ -66,15 +50,8 @@ class SponsorOffer {
 class Sponsor {
   const Sponsor({required this.sector, required this.name, this.chosen, required this.offers});
 
-  factory Sponsor.fromJson(Map<String, dynamic> j) {
-    final chosen = j['chosen'];
-    return Sponsor(
-      sector: '${j['sector']}',
-      name: '${j['name']}',
-      chosen: chosen is Map<dynamic, dynamic> ? '${chosen['offer']}' : chosen as String?,
-      offers: [for (final o in (j['offers'] as List<dynamic>? ?? const [])) SponsorOffer.fromJson(o as Map<String, dynamic>)],
-    );
-  }
+  factory Sponsor.of(api.ClubFinanceSponsorsItem s) =>
+      Sponsor(sector: s.sector, name: s.name, chosen: s.chosen, offers: [for (final o in s.offers) SponsorOffer.of(o)]);
 
   final String sector, name;
   final String? chosen;
@@ -96,22 +73,23 @@ class Finance {
     required this.sponsors,
   });
 
-  factory Finance.fromJson(Map<String, dynamic> j) => Finance(
-    balance: (j['balance'] as num).toInt(),
-    canSpend: j['can_spend'] != false,
-    debtRounds: j['debt_rounds'] as int? ?? 0,
-    debtLimit: j['debt_limit'] as int? ?? 3,
-    wagesPerRound: (j['wages_per_round'] as num?)?.toInt() ?? 0,
-    income: (j['season_income'] as num?)?.toInt() ?? 0,
-    expenses: (j['season_expenses'] as num?)?.toInt() ?? 0,
-    totals: [
-      for (final t in (j['season_totals'] as List<dynamic>? ?? const []))
-        (label: '${(t as Map<dynamic, dynamic>)['label']}', total: (t['total'] as num).toInt()),
-    ],
-    transactions: [for (final t in (j['transactions'] as List<dynamic>? ?? const [])) Txn.fromJson(t as Map<String, dynamic>)],
-    tickets: Tickets.fromJson(j['tickets'] as Map<String, dynamic>?),
-    sponsors: [for (final s in (j['sponsors'] as List<dynamic>? ?? const [])) Sponsor.fromJson(s as Map<String, dynamic>)],
-  );
+  /// [Sprint 59 F1] The club's money (`ClubFinance`), read through its generated model.
+  factory Finance.fromJson(Object? json) {
+    final f = api.ClubFinance.fromJson(json);
+    return Finance(
+      balance: f.balance,
+      canSpend: f.canSpend,
+      debtRounds: f.debtRounds,
+      debtLimit: f.debtLimit,
+      wagesPerRound: f.wagesPerRound,
+      income: f.seasonIncome,
+      expenses: f.seasonExpenses,
+      totals: [for (final t in f.seasonTotals) (label: t.label, total: t.total)],
+      transactions: [for (final t in f.transactions) Txn.of(t)],
+      tickets: Tickets.of(f.tickets),
+      sponsors: [for (final s in f.sponsors) Sponsor.of(s)],
+    );
+  }
 
   final int balance, debtRounds, debtLimit, wagesPerRound, income, expenses;
   final bool canSpend;
@@ -131,17 +109,14 @@ class StadiumSection {
     this.next,
   });
 
-  factory StadiumSection.fromJson(Map<String, dynamic> j) {
-    final n = j['next'] as Map<String, dynamic>?;
-    return StadiumSection(
-      section: '${j['section']}',
-      stage: j['stage'] as int? ?? 0,
-      parts: j['parts'] as int? ?? 0,
-      done: j['done'] as int? ?? 0,
-      effects: [for (final e in (j['effects'] as List<dynamic>? ?? const [])) (e as num).toInt()],
-      next: n == null ? null : (stage: n['stage'] as int, part: n['part'] as int, cost: (n['cost'] as num).toInt()),
-    );
-  }
+  factory StadiumSection.of(api.StadiumViewSectionsItem s) => StadiumSection(
+    section: s.section,
+    stage: s.stage,
+    parts: s.parts,
+    done: s.done,
+    effects: s.effects,
+    next: s.next == null ? null : (stage: s.next!.stage, part: s.next!.part_, cost: s.next!.cost),
+  );
 
   final String section;
   final int stage, parts, done;
@@ -162,27 +137,22 @@ class StadiumView {
     this.now,
   });
 
-  factory StadiumView.fromJson(Map<String, dynamic> j) {
-    final facts = j['facts'] as Map<String, dynamic>? ?? const {};
-    final b = j['building'] as Map<String, dynamic>?;
+  /// [Sprint 59 F1] The stadium (`StadiumView`), read through its generated model.
+  factory StadiumView.fromJson(Object? json) {
+    final v = api.StadiumView.fromJson(json);
+    final b = v.building;
     return StadiumView(
-      balance: (j['balance'] as num?)?.toInt() ?? 0,
-      partMinutes: j['part_minutes'] as int? ?? 0,
-      partsTotal: j['parts_total'] as int? ?? 45,
-      partsDone: facts['parts_done'] as int? ?? 0,
-      capacity: facts['capacity'] as int? ?? 0,
-      homeBp: facts['home_bp'] as int? ?? 0,
-      sections: [for (final s in (j['sections'] as List<dynamic>? ?? const [])) StadiumSection.fromJson(s as Map<String, dynamic>)],
+      balance: v.balance,
+      partMinutes: v.partMinutes,
+      partsTotal: v.partsTotal,
+      partsDone: v.facts.partsDone,
+      capacity: v.facts.capacity,
+      homeBp: v.facts.homeBp,
+      sections: [for (final s in v.sections) StadiumSection.of(s)],
       building: b == null
           ? null
-          : (
-              section: '${b['section']}',
-              stage: b['stage'] as int,
-              part: b['part'] as int,
-              endsAt: DateTime.parse('${b['ends_at']}'),
-              finishCoins: b['finish_coins'] as int? ?? 0,
-            ),
-      now: DateTime.tryParse('${j['now'] ?? ''}'),
+          : (section: b.section, stage: b.stage, part: b.part_, endsAt: DateTime.parse(b.endsAt), finishCoins: b.finishCoins ?? 0),
+      now: DateTime.tryParse(v.now),
     );
   }
 
