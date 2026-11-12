@@ -70,6 +70,27 @@
   "src/components/league/RestDaysPicker.vue": {
     "button": 1
   },
+  "src/components/match/CoachDrawer.vue": {
+    "button": 3,
+    "card": 2
+  },
+  "src/components/match/FeedList.vue": {
+    "card": 3
+  },
+  "src/components/match/HalftimeCard.vue": {
+    "button": 5
+  },
+  "src/components/match/LiveStart.vue": {
+    "button": 1,
+    "card": 1
+  },
+  "src/components/match/MatchChat.vue": {
+    "button": 1,
+    "card": 2
+  },
+  "src/components/match/MatchTopBar.vue": {
+    "button": 1
+  },
   "src/components/match/ShotMap.vue": {
     "card": 1,
     "hex": 2
@@ -140,8 +161,7 @@
     "card": 8
   },
   "src/pages/SimMatch.vue": {
-    "button": 13,
-    "card": 8,
+    "button": 2,
     "hex": 6
   },
   "src/pages/SimReport.vue": {
