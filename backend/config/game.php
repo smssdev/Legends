@@ -217,6 +217,10 @@ return [
             'popular' => ['price_bp' => 7500, 'attendance_bp' => 1500],
             'normal' => ['price_bp' => 10000, 'attendance_bp' => 0],
             'high' => ['price_bp' => 12500, 'attendance_bp' => -1500],
+            // [Sprint 58 B2] Where the crests' static files and their manifest go (App\Data\Crests); null: public/crests and
+            // storage/app/crests.json. The tests point them at a folder of their own.
+            'crests' => ['dir' => null, 'manifest' => null],
+
             'premium' => ['price_bp' => 15000, 'attendance_bp' => -3000],
         ],
         // A league match's result, as a share of the scale: a bonus for a win, a smaller one for a draw, and a

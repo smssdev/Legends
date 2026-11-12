@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
+import { takeBoot } from '../lib/session'
 
 type Slot = components['schemas']['HomeScreen']['slots'][number]
 type Coach = components['schemas']['HomeScreen']['coach']
@@ -19,7 +20,7 @@ export const useSlot = defineStore('slot', () => {
     if (!force && loadedFor === userId) return pick()
     loadedFor = userId
     try {
-      const home = (await api.GET('/home')).data
+      const home = (takeBoot('home', userId) as { slots: Slot[]; coach: Coach } | undefined) ?? (await api.GET('/home')).data
       slots.value = home?.slots ?? []
       coach.value = home?.coach ?? null
     } catch {

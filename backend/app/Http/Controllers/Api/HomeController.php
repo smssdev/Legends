@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Auth\Username;
+use App\Data\Crests;
 use App\Http\Controllers\Controller;
 use App\Ideas\Polls;
 use App\League\ClubAgenda;
@@ -103,7 +104,7 @@ class HomeController extends Controller
             $club = Club::find($m->club_id);
             $pending = count(ClubAgenda::pending($club, League::find($m->league_id), $user->id));
             $out[] = ['state' => 'club', 'league' => ['id' => (int) $m->league_id, 'name' => $m->league, 'status' => $m->status], 'pending' => $pending,
-                'club' => ['id' => (int) $m->club_id, 'name' => $m->club, 'crest_url' => url("/api/v1/data/clubs/{$m->master_club_id}/crest.svg"), 'cash' => (int) $m->balance],
+                'club' => ['id' => (int) $m->club_id, 'name' => $m->club, 'crest_url' => Crests::url($m->master_club_id), 'cash' => (int) $m->balance],
                 'position' => ($i = array_search((int) $m->club_id, $order, true)) === false ? null : $i + 1, 'teams' => count($order),
                 'next_match' => $next ? ['opponent' => $opponent, 'venue' => $next->home_id === $m->club_id ? 'home' : 'away', 'live' => $next->status === 'live',
                     'scheduled_at' => Carbon::parse($next->scheduled_at, 'UTC')->toIso8601ZuluString()] : null];

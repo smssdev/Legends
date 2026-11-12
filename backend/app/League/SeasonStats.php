@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Data\Crests;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -16,7 +17,7 @@ class SeasonStats
     {
         $clubs = DB::table('clubs')->where('league_id', $leagueId)->get(['id', 'name', 'code', 'master_club_id', 'user_id'])->keyBy('id');
         $card = fn (int $id) => ['id' => $id, 'name' => $clubs[$id]->name ?? '', 'code' => $clubs[$id]->code ?? '',
-            'crest_url' => url('/api/v1/data/clubs/'.($clubs[$id]->master_club_id ?? 0).'/crest.svg')];
+            'crest_url' => Crests::url($clubs[$id]->master_club_id ?? 0)];
 
         $matches = DB::table('matches')->join('fixtures', 'fixtures.id', '=', 'matches.fixture_id')
             ->where('fixtures.season_id', $seasonId)->where('fixtures.status', 'finished')->where('fixtures.is_bye', false)

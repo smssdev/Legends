@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Auth\Username;
+use App\Data\Crests;
 use App\Http\Controllers\Controller;
 use App\League\Awards;
 use App\Models\League;
@@ -46,7 +47,7 @@ class HonoursController extends Controller
                 'number' => (int) $s->number, 'status' => $s->status,
                 'titles' => $titles->where('number', $s->number)->values()->map(fn ($t) => [
                     'competition' => $t->competition, 'position' => (int) $t->position,
-                    'club' => ['id' => $t->club_id, 'name' => $t->club, 'crest_url' => url("/api/v1/data/clubs/{$t->master_club_id}/crest.svg")],
+                    'club' => ['id' => $t->club_id, 'name' => $t->club, 'crest_url' => Crests::url($t->master_club_id)],
                     'coach' => $t->user_id ? ['id' => $t->user_id, 'name' => $t->coach] : null,
                 ])->all(),
             ])->all(),

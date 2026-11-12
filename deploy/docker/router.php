@@ -52,7 +52,7 @@ const TYPES = ['js' => 'text/javascript; charset=utf-8', 'mjs' => 'text/javascri
     'apk' => 'application/vnd.android.package-archive'];
 
 // Files whose name or folder changes with their content: kept for a year.
-const LASTING = ['/assets/', '/logos/', '/brand/', '/art/', '/unity/'];
+const LASTING = ['/assets/', '/logos/', '/brand/', '/art/', '/unity/', '/crests/'];
 
 function send(string $path, string $cache): void
 {

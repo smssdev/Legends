@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\Crests;
 use App\Data\KitPattern;
 use App\Http\Controllers\Controller;
 use App\Rules\NotJunk;
@@ -71,8 +72,11 @@ class DataEditorController extends Controller
         $row = DB::table('master_clubs')->where('id', $id)->first();
         abort_unless($row, 404);
         $data = $request->validate($this->clubRules(false, $id));
+        $changed = $this->change('club', 'master_clubs', $request, $row, $data);
+        // [Sprint 58 B2] Its crest drawn again (a new name, so the players' caches take it on their next load).
+        Crests::write([$id]);
 
-        return response()->json(['row' => $this->change('club', 'master_clubs', $request, $row, $data)]);
+        return response()->json(['row' => $changed]);
     }
 
     /** A new player in a club: his attributes start at his rating (the keepers' for a keeper). */
@@ -97,6 +101,7 @@ class DataEditorController extends Controller
         $id = DB::table('master_clubs')->insertGetId($data + ['data_version' => self::version(), 'source' => 'editor', 'strength_cp' => 6000,
             'created_at' => $now, 'updated_at' => $now]);
         $this->log($request, 'club', $id, 'create', $data);
+        Crests::write([$id]);
 
         return response()->json(['row' => DB::table('master_clubs')->find($id)], 201);
     }

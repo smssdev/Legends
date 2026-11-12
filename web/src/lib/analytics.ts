@@ -7,7 +7,7 @@
 // - The game is one page: each screen is its own page_view (router.afterEach), never the admin panel's, and no name,
 //   username or email is ever sent: the paths carry ids only.
 import type { Router } from 'vue-router'
-import { api } from '../api/client'
+import { siteConfig } from './session'
 
 type Config = { ga: string | null; pixel: string | null }
 type Fn = (...args: unknown[]) => void
@@ -83,7 +83,7 @@ function page(path: string) {
 /** Once at the start: the server's ids, then Google and Meta, and a page for every screen after. */
 export function useAnalytics(router: Router) {
   if (typeof window === 'undefined' || navigator.webdriver) return
-  api.GET('/health').then(({ data }) => {
+  siteConfig().then((data) => {
     cfg = (data?.analytics ?? null) as Config | null
     if (!cfg) return
     if (cfg.ga) startGoogle(cfg.ga)

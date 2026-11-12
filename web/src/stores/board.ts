@@ -13,24 +13,38 @@ export const useBoard = defineStore('board', () => {
   const league = ref<number | null>(null)
   let fetched = 0
   let timer: ReturnType<typeof setInterval> | undefined
+  // [Sprint 58] One request at a time per league: the shell and the club's screen asking together share it.
+  let inflight: { league: number; done: Promise<void> } | null = null
 
   async function load(leagueId: number | null, force = false) {
     if (!leagueId) {
       board.value = null
       league.value = null
+      pause()
       return
     }
+    if (inflight?.league === leagueId) return inflight.done
     if (!force && league.value === leagueId && Date.now() - fetched < 20000) return
     if (league.value !== leagueId) board.value = null
     league.value = leagueId
     fetched = Date.now()
-    try {
-      board.value = (await api.GET('/leagues/{league}/team/summary', { params: { path: { league: leagueId } } })).data ?? null
-    } catch {
-      // No club in this league (left, or not yet taken): no board.
-      if (league.value === leagueId) board.value = null
-    }
+    const done = (async () => {
+      try {
+        board.value = (await api.GET('/leagues/{league}/team/summary', { params: { path: { league: leagueId } } })).data ?? null
+      } catch {
+        // No club in this league (left, or not yet taken): no board.
+        if (league.value === leagueId) board.value = null
+      }
+    })()
+    inflight = { league: leagueId, done }
+    await done.finally(() => { if (inflight?.done === done) inflight = null })
     timer ??= setInterval(() => document.visibilityState === 'visible' && league.value && load(league.value, true), 60000)
+  }
+
+  /** [Sprint 58 W6, W-B06] Out of the club (or signed out): the minute's refresh stops; the board stays for its return. */
+  function pause() {
+    clearInterval(timer)
+    timer = undefined
   }
 
   // [X85] After a tap that changed something in this league (api/client.ts), the board again, once for a burst of taps.
@@ -43,5 +57,5 @@ export const useBoard = defineStore('board', () => {
     })
   }
 
-  return { board, league, load, refresh: () => load(league.value, true) }
+  return { board, league, load, pause, refresh: () => load(league.value, true) }
 })

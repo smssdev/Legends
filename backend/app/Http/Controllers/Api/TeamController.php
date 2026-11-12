@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\Crests;
 use App\Data\Nations;
 use App\Economy\Contracts;
 use App\Economy\Economy;
@@ -66,7 +67,7 @@ class TeamController extends Controller
 
         return response()->json([
             'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'strength_cp' => (int) $club->strength_snapshot,
-                'balance' => (int) $club->balance, 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
+                'balance' => (int) $club->balance, 'crest_url' => Crests::url($club->master_club_id)],
             // The squad's morale and its run without a win [X25].
             'morale' => ['value' => (int) $club->morale, 'winless_run' => (int) $club->winless_run],
             'squad_value' => (int) $players->sum('value'),
@@ -227,11 +228,11 @@ class TeamController extends Controller
             // My club beside the opponent, for the VS card [X29].
             // [Sprint 20 S1] The tactics page's header: each side's last five results (public), and my formation now.
             'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'strength_cp' => (int) $club->strength_snapshot,
-                'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg"), 'coach' => $request->user()->name,
+                'crest_url' => Crests::url($club->master_club_id), 'coach' => $request->user()->name,
                 'form' => Spy::form($club->id), 'formation' => $mine->formation ?? TeamSheet::current($club)['formation']],
             'opponent' => [
                 'id' => $opponent->id, 'name' => $opponent->name, 'code' => $opponent->code, 'strength_cp' => (int) $opponent->strength_snapshot,
-                'crest_url' => url("/api/v1/data/clubs/{$opponent->master_club_id}/crest.svg"), 'coach' => $opponent->user?->name, 'form' => Spy::form($opponent->id),
+                'crest_url' => Crests::url($opponent->master_club_id), 'coach' => $opponent->user?->name, 'form' => Spy::form($opponent->id),
                 // Only after the lock, and only these.
                 'sheet' => $theirs ? [
                     'formation' => $theirs->formation,

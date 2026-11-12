@@ -43,7 +43,7 @@ const inbox = useInbox()
 watch(() => auth.user?.id ?? null, (id) => inbox.follow(id), { immediate: true })
 // The coins balance on the shell [Sprint 34].
 const wallet = useWallet()
-watch(() => auth.user?.id ?? null, (id) => id && wallet.load(), { immediate: true })
+watch(() => auth.user?.id ?? null, (id) => id && wallet.load(id), { immediate: true })
 // The slot the coach is in: its club heads the dock.
 const slot = useSlot()
 // Fetched again on a new account and on the home screen (a club claimed or left since), else only re-picked.
@@ -66,7 +66,7 @@ const inSlot = computed(() => clubSections.value.some((s) => active(pathOf(s))))
 const unread = computed(() => (inbox.unread > 99 ? '99+' : inbox.unread ? String(inbox.unread) : ''))
 // [Sprint 20 B1] The board of the slot: the money, the timers and the to-do list.
 const board = useBoard()
-watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as const, ([inside, league]) => inside && board.load(league ?? null), { immediate: true })
+watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as const, ([inside, league]) => (inside ? board.load(league ?? null) : board.pause()), { immediate: true })
 
 // [Sprint 55 W1, D2] The dock's sections: in a club the six (each lit when one of its pages is open), outside the five.
 const entries = computed<DockEntry[]>(() => {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Data\ClubLogo;
+use App\Data\Crests;
 use App\Data\KitPattern;
 use App\Data\MatchKits;
 use App\Engine\MatchSetup;
@@ -266,7 +267,7 @@ class MatchController extends Controller
             MissedMatches::seen($request->user()->id, [$m->id]);
         }
         $clubs = DB::table('clubs')->whereIn('id', [$f->home_id, $f->away_id])->get(['id', 'name', 'code', 'master_club_id'])->keyBy('id');
-        $card = fn ($id) => ['id' => (int) $id, 'name' => $clubs[$id]->name, 'code' => $clubs[$id]->code, 'crest_url' => url("/api/v1/data/clubs/{$clubs[$id]->master_club_id}/crest.svg")];
+        $card = fn ($id) => ['id' => (int) $id, 'name' => $clubs[$id]->name, 'code' => $clubs[$id]->code, 'crest_url' => Crests::url($clubs[$id]->master_club_id)];
         $recap = MatchRecap::build(['side' => $you] + json_decode($row->report, true));
         if (! $you) {
             $so = $recap['shootout'] ?? ['home' => 0, 'away' => 0];

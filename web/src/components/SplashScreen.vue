@@ -1,8 +1,10 @@
 <script setup lang="ts">
-// The splash screen [UP4]: GLM's emblem (its ball spins in the SVG itself) breathes while the server is reached (/health); then the game fades in. If the
+// The splash screen [UP4]: GLM's emblem (its ball spins in the SVG itself) breathes while the server is reached (/bootstrap); then the game fades in. If the
 // server does not answer, the message and a retry, and the game stays behind until it does.
 import { onMounted, ref } from 'vue'
 import { loaderSrc } from '../lib/i18n'
+import { ApiError } from '../api/client'
+import { boot, rebootSession } from '../lib/session'
 
 const emit = defineEmits<{ done: [] }>()
 const state = ref<'checking' | 'failed' | 'leaving'>('checking')
@@ -12,11 +14,14 @@ async function check() {
   state.value = 'checking'
   const started = performance.now()
   let ok = false
+  // [Sprint 58 W1] The visit's start (GET /bootstrap) tells the server is up: the same request the stores wait on.
+  // Signed out (401, 419) is the server answering; only no answer in 12 s (or a server error) is a failure.
   try {
-    const r = await fetch('/api/v1/health', { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(12000) })
-    ok = r.ok
-  } catch {
-    ok = false
+    await Promise.race([boot(), new Promise((_, no) => setTimeout(() => no(new Error('timeout')), 12000))])
+    ok = true
+  } catch (e) {
+    ok = e instanceof ApiError && e.status > 0 && e.status < 500
+    if (!ok) rebootSession()
   }
   const rest = MIN_MS - (performance.now() - started)
   if (rest > 0) await new Promise((r) => setTimeout(r, rest))

@@ -1251,6 +1251,64 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/bootstrap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Everything the web asks when it opens, in one reply (Sprint 58 B1)
+         * @description Who is signed in (as GET /auth/me), the coins wallet (GET /wallet), the coach and his slots (GET /home's coach and slots), the unread count (GET /messages/unread) and the site's settings from GET /health (support, adsense, analytics, broadcast, version, time, clock_offset). Each part is its own route's, which stays. Open to a guest: user, wallet and home are then null. Under 5 KB. A bearer token that no longer works gets 401.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The web's start */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            user: components["schemas"]["Account"] | null;
+                            wallet: components["schemas"]["WalletView"] | null;
+                            home: {
+                                /** @description GET /home's coach */
+                                coach: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description GET /home's slots */
+                                slots: {
+                                    [key: string]: unknown;
+                                }[];
+                            } | null;
+                            unread: number;
+                            /** @description GET /health's version, time, clock_offset, broadcast, support, adsense and analytics */
+                            config: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                401: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;

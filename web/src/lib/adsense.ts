@@ -2,7 +2,7 @@
 // server (/health → adsense), null until the owner's account is set there (legends-set ADSENSE_CLIENT): then Google's
 // script loads once (on our server it is already in the page's head, deploy/docker/router.php), the display units
 // fill (AdSlot.vue), and, with rewarded on, Google's rewarded video is tried before our own ad (AdReward.vue).
-import { api } from '../api/client'
+import { siteConfig } from './session'
 
 export type AdSenseConfig = { client: string; slot: string | null; rewarded: boolean; test: boolean }
 type AdBreakDone = { breakStatus: string }
@@ -13,7 +13,7 @@ let loading: Promise<AdSenseConfig | null> | null = null
 
 /** The account's settings, once per visit; null when Google's ads are off (or the server is not reached). */
 export function adsense(): Promise<AdSenseConfig | null> {
-  return (loading ??= api.GET('/health').then(({ data }) => {
+  return (loading ??= siteConfig().then((data) => {
     const cfg = (data?.adsense ?? null) as AdSenseConfig | null
     if (cfg) inject(cfg)
     return cfg

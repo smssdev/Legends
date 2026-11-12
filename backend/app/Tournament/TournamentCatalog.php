@@ -3,6 +3,7 @@
 namespace App\Tournament;
 
 use App\Data\ClubLogo;
+use App\Data\Crests;
 use App\Http\Controllers\Api\DataController;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class TournamentCatalog
     public static function card(object $m): array
     {
         return ['id' => (int) $m->id, 'name' => $m->name, 'code' => $m->code, 'league' => $m->league_name, 'strength_cp' => (int) $m->strength_cp,
-            'colors' => [$m->color_primary, $m->color_secondary], 'crest_url' => url("/api/v1/data/clubs/{$m->id}/crest.svg"),
+            'colors' => [$m->color_primary, $m->color_secondary], 'crest_url' => Crests::url($m->id),
             'logo' => ClubLogo::path($m->league_name, $m->name), 'nation' => $m->source === NationSquad::SOURCE, 'confederation' => $m->confederation];
     }
 

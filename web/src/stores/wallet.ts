@@ -4,11 +4,15 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
+import { takeBoot } from '../lib/session'
 
 export const useWallet = defineStore('wallet', () => {
   const view = ref<components['schemas']['WalletView'] | null>(null)
 
-  async function load() {
+  /** userId: the account, to take the visit's start once (GET /bootstrap) instead of asking. */
+  async function load(userId?: number) {
+    const start = takeBoot('wallet', userId)
+    if (start) return void (view.value = start as typeof view.value)
     try {
       view.value = (await api.GET('/wallet')).data!
     } catch {
