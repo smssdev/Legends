@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
-import '../../api/gen/models.g.dart' show LeagueMatch, LeagueMatchTimeoutsItem, MatchKit, MatchViewClub, MatchViewPlayer, MatchViewTeam;
+import '../../api/gen/models.g.dart'
+    show LeagueMatch, LeagueMatchTimeoutsItem, MatchCoachReport, ReportNote, MatchKit, MatchViewClub, MatchViewPlayer, MatchViewTeam;
 import 'frames.dart';
 
 part 'match_event.dart';
@@ -15,16 +16,6 @@ class MatchClub {
   /// [Sprint 59 F1] From the generated model.
   factory MatchClub.of(MatchViewClub c) =>
       MatchClub(id: c.id, name: c.name, code: c.code, primary: c.primary, secondary: c.secondary, logo: c.logo, awayKit: c.awayKit?.color);
-
-  factory MatchClub.fromJson(Map<String, dynamic>? j) => MatchClub(
-    id: j?['id'] as int? ?? 0,
-    name: '${j?['name'] ?? ''}',
-    code: '${j?['code'] ?? ''}',
-    primary: j?['primary'] as String?,
-    secondary: j?['secondary'] as String?,
-    logo: j?['logo'] as String?,
-    awayKit: (j?['away_kit'] as Map<dynamic, dynamic>?)?['color'] as String?,
-  );
 
   final int id;
   final String name, code;

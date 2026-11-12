@@ -4747,6 +4747,157 @@ class MarketSelling {
   final int room;
 }
 
+/// [Sprint 59 F1] A coach's report of a finished match (GET /matches/{match}/report)
+class MatchCoachReport {
+  const MatchCoachReport({
+    this.formations,
+    this.improve,
+    this.manOfTheMatch,
+    this.momentum,
+    required this.ratings,
+    this.readings,
+    required this.reasons,
+    required this.result,
+    required this.score,
+    this.shootout,
+    this.shots,
+    required this.side,
+    required this.stats,
+    this.thirds,
+    required this.timeline,
+    required this.verdict,
+  });
+
+  factory MatchCoachReport.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchCoachReport');
+    return MatchCoachReport(
+      formations: r.objectOrNull('formations', MatchCoachReportFormations.fromJson),
+      improve: r.objectOrNull('improve', ReportNote.fromJson),
+      manOfTheMatch: r.objectOrNull('man_of_the_match', ReportPlayer.fromJson),
+      momentum: r.listOrNull('momentum', JsonReader.intOf),
+      ratings: r.object('ratings', MatchCoachReportRatings.fromJson),
+      readings: r.listOrNull('readings', MatchReading.fromJson),
+      reasons: r.list('reasons', ReportNote.fromJson),
+      result: r.string('result'),
+      score: r.map('score', JsonReader.intOf),
+      shootout: r.mapOrNull('shootout', JsonReader.intOf),
+      shots: r.listOrNull('shots', MatchCoachReportShotsItem.fromJson),
+      side: r.string('side'),
+      stats: r.object('stats', MatchCoachReportStats.fromJson),
+      thirds: r.listOrNull('thirds', JsonReader.intOf),
+      timeline: r.list('timeline', JsonReader.anyOf),
+      verdict: r.list('verdict', MatchCoachReportVerdictItem.fromJson),
+    );
+  }
+
+  /// [Sprint 30 G5] Both shapes as they ended (never the tactics)
+  final MatchCoachReportFormations? formations;
+  final ReportNote? improve;
+  final ReportPlayer? manOfTheMatch;
+  final List<int>? momentum;
+  final MatchCoachReportRatings ratings;
+
+  /// The readings during the match (a report stored before they existed has none: optional)
+  final List<MatchReading>? readings;
+  final List<ReportNote> reasons;
+  final String result;
+  final Map<String, int> score;
+  final Map<String, int>? shootout;
+
+  /// [X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal
+  final List<MatchCoachReportShotsItem>? shots;
+  final String side;
+
+  /// Each side's numbers (xg ×10000)
+  final MatchCoachReportStats stats;
+  final List<int>? thirds;
+  final List<Object?> timeline;
+  final List<MatchCoachReportVerdictItem> verdict;
+}
+
+/// [Sprint 30 G5] Both shapes as they ended (never the tactics)
+class MatchCoachReportFormations {
+  const MatchCoachReportFormations({this.away, this.home});
+
+  factory MatchCoachReportFormations.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchCoachReportFormations');
+    return MatchCoachReportFormations(away: r.stringOrNull('away'), home: r.stringOrNull('home'));
+  }
+
+  final String? away;
+  final String? home;
+}
+
+class MatchCoachReportRatings {
+  const MatchCoachReportRatings({required this.away, required this.home});
+
+  factory MatchCoachReportRatings.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchCoachReportRatings');
+    return MatchCoachReportRatings(away: r.list('away', ReportPlayer.fromJson), home: r.list('home', ReportPlayer.fromJson));
+  }
+
+  final List<ReportPlayer> away;
+  final List<ReportPlayer> home;
+}
+
+class MatchCoachReportShotsItem {
+  const MatchCoachReportShotsItem({
+    required this.minute,
+    required this.quality,
+    required this.result,
+    this.shooter,
+    required this.team,
+    required this.x,
+    required this.y,
+  });
+
+  factory MatchCoachReportShotsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchCoachReportShotsItem');
+    return MatchCoachReportShotsItem(
+      minute: r.int_('minute'),
+      quality: r.string('quality'),
+      result: r.string('result'),
+      shooter: r.intOrNull('shooter'),
+      team: r.string('team'),
+      x: r.int_('x'),
+      y: r.int_('y'),
+    );
+  }
+
+  final int minute;
+  final String quality;
+  final String result;
+  final int? shooter;
+  final String team;
+  final int x;
+  final int y;
+}
+
+/// Each side's numbers (xg ×10000)
+class MatchCoachReportStats {
+  const MatchCoachReportStats({required this.away, required this.home});
+
+  factory MatchCoachReportStats.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchCoachReportStats');
+    return MatchCoachReportStats(away: r.map('away', JsonReader.intOf), home: r.map('home', JsonReader.intOf));
+  }
+
+  final Map<String, int> away;
+  final Map<String, int> home;
+}
+
+class MatchCoachReportVerdictItem {
+  const MatchCoachReportVerdictItem({required this.tag, required this.text});
+
+  factory MatchCoachReportVerdictItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchCoachReportVerdictItem');
+    return MatchCoachReportVerdictItem(tag: r.string('tag'), text: r.string('text'));
+  }
+
+  final String tag;
+  final String text;
+}
+
 class MatchKit {
   const MatchKit({
     required this.gk,
@@ -6114,6 +6265,60 @@ class RecapStats {
   final int saves;
   final int shots;
   final int yellow;
+}
+
+/// A reason for the result, or the one thing to improve
+class ReportNote {
+  const ReportNote({required this.big, required this.text, required this.title, this.unit});
+
+  factory ReportNote.fromJson(Object? json) {
+    final r = JsonReader(json, 'ReportNote');
+    return ReportNote(big: r.string('big'), text: r.string('text'), title: r.string('title'), unit: r.stringOrNull('unit'));
+  }
+
+  /// The number in large type
+  final String big;
+  final String text;
+  final String title;
+  final String? unit;
+}
+
+class ReportPlayer {
+  const ReportPlayer({
+    this.assists,
+    this.goals,
+    required this.id,
+    required this.name,
+    this.no,
+    required this.rating,
+    this.shots,
+    required this.team,
+  });
+
+  factory ReportPlayer.fromJson(Object? json) {
+    final r = JsonReader(json, 'ReportPlayer');
+    return ReportPlayer(
+      assists: r.intOrNull('assists'),
+      goals: r.intOrNull('goals'),
+      id: r.int_('id'),
+      name: r.string('name'),
+      no: r.intOrNull('no'),
+      rating: r.int_('rating'),
+      shots: r.intOrNull('shots'),
+      team: r.string('team'),
+    );
+  }
+
+  final int? assists;
+  final int? goals;
+  final int id;
+  final String name;
+  final int? no;
+
+  /// The match rating ×100
+  final int rating;
+  final int? shots;
+  final String team;
 }
 
 class Room {
