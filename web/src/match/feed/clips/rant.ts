@@ -1,15 +1,14 @@
-// @ts-nocheck
 // [Sprint 57 W4] The rant scene (art.ts's SCENES.rant).
 import { t as tr } from '../../../lib/i18n'
 import { burst, headOf, vein } from '../effects'
 import { player, title } from '../figures'
-import { K, el, lerp, rnd, sa, seg } from '../kit'
+import { K, type SceneData, el, lerp, rnd, sa, seg } from '../kit'
 import { cam, stage } from '../stage'
 
 // [Sprint 42 F7] The coach's megaphone: play stops for a moment, he stands on the line and shouts through a huge
 // megaphone; angry letters and symbols fly out and bounce off his players, who shake and sweat. No instruction is
 // shown (the other side's stay private).
-export function rant(e) {
+export function rant(e: SceneData) {
   const R = rnd(e.v ?? 37), svg = stage(e.side), w = svg.world, kit = K(e.side).kit
   const pls = [0, 1, 2].map(() => player(w, kit, '', 1.1, { look: Math.floor(R() * 40) }))
   const co = player(w, '#1F2937', '', 1.7, { look: Math.floor(R() * 40), shorts: '#1F2937', socks: '#111827', trim: kit })
@@ -20,7 +19,7 @@ export function rant(e) {
   const waves = burst(svg, w, '#FFD36B', 6), vn = vein(svg)
   const drops = pls.map(() => el('path', { d: 'M0 -5 Q4 1 0 3 Q-4 1 0 -5 Z', fill: '#9AD4FF', opacity: 0 }, w))
   const tt = title(svg, tr('المدرب غاضب!'), '#EF4444')
-  return { dur: 3.6, svg, update(t) {
+  return { dur: 3.6, svg, update(t: number) {
     cam(svg, 1.04, 320, 200)
     co.face?.('side', 1); co.mood('angry'); co.at(120, 214 + Math.sin(t * 30) * 1.5, 0, 1.7); co.pose(4, -4, 20, -95 + Math.sin(t * 20) * 6)
     const [hx, hy] = headOf(120, 214, 1.7), mx = hx + 22, my = hy + 6

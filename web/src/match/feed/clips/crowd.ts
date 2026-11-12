@@ -1,14 +1,13 @@
-// @ts-nocheck
 // [Sprint 57 W4] The crowd scene (art.ts's SCENES.crowd).
 import { t as tr } from '../../../lib/i18n'
 import { title } from '../figures'
-import { K, ease, el, rnd, sa, seg } from '../kit'
+import { K, type SceneData, type SvgNode, ease, el, rnd, sa, seg } from '../kit'
 import { cam, ref, stage } from '../stage'
 
 // ------------------------------------------------------------ [Sprint 35 C1] the director's cutaways
 // The crowd behind the goal on its feet: the scoring side's fans jumping with their arms and scarves up, two big
 // flags waving, and (the full tier) flares and paper raining down. e.side: whose fans; e.count: how many to draw.
-export function crowd(e) {
+export function crowd(e: SceneData) {
   const svg = stage(e.side), w = svg.world, k = K(e.side), R = rnd(e.v ?? 7)
   const g = el('g', {}, w)
   const skins = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982']
@@ -35,9 +34,9 @@ export function crowd(e) {
   const wave = rnd((e.v ?? 7) * 5 + 3)() < 0.5
   const masc = el('g', {}, w)
   masc.innerHTML = `<ellipse cx="0" cy="62" rx="34" ry="7" fill="rgba(0,0,0,.4)"/><ellipse cx="0" cy="20" rx="30" ry="38" fill="${k.kit}" stroke="${k.trim ?? '#fff'}" stroke-width="3"/><circle cy="-30" r="26" fill="${k.trim ?? '#F5B82E'}" stroke="${k.kit}" stroke-width="3"/><circle cx="-9" cy="-34" r="8" fill="#fff"/><circle cx="9" cy="-34" r="8" fill="#fff"/><circle cx="-8" cy="-33" r="3.5" fill="#111"/><circle cx="10" cy="-33" r="3.5" fill="#111"/><path d="M-12 -18 Q0 -6 12 -18" fill="#5A1A14"/><path d="M-22 -50 L-14 -62 L-8 -50 M8 -50 L14 -62 L22 -50" fill="${k.kit}"/><rect data-m="1" x="-44" y="0" width="14" height="40" rx="7" fill="${k.kit}"/><rect data-m="2" x="30" y="0" width="14" height="40" rx="7" fill="${k.kit}"/>`
-  const mArm = [masc.querySelector('[data-m="1"]'), masc.querySelector('[data-m="2"]')]
+  const mArm = [masc.querySelector<SvgNode>('[data-m="1"]')!, masc.querySelector<SvgNode>('[data-m="2"]')!]
   const tt = title(svg, wave ? tr('موجة في المدرجات') : tr('فرحة الجماهير'))
-  return { dur: 2.6, svg, update(t) {
+  return { dur: 2.6, svg, update(t: number) {
     cam(svg, 1.25 - 0.08 * ease(seg(t, 0, 2.6)), 320, 200)
     const mx = 320 + Math.sin(t * 2) * 120, md = Math.sin(t * 10)
     sa(masc, 'transform', `translate(${mx.toFixed(1)} ${(250 - Math.abs(md) * 12).toFixed(1)}) rotate(${(md * 8).toFixed(1)})`)
@@ -47,7 +46,7 @@ export function crowd(e) {
       sa(q.g, 'transform', `translate(0 ${(-j).toFixed(1)})`)
     }
     for (const { p, x } of flags) {
-      const wv = (dx) => Math.sin(t * 6 + dx / 18) * 8
+      const wv = (dx: number) => Math.sin(t * 6 + dx / 18) * 8
       sa(p, 'd', `M${x} 60 L${x + 120} ${60 + wv(120)} L${x + 120} ${130 + wv(120)} L${x} 130 Z`)
     }
     flares.forEach((f, i) => sa(f, 'opacity', 0.5 + 0.3 * Math.sin(t * 13 + i * 2)))

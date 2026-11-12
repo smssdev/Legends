@@ -1,4 +1,3 @@
-// @ts-nocheck
 // The match feed's art (docs/MATCH_VIEW.md 4.6): broadcast motion graphics in the
 // brand's navy and gold, with each team's colour as light. A night pitch in
 // perspective, clean player silhouettes with numbers, light trails, flashes and
@@ -32,10 +31,8 @@ import { trap } from './clips/trap'
 import { tunnel } from './clips/tunnel'
 import { varCheck } from './clips/var'
 import { whistle } from './clips/whistle'
-import { t as tr } from '../../lib/i18n'
 import { SCENE_TIME } from './timing'
-import { NS, SMOOTH, VARIANT, ease, el, esc, inout, lerp, rnd, sa, seg } from './kit'
-import { cam } from './stage'
+import { NS, SMOOTH, VARIANT, ease, el, esc, inout, lerp, rnd, sa, seg, type Scene, type SceneData, type SvgNode } from './kit'
 
 export { setKits, setSmooth, setRich, setLight, setRain, lum, shade, mix, keeperKit, officialKit, esc, crest, ICON } from './kit'
 export { SKINS, HAIR, player } from './figures'
@@ -43,7 +40,7 @@ export { REACT_COUNT, studio } from './stage'
 
 // ---------------------------------------------------------------- scenes: one per kind of moment
 // Lengths and key moments are SCENE_TIME in timing.ts; keep them in step.
-export const SCENES = {
+export const SCENES: Record<string, (e: SceneData) => Scene> = {
   goal,
   save,
   miss,
@@ -79,15 +76,15 @@ export const SCENES = {
 // them. The same on every screen (the seed is the minute's), drawing only.
 const CAMS = 5, TITLES = 4, ACCENTS = 6
 export const VARIETY = { cams: CAMS, titles: TITLES, accents: ACCENTS }
-const WORDS = {
+const WORDS: Record<string, string[]> = {
   goal: ['GOAL!!', 'BOOM!', 'WOW!'], save: ['DENIED!', 'NO WAY!', 'WOW!'], miss: ['OHH!', 'SO CLOSE!', 'NOO!'], blocked: ['BLOCKED!', 'THUD!'],
   penalty: ['ICE COLD!', 'BOOM!', 'OH!'], freekick: ['WHOOSH!', 'CURL!'], card: ['OUCH!', 'TROUBLE!', 'OH NO!'], foul: ['OUCH!', 'CRUNCH!'],
   injury: ['OUCH!', 'OOF!'], sub: ['FRESH!', 'IN!'], var: ['CHECK!', 'HOLD ON!'], clearance: ['SAVED!', 'PHEW!'], trap: ['STEP UP!', 'CAUGHT!'],
   slip: ['SPLASH!', 'OOPS!'], rant: ['LISTEN!'], meltdown: ['ARGH!'], crowd: ['YEAH!', 'OLE!'], brawl: ['HEY!'],
 }
-const hashOf = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) } return (h >>> 0) % 1000000 }
-function vary(name, make) {
-  return (e) => {
+const hashOf = (str: string) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) } return (h >>> 0) % 1000000 }
+function vary(name: string, make: (e: SceneData) => Scene) {
+  return (e: SceneData) => {
     const R = rnd(((e.v ?? hashOf(name + JSON.stringify(e))) * 13 + 7) >>> 0)
     VARIANT.cam = Math.floor(R() * CAMS); VARIANT.title = Math.floor(R() * TITLES); VARIANT.accent = Math.floor(R() * ACCENTS)
     const word = (WORDS[name] ?? ['WOW!'])[Math.floor(R() * (WORDS[name]?.length ?? 1))], cam = VARIANT.cam, acc = SMOOTH ? 0 : VARIANT.accent
@@ -105,7 +102,7 @@ function vary(name, make) {
     if (acc === 4) fx.innerHTML = '<rect width="640" height="340" fill="#FFFFFF"/>'
     if (acc === 5) fx.innerHTML = `<radialGradient id="vg${svg.dataset.id}" cx=".5" cy=".5" r=".7"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></radialGradient><rect width="640" height="340" fill="url(#vg${svg.dataset.id})"/>`
     const update = sc.update
-    sc.update = (t) => {
+    sc.update = (t: number) => {
       update(t)
       if (rig) {
         const k = t / D, p = seg(t, KT - 0.05, KT + 0.12) * (1 - seg(t, KT + 0.3, KT + 1.1))
@@ -120,8 +117,8 @@ function vary(name, make) {
           : acc === 5 ? seg(t, KT - 0.1, KT + 0.1) * (1 - seg(t, KT + 0.8, KT + 1.4))
           : seg(t, KT, KT + 0.12) * (1 - seg(t, KT + (acc === 3 ? 1.2 : 0.5), KT + (acc === 3 ? 1.5 : 0.9)))
         sa(fx, 'opacity', on.toFixed(2))
-        if (acc === 1 && on > 0) [...fx.children].forEach((c, i) => sa(c, 'opacity', (0.5 + 0.5 * Math.sin(t * 20 + i)).toFixed(2)))
-        if (acc === 3 && on > 0) sa(fx.firstElementChild, 'transform', `translate(520 280) rotate(-8) scale(${(lerp(1.8, 1, ease(seg(t, KT, KT + 0.18)))).toFixed(2)})`)
+        if (acc === 1 && on > 0) [...fx.children].forEach((c, i) => sa(c as SvgNode, 'opacity', (0.5 + 0.5 * Math.sin(t * 20 + i)).toFixed(2)))
+        if (acc === 3 && on > 0) sa(fx.firstElementChild as SvgNode, 'transform', `translate(520 280) rotate(-8) scale(${(lerp(1.8, 1, ease(seg(t, KT, KT + 0.18)))).toFixed(2)})`)
       }
     }
     return sc

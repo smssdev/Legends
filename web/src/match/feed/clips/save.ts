@@ -1,19 +1,18 @@
-// @ts-nocheck
 // [Sprint 57 W4] The save scene (art.ts's SCENES.save).
 import { t as tr } from '../../../lib/i18n'
 import { boom, danger, flame, shakeIt, tint } from '../effects'
-import { put, run, title } from '../figures'
-import { bez, ease, el, lerp, sa, seg } from '../kit'
+import { put, title } from '../figures'
+import { type SceneData, bez, ease, el, lerp, sa, seg } from '../kit'
 import { openPlay } from '../play'
 import { LINE, persp, ref } from '../stage'
 
-export function save(e) {
+export function save(e: SceneData) {
   const KT = 2.9, { svg, go } = openPlay(e, 'save', KT), dg = danger(svg), fire = flame(svg), pow = boom(svg, svg.world, 'BOOM!')
   const double = e.drama === 'double', pow2 = double ? boom(svg, svg.world, 'BOOM!') : null, blue = double ? tint(svg, '#3B82F6') : null
   const ring = el('circle', { r: 26, fill: 'none', stroke: '#2BB673', 'stroke-width': 3, opacity: 0, filter: ref(svg, 'glow') }, svg.world)
   const tt = title(svg, double ? tr('تصدٍّ مزدوج!') : tr('تصدٍّ رائع'), '#2BB673')
-  let last = null, land = null
-  return { dur: 5.4, svg, update(t) {
+  let last: number[] | null = null, land: number[] | null = null
+  return { dur: 5.4, svg, update(t: number) {
     const r = go(t), { target } = r; dg(t, r)
     // [Sprint 42 C3] The shot a fireball to the top corner; the keeper's fingertips go BOOM.
     const fly = t > r.tS && t < KT
@@ -40,8 +39,8 @@ export function save(e) {
         if (t < KT + 1.35) { const g = seg(t, KT + 1.0, KT + 1.35); p = bez([reb, [lerp(reb[0], aim[0], 0.5), 150], aim], g); gr = lerp(reb[1], LINE, g) }
         else { const g = ease(seg(t, KT + 1.35, KT + 2.1)); p = bez([aim, [aim[0] - dx * 60, 60], [aim[0] - dx * 190, 150]], g); gr = lerp(LINE, 150, g) }
         r.b.set(p[0], p[1], gr, t * 1800, 1 - seg(t, KT + 1.9, KT + 2.1))
-        pow2(aim[0], aim[1], seg(t, KT + 1.33, KT + 2.0))
-        blue(0.3 * seg(t, KT + 1.35, KT + 1.42) * (1 - seg(t, KT + 1.55, KT + 1.9)))
+        pow2!(aim[0], aim[1], seg(t, KT + 1.33, KT + 2.0))
+        blue!(0.3 * seg(t, KT + 1.35, KT + 1.42) * (1 - seg(t, KT + 1.55, KT + 1.9)))
       }
     }
     tt(seg(t, double ? KT + 1.5 : KT + 0.3, double ? KT + 1.9 : KT + 0.7))

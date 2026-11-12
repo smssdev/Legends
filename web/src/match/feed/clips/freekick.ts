@@ -1,14 +1,13 @@
-// @ts-nocheck
 // [Sprint 57 W4] The freekick scene (art.ts's SCENES.freekick).
 import { t as tr } from '../../../lib/i18n'
 import { ball, dive, drawTrail, flash, flashes, keeper, player, put, ready, title, trail } from '../figures'
-import { K, bez, clamp, ease, el, inout, lerp, officialKit, other, rnd, sa, seg } from '../kit'
+import { K, type SceneData, bez, clamp, ease, el, inout, lerp, officialKit, other, rnd, sa, seg } from '../kit'
 import { LINE, POSTS, cam, goalFrame, stage } from '../stage'
 
-export function freekick(e) {
-  const R = rnd(e.v ?? (e.no ?? 9) * 53), svg = stage(e.side), w = svg.world, G = goalFrame(svg)
+export function freekick(e: SceneData) {
+  const R = rnd(e.v ?? Number(e.no ?? 9) * 53), svg = stage(e.side), w = svg.world, G = goalFrame(svg)
   const kp = keeper(svg, other(e.side), Math.floor(R() * 40))
-  const wall = [0, 1, 2, 3].map((i) => player(w, K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }))
+  const wall = [0, 1, 2, 3].map(() => player(w, K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }))
   const tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), trl = trail(svg)
   const fl = flash(svg), cf = flashes(svg)
   // [Sprint 38 S3] The referee marks the wall's line with his spray, then steps away.
@@ -18,7 +17,7 @@ export function freekick(e) {
   const target = e.scored ? [side > 0 ? POSTS[1] - 12 : POSTS[0] + 12, 84 + R() * 8] : e.saved ? [320 + side * (44 + R() * 14), 92 + R() * 14] : [320 + side * 20, 50]
   const path = [spot, [lerp(spot[0], target[0], 0.4) - side * 30, 30], target]
   const tt = title(svg, e.scored ? tr('هدف!') : e.saved ? tr('تصدٍّ!') : tr('فوق العارضة'), e.scored ? undefined : e.saved ? '#2BB673' : '#C9D2E1')
-  return { dur: 5.2, svg, update(t) {
+  return { dur: 5.2, svg, update(t: number) {
     cam(svg, 1.06 + 0.1 * inout(seg(t, 0.2, tS)), 320, 165)
     // The wall, nine metres off, jumps as the kick is taken.
     const jump = 14 * Math.sin(Math.PI * seg(t, tS - 0.05, tS + 0.45))

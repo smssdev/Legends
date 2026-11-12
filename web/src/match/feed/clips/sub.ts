@@ -1,26 +1,25 @@
-// @ts-nocheck
 // [Sprint 57 W4] The sub scene (art.ts's SCENES.sub).
 import { t as tr } from '../../../lib/i18n'
 import { burst, referee } from '../effects'
 import { player, title } from '../figures'
-import { K, ease, el, lerp, rnd, sa, seg } from '../kit'
+import { K, type SceneData, type SvgNode, ease, el, lerp, rnd, sa, seg } from '../kit'
 import { cam, ref, stage } from '../stage'
 
 // [Sprint 37 N2] The substitution: the fourth official holds up the lit board (off in red, on in green), the player
 // coming off walks to the line and shakes hands with the one coming on, who runs onto the pitch.
 // [Sprint 42 D4] The sub, as a cartoon: the board flashes green and red, the tired player trudges off with his head
 // down, the substitute bounces on the spot, they slap a high five, and he leaps onto the pitch.
-export function sub(e) {
-  const svg = stage(e.side), w = svg.world, k = K(e.side).kit, R = rnd((e.inNo || 3) * 17 + (e.outNo || 5))
+export function sub(e: SceneData) {
+  const svg = stage(e.side), w = svg.world, k = K(e.side).kit, R = rnd(Number(e.inNo || 3) * 17 + Number(e.outNo || 5))
   const fo = referee(w, 1.4)
   const out = player(w, k, e.outNo, 1.4, { look: Math.floor(R() * 40) }), inn = player(w, k, e.inNo, 1.4, { look: Math.floor(R() * 40) })
-  const led = (n, c) => `<text y="-2" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="34" fill="${c}" style="letter-spacing:1px" filter="${ref(svg, 'glow')}">${n ?? ''}</text>`
+  const led = (n: number | string | undefined, c: string) => `<text y="-2" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="34" fill="${c}" style="letter-spacing:1px" filter="${ref(svg, 'glow')}">${n ?? ''}</text>`
   const board = el('g', {}, w)
   board.innerHTML = `<rect data-frame="1" x="-58" y="-34" width="116" height="52" rx="5" fill="#05080F" stroke="#3A4256" stroke-width="2"/><g data-o="1" transform="translate(-28 8)">${led(e.outNo, '#FF4D4D')}</g><g data-i="1" transform="translate(28 8)">${led(e.inNo, '#3BFF8A')}</g><path d="M0 -26 V12" stroke="#1B2233" stroke-width="2"/><rect x="-6" y="18" width="12" height="24" rx="3" fill="#1B2233"/>`
-  const frameB = board.querySelector('[data-frame]'), oN = board.querySelector('[data-o]'), iN = board.querySelector('[data-i]')
+  const frameB = board.querySelector<SvgNode>('[data-frame]')!, oN = board.querySelector<SvgNode>('[data-o]')!, iN = board.querySelector<SvgNode>('[data-i]')!
   const slap = burst(svg, w, '#FFD400', 10), sweat = el('path', { d: 'M0 -5 Q4 1 0 3 Q-4 1 0 -5 Z', fill: '#9AD4FF', opacity: 0 }, w)
   const tt = title(svg, tr('تبديل'), '#2BB673')
-  return { dur: 5.0, svg, update(t) {
+  return { dur: 5.0, svg, update(t: number) {
     cam(svg, 1.05, 320, 200)
     // The fourth official, the board up and flashing (out red, in green, its frame blinking both colours).
     const up = ease(seg(t, 0, 0.5)), blink = t < 2.4 ? Math.floor(t * 6) % 2 : 0

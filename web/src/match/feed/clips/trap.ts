@@ -1,29 +1,28 @@
-// @ts-nocheck
 // [Sprint 57 W4] The trap scene (art.ts's SCENES.trap).
 import { t as tr } from '../../../lib/i18n'
 import { burst, dust, headOf } from '../effects'
 import { ball, player, put, title } from '../figures'
-import { K, ease, el, inout, lerp, other, rnd, sa, seg } from '../kit'
+import { K, type SceneData, type SvgNode, ease, el, inout, lerp, other, rnd, sa, seg } from '../kit'
 import { cam, persp, stage } from '../stage'
 
 // [Sprint 42 F3] The offside trap: the through ball is played, and in one step the whole back line jumps forward
 // together. The striker stops dead, white dashed lines appear on the grass, and the assistant's flag waves in the
 // corner of the screen with a sharp whistle.
-export function trap(e) {
-  const R = rnd((e.no || 9) * 61), svg = stage(e.side), w = svg.world, atk = K(e.side).kit, dfk = K(other(e.side)).kit
+export function trap(e: SceneData) {
+  const R = rnd(Number(e.no || 9) * 61), svg = stage(e.side), w = svg.world, atk = K(e.side).kit, dfk = K(other(e.side)).kit
   const defs = [214, 282, 358, 426].map(() => player(w, dfk, '', 1, { look: Math.floor(R() * 40) }))
   const st = player(w, atk, e.no, 1, { look: Math.floor(R() * 40) }), pm = player(w, atk, '', 1, { look: Math.floor(R() * 40) }), b = ball(svg)
   const lines = el('g', { stroke: '#FFFFFF', 'stroke-width': 2, 'stroke-dasharray': '10 7', fill: 'none', opacity: 0 }, w)
   lines.innerHTML = `<path data-l="d" d="M110 0 H530"/><path data-l="a" d="M110 0 H530" stroke="#FFD36B"/>`
-  const lD = lines.querySelector('[data-l="d"]'), lA = lines.querySelector('[data-l="a"]')
+  const lD = lines.querySelector<SvgNode>('[data-l="d"]')!, lA = lines.querySelector<SvgNode>('[data-l="a"]')!
   const skid = dust(svg, w, 6), blow = burst(svg, w)
   // The assistant's flag in the corner of the screen.
   const flag = el('g', { opacity: 0 }, svg)
   flag.innerHTML = '<rect x="520" y="78" width="104" height="104" rx="10" fill="rgba(4,11,28,.8)" stroke="#F5B82E" stroke-width="2"/><path d="M552 170 V96" stroke="#C9D2E1" stroke-width="4" stroke-linecap="round"/><path data-flag="1" fill="#EF4444" stroke="#B91C1C" stroke-width="1"/>'
-  const cloth = flag.querySelector('[data-flag]')
+  const cloth = flag.querySelector<SvgNode>('[data-flag]')!
   const tt = title(svg, tr('مصيدة التسلل!'), '#EF4444')
   const KT = 1.5
-  return { dur: 3.6, svg, update(t) {
+  return { dur: 3.6, svg, update(t: number) {
     cam(svg, 1.08, 320, 210)
     // The back line: level, then all four step up at once (a little hop) at 0.95 s.
     const up = inout(seg(t, 0.95, 1.25)), hop = Math.sin(Math.PI * seg(t, 0.95, 1.25)) * 8

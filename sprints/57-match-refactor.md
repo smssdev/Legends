@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **الحالة** | 🔄 جارٍ (2026-11-12): كل المهام مبنية إلا باقي W3 (أنواع أجزاء الرسم و`MatchFeed.vue`) |
+| **الحالة** | ✅ مبني كله (2026-11-12)، وينتظر مراجعة حمزة |
 | **المدة** | 7 أيام عمل |
 | **المرحلة** | ب. الأساس |
 | **المنصة** | ويب، خادم (ويخدم التطبيق وUnity) |
@@ -32,7 +32,7 @@ W-Sprint 51، W-Sprint 52، W-Sprint 53، W-Sprint 54، W-Sprint 60، W-S07، W-
 |---|---|---|
 | W1 ✅ | **`SimMatch.vue` إلى composables:** `useMatchClock` (الدقائق والمؤقتات)، و`useLiveSync` (من Sprint 53)، و`useCoachOrders` (الأوامر والمعلّق منها)، و`useMatchAudio` (الصوت والمعلق والكتم)، و`useReplay` (الإعادة والملخص)، و`useWakeLock`. كل واحد باختبار وحدة (Vitest، مؤقتات وهمية) | `web/src/match/use*.ts` |
 | W2 ✅ | **اللوحات مكونات:** `ScoreBug`، و`CoachDrawer` (سريع، وتبديل، وتكتيك، وخطة)، و`MatchSettings`، و`FeedList`، و`HalftimeCard`، و`MatchChat` | `web/src/components/match/` |
-| W3 | **أنواع البث:** `Tick`، و`Moment`، و`MatchEvent` من `schema.d.ts` إلى `match/feed/`. إزالة `@ts-nocheck` بالترتيب: `director.ts`، ثم `story.ts` (أو حذفه بعد B2)، ثم `GoalReplay.vue`، ثم `MatchFeed.vue`، ثم `characters/art.ts`، ثم `art.ts` | `web/src/match/feed/` |
+| W3 ✅ | **أنواع البث:** `Tick`، و`Moment`، و`MatchEvent` من `schema.d.ts` إلى `match/feed/`. إزالة `@ts-nocheck` بالترتيب: `director.ts`، ثم `story.ts` (أو حذفه بعد B2)، ثم `GoalReplay.vue`، ثم `MatchFeed.vue`، ثم `characters/art.ts`، ثم `art.ts` | `web/src/match/feed/` |
 | W4 ✅ | **`art.ts` (1896 سطراً) إلى ملفات:** `stage.ts` (الملعب والأستوديو)، و`figures.ts` (اللاعب والكرة والحكم)، ومجلد `clips/` بملف لكل لقطة (هدف، وجزاء، وبطاقة، وفار، وتسلل، والحيل…). الواجهة العامة للملف لا تتغير، و`npm run feed` يبقى أخضر | `web/src/match/feed/` |
 | W5 ✅ | **التهريب:** كل قيمة من الخادم في `innerHTML` تمر بـ `esc()`، أو تُكتب بـ `textContent`. فحص ESLint يرفض `innerHTML =` بقالب فيه `${` بلا `esc(` | `web/src/match/feed/`، `eslint.config.js` |
 | W6 ✅ | **تنظيف:** مؤقت نهاية البث واحد (W-B07)، والساعة كل ثانية (W-P14)، وتعليقات التاريخ القديمة، ولاحقة `Page` موحدة لأسماء الصفحات | متفرقة |
@@ -47,12 +47,12 @@ W-Sprint 51، W-Sprint 52، W-Sprint 53، W-Sprint 54، W-Sprint 60، W-S07، W-
 
 ## تعريف الانتهاء
 
-- [ ] `grep -r "@ts-nocheck" web/src` بلا نتائج.
-- [ ] `SimMatch.vue` أقل من 300 سطر (243 ✅)، ولا ملف في `match/` فوق 400 (يبقى `MatchFeed.vue` بـ 679).
+- [x] `grep -r "@ts-nocheck" web/src` بلا نتائج.
+- [x] `SimMatch.vue` أقل من 300 سطر (243)، ولا ملف في `match/` فوق 400 (أكبرها `MatchFeed.vue` بـ 392).
 - [x] اختبار B2 الذهبي: رواية الخادم = رواية `story.ts` على 50 مباراة، ثم يُحذف الملف.
 - [x] `sim:golden` بلا تغيير (المحرك لم يُمس).
 - [x] مباراة قديمة تُعاد كما لُعبت.
-- [ ] لقطات المقارنة للقطات البث (Sprint 56 T2 موسّعة لعشر لقطات) بلا فرق.
+- [x] لقطات المقارنة للقطات البث (Sprint 56 T2 موسّعة لعشر لقطات) بلا فرق. فُحصت بما هو أدق من الصور: SVG كل لقطة حرفاً بحرف قبل التقسيم وبعده (164 حالة و3948 إطاراً بثلاثة أشكال، والأستوديو).
 - [x] `CLAUDE.md` محدّث: قاعدة «ألوان الطقم في `art.ts` و`KitColours` معاً» تصير «من الخادم».
 
 ## كيف يُختبر باليد
@@ -133,10 +133,27 @@ W-Sprint 51، W-Sprint 52، W-Sprint 53، W-Sprint 54، W-Sprint 60، W-S07، W-
   - الدرج نفسه قبل التفكيك وبعده، و`npm run e2e` ناجح، و`npm run build` بكل فحوصه.
 - **ملاحظة قديمة لم تتغير:** قسم «مجريات المباراة» في درج الدردشة ينضغط تحت الزخم والإحصائيات. كان كذلك قبل التفكيك، فلم يُمس هنا.
 
-**ما بقي:**
-- **W3:** باقي `@ts-nocheck`، وهي أجزاء الرسم (`kit` و`stage` و`figures` و`effects` و`play` و`clips/`)، و`MatchFeed.vue`، و`characters/art.ts`.
-  - بلا الاستثناء يظهر نحو 570 خطأ أنواع، أغلبها معاملات بلا نوع.
-- وتقسيم `MatchFeed.vue` (679 سطراً) ليصير تحت 400.
+**الدفعة الرابعة (2026-11-12):**
+
+- **W3، الأنواع:** لا `@ts-nocheck` في `web/src` كله.
+  - كانت نحو 570 خطأ بلا الاستثناء.
+  - أنواع الرسم في `kit.ts`: `Side` و`Kit` و`SvgNode` و`Svg` و`SceneData` و`Scene`.
+  - ومعها `Figure` و`Looks` و`TackleFx` و`StudioState`، و`FaceLook` و`CoachLook` و`Char` في رسم الشخصيات.
+  - **لا شيء يتغير على الشاشة:**
+    - كل لقطة ترسم SVG نفسه حرفاً بحرف كما قبل التقسيم: 164 حالة، و3948 إطاراً بثلاثة أشكال، والأستوديو.
+    - وكل شخصية بكل شعور كما كانت (81).
+- **`MatchFeed.vue`** من 679 سطراً إلى 392، وكل ملف في `match/` تحت 400.
+  - المظهر صار في `MatchFeed.css`، وبقي scoped بـ `<style scoped src>`.
+  - أصوات اللقطة وما يتفاعل معه الأستوديو في `cues.ts`.
+  - حساب الساعة في `clock.ts`، وكتابتها وقرب الكرة في `useBroadcastClock.ts`.
+  - والأستوديو في `useStudio.ts`.
+  - واختبارات Vitest لـ `clock.ts` و`cues.ts`، فصارت 20 اختباراً.
+- **فُحص في المتصفح:**
+  - مباراة محاكي: الساعة تمشي وتتوقف عند لقطة.
+  - الأستوديو يتفاعل، وفقاعة المعلق بسطرها الإنجليزي.
+  - بلا أخطاء.
+
+**Sprint 57 مبني كله، وينتظر مراجعة حمزة.**
 
 ## ملاحظات وتعديلات بالتوازي
 

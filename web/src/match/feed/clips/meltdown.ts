@@ -1,14 +1,13 @@
-// @ts-nocheck
 // [Sprint 57 W4] The meltdown scene (art.ts's SCENES.meltdown).
 import { t as tr } from '../../../lib/i18n'
 import { boom, headOf, tint, vein } from '../effects'
 import { player, title } from '../figures'
-import { K, ease, el, lerp, rnd, sa, seg } from '../kit'
+import { K, type SceneData, ease, el, lerp, rnd, sa, seg, type SvgNode } from '../kit'
 import { cam, stage } from '../stage'
 
 // [Sprint 42 F6] The coach's meltdown after a chance blasted over: hands on his head, he pulls his hair, kicks the
 // bench away, throws his jacket down, fire coming out of his eyes.
-export function meltdown(e) {
+export function meltdown(e: SceneData) {
   const R = rnd(e.v ?? 71), svg = stage(e.side), w = svg.world, kit = K(e.side).kit
   el('rect', { x: -80, y: 236, width: 800, height: 110, fill: 'rgba(4,11,28,.55)' }, w)
   const bench = el('g', {}, w)
@@ -21,7 +20,7 @@ export function meltdown(e) {
   hairs.innerHTML = Array.from({ length: 6 }, (_, i) => `<path d="M${-10 + i * 4} 0 q2 -6 0 -10"/>`).join('')
   const redT = tint(svg, '#FF1E1E'), boomB = boom(svg, w, 'BANG!'), vn = vein(svg)
   const tt = title(svg, tr('المدرب ينفجر!'), '#EF4444')
-  return { dur: 2.8, svg, update(t) {
+  return { dur: 2.8, svg, update(t: number) {
     cam(svg, 1.1, 320, 190)
     redT(0.18 * seg(t, 0.05, 0.15) * (1 - seg(t, 0.6, 1.2)))
     const kick = seg(t, 0.9, 1.15), thr = seg(t, 1.5, 1.8)
@@ -37,7 +36,7 @@ export function meltdown(e) {
     // Fire from his eyes.
     const fl = Math.sin(t * 40) * 3, on = t > 0.25
     sa(fireL, 'opacity', on ? 1 : 0)
-    for (const [i, e2] of [...fireL.children].entries()) { const sx = hx + (i < 2 ? -6 : 6), sy = hy + 0, d = i < 2 ? -1 : 1; sa(e2, 'd', `M${sx} ${sy} L${sx + d * (26 + fl)} ${sy - 8 + fl}`) }
+    for (const [i, e2] of [...(fireL.children as HTMLCollectionOf<SvgNode>)].entries()) { const sx = hx + (i < 2 ? -6 : 6), sy = hy + 0, d = i < 2 ? -1 : 1; sa(e2, 'd', `M${sx} ${sy} L${sx + d * (26 + fl)} ${sy - 8 + fl}`) }
     // The bench kicked away, spinning.
     const bf = ease(seg(t, 1.05, 1.9)); sa(bench, 'transform', `translate(${lerp(420, 700, bf).toFixed(1)} ${(250 - Math.sin(Math.PI * bf) * 90).toFixed(1)}) rotate(${Math.round(bf * 540)})`)
     boomB(430, 228, seg(t, 1.05, 1.6))

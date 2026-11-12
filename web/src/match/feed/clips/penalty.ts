@@ -1,13 +1,12 @@
-// @ts-nocheck
 // [Sprint 57 W4] The penalty scene (art.ts's SCENES.penalty).
 import { t as tr } from '../../../lib/i18n'
 import { burst, referee, shakeIt } from '../effects'
 import { ball, dive, drawTrail, flash, flashes, keeper, player, put, ready, title, trail } from '../figures'
-import { K, SMOOTH, bez, clamp, ease, el, inout, keeperKit, lerp, other, rnd, sa, seg } from '../kit'
+import { K, SMOOTH, type SceneData, bez, clamp, ease, el, inout, keeperKit, lerp, other, rnd, sa, seg } from '../kit'
 import { LINE, cam, goalFrame, persp, ref, stage } from '../stage'
 
-export function penalty(e) {
-  const R = rnd(e.v ?? (e.no ?? 9) * 31), svg = stage(e.side), w = svg.world, G = goalFrame(svg)
+export function penalty(e: SceneData) {
+  const R = rnd(e.v ?? Number(e.no ?? 9) * 31), svg = stage(e.side), w = svg.world, G = goalFrame(svg)
   const kp = keeper(svg, other(e.side), Math.floor(R() * 40)), tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), trl = trail(svg)
   const hush = el('text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 600, 'font-size': 15, fill: '#C9D2E1', opacity: 0 }, svg); hush.textContent = tr('صمت في المدرجات...')
   const tt = title(svg, e.scored ? tr('هدف!') : tr('تصدٍّ!'), e.scored ? undefined : '#2BB673'), fl = flash(svg), cf = flashes(svg)
@@ -25,10 +24,10 @@ export function penalty(e) {
   const PRE = 1.2, rf = referee(w, 1), blow = burst(svg, w, '#FFFFFF'), spotRing = el('ellipse', { cx: spot[0], cy: spot[1], rx: 10, ry: 3.5, fill: 'none', stroke: '#F5B82E', 'stroke-width': 2, opacity: 0, filter: ref(svg, 'glow') }, w)
   // ... and in the face-off, a close-up of their eyes, staring each other down.
   const eyes = el('g', { opacity: 0 }, vs)
-  const eyePair = (cx, look, brow) => `<g transform="translate(${cx} 176)">${[-38, 38].map((dx) => `<g transform="translate(${dx} 0)"><path d="M-30 0 Q0 -20 30 0 Q0 16 -30 0 Z" fill="#F7F3EA" stroke="#1A1A1A" stroke-width="2.5"/><circle data-iris="1" cx="${look}" cy="0" r="9" fill="#3B2414"/><circle cx="${look}" cy="0" r="4.2" fill="#0A0A0A"/><circle cx="${look + 3}" cy="-3" r="1.8" fill="#fff"/><path d="${brow}" stroke="#1A1A1A" stroke-width="5" stroke-linecap="round" fill="none"/></g>`).join('')}</g>`
+  const eyePair = (cx: number, look: number, brow: string) => `<g transform="translate(${cx} 176)">${[-38, 38].map((dx) => `<g transform="translate(${dx} 0)"><path d="M-30 0 Q0 -20 30 0 Q0 16 -30 0 Z" fill="#F7F3EA" stroke="#1A1A1A" stroke-width="2.5"/><circle data-iris="1" cx="${look}" cy="0" r="9" fill="#3B2414"/><circle cx="${look}" cy="0" r="4.2" fill="#0A0A0A"/><circle cx="${look + 3}" cy="-3" r="1.8" fill="#fff"/><path d="${brow}" stroke="#1A1A1A" stroke-width="5" stroke-linecap="round" fill="none"/></g>`).join('')}</g>`
   eyes.innerHTML = `<rect x="0" y="134" width="640" height="84" fill="#0A0F1C"/><rect x="0" y="134" width="640" height="2" fill="#F5B82E"/><rect x="0" y="216" width="640" height="2" fill="#F5B82E"/>`
     + eyePair(160, 9, 'M-30 -18 L26 -8') + eyePair(480, -9, 'M-26 -8 L30 -18') + `<path d="M319 140 V212" stroke="#F5B82E" stroke-width="2" stroke-dasharray="4 4"/>`
-  const old = (t) => {
+  const old = (t: number) => {
     cam(svg, 1.15 + 0.1 * inout(seg(t, 0.3, tS)), 320, 160)
     sa(eyes, 'opacity', SMOOTH ? 0 : seg(t, 0.5, 0.6) * (1 - seg(t, 1.05, 1.15)))
     if (t > 0.5 && t < 1.15) sa(eyes, 'transform', `translate(320 176) scale(${(1 + 0.12 * seg(t, 0.5, 1.15)).toFixed(3)}) translate(-320 -176)`)
@@ -42,11 +41,10 @@ export function penalty(e) {
     if (t > KT + 0.6 && e.scored) tk.celebrate(t)
     if (t > KT + 0.4 && !e.scored) tk.despair()
     // The keeper bounces on his line, then goes.
-    let glove = null
     // [Sprint 42 H2] One keeper in two puts the taker off with his spaghetti legs, arms waving, on his line.
     if (t < tS && wobbly && t > 1.2) { const q = Math.sin(t * 14); ready(kp, 320 + Math.sin(t * 5) * 14, LINE + 2, t, 1.1); kp.pose(36 * q, -36 * q, 120 + 40 * q, -120 + 40 * q, Math.max(0, q) * 0.5, Math.max(0, -q) * 0.5) }
     else if (t < tS) { ready(kp, 320 + Math.sin(t * 2.4) * 6, LINE + 2, t, 1.3); kp.pose(14, -14, 52 + Math.sin(t * 6) * 8, -52 - Math.sin(t * 6) * 8) }
-    else glove = dive(kp, 320, LINE + 2, kAim[0], kAim[1], seg(t, tS + 0.03, KT), seg(t, KT + 0.2, KT + 0.85))
+    else dive(kp, 320, LINE + 2, kAim[0], kAim[1], seg(t, tS + 0.03, KT), seg(t, KT + 0.2, KT + 0.85))
     let p, gr = LINE + 2
     if (t < tS) { p = spot; gr = spot[1] }
     else if (t < KT) { const g = seg(t, tS, KT); p = bez(path, g); gr = lerp(spot[1], LINE + 2, g); drawTrail(trl, path, g, 0.55) }
@@ -56,7 +54,7 @@ export function penalty(e) {
     if (e.scored) { G.bulge(target[0], target[1] - 8, 1.9 * seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.3, KT + 1.3))); fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16); cf(t, t > KT); shakeIt(svg, 6 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.6)), t) }
     tt(seg(t, KT + 0.2, KT + 0.6))
   }
-  return { dur: 5.6 + PRE, svg, update(t) {
+  return { dur: 5.6 + PRE, svg, update(t: number) {
     old(Math.max(0, t - PRE))
     // The referee: runs in, blows (0.15), points at the spot, then steps away as the taker places the ball.
     const away = ease(seg(t, PRE - 0.25, PRE + 0.4))

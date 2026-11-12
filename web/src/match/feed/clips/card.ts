@@ -1,9 +1,8 @@
-// @ts-nocheck
 // [Sprint 57 W4] The card scene (art.ts's SCENES.card).
 import { t as tr } from '../../../lib/i18n'
 import { bottle, brawlCloud, bubbleOf, burst, dust, headOf, referee, shakeIt, tackle, tint, vein } from '../effects'
 import { player, title } from '../figures'
-import { K, ease, el, lerp, other, rnd, sa, seg } from '../kit'
+import { K, type SceneData, ease, el, lerp, other, rnd, sa, seg } from '../kit'
 import { cam, ref, stage } from '../stage'
 
 // [Sprint 35 C2] The card: the referee holds it up over the offender, who protests (arms out, or hands together
@@ -14,9 +13,9 @@ import { cam, ref, stage } from '../stage'
 // cloud of dust with fists and boots flying out; spit: a close-up of the argument, the spit, the referee's shock,
 // his slow wipe, his face going red. A yellow: the offender acts innocent. A red: a red flash, the referee points
 // to the tunnel, and on his way off the player kicks a water bottle.
-export function card(e) {
-  const svg = stage(e.side), w = svg.world, red = e.type === 'red', R = rnd(e.v ?? (e.no ?? 4) * 13)
-  const drama = ['swarm', 'brawl', 'spit'].includes(e.drama) ? e.drama : 'tackle', KT = 3.4, k = 1.4
+export function card(e: SceneData) {
+  const svg = stage(e.side), w = svg.world, red = e.type === 'red', R = rnd(e.v ?? Number(e.no ?? 4) * 13)
+  const drama = e.drama && ['swarm', 'brawl', 'spit'].includes(e.drama) ? e.drama : 'tackle', KT = 3.4, k = 1.4
   const kit = K(e.side).kit, col = red ? '#EF4444' : '#FFD400'
   const vi = player(w, K(other(e.side)).kit, e.victimNo ?? '', k, { look: Math.floor(R() * 40) })
   const mates = drama === 'swarm' ? [0, 1, 2].map(() => player(w, kit, '', k, { look: Math.floor(R() * 40) })) : []
@@ -33,7 +32,7 @@ export function card(e) {
   const tt = title(svg, red ? tr('طرد!') : tr('إنذار'), col)
   // Where the referee stands to show it, and where the offender stands in front of him.
   const RX = drama === 'swarm' ? 430 : 395, PX = drama === 'spit' ? 318 : 300
-  return { dur: 6.6, svg, update(t) {
+  return { dur: 6.6, svg, update(t: number) {
     blow(0, 0, 0)
     // The tackle (contact at 0.8 s); the victim lies there and rolls, unless a brawl gets him up.
     const up = drama === 'brawl' ? 1.55 : Infinity
@@ -66,9 +65,9 @@ export function card(e) {
       swear2(rx + 60, 134, seg(t, 2.2, 2.35) * (1 - seg(t, 2.95, 3.05)), 0.85, Math.cos(t * 37) * 2)
       if (t > 2.0 && t < 3.0) { rf.pose(3, -3, 30, -150); blow(hx + 5, hy + 4, ((t - 2.0) % 0.25) / 0.25) }
     } else if (drama === 'brawl') {
-      // The victim is up and charges; the two vanish in the dust cloud, fists and boots flying out of it.
+      // The victim is up and charges; the two vanish in the dust cloud!, fists and boots flying out of it.
       const inCloud = t > 1.85 && t < 2.95, f = seg(t, 1.8, 1.95) * (1 - seg(t, 2.9, 3.15))
-      cloud(340, 236, t, f)
+      cloud!(340, 236, t, f)
       sa(pl.g, 'opacity', inCloud ? 0 : 1); sa(vi.g, 'opacity', inCloud ? 0 : 1)
       swear(340, 150, f, 1, Math.sin(t * 40) * 2)
       shakeIt(svg, inCloud ? 3 : 0, t)
