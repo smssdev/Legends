@@ -52,7 +52,11 @@ const TYPES = ['js' => 'text/javascript; charset=utf-8', 'mjs' => 'text/javascri
     'apk' => 'application/vnd.android.package-archive'];
 
 // Files whose name or folder changes with their content: kept for a year.
-const LASTING = ['/assets/', '/logos/', '/brand/', '/art/', '/unity/', '/crests/'];
+const LASTING = ['/assets/', '/unity/', '/crests/'];
+// [Sprint 58 B3, W-P08] Fixed names whose content may change (a club's logo, the brand, the art, the characters, the
+// sounds, the commentary): an hour, then asked again with their ETag (a 304 when unchanged). They were a year and
+// immutable, so a new logo never reached anyone who had seen the old one.
+const HOURLY = ['/logos/', '/brand/', '/art/', '/characters/', '/sounds/', '/commentary/'];
 
 function send(string $path, string $cache): void
 {
@@ -61,6 +65,14 @@ function send(string $path, string $cache): void
     header('Content-Type: '.(TYPES[$ext] ?? (mime_content_type($path) ?: 'application/octet-stream')));
     header('Cache-Control: '.$cache);
     header('Vary: Accept-Encoding');
+    // The file's own tag (its size and time): a browser that has it gets a 304 and nothing more.
+    $etag = '"'.dechex((int) filemtime($path)).'-'.dechex((int) filesize($path)).'"';
+    header('ETag: '.$etag);
+    if (trim((string) ($_SERVER['HTTP_IF_NONE_MATCH'] ?? '')) === $etag) {
+        http_response_code(304);
+
+        return;
+    }
     if ($ext === 'apk') {
         header('Content-Disposition: attachment; filename="'.basename($path).'"');
     }
@@ -96,16 +108,19 @@ foreach (LARAVEL as $prefix) {
 }
 
 if (! $laravel && $uri !== '/' && $file !== false && str_starts_with($file, $public.'/') && is_file($file) && ! str_ends_with($file, '.php')) {
-    $lasting = false;
+    $lasting = $hourly = false;
     foreach (LASTING as $prefix) {
         $lasting = $lasting || str_starts_with($uri, $prefix);
+    }
+    foreach (HOURLY as $prefix) {
+        $hourly = $hourly || str_starts_with($uri, $prefix);
     }
     // Media with ranges (the commentary's audio) and anything not listed: PHP's own server, which answers ranges.
     if (! isset(TYPES[strtolower(pathinfo($file, PATHINFO_EXTENSION))])) {
         return false;
     }
     // [Sprint 30 Q12] The fonts (fixed files, not hashed) a month; the rest five minutes.
-    send($file, $lasting ? 'public, max-age=31536000, immutable' : (str_starts_with($uri, '/fonts/') ? 'public, max-age=2592000' : 'public, max-age=300'));
+    send($file, $lasting ? 'public, max-age=31536000, immutable' : ($hourly ? 'public, max-age=3600' : (str_starts_with($uri, '/fonts/') ? 'public, max-age=2592000' : 'public, max-age=300')));
 
     return true;
 }
