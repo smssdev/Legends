@@ -50,7 +50,10 @@ class _GlmAppState extends ConsumerState<GlmApp> {
 
     // [Sprint 19 F1] Pushes: started for a signed-in coach; a tap opens its screen, an arrival refreshes the inbox count.
     final push = ref.read(pushProvider);
-    _taps = push.taps.listen((route) => ref.read(routerProvider).push(route));
+    _taps = push.taps.listen((route) {
+      final router = ref.read(routerProvider);
+      if (knownRoute(router, route)) unawaited(router.push(route));
+    });
     _arrivals = push.arrivals.listen((_) => ref.invalidate(unreadProvider));
     ref.listenManual(authProvider, (_, next) {
       if (next.value != null) push.start();

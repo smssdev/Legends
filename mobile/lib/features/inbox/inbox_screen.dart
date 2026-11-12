@@ -11,6 +11,7 @@ import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../leagues/widgets.dart' show when;
 import 'inbox_data.dart';
+import '../../router.dart' show knownRoute;
 import '../leagues/shell.dart';
 
 /// [Sprint 18 F1] The inbox: the newest first, unread marked; a tap reads it and opens its screen in the app.
@@ -63,7 +64,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
       ref.invalidate(unreadProvider);
     }
     final route = m.route;
-    if (route != null && mounted) unawaited(context.push(route));
+    if (route != null && mounted && knownRoute(GoRouter.of(context), route)) unawaited(context.push(route));
   }
 
   @override

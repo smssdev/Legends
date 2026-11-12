@@ -237,3 +237,12 @@ Widget _withId(GoRouterState s, Widget Function(int id) page) {
   final id = int.tryParse(s.pathParameters['id'] ?? '');
   return id == null || id <= 0 ? const NotFoundScreen() : page(id);
 }
+
+/// [Sprint 59 F11] Whether a route from outside (a push, an inbox message) is one of the app's own pages: an app path
+/// (one slash, no scheme or host) that the router's own table matches. Anything else is not opened.
+bool knownRoute(GoRouter router, String? route) {
+  if (route == null || !route.startsWith('/') || route.startsWith('//')) return false;
+  final uri = Uri.tryParse(route);
+  if (uri == null || uri.hasScheme || uri.hasAuthority) return false;
+  return router.configuration.findMatch(uri).isNotEmpty;
+}
