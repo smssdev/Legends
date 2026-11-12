@@ -8,7 +8,16 @@ import 'motion.dart';
 /// deep shadow, the gold line on its upper cut, and a gold edge, glow and a passing sheen when it is the screen's main
 /// object.
 class GlmCard extends StatelessWidget {
-  const GlmCard({super.key, required this.child, this.padding = const EdgeInsets.all(16), this.gold = false, this.onTap, this.color, this.accent, this.shine});
+  const GlmCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+    this.gold = false,
+    this.onTap,
+    this.color,
+    this.accent,
+    this.shine,
+  });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -37,30 +46,51 @@ class GlmCard extends StatelessWidget {
         shape: shape,
         color: base,
         shadows: [
-          BoxShadow(color: p.shade.withValues(alpha: day ? .08 : .30), blurRadius: 18, offset: const Offset(0, 8), spreadRadius: -10),
+          BoxShadow(
+            color: p.shade.withValues(alpha: day ? .08 : .30),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+            spreadRadius: -10,
+          ),
           if (gold) BoxShadow(color: p.gold.withValues(alpha: day ? .10 : .16), blurRadius: 24, spreadRadius: -6),
         ],
       ),
       child: CutClip(
-        child: Stack(children: [
-          if (accent != null)
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(center: const AlignmentDirectional(1.1, -1.2).resolve(Directionality.of(context)), radius: 1.3,
-                      colors: [accent!.withValues(alpha: day ? .16 : .30), accent!.withValues(alpha: 0)]),
+        child: Stack(
+          children: [
+            if (accent != null)
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: const AlignmentDirectional(1.1, -1.2).resolve(Directionality.of(context)),
+                      radius: 1.3,
+                      colors: [
+                        accent!.withValues(alpha: day ? .16 : .30),
+                        accent!.withValues(alpha: 0),
+                      ],
+                    ),
+                  ),
                 ),
               ),
+            Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                customBorder: GlmCut.shape(radius),
+                onTap: onTap,
+                child: Padding(padding: padding, child: child),
+              ),
             ),
-          Material(
-            type: MaterialType.transparency,
-            child: InkWell(customBorder: GlmCut.shape(radius), onTap: onTap, child: Padding(padding: padding, child: child)),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
     card = CustomPaint(
-      foregroundPainter: CutNotch(cut: radius, rtl: rtl, color: gold ? p.goldLight : p.gold.withValues(alpha: day ? .45 : .38)),
+      foregroundPainter: CutNotch(
+        cut: radius,
+        rtl: rtl,
+        color: gold ? p.goldLight : p.gold.withValues(alpha: day ? .45 : .38),
+      ),
       child: card,
     );
     if (shine ?? gold) card = Shine(strength: .10, period: const Duration(milliseconds: 6000), clip: GlmCut.card, child: card);

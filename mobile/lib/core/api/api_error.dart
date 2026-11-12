@@ -27,7 +27,12 @@ class ApiError implements Exception {
             if (v is List<dynamic> && v.isNotEmpty) errors['$k'] = '${v.first}';
           });
         }
-        return ApiError('${data['message'] ?? 'حدث خطأ، حاول مرة أخرى.'}', status: e.response?.statusCode, code: data['code'] as String?, fields: errors);
+        return ApiError(
+          '${data['message'] ?? 'حدث خطأ، حاول مرة أخرى.'}',
+          status: e.response?.statusCode,
+          code: data['code'] as String?,
+          fields: errors,
+        );
       }
       if (e.response != null) return ApiError('حدث خطأ في الخادم، حاول بعد قليل.', status: e.response!.statusCode);
       return const ApiError('تعذر الاتصال بالخادم، تحقق من اتصالك بالإنترنت.');

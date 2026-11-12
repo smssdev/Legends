@@ -10,7 +10,14 @@ import 'match_data.dart';
 /// curve as the web and Unity (frames.dart). Each minute plays from its start on the server's clock (`at`), so two
 /// screens show the same moment. No game logic: the positions all come from the server.
 class LivePitch extends StatefulWidget {
-  const LivePitch({super.key, required this.ticks, required this.tickMs, required this.serverOffset, required this.kits, required this.numbers});
+  const LivePitch({
+    super.key,
+    required this.ticks,
+    required this.tickMs,
+    required this.serverOffset,
+    required this.kits,
+    required this.numbers,
+  });
 
   /// The latest minutes with their Keyframes, oldest first.
   final List<LiveTick> ticks;
@@ -54,10 +61,16 @@ class _LivePitchState extends State<LivePitch> with SingleTickerProviderStateMix
       }
       _labels.clear();
     }
-    return _labels.putIfAbsent((number, ink.toARGB32(), size), () => TextPainter(
-          text: TextSpan(text: '$number', style: TextStyle(color: ink, fontSize: size, fontWeight: FontWeight.w800, fontFamily: GlmFonts.numbers)),
-          textDirection: TextDirection.ltr,
-        )..layout());
+    return _labels.putIfAbsent(
+      (number, ink.toARGB32(), size),
+      () => TextPainter(
+        text: TextSpan(
+          text: '$number',
+          style: TextStyle(color: ink, fontSize: size, fontWeight: FontWeight.w800, fontFamily: GlmFonts.numbers),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout(),
+    );
   }
 
   RenderFrame? _frame() {
@@ -128,10 +141,14 @@ class _PitchPainter extends CustomPainter {
       final c = Offset(e.value.$1 * sx, e.value.$2 * sy);
       canvas.drawCircle(c.translate(0, 1.5), r, Paint()..color = Colors.black.withValues(alpha: .25));
       canvas.drawCircle(c, r, Paint()..color = shirt);
-      canvas.drawCircle(c, r, Paint()
-        ..color = ink.withValues(alpha: .8)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.2);
+      canvas.drawCircle(
+        c,
+        r,
+        Paint()
+          ..color = ink.withValues(alpha: .8)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.2,
+      );
       final tp = label(who.$2, ink, r * 1.05);
       tp.paint(canvas, c - Offset(tp.width / 2, tp.height / 2));
     }
@@ -165,7 +182,9 @@ Map<String, (Color, Color)> matchKits(MatchView v) {
   // [Sprint 57 F1] The server's kits (MatchKits); a match view from before them, each club's own colours.
   final k = v.kits;
   if (k != null && k['home'] != null && k['away'] != null) {
-    return {for (final side in ['home', 'away']) side: (hexColor(k[side]!.shirt), hexColor(k[side]!.text))};
+    return {
+      for (final side in ['home', 'away']) side: (hexColor(k[side]!.shirt), hexColor(k[side]!.text)),
+    };
   }
   final home = hexColor(v.home.primary), away = hexColor(v.away.primary);
   return {'home': (home, inkOn(home)), 'away': (away, inkOn(away))};

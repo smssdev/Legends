@@ -23,14 +23,16 @@ class FakeConsole implements ConsoleRepository {
 
   @override
   Future<DailyTasks> dailyTasks(int league) async => DailyTasks.fromJson({
-        'done': 1, 'total': 4, 'renews_at': '2026-11-10T22:00:00Z',
-        'tasks': [
-          {'task': 'lineup', 'complete': true, 'claimed': claimed, 'coins': 2},
-          {'task': 'friendly', 'complete': false, 'claimed': false, 'coins': 3},
-          {'task': 'training', 'complete': false, 'claimed': false, 'coins': 2},
-          {'task': 'chat', 'complete': false, 'claimed': false, 'coins': 1},
-        ],
-      });
+    'done': 1,
+    'total': 4,
+    'renews_at': '2026-11-10T22:00:00Z',
+    'tasks': [
+      {'task': 'lineup', 'complete': true, 'claimed': claimed, 'coins': 2},
+      {'task': 'friendly', 'complete': false, 'claimed': false, 'coins': 3},
+      {'task': 'training', 'complete': false, 'claimed': false, 'coins': 2},
+      {'task': 'chat', 'complete': false, 'claimed': false, 'coins': 1},
+    ],
+  });
 
   @override
   Future<DailyTasks> claimTask(int league, String task) async {
@@ -41,15 +43,28 @@ class FakeConsole implements ConsoleRepository {
 
   @override
   Future<({List<Auction> auctions, List<int> minutes})> auctions(int league) async => (
-        auctions: [
-          Auction.fromJson({
-            'player_id': 7, 'name': 'L. Moreau', 'position': 'CAM', 'age': 23, 'overall': 86, 'value': 1000000, 'club_id': 3, 'club': 'Lions',
-            'opening': 1000000, 'top': top == 0 ? null : top, 'bids': top == 0 ? 0 : 1, 'next': top == 0 ? 1000000 : top + 20000, 'max': 2000000,
-            'mine': top == 0 ? null : top, 'leading': top != 0, 'ends_at': DateTime.now().add(const Duration(minutes: 12)).toUtc().toIso8601String(),
-          }),
-        ],
-        minutes: [30, 60],
-      );
+    auctions: [
+      Auction.fromJson({
+        'player_id': 7,
+        'name': 'L. Moreau',
+        'position': 'CAM',
+        'age': 23,
+        'overall': 86,
+        'value': 1000000,
+        'club_id': 3,
+        'club': 'Lions',
+        'opening': 1000000,
+        'top': top == 0 ? null : top,
+        'bids': top == 0 ? 0 : 1,
+        'next': top == 0 ? 1000000 : top + 20000,
+        'max': 2000000,
+        'mine': top == 0 ? null : top,
+        'leading': top != 0,
+        'ends_at': DateTime.now().add(const Duration(minutes: 12)).toUtc().toIso8601String(),
+      }),
+    ],
+    minutes: [30, 60],
+  );
 
   @override
   Future<Auction> bid(int league, int player, int amount) async {
@@ -60,8 +75,15 @@ class FakeConsole implements ConsoleRepository {
 
   @override
   Future<List<Chest>> chests(int league) async => [
-        Chest.fromJson({'chest': 'bronze', 'coins': 30, 'odds': [{'reward': 'fitness', 'amount': 5, 'pct_bp': 6000}, {'reward': 'coins', 'amount': 60, 'pct_bp': 4000}]}),
-      ];
+    Chest.fromJson({
+      'chest': 'bronze',
+      'coins': 30,
+      'odds': [
+        {'reward': 'fitness', 'amount': 5, 'pct_bp': 6000},
+        {'reward': 'coins', 'amount': 60, 'pct_bp': 4000},
+      ],
+    }),
+  ];
 
   @override
   Future<({String reward, int amount})> openChest(int league, String chest) async {
@@ -76,16 +98,23 @@ Future<void> pump(WidgetTester t, Widget child, FakeConsole fake, {Size size = c
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;
   GlmModel3D.enabled = false;
-  await t.pumpWidget(ProviderScope(
-    overrides: [consoleRepositoryProvider.overrideWithValue(fake)],
-    child: MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: Scaffold(body: child),
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [consoleRepositoryProvider.overrideWithValue(fake)],
+      child: MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: Scaffold(body: child),
+      ),
     ),
-  ));
+  );
   if (ticking) {
     // A screen with a ticking countdown never settles: a few frames are enough.
     for (var i = 0; i < 5; i++) {
@@ -138,7 +167,16 @@ void main() {
   });
 
   testWidgets("the report's bar: my side in mint, theirs in orange, the figure between", (t) async {
-    await pump(t, const Center(child: SizedBox(width: 500, child: GlmDualCompareBar(label: 'الاستحواذ', mine: 58, theirs: 42, mineText: '58%', theirsText: '42%'))), FakeConsole());
+    await pump(
+      t,
+      const Center(
+        child: SizedBox(
+          width: 500,
+          child: GlmDualCompareBar(label: 'الاستحواذ', mine: 58, theirs: 42, mineText: '58%', theirsText: '42%'),
+        ),
+      ),
+      FakeConsole(),
+    );
     expect(find.text('58%'), findsOneWidget);
     expect(find.text('42%'), findsOneWidget);
     expect(find.bySemanticsLabel('الاستحواذ: 58% - 42%'), findsOneWidget);

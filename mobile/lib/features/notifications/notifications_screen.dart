@@ -47,48 +47,67 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             final p = context.palette;
             final ready = s['app_enabled'] == true;
             final names = {
-              'referee': l.kindReferee, 'match_soon': l.kindMatchSoon, 'offers': l.kindOffers, 'done': l.kindDone, 'news': l.kindNews, 'absence': l.kindAbsence,
+              'referee': l.kindReferee,
+              'match_soon': l.kindMatchSoon,
+              'offers': l.kindOffers,
+              'done': l.kindDone,
+              'news': l.kindNews,
+              'absence': l.kindAbsence,
             };
             final emailReady = s['email_ready'] == true;
-            return ListView(padding: const EdgeInsets.all(12), children: [
-              GlmCard(
-                gold: ready,
-                child: Row(children: [
-                  Icon(ready ? Icons.notifications_active_rounded : Icons.notifications_off_rounded, color: ready ? p.gold : p.textMuted),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(ready ? l.pushReady : l.pushNotReady)),
-                ]),
-              ),
-              const SizedBox(height: 12),
-              GlmCard(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                child: Column(children: [
-                  for (final k in (s['kinds'] as List<dynamic>? ?? const []))
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      value: (k as Map<dynamic, dynamic>)['on'] == true,
-                      activeThumbColor: p.gold,
-                      title: Text(names[k['kind']] ?? '${k['kind']}'),
-                      onChanged: (v) => _put({'kinds': {'${k['kind']}': v}}),
-                    ),
-                ]),
-              ),
-              const SizedBox(height: 12),
-              GlmCard(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                child: Column(children: [
-                  for (final (key, label) in [('email_match', l.emailMatch), ('email_offers', l.emailOffers)])
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      value: s[key] == true,
-                      activeThumbColor: p.gold,
-                      title: Text(label),
-                      subtitle: emailReady ? null : Text(l.emailNeeded, style: TextStyle(color: p.textMuted, fontSize: 12)),
-                      onChanged: (v) => _put({key: v}),
-                    ),
-                ]),
-              ),
-            ]);
+            return ListView(
+              padding: const EdgeInsets.all(12),
+              children: [
+                GlmCard(
+                  gold: ready,
+                  child: Row(
+                    children: [
+                      Icon(
+                        ready ? Icons.notifications_active_rounded : Icons.notifications_off_rounded,
+                        color: ready ? p.gold : p.textMuted,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(ready ? l.pushReady : l.pushNotReady)),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                GlmCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  child: Column(
+                    children: [
+                      for (final k in (s['kinds'] as List<dynamic>? ?? const []))
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          value: (k as Map<dynamic, dynamic>)['on'] == true,
+                          activeThumbColor: p.gold,
+                          title: Text(names[k['kind']] ?? '${k['kind']}'),
+                          onChanged: (v) => _put({
+                            'kinds': {'${k['kind']}': v},
+                          }),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                GlmCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  child: Column(
+                    children: [
+                      for (final (key, label) in [('email_match', l.emailMatch), ('email_offers', l.emailOffers)])
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          value: s[key] == true,
+                          activeThumbColor: p.gold,
+                          title: Text(label),
+                          subtitle: emailReady ? null : Text(l.emailNeeded, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                          onChanged: (v) => _put({key: v}),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            );
           },
         ),
       ),

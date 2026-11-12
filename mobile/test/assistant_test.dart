@@ -21,7 +21,13 @@ class FakeAssistant implements AssistantRepository {
   @override
   Future<Map<String, dynamic>> start(String page) async => json('assistant_start');
   @override
-  Future<Map<String, dynamic>> ask(String question, {String? topic, required String page, int? leagueId, List<Map<String, String>> history = const []}) async {
+  Future<Map<String, dynamic>> ask(
+    String question, {
+    String? topic,
+    required String page,
+    int? leagueId,
+    List<Map<String, String>> history = const [],
+  }) async {
     asked.add('$question|$topic|$page|$leagueId');
     return json('assistant_answer');
   }
@@ -42,17 +48,28 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final fake = FakeAssistant();
-    final router = GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => const Scaffold())]);
-    await t.pumpWidget(ProviderScope(
-      overrides: [preferencesProvider.overrideWithValue(prefs), assistantRepositoryProvider.overrideWithValue(fake)],
-      child: MaterialApp(
-        theme: glmTheme(day: false),
-        locale: const Locale('ar'),
-        supportedLocales: L.supportedLocales,
-        localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-        home: Scaffold(body: AssistantSheet(router: router, path: '/leagues/8/market')),
+    final router = GoRouter(
+      routes: [GoRoute(path: '/', builder: (_, _) => const Scaffold())],
+    );
+    await t.pumpWidget(
+      ProviderScope(
+        overrides: [preferencesProvider.overrideWithValue(prefs), assistantRepositoryProvider.overrideWithValue(fake)],
+        child: MaterialApp(
+          theme: glmTheme(day: false),
+          locale: const Locale('ar'),
+          supportedLocales: L.supportedLocales,
+          localizationsDelegates: const [
+            L.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: Scaffold(
+            body: AssistantSheet(router: router, path: '/leagues/8/market'),
+          ),
+        ),
       ),
-    ));
+    );
     await t.pumpAndSettle();
     expect(find.text('المدرب المساعد'), findsOneWidget);
     expect(find.textContaining('أهلاً كوتش'), findsOneWidget);

@@ -43,6 +43,7 @@ class _GlmAppState extends ConsumerState<GlmApp> {
       // [Sprint 18 G] A group's invite link.
       if (seg.length >= 3 && seg.first == 'groups' && seg[1] == 'join') ref.read(routerProvider).push('/groups/join/${seg[2]}');
     }
+
     links.getInitialLink().then((u) => u == null ? null : open(u)).catchError((_) => null);
     _links = links.uriLinkStream.listen(open, onError: (_) {});
 
@@ -74,12 +75,25 @@ class _GlmAppState extends ConsumerState<GlmApp> {
       themeMode: settings.theme,
       locale: settings.locale,
       supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+      localizationsDelegates: const [
+        L.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
     if (update) {
-      return MaterialApp(debugShowCheckedModeBanner: false, onGenerateTitle: (c) => L.of(c).appName, theme: common.theme, darkTheme: common.darkTheme,
-          themeMode: common.themeMode, locale: common.locale, supportedLocales: common.supportedLocales, localizationsDelegates: common.localizationsDelegates,
-          home: const UpdateRequiredScreen());
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        onGenerateTitle: (c) => L.of(c).appName,
+        theme: common.theme,
+        darkTheme: common.darkTheme,
+        themeMode: common.themeMode,
+        locale: common.locale,
+        supportedLocales: common.supportedLocales,
+        localizationsDelegates: common.localizationsDelegates,
+        home: const UpdateRequiredScreen(),
+      );
     }
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,

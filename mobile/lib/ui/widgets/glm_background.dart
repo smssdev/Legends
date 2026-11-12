@@ -16,22 +16,43 @@ class GlmBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final body = wide ? child : Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 760), child: child));
+    final body = wide
+        ? child
+        : Center(
+            child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 760), child: child),
+          );
     // [Sprint 47] The approved design: by night the web's ink, flat, with an emerald glow from the top as from the
     // floodlights; by day the warm paper as before.
     if (!context.glm.day) {
       return DecoratedBox(
         decoration: BoxDecoration(
-          gradient: RadialGradient(center: const Alignment(0, -1.25), radius: 1.2, colors: [Color.lerp(p.bg, p.brand, .22)!, p.bg, p.bg], stops: const [0, .6, 1]),
+          gradient: RadialGradient(
+            center: const Alignment(0, -1.25),
+            radius: 1.2,
+            colors: [Color.lerp(p.bg, p.brand, .22)!, p.bg, p.bg],
+            stops: const [0, .6, 1],
+          ),
         ),
         child: body,
       );
     }
     return DecoratedBox(
       decoration: BoxDecoration(
-        gradient: RadialGradient(center: const Alignment(0, -1.1), radius: 1.35, colors: [p.surface, p.bg, p.bgDeep], stops: const [0, .55, 1]),
+        gradient: RadialGradient(
+          center: const Alignment(0, -1.1),
+          radius: 1.35,
+          colors: [p.surface, p.bg, p.bgDeep],
+          stops: const [0, .55, 1],
+        ),
       ),
-      child: CustomPaint(painter: _Stripes(Colors.white.withValues(alpha: 0), lines: p.textMuted.withValues(alpha: .06), light: Colors.white.withValues(alpha: 0)), child: body),
+      child: CustomPaint(
+        painter: _Stripes(
+          Colors.white.withValues(alpha: 0),
+          lines: p.textMuted.withValues(alpha: .06),
+          light: Colors.white.withValues(alpha: 0),
+        ),
+        child: body,
+      ),
     );
   }
 }
@@ -46,7 +67,11 @@ class _Stripes extends CustomPainter {
     // The floodlights.
     for (final c in [const Offset(0, 0), Offset(size.width, 0)]) {
       final r = size.shortestSide * .9;
-      canvas.drawCircle(c, r, Paint()..shader = RadialGradient(colors: [light, light.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: c, radius: r)));
+      canvas.drawCircle(
+        c,
+        r,
+        Paint()..shader = RadialGradient(colors: [light, light.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: c, radius: r)),
+      );
     }
     // The pitch: its outline, the halfway line and circle, both boxes; lying across a wide screen, upright on a tall one.
     final pen = Paint()
@@ -61,14 +86,23 @@ class _Stripes extends CustomPainter {
       canvas.drawLine(Offset(f.center.dx, f.top), Offset(f.center.dx, f.bottom), pen);
       for (final left in [true, false]) {
         final x = left ? f.left : f.right, d = left ? 1.0 : -1.0;
-        canvas.drawRect(Rect.fromPoints(Offset(x, f.center.dy - f.height * .3), Offset(x + d * f.width * .14, f.center.dy + f.height * .3)), pen);
-        canvas.drawRect(Rect.fromPoints(Offset(x, f.center.dy - f.height * .13), Offset(x + d * f.width * .05, f.center.dy + f.height * .13)), pen);
+        canvas.drawRect(
+          Rect.fromPoints(Offset(x, f.center.dy - f.height * .3), Offset(x + d * f.width * .14, f.center.dy + f.height * .3)),
+          pen,
+        );
+        canvas.drawRect(
+          Rect.fromPoints(Offset(x, f.center.dy - f.height * .13), Offset(x + d * f.width * .05, f.center.dy + f.height * .13)),
+          pen,
+        );
       }
     } else {
       canvas.drawLine(Offset(f.left, f.center.dy), Offset(f.right, f.center.dy), pen);
       for (final top in [true, false]) {
         final y = top ? f.top : f.bottom, d = top ? 1.0 : -1.0;
-        canvas.drawRect(Rect.fromPoints(Offset(f.center.dx - f.width * .3, y), Offset(f.center.dx + f.width * .3, y + d * f.height * .14)), pen);
+        canvas.drawRect(
+          Rect.fromPoints(Offset(f.center.dx - f.width * .3, y), Offset(f.center.dx + f.width * .3, y + d * f.height * .14)),
+          pen,
+        );
       }
     }
     canvas.drawCircle(f.center, size.shortestSide * .16, pen);
@@ -97,9 +131,11 @@ void showGlmToast(BuildContext context, String message, {bool error = false}) {
   GameSounds.play(error ? Sfx.error : Sfx.confirm);
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(
-      content: Text(message),
-      backgroundColor: error ? p.live : p.surfaceRaised,
-      duration: Duration(seconds: error ? 5 : 3),
-    ));
+    ..showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: error ? p.live : p.surfaceRaised,
+        duration: Duration(seconds: error ? 5 : 3),
+      ),
+    );
 }

@@ -22,12 +22,22 @@ import '../leagues/shell.dart';
 /// [Sprint 18 G] Tournaments (Sprint 29) and the alliance tournament (X27) in the app: my tournaments, a new one from
 /// a template, its page (code, entry, groups), and its draw replayed on the server's clock, one ball every reveal_ms
 /// from drawn_at, so every screen shows the same ball at the same moment. Picking teams one by one stays on the site.
-final tournamentsProvider = FutureProvider.autoDispose<List<dynamic>>((ref) async => (await ref.read(apiProvider).get('/tournaments'))['tournaments'] as List<dynamic>? ?? const []);
+final tournamentsProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>(
+  (ref) async => [
+    for (final t in (await ref.read(apiProvider).get('/tournaments'))['tournaments'] as List<dynamic>? ?? const [])
+      t as Map<String, dynamic>,
+  ],
+);
 final catalogProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) => ref.read(apiProvider).get('/tournaments/catalog'));
 final tournamentProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
-    (ref, id) async => (await ref.read(apiProvider).get('/tournaments/$id'))['tournament'] as Map<String, dynamic>);
-final drawProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>((ref, id) => ref.read(apiProvider).get('/tournaments/$id/draw'));
-final allianceProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>((ref, id) => ref.read(apiProvider).get('/leagues/$id/alliance'));
+  (ref, id) async => (await ref.read(apiProvider).get('/tournaments/$id'))['tournament'] as Map<String, dynamic>,
+);
+final drawProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
+  (ref, id) => ref.read(apiProvider).get('/tournaments/$id/draw'),
+);
+final allianceProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
+  (ref, id) => ref.read(apiProvider).get('/leagues/$id/alliance'),
+);
 
 Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
   try {
@@ -38,13 +48,21 @@ Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
   }
 }
 
-Widget _page(String title, Widget body, {Widget? fab}) =>
-    Scaffold(appBar: GameBar(title: Text(title)), floatingActionButton: fab, body: GlmBackground(child: body));
+Widget _page(String title, Widget body, {Widget? fab}) => Scaffold(
+  appBar: GameBar(title: Text(title)),
+  floatingActionButton: fab,
+  body: GlmBackground(child: body),
+);
 
 String templateName(L l, String key) => switch (key) {
-      'world_cup' => l.tplWorldCup, 'world_cup_48' => l.tplWorldCup48, 'club_world_cup' => l.tplClubWorldCup,
-      'afcon' => l.tplAfcon, 'euro' => l.tplEuro, 'asian_cup' => l.tplAsianCup, _ => key,
-    };
+  'world_cup' => l.tplWorldCup,
+  'world_cup_48' => l.tplWorldCup48,
+  'club_world_cup' => l.tplClubWorldCup,
+  'afcon' => l.tplAfcon,
+  'euro' => l.tplEuro,
+  'asian_cup' => l.tplAsianCup,
+  _ => key,
+};
 
 /// A date and then a time, from the device's pickers; null when either is dismissed.
 Future<DateTime?> pickWhen(BuildContext context, DateTime from) async {
@@ -68,26 +86,37 @@ class TournamentsScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(tournamentsProvider),
         data: (list) => list.isEmpty
             ? Center(child: Text(l.noTournaments))
-            : ListView(padding: const EdgeInsets.all(12), children: [
-                for (final t in list)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: GlmCard(
-                      onTap: () => context.push('/tournaments/${(t as Map<dynamic, dynamic>)['id']}'),
-                      child: Row(children: [
-                        Icon(Icons.emoji_events_rounded, color: context.palette.gold),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text('${t['name']}', style: const TextStyle(fontWeight: FontWeight.w800)),
-                            Text('${templateName(l, '${t['template']}')} · ${l.teamsCount(t['team_count'] as int? ?? 0)}', style: TextStyle(color: context.palette.textMuted, fontSize: 12)),
-                          ]),
+            : ListView(
+                padding: const EdgeInsets.all(12),
+                children: [
+                  for (final t in list)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: GlmCard(
+                        onTap: () => context.push('/tournaments/${(t as Map<dynamic, dynamic>)['id']}'),
+                        child: Row(
+                          children: [
+                            Icon(Icons.emoji_events_rounded, color: context.palette.gold),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('${t['name']}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                                  Text(
+                                    '${templateName(l, '${t['template']}')} · ${l.teamsCount(t['team_count'] as int? ?? 0)}',
+                                    style: TextStyle(color: context.palette.textMuted, fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right_rounded),
+                          ],
                         ),
-                        const Icon(Icons.chevron_right_rounded),
-                      ]),
+                      ),
                     ),
-                  ),
-              ]),
+                ],
+              ),
       ),
       fab: FloatingActionButton.extended(
         onPressed: () => context.push('/tournaments/new'),
@@ -129,23 +158,39 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
     final l = L.of(context);
     final p = context.palette;
     final groupCounts = ((c['limits'] as Map<dynamic, dynamic>?)?['group_counts'] as List<dynamic>? ?? const [1, 2, 4, 8]).cast<int>();
-    final pool = _clubs ? _found : (c['nations'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>().where((n) => _q.isEmpty || '${n['name']}'.toLowerCase().contains(_q.toLowerCase())).toList();
+    final pool = _clubs
+        ? _found
+        : (c['nations'] as List<dynamic>? ?? const [])
+              .cast<Map<dynamic, dynamic>>()
+              .where((n) => _q.isEmpty || '${n['name']}'.toLowerCase().contains(_q.toLowerCase()))
+              .toList();
     return [
       const SizedBox(height: 10),
       SegmentedButton<String>(
         showSelectedIcon: false,
-        segments: [ButtonSegment(value: 'league', label: Text(l.formatLeague)), ButtonSegment(value: 'groups', label: Text(l.formatGroups)), ButtonSegment(value: 'knockout', label: Text(l.formatKnockout))],
+        segments: [
+          ButtonSegment(value: 'league', label: Text(l.formatLeague)),
+          ButtonSegment(value: 'groups', label: Text(l.formatGroups)),
+          ButtonSegment(value: 'knockout', label: Text(l.formatKnockout)),
+        ],
         selected: {_format},
         onSelectionChanged: (x) => setState(() => _format = x.first),
       ),
       if (_format == 'groups')
-        Wrap(spacing: 6, children: [
-          for (final g in groupCounts) ChoiceChip(label: Text(l.groupsCount(g)), selected: _groups == g, onSelected: (_) => setState(() => _groups = g)),
-        ]),
+        Wrap(
+          spacing: 6,
+          children: [
+            for (final g in groupCounts)
+              ChoiceChip(label: Text(l.groupsCount(g)), selected: _groups == g, onSelected: (_) => setState(() => _groups = g)),
+          ],
+        ),
       const SizedBox(height: 8),
       SegmentedButton<bool>(
         showSelectedIcon: false,
-        segments: [ButtonSegment(value: false, label: Text(l.nationsTab)), ButtonSegment(value: true, label: Text(l.clubsTab))],
+        segments: [
+          ButtonSegment(value: false, label: Text(l.nationsTab)),
+          ButtonSegment(value: true, label: Text(l.clubsTab)),
+        ],
         selected: {_clubs},
         onSelectionChanged: (x) => setState(() => _clubs = x.first),
       ),
@@ -159,24 +204,37 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
           }
         },
       ),
-      Text(l.chosenTeams(_picked.length), style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700)),
+      Text(
+        l.chosenTeams(_picked.length),
+        style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700),
+      ),
       if (_picked.isNotEmpty)
-        Wrap(spacing: 4, runSpacing: 4, children: [
-          for (final e in _picked.entries) InputChip(label: Text(e.value, textDirection: TextDirection.ltr), onDeleted: () => setState(() => _picked.remove(e.key))),
-        ]),
+        Wrap(
+          spacing: 4,
+          runSpacing: 4,
+          children: [
+            for (final e in _picked.entries)
+              InputChip(
+                label: Text(e.value, textDirection: TextDirection.ltr),
+                onDeleted: () => setState(() => _picked.remove(e.key)),
+              ),
+          ],
+        ),
       SizedBox(
         height: 260,
-        child: ListView(children: [
-          for (final t in pool.take(60))
-            CheckboxListTile(
-              dense: true,
-              value: _picked.containsKey(t['id']),
-              activeColor: p.gold,
-              title: Text('${t['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
-              subtitle: Text('${t['league'] ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 11)),
-              onChanged: (on) => setState(() => on == true ? _picked[t['id'] as int] = '${t['name']}' : _picked.remove(t['id'])),
-            ),
-        ]),
+        child: ListView(
+          children: [
+            for (final t in pool.take(60))
+              CheckboxListTile(
+                dense: true,
+                value: _picked.containsKey(t['id']),
+                activeColor: p.gold,
+                title: Text('${t['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
+                subtitle: Text('${t['league'] ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 11)),
+                onChanged: (on) => setState(() => on == true ? _picked[t['id'] as int] = '${t['name']}' : _picked.remove(t['id'])),
+              ),
+          ],
+        ),
       ),
     ];
   }
@@ -191,73 +249,117 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
         onRetry: () => ref.invalidate(catalogProvider),
         data: (c) {
           final p = context.palette;
-          final templates = [for (final t in (c['templates'] as List<dynamic>? ?? const [])) if ((t as Map<dynamic, dynamic>)['key'] != 'custom' && (t['teams'] as List<dynamic>).isNotEmpty) t];
+          final templates = [
+            for (final t in (c['templates'] as List<dynamic>? ?? const []))
+              if ((t as Map<dynamic, dynamic>)['key'] != 'custom' && (t['teams'] as List<dynamic>).isNotEmpty) t,
+          ];
           final chosen = templates.where((t) => t['key'] == _template).firstOrNull;
           final perTeam = (c['limits'] as Map<dynamic, dynamic>?)?['coins_per_team'] as int? ?? 0;
-          return ListView(padding: const EdgeInsets.all(12), children: [
-            TextField(controller: _name, maxLength: 60, decoration: InputDecoration(labelText: l.leagueName)),
-            Wrap(spacing: 8, runSpacing: 8, children: [
-              for (final t in templates)
-                ChoiceChip(
-                  label: Text('${templateName(l, '${t['key']}')} · ${(t['teams'] as List<dynamic>).length}'),
-                  selected: _template == t['key'],
-                  selectedColor: p.gold.withValues(alpha: .28),
-                  onSelected: (_) => setState(() => _template = '${t['key']}'),
-                ),
-              ChoiceChip(
-                label: Text(l.customTeams),
-                selected: _template == 'custom',
-                selectedColor: p.gold.withValues(alpha: .28),
-                onSelected: (_) => setState(() => _template = 'custom'),
+          return ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              TextField(
+                controller: _name,
+                maxLength: 60,
+                decoration: InputDecoration(labelText: l.leagueName),
               ),
-            ]),
-            if (_template == 'custom') ..._custom(context, c),
-            const SizedBox(height: 12),
-            RadioGroup<String>(
-              groupValue: _entry,
-              onChanged: (v) => setState(() => _entry = v ?? 'pick'),
-              child: Column(children: [
-                RadioListTile(value: 'pick', title: Text(l.entryPick), activeColor: p.gold, contentPadding: EdgeInsets.zero),
-                RadioListTile(value: 'draw', title: Text(l.entryDraw), activeColor: p.gold, contentPadding: EdgeInsets.zero),
-              ]),
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.event_rounded, color: p.gold),
-              title: Text(l.startsOn),
-              subtitle: Text(_starts == null ? '—' : when(context, _starts!)),
-              onTap: () async {
-                final d = await pickWhen(context, DateTime.now().add(const Duration(days: 1)));
-                if (d != null) setState(() => _starts = d);
-              },
-            ),
-            if (chosen != null) Text(l.tournamentCost(perTeam * (chosen['teams'] as List<dynamic>).length), textAlign: TextAlign.center, style: TextStyle(color: context.glm.goldText)),
-            if (_template == 'custom' && _picked.isNotEmpty) Text(l.tournamentCost(perTeam * _picked.length), textAlign: TextAlign.center, style: TextStyle(color: context.glm.goldText)),
-            const SizedBox(height: 12),
-            GlmButton(
-              label: l.create,
-              block: true,
-              loading: _busy,
-              onPressed: (chosen == null && !(_template == 'custom' && _picked.length >= 2)) || _starts == null
-                  ? null
-                  : () async {
-                      setState(() => _busy = true);
-                      final shape = chosen == null
-                          ? {'template': 'custom', 'teams': _picked.keys.toList(), 'format': _format, if (_format == 'groups') ...{'group_count': _groups, 'advance_per_group': 2}, 'legs': 1}
-                          : {'template': chosen['key'], 'teams': chosen['teams'], 'format': chosen['format'], 'group_count': chosen['group_count'],
-                              'advance_per_group': chosen['advance_per_group'], 'best_thirds': chosen['best_thirds'], 'legs': chosen['legs']};
-                      final r = await _try(context, () => ref.read(apiProvider).post('/tournaments', {
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final t in templates)
+                    ChoiceChip(
+                      label: Text('${templateName(l, '${t['key']}')} · ${(t['teams'] as List<dynamic>).length}'),
+                      selected: _template == t['key'],
+                      selectedColor: p.gold.withValues(alpha: .28),
+                      onSelected: (_) => setState(() => _template = '${t['key']}'),
+                    ),
+                  ChoiceChip(
+                    label: Text(l.customTeams),
+                    selected: _template == 'custom',
+                    selectedColor: p.gold.withValues(alpha: .28),
+                    onSelected: (_) => setState(() => _template = 'custom'),
+                  ),
+                ],
+              ),
+              if (_template == 'custom') ..._custom(context, c),
+              const SizedBox(height: 12),
+              RadioGroup<String>(
+                groupValue: _entry,
+                onChanged: (v) => setState(() => _entry = v ?? 'pick'),
+                child: Column(
+                  children: [
+                    RadioListTile(value: 'pick', title: Text(l.entryPick), activeColor: p.gold, contentPadding: EdgeInsets.zero),
+                    RadioListTile(value: 'draw', title: Text(l.entryDraw), activeColor: p.gold, contentPadding: EdgeInsets.zero),
+                  ],
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.event_rounded, color: p.gold),
+                title: Text(l.startsOn),
+                subtitle: Text(_starts == null ? '—' : when(context, _starts!)),
+                onTap: () async {
+                  final d = await pickWhen(context, DateTime.now().add(const Duration(days: 1)));
+                  if (d != null) setState(() => _starts = d);
+                },
+              ),
+              if (chosen != null)
+                Text(
+                  l.tournamentCost(perTeam * (chosen['teams'] as List<dynamic>).length),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: context.glm.goldText),
+                ),
+              if (_template == 'custom' && _picked.isNotEmpty)
+                Text(
+                  l.tournamentCost(perTeam * _picked.length),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: context.glm.goldText),
+                ),
+              const SizedBox(height: 12),
+              GlmButton(
+                label: l.create,
+                block: true,
+                loading: _busy,
+                onPressed: (chosen == null && !(_template == 'custom' && _picked.length >= 2)) || _starts == null
+                    ? null
+                    : () async {
+                        setState(() => _busy = true);
+                        final shape = chosen == null
+                            ? {
+                                'template': 'custom',
+                                'teams': _picked.keys.toList(),
+                                'format': _format,
+                                if (_format == 'groups') ...{'group_count': _groups, 'advance_per_group': 2},
+                                'legs': 1,
+                              }
+                            : {
+                                'template': chosen['key'],
+                                'teams': chosen['teams'],
+                                'format': chosen['format'],
+                                'group_count': chosen['group_count'],
+                                'advance_per_group': chosen['advance_per_group'],
+                                'best_thirds': chosen['best_thirds'],
+                                'legs': chosen['legs'],
+                              };
+                        final r = await _try(
+                          context,
+                          () => ref.read(apiProvider).post('/tournaments', {
                             if (_name.text.trim().isNotEmpty) 'name': _name.text.trim(),
                             ...shape,
-                            'starts_at': _starts!.toUtc().toIso8601String(), 'entry_mode': _entry, 'timezone': 'Africa/Cairo',
-                          }));
-                      if (mounted) setState(() => _busy = false);
-                      ref.invalidate(tournamentsProvider);
-                      final id = ((r?['tournament'] as Map<dynamic, dynamic>?)?['id']) as int?;
-                      if (id != null && context.mounted) context.pushReplacement('/tournaments/$id');
-                    },
-            ),
-          ]);
+                            'starts_at': _starts!.toUtc().toIso8601String(),
+                            'entry_mode': _entry,
+                            'timezone': 'Africa/Cairo',
+                          }),
+                        );
+                        if (mounted) setState(() => _busy = false);
+                        ref.invalidate(tournamentsProvider);
+                        final id = ((r?['tournament'] as Map<dynamic, dynamic>?)?['id']) as int?;
+                        if (id != null && context.mounted) context.pushReplacement('/tournaments/$id');
+                      },
+              ),
+            ],
+          );
         },
       ),
     );
@@ -291,62 +393,123 @@ class TournamentScreen extends ConsumerWidget {
             ref.invalidate(tournamentProvider(id));
           }
 
-          return ListView(padding: const EdgeInsets.all(12), children: [
-            GlmCard(
-              gold: true,
-              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Text('${t['name']}', style: context.text.titleLarge),
-                Text('${templateName(l, '${t['template']}')} · ${l.teamsCount(t['team_count'] as int? ?? 0)}', style: TextStyle(color: p.textMuted)),
-                if (DateTime.tryParse('${t['starts_at']}') != null) Text('${l.startsOn}: ${when(context, DateTime.parse('${t['starts_at']}').toLocal())}'),
-                const SizedBox(height: 10),
-                Text(l.tournamentCode, style: TextStyle(color: p.textMuted, fontSize: 12)),
-                SelectableText(code, textAlign: TextAlign.center, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 28, letterSpacing: 4, fontWeight: FontWeight.w800, color: context.glm.goldText)),
-                Row(children: [
-                  Expanded(child: GlmButton(label: l.share, icon: const Icon(Icons.share_rounded), onPressed: () => SharePlus.instance.share(ShareParams(text: '${AppConfig.siteUrl}/join/$code')))),
-                  const SizedBox(width: 8),
-                  Expanded(child: GlmButton(label: l.code, variant: GlmButtonVariant.quiet, icon: const Icon(Icons.copy_rounded), onPressed: () {
-                    Clipboard.setData(ClipboardData(text: code));
-                    showGlmToast(context, l.copied);
-                  })),
-                ]),
-              ]),
-            ),
-            const SizedBox(height: 10),
-            if (entry['mode'] == 'draw' && (entry['can_enter'] == true || entry['is_entrant'] == true))
-              GlmButton(
-                label: entry['is_entrant'] == true ? l.leaveEntry : l.enter,
-                variant: entry['is_entrant'] == true ? GlmButtonVariant.outline : GlmButtonVariant.primary,
-                block: true,
-                onPressed: () => act(() => entry['is_entrant'] == true ? ref.read(apiProvider).delete('/tournaments/$id/entry') : ref.read(apiProvider).post('/tournaments/$id/entry')),
-              ),
-            const SizedBox(height: 8),
-            GlmButton(label: l.watchDraw, variant: GlmButtonVariant.brand, icon: const Icon(Icons.casino_rounded), block: true, onPressed: () => context.push('/tournaments/$id/draw')),
-            if (entry['is_member'] == true && t['status'] != 'waiting') ...[
-              const SizedBox(height: 8),
-              GlmButton(label: l.openLeague, variant: GlmButtonVariant.outline, block: true, onPressed: () => context.push('/leagues/$id')),
-            ],
-            const SizedBox(height: 12),
-            for (final g in (groups.keys.toList()..sort()))
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: GlmCard(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Text(l.groupN(g), style: context.text.titleMedium),
-                    for (final x in groups[g]!)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 3),
-                        child: Row(children: [
-                          ClubCrest(url: x['crest_url'] as String?, name: '${x['code']}', size: 24),
-                          const SizedBox(width: 8),
-                          Expanded(child: Text('${x['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
-                          if (x['coach'] != null) Text('${(x['coach'] as Map<dynamic, dynamic>?)?['name'] ?? x['coach']}', style: TextStyle(color: p.textMuted, fontSize: 12)),
-                        ]),
+          return ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              GlmCard(
+                gold: true,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('${t['name']}', style: context.text.titleLarge),
+                    Text(
+                      '${templateName(l, '${t['template']}')} · ${l.teamsCount(t['team_count'] as int? ?? 0)}',
+                      style: TextStyle(color: p.textMuted),
+                    ),
+                    if (DateTime.tryParse('${t['starts_at']}') != null)
+                      Text('${l.startsOn}: ${when(context, DateTime.parse('${t['starts_at']}').toLocal())}'),
+                    const SizedBox(height: 10),
+                    Text(l.tournamentCode, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                    SelectableText(
+                      code,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: GlmFonts.numbers,
+                        fontSize: 28,
+                        letterSpacing: 4,
+                        fontWeight: FontWeight.w800,
+                        color: context.glm.goldText,
                       ),
-                  ]),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GlmButton(
+                            label: l.share,
+                            icon: const Icon(Icons.share_rounded),
+                            onPressed: () => SharePlus.instance.share(ShareParams(text: '${AppConfig.siteUrl}/join/$code')),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: GlmButton(
+                            label: l.code,
+                            variant: GlmButtonVariant.quiet,
+                            icon: const Icon(Icons.copy_rounded),
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: code));
+                              showGlmToast(context, l.copied);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-          ]);
+              const SizedBox(height: 10),
+              if (entry['mode'] == 'draw' && (entry['can_enter'] == true || entry['is_entrant'] == true))
+                GlmButton(
+                  label: entry['is_entrant'] == true ? l.leaveEntry : l.enter,
+                  variant: entry['is_entrant'] == true ? GlmButtonVariant.outline : GlmButtonVariant.primary,
+                  block: true,
+                  onPressed: () => act(
+                    () => entry['is_entrant'] == true
+                        ? ref.read(apiProvider).delete('/tournaments/$id/entry')
+                        : ref.read(apiProvider).post('/tournaments/$id/entry'),
+                  ),
+                ),
+              const SizedBox(height: 8),
+              GlmButton(
+                label: l.watchDraw,
+                variant: GlmButtonVariant.brand,
+                icon: const Icon(Icons.casino_rounded),
+                block: true,
+                onPressed: () => context.push('/tournaments/$id/draw'),
+              ),
+              if (entry['is_member'] == true && t['status'] != 'waiting') ...[
+                const SizedBox(height: 8),
+                GlmButton(
+                  label: l.openLeague,
+                  variant: GlmButtonVariant.outline,
+                  block: true,
+                  onPressed: () => context.push('/leagues/$id'),
+                ),
+              ],
+              const SizedBox(height: 12),
+              for (final g in (groups.keys.toList()..sort()))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: GlmCard(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(l.groupN(g), style: context.text.titleMedium),
+                        for (final x in groups[g]!)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 3),
+                            child: Row(
+                              children: [
+                                ClubCrest(url: x['crest_url'] as String?, name: '${x['code']}', size: 24),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text('${x['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
+                                ),
+                                if (x['coach'] != null)
+                                  Text(
+                                    '${(x['coach'] as Map<dynamic, dynamic>?)?['name'] ?? x['coach']}',
+                                    style: TextStyle(color: p.textMuted, fontSize: 12),
+                                  ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          );
         },
       ),
     );
@@ -407,48 +570,84 @@ class _DrawScreenState extends ConsumerState<DrawScreen> {
             if (s['group'] != null) (groups[s['group'] as int] ??= []).add(s);
           }
           final last = shown == 0 ? null : steps[shown - 1];
-          return ListView(padding: const EdgeInsets.all(12), children: [
-            if (drawnAt == null) ...[
-              Text(drawAt == null ? l.drawNotSet : l.drawAt(when(context, drawAt.toLocal())), textAlign: TextAlign.center, style: context.text.titleMedium),
-              if (d['can_schedule'] == true) ...[
-                const SizedBox(height: 10),
-                GlmButton(
-                  label: l.scheduleDraw,
-                  icon: const Icon(Icons.schedule_rounded),
-                  onPressed: () async {
-                    final at = await pickWhen(context, DateTime.now());
-                    if (at == null || !context.mounted) return;
-                    await _try(context, () => ref.read(apiProvider).put('/leagues/${widget.id}/draw', {'draw_at': at.toUtc().toIso8601String()}));
-                    ref.invalidate(drawProvider(widget.id));
-                  },
+          return ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              if (drawnAt == null) ...[
+                Text(
+                  drawAt == null ? l.drawNotSet : l.drawAt(when(context, drawAt.toLocal())),
+                  textAlign: TextAlign.center,
+                  style: context.text.titleMedium,
                 ),
-              ],
-            ] else ...[
-              Text(l.drawnBalls(shown, steps.length), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
-              if (last != null)
-                GlmCard(
-                  gold: true,
-                  child: Column(children: [
-                    ClubCrest(url: (last['club'] as Map<dynamic, dynamic>?)?['crest_url'] as String?, name: '${(last['club'] as Map<dynamic, dynamic>?)?['code'] ?? ''}', size: 64),
-                    const SizedBox(height: 6),
-                    Text('${(last['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', textDirection: TextDirection.ltr, style: context.text.titleLarge),
-                    if (last['group'] != null) Text(l.groupN(String.fromCharCode(64 + (last['group'] as int))), style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800)),
-                  ]),
-                ),
-              const SizedBox(height: 10),
-              for (final g in (groups.keys.toList()..sort()))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: GlmCard(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                      Text(l.groupN(String.fromCharCode(64 + g)), style: const TextStyle(fontWeight: FontWeight.w800)),
-                      for (final s in groups[g]!) Text('${(s['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
-                    ]),
+                if (d['can_schedule'] == true) ...[
+                  const SizedBox(height: 10),
+                  GlmButton(
+                    label: l.scheduleDraw,
+                    icon: const Icon(Icons.schedule_rounded),
+                    onPressed: () async {
+                      final at = await pickWhen(context, DateTime.now());
+                      if (at == null || !context.mounted) return;
+                      await _try(
+                        context,
+                        () => ref.read(apiProvider).put('/leagues/${widget.id}/draw', {'draw_at': at.toUtc().toIso8601String()}),
+                      );
+                      ref.invalidate(drawProvider(widget.id));
+                    },
                   ),
+                ],
+              ] else ...[
+                Text(
+                  l.drawnBalls(shown, steps.length),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: p.textMuted),
                 ),
+                if (last != null)
+                  GlmCard(
+                    gold: true,
+                    child: Column(
+                      children: [
+                        ClubCrest(
+                          url: (last['club'] as Map<dynamic, dynamic>?)?['crest_url'] as String?,
+                          name: '${(last['club'] as Map<dynamic, dynamic>?)?['code'] ?? ''}',
+                          size: 64,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${(last['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
+                          textDirection: TextDirection.ltr,
+                          style: context.text.titleLarge,
+                        ),
+                        if (last['group'] != null)
+                          Text(
+                            l.groupN(String.fromCharCode(64 + (last['group'] as int))),
+                            style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800),
+                          ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 10),
+                for (final g in (groups.keys.toList()..sort()))
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: GlmCard(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(l.groupN(String.fromCharCode(64 + g)), style: const TextStyle(fontWeight: FontWeight.w800)),
+                          for (final s in groups[g]!)
+                            Text(
+                              '${(s['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
+                              textDirection: TextDirection.ltr,
+                              textAlign: TextAlign.start,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
             ],
-          ]);
+          );
         },
       ),
     );
@@ -469,10 +668,15 @@ class _AllianceScreenState extends ConsumerState<AllianceScreen> {
   Future<void> _swap(Map<dynamic, dynamic> tie, int max) async {
     final l = L.of(context);
     final mine = tie['winner_id'];
-    final other = (tie['home'] as Map<dynamic, dynamic>?)?['id'] == mine ? tie['away'] as Map<dynamic, dynamic>? : tie['home'] as Map<dynamic, dynamic>?;
+    final other = (tie['home'] as Map<dynamic, dynamic>?)?['id'] == mine
+        ? tie['away'] as Map<dynamic, dynamic>?
+        : tie['home'] as Map<dynamic, dynamic>?;
     if (other == null) return;
     final api = ref.read(apiProvider);
-    final lists = await Future.wait([api.get('/leagues/${widget.leagueId}/clubs/$mine'), api.get('/leagues/${widget.leagueId}/clubs/${other['id']}')]);
+    final lists = await Future.wait([
+      api.get('/leagues/${widget.leagueId}/clubs/$mine'),
+      api.get('/leagues/${widget.leagueId}/clubs/${other['id']}'),
+    ]);
     if (!mounted) return;
     final give = <int>{}, take = <int>{};
     final ok = await showModalBottomSheet<bool>(
@@ -482,38 +686,67 @@ class _AllianceScreenState extends ConsumerState<AllianceScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, set) => SizedBox(
           height: MediaQuery.of(ctx).size.height * .75,
-          child: Column(children: [
-            Expanded(
-              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                for (final (title, list, chosen) in [(l.swapGive, lists[0], give), (l.swapTake, lists[1], take)])
-                  Expanded(
-                    child: ListView(children: [
-                      Padding(padding: const EdgeInsets.all(8), child: Text(title, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w800))),
-                      for (final pl in (list['players'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>())
-                        CheckboxListTile(
-                          dense: true,
-                          value: chosen.contains(pl['id']),
-                          title: Text('${pl['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text('${pl['position']} ${pl['overall']}', textDirection: TextDirection.ltr),
-                          onChanged: (on) => set(() => on == true ? (chosen.length < max ? chosen.add(pl['id'] as int) : null) : chosen.remove(pl['id'])),
+          child: Column(
+            children: [
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final (title, list, chosen) in [(l.swapGive, lists[0], give), (l.swapTake, lists[1], take)])
+                      Expanded(
+                        child: ListView(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Text(
+                                title,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontWeight: FontWeight.w800),
+                              ),
+                            ),
+                            for (final pl in (list['players'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>())
+                              CheckboxListTile(
+                                dense: true,
+                                value: chosen.contains(pl['id']),
+                                title: Text(
+                                  '${pl['name']}',
+                                  textDirection: TextDirection.ltr,
+                                  textAlign: TextAlign.start,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text('${pl['position']} ${pl['overall']}', textDirection: TextDirection.ltr),
+                                onChanged: (on) => set(
+                                  () => on == true ? (chosen.length < max ? chosen.add(pl['id'] as int) : null) : chosen.remove(pl['id']),
+                                ),
+                              ),
+                          ],
                         ),
-                    ]),
-                  ),
-              ]),
-            ),
-            SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: GlmButton(label: l.send, block: true, onPressed: give.isEmpty || take.isEmpty ? null : () => Navigator.pop(ctx, true)),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ]),
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: GlmButton(
+                    label: l.send,
+                    block: true,
+                    onPressed: give.isEmpty || take.isEmpty ? null : () => Navigator.pop(ctx, true),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
     if (ok == true && mounted) {
-      await _try(context, () => api.post('/leagues/${widget.leagueId}/alliance/ties/${tie['id']}/swap', {'give': give.toList(), 'take': take.toList()}));
+      await _try(
+        context,
+        () => api.post('/leagues/${widget.leagueId}/alliance/ties/${tie['id']}/swap', {'give': give.toList(), 'take': take.toList()}),
+      );
       ref.invalidate(allianceProvider(widget.leagueId));
     }
   }
@@ -543,91 +776,159 @@ class _AllianceScreenState extends ConsumerState<AllianceScreen> {
           final coaches = (d['coaches'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>();
           final sizes = (d['sizes'] as List<dynamic>? ?? const [1, 5]).cast<int>();
           _size ??= (d['default_size'] as int? ?? 2).toDouble();
-          return ListView(padding: const EdgeInsets.all(12), children: [
-            Text(l.allianceLead, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
-            const SizedBox(height: 12),
-            if (t != null) ...[
-              Text('${t['name']}', style: context.text.titleLarge, textAlign: TextAlign.center),
-              const SizedBox(height: 8),
-              for (final x in (t['ties'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>())
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: GlmCard(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                      Row(children: [
-                        Expanded(child: Text('${(x['home'] as Map<dynamic, dynamic>?)?['name'] ?? '—'}', textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w700))),
-                        Text(x['score'] is Map<dynamic, dynamic> ? '${(x['score'] as Map<dynamic, dynamic>)['home']} - ${(x['score'] as Map<dynamic, dynamic>)['away']}' : 'vs', textDirection: TextDirection.ltr),
-                        Expanded(child: Text('${(x['away'] as Map<dynamic, dynamic>?)?['name'] ?? '—'}', textDirection: TextDirection.ltr, textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.w700))),
-                      ]),
-                      // [Sprint 40 D2] The one who went on swaps players with the team he passed.
-                      if (x['winner_id'] != null && x['winner_id'] == t['my_club_id'] && (x['swaps'] as int? ?? 0) < (t['swap_max'] as int? ?? 3))
-                        GlmButton(
-                          label: l.swapPlayers((t['swap_max'] as int? ?? 3) - (x['swaps'] as int? ?? 0)),
-                          variant: GlmButtonVariant.quiet,
-                          onPressed: () => _swap(x, (t['swap_max'] as int? ?? 3) - (x['swaps'] as int? ?? 0)),
-                        ),
-                      if (x['winner_id'] == null && t['my_club_id'] != null && [(x['home'] as Map<dynamic, dynamic>?)?['id'], (x['away'] as Map<dynamic, dynamic>?)?['id']].contains(t['my_club_id']))
-                        Row(children: [
-                          for (final side in ['home', 'away'])
-                            if (x[side] is Map<dynamic, dynamic>)
+          return ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              Text(
+                l.allianceLead,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: p.textMuted),
+              ),
+              const SizedBox(height: 12),
+              if (t != null) ...[
+                Text('${t['name']}', style: context.text.titleLarge, textAlign: TextAlign.center),
+                const SizedBox(height: 8),
+                for (final x in (t['ties'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>())
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: GlmCard(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
                               Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4),
-                                  child: GlmButton(
-                                    label: '${l.goesOn}: ${(x[side] as Map<dynamic, dynamic>)['code']}',
-                                    variant: GlmButtonVariant.outline,
-                                    onPressed: () async {
-                                      await _try(context, () => ref.read(apiProvider).post('/leagues/${widget.leagueId}/alliance/ties/${x['id']}/decide', {'winner': (x[side] as Map<dynamic, dynamic>)['id']}));
-                                      ref.invalidate(allianceProvider(widget.leagueId));
-                                    },
-                                  ),
+                                child: Text(
+                                  '${(x['home'] as Map<dynamic, dynamic>?)?['name'] ?? '—'}',
+                                  textDirection: TextDirection.ltr,
+                                  style: const TextStyle(fontWeight: FontWeight.w700),
                                 ),
                               ),
-                        ]),
-                    ]),
+                              Text(
+                                x['score'] is Map<dynamic, dynamic>
+                                    ? '${(x['score'] as Map<dynamic, dynamic>)['home']} - ${(x['score'] as Map<dynamic, dynamic>)['away']}'
+                                    : 'vs',
+                                textDirection: TextDirection.ltr,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  '${(x['away'] as Map<dynamic, dynamic>?)?['name'] ?? '—'}',
+                                  textDirection: TextDirection.ltr,
+                                  textAlign: TextAlign.end,
+                                  style: const TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ],
+                          ),
+                          // [Sprint 40 D2] The one who went on swaps players with the team he passed.
+                          if (x['winner_id'] != null &&
+                              x['winner_id'] == t['my_club_id'] &&
+                              (x['swaps'] as int? ?? 0) < (t['swap_max'] as int? ?? 3))
+                            GlmButton(
+                              label: l.swapPlayers((t['swap_max'] as int? ?? 3) - (x['swaps'] as int? ?? 0)),
+                              variant: GlmButtonVariant.quiet,
+                              onPressed: () => _swap(x, (t['swap_max'] as int? ?? 3) - (x['swaps'] as int? ?? 0)),
+                            ),
+                          if (x['winner_id'] == null &&
+                              t['my_club_id'] != null &&
+                              [
+                                (x['home'] as Map<dynamic, dynamic>?)?['id'],
+                                (x['away'] as Map<dynamic, dynamic>?)?['id'],
+                              ].contains(t['my_club_id']))
+                            Row(
+                              children: [
+                                for (final side in ['home', 'away'])
+                                  if (x[side] is Map<dynamic, dynamic>)
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: GlmButton(
+                                          label: '${l.goesOn}: ${(x[side] as Map<dynamic, dynamic>)['code']}',
+                                          variant: GlmButtonVariant.outline,
+                                          onPressed: () async {
+                                            await _try(
+                                              context,
+                                              () => ref.read(apiProvider).post(
+                                                '/leagues/${widget.leagueId}/alliance/ties/${x['id']}/decide',
+                                                {'winner': (x[side] as Map<dynamic, dynamic>)['id']},
+                                              ),
+                                            );
+                                            ref.invalidate(allianceProvider(widget.leagueId));
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ] else if (d['can_create'] != true)
+                Center(child: Text(l.noAlliance)),
+              if (d['can_create'] == true)
+                GlmCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextField(
+                        controller: _name,
+                        maxLength: 40,
+                        decoration: InputDecoration(labelText: l.leagueName),
+                      ),
+                      for (final (label, value, set) in [(l.captainA, _a, (String? v) => _a = v), (l.captainB, _b, (String? v) => _b = v)])
+                        DropdownButtonFormField<String>(
+                          initialValue: value,
+                          isExpanded: true,
+                          decoration: InputDecoration(labelText: label),
+                          items: [
+                            for (final c in coaches)
+                              DropdownMenuItem(value: '${c['username']}', child: Text('${c['name']} (@${c['username']})')),
+                          ],
+                          onChanged: (v) => setState(() => set(v)),
+                        ),
+                      Text(l.allianceSize(_size!.round())),
+                      Slider(
+                        value: _size!,
+                        min: sizes.first.toDouble(),
+                        max: sizes.last.toDouble(),
+                        divisions: (sizes.last - sizes.first).clamp(1, 20),
+                        activeColor: p.gold,
+                        onChanged: (v) => setState(() => _size = v),
+                      ),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(l.firstRound),
+                        subtitle: Text(_first == null ? '—' : when(context, _first!)),
+                        onTap: () async {
+                          final at = await pickWhen(context, DateTime.now().add(const Duration(days: 1)));
+                          if (at != null) setState(() => _first = at);
+                        },
+                      ),
+                      GlmButton(
+                        label: l.createAlliance,
+                        onPressed: _a == null || _b == null || _first == null
+                            ? null
+                            : () async {
+                                await _try(
+                                  context,
+                                  () => ref.read(apiProvider).post('/leagues/${widget.leagueId}/alliance', {
+                                    'name': _name.text.trim(),
+                                    'captain_a': _a,
+                                    'captain_b': _b,
+                                    'size': _size!.round(),
+                                    'first_round_at': _first!.toUtc().toIso8601String(),
+                                  }),
+                                );
+                                ref.invalidate(allianceProvider(widget.leagueId));
+                              },
+                      ),
+                    ],
                   ),
                 ),
-            ] else if (d['can_create'] != true)
-              Center(child: Text(l.noAlliance)),
-            if (d['can_create'] == true)
-              GlmCard(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  TextField(controller: _name, maxLength: 40, decoration: InputDecoration(labelText: l.leagueName)),
-                  for (final (label, value, set) in [(l.captainA, _a, (String? v) => _a = v), (l.captainB, _b, (String? v) => _b = v)])
-                    DropdownButtonFormField<String>(
-                      initialValue: value,
-                      isExpanded: true,
-                      decoration: InputDecoration(labelText: label),
-                      items: [for (final c in coaches) DropdownMenuItem(value: '${c['username']}', child: Text('${c['name']} (@${c['username']})'))],
-                      onChanged: (v) => setState(() => set(v)),
-                    ),
-                  Text(l.allianceSize(_size!.round())),
-                  Slider(value: _size!, min: sizes.first.toDouble(), max: sizes.last.toDouble(), divisions: (sizes.last - sizes.first).clamp(1, 20), activeColor: p.gold,
-                      onChanged: (v) => setState(() => _size = v)),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l.firstRound),
-                    subtitle: Text(_first == null ? '—' : when(context, _first!)),
-                    onTap: () async {
-                      final at = await pickWhen(context, DateTime.now().add(const Duration(days: 1)));
-                      if (at != null) setState(() => _first = at);
-                    },
-                  ),
-                  GlmButton(
-                    label: l.createAlliance,
-                    onPressed: _a == null || _b == null || _first == null
-                        ? null
-                        : () async {
-                            await _try(context, () => ref.read(apiProvider).post('/leagues/${widget.leagueId}/alliance', {
-                                  'name': _name.text.trim(), 'captain_a': _a, 'captain_b': _b, 'size': _size!.round(), 'first_round_at': _first!.toUtc().toIso8601String(),
-                                }));
-                            ref.invalidate(allianceProvider(widget.leagueId));
-                          },
-                  ),
-                ]),
-              ),
-          ]);
+            ],
+          );
         },
       ),
     );

@@ -19,12 +19,25 @@ class GlmSectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Row(children: [
-      Container(width: 4, height: 17, decoration: BoxDecoration(color: p.gold, borderRadius: BorderRadius.circular(4))),
-      const SizedBox(width: 8),
-      Expanded(child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16))),
-      ?trailing,
-    ]);
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 17,
+          decoration: BoxDecoration(color: p.gold, borderRadius: BorderRadius.circular(4)),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          ),
+        ),
+        ?trailing,
+      ],
+    );
   }
 }
 
@@ -32,7 +45,14 @@ class GlmSectionTitle extends StatelessWidget {
 /// inspector. On a narrow screen (a tablet held the other way never happens: the game is landscape only, but a small
 /// window may) the two stack.
 class GlmSplitLayout extends StatelessWidget {
-  const GlmSplitLayout({super.key, required this.start, required this.end, this.ratio = (50, 50), this.gap = 8, this.padding = const EdgeInsets.all(8)});
+  const GlmSplitLayout({
+    super.key,
+    required this.start,
+    required this.end,
+    this.ratio = (50, 50),
+    this.gap = 8,
+    this.padding = const EdgeInsets.all(8),
+  });
 
   final Widget start, end;
   final (int, int) ratio;
@@ -41,18 +61,30 @@ class GlmSplitLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: padding,
-        child: LayoutBuilder(builder: (context, c) {
-          if (c.maxWidth < 560) {
-            return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(child: start), SizedBox(height: gap), Expanded(child: end)]);
-          }
-          return Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    padding: padding,
+    child: LayoutBuilder(
+      builder: (context, c) {
+        if (c.maxWidth < 560) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: start),
+              SizedBox(height: gap),
+              Expanded(child: end),
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
             Expanded(flex: ratio.$1, child: start),
             SizedBox(width: gap),
             Expanded(flex: ratio.$2, child: end),
-          ]);
-        }),
-      );
+          ],
+        );
+      },
+    ),
+  );
 }
 
 /// [Sprint 50 M16] The report's bar for one figure: your side in mint from the middle to the start, the other in orange
@@ -71,23 +103,45 @@ class GlmDualCompareBar extends StatelessWidget {
     final a = total == 0 ? .5 : mine / total;
     const number = TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 15);
     Widget bar(double share, Color colour, AlignmentGeometry from) => Expanded(
+      child: Container(
+        height: 8,
+        decoration: BoxDecoration(color: p.surfaceRaised, borderRadius: BorderRadius.circular(4)),
+        alignment: from,
+        child: FractionallySizedBox(
+          widthFactor: share.clamp(0, 1).toDouble(),
           child: Container(
-            height: 8,
-            decoration: BoxDecoration(color: p.surfaceRaised, borderRadius: BorderRadius.circular(4)),
-            alignment: from,
-            child: FractionallySizedBox(widthFactor: share.clamp(0, 1).toDouble(), child: Container(decoration: BoxDecoration(color: colour, borderRadius: BorderRadius.circular(4)))),
+            decoration: BoxDecoration(color: colour, borderRadius: BorderRadius.circular(4)),
           ),
-        );
+        ),
+      ),
+    );
     return Semantics(
       label: '$label: ${mineText ?? mine} - ${theirsText ?? theirs}',
       excludeSemantics: true,
-      child: Row(children: [
-        SizedBox(width: 38, child: Text(mineText ?? '$mine', textAlign: TextAlign.center, textDirection: TextDirection.ltr, style: number)),
-        bar(a.toDouble(), p.brandLight, AlignmentDirectional.centerEnd),
-        SizedBox(width: 86, child: Text(label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 12))),
-        bar(1 - a.toDouble(), p.warning, AlignmentDirectional.centerStart),
-        SizedBox(width: 38, child: Text(theirsText ?? '$theirs', textAlign: TextAlign.center, textDirection: TextDirection.ltr, style: number)),
-      ]),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 38,
+            child: Text(mineText ?? '$mine', textAlign: TextAlign.center, textDirection: TextDirection.ltr, style: number),
+          ),
+          bar(a.toDouble(), p.brandLight, AlignmentDirectional.centerEnd),
+          SizedBox(
+            width: 86,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: p.textMuted, fontSize: 12),
+            ),
+          ),
+          bar(1 - a.toDouble(), p.warning, AlignmentDirectional.centerStart),
+          SizedBox(
+            width: 38,
+            child: Text(theirsText ?? '$theirs', textAlign: TextAlign.center, textDirection: TextDirection.ltr, style: number),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -101,11 +155,16 @@ class GlmCompactField extends StatelessWidget {
   final double labelWidth;
 
   @override
-  Widget build(BuildContext context) => Row(children: [
-        SizedBox(width: labelWidth, child: Text(label, style: TextStyle(color: context.palette.textMuted, fontSize: 13))),
-        const SizedBox(width: 8),
-        Expanded(child: child),
-      ]);
+  Widget build(BuildContext context) => Row(
+    children: [
+      SizedBox(
+        width: labelWidth,
+        child: Text(label, style: TextStyle(color: context.palette.textMuted, fontSize: 13)),
+      ),
+      const SizedBox(width: 8),
+      Expanded(child: child),
+    ],
+  );
 }
 
 /// [Sprint 50 M3] The floating input sheet: a short sheet that opens on the screen's upper half above the keyboard, so
@@ -127,21 +186,30 @@ Future<T?> showCompactInputSheet<T>(BuildContext context, {required String title
             constraints: const BoxConstraints(maxWidth: 460),
             child: Material(
               color: p.surface,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: BorderSide(color: p.gold.withValues(alpha: .3))),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+                side: BorderSide(color: p.gold.withValues(alpha: .3)),
+              ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-                child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  GlmSectionTitle(title),
-                  const SizedBox(height: 10),
-                  builder(context),
-                ]),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [GlmSectionTitle(title), const SizedBox(height: 10), builder(context)],
+                ),
               ),
             ),
           ),
         ),
       ),
     ),
-    transitionBuilder: (_, a, _, child) => FadeTransition(opacity: a, child: SlideTransition(position: Tween(begin: const Offset(0, -.06), end: Offset.zero).animate(a), child: child)),
+    transitionBuilder: (_, a, _, child) => FadeTransition(
+      opacity: a,
+      child: SlideTransition(
+        position: Tween(begin: const Offset(0, -.06), end: Offset.zero).animate(a),
+        child: child,
+      ),
+    ),
   );
 }
 

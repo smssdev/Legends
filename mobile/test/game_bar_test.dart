@@ -10,15 +10,22 @@ import 'package:glm/ui/theme.dart';
 /// it, and without a family the title fell back to the system's (boxes in the screenshots).
 void main() {
   testWidgets("the top bar's title is in the game's font", (t) async {
-    await t.pumpWidget(ProviderScope(
-      child: MaterialApp(
-        theme: glmTheme(day: false),
-        locale: const Locale('ar'),
-        supportedLocales: L.supportedLocales,
-        localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-        home: const Scaffold(appBar: GameBar(title: Text('السوق'))),
+    await t.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: glmTheme(day: false),
+          locale: const Locale('ar'),
+          supportedLocales: L.supportedLocales,
+          localizationsDelegates: const [
+            L.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: const Scaffold(appBar: GameBar(title: Text('السوق'))),
+        ),
       ),
-    ));
+    );
     final style = DefaultTextStyle.of(t.element(find.text('السوق'))).style;
     expect(style.fontFamily, GlmFonts.body);
     expect(style.fontWeight, FontWeight.w800);

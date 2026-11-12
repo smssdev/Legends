@@ -40,11 +40,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _submit() async {
     final l = L.of(context);
-    setState(() => _errors = {
-          if (_name.text.trim().length < 2) 'name': l.required,
-          if (_username.text.trim().isEmpty) 'username': l.required,
-          if (_password.text.length < 8) 'password': l.passwordHint,
-        });
+    setState(
+      () => _errors = {
+        if (_name.text.trim().length < 2) 'name': l.required,
+        if (_username.text.trim().isEmpty) 'username': l.required,
+        if (_password.text.length < 8) 'password': l.passwordHint,
+      },
+    );
     if (_errors.isNotEmpty) return;
     if (!_terms) {
       showGlmToast(context, l.mustAcceptTerms, error: true);
@@ -52,7 +54,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
     setState(() => _busy = true);
     try {
-      await ref.read(authProvider.notifier).register(name: _name.text, username: _username.text, email: _email.text, password: _password.text);
+      await ref
+          .read(authProvider.notifier)
+          .register(name: _name.text, username: _username.text, email: _email.text, password: _password.text);
     } on ApiError catch (e) {
       if (!mounted) return;
       setState(() => _errors = e.fields);
@@ -73,12 +77,34 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       children: [
         GlmTextField(label: l.displayName, controller: _name, autofill: const [AutofillHints.nickname], error: _errors['name']),
         const SizedBox(height: 14),
-        GlmTextField(label: l.username, controller: _username, ltr: true, hint: l.usernameHint, autofill: const [AutofillHints.newUsername], error: _errors['username']),
+        GlmTextField(
+          label: l.username,
+          controller: _username,
+          ltr: true,
+          hint: l.usernameHint,
+          autofill: const [AutofillHints.newUsername],
+          error: _errors['username'],
+        ),
         const SizedBox(height: 14),
-        GlmTextField(label: l.emailOptional, controller: _email, ltr: true, keyboard: TextInputType.emailAddress, autofill: const [AutofillHints.email], error: _errors['email']),
+        GlmTextField(
+          label: l.emailOptional,
+          controller: _email,
+          ltr: true,
+          keyboard: TextInputType.emailAddress,
+          autofill: const [AutofillHints.email],
+          error: _errors['email'],
+        ),
         const SizedBox(height: 14),
-        GlmTextField(label: l.password, controller: _password, password: true, hint: l.passwordHint, autofill: const [AutofillHints.newPassword],
-            action: TextInputAction.done, onSubmitted: (_) => _submit(), error: _errors['password']),
+        GlmTextField(
+          label: l.password,
+          controller: _password,
+          password: true,
+          hint: l.passwordHint,
+          autofill: const [AutofillHints.newPassword],
+          action: TextInputAction.done,
+          onSubmitted: (_) => _submit(),
+          error: _errors['password'],
+        ),
         const SizedBox(height: 10),
         CheckboxListTile(
           value: _terms,
@@ -89,7 +115,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           title: Text(l.acceptTerms, style: const TextStyle(fontSize: 14)),
           subtitle: GestureDetector(
             onTap: () => launchUrl(Uri.parse('${AppConfig.siteUrl}/terms'), mode: LaunchMode.externalApplication),
-            child: Text(l.termsAndPrivacy, style: TextStyle(color: context.glm.goldText, decoration: TextDecoration.underline, fontSize: 13)),
+            child: Text(
+              l.termsAndPrivacy,
+              style: TextStyle(color: context.glm.goldText, decoration: TextDecoration.underline, fontSize: 13),
+            ),
           ),
         ),
         const SizedBox(height: 8),

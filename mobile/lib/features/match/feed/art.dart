@@ -24,13 +24,22 @@ Offset lerpO(Offset a, Offset b, double t) => Offset(lerp(a.dx, b.dx, t), lerp(a
 
 /// A point along a quadratic curve (a curled free kick, a cross).
 Offset bezier(Offset a, Offset c, Offset b, double t) => Offset(
-      (1 - t) * (1 - t) * a.dx + 2 * (1 - t) * t * c.dx + t * t * b.dx,
-      (1 - t) * (1 - t) * a.dy + 2 * (1 - t) * t * c.dy + t * t * b.dy,
-    );
+  (1 - t) * (1 - t) * a.dx + 2 * (1 - t) * t * c.dx + t * t * b.dx,
+  (1 - t) * (1 - t) * a.dy + 2 * (1 - t) * t * c.dy + t * t * b.dy,
+);
 
 /// The colours of one clip: both kits, the keepers', the referee's, the grass, the night.
 class ClipLook {
-  const ClipLook({required this.kits, required this.keeper, required this.referee, required this.grass, required this.grassDark, required this.gold, required this.night, this.rain = false});
+  const ClipLook({
+    required this.kits,
+    required this.keeper,
+    required this.referee,
+    required this.grass,
+    required this.grassDark,
+    required this.gold,
+    required this.night,
+    this.rain = false,
+  });
 
   /// Each side's shirt and its ink (the number).
   final Map<String, (Color, Color)> kits;
@@ -54,13 +63,39 @@ void fitFrame(Canvas c, Size s) {
   c.scale(k);
 }
 
-void text(Canvas c, String t, Offset at, {double size = 16, Color color = Colors.white, FontWeight weight = FontWeight.w800, String? family, TextAlign align = TextAlign.center, double letter = 0, List<Shadow>? shadows}) {
+void text(
+  Canvas c,
+  String t,
+  Offset at, {
+  double size = 16,
+  Color color = Colors.white,
+  FontWeight weight = FontWeight.w800,
+  String? family,
+  TextAlign align = TextAlign.center,
+  double letter = 0,
+  List<Shadow>? shadows,
+}) {
   final p = TextPainter(
-    text: TextSpan(text: t, style: TextStyle(fontSize: size, color: color, fontWeight: weight, fontFamily: family ?? 'Tajawal', letterSpacing: letter, height: 1, shadows: shadows)),
+    text: TextSpan(
+      text: t,
+      style: TextStyle(
+        fontSize: size,
+        color: color,
+        fontWeight: weight,
+        fontFamily: family ?? 'Tajawal',
+        letterSpacing: letter,
+        height: 1,
+        shadows: shadows,
+      ),
+    ),
     textDirection: TextDirection.ltr,
     textAlign: align,
   )..layout();
-  final dx = align == TextAlign.center ? p.width / 2 : align == TextAlign.right ? p.width : 0.0;
+  final dx = align == TextAlign.center
+      ? p.width / 2
+      : align == TextAlign.right
+      ? p.width
+      : 0.0;
   p.paint(c, at - Offset(dx, p.height / 2));
 }
 
@@ -68,7 +103,15 @@ void text(Canvas c, String t, Offset at, {double size = 16, Color color = Colors
 /// pitch with its mowing stripes, its box and its goal.
 void drawGround(Canvas c, ClipLook l, double u, {double roar = 0, bool goal = true, Map<String, (Color, Color)>? fans}) {
   final sky = const Rect.fromLTWH(0, 0, frameW, 150);
-  c.drawRect(sky, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [l.night, Color.lerp(l.night, Colors.black, .4)!]).createShader(sky));
+  c.drawRect(
+    sky,
+    Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [l.night, Color.lerp(l.night, Colors.black, .4)!],
+      ).createShader(sky),
+  );
   // The fans: rows of heads and shoulders in both clubs' colours, more of the home side's.
   final rnd = math.Random(3);
   final colours = [l.shirt('home'), l.shirt('home'), l.shirt('home'), l.shirt('away'), Colors.white70];
@@ -77,36 +120,88 @@ void drawGround(Canvas c, ClipLook l, double u, {double roar = 0, bool goal = tr
     for (var x = -6.0 + (row.isOdd ? 9 : 0); x < frameW + 10; x += 18) {
       final bounce = roar > 0 ? math.sin(u * 14 + x * .07 + row) * 4 * roar - 2 * roar : math.sin(u * 2 + x) * .6;
       final col = colours[rnd.nextInt(colours.length)];
-      c.drawRRect(RRect.fromRectAndRadius(Rect.fromCenter(center: Offset(x, y + 12 + bounce), width: 14, height: 14), const Radius.circular(5)), Paint()..color = Color.lerp(col, Colors.black, .35)!);
+      c.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromCenter(center: Offset(x, y + 12 + bounce), width: 14, height: 14), const Radius.circular(5)),
+        Paint()..color = Color.lerp(col, Colors.black, .35)!,
+      );
       c.drawCircle(Offset(x, y + bounce), 5, Paint()..color = const Color(0xFFD9A37A).withValues(alpha: .85));
       if (roar > .4 && rnd.nextDouble() > .6) {
-        c.drawLine(Offset(x - 4, y + 4 + bounce), Offset(x - 8, y - 8 + bounce - roar * 4), Paint()..color = Color.lerp(col, Colors.black, .2)!..strokeWidth = 2.5..strokeCap = StrokeCap.round);
+        c.drawLine(
+          Offset(x - 4, y + 4 + bounce),
+          Offset(x - 8, y - 8 + bounce - roar * 4),
+          Paint()
+            ..color = Color.lerp(col, Colors.black, .2)!
+            ..strokeWidth = 2.5
+            ..strokeCap = StrokeCap.round,
+        );
       }
     }
   }
   // The floodlights' glow over the stands.
   for (final fx in [120.0, 880.0]) {
-    c.drawCircle(Offset(fx, 0), 260, Paint()..shader = RadialGradient(colors: [l.gold.withValues(alpha: .18), l.gold.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: Offset(fx, 0), radius: 260)));
+    c.drawCircle(
+      Offset(fx, 0),
+      260,
+      Paint()
+        ..shader = RadialGradient(colors: [l.gold.withValues(alpha: .18), l.gold.withValues(alpha: 0)])
+            .createShader(Rect.fromCircle(center: Offset(fx, 0), radius: 260)),
+    );
   }
   // The boards.
   final boards = const Rect.fromLTWH(0, 150, frameW, 26);
-  c.drawRect(boards, Paint()..shader = const LinearGradient(colors: [Color(0xFF0E1B2B), Color(0xFF15304A), Color(0xFF0E1B2B)]).createShader(boards));
+  c.drawRect(
+    boards,
+    Paint()..shader = const LinearGradient(colors: [Color(0xFF0E1B2B), Color(0xFF15304A), Color(0xFF0E1B2B)]).createShader(boards),
+  );
   for (var x = 60.0; x < frameW; x += 220) {
     text(c, 'LEGENDS', Offset(x + (u * 18) % 220 - 60, 163), size: 15, color: l.gold, letter: 4);
   }
   // The grass: stripes fanning out toward the camera.
   final grass = const Rect.fromLTWH(0, 176, frameW, frameH - 176);
-  c.drawRect(grass, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [l.grassDark, l.grass]).createShader(grass));
+  c.drawRect(
+    grass,
+    Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [l.grassDark, l.grass],
+      ).createShader(grass),
+  );
   final stripe = Paint()..color = Colors.black.withValues(alpha: .08);
   for (var i = -8; i <= 8; i += 2) {
     final x0 = 500 + i * 60.0, x1 = 500 + (i + 1) * 60.0;
-    c.drawPath(Path()..moveTo(x0, 176)..lineTo(x1, 176)..lineTo(500 + (x1 - 500) * 3.2, frameH)..lineTo(500 + (x0 - 500) * 3.2, frameH)..close(), stripe);
+    c.drawPath(
+      Path()
+        ..moveTo(x0, 176)
+        ..lineTo(x1, 176)
+        ..lineTo(500 + (x1 - 500) * 3.2, frameH)
+        ..lineTo(500 + (x0 - 500) * 3.2, frameH)
+        ..close(),
+      stripe,
+    );
   }
-  final line = Paint()..color = Colors.white.withValues(alpha: .7)..style = PaintingStyle.stroke..strokeWidth = 2.2;
+  final line = Paint()
+    ..color = Colors.white.withValues(alpha: .7)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2.2;
   // The goal line, the six-yard box, the box, the spot and the arc.
   c.drawLine(const Offset(0, goalLine), const Offset(frameW, goalLine), line);
-  c.drawPath(Path()..moveTo(355, goalLine)..lineTo(330, 322)..lineTo(670, 322)..lineTo(645, goalLine), line);
-  c.drawPath(Path()..moveTo(250, goalLine)..lineTo(170, 420)..lineTo(830, 420)..lineTo(750, goalLine), line);
+  c.drawPath(
+    Path()
+      ..moveTo(355, goalLine)
+      ..lineTo(330, 322)
+      ..lineTo(670, 322)
+      ..lineTo(645, goalLine),
+    line,
+  );
+  c.drawPath(
+    Path()
+      ..moveTo(250, goalLine)
+      ..lineTo(170, 420)
+      ..lineTo(830, 420)
+      ..lineTo(750, goalLine),
+    line,
+  );
   c.drawOval(Rect.fromCenter(center: const Offset(500, 392), width: 7, height: 4), Paint()..color = Colors.white70);
   c.drawArc(Rect.fromCenter(center: const Offset(500, 420), width: 200, height: 60), 0, math.pi, false, line);
   if (goal) drawGoal(c, l);
@@ -114,7 +209,9 @@ void drawGround(Canvas c, ClipLook l, double u, {double roar = 0, bool goal = tr
 
 /// The goal: its net (bulging at [bulge] where the ball hits), its posts and bar.
 void drawGoal(Canvas c, ClipLook l, {Offset? bulge, double give = 0}) {
-  final net = Paint()..color = Colors.white.withValues(alpha: .35)..strokeWidth = 1;
+  final net = Paint()
+    ..color = Colors.white.withValues(alpha: .35)
+    ..strokeWidth = 1;
   Offset pull(Offset p) {
     if (bulge == null || give == 0) return p;
     final d = (p - bulge).distance;
@@ -130,7 +227,10 @@ void drawGoal(Canvas c, ClipLook l, {Offset? bulge, double give = 0}) {
     final a = Offset(postL + (y - barY) * .15, y), b = Offset(postR - (y - barY) * .15, y);
     c.drawLine(pull(a), pull(b), net);
   }
-  final post = Paint()..color = Colors.white..strokeWidth = 6..strokeCap = StrokeCap.round;
+  final post = Paint()
+    ..color = Colors.white
+    ..strokeWidth = 6
+    ..strokeCap = StrokeCap.round;
   c.drawLine(const Offset(postL, goalLine), const Offset(postL, barY), post);
   c.drawLine(const Offset(postR, goalLine), const Offset(postR, barY), post);
   c.drawLine(const Offset(postL, barY), const Offset(postR, barY), post);
@@ -148,16 +248,46 @@ void drawGoal(Canvas c, ClipLook l, {Offset? bulge, double give = 0}) {
 /// [run]: the stride's phase (null: still). [kick]: the striking leg's swing, 0..1. [arms]: 0 down, 1 up in joy.
 /// [tilt]: the body's lean or fall in radians (a dive, a tumble). [lift]: off the ground (a jump). [front]: facing
 /// the camera (the face), otherwise his back (the number). [hold]: what his raised hand holds (a card's colour).
-void drawPlayer(Canvas c, double x, double y, {required Color shirt, required Color ink, Color? shorts, String no = '', double? run, double kick = 0, double arms = 0,
-    double tilt = 0, double lift = 0, bool front = false, Color? hold, bool gloves = false, double scale = 1, bool shadow = true, String face = 'idle', double armOut = 0}) {
+void drawPlayer(
+  Canvas c,
+  double x,
+  double y, {
+  required Color shirt,
+  required Color ink,
+  Color? shorts,
+  String no = '',
+  double? run,
+  double kick = 0,
+  double arms = 0,
+  double tilt = 0,
+  double lift = 0,
+  bool front = false,
+  Color? hold,
+  bool gloves = false,
+  double scale = 1,
+  bool shadow = true,
+  String face = 'idle',
+  double armOut = 0,
+}) {
   final s = depth(y) * scale;
   final (skin, hair) = _skin(no.isEmpty ? '$x' : no);
-  if (shadow) c.drawOval(Rect.fromCenter(center: Offset(x, y), width: 44 * s * (1 - lift / 200).clamp(.4, 1), height: 10 * s), Paint()..color = Colors.black.withValues(alpha: .28));
+  if (shadow) {
+    c.drawOval(
+      Rect.fromCenter(center: Offset(x, y), width: 44 * s * (1 - lift / 200).clamp(.4, 1), height: 10 * s),
+      Paint()..color = Colors.black.withValues(alpha: .28),
+    );
+  }
   c.save();
   c.translate(x, y - lift * s);
   c.rotate(tilt);
-  final leg = Paint()..color = skin..strokeWidth = 7 * s..strokeCap = StrokeCap.round;
-  final sock = Paint()..color = shorts ?? Color.lerp(shirt, Colors.black, .2)!..strokeWidth = 8 * s..strokeCap = StrokeCap.round;
+  final leg = Paint()
+    ..color = skin
+    ..strokeWidth = 7 * s
+    ..strokeCap = StrokeCap.round;
+  final sock = Paint()
+    ..color = shorts ?? Color.lerp(shirt, Colors.black, .2)!
+    ..strokeWidth = 8 * s
+    ..strokeCap = StrokeCap.round;
   final swing = run == null ? 0.0 : math.sin(run) * .55;
   final hip = Offset(0, -42 * s);
   Offset foot(double a) => hip + Offset(math.sin(a) * 40 * s, math.cos(a) * 40 * s);
@@ -168,12 +298,29 @@ void drawPlayer(Canvas c, double x, double y, {required Color shirt, required Co
     c.drawCircle(f, 4.5 * s, Paint()..color = const Color(0xFF1B1B1B));
   }
   // The shorts and the shirt.
-  c.drawRRect(RRect.fromRectAndRadius(Rect.fromCenter(center: hip + Offset(0, -2 * s), width: 30 * s, height: 14 * s), Radius.circular(4 * s)), Paint()..color = shorts ?? Colors.white);
+  c.drawRRect(
+    RRect.fromRectAndRadius(Rect.fromCenter(center: hip + Offset(0, -2 * s), width: 30 * s, height: 14 * s), Radius.circular(4 * s)),
+    Paint()..color = shorts ?? Colors.white,
+  );
   final torso = RRect.fromRectAndRadius(Rect.fromLTRB(-17 * s, -88 * s, 17 * s, -44 * s), Radius.circular(9 * s));
-  c.drawRRect(torso, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(shirt, Colors.white, .18)!, shirt]).createShader(torso.outerRect));
+  c.drawRRect(
+    torso,
+    Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color.lerp(shirt, Colors.white, .18)!, shirt],
+      ).createShader(torso.outerRect),
+  );
   // The arms: down and swinging, raised, or out wide (a protest, an appeal).
-  final arm = Paint()..color = skin..strokeWidth = 6 * s..strokeCap = StrokeCap.round;
-  final sleeve = Paint()..color = shirt..strokeWidth = 8 * s..strokeCap = StrokeCap.round;
+  final arm = Paint()
+    ..color = skin
+    ..strokeWidth = 6 * s
+    ..strokeCap = StrokeCap.round;
+  final sleeve = Paint()
+    ..color = shirt
+    ..strokeWidth = 8 * s
+    ..strokeCap = StrokeCap.round;
   for (final side in [-1.0, 1.0]) {
     final sh = Offset(side * 15 * s, -82 * s);
     final down = Offset(side * 22 * s, -50 * s + (run == null ? 0 : math.sin(run + (side > 0 ? 0 : math.pi)) * 6 * s));
@@ -185,8 +332,20 @@ void drawPlayer(Canvas c, double x, double y, {required Color shirt, required Co
     c.drawLine(lerpO(sh, hand, .4), hand, arm);
     if (gloves) c.drawCircle(hand, 6 * s, Paint()..color = const Color(0xFFF7F7F2));
     if (hold != null && side > 0) {
-      c.drawRRect(RRect.fromRectAndRadius(Rect.fromCenter(center: hand + Offset(4 * s, -12 * s), width: 16 * s, height: 22 * s), Radius.circular(2 * s)), Paint()..color = hold);
-      c.drawCircle(hand + Offset(4 * s, -12 * s), 22 * s, Paint()..shader = RadialGradient(colors: [hold.withValues(alpha: .45), hold.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: hand + Offset(4 * s, -12 * s), radius: 22 * s)));
+      c.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromCenter(center: hand + Offset(4 * s, -12 * s), width: 16 * s, height: 22 * s),
+          Radius.circular(2 * s),
+        ),
+        Paint()..color = hold,
+      );
+      c.drawCircle(
+        hand + Offset(4 * s, -12 * s),
+        22 * s,
+        Paint()
+          ..shader = RadialGradient(colors: [hold.withValues(alpha: .45), hold.withValues(alpha: 0)])
+              .createShader(Rect.fromCircle(center: hand + Offset(4 * s, -12 * s), radius: 22 * s)),
+      );
     }
   }
   // The number on his back, or his face.
@@ -204,7 +363,11 @@ void drawPlayer(Canvas c, double x, double y, {required Color shirt, required Co
 }
 
 void _face(Canvas c, Offset h, double s, String mood) {
-  final ink = Paint()..color = const Color(0xFF1A1A1A)..strokeWidth = 1.6 * s..style = PaintingStyle.stroke..strokeCap = StrokeCap.round;
+  final ink = Paint()
+    ..color = const Color(0xFF1A1A1A)
+    ..strokeWidth = 1.6 * s
+    ..style = PaintingStyle.stroke
+    ..strokeCap = StrokeCap.round;
   final dot = Paint()..color = const Color(0xFF1A1A1A);
   for (final e in [-4.5, 4.5]) {
     if (mood == 'joy' || mood == 'cheer') {
@@ -212,8 +375,16 @@ void _face(Canvas c, Offset h, double s, String mood) {
     } else {
       c.drawCircle(h + Offset(e * s, 1 * s), (mood == 'surprise' ? 2.2 : 1.6) * s, dot);
     }
-    if (mood == 'angry') c.drawLine(h + Offset((e - 2.5) * s, -3.5 * s + (e > 0 ? 1.5 : 0) * s), h + Offset((e + 2.5) * s, -3.5 * s + (e > 0 ? 0 : 1.5) * s), ink);
-    if (mood == 'worried' || mood == 'sad') c.drawLine(h + Offset((e - 2.5) * s, -3 * s + (e > 0 ? 0 : 1.2) * s), h + Offset((e + 2.5) * s, -3 * s + (e > 0 ? 1.2 : 0) * s), ink);
+    if (mood == 'angry') {
+      c.drawLine(
+        h + Offset((e - 2.5) * s, -3.5 * s + (e > 0 ? 1.5 : 0) * s),
+        h + Offset((e + 2.5) * s, -3.5 * s + (e > 0 ? 0 : 1.5) * s),
+        ink,
+      );
+    }
+    if (mood == 'worried' || mood == 'sad') {
+      c.drawLine(h + Offset((e - 2.5) * s, -3 * s + (e > 0 ? 0 : 1.2) * s), h + Offset((e + 2.5) * s, -3 * s + (e > 0 ? 1.2 : 0) * s), ink);
+    }
   }
   final m = h + Offset(0, 6 * s);
   switch (mood) {
@@ -233,10 +404,21 @@ void _face(Canvas c, Offset h, double s, String mood) {
 /// The ball at ([x], [y]) on the ground, [z] in the air, spinning by [spin]; its shadow on the grass.
 void drawBall(Canvas c, double x, double y, {double z = 0, double spin = 0, double scale = 1}) {
   final s = depth(y) * scale;
-  c.drawOval(Rect.fromCenter(center: Offset(x, y), width: 16 * s / (1 + z / 120), height: 5 * s / (1 + z / 120)), Paint()..color = Colors.black.withValues(alpha: .3));
+  c.drawOval(
+    Rect.fromCenter(center: Offset(x, y), width: 16 * s / (1 + z / 120), height: 5 * s / (1 + z / 120)),
+    Paint()..color = Colors.black.withValues(alpha: .3),
+  );
   final at = Offset(x, y - 7 * s - z * s);
   final r = 7.5 * s;
-  c.drawCircle(at, r, Paint()..shader = const RadialGradient(center: Alignment(-.4, -.4), colors: [Colors.white, Color(0xFFD7D7D7)]).createShader(Rect.fromCircle(center: at, radius: r)));
+  c.drawCircle(
+    at,
+    r,
+    Paint()
+      ..shader = const RadialGradient(
+        center: Alignment(-.4, -.4),
+        colors: [Colors.white, Color(0xFFD7D7D7)],
+      ).createShader(Rect.fromCircle(center: at, radius: r)),
+  );
   final patch = Paint()..color = const Color(0xFF1C1C1C);
   for (var i = 0; i < 3; i++) {
     final a = spin + i * 2.1;
@@ -247,7 +429,14 @@ void drawBall(Canvas c, double x, double y, {double z = 0, double spin = 0, doub
 /// A speed trail behind a ball in flight.
 void drawTrail(Canvas c, List<Offset> pts, Color color) {
   for (var i = 1; i < pts.length; i++) {
-    c.drawLine(pts[i - 1], pts[i], Paint()..color = color.withValues(alpha: .08 + .5 * i / pts.length)..strokeWidth = 2 + 6 * i / pts.length..strokeCap = StrokeCap.round);
+    c.drawLine(
+      pts[i - 1],
+      pts[i],
+      Paint()
+        ..color = color.withValues(alpha: .08 + .5 * i / pts.length)
+        ..strokeWidth = 2 + 6 * i / pts.length
+        ..strokeCap = StrokeCap.round,
+    );
   }
 }
 
@@ -280,14 +469,22 @@ void drawBurst(Canvas c, Offset at, String word, double t, {Color color = const 
     i == 0 ? p.moveTo(pt.dx, pt.dy) : p.lineTo(pt.dx, pt.dy);
   }
   c.drawPath(p..close(), Paint()..color = color);
-  c.drawPath(p, Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 2.5);
+  c.drawPath(
+    p,
+    Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5,
+  );
   text(c, word, at, size: size * .42 * k, color: const Color(0xFF1A1A1A), family: 'BarlowCondensed');
 }
 
 /// The rain: streaks across the frame and splashes on the grass (a rainy match, MomentClock::rainy).
 void drawRain(Canvas c, double u, {double heavy = 1}) {
   final rnd = math.Random(5);
-  final streak = Paint()..color = Colors.white.withValues(alpha: .28 * heavy)..strokeWidth = 1.4;
+  final streak = Paint()
+    ..color = Colors.white.withValues(alpha: .28 * heavy)
+    ..strokeWidth = 1.4;
   for (var i = 0; i < 140 * heavy; i++) {
     final x0 = rnd.nextDouble() * (frameW + 200), speed = 500 + rnd.nextDouble() * 300;
     final y = (rnd.nextDouble() * frameH + u * speed) % (frameH + 40) - 20;
@@ -313,13 +510,24 @@ void drawDust(Canvas c, Offset at, double u, {double size = 70}) {
   final rnd = math.Random(4);
   for (var i = 0; i < 12; i++) {
     final a = i * math.pi / 6 + u * 2, r = size * (.55 + .25 * math.sin(u * 6 + i));
-    c.drawCircle(at + Offset(math.cos(a) * r * .9, math.sin(a) * r * .5), size * (.32 + rnd.nextDouble() * .12), Paint()..color = const Color(0xFFD9CDB5).withValues(alpha: .92));
+    c.drawCircle(
+      at + Offset(math.cos(a) * r * .9, math.sin(a) * r * .5),
+      size * (.32 + rnd.nextDouble() * .12),
+      Paint()..color = const Color(0xFFD9CDB5).withValues(alpha: .92),
+    );
   }
   c.drawCircle(at, size * .6, Paint()..color = const Color(0xFFE6DCC7));
   for (var i = 0; i < 4; i++) {
     final a = u * 7 + i * 1.6;
     final from = at + Offset(math.cos(a) * size * .4, math.sin(a) * size * .25);
-    c.drawLine(from, from + Offset(math.cos(a) * 26, math.sin(a) * 16), Paint()..color = const Color(0xFFD9A37A)..strokeWidth = 7..strokeCap = StrokeCap.round);
+    c.drawLine(
+      from,
+      from + Offset(math.cos(a) * 26, math.sin(a) * 16),
+      Paint()
+        ..color = const Color(0xFFD9A37A)
+        ..strokeWidth = 7
+        ..strokeCap = StrokeCap.round,
+    );
   }
   drawStars(c, at + Offset(0, -size * .6), u, r: size * .5);
 }

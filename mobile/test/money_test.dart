@@ -63,28 +63,40 @@ Future<void> pump(WidgetTester t, Widget screen, {FakeMoney? money, FakeInbox? i
   t.view.physicalSize = const Size(360 * 3, 2400 * 3);
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
-  await t.pumpWidget(ProviderScope(
-    overrides: [
-      preferencesProvider.overrideWithValue(prefs),
-      if (money != null) moneyRepositoryProvider.overrideWithValue(money),
-      if (inbox != null) inboxRepositoryProvider.overrideWithValue(inbox),
-    ],
-    child: router != null
-        ? MaterialApp.router(
-            theme: glmTheme(day: false),
-            locale: const Locale('ar'),
-            supportedLocales: L.supportedLocales,
-            localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-            routerConfig: router,
-          )
-        : MaterialApp(
-            theme: glmTheme(day: false),
-            locale: const Locale('ar'),
-            supportedLocales: L.supportedLocales,
-            localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-            home: screen,
-          ),
-  ));
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [
+        preferencesProvider.overrideWithValue(prefs),
+        if (money != null) moneyRepositoryProvider.overrideWithValue(money),
+        if (inbox != null) inboxRepositoryProvider.overrideWithValue(inbox),
+      ],
+      child: router != null
+          ? MaterialApp.router(
+              theme: glmTheme(day: false),
+              locale: const Locale('ar'),
+              supportedLocales: L.supportedLocales,
+              localizationsDelegates: const [
+                L.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              routerConfig: router,
+            )
+          : MaterialApp(
+              theme: glmTheme(day: false),
+              locale: const Locale('ar'),
+              supportedLocales: L.supportedLocales,
+              localizationsDelegates: const [
+                L.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              home: screen,
+            ),
+    ),
+  );
   for (var i = 0; i < 8; i++) {
     await t.pump(const Duration(milliseconds: 100));
   }
@@ -137,10 +149,15 @@ void main() {
 
   testWidgets('the inbox: a message read on a tap', (t) async {
     final inbox = FakeInbox();
-    final router = GoRouter(routes: [
-      GoRoute(path: '/', builder: (_, _) => const InboxScreen()),
-      GoRoute(path: '/leagues/:id/stadium', builder: (_, s) => Scaffold(body: Text('stadium ${s.pathParameters['id']}'))),
-    ]);
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const InboxScreen()),
+        GoRoute(
+          path: '/leagues/:id/stadium',
+          builder: (_, s) => Scaffold(body: Text('stadium ${s.pathParameters['id']}')),
+        ),
+      ],
+    );
     await pump(t, const SizedBox(), inbox: inbox, router: router);
     expect(find.text('اكتمل جزء في الملعب'), findsOneWidget);
     await t.tap(find.text('اكتمل جزء في الملعب'));

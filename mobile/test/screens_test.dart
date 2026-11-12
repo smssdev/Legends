@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/auth/ui/login_screen.dart';
@@ -11,7 +12,7 @@ import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<Widget> app(Widget screen, {List<dynamic> overrides = const [], String language = 'ar', bool day = false}) async {
+Future<Widget> app(Widget screen, {List<Override> overrides = const [], String language = 'ar', bool day = false}) async {
   SharedPreferences.setMockInitialValues({'glm.language': language});
   final prefs = await SharedPreferences.getInstance();
   return ProviderScope(
@@ -20,20 +21,40 @@ Future<Widget> app(Widget screen, {List<dynamic> overrides = const [], String la
       theme: glmTheme(day: day),
       locale: Locale(language),
       supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+      localizationsDelegates: const [
+        L.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: screen,
     ),
   );
 }
 
 const homeJson = {
-  'coach': {'name': 'حمزة', 'coins': 1250, 'account_no': 48213, 'record': {'won': 7, 'drawn': 2, 'lost': 1},
-    'rating': {'points': 420, 'tier': {'key': 'professional', 'division': 3}}},
+  'coach': {
+    'name': 'حمزة',
+    'coins': 1250,
+    'account_no': 48213,
+    'record': {'won': 7, 'drawn': 2, 'lost': 1},
+    'rating': {
+      'points': 420,
+      'tier': {'key': 'professional', 'division': 3},
+    },
+  },
   'slots_open': 2,
   'slots': [
-    {'slot': 1, 'state': 'club', 'pending': 2, 'league': {'id': 5, 'name': 'دوري الأصدقاء', 'status': 'running'},
-      'club': {'id': 9, 'name': 'Liverpool', 'crest_url': null, 'cash': 1}, 'position': 2, 'teams': 20,
-      'next_match': {'opponent': 'Arsenal', 'venue': 'home', 'live': false, 'scheduled_at': '2030-01-01T19:00:00Z'}},
+    {
+      'slot': 1,
+      'state': 'club',
+      'pending': 2,
+      'league': {'id': 5, 'name': 'دوري الأصدقاء', 'status': 'running'},
+      'club': {'id': 9, 'name': 'Liverpool', 'crest_url': null, 'cash': 1},
+      'position': 2,
+      'teams': 20,
+      'next_match': {'opponent': 'Arsenal', 'venue': 'home', 'live': false, 'scheduled_at': '2030-01-01T19:00:00Z'},
+    },
     {'slot': 2, 'state': 'free'},
     {'slot': 3, 'state': 'locked', 'opens_at': '2030-01-01T00:00:00Z', 'unlock_coins': 50},
   ],

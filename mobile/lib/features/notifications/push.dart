@@ -34,7 +34,12 @@ class PushService {
       if (f == null) return;
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp(
-          options: FirebaseOptions(apiKey: '${f['api_key']}', appId: '${f['app_id']}', messagingSenderId: '${f['sender_id']}', projectId: '${f['project_id']}'),
+          options: FirebaseOptions(
+            apiKey: '${f['api_key']}',
+            appId: '${f['app_id']}',
+            messagingSenderId: '${f['sender_id']}',
+            projectId: '${f['project_id']}',
+          ),
         );
       }
       final messaging = FirebaseMessaging.instance;

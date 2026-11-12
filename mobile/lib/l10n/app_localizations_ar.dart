@@ -46,8 +46,7 @@ class LAr extends L {
   String get registerTitle => 'حسابك الجديد';
 
   @override
-  String get registerLead =>
-      'ثلاث خانات وتبدأ: اسمك، واسم المستخدم، وكلمة المرور';
+  String get registerLead => 'ثلاث خانات وتبدأ: اسمك، واسم المستخدم، وكلمة المرور';
 
   @override
   String get displayName => 'اسمك الظاهر';
@@ -89,8 +88,7 @@ class LAr extends L {
   String get sendLink => 'أرسل الرابط';
 
   @override
-  String get linkSent =>
-      'أرسلنا الرابط إن كان البريد لحساب عندنا. افتحه من بريدك.';
+  String get linkSent => 'أرسلنا الرابط إن كان البريد لحساب عندنا. افتحه من بريدك.';
 
   @override
   String get required => 'مطلوب';
@@ -111,8 +109,7 @@ class LAr extends L {
   String get updateTitle => 'حدّث التطبيق';
 
   @override
-  String get updateBody =>
-      'نسخة جديدة من اللعبة متاحة، ولا تعمل هذه النسخة معها. حدّث التطبيق لتكمل.';
+  String get updateBody => 'نسخة جديدة من اللعبة متاحة، ولا تعمل هذه النسخة معها. حدّث التطبيق لتكمل.';
 
   @override
   String get update => 'حدّث الآن';
@@ -272,8 +269,7 @@ class LAr extends L {
   String get newLeague => 'دوري جديد';
 
   @override
-  String get freeLeagueLead =>
-      'الدوري المجاني: كل أندية الدوري، جولة كل يوم الساعة 9 مساءً، ويومان للتحضير. والخيارات المدفوعة من الموقع.';
+  String get freeLeagueLead => 'الدوري المجاني: كل أندية الدوري، جولة كل يوم الساعة 9 مساءً، ويومان للتحضير. والخيارات المدفوعة من الموقع.';
 
   @override
   String get pickTemplate => 'اختر الدوري';
@@ -296,8 +292,7 @@ class LAr extends L {
   String get joinTitle => 'انضم إلى دوري';
 
   @override
-  String get joinLead =>
-      'اطلب من صاحبك كود دوريه واكتبه هنا، ثم ينتظر طلبك موافقة المنشئ.';
+  String get joinLead => 'اطلب من صاحبك كود دوريه واكتبه هنا، ثم ينتظر طلبك موافقة المنشئ.';
 
   @override
   String get code => 'كود الدوري';
@@ -651,8 +646,7 @@ class LAr extends L {
   }
 
   @override
-  String get ordersHint =>
-      'الأوامر تُنفَّذ في النوافذ: قبل البداية وبين الشوطين وبعد الدقائق 15 و30 و60 و75.';
+  String get ordersHint => 'الأوامر تُنفَّذ في النوافذ: قبل البداية وبين الشوطين وبعد الدقائق 15 و30 و60 و75.';
 
   @override
   String get windowOpen => 'النافذة مفتوحة: أوامرك الآن';
@@ -991,8 +985,7 @@ class LAr extends L {
   String get scout => 'الكشاف';
 
   @override
-  String get scoutLead =>
-      'يبحث لك الكشاف عن خمسة لاعبين من خارج الدوري بشروطك، ويحجزهم لك حتى يتجدد السوق.';
+  String get scoutLead => 'يبحث لك الكشاف عن خمسة لاعبين من خارج الدوري بشروطك، ويحجزهم لك حتى يتجدد السوق.';
 
   @override
   String get minOverall => 'أقل تقييم';
@@ -1038,8 +1031,7 @@ class LAr extends L {
   String get training => 'التدريب';
 
   @override
-  String get trainingLead =>
-      'لاعب واحد في كل خط يتدرب، وكل حصة ترفع تقدمه حتى يزيد تقييمه.';
+  String get trainingLead => 'لاعب واحد في كل خط يتدرب، وكل حصة ترفع تقدمه حتى يزيد تقييمه.';
 
   @override
   String sessionCost(String cost, String time) {
@@ -1101,8 +1093,7 @@ class LAr extends L {
   String get spy => 'التجسس';
 
   @override
-  String get spyLead =>
-      'يكشف لك جاسوسك تشكيلة خصمك القادم وخطته ولياقته قبل القفل.';
+  String get spyLead => 'يكشف لك جاسوسك تشكيلة خصمك القادم وخطته ولياقته قبل القفل.';
 
   @override
   String sendSpy(String cost) {
@@ -1164,8 +1155,7 @@ class LAr extends L {
   String get resign => 'استقل من الدوري';
 
   @override
-  String get resignConfirm =>
-      'تستقيل من هذا الدوري؟ يعود فريقك للكمبيوتر ولا رجوع.';
+  String get resignConfirm => 'تستقيل من هذا الدوري؟ يعود فريقك للكمبيوتر ولا رجوع.';
 
   @override
   String get wallet => 'المحفظة';
@@ -1233,8 +1223,7 @@ class LAr extends L {
   String get pushReady => 'الإشعارات تصل إلى هذا الجوال';
 
   @override
-  String get pushNotReady =>
-      'الإشعارات على الجوال لم تُفعَّل في الخادم بعد، والرسائل كلها في صندوقك';
+  String get pushNotReady => 'الإشعارات على الجوال لم تُفعَّل في الخادم بعد، والرسائل كلها في صندوقك';
 
   @override
   String get kindReferee => 'حكم مباراتك القادمة';
@@ -1728,8 +1717,7 @@ class LAr extends L {
   String get alliance => 'بطولة التحالفات';
 
   @override
-  String get allianceLead =>
-      'تحالفان من مدربي الدوري، وكل مواجهة يتأهل منها من يتفق مدرباها عليه.';
+  String get allianceLead => 'تحالفان من مدربي الدوري، وكل مواجهة يتأهل منها من يتفق مدرباها عليه.';
 
   @override
   String get createAlliance => 'أنشئ البطولة';
@@ -2025,8 +2013,7 @@ class LAr extends L {
   String get deleteAccount => 'احذف حسابي';
 
   @override
-  String get deleteAccountLead =>
-      'تعود فرقك للكمبيوتر ولا رجوع. اكتب «احذف» للتأكيد.';
+  String get deleteAccountLead => 'تعود فرقك للكمبيوتر ولا رجوع. اكتب «احذف» للتأكيد.';
 
   @override
   String get startLeague => 'ابدأ الدوري الآن';

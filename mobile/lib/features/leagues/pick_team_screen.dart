@@ -51,16 +51,25 @@ class _PickTeamScreenState extends ConsumerState<PickTeamScreen> {
     return Scaffold(
       appBar: GameBar(title: Text(l.pickClub)),
       bottomNavigationBar: SafeArea(
-        child: Padding(padding: const EdgeInsets.all(16), child: GlmButton(label: l.takeClub, block: true, loading: _busy, onPressed: _club == null ? null : _take)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: GlmButton(label: l.takeClub, block: true, loading: _busy, onPressed: _club == null ? null : _take),
+        ),
       ),
       body: GlmBackground(
         child: AsyncView(
           value: ref.watch(leagueClubsProvider(widget.leagueId)),
           onRetry: () => ref.invalidate(leagueClubsProvider(widget.leagueId)),
-          data: (clubs) => ListView(padding: const EdgeInsets.all(16), children: [
-            for (final c in clubs.where((c) => c.bot))
-              Padding(padding: const EdgeInsets.only(bottom: 8), child: ClubChoice(club: c, selected: _club?.id == c.id, onTap: () => setState(() => _club = c))),
-          ]),
+          data: (clubs) => ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              for (final c in clubs.where((c) => c.bot))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: ClubChoice(club: c, selected: _club?.id == c.id, onTap: () => setState(() => _club = c)),
+                ),
+            ],
+          ),
         ),
       ),
     );

@@ -15,16 +15,19 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: GlmBackground(
-          child: Center(
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              const BrandMark(size: 120, stacked: true),
-              const SizedBox(height: 36),
-              SizedBox.square(dimension: 28, child: CircularProgressIndicator(strokeWidth: 3, color: context.palette.gold)),
-            ]),
-          ),
+    body: GlmBackground(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const BrandMark(size: 120, stacked: true),
+            const SizedBox(height: 36),
+            SizedBox.square(dimension: 28, child: CircularProgressIndicator(strokeWidth: 3, color: context.palette.gold)),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _Message extends StatelessWidget {
@@ -38,27 +41,34 @@ class _Message extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: GlmBackground(
-          child: SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(28),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  const BrandMark(size: 72, stacked: true),
-                  const SizedBox(height: 36),
-                  Icon(icon, size: 48, color: context.palette.gold),
-                  const SizedBox(height: 14),
-                  Text(title, style: context.text.headlineSmall, textAlign: TextAlign.center),
-                  const SizedBox(height: 8),
-                  Text(body, style: context.text.bodyMedium?.copyWith(color: context.palette.textMuted), textAlign: TextAlign.center),
-                  const SizedBox(height: 24),
-                  GlmButton(label: action, onPressed: onPressed),
-                ]),
-              ),
+    body: GlmBackground(
+      child: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const BrandMark(size: 72, stacked: true),
+                const SizedBox(height: 36),
+                Icon(icon, size: 48, color: context.palette.gold),
+                const SizedBox(height: 14),
+                Text(title, style: context.text.headlineSmall, textAlign: TextAlign.center),
+                const SizedBox(height: 8),
+                Text(
+                  body,
+                  style: context.text.bodyMedium?.copyWith(color: context.palette.textMuted),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                GlmButton(label: action, onPressed: onPressed),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class UpdateRequiredScreen extends StatelessWidget {
@@ -67,8 +77,13 @@ class UpdateRequiredScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
-    return _Message(icon: Icons.system_update_rounded, title: l.updateTitle, body: l.updateBody, action: l.update,
-        onPressed: () => launchUrl(Uri.parse('${AppConfig.siteUrl}/download'), mode: LaunchMode.externalApplication));
+    return _Message(
+      icon: Icons.system_update_rounded,
+      title: l.updateTitle,
+      body: l.updateBody,
+      action: l.update,
+      onPressed: () => launchUrl(Uri.parse('${AppConfig.siteUrl}/download'), mode: LaunchMode.externalApplication),
+    );
   }
 }
 
@@ -92,6 +107,12 @@ class NotFoundScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
-    return _Message(icon: Icons.link_off_rounded, title: l.notFoundTitle, body: l.notFoundBody, action: l.home, onPressed: () => GoRouter.of(context).go('/'));
+    return _Message(
+      icon: Icons.link_off_rounded,
+      title: l.notFoundTitle,
+      body: l.notFoundBody,
+      action: l.home,
+      onPressed: () => GoRouter.of(context).go('/'),
+    );
   }
 }

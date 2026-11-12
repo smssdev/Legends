@@ -14,7 +14,8 @@ class Keyframe {
     return Keyframe(
       ball: (b[0], b[1], b.length > 2 ? b[2] : 0),
       players: {
-        for (final e in (j['p'] as Map<dynamic, dynamic>).entries) '${e.key}': (((e.value as List<dynamic>)[0] as num).toDouble(), ((e.value as List<dynamic>)[1] as num).toDouble()),
+        for (final e in (j['p'] as Map<dynamic, dynamic>).entries)
+          '${e.key}': (((e.value as List<dynamic>)[0] as num).toDouble(), ((e.value as List<dynamic>)[1] as num).toDouble()),
       },
       officials: (j['r'] as List<dynamic>?)?.map((o) => (((o as List<dynamic>)[0] as num).toDouble(), (o[1] as num).toDouble())).toList(),
     );

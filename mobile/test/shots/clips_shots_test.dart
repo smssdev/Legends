@@ -11,7 +11,10 @@ import 'package:glm/features/match/feed/art.dart';
 import 'package:glm/features/match/feed/clips.dart';
 
 Future<void> _fonts() async {
-  for (final (family, files) in [('Tajawal', ['Tajawal-700', 'Tajawal-800']), ('BarlowCondensed', ['BarlowCondensed-700', 'BarlowCondensed-800'])]) {
+  for (final (family, files) in [
+    ('Tajawal', ['Tajawal-700', 'Tajawal-800']),
+    ('BarlowCondensed', ['BarlowCondensed-700', 'BarlowCondensed-800']),
+  ]) {
     final l = FontLoader(family);
     for (final f in files) {
       l.addFont(Future.value(ByteData.sublistView(File('assets/fonts/$f.ttf').readAsBytesSync())));
@@ -22,7 +25,12 @@ Future<void> _fonts() async {
 
 const look = ClipLook(
   kits: {'home': (Color(0xFFC8102E), Colors.white), 'away': (Color(0xFFF3F0E6), Color(0xFF1C2333))},
-  keeper: Color(0xFF7CB342), referee: Color(0xFF111111), grass: Color(0xFF1E9E4A), grassDark: Color(0xFF167A39), gold: Color(0xFFF5B82E), night: Color(0xFF0B1A2C),
+  keeper: Color(0xFF7CB342),
+  referee: Color(0xFF111111),
+  grass: Color(0xFF1E9E4A),
+  grassDark: Color(0xFF167A39),
+  gold: Color(0xFFF5B82E),
+  night: Color(0xFF0B1A2C),
 );
 
 void main() {
@@ -41,7 +49,18 @@ void main() {
     ('sub', 'sub', {'inNo': '20', 'outNo': '9'}, 2.5),
     ('injury', 'injury', {'no': '7'}, 3.0),
     ('rant', 'rant', {}, 1.2),
-    ('whistle', 'whistle', {'name': 'halftime', 'big': 'Half time', 'home': 1, 'away': 0, 'stats': [('Shots', 7, 3), ('On target', 3, 1)]}, 2.2),
+    (
+      'whistle',
+      'whistle',
+      {
+        'name': 'halftime',
+        'big': 'Half time',
+        'home': 1,
+        'away': 0,
+        'stats': [('Shots', 7, 3), ('On target', 3, 1)],
+      },
+      2.2,
+    ),
     ('var', 'var', {'no': '9', 'reason': 'offside', 'v': 3}, 7.0),
     ('slip', 'slip', {'no': '9', 'defNo': '5'}, 1.6),
     ('crowd', 'crowd', {'flares': true, 'v': 3}, 1.0),
@@ -55,10 +74,34 @@ void main() {
       addTearDown(t.view.reset);
       await t.runAsync(_fonts);
       final rain = name == 'slip';
-      await t.pumpWidget(Directionality(
-        textDirection: TextDirection.ltr,
-        child: RepaintBoundary(child: CustomPaint(size: const Size(1000, 562), painter: ClipPainter(scene: scene, data: data, side: 'home', u: u, look: rain ? ClipLook(kits: look.kits, keeper: look.keeper, referee: look.referee, grass: look.grass, grassDark: look.grassDark, gold: look.gold, night: look.night, rain: true) : look))),
-      ));
+      await t.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: RepaintBoundary(
+            child: CustomPaint(
+              size: const Size(1000, 562),
+              painter: ClipPainter(
+                scene: scene,
+                data: data,
+                side: 'home',
+                u: u,
+                look: rain
+                    ? ClipLook(
+                        kits: look.kits,
+                        keeper: look.keeper,
+                        referee: look.referee,
+                        grass: look.grass,
+                        grassDark: look.grassDark,
+                        gold: look.gold,
+                        night: look.night,
+                        rain: true,
+                      )
+                    : look,
+              ),
+            ),
+          ),
+        ),
+      );
       await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('out/clip-$name.png'));
     });
   }

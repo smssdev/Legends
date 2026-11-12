@@ -46,7 +46,10 @@ class _FadeSlideInState extends State<FadeSlideIn> with SingleTickerProviderStat
     if (_still(context)) return widget.child;
     return AnimatedBuilder(
       animation: _t,
-      builder: (_, child) => Opacity(opacity: _t.value, child: Transform.translate(offset: Offset(0, (1 - _t.value) * widget.offset), child: child)),
+      builder: (_, child) => Opacity(
+        opacity: _t.value,
+        child: Transform.translate(offset: Offset(0, (1 - _t.value) * widget.offset), child: child),
+      ),
       child: widget.child,
     );
   }
@@ -78,7 +81,10 @@ class _PulseState extends State<Pulse> with SingleTickerProviderStateMixin {
       _c.stop();
       return widget.child;
     }
-    return FadeTransition(opacity: Tween(begin: widget.min, end: 1.0).animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut)), child: widget.child);
+    return FadeTransition(
+      opacity: Tween(begin: widget.min, end: 1.0).animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut)),
+      child: widget.child,
+    );
   }
 }
 
@@ -119,7 +125,12 @@ class _PressScaleState extends State<PressScale> {
 
   @override
   Widget build(BuildContext context) {
-    final scaled = AnimatedScale(scale: _down ? .97 : 1, duration: const Duration(milliseconds: 110), curve: Curves.easeOut, child: widget.child);
+    final scaled = AnimatedScale(
+      scale: _down ? .97 : 1,
+      duration: const Duration(milliseconds: 110),
+      curve: Curves.easeOut,
+      child: widget.child,
+    );
     // Without its own tap (a card whose InkWell takes it), it only listens to the finger, never stealing the tap.
     if (widget.onTap == null) {
       return Listener(
@@ -133,13 +144,13 @@ class _PressScaleState extends State<PressScale> {
   }
 
   Widget _tapper() => GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTapDown: widget.onTap == null ? null : (_) => setState(() => _down = true),
-        onTapUp: widget.onTap == null ? null : (_) => setState(() => _down = false),
-        onTapCancel: () => setState(() => _down = false),
-        onTap: widget.onTap,
-        child: AnimatedScale(scale: _down ? .96 : 1, duration: const Duration(milliseconds: 110), curve: Curves.easeOut, child: widget.child),
-      );
+    behavior: HitTestBehavior.translucent,
+    onTapDown: widget.onTap == null ? null : (_) => setState(() => _down = true),
+    onTapUp: widget.onTap == null ? null : (_) => setState(() => _down = false),
+    onTapCancel: () => setState(() => _down = false),
+    onTap: widget.onTap,
+    child: AnimatedScale(scale: _down ? .96 : 1, duration: const Duration(milliseconds: 110), curve: Curves.easeOut, child: widget.child),
+  );
 }
 
 /// [Sprint 47] A football that rolls a little to and fro, turning as it goes (the simulator's door, a waiting screen).
@@ -180,7 +191,10 @@ class _RollingBallState extends State<RollingBall> with SingleTickerProviderStat
       builder: (_, child) {
         final t = Curves.easeInOut.transform(_c.value) * 2 - 1;
         final dx = t * widget.travel;
-        return Transform.translate(offset: Offset(dx, 0), child: Transform.rotate(angle: dx / (widget.size / 2), child: child));
+        return Transform.translate(
+          offset: Offset(dx, 0),
+          child: Transform.rotate(angle: dx / (widget.size / 2), child: child),
+        );
       },
       child: ball,
     );
@@ -194,13 +208,25 @@ class BallPainter extends CustomPainter {
     const white = Color(0xFFF7F4EA), ink = Color(0xFF06111E);
     final c = s.center(Offset.zero), r = s.width / 2 - 1;
     canvas.drawCircle(c, r, Paint()..color = white);
-    canvas.drawCircle(c, r, Paint()
-      ..color = ink
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = s.width / 16);
+    canvas.drawCircle(
+      c,
+      r,
+      Paint()
+        ..color = ink
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = s.width / 16,
+    );
     final k = s.width / 24;
-    canvas.drawPath(Path()..addPolygon([Offset(12 * k, 7 * k), Offset(16 * k, 10 * k), Offset(14.5 * k, 15 * k), Offset(9.5 * k, 15 * k), Offset(8 * k, 10 * k)], true),
-        Paint()..color = ink);
+    canvas.drawPath(
+      Path()..addPolygon([
+        Offset(12 * k, 7 * k),
+        Offset(16 * k, 10 * k),
+        Offset(14.5 * k, 15 * k),
+        Offset(9.5 * k, 15 * k),
+        Offset(8 * k, 10 * k),
+      ], true),
+      Paint()..color = ink,
+    );
   }
 
   @override

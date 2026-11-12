@@ -11,7 +11,8 @@ abstract final class GlmCut {
 
   static BorderRadiusDirectional radius(double r) => BorderRadiusDirectional.all(Radius.circular(r));
 
-  static RoundedRectangleBorder shape(double r, {BorderSide side = BorderSide.none}) => RoundedRectangleBorder(side: side, borderRadius: radius(r));
+  static RoundedRectangleBorder shape(double r, {BorderSide side = BorderSide.none}) =>
+      RoundedRectangleBorder(side: side, borderRadius: radius(r));
 }
 
 /// Clips its child to the cut.
@@ -22,8 +23,10 @@ class CutClip extends StatelessWidget {
   final double cut;
 
   @override
-  Widget build(BuildContext context) =>
-      ClipPath(clipper: ShapeBorderClipper(shape: GlmCut.shape(cut), textDirection: Directionality.of(context)), child: child);
+  Widget build(BuildContext context) => ClipPath(
+    clipper: ShapeBorderClipper(shape: GlmCut.shape(cut), textDirection: Directionality.of(context)),
+    child: child,
+  );
 }
 
 /// The gold line along the upper cut: the signature's detail. Bright on the screen's main card, faint on the others.
@@ -45,7 +48,14 @@ class CutNotch extends CustomPainter {
 /// A sweep of light crossing the child every few seconds (the main button, the hero card): the sheen of a trophy.
 /// Still when the phone asks for less motion.
 class Shine extends StatefulWidget {
-  const Shine({super.key, required this.child, this.enabled = true, this.period = const Duration(milliseconds: 4200), this.strength = .28, this.clip});
+  const Shine({
+    super.key,
+    required this.child,
+    this.enabled = true,
+    this.period = const Duration(milliseconds: 4200),
+    this.strength = .28,
+    this.clip,
+  });
 
   final Widget child;
   final bool enabled;
@@ -82,31 +92,39 @@ class _ShineState extends State<Shine> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     if (!widget.enabled || !_c.isAnimating) return widget.child;
-    return Stack(children: [
-      widget.child,
-      Positioned.fill(
-        child: IgnorePointer(
-          child: _clip(AnimatedBuilder(
-            animation: _c,
-            builder: (_, _) {
-              // The light crosses in the first third of the period, then rests.
-              final t = (_c.value * 3).clamp(0.0, 1.0);
-              if (t <= 0 || t >= 1) return const SizedBox();
-              final x = -1.6 + t * 3.2;
-              return DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment(x - .5, -1),
-                    end: Alignment(x + .5, 1),
-                    colors: [Colors.white.withValues(alpha: 0), Colors.white.withValues(alpha: widget.strength), Colors.white.withValues(alpha: 0)],
-                  ),
-                ),
-              );
-            },
-          )),
+    return Stack(
+      children: [
+        widget.child,
+        Positioned.fill(
+          child: IgnorePointer(
+            child: _clip(
+              AnimatedBuilder(
+                animation: _c,
+                builder: (_, _) {
+                  // The light crosses in the first third of the period, then rests.
+                  final t = (_c.value * 3).clamp(0.0, 1.0);
+                  if (t <= 0 || t >= 1) return const SizedBox();
+                  final x = -1.6 + t * 3.2;
+                  return DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(x - .5, -1),
+                        end: Alignment(x + .5, 1),
+                        colors: [
+                          Colors.white.withValues(alpha: 0),
+                          Colors.white.withValues(alpha: widget.strength),
+                          Colors.white.withValues(alpha: 0),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 
   Widget _clip(Widget w) => widget.clip == null ? w : CutClip(cut: widget.clip!, child: w);
@@ -124,13 +142,26 @@ class BroadcastTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Row(children: [
-      Container(width: 5, height: 18, decoration: BoxDecoration(color: context.glm.day ? p.brand : p.ring, borderRadius: BorderRadius.circular(3))),
-      const SizedBox(width: 8),
-      if (icon != null) ...[Icon(icon, size: 18, color: context.glm.brandText), const SizedBox(width: 6)],
-      Expanded(child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.text, fontWeight: FontWeight.w800, fontSize: 17, height: 1.2))),
-      if (trailing != null) ...[const SizedBox(width: 8), trailing!],
-    ]);
+    return Row(
+      children: [
+        Container(
+          width: 5,
+          height: 18,
+          decoration: BoxDecoration(color: context.glm.day ? p.brand : p.ring, borderRadius: BorderRadius.circular(3)),
+        ),
+        const SizedBox(width: 8),
+        if (icon != null) ...[Icon(icon, size: 18, color: context.glm.brandText), const SizedBox(width: 6)],
+        Expanded(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: p.text, fontWeight: FontWeight.w800, fontSize: 17, height: 1.2),
+          ),
+        ),
+        if (trailing != null) ...[const SizedBox(width: 8), trailing!],
+      ],
+    );
   }
 }
 
@@ -156,7 +187,10 @@ class HeroFrame extends StatelessWidget {
           gradient: gradient,
           shadows: [BoxShadow(color: (glow ?? e).withValues(alpha: .22), blurRadius: 30, spreadRadius: -8, offset: const Offset(0, 10))],
         ),
-        child: CutClip(cut: cut, child: Shine(strength: .12, period: const Duration(milliseconds: 7000), child: child)),
+        child: CutClip(
+          cut: cut,
+          child: Shine(strength: .12, period: const Duration(milliseconds: 7000), child: child),
+        ),
       ),
     );
   }
@@ -181,7 +215,8 @@ class CutInputBorder extends InputBorder {
   ShapeBorder scale(double t) => CutInputBorder(borderSide: borderSide.scale(t), cut: cut * t);
 
   @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) => GlmCut.shape(cut).getInnerPath(rect.deflate(borderSide.width), textDirection: textDirection);
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      GlmCut.shape(cut).getInnerPath(rect.deflate(borderSide.width), textDirection: textDirection);
 
   @override
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) => GlmCut.shape(cut).getOuterPath(rect, textDirection: textDirection);

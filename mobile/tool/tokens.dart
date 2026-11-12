@@ -26,7 +26,9 @@ void main() {
   for (final k in night.keys) {
     b.writeln('  final Color ${ident(k)};');
   }
-  b..writeln('}')..writeln();
+  b
+    ..writeln('}')
+    ..writeln();
   void palette(String name, Map<String, dynamic> c) {
     b.writeln('const $name = GlmPalette(');
     for (final k in night.keys) {
@@ -44,15 +46,33 @@ void main() {
   for (final e in ink.entries) {
     b.writeln('  static const ${ident(e.key)} = Color(${hex(e.value as String)});');
   }
-  b..writeln('}')..writeln()..writeln('/// [Sprint 47] The app\'s stage in the approved design: the night ground, the navy cards, the mint accent, the pills.')..writeln('abstract final class GlmStage {');
+  b
+    ..writeln('}')
+    ..writeln()
+    ..writeln('/// [Sprint 47] The app\'s stage in the approved design: the night ground, the navy cards, the mint accent, the pills.')
+    ..writeln('abstract final class GlmStage {');
   (t['stage'] as Map<dynamic, dynamic>).forEach((k, v) {
     if (!(k as String).startsWith(r'$')) b.writeln('  static const ${ident(k)} = Color(${hex(v as String)});');
   });
-  b..writeln('}')..writeln()..writeln('/// A player\'s line: its badge colour and text.')..writeln('abstract final class GlmLine {');
-  (t['line'] as Map<dynamic, dynamic>).forEach((k, v) => b.writeln('  static const $k = (bg: Color(${hex(at(v, 'bg'))}), fg: Color(${hex(at(v, 'fg'))}));'));
-  b..writeln('}')..writeln()..writeln('/// Fitness from its value (min, colour), highest first.')..writeln('const glmFitness = [');
+  b
+    ..writeln('}')
+    ..writeln()
+    ..writeln('/// A player\'s line: its badge colour and text.')
+    ..writeln('abstract final class GlmLine {');
+  (t['line'] as Map<dynamic, dynamic>).forEach(
+    (k, v) => b.writeln('  static const $k = (bg: Color(${hex(at(v, 'bg'))}), fg: Color(${hex(at(v, 'fg'))}));'),
+  );
+  b
+    ..writeln('}')
+    ..writeln()
+    ..writeln('/// Fitness from its value (min, colour), highest first.')
+    ..writeln('const glmFitness = [');
   (t['fitness'] as Map<dynamic, dynamic>).forEach((k, v) => b.writeln('  (min: ${at(v, 'min')}, color: Color(${hex(at(v, 'color'))})),'));
-  b..writeln('];')..writeln()..writeln('/// A match rating from its value (min, background, text), highest first.')..writeln('const glmRating = [');
+  b
+    ..writeln('];')
+    ..writeln()
+    ..writeln('/// A match rating from its value (min, background, text), highest first.')
+    ..writeln('const glmRating = [');
   for (final r in t['rating'] as List<dynamic>) {
     b.writeln('  (min: ${at(r, 'min')}, bg: Color(${hex(at(r, 'bg'))}), fg: Color(${hex(at(r, 'fg'))})),');
   }
@@ -63,26 +83,60 @@ void main() {
     ..writeln('/// The sizes: the smallest touch target, the radii and the spacing scale.')
     ..writeln('abstract final class GlmSize {')
     ..writeln('  static const double touchMin = ${size['touchMin']};');
-  (size['radius'] as Map<dynamic, dynamic>).forEach((k, v) => b.writeln('  static const double radius${(k as String)[0].toUpperCase()}${k.substring(1)} = $v;'));
-  b..writeln('  static const space = <double>[${(size['space'] as List<dynamic>).join(', ')}];')..writeln('}');
+  (size['radius'] as Map<dynamic, dynamic>).forEach(
+    (k, v) => b.writeln('  static const double radius${(k as String)[0].toUpperCase()}${k.substring(1)} = $v;'),
+  );
+  b
+    ..writeln('  static const space = <double>[${(size['space'] as List<dynamic>).join(', ')}];')
+    ..writeln('}');
 
   // [Sprint 54 F1] The type roles, the spacing, the touch sizes, the shadows, the motion and the broadcast palette, the
   // same names as the web's (text-caption … text-display, --space-*, --shadow-*, --ease-*, --duration-*).
-  Map<String, dynamic> part(String k) => Map<String, dynamic>.from(t[k] as Map<dynamic, dynamic>)..removeWhere((k, _) => k.startsWith(r'$'));
-  b..writeln()..writeln('/// One type role: its size, line height (a multiple) and weight.')
-    ..writeln('typedef GlmTypeRole = ({double size, double height, int weight});')..writeln()
+  Map<String, dynamic> part(String k) =>
+      Map<String, dynamic>.from(t[k] as Map<dynamic, dynamic>)..removeWhere((k, _) => k.startsWith(r'$'));
+  b
+    ..writeln()
+    ..writeln('/// One type role: its size, line height (a multiple) and weight.')
+    ..writeln('typedef GlmTypeRole = ({double size, double height, int weight});')
+    ..writeln()
     ..writeln('/// The type scale: six roles (and the large display), as the web\'s text-caption … text-display.')
     ..writeln('abstract final class GlmType {');
-  part('type').forEach((k, v) => b.writeln('  static const GlmTypeRole $k = (size: ${at(v, 'size')}, height: ${at(v, 'line')}, weight: ${at(v, 'weight')});'));
-  b..writeln('}')..writeln()..writeln('/// The spacing scale, as the web\'s --space-*.')..writeln('abstract final class GlmSpace {');
+  part('type').forEach(
+    (k, v) => b.writeln('  static const GlmTypeRole $k = (size: ${at(v, 'size')}, height: ${at(v, 'line')}, weight: ${at(v, 'weight')});'),
+  );
+  b
+    ..writeln('}')
+    ..writeln()
+    ..writeln('/// The spacing scale, as the web\'s --space-*.')
+    ..writeln('abstract final class GlmSpace {');
   part('spacing').forEach((k, v) => b.writeln('  static const double $k = $v;'));
-  b..writeln('}')..writeln()..writeln('/// The smallest touch target: 44 on the web, 48 in the app (Material).')..writeln('abstract final class GlmTouch {');
+  b
+    ..writeln('}')
+    ..writeln()
+    ..writeln('/// The smallest touch target: 44 on the web, 48 in the app (Material).')
+    ..writeln('abstract final class GlmTouch {');
   part('touch').forEach((k, v) => b.writeln('  static const double $k = $v;'));
-  b..writeln('}')..writeln()..writeln('/// The radii, as the web\'s rounded-* (one source with GlmSize).')..writeln('abstract final class GlmRadius {');
+  b
+    ..writeln('}')
+    ..writeln()
+    ..writeln('/// The radii, as the web\'s rounded-* (one source with GlmSize).')
+    ..writeln('abstract final class GlmRadius {');
   (size['radius'] as Map<dynamic, dynamic>).forEach((k, v) => b.writeln('  static const double $k = $v;'));
-  b..writeln('}')..writeln()..writeln('/// The shadows (offset y, blur, spread, the shade\'s opacity), as the web\'s --shadow-*.')..writeln('abstract final class GlmShadow {');
-  part('shadow').forEach((k, v) => b.writeln('  static const $k = (y: ${at(v, 'y')}.0, blur: ${at(v, 'blur')}.0, spread: ${at(v, 'spread')}.0, alpha: ${at(v, 'alpha')});'));
-  b..writeln('}')..writeln()..writeln('/// The motion: two curves and three durations, as the web\'s --ease-* and --duration-*.')..writeln('abstract final class GlmMotion {');
+  b
+    ..writeln('}')
+    ..writeln()
+    ..writeln('/// The shadows (offset y, blur, spread, the shade\'s opacity), as the web\'s --shadow-*.')
+    ..writeln('abstract final class GlmShadow {');
+  part('shadow').forEach(
+    (k, v) => b.writeln(
+      '  static const $k = (y: ${at(v, 'y')}.0, blur: ${at(v, 'blur')}.0, spread: ${at(v, 'spread')}.0, alpha: ${at(v, 'alpha')});',
+    ),
+  );
+  b
+    ..writeln('}')
+    ..writeln()
+    ..writeln('/// The motion: two curves and three durations, as the web\'s --ease-* and --duration-*.')
+    ..writeln('abstract final class GlmMotion {');
   part('motion').forEach((k, v) {
     if (v is List<dynamic>) {
       b.writeln('  static const $k = Cubic(${v.join(', ')});');
@@ -90,7 +144,11 @@ void main() {
       b.writeln('  static const $k = Duration(milliseconds: $v);');
     }
   });
-  b..writeln('}')..writeln()..writeln('/// The match\'s TV look (the studio, the score bug, the cards), as the web\'s --color-broadcast-*.')..writeln('abstract final class GlmBroadcast {');
+  b
+    ..writeln('}')
+    ..writeln()
+    ..writeln('/// The match\'s TV look (the studio, the score bug, the cards), as the web\'s --color-broadcast-*.')
+    ..writeln('abstract final class GlmBroadcast {');
   part('broadcast').forEach((k, v) => b.writeln('  static const ${ident(k)} = Color(${hex(v as String)});'));
   b.writeln('}');
   File('lib/ui/tokens.g.dart').writeAsStringSync(b.toString());

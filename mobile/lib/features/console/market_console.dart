@@ -58,17 +58,24 @@ class _AuctionsTabState extends ConsumerState<AuctionsTab> {
       value: ref.watch(auctionsProvider(widget.leagueId)),
       onRetry: () => ref.invalidate(auctionsProvider(widget.leagueId)),
       data: (a) {
-        if (a.auctions.isEmpty) return Center(child: Text(l.noAuctions, style: TextStyle(color: context.palette.textMuted)));
+        if (a.auctions.isEmpty) {
+          return Center(
+            child: Text(l.noAuctions, style: TextStyle(color: context.palette.textMuted)),
+          );
+        }
         final picked = a.auctions.where((x) => x.playerId == _picked).firstOrNull ?? a.auctions.first;
         return GlmSplitLayout(
           ratio: (60, 40),
-          start: ListView(padding: EdgeInsets.zero, children: [
-            for (final x in a.auctions)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: _AuctionRow(a: x, on: x.playerId == picked.playerId, onTap: () => setState(() => _picked = x.playerId)),
-              ),
-          ]),
+          start: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              for (final x in a.auctions)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: _AuctionRow(a: x, on: x.playerId == picked.playerId, onTap: () => setState(() => _picked = x.playerId)),
+                ),
+            ],
+          ),
           end: _Inspector(leagueId: widget.leagueId, a: picked),
         );
       },
@@ -98,29 +105,63 @@ class _AuctionRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       gold: on,
       onTap: onTap,
-      child: Row(children: [
-        Container(
-          width: 38, height: 38, alignment: Alignment.center,
-          decoration: BoxDecoration(color: p.surfaceRaised, borderRadius: BorderRadius.circular(8)),
-          child: Text('${a.overall}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 16, color: p.goldLight)),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(a.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800)),
-            Text('${a.club} · ${a.position} · ${a.age}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 12)),
-          ]),
-        ),
-        Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text(money(context, a.top ?? a.opening), textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 16, color: p.goldLight)),
+      child: Row(
+        children: [
           Container(
-            margin: const EdgeInsets.only(top: 2),
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-            decoration: BoxDecoration(color: (a.leading ? p.success : p.gold).withValues(alpha: .15), borderRadius: BorderRadius.circular(6)),
-            child: Text(a.leading ? l.leading : l.auctionEnds(_left(a.endsAt)), style: TextStyle(fontSize: 11, color: a.leading ? p.success : p.goldLight)),
+            width: 38,
+            height: 38,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(color: p.surfaceRaised, borderRadius: BorderRadius.circular(8)),
+            child: Text(
+              '${a.overall}',
+              style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 16, color: p.goldLight),
+            ),
           ),
-        ]),
-      ]),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  a.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textDirection: TextDirection.ltr,
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+                Text(
+                  '${a.club} · ${a.position} · ${a.age}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: p.textMuted, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                money(context, a.top ?? a.opening),
+                textDirection: TextDirection.ltr,
+                style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 16, color: p.goldLight),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: (a.leading ? p.success : p.gold).withValues(alpha: .15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  a.leading ? l.leading : l.auctionEnds(_left(a.endsAt)),
+                  style: TextStyle(fontSize: 11, color: a.leading ? p.success : p.goldLight),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -143,7 +184,7 @@ class _InspectorState extends ConsumerState<_Inspector> {
     setState(() => _busy = true);
     try {
       await ref.read(consoleRepositoryProvider).bid(widget.leagueId, widget.a.playerId, amount);
-      HapticFeedback.mediumImpact();
+      unawaited(HapticFeedback.mediumImpact());
       ref.invalidate(auctionsProvider(widget.leagueId));
     } on ApiError catch (e) {
       if (mounted) showGlmToast(context, e.message, error: true);
@@ -158,42 +199,86 @@ class _InspectorState extends ConsumerState<_Inspector> {
     final p = context.palette;
     final a = widget.a;
     Widget row(String k, String v, {Color? colour}) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Row(children: [
-            Expanded(child: Text(k, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 12))),
-            Flexible(flex: 2, child: Text(v, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: const [GlmFonts.body], fontWeight: FontWeight.w700, color: colour ?? p.text))),
-          ]),
-        );
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              k,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: p.textMuted, fontSize: 12),
+            ),
+          ),
+          Flexible(
+            flex: 2,
+            child: Text(
+              v,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontFamily: GlmFonts.numbers,
+                fontFamilyFallback: const [GlmFonts.body],
+                fontWeight: FontWeight.w700,
+                color: colour ?? p.text,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
     return GlmCard(
       padding: const EdgeInsets.all(8),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        SizedBox(
-          width: 100,
-          child: GlmModel3D(model: 'player_card', label: a.name, orbit: '0deg 80deg 2.6m', fallback: PlayerCardArt(overall: a.overall, position: a.position, name: a.name)),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: ListView(padding: EdgeInsets.zero, children: [
-            Text(a.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-            const SizedBox(height: 4),
-            row(l.marketValue, money(context, a.value), colour: p.success),
-            row(l.auctionOpening, money(context, a.opening)),
-            row(l.auctionTop, a.top == null ? '-' : money(context, a.top!), colour: p.goldLight),
-            if (a.mine != null) row(l.yourBid, money(context, a.mine!)),
-            Text(l.auctionEnds(_left(a.endsAt)), textAlign: TextAlign.center, style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w700, fontSize: 12)),
-            const SizedBox(height: 6),
-            GlmButton(
-              label: l.bid(money(context, a.next)),
-              variant: GlmButtonVariant.brand,
-              block: true,
-              loading: _busy,
-              onPressed: a.leading || a.next > a.max ? null : () => _bid(a.next),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 100,
+            child: GlmModel3D(
+              model: 'player_card',
+              label: a.name,
+              orbit: '0deg 80deg 2.6m',
+              fallback: PlayerCardArt(overall: a.overall, position: a.position, name: a.name),
             ),
-            const SizedBox(height: 6),
-            ReleaseClauseButton(leagueId: widget.leagueId, playerId: a.playerId),
-          ]),
-        ),
-      ]),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                Text(
+                  a.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textDirection: TextDirection.ltr,
+                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                ),
+                const SizedBox(height: 4),
+                row(l.marketValue, money(context, a.value), colour: p.success),
+                row(l.auctionOpening, money(context, a.opening)),
+                row(l.auctionTop, a.top == null ? '-' : money(context, a.top!), colour: p.goldLight),
+                if (a.mine != null) row(l.yourBid, money(context, a.mine!)),
+                Text(
+                  l.auctionEnds(_left(a.endsAt)),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w700, fontSize: 12),
+                ),
+                const SizedBox(height: 6),
+                GlmButton(
+                  label: l.bid(money(context, a.next)),
+                  variant: GlmButtonVariant.brand,
+                  block: true,
+                  loading: _busy,
+                  onPressed: a.leading || a.next > a.max ? null : () => _bid(a.next),
+                ),
+                const SizedBox(height: 6),
+                ReleaseClauseButton(leagueId: widget.leagueId, playerId: a.playerId),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -215,22 +300,37 @@ class PlayerCardArt extends StatelessWidget {
           ..setEntry(3, 2, .0015)
           ..rotateY(-.3),
         child: Container(
-          width: 100, height: 142,
+          width: 100,
+          height: 142,
           padding: const EdgeInsets.only(top: 10),
           decoration: BoxDecoration(
             gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [p.goldLight, p.goldDark]),
             borderRadius: BorderRadius.circular(12),
             boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 14, offset: Offset(-6, 8))],
           ),
-          child: Column(children: [
-            Text('$overall', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 30, color: p.onGold)),
-            Text(position, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.onGold)),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(6, 0, 6, 10),
-              child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: p.onGold)),
-            ),
-          ]),
+          child: Column(
+            children: [
+              Text(
+                '$overall',
+                style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 30, color: p.onGold),
+              ),
+              Text(
+                position,
+                style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.onGold),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(6, 0, 6, 10),
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textDirection: TextDirection.ltr,
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: p.onGold),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -277,12 +377,22 @@ class _ReleaseClauseButtonState extends ConsumerState<ReleaseClauseButton> {
   }
 
   @override
-  Widget build(BuildContext context) => GlmButton(label: L.of(context).payRelease, block: true, loading: _busy, icon: const Icon(Icons.bolt_rounded, size: 18), onPressed: _go);
+  Widget build(BuildContext context) => GlmButton(
+    label: L.of(context).payRelease,
+    block: true,
+    loading: _busy,
+    icon: const Icon(Icons.bolt_rounded, size: 18),
+    onPressed: _go,
+  );
 }
 
 /// [Sprint 50 M19] The talk with a computer club over one of its players: its ask, the round, and the coach's offer.
 Future<bool?> showNegotiation(BuildContext context, {required int leagueId, required int playerId, required String name}) =>
-    showCompactInputSheet<bool>(context, title: '${L.of(context).negotiate} · $name', builder: (_) => _Negotiation(leagueId: leagueId, playerId: playerId));
+    showCompactInputSheet<bool>(
+      context,
+      title: '${L.of(context).negotiate} · $name',
+      builder: (_) => _Negotiation(leagueId: leagueId, playerId: playerId),
+    );
 
 class _Negotiation extends ConsumerStatefulWidget {
   const _Negotiation({required this.leagueId, required this.playerId});
@@ -301,11 +411,17 @@ class _NegotiationState extends ConsumerState<_Negotiation> {
   @override
   void initState() {
     super.initState();
-    ref.read(consoleRepositoryProvider).negotiation(widget.leagueId, widget.playerId).then((n) {
-      if (mounted) setState(() => _n = n);
-    }, onError: (Object e) {
-      if (mounted) showGlmToast(context, ApiError.from(e).message, error: true);
-    });
+    ref
+        .read(consoleRepositoryProvider)
+        .negotiation(widget.leagueId, widget.playerId)
+        .then(
+          (n) {
+            if (mounted) setState(() => _n = n);
+          },
+          onError: (Object e) {
+            if (mounted) showGlmToast(context, ApiError.from(e).message, error: true);
+          },
+        );
   }
 
   @override
@@ -340,27 +456,42 @@ class _NegotiationState extends ConsumerState<_Negotiation> {
     final l = L.of(context);
     final p = context.palette;
     final n = _n;
-    if (n == null) return const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator()));
+    if (n == null) {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
     final closed = n.status == 'closed';
-    return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Text(l.theyAsk(money(context, n.ask)), style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: p.goldLight)),
-      Text(closed ? l.talkClosed : l.roundOf(n.round + 1, n.rounds + 1), style: TextStyle(color: closed ? p.danger : p.textMuted, fontSize: 12)),
-      const SizedBox(height: 10),
-      GlmCompactField(
-        label: l.yourOffer,
-        child: TextField(
-          controller: _amount,
-          enabled: !closed,
-          keyboardType: TextInputType.number,
-          textDirection: TextDirection.ltr,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(isDense: true),
-          onSubmitted: (_) => _send(),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l.theyAsk(money(context, n.ask)),
+          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: p.goldLight),
         ),
-      ),
-      const SizedBox(height: 10),
-      GlmButton(label: l.sendOffer, block: true, loading: _busy, onPressed: closed ? null : _send),
-    ]);
+        Text(
+          closed ? l.talkClosed : l.roundOf(n.round + 1, n.rounds + 1),
+          style: TextStyle(color: closed ? p.danger : p.textMuted, fontSize: 12),
+        ),
+        const SizedBox(height: 10),
+        GlmCompactField(
+          label: l.yourOffer,
+          child: TextField(
+            controller: _amount,
+            enabled: !closed,
+            keyboardType: TextInputType.number,
+            textDirection: TextDirection.ltr,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: const InputDecoration(isDense: true),
+            onSubmitted: (_) => _send(),
+          ),
+        ),
+        const SizedBox(height: 10),
+        GlmButton(label: l.sendOffer, block: true, loading: _busy, onPressed: closed ? null : _send),
+      ],
+    );
   }
 }
 
@@ -376,25 +507,33 @@ class AuctionListing extends ConsumerWidget {
     final l = L.of(context);
     final minutes = ref.watch(auctionsProvider(leagueId)).value?.minutes ?? const [];
     if (minutes.isEmpty) return const SizedBox.shrink();
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      const SizedBox(height: 10),
-      GlmSectionTitle(l.listAsAuction),
-      const SizedBox(height: 6),
-      Wrap(spacing: 6, runSpacing: 6, alignment: WrapAlignment.center, children: [
-        for (final m in minutes)
-          ActionChip(
-            label: Text(l.auctionMinutes(m)),
-            onPressed: () async {
-              try {
-                await ref.read(consoleRepositoryProvider).listAuction(leagueId, playerId, price, m);
-                ref.invalidate(auctionsProvider(leagueId));
-                onListed();
-              } on ApiError catch (e) {
-                if (context.mounted) showGlmToast(context, e.message, error: true);
-              }
-            },
-          ),
-      ]),
-    ]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 10),
+        GlmSectionTitle(l.listAsAuction),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          alignment: WrapAlignment.center,
+          children: [
+            for (final m in minutes)
+              ActionChip(
+                label: Text(l.auctionMinutes(m)),
+                onPressed: () async {
+                  try {
+                    await ref.read(consoleRepositoryProvider).listAuction(leagueId, playerId, price, m);
+                    ref.invalidate(auctionsProvider(leagueId));
+                    onListed();
+                  } on ApiError catch (e) {
+                    if (context.mounted) showGlmToast(context, e.message, error: true);
+                  }
+                },
+              ),
+          ],
+        ),
+      ],
+    );
   }
 }

@@ -25,10 +25,10 @@ class RatingBadge extends StatelessWidget {
     final (bg, fg) = value >= 85
         ? (p.gold, p.onGold)
         : value >= 75
-            ? (p.success, Colors.white)
-            : value >= 65
-                ? (GlmLine.def.bg, Colors.white)
-                : (p.surfaceRaised, p.text);
+        ? (p.success, Colors.white)
+        : value >= 65
+        ? (GlmLine.def.bg, Colors.white)
+        : (p.surfaceRaised, p.text);
     return Container(
       width: size,
       height: size,
@@ -36,10 +36,18 @@ class RatingBadge extends StatelessWidget {
       // In the Legend Cut, lit from the top like a medal.
       decoration: ShapeDecoration(
         shape: GlmCut.shape(size * .26, side: BorderSide(color: Colors.white.withValues(alpha: .22))),
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(bg, Colors.white, .28)!, bg, Color.lerp(bg, Colors.black, .12)!], stops: const [0, .55, 1]),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color.lerp(bg, Colors.white, .28)!, bg, Color.lerp(bg, Colors.black, .12)!],
+          stops: const [0, .55, 1],
+        ),
         shadows: [BoxShadow(color: bg.withValues(alpha: .40), blurRadius: 12, offset: const Offset(0, 4), spreadRadius: -4)],
       ),
-      child: Text('$value', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: size * .5, fontWeight: FontWeight.w800, color: fg, height: 1)),
+      child: Text(
+        '$value',
+        style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: size * .5, fontWeight: FontWeight.w800, color: fg, height: 1),
+      ),
     );
   }
 }
@@ -52,13 +60,22 @@ class PositionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = switch (line) { 'gk' => GlmLine.gk, 'def' => GlmLine.def, 'mid' => GlmLine.mid, _ => GlmLine.att };
+    final c = switch (line) {
+      'gk' => GlmLine.gk,
+      'def' => GlmLine.def,
+      'mid' => GlmLine.mid,
+      _ => GlmLine.att,
+    };
     return Container(
       constraints: const BoxConstraints(minWidth: 38),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: ShapeDecoration(color: c.bg, shape: GlmCut.shape(GlmCut.chip)),
-      child: Text(position, textAlign: TextAlign.center, textDirection: TextDirection.ltr,
-          style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 14, color: c.fg, height: 1.1)),
+      child: Text(
+        position,
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr,
+        style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 14, color: c.fg, height: 1.1),
+      ),
     );
   }
 }
@@ -76,13 +93,24 @@ class LevelBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final v = value.clamp(0, 1).toDouble();
-    final c = color ?? (v >= .8 ? p.success : v >= .6 ? p.warning : p.danger);
+    final c =
+        color ??
+        (v >= .8
+            ? p.success
+            : v >= .6
+            ? p.warning
+            : p.danger);
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(color: p.surfaceSunk, borderRadius: BorderRadius.circular(height)),
       alignment: AlignmentDirectional.centerStart,
-      child: FractionallySizedBox(widthFactor: v, child: Container(decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(height)))),
+      child: FractionallySizedBox(
+        widthFactor: v,
+        child: Container(
+          decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(height)),
+        ),
+      ),
     );
   }
 }
@@ -100,19 +128,38 @@ class StatTile extends StatelessWidget {
     final p = context.palette;
     return GlmCard(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      child: Row(children: [
-        if (icon != null) ...[
-          IconTile(icon!, color: color ?? p.gold, size: 36),
-          const SizedBox(width: 10),
+      child: Row(
+        children: [
+          if (icon != null) ...[IconTile(icon!, color: color ?? p.gold, size: 36), const SizedBox(width: 10)],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  textDirection: TextDirection.ltr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: GlmFonts.numbers,
+                    fontFamilyFallback: const [GlmFonts.body],
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: p.text,
+                    height: 1.1,
+                  ),
+                ),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: p.textMuted, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
         ],
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(value, textDirection: TextDirection.ltr, maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: const [GlmFonts.body], fontSize: 22, fontWeight: FontWeight.w800, color: p.text, height: 1.1)),
-            Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 12)),
-          ]),
-        ),
-      ]),
+      ),
     );
   }
 }
@@ -127,9 +174,9 @@ class GameHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(2, 18, 2, 10),
-        child: BroadcastTitle(title, icon: icon, trailing: trailing),
-      );
+    padding: const EdgeInsets.fromLTRB(2, 18, 2, 10),
+    child: BroadcastTitle(title, icon: icon, trailing: trailing),
+  );
 }
 
 /// One screen in a menu: its icon in a coloured square, its name, a short line, and a badge (a count waiting).
@@ -154,62 +201,105 @@ class MenuSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      GameHeader(title, icon: icon),
-      GlmCard(
-        padding: EdgeInsets.zero,
-        child: Column(children: [
-          for (final (i, m) in items.indexed) ...[
-            if (i > 0) Divider(height: 1, indent: 64, color: Colors.white.withValues(alpha: context.glm.day ? 0 : .06)),
-            InkWell(
-              onTap: m.onTap,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                child: Row(children: [
-                  IconTile(m.icon, color: m.color),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(m.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-                      if (m.subtitle != null) Text(m.subtitle!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 12)),
-                    ]),
-                  ),
-                  if (m.badge != null)
-                    Container(
-                      margin: const EdgeInsetsDirectional.only(end: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: ShapeDecoration(color: p.live, shape: GlmCut.shape(GlmCut.chip + 2)),
-                      child: Text(m.badge!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        GameHeader(title, icon: icon),
+        GlmCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              for (final (i, m) in items.indexed) ...[
+                if (i > 0) Divider(height: 1, indent: 64, color: Colors.white.withValues(alpha: context.glm.day ? 0 : .06)),
+                InkWell(
+                  onTap: m.onTap,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    child: Row(
+                      children: [
+                        IconTile(m.icon, color: m.color),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(m.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                              if (m.subtitle != null)
+                                Text(
+                                  m.subtitle!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(color: p.textMuted, fontSize: 12),
+                                ),
+                            ],
+                          ),
+                        ),
+                        if (m.badge != null)
+                          Container(
+                            margin: const EdgeInsetsDirectional.only(end: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: ShapeDecoration(color: p.live, shape: GlmCut.shape(GlmCut.chip + 2)),
+                            child: Text(
+                              m.badge!,
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12),
+                            ),
+                          ),
+                        Icon(Icons.chevron_right_rounded, color: p.textMuted),
+                      ],
                     ),
-                  Icon(Icons.chevron_right_rounded, color: p.textMuted),
-                ]),
-              ),
-            ),
-          ],
-        ]),
-      ),
-    ]);
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 
 /// [2026-11-06] A screen in two columns on a wide (landscape) screen, each scrolling on its own, or one list when narrow.
 /// Each child arrives with a short staggered rise.
 class GamePanes extends StatelessWidget {
-  const GamePanes({super.key, required this.start, required this.end, this.startFlex = 5, this.endFlex = 4, this.padding = const EdgeInsets.fromLTRB(16, 12, 16, 24)});
+  const GamePanes({
+    super.key,
+    required this.start,
+    required this.end,
+    this.startFlex = 5,
+    this.endFlex = 4,
+    this.padding = const EdgeInsets.fromLTRB(16, 12, 16, 24),
+  });
 
   final List<Widget> start, end;
   final int startFlex, endFlex;
   final EdgeInsets padding;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: (context, box) {
-        List<Widget> rise(List<Widget> xs, int from) => [for (final (i, w) in xs.indexed) FadeSlideIn(index: from + i, child: w)];
-        if (box.maxWidth < 560) return ListView(padding: padding, children: rise([...start, ...end], 0));
-        return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Expanded(flex: startFlex, child: ListView(padding: padding.copyWith(right: padding.right / 2), children: rise(start, 0))),
-          Expanded(flex: endFlex, child: ListView(padding: padding.copyWith(left: padding.left / 2), children: rise(end, 2))),
-        ]);
-      });
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      List<Widget> rise(List<Widget> xs, int from) => [for (final (i, w) in xs.indexed) FadeSlideIn(index: from + i, child: w)];
+      if (box.maxWidth < 560) return ListView(padding: padding, children: rise([...start, ...end], 0));
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: startFlex,
+            child: ListView(
+              padding: padding.copyWith(right: padding.right / 2),
+              children: rise(start, 0),
+            ),
+          ),
+          Expanded(
+            flex: endFlex,
+            child: ListView(
+              padding: padding.copyWith(left: padding.left / 2),
+              children: rise(end, 2),
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 /// [2026-11-06, stage 3] Cards in as many columns as fit ([minWidth] each), one under the other when narrow, each
@@ -222,13 +312,23 @@ class GameGrid extends StatelessWidget {
   final int maxColumns;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: (context, box) {
-        final cols = (box.maxWidth / minWidth).floor().clamp(1, maxColumns);
-        final w = (box.maxWidth - (cols - 1) * spacing) / cols;
-        return Wrap(spacing: spacing, runSpacing: spacing, children: [
-          for (final (i, c) in children.indexed) SizedBox(width: w, child: FadeSlideIn(index: i, child: c)),
-        ]);
-      });
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      final cols = (box.maxWidth / minWidth).floor().clamp(1, maxColumns);
+      final w = (box.maxWidth - (cols - 1) * spacing) / cols;
+      return Wrap(
+        spacing: spacing,
+        runSpacing: spacing,
+        children: [
+          for (final (i, c) in children.indexed)
+            SizedBox(
+              width: w,
+              child: FadeSlideIn(index: i, child: c),
+            ),
+        ],
+      );
+    },
+  );
 }
 
 /// An icon on a glossy square in its colour: the game's icon style everywhere (menus, rails, headers, empty states).
@@ -247,7 +347,11 @@ class IconTile extends StatelessWidget {
       height: size,
       decoration: ShapeDecoration(
         shape: GlmCut.shape(size * .30, side: BorderSide(color: c.withValues(alpha: .30))),
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [c.withValues(alpha: .36), c.withValues(alpha: .10)]),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [c.withValues(alpha: .36), c.withValues(alpha: .10)],
+        ),
       ),
       child: Icon(icon, size: size * .55, color: c),
     );
@@ -276,7 +380,13 @@ PreferredSizeWidget gameTabsBar(BuildContext context, {required String title, re
   if (!isWide(context)) return GameBar(title: Text(title), actions: actions, bottom: bar);
   return GameBar(
     titleSpacing: 16,
-    title: Row(children: [Text(title), const SizedBox(width: 16), Expanded(child: bar)]),
+    title: Row(
+      children: [
+        Text(title),
+        const SizedBox(width: 16),
+        Expanded(child: bar),
+      ],
+    ),
     actions: actions,
   );
 }
@@ -294,7 +404,13 @@ class ArcGauge extends StatelessWidget {
 
   static Color levelColor(BuildContext context, int v) {
     final p = context.palette;
-    return v >= 85 ? p.gold : v >= 75 ? const Color(0xFF55D6F2) : v >= 65 ? GlmLine.def.bg : p.textMuted;
+    return v >= 85
+        ? p.gold
+        : v >= 75
+        ? const Color(0xFF55D6F2)
+        : v >= 65
+        ? GlmLine.def.bg
+        : p.textMuted;
   }
 
   @override
@@ -303,19 +419,40 @@ class ArcGauge extends StatelessWidget {
     final still = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     final w = stroke ?? size * .085;
     Widget face(double t) => CustomPaint(
-          painter: _Arc(fraction: (value / max).clamp(0, 1) * t, color: c, width: w),
-          child: SizedBox.square(
-            dimension: size,
-            child: Center(
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                if (label != null) Text(label!, style: TextStyle(color: c.withValues(alpha: .9), fontWeight: FontWeight.w700, fontSize: size * .17, height: 1)),
-                Text('${(value * t).round()}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: size * (label == null ? .44 : .38), color: Colors.white, height: 1.05)),
-              ]),
-            ),
+      painter: _Arc(fraction: (value / max).clamp(0, 1) * t, color: c, width: w),
+      child: SizedBox.square(
+        dimension: size,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (label != null)
+                Text(
+                  label!,
+                  style: TextStyle(color: c.withValues(alpha: .9), fontWeight: FontWeight.w700, fontSize: size * .17, height: 1),
+                ),
+              Text(
+                '${(value * t).round()}',
+                style: TextStyle(
+                  fontFamily: GlmFonts.numbers,
+                  fontWeight: FontWeight.w800,
+                  fontSize: size * (label == null ? .44 : .38),
+                  color: Colors.white,
+                  height: 1.05,
+                ),
+              ),
+            ],
           ),
-        );
+        ),
+      ),
+    );
     if (still) return face(1);
-    return TweenAnimationBuilder<double>(tween: Tween(begin: 0, end: 1), duration: const Duration(milliseconds: 1100), curve: Curves.easeOutCubic, builder: (_, t, _) => face(t));
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 1100),
+      curve: Curves.easeOutCubic,
+      builder: (_, t, _) => face(t),
+    );
   }
 }
 
@@ -330,18 +467,41 @@ class _Arc extends CustomPainter {
     final r = (s.shortestSide - width) / 2;
     final o = s.center(Offset.zero);
     c.drawCircle(o, r + width / 2, Paint()..color = const Color(0xFF0F2248));
-    c.drawCircle(o, r, Paint()..color = Colors.white.withValues(alpha: .10)..style = PaintingStyle.stroke..strokeWidth = width);
+    c.drawCircle(
+      o,
+      r,
+      Paint()
+        ..color = Colors.white.withValues(alpha: .10)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = width,
+    );
     final rect = Rect.fromCircle(center: o, radius: r);
-    c.drawArc(rect, -math.pi / 2, math.pi * 2 * fraction, false, Paint()
-      ..color = color.withValues(alpha: .45)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = width * 2.2
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6));
-    c.drawArc(rect, -math.pi / 2, math.pi * 2 * fraction, false, Paint()
-      ..shader = SweepGradient(startAngle: -math.pi / 2, endAngle: math.pi * 1.5, colors: [Color.lerp(color, Colors.white, .35)!, color]).createShader(rect)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = width
-      ..strokeCap = StrokeCap.round);
+    c.drawArc(
+      rect,
+      -math.pi / 2,
+      math.pi * 2 * fraction,
+      false,
+      Paint()
+        ..color = color.withValues(alpha: .45)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = width * 2.2
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
+    );
+    c.drawArc(
+      rect,
+      -math.pi / 2,
+      math.pi * 2 * fraction,
+      false,
+      Paint()
+        ..shader = SweepGradient(
+          startAngle: -math.pi / 2,
+          endAngle: math.pi * 1.5,
+          colors: [Color.lerp(color, Colors.white, .35)!, color],
+        ).createShader(rect)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = width
+        ..strokeCap = StrokeCap.round,
+    );
   }
 
   @override

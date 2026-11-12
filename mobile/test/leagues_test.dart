@@ -46,23 +46,30 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     await t.binding.setSurfaceSize(const Size(420, 1400));
-    await t.pumpWidget(ProviderScope(
-      overrides: [
-        preferencesProvider.overrideWithValue(prefs),
-        leagueProvider(league.id).overrideWith((ref) async => league),
-        clubSummaryProvider(league.id).overrideWith((ref) async => summary),
-        standingsProvider(league.id).overrideWith((ref) async => table),
-        fixturesProvider(league.id).overrideWith((ref) async => fixtures),
-        requestsProvider(league.id).overrideWith((ref) async => const []),
-      ],
-      child: MaterialApp(
-        theme: glmTheme(day: false),
-        locale: const Locale('ar'),
-        supportedLocales: L.supportedLocales,
-        localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-        home: LeagueScreen(id: league.id),
+    await t.pumpWidget(
+      ProviderScope(
+        overrides: [
+          preferencesProvider.overrideWithValue(prefs),
+          leagueProvider(league.id).overrideWith((ref) async => league),
+          clubSummaryProvider(league.id).overrideWith((ref) async => summary),
+          standingsProvider(league.id).overrideWith((ref) async => table),
+          fixturesProvider(league.id).overrideWith((ref) async => fixtures),
+          requestsProvider(league.id).overrideWith((ref) async => const []),
+        ],
+        child: MaterialApp(
+          theme: glmTheme(day: false),
+          locale: const Locale('ar'),
+          supportedLocales: L.supportedLocales,
+          localizationsDelegates: const [
+            L.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: LeagueScreen(id: league.id),
+        ),
       ),
-    ));
+    );
     await t.pumpAndSettle();
     // [Sprint 46] The hub: the next match's round on the stadium, the opponent's name.
     expect(find.text('الجولة 1'), findsOneWidget);

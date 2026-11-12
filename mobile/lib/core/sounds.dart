@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
@@ -15,10 +17,16 @@ abstract final class GameSounds {
 
   static final Map<Sfx, AudioPlayer> _players = {};
 
+  /// A new player that stops at the end of its sound (set once, not awaited: it only applies to the next play).
+  static AudioPlayer _stopped(AudioPlayer p) {
+    unawaited(p.setReleaseMode(ReleaseMode.stop));
+    return p;
+  }
+
   static Future<void> play(Sfx s) async {
     if (!enabled || !Ambient.on) return;
     try {
-      final p = _players[s] ??= AudioPlayer()..setReleaseMode(ReleaseMode.stop);
+      final p = _players[s] ??= _stopped(AudioPlayer());
       // Short sounds in the low-latency mode; the intro in the media mode (it is longer).
       if (s != Sfx.intro && s != Sfx.roar) await p.setPlayerMode(PlayerMode.lowLatency);
       await p.stop();

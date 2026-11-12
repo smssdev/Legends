@@ -33,13 +33,13 @@ abstract final class GlmFonts {
 /// The theme's textTheme is built from the same roles, so a Text with no style is already on the scale.
 class GlmTypeStyles extends ThemeExtension<GlmTypeStyles> {
   GlmTypeStyles(Color text, Color muted)
-      : caption = glmStyle(GlmType.caption, muted),
-        body = glmStyle(GlmType.body, text),
-        bodyLg = glmStyle(GlmType.bodyLg, text),
-        title = glmStyle(GlmType.title, text),
-        headline = glmStyle(GlmType.headline, text),
-        display = glmStyle(GlmType.display, text),
-        displayLg = glmStyle(GlmType.displayLg, text);
+    : caption = glmStyle(GlmType.caption, muted),
+      body = glmStyle(GlmType.body, text),
+      bodyLg = glmStyle(GlmType.bodyLg, text),
+      title = glmStyle(GlmType.title, text),
+      headline = glmStyle(GlmType.headline, text),
+      display = glmStyle(GlmType.display, text),
+      displayLg = glmStyle(GlmType.displayLg, text);
 
   final TextStyle caption, body, bodyLg, title, headline, display, displayLg;
 
@@ -55,25 +55,35 @@ class GlmTypeStyles extends ThemeExtension<GlmTypeStyles> {
 
 /// One role of the scale as a TextStyle.
 TextStyle glmStyle(GlmTypeRole r, Color color) => TextStyle(
-      fontFamily: GlmFonts.body,
-      fontSize: r.size,
-      height: r.height,
-      fontWeight: FontWeight.values[(r.weight ~/ 100).clamp(1, 9) - 1],
-      color: color,
-    );
+  fontFamily: GlmFonts.body,
+  fontSize: r.size,
+  height: r.height,
+  fontWeight: FontWeight.values[(r.weight ~/ 100).clamp(1, 9) - 1],
+  color: color,
+);
 
 ThemeData glmTheme({required bool day}) {
   // [Sprint 47] The approved design: the app at night takes the web's own night colours (tokens.json «color»).
   final p = day ? glmDay : glmNight;
   final scheme = ColorScheme(
     brightness: day ? Brightness.light : Brightness.dark,
-    primary: p.gold, onPrimary: p.onGold,
-    secondary: p.brand, onSecondary: Colors.white,
-    error: p.live, onError: Colors.white,
-    surface: p.surface, onSurface: p.text,
-    surfaceContainerLowest: p.bgDeep, surfaceContainerLow: p.surfaceSunk, surfaceContainer: p.surface,
-    surfaceContainerHigh: p.surfaceRaised, surfaceContainerHighest: p.surfaceRaised,
-    onSurfaceVariant: p.textMuted, outline: p.surfaceRaised, outlineVariant: p.surfaceRaised, shadow: p.shade,
+    primary: p.gold,
+    onPrimary: p.onGold,
+    secondary: p.brand,
+    onSecondary: Colors.white,
+    error: p.live,
+    onError: Colors.white,
+    surface: p.surface,
+    onSurface: p.text,
+    surfaceContainerLowest: p.bgDeep,
+    surfaceContainerLow: p.surfaceSunk,
+    surfaceContainer: p.surface,
+    surfaceContainerHigh: p.surfaceRaised,
+    surfaceContainerHighest: p.surfaceRaised,
+    onSurfaceVariant: p.textMuted,
+    outline: p.surfaceRaised,
+    outlineVariant: p.surfaceRaised,
+    shadow: p.shade,
   );
   final base = ThemeData(useMaterial3: true, colorScheme: scheme, fontFamily: GlmFonts.body, scaffoldBackgroundColor: p.bg);
   final text = base.textTheme.apply(bodyColor: p.text, displayColor: p.text, fontFamily: GlmFonts.body);
@@ -82,7 +92,10 @@ ThemeData glmTheme({required bool day}) {
   TextStyle bold(TextStyle s, FontWeight w) => s.copyWith(fontWeight: w);
 
   return base.copyWith(
-    extensions: [GlmColors(p, day: day), type],
+    extensions: [
+      GlmColors(p, day: day),
+      type,
+    ],
     textTheme: text.copyWith(
       displayLarge: type.displayLg,
       displayMedium: type.display,
@@ -101,12 +114,19 @@ ThemeData glmTheme({required bool day}) {
       labelSmall: type.caption,
     ),
     // [2026-11-06] Screens fade through into each other, as in a game's menus.
-    pageTransitionsTheme: const PageTransitionsTheme(builders: {
-      TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
-      TargetPlatform.iOS: FadeForwardsPageTransitionsBuilder(),
-    }),
-    appBarTheme: AppBarTheme(toolbarHeight: 50, backgroundColor: day ? p.panel : p.bgDeep, foregroundColor: p.text, elevation: 0, scrolledUnderElevation: 0, centerTitle: false,
-        surfaceTintColor: Colors.transparent, titleTextStyle: text.titleLarge?.copyWith(fontWeight: FontWeight.w800, fontSize: 20)),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {TargetPlatform.android: FadeForwardsPageTransitionsBuilder(), TargetPlatform.iOS: FadeForwardsPageTransitionsBuilder()},
+    ),
+    appBarTheme: AppBarTheme(
+      toolbarHeight: 50,
+      backgroundColor: day ? p.panel : p.bgDeep,
+      foregroundColor: p.text,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: false,
+      surfaceTintColor: Colors.transparent,
+      titleTextStyle: text.titleLarge?.copyWith(fontWeight: FontWeight.w800, fontSize: 20),
+    ),
     // [2026-11-06] The league's five sections at the bottom, as in the manager games: gold for where you are.
     // In landscape the league's sections stand in a rail at the side.
     navigationRailTheme: NavigationRailThemeData(
@@ -114,7 +134,12 @@ ThemeData glmTheme({required bool day}) {
       indicatorColor: p.brand.withValues(alpha: .22),
       selectedIconTheme: IconThemeData(color: day ? GlmInk.brand : p.brandLight, size: 24),
       unselectedIconTheme: IconThemeData(color: p.textMuted, size: 24),
-      selectedLabelTextStyle: TextStyle(fontFamily: GlmFonts.body, fontSize: 12, fontWeight: FontWeight.w800, color: day ? GlmInk.brand : p.brandLight),
+      selectedLabelTextStyle: TextStyle(
+        fontFamily: GlmFonts.body,
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        color: day ? GlmInk.brand : p.brandLight,
+      ),
       unselectedLabelTextStyle: TextStyle(fontFamily: GlmFonts.body, fontSize: 12, fontWeight: FontWeight.w600, color: p.textMuted),
       labelType: NavigationRailLabelType.all,
       indicatorShape: GlmCut.shape(GlmCut.badge),
@@ -125,31 +150,63 @@ ThemeData glmTheme({required bool day}) {
       indicatorColor: p.brand.withValues(alpha: .22),
       indicatorShape: const StadiumBorder(),
       height: 68,
-      labelTextStyle: WidgetStateProperty.resolveWith((s) => TextStyle(fontFamily: GlmFonts.body, fontSize: 12,
-          fontWeight: s.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w600, color: s.contains(WidgetState.selected) ? (day ? GlmInk.brand : p.brandLight) : p.textMuted)),
-      iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(color: s.contains(WidgetState.selected) ? (day ? GlmInk.brand : p.brandLight) : p.textMuted, size: 24)),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (s) => TextStyle(
+          fontFamily: GlmFonts.body,
+          fontSize: 12,
+          fontWeight: s.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w600,
+          color: s.contains(WidgetState.selected) ? (day ? GlmInk.brand : p.brandLight) : p.textMuted,
+        ),
+      ),
+      iconTheme: WidgetStateProperty.resolveWith(
+        (s) => IconThemeData(color: s.contains(WidgetState.selected) ? (day ? GlmInk.brand : p.brandLight) : p.textMuted, size: 24),
+      ),
     ),
     // [Sprint 47] The approved design's tabs: the chosen one an ivory pill (chrome), the others muted.
-    tabBarTheme: TabBarThemeData(labelColor: p.onChrome, unselectedLabelColor: p.textMuted, dividerColor: Colors.transparent,
-        indicator: BoxDecoration(color: p.chrome, borderRadius: BorderRadius.circular(9)), indicatorSize: TabBarIndicatorSize.tab,
-        splashBorderRadius: BorderRadius.circular(9), labelPadding: const EdgeInsets.symmetric(horizontal: 14),
-        labelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, fontSize: 15),
-        unselectedLabelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, fontSize: 15)),
-    chipTheme: ChipThemeData(backgroundColor: p.surface, side: BorderSide(color: p.surfaceRaised), shape: GlmCut.shape(GlmCut.badge),
-        labelStyle: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, color: p.text)),
-    bottomSheetTheme: BottomSheetThemeData(backgroundColor: day ? p.panel : p.surface, surfaceTintColor: Colors.transparent,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(22)))),
-    listTileTheme: ListTileThemeData(iconColor: day ? GlmInk.brand : p.brandLight, titleTextStyle: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, fontSize: 15, color: p.text)),
+    tabBarTheme: TabBarThemeData(
+      labelColor: p.onChrome,
+      unselectedLabelColor: p.textMuted,
+      dividerColor: Colors.transparent,
+      indicator: BoxDecoration(color: p.chrome, borderRadius: BorderRadius.circular(9)),
+      indicatorSize: TabBarIndicatorSize.tab,
+      splashBorderRadius: BorderRadius.circular(9),
+      labelPadding: const EdgeInsets.symmetric(horizontal: 14),
+      labelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, fontSize: 15),
+      unselectedLabelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, fontSize: 15),
+    ),
+    chipTheme: ChipThemeData(
+      backgroundColor: p.surface,
+      side: BorderSide(color: p.surfaceRaised),
+      shape: GlmCut.shape(GlmCut.badge),
+      labelStyle: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, color: p.text),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: day ? p.panel : p.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
+    ),
+    listTileTheme: ListTileThemeData(
+      iconColor: day ? GlmInk.brand : p.brandLight,
+      titleTextStyle: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, fontSize: 15, color: p.text),
+    ),
     dividerTheme: DividerThemeData(color: p.surfaceRaised, thickness: 1),
-    snackBarTheme: SnackBarThemeData(behavior: SnackBarBehavior.floating, backgroundColor: p.surfaceRaised,
-        contentTextStyle: TextStyle(fontFamily: GlmFonts.body, color: p.text, fontWeight: FontWeight.w600),
-        shape: GlmCut.shape(GlmCut.button)),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: p.surfaceRaised,
+      contentTextStyle: TextStyle(fontFamily: GlmFonts.body, color: p.text, fontWeight: FontWeight.w600),
+      shape: GlmCut.shape(GlmCut.button),
+    ),
     // [2026-11-06] The Legend Cut on the dialogs, the segmented choices and the menus too.
-    dialogTheme: DialogThemeData(backgroundColor: day ? p.panel : p.surface, surfaceTintColor: Colors.transparent, shape: GlmCut.shape(GlmCut.card)),
+    dialogTheme: DialogThemeData(
+      backgroundColor: day ? p.panel : p.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: GlmCut.shape(GlmCut.card),
+    ),
     segmentedButtonTheme: SegmentedButtonThemeData(style: ButtonStyle(shape: WidgetStatePropertyAll(GlmCut.shape(GlmCut.button)))),
     popupMenuTheme: PopupMenuThemeData(shape: GlmCut.shape(GlmCut.badge), color: p.surfaceRaised),
     inputDecorationTheme: InputDecorationTheme(
-      filled: true, fillColor: p.surfaceSunk,
+      filled: true,
+      fillColor: p.surfaceSunk,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       hintStyle: TextStyle(color: p.textMuted),
       border: CutInputBorder(borderSide: BorderSide(color: p.surfaceRaised)),

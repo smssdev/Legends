@@ -10,14 +10,27 @@ typedef Cut = ({String name, Map<String, Object?> data, double dur});
 
 const _moods = ['joy', 'cheer', 'angry', 'worried', 'sad', 'surprise'];
 
-List<Cut> director(FeedStory s, {required int tick, Map<String, String> moods = const {}, required double total, required double sceneT, required Tier tier,
-    Map<String, String>? looks, int seed = 1}) {
+List<Cut> director(
+  FeedStory s, {
+  required int tick,
+  Map<String, String> moods = const {},
+  required double total,
+  required double sceneT,
+  required Tier tier,
+  Map<String, String>? looks,
+  int seed = 1,
+}) {
   if (s.scene == null || tier == Tier.low) return const [];
   final other = s.side == 'home' ? 'away' : 'home';
   String look(String side) => looks?[side] ?? (side == 'home' ? 'C1' : 'C2');
   String felt(String side, String fallback) => _moods.contains(moods[side]) ? moods[side]! : fallback;
-  Cut coach(String side, String fallback) => (name: 'coachReact', data: {'side': side, 'look': look(side), 'mood': felt(side, fallback)}, dur: sceneTime['coachReact']!.$1);
-  Cut crowd() => (name: 'crowd', data: {'side': s.side, 'v': seed * 7 + tick, 'count': tier == Tier.high ? 110 : 60, 'flares': tier == Tier.high}, dur: sceneTime['crowd']!.$1);
+  Cut coach(String side, String fallback) =>
+      (name: 'coachReact', data: {'side': side, 'look': look(side), 'mood': felt(side, fallback)}, dur: sceneTime['coachReact']!.$1);
+  Cut crowd() => (
+    name: 'crowd',
+    data: {'side': s.side, 'v': seed * 7 + tick, 'count': tier == Tier.high ? 110 : 60, 'flares': tier == Tier.high},
+    dur: sceneTime['crowd']!.$1,
+  );
   final d = s.data;
   var list = <Cut>[];
   if (s.goal) {
@@ -26,18 +39,29 @@ List<Cut> director(FeedStory s, {required int tick, Map<String, String> moods = 
     list = [coach(s.side, 'angry')];
   } else if (s.scene == 'card') {
     list = d['type'] == 'red'
-        ? [(name: 'brawl', data: {'side': s.side, 'v': seed * 13 + tick}, dur: sceneTime['brawl']!.$1), coach(s.side, 'angry')]
+        ? [
+            (name: 'brawl', data: {'side': s.side, 'v': seed * 13 + tick}, dur: sceneTime['brawl']!.$1),
+            coach(s.side, 'angry'),
+          ]
         : tier == Tier.high
-            ? [coach(s.side, 'angry')]
-            : [];
+        ? [coach(s.side, 'angry')]
+        : [];
   } else if (s.scene == 'miss' && d['how'] == 'over') {
-    list = [(name: 'meltdown', data: {'side': s.side, 'v': seed * 5 + tick}, dur: sceneTime['meltdown']!.$1)];
+    list = [
+      (name: 'meltdown', data: {'side': s.side, 'v': seed * 5 + tick}, dur: sceneTime['meltdown']!.$1),
+    ];
   } else if (['miss', 'save', 'penalty', 'freekick'].contains(s.scene)) {
     list = [coach(s.side, 'worried')];
   } else if (s.scene == 'whistle' && d['name'] == 'halftime') {
-    list = [(name: 'tunnel', data: {'side': 'home'}, dur: sceneTime['tunnel']!.$1)];
+    list = [
+      (name: 'tunnel', data: {'side': 'home'}, dur: sceneTime['tunnel']!.$1),
+    ];
   } else if (s.scene == 'whistle' && d['name'] == 'fulltime') {
-    list = [(name: 'handshake', data: {'side': 'home'}, dur: sceneTime['handshake']!.$1), coach('home', 'idle'), coach('away', 'idle')];
+    list = [
+      (name: 'handshake', data: {'side': 'home'}, dur: sceneTime['handshake']!.$1),
+      coach('home', 'idle'),
+      coach('away', 'idle'),
+    ];
   } else if (s.scene == 'var') {
     list = [coach(s.side, 'angry'), coach(other, 'joy')];
   }

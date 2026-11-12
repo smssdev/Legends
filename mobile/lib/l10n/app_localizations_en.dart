@@ -46,8 +46,7 @@ class LEn extends L {
   String get registerTitle => 'Your new account';
 
   @override
-  String get registerLead =>
-      'Three fields and you start: your name, a username and a password';
+  String get registerLead => 'Three fields and you start: your name, a username and a password';
 
   @override
   String get displayName => 'Your display name';
@@ -80,8 +79,7 @@ class LEn extends L {
   String get forgotTitle => 'Get your password back';
 
   @override
-  String get forgotLead =>
-      'Type your account\'s email and we send you a link for a new password';
+  String get forgotLead => 'Type your account\'s email and we send you a link for a new password';
 
   @override
   String get email => 'Email';
@@ -90,8 +88,7 @@ class LEn extends L {
   String get sendLink => 'Send the link';
 
   @override
-  String get linkSent =>
-      'If the email belongs to an account, the link is on its way. Open it from your inbox.';
+  String get linkSent => 'If the email belongs to an account, the link is on its way. Open it from your inbox.';
 
   @override
   String get required => 'Required';
@@ -112,8 +109,7 @@ class LEn extends L {
   String get updateTitle => 'Update the app';
 
   @override
-  String get updateBody =>
-      'A new version of the game is out, and this one no longer works with it. Update the app to carry on.';
+  String get updateBody => 'A new version of the game is out, and this one no longer works with it. Update the app to carry on.';
 
   @override
   String get update => 'Update now';
@@ -267,8 +263,7 @@ class LEn extends L {
   String get myLeagues => 'My leagues';
 
   @override
-  String get noLeagues =>
-      'No league yet. Make one for your friends or join with a code.';
+  String get noLeagues => 'No league yet. Make one for your friends or join with a code.';
 
   @override
   String get newLeague => 'New league';
@@ -298,8 +293,7 @@ class LEn extends L {
   String get joinTitle => 'Join a league';
 
   @override
-  String get joinLead =>
-      'Ask your friend for their league\'s code and type it here; then the creator approves your request.';
+  String get joinLead => 'Ask your friend for their league\'s code and type it here; then the creator approves your request.';
 
   @override
   String get code => 'League code';
@@ -653,8 +647,7 @@ class LEn extends L {
   }
 
   @override
-  String get ordersHint =>
-      'Orders go in during the windows: before kick-off, at half-time and after minutes 15, 30, 60 and 75.';
+  String get ordersHint => 'Orders go in during the windows: before kick-off, at half-time and after minutes 15, 30, 60 and 75.';
 
   @override
   String get windowOpen => 'The window is open: give your orders now';
@@ -973,8 +966,7 @@ class LEn extends L {
   String get cancelOffer => 'Withdraw';
 
   @override
-  String get offersOnWeb =>
-      'Making an offer or a counter is on the site for now';
+  String get offersOnWeb => 'Making an offer or a counter is on the site for now';
 
   @override
   String coinsWord(int n) {
@@ -994,8 +986,7 @@ class LEn extends L {
   String get scout => 'Scout';
 
   @override
-  String get scoutLead =>
-      'The scout finds you five players from outside the league to your terms, held for you until the market renews.';
+  String get scoutLead => 'The scout finds you five players from outside the league to your terms, held for you until the market renews.';
 
   @override
   String get minOverall => 'Lowest rating';
@@ -1041,8 +1032,7 @@ class LEn extends L {
   String get training => 'Training';
 
   @override
-  String get trainingLead =>
-      'One player per line trains; each session raises his progress until his rating goes up.';
+  String get trainingLead => 'One player per line trains; each session raises his progress until his rating goes up.';
 
   @override
   String sessionCost(String cost, String time) {
@@ -1104,8 +1094,7 @@ class LEn extends L {
   String get spy => 'Spy';
 
   @override
-  String get spyLead =>
-      'Your spy reveals your next opponent\'s lineup, shape and fitness before the lock.';
+  String get spyLead => 'Your spy reveals your next opponent\'s lineup, shape and fitness before the lock.';
 
   @override
   String sendSpy(String cost) {
@@ -1167,8 +1156,7 @@ class LEn extends L {
   String get resign => 'Resign from the league';
 
   @override
-  String get resignConfirm =>
-      'Resign from this league? Your team goes back to the computer, with no undo.';
+  String get resignConfirm => 'Resign from this league? Your team goes back to the computer, with no undo.';
 
   @override
   String get wallet => 'Wallet';
@@ -1236,8 +1224,7 @@ class LEn extends L {
   String get pushReady => 'Notifications reach this phone';
 
   @override
-  String get pushNotReady =>
-      'Phone notifications are not switched on on the server yet; every message is in your inbox';
+  String get pushNotReady => 'Phone notifications are not switched on on the server yet; every message is in your inbox';
 
   @override
   String get kindReferee => 'Your next match\'s referee';
@@ -1457,8 +1444,7 @@ class LEn extends L {
   String get articleBody => 'Article';
 
   @override
-  String get articleSent =>
-      'Your article went to the league\'s creator for publishing';
+  String get articleSent => 'Your article went to the league\'s creator for publishing';
 
   @override
   String get pendingArticles => 'Waiting to publish';
@@ -1732,8 +1718,7 @@ class LEn extends L {
   String get alliance => 'Alliance tournament';
 
   @override
-  String get allianceLead =>
-      'Two alliances of the league\'s coaches; in each tie its two coaches agree who goes on.';
+  String get allianceLead => 'Two alliances of the league\'s coaches; in each tie its two coaches agree who goes on.';
 
   @override
   String get createAlliance => 'Create it';
@@ -2029,8 +2014,7 @@ class LEn extends L {
   String get deleteAccount => 'Delete my account';
 
   @override
-  String get deleteAccountLead =>
-      'Your teams go back to the computer, with no undo. Type «احذف» to confirm.';
+  String get deleteAccountLead => 'Your teams go back to the computer, with no undo. Type «احذف» to confirm.';
 
   @override
   String get startLeague => 'Start the league now';
@@ -2104,8 +2088,7 @@ class LEn extends L {
   }
 
   @override
-  String get micDenied =>
-      'Allow the app to use the microphone in the phone\'s settings';
+  String get micDenied => 'Allow the app to use the microphone in the phone\'s settings';
 
   @override
   String get navClub => 'My club';
@@ -2571,8 +2554,7 @@ class LEn extends L {
   String get playAsGuest => 'Play as a guest';
 
   @override
-  String get guestBanner =>
-      'You are playing as a guest: keep your account so it is not lost after 30 days.';
+  String get guestBanner => 'You are playing as a guest: keep your account so it is not lost after 30 days.';
 
   @override
   String get keepAccount => 'Keep your account';
@@ -2634,8 +2616,7 @@ class LEn extends L {
   String get slow => 'Slow';
 
   @override
-  String get hiddenTactics =>
-      'Your opponent never sees your tactics · saved by itself';
+  String get hiddenTactics => 'Your opponent never sees your tactics · saved by itself';
 
   @override
   String get timeout => 'Timeout';

@@ -20,8 +20,14 @@ class StadiumBackdrop extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     return CustomPaint(
-      painter: _Stadium(sky: Color.lerp(p.bgDeep, tint ?? p.brandDark, tint == null ? .25 : .35)!, deep: p.bgDeep, grass: p.pitch, grassDark: p.pitchDark,
-          light: p.goldLight, pitch: pitch),
+      painter: _Stadium(
+        sky: Color.lerp(p.bgDeep, tint ?? p.brandDark, tint == null ? .25 : .35)!,
+        deep: p.bgDeep,
+        grass: p.pitch,
+        grassDark: p.pitchDark,
+        light: p.goldLight,
+        pitch: pitch,
+      ),
       child: child,
     );
   }
@@ -37,7 +43,10 @@ class _Stadium extends CustomPainter {
   void paint(Canvas canvas, Size s) {
     final r = Offset.zero & s;
     canvas.clipRect(r);
-    canvas.drawRect(r, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [deep, sky, deep]).createShader(r));
+    canvas.drawRect(
+      r,
+      Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [deep, sky, deep]).createShader(r),
+    );
 
     final horizon = s.height * (pitch ? .58 : .8);
     // The stands: three tiers of seats, lit here and there.
@@ -60,10 +69,21 @@ class _Stadium extends CustomPainter {
     // The floodlights: towers at both ends, their beams falling on the pitch.
     for (final fx in [s.width * .03, s.width * .97]) {
       final top = Offset(fx, s.height * .03);
-      canvas.drawRect(Rect.fromCenter(center: top.translate(0, s.height * .2), width: 3, height: s.height * .4), Paint()..color = Colors.black.withValues(alpha: .5));
-      canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromCenter(center: top, width: 14, height: 5), const Radius.circular(2)), Paint()..color = light.withValues(alpha: .8));
-      canvas.drawCircle(top, s.width * .28,
-          Paint()..shader = RadialGradient(colors: [light.withValues(alpha: .22), light.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: top, radius: s.width * .28)));
+      canvas.drawRect(
+        Rect.fromCenter(center: top.translate(0, s.height * .2), width: 3, height: s.height * .4),
+        Paint()..color = Colors.black.withValues(alpha: .5),
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromCenter(center: top, width: 14, height: 5), const Radius.circular(2)),
+        Paint()..color = light.withValues(alpha: .8),
+      );
+      canvas.drawCircle(
+        top,
+        s.width * .28,
+        Paint()
+          ..shader = RadialGradient(colors: [light.withValues(alpha: .22), light.withValues(alpha: 0)])
+              .createShader(Rect.fromCircle(center: top, radius: s.width * .28)),
+      );
       final beam = Path()
         ..moveTo(top.dx - 10, top.dy)
         ..lineTo(top.dx + 10, top.dy)
@@ -82,7 +102,10 @@ class _Stadium extends CustomPainter {
       ..close();
     canvas.save();
     canvas.clipPath(grassPath);
-    canvas.drawRect(r, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [grassDark, grass]).createShader(r));
+    canvas.drawRect(
+      r,
+      Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [grassDark, grass]).createShader(r),
+    );
     final stripe = Paint()..color = Colors.black.withValues(alpha: .10);
     for (var i = -6; i < 8; i += 2) {
       final x0 = s.width / 2 + i * s.width * .07, x1 = s.width / 2 + (i + 1) * s.width * .07;
@@ -104,7 +127,16 @@ class _Stadium extends CustomPainter {
     canvas.drawOval(Rect.fromCenter(center: Offset(s.width / 2, mid), width: s.width * .26, height: (s.height - horizon) * .38), line);
     canvas.restore();
     // A fade into the page below, so content sits on it cleanly.
-    canvas.drawRect(r, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, deep.withValues(alpha: .65)], stops: const [.55, 1]).createShader(r));
+    canvas.drawRect(
+      r,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.transparent, deep.withValues(alpha: .65)],
+          stops: const [.55, 1],
+        ).createShader(r),
+    );
   }
 
   @override

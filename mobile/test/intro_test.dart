@@ -9,11 +9,18 @@ void main() {
   testWidgets('the opening: done at once when the motion is off (as in the tests), then the crest waits', (t) async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
-    await t.pumpWidget(UncontrolledProviderScope(
-      container: container,
-      child: MaterialApp(theme: glmTheme(day: false), locale: const Locale('ar'), supportedLocales: L.supportedLocales, localizationsDelegates: L.localizationsDelegates,
-          home: const IntroScreen()),
-    ));
+    await t.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: glmTheme(day: false),
+          locale: const Locale('ar'),
+          supportedLocales: L.supportedLocales,
+          localizationsDelegates: L.localizationsDelegates,
+          home: const IntroScreen(),
+        ),
+      ),
+    );
     await t.pump();
     expect(container.read(introDoneProvider), isTrue);
     expect(find.text('المدرب الأسطورة'), findsOneWidget);

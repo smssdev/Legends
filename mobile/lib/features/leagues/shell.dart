@@ -45,10 +45,18 @@ class LeagueShellState extends ConsumerState<LeagueShell> {
     if (lg == null || lg.myClubId == null) return widget.child;
     return Material(
       color: GlmStage.deep,
-      child: Row(children: [
-        SafeArea(right: false, left: true, child: ConsoleDock(leagueId: widget.leagueId, location: widget.location)),
-        Expanded(child: _InShell(shell: this, child: widget.child)),
-      ]),
+      child: Row(
+        children: [
+          SafeArea(
+            right: false,
+            left: true,
+            child: ConsoleDock(leagueId: widget.leagueId, location: widget.location),
+          ),
+          Expanded(
+            child: _InShell(shell: this, child: widget.child),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -119,7 +127,8 @@ class _TopBarGround extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topCenter, end: Alignment.bottomCenter,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           colors: context.glm.day ? [p.panel, p.panel] : [Color.lerp(p.panel, p.brand, .22)!, p.panel, p.bgDeep],
           stops: context.glm.day ? null : const [0, .55, 1],
         ),
@@ -128,7 +137,9 @@ class _TopBarGround extends StatelessWidget {
         alignment: Alignment.bottomCenter,
         child: Container(
           height: 2,
-          decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.transparent, p.brandLight, p.gold, Colors.transparent], stops: const [0, .25, .75, 1])),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [Colors.transparent, p.brandLight, p.gold, Colors.transparent], stops: const [0, .25, .75, 1]),
+          ),
         ),
       ),
     );
@@ -152,20 +163,34 @@ class CoinsPill extends StatelessWidget {
         shape: const StadiumBorder(),
         clipBehavior: Clip.antiAlias,
         child: Ink(
-          decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [p.goldLight, p.gold, p.goldDark], stops: const [0, .6, 1])),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [p.goldLight, p.gold, p.goldDark],
+              stops: const [0, .6, 1],
+            ),
+          ),
           child: InkWell(
             onTap: onTap,
             child: Container(
               height: 32,
               padding: const EdgeInsetsDirectional.fromSTEB(4, 0, 4, 0),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Image.asset('assets/brand/coin.png', width: 20, height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Text(value, textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 16, color: p.onGold)),
-                ),
-                _Plus(bg: p.bg, fg: p.goldLight),
-              ]),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset('assets/brand/coin.png', width: 20, height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Text(
+                      value,
+                      textDirection: TextDirection.ltr,
+                      style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 16, color: p.onGold),
+                    ),
+                  ),
+                  _Plus(bg: p.bg, fg: p.goldLight),
+                ],
+              ),
             ),
           ),
         ),
@@ -196,11 +221,18 @@ class MoneyPill extends StatelessWidget {
           child: Container(
             height: 32,
             padding: const EdgeInsetsDirectional.fromSTEB(10, 0, 4, 0),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Text(value, textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 16, color: p.success)),
-              const SizedBox(width: 5),
-              _Plus(bg: p.success, fg: p.bgDeep),
-            ]),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  value,
+                  textDirection: TextDirection.ltr,
+                  style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 16, color: p.success),
+                ),
+                const SizedBox(width: 5),
+                _Plus(bg: p.success, fg: p.bgDeep),
+              ],
+            ),
           ),
         ),
       ),
@@ -215,10 +247,12 @@ class _Plus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: 22, height: 22, alignment: Alignment.center,
-        decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
-        child: Icon(Icons.add_rounded, size: 16, color: fg),
-      );
+    width: 22,
+    height: 22,
+    alignment: Alignment.center,
+    decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+    child: Icon(Icons.add_rounded, size: 16, color: fg),
+  );
 }
 
 /// [Sprint 50] A round icon of the top bar, as the site's .bar-icon (a 44px touch on a 36px circle), with its badge.
@@ -242,25 +276,38 @@ class BarIcon extends StatelessWidget {
         child: SizedBox.square(
           dimension: 44,
           child: Center(
-            child: Stack(clipBehavior: Clip.none, children: [
-              Container(
-                width: 36, height: 36,
-                decoration: BoxDecoration(color: p.text.withValues(alpha: .1), shape: BoxShape.circle),
-                child: Icon(icon, size: 19, color: p.text),
-              ),
-              if (badge != null)
-                PositionedDirectional(
-                  top: -3, end: -3,
-                  child: Container(
-                    constraints: const BoxConstraints(minWidth: 16),
-                    height: 16,
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    decoration: BoxDecoration(color: p.live, borderRadius: BorderRadius.circular(8)),
-                    alignment: Alignment.center,
-                    child: Text(badge!, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 11, color: Colors.white)),
-                  ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(color: p.text.withValues(alpha: .1), shape: BoxShape.circle),
+                  child: Icon(icon, size: 19, color: p.text),
                 ),
-            ]),
+                if (badge != null)
+                  PositionedDirectional(
+                    top: -3,
+                    end: -3,
+                    child: Container(
+                      constraints: const BoxConstraints(minWidth: 16),
+                      height: 16,
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      decoration: BoxDecoration(color: p.live, borderRadius: BorderRadius.circular(8)),
+                      alignment: Alignment.center,
+                      child: Text(
+                        badge!,
+                        style: const TextStyle(
+                          fontFamily: GlmFonts.numbers,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -298,11 +345,18 @@ class _CountdownState extends State<_Countdown> {
             height: 32,
             padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(color: p.text.withValues(alpha: .1), borderRadius: BorderRadius.circular(16)),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Icon(Icons.schedule_rounded, size: 16, color: p.gold),
-              const SizedBox(width: 5),
-              Text(text, textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 15, color: p.text)),
-            ]),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.schedule_rounded, size: 16, color: p.gold),
+                const SizedBox(width: 5),
+                Text(
+                  text,
+                  textDirection: TextDirection.ltr,
+                  style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 15, color: p.text),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -331,63 +385,105 @@ class ConsoleDock extends ConsumerWidget {
     _Entry e(GameGlyph icon, String label, String path, {bool push = false}) => (icon: icon, label: label, path: path, push: push);
     final sections = <_Section>[
       (icon: Icons.home_rounded, label: l.navOffice, entries: [e(GameGlyph.office, l.navOffice, base)], badge: null),
-      (icon: Icons.checkroom_rounded, label: l.navTeam, entries: [
-        e(GameGlyph.squad, l.squad, '$base/squad'),
-        e(GameGlyph.lineup, l.lineup, '$base/lineup'),
-        e(GameGlyph.specialists, l.specialists, '$base/specialists'),
-        e(GameGlyph.training, l.training, '$base/training'),
-        e(GameGlyph.contracts, l.contracts, '$base/contracts'),
-      ], badge: null),
+      (
+        icon: Icons.checkroom_rounded,
+        label: l.navTeam,
+        entries: [
+          e(GameGlyph.squad, l.squad, '$base/squad'),
+          e(GameGlyph.lineup, l.lineup, '$base/lineup'),
+          e(GameGlyph.specialists, l.specialists, '$base/specialists'),
+          e(GameGlyph.training, l.training, '$base/training'),
+          e(GameGlyph.contracts, l.contracts, '$base/contracts'),
+        ],
+        badge: null,
+      ),
       (icon: Icons.tune_rounded, label: l.tactics, entries: [e(GameGlyph.tactics, l.tactics, '$base/tactics')], badge: null),
-      (icon: Icons.sports_soccer_rounded, label: l.secCompete, entries: [
-        e(GameGlyph.match, l.matchday, '$base/matchday'),
-        e(GameGlyph.table, l.leagueTable, '$base?tab=matches'),
-        e(GameGlyph.friendlies, l.friendlies, '$base/friendlies'),
-        e(GameGlyph.predict, l.predictions, '$base/predictions'),
-        e(GameGlyph.quests, l.quests, '$base/quests'),
-        e(GameGlyph.spy, l.spy, '$base/spy'),
-        e(GameGlyph.alliance, l.alliance, '$base/alliance'),
-        e(GameGlyph.honours, l.honours, '$base/honours'),
-      ], badge: s?.matchStatus == 'live' ? 'live' : null),
-      (icon: Icons.storefront_rounded, label: l.secDeals, entries: [
-        e(GameGlyph.transfers, l.market, '$base/market'),
-        e(GameGlyph.scout, l.scout, '$base/scout'),
-      ], badge: null),
-      (icon: Icons.stadium_rounded, label: l.secMoney, entries: [
-        e(GameGlyph.stadium, l.stadium, '$base/stadium'),
-        e(GameGlyph.finance, l.finance, '$base/finance'),
-        e(GameGlyph.shop, l.wallet, '/wallet', push: true),
-      ], badge: null),
-      (icon: Icons.forum_rounded, label: l.secCommunity, entries: [
-        e(GameGlyph.groups, l.groups, '/groups', push: true),
-        e(GameGlyph.newspaper, l.newspaper, '$base/newspaper'),
-        e(GameGlyph.results, l.stats, '$base/stats'),
-        e(GameGlyph.quick, l.tournaments, '/tournaments', push: true),
-        e(GameGlyph.invite, l.invite, '$base?tab=more'),
-      ], badge: null),
+      (
+        icon: Icons.sports_soccer_rounded,
+        label: l.secCompete,
+        entries: [
+          e(GameGlyph.match, l.matchday, '$base/matchday'),
+          e(GameGlyph.table, l.leagueTable, '$base?tab=matches'),
+          e(GameGlyph.friendlies, l.friendlies, '$base/friendlies'),
+          e(GameGlyph.predict, l.predictions, '$base/predictions'),
+          e(GameGlyph.quests, l.quests, '$base/quests'),
+          e(GameGlyph.spy, l.spy, '$base/spy'),
+          e(GameGlyph.alliance, l.alliance, '$base/alliance'),
+          e(GameGlyph.honours, l.honours, '$base/honours'),
+        ],
+        badge: s?.matchStatus == 'live' ? 'live' : null,
+      ),
+      (
+        icon: Icons.storefront_rounded,
+        label: l.secDeals,
+        entries: [e(GameGlyph.transfers, l.market, '$base/market'), e(GameGlyph.scout, l.scout, '$base/scout')],
+        badge: null,
+      ),
+      (
+        icon: Icons.stadium_rounded,
+        label: l.secMoney,
+        entries: [
+          e(GameGlyph.stadium, l.stadium, '$base/stadium'),
+          e(GameGlyph.finance, l.finance, '$base/finance'),
+          e(GameGlyph.shop, l.wallet, '/wallet', push: true),
+        ],
+        badge: null,
+      ),
+      (
+        icon: Icons.forum_rounded,
+        label: l.secCommunity,
+        entries: [
+          e(GameGlyph.groups, l.groups, '/groups', push: true),
+          e(GameGlyph.newspaper, l.newspaper, '$base/newspaper'),
+          e(GameGlyph.results, l.stats, '$base/stats'),
+          e(GameGlyph.quick, l.tournaments, '/tournaments', push: true),
+          e(GameGlyph.invite, l.invite, '$base?tab=more'),
+        ],
+        badge: null,
+      ),
     ];
     return Container(
       width: 72,
       decoration: BoxDecoration(
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [p.bgDeep.withValues(alpha: .92), p.panel.withValues(alpha: .88)]),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [p.bgDeep.withValues(alpha: .92), p.panel.withValues(alpha: .88)],
+        ),
         border: BorderDirectional(end: BorderSide(color: p.gold.withValues(alpha: .55))),
       ),
-      child: Column(children: [
-        // The club's crest: back to the office.
-        Semantics(
-          button: true,
-          label: s?.club.name ?? l.navOffice,
-          child: InkWell(
-            onTap: () => _go(context, base),
-            child: SizedBox(height: 50, child: Center(child: ClubCrest(url: s?.club.crestUrl, name: s?.club.code ?? '', size: 34))),
+      child: Column(
+        children: [
+          // The club's crest: back to the office.
+          Semantics(
+            button: true,
+            label: s?.club.name ?? l.navOffice,
+            child: InkWell(
+              onTap: () => _go(context, base),
+              child: SizedBox(
+                height: 50,
+                child: Center(
+                  child: ClubCrest(url: s?.club.crestUrl, name: s?.club.code ?? '', size: 34),
+                ),
+              ),
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView(padding: EdgeInsets.zero, children: [
-            for (final x in sections) _DockItem(section: x, on: x.entries.any((y) => _isOn(y.path)), isOn: _isOn, go: (path, push) => _go(context, path, push: push)),
-          ]),
-        ),
-      ]),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                for (final x in sections)
+                  _DockItem(
+                    section: x,
+                    on: x.entries.any((y) => _isOn(y.path)),
+                    isOn: _isOn,
+                    go: (path, push) => _go(context, path, push: push),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -418,33 +514,50 @@ class _DockItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     Widget item(VoidCallback onTap) => Semantics(
-          button: true,
-          selected: on,
-          label: section.label,
-          excludeSemantics: true,
-          child: Material(
-            color: on ? p.text.withValues(alpha: .06) : Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                onTap();
-              },
-              child: Container(
-                height: 54,
-                decoration: BoxDecoration(border: BorderDirectional(end: BorderSide(color: on ? p.gold : Colors.transparent, width: 3))),
-                child: Stack(alignment: Alignment.center, children: [
-                  Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Icon(section.icon, size: 22, color: p.gold, shadows: const [Shadow(color: Colors.black54, blurRadius: 3, offset: Offset(0, 2))]),
+      button: true,
+      selected: on,
+      label: section.label,
+      excludeSemantics: true,
+      child: Material(
+        color: on ? p.text.withValues(alpha: .06) : Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onTap();
+          },
+          child: Container(
+            height: 54,
+            decoration: BoxDecoration(
+              border: BorderDirectional(end: BorderSide(color: on ? p.gold : Colors.transparent, width: 3)),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      section.icon,
+                      size: 22,
+                      color: p.gold,
+                      shadows: const [Shadow(color: Colors.black54, blurRadius: 3, offset: Offset(0, 2))],
+                    ),
                     const SizedBox(height: 2),
-                    Text(section.label, maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: on ? p.goldLight : p.text)),
-                  ]),
-                  if (section.badge == 'live') const PositionedDirectional(top: 6, end: 14, child: _LiveDot()),
-                ]),
-              ),
+                    Text(
+                      section.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: on ? p.goldLight : p.text),
+                    ),
+                  ],
+                ),
+                if (section.badge == 'live') const PositionedDirectional(top: 6, end: 14, child: _LiveDot()),
+              ],
             ),
           ),
-        );
+        ),
+      ),
+    );
     if (section.entries.length == 1) {
       final x = section.entries.first;
       return item(() => go(x.path, x.push));
@@ -454,7 +567,12 @@ class _DockItem extends StatelessWidget {
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(p.surface),
         padding: const WidgetStatePropertyAll(EdgeInsets.all(6)),
-        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: BorderSide(color: p.gold.withValues(alpha: .3)))),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: BorderSide(color: p.gold.withValues(alpha: .3)),
+          ),
+        ),
       ),
       menuChildren: [
         for (final x in section.entries)
@@ -499,8 +617,18 @@ class _LiveDotState extends State<_LiveDot> with SingleTickerProviderStateMixin 
     return AnimatedBuilder(
       animation: _c,
       builder: (_, _) => Container(
-        width: 9, height: 9,
-        decoration: BoxDecoration(color: live, shape: BoxShape.circle, boxShadow: [BoxShadow(color: live.withValues(alpha: 1 - _c.value), spreadRadius: 6 * _c.value)]),
+        width: 9,
+        height: 9,
+        decoration: BoxDecoration(
+          color: live,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: live.withValues(alpha: 1 - _c.value),
+              spreadRadius: 6 * _c.value,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -10,20 +10,30 @@ import 'api_error.dart';
 /// A 401 tells the app the token is gone (expired or revoked), so it goes back to the sign-in.
 class ApiClient {
   ApiClient(this._tokens, {String? language, void Function()? onUnauthorized, Dio? dio})
-      : dio = dio ?? Dio(BaseOptions(baseUrl: AppConfig.apiUrl, connectTimeout: const Duration(seconds: 15), receiveTimeout: const Duration(seconds: 30))) {
+    : dio =
+          dio ??
+          Dio(
+            BaseOptions(
+              baseUrl: AppConfig.apiUrl,
+              connectTimeout: const Duration(seconds: 15),
+              receiveTimeout: const Duration(seconds: 30),
+            ),
+          ) {
     this.dio.options.headers['Accept'] = 'application/json';
-    this.dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final token = await _tokens.read();
-        if (token != null) options.headers['Authorization'] = 'Bearer $token';
-        if (language != null) options.headers['Accept-Language'] = language;
-        handler.next(options);
-      },
-      onError: (e, handler) {
-        if (e.response?.statusCode == 401) onUnauthorized?.call();
-        handler.next(e);
-      },
-    ));
+    this.dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await _tokens.read();
+          if (token != null) options.headers['Authorization'] = 'Bearer $token';
+          if (language != null) options.headers['Accept-Language'] = language;
+          handler.next(options);
+        },
+        onError: (e, handler) {
+          if (e.response?.statusCode == 401) onUnauthorized?.call();
+          handler.next(e);
+        },
+      ),
+    );
   }
 
   final Dio dio;
@@ -37,7 +47,15 @@ class ApiClient {
 
   /// A file sent as a form (a picture for the avatar or a group), with its other fields.
   Future<Map<String, dynamic>> upload(String path, String field, String filePath, {Map<String, Object> fields = const {}, String? type}) =>
-      _call(() async => dio.post(path, data: FormData.fromMap({...fields, field: await MultipartFile.fromFile(filePath, contentType: type == null ? null : DioMediaType.parse(type))})));
+      _call(
+        () async => dio.post(
+          path,
+          data: FormData.fromMap({
+            ...fields,
+            field: await MultipartFile.fromFile(filePath, contentType: type == null ? null : DioMediaType.parse(type)),
+          }),
+        ),
+      );
 
   /// A private file's bytes (a group's picture), with the account's token.
   Future<List<int>> bytes(String path) async {

@@ -52,8 +52,16 @@ class _ForgotScreenState extends ConsumerState<ForgotScreen> {
       title: l.forgotTitle,
       lead: l.forgotLead,
       children: [
-        GlmTextField(label: l.email, controller: _email, ltr: true, keyboard: TextInputType.emailAddress, autofill: const [AutofillHints.email],
-            action: TextInputAction.done, onSubmitted: (_) => _submit(), error: _error),
+        GlmTextField(
+          label: l.email,
+          controller: _email,
+          ltr: true,
+          keyboard: TextInputType.emailAddress,
+          autofill: const [AutofillHints.email],
+          action: TextInputAction.done,
+          onSubmitted: (_) => _submit(),
+          error: _error,
+        ),
         const SizedBox(height: 18),
         GlmButton(label: l.sendLink, block: true, loading: _busy, onPressed: _submit),
       ],

@@ -101,77 +101,199 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
             final l = L.of(context);
             final summary = ref.watch(clubSummaryProvider(widget.leagueId)).value;
             Widget gap(Widget w) => Padding(padding: const EdgeInsets.only(bottom: 12), child: w);
-            Widget pair(Widget a, Widget b) => LayoutBuilder(builder: (context, box) => box.maxWidth < 560
-                ? Column(children: [gap(a), gap(b)])
-                : gap(IntrinsicHeight(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(child: a), const SizedBox(width: 12), Expanded(child: b)]))));
-            String level(num v) => v < 40 ? l.low : v > 60 ? l.high : l.balancedWord;
+            Widget pair(Widget a, Widget b) => LayoutBuilder(
+              builder: (context, box) => box.maxWidth < 560
+                  ? Column(children: [gap(a), gap(b)])
+                  : gap(
+                      IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(child: a),
+                            const SizedBox(width: 12),
+                            Expanded(child: b),
+                          ],
+                        ),
+                      ),
+                    ),
+            );
+            String level(num v) => v < 40
+                ? l.low
+                : v > 60
+                ? l.high
+                : l.balancedWord;
             // [Sprint 46, the owner's screenshots] The tactics as the manager games set them: the next match first, then
             // each choice a card of its own, turned with its arrows and drawn (the plan on a little pitch, the lines on a
             // tall one), the three dials as sliders with their number, the trap and the marking.
             // [Sprint 50 M12] The console: the live preview on one half (the plan drawn, the trap's line, the ready
             // philosophies) in front of the dials on the other, so a turn of a dial shows at once beside it.
-            return LayoutBuilder(builder: (context, box) {
-              if (box.maxWidth >= 760) {
-                return GlmSplitLayout(
-                  start: _Preview(t: t, onPreset: _preset),
-                  end: ListView(padding: EdgeInsets.zero, children: [
-                    Row(children: [
-                      for (final (key, title, lo, hi) in [('style', l.mentality, l.defensive, l.attacking), ('pressing', l.pressing, l.calm, l.suffocating), ('tempo', l.tempo, l.slow, l.fast)])
-                        Expanded(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 3), child: _RoundDial(title: title, value: t.get<num>(key).toInt(), low: lo, high: hi, onChanged: (v) => _set(key, v)))),
-                    ]),
-                    const SizedBox(height: 8),
-                    gap(_Lines(t: t, onSet: _set)),
-                    pair(
-                      _Carousel(title: l.marking, values: const ['zone', 'man'], value: '${t.values['marking']}', label: (v) => v == 'zone' ? l.markZone : l.markMan,
-                          picture: (v) => SizedBox(height: 90, child: CustomPaint(painter: _MarkArt(v), size: Size.infinite)), onChanged: (v) => _set('marking', v)),
-                      _Carousel(title: l.tackling, values: const [3, 2, 1, 0], value: (t.values['tackling'] as num).toInt(),
-                          label: (v) => {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3}[v]!,
-                          picture: (v) => SizedBox(height: 90, child: CustomPaint(painter: _TackleArt(v), size: Size.infinite)), onChanged: (v) => _set('tackling', v)),
+            return LayoutBuilder(
+              builder: (context, box) {
+                if (box.maxWidth >= 760) {
+                  return GlmSplitLayout(
+                    start: _Preview(t: t, onPreset: _preset),
+                    end: ListView(
+                      padding: EdgeInsets.zero,
+                      children: [
+                        Row(
+                          children: [
+                            for (final (key, title, lo, hi) in [
+                              ('style', l.mentality, l.defensive, l.attacking),
+                              ('pressing', l.pressing, l.calm, l.suffocating),
+                              ('tempo', l.tempo, l.slow, l.fast),
+                            ])
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                                  child: _RoundDial(
+                                    title: title,
+                                    value: t.get<num>(key).toInt(),
+                                    low: lo,
+                                    high: hi,
+                                    onChanged: (v) => _set(key, v),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        gap(_Lines(t: t, onSet: _set)),
+                        pair(
+                          _Carousel(
+                            title: l.marking,
+                            values: const ['zone', 'man'],
+                            value: '${t.values['marking']}',
+                            label: (v) => v == 'zone' ? l.markZone : l.markMan,
+                            picture: (v) => SizedBox(
+                              height: 90,
+                              child: CustomPaint(painter: _MarkArt(v), size: Size.infinite),
+                            ),
+                            onChanged: (v) => _set('marking', v),
+                          ),
+                          _Carousel(
+                            title: l.tackling,
+                            values: const [3, 2, 1, 0],
+                            value: (t.values['tackling'] as num).toInt(),
+                            label: (v) => {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3}[v]!,
+                            picture: (v) => SizedBox(
+                              height: 90,
+                              child: CustomPaint(painter: _TackleArt(v), size: Size.infinite),
+                            ),
+                            onChanged: (v) => _set('tackling', v),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.lock_rounded, size: 15, color: context.palette.brandLight),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(l.hiddenTactics, style: TextStyle(color: context.palette.textMuted, fontSize: 12)),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Icon(Icons.lock_rounded, size: 15, color: context.palette.brandLight),
-                      const SizedBox(width: 6),
-                      Flexible(child: Text(l.hiddenTactics, style: TextStyle(color: context.palette.textMuted, fontSize: 12))),
-                    ]),
-                  ]),
-                );
-              }
-              return ListView(padding: const EdgeInsets.fromLTRB(16, 10, 16, 24), children: [
-              if (summary != null) gap(_NextCard(s: summary)),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Text(l.prepareTactics, textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 24, shadows: [Shadow(color: Colors.black54, blurRadius: 6)])),
-              ),
-              pair(
-                _Carousel(title: l.plan, values: const ['shots', 'counter', 'long', 'passing', 'wings'], value: '${t.values['plan']}',
-                    label: (v) => {'passing': l.planPassing, 'counter': l.planCounter, 'long': l.planLong, 'wings': l.planWings, 'shots': l.planShots}[v]!,
-                    picture: (v) => SizedBox(
-                      height: 120,
-                      // [Sprint 46, the polish] The plan's arrows trace themselves in as it is chosen.
-                      child: TweenAnimationBuilder<double>(
-                        key: ValueKey(v),
-                        tween: Tween(begin: MediaQuery.of(context).disableAnimations ? 1 : 0, end: 1),
-                        duration: const Duration(milliseconds: 900),
-                        curve: Curves.easeInOutCubic,
-                        builder: (_, t, _) => CustomPaint(painter: _PlanArt(v, t), size: Size.infinite),
+                  );
+                }
+                return ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+                  children: [
+                    if (summary != null) gap(_NextCard(s: summary)),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        l.prepareTactics,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 24,
+                          shadows: [Shadow(color: Colors.black54, blurRadius: 6)],
+                        ),
                       ),
-                    ), onChanged: (v) => _set('plan', v)),
-                _Carousel(title: l.tackling, values: const [3, 2, 1, 0], value: (t.values['tackling'] as num).toInt(),
-                    label: (v) => {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3}[v]!,
-                    picture: (v) => SizedBox(height: 120, child: CustomPaint(painter: _TackleArt(v), size: Size.infinite)), onChanged: (v) => _set('tackling', v)),
-              ),
-              gap(_Lines(t: t, onSet: _set)),
-              for (final (key, title, lo, hi) in [('pressing', l.pressing, l.low, l.high), ('style', l.style, l.defensive, l.attacking), ('tempo', l.tempo, l.calm, l.fast)])
-                gap(_Dial(title: title, value: t.get<num>(key), word: level(t.get<num>(key)), low: lo, high: hi, onChanged: (v) => _set(key, v))),
-              pair(
-                _Carousel(title: l.marking, values: const ['zone', 'man'], value: '${t.values['marking']}', label: (v) => v == 'zone' ? l.markZone : l.markMan,
-                    picture: (v) => SizedBox(height: 110, child: CustomPaint(painter: _MarkArt(v), size: Size.infinite)), onChanged: (v) => _set('marking', v)),
-                _Carousel(title: l.trap, values: const [0, 1], value: (t.values['trap'] as num).toInt(), label: (v) => v == 1 ? l.yes : l.no,
-                    picture: (v) => SizedBox(height: 110, child: CustomPaint(painter: _TrapArt(v == 1), size: Size.infinite)), onChanged: (v) => _set('trap', v)),
-              ),
-            ]);
-            });
+                    ),
+                    pair(
+                      _Carousel(
+                        title: l.plan,
+                        values: const ['shots', 'counter', 'long', 'passing', 'wings'],
+                        value: '${t.values['plan']}',
+                        label: (v) => {
+                          'passing': l.planPassing,
+                          'counter': l.planCounter,
+                          'long': l.planLong,
+                          'wings': l.planWings,
+                          'shots': l.planShots,
+                        }[v]!,
+                        picture: (v) => SizedBox(
+                          height: 120,
+                          // [Sprint 46, the polish] The plan's arrows trace themselves in as it is chosen.
+                          child: TweenAnimationBuilder<double>(
+                            key: ValueKey(v),
+                            tween: Tween(begin: MediaQuery.of(context).disableAnimations ? 1 : 0, end: 1),
+                            duration: const Duration(milliseconds: 900),
+                            curve: Curves.easeInOutCubic,
+                            builder: (_, t, _) => CustomPaint(painter: _PlanArt(v, t), size: Size.infinite),
+                          ),
+                        ),
+                        onChanged: (v) => _set('plan', v),
+                      ),
+                      _Carousel(
+                        title: l.tackling,
+                        values: const [3, 2, 1, 0],
+                        value: (t.values['tackling'] as num).toInt(),
+                        label: (v) => {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3}[v]!,
+                        picture: (v) => SizedBox(
+                          height: 120,
+                          child: CustomPaint(painter: _TackleArt(v), size: Size.infinite),
+                        ),
+                        onChanged: (v) => _set('tackling', v),
+                      ),
+                    ),
+                    gap(_Lines(t: t, onSet: _set)),
+                    for (final (key, title, lo, hi) in [
+                      ('pressing', l.pressing, l.low, l.high),
+                      ('style', l.style, l.defensive, l.attacking),
+                      ('tempo', l.tempo, l.calm, l.fast),
+                    ])
+                      gap(
+                        _Dial(
+                          title: title,
+                          value: t.get<num>(key),
+                          word: level(t.get<num>(key)),
+                          low: lo,
+                          high: hi,
+                          onChanged: (v) => _set(key, v),
+                        ),
+                      ),
+                    pair(
+                      _Carousel(
+                        title: l.marking,
+                        values: const ['zone', 'man'],
+                        value: '${t.values['marking']}',
+                        label: (v) => v == 'zone' ? l.markZone : l.markMan,
+                        picture: (v) => SizedBox(
+                          height: 110,
+                          child: CustomPaint(painter: _MarkArt(v), size: Size.infinite),
+                        ),
+                        onChanged: (v) => _set('marking', v),
+                      ),
+                      _Carousel(
+                        title: l.trap,
+                        values: const [0, 1],
+                        value: (t.values['trap'] as num).toInt(),
+                        label: (v) => v == 1 ? l.yes : l.no,
+                        picture: (v) => SizedBox(
+                          height: 110,
+                          child: CustomPaint(painter: _TrapArt(v == 1), size: Size.infinite),
+                        ),
+                        onChanged: (v) => _set('trap', v),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
           },
         ),
       ),
@@ -193,57 +315,81 @@ class _Preview extends StatelessWidget {
     final p = context.palette;
     final plan = '${t.values['plan']}';
     final trap = (t.values['trap'] as num?)?.toInt() == 1;
-    String name(String x) => switch (x) { 'tiki_taka' => l.presetTikiTaka, 'counter' => l.presetCounter, 'high_press' => l.presetHighPress, _ => l.presetLongBall };
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Expanded(
-        child: Container(
-          decoration: ShapeDecoration(shape: GlmCut.shape(14, side: BorderSide(color: p.text.withValues(alpha: .25))), gradient: _cardFill),
-          clipBehavior: Clip.antiAlias,
-          child: Stack(children: [
-            Positioned.fill(
-              child: TweenAnimationBuilder<double>(
-                key: ValueKey('$plan:${t.values['style']}:${t.values['tempo']}'),
-                tween: Tween(begin: MediaQuery.of(context).disableAnimations ? 1 : 0, end: 1),
-                duration: const Duration(milliseconds: 900),
-                curve: Curves.easeInOutCubic,
-                builder: (_, v, _) => CustomPaint(painter: _PlanArt(plan, v)),
-              ),
+    String name(String x) => switch (x) {
+      'tiki_taka' => l.presetTikiTaka,
+      'counter' => l.presetCounter,
+      'high_press' => l.presetHighPress,
+      _ => l.presetLongBall,
+    };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: Container(
+            decoration: ShapeDecoration(
+              shape: GlmCut.shape(14, side: BorderSide(color: p.text.withValues(alpha: .25))),
+              gradient: _cardFill,
             ),
-            if (trap)
-              PositionedDirectional(
-                top: 0, bottom: 0, end: 0, start: 0,
-                child: Align(
-                  alignment: const AlignmentDirectional(-.18, 0),
-                  child: Column(mainAxisSize: MainAxisSize.max, children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                      decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .8), borderRadius: BorderRadius.circular(4)),
-                      child: Text(l.trap, style: TextStyle(color: p.goldLight, fontSize: 11)),
-                    ),
-                    Expanded(child: Container(width: 2, color: p.goldLight.withValues(alpha: .8))),
-                  ]),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: TweenAnimationBuilder<double>(
+                    key: ValueKey('$plan:${t.values['style']}:${t.values['tempo']}'),
+                    tween: Tween(begin: MediaQuery.of(context).disableAnimations ? 1 : 0, end: 1),
+                    duration: const Duration(milliseconds: 900),
+                    curve: Curves.easeInOutCubic,
+                    builder: (_, v, _) => CustomPaint(painter: _PlanArt(plan, v)),
+                  ),
                 ),
-              ),
-          ]),
-        ),
-      ),
-      const SizedBox(height: 8),
-      Wrap(alignment: WrapAlignment.center, spacing: 6, runSpacing: 6, children: [
-        for (final x in t.presets)
-          ChoiceChip(
-            label: Text(name(x)),
-            selected: t.preset == x,
-            onSelected: (_) => onPreset(x),
-            showCheckmark: false,
-            selectedColor: p.gold,
-            labelStyle: TextStyle(fontWeight: FontWeight.w700, color: t.preset == x ? p.onGold : p.text),
-            side: BorderSide(color: t.preset == x ? p.gold : p.surfaceRaised),
-            shape: const StadiumBorder(),
-            materialTapTargetSize: MaterialTapTargetSize.padded,
+                if (trap)
+                  PositionedDirectional(
+                    top: 0,
+                    bottom: 0,
+                    end: 0,
+                    start: 0,
+                    child: Align(
+                      alignment: const AlignmentDirectional(-.18, 0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .8), borderRadius: BorderRadius.circular(4)),
+                            child: Text(l.trap, style: TextStyle(color: p.goldLight, fontSize: 11)),
+                          ),
+                          Expanded(child: Container(width: 2, color: p.goldLight.withValues(alpha: .8))),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
-      ]),
-    ]);
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            for (final x in t.presets)
+              ChoiceChip(
+                label: Text(name(x)),
+                selected: t.preset == x,
+                onSelected: (_) => onPreset(x),
+                showCheckmark: false,
+                selectedColor: p.gold,
+                labelStyle: TextStyle(fontWeight: FontWeight.w700, color: t.preset == x ? p.onGold : p.text),
+                side: BorderSide(color: t.preset == x ? p.gold : p.surfaceRaised),
+                shape: const StadiumBorder(),
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+              ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
@@ -259,7 +405,11 @@ class _RoundDial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final colour = value < 40 ? p.brandLight : value > 60 ? p.warning : p.goldLight;
+    final colour = value < 40
+        ? p.brandLight
+        : value > 60
+        ? p.warning
+        : p.goldLight;
     return Semantics(
       slider: true,
       label: title,
@@ -271,27 +421,56 @@ class _RoundDial extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
         decoration: ShapeDecoration(shape: GlmCut.shape(14), gradient: _cardFill),
-        child: Column(children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
-          LayoutBuilder(builder: (context, box) {
-            final w = box.maxWidth;
-            final rtl = Directionality.of(context) == TextDirection.rtl;
-            void at(Offset o) {
-              final share = (o.dx / w).clamp(0.0, 1.0);
-              onChanged(((rtl ? 1 - share : share) * 100).round());
-            }
-            return GestureDetector(
-              onHorizontalDragUpdate: (d) => at(d.localPosition),
-              onTapDown: (d) => at(d.localPosition),
-              child: SizedBox(width: w, height: w * .55, child: CustomPaint(painter: _HalfRing(value / 100, colour, p.surfaceRaised, rtl))),
-            );
-          }),
-          Text('$value', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: colour)),
-          Row(children: [
-            Expanded(child: Text(low, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 10))),
-            Expanded(child: Text(high, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: TextStyle(color: p.textMuted, fontSize: 10))),
-          ]),
-        ]),
+        child: Column(
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+            LayoutBuilder(
+              builder: (context, box) {
+                final w = box.maxWidth;
+                final rtl = Directionality.of(context) == TextDirection.rtl;
+                void at(Offset o) {
+                  final share = (o.dx / w).clamp(0.0, 1.0);
+                  onChanged(((rtl ? 1 - share : share) * 100).round());
+                }
+
+                return GestureDetector(
+                  onHorizontalDragUpdate: (d) => at(d.localPosition),
+                  onTapDown: (d) => at(d.localPosition),
+                  child: SizedBox(
+                    width: w,
+                    height: w * .55,
+                    child: CustomPaint(painter: _HalfRing(value / 100, colour, p.surfaceRaised, rtl)),
+                  ),
+                );
+              },
+            ),
+            Text(
+              '$value',
+              style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: colour),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    low,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: p.textMuted, fontSize: 10),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    high,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                    style: TextStyle(color: p.textMuted, fontSize: 10),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -308,9 +487,17 @@ class _HalfRing extends CustomPainter {
   void paint(Canvas c, Size s) {
     final stroke = s.width * .1;
     final r = Rect.fromCircle(center: Offset(s.width / 2, s.height - stroke / 2), radius: s.width / 2 - stroke);
-    final base = Paint()..color = track..style = PaintingStyle.stroke..strokeWidth = stroke..strokeCap = StrokeCap.round;
+    final base = Paint()
+      ..color = track
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeCap = StrokeCap.round;
     c.drawArc(r, math.pi, math.pi, false, base);
-    final fill = Paint()..color = colour..style = PaintingStyle.stroke..strokeWidth = stroke..strokeCap = StrokeCap.round;
+    final fill = Paint()
+      ..color = colour
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeCap = StrokeCap.round;
     // In Arabic the dial fills from the right, as the page reads.
     if (rtl) {
       c.drawArc(r, 0, -math.pi * share, false, fill);
@@ -320,7 +507,14 @@ class _HalfRing extends CustomPainter {
     final a = rtl ? -math.pi * share : math.pi + math.pi * share;
     final knob = r.center + Offset(math.cos(a), math.sin(a)) * r.width / 2;
     c.drawCircle(knob, stroke * .8, Paint()..color = Colors.white);
-    c.drawCircle(knob, stroke * .8, Paint()..color = colour..style = PaintingStyle.stroke..strokeWidth = 3);
+    c.drawCircle(
+      knob,
+      stroke * .8,
+      Paint()
+        ..color = colour
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3,
+    );
   }
 
   @override
@@ -340,60 +534,105 @@ class _NextCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final home = s.venue != 'away';
-    Widget ring(int? v, bool mine) => ArcGauge(value: v == null ? 0 : v ~/ 100, size: 62, color: mine ? context.palette.gold : GlmStage.accent);
+    Widget ring(int? v, bool mine) =>
+        ArcGauge(value: v == null ? 0 : v ~/ 100, size: 62, color: mine ? context.palette.gold : GlmStage.accent);
     Widget side(Side? c, bool mine) => Expanded(
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            ClubCrest(url: c?.crestUrl, name: c?.code ?? '', size: 62),
-            const SizedBox(width: 10),
-            Flexible(child: Text(c?.name ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 28, color: Colors.white))),
-          ]),
-        );
-    final (a, b) = home ? (s.club, s.next) : (s.next, s.club);
-    final (sa, sb) = s.strength == null ? (null, null) : home ? (s.strength!.$1, s.strength!.$2) : (s.strength!.$2, s.strength!.$1);
-    return ClipPath(
-      clipper: ShapeBorderClipper(shape: GlmCut.shape(16), textDirection: Directionality.of(context)),
-      child: Column(children: [
-        SizedBox(
-          height: 130,
-          child: StadiumBackdrop(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(children: [
-                side(a, home),
-                ring(sa, home),
-                const SizedBox(width: 12),
-                Text('VS', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 52,
-                    foreground: Paint()..shader = const LinearGradient(colors: [Color(0xFFFFE36E), Color(0xFFC08A0C)]).createShader(const Rect.fromLTWH(0, 0, 70, 50)))),
-                const SizedBox(width: 12),
-                ring(sb, !home),
-                side(b, !home),
-              ]),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ClubCrest(url: c?.crestUrl, name: c?.code ?? '', size: 62),
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              c?.name ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 28, color: Colors.white),
             ),
           ),
-        ),
-        Container(
-          color: GlmStage.card,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: Row(children: [
-            const GameIcon(GameGlyph.lineup, size: 26),
-            const SizedBox(width: 8),
-            Text(home ? (s.formation ?? '') : '', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 22, color: Colors.white)),
-            const Spacer(),
-            Text(l.nextMatchShort, style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 15)),
-            const Spacer(),
-            Text(home ? '' : (s.formation ?? ''), style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 22, color: Colors.white)),
-            if (!home) ...[const SizedBox(width: 8), const GameIcon(GameGlyph.lineup, size: 26)],
-          ]),
-        ),
-      ]),
+        ],
+      ),
+    );
+    final (a, b) = home ? (s.club, s.next) : (s.next, s.club);
+    final (sa, sb) = s.strength == null
+        ? (null, null)
+        : home
+        ? (s.strength!.$1, s.strength!.$2)
+        : (s.strength!.$2, s.strength!.$1);
+    return ClipPath(
+      clipper: ShapeBorderClipper(shape: GlmCut.shape(16), textDirection: Directionality.of(context)),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 130,
+            child: StadiumBackdrop(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    side(a, home),
+                    ring(sa, home),
+                    const SizedBox(width: 12),
+                    Text(
+                      'VS',
+                      style: TextStyle(
+                        fontFamily: GlmFonts.numbers,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 52,
+                        foreground: Paint()
+                          ..shader = const LinearGradient(colors: [Color(0xFFFFE36E), Color(0xFFC08A0C)])
+                              .createShader(const Rect.fromLTWH(0, 0, 70, 50)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    ring(sb, !home),
+                    side(b, !home),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            color: GlmStage.card,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              children: [
+                const GameIcon(GameGlyph.lineup, size: 26),
+                const SizedBox(width: 8),
+                Text(
+                  home ? (s.formation ?? '') : '',
+                  style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 22, color: Colors.white),
+                ),
+                const Spacer(),
+                Text(
+                  l.nextMatchShort,
+                  style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 15),
+                ),
+                const Spacer(),
+                Text(
+                  home ? '' : (s.formation ?? ''),
+                  style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 22, color: Colors.white),
+                ),
+                if (!home) ...[const SizedBox(width: 8), const GameIcon(GameGlyph.lineup, size: 26)],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 /// A choice turned with its arrows (or a swipe): its title in blue, its value large, its picture, and a dot for each.
 class _Carousel<T extends Object> extends StatelessWidget {
-  const _Carousel({required this.title, required this.values, required this.value, required this.label, required this.picture, required this.onChanged});
+  const _Carousel({
+    required this.title,
+    required this.values,
+    required this.value,
+    required this.label,
+    required this.picture,
+    required this.onChanged,
+  });
 
   final String title;
   final List<T> values;
@@ -411,34 +650,61 @@ class _Carousel<T extends Object> extends StatelessWidget {
     }
 
     Widget arrow(IconData icon, int d) => Material(
-          shape: const CircleBorder(),
-          color: GlmStage.pill,
-          child: InkWell(customBorder: const CircleBorder(), onTap: () => step(d), child: SizedBox.square(dimension: 44, child: Icon(icon, color: Colors.white, size: 28))),
-        );
+      shape: const CircleBorder(),
+      color: GlmStage.pill,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: () => step(d),
+        child: SizedBox.square(dimension: 44, child: Icon(icon, color: Colors.white, size: 28)),
+      ),
+    );
     return GestureDetector(
       onHorizontalDragEnd: (e) => step((e.primaryVelocity ?? 0) < 0 ? 1 : -1),
       child: Container(
         decoration: ShapeDecoration(shape: GlmCut.shape(14), gradient: _cardFill),
         padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-        child: Column(children: [
-          Text(title, style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 17)),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Text(label(value), key: ValueKey(value), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 24)),
-          ),
-          const SizedBox(height: 6),
-          Row(children: [
-            arrow(Icons.chevron_right_rounded, -1),
-            Expanded(child: AnimatedSwitcher(duration: const Duration(milliseconds: 250), child: KeyedSubtree(key: ValueKey(value), child: picture(value)))),
-            arrow(Icons.chevron_left_rounded, 1),
-          ]),
-          const SizedBox(height: 8),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            for (var k = 0; k < values.length; k++)
-              Container(width: 11, height: 11, margin: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: k == i ? Colors.white : Colors.white.withValues(alpha: .3))),
-          ]),
-        ]),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 17),
+            ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Text(
+                label(value),
+                key: ValueKey(value),
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 24),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                arrow(Icons.chevron_right_rounded, -1),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    child: KeyedSubtree(key: ValueKey(value), child: picture(value)),
+                  ),
+                ),
+                arrow(Icons.chevron_left_rounded, 1),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (var k = 0; k < values.length; k++)
+                  Container(
+                    width: 11,
+                    height: 11,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: k == i ? Colors.white : Colors.white.withValues(alpha: .3)),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -455,43 +721,95 @@ class _Lines extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final rows = [
-      ('att', l.groupAtt, const ['only', 'support', 'back'], {'back': l.attBack, 'support': l.attSupport, 'only': l.attOnly}, const Color(0xFF7FC4FF)),
+      (
+        'att',
+        l.groupAtt,
+        const ['only', 'support', 'back'],
+        {'back': l.attBack, 'support': l.attSupport, 'only': l.attOnly},
+        const Color(0xFF7FC4FF),
+      ),
       ('mid', l.groupMid, const ['push', 'stay', 'def'], {'def': l.midDef, 'stay': l.midStay, 'push': l.midPush}, const Color(0xFFFFB13D)),
-      ('def', l.groupDef, const ['mid', 'fullbacks', 'stay'], {'stay': l.defStay, 'fullbacks': l.defFullbacks, 'mid': l.defMid}, const Color(0xFFFF7A3D)),
+      (
+        'def',
+        l.groupDef,
+        const ['mid', 'fullbacks', 'stay'],
+        {'stay': l.defStay, 'fullbacks': l.defFullbacks, 'mid': l.defMid},
+        const Color(0xFFFF7A3D),
+      ),
     ];
     return Container(
       decoration: ShapeDecoration(shape: GlmCut.shape(14), gradient: _cardFill),
       padding: const EdgeInsets.all(14),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Expanded(
-          flex: 3,
-          child: Column(children: [
-            Text(l.positioning, style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 17)),
-            const SizedBox(height: 6),
-            AspectRatio(aspectRatio: .82, child: CustomPaint(painter: _LinesArt('${t.values['att']}', '${t.values['mid']}', '${t.values['def']}'))),
-          ]),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          flex: 4,
-          child: Column(children: [
-            for (final (key, title, values, labels, colour) in rows) ...[
-              const SizedBox(height: 8),
-              Text(title, style: TextStyle(color: colour, fontWeight: FontWeight.w700, fontSize: 17)),
-              Row(children: [
-                _Arrow(Icons.chevron_right_rounded, () => onSet(key, values[(values.indexOf('${t.values[key]}') - 1) % values.length])),
-                Expanded(child: Text(labels['${t.values[key]}'] ?? '', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20))),
-                _Arrow(Icons.chevron_left_rounded, () => onSet(key, values[(values.indexOf('${t.values[key]}') + 1) % values.length])),
-              ]),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                for (final v in values)
-                  Container(width: 10, height: 10, margin: const EdgeInsets.symmetric(horizontal: 3),
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: v == '${t.values[key]}' ? Colors.white : Colors.white.withValues(alpha: .3))),
-              ]),
-            ],
-          ]),
-        ),
-      ]),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 3,
+            child: Column(
+              children: [
+                Text(
+                  l.positioning,
+                  style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 17),
+                ),
+                const SizedBox(height: 6),
+                AspectRatio(
+                  aspectRatio: .82,
+                  child: CustomPaint(painter: _LinesArt('${t.values['att']}', '${t.values['mid']}', '${t.values['def']}')),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 4,
+            child: Column(
+              children: [
+                for (final (key, title, values, labels, colour) in rows) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    style: TextStyle(color: colour, fontWeight: FontWeight.w700, fontSize: 17),
+                  ),
+                  Row(
+                    children: [
+                      _Arrow(
+                        Icons.chevron_right_rounded,
+                        () => onSet(key, values[(values.indexOf('${t.values[key]}') - 1) % values.length]),
+                      ),
+                      Expanded(
+                        child: Text(
+                          labels['${t.values[key]}'] ?? '',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20),
+                        ),
+                      ),
+                      _Arrow(
+                        Icons.chevron_left_rounded,
+                        () => onSet(key, values[(values.indexOf('${t.values[key]}') + 1) % values.length]),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      for (final v in values)
+                        Container(
+                          width: 10,
+                          height: 10,
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: v == '${t.values[key]}' ? Colors.white : Colors.white.withValues(alpha: .3),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -504,22 +822,29 @@ class _Arrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-        shape: const CircleBorder(),
-        color: GlmStage.pill,
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: () {
-            GameSounds.play(Sfx.tap);
-            onTap();
-          },
-          child: SizedBox.square(dimension: 44, child: Icon(icon, color: Colors.white, size: 28)),
-        ),
-      );
+    shape: const CircleBorder(),
+    color: GlmStage.pill,
+    child: InkWell(
+      customBorder: const CircleBorder(),
+      onTap: () {
+        GameSounds.play(Sfx.tap);
+        onTap();
+      },
+      child: SizedBox.square(dimension: 44, child: Icon(icon, color: Colors.white, size: 28)),
+    ),
+  );
 }
 
 /// A dial as the manager games show it: its title, its word, its number in a black box and the slider.
 class _Dial extends StatelessWidget {
-  const _Dial({required this.title, required this.value, required this.word, required this.low, required this.high, required this.onChanged});
+  const _Dial({
+    required this.title,
+    required this.value,
+    required this.word,
+    required this.low,
+    required this.high,
+    required this.onChanged,
+  });
 
   final String title, word, low, high;
   final num value;
@@ -527,12 +852,20 @@ class _Dial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        decoration: ShapeDecoration(shape: GlmCut.shape(14), gradient: _cardFill),
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-        child: Column(children: [
-          Text(title, style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 17)),
-          Text(word, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 22)),
-          Row(children: [
+    decoration: ShapeDecoration(shape: GlmCut.shape(14), gradient: _cardFill),
+    padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+    child: Column(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 17),
+        ),
+        Text(
+          word,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 22),
+        ),
+        Row(
+          children: [
             Expanded(
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
@@ -554,28 +887,71 @@ class _Dial extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.black,
-                border: Border(bottom: BorderSide(color: value < 40 ? GlmStage.accent : value > 60 ? const Color(0xFFFF6A2B) : const Color(0xFFFFE36E), width: 4)),
-                boxShadow: [BoxShadow(color: (value < 40 ? GlmStage.accent : value > 60 ? const Color(0xFFFF6A2B) : const Color(0xFFFFE36E)).withValues(alpha: .35), blurRadius: 12)],
+                border: Border(
+                  bottom: BorderSide(
+                    color: value < 40
+                        ? GlmStage.accent
+                        : value > 60
+                        ? const Color(0xFFFF6A2B)
+                        : const Color(0xFFFFE36E),
+                    width: 4,
+                  ),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color:
+                        (value < 40
+                                ? GlmStage.accent
+                                : value > 60
+                                ? const Color(0xFFFF6A2B)
+                                : const Color(0xFFFFE36E))
+                            .withValues(alpha: .35),
+                    blurRadius: 12,
+                  ),
+                ],
               ),
-              child: Text('${value.round()}', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 26, color: Colors.white)),
+              child: Text(
+                '${value.round()}',
+                style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 26, color: Colors.white),
+              ),
             ),
-          ]),
-          Row(children: [
+          ],
+        ),
+        Row(
+          children: [
             Text(low, style: const TextStyle(color: Colors.white54, fontSize: 12)),
             const Spacer(),
             Text(high, style: const TextStyle(color: Colors.white54, fontSize: 12)),
             const SizedBox(width: 66),
-          ]),
-        ]),
-      );
+          ],
+        ),
+      ],
+    ),
+  );
 }
 
 /// A little pitch in perspective, our own drawing, its two goals; the art's arrows go on top.
 void _miniPitch(Canvas c, Size s, Rect f) {
-  final grass = Path()..moveTo(f.left + f.width * .08, f.top)..lineTo(f.right - f.width * .08, f.top)..lineTo(f.right, f.bottom)..lineTo(f.left, f.bottom)..close();
+  final grass = Path()
+    ..moveTo(f.left + f.width * .08, f.top)
+    ..lineTo(f.right - f.width * .08, f.top)
+    ..lineTo(f.right, f.bottom)
+    ..lineTo(f.left, f.bottom)
+    ..close();
   c.drawPath(grass.shift(Offset(0, f.height * .1)), Paint()..color = const Color(0xFF6E431B));
-  c.drawPath(grass, Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF2FA046), Color(0xFF1E7A34)]).createShader(f));
-  final line = Paint()..color = Colors.white.withValues(alpha: .7)..style = PaintingStyle.stroke..strokeWidth = 1.2;
+  c.drawPath(
+    grass,
+    Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFF2FA046), Color(0xFF1E7A34)],
+      ).createShader(f),
+  );
+  final line = Paint()
+    ..color = Colors.white.withValues(alpha: .7)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.2;
   c.drawPath(grass, line);
   c.drawLine(Offset(f.center.dx, f.top), Offset(f.center.dx, f.bottom), line);
   c.drawOval(Rect.fromCenter(center: f.center, width: f.width * .14, height: f.height * .42), line);
@@ -599,12 +975,35 @@ void _arrowLine(Canvas c, List<Offset> pts, Color color, {double width = 4, doub
   for (final m in path.computeMetrics()) {
     drawn.addPath(m.extractPath(0, m.length * t.clamp(0, 1)), Offset.zero);
   }
-  c.drawPath(drawn, Paint()..color = color.withValues(alpha: .35)..style = PaintingStyle.stroke..strokeWidth = width * 2.4..strokeCap = StrokeCap.round..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3));
-  c.drawPath(drawn, Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = width..strokeCap = StrokeCap.round..strokeJoin = StrokeJoin.round);
+  c.drawPath(
+    drawn,
+    Paint()
+      ..color = color.withValues(alpha: .35)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = width * 2.4
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+  );
+  c.drawPath(
+    drawn,
+    Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = width
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round,
+  );
   if (t < .98) return;
   final end = pts.last, before = pts.length == 3 ? pts[1] : pts[pts.length - 2];
   final a = math.atan2(end.dy - before.dy, end.dx - before.dx);
-  c.drawPath(Path()..moveTo(end.dx + math.cos(a) * width * 2, end.dy + math.sin(a) * width * 2)..lineTo(end.dx + math.cos(a + 2.4) * width * 2.4, end.dy + math.sin(a + 2.4) * width * 2.4)..lineTo(end.dx + math.cos(a - 2.4) * width * 2.4, end.dy + math.sin(a - 2.4) * width * 2.4)..close(), Paint()..color = color);
+  c.drawPath(
+    Path()
+      ..moveTo(end.dx + math.cos(a) * width * 2, end.dy + math.sin(a) * width * 2)
+      ..lineTo(end.dx + math.cos(a + 2.4) * width * 2.4, end.dy + math.sin(a + 2.4) * width * 2.4)
+      ..lineTo(end.dx + math.cos(a - 2.4) * width * 2.4, end.dy + math.sin(a - 2.4) * width * 2.4)
+      ..close(),
+    Paint()..color = color,
+  );
 }
 
 /// The plan drawn on its pitch (attacking toward the reading start): short passes weaving, a counter's long ball after
@@ -623,7 +1022,13 @@ class _PlanArt extends CustomPainter {
     Offset at(double u, double v) => Offset(f.left + f.width * u, f.top + f.height * v);
     switch (plan) {
       case 'passing':
-        _arrowLine(c, [at(.85, .5), at(.75, .5), at(.68, .3), at(.6, .65), at(.52, .35), at(.44, .7), at(.36, .45), at(.18, .5)], red, width: 3, t: t);
+        _arrowLine(
+          c,
+          [at(.85, .5), at(.75, .5), at(.68, .3), at(.6, .65), at(.52, .35), at(.44, .7), at(.36, .45), at(.18, .5)],
+          red,
+          width: 3,
+          t: t,
+        );
       case 'counter':
         _arrowLine(c, [at(.82, .7), at(.62, .75)], blue, width: 3, t: t);
         _arrowLine(c, [at(.6, .72), at(.4, .68)], blue, width: 3, t: t);
@@ -673,7 +1078,14 @@ class _TackleArt extends CustomPainter {
     c.drawCircle(Offset(mid.dx + 44, mid.dy - 2), 5, Paint()..color = const Color(0xFF1C1C1C));
     // Speed lines for the keener levels.
     for (var i = 0; i < level; i++) {
-      c.drawLine(Offset(mid.dx - 96 - i * 6.0, mid.dy - 14 + i * 9.0), Offset(mid.dx - 72, mid.dy - 14 + i * 9.0), Paint()..color = Colors.white38..strokeWidth = 3..strokeCap = StrokeCap.round);
+      c.drawLine(
+        Offset(mid.dx - 96 - i * 6.0, mid.dy - 14 + i * 9.0),
+        Offset(mid.dx - 72, mid.dy - 14 + i * 9.0),
+        Paint()
+          ..color = Colors.white38
+          ..strokeWidth = 3
+          ..strokeCap = StrokeCap.round,
+      );
     }
     final cards = [if (level >= 2) const Color(0xFFFFD600), if (level >= 3) const Color(0xFFE53935)];
     for (final (i, col) in cards.indexed) {
@@ -705,7 +1117,10 @@ class _LinesArt extends CustomPainter {
     for (var i = 0; i < 8; i += 2) {
       c.drawRect(Rect.fromLTWH(0, s.height * i / 8, s.width, s.height / 8), Paint()..color = Colors.white.withValues(alpha: .05));
     }
-    final line = Paint()..color = Colors.white..style = PaintingStyle.stroke..strokeWidth = 3;
+    final line = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
     c.drawLine(Offset(0, s.height / 2), Offset(s.width, s.height / 2), line);
     c.drawCircle(Offset(s.width / 2, s.height / 2), s.width * .14, line);
     for (final top in [true, false]) {
@@ -772,9 +1187,18 @@ class _MarkArt extends CustomPainter {
     for (var i = 0; i < 4; i++) {
       final d = at(.3, .14 + i * .24), a = at(.42, .2 + i * .22);
       if (mode == 'zone') {
-        c.drawOval(Rect.fromCenter(center: d, width: f.width * .22, height: f.height * .22), Paint()..color = const Color(0xFF4FA3FF).withValues(alpha: .35));
+        c.drawOval(
+          Rect.fromCenter(center: d, width: f.width * .22, height: f.height * .22),
+          Paint()..color = const Color(0xFF4FA3FF).withValues(alpha: .35),
+        );
       } else {
-        c.drawLine(d, a, Paint()..color = const Color(0xFFFFE36E)..strokeWidth = 2.5);
+        c.drawLine(
+          d,
+          a,
+          Paint()
+            ..color = const Color(0xFFFFE36E)
+            ..strokeWidth = 2.5,
+        );
       }
       c.drawCircle(d, 6, Paint()..color = const Color(0xFF2B7ED3));
       c.drawCircle(a, 6, Paint()..color = const Color(0xFFE53935));
@@ -797,7 +1221,15 @@ class _TrapArt extends CustomPainter {
     _miniPitch(c, s, f);
     Offset at(double u, double v) => Offset(f.left + f.width * u, f.top + f.height * v);
     final x = on ? .44 : .3;
-    if (on) c.drawLine(at(x, .02), at(x, .98), Paint()..color = const Color(0xFFFFD600)..strokeWidth = 2);
+    if (on) {
+      c.drawLine(
+        at(x, .02),
+        at(x, .98),
+        Paint()
+          ..color = const Color(0xFFFFD600)
+          ..strokeWidth = 2,
+      );
+    }
     for (var i = 0; i < 4; i++) {
       final p = at(x, .14 + i * .24);
       if (on) _arrowLine(c, [at(.3, .14 + i * .24), p], const Color(0xFF7FC4FF), width: 2.5);
@@ -806,7 +1238,13 @@ class _TrapArt extends CustomPainter {
     c.drawCircle(at(.4, .5), 6, Paint()..color = const Color(0xFFE53935));
     // The flag.
     final pole = at(.52, -.1);
-    c.drawLine(pole, pole + const Offset(0, -26), Paint()..color = Colors.white..strokeWidth = 2);
+    c.drawLine(
+      pole,
+      pole + const Offset(0, -26),
+      Paint()
+        ..color = Colors.white
+        ..strokeWidth = 2,
+    );
     c.drawRect(Rect.fromLTWH(pole.dx, pole.dy - 26, 16, on ? 11 : 0), Paint()..color = const Color(0xFFFF6D00));
   }
 

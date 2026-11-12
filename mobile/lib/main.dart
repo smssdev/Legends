@@ -13,7 +13,7 @@ Future<void> main() async {
   await initializeDateFormatting();
   // [2026-11-06] The game plays in landscape, as the owner asked: wide screens, a side rail, two columns.
   await SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   final preferences = await SharedPreferences.getInstance();
   runApp(ProviderScope(overrides: [preferencesProvider.overrideWithValue(preferences)], child: const GlmApp()));
 }

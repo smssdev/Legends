@@ -23,32 +23,61 @@ Future<void> pump(WidgetTester t, Widget screen) async {
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;
-  await t.pumpWidget(ProviderScope(
-    overrides: [
-      preferencesProvider.overrideWithValue(prefs),
-      nextMatchProvider.overrideWith((ref, l) async => json('next_match')['match'] as Map<String, dynamic>),
-      pressProvider.overrideWith((ref, k) async => {...json('press_2794')['press'] as Map<String, dynamic>, 'open': true}),
-      integrityProvider.overrideWith((ref, l) async => {
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [
+        preferencesProvider.overrideWithValue(prefs),
+        nextMatchProvider.overrideWith((ref, l) async => json('next_match')['match'] as Map<String, dynamic>),
+        pressProvider.overrideWith((ref, k) async => {...json('press_2794')['press'] as Map<String, dynamic>, 'open': true}),
+        integrityProvider.overrideWith(
+          (ref, l) async => {
             ...json('integrity'),
-            'security': {'sees': true, 'cost': {'currency': 'coins', 'amount': 10}},
-            'spies_on_me': [{'id': 3, 'club': 'Burnley', 'turned': false}],
-          }),
-      contractsProvider.overrideWith((ref, l) async => json('team_contracts')),
-      ticketsProvider.overrideWith((ref, l) async => json('tickets')),
-      missedProvider.overrideWith((ref, l) async => [
-            {'match_id': 77, 'result': 1, 'home': {'name': 'Liverpool'}, 'away': {'name': 'Arsenal'}, 'home_goals': 2, 'away_goals': 1,
-              'goals': [{'minute': 18, 'side': 'home', 'scorer': 'Mohamed Salah'}], 'man_of_the_match': {'name': 'Mohamed Salah'}, 'coins': 3,
-              'changes': [{'kind': 'injury', 'player': 'Cody Gakpo'}]},
-          ]),
-    ],
-    child: MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: screen,
+            'security': {
+              'sees': true,
+              'cost': {'currency': 'coins', 'amount': 10},
+            },
+            'spies_on_me': [
+              {'id': 3, 'club': 'Burnley', 'turned': false},
+            ],
+          },
+        ),
+        contractsProvider.overrideWith((ref, l) async => json('team_contracts')),
+        ticketsProvider.overrideWith((ref, l) async => json('tickets')),
+        missedProvider.overrideWith(
+          (ref, l) async => [
+            {
+              'match_id': 77,
+              'result': 1,
+              'home': {'name': 'Liverpool'},
+              'away': {'name': 'Arsenal'},
+              'home_goals': 2,
+              'away_goals': 1,
+              'goals': [
+                {'minute': 18, 'side': 'home', 'scorer': 'Mohamed Salah'},
+              ],
+              'man_of_the_match': {'name': 'Mohamed Salah'},
+              'coins': 3,
+              'changes': [
+                {'kind': 'injury', 'player': 'Cody Gakpo'},
+              ],
+            },
+          ],
+        ),
+      ],
+      child: MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: screen,
+      ),
     ),
-  ));
+  );
   await t.pumpAndSettle();
 }
 
