@@ -3967,21 +3967,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            price: number;
-                            cash: number;
-                            /** @description 1 or 2 coins to register it (0 in a fair league) */
-                            doc_coins: number;
-                            /** @description The money the club lacks */
-                            short: number;
-                            /** @description With half the price in cash at least: all the cash, and coins for the rest */
-                            compensate: {
-                                cash: number;
-                                coins: number;
-                            } | null;
-                            can: boolean;
-                            why: string | null;
-                        };
+                        "application/json": components["schemas"]["BuyQuote"];
                     };
                 };
                 404: components["responses"]["Error"];
@@ -13932,6 +13918,22 @@ export interface components {
                 name: string;
                 code: string;
             }[];
+        };
+        /** @description [UP11] The deal before it is made (Sprint 59 F1: the app reads it through its generated model) */
+        BuyQuote: {
+            price: number;
+            cash: number;
+            /** @description 1 or 2 coins to register it (0 in a fair league) */
+            doc_coins: number;
+            /** @description The money the club lacks */
+            short: number;
+            /** @description With half the price in cash at least: all the cash, and coins for the rest */
+            compensate: {
+                cash: number;
+                coins: number;
+            } | null;
+            can: boolean;
+            why: string | null;
         };
         Market: {
             closed: string | null;

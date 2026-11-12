@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/intents.dart';
 
+// [Sprint 59 F1] The buy quote is the generated model (docs/api/openapi.yaml → lib/api/gen/models.g.dart).
+import '../../api/gen/models.g.dart' show BuyQuote;
+export '../../api/gen/models.g.dart' show BuyQuote, BuyQuoteCompensate;
+
 /// [Sprint 18 F1] The market (`/leagues/{id}/market`, UP11) and the deals between coaches (`/leagues/{id}/transfers`,
 /// Sprint 25): the server sets every price, floor, cap, wait and fee; the app shows them and sends the coach's choice.
 class MarketPlayer {
@@ -57,36 +61,6 @@ class MarketPlayer {
   final String? nationality, sellerKind, sellerClub, sellerCoach;
   final bool fits, star;
   final Map<String, int> attributes;
-}
-
-class BuyQuote {
-  const BuyQuote({
-    required this.price,
-    required this.cash,
-    required this.docCoins,
-    required this.short,
-    this.compensate,
-    required this.can,
-    this.why,
-  });
-
-  factory BuyQuote.fromJson(Map<String, dynamic> j) {
-    final c = j['compensate'] as Map<String, dynamic>?;
-    return BuyQuote(
-      price: (j['price'] as num).toInt(),
-      cash: (j['cash'] as num?)?.toInt() ?? 0,
-      docCoins: j['doc_coins'] as int? ?? 0,
-      short: (j['short'] as num?)?.toInt() ?? 0,
-      compensate: c == null ? null : (cash: (c['cash'] as num).toInt(), coins: (c['coins'] as num).toInt()),
-      can: j['can'] == true,
-      why: j['why'] as String?,
-    );
-  }
-
-  final int price, cash, docCoins, short;
-  final ({int cash, int coins})? compensate;
-  final bool can;
-  final String? why;
 }
 
 /// One of my players and the two ways to sell him: listed (up to his cap, waiting for a buyer) or now (a fee).

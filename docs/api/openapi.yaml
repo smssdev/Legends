@@ -1630,17 +1630,7 @@ paths:
           description: The deal
           content:
             application/json:
-              schema:
-                type: object
-                required: [price, cash, doc_coins, short, compensate, can, why]
-                properties:
-                  price: { type: integer }
-                  cash: { type: integer }
-                  doc_coins: { type: integer, description: '1 or 2 coins to register it (0 in a fair league)' }
-                  short: { type: integer, description: The money the club lacks }
-                  compensate: { type: object, nullable: true, required: [cash, coins], properties: { cash: { type: integer }, coins: { type: integer } }, description: 'With half the price in cash at least: all the cash, and coins for the rest' }
-                  can: { type: boolean }
-                  why: { type: string, nullable: true }
+              schema: { $ref: '#/components/schemas/BuyQuote' }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/market/done:
@@ -5480,6 +5470,18 @@ components:
               mine: { type: boolean }
         offers: { type: array, items: { $ref: '#/components/schemas/TransferOffer' } }
         clubs: { type: array, items: { type: object, required: [id, name, code], properties: { id: { type: integer }, name: { type: string }, code: { type: string } } } }
+    BuyQuote:
+      type: object
+      description: '[UP11] The deal before it is made (Sprint 59 F1: the app reads it through its generated model)'
+      required: [price, cash, doc_coins, short, compensate, can, why]
+      properties:
+        price: { type: integer }
+        cash: { type: integer }
+        doc_coins: { type: integer, description: '1 or 2 coins to register it (0 in a fair league)' }
+        short: { type: integer, description: The money the club lacks }
+        compensate: { type: object, nullable: true, required: [cash, coins], properties: { cash: { type: integer }, coins: { type: integer } }, description: 'With half the price in cash at least: all the cash, and coins for the rest' }
+        can: { type: boolean }
+        why: { type: string, nullable: true }
     Market:
       type: object
       required: [closed, open_until_round, counts, balance, bots, players, mine]
