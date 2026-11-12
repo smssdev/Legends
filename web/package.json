@@ -7,7 +7,7 @@
     "tokens": "node scripts/tokens.mjs",
     "predev": "npm run tokens && npm run names",
     "dev": "vite",
-    "prebuild": "npm run tokens && npm run names && npm run i18n && npm run design && node scripts/safe-html.mjs && npm run frames && npm run feed",
+    "prebuild": "npm run tokens && npm run names && npm run i18n && npm run design && node scripts/safe-html.mjs && npm run frames && npm run feed && npm test",
     "build": "vue-tsc -b && vite build",
     "postbuild": "node --experimental-strip-types --no-warnings scripts/seo.mjs",
     "preview": "vite preview",
@@ -17,7 +17,8 @@
     "design": "node scripts/design.mjs",
     "frames": "node --experimental-strip-types --no-warnings scripts/frames.mjs",
     "feed": "node --experimental-strip-types --no-warnings scripts/feed.mjs",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "test": "vitest run"
   },
   "dependencies": {
     "laravel-echo": "^2.6.1",
@@ -34,10 +35,12 @@
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/tsconfig": "^0.7.0",
+    "happy-dom": "^17.4.4",
     "openapi-typescript": "^7.13.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~5.8.3",
     "vite": "^6.3.5",
+    "vitest": "^3.2.4",
     "vue-tsc": "^2.2.8"
   }
 }

@@ -59,7 +59,7 @@ const TS_ARABIC_ONLY = {
 }
 for (const f of files) {
   const rel = f.slice(4).split('\\').join('/')
-  if (!f.endsWith('.ts') || rel === 'i18n/en.ts' || rel.endsWith('.d.ts') || TS_ARABIC_ONLY[rel]) continue
+  if (!f.endsWith('.ts') || rel === 'i18n/en.ts' || rel.endsWith('.d.ts') || rel.endsWith('.test.ts') || TS_ARABIC_ONLY[rel]) continue
   for (const lit of readFileSync(f, 'utf8').matchAll(/'((?:[^'\\\n]|\\.)*)'/g)) {
     const k = unq(lit[1])
     if (ARABIC.test(k) && !en.has(k) && !lost.includes(`${f}: ${k}`)) missing(k, f)
