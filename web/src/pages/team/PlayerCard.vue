@@ -33,7 +33,8 @@ async function openSale() {
   loadingSale.value = true
   try {
     const league = await currentLeague()
-    const market = league ? (await api.GET('/leagues/{league}/market', { params: { path: { league }, query: { source: 'pool', line: 'gk' } as any } })).data : null
+    // source=pool answers Market (source=list answers TransferList).
+    const market = league ? ((await api.GET('/leagues/{league}/market', { params: { path: { league }, query: { source: 'pool', line: 'gk' } as any } })).data as components['schemas']['Market'] | undefined) : null
     const mine = market?.mine.find((m) => m.id === props.player.id)
     if (!league || !market) sellError.value = 'لا دوري لك الآن.'
     else if (market.closed) sellError.value = market.closed

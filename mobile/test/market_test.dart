@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/api/gen/models.g.dart' show TransferList;
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/market/market_data.dart';
 import 'package:glm/features/market/market_screen.dart';
@@ -22,10 +23,12 @@ class FakeMarket implements MarketRepository {
 
   @override
   Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(int league, String line) async {
-    final j = json('market');
+    // [Sprint 59 F1] The captured answer read through the generated model: the fixture checks the contract too.
+    final t = TransferList.fromJson(json('market'));
+    expect(t.players, hasLength((json('market')['players'] as List<dynamic>).length), reason: 'every player reads');
     return (
-      players: [for (final p in j['players'] as List<dynamic>) MarketPlayer.fromJson(p as Map<String, dynamic>)],
-      renewsAt: DateTime.tryParse('${j['renews_at']}'),
+      players: [for (final p in t.players) MarketPlayer.of(p)],
+      renewsAt: DateTime.tryParse(t.renewsAt ?? ''),
       balance: 0,
       closed: null,
     );

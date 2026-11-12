@@ -4,7 +4,7 @@ import '../../core/api/api_client.dart';
 import '../../core/api/intents.dart';
 
 // [Sprint 59 F1] The buy quote is the generated model (docs/api/openapi.yaml → lib/api/gen/models.g.dart).
-import '../../api/gen/models.g.dart' show BuyQuote;
+import '../../api/gen/models.g.dart' show BuyQuote, TransferList, TransferListPlayer;
 export '../../api/gen/models.g.dart' show BuyQuote, BuyQuoteCompensate;
 
 /// [Sprint 18 F1] The market (`/leagues/{id}/market`, UP11) and the deals between coaches (`/leagues/{id}/transfers`,
@@ -30,6 +30,29 @@ class MarketPlayer {
     this.attributes = const {},
   });
 
+  /// [Sprint 59 F1] A player of the transfer list, from its generated model (a field renamed in the contract fails
+  /// `flutter analyze` here).
+  factory MarketPlayer.of(TransferListPlayer p) => MarketPlayer(
+    id: p.id,
+    name: p.name,
+    position: p.position,
+    line: p.line,
+    age: p.age,
+    overall: p.overall,
+    potential: p.potential,
+    value: p.value,
+    price: p.price,
+    wasPrice: p.wasPrice,
+    nationality: p.nationality,
+    sellerKind: p.seller.kind,
+    sellerClub: p.seller.club,
+    sellerCoach: p.seller.coach,
+    fits: p.fits,
+    star: p.star,
+    attributes: {for (final e in p.attributes.entries) e.key: e.value ?? 0},
+  );
+
+  /// The scout's players and the older answers (not yet in the contract's models).
   factory MarketPlayer.fromJson(Map<String, dynamic> j) {
     final s = j['seller'] as Map<String, dynamic>?;
     return MarketPlayer(
@@ -299,12 +322,12 @@ class MarketRepository {
   final ApiClient _api;
 
   Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(int league, String line) async {
-    final j = await _api.get('/leagues/$league/market', query: {'line': line});
+    final t = TransferList.fromJson(await _api.get('/leagues/$league/market', query: {'line': line}));
     return (
-      players: [for (final p in (j['players'] as List<dynamic>? ?? const [])) MarketPlayer.fromJson(p as Map<String, dynamic>)],
-      renewsAt: DateTime.tryParse('${j['renews_at'] ?? ''}'),
-      balance: (j['balance'] as num?)?.toInt() ?? 0,
-      closed: j['closed'] as String?,
+      players: [for (final p in t.players) MarketPlayer.of(p)],
+      renewsAt: DateTime.tryParse(t.renewsAt ?? ''),
+      balance: t.balance,
+      closed: t.closed,
     );
   }
 

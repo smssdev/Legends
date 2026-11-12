@@ -7748,6 +7748,128 @@ class TrainingViewSlotsItemPlayer {
   final int trainingBonus;
 }
 
+/// [UP11, Sprint 59 F1] The transfer list of one line (GET /leagues/{league}/market, source=list): the app reads it through its generated model
+class TransferList {
+  const TransferList({required this.balance, this.closed, required this.events, required this.line, required this.players, this.renewsAt});
+
+  factory TransferList.fromJson(Object? json) {
+    final r = JsonReader(json, 'TransferList');
+    return TransferList(
+      balance: r.int_('balance'),
+      closed: r.stringOrNull('closed'),
+      events: r.list('events', TimedEventNow.fromJson),
+      line: r.string('line'),
+      players: r.list('players', TransferListPlayer.fromJson),
+      renewsAt: r.stringOrNull('renews_at'),
+    );
+  }
+
+  final int balance;
+
+  /// Why the market is shut
+  final String? closed;
+  final List<TimedEventNow> events;
+  final String line;
+  final List<TransferListPlayer> players;
+
+  /// When the world's offers renew
+  final String? renewsAt;
+}
+
+/// One player on the transfer list, the stars and an event's special players first
+class TransferListPlayer {
+  const TransferListPlayer({
+    required this.age,
+    required this.attributes,
+    required this.fits,
+    required this.id,
+    required this.line,
+    required this.name,
+    this.nationality,
+    required this.overall,
+    required this.position,
+    required this.potential,
+    required this.price,
+    required this.seller,
+    this.special,
+    required this.star,
+    required this.value,
+    this.wasPrice,
+  });
+
+  factory TransferListPlayer.fromJson(Object? json) {
+    final r = JsonReader(json, 'TransferListPlayer');
+    return TransferListPlayer(
+      age: r.int_('age'),
+      attributes: r.map('attributes', JsonReader.intOrNullOf),
+      fits: r.bool_('fits'),
+      id: r.int_('id'),
+      line: r.string('line'),
+      name: r.string('name'),
+      nationality: r.stringOrNull('nationality'),
+      overall: r.int_('overall'),
+      position: r.string('position'),
+      potential: r.int_('potential'),
+      price: r.int_('price'),
+      seller: r.object('seller', TransferListPlayerSeller.fromJson),
+      special: r.stringOrNull('special'),
+      star: r.bool_('star'),
+      value: r.int_('value'),
+      wasPrice: r.intOrNull('was_price'),
+    );
+  }
+
+  final int age;
+
+  /// The six attributes, or the keeper's five [X29]
+  final Map<String, int?> attributes;
+
+  /// [Sprint 30 Q6] Stronger than the weakest of my usual starters in the line
+  final bool fits;
+  final int id;
+  final String line;
+  final String name;
+  final String? nationality;
+
+  /// Training counted
+  final int overall;
+  final String position;
+  final int potential;
+  final int price;
+  final TransferListPlayerSeller seller;
+
+  /// [Sprint 23] An event's special player
+  final String? special;
+
+  /// A star from a parallel league
+  final bool star;
+  final int value;
+
+  /// [Sprint 23] The price before a discount (a world player under his value)
+  final int? wasPrice;
+}
+
+class TransferListPlayerSeller {
+  const TransferListPlayerSeller({this.club, this.clubId, this.coach, required this.kind, this.logo});
+
+  factory TransferListPlayerSeller.fromJson(Object? json) {
+    final r = JsonReader(json, 'TransferListPlayerSeller');
+    return TransferListPlayerSeller(
+      club: r.stringOrNull('club'),
+      clubId: r.intOrNull('club_id'),
+      coach: r.stringOrNull('coach'),
+      kind: r.string('kind'),
+      logo: r.stringOrNull('logo'),
+    );
+  }
+
+  final String? club;
+  final int? clubId;
+  final String? coach;
+  final String kind;
+  final String? logo;
+}
+
 class TransferOffer {
   const TransferOffer({
     this.counterOf,

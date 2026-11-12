@@ -1501,10 +1501,10 @@ paths:
         - { name: max_price, in: query, schema: { type: integer } }
       responses:
         '200':
-          description: The market
+          description: 'The market: source=list (the default) answers TransferList, pool and bots answer Market'
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Market' }
+              schema: { oneOf: [{ $ref: '#/components/schemas/TransferList' }, { $ref: '#/components/schemas/Market' }] }
         '403': { $ref: '#/components/responses/Error' }
   /leagues/{league}/market/buy:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
@@ -5482,6 +5482,46 @@ components:
         compensate: { type: object, nullable: true, required: [cash, coins], properties: { cash: { type: integer }, coins: { type: integer } }, description: 'With half the price in cash at least: all the cash, and coins for the rest' }
         can: { type: boolean }
         why: { type: string, nullable: true }
+    TransferList:
+      type: object
+      description: '[UP11, Sprint 59 F1] The transfer list of one line (GET /leagues/{league}/market, source=list): the app reads it through its generated model'
+      required: [closed, line, balance, renews_at, events, players]
+      properties:
+        closed: { type: string, nullable: true, description: Why the market is shut, or null }
+        line: { type: string, enum: [gk, def, mid, att] }
+        balance: { type: integer }
+        renews_at: { type: string, format: date-time, nullable: true, description: When the world's offers renew }
+        events: { type: array, items: { $ref: '#/components/schemas/TimedEventNow' } }
+        players: { type: array, items: { $ref: '#/components/schemas/TransferListPlayer' } }
+    TransferListPlayer:
+      type: object
+      description: One player on the transfer list, the stars and an event's special players first
+      required: [id, name, position, line, age, overall, potential, nationality, value, price, seller, star, special, was_price, fits, attributes]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        position: { type: string }
+        line: { type: string, enum: [gk, def, mid, att] }
+        age: { type: integer }
+        overall: { type: integer, description: Training counted }
+        potential: { type: integer }
+        nationality: { type: string, nullable: true }
+        value: { type: integer }
+        price: { type: integer }
+        was_price: { type: integer, nullable: true, description: '[Sprint 23] The price before a discount (a world player under his value)' }
+        seller:
+          type: object
+          required: [kind, club_id, club, coach, logo]
+          properties:
+            kind: { type: string, enum: [world, bot, coach] }
+            club_id: { type: integer, nullable: true }
+            club: { type: string, nullable: true }
+            coach: { type: string, nullable: true }
+            logo: { type: string, nullable: true }
+        star: { type: boolean, description: A star from a parallel league, in the pool from mid-season }
+        special: { type: string, nullable: true, enum: [offer, in_form, legend, null], description: '[Sprint 23] An event''s special player' }
+        fits: { type: boolean, description: '[Sprint 30 Q6] Stronger than the weakest of my usual starters in the line' }
+        attributes: { type: object, additionalProperties: { type: integer, nullable: true }, description: 'The six attributes, or the keeper''s five [X29]' }
     Market:
       type: object
       required: [closed, open_until_round, counts, balance, bots, players, mine]

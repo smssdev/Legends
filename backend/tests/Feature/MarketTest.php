@@ -374,7 +374,13 @@ class MarketTest extends TestCase
         DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => false]);
         $p = $this->poolPlayer();
         $line = DB::table('master_players')->where('id', $p->master_player_id)->value('line');
-        $list = $this->actingAs($this->owner)->getJson($this->url()."?line={$line}")->assertOk()->json();
+        $list = $this->actingAs($this->owner)->getJson($this->url()."?line={$line}")->assertOk()
+            // [Sprint 59 F1] Every field TransferList and TransferListPlayer require in openapi.yaml (the app's generated
+            // model fails on a missing one).
+            ->assertJsonStructure(['closed', 'line', 'balance', 'renews_at', 'events', 'players' => ['*' => [
+                'id', 'name', 'position', 'line', 'age', 'overall', 'potential', 'nationality', 'value', 'price', 'was_price',
+                'seller' => ['kind', 'club_id', 'club', 'coach', 'logo'], 'star', 'special', 'fits', 'attributes',
+            ]]])->json();
         $this->assertNotNull($list['renews_at']);
         $this->assertTrue(collect($list['players'])->every(fn ($x) => $x['line'] === $line));
         $this->assertContains('world', collect($list['players'])->pluck('seller.kind')->all());
