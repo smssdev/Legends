@@ -2976,4 +2976,9 @@ export const EN: Record<string, string> = {
   'تمركز المهاجمين': 'Forwards\' positioning',
   'تمركز الوسط': 'Midfield positioning',
   'تمركز الدفاع': 'Defence positioning',
+  // [Sprint 57 W4] The scenes' headlines (the gap art.ts kept is closed).
+  'الحارس يمسكها': 'The keeper holds it',
+  'رأسية!': 'Header!',
+  'تصدٍّ!': 'Saved!',
+  'صمت في المدرجات...': 'Silence in the stands...',
 }

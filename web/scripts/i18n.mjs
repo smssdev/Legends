@@ -56,7 +56,6 @@ const TS_ARABIC_ONLY = {
   // Known gaps, closed by their sprints (each removes its line here):
   'content/leagueAtlas.ts': 'Sprint 56: the countries on the league picker',
   'components/characters/art.ts': "Sprint 63: the characters' names and descriptions",
-  'match/feed/art.ts': 'Sprint 57: the broadcast words come from the server',
 }
 for (const f of files) {
   const rel = f.slice(4).split('\\').join('/')
