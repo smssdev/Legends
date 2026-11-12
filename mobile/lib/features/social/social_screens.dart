@@ -867,18 +867,20 @@ class _GroupVoiceState extends ConsumerState<_GroupVoice> {
   final _player = AudioPlayer();
   bool _playing = false, _loading = false;
   String? _file;
+  StreamSubscription<void>? _done;
 
   @override
   void initState() {
     super.initState();
-    _player.onPlayerComplete.listen((_) {
+    _done = _player.onPlayerComplete.listen((_) {
       if (mounted) setState(() => _playing = false);
     });
   }
 
   @override
   void dispose() {
-    _player.dispose();
+    unawaited(_done?.cancel());
+    unawaited(_player.dispose());
     super.dispose();
   }
 

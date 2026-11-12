@@ -69,7 +69,10 @@ class _GlmAppState extends ConsumerState<GlmApp> {
     final settings = ref.watch(settingsProvider);
     GameSounds.enabled = settings.sounds;
     final update = ref.watch(updateRequiredProvider).value ?? false;
-    final common = (
+    // [Sprint 59 F12] One MaterialApp: an update the server requires replaces the routed screens, not the app.
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      onGenerateTitle: (c) => L.of(c).appName,
       theme: glmTheme(day: true),
       darkTheme: glmTheme(day: false),
       themeMode: settings.theme,
@@ -81,32 +84,11 @@ class _GlmAppState extends ConsumerState<GlmApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-    );
-    if (update) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        onGenerateTitle: (c) => L.of(c).appName,
-        theme: common.theme,
-        darkTheme: common.darkTheme,
-        themeMode: common.themeMode,
-        locale: common.locale,
-        supportedLocales: common.supportedLocales,
-        localizationsDelegates: common.localizationsDelegates,
-        home: const UpdateRequiredScreen(),
-      );
-    }
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      onGenerateTitle: (c) => L.of(c).appName,
-      theme: common.theme,
-      darkTheme: common.darkTheme,
-      themeMode: common.themeMode,
-      locale: common.locale,
-      supportedLocales: common.supportedLocales,
-      localizationsDelegates: common.localizationsDelegates,
       routerConfig: ref.watch(routerProvider),
       // [Sprint 18 H] The assistant coach over every screen.
-      builder: (context, child) => AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
+      builder: (context, child) => update
+          ? const UpdateRequiredScreen()
+          : AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
     );
   }
 }

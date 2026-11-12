@@ -19,6 +19,16 @@ class PushService {
   String? _token;
   final _taps = StreamController<String>.broadcast();
   final _arrivals = StreamController<void>.broadcast();
+  final _subs = <StreamSubscription<Object?>>[];
+
+  /// [Sprint 59 F7] The Firebase listeners and the two streams closed with the provider.
+  Future<void> dispose() async {
+    for (final s in _subs) {
+      await s.cancel();
+    }
+    await _taps.close();
+    await _arrivals.close();
+  }
 
   /// The screens the taps open.
   Stream<String> get taps => _taps.stream;
@@ -50,10 +60,11 @@ class PushService {
       // is not that target, so the token stays until the server sends another way.
       // ignore: deprecated_member_use
       await _register(await messaging.getToken());
-      // ignore: deprecated_member_use
-      messaging.onTokenRefresh.listen(_register);
-      FirebaseMessaging.onMessage.listen((_) => _arrivals.add(null));
-      FirebaseMessaging.onMessageOpenedApp.listen(_open);
+      _subs
+        // ignore: deprecated_member_use
+        ..add(messaging.onTokenRefresh.listen(_register))
+        ..add(FirebaseMessaging.onMessage.listen((_) => _arrivals.add(null)))
+        ..add(FirebaseMessaging.onMessageOpenedApp.listen(_open));
       final first = await messaging.getInitialMessage();
       if (first != null) _open(first);
     } catch (_) {
@@ -85,4 +96,8 @@ class PushService {
   }
 }
 
-final pushProvider = Provider<PushService>((ref) => PushService(ref.watch(apiProvider)));
+final pushProvider = Provider<PushService>((ref) {
+  final push = PushService(ref.watch(apiProvider));
+  ref.onDispose(() => unawaited(push.dispose()));
+  return push;
+});

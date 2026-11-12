@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// [2026-11-06] The app's motion, small and purposeful: things arrive (a fade and a short rise, staggered down a
@@ -26,17 +28,18 @@ class FadeSlideIn extends StatefulWidget {
 class _FadeSlideInState extends State<FadeSlideIn> with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 420));
   late final Animation<double> _t = CurvedAnimation(parent: _c, curve: Curves.easeOutCubic);
+  // [Sprint 59 F7] A Timer, cancelled with the widget (a Future.delayed outlived it).
+  Timer? _wait;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 40 * widget.index.clamp(0, 8)), () {
-      if (mounted) _c.forward();
-    });
+    _wait = Timer(Duration(milliseconds: 40 * widget.index.clamp(0, 8)), _c.forward);
   }
 
   @override
   void dispose() {
+    _wait?.cancel();
     _c.dispose();
     super.dispose();
   }
