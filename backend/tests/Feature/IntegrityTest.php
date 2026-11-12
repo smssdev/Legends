@@ -151,7 +151,9 @@ class IntegrityTest extends TestCase
         $this->postJson("{$this->url}/spies/{$spy}/turn")->assertOk()->assertJsonPath('spies_on_me.0.turned', true);
 
         // The rival's report is now a fake board, with no bribe in it: nothing to take to the FA.
-        $fake = $this->actingAs($this->rival)->getJson("/api/v1/leagues/{$this->league['id']}/spy")->json('report');
+        $fake = $this->actingAs($this->rival)->getJson("/api/v1/leagues/{$this->league['id']}/spy")
+            // [Sprint 59 F1] The fields the app reads through SpyView (openapi.yaml).
+            ->assertJsonStructure(['cost', 'currency', 'fixture', 'report'])->json('report');
         $this->assertNotSame($real['formation'], $fake['formation']);
         $this->assertNotSame($real['tactics']['plan'], $fake['tactics']['plan']);
         $this->assertFalse($fake['bribed']);

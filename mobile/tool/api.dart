@@ -94,7 +94,8 @@ Object? _plain(Object? s) {
   // `allOf: [one $ref]` (OpenAPI 3.0's way to make a ref nullable) is that ref.
   if (s is Map && s['allOf'] is List && (s['allOf'] as List<dynamic>).length == 1 && s['properties'] == null) {
     final only = (s['allOf'] as List<dynamic>).single;
-    if (_refName(only) != null) return {r'$ref': (only as Map<dynamic, dynamic>)[r'$ref'], 'nullable': s['nullable'], 'description': s['description']};
+    if (_refName(only) != null)
+      return {r'$ref': (only as Map<dynamic, dynamic>)[r'$ref'], 'nullable': s['nullable'], 'description': s['description']};
   }
   if (s is! Map || s['type'] is! List) return s;
   final types = [for (final t in s['type'] as List<dynamic>) '$t'];

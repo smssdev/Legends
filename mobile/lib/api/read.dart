@@ -37,7 +37,14 @@ class JsonReader {
   T? _may<T>(String field, T? Function(Object? v) read) {
     final raw = _j[field];
     if (raw == null) return null;
-    final v = read(raw);
+    final T? v;
+    try {
+      v = read(raw);
+    } on ModelError catch (e) {
+      // An optional object that does not read is null (logged), not the whole answer.
+      _fail(field, '${e.problem} (${e.model}.${e.field}), read as null');
+      return null;
+    }
     if (v == null) _fail(field, 'is not a $T (${raw.runtimeType}), read as null');
     return v;
   }
