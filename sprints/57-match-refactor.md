@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **الحالة** | 🔄 جارٍ (2026-11-12): B1 وB2 وB3 وW4 وW5 وW6 وW7 وF1 وU1 وجزء من W3 مبنية، ويبقى W1 وW2 وباقي W3 (تفكيك `SimMatch.vue`) |
+| **الحالة** | 🔄 جارٍ (2026-11-12): كل المهام مبنية إلا باقي W3 (أنواع أجزاء الرسم و`MatchFeed.vue`) |
 | **المدة** | 7 أيام عمل |
 | **المرحلة** | ب. الأساس |
 | **المنصة** | ويب، خادم (ويخدم التطبيق وUnity) |
@@ -30,8 +30,8 @@ W-Sprint 51، W-Sprint 52، W-Sprint 53، W-Sprint 54، W-Sprint 60، W-S07، W-
 
 | الرمز | المهمة | الملفات |
 |---|---|---|
-| W1 | **`SimMatch.vue` إلى composables:** `useMatchClock` (الدقائق والمؤقتات)، و`useLiveSync` (من Sprint 53)، و`useCoachOrders` (الأوامر والمعلّق منها)، و`useMatchAudio` (الصوت والمعلق والكتم)، و`useReplay` (الإعادة والملخص)، و`useWakeLock`. كل واحد باختبار وحدة (Vitest، مؤقتات وهمية) | `web/src/match/use*.ts` |
-| W2 | **اللوحات مكونات:** `ScoreBug`، و`CoachDrawer` (سريع، وتبديل، وتكتيك، وخطة)، و`MatchSettings`، و`FeedList`، و`HalftimeCard`، و`MatchChat` | `web/src/components/match/` |
+| W1 ✅ | **`SimMatch.vue` إلى composables:** `useMatchClock` (الدقائق والمؤقتات)، و`useLiveSync` (من Sprint 53)، و`useCoachOrders` (الأوامر والمعلّق منها)، و`useMatchAudio` (الصوت والمعلق والكتم)، و`useReplay` (الإعادة والملخص)، و`useWakeLock`. كل واحد باختبار وحدة (Vitest، مؤقتات وهمية) | `web/src/match/use*.ts` |
+| W2 ✅ | **اللوحات مكونات:** `ScoreBug`، و`CoachDrawer` (سريع، وتبديل، وتكتيك، وخطة)، و`MatchSettings`، و`FeedList`، و`HalftimeCard`، و`MatchChat` | `web/src/components/match/` |
 | W3 | **أنواع البث:** `Tick`، و`Moment`، و`MatchEvent` من `schema.d.ts` إلى `match/feed/`. إزالة `@ts-nocheck` بالترتيب: `director.ts`، ثم `story.ts` (أو حذفه بعد B2)، ثم `GoalReplay.vue`، ثم `MatchFeed.vue`، ثم `characters/art.ts`، ثم `art.ts` | `web/src/match/feed/` |
 | W4 ✅ | **`art.ts` (1896 سطراً) إلى ملفات:** `stage.ts` (الملعب والأستوديو)، و`figures.ts` (اللاعب والكرة والحكم)، ومجلد `clips/` بملف لكل لقطة (هدف، وجزاء، وبطاقة، وفار، وتسلل، والحيل…). الواجهة العامة للملف لا تتغير، و`npm run feed` يبقى أخضر | `web/src/match/feed/` |
 | W5 ✅ | **التهريب:** كل قيمة من الخادم في `innerHTML` تمر بـ `esc()`، أو تُكتب بـ `textContent`. فحص ESLint يرفض `innerHTML =` بقالب فيه `${` بلا `esc(` | `web/src/match/feed/`، `eslint.config.js` |
@@ -48,7 +48,7 @@ W-Sprint 51، W-Sprint 52، W-Sprint 53، W-Sprint 54، W-Sprint 60، W-S07، W-
 ## تعريف الانتهاء
 
 - [ ] `grep -r "@ts-nocheck" web/src` بلا نتائج.
-- [ ] `SimMatch.vue` أقل من 300 سطر، ولا ملف في `match/` فوق 400.
+- [ ] `SimMatch.vue` أقل من 300 سطر (243 ✅)، ولا ملف في `match/` فوق 400 (يبقى `MatchFeed.vue` بـ 679).
 - [x] اختبار B2 الذهبي: رواية الخادم = رواية `story.ts` على 50 مباراة، ثم يُحذف الملف.
 - [x] `sim:golden` بلا تغيير (المحرك لم يُمس).
 - [x] مباراة قديمة تُعاد كما لُعبت.
@@ -119,9 +119,24 @@ W-Sprint 51، W-Sprint 52، W-Sprint 53، W-Sprint 54، W-Sprint 60، W-S07، W-
 - التطبيق: `flutter analyze` بلا ملاحظات، و`flutter test` 73 ناجحاً، و`dart run tool/design.dart`.
 - مباراة محاكي في المتصفح: الهدف والصناعة بالأسماء، وبلا أخطاء.
 
+**الدفعة الثالثة (2026-11-12):**
+
+- **W1، الـ composables:** `SimMatch.vue` من 1241 سطراً إلى 243، يربط أجزاءه فقط.
+  - المنطق في `match/`: `useMatchPlayer` (حالة المباراة وإيقاع المحاكي)، و`useLiveMatch` (المباشر على ساعة الخادم والقناة واللحاق)، و`useMatchClock`، و`useCoachOrders`، و`useMatchAudio`، و`useMatchSocial`، و`useReplay`، و`useWakeLock`.
+  - كل واحد نقل حرفي لكود الصفحة نفسه، بلا تغيير في السلوك.
+  - **Vitest:** 15 اختباراً (مؤقتات وهمية وhappy-dom)، و`npm test` يعمل قبل كل بناء.
+- **W2، المكونات:** في `components/match/`: `MatchTopBar` (بدل `ScoreBug`، فالنتيجة على الصورة لا في الشريط)، و`MatchDrawer`، و`CoachDrawer`، و`MatchChat`، و`FeedList`، و`HalftimeCard`، و`EmergencySub`، و`LiveStart`، و`MatchSettings`.
+  - الأشكال التي ترسمها الشاشة انتقلت معها، ومجاميع قائمة الاستثناء في `design-baseline.json` كما كانت (13 زراً و8 بطاقات).
+- **فُحص في المتصفح:**
+  - مباراة محاكي: الأوامر وتعليقها، والدرجان، والإعدادات، والتخطي إلى النهاية.
+  - مباراة مباشرة مع صديق: البداية على ساعة الخادم، والدقائق، وفترة التوقف في الدقيقة 15 بعدّها التنازلي.
+  - الدرج نفسه قبل التفكيك وبعده، و`npm run e2e` ناجح، و`npm run build` بكل فحوصه.
+- **ملاحظة قديمة لم تتغير:** قسم «مجريات المباراة» في درج الدردشة ينضغط تحت الزخم والإحصائيات. كان كذلك قبل التفكيك، فلم يُمس هنا.
+
 **ما بقي:**
-- **W1 وW2:** تفكيك `SimMatch.vue` (1241 سطراً) إلى composables باختبارات Vitest ومكونات، حتى أقل من 300 سطر.
-- **W3:** باقي `@ts-nocheck` (`MatchFeed.vue`، وأجزاء `art.ts`، و`characters/art.ts`).
+- **W3:** باقي `@ts-nocheck`، وهي أجزاء الرسم (`kit` و`stage` و`figures` و`effects` و`play` و`clips/`)، و`MatchFeed.vue`، و`characters/art.ts`.
+  - بلا الاستثناء يظهر نحو 570 خطأ أنواع، أغلبها معاملات بلا نوع.
+- وتقسيم `MatchFeed.vue` (679 سطراً) ليصير تحت 400.
 
 ## ملاحظات وتعديلات بالتوازي
 
