@@ -298,8 +298,8 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('المدربون') }}</dt><dd class="font-bold"><span class="font-numbers">{{ league.coaches }}</span> {{ $t('من') }} <span class="font-numbers">{{ league.team_count }}</span></dd></div>
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ $t(END_MODES[league.season_end_mode]) }}</dd></div>
             <div class="col-span-2 flex items-center gap-2 rounded-lg bg-surface-sunk p-3">
-              <span class="flex-1"><dt class="text-text-muted">{{ $t('أيام الإجازة') }}</dt>
-                <dd class="font-bold">{{ league.rest_days?.length ? league.rest_days.map((d) => $t(DAY_NAMES[d])).join('، ') : $t('لا إجازة: مباراة كل يوم') }}</dd></span>
+              <div class="flex-1"><dt class="text-text-muted">{{ $t('أيام الإجازة') }}</dt>
+                <dd class="font-bold">{{ league.rest_days?.length ? league.rest_days.map((d) => $t(DAY_NAMES[d])).join('، ') : $t('لا إجازة: مباراة كل يوم') }}</dd></div>
               <button v-if="league.is_owner && !league.locked && !restEdit" type="button" class="h-10 rounded-lg bg-surface-raised px-3 text-sm font-bold" @click="restEdit = [...(league.rest_days ?? [])]">{{ $t('تعديل') }}</button>
             </div>
           </dl>

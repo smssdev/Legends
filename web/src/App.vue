@@ -19,7 +19,7 @@
     <button type="button" class="min-h-touch rounded-lg bg-bg-deep/15 px-4" :disabled="retrying" @click="retry">{{ $t('حاول مجدداً') }}</button>
   </div>
   <!-- [Sprint 30 Q2] The one «are you sure» window (stores/confirm). -->
-  <ConfirmHost />
+  <ConfirmHost v-if="confirmAsked" />
   <!-- [Sprint 48 L1] The whole game is played sideways (the owner's decision 2026-11-08): upright on a phone, the
        match's card asks to turn it on every game screen (not the public pages; the match page shows its own). -->
   <TurnPhone game v-if="(auth.signedIn || route.meta.auth) && route.name !== 'sim-match' && route.name !== 'league-match'" />
@@ -28,11 +28,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { defineAsyncComponent, ref, watch } from 'vue'
+import { useConfirm } from './stores/confirm'
 import { ConfigProvider, TooltipProvider } from 'reka-ui'
 import { locale } from './lib/i18n'
 import SplashScreen from './components/SplashScreen.vue'
-import ConfirmHost from './components/shell/ConfirmHost.vue'
+// [Sprint 58 T1] The confirmation window loads the first time something asks (its dialog is not part of the first paint),
+// and stays mounted after.
+const ConfirmHost = defineAsyncComponent(() => import('./components/shell/ConfirmHost.vue'))
+const confirmAsked = ref(false)
+watch(() => useConfirm().current, (c) => { if (c) confirmAsked.value = true })
 import TurnPhone from './components/match/TurnPhone.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from './stores/auth'

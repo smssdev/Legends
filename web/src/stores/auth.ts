@@ -1,12 +1,11 @@
 // The signed-in account for the web (Sanctum session cookie) [PLAN 2.17].
 import { storage } from '../lib/storage'
 import { defineStore } from 'pinia'
-import { track } from '../lib/analytics'
+import { track } from '../lib/track'
 import { computed, ref } from 'vue'
 import { api, ApiError, ensureCsrf, type Account } from '../api/client'
 import { adoptLocale } from '../lib/i18n'
 import { boot, rebootSession } from '../lib/session'
-import { useBot } from './bot'
 import { useBoard } from './board'
 
 export const useAuth = defineStore('auth', () => {
@@ -84,7 +83,7 @@ export const useAuth = defineStore('auth', () => {
     // [Sprint 58 W6] The club board's refresh stops with the account.
     useBoard().pause()
     // [Sprint 51 W5] The Assistant Coach's conversation stays with the account, not on a shared device.
-    useBot().forget(true)
+    void import('./bot').then((m) => m.useBot().forget(true))
   }
   const set = (u: Account | null) => (user.value = u)
 
