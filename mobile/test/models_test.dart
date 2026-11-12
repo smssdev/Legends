@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glm/api/gen/models.g.dart' hide MatchView;
+import 'package:glm/api/gen/models.g.dart' hide MatchView, TrainingView;
 import 'package:glm/api/read.dart';
+import 'package:glm/features/club/extras_data.dart';
 import 'package:glm/features/club/team_data.dart';
 import 'package:glm/features/match/match_data.dart';
 
@@ -70,5 +71,18 @@ void main() {
     expect(m.teams['home']!.players, hasLength((((raw['teams'] as Map)['home'] as Map)['players'] as List).length));
     expect(m.home.name, isNotEmpty);
     expect(modelErrors.where((e) => e.contains('LeagueMatch') || e.contains('MatchView')), isEmpty);
+  });
+
+  test('a trainee: his rating is the server overall (the training already in it)', () {
+    final t = TrainingView.fromJson(jsonDecode(File('test/fixtures/training.json').readAsStringSync()));
+    expect(t.players, isNotEmpty);
+    final raw =
+        Map<String, dynamic>.from(
+            ((jsonDecode(File('test/fixtures/training.json').readAsStringSync()) as Map<String, dynamic>)['players'] as List<dynamic>).first
+                as Map<dynamic, dynamic>,
+          )
+          ..['overall'] = 80
+          ..['training_bonus'] = 3;
+    expect(Trainee.of(TrainingPlayer.fromJson(raw)).rating, 80);
   });
 }

@@ -99,7 +99,9 @@ class MoraleTest extends TestCase
         $this->assertSame(68, $this->morale($id));   // -6 + 4
         Morale::after($id, 1, 1);
         $this->assertSame(68, $this->morale($id));   // -2 - 2 + 4, never up after a bad result
-        $offers = $this->getJson("/api/v1/leagues/{$this->league['id']}/specialists")->assertOk()->json('specialists');
+        $offers = $this->getJson("/api/v1/leagues/{$this->league['id']}/specialists")->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['days', 'specialists' => ['*' => ['type', 'name', 'stars', 'ends_at', 'offers' => ['*' => ['stars', 'cost', 'currency', 'effect']]]]])->json('specialists');
         $this->assertStringContainsString('المعنويات', collect($offers)->firstWhere('type', 'mental_coach')['offers'][4]['effect']);
     }
 

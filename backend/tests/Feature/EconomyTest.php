@@ -145,7 +145,11 @@ class EconomyTest extends TestCase
 
     public function test_the_finance_page_and_signing_a_sponsor(): void
     {
-        $page = $this->actingAs($this->owner)->getJson("/api/v1/leagues/{$this->league['id']}/team/finance")->assertOk()->json();
+        $page = $this->actingAs($this->owner)->getJson("/api/v1/leagues/{$this->league['id']}/team/finance")->assertOk()
+            // [Sprint 59 F1] Every field the app reads through ClubFinance (openapi.yaml).
+            ->assertJsonStructure(['balance', 'can_spend', 'debt_rounds', 'debt_limit', 'wages_per_round', 'season_income', 'season_expenses',
+                'season_totals', 'transactions' => ['*' => ['label', 'amount', 'balance_after', 'created_at']], 'tickets' => ['level', 'levels'],
+                'sponsors' => ['*' => ['sector', 'name', 'chosen', 'offers']]])->json();
         $this->assertSame((int) DB::table('clubs')->where('id', $this->mine)->value('balance'), $page['balance']);
         $this->assertTrue($page['can_spend']);
         $this->assertCount(4, $page['sponsors']);
@@ -195,7 +199,10 @@ class EconomyTest extends TestCase
         $this->assertSame($levels['popular']['per_match'], $view['per_match']);
         $this->getJson("/api/v1/leagues/{$this->league['id']}/team/finance")->assertOk()->assertJsonPath('tickets.level', 'popular')
             ->assertJsonPath('stadium.tickets_per_match', $view['per_match']);
-        $this->getJson("/api/v1/leagues/{$this->league['id']}/stadium")->assertOk()->assertJsonPath('facts.tickets.level', 'popular');
+        $this->getJson("/api/v1/leagues/{$this->league['id']}/stadium")->assertOk()->assertJsonPath('facts.tickets.level', 'popular')
+            // [Sprint 59 F1] Every field the app reads through StadiumView (openapi.yaml).
+            ->assertJsonStructure(['balance', 'part_minutes', 'parts_total', 'now', 'building', 'facts' => ['parts_done', 'capacity', 'home_bp'],
+                'sections' => ['*' => ['section', 'stage', 'parts', 'done', 'effects', 'next']]]);
 
         // The gate after a home match is the chosen level's.
         $f = $this->fixtures()->firstWhere('home_id', $this->mine);

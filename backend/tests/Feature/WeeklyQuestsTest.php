@@ -31,7 +31,9 @@ class WeeklyQuestsTest extends TestCase
         $mine = $league['my_club_id'];
         $url = "/api/v1/leagues/{$league['id']}/quests";
 
-        $view = $this->actingAs($owner)->getJson($url)->assertOk()->assertJsonCount(5, 'quests')->json();
+        $view = $this->actingAs($owner)->getJson($url)->assertOk()->assertJsonCount(5, 'quests')
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['week', 'renews_at', 'quests' => ['*' => ['quest', 'progress', 'target', 'reward', 'complete', 'claimed']]])->json();
         $this->assertSame('2026-10-19', $view['week']);
         $this->postJson("{$url}/claim", ['quest' => 'friendly'])->assertConflict();
 

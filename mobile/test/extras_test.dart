@@ -35,11 +35,7 @@ class FakeExtras implements ExtrasRepository {
   Future<TrainingView> finishTraining(int league, String line) async => training(league);
   @override
   Future<({int days, List<Specialist> list})> specialists(int league) async {
-    final j = json('specialists');
-    return (
-      days: j['days'] as int,
-      list: [for (final s in j['specialists'] as List<dynamic>) Specialist.fromJson(s as Map<String, dynamic>)],
-    );
+    return ExtrasRepository.readSpecialists(json('specialists'));
   }
 
   @override
@@ -68,11 +64,7 @@ class FakeExtras implements ExtrasRepository {
 
   @override
   Future<({DateTime? renewsAt, List<Quest> quests})> quests(int league) async {
-    final j = json('quests');
-    return (
-      renewsAt: DateTime.tryParse('${j['renews_at']}'),
-      quests: [for (final q in j['quests'] as List<dynamic>) Quest.fromJson(q as Map<String, dynamic>)],
-    );
+    return ExtrasRepository.readQuests(json('quests'));
   }
 
   @override

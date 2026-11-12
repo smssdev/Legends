@@ -92,7 +92,10 @@ class TimedEventsTest extends TestCase
         Carbon::setTestNow(GameClock::now()->addHours(2));
         $this->assertSame(20000, TimedEvents::times('progression', $this->league['id']));
         $this->assertSame(10000, TimedEvents::times('progression', $other['id']));
-        $this->actingAs($this->owner)->getJson("/api/v1/leagues/{$this->league['id']}/training")->assertOk()->assertJsonPath('events.0.kind', 'progression');
+        $this->actingAs($this->owner)->getJson("/api/v1/leagues/{$this->league['id']}/training")->assertOk()->assertJsonPath('events.0.kind', 'progression')
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['cost', 'interval_minutes', 'recommended', 'slots' => ['*' => ['line', 'player', 'sessions_done', 'next_at', 'coach' => ['name', 'hired', 'stars']]],
+                'players' => ['*' => ['id', 'name', 'position', 'line', 'age', 'overall', 'training_bonus', 'potential', 'progress', 'sessions', 'injured', 'maxed']]]);
         Carbon::setTestNow(GameClock::now()->addHours(2));
         $this->assertSame(10000, TimedEvents::times('progression', $this->league['id']));
     }

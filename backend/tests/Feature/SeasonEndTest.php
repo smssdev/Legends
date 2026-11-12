@@ -121,7 +121,9 @@ class SeasonEndTest extends TestCase
         $this->assertSame($mine, DB::table('clubs')->where('id', $mine)->value('user_id') ? $mine : null);
 
         // The hall of fame and the coach's profile keep it.
-        $honours = $this->getJson("/api/v1/leagues/{$this->league['id']}/honours")->assertOk()->json('seasons');
+        $honours = $this->getJson("/api/v1/leagues/{$this->league['id']}/honours")->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['league', 'seasons' => ['*' => ['number', 'titles' => ['*' => ['competition', 'position', 'club' => ['name'], 'coach']]]]])->json('seasons');
         $this->assertSame([2, 1], array_column($honours, 'number'));
         $this->assertCount(5, $honours[1]['titles']);
         $profile = $this->getJson("/api/v1/coaches/{$this->owner->id}")->assertOk()->json();
