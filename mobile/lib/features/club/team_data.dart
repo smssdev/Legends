@@ -1,22 +1,53 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' show SquadPlayer;
 import '../../core/api/api_client.dart';
 
 /// [Sprint 17 F1] My team as the API gives it (`/team`): the squad with each player's numbers, the lineup (formation,
 /// eleven in slot order, the bench) and the takers.
 class Player {
-  const Player({required this.id, required this.name, required this.position, required this.line, required this.age, required this.overall,
-      required this.potential, required this.value, required this.fitness, required this.available, required this.role,
-      this.injured = 0, this.suspended = 0, this.attributes = const {}, this.nationality, this.nationCode, this.nationColors = const []});
+  const Player({
+    required this.id,
+    required this.name,
+    required this.position,
+    required this.line,
+    required this.age,
+    required this.overall,
+    required this.potential,
+    required this.value,
+    required this.fitness,
+    required this.available,
+    required this.role,
+    this.injured = 0,
+    this.suspended = 0,
+    this.attributes = const {},
+    this.nationality,
+    this.nationCode,
+    this.nationColors = const [],
+  });
 
-  factory Player.fromJson(Map<String, dynamic> j) => Player(
-        id: j['id'] as int, name: '${j['name']}', position: '${j['position']}', line: '${j['line']}', age: j['age'] as int? ?? 0,
-        overall: (j['overall'] as int? ?? 0) + (j['training_bonus'] as int? ?? 0), potential: j['potential'] as int? ?? 0,
-        value: j['value'] as int? ?? 0, fitness: j['fitness'] as int? ?? 100, available: j['available'] != false, role: '${j['role'] ?? 'reserve'}',
-        injured: j['injured_matches'] as int? ?? 0, suspended: j['suspended_matches'] as int? ?? 0, nationality: j['nationality'] as String?,
-        nationCode: (j['nation'] as Map?)?['code'] as String?, nationColors: [for (final c in ((j['nation'] as Map?)?['colors'] as List? ?? const [])) '$c'],
-        attributes: {for (final e in ((j['attributes'] as Map?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()},
-      );
+  /// [Sprint 59 F1] A squad player from the generated model. `overall` already counts the training (the server's
+  /// Training::boosted); the hand-written reader added training_bonus again, so a trained player showed higher here
+  /// than on the site.
+  factory Player.of(SquadPlayer p) => Player(
+    id: p.id,
+    name: p.name,
+    position: p.position,
+    line: p.line,
+    age: p.age,
+    overall: p.overall,
+    potential: p.potential,
+    value: p.value,
+    fitness: p.fitness,
+    available: p.available,
+    role: p.role,
+    injured: p.injuredMatches,
+    suspended: p.suspendedMatches,
+    nationality: p.nationality,
+    nationCode: p.nation?.code,
+    nationColors: p.nation?.colors ?? const [],
+    attributes: {for (final e in p.attributes.entries) e.key: e.value ?? 0},
+  );
 
   final int id, age, overall, potential, value, fitness, injured, suspended;
   final String name, position, line, role;
@@ -30,11 +61,23 @@ class Player {
 }
 
 class Slot {
-  const Slot({required this.role, required this.line, required this.x, required this.y});
+  const Slot({required this.role, required this.line, required this.x, required this.y, this.allowed = const []});
 
-  factory Slot.fromJson(Map<String, dynamic> j) => Slot(role: '${j['role']}', line: '${j['line']}', x: (j['x'] as num).toInt(), y: (j['y'] as num).toInt());
+  factory Slot.fromJson(Map<String, dynamic> j) => Slot(
+    role: '${j['role']}',
+    line: '${j['line']}',
+    x: (j['x'] as num).toInt(),
+    y: (j['y'] as num).toInt(),
+    allowed: [for (final l in j['allowed'] as List<dynamic>? ?? const []) '$l'],
+  );
 
   final String role, line;
+
+  /// [Sprint 59 F6] The player lines this slot takes, the server's rule (empty from an older server: nothing refused).
+  final List<String> allowed;
+
+  /// Whether a player of [playerLine] may stand here.
+  bool takes(String? playerLine) => allowed.isEmpty || allowed.contains(playerLine);
 
   /// On the pitch: x along its length from my goal (0) forward, y across (0 to 680).
   final int x, y;
@@ -44,10 +87,12 @@ class Lineup {
   const Lineup({required this.formation, required this.auto, required this.slots, required this.starters, required this.bench});
 
   factory Lineup.fromJson(Map<String, dynamic> j) => Lineup(
-        formation: '${j['formation']}', auto: j['auto'] == true,
-        slots: [for (final s in j['slots'] as List) Slot.fromJson(s as Map<String, dynamic>)],
-        starters: [for (final id in j['starters'] as List) id as int], bench: [for (final id in j['bench'] as List) id as int],
-      );
+    formation: '${j['formation']}',
+    auto: j['auto'] == true,
+    slots: [for (final s in j['slots'] as List<dynamic>) Slot.fromJson(s as Map<String, dynamic>)],
+    starters: [for (final id in j['starters'] as List<dynamic>) id as int],
+    bench: [for (final id in j['bench'] as List<dynamic>) id as int],
+  );
 
   final String formation;
   final bool auto;
@@ -56,15 +101,23 @@ class Lineup {
 }
 
 class TeamData {
-  const TeamData({required this.players, required this.lineup, required this.morale, required this.squadValue, this.lines = const {}, this.captain});
+  const TeamData({
+    required this.players,
+    required this.lineup,
+    required this.morale,
+    required this.squadValue,
+    this.lines = const {},
+    this.captain,
+  });
 
   factory TeamData.fromJson(Map<String, dynamic> j) => TeamData(
-        players: [for (final p in j['players'] as List) Player.fromJson(p as Map<String, dynamic>)],
-        lineup: Lineup.fromJson(j['lineup'] as Map<String, dynamic>),
-        morale: (j['morale'] as Map?)?['value'] as int? ?? 70, squadValue: j['squad_value'] as int? ?? 0,
-        lines: {for (final e in ((j['lines'] as Map?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()},
-        captain: ((j['takers'] as Map?)?['captain'] as Map?)?['player_id'] as int?,
-      );
+    players: [for (final p in j['players'] as List<dynamic>) Player.of(SquadPlayer.fromJson(p))],
+    lineup: Lineup.fromJson(j['lineup'] as Map<String, dynamic>),
+    morale: (j['morale'] as Map<dynamic, dynamic>?)?['value'] as int? ?? 70,
+    squadValue: j['squad_value'] as int? ?? 0,
+    lines: {for (final e in ((j['lines'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()},
+    captain: ((j['takers'] as Map<dynamic, dynamic>?)?['captain'] as Map<dynamic, dynamic>?)?['player_id'] as int?,
+  );
 
   final List<Player> players;
   final Lineup lineup;
@@ -80,8 +133,11 @@ class TeamData {
 class Formation {
   const Formation({required this.name, required this.label, required this.slots});
 
-  factory Formation.fromJson(Map<String, dynamic> j) =>
-      Formation(name: '${j['name']}', label: '${j['label'] ?? j['name']}', slots: [for (final s in j['slots'] as List) Slot.fromJson(s as Map<String, dynamic>)]);
+  factory Formation.fromJson(Map<String, dynamic> j) => Formation(
+    name: '${j['name']}',
+    label: '${j['label'] ?? j['name']}',
+    slots: [for (final s in j['slots'] as List<dynamic>) Slot.fromJson(s as Map<String, dynamic>)],
+  );
 
   final String name, label;
   final List<Slot> slots;
@@ -92,8 +148,11 @@ class Formation {
 class Tactics {
   const Tactics(this.values, {this.preset, this.presets = const []});
 
-  factory Tactics.fromJson(Map<String, dynamic> j) => Tactics(Map<String, Object>.from(j['tactics'] as Map),
-      preset: j['preset'] as String?, presets: [for (final p in (j['presets'] as List? ?? const [])) '$p']);
+  factory Tactics.fromJson(Map<String, dynamic> j) => Tactics(
+    Map<String, Object>.from(j['tactics'] as Map<dynamic, dynamic>),
+    preset: j['preset'] as String?,
+    presets: [for (final p in (j['presets'] as List<dynamic>? ?? const [])) '$p'],
+  );
 
   final Map<String, Object> values;
 
@@ -110,15 +169,25 @@ class TeamRepository {
   final ApiClient _api;
 
   Future<TeamData> team(int league) async => TeamData.fromJson(await _api.get('/leagues/$league/team'));
-  Future<List<Formation>> formations() async => [for (final f in (await _api.get('/data/formations'))['formations'] as List) Formation.fromJson(f as Map<String, dynamic>)];
+  Future<List<Formation>> formations() async => [
+    for (final f in (await _api.get('/data/formations'))['formations'] as List<dynamic>) Formation.fromJson(f as Map<String, dynamic>),
+  ];
+
   /// [positions] the ten outfield places [x, y] (the keeper stays in goal); without them the server goes back to the
   /// formation's own places.
   Future<TeamData> saveLineup(int league, String formation, List<int> starters, List<int> bench, {List<List<int>>? positions}) async =>
-      TeamData.fromJson(await _api.put('/leagues/$league/team/lineup',
-          {'formation': formation, 'starters': starters, 'bench': bench, 'positions': ?positions}));
+      TeamData.fromJson(
+        await _api.put('/leagues/$league/team/lineup', {
+          'formation': formation,
+          'starters': starters,
+          'bench': bench,
+          'positions': ?positions,
+        }),
+      );
   Future<TeamData> autoLineup(int league) async => TeamData.fromJson(await _api.delete('/leagues/$league/team/lineup'));
   Future<Tactics> tactics(int league) async => Tactics.fromJson(await _api.get('/leagues/$league/team/tactics'));
-  Future<Tactics> saveTactics(int league, Map<String, Object> changes) async => Tactics.fromJson(await _api.put('/leagues/$league/team/tactics', changes));
+  Future<Tactics> saveTactics(int league, Map<String, Object> changes) async =>
+      Tactics.fromJson(await _api.put('/leagues/$league/team/tactics', changes));
 }
 
 final teamRepositoryProvider = Provider<TeamRepository>((ref) => TeamRepository(ref.watch(apiProvider)));

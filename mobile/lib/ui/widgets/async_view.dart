@@ -14,7 +14,17 @@ import 'glm_button.dart';
 /// (GlmSkeleton) instead of the spinner, and `isEmpty` shows the empty state (a title and a line) for an empty list.
 /// AsyncView stays as its other name, for the screens written before.
 class GlmAsync<T> extends StatelessWidget {
-  const GlmAsync({super.key, required this.value, required this.data, this.onRetry, this.skeleton, this.rows = 4, this.isEmpty, this.emptyTitle, this.emptyText});
+  const GlmAsync({
+    super.key,
+    required this.value,
+    required this.data,
+    this.onRetry,
+    this.skeleton,
+    this.rows = 4,
+    this.isEmpty,
+    this.emptyTitle,
+    this.emptyText,
+  });
 
   final AsyncValue<T> value;
   final Widget Function(T data) data;
@@ -35,16 +45,31 @@ class GlmAsync<T> extends StatelessWidget {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(GlmSpace.xl),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.error_outline_rounded, size: 40, color: context.palette.textMuted),
-            const SizedBox(height: GlmSpace.md),
-            Text(ApiError.from(value.error!).message, textAlign: TextAlign.center, style: context.type.body.copyWith(color: context.palette.textSoft)),
-            if (onRetry != null) ...[const SizedBox(height: GlmSpace.lg), GlmButton(label: L.of(context).retry, variant: GlmButtonVariant.quiet, onPressed: onRetry)],
-          ]),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline_rounded, size: 40, color: context.palette.textMuted),
+              const SizedBox(height: GlmSpace.md),
+              Text(
+                ApiError.from(value.error!).message,
+                textAlign: TextAlign.center,
+                style: context.type.body.copyWith(color: context.palette.textSoft),
+              ),
+              if (onRetry != null) ...[
+                const SizedBox(height: GlmSpace.lg),
+                GlmButton(label: L.of(context).retry, variant: GlmButtonVariant.quiet, onPressed: onRetry),
+              ],
+            ],
+          ),
         ),
       );
     }
-    if (skeleton != null) return Semantics(label: L.of(context).loading, child: GlmSkeleton(kind: skeleton!, count: rows));
+    if (skeleton != null) {
+      return Semantics(
+        label: L.of(context).loading,
+        child: GlmSkeleton(kind: skeleton!, count: rows),
+      );
+    }
     return const Center(child: GlmLoader());
   }
 }
@@ -59,16 +84,19 @@ class _Empty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(GlmSpace.xl),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.inbox_outlined, size: 40, color: context.palette.textMuted),
-            const SizedBox(height: GlmSpace.md),
-            Text(title, textAlign: TextAlign.center, style: context.type.title),
-            if (text != null) ...[const SizedBox(height: GlmSpace.xs), Text(text!, textAlign: TextAlign.center, style: context.type.caption)],
-          ]),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.all(GlmSpace.xl),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.inbox_outlined, size: 40, color: context.palette.textMuted),
+          const SizedBox(height: GlmSpace.md),
+          Text(title, textAlign: TextAlign.center, style: context.type.title),
+          if (text != null) ...[const SizedBox(height: GlmSpace.xs), Text(text!, textAlign: TextAlign.center, style: context.type.caption)],
+        ],
+      ),
+    ),
+  );
 }
 
 /// [Sprint 54 F3] The web's Skeleton: lines of text, cards, rows or the board's hero in the shape of what comes, a soft
@@ -116,26 +144,29 @@ class _GlmSkeletonState extends State<GlmSkeleton> with SingleTickerProviderStat
     return ExcludeSemantics(
       child: AnimatedBuilder(
         animation: _c,
-        builder: (context, _) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          for (var i = 1; i <= widget.count; i++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: GlmSpace.sm),
-              child: FractionallySizedBox(
-                widthFactor: widget.kind == GlmSkeletonKind.line ? (100 - (i * 17) % 40) / 100 : 1,
-                child: Container(
-                  height: h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(r),
-                    gradient: LinearGradient(
-                      begin: Alignment(-3 + _c.value * 4, 0),
-                      end: Alignment(-1 + _c.value * 4, 0),
-                      colors: [p.surfaceSunk, p.surfaceRaised, p.surfaceSunk],
+        builder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = 1; i <= widget.count; i++)
+              Padding(
+                padding: const EdgeInsets.only(bottom: GlmSpace.sm),
+                child: FractionallySizedBox(
+                  widthFactor: widget.kind == GlmSkeletonKind.line ? (100 - (i * 17) % 40) / 100 : 1,
+                  child: Container(
+                    height: h,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(r),
+                      gradient: LinearGradient(
+                        begin: Alignment(-3 + _c.value * 4, 0),
+                        end: Alignment(-1 + _c.value * 4, 0),
+                        colors: [p.surfaceSunk, p.surfaceRaised, p.surfaceSunk],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -155,17 +186,31 @@ class GlmPageTitle extends StatelessWidget {
     final p = context.palette;
     return Padding(
       padding: const EdgeInsets.only(bottom: GlmSpace.md),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-            Text(title, style: context.type.headline, semanticsLabel: title),
-            const SizedBox(height: GlmSpace.xs),
-            Container(width: 40, height: 3, decoration: BoxDecoration(borderRadius: BorderRadius.circular(GlmRadius.pill), gradient: LinearGradient(colors: [p.gold, p.gold.withValues(alpha: 0)]))),
-            if (subtitle != null) ...[const SizedBox(height: GlmSpace.sm), Text(subtitle!, style: context.type.caption)],
-          ]),
-        ),
-        for (final a in actions) ...[const SizedBox(width: GlmSpace.sm), a],
-      ]),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(title, style: context.type.headline, semanticsLabel: title),
+                const SizedBox(height: GlmSpace.xs),
+                Container(
+                  width: 40,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(GlmRadius.pill),
+                    gradient: LinearGradient(colors: [p.gold, p.gold.withValues(alpha: 0)]),
+                  ),
+                ),
+                if (subtitle != null) ...[const SizedBox(height: GlmSpace.sm), Text(subtitle!, style: context.type.caption)],
+              ],
+            ),
+          ),
+          for (final a in actions) ...[const SizedBox(width: GlmSpace.sm), a],
+        ],
+      ),
     );
   }
 }
@@ -179,10 +224,10 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(2, 18, 2, 10),
-        // [2026-11-06] The broadcast slab, the game's section mark on every screen.
-        child: BroadcastTitle(text, trailing: trailing),
-      );
+    padding: const EdgeInsets.fromLTRB(2, 18, 2, 10),
+    // [2026-11-06] The broadcast slab, the game's section mark on every screen.
+    child: BroadcastTitle(text, trailing: trailing),
+  );
 }
 
 /// [2026-11-06] The game's own wait: a ball spinning under a floodlight's glow, its shadow breathing on the grass.
@@ -220,22 +265,31 @@ class _GlmLoaderState extends State<GlmLoader> with SingleTickerProviderStateMix
             final t = still ? 0.0 : _c.value;
             // A small bounce: up and down twice a turn.
             final hop = still ? 0.0 : (1 - (2 * ((t * 2) % 1) - 1).abs()) * widget.size * .28;
-            return Stack(alignment: Alignment.center, children: [
-              Container(
-                width: widget.size * 1.8,
-                height: widget.size * 1.8,
-                decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [p.goldLight.withValues(alpha: .18), p.goldLight.withValues(alpha: 0)])),
-              ),
-              Positioned(
-                bottom: widget.size * .12,
-                child: Container(
-                  width: widget.size * (.75 - hop / widget.size * .6),
-                  height: widget.size * .14,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(widget.size), color: p.shade.withValues(alpha: .45)),
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: widget.size * 1.8,
+                  height: widget.size * 1.8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(colors: [p.goldLight.withValues(alpha: .18), p.goldLight.withValues(alpha: 0)]),
+                  ),
                 ),
-              ),
-              Transform.translate(offset: Offset(0, -hop - widget.size * .1), child: Transform.rotate(angle: t * 6.283185307179586, child: ball)),
-            ]);
+                Positioned(
+                  bottom: widget.size * .12,
+                  child: Container(
+                    width: widget.size * (.75 - hop / widget.size * .6),
+                    height: widget.size * .14,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(widget.size), color: p.shade.withValues(alpha: .45)),
+                  ),
+                ),
+                Transform.translate(
+                  offset: Offset(0, -hop - widget.size * .1),
+                  child: Transform.rotate(angle: t * 6.283185307179586, child: ball),
+                ),
+              ],
+            );
           },
         ),
       ),

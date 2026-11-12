@@ -52,7 +52,9 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
       final sent = await ref.read(leaguesRepositoryProvider).join(_code.text);
       ref.invalidate(myLeaguesProvider);
       if (!mounted) return;
-      if (sent.league.myClubId != null || sent.league.canPick || sent.status == 'approved') return context.pushReplacement('/leagues/${sent.league.id}');
+      if (sent.league.myClubId != null || sent.league.canPick || sent.status == 'approved') {
+        return context.pushReplacement('/leagues/${sent.league.id}');
+      }
       setState(() => _sent = sent);
     } on ApiError catch (e) {
       if (mounted) setState(() => _error = e.fields['code'] ?? e.message);
@@ -68,32 +70,53 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
     return Scaffold(
       appBar: GameBar(title: Text(l.joinTitle)),
       body: GlmBackground(
-        child: ListView(padding: const EdgeInsets.all(20), children: [
-          if (_sent == null) ...[
-            Text(l.joinLead, style: TextStyle(color: p.textSoft, height: 1.6)),
-            const SizedBox(height: 18),
-            GlmTextField(label: l.code, controller: _code, ltr: true, hint: 'K7F2QX9M', action: TextInputAction.done, onSubmitted: (_) => _send(), error: _error),
-            const SizedBox(height: 16),
-            GlmButton(label: l.sendRequest, block: true, loading: _busy, onPressed: _send),
-          ] else
-            GlmCard(
-              gold: true,
-              child: Column(children: [
-                Icon(_sent!.status == 'rejected' ? Icons.block_rounded : Icons.hourglass_top_rounded, size: 44, color: p.gold),
-                const SizedBox(height: 10),
-                Text(_sent!.league.name, style: context.text.titleLarge, textAlign: TextAlign.center),
-                const SizedBox(height: 6),
-                Text(_sent!.status == 'rejected' ? l.requestRejected : l.requestPending, textAlign: TextAlign.center, style: TextStyle(color: p.textSoft)),
-                const SizedBox(height: 16),
-                if (_sent!.status == 'pending')
-                  GlmButton(label: l.cancelRequest, variant: GlmButtonVariant.quiet, onPressed: () async {
-                    await ref.read(leaguesRepositoryProvider).cancelRequest(_sent!.league.id);
-                    ref.invalidate(myLeaguesProvider);
-                    if (context.mounted) context.pop();
-                  }),
-              ]),
-            ),
-        ]),
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            if (_sent == null) ...[
+              Text(l.joinLead, style: TextStyle(color: p.textSoft, height: 1.6)),
+              const SizedBox(height: 18),
+              GlmTextField(
+                label: l.code,
+                controller: _code,
+                ltr: true,
+                hint: 'K7F2QX9M',
+                action: TextInputAction.done,
+                onSubmitted: (_) => _send(),
+                error: _error,
+              ),
+              const SizedBox(height: 16),
+              GlmButton(label: l.sendRequest, block: true, loading: _busy, onPressed: _send),
+            ] else
+              GlmCard(
+                gold: true,
+                child: Column(
+                  children: [
+                    Icon(_sent!.status == 'rejected' ? Icons.block_rounded : Icons.hourglass_top_rounded, size: 44, color: p.gold),
+                    const SizedBox(height: 10),
+                    Text(_sent!.league.name, style: context.text.titleLarge, textAlign: TextAlign.center),
+                    const SizedBox(height: 6),
+                    Text(
+                      _sent!.status == 'rejected' ? l.requestRejected : l.requestPending,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: p.textSoft),
+                    ),
+                    const SizedBox(height: 16),
+                    if (_sent!.status == 'pending')
+                      GlmButton(
+                        label: l.cancelRequest,
+                        variant: GlmButtonVariant.quiet,
+                        onPressed: () async {
+                          await ref.read(leaguesRepositoryProvider).cancelRequest(_sent!.league.id);
+                          ref.invalidate(myLeaguesProvider);
+                          if (context.mounted) context.pop();
+                        },
+                      ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

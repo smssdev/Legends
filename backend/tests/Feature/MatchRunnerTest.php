@@ -226,7 +226,12 @@ class MatchRunnerTest extends TestCase
         $free = DB::table('clubs')->where('league_id', $this->league['id'])->whereNull('user_id')
             ->whereNotIn('id', [$this->fixture->home_id, $this->fixture->away_id])->value('id');
         $this->actingAs($member)->postJson("/api/v1/leagues/{$this->league['id']}/clubs/{$free}/claim")->assertCreated();
-        $seen = json_encode($this->getJson("/api/v1/matches/{$match->id}/live?since=0")->json()).json_encode($this->getJson("/api/v1/matches/{$match->id}")->json());
+        $view = $this->getJson("/api/v1/matches/{$match->id}")->assertOk()
+            // [Sprint 59 F1] Every field LeagueMatch requires in openapi.yaml (the app reads the match through it).
+            ->assertJsonStructure(['id', 'finished', 'score' => ['home', 'away'], 'tick', 'timing' => ['tick_ms'],
+                'clubs' => ['home' => ['id', 'name', 'code'], 'away' => ['id', 'name', 'code']],
+                'teams' => ['home' => ['players' => ['*' => ['id', 'name', 'no', 'pos', 'line', 'on']]], 'away' => ['players']]])->json();
+        $seen = json_encode($this->getJson("/api/v1/matches/{$match->id}/live?since=0")->json()).json_encode($view);
         foreach (['pressing', 'tempo', '"style"'] as $hidden) {
             $this->assertStringNotContainsString($hidden, $seen, $hidden);
         }

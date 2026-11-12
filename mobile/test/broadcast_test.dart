@@ -13,18 +13,38 @@ import 'package:glm/ui/widgets/motion.dart';
 /// [Sprint 44 C1] The broadcast holds a minute's result until its scene reaches the key moment (the ball in the net),
 /// then tells it, with the goal's banner; a tap skips the scene and tells it at once.
 void main() {
-  const look = ClipLook(kits: {'home': (Colors.red, Colors.white), 'away': (Colors.white, Colors.black)}, keeper: Colors.green, referee: Colors.black,
-      grass: Colors.green, grassDark: Colors.green, gold: Colors.amber, night: Colors.black);
+  const look = ClipLook(
+    kits: {'home': (Colors.red, Colors.white), 'away': (Colors.white, Colors.black)},
+    keeper: Colors.green,
+    referee: Colors.black,
+    grass: Colors.green,
+    grassDark: Colors.green,
+    gold: Colors.amber,
+    night: Colors.black,
+  );
 
   Future<List<int>> stage(WidgetTester t, List<BroadcastPlay> queue) async {
     final told = <int>[];
-    await t.pumpWidget(MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: Scaffold(body: SizedBox(width: 640, height: 360, child: BroadcastStage(look: look, queue: queue, onKey: told.add, child: const Text('pitch')))),
-    ));
+    await t.pumpWidget(
+      MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: Scaffold(
+          body: SizedBox(
+            width: 640,
+            height: 360,
+            child: BroadcastStage(look: look, queue: queue, onKey: told.add, child: const Text('pitch')),
+          ),
+        ),
+      ),
+    );
     return told;
   }
 
@@ -34,8 +54,21 @@ void main() {
   });
   tearDown(() => Ambient.on = false);
 
-  BroadcastPlay goal() => BroadcastPlay.of(30, FeedStory(scene: 'goal', goal: true, side: 'home', head: 'هدف!', who: 'Salah', data: const {'no': '11', 'side': 'home'},
-      pre: (head: 'هجمة خطيرة', who: 'Salah', sub: 'Liverpool')), total: 12, moods: const {}, tier: Tier.high);
+  BroadcastPlay goal() => BroadcastPlay.of(
+    30,
+    FeedStory(
+      scene: 'goal',
+      goal: true,
+      side: 'home',
+      head: 'هدف!',
+      who: 'Salah',
+      data: const {'no': '11', 'side': 'home'},
+      pre: (head: 'هجمة خطيرة', who: 'Salah', sub: 'Liverpool'),
+    ),
+    total: 12,
+    moods: const {},
+    tier: Tier.high,
+  );
 
   testWidgets('a goal: held until the ball is in, then told with its banner, then the pitch again', (t) async {
     final play = goal();

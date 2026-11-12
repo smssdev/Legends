@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../ui/widgets/console.dart';
+
 import 'package:go_router/go_router.dart';
 
 import '../../../core/sounds.dart';
@@ -41,35 +42,54 @@ class AuthLayout extends StatelessWidget {
     return Scaffold(
       body: GlmBackground(
         wide: true,
-        child: LayoutBuilder(builder: (context, box) {
-          if (box.maxWidth > box.maxHeight) {
-            return Row(children: [
-              Expanded(flex: 5, child: _PitchHead(title: title, lead: lead, tall: true)),
-              Expanded(
-                flex: 5,
-                child: SafeArea(
-                  child: Center(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(28, 16, 28, 16),
-                      child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 420), child: FadeSlideIn(index: 2, child: form)),
+        child: LayoutBuilder(
+          builder: (context, box) {
+            if (box.maxWidth > box.maxHeight) {
+              return Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: _PitchHead(title: title, lead: lead, tall: true),
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: SafeArea(
+                      child: Center(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(28, 16, 28, 16),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 420),
+                            child: FadeSlideIn(index: 2, child: form),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
+              );
+            }
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 280 + MediaQuery.paddingOf(context).top,
+                    child: _PitchHead(title: title, lead: lead),
+                  ),
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 440),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 14, 24, 24),
+                        child: FadeSlideIn(index: 1, child: form),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ]);
-          }
-          return SingleChildScrollView(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              SizedBox(height: 280 + MediaQuery.paddingOf(context).top, child: _PitchHead(title: title, lead: lead)),
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 440),
-                  child: Padding(padding: const EdgeInsets.fromLTRB(24, 14, 24, 24), child: FadeSlideIn(index: 1, child: form)),
-                ),
-              ),
-            ]),
-          );
-        }),
+            );
+          },
+        ),
       ),
     );
   }
@@ -92,27 +112,60 @@ class _PitchHead extends StatelessWidget {
         bottom: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(22, 18, 22, 20),
-          child: Column(crossAxisAlignment: tall ? CrossAxisAlignment.center : CrossAxisAlignment.start, mainAxisAlignment: tall ? MainAxisAlignment.center : MainAxisAlignment.start, children: [
-            Row(mainAxisSize: tall ? MainAxisSize.min : MainAxisSize.max, children: [
-              LegendCrest(size: tall ? 64 : 40, letters: tall),
-              const SizedBox(width: 10),
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text('GAME LEGEND MANAGER', textDirection: TextDirection.ltr,
-                      style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: tall ? 24 : 18, letterSpacing: 1, color: p.text)),
-                ),
+          child: Column(
+            crossAxisAlignment: tall ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+            mainAxisAlignment: tall ? MainAxisAlignment.center : MainAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisSize: tall ? MainAxisSize.min : MainAxisSize.max,
+                children: [
+                  LegendCrest(size: tall ? 64 : 40, letters: tall),
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'GAME LEGEND MANAGER',
+                        textDirection: TextDirection.ltr,
+                        style: TextStyle(
+                          fontFamily: GlmFonts.numbers,
+                          fontWeight: FontWeight.w700,
+                          fontSize: tall ? 24 : 18,
+                          letterSpacing: 1,
+                          color: p.text,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ]),
-            // [Sprint 50 M4] The cinematic stage: our trophy in 3D turning under the floodlights (wide only).
-            if (tall)
-              SizedBox(height: 150, width: 150, child: GlmModel3D(model: 'trophy', label: 'GLM', orbit: '0deg 78deg 3.4m', fallback: Icon(Icons.emoji_events_rounded, size: 110, color: p.gold)))
-            else
-              const Spacer(),
-            Text(title, textAlign: tall ? TextAlign.center : TextAlign.start, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 28, height: 1.25, color: p.text)),
-            const SizedBox(height: 4),
-            Text(lead, textAlign: tall ? TextAlign.center : TextAlign.start, style: TextStyle(fontSize: 15, color: p.textSoft)),
-          ]),
+              // [Sprint 50 M4] The cinematic stage: our trophy in 3D turning under the floodlights (wide only).
+              if (tall)
+                SizedBox(
+                  height: 150,
+                  width: 150,
+                  child: GlmModel3D(
+                    model: 'trophy',
+                    label: 'GLM',
+                    orbit: '0deg 78deg 3.4m',
+                    fallback: Icon(Icons.emoji_events_rounded, size: 110, color: p.gold),
+                  ),
+                )
+              else
+                const Spacer(),
+              Text(
+                title,
+                textAlign: tall ? TextAlign.center : TextAlign.start,
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 28, height: 1.25, color: p.text),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                lead,
+                textAlign: tall ? TextAlign.center : TextAlign.start,
+                style: TextStyle(fontSize: 15, color: p.textSoft),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -144,10 +197,15 @@ class _Pitch extends CustomPainter {
     canvas.drawCircle(c, 58, line);
     canvas.drawRect(Rect.fromCenter(center: Offset(s.width / 2, s.height * .11 + 31), width: 160, height: 62), line);
     canvas.drawRect(
-        Offset.zero & s,
-        Paint()
-          ..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [fade.withValues(alpha: .15), fade], stops: const [.2, 1])
-              .createShader(Offset.zero & s));
+      Offset.zero & s,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [fade.withValues(alpha: .15), fade],
+          stops: const [.2, 1],
+        ).createShader(Offset.zero & s),
+    );
   }
 
   @override
@@ -184,7 +242,12 @@ class _Tabs extends StatelessWidget {
                     },
               child: SizedBox(
                 height: 44,
-                child: Center(child: Text(label, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: on ? p.onGold : p.textSoft))),
+                child: Center(
+                  child: Text(
+                    label,
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: on ? p.onGold : p.textSoft),
+                  ),
+                ),
               ),
             ),
           ),
@@ -194,8 +257,14 @@ class _Tabs extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: context.glm.day ? p.surfaceSunk : p.surface, borderRadius: BorderRadius.circular(15), border: Border.all(color: p.surfaceRaised)),
-      child: Row(children: [one(AuthTab.signIn, l.signIn, '/login'), const SizedBox(width: 4), one(AuthTab.register, l.createAccount, '/register')]),
+      decoration: BoxDecoration(
+        color: context.glm.day ? p.surfaceSunk : p.surface,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: p.surfaceRaised),
+      ),
+      child: Row(
+        children: [one(AuthTab.signIn, l.signIn, '/login'), const SizedBox(width: 4), one(AuthTab.register, l.createAccount, '/register')],
+      ),
     );
   }
 }

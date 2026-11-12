@@ -18,13 +18,15 @@ Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.j
 /// server's shape: four balls drawn a while ago, one every reveal_ms.
 Map<String, dynamic> drawn() {
   final t = json('tournament')['tournament'] as Map<String, dynamic>;
-  final teams = (t['teams'] as List).cast<Map<String, dynamic>>();
+  final teams = (t['teams'] as List<dynamic>).cast<Map<String, dynamic>>();
   final now = DateTime.now().millisecondsSinceEpoch;
   return {
     ...json('tournament_draw'),
     'drawn_at': DateTime.fromMillisecondsSinceEpoch(now - 60000).toUtc().toIso8601String(),
     'server_now': now,
-    'steps': [for (final (i, c) in teams.take(4).indexed) {'type': 'group', 'club': c, 'pot': 1, 'group': i + 1, 'position': 1}],
+    'steps': [
+      for (final (i, c) in teams.take(4).indexed) {'type': 'group', 'club': c, 'pot': 1, 'group': i + 1, 'position': 1},
+    ],
   };
 }
 
@@ -35,32 +37,63 @@ Future<void> pump(WidgetTester t, Widget screen, {Map<String, dynamic>? draw}) a
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;
-  await t.pumpWidget(ProviderScope(
-    overrides: [
-      preferencesProvider.overrideWithValue(prefs),
-      tournamentsProvider.overrideWith((ref) async => json('tournaments')['tournaments'] as List),
-      catalogProvider.overrideWith((ref) async => json('tournaments_catalog')),
-      tournamentProvider.overrideWith((ref, id) async => json('tournament')['tournament'] as Map<String, dynamic>),
-      drawProvider.overrideWith((ref, id) async => draw ?? json('tournament_draw')),
-      allianceProvider.overrideWith((ref, id) async => {
-            'can_create': false, 'sizes': [1, 5], 'default_size': 2, 'coaches': [],
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [
+        preferencesProvider.overrideWithValue(prefs),
+        tournamentsProvider.overrideWith((ref) async => (json('tournaments')['tournaments'] as List<dynamic>).cast<Map<String, dynamic>>()),
+        catalogProvider.overrideWith((ref) async => json('tournaments_catalog')),
+        tournamentProvider.overrideWith((ref, id) async => json('tournament')['tournament'] as Map<String, dynamic>),
+        drawProvider.overrideWith((ref, id) async => draw ?? json('tournament_draw')),
+        allianceProvider.overrideWith(
+          (ref, id) async => {
+            'can_create': false,
+            'sizes': [1, 5],
+            'default_size': 2,
+            'coaches': <dynamic>[],
             'tournament': {
-              'id': 1, 'name': 'Derby of alliances', 'status': 'running', 'my_club_id': 141, 'swap_max': 3,
+              'id': 1,
+              'name': 'Derby of alliances',
+              'status': 'running',
+              'my_club_id': 141,
+              'swap_max': 3,
               'ties': [
-                {'id': 7, 'round': 1, 'home': {'id': 141, 'name': 'Liverpool', 'code': 'LIV'}, 'away': {'id': 142, 'name': 'Arsenal', 'code': 'ARS'}, 'winner_id': null, 'score': null},
-                {'id': 6, 'round': 0, 'home': {'id': 141, 'name': 'Liverpool', 'code': 'LIV'}, 'away': {'id': 150, 'name': 'Chelsea', 'code': 'CHE'}, 'winner_id': 141, 'score': {'home': 2, 'away': 0}, 'swaps': 1},
+                {
+                  'id': 7,
+                  'round': 1,
+                  'home': {'id': 141, 'name': 'Liverpool', 'code': 'LIV'},
+                  'away': {'id': 142, 'name': 'Arsenal', 'code': 'ARS'},
+                  'winner_id': null,
+                  'score': null,
+                },
+                {
+                  'id': 6,
+                  'round': 0,
+                  'home': {'id': 141, 'name': 'Liverpool', 'code': 'LIV'},
+                  'away': {'id': 150, 'name': 'Chelsea', 'code': 'CHE'},
+                  'winner_id': 141,
+                  'score': {'home': 2, 'away': 0},
+                  'swaps': 1,
+                },
               ],
             },
-          }),
-    ],
-    child: MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: screen,
+          },
+        ),
+      ],
+      child: MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: screen,
+      ),
     ),
-  ));
+  );
   for (var i = 0; i < 6; i++) {
     await t.pump(const Duration(milliseconds: 100));
   }

@@ -227,7 +227,9 @@ class SeasonScheduleTest extends TestCase
         $this->actingAs(User::factory()->create())->getJson("{$url}/fixtures")->assertNotFound();
 
         $this->actingAs($owner);
-        $fixtures = $this->getJson("{$url}/fixtures")->assertOk()->assertJsonPath('season.rounds', 10)->assertJsonCount(2, 'season.windows')->json('fixtures');
+        $fixtures = $this->getJson("{$url}/fixtures")->assertOk()->assertJsonPath('season.rounds', 10)->assertJsonCount(2, 'season.windows')
+            // [Sprint 59 F1] Every field Fixture requires in openapi.yaml (the app reads the calendar through it).
+            ->assertJsonStructure(['fixtures' => ['*' => ['id', 'competition', 'round', 'scheduled_at', 'is_bye', 'status']]])->json('fixtures');
         // 10 rounds of 2 matches and a rest, then 3 cup stages (1 preliminary, 2 semi-finals, the final).
         $this->assertCount(30 + 4, $fixtures);
         $this->assertStringEndsWith('Z', $fixtures[0]['scheduled_at']);

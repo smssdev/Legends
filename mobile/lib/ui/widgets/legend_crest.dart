@@ -15,10 +15,13 @@ class LegendCrest extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-        label: 'Game Legend Manager',
-        image: true,
-        child: CustomPaint(size: Size(size, size * 172 / 150), painter: _CrestPainter(context.palette, letters: letters)),
-      );
+    label: 'Game Legend Manager',
+    image: true,
+    child: CustomPaint(
+      size: Size(size, size * 172 / 150),
+      painter: _CrestPainter(context.palette, letters: letters),
+    ),
+  );
 }
 
 class _CrestPainter extends CustomPainter {
@@ -45,28 +48,40 @@ class _CrestPainter extends CustomPainter {
     canvas.save();
     canvas.scale(size.width / 150, size.height / 172);
     final gold = Paint()
-      ..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [p.goldLight, p.gold, p.goldDark], stops: const [0, .55, 1])
-          .createShader(const Rect.fromLTWH(0, 0, 150, 172));
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [p.goldLight, p.gold, p.goldDark],
+        stops: const [0, .55, 1],
+      ).createShader(const Rect.fromLTWH(0, 0, 150, 172));
     final emerald = Paint()
-      ..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [p.brand, p.brandDark]).createShader(const Rect.fromLTWH(0, 0, 150, 172));
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [p.brand, p.brandDark],
+      ).createShader(const Rect.fromLTWH(0, 0, 150, 172));
     canvas.drawPath(_shield(0), gold);
     canvas.drawPath(_shield(10), emerald);
     // The crown and its band.
     canvas.drawPath(
-        Path()
-          ..moveTo(48, 50)
-          ..lineTo(58, 64)
-          ..lineTo(75, 44)
-          ..lineTo(92, 64)
-          ..lineTo(102, 50)
-          ..lineTo(98, 78)
-          ..lineTo(52, 78)
-          ..close(),
-        gold);
+      Path()
+        ..moveTo(48, 50)
+        ..lineTo(58, 64)
+        ..lineTo(75, 44)
+        ..lineTo(92, 64)
+        ..lineTo(102, 50)
+        ..lineTo(98, 78)
+        ..lineTo(52, 78)
+        ..close(),
+      gold,
+    );
     canvas.drawRRect(RRect.fromRectAndRadius(const Rect.fromLTWH(52, 82, 46, 6), const Radius.circular(2)), gold);
     if (letters) {
       final tp = TextPainter(
-        text: TextSpan(text: 'GLM', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 34, letterSpacing: 3, color: glmNight.text)),
+        text: TextSpan(
+          text: 'GLM',
+          style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 34, letterSpacing: 3, color: glmNight.text),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       tp.paint(canvas, Offset(75 - tp.width / 2 + 1.5, 96));

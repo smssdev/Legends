@@ -27,8 +27,11 @@ class AuthRepository {
 
   Future<Account> register({required String name, required String username, String? email, required String password}) async {
     final data = await _api.post('/auth/register', {
-      'name': name.trim(), 'username': username.trim().toLowerCase(), if (email != null && email.trim().isNotEmpty) 'email': email.trim(),
-      'password': password, 'device_name': AppConfig.deviceName,
+      'name': name.trim(),
+      'username': username.trim().toLowerCase(),
+      if (email != null && email.trim().isNotEmpty) 'email': email.trim(),
+      'password': password,
+      'device_name': AppConfig.deviceName,
     });
     return _keep(data);
   }
@@ -39,7 +42,10 @@ class AuthRepository {
   /// [Sprint 50 M5] The guest keeps the account with a name, a username and a password (an email if typed).
   Future<Account> keepGuest({required String name, required String username, String? email, required String password}) async {
     final data = await _api.post('/auth/guest/keep', {
-      'name': name.trim(), 'username': username.trim().toLowerCase(), if (email != null && email.trim().isNotEmpty) 'email': email.trim(), 'password': password,
+      'name': name.trim(),
+      'username': username.trim().toLowerCase(),
+      if (email != null && email.trim().isNotEmpty) 'email': email.trim(),
+      'password': password,
     });
     return Account.fromJson(data['user'] as Map<String, dynamic>);
   }

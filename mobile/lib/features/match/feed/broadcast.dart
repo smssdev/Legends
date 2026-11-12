@@ -12,6 +12,7 @@ import 'art.dart';
 import 'clips.dart';
 import 'director.dart';
 import 'story.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// [Sprint 44 C1] One minute to play on the broadcast: its story, how long the scene runs within the minute, and the
 /// director's cutaways after it. Built by [BroadcastPlay.of] as the web's MatchFeed.vue play() builds its plan.
@@ -19,11 +20,24 @@ class BroadcastPlay {
   BroadcastPlay({required this.tick, required this.story, required this.sceneT, required this.cuts});
 
   /// [total]: the minute's length on the broadcast (tick.moment.ms) in seconds.
-  factory BroadcastPlay.of(int tick, FeedStory s, {required double total, required Map<String, String> moods, required Tier tier, Map<String, String>? looks, int seed = 1}) {
+  factory BroadcastPlay.of(
+    int tick,
+    FeedStory s, {
+    required double total,
+    required Map<String, String> moods,
+    required Tier tier,
+    Map<String, String>? looks,
+    int seed = 1,
+  }) {
     final nominal = s.length;
     // The scene takes most of the minute; at the broadcast's fixed pace (a minute of 3.4 s or less) up to nine tenths.
     final sceneT = math.min(nominal, total * (total <= 3.4 ? .9 : .72));
-    return BroadcastPlay(tick: tick, story: s, sceneT: sceneT, cuts: director(s, tick: tick, moods: moods, total: total, sceneT: sceneT, tier: tier, looks: looks, seed: seed));
+    return BroadcastPlay(
+      tick: tick,
+      story: s,
+      sceneT: sceneT,
+      cuts: director(s, tick: tick, moods: moods, total: total, sceneT: sceneT, tier: tier, looks: looks, seed: seed),
+    );
   }
 
   final int tick;
@@ -169,7 +183,8 @@ class _BroadcastStageState extends State<BroadcastStage> with SingleTickerProvid
         HapticFeedback.heavyImpact();
       });
       at('buzz', key + .18, HapticFeedback.heavyImpact);
-    } else if (['miss', 'save', 'clearance', 'blocked'].contains(s.scene) || (['penalty', 'freekick'].contains(s.scene) && s.data['scored'] != true)) {
+    } else if (['miss', 'save', 'clearance', 'blocked'].contains(s.scene) ||
+        (['penalty', 'freekick'].contains(s.scene) && s.data['scored'] != true)) {
       at('ooh', key, () => GameSounds.play(Sfx.ooh));
     } else if (s.scene == 'card' && s.data['type'] == 'red') {
       at('red', key, HapticFeedback.mediumImpact);
@@ -184,7 +199,18 @@ class _BroadcastStageState extends State<BroadcastStage> with SingleTickerProvid
     if (p == null) {
       final studio = widget.studio;
       if (studio == null) return widget.child;
-      return CutClip(child: CustomPaint(painter: ClipPainter(scene: 'studio', data: {'score': studio.score, 'clock': studio.clock}, side: 'home', u: _studioT, look: widget.look), child: const SizedBox.expand()));
+      return CutClip(
+        child: CustomPaint(
+          painter: ClipPainter(
+            scene: 'studio',
+            data: {'score': studio.score, 'clock': studio.clock},
+            side: 'home',
+            u: _studioT,
+            look: widget.look,
+          ),
+          child: const SizedBox.expand(),
+        ),
+      );
     }
     // Which picture now: the scene, or one of the cutaways after it.
     var scene = p.story.scene!, data = p.story.data, side = p.story.side, u = _t * p.rate;
@@ -209,15 +235,38 @@ class _BroadcastStageState extends State<BroadcastStage> with SingleTickerProvid
     return GestureDetector(
       onTap: _end,
       child: CutClip(
-        child: Stack(fit: StackFit.expand, children: [
-          RepaintBoundary(child: CustomPaint(painter: ClipPainter(scene: scene, data: data, side: side, u: u, look: widget.look))),
-          // A goal: the banner at the key moment, and the gold confetti.
-          if (s.goal && revealed) _GoalBanner(t: _t - p.keyAt, who: s.who, ar: ar),
-          if (s.goal && revealed) IgnorePointer(child: CustomPaint(painter: _Confetti(t: _t - p.keyAt, gold: widget.look.gold, kit: widget.look.shirt(s.side)))),
-          // The lower third, through the scene and its cutaways.
-          Positioned(left: 10, right: 10, bottom: 10, child: _LowerThird(head: third.head, who: third.who, sub: third.sub, kit: widget.look.shirt(s.side), alert: s.goal && revealed)),
-          Positioned(top: 8, right: 10, child: _Tag(scene == p.story.scene ? 'LIVE' : 'GLM TV', live: scene == p.story.scene)),
-        ]),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            RepaintBoundary(
+              child: CustomPaint(
+                painter: ClipPainter(scene: scene, data: data, side: side, u: u, look: widget.look),
+              ),
+            ),
+            // A goal: the banner at the key moment, and the gold confetti.
+            if (s.goal && revealed) _GoalBanner(t: _t - p.keyAt, who: s.who, ar: ar),
+            if (s.goal && revealed)
+              IgnorePointer(
+                child: CustomPaint(
+                  painter: _Confetti(t: _t - p.keyAt, gold: widget.look.gold, kit: widget.look.shirt(s.side)),
+                ),
+              ),
+            // The lower third, through the scene and its cutaways.
+            Positioned(
+              left: 10,
+              right: 10,
+              bottom: 10,
+              child: _LowerThird(
+                head: third.head,
+                who: third.who,
+                sub: third.sub,
+                kit: widget.look.shirt(s.side),
+                alert: s.goal && revealed,
+              ),
+            ),
+            Positioned(top: 8, right: 10, child: _Tag(scene == p.story.scene ? 'LIVE' : 'GLM TV', live: scene == p.story.scene)),
+          ],
+        ),
       ),
     );
   }
@@ -235,24 +284,54 @@ class _LowerThird extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     if (head.isEmpty && who.isEmpty) return const SizedBox();
-    return Row(mainAxisSize: MainAxisSize.min, children: [
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: ShapeDecoration(shape: GlmCut.shape(10), gradient: LinearGradient(colors: alert ? [p.goldLight, p.gold] : [kit, Color.lerp(kit, Colors.black, .3)!])),
-        child: Text(head, style: TextStyle(color: alert ? p.onGold : (kit.computeLuminance() > .5 ? Colors.black : Colors.white), fontWeight: FontWeight.w800, fontSize: 15)),
-      ),
-      const SizedBox(width: 4),
-      Flexible(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: ShapeDecoration(shape: GlmCut.shape(10), color: Colors.black.withValues(alpha: .72)),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-            if (who.isNotEmpty) Text(who, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14)),
-            if (sub.isNotEmpty) Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w600, fontSize: 11)),
-          ]),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: ShapeDecoration(
+            shape: GlmCut.shape(10),
+            gradient: LinearGradient(colors: alert ? [p.goldLight, p.gold] : [kit, Color.lerp(kit, Colors.black, .3)!]),
+          ),
+          child: Text(
+            head,
+            style: TextStyle(
+              color: alert ? p.onGold : (kit.computeLuminance() > .5 ? Colors.black : Colors.white),
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+            ),
+          ),
         ),
-      ),
-    ]);
+        const SizedBox(width: 4),
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: ShapeDecoration(shape: GlmCut.shape(10), color: Colors.black.withValues(alpha: .72)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (who.isNotEmpty)
+                  Text(
+                    who,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textDirection: TextDirection.ltr,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14),
+                  ),
+                if (sub.isNotEmpty)
+                  Text(
+                    sub,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w600, fontSize: 11),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -264,13 +343,19 @@ class _Tag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: ShapeDecoration(shape: GlmCut.shape(6), color: live ? context.palette.danger : Colors.black.withValues(alpha: .6)),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          if (live) ...[const Icon(Icons.circle, size: 7, color: Colors.white), const SizedBox(width: 4)],
-          Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 1.5)),
-        ]),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+    decoration: ShapeDecoration(shape: GlmCut.shape(6), color: live ? context.palette.danger : Colors.black.withValues(alpha: .6)),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (live) ...[const Icon(Icons.circle, size: 7, color: Colors.white), const SizedBox(width: 4)],
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 1.5),
+        ),
+      ],
+    ),
+  );
 }
 
 /// «GOAL!» on a gold slab in the Legend Cut, bursting in at the key moment, the scorer's name under it.
@@ -303,10 +388,28 @@ class _GoalBanner extends StatelessWidget {
                   gradient: LinearGradient(colors: [p.goldLight, p.gold, p.goldDark], stops: const [0, .5, 1]),
                   shadows: [BoxShadow(color: p.gold.withValues(alpha: .6), blurRadius: 30, spreadRadius: -2)],
                 ),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Text(ar ? 'هدف!' : 'GOAL!', style: TextStyle(fontFamily: ar ? GlmFonts.body : GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 46, color: p.onGold, height: 1.05, letterSpacing: ar ? 0 : 4)),
-                  if (who.isNotEmpty) Text(who, textDirection: TextDirection.ltr, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: p.onGold)),
-                ]),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      L.of(context).goalShout,
+                      style: TextStyle(
+                        fontFamily: ar ? GlmFonts.body : GlmFonts.numbers,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 46,
+                        color: p.onGold,
+                        height: 1.05,
+                        letterSpacing: ar ? 0 : 4,
+                      ),
+                    ),
+                    if (who.isNotEmpty)
+                      Text(
+                        who,
+                        textDirection: TextDirection.ltr,
+                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: p.onGold),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -337,7 +440,10 @@ class _Confetti extends CustomPainter {
       canvas.save();
       canvas.translate(x, y);
       canvas.rotate(k * 6 + i);
-      canvas.drawRect(Rect.fromCenter(center: Offset.zero, width: 7, height: 4), Paint()..color = (i % 3 == 0 ? kit : gold).withValues(alpha: (1 - t / 3.5).clamp(0, 1)));
+      canvas.drawRect(
+        Rect.fromCenter(center: Offset.zero, width: 7, height: 4),
+        Paint()..color = (i % 3 == 0 ? kit : gold).withValues(alpha: (1 - t / 3.5).clamp(0, 1)),
+      );
       canvas.restore();
     }
   }

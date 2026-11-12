@@ -39,11 +39,17 @@ class FakeSocial implements SocialRepository {
 
   @override
   Future<Map<String, dynamic>> newspaper(int league) async => {
-        ...json('newspaper'),
-        'pending': [
-          {'id': 3, 'title': 'Liverpool on top', 'body': 'A great start for the reds this season.', 'status': 'pending', 'author': {'id': 9, 'name': 'Hamza'}},
-        ],
-      };
+    ...json('newspaper'),
+    'pending': [
+      {
+        'id': 3,
+        'title': 'Liverpool on top',
+        'body': 'A great start for the reds this season.',
+        'status': 'pending',
+        'author': {'id': 9, 'name': 'Hamza'},
+      },
+    ],
+  };
   @override
   Future<Map<String, dynamic>> write(int league, String title, String body) async => json('newspaper');
   @override
@@ -57,10 +63,18 @@ class FakeSocial implements SocialRepository {
   int loads = 0;
   @override
   Future<List<Map<String, dynamic>>> messages(int group) async => [
-        if (++loads < 0) <String, dynamic>{},
-        for (final m in json('group_messages')['messages'] as List) m as Map<String, dynamic>,
-        {'id': 2, 'kind': 'audio', 'deleted': false, 'body': '', 'user': {'id': 9, 'name': 'حمزة'}, 'seconds': 7, 'created_at': '2026-11-06T08:00:00Z'},
-      ];
+    if (++loads < 0) <String, dynamic>{},
+    for (final m in json('group_messages')['messages'] as List<dynamic>) m as Map<String, dynamic>,
+    {
+      'id': 2,
+      'kind': 'audio',
+      'deleted': false,
+      'body': '',
+      'user': {'id': 9, 'name': 'حمزة'},
+      'seconds': 7,
+      'created_at': '2026-11-06T08:00:00Z',
+    },
+  ];
   @override
   Future<void> say(int group, String body, {int? replyTo}) async => sent.add('say $group $body');
   @override
@@ -74,16 +88,27 @@ Future<void> pump(WidgetTester t, Widget screen, FakeSocial social, {FakeFeed? f
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;
-  await t.pumpWidget(ProviderScope(
-    overrides: [preferencesProvider.overrideWithValue(prefs), socialRepositoryProvider.overrideWithValue(social), liveFeedProvider.overrideWithValue(feed ?? FakeFeed())],
-    child: MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: screen,
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [
+        preferencesProvider.overrideWithValue(prefs),
+        socialRepositoryProvider.overrideWithValue(social),
+        liveFeedProvider.overrideWithValue(feed ?? FakeFeed()),
+      ],
+      child: MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: screen,
+      ),
     ),
-  ));
+  );
   await t.pumpAndSettle();
 }
 
@@ -150,7 +175,9 @@ void main() {
     await t.pump(const Duration(seconds: 20));
     expect(s.loads, loads);
     // ...and a new message is fetched as soon as it is announced.
-    feed.push('chat', {'message': {'id': 3}});
+    feed.push('chat', {
+      'message': {'id': 3},
+    });
     await t.pump(const Duration(milliseconds: 100));
     expect(s.loads, loads + 1);
     await t.pumpWidget(const SizedBox());

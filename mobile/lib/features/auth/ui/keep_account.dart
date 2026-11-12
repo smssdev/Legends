@@ -22,13 +22,20 @@ class KeepAccountCard extends ConsumerWidget {
     return GlmCard(
       gold: true,
       accent: p.gold,
-      child: Row(children: [
-        Icon(Icons.person_add_alt_1_rounded, color: p.gold),
-        const SizedBox(width: 10),
-        Expanded(child: Text(l.guestBanner, style: const TextStyle(fontWeight: FontWeight.w700))),
-        const SizedBox(width: 8),
-        GlmButton(label: l.keepAccount, onPressed: () => showCompactInputSheet<void>(context, title: l.keepAccount, builder: (_) => const _KeepForm())),
-      ]),
+      child: Row(
+        children: [
+          Icon(Icons.person_add_alt_1_rounded, color: p.gold),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(l.guestBanner, style: const TextStyle(fontWeight: FontWeight.w700)),
+          ),
+          const SizedBox(width: 8),
+          GlmButton(
+            label: l.keepAccount,
+            onPressed: () => showCompactInputSheet<void>(context, title: l.keepAccount, builder: (_) => const _KeepForm()),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -63,7 +70,9 @@ class _KeepFormState extends ConsumerState<_KeepForm> {
       _errors = {};
     });
     try {
-      await ref.read(authProvider.notifier).keepGuest(name: _name.text, username: _username.text, email: _email.text, password: _password.text);
+      await ref
+          .read(authProvider.notifier)
+          .keepGuest(name: _name.text, username: _username.text, email: _email.text, password: _password.text);
       if (!mounted) return;
       Navigator.of(context).pop();
       showGlmToast(context, l.accountKept);
@@ -79,7 +88,8 @@ class _KeepFormState extends ConsumerState<_KeepForm> {
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
-    Widget field(String label, TextEditingController c, String key, {bool ltr = false, bool secret = false, TextInputType? keyboard}) => Padding(
+    Widget field(String label, TextEditingController c, String key, {bool ltr = false, bool secret = false, TextInputType? keyboard}) =>
+        Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: GlmCompactField(
             label: label,
@@ -92,13 +102,17 @@ class _KeepFormState extends ConsumerState<_KeepForm> {
             ),
           ),
         );
-    return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      field(l.displayName, _name, 'name'),
-      field(l.username, _username, 'username', ltr: true),
-      field(l.email, _email, 'email', ltr: true, keyboard: TextInputType.emailAddress),
-      field(l.password, _password, 'password', ltr: true, secret: true),
-      const SizedBox(height: 4),
-      GlmButton(label: l.keepAccount, block: true, loading: _busy, onPressed: _submit),
-    ]);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        field(l.displayName, _name, 'name'),
+        field(l.username, _username, 'username', ltr: true),
+        field(l.email, _email, 'email', ltr: true, keyboard: TextInputType.emailAddress),
+        field(l.password, _password, 'password', ltr: true, secret: true),
+        const SizedBox(height: 4),
+        GlmButton(label: l.keepAccount, block: true, loading: _busy, onPressed: _submit),
+      ],
+    );
   }
 }

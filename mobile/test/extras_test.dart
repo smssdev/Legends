@@ -36,21 +36,29 @@ class FakeExtras implements ExtrasRepository {
   @override
   Future<({int days, List<Specialist> list})> specialists(int league) async {
     final j = json('specialists');
-    return (days: j['days'] as int, list: [for (final s in j['specialists'] as List) Specialist.fromJson(s as Map<String, dynamic>)]);
+    return (
+      days: j['days'] as int,
+      list: [for (final s in j['specialists'] as List<dynamic>) Specialist.fromJson(s as Map<String, dynamic>)],
+    );
   }
 
   @override
   Future<void> hire(int league, String type, int stars) async => sent.add('hire $type $stars');
   @override
   Future<SpyView> spy(int league) async => SpyView.fromJson({
-        ...json('spy'),
-        if (spied)
-          'report': {
-            'club': {'id': 160, 'name': 'Burnley'}, 'formation': '4-4-2', 'fitness': 93, 'form': ['W', 'L'],
-            'tactics': {'plan': 'counter', 'marking': 'zone'},
-            'starters': [{'id': 1, 'name': 'Zian Flemming', 'position': 'ST', 'line': 'att', 'overall': 77}],
-          },
-      });
+    ...json('spy'),
+    if (spied)
+      'report': {
+        'club': {'id': 160, 'name': 'Burnley'},
+        'formation': '4-4-2',
+        'fitness': 93,
+        'form': ['W', 'L'],
+        'tactics': {'plan': 'counter', 'marking': 'zone'},
+        'starters': [
+          {'id': 1, 'name': 'Zian Flemming', 'position': 'ST', 'line': 'att', 'overall': 77},
+        ],
+      },
+  });
   @override
   Future<SpyView> sendSpy(int league) async {
     spied = true;
@@ -61,30 +69,40 @@ class FakeExtras implements ExtrasRepository {
   @override
   Future<({DateTime? renewsAt, List<Quest> quests})> quests(int league) async {
     final j = json('quests');
-    return (renewsAt: DateTime.tryParse('${j['renews_at']}'), quests: [for (final q in j['quests'] as List) Quest.fromJson(q as Map<String, dynamic>)]);
+    return (
+      renewsAt: DateTime.tryParse('${j['renews_at']}'),
+      quests: [for (final q in j['quests'] as List<dynamic>) Quest.fromJson(q as Map<String, dynamic>)],
+    );
   }
 
   @override
   Future<void> claimQuest(int league, String quest) async => sent.add('claim $quest');
   @override
   Future<List<({int number, List<({String competition, int position, String club, String? coach})> titles})>> honours(int league) async => [
-        (number: 1, titles: const [(competition: 'league', position: 1, club: 'Liverpool', coach: 'Suleiman')]),
-      ];
+    (number: 1, titles: const [(competition: 'league', position: 1, club: 'Liverpool', coach: 'Suleiman')]),
+  ];
   @override
   Future<void> resign(int league) async => sent.add('resign');
   @override
-  Future<Map<String, int>> prices() async => {for (final e in (json('wallet')['prices'] as Map).entries) '${e.key}': e.value as int};
+  Future<Map<String, int>> prices() async => {
+    for (final e in (json('wallet')['prices'] as Map<dynamic, dynamic>).entries) '${e.key}': e.value as int,
+  };
 }
 
 class FakeWallet implements WalletRepository {
   int claims = 0;
 
   @override
-  Future<WalletView> wallet() async => WalletView.fromJson({...json('wallet'), 'daily': {'amount': 10, 'claimed': claims > 0}});
+  Future<WalletView> wallet() async => WalletView.fromJson({
+    ...json('wallet'),
+    'daily': {'amount': 10, 'claimed': claims > 0},
+  });
   @override
   Future<void> claimDaily() async => claims++;
   @override
-  Future<List<StoreItem>> store() async => [for (final i in json('store')['items'] as List) StoreItem.fromJson(i as Map<String, dynamic>)];
+  Future<List<StoreItem>> store() async => [
+    for (final i in json('store')['items'] as List<dynamic>) StoreItem.fromJson(i as Map<String, dynamic>),
+  ];
 }
 
 Future<void> pump(WidgetTester t, Widget screen, {FakeExtras? extras, FakeWallet? wallet}) async {
@@ -94,21 +112,35 @@ Future<void> pump(WidgetTester t, Widget screen, {FakeExtras? extras, FakeWallet
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;
-  await t.pumpWidget(ProviderScope(
-    overrides: [
-      preferencesProvider.overrideWithValue(prefs),
-      extrasRepositoryProvider.overrideWithValue(extras ?? FakeExtras()),
-      walletRepositoryProvider.overrideWithValue(wallet ?? FakeWallet()),
-      coachProfileProvider.overrideWith((ref, id) async => {...json('coach'), 'titles': [{'league': 'Premier League', 'season': 1, 'competition': 'league', 'position': 1, 'club': 'Liverpool'}]}),
-    ],
-    child: MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: screen,
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [
+        preferencesProvider.overrideWithValue(prefs),
+        extrasRepositoryProvider.overrideWithValue(extras ?? FakeExtras()),
+        walletRepositoryProvider.overrideWithValue(wallet ?? FakeWallet()),
+        coachProfileProvider.overrideWith(
+          (ref, id) async => {
+            ...json('coach'),
+            'titles': [
+              {'league': 'Premier League', 'season': 1, 'competition': 'league', 'position': 1, 'club': 'Liverpool'},
+            ],
+          },
+        ),
+      ],
+      child: MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: screen,
+      ),
     ),
-  ));
+  );
   await t.pumpAndSettle();
 }
 

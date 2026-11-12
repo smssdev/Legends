@@ -92,98 +92,163 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
                 ref.invalidate(stadiumProvider(widget.leagueId));
                 return ref.read(stadiumProvider(widget.leagueId).future);
               },
-              child: ListView(padding: const EdgeInsets.all(12), children: [
-                // [Sprint 50 M20] The stadium and its buildings in panorama, in 3D.
-                StadiumPanorama(capacity: '${s.capacity}'),
-                gap,
-                GlmCard(
-                  gold: true,
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Text(l.stadiumProgress(s.partsDone, s.partsTotal), textAlign: TextAlign.center, style: context.text.titleMedium),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(value: s.partsTotal == 0 ? 0 : s.partsDone / s.partsTotal, minHeight: 10, color: p.gold, backgroundColor: p.surfaceRaised),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(children: [
-                      Expanded(child: _Fact(l.capacity, '${s.capacity}')),
-                      Expanded(child: _Fact(l.homeAdvantage, '+${(s.homeBp / 100).toStringAsFixed(1)}%')),
-                      Expanded(child: _Fact(l.balance, money(context, s.balance))),
-                    ]),
-                    const SizedBox(height: 8),
-                    Text(l.partTime(partTime), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12)),
-                  ]),
-                ),
-                if (b != null) ...[
+              child: ListView(
+                padding: const EdgeInsets.all(12),
+                children: [
+                  // [Sprint 50 M20] The stadium and its buildings in panorama, in 3D.
+                  StadiumPanorama(capacity: '${s.capacity}'),
                   gap,
                   GlmCard(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                      Row(children: [
-                        Icon(Icons.construction_rounded, color: p.gold),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(l.buildingNow(names[b.section] ?? b.section), style: const TextStyle(fontWeight: FontWeight.w800))),
-                      ]),
-                      const SizedBox(height: 6),
-                      Text('${l.stageOf(b.stage)} · ${l.partOf(b.part)}', style: TextStyle(color: p.textMuted)),
-                      const SizedBox(height: 6),
-                      Text(l.endsIn(_left(left)),
-                          style: TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: const [GlmFonts.body], fontSize: 20, fontWeight: FontWeight.w800, color: context.glm.goldText)),
-                      const SizedBox(height: 10),
-                      GlmButton(
-                        label: l.finishNow(finishCoins),
-                        variant: GlmButtonVariant.outline,
-                        loading: _busy,
-                        onPressed: () async {
-                          if (await confirm(context, l.finishNowConfirm(finishCoins))) await _run(() => repo.finishNow(widget.leagueId));
-                        },
-                      ),
-                    ]),
-                  ),
-                ],
-                gap,
-                for (final sec in s.sections)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: GlmCard(
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                        Row(children: [
-                          Icon(icons[sec.section] ?? Icons.stadium_rounded, color: p.gold),
-                          const SizedBox(width: 8),
-                          Expanded(child: Text(names[sec.section] ?? sec.section, style: context.text.titleMedium)),
-                          Text('${sec.stage}/3', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800, color: context.glm.goldText)),
-                        ]),
+                    gold: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(l.stadiumProgress(s.partsDone, s.partsTotal), textAlign: TextAlign.center, style: context.text.titleMedium),
                         const SizedBox(height: 8),
-                        Row(children: [
-                          for (var i = 0; i < 15; i++)
-                            Expanded(
-                              child: Container(
-                                height: 8,
-                                margin: EdgeInsetsDirectional.only(end: i % 5 == 4 ? 6 : 2),
-                                decoration: BoxDecoration(color: i < sec.done ? p.gold : p.surfaceRaised, borderRadius: BorderRadius.circular(3)),
-                              ),
-                            ),
-                        ]),
-                        const SizedBox(height: 10),
-                        if (sec.next == null)
-                          Text(l.sectionDone, style: TextStyle(color: context.glm.successText, fontWeight: FontWeight.w800))
-                        else
-                          Row(children: [
-                            Expanded(child: Text('${l.stageOf(sec.next!.stage)} · ${l.partOf(sec.next!.part)}', style: TextStyle(color: p.textMuted, fontSize: 13))),
-                            GlmButton(
-                              label: l.buildPart(money(context, sec.next!.cost)),
-                              loading: _busy && b == null,
-                              onPressed: b != null || _busy ? null : () => _run(() => repo.build(widget.leagueId, sec.section)),
-                            ),
-                          ]),
-                      ]),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: LinearProgressIndicator(
+                            value: s.partsTotal == 0 ? 0 : s.partsDone / s.partsTotal,
+                            minHeight: 10,
+                            color: p.gold,
+                            backgroundColor: p.surfaceRaised,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(child: _Fact(l.capacity, '${s.capacity}')),
+                            Expanded(child: _Fact(l.homeAdvantage, '+${(s.homeBp / 100).toStringAsFixed(1)}%')),
+                            Expanded(child: _Fact(l.balance, money(context, s.balance))),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l.partTime(partTime),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: p.textMuted, fontSize: 12),
+                        ),
+                      ],
                     ),
                   ),
-                // [Sprint 50 M21] The store's chests in a row, their odds shown.
-                gap,
-                ChestsRow(leagueId: widget.leagueId),
-                const SizedBox(height: 24),
-              ]),
+                  if (b != null) ...[
+                    gap,
+                    GlmCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.construction_rounded, color: p.gold),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  l.buildingNow(names[b.section] ?? b.section),
+                                  style: const TextStyle(fontWeight: FontWeight.w800),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text('${l.stageOf(b.stage)} · ${l.partOf(b.part)}', style: TextStyle(color: p.textMuted)),
+                          const SizedBox(height: 6),
+                          Text(
+                            l.endsIn(_left(left)),
+                            style: TextStyle(
+                              fontFamily: GlmFonts.numbers,
+                              fontFamilyFallback: const [GlmFonts.body],
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: context.glm.goldText,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          GlmButton(
+                            label: l.finishNow(finishCoins),
+                            variant: GlmButtonVariant.outline,
+                            loading: _busy,
+                            onPressed: () async {
+                              if (await confirm(context, l.finishNowConfirm(finishCoins))) {
+                                await _run(() => repo.finishNow(widget.leagueId));
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  gap,
+                  for (final sec in s.sections)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: GlmCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(icons[sec.section] ?? Icons.stadium_rounded, color: p.gold),
+                                const SizedBox(width: 8),
+                                Expanded(child: Text(names[sec.section] ?? sec.section, style: context.text.titleMedium)),
+                                Text(
+                                  '${sec.stage}/3',
+                                  style: TextStyle(
+                                    fontFamily: GlmFonts.numbers,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                    color: context.glm.goldText,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                for (var i = 0; i < 15; i++)
+                                  Expanded(
+                                    child: Container(
+                                      height: 8,
+                                      margin: EdgeInsetsDirectional.only(end: i % 5 == 4 ? 6 : 2),
+                                      decoration: BoxDecoration(
+                                        color: i < sec.done ? p.gold : p.surfaceRaised,
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            if (sec.next == null)
+                              Text(
+                                l.sectionDone,
+                                style: TextStyle(color: context.glm.successText, fontWeight: FontWeight.w800),
+                              )
+                            else
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '${l.stageOf(sec.next!.stage)} · ${l.partOf(sec.next!.part)}',
+                                      style: TextStyle(color: p.textMuted, fontSize: 13),
+                                    ),
+                                  ),
+                                  GlmButton(
+                                    label: l.buildPart(money(context, sec.next!.cost)),
+                                    loading: _busy && b == null,
+                                    onPressed: b != null || _busy ? null : () => _run(() => repo.build(widget.leagueId, sec.section)),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  // [Sprint 50 M21] The store's chests in a row, their odds shown.
+                  gap,
+                  ChestsRow(leagueId: widget.leagueId),
+                  const SizedBox(height: 24),
+                ],
+              ),
             );
           },
         ),
@@ -198,8 +263,18 @@ class _Fact extends StatelessWidget {
   final String label, value;
 
   @override
-  Widget build(BuildContext context) => Column(children: [
-        Text(value, textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800, color: context.palette.text)),
-        Text(label, textAlign: TextAlign.center, style: TextStyle(color: context.palette.textMuted, fontSize: 12)),
-      ]);
+  Widget build(BuildContext context) => Column(
+    children: [
+      Text(
+        value,
+        textDirection: TextDirection.ltr,
+        style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800, color: context.palette.text),
+      ),
+      Text(
+        label,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: context.palette.textMuted, fontSize: 12),
+      ),
+    ],
+  );
 }

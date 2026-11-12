@@ -13,11 +13,11 @@ abstract final class AppConfig {
   /// The name a token is made for (the account's devices list shows it): the phone's system, so an iPhone is not
   /// listed as Android.
   static String get deviceName => switch (defaultTargetPlatform) {
-        TargetPlatform.iOS => 'GLM iOS',
-        TargetPlatform.android => 'GLM Android',
-        TargetPlatform.macOS => 'GLM macOS',
-        TargetPlatform.windows => 'GLM Windows',
-        TargetPlatform.linux => 'GLM Linux',
-        TargetPlatform.fuchsia => 'GLM',
-      };
+    TargetPlatform.iOS => 'GLM iOS',
+    TargetPlatform.android => 'GLM Android',
+    TargetPlatform.macOS => 'GLM macOS',
+    TargetPlatform.windows => 'GLM Windows',
+    TargetPlatform.linux => 'GLM Linux',
+    TargetPlatform.fuchsia => 'GLM',
+  };
 }

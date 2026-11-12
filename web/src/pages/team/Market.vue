@@ -161,7 +161,8 @@ async function load() {
     if (leagueId.value) {
       // My players to sell, the balance and the season's limits.
       const { data } = await api.GET('/leagues/{league}/market', { params: { path: { league: leagueId.value }, query: { source: 'pool', line: 'gk' } as any } })
-      m.value = data!
+      // source=pool answers Market (source=list answers TransferList).
+      m.value = data as Market
       if (tab.value === 'list') await loadList()
       if (tab.value === 'done') await loadDone()
     }

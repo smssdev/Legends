@@ -30,7 +30,11 @@ class SettingsController extends Notifier<Settings> {
   @override
   Settings build() {
     final p = ref.watch(preferencesProvider);
-    final theme = switch (p.getString(_theme)) { 'dark' => ThemeMode.dark, 'light' => ThemeMode.light, _ => ThemeMode.system };
+    final theme = switch (p.getString(_theme)) {
+      'dark' => ThemeMode.dark,
+      'light' => ThemeMode.light,
+      _ => ThemeMode.system,
+    };
     return Settings(theme: theme, language: p.getString(_language) == 'en' ? 'en' : 'ar', sounds: p.getBool(_sounds) ?? true);
   }
 

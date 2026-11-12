@@ -358,7 +358,11 @@ class MarketTest extends TestCase
     public function test_the_market_page_lists_the_pool_the_bots_and_my_players(): void
     {
         $line = DB::table('master_players')->where('id', $this->poolPlayer()->master_player_id)->value('line');
-        $page = $this->actingAs($this->owner)->getJson($this->url()."?source=pool&line={$line}")->assertOk()->json();
+        $page = $this->actingAs($this->owner)->getJson($this->url()."?source=pool&line={$line}")->assertOk()
+            // [Sprint 59 F1] Every field Market requires for my players in openapi.yaml (the app reads them through it).
+            ->assertJsonStructure(['closed', 'open_until_round', 'counts', 'balance', 'bots', 'players', 'selling' => ['max_listings', 'listed'],
+                'mine' => ['*' => ['id', 'name', 'position', 'line', 'overall', 'value', 'floor', 'cap', 'quick' => ['pays', 'fee' => ['currency', 'amount']],
+                    'wait_hours' => ['value', 'cap'], 'listed']]])->json();
         $this->assertNull($page['closed']);
         $this->assertNotEmpty($page['players']);
         $this->assertTrue(collect($page['players'])->every(fn ($p) => $p['line'] === $line && $p['price'] === $p['value'] && $p['club'] === null));
@@ -374,7 +378,13 @@ class MarketTest extends TestCase
         DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => false]);
         $p = $this->poolPlayer();
         $line = DB::table('master_players')->where('id', $p->master_player_id)->value('line');
-        $list = $this->actingAs($this->owner)->getJson($this->url()."?line={$line}")->assertOk()->json();
+        $list = $this->actingAs($this->owner)->getJson($this->url()."?line={$line}")->assertOk()
+            // [Sprint 59 F1] Every field TransferList and TransferListPlayer require in openapi.yaml (the app's generated
+            // model fails on a missing one).
+            ->assertJsonStructure(['closed', 'line', 'balance', 'renews_at', 'events', 'players' => ['*' => [
+                'id', 'name', 'position', 'line', 'age', 'overall', 'potential', 'nationality', 'value', 'price', 'was_price',
+                'seller' => ['kind', 'club_id', 'club', 'coach', 'logo'], 'star', 'special', 'fits', 'attributes',
+            ]]])->json();
         $this->assertNotNull($list['renews_at']);
         $this->assertTrue(collect($list['players'])->every(fn ($x) => $x['line'] === $line));
         $this->assertContains('world', collect($list['players'])->pluck('seller.kind')->all());

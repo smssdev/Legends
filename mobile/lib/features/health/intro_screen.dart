@@ -8,6 +8,7 @@ import '../../ui/theme.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/legend_crest.dart';
 import '../../ui/widgets/motion.dart';
+import '../../l10n/app_localizations.dart';
 
 /// [2026-11-06] Whether the opening has played (once a launch): the router holds the start page until it has.
 final introDoneProvider = NotifierProvider<IntroDone, bool>(IntroDone.new);
@@ -98,128 +99,217 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with TickerProviderSt
             final r3 = waiting ? 1.0 : _seg(.95, 1.65, Curves.easeOutCubic);
             final bar = waiting ? (l * 1.3).clamp(0.04, 1.0) : _seg(.9, 3.0, Curves.easeInOut).clamp(0.04, 1.0);
             final sway = math.sin(l * math.pi * 2);
-            return Stack(fit: StackFit.expand, children: [
-              // The emerald halo behind the crest, breathing.
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(center: const Alignment(0, -.16), radius: .85,
-                      colors: [p.brand.withValues(alpha: .22 + .1 * (.5 + .5 * sway)), p.bgDeep.withValues(alpha: 0)]),
-                ),
-              ),
-              // The two beams from the towers, swaying in turn.
-              CustomPaint(painter: _Beams(sway: sway, light: const Color(0xFFFFF0C8))),
-              // The towers.
-              const Positioned(top: 16, left: 14, child: _Tower()),
-              const Positioned(top: 16, right: 14, child: _Tower()),
-              // The pitch in perspective at the bottom.
-              Positioned(left: 0, right: 0, bottom: 0, height: 300, child: CustomPaint(painter: _Pitch(p))),
-              // [Sprint 47] The phone is held sideways (the app is landscape): the crest at the reading start, the name,
-              // the gold line, the motto and the bar beside it; upright, all in one column.
-              SafeArea(
-                child: LayoutBuilder(builder: (context, box) {
-                  final crestBox = SizedBox(
-                    width: 170,
-                    height: 190,
-                    child: Stack(alignment: Alignment.center, children: [
-                      // The mint ring spreading from the crest, again and again.
-                      if (crest >= 1)
-                        Opacity(
-                          opacity: (1 - l).clamp(0.0, 1.0) * .9,
-                          child: Container(
-                            width: 150 * (.7 + 1.2 * l),
-                            height: 150 * (.7 + 1.2 * l),
-                            decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: p.ring, width: 2)),
-                          ),
-                        ),
-                      Opacity(
-                        opacity: crest.clamp(0.0, 1.0),
-                        child: Transform.translate(offset: Offset(0, (1 - crest) * 24), child: Transform.scale(scale: .55 + .45 * crest, child: const LegendCrest(size: 150))),
-                      ),
-                    ]),
-                  );
-                  final name = _Rise(t: r1, child: Text('GAME LEGEND MANAGER', textDirection: TextDirection.ltr,
-                      style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 36, height: 1, letterSpacing: 2, color: p.text)));
-                  final gold = _Rise(
-                    t: r1,
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Container(width: 34, height: 2, color: p.ring),
-                      const SizedBox(width: 10),
-                      Text(ar ? 'المدرب الأسطورة' : 'THE LEGEND COACH',
-                          style: TextStyle(fontFamily: ar ? GlmFonts.body : GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 24, letterSpacing: ar ? 0 : 2, color: p.gold)),
-                      const SizedBox(width: 10),
-                      Container(width: 34, height: 2, color: p.ring),
-                    ]),
-                  );
-                  final motto = _Rise(t: r2, child: Text(ar ? 'فريقك. قراراتك. أسطورتك.' : 'Your team. Your calls. Your legend.', style: TextStyle(fontSize: 15, color: p.textSoft)));
-                  final barRow = _Rise(
-                    t: r3,
-                    child: SizedBox(
-                      width: 190,
-                      height: 24,
-                      child: Stack(clipBehavior: Clip.none, children: [
-                        Positioned(
-                          left: 0, right: 0, top: 9,
-                          child: Container(
-                            height: 6,
-                            decoration: BoxDecoration(color: p.text.withValues(alpha: .1), borderRadius: BorderRadius.circular(6)),
-                            alignment: AlignmentDirectional.centerStart,
-                            child: FractionallySizedBox(widthFactor: bar, child: Container(decoration: BoxDecoration(color: p.gold, borderRadius: BorderRadius.circular(6)))),
-                          ),
-                        ),
-                        // The ball rolling at the bar's head.
-                        PositionedDirectional(
-                          start: bar * 190 - 12,
-                          top: 0,
-                          child: Transform.rotate(angle: bar * math.pi * 8 * (ar ? -1 : 1), child: CustomPaint(size: const Size.square(24), painter: BallPainter())),
-                        ),
-                      ]),
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                // The emerald halo behind the crest, breathing.
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: const Alignment(0, -.16),
+                      radius: .85,
+                      colors: [
+                        p.brand.withValues(alpha: .22 + .1 * (.5 + .5 * sway)),
+                        p.bgDeep.withValues(alpha: 0),
+                      ],
                     ),
-                  );
-                  final loading = _Rise(t: r3, child: Text(ar ? 'نجهّز غرفة الملابس…' : 'Getting the dressing room ready…', style: TextStyle(fontSize: 14, color: p.textMuted)));
-                  if (box.maxWidth > box.maxHeight) {
-                    return Center(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: SizedBox(
-                          width: 780,
-                          height: 330,
-                          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                            Transform.scale(scale: 1.15, child: crestBox),
-                            const SizedBox(width: 40),
-                            Flexible(child: FittedBox(fit: BoxFit.scaleDown, alignment: AlignmentDirectional.centerStart, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                              name,
-                              const SizedBox(height: 12),
-                              gold,
-                              const SizedBox(height: 16),
-                              motto,
-                              const SizedBox(height: 34),
-                              barRow,
-                              const SizedBox(height: 10),
-                              loading,
-                            ]))),
-                          ]),
+                  ),
+                ),
+                // The two beams from the towers, swaying in turn.
+                CustomPaint(
+                  painter: _Beams(sway: sway, light: const Color(0xFFFFF0C8)),
+                ),
+                // The towers.
+                const Positioned(top: 16, left: 14, child: _Tower()),
+                const Positioned(top: 16, right: 14, child: _Tower()),
+                // The pitch in perspective at the bottom.
+                Positioned(left: 0, right: 0, bottom: 0, height: 300, child: CustomPaint(painter: _Pitch(p))),
+                // [Sprint 47] The phone is held sideways (the app is landscape): the crest at the reading start, the name,
+                // the gold line, the motto and the bar beside it; upright, all in one column.
+                SafeArea(
+                  child: LayoutBuilder(
+                    builder: (context, box) {
+                      final crestBox = SizedBox(
+                        width: 170,
+                        height: 190,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // The mint ring spreading from the crest, again and again.
+                            if (crest >= 1)
+                              Opacity(
+                                opacity: (1 - l).clamp(0.0, 1.0) * .9,
+                                child: Container(
+                                  width: 150 * (.7 + 1.2 * l),
+                                  height: 150 * (.7 + 1.2 * l),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: p.ring, width: 2),
+                                  ),
+                                ),
+                              ),
+                            Opacity(
+                              opacity: crest.clamp(0.0, 1.0),
+                              child: Transform.translate(
+                                offset: Offset(0, (1 - crest) * 24),
+                                child: Transform.scale(scale: .55 + .45 * crest, child: const LegendCrest(size: 150)),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    );
-                  }
-                  return Center(child: FittedBox(fit: BoxFit.scaleDown, child: SizedBox(width: 390, height: 760, child: Column(children: [
-                    const Spacer(flex: 5),
-                    crestBox,
-                    const SizedBox(height: 22),
-                    name,
-                    const SizedBox(height: 10),
-                    gold,
-                    const SizedBox(height: 22),
-                    motto,
-                    const Spacer(flex: 4),
-                    barRow,
-                    const SizedBox(height: 12),
-                    loading,
-                    const SizedBox(height: 30),
-                  ]))));
-                }),
-              ),
-            ]);
+                      );
+                      final name = _Rise(
+                        t: r1,
+                        child: Text(
+                          'GAME LEGEND MANAGER',
+                          textDirection: TextDirection.ltr,
+                          style: TextStyle(
+                            fontFamily: GlmFonts.numbers,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 36,
+                            height: 1,
+                            letterSpacing: 2,
+                            color: p.text,
+                          ),
+                        ),
+                      );
+                      final gold = _Rise(
+                        t: r1,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(width: 34, height: 2, color: p.ring),
+                            const SizedBox(width: 10),
+                            Text(
+                              ar ? 'المدرب الأسطورة' : 'THE LEGEND COACH',
+                              style: TextStyle(
+                                fontFamily: ar ? GlmFonts.body : GlmFonts.numbers,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 24,
+                                letterSpacing: ar ? 0 : 2,
+                                color: p.gold,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Container(width: 34, height: 2, color: p.ring),
+                          ],
+                        ),
+                      );
+                      final motto = _Rise(
+                        t: r2,
+                        child: Text(L.of(context).introTagline, style: TextStyle(fontSize: 15, color: p.textSoft)),
+                      );
+                      final barRow = _Rise(
+                        t: r3,
+                        child: SizedBox(
+                          width: 190,
+                          height: 24,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                top: 9,
+                                child: Container(
+                                  height: 6,
+                                  decoration: BoxDecoration(color: p.text.withValues(alpha: .1), borderRadius: BorderRadius.circular(6)),
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: FractionallySizedBox(
+                                    widthFactor: bar,
+                                    child: Container(
+                                      decoration: BoxDecoration(color: p.gold, borderRadius: BorderRadius.circular(6)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // The ball rolling at the bar's head.
+                              PositionedDirectional(
+                                start: bar * 190 - 12,
+                                top: 0,
+                                child: Transform.rotate(
+                                  angle: bar * math.pi * 8 * (ar ? -1 : 1),
+                                  child: CustomPaint(size: const Size.square(24), painter: BallPainter()),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                      final loading = _Rise(
+                        t: r3,
+                        child: Text(L.of(context).introLoading, style: TextStyle(fontSize: 14, color: p.textMuted)),
+                      );
+                      if (box.maxWidth > box.maxHeight) {
+                        return Center(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: SizedBox(
+                              width: 780,
+                              height: 330,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Transform.scale(scale: 1.15, child: crestBox),
+                                  const SizedBox(width: 40),
+                                  Flexible(
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      alignment: AlignmentDirectional.centerStart,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          name,
+                                          const SizedBox(height: 12),
+                                          gold,
+                                          const SizedBox(height: 16),
+                                          motto,
+                                          const SizedBox(height: 34),
+                                          barRow,
+                                          const SizedBox(height: 10),
+                                          loading,
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return Center(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: SizedBox(
+                            width: 390,
+                            height: 760,
+                            child: Column(
+                              children: [
+                                const Spacer(flex: 5),
+                                crestBox,
+                                const SizedBox(height: 22),
+                                name,
+                                const SizedBox(height: 10),
+                                gold,
+                                const SizedBox(height: 22),
+                                motto,
+                                const Spacer(flex: 4),
+                                barRow,
+                                const SizedBox(height: 12),
+                                loading,
+                                const SizedBox(height: 30),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
           },
         ),
       ),
@@ -235,7 +325,10 @@ class _Rise extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => Opacity(opacity: t.clamp(0.0, 1.0), child: Transform.translate(offset: Offset(0, (1 - t) * 14), child: child));
+  Widget build(BuildContext context) => Opacity(
+    opacity: t.clamp(0.0, 1.0),
+    child: Transform.translate(offset: Offset(0, (1 - t) * 14), child: child),
+  );
 }
 
 /// A floodlight tower: a bank of six lamps on a mast.
@@ -243,11 +336,7 @@ class _Tower extends StatelessWidget {
   const _Tower();
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        width: 66,
-        height: 74,
-        child: CustomPaint(painter: _TowerPainter(glmNight)),
-      );
+  Widget build(BuildContext context) => SizedBox(width: 66, height: 74, child: CustomPaint(painter: _TowerPainter(glmNight)));
 }
 
 class _TowerPainter extends CustomPainter {
@@ -259,11 +348,13 @@ class _TowerPainter extends CustomPainter {
   void paint(Canvas canvas, Size s) {
     canvas.scale(s.width / 64, s.height / 70);
     canvas.drawRRect(RRect.fromRectAndRadius(const Rect.fromLTWH(4, 4, 56, 34), const Radius.circular(6)), Paint()..color = p.surface);
-    canvas.drawRRect(RRect.fromRectAndRadius(const Rect.fromLTWH(4, 4, 56, 34), const Radius.circular(6)),
-        Paint()
-          ..color = p.surfaceRaised
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(const Rect.fromLTWH(4, 4, 56, 34), const Radius.circular(6)),
+      Paint()
+        ..color = p.surfaceRaised
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
     final lamp = Paint()..color = const Color(0xFFFFF3D4);
     for (final y in [15.0, 28.0]) {
       for (final x in [16.0, 32.0, 48.0]) {
@@ -299,11 +390,16 @@ class _Beams extends CustomPainter {
         ..lineTo(-w / 2, h)
         ..close();
       canvas.drawPath(
-          beam,
-          Paint()
-            ..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [light.withValues(alpha: .32), light.withValues(alpha: 0)], stops: const [0, .8])
-                .createShader(Rect.fromLTWH(-w / 2, 0, w, h))
-            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2));
+        beam,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [light.withValues(alpha: .32), light.withValues(alpha: 0)],
+            stops: const [0, .8],
+          ).createShader(Rect.fromLTWH(-w / 2, 0, w, h))
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2),
+      );
       canvas.restore();
     }
   }
@@ -337,14 +433,17 @@ class _Pitch extends CustomPainter {
     canvas.drawOval(Rect.fromCenter(center: o(195, 72), width: 124 * k, height: 32 * h / 300), line);
     canvas.drawPath(Path()..addPolygon([o(120, 300), o(150, 190), o(240, 190), o(270, 300)], false), line);
     canvas.drawRect(
-        Offset.zero & s,
-        Paint()
-          ..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
-              colors: [p.bgDeep.withValues(alpha: .95), p.bgDeep.withValues(alpha: .15), p.bgDeep.withValues(alpha: .9)], stops: const [0, .45, 1])
-              .createShader(Offset.zero & s));
+      Offset.zero & s,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [p.bgDeep.withValues(alpha: .95), p.bgDeep.withValues(alpha: .15), p.bgDeep.withValues(alpha: .9)],
+          stops: const [0, .45, 1],
+        ).createShader(Offset.zero & s),
+    );
   }
 
   @override
   bool shouldRepaint(_Pitch old) => false;
 }
-

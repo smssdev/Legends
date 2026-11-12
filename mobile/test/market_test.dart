@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/api/gen/models.g.dart' show TransferList;
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/market/market_data.dart';
 import 'package:glm/features/market/market_screen.dart';
@@ -22,19 +23,27 @@ class FakeMarket implements MarketRepository {
 
   @override
   Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(int league, String line) async {
-    final j = json('market');
-    return (players: [for (final p in j['players'] as List) MarketPlayer.fromJson(p as Map<String, dynamic>)], renewsAt: DateTime.tryParse('${j['renews_at']}'), balance: 0, closed: null);
+    // [Sprint 59 F1] The captured answer read through the generated model: the fixture checks the contract too.
+    final t = TransferList.fromJson(json('market'));
+    expect(t.players, hasLength((json('market')['players'] as List<dynamic>).length), reason: 'every player reads');
+    return (
+      players: [for (final p in t.players) MarketPlayer.of(p)],
+      renewsAt: DateTime.tryParse(t.renewsAt ?? ''),
+      balance: 0,
+      closed: null,
+    );
   }
 
   @override
   Future<BuyQuote> buyQuote(int league, int player) async =>
       BuyQuote.fromJson({'price': 530000, 'cash': 2971870, 'doc_coins': 1, 'short': 0, 'compensate': null, 'can': true, 'why': null});
   @override
-  Future<void> buy(int league, int player, {bool compensate = false}) async => sent.add('buy $player');
+  Future<void> buy(int league, int player, {bool compensate = false, required String key}) async => sent.add('buy $player');
   @override
   Future<Selling> selling(int league) async => Selling.fromJson(json('market_pool'));
   @override
-  Future<({int floor, int cap, bool ok, int waitHours})> sellQuote(int league, int player, int price) async => (floor: 1, cap: 2, ok: true, waitHours: 6);
+  Future<({int floor, int cap, bool ok, int waitHours})> sellQuote(int league, int player, int price) async =>
+      (floor: 1, cap: 2, ok: true, waitHours: 6);
   @override
   Future<void> listForSale(int league, int player, int price) async => sent.add('list $player $price');
   @override
@@ -46,19 +55,30 @@ class FakeMarket implements MarketRepository {
   @override
   Future<void> answer(int league, int offer, String action) async => sent.add('$action $offer');
   @override
-  Future<List<OfferPlayer>> clubPlayers(int league, int club) async =>
-      [for (final p in json('club_142')['players'] as List) OfferPlayer.fromJson(p as Map<String, dynamic>)];
+  Future<List<OfferPlayer>> clubPlayers(int league, int club) async => [
+    for (final p in json('club_142')['players'] as List<dynamic>) OfferPlayer.fromJson(p as Map<String, dynamic>),
+  ];
   @override
   Future<void> offer(int league, {int? to, int? counterOf, required int money, required List<int> want, required List<int> give}) async =>
       sent.add('offer to:$to counter:$counterOf money:$money want:$want give:$give');
   @override
   Future<({List<Loan> loans, int maxRounds, int maxFeeBp})> loans(int league) async => (
-        loans: [
-          Loan.fromJson({'id': 4, 'status': 'pending', 'mine': true, 'player': {'id': 5625, 'name': 'Florian Wirtz', 'position': 'CAM'},
-            'owner': 'Liverpool', 'borrower': 'Arsenal', 'rounds': 3, 'fee': 500000, 'until_round': null}),
-        ],
-        maxRounds: 6, maxFeeBp: 2000,
-      );
+    loans: [
+      Loan.fromJson({
+        'id': 4,
+        'status': 'pending',
+        'mine': true,
+        'player': {'id': 5625, 'name': 'Florian Wirtz', 'position': 'CAM'},
+        'owner': 'Liverpool',
+        'borrower': 'Arsenal',
+        'rounds': 3,
+        'fee': 500000,
+        'until_round': null,
+      }),
+    ],
+    maxRounds: 6,
+    maxFeeBp: 2000,
+  );
   @override
   Future<void> askLoan(int league, int player, int rounds, int fee) async => sent.add('loan $player $rounds $fee');
   @override
@@ -66,7 +86,12 @@ class FakeMarket implements MarketRepository {
   @override
   Future<({List<Prospect> prospects, DateTime? renewsAt, int signed, int perSeason})> academy(int league) async {
     final j = json('academy');
-    return (prospects: [for (final p in j['prospects'] as List) Prospect.fromJson(p as Map<String, dynamic>)], renewsAt: null, signed: 0, perSeason: 2);
+    return (
+      prospects: [for (final p in j['prospects'] as List<dynamic>) Prospect.fromJson(p as Map<String, dynamic>)],
+      renewsAt: null,
+      signed: 0,
+      perSeason: 2,
+    );
   }
 
   @override
@@ -88,16 +113,27 @@ Future<void> pump(WidgetTester t, Widget screen, FakeMarket market) async {
   t.view.physicalSize = const Size(360 * 3, 3200 * 3);
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
-  await t.pumpWidget(ProviderScope(
-    overrides: [preferencesProvider.overrideWithValue(prefs), marketRepositoryProvider.overrideWithValue(market), scoutRepositoryProvider.overrideWithValue(FakeScout())],
-    child: MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: screen,
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [
+        preferencesProvider.overrideWithValue(prefs),
+        marketRepositoryProvider.overrideWithValue(market),
+        scoutRepositoryProvider.overrideWithValue(FakeScout()),
+      ],
+      child: MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: screen,
+      ),
     ),
-  ));
+  );
   await t.pumpAndSettle();
 }
 
@@ -105,9 +141,14 @@ void main() {
   test('the market, my players for sale and the offers from the API', () {
     final s = Selling.fromJson(json('market_pool'));
     expect(s.mine, isNotEmpty);
+    // [Sprint 59 F1] Every one of my players reads through the generated model.
+    expect(s.mine, hasLength((json('market_pool')['mine'] as List<dynamic>).length));
     expect(s.mine.first.cap, greaterThan(s.mine.first.floor));
     expect(s.mine.first.quickFee.currency, 'coins');
     final d = Deals.fromJson(json('offers'));
+    // [Sprint 59 F1] Every offer and listing reads through the generated model.
+    expect(d.offers, hasLength((json('offers')['offers'] as List<dynamic>).length));
+    expect(d.listings, hasLength((json('offers')['listings'] as List<dynamic>).length));
     expect(d.offers.first.incoming, isTrue);
     expect(d.offers.first.players.single.name, 'Florian Wirtz');
   });
@@ -185,7 +226,7 @@ void main() {
 
   testWidgets('a new offer: the club, his player asked for, sent', (t) async {
     final m = FakeMarket();
-    await pump(t, OfferScreen(leagueId: 8, clubId: 142, clubName: 'Arsenal'), m);
+    await pump(t, const OfferScreen(leagueId: 8, clubId: 142, clubName: 'Arsenal'), m);
     await t.tap(find.text('David Raya'));
     await t.pump();
     await t.enterText(find.byType(TextField).first, '2000000');

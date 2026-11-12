@@ -16,19 +16,22 @@ void main() {
     t.view.devicePixelRatio = 1;
     addTearDown(t.view.reset);
     await t.runAsync(() async {
-      final l = FontLoader('BarlowCondensed')..addFont(Future.value(ByteData.sublistView(File('assets/fonts/BarlowCondensed-800.ttf').readAsBytesSync())));
+      final l = FontLoader('BarlowCondensed')
+        ..addFont(Future.value(ByteData.sublistView(File('assets/fonts/BarlowCondensed-800.ttf').readAsBytesSync())));
       await l.load();
     });
-    await t.pumpWidget(Directionality(
-      textDirection: TextDirection.ltr,
-      child: RepaintBoundary(
-        child: Container(
-          color: GlmStage.ground,
-          padding: const EdgeInsets.all(16),
-          child: Wrap(spacing: 14, runSpacing: 14, children: [for (final g in GameGlyph.values) GameIcon(g, size: 72)]),
+    await t.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: RepaintBoundary(
+          child: Container(
+            color: GlmStage.ground,
+            padding: const EdgeInsets.all(16),
+            child: Wrap(spacing: 14, runSpacing: 14, children: [for (final g in GameGlyph.values) GameIcon(g, size: 72)]),
+          ),
         ),
       ),
-    ));
+    );
     await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('out/icons.png'));
   });
 }

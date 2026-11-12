@@ -10,13 +10,20 @@ import 'package:glm/ui/tokens.g.dart';
 import 'package:glm/ui/widgets/async_view.dart';
 
 Future<void> pump(WidgetTester t, Widget child) async {
-  await t.pumpWidget(MaterialApp(
-    theme: glmTheme(day: false),
-    locale: const Locale('ar'),
-    supportedLocales: L.supportedLocales,
-    localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-    home: Scaffold(body: child),
-  ));
+  await t.pumpWidget(
+    MaterialApp(
+      theme: glmTheme(day: false),
+      locale: const Locale('ar'),
+      supportedLocales: L.supportedLocales,
+      localizationsDelegates: const [
+        L.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: Scaffold(body: child),
+    ),
+  );
   await t.pump(const Duration(milliseconds: 50));
 }
 
@@ -44,7 +51,14 @@ void main() {
   });
 
   testWidgets('GlmPageTitle draws the title with its actions', (t) async {
-    await pump(t, GlmPageTitle('الكشاف', subtitle: 'ابحث عن لاعب', actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.add))]));
+    await pump(
+      t,
+      GlmPageTitle(
+        'الكشاف',
+        subtitle: 'ابحث عن لاعب',
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.add))],
+      ),
+    );
     expect(find.text('الكشاف'), findsOneWidget);
     expect(find.text('ابحث عن لاعب'), findsOneWidget);
     expect(find.byIcon(Icons.add), findsOneWidget);

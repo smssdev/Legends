@@ -22,32 +22,50 @@ class BrandMark extends StatelessWidget {
     final ar = Localizations.localeOf(context).languageCode == 'ar';
     final p = context.palette;
     final name = Text.rich(
-      TextSpan(children: [
-        TextSpan(text: 'GAME LEGEND ', style: TextStyle(color: p.text)),
-        TextSpan(text: 'MANAGER', style: TextStyle(color: context.glm.goldText)),
-      ]),
+      TextSpan(
+        children: [
+          TextSpan(
+            text: 'GAME LEGEND ',
+            style: TextStyle(color: p.text),
+          ),
+          TextSpan(
+            text: 'MANAGER',
+            style: TextStyle(color: context.glm.goldText),
+          ),
+        ],
+      ),
       textDirection: TextDirection.ltr,
-      style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, letterSpacing: stacked ? 2 : 1, fontSize: stacked ? 26 : 16),
+      style: TextStyle(
+        fontFamily: GlmFonts.numbers,
+        fontWeight: FontWeight.w700,
+        letterSpacing: stacked ? 2 : 1,
+        fontSize: stacked ? 26 : 16,
+      ),
     );
-    final sub = Text(ar ? 'المدرب الأسطورة' : 'ONLINE FOOTBALL MANAGER',
-        style: TextStyle(fontSize: stacked ? 15 : 10, fontWeight: FontWeight.w700, color: p.textSoft, letterSpacing: ar ? 0 : 2));
+    final sub = Text(
+      ar ? 'المدرب الأسطورة' : 'ONLINE FOOTBALL MANAGER',
+      style: TextStyle(fontSize: stacked ? 15 : 10, fontWeight: FontWeight.w700, color: p.textSoft, letterSpacing: ar ? 0 : 2),
+    );
     // [Sprint 47] The approved design's crest, drawn (legend_crest.dart), as tall as [size].
     final crest = LegendCrest(size: size * 150 / 172, letters: size >= 56);
     if (stacked) {
       return Column(mainAxisSize: MainAxisSize.min, children: [crest, const SizedBox(height: 14), name, const SizedBox(height: 4), sub]);
     }
     // In a bar beside other buttons, the name shrinks to the room left rather than overflow.
-    return Row(mainAxisSize: MainAxisSize.min, children: [
-      crest,
-      const SizedBox(width: 10),
-      Flexible(
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: AlignmentDirectional.centerStart,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [name, sub]),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        crest,
+        const SizedBox(width: 10),
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [name, sub]),
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -71,11 +89,17 @@ class CoinsPill extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: GlmSize.touchMin),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Image.asset('assets/brand/coin.png', width: 22, height: 22),
-              const SizedBox(width: 6),
-              Text('$coins', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: context.glm.goldText)),
-            ]),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset('assets/brand/coin.png', width: 22, height: 22),
+                const SizedBox(width: 6),
+                Text(
+                  '$coins',
+                  style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: context.glm.goldText),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -105,8 +129,15 @@ class ClubCrest extends StatelessWidget {
     // (/logos/....webp, ClubLogo) where the club has one, else with its drawn badge (SVG). The picture first, the SVG
     // when it is not one, our shield while either loads.
     final full = url!.startsWith('/') ? '${AppConfig.siteUrl}$url' : url!;
-    return Image.network(full, width: size, height: size, fit: BoxFit.contain, semanticLabel: name,
-        loadingBuilder: (_, child, progress) => progress == null ? child : shield,
-        errorBuilder: (_, _, _) => SvgPicture.network(full, width: size, height: size, placeholderBuilder: (_) => shield, semanticsLabel: name));
+    return Image.network(
+      full,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      semanticLabel: name,
+      loadingBuilder: (_, child, progress) => progress == null ? child : shield,
+      errorBuilder: (_, _, _) =>
+          SvgPicture.network(full, width: size, height: size, placeholderBuilder: (_) => shield, semanticsLabel: name),
+    );
   }
 }

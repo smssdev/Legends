@@ -57,15 +57,24 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (here == '/start' && !ref.read(introDoneProvider)) return null;
       final signedIn = auth.value != null;
       // A guest from an invite link signs in first, then lands on the link.
-      if (!signedIn) return guest.contains(here) ? null : (here.startsWith('/join') ? '/login?from=${Uri.encodeComponent(state.uri.toString())}' : '/login');
+      if (!signedIn) {
+        return guest.contains(here)
+            ? null
+            : (here.startsWith('/join') ? '/login?from=${Uri.encodeComponent(state.uri.toString())}' : '/login');
+      }
       final from = state.uri.queryParameters['from'];
       if (from != null && guest.contains(here)) return from;
       return guest.contains(here) || here == '/start' || here == '/offline' ? '/' : null;
     },
     routes: [
       GoRoute(path: '/start', builder: (_, _) => const IntroScreen()),
-      GoRoute(path: '/offline', builder: (context, _) => Consumer(builder: (context, ref, _) => OfflineScreen(
-            message: '${ref.read(authProvider).error}', onRetry: () => ref.invalidate(authProvider)))),
+      GoRoute(
+        path: '/offline',
+        builder: (context, _) => Consumer(
+          builder: (context, ref, _) =>
+              OfflineScreen(message: '${ref.read(authProvider).error}', onRetry: () => ref.invalidate(authProvider)),
+        ),
+      ),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
       GoRoute(path: '/forgot', builder: (_, _) => const ForgotScreen()),
@@ -73,45 +82,130 @@ final routerProvider = Provider<GoRouter>((ref) {
       // [Sprint 16] The leagues, and an invite link (gamelegendmanager.online/join/CODE) opening the app on its code.
       GoRoute(path: '/leagues', builder: (_, _) => const MyLeaguesScreen()),
       GoRoute(path: '/leagues/new', builder: (_, _) => const CreateLeagueScreen()),
-      GoRoute(path: '/join', builder: (_, s) => JoinScreen(code: s.uri.queryParameters['code'])),
-      GoRoute(path: '/join/:code', builder: (_, s) => JoinScreen(code: s.pathParameters['code'])),
+      GoRoute(
+        path: '/join',
+        builder: (_, s) => JoinScreen(code: s.uri.queryParameters['code']),
+      ),
+      GoRoute(
+        path: '/join/:code',
+        builder: (_, s) => JoinScreen(code: s.pathParameters['code']),
+      ),
       // [Sprint 45 M1] A league's screens inside its menu (shell.dart): one tap from any to any, on a wide screen.
       ShellRoute(
-        builder: (_, s, child) => LeagueShell(leagueId: int.tryParse(s.pathParameters['id'] ?? '') ?? 0, location: s.uri.toString(), child: child),
+        builder: (_, s, child) =>
+            LeagueShell(leagueId: int.tryParse(s.pathParameters['id'] ?? '') ?? 0, location: s.uri.toString(), child: child),
         routes: [
-          GoRoute(path: '/leagues/:id', builder: (_, s) => _withId(s, (id) => LeagueScreen(id: id, tab: s.uri.queryParameters['tab']))),
-          GoRoute(path: '/leagues/:id/squad', builder: (_, s) => _withId(s, (id) => SquadScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/lineup', builder: (_, s) => _withId(s, (id) => LineupScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/tactics', builder: (_, s) => _withId(s, (id) => TacticsScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/finance', builder: (_, s) => _withId(s, (id) => FinanceScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/stadium', builder: (_, s) => _withId(s, (id) => StadiumScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/market', builder: (_, s) => _withId(s, (id) => MarketScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/scout', builder: (_, s) => _withId(s, (id) => ScoutScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/alliance', builder: (_, s) => _withId(s, (id) => AllianceScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/friendlies', builder: (_, s) => _withId(s, (id) => FriendliesScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/predictions', builder: (_, s) => _withId(s, (id) => PredictionsScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/newspaper', builder: (_, s) => _withId(s, (id) => NewspaperScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/stats', builder: (_, s) => _withId(s, (id) => StatsScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/missed', builder: (_, s) => _withId(s, (id) => MissedScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/matchday', builder: (_, s) => _withId(s, (id) => MatchdayScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/contracts', builder: (_, s) => _withId(s, (id) => ContractsScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/tickets', builder: (_, s) => _withId(s, (id) => TicketsScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/training', builder: (_, s) => _withId(s, (id) => TrainingScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/specialists', builder: (_, s) => _withId(s, (id) => SpecialistsScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/spy', builder: (_, s) => _withId(s, (id) => SpyScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/quests', builder: (_, s) => _withId(s, (id) => QuestsScreen(leagueId: id))),
-          GoRoute(path: '/leagues/:id/honours', builder: (_, s) => _withId(s, (id) => HonoursScreen(leagueId: id))),
+          GoRoute(
+            path: '/leagues/:id',
+            builder: (_, s) => _withId(s, (id) => LeagueScreen(id: id, tab: s.uri.queryParameters['tab'])),
+          ),
+          GoRoute(
+            path: '/leagues/:id/squad',
+            builder: (_, s) => _withId(s, (id) => SquadScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/lineup',
+            builder: (_, s) => _withId(s, (id) => LineupScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/tactics',
+            builder: (_, s) => _withId(s, (id) => TacticsScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/finance',
+            builder: (_, s) => _withId(s, (id) => FinanceScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/stadium',
+            builder: (_, s) => _withId(s, (id) => StadiumScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/market',
+            builder: (_, s) => _withId(s, (id) => MarketScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/scout',
+            builder: (_, s) => _withId(s, (id) => ScoutScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/alliance',
+            builder: (_, s) => _withId(s, (id) => AllianceScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/friendlies',
+            builder: (_, s) => _withId(s, (id) => FriendliesScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/predictions',
+            builder: (_, s) => _withId(s, (id) => PredictionsScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/newspaper',
+            builder: (_, s) => _withId(s, (id) => NewspaperScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/stats',
+            builder: (_, s) => _withId(s, (id) => StatsScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/missed',
+            builder: (_, s) => _withId(s, (id) => MissedScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/matchday',
+            builder: (_, s) => _withId(s, (id) => MatchdayScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/contracts',
+            builder: (_, s) => _withId(s, (id) => ContractsScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/tickets',
+            builder: (_, s) => _withId(s, (id) => TicketsScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/training',
+            builder: (_, s) => _withId(s, (id) => TrainingScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/specialists',
+            builder: (_, s) => _withId(s, (id) => SpecialistsScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/spy',
+            builder: (_, s) => _withId(s, (id) => SpyScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/quests',
+            builder: (_, s) => _withId(s, (id) => QuestsScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/honours',
+            builder: (_, s) => _withId(s, (id) => HonoursScreen(leagueId: id)),
+          ),
         ],
       ),
       GoRoute(path: '/inbox', builder: (_, _) => const InboxScreen()),
-      GoRoute(path: '/coaches/:id', builder: (_, s) => _withId(s, (id) => CoachProfileScreen(userId: id))),
+      GoRoute(
+        path: '/coaches/:id',
+        builder: (_, s) => _withId(s, (id) => CoachProfileScreen(userId: id)),
+      ),
       GoRoute(path: '/notifications', builder: (_, _) => const NotificationsScreen()),
       GoRoute(path: '/groups', builder: (_, _) => const GroupsScreen()),
-      GoRoute(path: '/groups/join/:code', builder: (_, s) => GroupsScreen(joinCode: s.pathParameters['code'])),
+      GoRoute(
+        path: '/groups/join/:code',
+        builder: (_, s) => GroupsScreen(joinCode: s.pathParameters['code']),
+      ),
       GoRoute(path: '/tournaments', builder: (_, _) => const TournamentsScreen()),
       GoRoute(path: '/tournaments/new', builder: (_, _) => const NewTournamentScreen()),
-      GoRoute(path: '/tournaments/:id', builder: (_, s) => _withId(s, (id) => TournamentScreen(id: id))),
-      GoRoute(path: '/tournaments/:id/draw', builder: (_, s) => _withId(s, (id) => DrawScreen(id: id))),
+      GoRoute(
+        path: '/tournaments/:id',
+        builder: (_, s) => _withId(s, (id) => TournamentScreen(id: id)),
+      ),
+      GoRoute(
+        path: '/tournaments/:id/draw',
+        builder: (_, s) => _withId(s, (id) => DrawScreen(id: id)),
+      ),
       GoRoute(path: '/profile', builder: (_, _) => const ProfileScreen()),
       GoRoute(path: '/ranking', builder: (_, _) => const RankingScreen()),
       GoRoute(path: '/ideas', builder: (_, _) => const IdeasScreen()),
@@ -121,9 +215,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
       // [Sprint 47] The simulator: a trial match against the computer or a friend.
       GoRoute(path: '/sim', builder: (_, _) => const SimSetupScreen()),
-      GoRoute(path: '/match/:id', builder: (_, s) => _withId(s, (id) => LiveMatchScreen(matchId: id))),
-      GoRoute(path: '/match/:id/report', builder: (_, s) => _withId(s, (id) => MatchReportScreen(matchId: id, coach: s.uri.queryParameters['coach'] == 'true'))),
-      GoRoute(path: '/leagues/:id/pick', builder: (_, s) => _withId(s, (id) => PickTeamScreen(leagueId: id))),
+      GoRoute(
+        path: '/match/:id',
+        builder: (_, s) => _withId(s, (id) => LiveMatchScreen(matchId: id)),
+      ),
+      GoRoute(
+        path: '/match/:id/report',
+        builder: (_, s) => _withId(s, (id) => MatchReportScreen(matchId: id, coach: s.uri.queryParameters['coach'] == 'true')),
+      ),
+      GoRoute(
+        path: '/leagues/:id/pick',
+        builder: (_, s) => _withId(s, (id) => PickTeamScreen(leagueId: id)),
+      ),
     ],
   );
 });
@@ -133,4 +236,13 @@ final routerProvider = Provider<GoRouter>((ref) {
 Widget _withId(GoRouterState s, Widget Function(int id) page) {
   final id = int.tryParse(s.pathParameters['id'] ?? '');
   return id == null || id <= 0 ? const NotFoundScreen() : page(id);
+}
+
+/// [Sprint 59 F11] Whether a route from outside (a push, an inbox message) is one of the app's own pages: an app path
+/// (one slash, no scheme or host) that the router's own table matches. Anything else is not opened.
+bool knownRoute(GoRouter router, String? route) {
+  if (route == null || !route.startsWith('/') || route.startsWith('//')) return false;
+  final uri = Uri.tryParse(route);
+  if (uri == null || uri.hasScheme || uri.hasAuthority) return false;
+  return router.configuration.findMatch(uri).isNotEmpty;
 }

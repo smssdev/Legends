@@ -30,21 +30,27 @@ class FakeMatchRepository implements MatchRepository {
   @override
   Future<MatchView> show(int id) async => MatchView.fromJson({...json('match'), 'finished': finished});
   int polls = 0;
+
   /// The sample is in a coach's window; false answers with play going on.
   bool paused = true;
   @override
   Future<LiveSync> live(int id, int since) async {
     polls++;
-    return LiveSync.fromJson({...json('live'), 'finished': finished, 'server_now': DateTime.now().millisecondsSinceEpoch, if (!paused) 'pause': null});
+    return LiveSync.fromJson({
+      ...json('live'),
+      'finished': finished,
+      'server_now': DateTime.now().millisecondsSinceEpoch,
+      if (!paused) 'pause': null,
+    });
   }
+
+  final List<String> keys = [];
   @override
-  Future<void> order(int id, Map<String, Object> order) async => orders.add(order);
-  @override
-  Future<void> sub(int id, int out, int into) => order(id, {'type': 'sub', 'out': out, 'in': into});
-  @override
-  Future<void> tactics(int id, Map<String, Object> changes) => order(id, {'type': 'tactics', 'tactics': changes});
-  @override
-  Future<void> formation(int id, String formation) => order(id, {'type': 'formation', 'formation': formation});
+  Future<void> order(int id, Map<String, Object> order, {required String key}) async {
+    keys.add(key);
+    orders.add(order);
+  }
+
   @override
   Future<void> ready(int id) async => readies++;
   @override
@@ -52,14 +58,29 @@ class FakeMatchRepository implements MatchRepository {
   @override
   Future<void> say(int id, String body) async => orders.add({'say': body});
   @override
-  Future<MatchReport> report(int id, {required bool coach}) async => MatchReport.fromReport(json('report')).withMoments(MatchReport.fromRecap({
-        'score': {'home': 1, 'away': 1}, 'result': 'draw', 'side': 'home',
-        'moments': [
-          {'minute': 24, 'type': 'goal', 'team': 'away', 'player': 'Bukayo Saka', 'other': 'Martin Ødegaard', 'color': null, 'score': {'home': 0, 'away': 1}},
-        ],
-        'stats': {'home': {'possession': 52, 'shots': 13}, 'away': {'possession': 48, 'shots': 14}},
-        'best': {'home': [], 'away': []},
-      }));
+  Future<MatchReport> report(int id, {required bool coach}) async => MatchReport.fromReport(json('report')).withMoments(
+    MatchReport.fromRecap({
+      'score': {'home': 1, 'away': 1},
+      'result': 'draw',
+      'side': 'home',
+      'moments': [
+        {
+          'minute': 24,
+          'type': 'goal',
+          'team': 'away',
+          'player': 'Bukayo Saka',
+          'other': 'Martin Ødegaard',
+          'color': null,
+          'score': {'home': 0, 'away': 1},
+        },
+      ],
+      'stats': {
+        'home': {'possession': 52, 'shots': 13},
+        'away': {'possession': 48, 'shots': 14},
+      },
+      'best': {'home': <dynamic>[], 'away': <dynamic>[]},
+    }),
+  );
   @override
   Future<List<({int id, String home, String away})>> mine() async => const [];
 }
@@ -70,16 +91,27 @@ Future<void> pump(WidgetTester t, Widget screen, FakeMatchRepository repo, {Fake
   t.view.physicalSize = const Size(420 * 3, 1600 * 3);
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
-  await t.pumpWidget(ProviderScope(
-    overrides: [preferencesProvider.overrideWithValue(prefs), matchRepositoryProvider.overrideWithValue(repo), liveFeedProvider.overrideWithValue(feed ?? FakeFeed())],
-    child: MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: screen,
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [
+        preferencesProvider.overrideWithValue(prefs),
+        matchRepositoryProvider.overrideWithValue(repo),
+        liveFeedProvider.overrideWithValue(feed ?? FakeFeed()),
+      ],
+      child: MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: screen,
+      ),
     ),
-  ));
+  );
   // The pitch draws every frame: pump a while instead of settling.
   for (var i = 0; i < 10; i++) {
     await t.pump(const Duration(milliseconds: 100));
@@ -101,10 +133,10 @@ Future<void> leave(WidgetTester t) async {
 void main() {
   group('frames: the golden vectors (docs/api/frame-golden.json), as the web and Unity', () {
     final golden = jsonDecode(File('../docs/api/frame-golden.json').readAsStringSync()) as Map<String, dynamic>;
-    final frames = [for (final f in golden['frames'] as List) Keyframe.fromJson(f as Map<String, dynamic>)];
+    final frames = [for (final f in golden['frames'] as List<dynamic>) Keyframe.fromJson(f as Map<String, dynamic>)];
 
     test('segments', () {
-      for (final s in golden['segments'] as List) {
+      for (final s in (golden['segments'] as List<dynamic>).cast<Map<String, dynamic>>()) {
         final got = segment(s['count'] as int, (s['u'] as num).toDouble());
         expect(got.i, s['i'], reason: '$s');
         expect(got.k, closeTo((s['k'] as num).toDouble(), 1e-9), reason: '$s');
@@ -112,15 +144,23 @@ void main() {
     });
 
     test('samples', () {
-      for (final s in golden['samples'] as List) {
+      for (final s in (golden['samples'] as List<dynamic>).cast<Map<String, dynamic>>()) {
         final f = sample(frames, (s['u'] as num).toDouble())!;
-        final ball = s['ball'] as List;
-        expect([f.ball.$1, f.ball.$2, f.ball.$3], [for (final v in ball) closeTo((v as num).toDouble(), 1e-6)], reason: 'ball at ${s['u']}');
-        final players = s['players'] as Map;
+        final ball = s['ball'] as List<dynamic>;
+        expect(
+          [f.ball.$1, f.ball.$2, f.ball.$3],
+          [for (final v in ball) closeTo((v as num).toDouble(), 1e-6)],
+          reason: 'ball at ${s['u']}',
+        );
+        final players = s['players'] as Map<dynamic, dynamic>;
         expect(f.players.keys.toSet(), players.keys.toSet(), reason: 'players at ${s['u']}');
         for (final e in players.entries) {
-          final want = e.value as List;
-          expect([f.players[e.key]!.$1, f.players[e.key]!.$2], [closeTo((want[0] as num).toDouble(), 1e-6), closeTo((want[1] as num).toDouble(), 1e-6)], reason: '${e.key} at ${s['u']}');
+          final want = e.value as List<dynamic>;
+          expect(
+            [f.players[e.key]!.$1, f.players[e.key]!.$2],
+            [closeTo((want[0] as num).toDouble(), 1e-6), closeTo((want[1] as num).toDouble(), 1e-6)],
+            reason: '${e.key} at ${s['u']}',
+          );
         }
       }
     });
@@ -177,19 +217,22 @@ void main() {
     repo.paused = false;
     feed.sub.on = true;
     await t.pump(const Duration(milliseconds: 300));
-    final next = Map<String, dynamic>.from((json('live')['ticks'] as List).last as Map)
+    final next = Map<String, dynamic>.from((json('live')['ticks'] as List<dynamic>).last as Map<dynamic, dynamic>)
       ..['tick'] = 27
       ..['minute'] = [27, 0]
       ..['score'] = {'home': 2, 'away': 1}
-      ..['events'] = []
+      ..['events'] = <dynamic>[]
       ..['window'] = false;
     final polls = repo.polls;
     feed.push('minute', {'match_id': 77, 'live': next, 'next_at': DateTime.now().millisecondsSinceEpoch + 3000});
     await t.pump(const Duration(milliseconds: 300));
     expect(find.text('2 - 1'), findsOneWidget);
-    final chats = (json('live')['chat'] as List).length;
+    final chats = (json('live')['chat'] as List<dynamic>).length;
     expect(find.textContaining('الدردشة $chats'), findsOneWidget);
-    feed.push('chat', {'match_id': 77, 'item': {'id': 99, 'who': 'حمزة', 'body': 'هدف!', 'side': 'away', 'user_id': 3, 'at': 0}});
+    feed.push('chat', {
+      'match_id': 77,
+      'item': {'id': 99, 'who': 'حمزة', 'body': 'هدف!', 'side': 'away', 'user_id': 3, 'at': 0},
+    });
     await t.pump(const Duration(milliseconds: 300));
     expect(find.textContaining('الدردشة ${chats + 1}'), findsOneWidget);
     // On the channel the poll waits about 12 s: none in the next 5 (it was about every 1.5 s).

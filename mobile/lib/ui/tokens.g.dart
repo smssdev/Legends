@@ -4,7 +4,38 @@ import 'package:flutter/animation.dart';
 
 /// The colours of one look (night or day), as the web's CSS variables.
 class GlmPalette {
-  const GlmPalette({required this.bg, required this.bgDeep, required this.surface, required this.surfaceSunk, required this.surfaceRaised, required this.gold, required this.goldDark, required this.goldLight, required this.pitch, required this.pitchDark, required this.text, required this.textMuted, required this.textSoft, required this.live, required this.warning, required this.success, required this.onGold, required this.brand, required this.brandDark, required this.brandLight, required this.ring, required this.chrome, required this.chromeDark, required this.onChrome, required this.panel, required this.danger, required this.bronze, required this.silver, required this.cardYellow, required this.shade});
+  const GlmPalette({
+    required this.bg,
+    required this.bgDeep,
+    required this.surface,
+    required this.surfaceSunk,
+    required this.surfaceRaised,
+    required this.gold,
+    required this.goldDark,
+    required this.goldLight,
+    required this.pitch,
+    required this.pitchDark,
+    required this.text,
+    required this.textMuted,
+    required this.textSoft,
+    required this.live,
+    required this.warning,
+    required this.success,
+    required this.onGold,
+    required this.brand,
+    required this.brandDark,
+    required this.brandLight,
+    required this.ring,
+    required this.chrome,
+    required this.chromeDark,
+    required this.onChrome,
+    required this.panel,
+    required this.danger,
+    required this.bronze,
+    required this.silver,
+    required this.cardYellow,
+    required this.shade,
+  });
   final Color bg;
   final Color bgDeep;
   final Color surface;
@@ -139,11 +170,7 @@ abstract final class GlmLine {
 }
 
 /// Fitness from its value (min, colour), highest first.
-const glmFitness = [
-  (min: 75, color: Color(0xFF2BB673)),
-  (min: 60, color: Color(0xFFF5B82E)),
-  (min: 0, color: Color(0xFFF2994A)),
-];
+const glmFitness = [(min: 75, color: Color(0xFF2BB673)), (min: 60, color: Color(0xFFF5B82E)), (min: 0, color: Color(0xFFF2994A))];
 
 /// A match rating from its value (min, background, text), highest first.
 const glmRating = [

@@ -6,18 +6,48 @@ import 'story_words.dart';
 
 /// Each scene's own length and its key moment, in seconds (web/src/match/feed/timing.ts: keep the two in step).
 const sceneTime = <String, (double, double)>{
-  'goal': (6.0, 3.0), 'save': (5.4, 2.9), 'penalty': (6.8, 4.05), 'freekick': (5.2, 2.65), 'card': (6.6, 3.4), 'coach': (4.6, 1.0), 'sub': (5.0, 0.8),
-  'offside': (4.2, 1.5), 'corner': (4.6, 1.75), 'injury': (5.6, 0.4), 'foul': (5.2, 1.5), 'whistle': (3.6, 0.6), 'miss': (5.0, 2.9), 'blocked': (4.8, 2.6), 'board': (3.0, 0.5),
-  'crowd': (2.6, 0.3), 'coachReact': (2.4, 0.2), 'brawl': (2.8, 0.2), 'tunnel': (2.8, 0.2), 'handshake': (3.0, 0.2),
+  'goal': (6.0, 3.0),
+  'save': (5.4, 2.9),
+  'penalty': (6.8, 4.05),
+  'freekick': (5.2, 2.65),
+  'card': (6.6, 3.4),
+  'coach': (4.6, 1.0),
+  'sub': (5.0, 0.8),
+  'offside': (4.2, 1.5),
+  'corner': (4.6, 1.75),
+  'injury': (5.6, 0.4),
+  'foul': (5.2, 1.5),
+  'whistle': (3.6, 0.6),
+  'miss': (5.0, 2.9),
+  'blocked': (4.8, 2.6),
+  'board': (3.0, 0.5),
+  'crowd': (2.6, 0.3),
+  'coachReact': (2.4, 0.2),
+  'brawl': (2.8, 0.2),
+  'tunnel': (2.8, 0.2),
+  'handshake': (3.0, 0.2),
   'var': (8.2, 6.4),
-  'clearance': (4.2, 2.4), 'trap': (3.6, 1.5), 'rant': (3.6, 0.6), 'slip': (3.6, 1.0), 'meltdown': (2.8, 0.3),
+  'clearance': (4.2, 2.4),
+  'trap': (3.6, 1.5),
+  'rant': (3.6, 0.6),
+  'slip': (3.6, 1.0),
+  'meltdown': (2.8, 0.3),
 };
 
 /// A player as the broadcast names him: his name (always in English, decision 2026-11-01), his shirt number, his side.
 typedef CastMember = ({String name, int no, String side});
 
 class FeedStory {
-  FeedStory({this.scene, this.side = 'home', this.data = const {}, this.head = '', this.who = '', this.sub = '', this.pre, this.goal = false});
+  FeedStory({
+    this.scene,
+    this.side = 'home',
+    this.data = const {},
+    this.head = '',
+    this.who = '',
+    this.sub = '',
+    this.pre,
+    this.goal = false,
+  });
 
   /// The scene to play (sceneTime's keys), or none (a quiet minute, a brief one).
   final String? scene;
@@ -48,12 +78,12 @@ String storyText(Object? x, {required Map<String, CastMember> cast, required Map
   if (x.containsKey('r')) return '${x['r']}';
   if (x.containsKey('t')) {
     var out = w('${x['t']}');
-    for (final (i, v) in ((x['v'] as List?) ?? const []).indexed) {
+    for (final (i, v) in ((x['v'] as List<dynamic>?) ?? const []).indexed) {
       out = out.replaceAll('{v$i}', w(v));
     }
     return out;
   }
-  if (x.containsKey('j')) return [for (final v in (x['j'] as List? ?? const [])) w(v)].join(w(x['by']));
+  if (x.containsKey('j')) return [for (final v in (x['j'] as List<dynamic>? ?? const [])) w(v)].join(w(x['by']));
   return '';
 }
 
@@ -64,25 +94,31 @@ FeedStory feedStory(LiveTick tick, {required Map<String, CastMember> cast, requi
   final s = tick.story;
   if (s == null) return FeedStory();
   String w(Object? x) => storyText(x, cast: cast, clubs: clubs, ar: ar);
-  final data = <String, Object?>{...(s['data'] as Map? ?? const {}).cast<String, Object?>()};
+  final data = <String, Object?>{...(s['data'] as Map<dynamic, dynamic>? ?? const {}).cast<String, Object?>()};
   // The shirt numbers as the clips print them; the whistle's board in the clip's own shape.
   for (final k in ['no', 'passNo', 'defNo', 'victimNo', 'inNo', 'outNo']) {
     if (data.containsKey(k)) data[k] = '${data[k] ?? ''}';
   }
   if (data['big'] != null) data['big'] = w(data['big']);
   if (data['tactic'] != null) data['tactic'] = w(data['tactic']);
-  if (data['score'] is List) {
-    final sc = data.remove('score') as List;
+  if (data['score'] is List<dynamic>) {
+    final sc = data.remove('score') as List<dynamic>;
     data['home'] = sc[0];
     data['away'] = sc[1];
   }
-  if (data['stats'] is List) {
-    data['stats'] = [for (final r in data['stats'] as List) (w((r as List)[0]), (r[1] as num).toInt(), (r[2] as num).toInt())];
+  if (data['stats'] is List<dynamic>) {
+    data['stats'] = [
+      for (final r in data['stats'] as List<dynamic>) (w((r as List<dynamic>)[0]), (r[1] as num).toInt(), (r[2] as num).toInt()),
+    ];
   }
-  final pre = s['pre'] as Map?;
+  final pre = s['pre'] as Map<dynamic, dynamic>?;
   return FeedStory(
-    scene: s['scene'] as String?, side: '${s['side'] ?? 'home'}', data: data,
-    head: w(s['head']), who: w(s['who']), sub: w(s['sub']),
+    scene: s['scene'] as String?,
+    side: '${s['side'] ?? 'home'}',
+    data: data,
+    head: w(s['head']),
+    who: w(s['who']),
+    sub: w(s['sub']),
     pre: pre == null ? null : (head: w(pre['head']), who: w(pre['who']), sub: w(pre['sub'])),
     goal: s['goal'] == true,
   );

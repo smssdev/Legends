@@ -24,16 +24,30 @@ class FakeTeamRepository implements TeamRepository {
   @override
   Future<TeamData> team(int league) async => sample;
   @override
-  Future<List<Formation>> formations() async => [Formation(name: sample.lineup.formation, label: sample.lineup.formation, slots: sample.lineup.slots)];
+  Future<List<Formation>> formations() async => [
+    Formation(name: sample.lineup.formation, label: sample.lineup.formation, slots: sample.lineup.slots),
+  ];
   @override
   Future<TeamData> saveLineup(int league, String formation, List<int> starters, List<int> bench, {List<List<int>>? positions}) async {
     startersSent = starters;
     return sample;
   }
+
   @override
   Future<TeamData> autoLineup(int league) async => sample;
   @override
-  Future<Tactics> tactics(int league) async => const Tactics({'plan': 'passing', 'tackling': 1, 'pressing': 50, 'style': 50, 'tempo': 50, 'att': 'support', 'mid': 'stay', 'def': 'stay', 'trap': 0, 'marking': 'zone'});
+  Future<Tactics> tactics(int league) async => const Tactics({
+    'plan': 'passing',
+    'tackling': 1,
+    'pressing': 50,
+    'style': 50,
+    'tempo': 50,
+    'att': 'support',
+    'mid': 'stay',
+    'def': 'stay',
+    'trap': 0,
+    'marking': 'zone',
+  });
   @override
   Future<Tactics> saveTactics(int league, Map<String, Object> changes) async {
     tacticsSent.add(changes);
@@ -45,16 +59,23 @@ Future<void> pump(WidgetTester t, Widget screen, FakeTeamRepository repo) async 
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   await t.binding.setSurfaceSize(const Size(420, 2400));
-  await t.pumpWidget(ProviderScope(
-    overrides: [preferencesProvider.overrideWithValue(prefs), teamRepositoryProvider.overrideWithValue(repo)],
-    child: MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: screen,
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [preferencesProvider.overrideWithValue(prefs), teamRepositoryProvider.overrideWithValue(repo)],
+      child: MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: screen,
+      ),
     ),
-  ));
+  );
   await t.pumpAndSettle();
 }
 
@@ -119,6 +140,8 @@ void main() {
     }
     expect(find.text('هجوم مرتد'), findsOneWidget);
     await t.pump(const Duration(seconds: 1));
-    expect(repo.tacticsSent, [{'plan': 'counter'}]);
+    expect(repo.tacticsSent, [
+      {'plan': 'counter'},
+    ]);
   });
 }

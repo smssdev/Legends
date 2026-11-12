@@ -72,15 +72,17 @@ class ReverbFeed implements LiveFeed {
     final sub = _ReverbSubscription(channel, this);
     sub._listen.add(channel.bind(Channel.subscriptionSucceededEventName).listen((_) => sub._subscribed.value = true));
     on.forEach((event, handler) {
-      sub._listen.add(channel.bind(event).listen((e) {
-        final data = e.data;
-        try {
-          final map = data is String ? jsonDecode(data) : data;
-          if (map is Map<String, dynamic>) handler(map);
-        } catch (_) {
-          // A message the app cannot read: the poll has it.
-        }
-      }));
+      sub._listen.add(
+        channel.bind(event).listen((e) {
+          final data = e.data;
+          try {
+            final map = data is String ? jsonDecode(data) : data;
+            if (map is Map<String, dynamic>) handler(map);
+          } catch (_) {
+            // A message the app cannot read: the poll has it.
+          }
+        }),
+      );
     });
     _open.add(sub);
     channel.subscribe();

@@ -5,8 +5,20 @@ import '../theme.dart';
 /// [Sprint 15 F2] A labelled field as on the web: the label above, the server's message under it, emails, usernames
 /// and passwords left to right (README «الواجهة»), and a password's eye.
 class GlmTextField extends StatefulWidget {
-  const GlmTextField({super.key, required this.label, required this.controller, this.hint, this.error, this.password = false, this.ltr = false,
-      this.keyboard, this.autofill, this.action = TextInputAction.next, this.onSubmitted, this.validator});
+  const GlmTextField({
+    super.key,
+    required this.label,
+    required this.controller,
+    this.hint,
+    this.error,
+    this.password = false,
+    this.ltr = false,
+    this.keyboard,
+    this.autofill,
+    this.action = TextInputAction.next,
+    this.onSubmitted,
+    this.validator,
+  });
 
   final String label;
   final TextEditingController controller;
@@ -32,7 +44,10 @@ class _GlmTextFieldState extends State<GlmTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(padding: const EdgeInsetsDirectional.only(start: 4, bottom: 6), child: Text(widget.label, style: context.text.labelLarge?.copyWith(color: context.palette.textSoft, fontSize: 14))),
+        Padding(
+          padding: const EdgeInsetsDirectional.only(start: 4, bottom: 6),
+          child: Text(widget.label, style: context.text.labelLarge?.copyWith(color: context.palette.textSoft, fontSize: 14)),
+        ),
         TextFormField(
           controller: widget.controller,
           obscureText: widget.password && _hidden,

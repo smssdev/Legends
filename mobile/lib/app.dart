@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/api/api_error.dart';
 import 'core/settings.dart';
 import 'core/sounds.dart';
 import 'features/assistant/assistant.dart';
@@ -43,12 +44,16 @@ class _GlmAppState extends ConsumerState<GlmApp> {
       // [Sprint 18 G] A group's invite link.
       if (seg.length >= 3 && seg.first == 'groups' && seg[1] == 'join') ref.read(routerProvider).push('/groups/join/${seg[2]}');
     }
+
     links.getInitialLink().then((u) => u == null ? null : open(u)).catchError((_) => null);
     _links = links.uriLinkStream.listen(open, onError: (_) {});
 
     // [Sprint 19 F1] Pushes: started for a signed-in coach; a tap opens its screen, an arrival refreshes the inbox count.
     final push = ref.read(pushProvider);
-    _taps = push.taps.listen((route) => ref.read(routerProvider).push(route));
+    _taps = push.taps.listen((route) {
+      final router = ref.read(routerProvider);
+      if (knownRoute(router, route)) unawaited(router.push(route));
+    });
     _arrivals = push.arrivals.listen((_) => ref.invalidate(unreadProvider));
     ref.listenManual(authProvider, (_, next) {
       if (next.value != null) push.start();
@@ -68,31 +73,26 @@ class _GlmAppState extends ConsumerState<GlmApp> {
     final settings = ref.watch(settingsProvider);
     GameSounds.enabled = settings.sounds;
     final update = ref.watch(updateRequiredProvider).value ?? false;
-    final common = (
+    ApiError.locale = settings.locale;
+    // [Sprint 59 F12] One MaterialApp: an update the server requires replaces the routed screens, not the app.
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      onGenerateTitle: (c) => L.of(c).appName,
       theme: glmTheme(day: true),
       darkTheme: glmTheme(day: false),
       themeMode: settings.theme,
       locale: settings.locale,
       supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-    );
-    if (update) {
-      return MaterialApp(debugShowCheckedModeBanner: false, onGenerateTitle: (c) => L.of(c).appName, theme: common.theme, darkTheme: common.darkTheme,
-          themeMode: common.themeMode, locale: common.locale, supportedLocales: common.supportedLocales, localizationsDelegates: common.localizationsDelegates,
-          home: const UpdateRequiredScreen());
-    }
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      onGenerateTitle: (c) => L.of(c).appName,
-      theme: common.theme,
-      darkTheme: common.darkTheme,
-      themeMode: common.themeMode,
-      locale: common.locale,
-      supportedLocales: common.supportedLocales,
-      localizationsDelegates: common.localizationsDelegates,
+      localizationsDelegates: const [
+        L.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       routerConfig: ref.watch(routerProvider),
       // [Sprint 18 H] The assistant coach over every screen.
-      builder: (context, child) => AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
+      builder: (context, child) =>
+          update ? const UpdateRequiredScreen() : AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
     );
   }
 }

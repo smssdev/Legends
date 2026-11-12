@@ -15,28 +15,38 @@ void main(List<String> args) {
   for (final f in files) {
     final rel = f.path.replaceAll('\\', '/');
     if (rel.startsWith('lib/ui/') || rel.startsWith('lib/l10n/') || rel.endsWith('.g.dart')) continue;
-    final src = f.readAsStringSync().split('\n').where((l) => !l.trimLeft().startsWith('//')).join('\n');
-    final hit = <String, int>{};
+    final text = f.readAsStringSync();
+    // [Sprint 59 F4] A part counts with its library (a screen split in files keeps one baseline entry).
+    final of = RegExp(r"^part of '([^']+)';", multiLine: true).firstMatch(text);
+    final key = of == null ? rel : '${rel.substring(0, rel.lastIndexOf('/') + 1)}${of[1]}';
+    final src = text.split('\n').where((l) => !l.trimLeft().startsWith('//')).join('\n');
+    final hit = now.putIfAbsent(key, () => <String, int>{});
     rules.forEach((k, re) {
       final n = re.allMatches(src).length;
-      if (n > 0) hit[k] = n;
+      if (n > 0) hit[k] = (hit[k] ?? 0) + n;
     });
-    if (hit.isNotEmpty) now[rel] = hit;
   }
+  now.removeWhere((_, hit) => hit.isEmpty);
   final sorted = Map.fromEntries(now.entries.toList()..sort((a, b) => a.key.compareTo(b.key)));
   if (args.contains('--write')) {
     File(baseFile).writeAsStringSync('${const JsonEncoder.withIndent('  ').convert(sorted)}\n');
     stdout.writeln('design: ${sorted.length} files not yet on the components, written to $baseFile');
     return;
   }
-  final base = (jsonDecode(File(baseFile).readAsStringSync()) as Map).map((k, v) => MapEntry(k as String, Map<String, dynamic>.from(v as Map)));
+  final base = (jsonDecode(File(baseFile).readAsStringSync()) as Map<dynamic, dynamic>).map(
+    (k, v) => MapEntry(k as String, Map<String, dynamic>.from(v as Map<dynamic, dynamic>)),
+  );
   final bad = <String>[];
-  sorted.forEach((f, hit) => hit.forEach((k, v) {
-        final was = (base[f]?[k] ?? 0) as int;
-        if (v > was) bad.add('$f: $k $was → $v');
-      }));
+  sorted.forEach(
+    (f, hit) => hit.forEach((k, v) {
+      final was = (base[f]?[k] ?? 0) as int;
+      if (v > was) bad.add('$f: $k $was → $v');
+    }),
+  );
   if (bad.isNotEmpty) {
-    stderr.writeln("design: a screen set its own colour or size (use context.palette / context.type; see tool/design.dart):\n  ${bad.join('\n  ')}");
+    stderr.writeln(
+      "design: a screen set its own colour or size (use context.palette / context.type; see tool/design.dart):\n  ${bad.join('\n  ')}",
+    );
     exitCode = 1;
     return;
   }

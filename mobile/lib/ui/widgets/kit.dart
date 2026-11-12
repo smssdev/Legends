@@ -29,9 +29,18 @@ class KitShirt extends StatelessWidget {
             : Padding(
                 padding: EdgeInsets.only(top: size * .18),
                 child: Center(
-                  child: Text(label!, textDirection: TextDirection.ltr,
-                      style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: size * .34, color: fg, height: 1,
-                          shadows: [Shadow(color: Colors.black.withValues(alpha: .25), blurRadius: 2, offset: const Offset(0, 1))])),
+                  child: Text(
+                    label!,
+                    textDirection: TextDirection.ltr,
+                    style: TextStyle(
+                      fontFamily: GlmFonts.numbers,
+                      fontWeight: FontWeight.w800,
+                      fontSize: size * .34,
+                      color: fg,
+                      height: 1,
+                      shadows: [Shadow(color: Colors.black.withValues(alpha: .25), blurRadius: 2, offset: const Offset(0, 1))],
+                    ),
+                  ),
                 ),
               ),
       ),
@@ -65,15 +74,48 @@ class _Shirt extends CustomPainter {
       ..close();
     canvas.drawShadow(shirt, Colors.black, 3, true);
     final r = Offset.zero & s;
-    canvas.drawPath(shirt, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(color, Colors.white, .22)!, color, Color.lerp(color, Colors.black, .18)!], stops: const [0, .45, 1]).createShader(r));
+    canvas.drawPath(
+      shirt,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color.lerp(color, Colors.white, .22)!, color, Color.lerp(color, Colors.black, .18)!],
+          stops: const [0, .45, 1],
+        ).createShader(r),
+    );
     canvas.save();
     canvas.clipPath(shirt);
     // The cuffs and the side panels in the trim colour.
     final t = Paint()..color = trim;
-    canvas.drawPath(Path()..moveTo(w * .99, h * .42)..lineTo(w * .83, h * .50)..lineTo(w * .80, h * .44)..lineTo(w * .96, h * .36)..close(), t);
-    canvas.drawPath(Path()..moveTo(w * .01, h * .42)..lineTo(w * .17, h * .50)..lineTo(w * .20, h * .44)..lineTo(w * .04, h * .36)..close(), t);
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * .99, h * .42)
+        ..lineTo(w * .83, h * .50)
+        ..lineTo(w * .80, h * .44)
+        ..lineTo(w * .96, h * .36)
+        ..close(),
+      t,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * .01, h * .42)
+        ..lineTo(w * .17, h * .50)
+        ..lineTo(w * .20, h * .44)
+        ..lineTo(w * .04, h * .36)
+        ..close(),
+      t,
+    );
     // A soft light across one shoulder.
-    canvas.drawPath(shirt, Paint()..shader = RadialGradient(center: const Alignment(-.5, -.8), radius: .9, colors: [Colors.white.withValues(alpha: .22), Colors.white.withValues(alpha: 0)]).createShader(r));
+    canvas.drawPath(
+      shirt,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(-.5, -.8),
+          radius: .9,
+          colors: [Colors.white.withValues(alpha: .22), Colors.white.withValues(alpha: 0)],
+        ).createShader(r),
+    );
     canvas.restore();
     // The collar.
     canvas.drawPath(
@@ -86,11 +128,14 @@ class _Shirt extends CustomPainter {
         ..strokeWidth = w * .06
         ..strokeCap = StrokeCap.round,
     );
-    canvas.drawPath(shirt, Paint()
-      ..color = ring ?? Colors.black.withValues(alpha: .25)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = ring == null ? 1 : w * .07
-      ..strokeJoin = StrokeJoin.round);
+    canvas.drawPath(
+      shirt,
+      Paint()
+        ..color = ring ?? Colors.black.withValues(alpha: .25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = ring == null ? 1 : w * .07
+        ..strokeJoin = StrokeJoin.round,
+    );
   }
 
   @override
@@ -125,8 +170,18 @@ class CrestShield extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: size * .18),
-                child: Text(text, textDirection: TextDirection.ltr,
-                    style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: size * .30, color: fg, letterSpacing: .5, height: 1)),
+                child: Text(
+                  text,
+                  textDirection: TextDirection.ltr,
+                  style: TextStyle(
+                    fontFamily: GlmFonts.numbers,
+                    fontWeight: FontWeight.w800,
+                    fontSize: size * .30,
+                    color: fg,
+                    letterSpacing: .5,
+                    height: 1,
+                  ),
+                ),
               ),
             ),
           ),
@@ -154,8 +209,24 @@ class _Shield extends CustomPainter {
     final outer = shield(0), inner = shield(w * .07);
     final r = Offset.zero & s;
     canvas.drawShadow(outer, Colors.black, 3, true);
-    canvas.drawPath(outer, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(rim, Colors.white, .35)!, rim, Color.lerp(rim, Colors.black, .35)!]).createShader(r));
-    canvas.drawPath(inner, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(color, Colors.white, .20)!, color, Color.lerp(color, Colors.black, .30)!]).createShader(r));
+    canvas.drawPath(
+      outer,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color.lerp(rim, Colors.white, .35)!, rim, Color.lerp(rim, Colors.black, .35)!],
+        ).createShader(r),
+    );
+    canvas.drawPath(
+      inner,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color.lerp(color, Colors.white, .20)!, color, Color.lerp(color, Colors.black, .30)!],
+        ).createShader(r),
+    );
     // A band of light across the upper half.
     canvas.save();
     canvas.clipPath(inner);
@@ -191,12 +262,26 @@ class NationFlag extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(3),
         border: Border.all(color: Colors.black.withValues(alpha: .25)),
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [a, a, b, b], stops: const [0, .5, .5, 1]),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [a, a, b, b],
+          stops: const [0, .5, .5, 1],
+        ),
       ),
       alignment: Alignment.center,
-      child: Text(code, textDirection: TextDirection.ltr,
-          style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: width * .32, color: ink, height: 1,
-              shadows: [Shadow(color: Colors.black.withValues(alpha: .6), blurRadius: 2)])),
+      child: Text(
+        code,
+        textDirection: TextDirection.ltr,
+        style: TextStyle(
+          fontFamily: GlmFonts.numbers,
+          fontWeight: FontWeight.w800,
+          fontSize: width * .32,
+          color: ink,
+          height: 1,
+          shadows: [Shadow(color: Colors.black.withValues(alpha: .6), blurRadius: 2)],
+        ),
+      ),
     );
   }
 }

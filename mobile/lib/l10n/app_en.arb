@@ -841,5 +841,17 @@
     }
   },
   "nothingYet": "Nothing here yet",
-  "loading": "Loading"
+  "loading": "Loading",
+  "errorUnknown": "Something went wrong, try again.",
+  "errorServer": "The server had a problem, try again shortly.",
+  "errorOffline": "Can't reach the server, check your internet connection.",
+  "introTagline": "Your team. Your calls. Your legend.",
+  "introLoading": "Getting the dressing room ready…",
+  "goalShout": "GOAL!",
+  "leftDays": "{d}d",
+  "leftHoursMinutes": "{h}h {m}m",
+  "leftDaysHoursMinutes": "{d}d {h}h {m}m",
+  "formWin": "W",
+  "formDraw": "D",
+  "formLoss": "L"
 }

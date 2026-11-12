@@ -3497,13 +3497,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The market */
+                /** @description The market: source=list (the default) answers TransferList, pool and bots answer Market */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Market"];
+                        "application/json": components["schemas"]["TransferList"] | components["schemas"]["Market"];
                     };
                 };
                 403: components["responses"]["Error"];
@@ -3967,21 +3967,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            price: number;
-                            cash: number;
-                            /** @description 1 or 2 coins to register it (0 in a fair league) */
-                            doc_coins: number;
-                            /** @description The money the club lacks */
-                            short: number;
-                            /** @description With half the price in cash at least: all the cash, and coins for the rest */
-                            compensate: {
-                                cash: number;
-                                coins: number;
-                            } | null;
-                            can: boolean;
-                            why: string | null;
-                        };
+                        "application/json": components["schemas"]["BuyQuote"];
                     };
                 };
                 404: components["responses"]["Error"];
@@ -6622,7 +6608,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["LeagueMatch"];
+                    };
                 };
                 404: components["responses"]["Error"];
             };
@@ -13933,6 +13921,75 @@ export interface components {
                 code: string;
             }[];
         };
+        /** @description [UP11] The deal before it is made (Sprint 59 F1: the app reads it through its generated model) */
+        BuyQuote: {
+            price: number;
+            cash: number;
+            /** @description 1 or 2 coins to register it (0 in a fair league) */
+            doc_coins: number;
+            /** @description The money the club lacks */
+            short: number;
+            /** @description With half the price in cash at least: all the cash, and coins for the rest */
+            compensate: {
+                cash: number;
+                coins: number;
+            } | null;
+            can: boolean;
+            why: string | null;
+        };
+        /** @description [UP11, Sprint 59 F1] The transfer list of one line (GET /leagues/{league}/market, source=list): the app reads it through its generated model */
+        TransferList: {
+            /** @description Why the market is shut */
+            closed: string | null;
+            /** @enum {string} */
+            line: "gk" | "def" | "mid" | "att";
+            balance: number;
+            /**
+             * Format: date-time
+             * @description When the world's offers renew
+             */
+            renews_at: string | null;
+            events: components["schemas"]["TimedEventNow"][];
+            players: components["schemas"]["TransferListPlayer"][];
+        };
+        /** @description One player on the transfer list, the stars and an event's special players first */
+        TransferListPlayer: {
+            id: number;
+            name: string;
+            position: string;
+            /** @enum {string} */
+            line: "gk" | "def" | "mid" | "att";
+            age: number;
+            /** @description Training counted */
+            overall: number;
+            potential: number;
+            nationality: string | null;
+            value: number;
+            price: number;
+            /** @description [Sprint 23] The price before a discount (a world player under his value) */
+            was_price: number | null;
+            seller: {
+                /** @enum {string} */
+                kind: "world" | "bot" | "coach";
+                club_id: number | null;
+                club: string | null;
+                coach: string | null;
+                logo: string | null;
+            };
+            /** @description A star from a parallel league */
+            star: boolean;
+            /**
+             * @description [Sprint 23] An event's special player
+             * @enum {string|null}
+             */
+            special: "offer" | "in_form" | "legend" | null;
+            /** @description [Sprint 30 Q6] Stronger than the weakest of my usual starters in the line */
+            fits: boolean;
+            /** @description The six attributes, or the keeper's five [X29] */
+            attributes: {
+                [key: string]: number | null;
+            };
+        };
         Market: {
             closed: string | null;
             open_until_round: number;
@@ -14371,6 +14428,8 @@ export interface components {
             x: number;
             /** @description Across the pitch */
             y: number;
+            /** @description [Sprint 59 F6] The player lines this slot takes (sent with the team's lineup and formations): the screens apply it, the save enforces it. */
+            allowed?: ("gk" | "def" | "mid" | "att")[];
         };
         Formation: {
             /** @example 4-3-3A */
@@ -16266,6 +16325,98 @@ export interface components {
         MatchKits: {
             home: components["schemas"]["MatchKit"];
             away: components["schemas"]["MatchKit"];
+        };
+        /** @description [Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model */
+        LeagueMatch: {
+            id: number;
+            league_id?: number;
+            competition?: string;
+            round?: number | null;
+            /**
+             * @description The side the viewer manages
+             * @enum {string|null}
+             */
+            you?: "home" | "away" | null;
+            finished: boolean;
+            score: {
+                home: number;
+                away: number;
+            };
+            tick: number;
+            seed?: number;
+            /** Format: date-time */
+            kickoff_at?: string;
+            timing: {
+                tick_ms: number;
+                extra_time_tick_ms?: number;
+                halftime_seconds?: number;
+                window_seconds?: number;
+            };
+            clubs: {
+                home: components["schemas"]["MatchViewClub"];
+                away: components["schemas"]["MatchViewClub"];
+            };
+            /** @description [Sprint 57 B1] Both sides' final kits */
+            kits?: {
+                home?: components["schemas"]["MatchKit"];
+                away?: components["schemas"]["MatchKit"];
+            };
+            /** @description Each human coach's name by side (an empty list when neither side has one) */
+            coaches?: unknown;
+            teams: {
+                home: components["schemas"]["MatchViewTeam"];
+                away: components["schemas"]["MatchViewTeam"];
+            };
+            /** @description What the viewer's side can switch to */
+            formations?: string[];
+            timeouts?: {
+                /** @enum {string} */
+                side: "home" | "away";
+                tick?: number;
+                until?: number;
+            }[];
+            timeout_seconds?: number;
+        };
+        MatchViewClub: {
+            id: number;
+            name: string;
+            code: string;
+            primary?: string | null;
+            secondary?: string | null;
+            logo?: string | null;
+            /** @description [Sprint 34 V1] Its change kit, worn on a clash */
+            away_kit?: {
+                color?: string;
+            } | null;
+        };
+        MatchViewTeam: {
+            formation?: string | null;
+            /** @description Only for the viewer's own side */
+            tactics?: {
+                [key: string]: unknown;
+            } | null;
+            subs_used?: number;
+            subs_max?: number;
+            stats?: {
+                [key: string]: number | null;
+            };
+            players: components["schemas"]["MatchViewPlayer"][];
+        };
+        MatchViewPlayer: {
+            id: number;
+            name: string;
+            no: number;
+            pos: string;
+            /** @enum {string} */
+            line: "gk" | "def" | "mid" | "att";
+            /** @description On the pitch now */
+            on: boolean;
+            /** @description Why he left for good (red, injury, sub), empty while he plays */
+            out?: string;
+            fit?: number;
+            yc?: number;
+            /** @description The match rating ×100 */
+            rating?: number | null;
         };
         MatchKit: {
             /** @description #RRGGBB */

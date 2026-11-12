@@ -25,16 +25,23 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final settings = jsonDecode(File('test/fixtures/notifications.json').readAsStringSync()) as Map<String, dynamic>;
-    await t.pumpWidget(ProviderScope(
-      overrides: [preferencesProvider.overrideWithValue(prefs), notificationSettingsProvider.overrideWith((ref) async => settings)],
-      child: MaterialApp(
-        theme: glmTheme(day: false),
-        locale: const Locale('ar'),
-        supportedLocales: L.supportedLocales,
-        localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-        home: const NotificationsScreen(),
+    await t.pumpWidget(
+      ProviderScope(
+        overrides: [preferencesProvider.overrideWithValue(prefs), notificationSettingsProvider.overrideWith((ref) async => settings)],
+        child: MaterialApp(
+          theme: glmTheme(day: false),
+          locale: const Locale('ar'),
+          supportedLocales: L.supportedLocales,
+          localizationsDelegates: const [
+            L.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: const NotificationsScreen(),
+        ),
       ),
-    ));
+    );
     await t.pumpAndSettle();
     expect(find.textContaining('لم تُفعَّل في الخادم بعد'), findsOneWidget);
     expect(find.text('العروض والبيع والإعارة'), findsOneWidget);

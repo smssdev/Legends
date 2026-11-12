@@ -21,41 +21,71 @@ Future<void> pump(WidgetTester t, Widget screen) async {
   t.view.physicalSize = const Size(360 * 3, 2400 * 3);
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
-  await t.pumpWidget(ProviderScope(
-    overrides: [
-      preferencesProvider.overrideWithValue(prefs),
-      meProvider.overrideWith((ref) async => json('auth_me')['user'] as Map<String, dynamic>),
-      achievementsProvider.overrideWith((ref) async => json('home_achievements')['achievements'] as List),
-      statsProvider.overrideWith((ref, l) async => {
+  await t.pumpWidget(
+    ProviderScope(
+      overrides: [
+        preferencesProvider.overrideWithValue(prefs),
+        meProvider.overrideWith((ref) async => json('auth_me')['user'] as Map<String, dynamic>),
+        achievementsProvider.overrideWith((ref) async => json('home_achievements')['achievements'] as List<dynamic>),
+        statsProvider.overrideWith(
+          (ref, l) async => {
             ...json('stats'),
             'scorers': [
-              {'player': {'id': 1, 'name': 'Mohamed Salah'}, 'club': {'id': 141, 'code': 'LIV'}, 'goals': 7, 'assists': 2},
+              {
+                'player': {'id': 1, 'name': 'Mohamed Salah'},
+                'club': {'id': 141, 'code': 'LIV'},
+                'goals': 7,
+                'assists': 2,
+              },
             ],
-          }),
-      ideasProvider.overrideWith((ref) async => {
+          },
+        ),
+        ideasProvider.overrideWith(
+          (ref) async => {
             ...json('ideas'),
             'polls': [
-              {'id': 1, 'question': 'Which mode next?', 'body': null, 'state': 'open', 'options': [{'id': 1, 'label': 'Cups', 'votes': null}, {'id': 2, 'label': 'Leagues', 'votes': null}], 'my_vote': null},
+              {
+                'id': 1,
+                'question': 'Which mode next?',
+                'body': null,
+                'state': 'open',
+                'options': [
+                  {'id': 1, 'label': 'Cups', 'votes': null},
+                  {'id': 2, 'label': 'Leagues', 'votes': null},
+                ],
+                'my_vote': null,
+              },
             ],
-          }),
-      supportProvider.overrideWith((ref) async => [
+          },
+        ),
+        supportProvider.overrideWith(
+          (ref) async => [
             {'id': 1, 'body': 'Hello team', 'from_team': false, 'at': '2026-11-06T08:00:00Z'},
             {'id': 2, 'body': 'Welcome!', 'from_team': true, 'at': '2026-11-06T08:05:00Z'},
-          ]),
-      announcementsProvider.overrideWith((ref) async => [
+          ],
+        ),
+        announcementsProvider.overrideWith(
+          (ref) async => [
             {'id': 1, 'title': 'Season two', 'body': 'Starts on Friday.', 'image_url': null, 'cta': null},
-          ]),
-      guideProvider.overrideWith((ref) async => json('guide')['sections'] as List),
-      rankingProvider.overrideWith((ref) async => json('ranking')['coaches'] as List),
-    ],
-    child: MaterialApp(
-      theme: glmTheme(day: false),
-      locale: const Locale('ar'),
-      supportedLocales: L.supportedLocales,
-      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      home: screen,
+          ],
+        ),
+        guideProvider.overrideWith((ref) async => json('guide')['sections'] as List<dynamic>),
+        rankingProvider.overrideWith((ref) async => json('ranking')['coaches'] as List<dynamic>),
+      ],
+      child: MaterialApp(
+        theme: glmTheme(day: false),
+        locale: const Locale('ar'),
+        supportedLocales: L.supportedLocales,
+        localizationsDelegates: const [
+          L.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: screen,
+      ),
     ),
-  ));
+  );
   await t.pumpAndSettle();
 }
 

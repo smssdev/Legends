@@ -475,12 +475,12 @@ class TeamController extends Controller
 
     private function lineup(array $l, Club $club): array
     {
-        return ['formation' => $l['formation'], 'auto' => $l['auto'], 'slots' => $l['slots'], 'starters' => $l['starters'], 'bench' => $l['bench'],
+        return ['formation' => $l['formation'], 'auto' => $l['auto'], 'slots' => TeamSheet::withAllowed($l['slots']), 'starters' => $l['starters'], 'bench' => $l['bench'],
             'lines' => FormationBook::lines($l['slots']), 'chemistry' => Chemistry::of($club->id, $l['starters'], $l['slots'])];
     }
 
     private function formation(string $name, string $label, array $slots): array
     {
-        return ['name' => $name, 'label' => $label, 'slots' => $slots, 'lines' => FormationBook::lines($slots)];
+        return ['name' => $name, 'label' => $label, 'slots' => TeamSheet::withAllowed($slots), 'lines' => FormationBook::lines($slots)];
     }
 }

@@ -10,13 +10,14 @@ class Keyframe {
   const Keyframe({required this.ball, required this.players, this.officials});
 
   factory Keyframe.fromJson(Map<String, dynamic> j) {
-    final b = (j['b'] as List).map((v) => (v as num).toDouble()).toList();
+    final b = (j['b'] as List<dynamic>).map((v) => (v as num).toDouble()).toList();
     return Keyframe(
       ball: (b[0], b[1], b.length > 2 ? b[2] : 0),
       players: {
-        for (final e in (j['p'] as Map).entries) '${e.key}': (((e.value as List)[0] as num).toDouble(), ((e.value as List)[1] as num).toDouble()),
+        for (final e in (j['p'] as Map<dynamic, dynamic>).entries)
+          '${e.key}': (((e.value as List<dynamic>)[0] as num).toDouble(), ((e.value as List<dynamic>)[1] as num).toDouble()),
       },
-      officials: (j['r'] as List?)?.map((o) => (((o as List)[0] as num).toDouble(), (o[1] as num).toDouble())).toList(),
+      officials: (j['r'] as List<dynamic>?)?.map((o) => (((o as List<dynamic>)[0] as num).toDouble(), (o[1] as num).toDouble())).toList(),
     );
   }
 

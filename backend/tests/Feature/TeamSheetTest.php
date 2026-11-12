@@ -74,6 +74,22 @@ class TeamSheetTest extends TestCase
         $this->actingAs(User::factory()->create())->getJson($this->url)->assertForbidden()->assertJsonPath('message', 'ليس لديك فريق في هذا الدوري.');
     }
 
+    public function test_each_slot_says_which_lines_it_takes(): void
+    {
+        // [Sprint 59 F6] The screens read the rule from the server instead of keeping their own.
+        $team = $this->actingAs($this->owner)->getJson($this->url)->assertOk()
+            // [Sprint 59 F1] Every field SquadPlayer requires in openapi.yaml (the app reads the squad through it).
+            ->assertJsonStructure(['players' => ['*' => ['id', 'name', 'position', 'line', 'age', 'overall', 'potential', 'value', 'fitness',
+                'injured_matches', 'suspended_matches', 'available', 'attributes', 'role', 'place_bp', 'listed']]])->json();
+        $this->assertSame(['gk'], $team['lineup']['slots'][0]['allowed']);
+        foreach (array_slice($team['lineup']['slots'], 1) as $slot) {
+            $this->assertSame(['def', 'mid', 'att'], $slot['allowed']);
+        }
+        $this->assertSame(['gk'], $this->getJson('/api/v1/data/formations')->json('formations.0.slots.0.allowed'));
+        $this->assertSame(['gk'], TeamSheet::allowed('gk'));
+        $this->assertSame(['def', 'mid', 'att'], TeamSheet::allowed('mid'));
+    }
+
     public function test_an_injured_player_is_left_out_of_the_automatic_lineup(): void
     {
         $club = Club::where('user_id', $this->owner->id)->first();
