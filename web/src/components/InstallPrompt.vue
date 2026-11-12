@@ -3,16 +3,17 @@
 // Sprint 9 and 36; the button was only in «حسابي»). Here once on the home screen: the browser's own install offer, or on
 // an iPhone the two steps (Share, then «Add to Home Screen»). «لاحقاً» hides it on this device for two weeks; installed,
 // it never shows.
+import { storage } from '../lib/storage'
 import { computed, ref } from 'vue'
 import { install, installable, isIos, standalone } from '../lib/pwa'
 import UiButton from './ui/UiButton.vue'
 
-const KEY = 'glm.install.later'
-const later = ref((() => { try { return Date.now() - Number(localStorage.getItem(KEY) ?? 0) < 14 * 86400_000 } catch { return false } })())
+const KEY = 'install.later'
+const later = ref((() => { try { return Date.now() - Number(storage.get(KEY) ?? 0) < 14 * 86400_000 } catch { return false } })())
 const ios = isIos()
 const show = computed(() => !later.value && !standalone() && (installable.value || ios))
 function dismiss() {
-  try { localStorage.setItem(KEY, String(Date.now())) } catch { /* private mode */ }
+  try { storage.set(KEY, String(Date.now())) } catch { /* private mode */ }
   later.value = true
 }
 </script>

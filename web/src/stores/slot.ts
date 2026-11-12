@@ -1,5 +1,6 @@
 // The slot the coach is in [X29]: the club whose sections the menu shows. Read from the home screen's slots and the
 // league remembered on this device (lib/currentLeague); outside a slot there is no menu, only the top bar.
+import { storage } from '../lib/storage'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api } from '../api/client'
@@ -33,7 +34,7 @@ export const useSlot = defineStore('slot', () => {
   function pick() {
     let saved = 0
     try {
-      saved = Number(localStorage.getItem('legends.league')) || 0
+      saved = Number(storage.get('league')) || 0
     } catch {}
     const clubs = slots.value.filter((s) => s.state === 'club')
     current.value = clubs.find((s) => s.league?.id === saved) ?? clubs[0] ?? null

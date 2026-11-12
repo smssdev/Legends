@@ -9,6 +9,7 @@
 // - The screen in what is left, scrolling inside itself (the frame never moves), the footer at its end.
 // - Held upright on a phone (the coach chose «تابع عمودياً», TurnPhone): the same dock along the bottom.
 // Signed out (the landing, the sign-in) only a slim bar with the brand and the two doors.
+import { storage } from '../lib/storage'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BrandMark from '../components/BrandMark.vue'
@@ -51,7 +52,7 @@ watch(() => [auth.user?.id ?? 0, route.fullPath] as const, ([id], before) => id 
 
 // "الدوري والكأس" is the slot's own league page, and the media live under the league.
 // Before the slots come, the league remembered on this device stands in [Sprint 21 E3.3].
-const remembered = (() => { try { return Number(localStorage.getItem('legends.league')) || null } catch { return null } })()
+const remembered = (() => { try { return Number(storage.get('league')) || null } catch { return null } })()
 const pathOf = (s: Section) => {
   const league = slot.current?.league?.id ?? (slot.slots.length ? null : remembered)
   if (s.name === 'league' && league) return `/leagues/${league}`
@@ -108,9 +109,9 @@ const next = computed(() => {
 
 // [Sprint 55 W2] The Assistant Coach answers from the dock; the dock's own dot greets once a day until it is opened.
 const bot = useBot()
-const HELLO = 'glm.bot.hello'
+const HELLO = 'bot.hello'
 const today = new Date().toDateString()
-const hello = ref((() => { try { return localStorage.getItem(HELLO) !== today } catch { return false } })())
+const hello = ref((() => { try { return storage.get(HELLO) !== today } catch { return false } })())
 watch(() => bot.open, (o) => { if (o) hello.value = false })
 
 // [Sprint 39 N1] The tone when the coach's next match kicks off while the game is open (its end comes as the match

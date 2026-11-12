@@ -27,9 +27,9 @@ void i18nReady.then(() => app.mount('#app'))
 // build once instead of leaving the screen (the market, the club...) empty. Once a minute at most, never a loop.
 function freshBuild(path?: string) {
   try {
-    const last = Number(sessionStorage.getItem('legends.reloaded') || 0)
+    const last = Number(sessionStorage.getItem('glm.reloaded') || 0)
     if (Date.now() - last < 60_000) return false
-    sessionStorage.setItem('legends.reloaded', String(Date.now()))
+    sessionStorage.setItem('glm.reloaded', String(Date.now()))
   } catch {}
   if (path) location.assign(path)
   else location.reload()

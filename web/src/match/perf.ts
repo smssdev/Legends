@@ -5,15 +5,16 @@
 // the replay's confetti), at most 1.5 pixels a point and half the crowd. 'high' (full) is for strong phones and
 // laptops: all of it. Auto picks from what the device says of itself, then steps down one tier at a time when the
 // frames fall behind during a match. The coach can force any of the three. It changes the drawing, never the timing.
+import { storage } from '../lib/storage'
 import { computed, ref, watch } from 'vue'
 
 export type PerfPref = 'auto' | 'smooth' | 'balanced' | 'full'
 export type Tier = 'low' | 'mid' | 'high'
-const KEY = 'legends.perf'
+const KEY = 'perf'
 
 function readPref(): PerfPref {
   try {
-    const v = localStorage.getItem(KEY)
+    const v = storage.get(KEY)
     return v === 'smooth' || v === 'balanced' || v === 'full' ? v : 'auto'
   } catch {
     return 'auto'
@@ -58,7 +59,7 @@ watch(smooth, (v) => { if (typeof document !== 'undefined') document.documentEle
 
 export function setPerfPref(p: PerfPref) {
   perfPref.value = p
-  try { localStorage.setItem(KEY, p) } catch { /* private mode: for this visit only */ }
+  try { storage.set(KEY, p) } catch { /* private mode: for this visit only */ }
 }
 
 // Watching the frames while the match plays: two seconds of frames averaging over 28 ms (under 36 a second) lower

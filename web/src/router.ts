@@ -1,3 +1,4 @@
+import { storage } from './lib/storage'
 import { createRouter, createWebHistory } from 'vue-router'
 import { SECTIONS } from './layouts/nav'
 import { currentLeague } from './lib/currentLeague'
@@ -134,7 +135,7 @@ router.beforeEach(async (to) => {
   // [Sprint 21 E2.3] An invite link's ?ref=12345 is kept for the sign-up, wherever the link lands.
   if (typeof to.query.ref === 'string' && /^\d{5}$/.test(to.query.ref)) {
     try {
-      localStorage.setItem('glm.ref', to.query.ref)
+      storage.set('ref', to.query.ref)
     } catch {}
   }
   const auth = useAuth()

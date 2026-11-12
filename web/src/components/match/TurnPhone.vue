@@ -3,6 +3,7 @@
 // covers it and asks to turn the phone. On Android one tap opens the match full screen and locks it sideways (the
 // browser allows the lock only full screen, after a tap); Safari on the iPhone never locks, so the message stays until
 // the phone is turned. Leaving the match lets the phone turn freely again.
+import { storage } from '../../lib/storage'
 import { onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
 import UiButton from '../ui/UiButton.vue'
 
@@ -13,11 +14,11 @@ const query = '(orientation: portrait) and (pointer: coarse) and (max-width: 820
 // [Sprint 55 W4, the plan's decision 3] Sideways is the game's way, but on the site whoever wants carries on upright:
 // the frame then lays its dock along the bottom (AppShell). Remembered on this device; the match asks again (it is
 // watched sideways).
-const UPRIGHT = 'glm.upright'
-const chose = ref((() => { try { return localStorage.getItem(UPRIGHT) === '1' } catch { return false } })())
+const UPRIGHT = 'upright'
+const chose = ref((() => { try { return storage.get(UPRIGHT) === '1' } catch { return false } })())
 function stayUpright() {
   chose.value = true
-  try { localStorage.setItem(UPRIGHT, '1') } catch {}
+  try { storage.set(UPRIGHT, '1') } catch {}
 }
 const upright = ref(false)
 const lockable = ref(typeof screen !== 'undefined' && 'orientation' in screen && typeof (screen.orientation as any)?.lock === 'function'

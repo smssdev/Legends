@@ -29,7 +29,7 @@
       try {
         // [Sprint 43 A1] Who has not chosen follows the device (the owner's decision 2026-11-05).
         var t = null;
-        try { t = localStorage.getItem('legends.theme'); } catch (e) {}
+        try { t = localStorage.getItem('glm.theme') || localStorage.getItem('legends.theme'); } catch (e) {}
         if (t === 'light' || (t !== 'dark' && matchMedia('(prefers-color-scheme: light)').matches)) {
           document.documentElement.classList.add('light');
           document.querySelector('meta[name="theme-color"]').setAttribute('content', '#EFEADF');

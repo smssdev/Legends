@@ -2,6 +2,7 @@
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
 // cash and coins) and the eight club slots right under it, all in one screen without scrolling; the announcements, the
 // record, the trophies and the rankings below. A guest sees the way in ([X59] the landing page).
+import { storage } from '../lib/storage'
 import AsyncState from '../components/ui/AsyncState.vue'
 import InstallPrompt from '../components/InstallPrompt.vue'
 import ReminderPrompt from '../components/ReminderPrompt.vue'
@@ -142,10 +143,10 @@ const shownSlots = computed(() => {
 })
 const lockedHidden = computed(() => (home.value?.slots.length ?? 0) - shownSlots.value.length)
 // [X86] «المزيد» (the news, the badges, the poll, the ranking, the ways in), closed until the coach opens it, remembered here.
-const moreOpen = ref((() => { try { return localStorage.getItem('glm.home.more') === 'open' } catch { return false } })())
+const moreOpen = ref((() => { try { return storage.get('home.more') === 'open' } catch { return false } })())
 function setMore(open: boolean) {
   moreOpen.value = open
-  try { localStorage.setItem('glm.home.more', open ? 'open' : 'closed') } catch {}
+  try { storage.set('home.more', open ? 'open' : 'closed') } catch {}
 }
 function goClub(s: Home['slots'][number], to: string) {
   if (s.league) rememberLeague(s.league.id)

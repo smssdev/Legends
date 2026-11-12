@@ -1,6 +1,7 @@
 // [Sprint 30 Q2] One way to ask before anything that cannot be undone, instead of the browser's confirm(): any screen
 // awaits `useConfirm().ask({...})` and the one window (ConfirmHost in App.vue, on ConfirmDangerDialog) answers true
 // or false. With `expected`, the button wakes only once that name or number is typed.
+import { storage } from '../lib/storage'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -12,13 +13,13 @@ export const useConfirm = defineStore('confirm', () => {
   const current = ref<ConfirmAsk | null>(null)
   let answer: ((ok: boolean) => void) | null = null
   function ask(q: ConfirmAsk): Promise<boolean> {
-    try { if (q.remember && localStorage.getItem(q.remember) === '1') return Promise.resolve(true) } catch {}
+    try { if (q.remember && storage.get(q.remember) === '1') return Promise.resolve(true) } catch {}
     answer?.(false)
     current.value = q
     return new Promise((resolve) => { answer = resolve })
   }
   function settle(ok: boolean, remember = false) {
-    if (ok && remember && current.value?.remember) try { localStorage.setItem(current.value.remember, '1') } catch {}
+    if (ok && remember && current.value?.remember) try { storage.set(current.value.remember, '1') } catch {}
     answer?.(ok)
     answer = null
     current.value = null

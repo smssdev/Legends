@@ -2,16 +2,17 @@
 // chosen, Sprint 43 A1). On this
 // device only, like the names' language. A class on the page's root (html.light) swaps the colours of
 // docs/design/tokens.json (colorLight); index.html puts it there before the first paint, so the page never flashes.
+import { storage } from './storage'
 import { computed, ref, watch } from 'vue'
 
 export type ThemePref = 'dark' | 'light' | 'auto'
-const KEY = 'legends.theme'
+const KEY = 'theme'
 /** The bar's colour on the phone, as the page's ground in each look (tokens.json bg). */
 const BAR = { dark: '#0B1A2C', light: '#EFEADF' } as const
 
 function readPref(): ThemePref {
   try {
-    const v = localStorage.getItem(KEY)
+    const v = storage.get(KEY)
     return v === 'light' || v === 'dark' ? v : 'auto'
   } catch {
     return 'auto'
@@ -34,5 +35,5 @@ watch(theme, (v) => {
 
 export function setThemePref(p: ThemePref) {
   themePref.value = p
-  try { localStorage.setItem(KEY, p) } catch { /* private mode: for this visit only */ }
+  try { storage.set(KEY, p) } catch { /* private mode: for this visit only */ }
 }

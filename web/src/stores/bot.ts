@@ -3,6 +3,7 @@
 // remembers what was said.
 // [X61] Its end: «إنهاء» (or a recommendation followed) closes on a card; «احفظ وتابع لاحقاً» keeps the last
 // conversation on this device only, and the next opening offers «تابع من حيث توقفت».
+import { storage } from '../lib/storage'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api } from '../api/client'
@@ -24,11 +25,11 @@ export const useBot = defineStore('bot', () => {
   // The closing card: shown, and why (the coach ended it, or followed an answer's page).
   const closing = ref<null | 'ended' | 'done'>(null)
   const followed = ref<string | null>(null)
-  const SAVED = 'glm.bot.saved'
+  const SAVED = 'bot.saved'
   type Saved = { at: string; messages: BotMessage[] }
   const saved = ref<Saved | null>(read())
   function read(): Saved | null {
-    try { return JSON.parse(localStorage.getItem(SAVED) ?? 'null') } catch { return null }
+    try { return JSON.parse(storage.get(SAVED) ?? 'null') } catch { return null }
   }
 
   /** «إنهاء»: a short goodbye from him, then the card. */
@@ -38,7 +39,7 @@ export const useBot = defineStore('bot', () => {
   }
   function save() {
     const kept: Saved = { at: new Date().toISOString(), messages: messages.value.slice(-12).map(({ from, text, go }) => ({ from, text, go })) }
-    try { localStorage.setItem(SAVED, JSON.stringify(kept)) } catch {}
+    try { storage.set(SAVED, JSON.stringify(kept)) } catch {}
     saved.value = kept
   }
   /** Back to the saved conversation; it stays saved until a new one is. */
@@ -47,7 +48,7 @@ export const useBot = defineStore('bot', () => {
   }
   /** Forgets the saved conversation; at sign-out (all: true, Sprint 51 W5) the one on screen too. */
   function forget(all = false) {
-    try { localStorage.removeItem(SAVED) } catch {}
+    try { storage.remove(SAVED) } catch {}
     saved.value = null
     if (all) {
       messages.value = []

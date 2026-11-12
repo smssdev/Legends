@@ -1,5 +1,6 @@
 // How the coach watches his matches [X10]: the simulator, cartoon or Unity.
 // Kept in the account so every device plays the same; a guest (the simulator) keeps it on this device only.
+import { storage } from '../lib/storage'
 import { computed, ref } from 'vue'
 import { api } from '../api/client'
 import { useAuth } from '../stores/auth'
@@ -19,18 +20,18 @@ export const MATCH_VIEWS: { id: MatchView; name: string; hint: string }[] = [
 
 function local<T extends string>(key: string, allowed: readonly T[], fallback: T): T {
   try {
-    const v = localStorage.getItem(key) as T | null
+    const v = storage.get(key) as T | null
     return v && allowed.includes(v) ? v : fallback
   } catch {
     return fallback
   }
 }
 function keep(key: string, value: string) {
-  try { localStorage.setItem(key, value) } catch {}
+  try { storage.set(key, value) } catch {}
 }
 
 // This device's choice: a guest's only one, and a signed-in coach's until their account answers.
-const guestView = ref<MatchView>(local<MatchView>('legends.matchView', ['cartoon', 'unity'], 'cartoon'))
+const guestView = ref<MatchView>(local<MatchView>('matchView', ['cartoon', 'unity'], 'cartoon'))
 
 export function useViewing() {
   const auth = useAuth()
@@ -42,7 +43,7 @@ export function useViewing() {
   const coachLook = computed<CoachLook>(() => (auth.user?.viewing as { coach_look?: CoachLook } | undefined)?.coach_look ?? 'C1')
 
   async function save(body: { match_view?: MatchView; coach_look?: CoachLook }) {
-    if (body.match_view) keep('legends.matchView', (guestView.value = body.match_view))
+    if (body.match_view) keep('matchView', (guestView.value = body.match_view))
     if (!auth.user) return
     const { data } = await api.PATCH('/auth/me', { body })
     if (data?.user) auth.set(data.user)

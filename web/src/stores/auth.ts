@@ -1,4 +1,5 @@
 // The signed-in account for the web (Sanctum session cookie) [PLAN 2.17].
+import { storage } from '../lib/storage'
 import { defineStore } from 'pinia'
 import { track } from '../lib/analytics'
 import { computed, ref } from 'vue'
@@ -67,7 +68,7 @@ export const useAuth = defineStore('auth', () => {
     // [Sprint 21 E2.3] The inviter's number from an invite link opened on this device.
     let ref: number | undefined
     try {
-      ref = Number(localStorage.getItem('glm.ref')) || undefined
+      ref = Number(storage.get('ref')) || undefined
     } catch {}
     const { data } = await api.POST('/auth/register', { body: { name, username, password, ref } })
     user.value = data!.user

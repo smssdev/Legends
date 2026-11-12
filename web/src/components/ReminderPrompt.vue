@@ -2,6 +2,7 @@
 // [Sprint 30 G1] The match reminder half an hour before kick-off (MatchPrep, Web Push) works only once the coach allows
 // notifications, and the switch was deep in «حسابي». A coach with a club who has not allowed them on this device sees
 // one card on the home screen: allow, or «لاحقاً» (hidden on this device for a week).
+import { storage } from '../lib/storage'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import { currentSubscription, pushSupported, subscribe } from '../lib/pwa'
@@ -9,7 +10,7 @@ import { useToast } from '../stores/toast'
 import { t } from '../lib/i18n'
 import UiButton from './ui/UiButton.vue'
 
-const KEY = 'glm.reminder.later'
+const KEY = 'reminder.later'
 const show = ref(false)
 const busy = ref(false)
 let key: string | null = null
@@ -17,7 +18,7 @@ let key: string | null = null
 onMounted(async () => {
   try {
     if (!pushSupported() || Notification.permission === 'denied') return
-    const later = Number(localStorage.getItem(KEY) ?? 0)
+    const later = Number(storage.get(KEY) ?? 0)
     if (later && Date.now() - later < 7 * 86400_000) return
     if (await currentSubscription()) return
     const s = (await api.GET('/notifications')).data
@@ -45,7 +46,7 @@ async function allow() {
   busy.value = false
 }
 function later() {
-  try { localStorage.setItem(KEY, String(Date.now())) } catch { /* private mode */ }
+  try { storage.set(KEY, String(Date.now())) } catch { /* private mode */ }
   show.value = false
 }
 </script>
