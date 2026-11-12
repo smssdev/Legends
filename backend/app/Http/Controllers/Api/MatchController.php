@@ -154,7 +154,7 @@ class MatchController extends Controller
             'gap' => $gap,
             'missed' => $missed,
             'summary' => $summary,
-            'ticks' => array_map(fn ($t) => LiveDegrade::voice() ? Simulator::redact($t, $you) : ['voice' => null] + Simulator::redact($t, $you), $shown),
+            'ticks' => array_map(fn ($t) => Simulator::shown(LiveDegrade::voice() ? $t : ['voice' => null] + $t, $you, (int) $m->seed), $shown),
             'readings' => $this->readings($m, $f, $you, $tick),
             // [UP17] The break under way: its end, the coaches ready, and whose injured player waits.
             'pause' => $m->status === 'live' ? MatchRunner::pauseOf($m->id) : null,
@@ -347,7 +347,7 @@ class MatchController extends Controller
             return response()->json(['replayable' => false, 'expired' => $expired, 'ticks' => null, 'events' => array_map(fn ($e) => Simulator::redact(['events' => [$e]], $you)['events'][0], MatchReplay::events($m->id))]);
         }
 
-        return response()->json(['replayable' => true, 'expired' => false, 'ticks' => array_map(fn ($t) => Simulator::redact($t, $you), MatchReplay::ticks($m)), 'events' => null]);
+        return response()->json(['replayable' => true, 'expired' => false, 'ticks' => array_map(fn ($t) => Simulator::shown($t, $you, (int) $m->seed), MatchReplay::ticks($m)), 'events' => null]);
     }
 
     /** My matches being played now, in every league: the viewer switches between them. */

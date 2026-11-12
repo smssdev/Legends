@@ -57,7 +57,6 @@ const TS_ARABIC_ONLY = {
   'content/leagueAtlas.ts': 'Sprint 56: the countries on the league picker',
   'components/characters/art.ts': "Sprint 63: the characters' names and descriptions",
   'match/feed/art.ts': 'Sprint 57: the broadcast words come from the server',
-  'match/feed/story.ts': 'Sprint 57: the moment story comes from the server',
 }
 for (const f of files) {
   const rel = f.slice(4).split('\\').join('/')
@@ -66,6 +65,13 @@ for (const f of files) {
     const k = unq(lit[1])
     if (ARABIC.test(k) && !en.has(k) && !lost.includes(`${f}: ${k}`)) missing(k, f)
   }
+}
+// [Sprint 57 B2] The words of the minute's story are the server's (App\Simulator\MomentStory): the screens translate them.
+const STORY = '../backend/app/Simulator/MomentStory.php'
+const storyCode = readFileSync(STORY, 'utf8')
+for (const lit of storyCode.slice(storyCode.indexOf('final class')).matchAll(/'((?:[^'\\\n]|\\.)*)'/g)) {
+  const k = unq(lit[1])
+  if (ARABIC.test(k) && !en.has(k) && !lost.includes(`${STORY}: ${k}`)) missing(k, STORY)
 }
 if (lost.length) {
   console.error(`${lost.length} sentence(s) without English in src/i18n/en.ts:\n` + lost.join('\n'))

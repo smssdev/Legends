@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MasterClub;
 use App\Models\SimMatch;
 use App\Models\SimRoom;
+use App\Simulator\MomentStory;
 use App\Simulator\Simulator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -105,7 +106,7 @@ class SimulatorController extends Controller
         $data = $request->validate(['count' => 'nullable|integer|min:1|max:200']);
         abort_if($match->live !== null, 409, 'المباراة المباشرة يديرها الخادم.');
 
-        return ['ticks' => $this->sim->advance($match, (int) ($data['count'] ?? 1))];
+        return ['ticks' => array_map(fn ($t) => MomentStory::attach($t, (int) $match->seed), $this->sim->advance($match, (int) ($data['count'] ?? 1)))];
     }
 
     public function start(Request $request, SimMatch $match)

@@ -6735,7 +6735,7 @@ export interface paths {
                                     player: number | null;
                                 }[];
                             } | null;
-                            /** @description Each with at, match_time and server_ts [E8.3] */
+                            /** @description Each with at, match_time and server_ts [E8.3], and its story (MomentStory, Sprint 57 B2) */
                             ticks: {
                                 [key: string]: unknown;
                             }[];
@@ -16152,6 +16152,58 @@ export interface components {
             formation?: "4-2-3-1" | "4-3-3" | "4-4-2" | "4-1-4-1" | "3-5-2" | "5-3-2";
             tactics?: components["schemas"]["Tactics"];
         };
+        /** @description [Sprint 57 B2] What the minute becomes on the match feed, decided on the server (App\Simulator\MomentStory, told from the minute as the screen asking may see it): the scene and who is in it, the cards, the commentator's lines and the bubble. Texts are keys of the game's dictionary or parts (StoryText) the screen writes in its language with its names switch; the commentator's lines are places in voice.json (its words never travel). */
+        MomentStory: {
+            /** @description The scene to play (goal, save, penalty, freekick, card, foul, miss, blocked, clearance, var, offside, trap, corner, sub, injury, coach, rant, whistle, slip, board), or none */
+            scene: string | null;
+            /** @enum {string} */
+            side: "home" | "away";
+            /** @description What the scene draws: shirt numbers, lane, quality, drama, the scene's own seed v, and so on. tactic and big are StoryText, stats [[StoryText, home, away]], score [home, away] */
+            data: {
+                [key: string]: unknown;
+            };
+            head: components["schemas"]["StoryText"];
+            who: components["schemas"]["StoryText"];
+            sub: components["schemas"]["StoryText"];
+            /** @description What the lower bar says until the key moment (head, who, sub as StoryText) */
+            pre: {
+                [key: string]: unknown;
+            } | null;
+            /** @description The timeline cards once the scene has played */
+            items: {
+                /** @enum {string} */
+                side: "home" | "away";
+                icon: string;
+                name: components["schemas"]["StoryText"];
+                label: components["schemas"]["StoryText"];
+                minute: string;
+                goal?: boolean;
+                center?: boolean;
+            }[];
+            lines: {
+                at: number;
+                /** @description The English variant in voice.json */
+                en: number | null;
+                ar: number | null;
+                x: boolean;
+                /** @description p, q (players), A (side), n (StoryText) */
+                vars: {
+                    [key: string]: unknown;
+                };
+                /** @description The line in voice.json (none: the kick-off) */
+                m?: string;
+                /** @enum {string} */
+                s?: "pre" | "key" | "post";
+            }[];
+            bubble: components["schemas"]["StoryText"];
+            bubble_en: components["schemas"]["StoryText"];
+            goal: boolean;
+            minute: string;
+        };
+        /** @description [Sprint 57 B2] A text of the story: a string is a key to translate; {p} a player's name by id, {c} a club by side, {r} as it is, {t, v} a key with its parts {v0}…, {j, by} parts joined, {say: {m, s, lang?, i}, vars} a line of voice.json with its names. */
+        StoryText: string | {
+            [key: string]: unknown;
+        };
         /** @description [Sprint 57 B1] Both sides' final kits, worked out on the server (App\Data\MatchKits): the away side changes on a clash. Every screen draws these as they are. */
         MatchKits: {
             home: components["schemas"]["MatchKit"];
@@ -16262,6 +16314,7 @@ export interface components {
             /** @description Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant */
             ticks?: {
                 frames?: components["schemas"]["Keyframe"][];
+                story?: components["schemas"]["MomentStory"];
                 /** @description The minute's shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul. [Sprint 42] kind foul (a foul told as its own scene, matches made since), and drama, how a card or a foul is told: yellow tackle or swarm, red tackle, brawl, swarm or spit, foul tackle or dive; and the gags (Sprint 42 F): goal blackout, bicycle, nolook or nutmeg, save double, miss clearance, offside trap, coach rant. kind slip: a ball lost in a rainy match (matches made since) */
                 moment?: Record<string, never>;
             }[];

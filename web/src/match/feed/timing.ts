@@ -1,7 +1,7 @@
 // [Sprint 37 R1] The scenes' timing, apart from story.ts so the pure modules (director.ts) and their node checks
 // load it without the i18n and the commentary lines.
 // The scene's own length in seconds, and when its key moment happens (see art.ts).
-export const SCENE_TIME = {
+export const SCENE_TIME: Record<string, [number, number]> = {
   // [Sprint 42] The cartoon clips: the card is up at 3.4 s after the foul and its drama; the penalty opens with the
   // referee pointing to the spot (1.2 s); a foul's contact at 1.5 s; the injury and the sub longer and funnier.
   goal: [6.0, 3.0], save: [5.4, 2.9], penalty: [6.8, 4.05], freekick: [5.2, 2.65], card: [6.6, 3.4], coach: [4.6, 1.0], sub: [5.0, 0.8],

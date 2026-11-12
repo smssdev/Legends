@@ -146,6 +146,15 @@ class Simulator
         return $data;
     }
 
+    /**
+     * [Sprint 57 B2] A minute as the screen asking may see it (redact()), with its story told from that (MomentStory):
+     * the one way a minute leaves the server for a screen.
+     */
+    public static function shown(array $tick, ?string $you, int $seed): array
+    {
+        return MomentStory::attach(self::redact($tick, $you), $seed);
+    }
+
     /** Queues an order for the next minute that has not been simulated yet. */
     public function order(SimMatch $match, array $order): array
     {
@@ -259,7 +268,7 @@ class Simulator
                 'next_at' => $m->state['finished'] ? null : $live['next_at'],
                 // Older minutes were dropped from the buffer: the screen jumps to the latest.
                 'gap' => $ticks && $ticks[0]['tick'] > $since + 1,
-                'ticks' => array_map(fn ($t) => self::redact($t, $you), $ticks),
+                'ticks' => array_map(fn ($t) => self::shown($t, $you, (int) $m->seed), $ticks),
                 // The coaches' reactions of the last few seconds (each screen keeps the ids it has shown).
                 'reactions' => array_values(array_filter($live['reactions'] ?? [], fn ($r) => $r['at'] >= $now['ms'] - 8000)),
             ];

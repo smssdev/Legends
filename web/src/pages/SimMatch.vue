@@ -75,7 +75,7 @@
             <div v-if="halftime && league" class="flex h-24 w-full max-w-md items-center justify-center rounded-lg border border-dashed border-text/20 text-xs text-text-muted" aria-hidden="true">{{ $t('مساحة إعلانية') }}</div>
           </div>
 
-          <GoalReplay v-if="replayTick" :key="replayTick.tick" :tick="replayTick" :players="playersById" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :seed="view.seed" :tag="replayMissed ? $t('فاتك · {v0}', { v0: replayTick.minute[0] + `'` }) : undefined" @done="nextReplay" />
+          <GoalReplay v-if="replayTick" :key="replayTick.tick" :tick="replayTick" :players="playersById" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :tag="replayMissed ? $t('فاتك · {v0}', { v0: replayTick.minute[0] + `'` }) : undefined" @done="nextReplay" />
           <!-- [E8.5] Back after a gap (a hidden tab, a lost connection, joining late): now, with what was missed. -->
           <button v-if="caught" type="button" class="absolute inset-x-3 top-24 z-30 flex min-h-touch flex-col items-center justify-center gap-0.5 rounded-lg bg-surface-raised/95 px-3 py-2 text-center text-sm font-bold" role="status" @click="caught = null">
             <span>{{ $t('عدت إلى الوقت الحالي: فاتتك {v0} دقيقة', { v0: caught.minutes }) }}</span>
