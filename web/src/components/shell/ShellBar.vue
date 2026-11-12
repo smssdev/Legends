@@ -12,7 +12,7 @@ import MoneyPill from '../ui/MoneyPill.vue'
 defineProps<{
   title: string
   next?: { at: string | null; live: boolean; opponent: string } | null
-  coins: number
+  coins: number | null
   cash?: { value: number; label: string; title: string } | null
   unread: string
   avatar?: string | null

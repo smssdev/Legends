@@ -4,21 +4,25 @@
 import CountUp from './CountUp.vue'
 import { money } from '../../lib/format'
 
-defineProps<{ kind: 'coins' | 'cash'; value: number; to: string; label: string; caption?: string }>()
+// [Sprint 58 W7] value null: not known (the load failed): «?» and a warning dot, not a 0.
+defineProps<{ kind: 'coins' | 'cash'; value: number | null; to: string; label: string; caption?: string }>()
 </script>
 
 <template>
-  <RouterLink :to="to" class="ui-money-pill" :class="kind" :aria-label="label">
+  <RouterLink :to="to" class="ui-money-pill" :class="kind" :aria-label="value === null ? $t('{v0}: غير معروف الآن', { v0: label }) : label">
+    <i v-if="value === null" class="ui-money-warn" aria-hidden="true" />
     <AppImage v-if="kind === 'coins'" src="/brand/coin.svg" alt="" class="size-5" :size="20" />
     <span class="flex flex-col leading-none">
       <span v-if="caption" class="hidden text-caption font-bold opacity-80 md:block">{{ $t(caption) }}</span>
-      <b class="font-numbers text-body-lg" dir="ltr"><CountUp :value="value" :format="kind === 'cash' ? money : undefined" /></b>
+      <b class="font-numbers text-body-lg" dir="ltr"><CountUp v-if="value !== null" :value="value" :format="kind === 'cash' ? money : undefined" /><template v-else>?</template></b>
     </span>
   </RouterLink>
 </template>
 
 <style scoped>
+.ui-money-warn { position: absolute; top: 2px; inset-inline-end: 2px; width: 8px; height: 8px; border-radius: 50%; background: var(--color-warning); }
 .ui-money-pill {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-xs);

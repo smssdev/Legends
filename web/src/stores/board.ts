@@ -11,6 +11,8 @@ export type Board = components['schemas']['ClubBoard']
 export const useBoard = defineStore('board', () => {
   const board = ref<Board | null>(null)
   const league = ref<number | null>(null)
+  /** [Sprint 58 W7] The last load failed for a reason other than having no club here (the server, the network). */
+  const error = ref(false)
   let fetched = 0
   let timer: ReturnType<typeof setInterval> | undefined
   // [Sprint 58] One request at a time per league: the shell and the club's screen asking together share it.
@@ -31,9 +33,12 @@ export const useBoard = defineStore('board', () => {
     const done = (async () => {
       try {
         board.value = (await api.GET('/leagues/{league}/team/summary', { params: { path: { league: leagueId } } })).data ?? null
-      } catch {
-        // No club in this league (left, or not yet taken): no board.
-        if (league.value === leagueId) board.value = null
+        error.value = false
+      } catch (e) {
+        // No club in this league (left, or not yet taken): no board. Anything else is an error the shell shows.
+        const status = (e as { status?: number }).status ?? 0
+        error.value = !(status >= 400 && status < 500)
+        if (league.value === leagueId && !error.value) board.value = null
       }
     })()
     inflight = { league: leagueId, done }
@@ -57,5 +62,5 @@ export const useBoard = defineStore('board', () => {
     })
   }
 
-  return { board, league, load, pause, refresh: () => load(league.value, true) }
+  return { board, league, error, load, pause, refresh: () => load(league.value, true) }
 })

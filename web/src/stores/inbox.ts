@@ -17,6 +17,8 @@ export const useInbox = defineStore('inbox', () => {
   const more = ref(false)
   const loaded = ref(false)
   const error = ref('')
+  /** [Sprint 58 W7] The unread count could not be asked. */
+  const countError = ref(false)
   let userId: number | null = null
   let timer = 0
 
@@ -24,8 +26,10 @@ export const useInbox = defineStore('inbox', () => {
     try {
       const { data } = await api.GET('/messages/unread')
       unread.value = data!.unread
+      countError.value = false
     } catch {
-      /* the badge keeps its last number */
+      // The badge keeps its last number, with a warning that it may be old.
+      countError.value = true
     }
   }
 

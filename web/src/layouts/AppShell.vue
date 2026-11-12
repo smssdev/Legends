@@ -135,7 +135,7 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
     <!-- [Sprint 39 N1] Asked once a device: the game's sound and notifications. -->
     <SoundPrompt />
     <ShellDock :entries="entries" :more="more" :in-slot="inSlot" :bot-open="bot.open" :bot-dot="hello && !bot.open" @bot="bot.open = !bot.open" />
-    <ShellBar :title="title" :in-slot="inSlot" :next="next" :coins="wallet.view?.balance ?? 0" :cash="cash" :unread="unread" :avatar="auth.user.avatar_url" :initial="initial" :unverified="!auth.user.verification?.verified" />
+    <ShellBar :title="title" :in-slot="inSlot" :next="next" :coins="wallet.view?.balance ?? (wallet.error ? null : 0)" :cash="cash" :unread="unread" :avatar="auth.user.avatar_url" :initial="initial" :unverified="!auth.user.verification?.verified" />
 
     <main ref="main" class="shell-main">
       <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->

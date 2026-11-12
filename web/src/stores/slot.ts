@@ -16,6 +16,8 @@ export const useSlot = defineStore('slot', () => {
   // The coach's own tab on the shell's header (level and avatar) [X32].
   const coach = ref<Coach | null>(null)
   let loadedFor = 0
+  /** [Sprint 58 W7] The slots could not be loaded (the server, the network): not the same as having none. */
+  const error = ref(false)
 
   async function load(userId: number, force = false) {
     if (!force && loadedFor === userId) return pick()
@@ -24,9 +26,12 @@ export const useSlot = defineStore('slot', () => {
       const home = (takeBoot('home', userId) as { slots: Slot[]; coach: Coach } | undefined) ?? (await api.GET('/home')).data
       slots.value = home?.slots ?? []
       coach.value = home?.coach ?? null
+      error.value = false
     } catch {
       slots.value = []
       coach.value = null
+      error.value = true
+      loadedFor = 0
     }
     pick()
   }
@@ -40,5 +45,5 @@ export const useSlot = defineStore('slot', () => {
     current.value = clubs.find((s) => s.league?.id === saved) ?? clubs[0] ?? null
   }
 
-  return { slots, current, coach, load, pick }
+  return { slots, current, coach, error, load, pick }
 })
