@@ -12,7 +12,7 @@ class MatchClub {
   factory MatchClub.fromJson(Map<String, dynamic>? j) => MatchClub(
         id: j?['id'] as int? ?? 0, name: '${j?['name'] ?? ''}', code: '${j?['code'] ?? ''}',
         primary: j?['primary'] as String?, secondary: j?['secondary'] as String?, logo: j?['logo'] as String?,
-        awayKit: (j?['away_kit'] as Map?)?['color'] as String?,
+        awayKit: (j?['away_kit'] as Map<dynamic, dynamic>?)?['color'] as String?,
       );
 
   final int id;
@@ -46,10 +46,10 @@ class MatchTeam {
 
   factory MatchTeam.fromJson(Map<String, dynamic>? j) => MatchTeam(
         formation: j?['formation'] as String?,
-        tactics: j?['tactics'] == null ? null : Map<String, Object>.from(j!['tactics'] as Map),
+        tactics: j?['tactics'] == null ? null : Map<String, Object>.from(j!['tactics'] as Map<dynamic, dynamic>),
         subsUsed: j?['subs_used'] as int? ?? 0, subsMax: j?['subs_max'] as int? ?? 3,
-        players: [for (final p in (j?['players'] as List? ?? const [])) MatchPlayer.fromJson(p as Map<String, dynamic>)],
-        stats: {for (final e in ((j?['stats'] as Map?) ?? const {}).entries) '${e.key}': (e.value as num?)?.toInt() ?? 0},
+        players: [for (final p in (j?['players'] as List<dynamic>? ?? const [])) MatchPlayer.fromJson(p as Map<String, dynamic>)],
+        stats: {for (final e in ((j?['stats'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num?)?.toInt() ?? 0},
       );
 
   final String? formation;
@@ -79,13 +79,13 @@ class MatchView {
       you: j['you'] as String?, finished: j['finished'] == true,
       score: _score(j['score']), tick: j['tick'] as int? ?? 0, tickMs: timing['tick_ms'] as int? ?? 3000,
       kickoffAt: DateTime.tryParse('${j['kickoff_at'] ?? ''}'),
-      formations: [for (final f in (j['formations'] as List? ?? const [])) '$f'],
-      coaches: coaches is Map ? {for (final e in coaches.entries) '${e.key}': '${e.value}'} : const {},
+      formations: [for (final f in (j['formations'] as List<dynamic>? ?? const [])) '$f'],
+      coaches: coaches is Map<dynamic, dynamic> ? {for (final e in coaches.entries) '${e.key}': '${e.value}'} : const {},
       seed: (j['seed'] as num?)?.toInt(),
-      timeoutsUsed: [for (final t in (j['timeouts'] as List? ?? const [])) '${(t as Map)['side']}'],
+      timeoutsUsed: [for (final t in (j['timeouts'] as List<dynamic>? ?? const [])) '${(t as Map<dynamic, dynamic>)['side']}'],
       timeoutSeconds: (j['timeout_seconds'] as num?)?.toInt() ?? 0,
-      kits: j['kits'] is Map
-          ? {for (final e in (j['kits'] as Map).entries) if (e.value is Map) '${e.key}': (shirt: '${(e.value as Map)['shirt']}', text: '${(e.value as Map)['text']}', gk: '${(e.value as Map)['gk']}')}
+      kits: j['kits'] is Map<dynamic, dynamic>
+          ? {for (final e in (j['kits'] as Map<dynamic, dynamic>).entries) if (e.value is Map<dynamic, dynamic>) '${e.key}': (shirt: '${(e.value as Map<dynamic, dynamic>)['shirt']}', text: '${(e.value as Map<dynamic, dynamic>)['text']}', gk: '${(e.value as Map<dynamic, dynamic>)['gk']}')}
           : null,
     );
   }
@@ -116,7 +116,7 @@ class MatchView {
   MatchClub club(String side) => side == 'home' ? home : away;
 }
 
-(int, int) _score(Object? s) => s is Map ? ((s['home'] as num?)?.toInt() ?? 0, (s['away'] as num?)?.toInt() ?? 0) : (0, 0);
+(int, int) _score(Object? s) => s is Map<dynamic, dynamic> ? ((s['home'] as num?)?.toInt() ?? 0, (s['away'] as num?)?.toInt() ?? 0) : (0, 0);
 
 /// One event of a minute, with the server's commentary line (`text`, the same for everyone).
 class MatchEvent {
@@ -143,21 +143,21 @@ class LiveTick {
 
   factory LiveTick.fromJson(Map<String, dynamic> j) {
     final m = j['minute'];
-    final minute = m is List ? (m[0] as num).toInt() : (m as num?)?.toInt() ?? 0;
-    final added = m is List && m.length > 1 ? (m[1] as num).toInt() : 0;
+    final minute = m is List<dynamic> ? (m[0] as num).toInt() : (m as num?)?.toInt() ?? 0;
+    final added = m is List<dynamic> && m.length > 1 ? (m[1] as num).toInt() : 0;
     final teams = j['teams'] as Map<String, dynamic>?;
     return LiveTick(
       tick: j['tick'] as int, minute: minute, added: added, score: _score(j['score']),
-      events: [for (final e in (j['events'] as List? ?? const [])) MatchEvent.fromJson(e as Map<String, dynamic>, minute: minute, added: added)],
+      events: [for (final e in (j['events'] as List<dynamic>? ?? const [])) MatchEvent.fromJson(e as Map<String, dynamic>, minute: minute, added: added)],
       teams: teams == null ? null : {'home': MatchTeam.fromJson(teams['home'] as Map<String, dynamic>?), 'away': MatchTeam.fromJson(teams['away'] as Map<String, dynamic>?)},
-      frames: [for (final f in (j['frames'] as List? ?? const [])) Keyframe.fromJson(f as Map<String, dynamic>)],
+      frames: [for (final f in (j['frames'] as List<dynamic>? ?? const [])) Keyframe.fromJson(f as Map<String, dynamic>)],
       at: (j['at'] as num?)?.toInt(), window: j['window'] == true, finished: j['finished'] == true, period: j['period'] as int?,
-      moment: j['moment'] is Map ? Moment.fromJson(j['moment'] as Map<String, dynamic>) : null,
-      moods: j['moods'] is Map ? {for (final e in (j['moods'] as Map).entries) '${e.key}': '${e.value}'} : const {},
-      how: j['voice'] is Map ? (j['voice'] as Map)['how'] as String? : null,
-      momentumNow: ((j['momentum'] as Map?)?['now'] as num?)?.toInt() ?? 0,
-      momentumPct: ((j['momentum'] as Map?)?['home_pct'] as num?)?.toInt(),
-      story: j['story'] is Map ? (j['story'] as Map).cast<String, dynamic>() : null,
+      moment: j['moment'] is Map<dynamic, dynamic> ? Moment.fromJson(j['moment'] as Map<String, dynamic>) : null,
+      moods: j['moods'] is Map<dynamic, dynamic> ? {for (final e in (j['moods'] as Map<dynamic, dynamic>).entries) '${e.key}': '${e.value}'} : const {},
+      how: j['voice'] is Map<dynamic, dynamic> ? (j['voice'] as Map<dynamic, dynamic>)['how'] as String? : null,
+      momentumNow: ((j['momentum'] as Map<dynamic, dynamic>?)?['now'] as num?)?.toInt() ?? 0,
+      momentumPct: ((j['momentum'] as Map<dynamic, dynamic>?)?['home_pct'] as num?)?.toInt(),
+      story: j['story'] is Map<dynamic, dynamic> ? (j['story'] as Map<dynamic, dynamic>).cast<String, dynamic>() : null,
     );
   }
 
@@ -206,7 +206,7 @@ class MatchPause {
   const MatchPause({required this.until, this.ready = const [], this.window = false});
 
   factory MatchPause.fromJson(Map<String, dynamic> j) =>
-      MatchPause(until: (j['until'] as num?)?.toInt() ?? 0, ready: [for (final r in (j['ready'] as List? ?? const [])) '$r'], window: j['window'] == true);
+      MatchPause(until: (j['until'] as num?)?.toInt() ?? 0, ready: [for (final r in (j['ready'] as List<dynamic>? ?? const [])) '$r'], window: j['window'] == true);
 
   final int until;
   final List<String> ready;
@@ -220,17 +220,17 @@ class LiveSync {
   factory LiveSync.fromJson(Map<String, dynamic> j) => LiveSync(
         finished: j['finished'] == true, tick: j['tick'] as int? ?? 0, serverNow: (j['server_now'] as num?)?.toInt() ?? 0,
         nextAt: (j['next_at'] as num?)?.toInt(),
-        ticks: [for (final t in (j['ticks'] as List? ?? const [])) LiveTick.fromJson(t as Map<String, dynamic>)],
+        ticks: [for (final t in (j['ticks'] as List<dynamic>? ?? const [])) LiveTick.fromJson(t as Map<String, dynamic>)],
         missed: [
-          for (final t in (j['missed'] as List? ?? const []))
-            for (final e in ((t as Map)['events'] as List? ?? const []))
+          for (final t in (j['missed'] as List<dynamic>? ?? const []))
+            for (final e in ((t as Map<dynamic, dynamic>)['events'] as List<dynamic>? ?? const []))
               MatchEvent.fromJson(e as Map<String, dynamic>, minute: (t['minute'] as num?)?.toInt() ?? 0),
         ],
-        pause: j['pause'] is Map ? MatchPause.fromJson(j['pause'] as Map<String, dynamic>) : null,
+        pause: j['pause'] is Map<dynamic, dynamic> ? MatchPause.fromJson(j['pause'] as Map<String, dynamic>) : null,
         pollMs: (j['poll_ms'] as num?)?.toInt(),
-        readings: [for (final r in (j['readings'] as List? ?? const [])) if (r is Map && r['text'] != null) '${r['text']}'],
-        chat: [for (final c in (j['chat'] as List? ?? const [])) (id: (c as Map)['id'] as int, who: '${c['who']}', body: '${c['body']}', side: c['side'] as String?)],
-        reactions: [for (final r in (j['reactions'] as List? ?? const [])) (id: (r as Map)['id'] as int, who: '${r['who']}', key: '${r['key']}', target: r['target'] as String?)],
+        readings: [for (final r in (j['readings'] as List<dynamic>? ?? const [])) if (r is Map<dynamic, dynamic> && r['text'] != null) '${r['text']}'],
+        chat: [for (final c in (j['chat'] as List<dynamic>? ?? const [])) (id: (c as Map<dynamic, dynamic>)['id'] as int, who: '${c['who']}', body: '${c['body']}', side: c['side'] as String?)],
+        reactions: [for (final r in (j['reactions'] as List<dynamic>? ?? const [])) (id: (r as Map<dynamic, dynamic>)['id'] as int, who: '${r['who']}', key: '${r['key']}', target: r['target'] as String?)],
       );
 
   final bool finished;
@@ -253,35 +253,35 @@ class MatchReport {
 
   factory MatchReport.fromReport(Map<String, dynamic> j) => MatchReport(
         score: _score(j['score']), result: j['result'] as String?, side: j['side'] as String?,
-        reasons: [for (final r in (j['reasons'] as List? ?? const [])) _note(r as Map)],
-        improve: j['improve'] is Map ? _note(j['improve'] as Map) : null,
-        verdict: [for (final v in (j['verdict'] as List? ?? const [])) (tag: '${(v as Map)['tag'] ?? ''}', text: '${v['text'] ?? ''}')],
-        motm: j['man_of_the_match'] is Map ? '${(j['man_of_the_match'] as Map)['name'] ?? ''}' : null,
+        reasons: [for (final r in (j['reasons'] as List<dynamic>? ?? const [])) _note(r as Map<dynamic, dynamic>)],
+        improve: j['improve'] is Map<dynamic, dynamic> ? _note(j['improve'] as Map<dynamic, dynamic>) : null,
+        verdict: [for (final v in (j['verdict'] as List<dynamic>? ?? const [])) (tag: '${(v as Map<dynamic, dynamic>)['tag'] ?? ''}', text: '${v['text'] ?? ''}')],
+        motm: j['man_of_the_match'] is Map<dynamic, dynamic> ? '${(j['man_of_the_match'] as Map<dynamic, dynamic>)['name'] ?? ''}' : null,
         stats: _stats(j['stats']),
         moments: [
-          for (final t in (j['timeline'] as List? ?? const []))
-            if ((t as Map)['type'] case 'goal' || 'card' || 'sub' || 'injury' || 'penalty')
-              MatchEvent.fromJson(t as Map<String, dynamic>, minute: (t['minute'] is List ? (t['minute'] as List)[0] : t['minute'] as num? ?? 0).toInt(),
-                  added: t['minute'] is List && (t['minute'] as List).length > 1 ? ((t['minute'] as List)[1] as num).toInt() : 0),
+          for (final t in (j['timeline'] as List<dynamic>? ?? const []))
+            if ((t as Map<dynamic, dynamic>)['type'] case 'goal' || 'card' || 'sub' || 'injury' || 'penalty')
+              MatchEvent.fromJson(t as Map<String, dynamic>, minute: (t['minute'] is List<dynamic> ? (t['minute'] as List<dynamic>)[0] : t['minute'] as num? ?? 0).toInt(),
+                  added: t['minute'] is List<dynamic> && (t['minute'] as List<dynamic>).length > 1 ? ((t['minute'] as List<dynamic>)[1] as num).toInt() : 0),
         ],
         ratings: {
           for (final side in ['home', 'away'])
-            side: [for (final r in ((j['ratings'] as Map?)?[side] as List? ?? const [])) (name: '${(r as Map)['name']}', rating: (r['rating'] as num?)?.toInt() ?? 0)],
+            side: [for (final r in ((j['ratings'] as Map<dynamic, dynamic>?)?[side] as List<dynamic>? ?? const [])) (name: '${(r as Map<dynamic, dynamic>)['name']}', rating: (r['rating'] as num?)?.toInt() ?? 0)],
         },
       );
 
   factory MatchReport.fromRecap(Map<String, dynamic> j) => MatchReport(
         score: _score(j['score']), result: j['result'] as String?, side: j['side'] as String?,
-        motm: j['man_of_the_match'] is Map ? '${(j['man_of_the_match'] as Map)['name'] ?? ''}' : null,
+        motm: j['man_of_the_match'] is Map<dynamic, dynamic> ? '${(j['man_of_the_match'] as Map<dynamic, dynamic>)['name'] ?? ''}' : null,
         stats: _stats(j['stats']),
         moments: [
-          for (final m in (j['moments'] as List? ?? const []))
-            MatchEvent(type: '${(m as Map)['type']}', team: m['team'] as String?, minute: (m['minute'] as num?)?.toInt() ?? 0, color: m['color'] as String?,
+          for (final m in (j['moments'] as List<dynamic>? ?? const []))
+            MatchEvent(type: '${(m as Map<dynamic, dynamic>)['type']}', team: m['team'] as String?, minute: (m['minute'] as num?)?.toInt() ?? 0, color: m['color'] as String?,
                 text: _moment(m), raw: Map<String, dynamic>.from(m)),
         ],
         ratings: {
           for (final side in ['home', 'away'])
-            side: [for (final r in ((j['best'] as Map?)?[side] as List? ?? const [])) (name: '${(r as Map)['name']}', rating: (r['rating'] as num?)?.toInt() ?? 0)],
+            side: [for (final r in ((j['best'] as Map<dynamic, dynamic>?)?[side] as List<dynamic>? ?? const [])) (name: '${(r as Map<dynamic, dynamic>)['name']}', rating: (r['rating'] as num?)?.toInt() ?? 0)],
         },
       );
 
@@ -300,7 +300,7 @@ class MatchReport {
 }
 
 /// A recap moment in a line (names in English): the scorer and his assist, who came on for whom, the booked player.
-String _moment(Map m) {
+String _moment(Map<dynamic, dynamic> m) {
   final who = m['player'] as String? ?? '', other = m['other'] as String?;
   return switch (m['type']) {
     'goal' => other == null ? who : '$who ($other)',
@@ -309,11 +309,11 @@ String _moment(Map m) {
   };
 }
 
-({String title, String text, String big}) _note(Map r) => (title: '${r['title'] ?? ''}', text: '${r['text'] ?? ''}', big: '${r['big'] ?? ''}');
+({String title, String text, String big}) _note(Map<dynamic, dynamic> r) => (title: '${r['title'] ?? ''}', text: '${r['text'] ?? ''}', big: '${r['big'] ?? ''}');
 
 Map<String, Map<String, int>> _stats(Object? s) => {
       for (final side in ['home', 'away'])
-        side: {for (final e in (((s as Map?)?[side] as Map?) ?? const {}).entries) if (e.value is num) '${e.key}': (e.value as num).toInt()},
+        side: {for (final e in (((s as Map<dynamic, dynamic>?)?[side] as Map<dynamic, dynamic>?) ?? const {}).entries) if (e.value is num) '${e.key}': (e.value as num).toInt()},
     };
 
 class MatchRepository {
@@ -344,8 +344,8 @@ class MatchRepository {
 
   /// My matches being played now, in every league (the switcher).
   Future<List<({int id, String home, String away})>> mine() async => [
-        for (final m in ((await _api.get('/matches/live'))['matches'] as List? ?? const []))
-          (id: (m as Map)['id'] as int, home: '${m['home']}', away: '${m['away']}'),
+        for (final m in ((await _api.get('/matches/live'))['matches'] as List<dynamic>? ?? const []))
+          (id: (m as Map<dynamic, dynamic>)['id'] as int, home: '${m['home']}', away: '${m['away']}'),
       ];
 }
 

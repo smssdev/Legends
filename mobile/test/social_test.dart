@@ -58,7 +58,7 @@ class FakeSocial implements SocialRepository {
   @override
   Future<List<Map<String, dynamic>>> messages(int group) async => [
         if (++loads < 0) <String, dynamic>{},
-        for (final m in json('group_messages')['messages'] as List) m as Map<String, dynamic>,
+        for (final m in json('group_messages')['messages'] as List<dynamic>) m as Map<String, dynamic>,
         {'id': 2, 'kind': 'audio', 'deleted': false, 'body': '', 'user': {'id': 9, 'name': 'حمزة'}, 'seconds': 7, 'created_at': '2026-11-06T08:00:00Z'},
       ];
   @override

@@ -25,7 +25,7 @@ class DailyTasks {
         done: (j['done'] as num?)?.toInt() ?? 0,
         total: (j['total'] as num?)?.toInt() ?? 0,
         renewsAt: DateTime.tryParse('${j['renews_at'] ?? ''}'),
-        tasks: [for (final t in (j['tasks'] as List? ?? const [])) DailyTask.fromJson(t as Map<String, dynamic>)],
+        tasks: [for (final t in (j['tasks'] as List<dynamic>? ?? const [])) DailyTask.fromJson(t as Map<String, dynamic>)],
       );
 
   final int done, total;
@@ -82,8 +82,8 @@ class Chest {
         chest: '${j['chest']}',
         coins: (j['coins'] as num?)?.toInt() ?? 0,
         odds: [
-          for (final o in (j['odds'] as List? ?? const []))
-            ChestOdds(reward: '${(o as Map)['reward']}', amount: (o['amount'] as num?)?.toInt() ?? 0, pctBp: (o['pct_bp'] as num?)?.toInt() ?? 0),
+          for (final o in (j['odds'] as List<dynamic>? ?? const []))
+            ChestOdds(reward: '${(o as Map<dynamic, dynamic>)['reward']}', amount: (o['amount'] as num?)?.toInt() ?? 0, pctBp: (o['pct_bp'] as num?)?.toInt() ?? 0),
         ],
       );
 
@@ -103,8 +103,8 @@ class ConsoleRepository {
   Future<({List<Auction> auctions, List<int> minutes})> auctions(int league) async {
     final j = await _api.get('/leagues/$league/auctions');
     return (
-      auctions: [for (final a in (j['auctions'] as List? ?? const [])) Auction.fromJson(a as Map<String, dynamic>)],
-      minutes: [for (final m in (j['minutes'] as List? ?? const [])) (m as num).toInt()],
+      auctions: [for (final a in (j['auctions'] as List<dynamic>? ?? const [])) Auction.fromJson(a as Map<String, dynamic>)],
+      minutes: [for (final m in (j['minutes'] as List<dynamic>? ?? const [])) (m as num).toInt()],
     );
   }
 
@@ -118,7 +118,7 @@ class ConsoleRepository {
 
   Future<({int clause, String club, bool can, String? why})> releaseQuote(int league, int player) async {
     final j = await _api.get('/leagues/$league/release/$player');
-    return (clause: (j['clause'] as num?)?.toInt() ?? 0, club: '${(j['club'] as Map?)?['name'] ?? ''}', can: j['can'] == true, why: j['why'] as String?);
+    return (clause: (j['clause'] as num?)?.toInt() ?? 0, club: '${(j['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', can: j['can'] == true, why: j['why'] as String?);
   }
 
   Future<void> payRelease(int league, int player) =>
@@ -130,21 +130,21 @@ class ConsoleRepository {
       (key) async => Negotiation.fromJson(await _api.post('/leagues/$league/negotiations/$player', {'amount': amount, 'idempotency_key': key})));
 
   Future<List<Chest>> chests(int league) async =>
-      [for (final c in ((await _api.get('/leagues/$league/chests'))['chests'] as List? ?? const [])) Chest.fromJson(c as Map<String, dynamic>)];
+      [for (final c in ((await _api.get('/leagues/$league/chests'))['chests'] as List<dynamic>? ?? const [])) Chest.fromJson(c as Map<String, dynamic>)];
 
   /// Opens a chest: what it gave ({reward, amount}).
   Future<({String reward, int amount})> openChest(int league, String chest) => Intents.run('chest:$league:$chest', (key) async {
-        final o = (await _api.post('/leagues/$league/chests/$chest/open', {'idempotency_key': key}))['opened'] as Map;
+        final o = (await _api.post('/leagues/$league/chests/$chest/open', {'idempotency_key': key}))['opened'] as Map<dynamic, dynamic>;
         return (reward: '${o['reward']}', amount: (o['amount'] as num?)?.toInt() ?? 0);
       });
 
   /// The coach's one timeout in a live match: when play goes on (ms since the epoch).
-  Future<int> timeout(int match) async => ((await _api.post('/matches/$match/timeout'))['timeout'] as Map)['until'] as int;
+  Future<int> timeout(int match) async => ((await _api.post('/matches/$match/timeout'))['timeout'] as Map<dynamic, dynamic>)['until'] as int;
 
   /// A reaction on a group message (the same again, or null, takes it back): the message's counts after it.
   Future<Map<String, int>> react(int group, int message, String? reaction) async {
-    final m = (await _api.post('/groups/$group/messages/$message/reaction', {'reaction': reaction}))['message'] as Map;
-    return {for (final e in ((m['reactions'] as Map?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()};
+    final m = (await _api.post('/groups/$group/messages/$message/reaction', {'reaction': reaction}))['message'] as Map<dynamic, dynamic>;
+    return {for (final e in ((m['reactions'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()};
   }
 }
 

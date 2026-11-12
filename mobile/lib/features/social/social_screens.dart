@@ -44,7 +44,7 @@ class SocialRepository {
   Future<Map<String, dynamic>> write(int league, String title, String body) => _api.post('/leagues/$league/newspaper/articles', {'title': title, 'body': body});
   Future<Map<String, dynamic>> decide(int league, int article, bool publish) => _api.post('/leagues/$league/newspaper/articles/$article/decide', {'publish': publish});
   Future<Map<String, dynamic>> groups() => _api.get('/groups');
-  Future<List<Map<String, dynamic>>> messages(int group) async => [for (final m in ((await _api.get('/groups/$group/messages'))['messages'] as List? ?? const [])) m as Map<String, dynamic>];
+  Future<List<Map<String, dynamic>>> messages(int group) async => [for (final m in ((await _api.get('/groups/$group/messages'))['messages'] as List<dynamic>? ?? const [])) m as Map<String, dynamic>];
   Future<void> say(int group, String body, {int? replyTo}) => _api.post('/groups/$group/messages', {'body': body, 'reply_to': ?replyTo});
   Future<void> read(int group) => _api.post('/groups/$group/read');
 }
@@ -81,7 +81,7 @@ class FriendliesScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(friendliesProvider(leagueId)),
         data: (f) {
           final p = context.palette;
-          final recent = f['recent'] as List? ?? const [];
+          final recent = f['recent'] as List<dynamic>? ?? const [];
           return ListView(padding: const EdgeInsets.all(12), children: [
             Text(l.friendlyLead(f['fitness'] as int? ?? 0), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
             Text(f['first_free'] == true ? l.friendlyFree : l.friendlyCost(f['coins'] as int? ?? 0), textAlign: TextAlign.center,
@@ -93,19 +93,19 @@ class FriendliesScreen extends ConsumerWidget {
               for (final r in recent.take(3))
                 ListTile(
                   dense: true,
-                  title: Text('${((r as Map)['opponent'] as Map?)?['name'] ?? ''}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
+                  title: Text('${((r as Map<dynamic, dynamic>)['opponent'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                   trailing: Text('${r['goals_for']} - ${r['goals_against']}', textDirection: TextDirection.ltr,
                       style: const TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800)),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => QuickMatchScreen(home: '${f['club']?['name'] ?? ''}', played: Map<String, dynamic>.from(r)))),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => QuickMatchScreen(home: '${f['club']?['name'] ?? ''}', played: Map<String, dynamic>.from(r)))),
                 ),
               const SizedBox(height: 8),
             ],
-            for (final o in (f['opponents'] as List? ?? const []))
+            for (final o in (f['opponents'] as List<dynamic>? ?? const []))
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: GlmCard(
                   padding: const EdgeInsets.all(10),
-                  gold: (o as Map)['recommended'] == true,
+                  gold: (o as Map<dynamic, dynamic>)['recommended'] == true,
                   child: Row(children: [
                     ClubCrest(url: o['crest_url'] as String?, name: '${o['code']}', size: 34),
                     const SizedBox(width: 10),
@@ -124,8 +124,8 @@ class FriendliesScreen extends ConsumerWidget {
                               final r = await _try(context, () => ref.read(socialRepositoryProvider).playFriendly(leagueId, o['id'] as int));
                               ref.invalidate(friendliesProvider(leagueId));
                               if (r != null && context.mounted) {
-                                await Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => QuickMatchScreen(home: '${f['club']?['name'] ?? ''}', played: Map<String, dynamic>.from(r['friendly'] as Map))));
+                                await Navigator.of(context).push(MaterialPageRoute<void>(
+                                    builder: (_) => QuickMatchScreen(home: '${f['club']?['name'] ?? ''}', played: Map<String, dynamic>.from(r['friendly'] as Map<dynamic, dynamic>))));
                               }
                             },
                     ),
@@ -151,7 +151,7 @@ class QuickMatchScreen extends StatefulWidget {
 }
 
 class _QuickMatchScreenState extends State<QuickMatchScreen> {
-  late final List<Map> _timeline = [for (final e in ((widget.played['report'] as Map?)?['timeline'] as List? ?? const [])) e as Map];
+  late final List<Map<dynamic, dynamic>> _timeline = [for (final e in ((widget.played['report'] as Map<dynamic, dynamic>?)?['timeline'] as List<dynamic>? ?? const [])) e as Map<dynamic, dynamic>];
   int _at = 0;
   Timer? _timer;
 
@@ -177,9 +177,9 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
     final done = _at >= _timeline.length;
     final shown = _timeline.take(_at).where((e) => e['k'] != 'quiet' && e['k'] != 'attack').toList().reversed;
     final last = _at == 0 ? null : _timeline[_at - 1];
-    final score = done ? [widget.played['goals_for'], widget.played['goals_against']] : (last?['score'] as List? ?? const [0, 0]);
-    final away = '${(widget.played['opponent'] as Map?)?['name'] ?? ''}';
-    final best = (widget.played['report'] as Map?)?['best'] as List? ?? const [];
+    final score = done ? [widget.played['goals_for'], widget.played['goals_against']] : (last?['score'] as List<dynamic>? ?? const [0, 0]);
+    final away = '${(widget.played['opponent'] as Map<dynamic, dynamic>?)?['name'] ?? ''}';
+    final best = (widget.played['report'] as Map<dynamic, dynamic>?)?['best'] as List<dynamic>? ?? const [];
     String kind(String k) => switch (k) {
           'goal' => '⚽ ${l.kGoal}', 'saved' => '🧤 ${l.kSaved}', 'missed' => l.kMissed, 'corner' => '⛳ ${l.kCorner}', 'yellow' => '🟨 ${l.kYellow}', 'red' => '🟥 ${l.kRed}', _ => l.kAttack,
         };
@@ -207,7 +207,7 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
                   Text(l.bestOfMatch, style: context.text.titleMedium),
                   for (final b in best)
                     Row(children: [
-                      Expanded(child: Text('${(b as Map)['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
+                      Expanded(child: Text('${(b as Map<dynamic, dynamic>)['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
                       Text(((b['rating'] as num? ?? 0) / 100).toStringAsFixed(1), style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText)),
                     ]),
                 ]),
@@ -254,16 +254,16 @@ class _PredictionsScreenState extends ConsumerState<PredictionsScreen> {
           return ListView(padding: const EdgeInsets.all(12), children: [
             Text(l.predictionsLead(d['round'] as int? ?? 0, money(context, (d['reward'] as num? ?? 0).toInt())), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
             const SizedBox(height: 12),
-            for (final m in (d['matches'] as List? ?? const []))
+            for (final m in (d['matches'] as List<dynamic>? ?? const []))
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: GlmCard(
                   padding: const EdgeInsets.all(10),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                     Row(children: [
-                      Expanded(child: Text('${((m as Map)['home'] as Map)['name']}', textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800))),
+                      Expanded(child: Text('${((m as Map<dynamic, dynamic>)['home'] as Map<dynamic, dynamic>)['name']}', textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800))),
                       const Text(' — '),
-                      Expanded(child: Text('${(m['away'] as Map)['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.w800))),
+                      Expanded(child: Text('${(m['away'] as Map<dynamic, dynamic>)['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.w800))),
                     ]),
                     const SizedBox(height: 8),
                     if (m['open'] != true)
@@ -273,11 +273,11 @@ class _PredictionsScreenState extends ConsumerState<PredictionsScreen> {
                         showSelectedIcon: false,
                         emptySelectionAllowed: true,
                         segments: [
-                          ButtonSegment(value: 'home', label: Text('${(m['home'] as Map)['code']}', textDirection: TextDirection.ltr)),
+                          ButtonSegment(value: 'home', label: Text('${(m['home'] as Map<dynamic, dynamic>)['code']}', textDirection: TextDirection.ltr)),
                           ButtonSegment(value: 'draw', label: Text(l.draw)),
-                          ButtonSegment(value: 'away', label: Text('${(m['away'] as Map)['code']}', textDirection: TextDirection.ltr)),
+                          ButtonSegment(value: 'away', label: Text('${(m['away'] as Map<dynamic, dynamic>)['code']}', textDirection: TextDirection.ltr)),
                         ],
-                        selected: {if (m['mine'] != null) '${m['mine'] is Map ? (m['mine'] as Map)['pick'] : m['mine']}'},
+                        selected: {if (m['mine'] != null) '${m['mine'] is Map<dynamic, dynamic> ? (m['mine'] as Map<dynamic, dynamic>)['pick'] : m['mine']}'},
                         onSelectionChanged: (s) async {
                           if (s.isEmpty) return;
                           final r = await _try(context, () => ref.read(socialRepositoryProvider).predict(widget.leagueId, m['fixture_id'] as int, s.first));
@@ -309,9 +309,9 @@ class NewspaperScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(newspaperProvider(leagueId)),
         data: (d) {
           final p = context.palette;
-          final e = d['edition'] as Map?;
-          final articles = d['articles'] as List? ?? const [];
-          final pending = d['pending'] as List? ?? const [];
+          final e = d['edition'] as Map<dynamic, dynamic>?;
+          final articles = d['articles'] as List<dynamic>? ?? const [];
+          final pending = d['pending'] as List<dynamic>? ?? const [];
           Future<void> decide(int id, bool publish) async {
             await _try(context, () => ref.read(socialRepositoryProvider).decide(leagueId, id, publish));
             ref.invalidate(newspaperProvider(leagueId));
@@ -321,13 +321,13 @@ class NewspaperScreen extends ConsumerWidget {
             if (e == null)
               Padding(padding: const EdgeInsets.all(16), child: Text(l.noEdition, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)))
             else ...[
-              for (final s in (e['stories'] as List? ?? const []))
+              for (final s in (e['stories'] as List<dynamic>? ?? const []))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: GlmCard(
                     gold: true,
                     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                      Text('${(s as Map)['title']}', style: context.text.titleMedium),
+                      Text('${(s as Map<dynamic, dynamic>)['title']}', style: context.text.titleMedium),
                       Text('${s['text']}', style: TextStyle(color: p.textMuted)),
                     ]),
                   ),
@@ -336,23 +336,23 @@ class NewspaperScreen extends ConsumerWidget {
               GlmCard(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Column(children: [
-                  for (final r in (e['results'] as List? ?? const []))
+                  for (final r in (e['results'] as List<dynamic>? ?? const []))
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Row(children: [
-                        Expanded(child: Text('${(r as Map)['home']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
+                        Expanded(child: Text('${(r as Map<dynamic, dynamic>)['home']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
                         Text('${r['home_goals']} - ${r['away_goals']}', textDirection: TextDirection.ltr, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800)),
                         Expanded(child: Text('${r['away']}', textDirection: TextDirection.ltr, textAlign: TextAlign.end)),
                       ]),
                     ),
                 ]),
               ),
-              if (e['coach'] is Map) ...[
+              if (e['coach'] is Map<dynamic, dynamic>) ...[
                 const SizedBox(height: 8),
                 ListTile(
                   leading: const Text('🎩', style: TextStyle(fontSize: 22)),
                   title: Text(l.coachOfRound),
-                  subtitle: Text('${((e['coach'] as Map)['coach'] as Map?)?['name'] ?? ''} · ${(e['coach'] as Map)['club'] ?? ''}'),
+                  subtitle: Text('${((e['coach'] as Map<dynamic, dynamic>)['coach'] as Map<dynamic, dynamic>?)?['name'] ?? ''} · ${(e['coach'] as Map<dynamic, dynamic>)['club'] ?? ''}'),
                 ),
               ],
             ],
@@ -362,9 +362,9 @@ class NewspaperScreen extends ConsumerWidget {
               for (final a in pending)
                 GlmCard(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Text('${(a as Map)['title']}', style: context.text.titleMedium),
+                    Text('${(a as Map<dynamic, dynamic>)['title']}', style: context.text.titleMedium),
                     Text('${a['body']}'),
-                    Text('${(a['author'] as Map?)?['name'] ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 12)),
+                    Text('${(a['author'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 12)),
                     const SizedBox(height: 8),
                     Row(children: [
                       Expanded(child: GlmButton(label: l.publish, onPressed: () => decide(a['id'] as int, true))),
@@ -381,11 +381,11 @@ class NewspaperScreen extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: GlmCard(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Text('${(a as Map)['title']}', style: context.text.titleMedium),
+                    Text('${(a as Map<dynamic, dynamic>)['title']}', style: context.text.titleMedium),
                     const SizedBox(height: 4),
                     Text('${a['body']}'),
                     const SizedBox(height: 4),
-                    Text([(a['author'] as Map?)?['name'] ?? '', if (DateTime.tryParse('${a['at']}') != null) when(context, DateTime.parse('${a['at']}').toLocal())].join(' · '),
+                    Text([(a['author'] as Map<dynamic, dynamic>?)?['name'] ?? '', if (DateTime.tryParse('${a['at']}') != null) when(context, DateTime.parse('${a['at']}').toLocal())].join(' · '),
                         style: TextStyle(color: p.textMuted, fontSize: 12)),
                   ]),
                 ),
@@ -434,9 +434,9 @@ class NewspaperScreen extends ConsumerWidget {
 Future<void> joinGroup(BuildContext context, WidgetRef ref, String code) async {
   final r = await _try(context, () => ref.read(apiProvider).post('/groups/join/${code.trim().toLowerCase()}'));
   ref.invalidate(groupsProvider);
-  final g = r?['group'] as Map?;
+  final g = r?['group'] as Map<dynamic, dynamic>?;
   if (g != null && context.mounted) {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}')));
+    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}')));
   }
 }
 
@@ -497,9 +497,9 @@ class GroupsScreen extends ConsumerWidget {
             final usernames = [for (final u in members.text.split(RegExp(r'[,،\s]+'))) if (u.trim().isNotEmpty) u.trim().replaceFirst('@', '')];
             final r = await _try(context, () => ref.read(apiProvider).post('/groups', {'name': name.text.trim(), 'usernames': usernames}));
             ref.invalidate(groupsProvider);
-            final g = r?['group'] as Map?;
+            final g = r?['group'] as Map<dynamic, dynamic>?;
             if (g != null && context.mounted) {
-              await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}')));
+              await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}')));
             }
           }
           name.dispose();
@@ -514,7 +514,7 @@ class GroupsScreen extends ConsumerWidget {
         value: ref.watch(groupsProvider),
         onRetry: () => ref.invalidate(groupsProvider),
         data: (d) {
-          final groups = d['groups'] as List? ?? const [];
+          final groups = d['groups'] as List<dynamic>? ?? const [];
           if (groups.isEmpty) return Center(child: Text(l.noGroups));
           return RefreshIndicator(
             onRefresh: () => ref.refresh(groupsProvider.future),
@@ -522,17 +522,17 @@ class GroupsScreen extends ConsumerWidget {
               for (final g in groups)
                 ListTile(
                   // [Sprint 50 M7] The open chat lit as the site's open page (the brand green).
-                  selected: open == (g as Map)['id'],
+                  selected: open == (g as Map<dynamic, dynamic>)['id'],
                   selectedTileColor: context.palette.brand,
                   selectedColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   leading: CircleAvatar(backgroundColor: open == g['id'] ? context.palette.brandDark : context.palette.brand, child: Icon(g['league_id'] != null ? Icons.emoji_events_rounded : Icons.groups_rounded, color: Colors.white)),
                   title: Text('${g['name']}', style: const TextStyle(fontWeight: FontWeight.w700)),
-                  subtitle: Text('${(g['last'] as Map?)?['body'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis),
+                  subtitle: Text('${(g['last'] as Map<dynamic, dynamic>?)?['body'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis),
                   trailing: (g['unread'] as int? ?? 0) > 0 ? Badge(backgroundColor: context.palette.gold, textColor: context.palette.onGold, label: Text('${g['unread']}')) : null,
                   onTap: () async {
                     if (onOpen != null) return onOpen(g['id'] as int, '${g['name']}');
-                    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}')));
+                    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}')));
                     ref.invalidate(groupsProvider);
                   },
                 ),
@@ -851,7 +851,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
             if (m['kind'] == 'note')
               const SizedBox.shrink()
             else
-              _bubble(context, l, p, m, mine: (m['user'] as Map?)?['id'] == me),
+              _bubble(context, l, p, m, mine: (m['user'] as Map<dynamic, dynamic>?)?['id'] == me),
         ]),
       ),
       if (_replyTo != null)
@@ -921,8 +921,8 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
   }
 
   Widget _bubble(BuildContext context, L l, GlmPalette p, Map<String, dynamic> m, {required bool mine}) {
-    final reactions = ((m['reactions'] as Map?) ?? const {}).entries.where((e) => (e.value as num) > 0).toList();
-    final reply = m['reply_to'] as Map?;
+    final reactions = ((m['reactions'] as Map<dynamic, dynamic>?) ?? const {}).entries.where((e) => (e.value as num) > 0).toList();
+    final reply = m['reply_to'] as Map<dynamic, dynamic>?;
     final bubble = Container(
       margin: EdgeInsets.only(bottom: reactions.isEmpty ? 6 : 16),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -933,7 +933,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
         border: mine ? null : Border.all(color: p.surfaceRaised),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        if (!mine) Text('${(m['user'] as Map?)?['name'] ?? ''}', style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12)),
+        if (!mine) Text('${(m['user'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12)),
         if (reply != null)
           Container(
             margin: const EdgeInsets.only(top: 2, bottom: 4),

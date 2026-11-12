@@ -17,26 +17,26 @@ class ClubSummary {
     final board = j['board'] as Map<String, dynamic>?;
     return ClubSummary(
       club: Side.fromJson(j['club'] as Map<String, dynamic>?),
-      cash: (j['money'] as Map?)?['cash'] as int? ?? 0, coins: (j['money'] as Map?)?['coins'] as int? ?? 0,
+      cash: (j['money'] as Map<dynamic, dynamic>?)?['cash'] as int? ?? 0, coins: (j['money'] as Map<dynamic, dynamic>?)?['coins'] as int? ?? 0,
       next: m == null ? null : Side.fromJson(m['opponent'] as Map<String, dynamic>?), venue: m?['venue'] as String?, matchAt: date(m?['scheduled_at']),
       lineupAuto: lineup['auto'] != false, lineupReady: lineup['ready'] != false,
       position: standings['position'] as int?, teams: standings['teams'] as int?,
       goal: board == null ? null : (kind: '${board['kind']}', target: board['target'] as int? ?? 0),
       matchId: m?['match_id'] as int?, matchStatus: m?['status'] as String?, missed: j['missed'] as int? ?? 0,
-      pending: [for (final p in (j['pending'] as List? ?? const [])) '${((p as Map)['lines'] as List?)?.join(' ') ?? p['kind']}'],
+      pending: [for (final p in (j['pending'] as List<dynamic>? ?? const [])) '${((p as Map<dynamic, dynamic>)['lines'] as List<dynamic>?)?.join(' ') ?? p['kind']}'],
       needs: [
-        for (final p in (j['pending'] as List? ?? const []))
-          (kind: '${(p as Map)['kind']}', severity: '${p['severity'] ?? 'low'}', count: (p['count'] as num?)?.toInt() ?? (p['lines'] as List?)?.length ?? (p['players'] as List?)?.length ?? 0, matchId: (p['match_id'] as num?)?.toInt()),
+        for (final p in (j['pending'] as List<dynamic>? ?? const []))
+          (kind: '${(p as Map<dynamic, dynamic>)['kind']}', severity: '${p['severity'] ?? 'low'}', count: (p['count'] as num?)?.toInt() ?? (p['lines'] as List<dynamic>?)?.length ?? (p['players'] as List<dynamic>?)?.length ?? 0, matchId: (p['match_id'] as num?)?.toInt()),
       ],
-      strength: m == null ? null : ((m['club'] as Map?)?['strength_cp'] as num?, (m['opponent'] as Map?)?['strength_cp'] as num?).let((s) => s.$1 == null || s.$2 == null ? null : (s.$1!.toInt(), s.$2!.toInt())),
+      strength: m == null ? null : ((m['club'] as Map<dynamic, dynamic>?)?['strength_cp'] as num?, (m['opponent'] as Map<dynamic, dynamic>?)?['strength_cp'] as num?).let((s) => s.$1 == null || s.$2 == null ? null : (s.$1!.toInt(), s.$2!.toInt())),
       top: [
-        for (final r in (standings['top'] as List? ?? const []))
-          (position: (r as Map)['position'] as int? ?? 0, name: '${r['name']}', code: '${r['code'] ?? ''}', points: r['points'] as int? ?? 0, mine: r['mine'] == true),
+        for (final r in (standings['top'] as List<dynamic>? ?? const []))
+          (position: (r as Map<dynamic, dynamic>)['position'] as int? ?? 0, name: '${r['name']}', code: '${r['code'] ?? ''}', points: r['points'] as int? ?? 0, mine: r['mine'] == true),
       ],
       formation: lineup['formation'] as String?,
       round: m?['round'] as int?,
-      form: [for (final f in ((m?['club'] as Map?)?['form'] as List? ?? const [])) '$f'],
-      timers: [for (final t in (j['timers'] as List? ?? const [])) (kind: '${(t as Map)['kind']}', at: date(t['at']))],
+      form: [for (final f in ((m?['club'] as Map<dynamic, dynamic>?)?['form'] as List<dynamic>? ?? const [])) '$f'],
+      timers: [for (final t in (j['timers'] as List<dynamic>? ?? const [])) (kind: '${(t as Map<dynamic, dynamic>)['kind']}', at: date(t['at']))],
     );
   }
 

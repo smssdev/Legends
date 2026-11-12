@@ -36,7 +36,7 @@ class Tickets {
 
   factory Tickets.fromJson(Map<String, dynamic>? j) => Tickets(
         level: '${j?['level'] ?? 'normal'}',
-        levels: [for (final l in (j?['levels'] as List? ?? const [])) TicketLevel.fromJson(l as Map<String, dynamic>)],
+        levels: [for (final l in (j?['levels'] as List<dynamic>? ?? const [])) TicketLevel.fromJson(l as Map<String, dynamic>)],
       );
 
   final String level;
@@ -60,8 +60,8 @@ class Sponsor {
     final chosen = j['chosen'];
     return Sponsor(
       sector: '${j['sector']}', name: '${j['name']}',
-      chosen: chosen is Map ? '${chosen['offer']}' : chosen as String?,
-      offers: [for (final o in (j['offers'] as List? ?? const [])) SponsorOffer.fromJson(o as Map<String, dynamic>)],
+      chosen: chosen is Map<dynamic, dynamic> ? '${chosen['offer']}' : chosen as String?,
+      offers: [for (final o in (j['offers'] as List<dynamic>? ?? const [])) SponsorOffer.fromJson(o as Map<String, dynamic>)],
     );
   }
 
@@ -79,10 +79,10 @@ class Finance {
         debtRounds: j['debt_rounds'] as int? ?? 0, debtLimit: j['debt_limit'] as int? ?? 3,
         wagesPerRound: (j['wages_per_round'] as num?)?.toInt() ?? 0,
         income: (j['season_income'] as num?)?.toInt() ?? 0, expenses: (j['season_expenses'] as num?)?.toInt() ?? 0,
-        totals: [for (final t in (j['season_totals'] as List? ?? const [])) (label: '${(t as Map)['label']}', total: (t['total'] as num).toInt())],
-        transactions: [for (final t in (j['transactions'] as List? ?? const [])) Txn.fromJson(t as Map<String, dynamic>)],
+        totals: [for (final t in (j['season_totals'] as List<dynamic>? ?? const [])) (label: '${(t as Map<dynamic, dynamic>)['label']}', total: (t['total'] as num).toInt())],
+        transactions: [for (final t in (j['transactions'] as List<dynamic>? ?? const [])) Txn.fromJson(t as Map<String, dynamic>)],
         tickets: Tickets.fromJson(j['tickets'] as Map<String, dynamic>?),
-        sponsors: [for (final s in (j['sponsors'] as List? ?? const [])) Sponsor.fromJson(s as Map<String, dynamic>)],
+        sponsors: [for (final s in (j['sponsors'] as List<dynamic>? ?? const [])) Sponsor.fromJson(s as Map<String, dynamic>)],
       );
 
   final int balance, debtRounds, debtLimit, wagesPerRound, income, expenses;
@@ -100,7 +100,7 @@ class StadiumSection {
     final n = j['next'] as Map<String, dynamic>?;
     return StadiumSection(
       section: '${j['section']}', stage: j['stage'] as int? ?? 0, parts: j['parts'] as int? ?? 0, done: j['done'] as int? ?? 0,
-      effects: [for (final e in (j['effects'] as List? ?? const [])) (e as num).toInt()],
+      effects: [for (final e in (j['effects'] as List<dynamic>? ?? const [])) (e as num).toInt()],
       next: n == null ? null : (stage: n['stage'] as int, part: n['part'] as int, cost: (n['cost'] as num).toInt()),
     );
   }
@@ -121,7 +121,7 @@ class StadiumView {
     return StadiumView(
       balance: (j['balance'] as num?)?.toInt() ?? 0, partMinutes: j['part_minutes'] as int? ?? 0, partsTotal: j['parts_total'] as int? ?? 45,
       partsDone: facts['parts_done'] as int? ?? 0, capacity: facts['capacity'] as int? ?? 0, homeBp: facts['home_bp'] as int? ?? 0,
-      sections: [for (final s in (j['sections'] as List? ?? const [])) StadiumSection.fromJson(s as Map<String, dynamic>)],
+      sections: [for (final s in (j['sections'] as List<dynamic>? ?? const [])) StadiumSection.fromJson(s as Map<String, dynamic>)],
       building: b == null ? null : (section: '${b['section']}', stage: b['stage'] as int, part: b['part'] as int, endsAt: DateTime.parse('${b['ends_at']}'), finishCoins: b['finish_coins'] as int? ?? 0),
       now: DateTime.tryParse('${j['now'] ?? ''}'),
     );

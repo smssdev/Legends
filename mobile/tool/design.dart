@@ -29,7 +29,7 @@ void main(List<String> args) {
     stdout.writeln('design: ${sorted.length} files not yet on the components, written to $baseFile');
     return;
   }
-  final base = (jsonDecode(File(baseFile).readAsStringSync()) as Map).map((k, v) => MapEntry(k as String, Map<String, dynamic>.from(v as Map)));
+  final base = (jsonDecode(File(baseFile).readAsStringSync()) as Map<dynamic, dynamic>).map((k, v) => MapEntry(k as String, Map<String, dynamic>.from(v as Map<dynamic, dynamic>)));
   final bad = <String>[];
   sorted.forEach((f, hit) => hit.forEach((k, v) {
         final was = (base[f]?[k] ?? 0) as int;

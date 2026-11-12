@@ -25,7 +25,7 @@ class ScoutRequest {
   factory ScoutRequest.fromJson(Map<String, dynamic> j) => ScoutRequest(
         id: j['id'] as int, status: '${j['status']}', finishesAt: DateTime.tryParse('${j['finishes_at'] ?? ''}'),
         players: [
-          for (final p in (j['players'] as List? ?? const []))
+          for (final p in (j['players'] as List<dynamic>? ?? const []))
             (player: MarketPlayer.fromJson(p as Map<String, dynamic>), state: '${p['state']}'),
         ],
       );
@@ -45,9 +45,9 @@ class ScoutView {
     final o = j['options'] as Map<String, dynamic>? ?? const {};
     return ScoutView(
       cost: (j['cost'] as num?)?.toInt() ?? 0, hours: j['hours'] as int? ?? 0, finishCoins: j['finish_coins'] as int? ?? 0,
-      nationalities: [for (final n in (o['nationalities'] as List? ?? const [])) '$n'],
-      leagues: [for (final n in (o['leagues'] as List? ?? const [])) '$n'],
-      requests: [for (final r in (j['requests'] as List? ?? const [])) ScoutRequest.fromJson(r as Map<String, dynamic>)],
+      nationalities: [for (final n in (o['nationalities'] as List<dynamic>? ?? const [])) '$n'],
+      leagues: [for (final n in (o['leagues'] as List<dynamic>? ?? const [])) '$n'],
+      requests: [for (final r in (j['requests'] as List<dynamic>? ?? const [])) ScoutRequest.fromJson(r as Map<String, dynamic>)],
     );
   }
 

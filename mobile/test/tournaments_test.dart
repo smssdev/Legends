@@ -18,7 +18,7 @@ Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.j
 /// server's shape: four balls drawn a while ago, one every reveal_ms.
 Map<String, dynamic> drawn() {
   final t = json('tournament')['tournament'] as Map<String, dynamic>;
-  final teams = (t['teams'] as List).cast<Map<String, dynamic>>();
+  final teams = (t['teams'] as List<dynamic>).cast<Map<String, dynamic>>();
   final now = DateTime.now().millisecondsSinceEpoch;
   return {
     ...json('tournament_draw'),
@@ -38,7 +38,7 @@ Future<void> pump(WidgetTester t, Widget screen, {Map<String, dynamic>? draw}) a
   await t.pumpWidget(ProviderScope(
     overrides: [
       preferencesProvider.overrideWithValue(prefs),
-      tournamentsProvider.overrideWith((ref) async => json('tournaments')['tournaments'] as List),
+      tournamentsProvider.overrideWith((ref) async => json('tournaments')['tournaments'] as List<dynamic>),
       catalogProvider.overrideWith((ref) async => json('tournaments_catalog')),
       tournamentProvider.overrideWith((ref, id) async => json('tournament')['tournament'] as Map<String, dynamic>),
       drawProvider.overrideWith((ref, id) async => draw ?? json('tournament_draw')),

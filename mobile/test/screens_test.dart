@@ -11,7 +11,7 @@ import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<Widget> app(Widget screen, {List overrides = const [], String language = 'ar', bool day = false}) async {
+Future<Widget> app(Widget screen, {List<dynamic> overrides = const [], String language = 'ar', bool day = false}) async {
   SharedPreferences.setMockInitialValues({'glm.language': language});
   final prefs = await SharedPreferences.getInstance();
   return ProviderScope(

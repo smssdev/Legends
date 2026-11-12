@@ -38,7 +38,7 @@ class LiveMatchScreen extends ConsumerWidget {
     final value = ref.watch(matchProvider(matchId));
     if (value.value case final m?) return _Live(view: m);
     return Scaffold(
-      appBar: GameBar(),
+      appBar: const GameBar(),
       body: GlmBackground(child: AsyncView(value: value, onRetry: () => ref.invalidate(matchProvider(matchId)), data: (_) => const SizedBox())),
     );
   }

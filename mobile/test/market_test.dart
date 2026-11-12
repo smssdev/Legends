@@ -23,7 +23,7 @@ class FakeMarket implements MarketRepository {
   @override
   Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(int league, String line) async {
     final j = json('market');
-    return (players: [for (final p in j['players'] as List) MarketPlayer.fromJson(p as Map<String, dynamic>)], renewsAt: DateTime.tryParse('${j['renews_at']}'), balance: 0, closed: null);
+    return (players: [for (final p in j['players'] as List<dynamic>) MarketPlayer.fromJson(p as Map<String, dynamic>)], renewsAt: DateTime.tryParse('${j['renews_at']}'), balance: 0, closed: null);
   }
 
   @override
@@ -47,7 +47,7 @@ class FakeMarket implements MarketRepository {
   Future<void> answer(int league, int offer, String action) async => sent.add('$action $offer');
   @override
   Future<List<OfferPlayer>> clubPlayers(int league, int club) async =>
-      [for (final p in json('club_142')['players'] as List) OfferPlayer.fromJson(p as Map<String, dynamic>)];
+      [for (final p in json('club_142')['players'] as List<dynamic>) OfferPlayer.fromJson(p as Map<String, dynamic>)];
   @override
   Future<void> offer(int league, {int? to, int? counterOf, required int money, required List<int> want, required List<int> give}) async =>
       sent.add('offer to:$to counter:$counterOf money:$money want:$want give:$give');
@@ -66,7 +66,7 @@ class FakeMarket implements MarketRepository {
   @override
   Future<({List<Prospect> prospects, DateTime? renewsAt, int signed, int perSeason})> academy(int league) async {
     final j = json('academy');
-    return (prospects: [for (final p in j['prospects'] as List) Prospect.fromJson(p as Map<String, dynamic>)], renewsAt: null, signed: 0, perSeason: 2);
+    return (prospects: [for (final p in j['prospects'] as List<dynamic>) Prospect.fromJson(p as Map<String, dynamic>)], renewsAt: null, signed: 0, perSeason: 2);
   }
 
   @override
@@ -185,7 +185,7 @@ void main() {
 
   testWidgets('a new offer: the club, his player asked for, sent', (t) async {
     final m = FakeMarket();
-    await pump(t, OfferScreen(leagueId: 8, clubId: 142, clubName: 'Arsenal'), m);
+    await pump(t, const OfferScreen(leagueId: 8, clubId: 142, clubName: 'Arsenal'), m);
     await t.tap(find.text('David Raya'));
     await t.pump();
     await t.enterText(find.byType(TextField).first, '2000000');

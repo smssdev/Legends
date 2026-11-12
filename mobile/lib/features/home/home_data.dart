@@ -8,9 +8,9 @@ class HomeData {
 
   factory HomeData.fromJson(Map<String, dynamic> j) => HomeData(
         coach: Coach.fromJson(j['coach'] as Map<String, dynamic>),
-        slots: [for (final s in j['slots'] as List) Slot.fromJson(s as Map<String, dynamic>)],
+        slots: [for (final s in j['slots'] as List<dynamic>) Slot.fromJson(s as Map<String, dynamic>)],
         slotsOpen: j['slots_open'] as int? ?? 0,
-        starterCoins: (j['starter_gift'] as Map?)?['coins'] as int? ?? 0, starterClaimed: (j['starter_gift'] as Map?)?['claimed'] != false,
+        starterCoins: (j['starter_gift'] as Map<dynamic, dynamic>?)?['coins'] as int? ?? 0, starterClaimed: (j['starter_gift'] as Map<dynamic, dynamic>?)?['claimed'] != false,
       );
 
   final Coach coach;

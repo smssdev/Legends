@@ -648,7 +648,7 @@ void _whistle(_Scene s) {
   s.c.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(16)), Paint()..color = s.l.gold..style = PaintingStyle.stroke..strokeWidth = 3);
   text(s.c, s.str('big'), r.topCenter + const Offset(0, 30), size: 26, color: s.l.gold);
   text(s.c, '${s.d['home'] ?? 0}  -  ${s.d['away'] ?? 0}', r.topCenter + const Offset(0, 78), size: 54, family: 'BarlowCondensed');
-  final rows = (s.d['stats'] as List?) ?? const [];
+  final rows = (s.d['stats'] as List<dynamic>?) ?? const [];
   for (final (i, row) in rows.indexed) {
     final (label, h, a) = row as (String, int, int);
     final y = r.top + 128 + i * 24.0;
@@ -833,7 +833,7 @@ void _studio(_Scene s) {
   }
   final desk = const Rect.fromLTWH(200, 430, 600, 132);
   s.c.drawPath(Path()..moveTo(desk.left + 40, desk.top)..lineTo(desk.right - 40, desk.top)..lineTo(desk.right, desk.bottom)..lineTo(desk.left, desk.bottom)..close(),
-      Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [const Color(0xFF1E3550), const Color(0xFF0B1A2C)]).createShader(desk));
+      Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF1E3550), Color(0xFF0B1A2C)]).createShader(desk));
   s.c.drawLine(Offset(desk.left + 40, desk.top), Offset(desk.right - 40, desk.top), Paint()..color = s.l.gold..strokeWidth = 3);
   text(s.c, 'GAME LEGEND MANAGER', desk.center + const Offset(0, 10), size: 20, color: s.l.gold, letter: 4);
 }

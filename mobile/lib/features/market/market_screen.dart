@@ -456,7 +456,7 @@ class _OffersTab extends ConsumerWidget {
 
     Future<void> open(int club, String name, {int? counterOf, Set<int> want = const {}, Set<int> give = const {}}) async {
       final d = ref.read(dealsProvider(leagueId)).value;
-      final sent = await Navigator.of(context).push<bool>(MaterialPageRoute(
+      final sent = await Navigator.of(context).push<bool>(MaterialPageRoute<bool>(
         builder: (_) => OfferScreen(leagueId: leagueId, clubId: club, clubName: name, counterOf: counterOf, want: want, give: give,
             fairMinBp: d?.fairMinBp ?? 5000, fairMaxBp: d?.fairMaxBp ?? 20000),
       ));

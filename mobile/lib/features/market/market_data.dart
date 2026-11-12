@@ -16,9 +16,9 @@ class MarketPlayer {
       id: j['id'] as int, name: '${j['name']}', position: '${j['position'] ?? ''}', line: '${j['line'] ?? 'mid'}', age: j['age'] as int? ?? 0,
       overall: j['overall'] as int? ?? 0, potential: j['potential'] as int?, value: (j['value'] as num?)?.toInt() ?? 0,
       price: (j['price'] as num?)?.toInt() ?? 0, wasPrice: (j['was_price'] as num?)?.toInt(), nationality: j['nationality'] as String?,
-      sellerKind: s?['kind'] as String?, sellerClub: s?['club'] as String? ?? (j['club'] as Map?)?['name'] as String?, sellerCoach: s?['coach'] as String?,
+      sellerKind: s?['kind'] as String?, sellerClub: s?['club'] as String? ?? (j['club'] as Map<dynamic, dynamic>?)?['name'] as String?, sellerCoach: s?['coach'] as String?,
       fits: j['fits'] == true, star: j['star'] == true,
-      attributes: {for (final e in ((j['attributes'] as Map?) ?? const {}).entries) '${e.key}': (e.value as num?)?.toInt() ?? 0},
+      attributes: {for (final e in ((j['attributes'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num?)?.toInt() ?? 0},
     );
   }
 
@@ -83,7 +83,7 @@ class Selling {
   factory Selling.fromJson(Map<String, dynamic> j) {
     final s = j['selling'] as Map<String, dynamic>? ?? const {};
     return Selling(
-      mine: [for (final p in (j['mine'] as List? ?? const [])) MyPlayer.fromJson(p as Map<String, dynamic>)],
+      mine: [for (final p in (j['mine'] as List<dynamic>? ?? const [])) MyPlayer.fromJson(p as Map<String, dynamic>)],
       maxListings: s['max_listings'] as int? ?? 4, listed: s['listed'] as int? ?? 0, closed: j['closed'] as String?,
     );
   }
@@ -109,10 +109,10 @@ class Offer {
 
   factory Offer.fromJson(Map<String, dynamic> j) => Offer(
         id: j['id'] as int, status: '${j['status']}', money: (j['money'] as num?)?.toInt() ?? 0,
-        from: '${(j['from'] as Map?)?['name'] ?? ''}', to: '${(j['to'] as Map?)?['name'] ?? ''}', incoming: j['incoming'] == true,
-        fromId: (j['from'] as Map?)?['id'] as int? ?? 0, toId: (j['to'] as Map?)?['id'] as int? ?? 0,
-        players: [for (final p in (j['in'] as List? ?? const [])) OfferPlayer.fromJson(p as Map<String, dynamic>)],
-        give: [for (final p in (j['out'] as List? ?? const [])) OfferPlayer.fromJson(p as Map<String, dynamic>)],
+        from: '${(j['from'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', to: '${(j['to'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', incoming: j['incoming'] == true,
+        fromId: (j['from'] as Map<dynamic, dynamic>?)?['id'] as int? ?? 0, toId: (j['to'] as Map<dynamic, dynamic>?)?['id'] as int? ?? 0,
+        players: [for (final p in (j['in'] as List<dynamic>? ?? const [])) OfferPlayer.fromJson(p as Map<String, dynamic>)],
+        give: [for (final p in (j['out'] as List<dynamic>? ?? const [])) OfferPlayer.fromJson(p as Map<String, dynamic>)],
         expiresAt: DateTime.tryParse('${j['expires_at'] ?? ''}'),
       );
 
@@ -131,14 +131,14 @@ class Deals {
   const Deals({required this.offers, required this.listings, this.closed, this.clubs = const [], this.fairMinBp = 5000, this.fairMaxBp = 20000});
 
   factory Deals.fromJson(Map<String, dynamic> j) => Deals(
-        offers: [for (final o in (j['offers'] as List? ?? const [])) Offer.fromJson(o as Map<String, dynamic>)],
+        offers: [for (final o in (j['offers'] as List<dynamic>? ?? const [])) Offer.fromJson(o as Map<String, dynamic>)],
         listings: [
-          for (final l in (j['listings'] as List? ?? const []))
-            (player: OfferPlayer.fromJson((l as Map)['player'] as Map<String, dynamic>), price: (l['price'] as num).toInt(), club: '${(l['club'] as Map?)?['name'] ?? ''}', mine: l['mine'] == true),
+          for (final l in (j['listings'] as List<dynamic>? ?? const []))
+            (player: OfferPlayer.fromJson((l as Map<dynamic, dynamic>)['player'] as Map<String, dynamic>), price: (l['price'] as num).toInt(), club: '${(l['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', mine: l['mine'] == true),
         ],
         closed: j['closed'] as String?,
-        clubs: [for (final c in (j['clubs'] as List? ?? const [])) (id: (c as Map)['id'] as int, name: '${c['name']}')],
-        fairMinBp: ((j['fair'] as Map?)?['min_bp'] as num?)?.toInt() ?? 5000, fairMaxBp: ((j['fair'] as Map?)?['max_bp'] as num?)?.toInt() ?? 20000,
+        clubs: [for (final c in (j['clubs'] as List<dynamic>? ?? const [])) (id: (c as Map<dynamic, dynamic>)['id'] as int, name: '${c['name']}')],
+        fairMinBp: ((j['fair'] as Map<dynamic, dynamic>?)?['min_bp'] as num?)?.toInt() ?? 5000, fairMaxBp: ((j['fair'] as Map<dynamic, dynamic>?)?['max_bp'] as num?)?.toInt() ?? 20000,
       );
 
   /// The coaches' clubs an offer can go to, and the fair range of a deal (its money and players against the values).
@@ -155,7 +155,7 @@ class Loan {
       required this.rounds, required this.fee, this.untilRound});
 
   factory Loan.fromJson(Map<String, dynamic> j) => Loan(
-        id: j['id'] as int, status: '${j['status']}', mine: j['mine'] == true, player: '${(j['player'] as Map?)?['name'] ?? ''}',
+        id: j['id'] as int, status: '${j['status']}', mine: j['mine'] == true, player: '${(j['player'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
         owner: '${j['owner'] ?? ''}', borrower: '${j['borrower'] ?? ''}', rounds: j['rounds'] as int? ?? 0, fee: (j['fee'] as num?)?.toInt() ?? 0,
         untilRound: j['until_round'] as int?,
       );
@@ -192,7 +192,7 @@ class MarketRepository {
   Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(int league, String line) async {
     final j = await _api.get('/leagues/$league/market', query: {'line': line});
     return (
-      players: [for (final p in (j['players'] as List? ?? const [])) MarketPlayer.fromJson(p as Map<String, dynamic>)],
+      players: [for (final p in (j['players'] as List<dynamic>? ?? const [])) MarketPlayer.fromJson(p as Map<String, dynamic>)],
       renewsAt: DateTime.tryParse('${j['renews_at'] ?? ''}'), balance: (j['balance'] as num?)?.toInt() ?? 0, closed: j['closed'] as String?,
     );
   }
@@ -218,7 +218,7 @@ class MarketRepository {
 
   /// [Sprint 18 D] Another coach's squad, to ask for his players.
   Future<List<OfferPlayer>> clubPlayers(int league, int club) async => [
-        for (final p in ((await _api.get('/leagues/$league/clubs/$club'))['players'] as List? ?? const [])) OfferPlayer.fromJson(p as Map<String, dynamic>),
+        for (final p in ((await _api.get('/leagues/$league/clubs/$club'))['players'] as List<dynamic>? ?? const [])) OfferPlayer.fromJson(p as Map<String, dynamic>),
       ];
 
   /// A new offer to a coach's club, or (counterOf) an answer with my own terms: `in` his players I want, `out` mine I give.
@@ -232,7 +232,7 @@ class MarketRepository {
   Future<({List<Loan> loans, int maxRounds, int maxFeeBp})> loans(int league) async {
     final j = await _api.get('/leagues/$league/transfers/loans');
     return (
-      loans: [for (final l in (j['loans'] as List? ?? const [])) Loan.fromJson(l as Map<String, dynamic>)],
+      loans: [for (final l in (j['loans'] as List<dynamic>? ?? const [])) Loan.fromJson(l as Map<String, dynamic>)],
       maxRounds: j['max_rounds'] as int? ?? 6, maxFeeBp: j['max_fee_bp'] as int? ?? 2000,
     );
   }
@@ -243,7 +243,7 @@ class MarketRepository {
   Future<({List<Prospect> prospects, DateTime? renewsAt, int signed, int perSeason})> academy(int league) async {
     final j = await _api.get('/leagues/$league/market/academy');
     return (
-      prospects: [for (final p in (j['prospects'] as List? ?? const [])) Prospect.fromJson(p as Map<String, dynamic>)],
+      prospects: [for (final p in (j['prospects'] as List<dynamic>? ?? const [])) Prospect.fromJson(p as Map<String, dynamic>)],
       renewsAt: DateTime.tryParse('${j['renews_at'] ?? ''}'), signed: j['signed'] as int? ?? 0, perSeason: j['per_season'] as int? ?? 0,
     );
   }

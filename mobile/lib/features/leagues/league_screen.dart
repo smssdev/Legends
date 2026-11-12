@@ -386,8 +386,8 @@ class _Versus extends StatelessWidget {
             ]),
             const SizedBox(height: 6),
             Text(c.name, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
-                style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 28, color: Colors.white, height: 1.05,
-                    shadows: const [Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 6)])),
+                style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 28, color: Colors.white, height: 1.05,
+                    shadows: [Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 6)])),
           ])),
         );
     return StadiumBackdrop(

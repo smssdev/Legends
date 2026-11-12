@@ -22,13 +22,13 @@ import '../leagues/shell.dart';
 /// [Sprint 18 F] The account and the community in the app: my account (name, look, password, invites, badges), a
 /// league's stats, the ideas and polls (Sprint 28), support, the developers' announcements and the guide (X59).
 final meProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) async => (await ref.read(apiProvider).get('/auth/me'))['user'] as Map<String, dynamic>);
-final achievementsProvider = FutureProvider.autoDispose<List>((ref) async => (await ref.read(apiProvider).get('/home/achievements'))['achievements'] as List? ?? const []);
+final achievementsProvider = FutureProvider.autoDispose<List<dynamic>>((ref) async => (await ref.read(apiProvider).get('/home/achievements'))['achievements'] as List<dynamic>? ?? const []);
 final statsProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>((ref, l) => ref.read(apiProvider).get('/leagues/$l/stats'));
 final ideasProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) => ref.read(apiProvider).get('/ideas'));
-final supportProvider = FutureProvider.autoDispose<List>((ref) async => (await ref.read(apiProvider).get('/support'))['messages'] as List? ?? const []);
-final announcementsProvider = FutureProvider.autoDispose<List>((ref) async => (await ref.read(apiProvider).get('/announcements'))['announcements'] as List? ?? const []);
-final rankingProvider = FutureProvider.autoDispose<List>((ref) async => (await ref.read(apiProvider).get('/rankings/coaches'))['coaches'] as List? ?? const []);
-final guideProvider = FutureProvider.autoDispose<List>((ref) async => (await ref.read(apiProvider).get('/guide'))['sections'] as List? ?? const []);
+final supportProvider = FutureProvider.autoDispose<List<dynamic>>((ref) async => (await ref.read(apiProvider).get('/support'))['messages'] as List<dynamic>? ?? const []);
+final announcementsProvider = FutureProvider.autoDispose<List<dynamic>>((ref) async => (await ref.read(apiProvider).get('/announcements'))['announcements'] as List<dynamic>? ?? const []);
+final rankingProvider = FutureProvider.autoDispose<List<dynamic>>((ref) async => (await ref.read(apiProvider).get('/rankings/coaches'))['coaches'] as List<dynamic>? ?? const []);
+final guideProvider = FutureProvider.autoDispose<List<dynamic>>((ref) async => (await ref.read(apiProvider).get('/guide'))['sections'] as List<dynamic>? ?? const []);
 
 Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
   try {
@@ -90,8 +90,8 @@ class ProfileScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(meProvider),
         data: (me) {
           final p = context.palette;
-          final look = (me['viewing'] as Map?)?['coach_look'] as String? ?? 'C1';
-          final ref0 = me['referral'] as Map? ?? const {};
+          final look = (me['viewing'] as Map<dynamic, dynamic>?)?['coach_look'] as String? ?? 'C1';
+          final ref0 = me['referral'] as Map<dynamic, dynamic>? ?? const {};
           Future<void> patch(Map<String, Object> body) async {
             if (await _try(context, () => api.patch('/auth/me', body)) != null) {
               ref.invalidate(meProvider);
@@ -145,7 +145,7 @@ class ProfileScreen extends ConsumerWidget {
               ]),
             ),
             const SizedBox(height: 12),
-            ...?(me['verification'] as Map?)?.let((v) => v['verified'] == true
+            ...?(me['verification'] as Map<dynamic, dynamic>?)?.let((v) => v['verified'] == true
                 ? [Text(l.verified, textAlign: TextAlign.center, style: TextStyle(color: context.glm.successText, fontWeight: FontWeight.w700))]
                 : [
                     GlmCard(
@@ -193,7 +193,7 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             SectionTitle(l.achievements),
             ...?ref.watch(achievementsProvider).value?.map((a) {
-              final m = a as Map;
+              final m = a as Map<dynamic, dynamic>;
               final goal = m['goal'] as int? ?? 1;
               return ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -205,14 +205,14 @@ class ProfileScreen extends ConsumerWidget {
             }),
             const SizedBox(height: 12),
             // [UP13] A long holiday for the whole account (the developers answer it), or its end.
-            if ((me['vacation'] as Map?)?['on'] == true)
+            if ((me['vacation'] as Map<dynamic, dynamic>?)?['on'] == true)
               GlmButton(label: l.endHoliday, variant: GlmButtonVariant.outline, onPressed: () async {
                 await _try(context, () => api.delete('/auth/vacation'));
                 ref.invalidate(meProvider);
               })
-            else if ((me['vacation'] as Map?)?['pending'] == null)
+            else if ((me['vacation'] as Map<dynamic, dynamic>?)?['pending'] == null)
               GlmButton(label: l.holidayAccount, variant: GlmButtonVariant.quiet, icon: const Icon(Icons.beach_access_rounded),
-                  onPressed: () => askHoliday(context, ref, '/auth/vacation', (me['vacation'] as Map?)?['max_days'] as int? ?? 60)),
+                  onPressed: () => askHoliday(context, ref, '/auth/vacation', (me['vacation'] as Map<dynamic, dynamic>?)?['max_days'] as int? ?? 60)),
             const SizedBox(height: 8),
             for (final (icon, label, path) in [
               (Icons.leaderboard_rounded, l.ranking, '/ranking'),
@@ -296,12 +296,12 @@ class RankingScreen extends ConsumerWidget {
         value: ref.watch(rankingProvider),
         onRetry: () => ref.invalidate(rankingProvider),
         data: (rows) => ListView(padding: const EdgeInsets.all(12), children: [
-          for (final r in rows.cast<Map>())
+          for (final r in rows.cast<Map<dynamic, dynamic>>())
             ListTile(
               leading: Text('${r['position']}', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800, color: context.glm.goldText)),
-              title: Text('${(r['coach'] as Map?)?['name'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: Text('${l.trophiesShort(((r['trophies'] as Map?)?['total'] as int?) ?? 0)} · ${r['won']}/${r['played']} · ${((r['rating'] as Map?)?['points']) ?? 0}'),
-              onTap: (r['coach'] as Map?)?['id'] == null ? null : () => context.push('/coaches/${(r['coach'] as Map)['id']}'),
+              title: Text('${(r['coach'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: Text('${l.trophiesShort(((r['trophies'] as Map<dynamic, dynamic>?)?['total'] as int?) ?? 0)} · ${r['won']}/${r['played']} · ${((r['rating'] as Map<dynamic, dynamic>?)?['points']) ?? 0}'),
+              onTap: (r['coach'] as Map<dynamic, dynamic>?)?['id'] == null ? null : () => context.push('/coaches/${(r['coach'] as Map<dynamic, dynamic>)['id']}'),
             ),
         ]),
       ),
@@ -324,7 +324,7 @@ class StatsScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(statsProvider(leagueId)),
         data: (s) {
           final p = context.palette;
-          Widget list(String title, List rows, String key, String unit) => GlmCard(
+          Widget list(String title, List<dynamic> rows, String key, String unit) => GlmCard(
                 padding: const EdgeInsets.all(12),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                   Text(title, style: context.text.titleMedium),
@@ -334,18 +334,18 @@ class StatsScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(vertical: 3),
                       child: Row(children: [
                         SizedBox(width: 24, child: Text('${i + 1}', style: TextStyle(color: p.textMuted, fontFamily: GlmFonts.numbers))),
-                        Expanded(child: Text('${((r as Map)['player'] as Map?)?['name'] ?? ''}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
-                        Text('${(r['club'] as Map?)?['code'] ?? ''}  ', style: TextStyle(color: p.textMuted, fontSize: 12)),
+                        Expanded(child: Text('${((r as Map<dynamic, dynamic>)['player'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
+                        Text('${(r['club'] as Map<dynamic, dynamic>?)?['code'] ?? ''}  ', style: TextStyle(color: p.textMuted, fontSize: 12)),
                         Text('${r[key]} $unit', style: TextStyle(fontWeight: FontWeight.w800, color: context.glm.goldText)),
                       ]),
                     ),
                 ]),
               );
-          final values = s['value'] as List? ?? const [];
+          final values = s['value'] as List<dynamic>? ?? const [];
           return ListView(padding: const EdgeInsets.all(12), children: [
-            list(l.scorers, s['scorers'] as List? ?? const [], 'goals', l.goalsShort),
+            list(l.scorers, s['scorers'] as List<dynamic>? ?? const [], 'goals', l.goalsShort),
             const SizedBox(height: 10),
-            list(l.assistsTitle, s['assists'] as List? ?? const [], 'assists', l.assistsShort),
+            list(l.assistsTitle, s['assists'] as List<dynamic>? ?? const [], 'assists', l.assistsShort),
             const SizedBox(height: 10),
             GlmCard(
               padding: const EdgeInsets.all(12),
@@ -355,8 +355,8 @@ class StatsScreen extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: Row(children: [
-                      SizedBox(width: 24, child: Text('${(v as Map)['position']}', style: TextStyle(color: p.textMuted, fontFamily: GlmFonts.numbers))),
-                      Expanded(child: Text('${(v['club'] as Map?)?['name'] ?? ''}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
+                      SizedBox(width: 24, child: Text('${(v as Map<dynamic, dynamic>)['position']}', style: TextStyle(color: p.textMuted, fontFamily: GlmFonts.numbers))),
+                      Expanded(child: Text('${(v['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
                       Text(money(context, (v['value'] as num? ?? 0).toInt()), textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800)),
                     ]),
                   ),
@@ -398,19 +398,19 @@ class _IdeasScreenState extends ConsumerState<IdeasScreen> {
         data: (d) {
           final p = context.palette;
           return ListView(padding: const EdgeInsets.all(12), children: [
-            for (final poll in (d['polls'] as List? ?? const []))
+            for (final poll in (d['polls'] as List<dynamic>? ?? const []))
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: GlmCard(
-                  gold: (poll as Map)['state'] == 'open',
+                  gold: (poll as Map<dynamic, dynamic>)['state'] == 'open',
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                     Text('${poll['question']}', style: context.text.titleMedium),
                     if (poll['body'] != null) Text('${poll['body']}', style: TextStyle(color: p.textMuted)),
-                    for (final o in (poll['options'] as List? ?? const []))
+                    for (final o in (poll['options'] as List<dynamic>? ?? const []))
                       ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
-                        leading: Icon(poll['my_vote'] == (o as Map)['id'] ? Icons.radio_button_checked : Icons.radio_button_off, color: p.gold),
+                        leading: Icon(poll['my_vote'] == (o as Map<dynamic, dynamic>)['id'] ? Icons.radio_button_checked : Icons.radio_button_off, color: p.gold),
                         title: Text('${o['label']}'),
                         trailing: o['votes'] == null ? null : Text(l.votes(o['votes'] as int), style: TextStyle(color: p.textMuted)),
                         onTap: poll['state'] != 'open' || poll['my_vote'] != null
@@ -445,23 +445,23 @@ class _IdeasScreenState extends ConsumerState<IdeasScreen> {
               ]),
             ),
             const SizedBox(height: 10),
-            for (final sgg in (d['suggestions'] as List? ?? const []))
+            for (final sgg in (d['suggestions'] as List<dynamic>? ?? const []))
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text('${(sgg as Map)['title']}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                title: Text('${(sgg as Map<dynamic, dynamic>)['title']}', style: const TextStyle(fontWeight: FontWeight.w700)),
                 subtitle: Text([
                   switch (sgg['status']) { 'accepted' => l.statusAccepted, 'built' => l.statusBuilt, 'rejected' => l.statusRejected, _ => l.statusPending },
                   if ((sgg['coins'] as int? ?? 0) > 0) l.coinsWord(sgg['coins'] as int),
                   if (sgg['reply'] != null) '${sgg['reply']}',
                 ].join(' · ')),
               ),
-            if ((d['honours'] as List? ?? const []).isNotEmpty) ...[
+            if ((d['honours'] as List<dynamic>? ?? const []).isNotEmpty) ...[
               SectionTitle(l.honourRoll),
-              for (final h in d['honours'] as List)
+              for (final h in d['honours'] as List<dynamic>)
                 ListTile(
                   dense: true,
-                  leading: Text('${(h as Map)['rank']}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText)),
-                  title: Text('${(h['user'] as Map?)?['name'] ?? ''}'),
+                  leading: Text('${(h as Map<dynamic, dynamic>)['rank']}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText)),
+                  title: Text('${(h['user'] as Map<dynamic, dynamic>?)?['name'] ?? ''}'),
                   trailing: Text('${h['count']}'),
                 ),
             ],
@@ -504,7 +504,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
               const SizedBox(height: 10),
               for (final m in messages)
                 Align(
-                  alignment: (m as Map)['from_team'] == true ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
+                  alignment: (m as Map<dynamic, dynamic>)['from_team'] == true ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 6),
                     padding: const EdgeInsets.all(10),
@@ -564,7 +564,7 @@ class AnnouncementsScreen extends ConsumerWidget {
                     child: GlmCard(
                       padding: EdgeInsets.zero,
                       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                        if ((a as Map)['image_url'] != null)
+                        if ((a as Map<dynamic, dynamic>)['image_url'] != null)
                           ClipRRect(
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                             child: Image.network('${a['image_url']}', fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox()),
@@ -575,10 +575,10 @@ class AnnouncementsScreen extends ConsumerWidget {
                             Text('${a['title']}', style: context.text.titleMedium),
                             const SizedBox(height: 4),
                             Text('${a['body']}'),
-                            if (a['cta'] is Map) ...[
+                            if (a['cta'] is Map<dynamic, dynamic>) ...[
                               const SizedBox(height: 8),
-                              GlmButton(label: '${(a['cta'] as Map)['label']}', variant: GlmButtonVariant.brand,
-                                  onPressed: () => launchUrl(Uri.parse('${(a['cta'] as Map)['url']}'), mode: LaunchMode.externalApplication)),
+                              GlmButton(label: '${(a['cta'] as Map<dynamic, dynamic>)['label']}', variant: GlmButtonVariant.brand,
+                                  onPressed: () => launchUrl(Uri.parse('${(a['cta'] as Map<dynamic, dynamic>)['url']}'), mode: LaunchMode.externalApplication)),
                             ],
                           ]),
                         ),
@@ -610,12 +610,12 @@ class GuideScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: ExpansionTile(
                   shape: const Border(),
-                  title: Text('${(s as Map)['title']}', style: context.text.titleMedium),
+                  title: Text('${(s as Map<dynamic, dynamic>)['title']}', style: context.text.titleMedium),
                   children: [
-                    for (final t in (s['topics'] as List? ?? const []))
+                    for (final t in (s['topics'] as List<dynamic>? ?? const []))
                       ExpansionTile(
                         shape: const Border(),
-                        title: Text('${(t as Map)['q']}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                        title: Text('${(t as Map<dynamic, dynamic>)['q']}', style: const TextStyle(fontWeight: FontWeight.w700)),
                         children: [Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 12), child: Text('${t['a']}'))],
                       ),
                   ],

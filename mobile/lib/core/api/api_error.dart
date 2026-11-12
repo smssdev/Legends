@@ -19,12 +19,12 @@ class ApiError implements Exception {
     if (e is ApiError) return e;
     if (e is DioException) {
       final data = e.response?.data;
-      if (data is Map) {
+      if (data is Map<dynamic, dynamic>) {
         final errors = <String, String>{};
         final raw = data['errors'];
-        if (raw is Map) {
+        if (raw is Map<dynamic, dynamic>) {
           raw.forEach((k, v) {
-            if (v is List && v.isNotEmpty) errors['$k'] = '${v.first}';
+            if (v is List<dynamic> && v.isNotEmpty) errors['$k'] = '${v.first}';
           });
         }
         return ApiError('${data['message'] ?? 'حدث خطأ، حاول مرة أخرى.'}', status: e.response?.statusCode, code: data['code'] as String?, fields: errors);

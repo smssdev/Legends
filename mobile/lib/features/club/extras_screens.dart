@@ -217,7 +217,7 @@ class SpyScreen extends ConsumerWidget {
           final p = context.palette;
           final r = s.report;
           final cost = s.currency == 'coins' ? l.coinsWord(s.cost) : money(context, s.cost);
-          final tactics = (r?['tactics'] as Map?) ?? const {};
+          final tactics = (r?['tactics'] as Map<dynamic, dynamic>?) ?? const {};
           return ListView(padding: const EdgeInsets.all(12), children: [
             Text(l.spyLead, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
             const SizedBox(height: 12),
@@ -242,23 +242,23 @@ class SpyScreen extends ConsumerWidget {
             else
               GlmCard(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  Text(l.spyReportOn('${(r['club'] as Map?)?['name'] ?? s.opponent}'), style: context.text.titleMedium),
+                  Text(l.spyReportOn('${(r['club'] as Map<dynamic, dynamic>?)?['name'] ?? s.opponent}'), style: context.text.titleMedium),
                   const SizedBox(height: 8),
                   Wrap(spacing: 16, runSpacing: 6, children: [
                     Text('${l.formation}: ${r['formation'] ?? '—'}'),
                     if (r['fitness'] != null) Text('${l.fitness}: ${r['fitness']}%'),
-                    Text('${l.form}: ${((r['form'] as List?) ?? const []).join(' ')}', textDirection: TextDirection.ltr),
+                    Text('${l.form}: ${((r['form'] as List<dynamic>?) ?? const []).join(' ')}', textDirection: TextDirection.ltr),
                   ]),
                   if (tactics.isNotEmpty) ...[
                     const SizedBox(height: 6),
                     Text(tactics.entries.map((e) => '${e.key}: ${e.value}').join(' · '), textDirection: TextDirection.ltr, style: TextStyle(color: p.textMuted, fontSize: 12)),
                   ],
                   const SizedBox(height: 10),
-                  for (final pl in (r['starters'] as List? ?? const []))
+                  for (final pl in (r['starters'] as List<dynamic>? ?? const []))
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 3),
                       child: Row(children: [
-                        Container(width: 8, height: 18, color: lineColor('${(pl as Map)['line']}').bg),
+                        Container(width: 8, height: 18, color: lineColor('${(pl as Map<dynamic, dynamic>)['line']}').bg),
                         const SizedBox(width: 8),
                         Expanded(child: Text('${pl['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start)),
                         Text('${pl['position']} ${pl['overall']}', textDirection: TextDirection.ltr, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800)),
@@ -388,10 +388,10 @@ class CoachProfileScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(coachProfileProvider(userId)),
         data: (j) {
           final p = context.palette;
-          final coach = j['coach'] as Map? ?? const {};
-          final r = j['record'] as Map? ?? const {};
-          final titles = j['titles'] as List? ?? const [];
-          final obj = j['objectives'] as Map? ?? const {};
+          final coach = j['coach'] as Map<dynamic, dynamic>? ?? const {};
+          final r = j['record'] as Map<dynamic, dynamic>? ?? const {};
+          final titles = j['titles'] as List<dynamic>? ?? const [];
+          final obj = j['objectives'] as Map<dynamic, dynamic>? ?? const {};
           Widget stat(String label, Object? v) => Expanded(
                 child: Column(children: [
                   Text('${v ?? 0}', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 24, fontWeight: FontWeight.w800, color: context.glm.goldText)),
@@ -415,7 +415,7 @@ class CoachProfileScreen extends ConsumerWidget {
             if (titles.isEmpty) Padding(padding: const EdgeInsets.all(12), child: Text(l.noTitles, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted))),
             for (final t in titles)
               ListTile(
-                leading: Text((t as Map)['position'] == 1 ? '🏆' : '🥈', style: const TextStyle(fontSize: 22)),
+                leading: Text((t as Map<dynamic, dynamic>)['position'] == 1 ? '🏆' : '🥈', style: const TextStyle(fontSize: 22)),
                 title: Text('${t['club']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start, style: const TextStyle(fontWeight: FontWeight.w800)),
                 subtitle: Text('${t['league']} · ${l.seasonN(t['season'] as int? ?? 1)} · ${t['competition'] == 'cup' ? l.cup : l.competitionLeague}'),
               ),

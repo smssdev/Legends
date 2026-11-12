@@ -21,8 +21,8 @@ Map<String, dynamic> fixture(String name) => jsonDecode(File('test/fixtures/$nam
 void main() {
   setUpAll(() => ClubCrest.loadFromNetwork = false);
   final league = League.fromJson(fixture('league')['league'] as Map<String, dynamic>);
-  final table = [for (final r in fixture('standings')['table'] as List) StandingRow.fromJson(r as Map<String, dynamic>)];
-  final fixtures = [for (final f in fixture('fixtures')['fixtures'] as List) Fixture.fromJson(f as Map<String, dynamic>)];
+  final table = [for (final r in fixture('standings')['table'] as List<dynamic>) StandingRow.fromJson(r as Map<String, dynamic>)];
+  final fixtures = [for (final f in fixture('fixtures')['fixtures'] as List<dynamic>) Fixture.fromJson(f as Map<String, dynamic>)];
   final summary = ClubSummary.fromJson(fixture('summary'));
 
   test('a league, its table, its matches and my club read from the API as it answers', () {
@@ -37,7 +37,7 @@ void main() {
     expect(summary.club.id, league.myClubId);
     expect(summary.next, isNotNull);
     expect(summary.goal?.kind, isNotNull);
-    final clubs = [for (final c in fixture('clubs')['clubs'] as List) ClubCardData.fromJson(c as Map<String, dynamic>)];
+    final clubs = [for (final c in fixture('clubs')['clubs'] as List<dynamic>) ClubCardData.fromJson(c as Map<String, dynamic>)];
     expect(clubs.where((c) => !c.bot), hasLength(1));
     expect(clubs.first.goal, isNotNull);
   });

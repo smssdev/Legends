@@ -150,7 +150,7 @@ class _AssistantSheetState extends ConsumerState<AssistantSheet> {
   }
 
   List<({String question, String? topic})> _questions(Object? list) =>
-      [for (final q in (list as List? ?? const [])) (question: '${(q as Map)['question']}', topic: q['topic'] as String?)];
+      [for (final q in (list as List<dynamic>? ?? const [])) (question: '${(q as Map<dynamic, dynamic>)['question']}', topic: q['topic'] as String?)];
 
   Future<void> _ask(String question, {String? topic}) async {
     if (question.trim().isEmpty || _busy) return;

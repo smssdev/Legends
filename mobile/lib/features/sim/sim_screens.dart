@@ -54,7 +54,7 @@ class SimRepository {
   Future<List<SimClub>> clubs(String q) async {
     try {
       final r = await _api.dio.get('/sim/clubs', queryParameters: {if (q.trim().isNotEmpty) 'q': q.trim()});
-      return [for (final c in (r.data as List? ?? const [])) SimClub.fromJson(c as Map<String, dynamic>)];
+      return [for (final c in (r.data as List<dynamic>? ?? const [])) SimClub.fromJson(c as Map<String, dynamic>)];
     } catch (e) {
       throw ApiError.from(e);
     }
@@ -534,7 +534,7 @@ class _NightPitch extends CustomPainter {
       canvas.translate(left ? 30 : s.width - 30, -10);
       canvas.rotate((left ? -.25 : .25) + .2 * sway * (left ? 1 : -1));
       final beam = Path()..addPolygon([const Offset(-7, 0), const Offset(7, 0), Offset(70, s.height * 1.3), Offset(-70, s.height * 1.3)], true);
-      canvas.drawPath(beam, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [const Color(0x47FFF0C8), const Color(0x00FFF0C8)]).createShader(Rect.fromLTWH(-70, 0, 140, s.height)));
+      canvas.drawPath(beam, Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x47FFF0C8), Color(0x00FFF0C8)]).createShader(Rect.fromLTWH(-70, 0, 140, s.height)));
       canvas.restore();
     }
     final top = s.height * .54, k = s.width / 390;

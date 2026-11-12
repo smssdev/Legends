@@ -101,10 +101,10 @@ Future<void> leave(WidgetTester t) async {
 void main() {
   group('frames: the golden vectors (docs/api/frame-golden.json), as the web and Unity', () {
     final golden = jsonDecode(File('../docs/api/frame-golden.json').readAsStringSync()) as Map<String, dynamic>;
-    final frames = [for (final f in golden['frames'] as List) Keyframe.fromJson(f as Map<String, dynamic>)];
+    final frames = [for (final f in golden['frames'] as List<dynamic>) Keyframe.fromJson(f as Map<String, dynamic>)];
 
     test('segments', () {
-      for (final s in golden['segments'] as List) {
+      for (final s in golden['segments'] as List<dynamic>) {
         final got = segment(s['count'] as int, (s['u'] as num).toDouble());
         expect(got.i, s['i'], reason: '$s');
         expect(got.k, closeTo((s['k'] as num).toDouble(), 1e-9), reason: '$s');
@@ -112,14 +112,14 @@ void main() {
     });
 
     test('samples', () {
-      for (final s in golden['samples'] as List) {
+      for (final s in golden['samples'] as List<dynamic>) {
         final f = sample(frames, (s['u'] as num).toDouble())!;
-        final ball = s['ball'] as List;
+        final ball = s['ball'] as List<dynamic>;
         expect([f.ball.$1, f.ball.$2, f.ball.$3], [for (final v in ball) closeTo((v as num).toDouble(), 1e-6)], reason: 'ball at ${s['u']}');
-        final players = s['players'] as Map;
+        final players = s['players'] as Map<dynamic, dynamic>;
         expect(f.players.keys.toSet(), players.keys.toSet(), reason: 'players at ${s['u']}');
         for (final e in players.entries) {
-          final want = e.value as List;
+          final want = e.value as List<dynamic>;
           expect([f.players[e.key]!.$1, f.players[e.key]!.$2], [closeTo((want[0] as num).toDouble(), 1e-6), closeTo((want[1] as num).toDouble(), 1e-6)], reason: '${e.key} at ${s['u']}');
         }
       }
@@ -177,7 +177,7 @@ void main() {
     repo.paused = false;
     feed.sub.on = true;
     await t.pump(const Duration(milliseconds: 300));
-    final next = Map<String, dynamic>.from((json('live')['ticks'] as List).last as Map)
+    final next = Map<String, dynamic>.from((json('live')['ticks'] as List<dynamic>).last as Map<dynamic, dynamic>)
       ..['tick'] = 27
       ..['minute'] = [27, 0]
       ..['score'] = {'home': 2, 'away': 1}
@@ -187,7 +187,7 @@ void main() {
     feed.push('minute', {'match_id': 77, 'live': next, 'next_at': DateTime.now().millisecondsSinceEpoch + 3000});
     await t.pump(const Duration(milliseconds: 300));
     expect(find.text('2 - 1'), findsOneWidget);
-    final chats = (json('live')['chat'] as List).length;
+    final chats = (json('live')['chat'] as List<dynamic>).length;
     expect(find.textContaining('الدردشة $chats'), findsOneWidget);
     feed.push('chat', {'match_id': 77, 'item': {'id': 99, 'who': 'حمزة', 'body': 'هدف!', 'side': 'away', 'user_id': 3, 'at': 0}});
     await t.pump(const Duration(milliseconds: 300));

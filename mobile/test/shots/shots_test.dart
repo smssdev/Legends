@@ -71,7 +71,7 @@ const homeJson = {
   ],
 };
 
-Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {Size size = const Size(844, 390), double h = 800, String? tap, Duration? at, IconData? tapIcon, double scroll = 0}) async {
+Future<void> shot(WidgetTester t, String name, Widget screen, List<dynamic> overrides, {Size size = const Size(844, 390), double h = 800, String? tap, Duration? at, IconData? tapIcon, double scroll = 0}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   t.view.physicalSize = size * 2;
@@ -144,8 +144,8 @@ void main() {
     testWidgets(name, (t) => shot(t, name, LeagueShell(leagueId: 8, location: '/leagues/8?tab=${{'league-team': 'team', 'league-matches': 'matches', 'league-more': 'more'}[name]}', child: LeagueScreen(id: 8, tab: {'league-team': 'team', 'league-matches': 'matches', 'league-more': 'more'}[name])), [
           leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
           clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
-          standingsProvider.overrideWith((ref, id) async => [for (final r in json('standings')['table'] as List) StandingRow.fromJson(r as Map<String, dynamic>)]),
-          fixturesProvider.overrideWith((ref, id) async => [for (final f in json('fixtures')['fixtures'] as List) Fixture.fromJson(f as Map<String, dynamic>)]),
+          standingsProvider.overrideWith((ref, id) async => [for (final r in json('standings')['table'] as List<dynamic>) StandingRow.fromJson(r as Map<String, dynamic>)]),
+          fixturesProvider.overrideWith((ref, id) async => [for (final f in json('fixtures')['fixtures'] as List<dynamic>) Fixture.fromJson(f as Map<String, dynamic>)]),
         ]));
   }
   testWidgets('menu', (t) => shot(t, 'menu', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
@@ -174,7 +174,7 @@ void main() {
               {'label': 'هدية البداية', 'amount': 25, 'at': '2026-11-05T20:00:00Z'},
               {'label': 'ودية', 'amount': -5, 'at': '2026-11-05T21:00:00Z'},
             ]})),
-        storeProvider.overrideWith((ref) async => [for (final i in json('store')['items'] as List) StoreItem.fromJson(i as Map<String, dynamic>)]),
+        storeProvider.overrideWith((ref) async => [for (final i in json('store')['items'] as List<dynamic>) StoreItem.fromJson(i as Map<String, dynamic>)]),
       ]));
   testWidgets('finance', (t) => shot(t, 'finance', const FinanceScreen(leagueId: 8), [financeProvider.overrideWith((ref, id) async => Finance.fromJson(json('finance')))]));
   testWidgets('market', (t) => shot(t, 'market', const MarketScreen(leagueId: 8), [marketRepositoryProvider.overrideWithValue(FakeMarket())]));

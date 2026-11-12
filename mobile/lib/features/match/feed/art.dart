@@ -67,7 +67,7 @@ void text(Canvas c, String t, Offset at, {double size = 16, Color color = Colors
 /// The stadium behind the goal: the night sky, the stands full of fans (bouncing by [roar]), the LEGENDS boards, and the
 /// pitch with its mowing stripes, its box and its goal.
 void drawGround(Canvas c, ClipLook l, double u, {double roar = 0, bool goal = true, Map<String, (Color, Color)>? fans}) {
-  final sky = Rect.fromLTWH(0, 0, frameW, 150);
+  final sky = const Rect.fromLTWH(0, 0, frameW, 150);
   c.drawRect(sky, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [l.night, Color.lerp(l.night, Colors.black, .4)!]).createShader(sky));
   // The fans: rows of heads and shoulders in both clubs' colours, more of the home side's.
   final rnd = math.Random(3);
@@ -89,13 +89,13 @@ void drawGround(Canvas c, ClipLook l, double u, {double roar = 0, bool goal = tr
     c.drawCircle(Offset(fx, 0), 260, Paint()..shader = RadialGradient(colors: [l.gold.withValues(alpha: .18), l.gold.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: Offset(fx, 0), radius: 260)));
   }
   // The boards.
-  final boards = Rect.fromLTWH(0, 150, frameW, 26);
-  c.drawRect(boards, Paint()..shader = LinearGradient(colors: [const Color(0xFF0E1B2B), const Color(0xFF15304A), const Color(0xFF0E1B2B)]).createShader(boards));
+  final boards = const Rect.fromLTWH(0, 150, frameW, 26);
+  c.drawRect(boards, Paint()..shader = const LinearGradient(colors: [Color(0xFF0E1B2B), Color(0xFF15304A), Color(0xFF0E1B2B)]).createShader(boards));
   for (var x = 60.0; x < frameW; x += 220) {
     text(c, 'LEGENDS', Offset(x + (u * 18) % 220 - 60, 163), size: 15, color: l.gold, letter: 4);
   }
   // The grass: stripes fanning out toward the camera.
-  final grass = Rect.fromLTWH(0, 176, frameW, frameH - 176);
+  final grass = const Rect.fromLTWH(0, 176, frameW, frameH - 176);
   c.drawRect(grass, Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [l.grassDark, l.grass]).createShader(grass));
   final stripe = Paint()..color = Colors.black.withValues(alpha: .08);
   for (var i = -8; i <= 8; i += 2) {
@@ -236,7 +236,7 @@ void drawBall(Canvas c, double x, double y, {double z = 0, double spin = 0, doub
   c.drawOval(Rect.fromCenter(center: Offset(x, y), width: 16 * s / (1 + z / 120), height: 5 * s / (1 + z / 120)), Paint()..color = Colors.black.withValues(alpha: .3));
   final at = Offset(x, y - 7 * s - z * s);
   final r = 7.5 * s;
-  c.drawCircle(at, r, Paint()..shader = RadialGradient(center: const Alignment(-.4, -.4), colors: [Colors.white, const Color(0xFFD7D7D7)]).createShader(Rect.fromCircle(center: at, radius: r)));
+  c.drawCircle(at, r, Paint()..shader = const RadialGradient(center: Alignment(-.4, -.4), colors: [Colors.white, Color(0xFFD7D7D7)]).createShader(Rect.fromCircle(center: at, radius: r)));
   final patch = Paint()..color = const Color(0xFF1C1C1C);
   for (var i = 0; i < 3; i++) {
     final a = spin + i * 2.1;

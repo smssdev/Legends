@@ -36,7 +36,7 @@ class FakeExtras implements ExtrasRepository {
   @override
   Future<({int days, List<Specialist> list})> specialists(int league) async {
     final j = json('specialists');
-    return (days: j['days'] as int, list: [for (final s in j['specialists'] as List) Specialist.fromJson(s as Map<String, dynamic>)]);
+    return (days: j['days'] as int, list: [for (final s in j['specialists'] as List<dynamic>) Specialist.fromJson(s as Map<String, dynamic>)]);
   }
 
   @override
@@ -61,7 +61,7 @@ class FakeExtras implements ExtrasRepository {
   @override
   Future<({DateTime? renewsAt, List<Quest> quests})> quests(int league) async {
     final j = json('quests');
-    return (renewsAt: DateTime.tryParse('${j['renews_at']}'), quests: [for (final q in j['quests'] as List) Quest.fromJson(q as Map<String, dynamic>)]);
+    return (renewsAt: DateTime.tryParse('${j['renews_at']}'), quests: [for (final q in j['quests'] as List<dynamic>) Quest.fromJson(q as Map<String, dynamic>)]);
   }
 
   @override
@@ -73,7 +73,7 @@ class FakeExtras implements ExtrasRepository {
   @override
   Future<void> resign(int league) async => sent.add('resign');
   @override
-  Future<Map<String, int>> prices() async => {for (final e in (json('wallet')['prices'] as Map).entries) '${e.key}': e.value as int};
+  Future<Map<String, int>> prices() async => {for (final e in (json('wallet')['prices'] as Map<dynamic, dynamic>).entries) '${e.key}': e.value as int};
 }
 
 class FakeWallet implements WalletRepository {
@@ -84,7 +84,7 @@ class FakeWallet implements WalletRepository {
   @override
   Future<void> claimDaily() async => claims++;
   @override
-  Future<List<StoreItem>> store() async => [for (final i in json('store')['items'] as List) StoreItem.fromJson(i as Map<String, dynamic>)];
+  Future<List<StoreItem>> store() async => [for (final i in json('store')['items'] as List<dynamic>) StoreItem.fromJson(i as Map<String, dynamic>)];
 }
 
 Future<void> pump(WidgetTester t, Widget screen, {FakeExtras? extras, FakeWallet? wallet}) async {

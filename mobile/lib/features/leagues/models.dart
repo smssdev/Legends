@@ -2,7 +2,7 @@
 DateTime? date(Object? v) => v is String ? DateTime.tryParse(v)?.toLocal() : null;
 
 /// A coach as the API gives him: his name, or an object with it (the clubs list).
-String? _name(Object? v) => v is Map ? v['name'] as String? : v as String?;
+String? _name(Object? v) => v is Map<dynamic, dynamic> ? v['name'] as String? : v as String?;
 
 class League {
   const League({required this.id, required this.name, required this.code, required this.status, required this.isOwner, this.myClubId, this.myRequest,
@@ -17,7 +17,7 @@ class League {
       myClubId: j['my_club_id'] as int?, myRequest: j['my_request'] as String?, freeClubs: j['free_clubs'] as int? ?? 0,
       pendingRequests: j['pending_requests'] as int? ?? 0, inviteUrl: j['invite_url'] as String?, startsAt: date(j['starts_at']),
       teamCount: j['team_count'] as int? ?? 0, coaches: j['coaches'] as int? ?? 0,
-      members: [for (final m in (j['members'] as List? ?? const [])) Member.fromJson(m as Map<String, dynamic>)],
+      members: [for (final m in (j['members'] as List<dynamic>? ?? const [])) Member.fromJson(m as Map<String, dynamic>)],
       seasonNumber: season?['number'] as int?, roundsPlayed: season?['rounds_played'] as int?, rounds: season?['rounds'] as int?,
       contract: me?['contract'] as Map<String, dynamic>?, locked: j['locked'] != false,
     );
@@ -48,7 +48,7 @@ class Member {
     final c = j['club'] as Map<String, dynamic>?;
     return Member(id: j['id'] as int, name: '${u['name'] ?? ''}', username: u['username'] as String?, club: c?['name'] as String?,
         isOwner: j['is_owner'] == true, onHoliday: j['on_holiday'] == true, userId: u['id'] as int?,
-        vacationRequest: j['vacation_request'] is Map ? (days: (j['vacation_request'] as Map)['days'] as int? ?? 0, reason: '${(j['vacation_request'] as Map)['reason'] ?? ''}') : null);
+        vacationRequest: j['vacation_request'] is Map<dynamic, dynamic> ? (days: (j['vacation_request'] as Map<dynamic, dynamic>)['days'] as int? ?? 0, reason: '${(j['vacation_request'] as Map<dynamic, dynamic>)['reason'] ?? ''}') : null);
   }
 
   final int id;

@@ -44,7 +44,7 @@ class _Stripes extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // The floodlights.
-    for (final c in [Offset(0, 0), Offset(size.width, 0)]) {
+    for (final c in [const Offset(0, 0), Offset(size.width, 0)]) {
       final r = size.shortestSide * .9;
       canvas.drawCircle(c, r, Paint()..shader = RadialGradient(colors: [light, light.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: c, radius: r)));
     }

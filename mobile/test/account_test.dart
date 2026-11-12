@@ -25,7 +25,7 @@ Future<void> pump(WidgetTester t, Widget screen) async {
     overrides: [
       preferencesProvider.overrideWithValue(prefs),
       meProvider.overrideWith((ref) async => json('auth_me')['user'] as Map<String, dynamic>),
-      achievementsProvider.overrideWith((ref) async => json('home_achievements')['achievements'] as List),
+      achievementsProvider.overrideWith((ref) async => json('home_achievements')['achievements'] as List<dynamic>),
       statsProvider.overrideWith((ref, l) async => {
             ...json('stats'),
             'scorers': [
@@ -45,8 +45,8 @@ Future<void> pump(WidgetTester t, Widget screen) async {
       announcementsProvider.overrideWith((ref) async => [
             {'id': 1, 'title': 'Season two', 'body': 'Starts on Friday.', 'image_url': null, 'cta': null},
           ]),
-      guideProvider.overrideWith((ref) async => json('guide')['sections'] as List),
-      rankingProvider.overrideWith((ref) async => json('ranking')['coaches'] as List),
+      guideProvider.overrideWith((ref) async => json('guide')['sections'] as List<dynamic>),
+      rankingProvider.overrideWith((ref) async => json('ranking')['coaches'] as List<dynamic>),
     ],
     child: MaterialApp(
       theme: glmTheme(day: false),

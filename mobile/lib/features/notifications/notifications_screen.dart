@@ -63,10 +63,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               GlmCard(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: Column(children: [
-                  for (final k in (s['kinds'] as List? ?? const []))
+                  for (final k in (s['kinds'] as List<dynamic>? ?? const []))
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      value: (k as Map)['on'] == true,
+                      value: (k as Map<dynamic, dynamic>)['on'] == true,
                       activeThumbColor: p.gold,
                       title: Text(names[k['kind']] ?? '${k['kind']}'),
                       onChanged: (v) => _put({'kinds': {'${k['kind']}': v}}),

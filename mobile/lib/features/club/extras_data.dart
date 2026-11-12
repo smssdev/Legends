@@ -28,7 +28,7 @@ class TrainingSlot {
   factory TrainingSlot.fromJson(Map<String, dynamic> j) {
     final c = j['coach'] as Map<String, dynamic>? ?? const {};
     return TrainingSlot(
-      line: '${j['line']}', player: j['player'] is Map ? Trainee.fromJson(j['player'] as Map<String, dynamic>) : null,
+      line: '${j['line']}', player: j['player'] is Map<dynamic, dynamic> ? Trainee.fromJson(j['player'] as Map<String, dynamic>) : null,
       sessionsDone: j['sessions_done'] as int? ?? 0, nextAt: DateTime.tryParse('${j['next_at'] ?? ''}'),
       coachName: '${c['name'] ?? ''}', coachStars: c['hired'] == true ? c['stars'] as int? ?? 0 : 0,
     );
@@ -45,9 +45,9 @@ class TrainingView {
 
   factory TrainingView.fromJson(Map<String, dynamic> j) => TrainingView(
         cost: (j['cost'] as num?)?.toInt() ?? 0, intervalMinutes: j['interval_minutes'] as int? ?? 0,
-        slots: [for (final s in (j['slots'] as List? ?? const [])) TrainingSlot.fromJson(s as Map<String, dynamic>)],
-        players: [for (final p in (j['players'] as List? ?? const [])) Trainee.fromJson(p as Map<String, dynamic>)],
-        recommended: {for (final e in ((j['recommended'] as Map?) ?? const {}).entries) if (e.value is num) '${e.key}': (e.value as num).toInt()},
+        slots: [for (final s in (j['slots'] as List<dynamic>? ?? const [])) TrainingSlot.fromJson(s as Map<String, dynamic>)],
+        players: [for (final p in (j['players'] as List<dynamic>? ?? const [])) Trainee.fromJson(p as Map<String, dynamic>)],
+        recommended: {for (final e in ((j['recommended'] as Map<dynamic, dynamic>?) ?? const {}).entries) if (e.value is num) '${e.key}': (e.value as num).toInt()},
       );
 
   final int cost, intervalMinutes;
@@ -62,8 +62,8 @@ class Specialist {
   factory Specialist.fromJson(Map<String, dynamic> j) => Specialist(
         type: '${j['type']}', name: '${j['name']}', stars: j['stars'] as int? ?? 0, endsAt: DateTime.tryParse('${j['ends_at'] ?? ''}'),
         offers: [
-          for (final o in (j['offers'] as List? ?? const []))
-            (stars: (o as Map)['stars'] as int, cost: (o['cost'] as num).toInt(), currency: '${o['currency'] ?? 'coins'}', effect: '${o['effect'] ?? ''}'),
+          for (final o in (j['offers'] as List<dynamic>? ?? const []))
+            (stars: (o as Map<dynamic, dynamic>)['stars'] as int, cost: (o['cost'] as num).toInt(), currency: '${o['currency'] ?? 'coins'}', effect: '${o['effect'] ?? ''}'),
         ],
       );
 
@@ -95,7 +95,7 @@ class Quest {
   const Quest({required this.quest, required this.progress, required this.target, required this.coins, required this.money, required this.complete, required this.claimed});
 
   factory Quest.fromJson(Map<String, dynamic> j) {
-    final r = j['reward'] as Map? ?? const {};
+    final r = j['reward'] as Map<dynamic, dynamic>? ?? const {};
     return Quest(
       quest: '${j['quest']}', progress: j['progress'] as int? ?? 0, target: j['target'] as int? ?? 1,
       coins: (r['coins'] as num?)?.toInt() ?? 0, money: (r['money'] as num?)?.toInt() ?? 0, complete: j['complete'] == true, claimed: j['claimed'] == true,
@@ -120,7 +120,7 @@ class ExtrasRepository {
 
   Future<({int days, List<Specialist> list})> specialists(int league) async {
     final j = await _api.get('/leagues/$league/specialists');
-    return (days: j['days'] as int? ?? 0, list: [for (final s in (j['specialists'] as List? ?? const [])) Specialist.fromJson(s as Map<String, dynamic>)]);
+    return (days: j['days'] as int? ?? 0, list: [for (final s in (j['specialists'] as List<dynamic>? ?? const [])) Specialist.fromJson(s as Map<String, dynamic>)]);
   }
 
   Future<void> hire(int league, String type, int stars) => Intents.run('specialist:$league:$type:$stars',
@@ -131,18 +131,18 @@ class ExtrasRepository {
 
   Future<({DateTime? renewsAt, List<Quest> quests})> quests(int league) async {
     final j = await _api.get('/leagues/$league/quests');
-    return (renewsAt: DateTime.tryParse('${j['renews_at'] ?? ''}'), quests: [for (final q in (j['quests'] as List? ?? const [])) Quest.fromJson(q as Map<String, dynamic>)]);
+    return (renewsAt: DateTime.tryParse('${j['renews_at'] ?? ''}'), quests: [for (final q in (j['quests'] as List<dynamic>? ?? const [])) Quest.fromJson(q as Map<String, dynamic>)]);
   }
 
   Future<void> claimQuest(int league, String quest) => _api.post('/leagues/$league/quests/claim', {'quest': quest});
 
   Future<List<({int number, List<({String competition, int position, String club, String? coach})> titles})>> honours(int league) async => [
-        for (final s in ((await _api.get('/leagues/$league/honours'))['seasons'] as List? ?? const []))
+        for (final s in ((await _api.get('/leagues/$league/honours'))['seasons'] as List<dynamic>? ?? const []))
           (
-            number: (s as Map)['number'] as int,
+            number: (s as Map<dynamic, dynamic>)['number'] as int,
             titles: [
-              for (final t in (s['titles'] as List? ?? const []))
-                (competition: '${(t as Map)['competition']}', position: t['position'] as int? ?? 1, club: '${(t['club'] as Map?)?['name'] ?? ''}', coach: (t['coach'] as Map?)?['name'] as String?),
+              for (final t in (s['titles'] as List<dynamic>? ?? const []))
+                (competition: '${(t as Map<dynamic, dynamic>)['competition']}', position: t['position'] as int? ?? 1, club: '${(t['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', coach: (t['coach'] as Map<dynamic, dynamic>?)?['name'] as String?),
             ],
           ),
       ];
@@ -151,7 +151,7 @@ class ExtrasRepository {
 
   /// What finishing a thing now costs, from the wallet's price list.
   Future<Map<String, int>> prices() async => {
-        for (final e in (((await _api.get('/wallet'))['prices'] as Map?) ?? const {}).entries) '${e.key}': (e.value as num).toInt(),
+        for (final e in (((await _api.get('/wallet'))['prices'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num).toInt(),
       };
 }
 

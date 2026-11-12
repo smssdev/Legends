@@ -48,7 +48,7 @@ class InboxPage {
   const InboxPage({required this.messages, required this.more, required this.unread});
 
   factory InboxPage.fromJson(Map<String, dynamic> j) => InboxPage(
-        messages: [for (final m in (j['messages'] as List? ?? const [])) InboxMessage.fromJson(m as Map<String, dynamic>)],
+        messages: [for (final m in (j['messages'] as List<dynamic>? ?? const [])) InboxMessage.fromJson(m as Map<String, dynamic>)],
         more: j['more'] == true, unread: j['unread'] as int? ?? 0,
       );
 

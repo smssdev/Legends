@@ -25,10 +25,10 @@ class WalletView {
 
   factory WalletView.fromJson(Map<String, dynamic> j) => WalletView(
         balance: (j['balance'] as num?)?.toInt() ?? 0,
-        daily: ((j['daily'] as Map?)?['amount'] as num?)?.toInt() ?? 0, dailyClaimed: (j['daily'] as Map?)?['claimed'] == true,
+        daily: ((j['daily'] as Map<dynamic, dynamic>?)?['amount'] as num?)?.toInt() ?? 0, dailyClaimed: (j['daily'] as Map<dynamic, dynamic>?)?['claimed'] == true,
         transactions: [
-          for (final t in (j['transactions'] as List? ?? const []))
-            (label: '${(t as Map)['label']}', amount: (t['amount'] as num).toInt(), at: DateTime.tryParse('${t['at'] ?? ''}')),
+          for (final t in (j['transactions'] as List<dynamic>? ?? const []))
+            (label: '${(t as Map<dynamic, dynamic>)['label']}', amount: (t['amount'] as num).toInt(), at: DateTime.tryParse('${t['at'] ?? ''}')),
         ],
       );
 
@@ -63,8 +63,8 @@ class WalletRepository {
   Future<WalletView> wallet() async => WalletView.fromJson(await _api.get('/wallet'));
   Future<void> claimDaily() => _api.post('/wallet/daily');
   Future<List<StoreItem>> store() async => [
-        for (final i in ((await _api.get('/store'))['items'] as List? ?? const []))
-          if ((i as Map)['ended'] != true && i['visible'] != false) StoreItem.fromJson(i as Map<String, dynamic>),
+        for (final i in ((await _api.get('/store'))['items'] as List<dynamic>? ?? const []))
+          if ((i as Map<dynamic, dynamic>)['ended'] != true && i['visible'] != false) StoreItem.fromJson(i as Map<String, dynamic>),
       ];
 }
 
