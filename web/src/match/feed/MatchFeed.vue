@@ -102,7 +102,9 @@ import { theme } from '../../lib/theme'
 import { ICON, SCENES, crest, esc, setKits, setLight, setRain, setRich, setSmooth, studio } from './art'
 import { noteFrame, smooth, tier } from '../perf'
 import { sample } from '../frames'
-import { SCENE_TIME, story } from './story'
+import { SCENE_TIME } from './timing'
+// [Sprint 57 B2] The minute's story is the server's (tick.story); told() writes it for this screen.
+import { told, untold } from './told'
 import { director } from './director'
 import { voiceLine, type Lang } from '../voice'
 
@@ -189,7 +191,7 @@ let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0, d
 // instead of counting frames, so two screens stay on the same instant even if one is slow.
 function play(tick, startAt = null) {
   finish()
-  const s = story(tick, { players: players.value, clubs: props.clubs, seed: props.seed, mine: props.mine })
+  const s = told(tick.story, { players: players.value, clubs: props.clubs }) ?? untold()
   const total = (tick.moment?.ms ?? 3000) / 1000
   const nominal = s.scene ? SCENE_TIME[s.scene][0] : 0
   // The scene takes most of the minute; the commentator sums it up after.
@@ -294,8 +296,8 @@ function prepare(tick) {
   idle(() => {
     if (ready !== job) return
     try {
-      const s = story(tick, { players: players.value, clubs: props.clubs, seed: props.seed, mine: props.mine })
-      if (!s.scene) return
+      const s = told(tick.story, { players: players.value, clubs: props.clubs })
+      if (!s?.scene) return
       job.scene = s.scene; job.made = SCENES[s.scene]({ ...s.data, side: s.side }); job.made.update(0); stash(job.made.svg)
     } catch (e) { console.error(e) }
   }, 800)

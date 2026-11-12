@@ -142,7 +142,7 @@
   "src/pages/SimMatch.vue": {
     "button": 13,
     "card": 8,
-    "hex": 7
+    "hex": 6
   },
   "src/pages/SimReport.vue": {
     "button": 4,

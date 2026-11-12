@@ -228,8 +228,6 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
             for (final p in (t.teams ?? _teams)[side]!.players) '${p.id}': (name: p.name, no: p.no, side: side),
         },
         clubs: {'home': v.home.name, 'away': v.away.name},
-        seed: v.seed,
-        mine: _you,
         ar: Localizations.localeOf(context).languageCode == 'ar');
   }
 

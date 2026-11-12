@@ -2972,4 +2972,13 @@ export const EN: Record<string, string> = {
   'اختر مدرباً من القائمة أعلاه وابدأ أول عرض.': 'Pick a coach from the list above and make your first offer.',
   'صفقات المدربين': 'Deals between coaches',
   'كل لاعب في الدوري قابل للتفاوض: اطلب لاعباً أو أكثر من مدرب، وأعطه مالاً أو لاعبين أو نسبة من بيعه القادم. ويرد بالقبول أو الرفض أو بعرض مضاد قبل أن ينتهي العرض.': 'Every player in the league is negotiable: ask a coach for one or more players, and give money, players or a share of his next sale. He accepts, declines or counters before the offer runs out.',
+  // [Sprint 57 B2] The coach's instructions as the server's story names them.
+  'تمركز المهاجمين': 'Forwards\' positioning',
+  'تمركز الوسط': 'Midfield positioning',
+  'تمركز الدفاع': 'Defence positioning',
+  // [Sprint 57 W4] The scenes' headlines (the gap art.ts kept is closed).
+  'الحارس يمسكها': 'The keeper holds it',
+  'رأسية!': 'Header!',
+  'تصدٍّ!': 'Saved!',
+  'صمت في المدرجات...': 'Silence in the stands...',
 }

@@ -14,20 +14,22 @@ import { SCENES } from './art'
 // [Sprint 57 W3] A scene as art.ts makes it: its picture and its clock (art.ts is still untyped).
 type Scene = { svg: SVGElement; update: (t: number) => void }
 const scenes = SCENES as unknown as Record<string, (data: Record<string, unknown>) => Scene>
-import { SCENE_TIME, story } from './story'
+import { SCENE_TIME } from './timing'
+import { told } from './told'
 
 // tag: what the label says before the scorer (the missed goals on a return say so, X94).
-const props = defineProps<{ tick: any; players: any; clubs: { home: string; away: string }; seed: number; tag?: string }>()
+const props = defineProps<{ tick: any; players: any; clubs: { home: string; away: string }; tag?: string }>()
 const emit = defineEmits<{ done: [] }>()
 const stage = ref<HTMLElement>()
-const s = story(props.tick, { players: props.players, clubs: props.clubs, seed: props.seed, mine: null })
-const who = s.who || ''
+// [Sprint 57 B2] The minute as the server told it.
+const s = told(props.tick.story, { players: props.players, clubs: props.clubs })
+const who = s?.who || ''
 // Four seconds: two seconds of play before the ball goes in, and the moment after, at half speed.
 const LENGTH = 2.2, RATE = 0.5
 let raf = 0
 
 onMounted(() => {
-  if (!s.scene || !scenes[s.scene] || !stage.value) return emit('done')
+  if (!s?.scene || !scenes[s.scene] || !stage.value) return emit('done')
   let scene: Scene
   // A scene that breaks ends the replay instead of stopping the match.
   try { scene = scenes[s.scene]({ ...s.data, side: s.side }) } catch (e) { console.error(e); return emit('done') }

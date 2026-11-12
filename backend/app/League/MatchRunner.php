@@ -237,7 +237,7 @@ class MatchRunner
             $live['next_at'] += $tick['moment']['ms'] + $pause;
             $live['pause']['until'] = $live['next_at'];
             $n++;
-            LiveEvents::send(new MatchMinute($fixture, $id, Simulator::redact($tick, null), (int) $live['next_at']));
+            LiveEvents::send(new MatchMinute($fixture, $id, Simulator::shown(LiveDegrade::voice() ? $tick : ['voice' => null] + $tick, null, (int) $state['seed']), (int) $live['next_at']));
             $live['said'] = self::readings($id, $fixture, $state, $tick, $live['control'], $live['said'] ?? null);
             $halftime = collect($tick['events'])->contains(fn ($e) => $e['type'] === 'period' && $e['name'] === 'halftime');
             if ($halftime || $state['finished']) {
