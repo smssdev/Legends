@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' show SquadPlayer;
 import '../../core/api/api_client.dart';
 
 /// [Sprint 17 F1] My team as the API gives it (`/team`): the squad with each player's numbers, the lineup (formation,
@@ -25,24 +26,27 @@ class Player {
     this.nationColors = const [],
   });
 
-  factory Player.fromJson(Map<String, dynamic> j) => Player(
-    id: j['id'] as int,
-    name: '${j['name']}',
-    position: '${j['position']}',
-    line: '${j['line']}',
-    age: j['age'] as int? ?? 0,
-    overall: (j['overall'] as int? ?? 0) + (j['training_bonus'] as int? ?? 0),
-    potential: j['potential'] as int? ?? 0,
-    value: j['value'] as int? ?? 0,
-    fitness: j['fitness'] as int? ?? 100,
-    available: j['available'] != false,
-    role: '${j['role'] ?? 'reserve'}',
-    injured: j['injured_matches'] as int? ?? 0,
-    suspended: j['suspended_matches'] as int? ?? 0,
-    nationality: j['nationality'] as String?,
-    nationCode: (j['nation'] as Map<dynamic, dynamic>?)?['code'] as String?,
-    nationColors: [for (final c in ((j['nation'] as Map<dynamic, dynamic>?)?['colors'] as List<dynamic>? ?? const [])) '$c'],
-    attributes: {for (final e in ((j['attributes'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()},
+  /// [Sprint 59 F1] A squad player from the generated model. `overall` already counts the training (the server's
+  /// Training::boosted); the hand-written reader added training_bonus again, so a trained player showed higher here
+  /// than on the site.
+  factory Player.of(SquadPlayer p) => Player(
+    id: p.id,
+    name: p.name,
+    position: p.position,
+    line: p.line,
+    age: p.age,
+    overall: p.overall,
+    potential: p.potential,
+    value: p.value,
+    fitness: p.fitness,
+    available: p.available,
+    role: p.role,
+    injured: p.injuredMatches,
+    suspended: p.suspendedMatches,
+    nationality: p.nationality,
+    nationCode: p.nation?.code,
+    nationColors: p.nation?.colors ?? const [],
+    attributes: {for (final e in p.attributes.entries) e.key: e.value ?? 0},
   );
 
   final int id, age, overall, potential, value, fitness, injured, suspended;
@@ -107,7 +111,7 @@ class TeamData {
   });
 
   factory TeamData.fromJson(Map<String, dynamic> j) => TeamData(
-    players: [for (final p in j['players'] as List<dynamic>) Player.fromJson(p as Map<String, dynamic>)],
+    players: [for (final p in j['players'] as List<dynamic>) Player.of(SquadPlayer.fromJson(p))],
     lineup: Lineup.fromJson(j['lineup'] as Map<String, dynamic>),
     morale: (j['morale'] as Map<dynamic, dynamic>?)?['value'] as int? ?? 70,
     squadValue: j['squad_value'] as int? ?? 0,

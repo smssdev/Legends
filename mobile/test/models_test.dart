@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/api/gen/models.g.dart';
 import 'package:glm/api/read.dart';
+import 'package:glm/features/club/team_data.dart';
 
 // [Sprint 59 F1, F2] The generated models read tolerantly: a new field the app does not know changes nothing, a
 // missing optional one reads as null, and a missing required one is one clear error naming the model and the field.
@@ -47,5 +51,15 @@ void main() {
       ],
     }, 'Test');
     expect(r.list('bots', MarketBotsItem.fromJson).map((b) => b.id), [1]);
+  });
+
+  test('a squad player: the overall as the server counts it (training once), and his flag', () {
+    final team = TeamData.fromJson(jsonDecode(File('test/fixtures/team.json').readAsStringSync()) as Map<String, dynamic>);
+    expect(team.players, isNotEmpty);
+    final raw = (jsonDecode(File('test/fixtures/team.json').readAsStringSync()) as Map<String, dynamic>)['players'] as List<dynamic>;
+    final first = Map<String, dynamic>.from(raw.first as Map<dynamic, dynamic>)
+      ..['overall'] = 80
+      ..['training_bonus'] = 3;
+    expect(Player.of(SquadPlayer.fromJson(first)).overall, 80, reason: 'overall already has the training in it');
   });
 }

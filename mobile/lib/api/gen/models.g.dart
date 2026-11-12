@@ -296,14 +296,14 @@ class AdminAccess {
 
   factory AdminAccess.fromJson(Object? json) {
     final r = JsonReader(json, 'AdminAccess');
-    return AdminAccess(scope: r.any('scope'), sections: r.any('sections'));
+    return AdminAccess(scope: r.stringOrNull('scope'), sections: r.listOrNull('sections', JsonReader.stringOf));
   }
 
   /// [Sprint 30 G6] This admin's scope (null: full)
-  final Object? scope;
+  final String? scope;
 
   /// [Sprint 30 G6] The panel sections this scope opens (null: all)
-  final Object? sections;
+  final List<String>? sections;
 }
 
 class AdminBackups {
@@ -376,7 +376,7 @@ class AdminUser {
     final r = JsonReader(json, 'AdminUser');
     return AdminUser(
       accountNo: r.intOrNull('account_no'),
-      adminScope: r.any('admin_scope'),
+      adminScope: r.stringOrNull('admin_scope'),
       email: r.stringOrNull('email'),
       id: r.int_('id'),
       joined: r.string('joined'),
@@ -394,7 +394,7 @@ class AdminUser {
   final int? accountNo;
 
   /// [Sprint 30 G6] An admin's scope (support, content, finance; null: full)
-  final Object? adminScope;
+  final String? adminScope;
   final String? email;
   final int id;
   final String joined;
@@ -436,10 +436,10 @@ class AnnouncementCard {
   const AnnouncementCard({
     required this.at,
     required this.body,
-    required this.cta,
+    this.cta,
     required this.id,
     this.imageUrl,
-    required this.sender,
+    this.sender,
     required this.sent,
     required this.title,
   });
@@ -449,10 +449,10 @@ class AnnouncementCard {
     return AnnouncementCard(
       at: r.string('at'),
       body: r.string('body'),
-      cta: r.object('cta', AnnouncementCardCta.fromJson),
+      cta: r.objectOrNull('cta', AnnouncementCardCta.fromJson),
       id: r.int_('id'),
-      imageUrl: r.any('image_url'),
-      sender: r.object('sender', AnnouncementCardSender.fromJson),
+      imageUrl: r.stringOrNull('image_url'),
+      sender: r.objectOrNull('sender', AnnouncementCardSender.fromJson),
       sent: r.int_('sent'),
       title: r.string('title'),
     );
@@ -460,10 +460,10 @@ class AnnouncementCard {
 
   final String at;
   final String body;
-  final AnnouncementCardCta cta;
+  final AnnouncementCardCta? cta;
   final int id;
-  final Object? imageUrl;
-  final AnnouncementCardSender sender;
+  final String? imageUrl;
+  final AnnouncementCardSender? sender;
   final int sent;
   final String title;
 }
@@ -1207,7 +1207,7 @@ class ChatReportsReportsItem {
   factory ChatReportsReportsItem.fromJson(Object? json) {
     final r = JsonReader(json, 'ChatReportsReportsItem');
     return ChatReportsReportsItem(
-      body: r.any('body'),
+      body: r.stringOrNull('body'),
       group: r.string('group'),
       kind: r.string('kind'),
       messageId: r.int_('message_id'),
@@ -1219,7 +1219,7 @@ class ChatReportsReportsItem {
   }
 
   /// The text (null for a picture or a voice note)
-  final Object? body;
+  final String? body;
   final String group;
   final String kind;
   final int messageId;
@@ -1234,13 +1234,18 @@ class ChatReportsReportsItemWriter {
 
   factory ChatReportsReportsItemWriter.fromJson(Object? json) {
     final r = JsonReader(json, 'ChatReportsReportsItemWriter');
-    return ChatReportsReportsItemWriter(banned: r.bool_('banned'), id: r.int_('id'), name: r.any('name'), username: r.any('username'));
+    return ChatReportsReportsItemWriter(
+      banned: r.bool_('banned'),
+      id: r.int_('id'),
+      name: r.stringOrNull('name'),
+      username: r.stringOrNull('username'),
+    );
   }
 
   final bool banned;
   final int id;
-  final Object? name;
-  final Object? username;
+  final String? name;
+  final String? username;
 }
 
 class Chest {
@@ -1273,10 +1278,10 @@ class ChestOddsItem {
 
 class ClubBoard {
   const ClubBoard({
-    required this.board,
+    this.board,
     required this.club,
     required this.lineup,
-    required this.match,
+    this.match,
     required this.missed,
     required this.money,
     required this.pending,
@@ -1287,10 +1292,10 @@ class ClubBoard {
   factory ClubBoard.fromJson(Object? json) {
     final r = JsonReader(json, 'ClubBoard');
     return ClubBoard(
-      board: r.object('board', ClubBoardBoard.fromJson),
+      board: r.objectOrNull('board', ClubBoardBoard.fromJson),
       club: r.object('club', ClubBoardClub.fromJson),
       lineup: r.object('lineup', ClubBoardLineup.fromJson),
-      match: r.object('match', ClubBoardMatch.fromJson),
+      match: r.objectOrNull('match', ClubBoardMatch.fromJson),
       missed: r.int_('missed'),
       money: r.object('money', ClubBoardMoney.fromJson),
       pending: r.list('pending', ClubBoardPendingItem.fromJson),
@@ -1299,10 +1304,10 @@ class ClubBoard {
     );
   }
 
-  final ClubBoardBoard board;
+  final ClubBoardBoard? board;
   final ClubBoardClub club;
   final ClubBoardLineup lineup;
-  final ClubBoardMatch match;
+  final ClubBoardMatch? match;
 
   /// Matches missed (B3)
   final int missed;
@@ -1321,12 +1326,12 @@ class ClubBoardBoard {
 
   factory ClubBoardBoard.fromJson(Object? json) {
     final r = JsonReader(json, 'ClubBoardBoard');
-    return ClubBoardBoard(kind: r.string('kind'), mood: r.string('mood'), position: r.any('position'), target: r.int_('target'));
+    return ClubBoardBoard(kind: r.string('kind'), mood: r.string('mood'), position: r.intOrNull('position'), target: r.int_('target'));
   }
 
   final String kind;
   final String mood;
-  final Object? position;
+  final int? position;
   final int target;
 }
 
@@ -1379,9 +1384,9 @@ class ClubBoardMatch {
       club: r.object('club', ClubBoardMatchClub.fromJson),
       competition: r.string('competition'),
       fixtureId: r.int_('fixture_id'),
-      matchId: r.any('match_id'),
+      matchId: r.intOrNull('match_id'),
       opponent: r.object('opponent', ClubBoardMatchOpponent.fromJson),
-      referee: r.any('referee'),
+      referee: r.stringOrNull('referee'),
       round: r.int_('round'),
       scheduledAt: r.string('scheduled_at'),
       status: r.string('status'),
@@ -1392,9 +1397,9 @@ class ClubBoardMatch {
   final ClubBoardMatchClub club;
   final String competition;
   final int fixtureId;
-  final Object? matchId;
+  final int? matchId;
   final ClubBoardMatchOpponent opponent;
-  final Object? referee;
+  final String? referee;
   final int round;
   final String scheduledAt;
   final String status;
@@ -1417,31 +1422,31 @@ class ClubBoardMatchClub {
   factory ClubBoardMatchClub.fromJson(Object? json) {
     final r = JsonReader(json, 'ClubBoardMatchClub');
     return ClubBoardMatchClub(
-      coach: r.any('coach'),
+      coach: r.stringOrNull('coach'),
       code: r.string('code'),
       crestUrl: r.string('crest_url'),
       form: r.list('form', JsonReader.stringOf),
-      formation: r.any('formation'),
+      formation: r.stringOrNull('formation'),
       id: r.int_('id'),
       name: r.string('name'),
       strengthCp: r.int_('strength_cp'),
-      tactics: r.any('tactics'),
+      tactics: r.mapOrNull('tactics', JsonReader.anyOf),
     );
   }
 
-  final Object? coach;
+  final String? coach;
   final String code;
   final String crestUrl;
   final List<String> form;
 
   /// After the lock only
-  final Object? formation;
+  final String? formation;
   final int id;
   final String name;
   final int strengthCp;
 
   /// After the lock, the public four only
-  final Object? tactics;
+  final Map<String, Object?>? tactics;
 }
 
 class ClubBoardMatchOpponent {
@@ -1460,31 +1465,31 @@ class ClubBoardMatchOpponent {
   factory ClubBoardMatchOpponent.fromJson(Object? json) {
     final r = JsonReader(json, 'ClubBoardMatchOpponent');
     return ClubBoardMatchOpponent(
-      coach: r.any('coach'),
+      coach: r.stringOrNull('coach'),
       code: r.string('code'),
       crestUrl: r.string('crest_url'),
       form: r.list('form', JsonReader.stringOf),
-      formation: r.any('formation'),
+      formation: r.stringOrNull('formation'),
       id: r.int_('id'),
       name: r.string('name'),
       strengthCp: r.int_('strength_cp'),
-      tactics: r.any('tactics'),
+      tactics: r.mapOrNull('tactics', JsonReader.anyOf),
     );
   }
 
-  final Object? coach;
+  final String? coach;
   final String code;
   final String crestUrl;
   final List<String> form;
 
   /// After the lock only
-  final Object? formation;
+  final String? formation;
   final int id;
   final String name;
   final int strengthCp;
 
   /// After the lock, the public four only
-  final Object? tactics;
+  final Map<String, Object?>? tactics;
 }
 
 class ClubBoardMoney {
@@ -1546,14 +1551,14 @@ class ClubBoardStandings {
     final r = JsonReader(json, 'ClubBoardStandings');
     return ClubBoardStandings(
       played: r.int_('played'),
-      position: r.any('position'),
+      position: r.intOrNull('position'),
       teams: r.int_('teams'),
       top: r.list('top', ClubBoardStandingsTopItem.fromJson),
     );
   }
 
   final int played;
-  final Object? position;
+  final int? position;
   final int teams;
 
   /// The first three, and mine below them when lower
@@ -1608,11 +1613,11 @@ class ClubBoardTimersItem {
     final r = JsonReader(json, 'ClubBoardTimersItem');
     return ClubBoardTimersItem(
       amount: r.intOrNull('amount'),
-      at: r.any('at'),
+      at: r.stringOrNull('at'),
       kind: r.string('kind'),
       line: r.stringOrNull('line'),
       live: r.boolOrNull('live'),
-      opponent: r.any('opponent'),
+      opponent: r.stringOrNull('opponent'),
       part_: r.intOrNull('part'),
       player: r.stringOrNull('player'),
       section: r.stringOrNull('section'),
@@ -1621,11 +1626,11 @@ class ClubBoardTimersItem {
   }
 
   final int? amount;
-  final Object? at;
+  final String? at;
   final String kind;
   final String? line;
   final bool? live;
-  final Object? opponent;
+  final String? opponent;
   final int? part_;
   final String? player;
   final String? section;
@@ -2324,26 +2329,26 @@ class EditClub {
   factory EditClub.fromJson(Object? json) {
     final r = JsonReader(json, 'EditClub');
     return EditClub(
-      awayColor: r.any('away_color'),
-      awayPattern: r.any('away_pattern'),
+      awayColor: r.stringOrNull('away_color'),
+      awayPattern: r.stringOrNull('away_pattern'),
       code: r.stringOrNull('code'),
       colorPrimary: r.stringOrNull('color_primary'),
       colorSecondary: r.stringOrNull('color_secondary'),
-      kitPattern: r.any('kit_pattern'),
+      kitPattern: r.stringOrNull('kit_pattern'),
       leagueName: r.stringOrNull('league_name'),
       name: r.stringOrNull('name'),
     );
   }
 
   /// [Sprint 34 V1] The change kit's shirt colour (#RRGGBB), null for none
-  final Object? awayColor;
-  final Object? awayPattern;
+  final String? awayColor;
+  final String? awayPattern;
   final String? code;
   final String? colorPrimary;
   final String? colorSecondary;
 
   /// [X76] The kit's pattern in the club's two colours; null or plain is a plain shirt
-  final Object? kitPattern;
+  final String? kitPattern;
   final String? leagueName;
   final String? name;
 }
@@ -2595,7 +2600,7 @@ class FormationLines {
 class Friendlies {
   const Friendlies({
     required this.balance,
-    required this.blocked,
+    this.blocked,
     required this.club,
     required this.coins,
     required this.firstFree,
@@ -2609,7 +2614,7 @@ class Friendlies {
     final r = JsonReader(json, 'Friendlies');
     return Friendlies(
       balance: r.int_('balance'),
-      blocked: r.object('blocked', FriendliesBlocked.fromJson),
+      blocked: r.objectOrNull('blocked', FriendliesBlocked.fromJson),
       club: r.object('club', FriendliesClub.fromJson),
       coins: r.int_('coins'),
       firstFree: r.bool_('first_free'),
@@ -2622,7 +2627,7 @@ class Friendlies {
 
   /// The coach's coins
   final int balance;
-  final FriendliesBlocked blocked;
+  final FriendliesBlocked? blocked;
 
   /// [Sprint 27 B3] My club, for the quick simulation
   final FriendliesClub club;
@@ -2680,7 +2685,7 @@ class FriendliesOpponentsItem {
   factory FriendliesOpponentsItem.fromJson(Object? json) {
     final r = JsonReader(json, 'FriendliesOpponentsItem');
     return FriendliesOpponentsItem(
-      coach: r.any('coach'),
+      coach: r.stringOrNull('coach'),
       code: r.string('code'),
       crestUrl: r.string('crest_url'),
       id: r.int_('id'),
@@ -2691,7 +2696,7 @@ class FriendliesOpponentsItem {
     );
   }
 
-  final Object? coach;
+  final String? coach;
   final String code;
   final String crestUrl;
   final int id;
@@ -2779,11 +2784,11 @@ class FriendlyReportBestItem {
 
   factory FriendlyReportBestItem.fromJson(Object? json) {
     final r = JsonReader(json, 'FriendlyReportBestItem');
-    return FriendlyReportBestItem(id: r.int_('id'), name: r.any('name'), rating: r.int_('rating'));
+    return FriendlyReportBestItem(id: r.int_('id'), name: r.stringOrNull('name'), rating: r.int_('rating'));
   }
 
   final int id;
-  final Object? name;
+  final String? name;
   final int rating;
 }
 
@@ -2792,11 +2797,11 @@ class FriendlyReportGoalsItem {
 
   factory FriendlyReportGoalsItem.fromJson(Object? json) {
     final r = JsonReader(json, 'FriendlyReportGoalsItem');
-    return FriendlyReportGoalsItem(minute: r.int_('minute'), name: r.any('name'), side: r.string('side'));
+    return FriendlyReportGoalsItem(minute: r.int_('minute'), name: r.stringOrNull('name'), side: r.string('side'));
   }
 
   final int minute;
-  final Object? name;
+  final String? name;
 
   /// home is my club
   final String side;
@@ -2822,7 +2827,7 @@ class FriendlyReportTimelineItem {
     return FriendlyReportTimelineItem(
       k: r.string('k'),
       m: r.int_('m'),
-      name: r.any('name'),
+      name: r.stringOrNull('name'),
       p: r.intOrNull('p'),
       s: r.stringOrNull('s'),
       score: r.list('score', JsonReader.intOf),
@@ -2834,7 +2839,7 @@ class FriendlyReportTimelineItem {
 
   /// The minute
   final int m;
-  final Object? name;
+  final String? name;
   final int? p;
 
   /// Whose it was (home is my club)
@@ -2895,7 +2900,7 @@ class HomeScreen {
       announcements: r.list('announcements', Message.fromJson),
       coach: r.object('coach', HomeScreenCoach.fromJson),
       colleagues: r.int_('colleagues'),
-      nextSlotAt: r.any('next_slot_at'),
+      nextSlotAt: r.stringOrNull('next_slot_at'),
       onboarding: r.object('onboarding', HomeScreenOnboarding.fromJson),
       pollsWaiting: r.int_('polls_waiting'),
       ratingTiers: r.list('rating_tiers', HomeScreenRatingTiersItem.fromJson),
@@ -2913,7 +2918,7 @@ class HomeScreen {
   final int colleagues;
 
   /// When the next slot opens (null when all are open)
-  final Object? nextSlotAt;
+  final String? nextSlotAt;
 
   /// [X75] The first steps, each done in the game (never by tapping it): account verified or tied to Google, another coach in my league or a friend from my link, a line coach hired, a lineup and tactics saved by the coach, a picture of his own, a friendly played
   final HomeScreenOnboarding onboarding;
@@ -3071,14 +3076,14 @@ class HomeScreenSlotsItem {
       club: r.objectOrNull('club', HomeScreenSlotsItemClub.fromJson),
       league: r.objectOrNull('league', HomeScreenSlotsItemLeague.fromJson),
       nextMatch: r.objectOrNull('next_match', HomeScreenSlotsItemNextMatch.fromJson),
-      opensAt: r.any('opens_at'),
+      opensAt: r.stringOrNull('opens_at'),
       pending: r.int_('pending'),
       position: r.intOrNull('position'),
-      progressBp: r.any('progress_bp'),
+      progressBp: r.intOrNull('progress_bp'),
       slot: r.int_('slot'),
       state: r.string('state'),
       teams: r.intOrNull('teams'),
-      unlockCoins: r.any('unlock_coins'),
+      unlockCoins: r.intOrNull('unlock_coins'),
     );
   }
 
@@ -3087,14 +3092,14 @@ class HomeScreenSlotsItem {
   final HomeScreenSlotsItemNextMatch? nextMatch;
 
   /// When a locked slot opens (for the countdown)
-  final Object? opensAt;
+  final String? opensAt;
 
   /// [Sprint 20 B2] What waits for the coach in this club (as the club board counts it)
   final int pending;
   final int? position;
 
   /// A locked slot's wait so far, from the account's first day, out of 10000
-  final Object? progressBp;
+  final int? progressBp;
   final int slot;
 
   /// A club, a join request waiting for its answer, free, or locked until the account is old enough [Sprint 24 B3]
@@ -3102,7 +3107,7 @@ class HomeScreenSlotsItem {
   final int? teams;
 
   /// The first locked slot's price to open it now (with any locked before it); null on the others
-  final Object? unlockCoins;
+  final int? unlockCoins;
 }
 
 class HomeScreenSlotsItemClub {
@@ -3181,10 +3186,10 @@ class HonourContributorLatest {
 
   factory HonourContributorLatest.fromJson(Object? json) {
     final r = JsonReader(json, 'HonourContributorLatest');
-    return HonourContributorLatest(at: r.any('at'), status: r.string('status'), title: r.string('title'));
+    return HonourContributorLatest(at: r.stringOrNull('at'), status: r.string('status'), title: r.string('title'));
   }
 
-  final Object? at;
+  final String? at;
   final String status;
   final String title;
 }
@@ -3195,19 +3200,19 @@ class HonourContributorUser {
   factory HonourContributorUser.fromJson(Object? json) {
     final r = JsonReader(json, 'HonourContributorUser');
     return HonourContributorUser(
-      avatarUrl: r.any('avatar_url'),
+      avatarUrl: r.stringOrNull('avatar_url'),
       id: r.int_('id'),
       name: r.string('name'),
       official: r.bool_('official'),
-      username: r.any('username'),
+      username: r.stringOrNull('username'),
     );
   }
 
-  final Object? avatarUrl;
+  final String? avatarUrl;
   final int id;
   final String name;
   final bool official;
-  final Object? username;
+  final String? username;
 }
 
 class Honours {
@@ -3316,8 +3321,8 @@ class HouseAd {
       active: r.bool_('active'),
       at: r.string('at'),
       body: r.string('body'),
-      ctaLabel: r.any('cta_label'),
-      ctaUrl: r.any('cta_url'),
+      ctaLabel: r.stringOrNull('cta_label'),
+      ctaUrl: r.stringOrNull('cta_url'),
       id: r.int_('id'),
       seconds: r.int_('seconds'),
       title: r.string('title'),
@@ -3328,8 +3333,8 @@ class HouseAd {
   final bool active;
   final String at;
   final String body;
-  final Object? ctaLabel;
-  final Object? ctaUrl;
+  final String? ctaLabel;
+  final String? ctaUrl;
   final int id;
   final int seconds;
   final String title;
@@ -3391,7 +3396,7 @@ class Keyframe {
     final r = JsonReader(json, 'Keyframe');
     return Keyframe(
       b: r.list('b', JsonReader.intOf),
-      h: r.any('h'),
+      h: r.intOrNull('h'),
       p: r.map('p', JsonReader.anyOf),
       r: r.listOrNull('r', JsonReader.anyOf),
       t: r.int_('t'),
@@ -3402,7 +3407,7 @@ class Keyframe {
   final List<int> b;
 
   /// The player on the ball; null while it is in flight (a pass or a shot, Sprint 33 B1)
-  final Object? h;
+  final int? h;
 
   /// Every player on the pitch by id
   final Map<String, Object?> p;
@@ -4351,7 +4356,7 @@ class LiveSync {
     return LiveSync(
       finished: r.boolOrNull('finished'),
       gap: r.boolOrNull('gap'),
-      nextAt: r.any('next_at'),
+      nextAt: r.intOrNull('next_at'),
       reactions: r.listOrNull('reactions', Reaction.fromJson),
       serverNow: r.intOrNull('server_now'),
       started: r.boolOrNull('started'),
@@ -4366,7 +4371,7 @@ class LiveSync {
   final bool? gap;
 
   /// When the next minute is due (ms)
-  final Object? nextAt;
+  final int? nextAt;
 
   /// The last few seconds of reactions
   final List<Reaction>? reactions;
@@ -4742,7 +4747,7 @@ class MatchKit {
     final r = JsonReader(json, 'MatchKit');
     return MatchKit(
       gk: r.string('gk'),
-      pattern: r.any('pattern'),
+      pattern: r.stringOrNull('pattern'),
       shirt: r.string('shirt'),
       shorts: r.string('shorts'),
       socks: r.string('socks'),
@@ -4753,7 +4758,7 @@ class MatchKit {
 
   /// The goalkeeper's shirt
   final String gk;
-  final Object? pattern;
+  final String? pattern;
 
   /// #RRGGBB
   final String shirt;
@@ -4801,21 +4806,21 @@ class MatchMove {
 
 /// [Sprint 27 B2] Moving the match by whole hours on its own day (Cairo), with the other coach's yes
 class MatchMoveView {
-  const MatchMoveView({required this.hours, required this.movesLeft, required this.pending});
+  const MatchMoveView({required this.hours, required this.movesLeft, this.pending});
 
   factory MatchMoveView.fromJson(Object? json) {
     final r = JsonReader(json, 'MatchMoveView');
     return MatchMoveView(
       hours: r.list('hours', JsonReader.intOf),
       movesLeft: r.int_('moves_left'),
-      pending: r.object('pending', MatchMoveViewPending.fromJson),
+      pending: r.objectOrNull('pending', MatchMoveViewPending.fromJson),
     );
   }
 
   /// The hours I may ask for now (negative: earlier)
   final List<int> hours;
   final int movesLeft;
-  final MatchMoveViewPending pending;
+  final MatchMoveViewPending? pending;
 }
 
 class MatchMoveViewPending {
@@ -4878,13 +4883,13 @@ class MatchRecap {
     required this.best,
     required this.competition,
     required this.home,
-    required this.manOfTheMatch,
+    this.manOfTheMatch,
     required this.matchId,
     required this.moments,
     required this.result,
     required this.round,
     required this.score,
-    required this.shootout,
+    this.shootout,
     this.side,
     required this.stats,
   });
@@ -4896,14 +4901,14 @@ class MatchRecap {
       best: r.object('best', MatchRecapBest.fromJson),
       competition: r.string('competition'),
       home: r.object('home', RecapClub.fromJson),
-      manOfTheMatch: r.object('man_of_the_match', MatchRecapManOfTheMatch.fromJson),
+      manOfTheMatch: r.objectOrNull('man_of_the_match', MatchRecapManOfTheMatch.fromJson),
       matchId: r.int_('match_id'),
       moments: r.list('moments', MatchRecapMomentsItem.fromJson),
       result: r.string('result'),
       round: r.int_('round'),
       score: r.object('score', MatchRecapScore.fromJson),
-      shootout: r.object('shootout', MatchRecapShootout.fromJson),
-      side: r.any('side'),
+      shootout: r.objectOrNull('shootout', MatchRecapShootout.fromJson),
+      side: r.stringOrNull('side'),
       stats: r.object('stats', MatchRecapStats.fromJson),
     );
   }
@@ -4912,7 +4917,7 @@ class MatchRecap {
   final MatchRecapBest best;
   final String competition;
   final RecapClub home;
-  final MatchRecapManOfTheMatch manOfTheMatch;
+  final MatchRecapManOfTheMatch? manOfTheMatch;
   final int matchId;
   final List<MatchRecapMomentsItem> moments;
 
@@ -4920,10 +4925,10 @@ class MatchRecap {
   final String result;
   final int round;
   final MatchRecapScore score;
-  final MatchRecapShootout shootout;
+  final MatchRecapShootout? shootout;
 
   /// [X69] null for a member who coaches neither side
-  final Object? side;
+  final String? side;
   final MatchRecapStats stats;
 }
 
@@ -4944,11 +4949,16 @@ class MatchRecapManOfTheMatch {
 
   factory MatchRecapManOfTheMatch.fromJson(Object? json) {
     final r = JsonReader(json, 'MatchRecapManOfTheMatch');
-    return MatchRecapManOfTheMatch(id: r.intOrNull('id'), name: r.any('name'), rating: r.intOrNull('rating'), team: r.stringOrNull('team'));
+    return MatchRecapManOfTheMatch(
+      id: r.intOrNull('id'),
+      name: r.stringOrNull('name'),
+      rating: r.intOrNull('rating'),
+      team: r.stringOrNull('team'),
+    );
   }
 
   final int? id;
-  final Object? name;
+  final String? name;
   final int? rating;
   final String? team;
 }
@@ -4967,28 +4977,28 @@ class MatchRecapMomentsItem {
   factory MatchRecapMomentsItem.fromJson(Object? json) {
     final r = JsonReader(json, 'MatchRecapMomentsItem');
     return MatchRecapMomentsItem(
-      color: r.any('color'),
+      color: r.stringOrNull('color'),
       minute: r.int_('minute'),
-      other: r.any('other'),
-      player: r.any('player'),
+      other: r.stringOrNull('other'),
+      player: r.stringOrNull('player'),
       score: r.object('score', MatchRecapMomentsItemScore.fromJson),
-      team: r.any('team'),
+      team: r.stringOrNull('team'),
       type: r.string('type'),
     );
   }
 
-  final Object? color;
+  final String? color;
   final int minute;
 
   /// The assist of a goal, or who came on
-  final Object? other;
+  final String? other;
 
   /// The scorer, the booked or injured player, or who went off
-  final Object? player;
+  final String? player;
 
   /// The score after this moment
   final MatchRecapMomentsItemScore score;
-  final Object? team;
+  final String? team;
   final String type;
 }
 
@@ -5094,7 +5104,7 @@ class MatchView {
       finished: r.boolOrNull('finished'),
       formations: r.listOrNull('formations', JsonReader.stringOf),
       id: r.stringOrNull('id'),
-      kickoffAt: r.any('kickoff_at'),
+      kickoffAt: r.stringOrNull('kickoff_at'),
       kits: r.objectOrNull('kits', MatchKits.fromJson),
       mode: r.stringOrNull('mode'),
       referee: r.intOrNull('referee'),
@@ -5107,7 +5117,7 @@ class MatchView {
       tick: r.intOrNull('tick'),
       timing: r.mapOrNull('timing', JsonReader.anyOf),
       venue: r.stringOrNull('venue'),
-      you: r.any('you'),
+      you: r.stringOrNull('you'),
     );
   }
 
@@ -5126,7 +5136,7 @@ class MatchView {
   final String? id;
 
   /// [Sprint 32 V3] When the match kicks off (UTC): the screens light the pitch for that hour in Cairo
-  final Object? kickoffAt;
+  final String? kickoffAt;
   final MatchKits? kits;
   final String? mode;
   final int? referee;
@@ -5147,7 +5157,7 @@ class MatchView {
   final String? venue;
 
   /// Live: the side the request's seat manages; null for a viewer. In a live match the other side's tactics are null
-  final Object? you;
+  final String? you;
 }
 
 class Message {
@@ -5220,7 +5230,7 @@ class MissedMatch {
     required this.goals,
     required this.home,
     required this.homeGoals,
-    required this.manOfTheMatch,
+    this.manOfTheMatch,
     required this.matchId,
     required this.mood,
     required this.result,
@@ -5240,7 +5250,7 @@ class MissedMatch {
       goals: r.list('goals', MissedMatchGoalsItem.fromJson),
       home: r.object('home', MissedMatchHome.fromJson),
       homeGoals: r.int_('home_goals'),
-      manOfTheMatch: r.object('man_of_the_match', MissedMatchManOfTheMatch.fromJson),
+      manOfTheMatch: r.objectOrNull('man_of_the_match', MissedMatchManOfTheMatch.fromJson),
       matchId: r.int_('match_id'),
       mood: r.string('mood'),
       result: r.int_('result'),
@@ -5258,7 +5268,7 @@ class MissedMatch {
   final List<MissedMatchGoalsItem> goals;
   final MissedMatchHome home;
   final int homeGoals;
-  final MissedMatchManOfTheMatch manOfTheMatch;
+  final MissedMatchManOfTheMatch? manOfTheMatch;
   final int matchId;
   final String mood;
 
@@ -5287,11 +5297,11 @@ class MissedMatchChangesItem {
 
   factory MissedMatchChangesItem.fromJson(Object? json) {
     final r = JsonReader(json, 'MissedMatchChangesItem');
-    return MissedMatchChangesItem(kind: r.string('kind'), player: r.any('player'));
+    return MissedMatchChangesItem(kind: r.string('kind'), player: r.stringOrNull('player'));
   }
 
   final String kind;
-  final Object? player;
+  final String? player;
 }
 
 class MissedMatchGoalsItem {
@@ -5299,11 +5309,11 @@ class MissedMatchGoalsItem {
 
   factory MissedMatchGoalsItem.fromJson(Object? json) {
     final r = JsonReader(json, 'MissedMatchGoalsItem');
-    return MissedMatchGoalsItem(minute: r.int_('minute'), scorer: r.any('scorer'), side: r.string('side'));
+    return MissedMatchGoalsItem(minute: r.int_('minute'), scorer: r.stringOrNull('scorer'), side: r.string('side'));
   }
 
   final int minute;
-  final Object? scorer;
+  final String? scorer;
   final String side;
 }
 
@@ -5326,12 +5336,12 @@ class MissedMatchManOfTheMatch {
 
   factory MissedMatchManOfTheMatch.fromJson(Object? json) {
     final r = JsonReader(json, 'MissedMatchManOfTheMatch');
-    return MissedMatchManOfTheMatch(id: r.int_('id'), mine: r.bool_('mine'), name: r.any('name'), rating: r.int_('rating'));
+    return MissedMatchManOfTheMatch(id: r.int_('id'), mine: r.bool_('mine'), name: r.stringOrNull('name'), rating: r.int_('rating'));
   }
 
   final int id;
   final bool mine;
-  final Object? name;
+  final String? name;
   final int rating;
 }
 
@@ -5594,9 +5604,9 @@ class PanelSuggestion {
       at: r.string('at'),
       body: r.string('body'),
       coins: r.int_('coins'),
-      decidedAt: r.any('decided_at'),
+      decidedAt: r.stringOrNull('decided_at'),
       id: r.int_('id'),
-      reply: r.any('reply'),
+      reply: r.stringOrNull('reply'),
       status: r.string('status'),
       title: r.string('title'),
       user: r.object('user', PanelSuggestionUser.fromJson),
@@ -5608,11 +5618,11 @@ class PanelSuggestion {
 
   /// The reward given (0 for none)
   final int coins;
-  final Object? decidedAt;
+  final String? decidedAt;
   final int id;
 
   /// The team's word
-  final Object? reply;
+  final String? reply;
   final String status;
   final String title;
   final PanelSuggestionUser user;
@@ -5623,13 +5633,18 @@ class PanelSuggestionUser {
 
   factory PanelSuggestionUser.fromJson(Object? json) {
     final r = JsonReader(json, 'PanelSuggestionUser');
-    return PanelSuggestionUser(accountNo: r.any('account_no'), id: r.int_('id'), name: r.string('name'), username: r.any('username'));
+    return PanelSuggestionUser(
+      accountNo: r.intOrNull('account_no'),
+      id: r.int_('id'),
+      name: r.string('name'),
+      username: r.stringOrNull('username'),
+    );
   }
 
-  final Object? accountNo;
+  final int? accountNo;
   final int id;
   final String name;
-  final Object? username;
+  final String? username;
 }
 
 class Poll {
@@ -5649,30 +5664,30 @@ class Poll {
   factory Poll.fromJson(Object? json) {
     final r = JsonReader(json, 'Poll');
     return Poll(
-      body: r.any('body'),
+      body: r.stringOrNull('body'),
       endsAt: r.string('ends_at'),
       id: r.int_('id'),
-      myVote: r.any('my_vote'),
+      myVote: r.intOrNull('my_vote'),
       options: r.list('options', PollOptionsItem.fromJson),
       question: r.string('question'),
       startsAt: r.string('starts_at'),
       state: r.string('state'),
-      total: r.any('total'),
+      total: r.intOrNull('total'),
       winners: r.list('winners', JsonReader.intOf),
     );
   }
 
-  final Object? body;
+  final String? body;
   final String endsAt;
   final int id;
 
   /// The option this account chose
-  final Object? myVote;
+  final int? myVote;
   final List<PollOptionsItem> options;
   final String question;
   final String startsAt;
   final String state;
-  final Object? total;
+  final int? total;
 
   /// The options with the most votes, once it ended
   final List<int> winners;
@@ -5683,15 +5698,20 @@ class PollOptionsItem {
 
   factory PollOptionsItem.fromJson(Object? json) {
     final r = JsonReader(json, 'PollOptionsItem');
-    return PollOptionsItem(id: r.int_('id'), label: r.string('label'), suggestionId: r.any('suggestion_id'), votes: r.any('votes'));
+    return PollOptionsItem(
+      id: r.int_('id'),
+      label: r.string('label'),
+      suggestionId: r.intOrNull('suggestion_id'),
+      votes: r.intOrNull('votes'),
+    );
   }
 
   final int id;
   final String label;
-  final Object? suggestionId;
+  final int? suggestionId;
 
   /// Null for a coach who has not voted while it is open
-  final Object? votes;
+  final int? votes;
 }
 
 /// The only tactics the opponent ever sees
@@ -5919,11 +5939,11 @@ class RecapRating {
 
   factory RecapRating.fromJson(Object? json) {
     final r = JsonReader(json, 'RecapRating');
-    return RecapRating(id: r.int_('id'), name: r.any('name'), rating: r.int_('rating'));
+    return RecapRating(id: r.int_('id'), name: r.stringOrNull('name'), rating: r.int_('rating'));
   }
 
   final int id;
-  final Object? name;
+  final String? name;
 
   /// Out of 1000 (7.4 = 740)
   final int rating;
@@ -6069,7 +6089,7 @@ class ScenarioTactics {
 /// A club as the Unity scene draws it (Sprint 02 B1)
 class SceneClub {
   const SceneClub({
-    required this.awayKit,
+    this.awayKit,
     required this.code,
     required this.id,
     required this.name,
@@ -6081,21 +6101,21 @@ class SceneClub {
   factory SceneClub.fromJson(Object? json) {
     final r = JsonReader(json, 'SceneClub');
     return SceneClub(
-      awayKit: r.object('away_kit', SceneClubAwayKit.fromJson),
+      awayKit: r.objectOrNull('away_kit', SceneClubAwayKit.fromJson),
       code: r.string('code'),
       id: r.int_('id'),
       name: r.string('name'),
-      pattern: r.any('pattern'),
+      pattern: r.stringOrNull('pattern'),
       primary: r.string('primary'),
       secondary: r.string('secondary'),
     );
   }
 
-  final SceneClubAwayKit awayKit;
+  final SceneClubAwayKit? awayKit;
   final String code;
   final int id;
   final String name;
-  final Object? pattern;
+  final String? pattern;
 
   /// Hex colour
   final String primary;
@@ -6109,11 +6129,11 @@ class SceneClubAwayKit {
 
   factory SceneClubAwayKit.fromJson(Object? json) {
     final r = JsonReader(json, 'SceneClubAwayKit');
-    return SceneClubAwayKit(color: r.stringOrNull('color'), pattern: r.any('pattern'));
+    return SceneClubAwayKit(color: r.stringOrNull('color'), pattern: r.stringOrNull('pattern'));
   }
 
   final String? color;
-  final Object? pattern;
+  final String? pattern;
 }
 
 class ScenePlayer {
@@ -6633,7 +6653,7 @@ class SquadPlayer {
       id: r.int_('id'),
       injuredMatches: r.int_('injured_matches'),
       line: r.string('line'),
-      listed: r.any('listed'),
+      listed: r.intOrNull('listed'),
       name: r.string('name'),
       nation: r.objectOrNull('nation', SquadPlayerNation.fromJson),
       nationality: r.stringOrNull('nationality'),
@@ -6659,7 +6679,7 @@ class SquadPlayer {
   final String line;
 
   /// [X84] His price on the transfer list, null when he is not listed
-  final Object? listed;
+  final int? listed;
   final String name;
 
   /// [Sprint 46] His national team: its three-letter code and two colours (Nations), for a flag chip
@@ -7043,9 +7063,9 @@ class Suggestion {
       at: r.string('at'),
       body: r.string('body'),
       coins: r.int_('coins'),
-      decidedAt: r.any('decided_at'),
+      decidedAt: r.stringOrNull('decided_at'),
       id: r.int_('id'),
-      reply: r.any('reply'),
+      reply: r.stringOrNull('reply'),
       status: r.string('status'),
       title: r.string('title'),
     );
@@ -7056,11 +7076,11 @@ class Suggestion {
 
   /// The reward given (0 for none)
   final int coins;
-  final Object? decidedAt;
+  final String? decidedAt;
   final int id;
 
   /// The team's word
-  final Object? reply;
+  final String? reply;
   final String status;
   final String title;
 }
@@ -7613,13 +7633,13 @@ class TrainingViewRecommended {
 
   factory TrainingViewRecommended.fromJson(Object? json) {
     final r = JsonReader(json, 'TrainingViewRecommended');
-    return TrainingViewRecommended(att: r.any('att'), def: r.any('def'), gk: r.any('gk'), mid: r.any('mid'));
+    return TrainingViewRecommended(att: r.intOrNull('att'), def: r.intOrNull('def'), gk: r.intOrNull('gk'), mid: r.intOrNull('mid'));
   }
 
-  final Object? att;
-  final Object? def;
-  final Object? gk;
-  final Object? mid;
+  final int? att;
+  final int? def;
+  final int? gk;
+  final int? mid;
 }
 
 class TrainingViewSlotsItem {

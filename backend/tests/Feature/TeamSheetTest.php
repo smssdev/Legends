@@ -77,7 +77,10 @@ class TeamSheetTest extends TestCase
     public function test_each_slot_says_which_lines_it_takes(): void
     {
         // [Sprint 59 F6] The screens read the rule from the server instead of keeping their own.
-        $team = $this->actingAs($this->owner)->getJson($this->url)->assertOk()->json();
+        $team = $this->actingAs($this->owner)->getJson($this->url)->assertOk()
+            // [Sprint 59 F1] Every field SquadPlayer requires in openapi.yaml (the app reads the squad through it).
+            ->assertJsonStructure(['players' => ['*' => ['id', 'name', 'position', 'line', 'age', 'overall', 'potential', 'value', 'fitness',
+                'injured_matches', 'suspended_matches', 'available', 'attributes', 'role', 'place_bp', 'listed']]])->json();
         $this->assertSame(['gk'], $team['lineup']['slots'][0]['allowed']);
         foreach (array_slice($team['lineup']['slots'], 1) as $slot) {
             $this->assertSame(['def', 'mid', 'att'], $slot['allowed']);

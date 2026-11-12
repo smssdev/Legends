@@ -89,6 +89,14 @@ String _field(String s) {
   return _keywords.contains(f) ? '${f}_' : f;
 }
 
+/// OpenAPI 3.1's `type: [integer, 'null']` as 3.0's `type: integer, nullable: true` (one shape for the rest).
+Object? _plain(Object? s) {
+  if (s is! Map || s['type'] is! List) return s;
+  final types = [for (final t in s['type'] as List<dynamic>) '$t'];
+  final real = types.where((t) => t != 'null').toList();
+  return {...s, 'type': real.length == 1 ? real.single : null, if (types.contains('null')) 'nullable': true};
+}
+
 String? _refName(Object? s) {
   if (s is Map && s[r'$ref'] is String) return (s[r'$ref'] as String).split('/').last;
   return null;
@@ -110,7 +118,8 @@ Map<dynamic, dynamic> _merged(Map<dynamic, dynamic> s) {
 bool _isObject(Map<dynamic, dynamic> s) => s['properties'] is Map || s['allOf'] is List;
 
 /// A value's Dart type and its reader for a list or a map (one value, not a field).
-({String type, String read}) _value(Object? schema, String nameIfObject) {
+({String type, String read}) _value(Object? raw, String nameIfObject) {
+  final schema = _plain(raw);
   if (schema is! Map) return (type: 'Object?', read: 'JsonReader.anyOf');
   final ref = _refName(schema);
   if (ref != null) {
@@ -137,10 +146,11 @@ bool _isObject(Map<dynamic, dynamic> s) => s['properties'] is Map || s['allOf'] 
 }
 
 /// A field's type (without the nullability) and its read from the JsonReader `r`.
-String _read(String key, Object? schema, bool required, String owner, void Function(String type, bool nullable) typed) {
+String _read(String key, Object? raw, bool required, String owner, void Function(String type, bool nullable) typed) {
+  final schema = _plain(raw);
   final s = schema is Map ? schema : const <dynamic, dynamic>{};
   final ref = _refName(s);
-  final target = ref == null ? s : (_schemas[ref] as Map<dynamic, dynamic>? ?? const {});
+  final Map<dynamic, dynamic> target = ref == null ? s : (_plain(_schemas[ref]) as Map<dynamic, dynamic>? ?? const {});
   final nullable = !required || s['nullable'] == true || target['nullable'] == true;
   final q = nullable ? 'OrNull' : '';
   final k = "'$key'";
