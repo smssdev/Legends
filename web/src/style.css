@@ -26,11 +26,12 @@
 
 @keyframes pop-in { from { opacity: 0; transform: scale(0.94) translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+/* [Sprint 58 W4, W-P13] On the compositor only: the light passes by transform, the ring grows by transform and fades. */
+@keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes pulse-ring {
-  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-gold) 45%, transparent); }
-  50% { box-shadow: 0 0 0 10px transparent; }
+  0% { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.45); }
 }
 
 /* [X61] What opens from the top bar (the club's list, the timers, what waits) drops from the top, under its button. */
@@ -195,7 +196,6 @@
     inset: 0;
     z-index: -2;
     pointer-events: none;
-    will-change: transform;
     background:
       linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 35%, transparent) 22%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
       url("/art/stadium-blur.jpg") center top / cover no-repeat,
@@ -493,10 +493,28 @@ input[type="radio"] {
 
 /* [X61] A place held while it loads: a soft light passing over it. */
 .skeleton {
+  position: relative;
+  overflow: hidden;
   border-radius: 0.75rem;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--color-text) 5%, transparent), color-mix(in srgb, var(--color-text) 11%, transparent), color-mix(in srgb, var(--color-text) 5%, transparent));
-  background-size: 200% 100%;
+  background: color-mix(in srgb, var(--color-text) 5%, transparent);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-text) 7%, transparent), transparent);
+  transform: translateX(-100%);
   animation: var(--animate-shimmer);
+}
+/* A ring that grows out of the element and fades (the Assistant's call to look). */
+.pulse-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+  pointer-events: none;
+  animation: var(--animate-pulse-ring);
 }
 
 /* [Sprint 54 W3] One section of the menu row (components/ui/NavItem.vue, and the row's dropdown names). */

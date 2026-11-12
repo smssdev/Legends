@@ -67,7 +67,7 @@ async function rate(helpful: boolean, withNote = false) {
         <div class="relative flex max-h-[85dvh] flex-col gap-3 overflow-y-auto overscroll-contain rounded-2xl bg-surface p-4">
           <button type="button" class="absolute end-2 top-2 grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إغلاق')" @click="close">✕</button>
           <header class="flex items-center gap-3 pe-10">
-            <span class="relative grid size-14 shrink-0 animate-pulse-ring place-items-center rounded-full bg-gold/15">
+            <span class="relative grid size-14 shrink-0 pulse-ring place-items-center rounded-full bg-gold/15">
               <img :src="slot.current?.club?.crest_url ?? '/brand/emblem-loader.svg'" alt="" class="size-11 animate-pop-in drop-shadow-[0_0_10px_var(--color-gold)]" />
             </span>
             <span class="min-w-0">
