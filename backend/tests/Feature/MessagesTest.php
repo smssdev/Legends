@@ -41,7 +41,9 @@ class MessagesTest extends TestCase
 
     private function inbox(User $user): array
     {
-        return $this->actingAs($user)->getJson('/api/v1/messages')->assertOk()->json();
+        return $this->actingAs($user)->getJson('/api/v1/messages')->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (MessagesAnswer in openapi.yaml).
+            ->assertJsonStructure(['messages' => ['*' => ['id', 'type', 'league_id', 'read', 'created_at', 'title', 'body', 'link']], 'more', 'unread'])->json();
     }
 
     /** A coach asks with the code, the owner approves, the coach takes a bot's club. */

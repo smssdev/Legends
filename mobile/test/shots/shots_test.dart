@@ -297,14 +297,12 @@ void main() {
           ...json('wallet'),
           'balance': 1250,
           'transactions': [
-            {'label': 'هدية البداية', 'amount': 25, 'at': '2026-11-05T20:00:00Z'},
-            {'label': 'ودية', 'amount': -5, 'at': '2026-11-05T21:00:00Z'},
+            {'type': 'starter', 'label': 'هدية البداية', 'amount': 25, 'balance_after': 25, 'at': '2026-11-05T20:00:00Z'},
+            {'type': 'friendly', 'label': 'ودية', 'amount': -5, 'balance_after': 20, 'at': '2026-11-05T21:00:00Z'},
           ],
         }),
       ),
-      storeProvider.overrideWith(
-        (ref) async => [for (final i in json('store')['items'] as List<dynamic>) StoreItem.fromJson(i as Map<String, dynamic>)],
-      ),
+      storeProvider.overrideWith((ref) async => StoreItem.shown(json('store'))),
     ]),
   );
   testWidgets(

@@ -93,9 +93,7 @@ class FakeWallet implements WalletRepository {
   @override
   Future<void> claimDaily() async => claims++;
   @override
-  Future<List<StoreItem>> store() async => [
-    for (final i in json('store')['items'] as List<dynamic>) StoreItem.fromJson(i as Map<String, dynamic>),
-  ];
+  Future<List<StoreItem>> store() async => StoreItem.shown(json('store'));
 }
 
 Future<void> pump(WidgetTester t, Widget screen, {FakeExtras? extras, FakeWallet? wallet}) async {
