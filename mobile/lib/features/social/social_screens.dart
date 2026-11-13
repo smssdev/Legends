@@ -34,6 +34,7 @@ import '../leagues/shell.dart';
 
 import 'chat_controller.dart';
 import '../../api/gen/models.g.dart' as api;
+import '../../api/read.dart';
 
 part 'social_screens_quick_match_screen.dart';
 part 'social_screens_newspaper_screen.dart';
@@ -47,10 +48,14 @@ class SocialRepository {
 
   final ApiClient _api;
 
-  Future<Map<String, dynamic>> friendlies(int league) => _api.get('/leagues/$league/friendlies');
-  Future<Map<String, dynamic>> playFriendly(int league, int opponent) => Intents.run(
+  /// [Sprint 59 F1] The friendlies (`Friendlies`) and a friendly played (`Friendly`) through their generated models.
+  Future<api.Friendlies> friendlies(int league) async => api.Friendlies.fromJson(await _api.get('/leagues/$league/friendlies'));
+  Future<api.Friendly> playFriendly(int league, int opponent) => Intents.run(
     'friendly:$league:$opponent',
-    (key) => _api.post('/leagues/$league/friendlies', {'opponent_id': opponent, 'idempotency_key': key}),
+    (key) async => JsonReader(
+      await _api.post('/leagues/$league/friendlies', {'opponent_id': opponent, 'idempotency_key': key}),
+      'PlayFriendly',
+    ).object('friendly', api.Friendly.fromJson),
   );
   Future<Map<String, dynamic>> predictions(int league) => _api.get('/leagues/$league/predictions');
   Future<Map<String, dynamic>> predict(int league, int fixture, String pick) =>
@@ -62,7 +67,7 @@ class SocialRepository {
       _api.post('/leagues/$league/newspaper/articles', {'title': title, 'body': body});
   Future<Map<String, dynamic>> decide(int league, int article, bool publish) =>
       _api.post('/leagues/$league/newspaper/articles/$article/decide', {'publish': publish});
-  Future<Map<String, dynamic>> groups() => _api.get('/groups');
+  Future<api.GroupsAnswer> groups() async => api.GroupsAnswer.fromJson(await _api.get('/groups'));
   Future<List<Map<String, dynamic>>> messages(int group) async => [
     for (final m in ((await _api.get('/groups/$group/messages'))['messages'] as List<dynamic>? ?? const [])) m as Map<String, dynamic>,
   ];
@@ -105,23 +110,27 @@ class FriendliesScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(friendliesProvider(leagueId)),
         data: (f) {
           final p = context.palette;
-          final recent = f['recent'] as List<dynamic>? ?? const [];
+          final recent = f.recent;
+          final blocked = f.blocked;
           return ListView(
             padding: const EdgeInsets.all(12),
             children: [
               Text(
-                l.friendlyLead(f['fitness'] as int? ?? 0),
+                l.friendlyLead(f.fitness),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: p.textMuted),
               ),
               Text(
-                f['first_free'] == true ? l.friendlyFree : l.friendlyCost(f['coins'] as int? ?? 0),
+                f.firstFree ? l.friendlyFree : l.friendlyCost(f.coins),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700),
               ),
-              if (f['blocked'] != null)
+              // [Sprint 59 F1] Why friendlies wait, in words: the screen printed the server's map as it came.
+              if (blocked != null)
                 Text(
-                  '${f['blocked']}',
+                  blocked.reason == 'live'
+                      ? l.friendlyBlockedLive
+                      : l.friendlyBlockedSoon(blocked.until == null ? '' : when(context, DateTime.parse(blocked.until!).toLocal())),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: context.glm.liveText),
                 ),
@@ -131,52 +140,41 @@ class FriendliesScreen extends ConsumerWidget {
                 for (final r in recent.take(3))
                   ListTile(
                     dense: true,
-                    title: Text(
-                      '${((r as Map<dynamic, dynamic>)['opponent'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                      textDirection: TextDirection.ltr,
-                      textAlign: TextAlign.start,
-                    ),
+                    title: Text(r.opponent.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                     trailing: Text(
-                      '${r['goals_for']} - ${r['goals_against']}',
+                      '${r.goalsFor} - ${r.goalsAgainst}',
                       textDirection: TextDirection.ltr,
                       style: const TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800),
                     ),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (_) => QuickMatchScreen(
-                          home: '${(f['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                          played: Map<String, dynamic>.from(r),
-                        ),
+                        builder: (_) => QuickMatchScreen(home: f.club.name, played: r),
                       ),
                     ),
                   ),
                 const SizedBox(height: 8),
               ],
-              for (final o in (f['opponents'] as List<dynamic>? ?? const []))
+              for (final o in f.opponents)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: GlmCard(
                     padding: const EdgeInsets.all(10),
-                    gold: (o as Map<dynamic, dynamic>)['recommended'] == true,
+                    gold: o.recommended,
                     child: Row(
                       children: [
-                        ClubCrest(url: o['crest_url'] as String?, name: '${o['code']}', size: 34),
+                        ClubCrest(url: o.crestUrl, name: o.code, size: 34),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${o['name']}',
+                                o.name,
                                 textDirection: TextDirection.ltr,
                                 style: const TextStyle(fontWeight: FontWeight.w800),
                               ),
                               Text(
-                                [
-                                  if (o['recommended'] == true) l.suggestedOpponent,
-                                  if (o['played_today'] == true) l.playedToday,
-                                  if (o['coach'] != null) '${o['coach']}',
-                                ].join(' · '),
+                                [if (o.recommended) l.suggestedOpponent, if (o.playedToday) l.playedToday, ?o.coach].join(' · '),
                                 style: TextStyle(color: p.textMuted, fontSize: 12),
                               ),
                             ],
@@ -184,21 +182,15 @@ class FriendliesScreen extends ConsumerWidget {
                         ),
                         GlmButton(
                           label: l.playFriendly,
-                          onPressed: f['blocked'] != null
+                          onPressed: blocked != null
                               ? null
                               : () async {
-                                  final r = await _try(
-                                    context,
-                                    () => ref.read(socialRepositoryProvider).playFriendly(leagueId, o['id'] as int),
-                                  );
+                                  final r = await _try(context, () => ref.read(socialRepositoryProvider).playFriendly(leagueId, o.id));
                                   ref.invalidate(friendliesProvider(leagueId));
                                   if (r != null && context.mounted) {
                                     await Navigator.of(context).push(
                                       MaterialPageRoute<void>(
-                                        builder: (_) => QuickMatchScreen(
-                                          home: '${(f['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                                          played: Map<String, dynamic>.from(r['friendly'] as Map<dynamic, dynamic>),
-                                        ),
+                                        builder: (_) => QuickMatchScreen(home: f.club.name, played: r),
                                       ),
                                     );
                                   }

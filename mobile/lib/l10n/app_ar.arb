@@ -1980,5 +1980,14 @@
   "refereeLenient": "متساهل",
   "refereeMedium": "متوسط",
   "refereeStrict": "صارم",
-  "refereeVeryStrict": "صارم جداً"
+  "refereeVeryStrict": "صارم جداً",
+  "friendlyBlockedLive": "مباراتك تُلعب الآن: الوديات بعدها.",
+  "friendlyBlockedSoon": "مباراتك بعد قليل: الوديات تعود بعدها ({at}).",
+  "@friendlyBlockedSoon": {
+    "placeholders": {
+      "at": {
+        "type": "String"
+      }
+    }
+  }
 }

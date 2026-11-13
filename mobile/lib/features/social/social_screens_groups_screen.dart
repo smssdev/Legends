@@ -82,11 +82,11 @@ class GroupsScreen extends ConsumerWidget {
             ];
             final r = await _try(context, () => ref.read(apiProvider).post('/groups', {'name': name.text.trim(), 'usernames': usernames}));
             ref.invalidate(groupsProvider);
-            final g = r?['group'] as Map<dynamic, dynamic>?;
+            final g = r == null ? null : JsonReader(r, 'NewGroup').objectOrNull('group', api.ChatGroup.fromJson);
             if (g != null && context.mounted) {
               await Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}'),
+                  builder: (_) => ChatScreen(groupId: g.id, name: g.name),
                 ),
               );
             }
@@ -107,7 +107,7 @@ class GroupsScreen extends ConsumerWidget {
     value: ref.watch(groupsProvider),
     onRetry: () => ref.invalidate(groupsProvider),
     data: (d) {
-      final groups = d['groups'] as List<dynamic>? ?? const [];
+      final groups = d.groups;
       if (groups.isEmpty) return Center(child: Text(l.noGroups));
       return RefreshIndicator(
         onRefresh: () => ref.refresh(groupsProvider.future),
@@ -116,24 +116,24 @@ class GroupsScreen extends ConsumerWidget {
             for (final g in groups)
               ListTile(
                 // [Sprint 50 M7] The open chat lit as the site's open page (the brand green).
-                selected: open == (g as Map<dynamic, dynamic>)['id'],
+                selected: open == g.id,
                 selectedTileColor: context.palette.brand,
                 selectedColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 leading: CircleAvatar(
-                  backgroundColor: open == g['id'] ? context.palette.brandDark : context.palette.brand,
-                  child: Icon(g['league_id'] != null ? Icons.emoji_events_rounded : Icons.groups_rounded, color: Colors.white),
+                  backgroundColor: open == g.id ? context.palette.brandDark : context.palette.brand,
+                  child: Icon(g.leagueId != null ? Icons.emoji_events_rounded : Icons.groups_rounded, color: Colors.white),
                 ),
-                title: Text('${g['name']}', style: const TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: Text('${(g['last'] as Map<dynamic, dynamic>?)?['body'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis),
-                trailing: (g['unread'] as int? ?? 0) > 0
-                    ? Badge(backgroundColor: context.palette.gold, textColor: context.palette.onGold, label: Text('${g['unread']}'))
+                title: Text(g.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+                subtitle: Text(g.last?.body ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
+                trailing: g.unread > 0
+                    ? Badge(backgroundColor: context.palette.gold, textColor: context.palette.onGold, label: Text('${g.unread}'))
                     : null,
                 onTap: () async {
-                  if (onOpen != null) return onOpen(g['id'] as int, '${g['name']}');
+                  if (onOpen != null) return onOpen(g.id, g.name);
                   await Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}'),
+                      builder: (_) => ChatScreen(groupId: g.id, name: g.name),
                     ),
                   );
                   ref.invalidate(groupsProvider);

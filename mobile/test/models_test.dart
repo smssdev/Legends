@@ -104,4 +104,18 @@ void main() {
     expect(console.Chest.fromJson((j('chests')['chests'] as List<dynamic>).first).odds, isNotEmpty);
     expect(modelErrors.where((e) => RegExp('DailyTasks|Auction|Negotiation|Chest').hasMatch(e)), isEmpty);
   });
+
+  test('a new or joined group (no unread, no last message) reads as ChatGroup', () {
+    final g = ChatGroup.fromJson({
+      'id': 4,
+      'name': 'Friends',
+      'league_id': null,
+      'is_admin': true,
+      'invite_url': null,
+      'members_count': 2,
+      'closed': false,
+    });
+    expect(g.id, 4);
+    expect(g.name, 'Friends');
+  });
 }

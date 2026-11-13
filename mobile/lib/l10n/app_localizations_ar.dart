@@ -2842,4 +2842,12 @@ class LAr extends L {
 
   @override
   String get refereeVeryStrict => 'صارم جداً';
+
+  @override
+  String get friendlyBlockedLive => 'مباراتك تُلعب الآن: الوديات بعدها.';
+
+  @override
+  String friendlyBlockedSoon(String at) {
+    return 'مباراتك بعد قليل: الوديات تعود بعدها ($at).';
+  }
 }

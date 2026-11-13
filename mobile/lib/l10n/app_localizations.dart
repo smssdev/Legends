@@ -5167,6 +5167,18 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'صارم جداً'**
   String get refereeVeryStrict;
+
+  /// No description provided for @friendlyBlockedLive.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباراتك تُلعب الآن: الوديات بعدها.'**
+  String get friendlyBlockedLive;
+
+  /// No description provided for @friendlyBlockedSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباراتك بعد قليل: الوديات تعود بعدها ({at}).'**
+  String friendlyBlockedSoon(String at);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

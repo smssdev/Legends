@@ -858,5 +858,14 @@
   "refereeLenient": "Lenient",
   "refereeMedium": "Medium",
   "refereeStrict": "Strict",
-  "refereeVeryStrict": "Very strict"
+  "refereeVeryStrict": "Very strict",
+  "friendlyBlockedLive": "Your match is on now: friendlies after it.",
+  "friendlyBlockedSoon": "Your match is about to start: friendlies are back after it ({at}).",
+  "@friendlyBlockedSoon": {
+    "placeholders": {
+      "at": {
+        "type": "String"
+      }
+    }
+  }
 }
