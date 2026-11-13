@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ui/widgets/console.dart';
+import '../../ui/widgets/glm_card.dart';
 
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
@@ -23,6 +24,7 @@ import '../../ui/widgets/stadium.dart';
 import '../leagues/models.dart';
 import 'club_data.dart';
 import 'tactics_controller.dart';
+import 'flat_pitch.dart';
 import 'team_data.dart';
 import '../leagues/shell.dart';
 
@@ -97,68 +99,117 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
             // philosophies) in front of the dials on the other, so a turn of a dial shows at once beside it.
             return LayoutBuilder(
               builder: (context, box) {
-                if (box.maxWidth >= 760) {
-                  return GlmSplitLayout(
-                    start: _Preview(t: t, onPreset: _preset),
-                    end: ListView(
-                      padding: EdgeInsets.zero,
+                // [Sprint 60 F4] The approved draft's tactics (Tactics.html): the lineup's own pitch in the same place, so going
+                // from one to the other does not move the eye; the choices as buttons at its start, the dials one column at its
+                // end. Saved by itself, as before.
+                if (box.maxWidth >= 560) {
+                  final team = ref.watch(teamProvider(widget.leagueId)).value;
+                  String presetName(String x) => switch (x) {
+                    'tiki_taka' => l.presetTikiTaka,
+                    'counter' => l.presetCounter,
+                    'high_press' => l.presetHighPress,
+                    _ => l.presetLongBall,
+                  };
+                  Widget choices<T>(String title, List<(T, String)> options, T now, void Function(T) pick) => Padding(
+                    padding: const EdgeInsets.only(bottom: GlmSpace.sm),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Row(
+                        GlmSectionTitle(title),
+                        const SizedBox(height: GlmSpace.xs),
+                        Wrap(
+                          spacing: GlmSpace.xs,
+                          runSpacing: GlmSpace.xs,
                           children: [
-                            for (final (key, title, lo, hi) in [
-                              ('style', l.mentality, l.defensive, l.attacking),
-                              ('pressing', l.pressing, l.calm, l.suffocating),
-                              ('tempo', l.tempo, l.slow, l.fast),
-                            ])
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                                  child: _RoundDial(
+                            for (final (v, label) in options)
+                              ChoiceChip(label: Text(label), selected: v == now, onSelected: (_) => pick(v)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                  return Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: GlmCard(
+                            padding: const EdgeInsets.all(GlmSpace.sm),
+                            child: ListView(
+                              padding: EdgeInsets.zero,
+                              children: [
+                                choices<String>(
+                                  l.plan,
+                                  [
+                                    ('passing', l.planPassing),
+                                    ('counter', l.planCounter),
+                                    ('long', l.planLong),
+                                    ('wings', l.planWings),
+                                    ('shots', l.planShots),
+                                  ],
+                                  '${t.values['plan']}',
+                                  (v) => set('plan', v),
+                                ),
+                                choices<String>(
+                                  l.marking,
+                                  [('zone', l.markZone), ('man', l.markMan)],
+                                  '${t.values['marking']}',
+                                  (v) => set('marking', v),
+                                ),
+                                choices<int>(
+                                  l.tackling,
+                                  [
+                                    for (final v in const [0, 1, 2, 3]) (v, {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3}[v]!),
+                                  ],
+                                  (t.values['tackling'] as num).toInt(),
+                                  (v) => set('tackling', v),
+                                ),
+                                choices<int>(l.trap, [(0, l.no), (1, l.yes)], (t.values['trap'] as num).toInt(), (v) => set('trap', v)),
+                                if (t.presets.isNotEmpty)
+                                  choices<String>(l.presets, [for (final x in t.presets) (x, presetName(x))], t.preset ?? '', _preset),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        AspectRatio(
+                          aspectRatio: 68 / 105,
+                          child: team == null ? const FlatPitch(child: SizedBox.shrink()) : ElevenOnPitch(team: team),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: GlmCard(
+                            padding: const EdgeInsets.all(GlmSpace.sm),
+                            child: ListView(
+                              padding: EdgeInsets.zero,
+                              children: [
+                                for (final (key, title, lo, hi) in [
+                                  ('style', l.mentality, l.defensive, l.attacking),
+                                  ('pressing', l.pressing, l.calm, l.suffocating),
+                                  ('tempo', l.tempo, l.slow, l.fast),
+                                ])
+                                  _SliderRow(
                                     title: title,
-                                    value: t.get<num>(key).toInt(),
+                                    value: t.get<num>(key).toDouble(),
+                                    word: level(t.get<num>(key)),
                                     low: lo,
                                     high: hi,
-                                    onChanged: (v) => set(key, v),
+                                    onChanged: (v) => set(key, v.round()),
                                   ),
+                                const SizedBox(height: GlmSpace.sm),
+                                _Lines(t: t, onSet: set),
+                                const SizedBox(height: GlmSpace.sm),
+                                Row(
+                                  children: [
+                                    Icon(Icons.lock_rounded, size: 15, color: context.palette.brandLight),
+                                    const SizedBox(width: 6),
+                                    Expanded(child: Text(l.hiddenTactics, style: context.type.caption)),
+                                  ],
                                 ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        gap(_Lines(t: t, onSet: set)),
-                        pair(
-                          _Carousel(
-                            title: l.marking,
-                            values: const ['zone', 'man'],
-                            value: '${t.values['marking']}',
-                            label: (v) => v == 'zone' ? l.markZone : l.markMan,
-                            picture: (v) => SizedBox(
-                              height: 90,
-                              child: CustomPaint(painter: _MarkArt(v), size: Size.infinite),
+                              ],
                             ),
-                            onChanged: (v) => set('marking', v),
                           ),
-                          _Carousel(
-                            title: l.tackling,
-                            values: const [3, 2, 1, 0],
-                            value: (t.values['tackling'] as num).toInt(),
-                            label: (v) => {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3}[v]!,
-                            picture: (v) => SizedBox(
-                              height: 90,
-                              child: CustomPaint(painter: _TackleArt(v), size: Size.infinite),
-                            ),
-                            onChanged: (v) => set('tackling', v),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.lock_rounded, size: 15, color: context.palette.brandLight),
-                            const SizedBox(width: 6),
-                            Flexible(
-                              child: Text(l.hiddenTactics, style: glmText(GlmType.caption, color: context.palette.textMuted)),
-                            ),
-                          ],
                         ),
                       ],
                     ),
@@ -269,94 +320,44 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
   }
 }
 
-/// [Sprint 50 M12] The preview half: the plan drawn large on its pitch (traced in again at each change), the offside
-/// trap's high line when it is set, and the ready philosophies under it (the one the tactics match lit in gold).
-class _Preview extends StatelessWidget {
-  const _Preview({required this.t, required this.onPreset});
+/// [Sprint 60 F4] One dial of the tactics as the draft's slider: its name and where it stands, the slider, and its two
+/// ends' names under it.
+class _SliderRow extends StatelessWidget {
+  const _SliderRow({
+    required this.title,
+    required this.value,
+    required this.word,
+    required this.low,
+    required this.high,
+    required this.onChanged,
+  });
 
-  final Tactics t;
-  final ValueChanged<String> onPreset;
+  final String title, word, low, high;
+  final double value;
+  final ValueChanged<double> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final l = L.of(context);
-    final p = context.palette;
-    final plan = '${t.values['plan']}';
-    final trap = (t.values['trap'] as num?)?.toInt() == 1;
-    String name(String x) => switch (x) {
-      'tiki_taka' => l.presetTikiTaka,
-      'counter' => l.presetCounter,
-      'high_press' => l.presetHighPress,
-      _ => l.presetLongBall,
-    };
-    return Column(
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: GlmSpace.xs),
+    child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: Container(
-            decoration: ShapeDecoration(
-              shape: GlmCut.shape(14, side: BorderSide(color: p.text.withValues(alpha: .25))),
-              gradient: _cardFill,
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: TweenAnimationBuilder<double>(
-                    key: ValueKey('$plan:${t.values['style']}:${t.values['tempo']}'),
-                    tween: Tween(begin: MediaQuery.of(context).disableAnimations ? 1 : 0, end: 1),
-                    duration: const Duration(milliseconds: 900),
-                    curve: Curves.easeInOutCubic,
-                    builder: (_, v, _) => CustomPaint(painter: _PlanArt(plan, v)),
-                  ),
-                ),
-                if (trap)
-                  PositionedDirectional(
-                    top: 0,
-                    bottom: 0,
-                    end: 0,
-                    start: 0,
-                    child: Align(
-                      alignment: const AlignmentDirectional(-.18, 0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 6),
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                            decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .8), borderRadius: BorderRadius.circular(4)),
-                            child: Text(l.trap, style: glmText(GlmType.caption, color: p.goldLight)),
-                          ),
-                          Expanded(child: Container(width: 2, color: p.goldLight.withValues(alpha: .8))),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          alignment: WrapAlignment.center,
-          spacing: 6,
-          runSpacing: 6,
+        Row(
           children: [
-            for (final x in t.presets)
-              ChoiceChip(
-                label: Text(name(x)),
-                selected: t.preset == x,
-                onSelected: (_) => onPreset(x),
-                showCheckmark: false,
-                selectedColor: p.gold,
-                labelStyle: TextStyle(fontWeight: FontWeight.w700, color: t.preset == x ? p.onGold : p.text),
-                side: BorderSide(color: t.preset == x ? p.gold : p.surfaceRaised),
-                shape: const StadiumBorder(),
-                materialTapTargetSize: MaterialTapTargetSize.padded,
-              ),
+            Expanded(
+              child: Text(title, style: context.type.body.copyWith(fontWeight: FontWeight.w700)),
+            ),
+            Text(word, style: context.type.caption.copyWith(color: context.glm.goldText)),
+          ],
+        ),
+        Slider(value: value.clamp(0, 100), max: 100, onChanged: onChanged, semanticFormatterCallback: (v) => '$title ${v.round()}'),
+        Row(
+          children: [
+            Expanded(child: Text(low, style: context.type.caption)),
+            Text(high, style: context.type.caption),
           ],
         ),
       ],
-    );
-  }
+    ),
+  );
 }

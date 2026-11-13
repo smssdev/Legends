@@ -7,12 +7,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
-import '../../ui/widgets/pitch_name.dart';
 import '../../ui/widgets/action_bar.dart';
 import '../../ui/widgets/console.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
-import '../../ui/widgets/cut.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/game_icons.dart';
 import '../../ui/widgets/game.dart';
@@ -20,6 +18,7 @@ import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../../ui/widgets/kit.dart';
 import '../../ui/widgets/motion.dart';
+import 'flat_pitch.dart';
 import 'squad_screen.dart';
 import 'lineup_controller.dart';
 import 'team_data.dart';
@@ -282,7 +281,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    AspectRatio(aspectRatio: 68 / 105, child: pitch),
+                    pitch,
                     const SizedBox(width: 8),
                     Expanded(
                       child: GlmCard(
@@ -336,53 +335,39 @@ class _Pitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
+    // [Sprint 60 F4] The one pitch of the lineup and the tactics (flat_pitch.dart), at the approved drafts' 68:105.
     final rtl = Directionality.of(context) == TextDirection.rtl;
-    final body = LayoutBuilder(
-      builder: (context, box) {
-        final w = box.maxWidth, h = box.maxHeight;
-        const tokenW = 56.0, tokenH = 48.0;
-        return Container(
-          decoration: ShapeDecoration(
-            shape: GlmCut.shape(GlmCut.card + 4, side: BorderSide(color: Colors.white.withValues(alpha: .12))),
-            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [p.pitch, p.pitchDark]),
-            shadows: [BoxShadow(color: p.shade.withValues(alpha: .45), blurRadius: 24, offset: const Offset(0, 12), spreadRadius: -10)],
-          ),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: CustomPaint(painter: _Lines(Colors.white.withValues(alpha: .35), horizontal: horizontal)),
-              ),
-              for (var i = 0; i < slots.length && i < starters.length; i++)
-                if (team.byId(starters[i]) case final pl?)
-                  Builder(
-                    builder: (context) {
-                      // x runs from my goal forward, y across (0..740 and 0..680 in the book).
-                      final fwd = (slots[i].x / 740).clamp(0.0, 1.0), across = (slots[i].y / 680).clamp(0.0, 1.0);
-                      final left = horizontal ? (rtl ? 1 - fwd : fwd) * (w - tokenW) : across * (w - tokenW);
-                      final top = horizontal ? across * (h - tokenH) : (1 - fwd) * (h - tokenH);
-                      return AnimatedPositioned(
-                        duration: const Duration(milliseconds: 280),
-                        curve: Curves.easeOutCubic,
-                        left: left,
-                        top: top,
-                        width: tokenW,
-                        child: _Token(
-                          player: pl,
-                          line: slots[i].line,
-                          picked: picked == pl.id,
-                          onTap: () => onTap(pl.id),
-                          onDrop: (d) => onDrop(d, pl.id),
-                        ),
-                      );
-                    },
-                  ),
-            ],
-          ),
-        );
-      },
+    final body = FlatPitch(
+      horizontal: horizontal,
+      child: LayoutBuilder(
+        builder: (context, box) => Stack(
+          children: [
+            for (var i = 0; i < slots.length && i < starters.length; i++)
+              if (team.byId(starters[i]) case final pl?)
+                Builder(
+                  builder: (context) {
+                    final at = placeOnPitch(slots[i], box.biggest, PitchDisc.size, rtl: rtl, horizontal: horizontal);
+                    return AnimatedPositioned(
+                      duration: const Duration(milliseconds: 280),
+                      curve: Curves.easeOutCubic,
+                      left: at.dx,
+                      top: at.dy,
+                      width: PitchDisc.size.width,
+                      child: _Token(
+                        player: pl,
+                        line: slots[i].line,
+                        picked: picked == pl.id,
+                        onTap: () => onTap(pl.id),
+                        onDrop: (d) => onDrop(d, pl.id),
+                      ),
+                    );
+                  },
+                ),
+          ],
+        ),
+      ),
     );
-    return horizontal ? body : AspectRatio(aspectRatio: 0.78, child: body);
+    return horizontal ? body : AspectRatio(aspectRatio: 68 / 105, child: body);
   }
 }
 
@@ -398,34 +383,9 @@ class _Token extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = lineColor(line);
     Widget shirt({bool lit = false, bool ghost = false}) => Opacity(
       opacity: ghost ? .35 : 1,
-      // [Sprint 60 F4] The approved draft's place on the pitch: a disc with his rating (gold when picked), his name under it.
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 30,
-            height: 30,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: picked || lit ? context.palette.gold : c.bg,
-              border: Border.all(color: Colors.white, width: 1.5),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .5), blurRadius: 6, offset: const Offset(0, 2))],
-            ),
-            child: Text(
-              '${player.overall}',
-              style: context.type
-                  .numbers(context.type.caption)
-                  .copyWith(color: picked || lit ? context.palette.onGold : c.fg, fontWeight: FontWeight.w800, height: 1),
-            ),
-          ),
-          const SizedBox(height: 1),
-          PitchName(player.name.split(' ').last, width: 56),
-        ],
-      ),
+      child: PitchDisc(player: player, line: line, lit: picked || lit),
     );
     // [Sprint 45 M4] Dragged straight away on the pitch; a player dropped on him swaps with him, his shirt lit gold.
     return DragTarget<int>(
