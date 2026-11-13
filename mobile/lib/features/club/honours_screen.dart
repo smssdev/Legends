@@ -30,10 +30,9 @@ class HonoursScreen extends ConsumerWidget {
             // [Sprint 50 M22] The trophy cabinet: our cup in 3D over the league's titles.
             SizedBox(
               height: 170,
-              child: GlmModel3D(
+              child: GlmModelSpin(
                 model: 'trophy',
                 label: l.honours,
-                orbit: '0deg 78deg 3.4m',
                 fallback: Icon(Icons.emoji_events_rounded, size: 110, color: context.palette.gold),
               ),
             ),

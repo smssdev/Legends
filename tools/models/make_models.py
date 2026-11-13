@@ -1,7 +1,7 @@
 """[Sprint 50 M23] The app's 3D models, made from code (ours, no outside asset): the trophy of the sign-in stage, the
 player card that flips in the market, the stadium with its buildings, and the three store chests.
 
-    python3 tools/models/make_models.py          # writes mobile/assets/models/*.glb
+    python3 tools/models/make_models.py          # writes tools/models/glb/*.glb (then render_spins.cjs and spins.py)
 
 Each model is a few simple shapes (turned profiles, boxes and tori) with PBR materials in the game's colours
 (docs/design/tokens.json): gold, emerald, navy, bronze and silver. Needs numpy and pygltflib (free, pip).
@@ -14,7 +14,8 @@ import numpy as np
 from pygltflib import (GLTF2, Accessor, Asset, Buffer, BufferView, Material, Mesh, Node, PbrMetallicRoughness, Primitive,
                        Scene, ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER, FLOAT, UNSIGNED_INT, VEC3, SCALAR)
 
-OUT = pathlib.Path(__file__).resolve().parents[2] / 'mobile' / 'assets' / 'models'
+# [Sprint 61 F2] The sources of the app's spins (render_spins.cjs, then spins.py): the app no longer carries a .glb.
+OUT = pathlib.Path(__file__).resolve().parent / 'glb'
 
 
 def hexrgb(h, a=1.0):
