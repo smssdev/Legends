@@ -2886,4 +2886,16 @@ class LEn extends L {
   String spanJoin(String a, String b) {
     return '$a $b';
   }
+
+  @override
+  String get counters => 'Timers';
+
+  @override
+  String get opponentReport => 'Opponent report';
+
+  @override
+  String get stadiumWorks => 'Stadium expansion';
+
+  @override
+  String get dailyReady => 'Today\'s coins are ready';
 }

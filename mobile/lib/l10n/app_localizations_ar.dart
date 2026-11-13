@@ -2925,4 +2925,16 @@ class LAr extends L {
   String spanJoin(String a, String b) {
     return '$a و$b';
   }
+
+  @override
+  String get counters => 'العدّادات';
+
+  @override
+  String get opponentReport => 'تقرير الخصم';
+
+  @override
+  String get stadiumWorks => 'توسعة الملعب';
+
+  @override
+  String get dailyReady => 'كوينز اليوم جاهزة';
 }
