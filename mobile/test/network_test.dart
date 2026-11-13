@@ -10,6 +10,7 @@ import 'package:glm/core/api/api_client.dart';
 import 'package:glm/core/api/api_error.dart';
 import 'package:glm/core/api/response_cache.dart';
 import 'package:glm/core/disk_images.dart';
+import 'package:glm/features/auth/auth_repository.dart';
 import 'package:glm/core/storage/token_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -212,5 +213,19 @@ void main() {
     await big.trim();
     final left = dir.listSync().whereType<File>().fold<int>(0, (s, f) => s + f.lengthSync());
     expect(left, lessThanOrEqualTo(DiskImages.maxBytes));
+  });
+
+  test('[Sprint 61 F8] the start in one request: the account from /bootstrap, the unread count taken once', () async {
+    final me = jsonDecode(File('test/fixtures/auth_me.json').readAsStringSync()) as Map<String, dynamic>;
+    final server = _Script([
+      (200, {'user': me['user'], 'wallet': null, 'home': null, 'unread': 4, 'config': <String, dynamic>{}}),
+    ]);
+    final tokens = TokenStore();
+    await tokens.write('t');
+    final account = await AuthRepository(client(server), tokens).current();
+    expect(server.asked, ['GET /bootstrap']);
+    expect(account, isNotNull);
+    expect(Bootstrap.takeUnread(), 4);
+    expect(Bootstrap.takeUnread(), isNull, reason: 'once: the badge asks its own route after');
   });
 }

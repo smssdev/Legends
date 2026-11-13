@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../auth/auth_repository.dart' show Bootstrap;
 import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 
@@ -111,4 +112,7 @@ class InboxRepository {
 }
 
 final inboxRepositoryProvider = Provider<InboxRepository>((ref) => InboxRepository(ref.watch(apiProvider)));
-final unreadProvider = FutureProvider.autoDispose<int>((ref) => ref.read(inboxRepositoryProvider).unread());
+final unreadProvider = FutureProvider.autoDispose<int>(
+  // [Sprint 61 F8] The first time from the start's /bootstrap, then from its own route.
+  (ref) async => Bootstrap.takeUnread() ?? await ref.read(inboxRepositoryProvider).unread(),
+);
