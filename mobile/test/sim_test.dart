@@ -86,7 +86,7 @@ void main() {
   testWidgets('the face-off: both clubs, their lines, the way in and the invite', (t) async {
     await t.pumpWidget(
       await app(
-        SimVersusScreen(home: clubs[0], away: clubs[1], friend: true, matchUrl: 'https://x/sim/1', inviteUrl: 'https://x/sim/1?seat=a'),
+        SimVersusScreen(home: clubs[0], away: clubs[1], friend: true, matchPath: '/sim/match/1', inviteUrl: 'https://x/sim/1?seat=a'),
       ),
     );
     await t.pumpAndSettle();

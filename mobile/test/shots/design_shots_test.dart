@@ -41,7 +41,12 @@ void main() {
   testWidgets('wide sim', (t) => shot(t, 'wide-sim', const SimSetupScreen(), [simClubsProvider.overrideWith((ref, q) async => clubs)]));
   testWidgets(
     'wide versus',
-    (t) => shot(t, 'wide-versus', SimVersusScreen(home: clubs[0], away: clubs[1], friend: true, matchUrl: 'x', inviteUrl: 'y'), []),
+    (t) => shot(
+      t,
+      'wide-versus',
+      SimVersusScreen(home: clubs[0], away: clubs[1], friend: true, matchPath: '/sim/match/x', inviteUrl: 'y'),
+      [],
+    ),
   );
   testWidgets(
     'wide league',

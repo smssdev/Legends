@@ -43,6 +43,7 @@ import 'features/match/live_screen.dart';
 import 'features/money/finance_screen.dart';
 import 'features/notifications/notifications_screen.dart';
 import 'features/sim/sim_setup_screen.dart';
+import 'features/match/sim_source.dart';
 import 'features/friendlies/friendlies_screen.dart';
 import 'features/predictions/predictions_screen.dart';
 import 'features/newspaper/newspaper_screen.dart';
@@ -241,6 +242,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
       // [Sprint 47] The simulator: a trial match against the computer or a friend.
       GoRoute(path: '/sim', builder: (_, _) => const SimSetupScreen()),
+      // [Sprint 61 F10] A simulator match played in the app (the live match screen), its seat for a match with a friend.
+      GoRoute(
+        path: '/sim/match/:id',
+        builder: (_, s) => LiveMatchScreen(matchId: SimMatches.handle(s.pathParameters['id']!, s.uri.queryParameters['seat'])),
+      ),
       GoRoute(
         path: '/match/:id',
         builder: (_, s) => _withId(s, (id) => LiveMatchScreen(matchId: id)),

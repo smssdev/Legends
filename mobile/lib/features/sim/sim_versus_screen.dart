@@ -5,7 +5,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
@@ -22,11 +22,13 @@ import 'sim_versus_art.dart';
 /// crashing between them with a flash ring, the three lines' strength bars filling, sparks rising, and the countdown
 /// ring to the kick-off. Then the way into the match (and, against a friend, the invite).
 class SimVersusScreen extends StatefulWidget {
-  const SimVersusScreen({super.key, required this.home, required this.away, required this.friend, required this.matchUrl, this.inviteUrl});
+  const SimVersusScreen({super.key, required this.home, required this.away, required this.friend, required this.matchPath, this.inviteUrl});
 
   final SimClub home, away;
   final bool friend;
-  final String matchUrl;
+
+  /// The match's place in the app (router: /sim/match/:id).
+  final String matchPath;
   final String? inviteUrl;
 
   static const length = Duration(milliseconds: 3600);
@@ -68,7 +70,11 @@ class _SimVersusScreenState extends State<SimVersusScreen> with TickerProviderSt
 
   Future<void> _open() async {
     unawaited(GameSounds.play(Sfx.whistle));
-    await launchUrl(Uri.parse(widget.matchUrl), mode: LaunchMode.inAppBrowserView);
+    if (!mounted) return;
+    // This screen was laid over the setup: it goes, and the match takes its place.
+    final router = GoRouter.of(context);
+    Navigator.of(context).pop();
+    unawaited(router.push(widget.matchPath));
   }
 
   @override

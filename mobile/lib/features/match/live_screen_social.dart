@@ -37,12 +37,14 @@ extension _LiveSocial on _LiveState {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                ActionChip(
-                  avatar: const Icon(Icons.chat_bubble_rounded, size: 18),
-                  label: Text('${l.matchChat} ${_chat.length}'),
-                  onPressed: _chatSheet,
-                ),
-                const SizedBox(width: 6),
+                if (!_sim) ...[
+                  ActionChip(
+                    avatar: const Icon(Icons.chat_bubble_rounded, size: 18),
+                    label: Text('${l.matchChat} ${_chat.length}'),
+                    onPressed: _chatSheet,
+                  ),
+                  const SizedBox(width: 6),
+                ],
                 for (final e in _LiveState.reactions.entries)
                   if (e.key != 'cheer' && e.key != 'boo')
                     IconButton(
@@ -50,7 +52,7 @@ extension _LiveSocial on _LiveState {
                       onPressed: () => _send(() => _repo.react(_id, e.key), quiet: true),
                       icon: Text(e.value, style: glmText(GlmType.headline)),
                     ),
-                for (final side in ['home', 'away']) ...[
+                for (final side in _sim ? const <String>[] : ['home', 'away']) ...[
                   IconButton(
                     tooltip: 'cheer $side',
                     onPressed: () => _send(() => _repo.react(_id, 'cheer', target: side), quiet: true),

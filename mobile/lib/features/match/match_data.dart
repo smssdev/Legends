@@ -18,6 +18,7 @@ import '../../api/gen/models.g.dart'
 import '../../api/gen/models.g.dart' as api;
 import 'frames.dart';
 
+import 'sim_source.dart';
 part 'match_event.dart';
 part 'match_report.dart';
 

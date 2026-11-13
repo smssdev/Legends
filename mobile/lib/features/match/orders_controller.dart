@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_error.dart';
 import '../../core/api/intents.dart';
-import 'match_data.dart';
+import 'sim_source.dart';
 
 /// An order's state on the live screen: on its way, or refused with the server's words.
 typedef OrderState = ({bool busy, String? error});
@@ -23,7 +23,7 @@ class LiveOrders extends Notifier<OrderState> {
     if (state.busy) return false;
     state = (busy: true, error: null);
     try {
-      await Intents.run('order:$match:$order', (key) => ref.read(matchRepositoryProvider).order(match, order, key: key));
+      await Intents.run('order:$match:$order', (key) => ref.read(matchSourceProvider(match)).order(match, order, key: key));
       state = (busy: false, error: null);
       return true;
     } on ApiError catch (e) {
