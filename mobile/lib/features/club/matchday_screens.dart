@@ -39,8 +39,10 @@ final pressProvider = FutureProvider.autoDispose.family<api.PressConference?, (i
     'PressAnswer',
   ).objectOrNull('press', api.PressConference.fromJson),
 );
-final integrityProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
-  (ref, l) => ref.read(apiProvider).get('/leagues/$l/integrity'),
+
+/// [Sprint 59 F1] The integrity system through the generated model (`IntegrityAnswer`).
+final integrityProvider = FutureProvider.autoDispose.family<api.IntegrityAnswer, int>(
+  (ref, l) async => api.IntegrityAnswer.fromJson(await ref.read(apiProvider).get('/leagues/$l/integrity')),
 );
 
 /// [Sprint 59 F1] The contracts through the generated model (`Contracts`).
@@ -53,8 +55,10 @@ final missedProvider = FutureProvider.autoDispose.family<List<api.MissedMatch>, 
   (ref, l) async =>
       JsonReader(await ref.read(apiProvider).get('/leagues/$l/team/missed'), 'Missed').list('matches', api.MissedMatch.fromJson),
 );
-final ticketsProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
-  (ref, l) => ref.read(apiProvider).get('/leagues/$l/tickets'),
+
+/// [Sprint 59 F1] The cheer tickets through the generated model (`TicketsAnswer`).
+final ticketsProvider = FutureProvider.autoDispose.family<api.TicketsAnswer, int>(
+  (ref, l) async => api.TicketsAnswer.fromJson(await ref.read(apiProvider).get('/leagues/$l/tickets')),
 );
 
 Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
@@ -66,12 +70,9 @@ Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
   }
 }
 
-/// A price as the server gives it ({currency, amount}): coins or club money.
-String price(BuildContext context, Object? p) {
-  final m = p as Map<dynamic, dynamic>? ?? const {};
-  final n = (m['amount'] as num? ?? 0).toInt();
-  return m['currency'] == 'coins' ? L.of(context).coinsWord(n) : money(context, n);
-}
+/// A price as the server gives it (its currency and amount): coins or club money.
+String price(BuildContext context, String currency, int amount) =>
+    currency == 'coins' ? L.of(context).coinsWord(amount) : money(context, amount);
 
 /// The referee's strictness in the coach's language.
 String refereeName(L l, String strictness) => switch (strictness) {
@@ -256,41 +257,38 @@ class MatchdayScreen extends ConsumerWidget {
                 ];
               }),
               ...?ref.watch(integrityProvider(leagueId)).value?.let((g) {
-                if (g['on'] != true || g['fixture'] == null) return const <Widget>[];
-                final bribe = g['bribe'] as Map<dynamic, dynamic>? ?? const {};
-                final security = g['security'] as Map<dynamic, dynamic>? ?? const {};
-                final spies = (g['spies_on_me'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>();
+                if (!g.on_ || g.fixture == null) return const <Widget>[];
+                final bribe = g.bribe;
+                final security = g.security;
+                final spies = g.spiesOnMe;
+                final bribeText = l.bribe(money(context, bribe.money), price(context, bribe.extra.currency, bribe.extra.amount));
                 return [
                   SectionTitle(l.integrity),
                   GlmCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (bribe['paid'] == true)
+                        if (bribe.paid)
                           Text(
                             l.bribePaid,
                             style: TextStyle(color: context.glm.liveText, fontWeight: FontWeight.w700),
                           )
                         else ...[
                           GlmButton(
-                            label: l.bribe(money(context, (bribe['money'] as num? ?? 0).toInt()), price(context, bribe['extra'])),
+                            label: bribeText,
                             variant: GlmButtonVariant.outline,
                             onPressed: () async {
-                              if (await confirm(
-                                    context,
-                                    l.bribe(money(context, (bribe['money'] as num? ?? 0).toInt()), price(context, bribe['extra'])),
-                                  ) &&
-                                  context.mounted) {
+                              if (await confirm(context, bribeText) && context.mounted) {
                                 await act(() => api.post('/leagues/$leagueId/integrity/bribe', {'fixture_id': fixture}));
                               }
                             },
                           ),
-                          Text(l.bribeNote(bribe['var_percent'] as int? ?? 0), style: TextStyle(color: p.textMuted, fontSize: 12)),
+                          Text(l.bribeNote(bribe.varPercent), style: TextStyle(color: p.textMuted, fontSize: 12)),
                         ],
                         const SizedBox(height: 10),
-                        if (security['sees'] != true)
+                        if (!security.sees)
                           GlmButton(
-                            label: l.securityCheck(price(context, security['cost'])),
+                            label: l.securityCheck(price(context, security.cost.currency, security.cost.amount)),
                             variant: GlmButtonVariant.outline,
                             onPressed: () => act(() => api.post('/leagues/$leagueId/integrity/security', {'fixture_id': fixture})),
                           )
@@ -303,17 +301,17 @@ class MatchdayScreen extends ConsumerWidget {
                               spacing: 4,
                               children: [
                                 Text(
-                                  '${s['club']}',
+                                  s.club,
                                   textDirection: TextDirection.ltr,
                                   style: const TextStyle(fontWeight: FontWeight.w700),
                                 ),
-                                if (s['turned'] != true) ...[
+                                if (!s.turned) ...[
                                   TextButton(
-                                    onPressed: () => act(() => api.post('/leagues/$leagueId/integrity/spies/${s['id']}/turn')),
-                                    child: Text(l.turnSpy(price(context, g['double_agent']))),
+                                    onPressed: () => act(() => api.post('/leagues/$leagueId/integrity/spies/${s.id}/turn')),
+                                    child: Text(l.turnSpy(price(context, g.doubleAgent.currency, g.doubleAgent.amount))),
                                   ),
                                   TextButton(
-                                    onPressed: () => act(() => api.post('/leagues/$leagueId/integrity/spies/${s['id']}/accuse')),
+                                    onPressed: () => act(() => api.post('/leagues/$leagueId/integrity/spies/${s.id}/accuse')),
                                     child: Text(l.accuse),
                                   ),
                                 ] else
