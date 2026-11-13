@@ -57,7 +57,7 @@ const country = (r: { place: { ar: string; en: string } }) => (locale.value === 
           <span class="max-w-full truncate text-xs font-semibold text-white/70" dir="ltr">{{ r.name }}</span>
           <span class="mt-1 flex items-center gap-2 text-xs font-bold">
             <span class="rounded-pill bg-black/30 px-2 py-0.5 text-white/90">{{ $t('{v0} نادياً', { v0: r.clubs }) }}</span>
-            <span class="tile-stars" :aria-label="$t('القوة {v0} من 5', { v0: stars(r) })"><i v-for="n in 5" :key="n" :class="n <= stars(r) ? 'on' : ''">★</i></span>
+            <span class="tile-stars" :aria-label="$t('القوة {v0} من 5', { v0: stars(r) })"><i v-for="n in 5" :key="n" :class="n <= stars(r) ? 'on' : ''"><Icon name="star" :size="16" /></i></span>
           </span>
         </button>
       </li>

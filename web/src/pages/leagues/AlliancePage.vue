@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // The alliance tournament [X27]: the owner's request (it waits for the developers), the two alliances with their
 // captains, and the rounds. A title left to one alliance is its own without another match.
 // [Sprint 40 D1, D2] Planned as the league is made (its teams formed before the first round), and two team-mates who
@@ -121,7 +122,7 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
           <h2 class="font-display text-2xl font-extrabold">{{ $nm(t.name) }}</h2>
           <UiChip :tone="STATUS[t.status][1]">{{ $t(STATUS[t.status][0]) }}</UiChip>
         </div>
-        <p v-if="t.status === 'finished' && t.winner" class="rounded-lg bg-gold/15 px-3 py-2 text-center font-display text-lg font-extrabold text-gold">{{ $t('🏆 البطل: {v0}', { v0: NAMES[t.winner] }) }}</p>
+        <p v-if="t.status === 'finished' && t.winner" class="rounded-lg bg-gold/15 px-3 py-2 text-center font-display text-lg font-extrabold text-gold"><Icon name="trophy" :size="16" class="inline-block align-[-3px]" /> {{ $t('البطل: {v0}', { v0: NAMES[t.winner] }) }}</p>
         <p v-if="t.review_note" class="text-sm text-text-muted">{{ $t('ملاحظة المطورين: {v0}', { v0: t.review_note }) }}</p>
         <p class="text-sm text-text-muted">{{ $t('الدور الأول {v0} · {v1} ضد {v2}', { v0: when(t.first_round_at), v1: t.size, v2: t.size }) }}</p>
         <div class="grid gap-3 md:grid-cols-2">

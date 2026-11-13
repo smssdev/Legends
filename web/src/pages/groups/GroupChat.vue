@@ -275,7 +275,7 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
             <img v-if="m.kind === 'image' && m.media_url" :src="m.media_url" :alt="m.body || $t('صورة')" loading="lazy"
               class="mb-1 max-h-72 w-full rounded-xl object-cover" @click.stop="lightbox = m.media_url" decoding="async" />
             <span v-if="m.kind === 'audio' && m.media_url" class="mb-1 flex items-center gap-2" @click.stop>
-              <span aria-hidden="true">🎤</span><audio :src="m.media_url" controls preload="none" class="h-10 max-w-[230px]" />
+              <span aria-hidden="true"><Icon name="mic" :size="18" class="inline-block align-[-3px]" /></span><audio :src="m.media_url" controls preload="none" class="h-10 max-w-[230px]" />
               <span v-if="m.seconds" class="font-numbers text-xs opacity-80" dir="ltr">{{ mmss(m.seconds) }}</span>
             </span>
             <span v-if="m.body" class="whitespace-pre-wrap break-words">{{ m.body }}</span>
@@ -299,17 +299,17 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
           <span class="size-2.5 animate-pulse rounded-full bg-live" /><span class="font-numbers" dir="ltr">{{ mmss(recorded) }}</span>
           <span class="text-sm text-text-muted">{{ $t('يُسجَّل… اضغط ➤ للإرسال') }}</span></span>
         <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-extrabold text-on-gold" :aria-label="$t('أرسل الرسالة الصوتية')" @click="record">
-          <span class="rtl:-scale-x-100">➤</span></button>
+          <span class="rtl:-scale-x-100"><Icon name="send" :size="18" class="inline-block align-[-3px]" /></span></button>
       </template>
       <template v-else>
       <input ref="picker" type="file" accept="image/*" class="hidden" @change="picture" />
       <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk text-xl disabled:opacity-50" :disabled="sending"
-        :aria-label="$t('أرسل صورة')" @click="picker?.click()">📷</button>
+        :aria-label="$t('أرسل صورة')" @click="picker?.click()"><Icon name="camera" :size="18" class="inline-block align-[-3px]" /></button>
       <textarea v-model="draft" rows="1" maxlength="1000" :placeholder="$t('اكتب رسالة…')" :aria-label="$t('اكتب رسالة…')"
         class="max-h-32 min-h-touch flex-1 resize-none rounded-3xl bg-surface-sunk px-4 py-3" @keydown.enter.exact.prevent="send" />
       <button type="submit" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-extrabold text-on-gold disabled:opacity-50"
         :disabled="sending" :aria-label="draft.trim() ? $t('أرسل') : $t('سجّل رسالة صوتية')" @click="!draft.trim() && ($event.preventDefault(), record())">
-        <span v-if="draft.trim()" class="rtl:-scale-x-100">➤</span><span v-else>🎤</span></button>
+        <span v-if="draft.trim()" class="rtl:-scale-x-100"><Icon name="send" :size="18" class="inline-block align-[-3px]" /></span><span v-else><Icon name="mic" :size="18" class="inline-block align-[-3px]" /></span></button>
       </template>
     </form>
     <UiDialog :open="!!lightbox" bare @close="lightbox = null">

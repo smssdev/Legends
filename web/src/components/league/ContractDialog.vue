@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 // [Sprint 43 W1] The contract the coach signs when he takes his club, once a season (Sprint43Drafts.html): paper with
 // the club's seal, the board's objective and the money for transfers, and the coach's signature drawn with his finger.
 // The drawing stays on this screen: only «signed» goes to the server. What it is: the guide («contract»).
@@ -79,7 +80,7 @@ onBeforeUnmount(() => { drawing = false })
           {{ $t('تعلن إدارة {c} تعيين المدرب {u} مديراً فنياً للفريق الأول في {l}، الموسم {s}.', { c: $nm(contract.club.name), u: auth.user?.name ?? '', l: contract.league, s: contract.season }) }}
         </p>
         <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
-          <div v-if="goal" class="col-span-2 rounded-xl bg-on-chrome p-2.5 text-gold-light">{{ $t('هدف الإدارة هذا الموسم') }}<b class="block text-base text-chrome">🏆 {{ goal }}</b></div>
+          <div v-if="goal" class="col-span-2 rounded-xl bg-on-chrome p-2.5 text-gold-light">{{ $t('هدف الإدارة هذا الموسم') }}<b class="block text-base text-chrome"><Icon name="trophy" :size="16" class="inline-block align-[-3px]" /> {{ goal }}</b></div>
           <div class="rounded-xl border border-chrome-dark bg-white/60 p-2.5">{{ $t('ميزانية الانتقالات') }}<b class="block font-numbers text-base" dir="ltr">{{ money(contract.budget) }}</b></div>
           <div class="rounded-xl border border-chrome-dark bg-white/60 p-2.5">{{ contract.cup ? $t('هدف الكأس') : $t('مدة العقد') }}<b class="block text-base">{{ contract.cup ? cupGoal(contract.cup) : $t('موسم واحد') }}</b></div>
         </div>
@@ -93,7 +94,7 @@ onBeforeUnmount(() => { drawing = false })
         <div class="mt-3 rounded-2xl border-2 border-dashed border-gold bg-panel">
           <canvas ref="pad" width="600" height="180" class="block h-28 w-full touch-none rounded-2xl" :aria-label="$t('وقّع بإصبعك هنا')"
             @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="up" @pointerleave="up" />
-          <p v-if="!strokes" class="pointer-events-none -mt-16 mb-10 text-center text-sm text-text-muted">✍️ {{ $t('وقّع بإصبعك هنا') }}</p>
+          <p v-if="!strokes" class="pointer-events-none -mt-16 mb-10 text-center text-sm text-text-muted"><Icon name="idea" :size="16" class="inline-block align-[-3px]" /> {{ $t('وقّع بإصبعك هنا') }}</p>
         </div>
         <div class="mt-3 flex gap-2">
           <UiButton class="flex-1" :disabled="strokes < 8" :loading="busy" @click="sign">{{ $t('وقّع وتولَّ القيادة') }}</UiButton>
@@ -101,7 +102,7 @@ onBeforeUnmount(() => { drawing = false })
         </div>
       </template>
       <div v-else class="mt-4 flex flex-col gap-3 text-center">
-        <b class="text-lg text-gold-light">✨ {{ $t('مرحباً بك مدرباً لـ{c}', { c: $nm(contract.club.name) }) }}</b>
+        <b class="text-lg text-gold-light"><Icon name="star" :size="16" class="inline-block align-[-3px]" /> {{ $t('مرحباً بك مدرباً لـ{c}', { c: $nm(contract.club.name) }) }}</b>
         <UiButton @click="emit('signed')">{{ $t('إلى غرفة الملابس') }}</UiButton>
       </div>
     </div>

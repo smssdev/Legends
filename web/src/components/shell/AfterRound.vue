@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 // [Sprint 20 W7, B3] The matches the coach missed since his last visit, in one window: the score, the goals, the man
 // of the match, the coins, and what changed in his squad; «شاهد الإعادة» and «التقرير» (each marks it seen), the
 // next one, or «تخطَّ الكل». Once skipped, a match does not come back. [Sprint 24 W1] «الملخص السريع» first: the
@@ -74,7 +75,7 @@ const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 
         <span v-if="m.coins" class="rounded-pill bg-gold px-2 font-numbers text-xs font-bold text-on-gold" dir="ltr">+{{ m.coins }}</span>
         <span v-for="(c, i) in m.changes" :key="i" class="rounded-pill px-2 text-xs" :class="c.kind === 'injury' ? 'bg-live/20 text-danger' : 'bg-warning/20 text-warning'"><bdi>{{ $nm(c.player ?? '') }}</bdi> {{ $t(c.kind === 'injury' ? 'مصاب' : 'مطرود') }}</span>
       </div>
-      <button type="button" class="h-touch rounded-lg bg-gold font-bold text-on-gold" @click="recap = m.match_id">⚡ {{ $t('الملخص السريع') }}</button>
+      <button type="button" class="h-touch rounded-lg bg-gold font-bold text-on-gold" @click="recap = m.match_id"><Icon name="bolt" :size="16" class="inline-block align-[-3px]" /> {{ $t('الملخص السريع') }}</button>
       <div class="flex gap-2">
         <button type="button" class="h-touch flex-1 rounded-lg bg-surface-raised font-bold" @click="open(`/live/${m.match_id}`)">{{ $t('شاهد الإعادة') }}</button>
         <button type="button" class="h-touch flex-1 rounded-lg bg-surface-raised font-bold" @click="open(`/live/${m.match_id}/report`)">{{ $t('التقرير') }}</button>

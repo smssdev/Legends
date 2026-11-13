@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [Sprint 15 D1] The app's versions in the admin panel: pick the APK from the device, its version and what is new;
 // it goes up in pieces (each well under the server's upload limits) with its progress, a piece retried on a network
 // hiccup, and becomes the site's download once whole and checked. The two latest are kept on the server.
@@ -81,7 +82,7 @@ const field = 'min-h-touch rounded-lg border border-surface-raised bg-surface-su
     <form class="flex flex-col gap-3 rounded-xl bg-surface p-4" @submit.prevent="upload">
       <h2 class="font-display text-xl font-bold">{{ $t('نسخة أندرويد جديدة') }}</h2>
       <label class="flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-gold p-4 text-center text-sm text-text-soft">
-        <b class="text-gold">📦 {{ file ? file.name : $t('اختر ملف APK من جهازك') }}</b>
+        <b class="text-gold"><Icon name="download" :size="16" class="inline-block align-[-3px]" /> {{ file ? file.name : $t('اختر ملف APK من جهازك') }}</b>
         <span v-if="file" dir="ltr">{{ mb(file.size) }} MB</span>
         <input type="file" accept=".apk,application/vnd.android.package-archive" class="sr-only" @change="pick" />
       </label>

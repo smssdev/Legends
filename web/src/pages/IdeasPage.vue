@@ -129,7 +129,7 @@ const vote = (p: S['Poll'], option: number) => run(async () => {
               :class="[p.my_vote === o.id ? 'border-gold' : 'border-text/10', p.winners.includes(o.id) ? 'bg-gold/10' : 'bg-surface-sunk']"
               :disabled="busy || p.state !== 'open' || p.my_vote === o.id" :aria-pressed="p.my_vote === o.id" @click="vote(p, o.id)">
               <span v-if="o.votes !== null" class="absolute inset-y-0 start-0 bg-gold/20" :style="{ width: share(p, o.votes) + '%' }" aria-hidden="true" />
-              <span class="relative min-w-0 flex-1 font-bold">{{ o.label }}<span v-if="p.my_vote === o.id" class="ms-1 text-gold">✓</span><span v-if="p.winners.includes(o.id)" class="ms-1">🏆</span></span>
+              <span class="relative min-w-0 flex-1 font-bold">{{ o.label }}<span v-if="p.my_vote === o.id" class="ms-1 text-gold"><Icon name="check" :size="16" /></span><span v-if="p.winners.includes(o.id)" class="ms-1"><Icon name="trophy" :size="18" /></span></span>
               <span v-if="o.votes !== null" class="relative font-numbers text-sm" dir="ltr">{{ share(p, o.votes) }}%</span>
             </button>
           </li>

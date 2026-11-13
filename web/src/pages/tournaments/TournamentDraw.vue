@@ -190,7 +190,7 @@ async function schedule() {
             <span class="text-lg font-extrabold text-gold-light">← {{ where(current) }}<template v-if="current.pot"> · {{ $t('الوعاء {v0}', { v0: current.pot }) }}</template></span>
           </div>
           <div v-if="done" class="flex flex-col items-center gap-3 text-center">
-            <span class="text-6xl">🏆</span>
+            <span class="text-6xl"><Icon name="trophy" :size="18" /></span>
             <b class="font-display text-3xl font-extrabold">{{ $t('انتهت القرعة') }}</b>
             <div class="flex flex-wrap justify-center gap-2">
               <button class="min-h-touch rounded-xl bg-gold px-5 font-extrabold text-on-gold" @click="replay">{{ $t('أعد مشاهدة القرعة') }}</button>

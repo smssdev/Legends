@@ -72,7 +72,7 @@ async function claim(quest: View['quests'][number]['quest']) {
         <span class="flex flex-col items-end gap-1">
           <!-- [X61] Each reward says its currency: coins (the wallet) or the club's money. -->
           <span v-if="q.reward.coins" class="flex items-center gap-1 rounded-pill bg-gold px-2 text-xs font-bold text-on-gold"><AppImage src="/brand/coin.svg" alt="" class="size-3.5" :size="14" /><span class="font-numbers" dir="ltr">{{ q.reward.coins }}</span> {{ $t('كوينز') }}</span>
-          <span v-else class="flex items-center gap-1 rounded-pill bg-success/20 px-2 text-xs font-bold text-success"><span aria-hidden="true">💵</span><span class="font-numbers" dir="ltr">{{ money(q.reward.money ?? 0) }}</span> {{ $t('أموال النادي') }}</span>
+          <span v-else class="flex items-center gap-1 rounded-pill bg-success/20 px-2 text-xs font-bold text-success"><span aria-hidden="true"><Icon name="finance" :size="18" class="inline-block align-[-3px]" /></span><span class="font-numbers" dir="ltr">{{ money(q.reward.money ?? 0) }}</span> {{ $t('أموال النادي') }}</span>
           <UiButton size="sm" v-if="q.complete && !q.claimed" :disabled="busy" @click="claim(q.quest)">{{ $t('خذها') }}</UiButton>
           <span v-else-if="q.claimed" class="text-xs text-success">{{ $t('أُخذت') }}</span>
         </span>

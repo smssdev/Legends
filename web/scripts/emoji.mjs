@@ -8,7 +8,9 @@ import { join, relative } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '..', '..')
 const BASE = join(import.meta.dirname, 'emoji-baseline.json')
-const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{2190}-\u{21FF}\u{25A0}-\u{25FF}\u{2300}-\u{23FF}]/gu
+// The pictographs, the dingbats (✓ ✕ ★), the geometric marks (▾ ● ▲) and the technical ones (⏳ ⌛). The arrows
+// (← →) are typography in a sentence ("from ← to"), as the font draws them, and stay.
+const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{25A0}-\u{25FF}\u{2300}-\u{23FF}]/gu
 // The reactions (a fan's 🔥 or 👏, a cheer 📣) are emoji on purpose: the web's and the app's lists and bars of them;
 // and the cartoon clips' drawn crowd (a thumbs-up over the stand) is art, not the interface.
 const REACTIONS = [

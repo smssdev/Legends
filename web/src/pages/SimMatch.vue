@@ -11,7 +11,7 @@
       <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
       <p v-if="oldEngine" class="flex flex-wrap items-center gap-2 rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">
         <span class="flex-1">{{ replayExpired ? $t('بدأت جولة جديدة، فلم تعد إعادة هذه المباراة متاحة. تبقى نتيجتها وملخصها السريع.') : $t('لُعبت هذه المباراة بنسخة أقدم من المحرك، فلا تُعاد محاكاتها. شاهد ملخصها السريع.') }}</span>
-        <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold" @click="recapOpen = true">⚡ {{ $t('الملخص السريع') }}</button>
+        <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold" @click="recapOpen = true"><Icon name="bolt" :size="16" class="inline-block align-[-3px]" /> {{ $t('الملخص السريع') }}</button>
       </p>
       <p v-if="viewing.chosenView.value === 'unity' && viewing.playing.value === 'cartoon'" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">{{ $t('المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.') }}</p>
     </div>
@@ -26,8 +26,8 @@
         <button v-if="caught" type="button" class="absolute inset-x-3 top-24 z-30 flex min-h-touch flex-col items-center justify-center gap-0.5 rounded-lg bg-surface-raised/95 px-3 py-2 text-center text-sm font-bold" role="status" @click="caught = null">
           <span>{{ $t('عدت إلى الوقت الحالي: فاتتك {v0} دقيقة', { v0: caught.minutes }) }}</span>
           <span v-if="caught.goals.length || caught.reds.length" class="text-xs text-text-muted">
-            <span v-for="(g, i) in caught.goals" :key="'g' + i" class="me-2">⚽ {{ g.minute }}' {{ $nm(P.clubName(g.team)) }}</span>
-            <span v-for="(r, i) in caught.reds" :key="'r' + i" class="me-2">🟥 {{ r.minute }}' {{ $nm(P.clubName(r.team)) }}</span>
+            <span v-for="(g, i) in caught.goals" :key="'g' + i" class="me-2"><Icon name="ball" :size="16" class="inline-block align-[-3px]" /> {{ g.minute }}' {{ $nm(P.clubName(g.team)) }}</span>
+            <span v-for="(r, i) in caught.reds" :key="'r' + i" class="me-2"><Icon name="card" :size="16" class="inline-block align-[-3px] text-live" /> {{ r.minute }}' {{ $nm(P.clubName(r.team)) }}</span>
           </span>
         </button>
         <p v-if="L.offline.value" class="absolute inset-x-3 top-24 z-30 rounded-lg bg-warning/90 px-3 py-2 text-center text-sm font-bold text-bg-deep" role="status">{{ $t('انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء') }}</p>
@@ -47,8 +47,8 @@
 
     <!-- The two drawers, each from its edge, over the picture (never moving it). -->
     <template v-if="view">
-      <button v-if="!rerun" type="button" class="match-edge is-end" :aria-expanded="drawer === 'coach'" @click="drawer = drawer === 'coach' ? null : 'coach'">📋<span>{{ $t('الأوامر') }}</span></button>
-      <button type="button" class="match-edge is-start" :aria-expanded="drawer === 'more'" @click="drawer = drawer === 'more' ? null : 'more'">💬<span>{{ $t('الدردشة') }}</span><i v-if="social.chat.value.length" class="match-dot" /></button>
+      <button v-if="!rerun" type="button" class="match-edge is-end" :aria-expanded="drawer === 'coach'" @click="drawer = drawer === 'coach' ? null : 'coach'"><Icon name="todo" :size="16" class="inline-block align-[-3px]" /><span>{{ $t('الأوامر') }}</span></button>
+      <button type="button" class="match-edge is-start" :aria-expanded="drawer === 'more'" @click="drawer = drawer === 'more' ? null : 'more'"><Icon name="chat" :size="16" class="inline-block align-[-3px]" /><span>{{ $t('الدردشة') }}</span><i v-if="social.chat.value.length" class="match-dot" /></button>
       <MatchDrawer side="end" label="لوحة المدرب" :open="drawer === 'coach'" @close="drawer = null">
         <CoachDrawer v-if="!rerun" :player="P" :orders="orders" :view="view" :mine="mine" :league="!!league" :can-change="canChange" :next-window="nextWindow" :readings="L.readings.value" @choose="(s) => (chosen = s)" />
       </MatchDrawer>
@@ -70,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import Icon from '../components/Icon.vue'
 import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { scoreText } from '../lib/format'

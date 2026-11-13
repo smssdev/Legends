@@ -760,7 +760,7 @@ onMounted(load)
             <p class="text-xs text-text-muted">{{ when(p.starts_at) }} ← {{ when(p.ends_at) }} · {{ $t('{v0} صوتاً', { v0: p.total ?? 0 }) }}</p>
             <ul class="flex flex-col gap-1 text-sm">
               <li v-for="o in p.options" :key="o.id" class="flex items-center gap-2 rounded-md bg-surface-sunk px-3 py-2" :class="p.winners.includes(o.id) ? 'ring-1 ring-gold' : ''">
-                <span class="min-w-0 flex-1">{{ o.label }}<span v-if="p.winners.includes(o.id)" class="ms-1">🏆</span></span><b class="font-numbers" dir="ltr">{{ o.votes ?? 0 }}</b>
+                <span class="min-w-0 flex-1">{{ o.label }}<span v-if="p.winners.includes(o.id)" class="ms-1"><Icon name="trophy" :size="18" /></span></span><b class="font-numbers" dir="ltr">{{ o.votes ?? 0 }}</b>
               </li>
             </ul>
             <button v-if="p.state !== 'ended'" type="button" class="h-10 self-start rounded-md bg-live/15 px-3 text-xs font-bold text-danger" :disabled="busy" @click="closePoll(p)">{{ $t(p.state === 'open' && p.total ? 'أنهِه الآن' : 'احذف') }}</button>

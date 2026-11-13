@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../components/Icon.vue'
 // [X59] The visitor's home page (the owner's request 2026-10-29): what GLM is, what is in it, how to start, and the
 // common questions, all readable before signing in, as Google AdSense asks of a site, and as a visitor deserves.
 // Every number in it is the game's own (the slots, the guide); nothing here is a rule, only a description.
@@ -52,7 +53,7 @@ const FAQ = [
           <RouterLink to="/guide" class="flex h-12 items-center rounded-lg border border-text/25 px-7 font-bold">{{ $t('طريقة اللعب') }}</RouterLink>
         </div>
         <!-- [Sprint 15 D1] The app: Android to download, the iPhone from Safari. -->
-        <RouterLink to="/download" class="flex min-h-touch items-center gap-2 rounded-full bg-surface/70 px-5 text-sm font-bold">📱 {{ $t('حمّل التطبيق: أندرويد وآيفون') }}</RouterLink>
+        <RouterLink to="/download" class="flex min-h-touch items-center gap-2 rounded-full bg-surface/70 px-5 text-sm font-bold"><Icon name="sim" :size="16" class="inline-block align-[-3px]" /> {{ $t('حمّل التطبيق: أندرويد وآيفون') }}</RouterLink>
         <div class="flex items-end justify-center gap-1">
           <Character model="A1" mood="joy" class="w-24 md:w-28" />
           <Character model="A2" mood="cheer" class="w-24 md:w-28" />

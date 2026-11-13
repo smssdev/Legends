@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // «جدول المباريات» [Sprint 21 E4.3]: the whole season round by round, the league's and the cup's, for any club
 // (the owner's request: anyone may see any rival's fixtures). The coach's own club in gold and chosen first; a club's
 // name opens its squad; a live one the match. [X69] A played match's score opens its quick
@@ -115,8 +116,8 @@ const lastRound = computed(() => {
                 <span class="flex gap-1 font-numbers text-gold"><span>{{ lastMine.home_goals }}</span><span>-</span><span>{{ lastMine.away_goals }}</span></span>
                 <bdi class="truncate">{{ $nm(lastMine.away!.name) }}</bdi><AppImage :src="lastMine.away!.crest_url" alt="" class="size-6 shrink-0" :size="24" crest />
               </span>
-              <UiButton size="sm" variant="quiet" @click="recapOf = lastMine.match_id!">⚡ {{ $t('ملخص') }}</UiButton>
-              <UiButton size="sm" :to="{ name: 'league-match', params: { id: lastMine.match_id! } }">▶ {{ $t('شاهد المحاكاة') }}</UiButton>
+              <UiButton size="sm" variant="quiet" @click="recapOf = lastMine.match_id!"><Icon name="bolt" :size="16" class="inline-block align-[-3px]" /> {{ $t('ملخص') }}</UiButton>
+              <UiButton size="sm" :to="{ name: 'league-match', params: { id: lastMine.match_id! } }"><Icon name="play" :size="16" class="inline-block align-[-3px]" /> {{ $t('شاهد المحاكاة') }}</UiButton>
             </div>
           </template>
           <h2 class="flex items-center gap-2 text-body font-extrabold">
@@ -129,8 +130,8 @@ const lastRound = computed(() => {
               <span class="flex gap-1 font-numbers text-gold"><span>{{ f.home_goals }}</span><span>-</span><span>{{ f.away_goals }}</span></span>
               <bdi class="truncate">{{ $nm(f.away!.name) }}</bdi><AppImage :src="f.away!.crest_url" alt="" class="size-6 shrink-0" :size="24" crest />
             </span>
-            <UiButton size="sm" variant="quiet" @click="recapOf = f.match_id!">⚡ <span class="max-md:hidden">{{ $t('ملخص') }}</span></UiButton>
-            <UiButton size="sm" variant="quiet" :to="{ name: 'league-match', params: { id: f.match_id! } }">▶ <span class="max-md:hidden">{{ $t('شاهد المحاكاة') }}</span></UiButton>
+            <UiButton size="sm" variant="quiet" @click="recapOf = f.match_id!"><Icon name="bolt" :size="16" class="inline-block align-[-3px]" /><span class="max-md:hidden">{{ $t('ملخص') }}</span></UiButton>
+            <UiButton size="sm" variant="quiet" :to="{ name: 'league-match', params: { id: f.match_id! } }"><Icon name="play" :size="16" class="inline-block align-[-3px]" /><span class="max-md:hidden">{{ $t('شاهد المحاكاة') }}</span></UiButton>
           </div>
         </template>
 

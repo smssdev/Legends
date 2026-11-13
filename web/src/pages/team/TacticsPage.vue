@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 import AsyncState from '../../components/ui/AsyncState.vue'
 import { REFEREE } from '../../lib/format'
 // Tactics (Sprint 17 W1). [Sprint 20 S1] Laid out as the owner's picture, in our colours and drawings: the match on
@@ -286,9 +287,9 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
                 <tr v-for="p in book.plans" :key="p.plan" class="border-t border-text/10" :class="p.plan === t.plan ? 'text-gold' : ''">
                   <th scope="row" class="py-2 text-start font-bold">{{ $t(PLANS[p.plan]) }}</th>
                   <td v-for="(_, k) in SHAPES" :key="k" class="py-2 text-center">
-                    <span v-if="p.edge[k] > 0" class="font-bold text-success" :title="$t('تتفوق')">▲</span>
-                    <span v-else-if="p.edge[k] < 0" class="font-bold text-danger" :title="$t('تتعثر')">▼</span>
-                    <span v-else class="text-text-muted" :title="$t('متعادلة')">●</span>
+                    <span v-if="p.edge[k] > 0" class="font-bold text-success" :title="$t('تتفوق')"><Icon name="chevron_up" :size="14" /></span>
+                    <span v-else-if="p.edge[k] < 0" class="font-bold text-danger" :title="$t('تتعثر')"><Icon name="chevron_down" :size="14" /></span>
+                    <span v-else class="text-text-muted" :title="$t('متعادلة')"><Icon name="dot" :size="12" /></span>
                   </td>
                 </tr>
               </tbody>

@@ -90,7 +90,7 @@ async function rate(helpful: boolean, withNote = false) {
             <div class="flex gap-2"><dt class="w-20 shrink-0 text-text-muted">{{ $t('رصيدك') }}</dt>
               <dd class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 font-numbers" dir="ltr">
                 <span class="flex items-center gap-1"><AppImage src="/brand/coin.svg" alt="" class="size-4" :size="16" />{{ wallet.view?.balance ?? 0 }}</span>
-                <span v-if="board.board" class="text-success">💵 {{ money(board.board.money.cash) }}</span>
+                <span v-if="board.board" class="text-success"><Icon name="finance" :size="16" class="inline-block align-[-3px]" /> {{ money(board.board.money.cash) }}</span>
               </dd></div>
           </dl>
 
@@ -107,8 +107,8 @@ async function rate(helpful: boolean, withNote = false) {
             <template v-else>
               <div class="flex items-center gap-2">
                 <span class="flex-1 text-sm">{{ $t('هل أفادك الرد؟') }}</span>
-                <button type="button" class="grid size-11 place-items-center rounded-full text-xl transition active:scale-90" :class="vote === true ? 'bg-success/25' : 'bg-surface-raised'" :aria-label="$t('أفادني')" :aria-pressed="vote === true" @click="rate(true)">👍</button>
-                <button type="button" class="grid size-11 place-items-center rounded-full text-xl transition active:scale-90" :class="vote === false ? 'bg-live/25' : 'bg-surface-raised'" :aria-label="$t('لم يفدني')" :aria-pressed="vote === false" @click="rate(false)">👎</button>
+                <button type="button" class="grid size-11 place-items-center rounded-full text-xl transition active:scale-90" :class="vote === true ? 'bg-success/25' : 'bg-surface-raised'" :aria-label="$t('أفادني')" :aria-pressed="vote === true" @click="rate(true)"><Icon name="thumbs_up" :size="18" class="inline-block align-[-3px]" /></button>
+                <button type="button" class="grid size-11 place-items-center rounded-full text-xl transition active:scale-90" :class="vote === false ? 'bg-live/25' : 'bg-surface-raised'" :aria-label="$t('لم يفدني')" :aria-pressed="vote === false" @click="rate(false)"><Icon name="thumbs_down" :size="18" class="inline-block align-[-3px]" /></button>
               </div>
               <form v-if="vote === false" class="flex gap-2" @submit.prevent="rate(false, true)">
                 <input v-model="note" maxlength="300" dir="auto" class="h-11 min-w-0 flex-1 rounded-lg bg-surface-sunk px-3 text-sm" :placeholder="$t('ما الذي كان ينقص؟ (اختياري)')" :aria-label="$t('ما الذي كان ينقص؟ (اختياري)')" />

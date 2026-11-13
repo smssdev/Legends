@@ -257,7 +257,7 @@ async function openRanking(by: By) {
                 <b class="line-clamp-2 min-w-0 text-start font-display text-sm leading-tight">{{ $nm(s.club!.name) }}</b>
               </template>
               <template v-else-if="s.state === 'waiting'">
-                <span class="text-xl" aria-hidden="true">⏳</span>
+                <span class="text-xl" aria-hidden="true"><Icon name="clock" :size="18" class="inline-block align-[-3px]" /></span>
                 <span class="text-caption text-text-muted">{{ $t('ينتظر موافقة المنشئ') }}</span>
               </template>
             </span>
@@ -311,7 +311,7 @@ async function openRanking(by: By) {
       <!-- [X61] A new coach's first steps, until they are all done (or hidden). -->
       <!-- [Sprint 55 W3] The verification: a card here (and a dot on the account), no longer a strip across every screen. -->
       <RouterLink v-if="auth.user && !auth.user.verification?.verified" to="/profile" class="ui-card verify-card flex min-h-touch items-center gap-3 rounded-xl px-4 py-3">
-        <span class="text-2xl" aria-hidden="true">🎁</span>
+        <span class="text-2xl" aria-hidden="true"><Icon name="gift" :size="18" class="inline-block align-[-3px]" /></span>
         <span class="min-w-0 flex-1"><b class="block">{{ $t('وثّق حسابك') }}</b>
           <span class="text-caption text-text-muted">{{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }}</span></span>
         <span class="font-bold text-gold">{{ $t('وثّق') }} ›</span>
@@ -398,10 +398,10 @@ async function openRanking(by: By) {
         </div>
         <!-- Quick ways in. -->
         <nav class="grid grid-cols-2 gap-2" :aria-label="$t('اختصارات')">
-          <RouterLink to="/leagues/new" class="home-tile"><span class="text-xl" aria-hidden="true">🏟️</span><span class="text-xs font-bold">{{ $t('أنشئ دورياً') }}</span></RouterLink>
-          <RouterLink :to="{ name: 'join' }" class="home-tile"><span class="text-xl" aria-hidden="true">🔑</span><span class="text-xs font-bold">{{ $t('انضم بكود') }}</span></RouterLink>
+          <RouterLink to="/leagues/new" class="home-tile"><span class="text-xl" aria-hidden="true"><Icon name="stadium" :size="18" class="inline-block align-[-3px]" /></span><span class="text-xs font-bold">{{ $t('أنشئ دورياً') }}</span></RouterLink>
+          <RouterLink :to="{ name: 'join' }" class="home-tile"><span class="text-xl" aria-hidden="true"><Icon name="key" :size="18" class="inline-block align-[-3px]" /></span><span class="text-xs font-bold">{{ $t('انضم بكود') }}</span></RouterLink>
           <RouterLink to="/wallet" class="home-tile"><AppImage src="/brand/coin.svg" alt="" class="size-6" :size="24" /><span class="text-xs font-bold">{{ $t('المحفظة') }}</span></RouterLink>
-          <RouterLink to="/profile" class="home-tile"><span class="text-xl" aria-hidden="true">🎁</span><span class="text-xs font-bold">{{ $t('ادعُ أصدقاءك') }}</span></RouterLink>
+          <RouterLink to="/profile" class="home-tile"><span class="text-xl" aria-hidden="true"><Icon name="gift" :size="18" class="inline-block align-[-3px]" /></span><span class="text-xs font-bold">{{ $t('ادعُ أصدقاءك') }}</span></RouterLink>
         </nav>
       </aside>
       </details>
@@ -426,7 +426,7 @@ async function openRanking(by: By) {
             </template>
             <template v-else>
               <span class="text-xs text-text-muted">{{ $t('م{n}', { n: r.level }) }}</span>
-              <b class="font-numbers">🏆 {{ r.trophies.total }}</b>
+              <b class="font-numbers"><Icon name="trophy" :size="16" class="inline-block align-[-3px]" /> {{ r.trophies.total }}</b>
             </template>
           </div>
           <p v-if="ranking.me && ranking.me.position > 50" class="border-t border-gold/40 pt-2 text-sm">{{ $t('مركزك:') }} <b class="font-numbers">{{ ranking.me.position }}</b></p>
@@ -468,7 +468,7 @@ async function openRanking(by: By) {
           <p v-if="!rating.recent.length" class="text-sm text-text-muted">{{ $t('تبدأ نقاطك مع أول مباراة لناديك.') }}</p>
           <div v-for="(c, i) in rating.recent" :key="i" class="flex min-h-touch items-center gap-3 border-t border-text/5 text-sm">
             <b class="w-11 text-center font-numbers" :class="c.delta > 0 ? 'text-success' : c.delta < 0 ? 'text-danger' : 'text-text-muted'" dir="ltr">{{ signed(c.delta) }}</b>
-            <span v-if="c.kind === 'trophy'" class="flex-1">🏆 {{ c.competition === 'cup' ? $t('الكأس: المركز {n}', { n: c.position ?? 0 }) : $t('الدوري: المركز {n}', { n: c.position ?? 0 }) }}</span>
+            <span v-if="c.kind === 'trophy'" class="flex-1"><Icon name="trophy" :size="16" class="inline-block align-[-3px]" /> {{ c.competition === 'cup' ? $t('الكأس: المركز {n}', { n: c.position ?? 0 }) : $t('الدوري: المركز {n}', { n: c.position ?? 0 }) }}</span>
             <template v-else>
               <span class="min-w-0 flex-1 truncate">{{ $t(c.result === 'win' ? 'فوز على {o}' : c.result === 'draw' ? 'تعادل مع {o}' : 'خسارة أمام {o}', { o: c.opponent ?? '' }) }}</span>
               <b class="font-numbers" dir="ltr">{{ c.for }}-{{ c.against }}</b>
@@ -480,7 +480,7 @@ async function openRanking(by: By) {
 
     <!-- [Sprint 24 B3] The confirmation before the coins go, or the way to more coins when they are short. -->
     <UiDialog :open="!!(buying && home)" title="فتح فوري" @close="buying = null"><div v-if="buying && home" class="flex flex-col gap-4 text-center">
-      <span class="text-4xl" aria-hidden="true">🔓</span>
+      <span class="text-4xl" aria-hidden="true"><Icon name="unlock" :size="18" class="inline-block align-[-3px]" /></span>
       <p class="font-bold">{{ $t('هل أنت متأكد من فتح الفتحة رقم {v0} فوراً مقابل {v1} كوينز؟', { v0: buying.slot, v1: buying.unlock_coins }) }}</p>
       <p class="text-sm text-text-muted">{{ $t('رصيدك') }}: <b class="font-numbers" dir="ltr">{{ home.coach.coins }}</b></p>
       <p v-if="buyError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">{{ $t(buyError) }}</p>

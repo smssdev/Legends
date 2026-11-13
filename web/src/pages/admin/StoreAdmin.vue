@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [Sprint 43 W2] The store in the admin panel (Sprint43Drafts.html): add a package (it stays until changed or deleted)
 // or an offer (it ends at the time set here), with a picture uploaded from the device (cut to one size on the server),
 // a preview, then hide, change, delete, or email it to the coaches who asked.
@@ -97,7 +98,7 @@ const field = 'min-h-touch rounded-lg border border-surface-raised bg-surface-su
       </div>
       <label class="flex aspect-video cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border-2 border-dashed border-gold text-center text-sm text-text-soft">
         <img v-if="card.image_url" :src="card.image_url" alt="" class="size-full object-cover" loading="lazy" decoding="async" />
-        <template v-else><b class="text-gold">📷 {{ $t('ارفع صورة من جهازك') }}</b>{{ $t('تُقصّ بنسبة 16:9 تلقائياً') }}</template>
+        <template v-else><b class="text-gold"><Icon name="camera" :size="16" class="inline-block align-[-3px]" /> {{ $t('ارفع صورة من جهازك') }}</b>{{ $t('تُقصّ بنسبة 16:9 تلقائياً') }}</template>
         <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="sr-only" @change="pick" />
       </label>
       <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('العنوان') }}<input v-model="form.title" maxlength="80" required :class="field" class="text-text" /></label>

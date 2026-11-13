@@ -504,8 +504,8 @@ async function saveCustom() {
                   <span v-if="offLine(i)" class="mini-flag end-0.5 bg-warning text-on-gold" :title="$t('خارج مركزه: {v0}% من مستواه', { v0: shareAt(players.get(starters[i]!)!, slot.line) })">{{ shareAt(players.get(starters[i]!)!, slot.line) }}%</span>
                   <span class="mini-role font-numbers leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
                   <!-- [Sprint 30 Q7] Why he cannot play, on the card itself: injured or suspended, and for how many matches. -->
-                  <span v-if="players.get(starters[i]!)!.injured_matches" class="mini-flag start-0.5 bg-live text-white" :title="$t('مصاب: {v0} مباراة', { v0: players.get(starters[i]!)!.injured_matches })">✚{{ players.get(starters[i]!)!.injured_matches }}</span>
-                  <span v-else-if="players.get(starters[i]!)!.suspended_matches" class="mini-flag start-0.5 bg-live text-white" :title="$t('موقوف: {v0} مباراة', { v0: players.get(starters[i]!)!.suspended_matches })">▮{{ players.get(starters[i]!)!.suspended_matches }}</span>
+                  <span v-if="players.get(starters[i]!)!.injured_matches" class="mini-flag start-0.5 bg-live text-white" :title="$t('مصاب: {v0} مباراة', { v0: players.get(starters[i]!)!.injured_matches })"><Icon name="injury" :size="16" class="inline-block align-[-3px]" /> {{ players.get(starters[i]!)!.injured_matches }}</span>
+                  <span v-else-if="players.get(starters[i]!)!.suspended_matches" class="mini-flag start-0.5 bg-live text-white" :title="$t('موقوف: {v0} مباراة', { v0: players.get(starters[i]!)!.suspended_matches })"><Icon name="card" :size="16" class="inline-block align-[-3px]" /> {{ players.get(starters[i]!)!.suspended_matches }}</span>
                 </span>
                 <span class="mini-name max-w-full truncate rounded bg-chrome px-1 font-extrabold text-on-chrome shadow" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
               </template>

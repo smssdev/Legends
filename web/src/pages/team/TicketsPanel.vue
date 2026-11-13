@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // Tickets [X25]: go to the other clubs' coming matches and cheer one side; each ticket lifts that side's morale
 // for the match. One per match, club money, until the lock.
 import { intlLocale, t } from '../../lib/i18n'
@@ -54,7 +55,7 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
           >
             <ClubCrest :url="f[s].crest_url" :code="f[s].code" :size="28" />
             <span class="min-w-0 flex-1 truncate text-sm font-bold">{{ $nm(f[s].name) }}</span>
-            <span class="text-xs text-text-muted" :aria-label="$t('{v0} تذكرة', { v0: f.cheering[s] })">📣 <span class="font-numbers">{{ f.cheering[s] }}</span></span>
+            <span class="text-xs text-text-muted" :aria-label="$t('{v0} تذكرة', { v0: f.cheering[s] })"><Icon name="megaphone" :size="16" class="inline-block align-[-3px]" /><span class="font-numbers">{{ f.cheering[s] }}</span></span>
           </button>
         </div>
       </li>

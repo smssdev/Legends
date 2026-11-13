@@ -144,9 +144,9 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
         <span class="bot-fab small robot" aria-hidden="true"><Character model="B1" :mood="bot.thinking ? 'think' : 'idle'" class="w-full" /></span>
         <div class="min-w-0 flex-1">
           <b class="block truncate">{{ bot.name || $t('المدرب المساعد') }}</b>
-          <small v-if="status === 'on'" class="text-ring">● {{ leagueId ? $t('متصل · يعرف ناديك') : $t('متصل') }}</small>
-          <small v-else-if="status === 'limit'" class="text-warning">● {{ $t('من دليل اللعبة حتى الغد') }}</small>
-          <small v-else class="text-text-muted">● {{ $t('من دليل اللعبة') }}</small>
+          <small v-if="status === 'on'" class="text-ring"><Icon name="dot" :size="16" class="inline-block align-[-3px]" /> {{ leagueId ? $t('متصل · يعرف ناديك') : $t('متصل') }}</small>
+          <small v-else-if="status === 'limit'" class="text-warning"><Icon name="dot" :size="16" class="inline-block align-[-3px]" /> {{ $t('من دليل اللعبة حتى الغد') }}</small>
+          <small v-else class="text-text-muted"><Icon name="dot" :size="16" class="inline-block align-[-3px]" /> {{ $t('من دليل اللعبة') }}</small>
         </div>
         <button v-if="bot.messages.length > 1" type="button" class="bot-end" @click="end">{{ $t('إنهاء') }}</button>
         <button type="button" class="bot-close" :aria-label="$t('إغلاق')" @click="bot.open = false"><Icon name="close" :size="18" /></button>

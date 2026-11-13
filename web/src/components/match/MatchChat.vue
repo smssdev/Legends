@@ -9,8 +9,8 @@
     </div>
     <div v-if="league" class="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
       <template v-for="s in (['home', 'away'] as const)" :key="s">
-        <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-success/15 px-2 text-sm font-bold text-success disabled:opacity-40" :disabled="cheerLeft > 0" @click="social.react('cheer', s)">📣 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
-        <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-danger disabled:opacity-40" :disabled="cheerLeft > 0" @click="social.react('boo', s)">👎 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
+        <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-success/15 px-2 text-sm font-bold text-success disabled:opacity-40" :disabled="cheerLeft > 0" @click="social.react('cheer', s)"><Icon name="megaphone" :size="16" class="inline-block align-[-3px]" /><span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
+        <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-danger disabled:opacity-40" :disabled="cheerLeft > 0" @click="social.react('boo', s)"><Icon name="thumbs_down" :size="16" class="inline-block align-[-3px]" /><span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
       </template>
     </div>
     <p v-if="league && cheerLeft > 0" class="text-center text-xs text-text-muted">{{ $t('التشجيع والاستهجان بعد') }} <span class="font-numbers">{{ cheerLeft }}</span> {{ $t('ثانية') }}</p>
@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 import type { MatchView, Side } from '../../api/sim'
 import type { MatchPlayer } from '../../match/useMatchPlayer'
 import { REACTIONS, type MatchSocial } from '../../match/useMatchSocial'

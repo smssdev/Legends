@@ -41,7 +41,7 @@ function pick(leagueId: number) {
           <AppImage :src="s.club!.crest_url" alt="" class="size-8 shrink-0" :size="32" crest eager />
           <span class="min-w-0 flex-1"><b class="block truncate text-sm">{{ $nm(s.club!.name) }}</b>
             <span class="block truncate text-xs text-text-muted">{{ $nm(s.league!.name) }}<template v-if="s.position"> · {{ $t('المركز {v0}', { v0: s.position }) }}</template></span></span>
-          <span v-if="s.league!.id === slot.current?.league?.id" class="text-gold" aria-hidden="true">✓</span>
+          <span v-if="s.league!.id === slot.current?.league?.id" class="text-gold" aria-hidden="true"><Icon name="check" :size="16" /></span>
           <span v-else-if="s.pending" class="min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-xs text-white">{{ s.pending }}</span>
         </DropdownMenuItem>
         <DropdownMenuItem as-child>

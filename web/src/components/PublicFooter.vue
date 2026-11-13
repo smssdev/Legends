@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from './Icon.vue'
 // [X59, X82] The foot of every page [X90: the game's frame, the sign-in screens, the guide and the legal pages]: the game and its
 // mark, its quick links (the public pages that exist: router.ts), its social accounts and the support, then the
 // copyright (this year, from the device) and the credit line [X98: «GLM Team» opens the team's site]. The accounts and the team come from content/site.ts:
@@ -88,7 +89,7 @@ const LEGAL = [
           <RouterLink v-for="l in LEGAL" :key="l.to" :to="l.to" class="foot-link foot-link-sm">{{ $t(l.label) }}</RouterLink>
         </nav>
         <p class="flex items-center gap-1.5" dir="ltr">
-          Made with <span class="heart" role="img" :aria-label="$t('حب')">♥</span> by
+          Made with <span class="heart" role="img" :aria-label="$t('حب')"><Icon name="heart" :size="18" class="inline-block align-[-3px]" /></span> by
           <RouterLink v-if="teamInside" :to="TEAM.url" class="team">{{ TEAM.name }}</RouterLink>
           <a v-else :href="TEAM.url" target="_blank" rel="noopener noreferrer" class="team">{{ TEAM.name }}</a>
         </p>
