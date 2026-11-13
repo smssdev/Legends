@@ -7,7 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/core/api/api_client.dart';
 import 'package:glm/core/api/api_error.dart';
 import 'package:glm/core/storage/token_store.dart';
-import 'package:glm/features/sim/sim_screens.dart';
+import 'package:glm/features/sim/sim_repository.dart';
+import 'package:glm/features/sim/sim_setup_screen.dart';
+import 'package:glm/features/sim/sim_versus_screen.dart';
 
 import 'screens_test.dart' show app;
 

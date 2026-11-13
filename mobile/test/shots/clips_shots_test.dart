@@ -102,7 +102,7 @@ void main() {
           ),
         ),
       );
-      await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('out/clip-$name.png'));
+      await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/clip-$name.png'));
     });
   }
 }

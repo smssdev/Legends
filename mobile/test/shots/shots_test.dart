@@ -149,7 +149,7 @@ Future<void> shot(
     for (var ms = 0; ms < at.inMilliseconds; ms += 50) {
       await t.pump(const Duration(milliseconds: 50));
     }
-    await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/$name.png'));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/$name.png'));
     await t.pumpWidget(const SizedBox());
     await t.pump(const Duration(seconds: 1));
     return;
@@ -175,7 +175,7 @@ Future<void> shot(
       await t.pump(const Duration(milliseconds: 100));
     }
   }
-  await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/$name.png'));
+  await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/$name.png'));
   await t.pumpWidget(const SizedBox());
   // [Sprint 59 F8] The requests still answering when the screen goes (a refused one schedules its error) end here.
   await t.pump(const Duration(seconds: 1));

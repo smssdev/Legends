@@ -32,6 +32,6 @@ void main() {
         ),
       ),
     );
-    await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('out/icons.png'));
+    await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/icons.png'));
   });
 }

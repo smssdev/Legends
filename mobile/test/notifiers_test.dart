@@ -14,8 +14,8 @@ import 'package:glm/features/market/buy_controller.dart';
 import 'package:glm/features/market/market_data.dart';
 import 'package:glm/features/match/match_data.dart';
 import 'package:glm/features/match/orders_controller.dart';
-import 'package:glm/features/social/chat_controller.dart';
-import 'package:glm/features/social/social_screens.dart';
+import 'package:glm/features/groups/chat_controller.dart';
+import 'package:glm/features/social/social_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // [Sprint 59 F5] The five editing screens' Notifiers, each with a fake repository: what is saved, what a refusal does,

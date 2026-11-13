@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/features/console/console_data.dart';
 import 'package:glm/features/console/market_console.dart';
 import 'package:glm/features/console/store_console.dart';
-import 'package:glm/features/leagues/league_screen.dart';
+import 'package:glm/features/leagues/tabs/daily_tasks_card.dart';
 import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
