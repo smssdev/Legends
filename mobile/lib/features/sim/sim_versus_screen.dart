@@ -1,3 +1,5 @@
+import '../../ui/art_palette.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -74,7 +76,7 @@ class _SimVersusScreenState extends State<SimVersusScreen> with TickerProviderSt
     final l = L.of(context);
     final p = glmNight;
     final homeColor = widget.home.color ?? p.live;
-    final awayColor = widget.away.color ?? const Color(0xFF2F6FDB);
+    final awayColor = widget.away.color ?? GlmArt.awayFallback;
     // The strength of each line from the club's (the simulator shows the real squads on its page).
     final hs = widget.home.strength ?? 75, as = widget.away.strength ?? 75;
     return Scaffold(
@@ -93,7 +95,7 @@ class _SimVersusScreenState extends State<SimVersusScreen> with TickerProviderSt
           final title = Text(
             '${l.simTitle} · ${widget.friend ? l.simVsFriend : l.simVsCpu}',
             textAlign: TextAlign.center,
-            style: TextStyle(color: p.chrome, fontWeight: FontWeight.w700, fontSize: 12, letterSpacing: .5),
+            style: glmText(GlmType.caption, color: p.chrome, fontWeight: FontWeight.w700, letterSpacing: .5),
           );
           final vsMark = SizedBox(
             width: 120,
@@ -116,10 +118,10 @@ class _SimVersusScreenState extends State<SimVersusScreen> with TickerProviderSt
                     angle: (1 - vs) * -.7,
                     child: Text(
                       'VS',
-                      style: TextStyle(
+                      style: glmText(
+                        GlmType.displayLg,
                         fontFamily: GlmFonts.numbers,
                         fontWeight: FontWeight.w700,
-                        fontSize: 76,
                         height: 1,
                         color: p.gold,
                         shadows: [
@@ -185,7 +187,7 @@ class _SimVersusScreenState extends State<SimVersusScreen> with TickerProviderSt
                     ),
                     Text(
                       '${(3 - (ring * 3).floor()).clamp(1, 3)}',
-                      style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 28, color: p.gold),
+                      style: glmText(GlmType.display, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.gold),
                     ),
                   ],
                 ),
@@ -193,7 +195,7 @@ class _SimVersusScreenState extends State<SimVersusScreen> with TickerProviderSt
               const SizedBox(width: 14),
               Text(
                 l.simKickoff,
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: p.text),
+                style: glmText(GlmType.title, fontWeight: FontWeight.w800, color: p.text),
               ),
             ],
           );
@@ -344,16 +346,16 @@ class _Slam extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.ltr,
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 22, color: p.text),
+                    style: glmText(GlmType.headline, fontWeight: FontWeight.w800, color: p.text),
                   ),
                 ),
                 if (club.strength != null)
                   Text(
                     l.simStrength(club.strength!),
-                    style: TextStyle(
+                    style: glmText(
+                      GlmType.body,
                       fontFamily: GlmFonts.body,
                       fontWeight: FontWeight.w700,
-                      fontSize: 15,
                       color: Color.lerp(tint, Colors.white, .45),
                     ),
                   ),
@@ -398,7 +400,7 @@ class _Duel extends StatelessWidget {
         ),
       ),
     );
-    TextStyle n() => TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 17, color: p.text);
+    TextStyle n() => glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.text);
     return Row(
       children: [
         SizedBox(
@@ -411,7 +413,7 @@ class _Duel extends StatelessWidget {
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: p.textSoft),
+            style: glmText(GlmType.caption, fontWeight: FontWeight.w700, color: p.textSoft),
           ),
         ),
         bar(away, awayColor, AlignmentDirectional.centerStart),

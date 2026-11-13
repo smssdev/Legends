@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -115,7 +117,7 @@ class _OfferScreenState extends ConsumerState<OfferScreen> {
                 Text(
                   l.fairHint(widget.fairMinBp ~/ 100, widget.fairMaxBp ~/ 100),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: p.textMuted, fontSize: 12),
+                  style: glmText(GlmType.caption, color: p.textMuted),
                 ),
                 const SizedBox(height: 8),
                 GlmButton(

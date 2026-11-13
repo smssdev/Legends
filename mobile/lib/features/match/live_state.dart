@@ -383,7 +383,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
               child: Text(_pause!.window ? l.windowOpen : l.breakTime, style: const TextStyle(fontWeight: FontWeight.w700)),
             ),
             ready
-                ? Text(l.readyWaiting, style: TextStyle(color: context.palette.textMuted, fontSize: 12))
+                ? Text(l.readyWaiting, style: glmText(GlmType.caption, color: context.palette.textMuted))
                 : GlmButton(
                     label: l.imReady,
                     onPressed: _busy
@@ -468,7 +468,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
                         label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                        style: glmText(GlmType.caption, fontWeight: FontWeight.w800),
                       ),
                     ],
                   ),

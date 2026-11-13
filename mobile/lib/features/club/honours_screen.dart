@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -56,7 +58,7 @@ class HonoursScreen extends ConsumerWidget {
                                 : t.position == 2
                                 ? '🥈'
                                 : '🥉',
-                            style: const TextStyle(fontSize: 22),
+                            style: glmText(GlmType.headline),
                           ),
                           title: Text(
                             t.club,

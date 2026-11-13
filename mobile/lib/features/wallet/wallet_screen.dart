@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -136,9 +138,9 @@ class WalletScreen extends ConsumerWidget {
                           const SizedBox(width: 10),
                           CountUp(
                             w.balance,
-                            style: TextStyle(
+                            style: glmText(
+                              GlmType.displayLg,
                               fontFamily: GlmFonts.numbers,
-                              fontSize: 48,
                               fontWeight: FontWeight.w800,
                               color: context.glm.goldText,
                               height: 1,
@@ -166,7 +168,7 @@ class WalletScreen extends ConsumerWidget {
                       if (!w.dailyClaimed)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
-                          child: Text(l.dailyCoins(w.daily), style: TextStyle(color: p.textMuted, fontSize: 12)),
+                          child: Text(l.dailyCoins(w.daily), style: glmText(GlmType.caption, color: p.textMuted)),
                         ),
                     ],
                   ),
@@ -191,10 +193,10 @@ class WalletScreen extends ConsumerWidget {
                             trailing: Text(
                               '${t.amount > 0 ? '+' : ''}${t.amount}',
                               textDirection: TextDirection.ltr,
-                              style: TextStyle(
+                              style: glmText(
+                                GlmType.bodyLg,
                                 fontFamily: GlmFonts.numbers,
                                 fontWeight: FontWeight.w800,
-                                fontSize: 17,
                                 color: t.amount >= 0 ? context.glm.successText : context.glm.liveText,
                               ),
                             ),
@@ -249,10 +251,10 @@ class WalletScreen extends ConsumerWidget {
                                       children: [
                                         Text(
                                           '${i.price} ${i.currency}',
-                                          style: TextStyle(
+                                          style: glmText(
+                                            GlmType.headline,
                                             fontFamily: GlmFonts.numbers,
                                             fontFamilyFallback: const [GlmFonts.body],
-                                            fontSize: 22,
                                             fontWeight: FontWeight.w800,
                                             color: context.glm.goldText,
                                           ),
@@ -267,7 +269,7 @@ class WalletScreen extends ConsumerWidget {
                                     if (i.endsAt != null && i.offer)
                                       Text(
                                         l.endsOn(when(context, i.endsAt!.toLocal())),
-                                        style: TextStyle(color: context.glm.liveText, fontSize: 12),
+                                        style: glmText(GlmType.caption, color: context.glm.liveText),
                                       ),
                                     if (i.whatsappUrl != null) ...[
                                       const SizedBox(height: 10),

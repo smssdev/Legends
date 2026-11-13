@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -57,7 +59,7 @@ class TrainingScreen extends ConsumerWidget {
                 Text(
                   l.sessionCost(money(context, t.cost), _span(l, t.intervalMinutes)),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: p.textMuted, fontSize: 12),
+                  style: glmText(GlmType.caption, color: p.textMuted),
                 ),
                 const SizedBox(height: 12),
                 for (final s in t.slots)
@@ -77,7 +79,7 @@ class TrainingScreen extends ConsumerWidget {
                               const SizedBox(width: 8),
                               Expanded(child: Text(_lineName(l, s.line), style: context.text.titleMedium)),
                               if (s.coachStars > 0)
-                                Text(l.lineCoach(s.coachName, s.coachStars), style: TextStyle(color: context.glm.goldText, fontSize: 12)),
+                                Text(l.lineCoach(s.coachName, s.coachStars), style: glmText(GlmType.caption, color: context.glm.goldText)),
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -107,7 +109,7 @@ class TrainingScreen extends ConsumerWidget {
                                 if (s.player!.maxed) l.maxed,
                                 if (s.nextAt != null) l.nextSession(when(context, s.nextAt!.toLocal())),
                               ].join(' · '),
-                              style: TextStyle(color: p.textMuted, fontSize: 12),
+                              style: glmText(GlmType.caption, color: p.textMuted),
                             ),
                           ],
                           const SizedBox(height: 10),

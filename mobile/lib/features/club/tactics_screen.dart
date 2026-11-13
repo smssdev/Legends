@@ -1,3 +1,5 @@
+import '../../ui/art_palette.dart';
+
 import 'dart:math' as math;
 import 'dart:async';
 
@@ -154,7 +156,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                             Icon(Icons.lock_rounded, size: 15, color: context.palette.brandLight),
                             const SizedBox(width: 6),
                             Flexible(
-                              child: Text(l.hiddenTactics, style: TextStyle(color: context.palette.textMuted, fontSize: 12)),
+                              child: Text(l.hiddenTactics, style: glmText(GlmType.caption, color: context.palette.textMuted)),
                             ),
                           ],
                         ),
@@ -171,11 +173,11 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                       child: Text(
                         l.prepareTactics,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: glmText(
+                          GlmType.headline,
                           color: Colors.white,
                           fontWeight: FontWeight.w800,
-                          fontSize: 24,
-                          shadows: [Shadow(color: Colors.black54, blurRadius: 6)],
+                          shadows: [const Shadow(color: Colors.black54, blurRadius: 6)],
                         ),
                       ),
                     ),
@@ -323,7 +325,7 @@ class _Preview extends StatelessWidget {
                             margin: const EdgeInsets.only(top: 6),
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                             decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .8), borderRadius: BorderRadius.circular(4)),
-                            child: Text(l.trap, style: TextStyle(color: p.goldLight, fontSize: 11)),
+                            child: Text(l.trap, style: glmText(GlmType.caption, color: p.goldLight)),
                           ),
                           Expanded(child: Container(width: 2, color: p.goldLight.withValues(alpha: .8))),
                         ],

@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -61,7 +63,7 @@ class FriendliesScreen extends ConsumerWidget {
                     trailing: Text(
                       '${r.goalsFor} - ${r.goalsAgainst}',
                       textDirection: TextDirection.ltr,
-                      style: const TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800),
+                      style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
                     ),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
@@ -92,7 +94,7 @@ class FriendliesScreen extends ConsumerWidget {
                               ),
                               Text(
                                 [if (o.recommended) l.suggestedOpponent, if (o.playedToday) l.playedToday, ?o.coach].join(' · '),
-                                style: TextStyle(color: p.textMuted, fontSize: 12),
+                                style: glmText(GlmType.caption, color: p.textMuted),
                               ),
                             ],
                           ),

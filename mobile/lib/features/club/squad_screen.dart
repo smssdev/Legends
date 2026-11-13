@@ -1,3 +1,5 @@
+import '../../ui/art_palette.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show NumberFormat;
@@ -169,18 +171,18 @@ class _InfoBand extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
+                style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w700),
               ),
             ),
             const SizedBox(width: 8),
             Text(
               value,
               textDirection: TextDirection.ltr,
-              style: TextStyle(
+              style: glmText(
+                GlmType.title,
                 fontFamily: GlmFonts.numbers,
                 fontFamilyFallback: const [GlmFonts.body],
                 fontWeight: FontWeight.w800,
-                fontSize: 19,
                 color: p.goldLight,
               ),
             ),
@@ -263,10 +265,10 @@ class _TeamHero extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textDirection: TextDirection.ltr,
-                            style: const TextStyle(
+                            style: glmText(
+                              GlmType.display,
                               fontFamily: GlmFonts.numbers,
                               fontWeight: FontWeight.w800,
-                              fontSize: 28,
                               color: Colors.white,
                               height: 1,
                             ),
@@ -284,7 +286,7 @@ class _TeamHero extends StatelessWidget {
                               width: 92,
                               child: Text(
                                 label,
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
+                                style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w700),
                               ),
                             ),
                             Expanded(
@@ -299,10 +301,10 @@ class _TeamHero extends StatelessWidget {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.start,
-                                        style: const TextStyle(
+                                        style: glmText(
+                                          GlmType.bodyLg,
                                           fontFamily: GlmFonts.numbers,
                                           fontWeight: FontWeight.w800,
-                                          fontSize: 17,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -311,10 +313,10 @@ class _TeamHero extends StatelessWidget {
                                     Text(
                                       pl == null ? '' : value(pl),
                                       textDirection: TextDirection.ltr,
-                                      style: TextStyle(
+                                      style: glmText(
+                                        GlmType.bodyLg,
                                         fontFamily: GlmFonts.numbers,
                                         fontWeight: FontWeight.w800,
-                                        fontSize: 17,
                                         color: p.goldLight,
                                       ),
                                     ),
@@ -387,7 +389,7 @@ class _Pin extends CustomPainter {
       ..lineTo(s.width, 0)
       ..lineTo(s.width / 2, s.height)
       ..close(),
-    Paint()..color = const Color(0xFF55D6F2),
+    Paint()..color = GlmArt.skyGlow,
   );
 
   @override
@@ -408,7 +410,7 @@ class _MiniPitch extends CustomPainter {
       ..lineTo(s.width * .88, s.height * .82)
       ..lineTo(0, s.height * .82)
       ..close();
-    c.drawPath(top.shift(Offset(0, s.height * .12)), Paint()..color = const Color(0xFF6E431B));
+    c.drawPath(top.shift(Offset(0, s.height * .12)), Paint()..color = GlmArt.earth);
     c.drawPath(top, Paint()..shader = LinearGradient(colors: [Color.lerp(grass, Colors.white, .15)!, dark]).createShader(Offset.zero & s));
     final line = Paint()
       ..color = Colors.white.withValues(alpha: .6)

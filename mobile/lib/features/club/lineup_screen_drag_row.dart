@@ -235,7 +235,7 @@ class _ArenaState extends State<_Arena> {
                 ),
                 child: Text(
                   label,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
+                  style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
@@ -288,7 +288,7 @@ class _ArenaState extends State<_Arena> {
                       child: Text(
                         f.label,
                         textDirection: TextDirection.ltr,
-                        style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18),
+                        style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
                       ),
                     ),
                 ],

@@ -1,3 +1,5 @@
+import '../../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -48,7 +50,7 @@ class FixturesTab extends ConsumerWidget {
                   title: Text(k, style: context.text.titleMedium),
                   subtitle: groups[k]!.first.at == null
                       ? null
-                      : Text(when(context, groups[k]!.first.at!), style: TextStyle(color: context.palette.textMuted, fontSize: 12)),
+                      : Text(when(context, groups[k]!.first.at!), style: glmText(GlmType.caption, color: context.palette.textMuted)),
                   children: [for (final f in groups[k]!) FixtureTile(f, mine: lg.myClubId)],
                 ),
             ],

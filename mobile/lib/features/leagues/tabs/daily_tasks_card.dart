@@ -75,7 +75,7 @@ class DailyTasksCard extends ConsumerWidget {
                       name(t.task),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      style: glmText(GlmType.caption, fontWeight: FontWeight.w600),
                     ),
                   ),
                   if (t.claimed)
@@ -175,13 +175,13 @@ class LeagueVersus extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textDirection: TextDirection.ltr,
-              style: const TextStyle(
+              style: glmText(
+                GlmType.display,
                 fontFamily: GlmFonts.numbers,
                 fontWeight: FontWeight.w800,
-                fontSize: 28,
                 color: Colors.white,
                 height: 1.05,
-                shadows: [Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 6)],
+                shadows: [const Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 6)],
               ),
             ),
           ],
@@ -210,7 +210,7 @@ class LeagueVersus extends StatelessWidget {
                       ),
                       child: Text(
                         s.round == null ? l.nextMatchShort : l.round(s.round!),
-                        style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w800, fontSize: 17),
+                        style: glmText(GlmType.bodyLg, color: p.goldLight, fontWeight: FontWeight.w800),
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -218,17 +218,17 @@ class LeagueVersus extends StatelessWidget {
                       Pulse(
                         child: Text(
                           l.liveBadge,
-                          style: TextStyle(color: p.danger, fontWeight: FontWeight.w800, fontSize: 18),
+                          style: glmText(GlmType.title, color: p.danger, fontWeight: FontWeight.w800),
                         ),
                       )
                     else if (countdown != null)
                       Text(
                         countdown,
-                        style: const TextStyle(
+                        style: glmText(
+                          GlmType.headline,
                           fontFamily: GlmFonts.numbers,
                           fontFamilyFallback: [GlmFonts.body],
                           fontWeight: FontWeight.w800,
-                          fontSize: 24,
                           color: Colors.white,
                         ),
                       ),
@@ -236,10 +236,10 @@ class LeagueVersus extends StatelessWidget {
                       min: .7,
                       child: Text(
                         'VS',
-                        style: TextStyle(
+                        style: glmText(
+                          GlmType.displayLg,
                           fontFamily: GlmFonts.numbers,
                           fontWeight: FontWeight.w800,
-                          fontSize: 60,
                           height: 1,
                           foreground: Paint()
                             ..shader = LinearGradient(colors: [p.goldLight, p.gold, p.goldDark])
@@ -250,7 +250,7 @@ class LeagueVersus extends StatelessWidget {
                     ),
                     Text(
                       home ? l.homeAway : l.awayGame,
-                      style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w700, fontSize: 12),
+                      style: glmText(GlmType.caption, color: Colors.white70, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 6),
                     live

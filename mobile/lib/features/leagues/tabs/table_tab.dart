@@ -16,9 +16,9 @@ class TableTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.palette;
-    TextStyle num([bool strong = false]) => TextStyle(
+    TextStyle num([bool strong = false]) => glmText(
+      GlmType.bodyLg,
       fontFamily: GlmFonts.numbers,
-      fontSize: 16,
       fontWeight: strong ? FontWeight.w800 : FontWeight.w600,
       color: strong ? p.text : p.textSoft,
     );
@@ -57,7 +57,7 @@ class TableTab extends ConsumerWidget {
                           if (r.coach != null)
                             Text(
                               r.coach!,
-                              style: TextStyle(color: p.textMuted, fontSize: 11),
+                              style: glmText(GlmType.caption, color: p.textMuted),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

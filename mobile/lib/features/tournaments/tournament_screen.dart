@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -58,13 +60,13 @@ class TournamentScreen extends ConsumerWidget {
                     Text('${templateName(l, t.template ?? '')} · ${l.teamsCount(t.teamCount)}', style: TextStyle(color: p.textMuted)),
                     if (DateTime.tryParse(t.startsAt) case final at?) Text('${l.startsOn}: ${when(context, at.toLocal())}'),
                     const SizedBox(height: 10),
-                    Text(l.tournamentCode, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                    Text(l.tournamentCode, style: glmText(GlmType.caption, color: p.textMuted)),
                     SelectableText(
                       code,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: glmText(
+                        GlmType.display,
                         fontFamily: GlmFonts.numbers,
-                        fontSize: 28,
                         letterSpacing: 4,
                         fontWeight: FontWeight.w800,
                         color: context.glm.goldText,
@@ -145,7 +147,7 @@ class TournamentScreen extends ConsumerWidget {
                                 Expanded(
                                   child: Text(x.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                                 ),
-                                if (x.coach case final coach?) Text(coach, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                                if (x.coach case final coach?) Text(coach, style: glmText(GlmType.caption, color: p.textMuted)),
                               ],
                             ),
                           ),

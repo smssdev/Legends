@@ -110,7 +110,7 @@ class _PlayerCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textDirection: TextDirection.ltr,
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                      style: glmText(GlmType.body, fontWeight: FontWeight.w800),
                     ),
                   ),
                 ],
@@ -120,9 +120,9 @@ class _PlayerCard extends StatelessWidget {
                 sub,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: glmText(
+                  GlmType.caption,
                   color: subColor ?? context.palette.textMuted,
-                  fontSize: 12,
                   fontWeight: subColor == null ? FontWeight.w500 : FontWeight.w700,
                 ),
               ),
@@ -201,7 +201,7 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
                       child: Text(
                         l.renewsAt(when(context, m.renewsAt!.toLocal())),
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: p.textMuted, fontSize: 12),
+                        style: glmText(GlmType.caption, color: p.textMuted),
                       ),
                     ),
                   GameGrid(
@@ -222,9 +222,9 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
                               Text(
                                 money(context, pl.price),
                                 textDirection: TextDirection.ltr,
-                                style: TextStyle(
+                                style: glmText(
+                                  GlmType.title,
                                   fontFamily: GlmFonts.numbers,
-                                  fontSize: 20,
                                   fontWeight: FontWeight.w800,
                                   color: context.glm.goldText,
                                 ),
@@ -233,7 +233,7 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
                                 Text(
                                   money(context, pl.wasPrice!),
                                   textDirection: TextDirection.ltr,
-                                  style: TextStyle(color: p.textMuted, fontSize: 12, decoration: TextDecoration.lineThrough),
+                                  style: glmText(GlmType.caption, color: p.textMuted, decoration: TextDecoration.lineThrough),
                                 ),
                             ],
                           ),

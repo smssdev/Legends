@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -107,7 +109,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                           value: on,
                           activeThumbColor: p.gold,
                           title: Text(label),
-                          subtitle: emailReady ? null : Text(l.emailNeeded, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                          subtitle: emailReady ? null : Text(l.emailNeeded, style: glmText(GlmType.caption, color: p.textMuted)),
                           onChanged: (v) => _put({key: v}),
                         ),
                     ],

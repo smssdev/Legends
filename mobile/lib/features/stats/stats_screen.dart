@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../api/gen/models.g.dart' as api;
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
+import '../../ui/tokens.g.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../account/account_data.dart';
@@ -51,7 +52,7 @@ class StatsScreen extends ConsumerWidget {
                         Expanded(
                           child: Text(r.player.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                         ),
-                        Text('${r.club.code}  ', style: TextStyle(color: p.textMuted, fontSize: 12)),
+                        Text('${r.club.code}  ', style: glmText(GlmType.caption, color: p.textMuted)),
                         Text(
                           '${count(r) ?? 0} $unit',
                           style: TextStyle(fontWeight: FontWeight.w800, color: context.glm.goldText),

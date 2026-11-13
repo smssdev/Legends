@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -64,7 +66,7 @@ class MissedScreen extends ConsumerWidget {
                             Text(
                               '${m.homeGoals} - ${m.awayGoals}',
                               textDirection: TextDirection.ltr,
-                              style: const TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800),
+                              style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
                             ),
                             Expanded(
                               child: Text(
@@ -81,14 +83,14 @@ class MissedScreen extends ConsumerWidget {
                             "⚽ ${g.minute}' ${g.scorer ?? ''}",
                             textDirection: TextDirection.ltr,
                             textAlign: g.side == 'home' ? TextAlign.left : TextAlign.right,
-                            style: TextStyle(color: context.palette.textMuted, fontSize: 12),
+                            style: glmText(GlmType.caption, color: context.palette.textMuted),
                           ),
                         if (m.manOfTheMatch case final motm?) Text('${l.manOfMatch}: ${motm.name ?? ''}'),
                         if (m.coins != 0) Text(l.coinsWord(m.coins), style: TextStyle(color: context.glm.goldText)),
                         for (final c in m.changes)
                           Text(
                             '${c.kind == 'injury' ? '🩹 ${l.injured}' : '🟥 ${l.sentOff}'}: ${c.player ?? ''}',
-                            style: TextStyle(color: context.glm.liveText, fontSize: 12),
+                            style: glmText(GlmType.caption, color: context.glm.liveText),
                           ),
                       ],
                     ),

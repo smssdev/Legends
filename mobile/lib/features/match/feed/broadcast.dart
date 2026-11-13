@@ -1,3 +1,5 @@
+import '../../../ui/tokens.g.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -295,10 +297,10 @@ class _LowerThird extends StatelessWidget {
           ),
           child: Text(
             head,
-            style: TextStyle(
+            style: glmText(
+              GlmType.body,
               color: alert ? p.onGold : (kit.computeLuminance() > .5 ? Colors.black : Colors.white),
               fontWeight: FontWeight.w800,
-              fontSize: 15,
             ),
           ),
         ),
@@ -317,14 +319,14 @@ class _LowerThird extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textDirection: TextDirection.ltr,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14),
+                    style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w800),
                   ),
                 if (sub.isNotEmpty)
                   Text(
                     sub,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w600, fontSize: 11),
+                    style: glmText(GlmType.caption, color: p.goldLight, fontWeight: FontWeight.w600),
                   ),
               ],
             ),
@@ -351,7 +353,7 @@ class _Tag extends StatelessWidget {
         if (live) ...[const Icon(Icons.circle, size: 7, color: Colors.white), const SizedBox(width: 4)],
         Text(
           label,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 1.5),
+          style: glmText(GlmType.caption, color: Colors.white, fontWeight: FontWeight.w800, letterSpacing: 1.5),
         ),
       ],
     ),
@@ -393,10 +395,10 @@ class _GoalBanner extends StatelessWidget {
                   children: [
                     Text(
                       L.of(context).goalShout,
-                      style: TextStyle(
+                      style: glmText(
+                        GlmType.displayLg,
                         fontFamily: ar ? GlmFonts.body : GlmFonts.numbers,
                         fontWeight: FontWeight.w800,
-                        fontSize: 46,
                         color: p.onGold,
                         height: 1.05,
                         letterSpacing: ar ? 0 : 4,
@@ -406,7 +408,7 @@ class _GoalBanner extends StatelessWidget {
                       Text(
                         who,
                         textDirection: TextDirection.ltr,
-                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: p.onGold),
+                        style: glmText(GlmType.body, fontWeight: FontWeight.w800, color: p.onGold),
                       ),
                   ],
                 ),

@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -81,7 +83,7 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
                     Text(
                       '${score[0]} - ${score[1]}',
                       textDirection: TextDirection.ltr,
-                      style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 36, fontWeight: FontWeight.w800, color: p.text),
+                      style: glmText(GlmType.display, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: p.text),
                     ),
                     Text(
                       done ? l.fullTime : "${last?.m ?? 0}'",
@@ -140,7 +142,7 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
                     trailing: Text(
                       e.s == 'home' ? widget.home : away,
                       textDirection: TextDirection.ltr,
-                      style: TextStyle(color: p.textMuted, fontSize: 12),
+                      style: glmText(GlmType.caption, color: p.textMuted),
                     ),
                   ),
               ],

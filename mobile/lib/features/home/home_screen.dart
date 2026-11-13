@@ -117,7 +117,7 @@ class _Home extends ConsumerWidget {
                     Text(
                       '${m.home} - ${m.away}',
                       textDirection: TextDirection.ltr,
-                      style: const TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800),
+                      style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(width: 8),
                     const Icon(Icons.chevron_right_rounded),
@@ -133,11 +133,11 @@ class _Home extends ConsumerWidget {
         children: [
           Icon(Icons.shield_rounded, color: p.gold, size: 20),
           const SizedBox(width: 6),
-          Text(l.myTeams, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+          Text(l.myTeams, style: glmText(GlmType.title, fontWeight: FontWeight.w800)),
           const SizedBox(width: 8),
           Text(
             l.slotsOpen(h.slotsOpen, h.slots.length),
-            style: TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: const [GlmFonts.body], fontSize: 15, color: p.textMuted),
+            style: glmText(GlmType.body, fontFamily: GlmFonts.numbers, fontFamilyFallback: const [GlmFonts.body], color: p.textMuted),
           ),
         ],
       ),
@@ -308,9 +308,9 @@ class _CoachCard extends StatelessWidget {
         children: [
           CountUp(
             n,
-            style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 22, fontWeight: FontWeight.w700, color: color, height: 1.1),
+            style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: color, height: 1.1),
           ),
-          Text(label, style: TextStyle(color: p.textMuted, fontSize: 12)),
+          Text(label, style: glmText(GlmType.caption, color: p.textMuted)),
         ],
       ),
     );
@@ -332,7 +332,7 @@ class _CoachCard extends StatelessWidget {
                 ),
                 child: Text(
                   c.name.characters.take(1).toString(),
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: context.glm.goldText),
+                  style: glmText(GlmType.headline, fontWeight: FontWeight.w800, color: context.glm.goldText),
                 ),
               ),
               const SizedBox(width: 12),
@@ -342,7 +342,7 @@ class _CoachCard extends StatelessWidget {
                   children: [
                     Text(
                       c.name,
-                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+                      style: glmText(GlmType.bodyLg, fontWeight: FontWeight.w800),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -356,7 +356,7 @@ class _CoachCard extends StatelessWidget {
                             '$tier$division',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: context.glm.goldText),
+                            style: glmText(GlmType.caption, fontWeight: FontWeight.w700, color: context.glm.goldText),
                           ),
                         ),
                       ],
@@ -371,9 +371,9 @@ class _CoachCard extends StatelessWidget {
                 children: [
                   CountUp(
                     c.points,
-                    style: const TextStyle(fontFamily: GlmFonts.numbers, fontSize: 26, fontWeight: FontWeight.w700, height: 1),
+                    style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, height: 1),
                   ),
-                  Text(l.pointsWord, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                  Text(l.pointsWord, style: glmText(GlmType.caption, color: p.textMuted)),
                 ],
               ),
             ],

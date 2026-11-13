@@ -123,7 +123,7 @@ class _ArenaPitch extends CustomPainter {
         o,
         s.width * .22,
         Paint()
-          ..shader = RadialGradient(colors: [const Color(0xFFFFE9B0).withValues(alpha: .35), const Color(0xFFFFE9B0).withValues(alpha: 0)])
+          ..shader = RadialGradient(colors: [GlmSheet.glow.withValues(alpha: .35), GlmSheet.glow.withValues(alpha: 0)])
               .createShader(Rect.fromCircle(center: o, radius: s.width * .22)),
       );
     }
@@ -158,10 +158,10 @@ class _Card extends StatelessWidget {
     final edge = picked
         ? c.gold
         : starter
-        ? const Color(0xFF6BE04A)
+        ? GlmSheet.starter
         : GlmStage.edge;
-    final big = const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 24, color: Colors.white, height: 1);
-    final small = const TextStyle(color: Color(0xFFB9C7E3), fontWeight: FontWeight.w700, fontSize: 11, height: 1);
+    final big = glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: Colors.white, height: 1);
+    final small = glmText(GlmType.caption, color: GlmSheet.caption, fontWeight: FontWeight.w700, height: 1);
     Widget bar(double v, Color color) => Container(
       width: 34,
       height: 9,
@@ -193,7 +193,7 @@ class _Card extends StatelessWidget {
             children: [
               bar(p.fitness / 100, fitnessColor(p.fitness)),
               const SizedBox(height: 5),
-              bar(p.available ? 1 : .15, p.available ? const Color(0xFF6BE04A) : c.live),
+              bar(p.available ? 1 : .15, p.available ? GlmSheet.starter : c.live),
             ],
           ),
         ],
@@ -237,9 +237,7 @@ class _Card extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [GlmStage.cardRaised, GlmStage.card],
         ),
-        shadows: [
-          BoxShadow(color: (starter ? const Color(0xFF6BE04A) : Colors.black).withValues(alpha: .35), blurRadius: 10, spreadRadius: -2),
-        ],
+        shadows: [BoxShadow(color: (starter ? GlmSheet.starter : Colors.black).withValues(alpha: .35), blurRadius: 10, spreadRadius: -2)],
       ),
       child: Stack(
         children: [
@@ -276,7 +274,7 @@ class _Card extends StatelessWidget {
                         decoration: BoxDecoration(color: c.gold, borderRadius: BorderRadius.circular(3)),
                         child: Text(
                           'C',
-                          style: TextStyle(color: c.onGold, fontWeight: FontWeight.w900, fontSize: 12),
+                          style: glmText(GlmType.caption, color: c.onGold, fontWeight: FontWeight.w900),
                         ),
                       ),
                     if (!p.available) Icon(p.injured > 0 ? Icons.local_hospital_rounded : Icons.style_rounded, size: 14, color: c.live),
@@ -287,10 +285,10 @@ class _Card extends StatelessWidget {
                   p.name.split(' ').last.toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: glmText(
+                    GlmType.bodyLg,
                     fontFamily: GlmFonts.numbers,
                     fontWeight: FontWeight.w800,
-                    fontSize: 16,
                     color: Colors.white,
                     height: 1.05,
                   ),
@@ -369,7 +367,7 @@ class _BenchPanel extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16),
+                          style: glmText(GlmType.bodyLg, color: Colors.white, fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 6),
                         Expanded(

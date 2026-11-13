@@ -1,3 +1,5 @@
+import '../../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -112,12 +114,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           controlAffinity: ListTileControlAffinity.leading,
           contentPadding: EdgeInsets.zero,
           activeColor: p.brand,
-          title: Text(l.acceptTerms, style: const TextStyle(fontSize: 14)),
+          title: Text(l.acceptTerms, style: glmText(GlmType.body)),
           subtitle: GestureDetector(
             onTap: () => launchUrl(Uri.parse('${AppConfig.siteUrl}/terms'), mode: LaunchMode.externalApplication),
             child: Text(
               l.termsAndPrivacy,
-              style: TextStyle(color: context.glm.goldText, decoration: TextDecoration.underline, fontSize: 13),
+              style: glmText(GlmType.caption, color: context.glm.goldText, decoration: TextDecoration.underline),
             ),
           ),
         ),

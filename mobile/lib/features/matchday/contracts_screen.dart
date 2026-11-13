@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -70,11 +72,11 @@ class ContractsScreen extends ConsumerWidget {
                             ),
                             Text(
                               l.untilSeason(x.until),
-                              style: TextStyle(color: x.until <= season ? context.glm.liveText : p.textMuted, fontSize: 12),
+                              style: glmText(GlmType.caption, color: x.until <= season ? context.glm.liveText : p.textMuted),
                             ),
                           ],
                         ),
-                        Text('${x.position} · ${x.age} · ${money(context, x.wage)}', style: TextStyle(color: p.textMuted, fontSize: 12)),
+                        Text('${x.position} · ${x.age} · ${money(context, x.wage)}', style: glmText(GlmType.caption, color: p.textMuted)),
                         Wrap(
                           spacing: 6,
                           children: [

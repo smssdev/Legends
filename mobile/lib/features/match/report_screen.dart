@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -77,7 +79,7 @@ class _Report extends StatelessWidget {
               textAlign: TextAlign.center,
               textDirection: TextDirection.ltr,
               maxLines: 1,
-              style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 22, fontWeight: FontWeight.w800, color: context.glm.goldText),
+              style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
             ),
           ),
           Expanded(
@@ -85,7 +87,7 @@ class _Report extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(n.title, style: const TextStyle(fontWeight: FontWeight.w800)),
-                Text(n.text, style: TextStyle(color: p.textMuted, fontSize: 13)),
+                Text(n.text, style: glmText(GlmType.caption, color: p.textMuted)),
               ],
             ),
           ),
@@ -120,9 +122,9 @@ class _Report extends StatelessWidget {
               Text(
                 '${r.score.$1}  -  ${r.score.$2}',
                 textDirection: TextDirection.ltr,
-                style: TextStyle(
+                style: glmText(
+                  GlmType.displayLg,
                   fontFamily: GlmFonts.numbers,
-                  fontSize: 56,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
                   height: 1,
@@ -139,7 +141,7 @@ class _Report extends StatelessWidget {
                   ),
                   child: Text(
                     result,
-                    style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 16),
+                    style: glmText(GlmType.bodyLg, color: color, fontWeight: FontWeight.w800),
                   ),
                 ),
               ],
@@ -162,7 +164,7 @@ class _Report extends StatelessWidget {
                     children: [
                       Icon(Icons.star_rounded, color: p.onGold, size: 18),
                       const SizedBox(width: 6),
-                      Text('${l.manOfMatch}: ', style: TextStyle(color: p.onGold, fontSize: 13)),
+                      Text('${l.manOfMatch}: ', style: glmText(GlmType.caption, color: p.onGold)),
                       Flexible(
                         child: Text(
                           r.motm!,
@@ -214,7 +216,7 @@ class _Report extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                         child: Text(
                           side == mine ? l.yourSide : l.theirSide,
-                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: side == mine ? p.brandLight : p.warning),
+                          style: glmText(GlmType.caption, fontWeight: FontWeight.w800, color: side == mine ? p.brandLight : p.warning),
                         ),
                       ),
                       for (final pl in r.ratings[side]!.take(4))

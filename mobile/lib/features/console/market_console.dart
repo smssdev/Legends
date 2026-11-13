@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -117,7 +119,7 @@ class _AuctionRow extends StatelessWidget {
             decoration: BoxDecoration(color: p.surfaceRaised, borderRadius: BorderRadius.circular(8)),
             child: Text(
               '${a.overall}',
-              style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 16, color: p.goldLight),
+              style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: p.goldLight),
             ),
           ),
           const SizedBox(width: 10),
@@ -136,7 +138,7 @@ class _AuctionRow extends StatelessWidget {
                   '${a.club} · ${a.position} · ${a.age}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: p.textMuted, fontSize: 12),
+                  style: glmText(GlmType.caption, color: p.textMuted),
                 ),
               ],
             ),
@@ -147,7 +149,7 @@ class _AuctionRow extends StatelessWidget {
               Text(
                 money(context, a.top ?? a.opening),
                 textDirection: TextDirection.ltr,
-                style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 16, color: p.goldLight),
+                style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: p.goldLight),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 2),
@@ -158,7 +160,7 @@ class _AuctionRow extends StatelessWidget {
                 ),
                 child: Text(
                   a.leading ? l.leading : l.auctionEnds(_left(a.endsAt)),
-                  style: TextStyle(fontSize: 11, color: a.leading ? p.success : p.goldLight),
+                  style: glmText(GlmType.caption, color: a.leading ? p.success : p.goldLight),
                 ),
               ),
             ],
@@ -210,7 +212,7 @@ class _InspectorState extends ConsumerState<_Inspector> {
               k,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: p.textMuted, fontSize: 12),
+              style: glmText(GlmType.caption, color: p.textMuted),
             ),
           ),
           Flexible(
@@ -255,7 +257,7 @@ class _InspectorState extends ConsumerState<_Inspector> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textDirection: TextDirection.ltr,
-                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                  style: glmText(GlmType.body, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 4),
                 row(l.marketValue, money(context, a.value), colour: p.success),
@@ -265,7 +267,7 @@ class _InspectorState extends ConsumerState<_Inspector> {
                 Text(
                   l.auctionEnds(_left(a.endsAt)),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w700, fontSize: 12),
+                  style: glmText(GlmType.caption, color: p.goldLight, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
                 GlmButton(

@@ -48,7 +48,7 @@ extension _LiveSheets on _LiveState {
                   Text(
                     l.ordersHint,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: ctx.palette.textMuted, fontSize: 12),
+                    style: glmText(GlmType.caption, color: ctx.palette.textMuted),
                   ),
                   const SizedBox(height: 8),
                   Expanded(
@@ -147,7 +147,7 @@ extension _LiveSheets on _LiveState {
                   Text(
                     l.ordersHint,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: ctx.palette.textMuted, fontSize: 12),
+                    style: glmText(GlmType.caption, color: ctx.palette.textMuted),
                   ),
                   const SizedBox(height: 10),
                   chips(l.plan, 'plan', {

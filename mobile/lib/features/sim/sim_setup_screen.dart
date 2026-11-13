@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -88,10 +90,10 @@ class _SimSetupScreenState extends ConsumerState<SimSetupScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.simTitle, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+            Text(l.simTitle, style: glmText(GlmType.title, fontWeight: FontWeight.w800)),
             Text(
               l.simLead,
-              style: TextStyle(fontSize: 12, color: p.textMuted, fontWeight: FontWeight.w500),
+              style: glmText(GlmType.caption, color: p.textMuted, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -102,7 +104,7 @@ class _SimSetupScreenState extends ConsumerState<SimSetupScreen> {
             decoration: BoxDecoration(color: p.success.withValues(alpha: .16), borderRadius: BorderRadius.circular(14)),
             child: Text(
               l.simFree,
-              style: TextStyle(color: context.glm.successText, fontWeight: FontWeight.w700, fontSize: 12),
+              style: glmText(GlmType.caption, color: context.glm.successText, fontWeight: FontWeight.w700),
             ),
           ),
         ],
@@ -253,7 +255,7 @@ class _Label extends StatelessWidget {
       Expanded(
         child: Text(
           text,
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: context.palette.textSoft),
+          style: glmText(GlmType.body, fontWeight: FontWeight.w800, color: context.palette.textSoft),
         ),
       ),
       if (action != null)
@@ -320,12 +322,12 @@ class _ModeCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                        Text(title, style: glmText(GlmType.bodyLg, fontWeight: FontWeight.w800)),
                         Text(
                           lead,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 12, color: p.textMuted),
+                          style: glmText(GlmType.caption, color: p.textMuted),
                         ),
                       ],
                     ),

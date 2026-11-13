@@ -1,3 +1,5 @@
+import '../../../ui/tokens.g.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -210,10 +212,10 @@ class _ClubColumn extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textDirection: TextDirection.ltr,
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                      style: glmText(GlmType.body, fontWeight: FontWeight.w800),
                     ),
                     if (s.position != null && s.teams != null)
-                      Text(l.position(s.position!, s.teams!), style: TextStyle(color: p.goldLight, fontSize: 12)),
+                      Text(l.position(s.position!, s.teams!), style: glmText(GlmType.caption, color: p.goldLight)),
                   ],
                 ),
               ),
@@ -225,12 +227,12 @@ class _ClubColumn extends StatelessWidget {
             decoration: BoxDecoration(color: p.surfaceSunk, borderRadius: BorderRadius.circular(10)),
             child: Row(
               children: [
-                Text(l.treasury, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                Text(l.treasury, style: glmText(GlmType.caption, color: p.textMuted)),
                 const Spacer(),
                 Text(
                   money(context, s.cash),
                   textDirection: TextDirection.ltr,
-                  style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 16, color: p.success),
+                  style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.success),
                 ),
               ],
             ),
@@ -244,7 +246,7 @@ class _ClubColumn extends StatelessWidget {
           ),
           if (s.top.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(l.leagueTable, style: TextStyle(color: p.textMuted, fontSize: 12)),
+            Text(l.leagueTable, style: glmText(GlmType.caption, color: p.textMuted)),
             const SizedBox(height: 4),
             for (final r in s.top)
               Container(
@@ -268,7 +270,7 @@ class _ClubColumn extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textDirection: TextDirection.ltr,
-                          style: TextStyle(fontSize: 12, color: r.mine ? p.goldLight : p.text),
+                          style: glmText(GlmType.caption, color: r.mine ? p.goldLight : p.text),
                         ),
                       ),
                     ),
@@ -341,7 +343,7 @@ class _Needs extends StatelessWidget {
                     IconTile(icon, color: color, size: 32),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                      child: Text(text, style: glmText(GlmType.body, fontWeight: FontWeight.w700)),
                     ),
                     Icon(Icons.chevron_right_rounded, color: p.textMuted),
                   ],

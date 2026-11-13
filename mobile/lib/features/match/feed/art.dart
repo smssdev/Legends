@@ -1,3 +1,7 @@
+import '../../../ui/tokens.g.dart';
+import '../../../ui/art_palette.dart';
+import '../../../ui/theme.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -80,8 +84,8 @@ void text(
   final p = TextPainter(
     text: TextSpan(
       text: t,
-      style: TextStyle(
-        fontSize: size,
+      style: glmDrawnText(
+        size,
         color: color,
         fontWeight: weight,
         fontFamily: family ?? 'Tajawal',
@@ -126,7 +130,7 @@ void drawGround(Canvas c, ClipLook l, double u, {double roar = 0, bool goal = tr
         RRect.fromRectAndRadius(Rect.fromCenter(center: Offset(x, y + 12 + bounce), width: 14, height: 14), const Radius.circular(5)),
         Paint()..color = Color.lerp(col, Colors.black, .35)!,
       );
-      c.drawCircle(Offset(x, y + bounce), 5, Paint()..color = const Color(0xFFD9A37A).withValues(alpha: .85));
+      c.drawCircle(Offset(x, y + bounce), 5, Paint()..color = GlmArt.skin.withValues(alpha: .85));
       if (roar > .4 && rnd.nextDouble() > .6) {
         c.drawLine(
           Offset(x - 4, y + 4 + bounce),
@@ -151,10 +155,7 @@ void drawGround(Canvas c, ClipLook l, double u, {double roar = 0, bool goal = tr
   }
   // The boards.
   final boards = const Rect.fromLTWH(0, 150, frameW, 26);
-  c.drawRect(
-    boards,
-    Paint()..shader = const LinearGradient(colors: [Color(0xFF0E1B2B), Color(0xFF15304A), Color(0xFF0E1B2B)]).createShader(boards),
-  );
+  c.drawRect(boards, Paint()..shader = const LinearGradient(colors: GlmArt.boards).createShader(boards));
   for (var x = 60.0; x < frameW; x += 220) {
     text(c, 'LEGENDS', Offset(x + (u * 18) % 220 - 60, 163), size: 15, color: l.gold, letter: 4);
   }
@@ -241,8 +242,8 @@ void drawGoal(Canvas c, ClipLook l, {Offset? bulge, double give = 0}) {
 /// A skin tone and a hair colour from the player's number, so a player looks the same each time.
 (Color, Color) _skin(String no) {
   final h = no.codeUnits.fold(7, (a, b) => a * 31 + b);
-  const skins = [Color(0xFFF2C6A0), Color(0xFFD9A37A), Color(0xFFB5794F), Color(0xFF7A4A2C)];
-  const hairs = [Color(0xFF2A1B12), Color(0xFF5A3A1E), Color(0xFF111111), Color(0xFFB8862E)];
+  const skins = GlmArt.skins;
+  const hairs = GlmArt.hairs;
   return (skins[h % skins.length], hairs[(h ~/ 4) % hairs.length]);
 }
 
@@ -297,7 +298,7 @@ void drawPlayer(
   for (final f in [fl, fr]) {
     c.drawLine(hip, f, leg);
     c.drawLine(lerpO(hip, f, .55), f, sock);
-    c.drawCircle(f, 4.5 * s, Paint()..color = const Color(0xFF1B1B1B));
+    c.drawCircle(f, 4.5 * s, Paint()..color = GlmArt.boot);
   }
   // The shorts and the shirt.
   c.drawRRect(
@@ -332,7 +333,7 @@ void drawPlayer(
     if (hold != null && side > 0) hand = Offset(14 * s, -128 * s);
     c.drawLine(sh, lerpO(sh, hand, .45), sleeve);
     c.drawLine(lerpO(sh, hand, .4), hand, arm);
-    if (gloves) c.drawCircle(hand, 6 * s, Paint()..color = const Color(0xFFF7F7F2));
+    if (gloves) c.drawCircle(hand, 6 * s, Paint()..color = GlmArt.gloves);
     if (hold != null && side > 0) {
       c.drawRRect(
         RRect.fromRectAndRadius(
@@ -366,11 +367,11 @@ void drawPlayer(
 
 void _face(Canvas c, Offset h, double s, String mood) {
   final ink = Paint()
-    ..color = const Color(0xFF1A1A1A)
+    ..color = GlmArt.ink
     ..strokeWidth = 1.6 * s
     ..style = PaintingStyle.stroke
     ..strokeCap = StrokeCap.round;
-  final dot = Paint()..color = const Color(0xFF1A1A1A);
+  final dot = Paint()..color = GlmArt.ink;
   for (final e in [-4.5, 4.5]) {
     if (mood == 'joy' || mood == 'cheer') {
       c.drawArc(Rect.fromCenter(center: h + Offset(e * s, 1 * s), width: 5 * s, height: 4 * s), math.pi, math.pi, false, ink);
@@ -391,13 +392,13 @@ void _face(Canvas c, Offset h, double s, String mood) {
   final m = h + Offset(0, 6 * s);
   switch (mood) {
     case 'joy' || 'cheer':
-      c.drawArc(Rect.fromCenter(center: m, width: 10 * s, height: 7 * s), 0, math.pi, true, Paint()..color = const Color(0xFF5A1414));
+      c.drawArc(Rect.fromCenter(center: m, width: 10 * s, height: 7 * s), 0, math.pi, true, Paint()..color = GlmArt.mouth);
     case 'angry':
-      c.drawRect(Rect.fromCenter(center: m, width: 9 * s, height: 3 * s), Paint()..color = const Color(0xFF5A1414));
+      c.drawRect(Rect.fromCenter(center: m, width: 9 * s, height: 3 * s), Paint()..color = GlmArt.mouth);
     case 'sad' || 'worried':
       c.drawArc(Rect.fromCenter(center: m + Offset(0, 2 * s), width: 9 * s, height: 6 * s), math.pi, math.pi, false, ink);
     case 'surprise':
-      c.drawOval(Rect.fromCenter(center: m, width: 5 * s, height: 6 * s), Paint()..color = const Color(0xFF5A1414));
+      c.drawOval(Rect.fromCenter(center: m, width: 5 * s, height: 6 * s), Paint()..color = GlmArt.mouth);
     default:
       c.drawLine(m - Offset(3.5 * s, 0), m + Offset(3.5 * s, 0), ink);
   }
@@ -418,10 +419,10 @@ void drawBall(Canvas c, double x, double y, {double z = 0, double spin = 0, doub
     Paint()
       ..shader = const RadialGradient(
         center: Alignment(-.4, -.4),
-        colors: [Colors.white, Color(0xFFD7D7D7)],
+        colors: [Colors.white, GlmArt.ballShade],
       ).createShader(Rect.fromCircle(center: at, radius: r)),
   );
-  final patch = Paint()..color = const Color(0xFF1C1C1C);
+  final patch = Paint()..color = GlmArt.ballPatch;
   for (var i = 0; i < 3; i++) {
     final a = spin + i * 2.1;
     c.drawCircle(at + Offset(math.cos(a) * r * .5, math.sin(a) * r * .5), r * .26, patch);
@@ -443,7 +444,7 @@ void drawTrail(Canvas c, List<Offset> pts, Color color) {
 }
 
 /// Little stars circling a dazed head.
-void drawStars(Canvas c, Offset head, double u, {double r = 22, Color color = const Color(0xFFFFD36B)}) {
+void drawStars(Canvas c, Offset head, double u, {double r = 22, Color color = GlmBroadcast.goldLight}) {
   for (var i = 0; i < 3; i++) {
     final a = u * 5 + i * 2.1;
     _star(c, head + Offset(math.cos(a) * r, math.sin(a) * r * .35), 6, color);

@@ -27,7 +27,7 @@ class _MomentumStrip extends StatelessWidget {
         decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .7), borderRadius: BorderRadius.circular(8)),
         child: Row(
           children: [
-            Text(l.momentum, style: TextStyle(color: p.textMuted, fontSize: 11)),
+            Text(l.momentum, style: glmText(GlmType.caption, color: p.textMuted)),
             const SizedBox(width: 8),
             Expanded(
               child: CustomPaint(painter: _Wave(wave, p.brandLight, p.warning), size: Size.infinite),
@@ -123,11 +123,11 @@ class _ScoreBug extends StatelessWidget {
               children: [
                 Text(
                   c.code,
-                  style: TextStyle(
+                  style: glmText(
+                    GlmType.headline,
                     fontFamily: GlmFonts.numbers,
                     color: ink,
                     fontWeight: FontWeight.w800,
-                    fontSize: 24,
                     height: 1,
                     letterSpacing: 1,
                   ),
@@ -137,7 +137,7 @@ class _ScoreBug extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textDirection: TextDirection.ltr,
-                  style: TextStyle(color: ink.withValues(alpha: .85), fontWeight: FontWeight.w700, fontSize: 11),
+                  style: glmText(GlmType.caption, color: ink.withValues(alpha: .85), fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -167,7 +167,7 @@ class _ScoreBug extends StatelessWidget {
                   Text(
                     '${score.$1} - ${score.$2}',
                     textDirection: TextDirection.ltr,
-                    style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 32, fontWeight: FontWeight.w800, color: p.text, height: 1),
+                    style: glmText(GlmType.display, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: p.text, height: 1),
                   ),
                   const SizedBox(height: 3),
                   Container(
@@ -176,10 +176,10 @@ class _ScoreBug extends StatelessWidget {
                     child: Text(
                       finished ? l.fullTime : (minute ?? l.notStarted),
                       textDirection: TextDirection.ltr,
-                      style: TextStyle(
+                      style: glmText(
+                        GlmType.caption,
                         color: finished ? p.text : Colors.white,
                         fontWeight: FontWeight.w800,
-                        fontSize: 11,
                         fontFamilyFallback: const [GlmFonts.body],
                       ),
                     ),

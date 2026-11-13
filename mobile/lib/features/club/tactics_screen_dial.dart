@@ -23,11 +23,11 @@ class _Dial extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 17),
+          style: glmText(GlmType.bodyLg, color: _titleBlue, fontWeight: FontWeight.w700),
         ),
         Text(
           word,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 22),
+          style: glmText(GlmType.headline, color: Colors.white, fontWeight: FontWeight.w800),
         ),
         Row(
           children: [
@@ -57,8 +57,8 @@ class _Dial extends StatelessWidget {
                     color: value < 40
                         ? GlmStage.accent
                         : value > 60
-                        ? const Color(0xFFFF6A2B)
-                        : const Color(0xFFFFE36E),
+                        ? GlmTacticsArt.press
+                        : GlmTacticsArt.gold,
                     width: 4,
                   ),
                 ),
@@ -68,8 +68,8 @@ class _Dial extends StatelessWidget {
                         (value < 40
                                 ? GlmStage.accent
                                 : value > 60
-                                ? const Color(0xFFFF6A2B)
-                                : const Color(0xFFFFE36E))
+                                ? GlmTacticsArt.press
+                                : GlmTacticsArt.gold)
                             .withValues(alpha: .35),
                     blurRadius: 12,
                   ),
@@ -77,16 +77,16 @@ class _Dial extends StatelessWidget {
               ),
               child: Text(
                 '${value.round()}',
-                style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 26, color: Colors.white),
+                style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: Colors.white),
               ),
             ),
           ],
         ),
         Row(
           children: [
-            Text(low, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+            Text(low, style: glmText(GlmType.caption, color: Colors.white54)),
             const Spacer(),
-            Text(high, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+            Text(high, style: glmText(GlmType.caption, color: Colors.white54)),
             const SizedBox(width: 66),
           ],
         ),
@@ -103,15 +103,11 @@ void _miniPitch(Canvas c, Size s, Rect f) {
     ..lineTo(f.right, f.bottom)
     ..lineTo(f.left, f.bottom)
     ..close();
-  c.drawPath(grass.shift(Offset(0, f.height * .1)), Paint()..color = const Color(0xFF6E431B));
+  c.drawPath(grass.shift(Offset(0, f.height * .1)), Paint()..color = GlmTacticsArt.earth);
   c.drawPath(
     grass,
     Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0xFF2FA046), Color(0xFF1E7A34)],
-      ).createShader(f),
+      ..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: GlmTacticsArt.grass).createShader(f),
   );
   final line = Paint()
     ..color = Colors.white.withValues(alpha: .7)
@@ -183,7 +179,7 @@ class _PlanArt extends CustomPainter {
   void paint(Canvas c, Size s) {
     final f = Rect.fromLTWH(s.width * .04, s.height * .22, s.width * .92, s.height * .62);
     _miniPitch(c, s, f);
-    const red = Color(0xFFE53935), blue = Color(0xFF2B7ED3);
+    const red = GlmTacticsArt.theirs, blue = GlmTacticsArt.mine;
     Offset at(double u, double v) => Offset(f.left + f.width * u, f.top + f.height * v);
     switch (plan) {
       case 'passing':
@@ -234,13 +230,13 @@ class _TackleArt extends CustomPainter {
     c.save();
     c.translate(-level * 8.0, 0);
     c.rotate(-.06 * level);
-    c.drawPath(boot, Paint()..color = const Color(0xFF1B1B1B));
+    c.drawPath(boot, Paint()..color = GlmTacticsArt.boot);
     for (var i = 0; i < 4; i++) {
-      c.drawRect(Rect.fromLTWH(mid.dx - 52 + i * 18.0, mid.dy + 10, 6, 6), Paint()..color = const Color(0xFFCFD8E6));
+      c.drawRect(Rect.fromLTWH(mid.dx - 52 + i * 18.0, mid.dy + 10, 6, 6), Paint()..color = GlmTacticsArt.studs);
     }
     c.restore();
     c.drawCircle(Offset(mid.dx + 44, mid.dy - 2), 14, Paint()..color = Colors.white);
-    c.drawCircle(Offset(mid.dx + 44, mid.dy - 2), 5, Paint()..color = const Color(0xFF1C1C1C));
+    c.drawCircle(Offset(mid.dx + 44, mid.dy - 2), 5, Paint()..color = GlmTacticsArt.ball);
     // Speed lines for the keener levels.
     for (var i = 0; i < level; i++) {
       c.drawLine(
@@ -252,7 +248,7 @@ class _TackleArt extends CustomPainter {
           ..strokeCap = StrokeCap.round,
       );
     }
-    final cards = [if (level >= 2) const Color(0xFFFFD600), if (level >= 3) const Color(0xFFE53935)];
+    final cards = [if (level >= 2) GlmArt.yellowCard, if (level >= 3) GlmTacticsArt.theirs];
     for (final (i, col) in cards.indexed) {
       c.save();
       c.translate(s.width / 2 + 70 + i * 22.0, s.height * .22);
@@ -276,7 +272,7 @@ class _LinesArt extends CustomPainter {
   @override
   void paint(Canvas c, Size s) {
     final r = RRect.fromRectAndRadius(Offset.zero & s, const Radius.circular(12));
-    c.drawRRect(r, Paint()..color = const Color(0xFF4CAF35));
+    c.drawRRect(r, Paint()..color = GlmTacticsArt.turf);
     c.save();
     c.clipRRect(r);
     for (var i = 0; i < 8; i += 2) {
@@ -296,7 +292,7 @@ class _LinesArt extends CustomPainter {
     }
     c.restore();
     Offset at(double u, double v) => Offset(s.width * u, s.height * v);
-    const blue = Color(0xFF4FA3FF), orange = Color(0xFFFFB13D), red = Color(0xFFFF6A2B);
+    const blue = GlmTacticsArt.zone, orange = GlmTacticsArt.mid, red = GlmTacticsArt.press;
     void cross(Offset o, Color col) {
       for (final d in [const Offset(1, 0), const Offset(0, 1)]) {
         _arrowLine(c, [o, o + d * 26], col, width: 4);
@@ -354,19 +350,19 @@ class _MarkArt extends CustomPainter {
       if (mode == 'zone') {
         c.drawOval(
           Rect.fromCenter(center: d, width: f.width * .22, height: f.height * .22),
-          Paint()..color = const Color(0xFF4FA3FF).withValues(alpha: .35),
+          Paint()..color = GlmTacticsArt.zone.withValues(alpha: .35),
         );
       } else {
         c.drawLine(
           d,
           a,
           Paint()
-            ..color = const Color(0xFFFFE36E)
+            ..color = GlmTacticsArt.gold
             ..strokeWidth = 2.5,
         );
       }
-      c.drawCircle(d, 6, Paint()..color = const Color(0xFF2B7ED3));
-      c.drawCircle(a, 6, Paint()..color = const Color(0xFFE53935));
+      c.drawCircle(d, 6, Paint()..color = GlmTacticsArt.mine);
+      c.drawCircle(a, 6, Paint()..color = GlmTacticsArt.theirs);
     }
   }
 
@@ -391,16 +387,16 @@ class _TrapArt extends CustomPainter {
         at(x, .02),
         at(x, .98),
         Paint()
-          ..color = const Color(0xFFFFD600)
+          ..color = GlmArt.yellowCard
           ..strokeWidth = 2,
       );
     }
     for (var i = 0; i < 4; i++) {
       final p = at(x, .14 + i * .24);
-      if (on) _arrowLine(c, [at(.3, .14 + i * .24), p], const Color(0xFF7FC4FF), width: 2.5);
-      c.drawCircle(p, 6, Paint()..color = const Color(0xFF2B7ED3));
+      if (on) _arrowLine(c, [at(.3, .14 + i * .24), p], GlmTacticsArt.title, width: 2.5);
+      c.drawCircle(p, 6, Paint()..color = GlmTacticsArt.mine);
     }
-    c.drawCircle(at(.4, .5), 6, Paint()..color = const Color(0xFFE53935));
+    c.drawCircle(at(.4, .5), 6, Paint()..color = GlmTacticsArt.theirs);
     // The flag.
     final pole = at(.52, -.1);
     c.drawLine(
@@ -410,7 +406,7 @@ class _TrapArt extends CustomPainter {
         ..color = Colors.white
         ..strokeWidth = 2,
     );
-    c.drawRect(Rect.fromLTWH(pole.dx, pole.dy - 26, 16, on ? 11 : 0), Paint()..color = const Color(0xFFFF6D00));
+    c.drawRect(Rect.fromLTWH(pole.dx, pole.dy - 26, 16, on ? 11 : 0), Paint()..color = GlmTacticsArt.flag);
   }
 
   @override

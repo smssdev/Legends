@@ -5,9 +5,9 @@ void _coachReact(_Scene s, {String? moodOverride}) {
   final u = s.u, side = s.str('side').isEmpty ? s.side : s.str('side');
   final mood = moodOverride ?? s.str('mood');
   final suit = switch (s.str('look')) {
-    'C2' => const Color(0xFF3A2A1A),
-    'C3' => const Color(0xFF263238),
-    _ => const Color(0xFF15233A),
+    'C2' => GlmArt.coachC2,
+    'C3' => GlmArt.coachC3,
+    _ => GlmArt.coachC1,
   };
   s.c.drawRect(
     const Rect.fromLTWH(0, 0, frameW, frameH),
@@ -86,7 +86,7 @@ void _coachReact(_Scene s, {String? moodOverride}) {
   if (mood == 'worried' || mood == 'sad') {
     for (var i = 0; i < 2; i++) {
       final t = (u * 1.2 + i / 2) % 1;
-      s.c.drawCircle(Offset(560 + i * 14, 210 + t * 40), 6, Paint()..color = const Color(0xFF81D4FA).withValues(alpha: 1 - t));
+      s.c.drawCircle(Offset(560 + i * 14, 210 + t * 40), 6, Paint()..color = GlmArt.water.withValues(alpha: 1 - t));
     }
   }
 }
@@ -102,7 +102,7 @@ void _meltdown(_Scene s) {
     s.c.rotate(t * 6);
     s.c.drawRRect(
       RRect.fromRectAndRadius(Rect.fromCenter(center: Offset.zero, width: 90, height: 60), const Radius.circular(12)),
-      Paint()..color = const Color(0xFF15233A),
+      Paint()..color = GlmArt.coachC1,
     );
     s.c.restore();
   }
@@ -113,11 +113,11 @@ void _meltdown(_Scene s) {
     s.c.rotate(-b * 9);
     s.c.drawRRect(
       RRect.fromRectAndRadius(Rect.fromCenter(center: Offset.zero, width: 22, height: 54), const Radius.circular(6)),
-      Paint()..color = const Color(0xFF4FC3F7),
+      Paint()..color = GlmArt.tear,
     );
     s.c.restore();
   }
-  drawBurst(s.c, const Offset(250, 140), '#@!', seg(u, .2, 1.6), size: 44, color: const Color(0xFFFF8A65));
+  drawBurst(s.c, const Offset(250, 140), '#@!', seg(u, .2, 1.6), size: 44, color: GlmArt.burst);
 }
 
 void _brawl(_Scene s) {
@@ -133,7 +133,7 @@ void _tunnel(_Scene s) {
   // The tunnel's mouth, lit, and the players walking into it.
   s.c.drawRRect(
     RRect.fromRectAndRadius(const Rect.fromLTWH(380, 160, 240, 260), const Radius.circular(120)),
-    Paint()..color = const Color(0xFF05080D),
+    Paint()..color = GlmArt.tunnel,
   );
   s.c.drawRRect(
     RRect.fromRectAndRadius(const Rect.fromLTWH(380, 160, 240, 260), const Radius.circular(120)),
@@ -183,7 +183,7 @@ void _studio(_Scene s) {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [const Color(0xFF0A1628), Color.lerp(s.l.night, Colors.black, .4)!],
+        colors: [GlmArt.tunnelSky, Color.lerp(s.l.night, Colors.black, .4)!],
       ).createShader(wall),
   );
   // The LED wall: the crest's gold, the match's clock and score (the d's text).
@@ -192,11 +192,7 @@ void _studio(_Scene s) {
     RRect.fromRectAndRadius(led, const Radius.circular(12)),
     Paint()
       ..shader = LinearGradient(
-        colors: [
-          Color.lerp(s.l.shirt('home'), Colors.black, .55)!,
-          const Color(0xFF0B1220),
-          Color.lerp(s.l.shirt('away'), Colors.black, .55)!,
-        ],
+        colors: [Color.lerp(s.l.shirt('home'), Colors.black, .55)!, GlmArt.panel, Color.lerp(s.l.shirt('away'), Colors.black, .55)!],
       ).createShader(led),
   );
   for (var y = led.top; y < led.bottom; y += 6) {
@@ -210,9 +206,9 @@ void _studio(_Scene s) {
       s.c,
       x,
       600,
-      shirt: x < 500 ? const Color(0xFF263238) : const Color(0xFF3E2723),
+      shirt: x < 500 ? GlmArt.coachC3 : GlmArt.coachBrown,
       ink: Colors.white,
-      shorts: const Color(0xFF263238),
+      shorts: GlmArt.coachC3,
       front: true,
       armOut: talk ? (.3 + .3 * math.sin(u * 8).abs()) : 0,
       face: talk && math.sin(u * 14) > 0 ? 'surprise' : 'idle',
@@ -229,11 +225,7 @@ void _studio(_Scene s) {
       ..lineTo(desk.left, desk.bottom)
       ..close(),
     Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0xFF1E3550), Color(0xFF0B1A2C)],
-      ).createShader(desk),
+      ..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: GlmArt.studio).createShader(desk),
   );
   s.c.drawLine(
     Offset(desk.left + 40, desk.top),

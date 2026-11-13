@@ -83,14 +83,14 @@ class _SlotTile extends ConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textDirection: TextDirection.ltr,
-                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
+                  style: glmText(GlmType.title, fontWeight: FontWeight.w800),
                 ),
                 if (s.opponent != null)
                   Text(
                     l.vs(s.opponent!),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: p.textSoft, fontSize: 13),
+                    style: glmText(GlmType.caption, color: p.textSoft),
                   ),
               ],
             ),
@@ -107,9 +107,9 @@ class _SlotTile extends ConsumerWidget {
                   children: [
                     Text(
                       '${s.position}',
-                      style: TextStyle(
+                      style: glmText(
+                        GlmType.headline,
                         fontFamily: GlmFonts.numbers,
-                        fontSize: 24,
                         fontWeight: FontWeight.w700,
                         height: 1,
                         color: s.position! <= 3 ? p.onGold : p.text,
@@ -117,7 +117,7 @@ class _SlotTile extends ConsumerWidget {
                     ),
                     Text(
                       l.positionWord,
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: s.position! <= 3 ? p.onGold : p.textMuted),
+                      style: glmText(GlmType.caption, fontWeight: FontWeight.w700, color: s.position! <= 3 ? p.onGold : p.textMuted),
                     ),
                   ],
                 ),
@@ -135,7 +135,7 @@ class _SlotTile extends ConsumerWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(l.newLeagueShort, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+            child: Text(l.newLeagueShort, style: glmText(GlmType.bodyLg, fontWeight: FontWeight.w800)),
           ),
         ],
       ),
@@ -153,7 +153,7 @@ class _SlotTile extends ConsumerWidget {
               s.opensAt == null ? l.slotLocked : l.slotOpensIn(_left(context, s.opensAt!)),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: p.textSoft, fontWeight: FontWeight.w700, fontSize: 14),
+              style: glmText(GlmType.body, color: p.textSoft, fontWeight: FontWeight.w700),
             ),
           ),
           if (s.unlockCoins != null)
@@ -172,7 +172,7 @@ class _SlotTile extends ConsumerWidget {
                   const SizedBox(width: 4),
                   Text(
                     '${s.unlockCoins}',
-                    style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 17, color: context.glm.goldText),
+                    style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: context.glm.goldText),
                   ),
                 ],
               ),
@@ -213,7 +213,7 @@ class _SlotTile extends ConsumerWidget {
                           band,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: club ? Colors.white : p.textMuted),
+                          style: glmText(GlmType.caption, fontWeight: FontWeight.w700, color: club ? Colors.white : p.textMuted),
                         ),
                       ),
                       if (s.live)
@@ -229,7 +229,7 @@ class _SlotTile extends ConsumerWidget {
                               const SizedBox(width: 5),
                               Text(
                                 l.liveNow,
-                                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Colors.white),
+                                style: glmText(GlmType.caption, fontWeight: FontWeight.w700, color: Colors.white),
                               ),
                             ],
                           ),
@@ -258,9 +258,9 @@ class _SlotTile extends ConsumerWidget {
                     color: GlmStage.alert,
                     border: Border.all(color: Colors.white, width: 2),
                   ),
-                  child: const Text(
+                  child: Text(
                     '!',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13, height: 1),
+                    style: glmText(GlmType.caption, color: Colors.white, fontWeight: FontWeight.w900, height: 1),
                   ),
                 ),
               ),

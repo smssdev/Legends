@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,9 +41,9 @@ class CoachProfileScreen extends ConsumerWidget {
               children: [
                 Text(
                   '${v ?? 0}',
-                  style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 24, fontWeight: FontWeight.w800, color: context.glm.goldText),
+                  style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
                 ),
-                Text(label, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                Text(label, style: glmText(GlmType.caption, color: p.textMuted)),
               ],
             ),
           );
@@ -57,7 +59,7 @@ class CoachProfileScreen extends ConsumerWidget {
                       backgroundColor: p.brand,
                       child: Text(
                         coach.name.characters.take(1).toString(),
-                        style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800),
+                        style: glmText(GlmType.headline, color: Colors.white, fontWeight: FontWeight.w800),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -89,7 +91,7 @@ class CoachProfileScreen extends ConsumerWidget {
                 ),
               for (final t in titles)
                 ListTile(
-                  leading: Text(t.position == 1 ? '🏆' : '🥈', style: const TextStyle(fontSize: 22)),
+                  leading: Text(t.position == 1 ? '🏆' : '🥈', style: glmText(GlmType.headline)),
                   title: Text(
                     t.club,
                     textDirection: TextDirection.ltr,

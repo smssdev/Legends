@@ -30,7 +30,7 @@ class _RoundDial extends StatelessWidget {
         decoration: ShapeDecoration(shape: GlmCut.shape(14), gradient: _cardFill),
         child: Column(
           children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+            Text(title, style: glmText(GlmType.caption, fontWeight: FontWeight.w800)),
             LayoutBuilder(
               builder: (context, box) {
                 final w = box.maxWidth;
@@ -53,7 +53,7 @@ class _RoundDial extends StatelessWidget {
             ),
             Text(
               '$value',
-              style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: colour),
+              style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: colour),
             ),
             Row(
               children: [
@@ -62,7 +62,7 @@ class _RoundDial extends StatelessWidget {
                     low,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: p.textMuted, fontSize: 10),
+                    style: glmText(GlmType.caption, color: p.textMuted),
                   ),
                 ),
                 Expanded(
@@ -71,7 +71,7 @@ class _RoundDial extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.end,
-                    style: TextStyle(color: p.textMuted, fontSize: 10),
+                    style: glmText(GlmType.caption, color: p.textMuted),
                   ),
                 ),
               ],
@@ -129,7 +129,7 @@ class _HalfRing extends CustomPainter {
 }
 
 const _cardFill = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmStage.cardRaised, GlmStage.card]);
-const _titleBlue = Color(0xFF7FC4FF);
+const _titleBlue = GlmTacticsArt.title;
 
 /// The next match over the tactics: both crests and strengths, «VS», and the band of both formations under it.
 class _NextCard extends StatelessWidget {
@@ -154,7 +154,7 @@ class _NextCard extends StatelessWidget {
               c?.name ?? '',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 28, color: Colors.white),
+              style: glmText(GlmType.display, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: Colors.white),
             ),
           ),
         ],
@@ -182,12 +182,12 @@ class _NextCard extends StatelessWidget {
                     const SizedBox(width: 12),
                     Text(
                       'VS',
-                      style: TextStyle(
+                      style: glmText(
+                        GlmType.displayLg,
                         fontFamily: GlmFonts.numbers,
                         fontWeight: FontWeight.w800,
-                        fontSize: 52,
                         foreground: Paint()
-                          ..shader = const LinearGradient(colors: [Color(0xFFFFE36E), Color(0xFFC08A0C)])
+                          ..shader = const LinearGradient(colors: [GlmTacticsArt.gold, GlmTacticsArt.goldDeep])
                               .createShader(const Rect.fromLTWH(0, 0, 70, 50)),
                       ),
                     ),
@@ -208,17 +208,17 @@ class _NextCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   home ? (s.formation ?? '') : '',
-                  style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 22, color: Colors.white),
+                  style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: Colors.white),
                 ),
                 const Spacer(),
                 Text(
                   l.nextMatchShort,
-                  style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 15),
+                  style: glmText(GlmType.body, color: _titleBlue, fontWeight: FontWeight.w700),
                 ),
                 const Spacer(),
                 Text(
                   home ? '' : (s.formation ?? ''),
-                  style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 22, color: Colors.white),
+                  style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: Colors.white),
                 ),
                 if (!home) ...[const SizedBox(width: 8), const GameIcon(GameGlyph.lineup, size: 26)],
               ],
@@ -274,14 +274,14 @@ class _Carousel<T extends Object> extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 17),
+              style: glmText(GlmType.bodyLg, color: _titleBlue, fontWeight: FontWeight.w700),
             ),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               child: Text(
                 label(value),
                 key: ValueKey(value),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 24),
+                style: glmText(GlmType.headline, color: Colors.white, fontWeight: FontWeight.w800),
               ),
             ),
             const SizedBox(height: 6),
@@ -333,15 +333,15 @@ class _Lines extends StatelessWidget {
         l.groupAtt,
         const ['only', 'support', 'back'],
         {'back': l.attBack, 'support': l.attSupport, 'only': l.attOnly},
-        const Color(0xFF7FC4FF),
+        GlmTacticsArt.title,
       ),
-      ('mid', l.groupMid, const ['push', 'stay', 'def'], {'def': l.midDef, 'stay': l.midStay, 'push': l.midPush}, const Color(0xFFFFB13D)),
+      ('mid', l.groupMid, const ['push', 'stay', 'def'], {'def': l.midDef, 'stay': l.midStay, 'push': l.midPush}, GlmTacticsArt.mid),
       (
         'def',
         l.groupDef,
         const ['mid', 'fullbacks', 'stay'],
         {'stay': l.defStay, 'fullbacks': l.defFullbacks, 'mid': l.defMid},
-        const Color(0xFFFF7A3D),
+        GlmTacticsArt.attack,
       ),
     ];
     return Container(
@@ -356,7 +356,7 @@ class _Lines extends StatelessWidget {
               children: [
                 Text(
                   l.positioning,
-                  style: const TextStyle(color: _titleBlue, fontWeight: FontWeight.w700, fontSize: 17),
+                  style: glmText(GlmType.bodyLg, color: _titleBlue, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
                 AspectRatio(
@@ -375,7 +375,7 @@ class _Lines extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     title,
-                    style: TextStyle(color: colour, fontWeight: FontWeight.w700, fontSize: 17),
+                    style: glmText(GlmType.bodyLg, color: colour, fontWeight: FontWeight.w700),
                   ),
                   Row(
                     children: [
@@ -387,7 +387,7 @@ class _Lines extends StatelessWidget {
                         child: Text(
                           labels['${t.values[key]}'] ?? '',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20),
+                          style: glmText(GlmType.title, color: Colors.white, fontWeight: FontWeight.w800),
                         ),
                       ),
                       _Arrow(

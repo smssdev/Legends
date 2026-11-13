@@ -1,3 +1,5 @@
+import '../../ui/art_palette.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -117,7 +119,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with TickerProviderSt
                 ),
                 // The two beams from the towers, swaying in turn.
                 CustomPaint(
-                  painter: _Beams(sway: sway, light: const Color(0xFFFFF0C8)),
+                  painter: _Beams(sway: sway, light: GlmArt.floodlight),
                 ),
                 // The towers.
                 const Positioned(top: 16, left: 14, child: _Tower()),
@@ -163,10 +165,10 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with TickerProviderSt
                         child: Text(
                           'GAME LEGEND MANAGER',
                           textDirection: TextDirection.ltr,
-                          style: TextStyle(
+                          style: glmText(
+                            GlmType.display,
                             fontFamily: GlmFonts.numbers,
                             fontWeight: FontWeight.w700,
-                            fontSize: 36,
                             height: 1,
                             letterSpacing: 2,
                             color: p.text,
@@ -182,10 +184,10 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with TickerProviderSt
                             const SizedBox(width: 10),
                             Text(
                               ar ? 'المدرب الأسطورة' : 'THE LEGEND COACH',
-                              style: TextStyle(
+                              style: glmText(
+                                GlmType.headline,
                                 fontFamily: ar ? GlmFonts.body : GlmFonts.numbers,
                                 fontWeight: FontWeight.w800,
-                                fontSize: 24,
                                 letterSpacing: ar ? 0 : 2,
                                 color: p.gold,
                               ),
@@ -197,7 +199,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with TickerProviderSt
                       );
                       final motto = _Rise(
                         t: r2,
-                        child: Text(L.of(context).introTagline, style: TextStyle(fontSize: 15, color: p.textSoft)),
+                        child: Text(L.of(context).introTagline, style: glmText(GlmType.body, color: p.textSoft)),
                       );
                       final barRow = _Rise(
                         t: r3,
@@ -238,7 +240,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with TickerProviderSt
                       );
                       final loading = _Rise(
                         t: r3,
-                        child: Text(L.of(context).introLoading, style: TextStyle(fontSize: 14, color: p.textMuted)),
+                        child: Text(L.of(context).introLoading, style: glmText(GlmType.body, color: p.textMuted)),
                       );
                       if (box.maxWidth > box.maxHeight) {
                         return Center(
@@ -355,7 +357,7 @@ class _TowerPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2,
     );
-    final lamp = Paint()..color = const Color(0xFFFFF3D4);
+    final lamp = Paint()..color = GlmArt.lamp;
     for (final y in [15.0, 28.0]) {
       for (final x in [16.0, 32.0, 48.0]) {
         canvas.drawCircle(Offset(x, y), 4, lamp);
