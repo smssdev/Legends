@@ -16,8 +16,11 @@ class AuthRepository {
 
   Future<Account?> current() async {
     if (await _tokens.read() == null) return null;
-    final user = api.AccountAnswer.fromJson(await _api.get('/auth/me')).user;
-    return user == null ? null : Account.of(user);
+    // [Sprint 61 F8] The app's start in one request, as the web's (Sprint 58 B1): the account, and the unread count the
+    // inbox's badge takes once instead of asking for it.
+    final b = api.BootstrapAnswer.fromJson(await _api.get('/bootstrap'));
+    Bootstrap.unread = b.unread;
+    return b.user == null ? null : Account.of(b.user!);
   }
 
   Future<Account> signIn(String login, String password) async {
@@ -69,3 +72,14 @@ class AuthRepository {
 }
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) => AuthRepository(ref.watch(apiProvider), ref.watch(tokenStoreProvider)));
+
+/// [Sprint 61 F8] What the start's `/bootstrap` brought for the screens that open first, each taken once.
+class Bootstrap {
+  static int? unread;
+
+  static int? takeUnread() {
+    final u = unread;
+    unread = null;
+    return u;
+  }
+}
