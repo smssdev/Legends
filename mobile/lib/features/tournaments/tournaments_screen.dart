@@ -8,6 +8,8 @@ import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_card.dart';
+import '../../ui/widgets/action_bar.dart';
+import '../../ui/widgets/glm_button.dart';
 import '../leagues/page.dart';
 import 'tournaments_data.dart';
 
@@ -56,10 +58,9 @@ class TournamentsScreen extends ConsumerWidget {
                 ],
               ),
       ),
-      fab: FloatingActionButton.extended(
-        onPressed: () => context.push('/tournaments/new'),
-        icon: const Icon(Icons.add_rounded),
-        label: Text(l.newTournament),
+      bar: GlmActionBar(
+        actions: const [],
+        main: GlmButton(label: l.newTournament, icon: const Icon(Icons.add_rounded), onPressed: () => context.push('/tournaments/new')),
       ),
     );
   }

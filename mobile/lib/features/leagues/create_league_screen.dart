@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
+import '../../ui/widgets/action_bar.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
@@ -68,10 +69,12 @@ class _CreateLeagueScreenState extends ConsumerState<CreateLeagueScreen> {
     final p = context.palette;
     return Scaffold(
       appBar: GameBar(title: Text(l.newLeague)),
+      // [Sprint 60 F7] The screen's action in the one bar at the foot.
       bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: GlmButton(label: l.create, block: true, loading: _busy, onPressed: _template != null && _club != null ? _create : null),
+        top: false,
+        child: GlmActionBar(
+          actions: const [],
+          main: GlmButton(label: l.create, loading: _busy, onPressed: _template != null && _club != null ? _create : null),
         ),
       ),
       body: GlmBackground(

@@ -8,6 +8,7 @@ import '../../api/read.dart';
 import '../../core/api/api_client.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
+import '../../ui/widgets/action_bar.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/console.dart';
 import '../../ui/widgets/glm_background.dart';
@@ -47,88 +48,91 @@ class GroupsScreen extends ConsumerWidget {
       });
     }
     return Scaffold(
-      appBar: GameBar(
-        title: Text(l.groups),
-        actions: [
-          IconButton(
-            tooltip: l.joinGroup,
-            icon: const Icon(Icons.vpn_key_rounded),
-            onPressed: () async {
-              final code = TextEditingController();
-              final ok = await showDialog<bool>(
-                context: context,
-                builder: (d) => AlertDialog(
-                  title: Text(l.joinGroup),
-                  content: TextField(
-                    controller: code,
-                    textDirection: TextDirection.ltr,
-                    decoration: InputDecoration(labelText: l.groupCode),
+      appBar: GameBar(title: Text(l.groups)),
+      // [Sprint 60 F7] Both actions in the bar at the foot, each with its name (the key had no name, in a corner).
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: GlmActionBar(
+          actions: [
+            GlmActionItem(
+              icon: const Icon(Icons.vpn_key_rounded),
+              label: l.joinGroup,
+              onTap: () async {
+                final code = TextEditingController();
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (d) => AlertDialog(
+                    title: Text(l.joinGroup),
+                    content: TextField(
+                      controller: code,
+                      textDirection: TextDirection.ltr,
+                      decoration: InputDecoration(labelText: l.groupCode),
+                    ),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l.cancel)),
+                      FilledButton(onPressed: () => Navigator.pop(d, true), child: Text(l.confirm)),
+                    ],
                   ),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l.cancel)),
-                    FilledButton(onPressed: () => Navigator.pop(d, true), child: Text(l.confirm)),
-                  ],
+                );
+                if (ok == true && context.mounted) await joinGroup(context, ref, code.text);
+                code.dispose();
+              },
+            ),
+          ],
+          main: GlmButton(
+            label: l.newGroup,
+            onPressed: () async {
+              final name = TextEditingController(), members = TextEditingController();
+              final ok = await showModalBottomSheet<bool>(
+                context: context,
+                isScrollControlled: true,
+                showDragHandle: true,
+                builder: (ctx) => Padding(
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.of(ctx).viewInsets.bottom + 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextField(
+                        controller: name,
+                        maxLength: 60,
+                        decoration: InputDecoration(labelText: l.groupName),
+                      ),
+                      TextField(
+                        controller: members,
+                        textDirection: TextDirection.ltr,
+                        decoration: InputDecoration(labelText: l.groupMembers),
+                      ),
+                      const SizedBox(height: 12),
+                      GlmButton(label: l.create, block: true, onPressed: () => Navigator.pop(ctx, true)),
+                    ],
+                  ),
                 ),
               );
-              if (ok == true && context.mounted) await joinGroup(context, ref, code.text);
-              code.dispose();
+              if (ok == true && context.mounted) {
+                final usernames = [
+                  for (final u in members.text.split(RegExp('[,\u060C\\s]+')))
+                    if (u.trim().isNotEmpty) u.trim().replaceFirst('@', ''),
+                ];
+                final r = await tryAction(
+                  context,
+                  () => ref.read(apiProvider).post('/groups', {'name': name.text.trim(), 'usernames': usernames}),
+                );
+                ref.invalidate(groupsProvider);
+                final g = r == null ? null : JsonReader(r, 'NewGroup').objectOrNull('group', api.ChatGroup.fromJson);
+                if (g != null && context.mounted) {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => ChatScreen(groupId: g.id, name: g.name),
+                    ),
+                  );
+                }
+              }
+              name.dispose();
+              members.dispose();
             },
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.group_add_rounded),
-        label: Text(l.newGroup),
-        onPressed: () async {
-          final name = TextEditingController(), members = TextEditingController();
-          final ok = await showModalBottomSheet<bool>(
-            context: context,
-            isScrollControlled: true,
-            showDragHandle: true,
-            builder: (ctx) => Padding(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.of(ctx).viewInsets.bottom + 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    controller: name,
-                    maxLength: 60,
-                    decoration: InputDecoration(labelText: l.groupName),
-                  ),
-                  TextField(
-                    controller: members,
-                    textDirection: TextDirection.ltr,
-                    decoration: InputDecoration(labelText: l.groupMembers),
-                  ),
-                  const SizedBox(height: 12),
-                  GlmButton(label: l.create, block: true, onPressed: () => Navigator.pop(ctx, true)),
-                ],
-              ),
-            ),
-          );
-          if (ok == true && context.mounted) {
-            final usernames = [
-              for (final u in members.text.split(RegExp('[,\u060C\\s]+')))
-                if (u.trim().isNotEmpty) u.trim().replaceFirst('@', ''),
-            ];
-            final r = await tryAction(
-              context,
-              () => ref.read(apiProvider).post('/groups', {'name': name.text.trim(), 'usernames': usernames}),
-            );
-            ref.invalidate(groupsProvider);
-            final g = r == null ? null : JsonReader(r, 'NewGroup').objectOrNull('group', api.ChatGroup.fromJson);
-            if (g != null && context.mounted) {
-              await Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => ChatScreen(groupId: g.id, name: g.name),
-                ),
-              );
-            }
-          }
-          name.dispose();
-          members.dispose();
-        },
+        ),
       ),
       body: GlmBackground(
         child: _GroupsConsole(

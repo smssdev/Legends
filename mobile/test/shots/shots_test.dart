@@ -48,6 +48,9 @@ import '../match_test.dart' show FakeMatchRepository;
 import '../team_test.dart' show FakeTeamRepository;
 import '../home_answer.dart';
 
+import 'package:glm/features/tournaments/tournaments_data.dart' show tournamentsProvider;
+import 'package:glm/features/tournaments/tournaments_screen.dart';
+
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
 Future<void> fonts() async {
@@ -335,6 +338,15 @@ void main() {
     (t) => shot(t, 'market-filters', const MarketScreen(leagueId: 8), [
       marketRepositoryProvider.overrideWithValue(FakeMarket()),
     ], tap: 'الفلاتر'),
+  );
+  // [Sprint 60 F7] A screen with its action in the bar at the foot (it was a floating button in a corner).
+  testWidgets(
+    'tournaments',
+    (t) => shot(t, 'tournaments', const TournamentsScreen(), [
+      tournamentsProvider.overrideWith(
+        (ref) async => [for (final x in json('tournaments')['tournaments'] as List<dynamic>) api.Tournament.fromJson(x)],
+      ),
+    ]),
   );
   testWidgets(
     'live',
