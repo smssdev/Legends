@@ -2982,4 +2982,22 @@ class LAr extends L {
 
   @override
   String get outOfEleven => 'خارج التشكيلة';
+
+  @override
+  String get marketFilters => 'الفلاتر';
+
+  @override
+  String get marketName => 'اسم اللاعب';
+
+  @override
+  String get marketMaxPrice => 'أعلى سعر';
+
+  @override
+  String get marketAnyPrice => 'أي سعر';
+
+  @override
+  String get marketApply => 'طبّق';
+
+  @override
+  String get marketClear => 'امسح الفلاتر';
 }

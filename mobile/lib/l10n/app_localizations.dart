@@ -5329,6 +5329,42 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'خارج التشكيلة'**
   String get outOfEleven;
+
+  /// No description provided for @marketFilters.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفلاتر'**
+  String get marketFilters;
+
+  /// No description provided for @marketName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم اللاعب'**
+  String get marketName;
+
+  /// No description provided for @marketMaxPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعلى سعر'**
+  String get marketMaxPrice;
+
+  /// No description provided for @marketAnyPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'أي سعر'**
+  String get marketAnyPrice;
+
+  /// No description provided for @marketApply.
+  ///
+  /// In ar, this message translates to:
+  /// **'طبّق'**
+  String get marketApply;
+
+  /// No description provided for @marketClear.
+  ///
+  /// In ar, this message translates to:
+  /// **'امسح الفلاتر'**
+  String get marketClear;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

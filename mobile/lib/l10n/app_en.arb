@@ -892,5 +892,11 @@
   "takerAuto": "Automatic: the best of the eleven",
   "takerAutoBadge": "Auto",
   "inEleven": "In the eleven",
-  "outOfEleven": "Not in the eleven"
+  "outOfEleven": "Not in the eleven",
+  "marketFilters": "Filters",
+  "marketName": "Player name",
+  "marketMaxPrice": "Highest price",
+  "marketAnyPrice": "Any price",
+  "marketApply": "Apply",
+  "marketClear": "Clear filters"
 }
