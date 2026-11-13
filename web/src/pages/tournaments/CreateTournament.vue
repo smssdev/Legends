@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [Sprint 29] Make a tournament (docs/design/legends-ui/Sprint29Drafts.html, 3): a template fills the teams and the
 // shape (World Cup, Club World Cup, AFCON, EURO, Asian Cup, or custom), and everything stays editable: the teams
 // (national teams by continent and clubs by search, 2 to 32), the format, the groups, the live draw's time, and the
@@ -168,7 +169,7 @@ async function create() {
       <ul class="flex flex-wrap gap-2">
         <li v-for="c in picked" :key="c.id">
           <button type="button" class="flex min-h-touch items-center gap-2 rounded-xl bg-surface-raised px-2 text-sm" :aria-label="$t('أزل {v0}', { v0: $nm(c.name) })" @click="toggle(c)">
-            <ClubCrest :url="c.crest_url" :code="c.code" :size="24" /><span>{{ $nm(c.name) }}</span><span class="text-text-muted">✕</span></button>
+            <ClubCrest :url="c.crest_url" :code="c.code" :size="24" /><span>{{ $nm(c.name) }}</span><span class="text-text-muted"><Icon name="close" :size="18" /></span></button>
         </li>
       </ul>
       <div class="flex gap-2" role="tablist">

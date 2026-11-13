@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [Sprint 29] A tournament's page (docs/design/legends-ui/Sprint29Drafts.html, 4): the groups' tables (those going
 // through marked), the league table, or the bracket whose first ties say where their teams come from (A1 against B2)
 // until the groups end; and the way to its draw, its group chat and joining it.
@@ -95,7 +96,7 @@ const through = computed(() => page.value?.advance_per_group ?? (page.value?.for
         <ul class="flex flex-wrap gap-2">
           <li v-for="e in page.entry.entrants" :key="e.id" class="flex min-h-[36px] items-center gap-1 rounded-full bg-surface-sunk px-3 text-sm">
             <b>{{ e.name }}</b><span v-if="e.club_id" class="text-text-muted">← {{ $nm(teamName(e.club_id)) }}</span>
-            <button v-if="page.entry.is_owner && page.entry.can_enter" type="button" class="size-8" :aria-label="$t('أخرج {v0}', { v0: e.name })" @click="entry(false, e.id)">✕</button>
+            <button v-if="page.entry.is_owner && page.entry.can_enter" type="button" class="size-8" :aria-label="$t('أخرج {v0}', { v0: e.name })" @click="entry(false, e.id)"><Icon name="close" :size="18" /></button>
           </li>
         </ul>
         <template v-if="page.entry.can_enter">

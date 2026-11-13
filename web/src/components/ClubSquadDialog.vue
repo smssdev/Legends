@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from './Icon.vue'
 // Any club's squad in the league [X17; Sprint 21 E4.1]: what every member may see (the players, their age, rating,
 // value and availability), never its tactics or its next lineup. Opened from a club's name in the table, the
 // statistics, the fixtures and the news.
@@ -63,7 +64,7 @@ onMounted(async () => {
         <div class="flex items-center gap-3">
           <AppImage :src="squad.crest_url" alt="" class="size-10" :size="40" crest />
           <div class="min-w-0 flex-1"><h2 class="truncate font-display text-xl font-extrabold">{{ $nm(squad.name) }}</h2><p class="text-xs text-text-muted">{{ $t('{v0} · {v1} لاعباً', { v0: squad.coach?.name ?? $t('الحاسوب'), v1: count(squad.players.length) }) }}</p></div>
-          <button type="button" class="size-touch rounded-md bg-surface-raised" :aria-label="$t('إغلاق')" @click="emit('close')">✕</button>
+          <button type="button" class="size-touch rounded-md bg-surface-raised" :aria-label="$t('إغلاق')" @click="emit('close')"><Icon name="close" :size="18" /></button>
         </div>
         <button v-if="!reporting" type="button" class="self-start text-xs font-bold text-text-muted underline-offset-2 hover:text-gold hover:underline" @click="reporting = true">{{ $t('أبلغ عن خطأ في البيانات') }}</button>
         <form v-else class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-2" @submit.prevent="sendReport">

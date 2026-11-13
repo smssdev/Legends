@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [Sprint 29] Inside a chat group (docs/design/legends-ui/Sprint29Drafts.html, 2): my messages on one side, the
 // others' with their names on the other, the group's notes in the middle. New messages come at once on the group's
 // channel; older ones load on scrolling up. A message can be answered or deleted; "⋮" opens the members, the link,
@@ -287,13 +288,13 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
     <p v-if="notice" class="bg-surface-sunk px-4 py-2 text-sm" role="status">{{ $t(notice) }}</p>
     <div v-if="replyTo" class="flex items-center gap-2 bg-panel px-4 pt-2 text-sm">
       <span class="min-w-0 flex-1 truncate border-s-2 border-gold-light ps-2 text-text-muted">{{ replyTo.body || (replyTo.kind === 'image' ? $t('صورة') : replyTo.kind === 'audio' ? $t('رسالة صوتية') : '') }}</span>
-      <button class="size-9" :aria-label="$t('إلغاء الرد')" @click="replyTo = null">✕</button>
+      <button class="size-9" :aria-label="$t('إلغاء الرد')" @click="replyTo = null"><Icon name="close" :size="18" /></button>
     </div>
     <!-- [Sprint 40 B3] A finished league's group: kept to read, no more messages. -->
     <p v-if="group?.closed" class="bg-panel p-4 text-center text-sm text-text-muted pb-[max(1rem,env(safe-area-inset-bottom))]" role="status">{{ $t('انتهى الدوري، وجروبه للقراءة فقط.') }}</p>
     <form v-else class="flex items-end gap-2 bg-panel p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pe-20 md:pe-3" @submit.prevent="send">
       <template v-if="recording">
-        <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk" :aria-label="$t('ألغِ التسجيل')" @click="dropRecording">✕</button>
+        <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk" :aria-label="$t('ألغِ التسجيل')" @click="dropRecording"><Icon name="close" :size="18" /></button>
         <span class="flex min-h-touch flex-1 items-center gap-2 rounded-3xl bg-surface-sunk px-4" role="status">
           <span class="size-2.5 animate-pulse rounded-full bg-live" /><span class="font-numbers" dir="ltr">{{ mmss(recorded) }}</span>
           <span class="text-sm text-text-muted">{{ $t('يُسجَّل… اضغط ➤ للإرسال') }}</span></span>

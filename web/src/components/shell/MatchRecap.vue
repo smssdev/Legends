@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 // [Sprint 24 B1, W1] The quick recap of a match the coach missed (the owner's request 2026-10-29): its big moments
 // one after another, fast (the goals, the cards, the substitutions, the injuries), with the score as it moved, then
 // the final score and the numbers (possession, shots, the best ratings). «تخطَّ إلى النتيجة» jumps to the end, and
@@ -63,7 +64,7 @@ function go(to: string) {
     <div class="flex max-h-full w-full max-w-md flex-col gap-3 overflow-hidden rounded-2xl border border-gold/40 bg-surface p-4 shadow-2xl">
       <div class="flex items-center gap-2 text-xs text-text-muted">
         <span class="flex-1 font-bold text-gold">{{ $t('الملخص السريع') }}</span>
-        <button type="button" class="grid size-11 place-items-center rounded-lg text-lg" :aria-label="$t('إغلاق')" @click="emit('close')">✕</button>
+        <button type="button" class="grid size-11 place-items-center rounded-lg text-lg" :aria-label="$t('إغلاق')" @click="emit('close')"><Icon name="close" :size="18" /></button>
       </div>
       <p v-if="error" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">{{ $t(error) }}</p>
       <div v-else-if="!r" class="h-40 animate-pulse rounded-xl bg-surface-sunk" aria-hidden="true" />

@@ -1,4 +1,4 @@
-import '../../ui/tokens.g.dart';
+import '../../ui/widgets/glm_icon.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,14 +51,7 @@ class HonoursScreen extends ConsumerWidget {
                         ListTile(
                           dense: true,
                           contentPadding: EdgeInsets.zero,
-                          leading: Text(
-                            t.position == 1
-                                ? '🏆'
-                                : t.position == 2
-                                ? '🥈'
-                                : '🥉',
-                            style: glmText(GlmType.headline),
-                          ),
+                          leading: GlmPlaceMark(t.position),
                           title: Text(
                             t.club,
                             textDirection: TextDirection.ltr,

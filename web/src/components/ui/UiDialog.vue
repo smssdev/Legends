@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 // [X61] Every window over a screen: the focus stays inside, Esc and the veil close it, the page behind does not
 // scroll. It drops from the top (under the top bar on a phone, never a sheet from the bottom), and scrolls inside
 // itself when long. [Sprint 54 W4] On reka-ui's Dialog (Headless UI is gone); the animation is the `ui-veil` and
@@ -21,7 +22,7 @@ const onOpen = (o: boolean) => { if (!o && props.open) emit('close') }
       <DialogContent class="ui-side" :aria-describedby="undefined">
         <div v-if="title || closable" class="mb-3 flex items-center gap-2">
           <DialogTitle v-if="title" class="flex-1 font-display text-title">{{ $t(title) }}</DialogTitle>
-          <DialogClose v-if="closable" class="ms-auto grid size-touch shrink-0 place-items-center rounded-md bg-surface-raised" :aria-label="$t('إغلاق')">✕</DialogClose>
+          <DialogClose v-if="closable" class="ms-auto grid size-touch shrink-0 place-items-center rounded-md bg-surface-raised" :aria-label="$t('إغلاق')"><Icon name="close" :size="18" /></DialogClose>
         </div>
         <slot />
       </DialogContent>
@@ -36,7 +37,7 @@ const onOpen = (o: boolean) => { if (!o && props.open) emit('close') }
           <DialogContent v-else class="ui-window flex max-h-[88dvh] w-full origin-top flex-col overflow-y-auto overscroll-contain rounded-2xl border border-text/10 bg-bg p-4 shadow-overlay" :class="wide ? 'max-w-2xl' : 'max-w-md'" :aria-describedby="undefined">
             <div v-if="title || closable" class="mb-3 flex items-center gap-2">
               <DialogTitle v-if="title" class="flex-1 font-display text-headline">{{ $t(title) }}</DialogTitle>
-              <DialogClose v-if="closable" class="ms-auto grid size-touch shrink-0 place-items-center rounded-md bg-surface-raised" :aria-label="$t('إغلاق')">✕</DialogClose>
+              <DialogClose v-if="closable" class="ms-auto grid size-touch shrink-0 place-items-center rounded-md bg-surface-raised" :aria-label="$t('إغلاق')"><Icon name="close" :size="18" /></DialogClose>
             </div>
             <slot />
           </DialogContent>

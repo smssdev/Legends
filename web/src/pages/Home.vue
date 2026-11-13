@@ -235,7 +235,7 @@ async function openRanking(by: By) {
           <!-- [Sprint 24 B3] A locked slot: it opens with the account's age (the countdown and the bar of the wait), or
                the first one at once for coins. -->
           <div v-else-if="s.state === 'locked'" class="slot-card is-locked" :class="s.unlock_coins ? 'is-next' : ''" role="group" :aria-label="$t('الفتحة {n}: مقفلة', { n: s.slot })">
-            <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-caption font-bold">🔒 {{ $t('مقفلة') }}</span></span>
+            <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-caption font-bold"><Icon name="lock" :size="14" class="inline align-[-2px]" /> {{ $t('مقفلة') }}</span></span>
             <span class="flex flex-1 flex-col items-center justify-center gap-1 p-2 text-center">
               <span class="text-caption text-text-muted">{{ $t('تُفتح مجاناً بعد') }}</span>
               <b class="font-numbers text-sm" dir="ltr">{{ countdown(s.opens_at, now) || $t('الآن') }}</b>
@@ -271,7 +271,7 @@ async function openRanking(by: By) {
         </div>
         <!-- [X86] Only the next locked slot shows; the others behind one line. -->
         <button v-if="lockedHidden" type="button" class="flex min-h-touch items-center justify-center gap-2 rounded-xl border border-dashed border-text/15 text-sm text-text-muted hover:text-text" @click="allSlots = true">
-          🔒 {{ $t('و{v0} فتحات مقفلة أخرى', { v0: lockedHidden }) }} <span aria-hidden="true">▾</span>
+          <Icon name="lock" :size="14" class="inline align-[-2px]" /> {{ $t('و{v0} فتحات مقفلة أخرى', { v0: lockedHidden }) }} <span aria-hidden="true"><Icon name="chevron_down" :size="16" /></span>
         </button>
       </section>
       <!-- [Sprint 30 Q9, Sprint 56 W8] The next match, under the slots: who, when (counting down), and the way to get ready. -->
@@ -321,7 +321,7 @@ async function openRanking(by: By) {
       <details class="home-more" :open="moreOpen" @toggle="(e: Event) => setMore((e.target as HTMLDetailsElement).open)">
         <summary class="ui-card flex min-h-touch cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-4 font-bold">
           <span>{{ $t('المزيد') }} <span class="text-xs font-normal text-text-muted">{{ $t('الإعلانات والأوسمة والترتيب') }}</span></span>
-          <span class="more-chevron text-text-muted" aria-hidden="true">▾</span>
+          <span class="more-chevron text-text-muted" aria-hidden="true"><Icon name="chevron_down" :size="16" /></span>
         </summary>
       <aside class="mt-3 grid gap-3 md:grid-cols-2" :aria-label="$t('آخر الأخبار')">
         <!-- [Sprint 30 G7] The game as an app on the home screen. -->

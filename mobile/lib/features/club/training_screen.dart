@@ -1,3 +1,4 @@
+import '../../ui/widgets/glm_icon.dart';
 import '../../ui/tokens.g.dart';
 
 import 'package:flutter/material.dart';
@@ -186,7 +187,12 @@ class TrainingScreen extends ConsumerWidget {
                     textDirection: TextDirection.ltr,
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                  subtitle: Text('${p.position} · ${p.age} · ${p.rating}/${p.potential}${p.injured ? ' · 🩹' : ''}'),
+                  subtitle: Row(
+                    children: [
+                      Text('${p.position} · ${p.age} · ${p.rating}/${p.potential}'),
+                      if (p.injured) ...[const Text(' · '), const GlmEventMark('injury', size: 14)],
+                    ],
+                  ),
                   trailing: p.id == rec
                       ? Text(
                           l.recommended,

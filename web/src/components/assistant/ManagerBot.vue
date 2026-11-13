@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 // [Sprint 22 W1, W2] The Assistant Coach (Manager Bot in English), on every screen of the game: the owner's approved
 // draft (docs/design/legends-ui/ManagerBotDraft.html). A gold button fixed on the left in Arabic and on the right in
 // English (the owner, 2026-10-29), still, never dragged; once a day a greeting beside it. Its window is a chat card above
@@ -127,7 +128,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
         <span class="bot-on" />
       </button>
       <div v-if="hello" class="bot-hello">
-        <button type="button" class="bot-hello-x" :aria-label="$t('إغلاق')" @click="quiet">✕</button>
+        <button type="button" class="bot-hello-x" :aria-label="$t('إغلاق')" @click="quiet"><Icon name="close" :size="18" /></button>
         <button type="button" class="min-h-touch text-start" @click="show">
           <b class="block text-sm">{{ $t('أهلاً كوتش!') }}</b>
           <span class="text-xs">{{ $t('أنا المدرب المساعد، اسألني عن أي شيء') }}</span>
@@ -148,7 +149,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
           <small v-else class="text-text-muted">● {{ $t('من دليل اللعبة') }}</small>
         </div>
         <button v-if="bot.messages.length > 1" type="button" class="bot-end" @click="end">{{ $t('إنهاء') }}</button>
-        <button type="button" class="bot-close" :aria-label="$t('إغلاق')" @click="bot.open = false">✕</button>
+        <button type="button" class="bot-close" :aria-label="$t('إغلاق')" @click="bot.open = false"><Icon name="close" :size="18" /></button>
       </header>
 
       <div ref="list" class="bot-body" aria-live="polite">
@@ -192,7 +193,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
       </button>
     </section>
     <!-- The round close button where the face was, as in the owner's picture. -->
-    <button type="button" class="bot-x" :aria-label="$t('إغلاق')" @click="bot.open = false">✕</button>
+    <button type="button" class="bot-x" :aria-label="$t('إغلاق')" @click="bot.open = false"><Icon name="close" :size="18" /></button>
     </div>
     <BotClosing :page="page" :league-id="leagueId" :label-of="labelOf" :path-for="pathFor" @go="(p) => { router.push(p); if (isPhone()) bot.open = false }" />
   </div>

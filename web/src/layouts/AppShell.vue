@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../components/Icon.vue'
 // The frame around every game screen. [Sprint 55 W1] Rebuilt on the approved landscape drafts
 // (docs/design/legends-ui/landscape/LandscapeShell.html, the owner's sign-off 2026-11-11, option A on the computer):
 // - The dock (ShellDock): 72px at the line's start, 200px with the names on the computer. The club at its head (a tap
@@ -146,9 +147,9 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
           <b class="shrink-0 font-numbers text-lg" dir="ltr">{{ broadcast.score }}</b>
           <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
         </RouterLink>
-        <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('كتم صوت المباراة')" @click="broadcast.muteAsk++">🔇</button>
+        <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('كتم صوت المباراة')" @click="broadcast.muteAsk++"><Icon name="muted" :size="20" /></button>
         <!-- [X74] Close the broadcast: the match page behind is let go, its sound and commentary with it. -->
-        <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('أغلق البث')" :title="$t('أغلق البث')" @click="broadcast.close()">✕</button>
+        <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('أغلق البث')" :title="$t('أغلق البث')" @click="broadcast.close()"><Icon name="close" :size="18" /></button>
       </div>
       <!-- [Sprint 21 E7.3] A suspended account: why, and the way to ask the developers. -->
       <RouterLink v-if="auth.user.suspended" to="/support" class="flex min-h-touch items-center justify-center bg-live/25 px-4 py-2 text-center text-sm font-bold" role="alert">

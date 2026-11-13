@@ -9,7 +9,7 @@ import '../../l10n/nav.g.dart';
 import '../../ui/theme.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/brand.dart';
-import '../../ui/widgets/game_icons.dart';
+import '../../ui/widgets/glm_icon.dart';
 import '../club/club_data.dart';
 import '../club/squad_screen.dart' show money;
 import 'leagues_repository.dart';

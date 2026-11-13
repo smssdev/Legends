@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [Sprint 29] The live draw (docs/design/legends-ui/Sprint29Drafts.html, 5), filling the screen. Before it: the
 // countdown and the hash announced in advance. At its time every screen plays the same ball at the same moment on the
 // server's clock: a ball leaves the bowl, is held under a drum roll, opens on the team's crest with a crash, its name
@@ -148,7 +149,7 @@ async function schedule() {
       <div class="flex items-center gap-2">
         <span v-if="liveNow" class="flex items-center gap-1.5 rounded-full bg-live px-3 py-1 text-xs font-extrabold"><span class="size-2 animate-pulse rounded-full bg-text" />{{ $t('مباشر') }}</span>
         <span v-else-if="replayFrom !== null && !done" class="rounded-full bg-surface-raised px-3 py-1 text-xs font-bold">{{ $t('إعادة') }}</span>
-        <button class="min-h-touch rounded-full bg-surface/70 px-3 text-sm font-bold" :aria-pressed="sound" @click="toggleSound">{{ sound ? '🔊 ' + $t('الصوت') : '🔇 ' + $t('شغّل الصوت') }}</button>
+        <button class="inline-flex min-h-touch items-center gap-1.5 rounded-full bg-surface/70 px-3 text-sm font-bold" :aria-pressed="sound" @click="toggleSound"><Icon :name="sound ? 'sound' : 'muted'" :size="16" />{{ sound ? $t('الصوت') : $t('شغّل الصوت') }}</button>
       </div>
     </header>
     <p v-if="error" class="m-4 rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>

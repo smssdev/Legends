@@ -134,7 +134,7 @@ const INFO = computed(() => [
             <div class="flex flex-col items-center gap-0.5">
               <span class="font-display text-headline font-extrabold italic drop-shadow">VS</span>
               <span class="text-caption font-bold text-text-muted">{{ locked ? $t('مقفلة') : $t('يُقفل بعد') }}</span>
-              <span class="nm-cd rounded-lg bg-bg-deep/70 px-2 py-0.5 font-numbers font-bold text-ring" dir="ltr">{{ locked ? '🔒' : left(match.lock_at) }}</span>
+              <span class="nm-cd rounded-lg bg-bg-deep/70 px-2 py-0.5 font-numbers font-bold text-ring" dir="ltr"><Icon v-if="locked" name="lock" :size="14" class="inline" /><template v-else>{{ left(match.lock_at) }}</template></span>
             </div>
           </div>
         </div>

@@ -163,7 +163,7 @@ class _CountdownState extends State<_Countdown> {
   }
 }
 
-typedef _Entry = ({GameGlyph icon, String label, String path, bool push});
+typedef _Entry = ({GlmIcons icon, String label, String path, bool push});
 
 /// [Sprint 50 M2] The dock: the site's section row stood on its side, 72px on the screen's start. The club's crest at
 /// its top (to the office), then each section: a gold icon over its name, the open one gold with a gold bar on the
@@ -185,10 +185,12 @@ class ConsoleDock extends ConsumerWidget {
     // page by the one name the site gives it, in this language.
     final lang = Localizations.localeOf(context).languageCode;
     _Section section(NavSection x) => (
-      icon: _sectionIcons[x.key] ?? Icons.more_horiz_rounded,
+      // [Sprint 63 G3] The site's same icons, from brand/icons (nav.json names them for both).
+      icon: GlmIcons.values.byName(_camel(x.icon)),
       label: x.label(lang),
       entries: [
-        for (final y in x.pages) (icon: GameGlyph.values.byName(y.glyph), label: y.label(lang), path: y.route(leagueId), push: y.push),
+        for (final y in x.pages)
+          (icon: GlmIcons.values.byName(_camel(y.icon)), label: y.label(lang), path: y.route(leagueId), push: y.push),
       ],
       badge: x.key == 'match' && s?.matchStatus == 'live' ? 'live' : null,
     );
@@ -252,18 +254,13 @@ class ConsoleDock extends ConsumerWidget {
   }
 }
 
-typedef _Section = ({IconData icon, String label, List<_Entry> entries, String? badge});
+typedef _Section = ({GlmIcons icon, String label, List<_Entry> entries, String? badge});
 
-/// Each section's icon in the dock (the site draws its own from Icon.vue).
-const _sectionIcons = {
-  'office': Icons.home_rounded,
-  'team': Icons.checkroom_rounded,
-  'tactics': Icons.tune_rounded,
-  'match': Icons.sports_soccer_rounded,
-  'market': Icons.storefront_rounded,
-  'club': Icons.stadium_rounded,
-  'more': Icons.more_horiz_rounded,
-};
+/// An icon's file name (brand/icons/chevron_down.svg) as the app's name (GlmIcons.chevronDown).
+String _camel(String name) {
+  final parts = name.split('_');
+  return parts.first + parts.skip(1).map((w) => w[0].toUpperCase() + w.substring(1)).join();
+}
 
 /// A section in the dock: its gold icon over its name; several pages open their list beside it.
 class _DockItem extends StatelessWidget {
@@ -300,12 +297,7 @@ class _DockItem extends StatelessWidget {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      section.icon,
-                      size: 22,
-                      color: p.gold,
-                      shadows: const [Shadow(color: Colors.black54, blurRadius: 3, offset: Offset(0, 2))],
-                    ),
+                    GlmIcon(section.icon, size: 22, color: p.gold),
                     const SizedBox(height: 2),
                     Text(
                       section.label,
@@ -349,7 +341,7 @@ class _DockItem extends StatelessWidget {
               foregroundColor: WidgetStatePropertyAll(isOn(x.path) ? Colors.white : p.textSoft),
               textStyle: WidgetStatePropertyAll(glmText(GlmType.body, fontWeight: FontWeight.w700)),
             ),
-            leadingIcon: GameIcon(x.icon, size: 26),
+            leadingIcon: GlmIcon(x.icon, size: 22),
             child: Text(x.label),
           ),
       ],

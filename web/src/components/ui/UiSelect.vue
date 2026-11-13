@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 // [X61] A choice from a list: a Select for a short list, a Combobox (typed to filter) for a long one (nationalities,
 // leagues). The keyboard, Esc and the tap outside are its own; the list drops under its field and scrolls inside
 // itself. `none` is the "any" choice (the empty value).
@@ -31,7 +32,7 @@ const ITEM = 'group flex min-h-touch cursor-pointer items-center gap-2 rounded-l
     <ComboboxAnchor :class="FIELD">
       <ComboboxInput v-model="query" class="h-full min-w-0 flex-1 bg-transparent focus:outline-none" :dir="ltr ? 'ltr' : 'auto'" :aria-label="$t(label)"
         :display-value="(v: unknown) => labelOf(String(v ?? ''))" />
-      <ComboboxTrigger class="grid size-8 place-items-center text-gold" :aria-label="$t(label)">▾</ComboboxTrigger>
+      <ComboboxTrigger class="grid size-8 place-items-center text-gold" :aria-label="$t(label)"><Icon name="chevron_down" :size="16" /></ComboboxTrigger>
     </ComboboxAnchor>
     <ComboboxContent position="popper" :side-offset="4" :class="PANEL">
       <ComboboxViewport>
@@ -46,7 +47,7 @@ const ITEM = 'group flex min-h-touch cursor-pointer items-center gap-2 rounded-l
 
   <SelectRoot v-else v-model="inner">
     <SelectTrigger :class="FIELD" :aria-label="$t(label)">
-      <span class="min-w-0 flex-1 truncate" :dir="ltr && model ? 'ltr' : undefined">{{ labelOf(inner) }}</span><span class="text-gold" aria-hidden="true">▾</span>
+      <span class="min-w-0 flex-1 truncate" :dir="ltr && model ? 'ltr' : undefined">{{ labelOf(inner) }}</span><span class="text-gold" aria-hidden="true"><Icon name="chevron_down" :size="16" /></span>
     </SelectTrigger>
     <SelectPortal>
       <SelectContent position="popper" :side-offset="4" :class="PANEL">

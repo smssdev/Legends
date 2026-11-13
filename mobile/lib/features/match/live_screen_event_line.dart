@@ -9,16 +9,8 @@ class EventLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final icon = switch (e.type) {
-      'goal' => '⚽',
-      'card' => e.color == 'red' ? '🟥' : '🟨',
-      'sub' => '🔁',
-      'injury' => '🩹',
-      'penalty' => '🎯',
-      'corner' => '⛳',
-      'period' => '⏱',
-      _ => '•',
-    };
+    // [Sprint 63 G5] The event's mark from the icon set (it was an emoji).
+    final mark = e.type == 'card' ? (e.color == 'red' ? 'red' : 'yellow') : e.type;
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -37,7 +29,7 @@ class EventLine extends StatelessWidget {
               style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
             ),
           ),
-          Text(icon),
+          Padding(padding: const EdgeInsets.only(top: 2), child: GlmEventMark(mark)),
           const SizedBox(width: 8),
           Expanded(
             child: Text(e.text ?? '', style: TextStyle(fontWeight: e.big ? FontWeight.w800 : FontWeight.w500)),
