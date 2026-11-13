@@ -97,90 +97,128 @@ class PlayerRow extends StatelessWidget {
   }
 }
 
-/// A player's card: his numbers and each attribute as a bar.
+/// A player's card: his numbers and each attribute as a bar. [Sprint 60 F4] One card, as the site's PlayerCard: beside
+/// the squad's table as a panel ([PlayerCardPanel]), in a sheet where there is no table to keep in view.
 Future<void> showPlayerCard(BuildContext context, Player p) => showModalBottomSheet<void>(
   context: context,
   showDragHandle: true,
   backgroundColor: context.palette.panel,
-  builder: (context) {
+  builder: (context) => SafeArea(
+    child: Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 20), child: PlayerCardBody(p)),
+  ),
+);
+
+/// [Sprint 60 F4] The card beside the squad's table (the approved draft's side panel): the table stays in view, and a
+/// tap on another row puts that player here.
+class PlayerCardPanel extends StatelessWidget {
+  const PlayerCardPanel({super.key, required this.player, required this.close});
+
+  final Player player;
+  final VoidCallback close;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: context.palette.panel,
+    child: SafeArea(
+      left: false,
+      right: false,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: IconButton(tooltip: L.of(context).close, icon: const Icon(Icons.close_rounded), onPressed: close),
+          ),
+          Expanded(
+            child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), child: PlayerCardBody(player)),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// The card's content: his name, position, age and nationality, his four numbers, and each attribute as a bar.
+class PlayerCardBody extends StatelessWidget {
+  const PlayerCardBody(this.p, {super.key});
+
+  final Player p;
+
+  @override
+  Widget build(BuildContext context) {
     final l = L.of(context);
     final c = context.palette;
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(p.name, textDirection: TextDirection.ltr, textAlign: TextAlign.center, style: context.text.headlineSmall),
+        const SizedBox(height: 4),
+        Text(
+          [p.position, l.age(p.age), if (p.nationality != null) p.nationality!].join(' · '),
+          textAlign: TextAlign.center,
+          style: TextStyle(color: c.textMuted),
+        ),
+        const SizedBox(height: 14),
+        Row(
           children: [
-            Text(p.name, textDirection: TextDirection.ltr, textAlign: TextAlign.center, style: context.text.headlineSmall),
-            const SizedBox(height: 4),
-            Text(
-              [p.position, l.age(p.age), if (p.nationality != null) p.nationality!].join(' · '),
-              textAlign: TextAlign.center,
-              style: TextStyle(color: c.textMuted),
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                for (final (v, label) in [
-                  ('${p.overall}', l.ratingWord),
-                  ('${p.potential}', l.potentialWord),
-                  ('${p.fitness}%', l.fitness),
-                  (money(context, p.value), l.value),
-                ])
-                  Expanded(
-                    child: FittedBox(fit: BoxFit.scaleDown, child: _big(context, v, label)),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(l.attributes, style: context.text.titleMedium),
-            const SizedBox(height: 8),
-            for (final a in p.attributes.entries)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 90,
-                      child: Text(
-                        a.key.toUpperCase(),
-                        textDirection: TextDirection.ltr,
-                        style: glmText(GlmType.caption, color: c.textSoft, fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: a.value / 100,
-                          minHeight: 8,
-                          backgroundColor: c.surfaceSunk,
-                          color: a.value >= 80
-                              ? c.success
-                              : a.value >= 65
-                              ? c.gold
-                              : c.warning,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 34,
-                      child: Text(
-                        '${a.value}',
-                        textAlign: TextAlign.end,
-                        style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
-                      ),
-                    ),
-                  ],
-                ),
+            for (final (v, label) in [
+              ('${p.overall}', l.ratingWord),
+              ('${p.potential}', l.potentialWord),
+              ('${p.fitness}%', l.fitness),
+              (money(context, p.value), l.value),
+            ])
+              Expanded(
+                child: FittedBox(fit: BoxFit.scaleDown, child: _big(context, v, label)),
               ),
           ],
         ),
-      ),
+        const SizedBox(height: 16),
+        Text(l.attributes, style: context.text.titleMedium),
+        const SizedBox(height: 8),
+        for (final a in p.attributes.entries)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 90,
+                  child: Text(
+                    a.key.toUpperCase(),
+                    textDirection: TextDirection.ltr,
+                    style: glmText(GlmType.caption, color: c.textSoft, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: a.value / 100,
+                      minHeight: 8,
+                      backgroundColor: c.surfaceSunk,
+                      color: a.value >= 80
+                          ? c.success
+                          : a.value >= 65
+                          ? c.gold
+                          : c.warning,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 34,
+                  child: Text(
+                    '${a.value}',
+                    textAlign: TextAlign.end,
+                    style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
-  },
-);
+  }
+}
 
 Widget _big(BuildContext context, String v, String label) => Column(
   children: [

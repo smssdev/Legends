@@ -2937,4 +2937,7 @@ class LAr extends L {
 
   @override
   String get dailyReady => 'كوينز اليوم جاهزة';
+
+  @override
+  String get close => 'إغلاق';
 }

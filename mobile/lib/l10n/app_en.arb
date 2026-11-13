@@ -877,5 +877,6 @@
   "counters": "Timers",
   "opponentReport": "Opponent report",
   "stadiumWorks": "Stadium expansion",
-  "dailyReady": "Today's coins are ready"
+  "dailyReady": "Today's coins are ready",
+  "close": "Close"
 }

@@ -2898,4 +2898,7 @@ class LEn extends L {
 
   @override
   String get dailyReady => 'Today\'s coins are ready';
+
+  @override
+  String get close => 'Close';
 }
