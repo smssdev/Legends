@@ -21,9 +21,16 @@ Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.j
 /// Real replies from a local server (the offers written in the server's shape), and what the screens send.
 class FakeMarket implements MarketRepository {
   final List<String> sent = [];
+  final List<String> asked = [];
 
   @override
-  Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(int league, String line) async {
+  Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(
+    int league,
+    String line, {
+    String q = '',
+    int? maxPrice,
+  }) async {
+    asked.add('$line q:$q max:$maxPrice');
     // [Sprint 59 F1] The captured answer read through the generated model: the fixture checks the contract too.
     final t = TransferList.fromJson(json('market'));
     expect(t.players, hasLength((json('market')['players'] as List<dynamic>).length), reason: 'every player reads');
@@ -160,6 +167,24 @@ void main() {
     await t.pumpAndSettle();
     expect(m.sent, ['buy 5676']);
     expect(find.text('صار في فريقك'), findsOneWidget);
+  });
+
+  testWidgets('the filters drawer: a name and a highest price asked of the server, a chip clears one', (t) async {
+    final m = FakeMarket();
+    await t.binding.setSurfaceSize(const Size(900, 420));
+    addTearDown(() => t.binding.setSurfaceSize(null));
+    await pump(t, const MarketScreen(leagueId: 8), m);
+    await t.tap(find.text('الفلاتر'));
+    await t.pumpAndSettle();
+    await t.enterText(find.byType(TextField).last, 'Don');
+    await t.tap(find.byType(ChoiceChip).at(2));
+    await t.tap(find.text('طبّق'));
+    await t.pumpAndSettle();
+    expect(m.asked.last, 'gk q:Don max:5000000');
+    expect(find.byType(InputChip), findsNWidgets(2));
+    await t.tap(find.descendant(of: find.byType(InputChip).first, matching: find.byType(Icon)).last);
+    await t.pumpAndSettle();
+    expect(m.asked.last, 'gk q: max:5000000');
   });
 
   testWidgets('sell: list a player at his value, and the offers answered', (t) async {

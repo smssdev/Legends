@@ -296,8 +296,16 @@ class MarketRepository {
 
   final ApiClient _api;
 
-  Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(int league, String line) async {
-    final t = TransferList.fromJson(await _api.get('/leagues/$league/market', query: {'line': line}));
+  /// [Sprint 60 F5] With the drawer's filters: part of a name ([q]) and the highest price, as the server takes them.
+  Future<({List<MarketPlayer> players, DateTime? renewsAt, int balance, String? closed})> list(
+    int league,
+    String line, {
+    String q = '',
+    int? maxPrice,
+  }) async {
+    final t = TransferList.fromJson(
+      await _api.get('/leagues/$league/market', query: {'line': line, if (q.isNotEmpty) 'q': q, 'max_price': ?maxPrice}),
+    );
     return (
       players: [for (final p in t.players) MarketPlayer.of(p)],
       renewsAt: DateTime.tryParse(t.renewsAt ?? ''),
@@ -375,7 +383,12 @@ class MarketRepository {
 }
 
 final marketRepositoryProvider = Provider<MarketRepository>((ref) => MarketRepository(ref.watch(apiProvider)));
-final marketListProvider = FutureProvider.autoDispose.family((ref, (int, String) k) => ref.read(marketRepositoryProvider).list(k.$1, k.$2));
+
+/// The list by (league, line, part of a name, highest price).
+typedef MarketQuery = (int league, String line, String q, int? maxPrice);
+final marketListProvider = FutureProvider.autoDispose.family(
+  (ref, MarketQuery k) => ref.read(marketRepositoryProvider).list(k.$1, k.$2, q: k.$3, maxPrice: k.$4),
+);
 final sellingProvider = FutureProvider.autoDispose.family<Selling, int>(
   (ref, league) => ref.read(marketRepositoryProvider).selling(league),
 );

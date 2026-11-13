@@ -2943,4 +2943,22 @@ class LEn extends L {
 
   @override
   String get outOfEleven => 'Not in the eleven';
+
+  @override
+  String get marketFilters => 'Filters';
+
+  @override
+  String get marketName => 'Player name';
+
+  @override
+  String get marketMaxPrice => 'Highest price';
+
+  @override
+  String get marketAnyPrice => 'Any price';
+
+  @override
+  String get marketApply => 'Apply';
+
+  @override
+  String get marketClear => 'Clear filters';
 }

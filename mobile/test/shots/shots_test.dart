@@ -331,6 +331,12 @@ void main() {
     (t) => shot(t, 'market', const MarketScreen(leagueId: 8), [marketRepositoryProvider.overrideWithValue(FakeMarket())]),
   );
   testWidgets(
+    'market-filters',
+    (t) => shot(t, 'market-filters', const MarketScreen(leagueId: 8), [
+      marketRepositoryProvider.overrideWithValue(FakeMarket()),
+    ], tap: 'الفلاتر'),
+  );
+  testWidgets(
     'live',
     (t) => shot(t, 'live', const LiveMatchScreen(matchId: 77), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())]),
   );

@@ -2059,5 +2059,11 @@
   "takerAuto": "تلقائي: الأفضل في التشكيلة",
   "takerAutoBadge": "تلقائي",
   "inEleven": "في التشكيلة",
-  "outOfEleven": "خارج التشكيلة"
+  "outOfEleven": "خارج التشكيلة",
+  "marketFilters": "الفلاتر",
+  "marketName": "اسم اللاعب",
+  "marketMaxPrice": "أعلى سعر",
+  "marketAnyPrice": "أي سعر",
+  "marketApply": "طبّق",
+  "marketClear": "امسح الفلاتر"
 }
