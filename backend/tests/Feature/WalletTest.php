@@ -66,7 +66,10 @@ class WalletTest extends TestCase
     public function test_2_the_daily_reward_once_a_cairo_day(): void
     {
         $this->league();
-        $this->actingAs($this->owner)->postJson('/api/v1/wallet/daily')->assertOk()->assertJsonPath('balance', 10)->assertJsonPath('daily.claimed', true);
+        $this->actingAs($this->owner)->postJson('/api/v1/wallet/daily')->assertOk()->assertJsonPath('balance', 10)->assertJsonPath('daily.claimed', true)
+            // [Sprint 59 F1] The fields the app reads through its generated model (WalletView in openapi.yaml).
+            ->assertJsonStructure(['balance', 'cap', 'daily' => ['amount', 'claimed'], 'leagues', 'prices', 'shop' => ['*' => ['coins', 'label']],
+                'transactions' => ['*' => ['type', 'label', 'amount', 'balance_after', 'at']]]);
         $this->postJson('/api/v1/wallet/daily')->assertOk()->assertJsonPath('balance', 10);
         // Cairo's next day (22:00 UTC is already tomorrow there).
         Carbon::setTestNow('2026-10-22 22:30:00');

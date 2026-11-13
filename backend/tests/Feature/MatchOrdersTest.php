@@ -286,7 +286,9 @@ class MatchOrdersTest extends TestCase
         config(['mail.default' => 'smtp']);
         Notification::fake();
         $this->owner->forceFill(['email' => 'coach@example.com', 'email_verified_at' => GameClock::now()])->save();
-        $this->actingAs($this->owner)->getJson('/api/v1/notifications')->assertOk()->assertJsonPath('email_match', false)->assertJsonPath('email_ready', true);
+        $this->actingAs($this->owner)->getJson('/api/v1/notifications')->assertOk()->assertJsonPath('email_match', false)->assertJsonPath('email_ready', true)
+            // [Sprint 59 F1] The fields the app reads through its generated model (NotificationSettings in openapi.yaml).
+            ->assertJsonStructure(['app_enabled', 'devices', 'enabled', 'email_match', 'email_offers', 'email_ready', 'kinds' => ['*' => ['kind', 'on']]]);
         $match = $this->kickOff();
         $this->playTo($match, 200);
         Notification::assertNothingSentTo($this->owner);

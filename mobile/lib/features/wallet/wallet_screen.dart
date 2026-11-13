@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../core/sounds.dart';
@@ -25,18 +26,14 @@ import '../leagues/shell.dart';
 class WalletView {
   const WalletView({required this.balance, required this.daily, required this.dailyClaimed, required this.transactions});
 
-  factory WalletView.fromJson(Map<String, dynamic> j) => WalletView(
-    balance: (j['balance'] as num?)?.toInt() ?? 0,
-    daily: ((j['daily'] as Map<dynamic, dynamic>?)?['amount'] as num?)?.toInt() ?? 0,
-    dailyClaimed: (j['daily'] as Map<dynamic, dynamic>?)?['claimed'] == true,
-    transactions: [
-      for (final t in (j['transactions'] as List<dynamic>? ?? const []))
-        (
-          label: '${(t as Map<dynamic, dynamic>)['label']}',
-          amount: (t['amount'] as num).toInt(),
-          at: DateTime.tryParse('${t['at'] ?? ''}'),
-        ),
-    ],
+  /// [Sprint 59 F1] From the generated model (`WalletView` in openapi.yaml).
+  factory WalletView.fromJson(Object? json) => WalletView.of(api.WalletView.fromJson(json));
+
+  factory WalletView.of(api.WalletView w) => WalletView(
+    balance: w.balance,
+    daily: w.daily.amount,
+    dailyClaimed: w.daily.claimed,
+    transactions: [for (final t in w.transactions) (label: t.label, amount: t.amount, at: DateTime.tryParse(t.at))],
   );
 
   final int balance, daily;
@@ -58,18 +55,25 @@ class StoreItem {
     required this.offer,
   });
 
-  factory StoreItem.fromJson(Map<String, dynamic> j) => StoreItem(
-    title: '${j['title']}',
-    description: '${j['description'] ?? ''}',
-    price: (j['price'] as num?)?.toInt() ?? 0,
-    oldPrice: (j['old_price'] as num?)?.toInt(),
-    currency: '${j['currency'] ?? ''}',
-    discount: j['discount'] as int?,
-    endsAt: DateTime.tryParse('${j['ends_at'] ?? ''}'),
-    imageUrl: j['image_url'] as String?,
-    whatsappUrl: j['whatsapp_url'] as String?,
-    offer: j['kind'] == 'offer',
+  /// [Sprint 59 F1] From the generated model (an item of `GET /store`, `StoreAnswer`).
+  factory StoreItem.of(api.StoreAnswerItemsItem i) => StoreItem(
+    title: i.title,
+    description: i.description,
+    price: i.price,
+    oldPrice: i.oldPrice,
+    currency: i.currency,
+    discount: i.discount,
+    endsAt: i.endsAt == null ? null : DateTime.tryParse(i.endsAt!),
+    imageUrl: i.imageUrl,
+    whatsappUrl: i.whatsappUrl,
+    offer: i.kind == 'offer',
   );
+
+  /// What the store shows of `GET /store`: the items still on (an ended offer or a hidden item never).
+  static List<StoreItem> shown(Object? json) => [
+    for (final i in api.StoreAnswer.fromJson(json).items)
+      if (!i.ended && i.visible) StoreItem.of(i),
+  ];
 
   final String title, description, currency;
   final int price;
@@ -86,10 +90,7 @@ class WalletRepository {
 
   Future<WalletView> wallet() async => WalletView.fromJson(await _api.get('/wallet'));
   Future<void> claimDaily() => _api.post('/wallet/daily');
-  Future<List<StoreItem>> store() async => [
-    for (final i in ((await _api.get('/store'))['items'] as List<dynamic>? ?? const []))
-      if ((i as Map<dynamic, dynamic>)['ended'] != true && i['visible'] != false) StoreItem.fromJson(i as Map<String, dynamic>),
-  ];
+  Future<List<StoreItem>> store() async => StoreItem.shown(await _api.get('/store'));
 }
 
 final walletRepositoryProvider = Provider<WalletRepository>((ref) => WalletRepository(ref.watch(apiProvider)));

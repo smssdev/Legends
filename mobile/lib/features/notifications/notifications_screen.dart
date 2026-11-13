@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
@@ -12,7 +13,10 @@ import '../leagues/shell.dart';
 
 /// [Sprint 19 F1] Which notifications the account wants (`/notifications`, Sprint 36): the six kinds, on the phone and in
 /// the browser alike, and the two emails. Whether the server can push to the app at all is shown on top.
-final notificationSettingsProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) => ref.read(apiProvider).get('/notifications'));
+/// [Sprint 59 F1] Read through the generated model (`NotificationSettings` in openapi.yaml).
+final notificationSettingsProvider = FutureProvider.autoDispose<api.NotificationSettings>(
+  (ref) async => api.NotificationSettings.fromJson(await ref.read(apiProvider).get('/notifications')),
+);
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -22,12 +26,12 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
-  Map<String, dynamic>? _fresh;
+  api.NotificationSettings? _fresh;
 
   Future<void> _put(Map<String, Object> body) async {
     try {
       final v = await ref.read(apiProvider).put('/notifications', body);
-      if (mounted) setState(() => _fresh = v);
+      if (mounted) setState(() => _fresh = api.NotificationSettings.fromJson(v));
     } on ApiError catch (e) {
       if (mounted) showGlmToast(context, e.message, error: true);
     }
@@ -45,7 +49,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           data: (loaded) {
             final s = _fresh ?? loaded;
             final p = context.palette;
-            final ready = s['app_enabled'] == true;
+            final ready = s.appEnabled ?? false;
             final names = {
               'referee': l.kindReferee,
               'match_soon': l.kindMatchSoon,
@@ -54,7 +58,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               'news': l.kindNews,
               'absence': l.kindAbsence,
             };
-            final emailReady = s['email_ready'] == true;
+            final emailReady = s.emailReady;
             return ListView(
               padding: const EdgeInsets.all(12),
               children: [
@@ -76,14 +80,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: Column(
                     children: [
-                      for (final k in (s['kinds'] as List<dynamic>? ?? const []))
+                      for (final k in s.kinds)
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          value: (k as Map<dynamic, dynamic>)['on'] == true,
+                          value: k.on_,
                           activeThumbColor: p.gold,
-                          title: Text(names[k['kind']] ?? '${k['kind']}'),
+                          title: Text(names[k.kind] ?? k.kind),
                           onChanged: (v) => _put({
-                            'kinds': {'${k['kind']}': v},
+                            'kinds': {k.kind: v},
                           }),
                         ),
                     ],
@@ -94,10 +98,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: Column(
                     children: [
-                      for (final (key, label) in [('email_match', l.emailMatch), ('email_offers', l.emailOffers)])
+                      for (final (key, label, on) in [
+                        ('email_match', l.emailMatch, s.emailMatch),
+                        ('email_offers', l.emailOffers, s.emailOffers),
+                      ])
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          value: s[key] == true,
+                          value: on,
                           activeThumbColor: p.gold,
                           title: Text(label),
                           subtitle: emailReady ? null : Text(l.emailNeeded, style: TextStyle(color: p.textMuted, fontSize: 12)),

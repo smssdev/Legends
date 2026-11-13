@@ -59,7 +59,10 @@ class StoreTest extends TestCase
 
         // The coach: the offer first, then the package, each with its WhatsApp chat and his account number.
         $coach = User::factory()->create();
-        $items = $this->actingAs($coach)->getJson('/api/v1/store')->assertOk()->json('items');
+        $items = $this->actingAs($coach)->getJson('/api/v1/store')->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (StoreAnswer in openapi.yaml).
+            ->assertJsonStructure(['whatsapp', 'items' => ['*' => ['id', 'kind', 'title', 'description', 'price', 'old_price', 'currency', 'discount',
+                'visible', 'sort', 'ends_at', 'ended', 'image_url', 'whatsapp_url']]])->json('items');
         $this->assertSame(['offer', 'package'], array_column($items, 'kind'));
         $this->assertStringStartsWith('https://wa.me/201116648302?text=', $items[0]['whatsapp_url']);
         $this->assertStringContainsString((string) $coach->account_no, urldecode($items[0]['whatsapp_url']));

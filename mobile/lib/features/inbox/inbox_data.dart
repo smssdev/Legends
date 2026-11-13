@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 
 /// [Sprint 18 F1] The inbox (`/messages`, Sprint 22): the server writes each message in the account's language.
@@ -15,15 +16,18 @@ class InboxMessage {
     this.link,
   });
 
-  factory InboxMessage.fromJson(Map<String, dynamic> j) => InboxMessage(
-    id: j['id'] as int,
-    type: '${j['type']}',
-    leagueId: j['league_id'] as int?,
-    read: j['read'] == true,
-    at: DateTime.tryParse('${j['created_at'] ?? ''}'),
-    title: '${j['title'] ?? ''}',
-    body: '${j['body'] ?? ''}',
-    link: j['link'] as String?,
+  /// [Sprint 59 F1] From the generated model (`Message` in openapi.yaml).
+  factory InboxMessage.fromJson(Object? json) => InboxMessage.of(api.Message.fromJson(json));
+
+  factory InboxMessage.of(api.Message m) => InboxMessage(
+    id: m.id,
+    type: m.type,
+    leagueId: m.leagueId,
+    read: m.read,
+    at: DateTime.tryParse(m.createdAt),
+    title: m.title,
+    body: m.body,
+    link: m.link,
   );
 
   final int id;
@@ -80,11 +84,10 @@ String? appRoute(String? link, int? league) {
 class InboxPage {
   const InboxPage({required this.messages, required this.more, required this.unread});
 
-  factory InboxPage.fromJson(Map<String, dynamic> j) => InboxPage(
-    messages: [for (final m in (j['messages'] as List<dynamic>? ?? const [])) InboxMessage.fromJson(m as Map<String, dynamic>)],
-    more: j['more'] == true,
-    unread: j['unread'] as int? ?? 0,
-  );
+  factory InboxPage.fromJson(Object? json) {
+    final page = api.MessagesAnswer.fromJson(json);
+    return InboxPage(messages: [for (final m in page.messages) InboxMessage.of(m)], more: page.more, unread: page.unread);
+  }
 
   final List<InboxMessage> messages;
   final bool more;
@@ -97,7 +100,7 @@ class InboxRepository {
   final ApiClient _api;
 
   Future<InboxPage> page({int? before}) async => InboxPage.fromJson(await _api.get('/messages', query: {'before': ?before}));
-  Future<int> unread() async => (await _api.get('/messages/unread'))['unread'] as int? ?? 0;
+  Future<int> unread() async => api.MessagesUnreadAnswer.fromJson(await _api.get('/messages/unread')).unread;
   Future<void> read(int id) => _api.post('/messages/$id/read');
   Future<void> readAll() => _api.post('/messages/read-all');
 }

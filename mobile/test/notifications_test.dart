@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/inbox/inbox_data.dart';
 import 'package:glm/features/notifications/notifications_screen.dart';
@@ -24,7 +25,7 @@ void main() {
   testWidgets('the settings: each kind by its name, and the app\'s pushes not on yet on this server', (t) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
-    final settings = jsonDecode(File('test/fixtures/notifications.json').readAsStringSync()) as Map<String, dynamic>;
+    final settings = api.NotificationSettings.fromJson(jsonDecode(File('test/fixtures/notifications.json').readAsStringSync()));
     await t.pumpWidget(
       ProviderScope(
         overrides: [preferencesProvider.overrideWithValue(prefs), notificationSettingsProvider.overrideWith((ref) async => settings)],
