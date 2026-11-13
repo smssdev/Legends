@@ -10,6 +10,10 @@ import BrandMark from '../BrandMark.vue'
 import ClubSwitcher from './ClubSwitcher.vue'
 import ShellMore, { type MoreGroup } from './ShellMore.vue'
 import { dockSide } from './dockSide'
+import { DOCK } from '../../layouts/dock.g'
+
+// [Sprint 63 G4] Each section's icon on its own coloured tile (docs/design/nav.json), as the app's dock draws it.
+const tile = (key: string) => DOCK.find((d) => d.key === key)
 
 export interface DockLink { to: string; label: string; icon: keyof typeof PATHS; active: boolean }
 export interface DockEntry { key: string; label: string; icon: keyof typeof PATHS; links: DockLink[]; active: boolean; badge?: string | number | null }
@@ -25,12 +29,12 @@ const emit = defineEmits<{ bot: [] }>()
 
     <template v-for="e in entries" :key="e.key">
       <RouterLink v-if="e.links.length === 1" :to="e.links[0].to" class="dock-item" :class="e.active ? 'is-active' : ''" :aria-current="e.active ? 'page' : undefined">
-        <Icon :name="e.icon" :size="22" /><span class="dock-label">{{ $t(e.label) }}</span>
+        <span v-if="tile(e.key)" class="dock-tile" :class="tile(e.key)!.ink === 'dark' ? 'ink-dark' : 'ink-light'" :style="{ background: `var(--color-${tile(e.key)!.color})` }"><Icon :name="e.icon" :size="18" /></span><Icon v-else :name="e.icon" :size="22" /><span class="dock-label">{{ $t(e.label) }}</span>
         <span v-if="e.badge" class="dock-badge">{{ e.badge }}</span>
       </RouterLink>
       <DropdownMenuRoot v-else :modal="false">
         <DropdownMenuTrigger class="dock-item" :class="e.active ? 'is-active' : ''">
-          <Icon :name="e.icon" :size="22" /><span class="dock-label">{{ $t(e.label) }}</span>
+          <span v-if="tile(e.key)" class="dock-tile" :class="tile(e.key)!.ink === 'dark' ? 'ink-dark' : 'ink-light'" :style="{ background: `var(--color-${tile(e.key)!.color})` }"><Icon :name="e.icon" :size="18" /></span><Icon v-else :name="e.icon" :size="22" /><span class="dock-label">{{ $t(e.label) }}</span>
           <span v-if="e.badge" class="dock-badge">{{ e.badge }}</span>
         </DropdownMenuTrigger>
         <DropdownMenuPortal>

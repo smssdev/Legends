@@ -2,15 +2,16 @@
 import type { PATHS } from '../components/Icon.vue'
 
 export type DockKey = "office" | "team" | "tactics" | "match" | "market" | "club"
-export interface DockSection { key: DockKey; label: string; icon: keyof typeof PATHS; items: string[] }
+/** [Sprint 63 G4] Each section's tile: its colour (a token: var(--color-<color>)) and its icon's ink on it. */
+export interface DockSection { key: DockKey; label: string; icon: keyof typeof PATHS; color: string; ink: 'dark' | 'light'; items: string[] }
 /** The six sections: each a list of SECTIONS names, the first where a tap on the section goes. */
 export const DOCK: DockSection[] = [
-  { key: "office", label: "المكتب", icon: "club", items: ["club"] },
-  { key: "team", label: "الفريق", icon: "team", items: ["team","lineup","takers","training","specialists"] },
-  { key: "tactics", label: "التكتيك", icon: "tactics", items: ["tactics"] },
-  { key: "match", label: "المباراة", icon: "match", items: ["match","league","fixtures","friendlies"] },
-  { key: "market", label: "السوق", icon: "market", items: ["market","scout"] },
-  { key: "club", label: "النادي", icon: "stadium", items: ["finance","stadium","quests"] },
+  { key: "office", label: "المكتب", icon: "club", color: "gold", ink: "dark", items: ["club"] },
+  { key: "team", label: "الفريق", icon: "team", color: "brand", ink: "light", items: ["team","lineup","takers","training","specialists"] },
+  { key: "tactics", label: "التكتيك", icon: "tactics", color: "ring", ink: "dark", items: ["tactics"] },
+  { key: "match", label: "المباراة", icon: "match", color: "live", ink: "light", items: ["match","league","fixtures","friendlies"] },
+  { key: "market", label: "السوق", icon: "market", color: "warning", ink: "dark", items: ["market","scout"] },
+  { key: "club", label: "النادي", icon: "stadium", color: "chrome", ink: "dark", items: ["finance","stadium","quests"] },
 ]
 /** «المزيد» inside a slot: the league's pages (by SECTIONS name). */
 export const MORE_IN_SLOT = ["stats","newspaper","predictions"]

@@ -1,5 +1,5 @@
 {
-  "$comment": "[Sprint 60 F1] The one frame's sections, one source for the site and the app (approved draft: docs/design/legends-ui/landscape/LandscapeShell.html, D2). Each page has one name in both; its path on each platform, null where that platform has no such page (sprints/60-app-design-parity.md, D1). The site's generator is web/scripts/nav.mjs (src/layouts/dock.g.ts), the app's mobile/tool/nav.dart (lib/l10n/nav.g.dart). In the app, {league} is the club's league and a path without it opens over the club (push).",
+  "$comment": "[Sprint 63 G4] Each dock section its tile: its colour (a token of color) and the ink of its icon on it (dark on the light ones). [Sprint 60 F1] The one frame's sections, one source for the site and the app (approved draft: docs/design/legends-ui/landscape/LandscapeShell.html, D2). Each page has one name in both; its path on each platform, null where that platform has no such page (sprints/60-app-design-parity.md, D1). The site's generator is web/scripts/nav.mjs (src/layouts/dock.g.ts), the app's mobile/tool/nav.dart (lib/l10n/nav.g.dart). In the app, {league} is the club's league and a path without it opens over the club (push).",
   "pages": {
     "club": { "ar": "لوحة النادي", "en": "Club board", "web": "club", "app": "/leagues/{league}", "icon": { "web": "club", "app": "office" } },
     "team": { "ar": "الفريق", "en": "Team", "web": "team", "app": "/leagues/{league}/squad", "icon": { "web": "team", "app": "squad" } },
@@ -34,12 +34,12 @@
     "profile": { "ar": "حسابي", "en": "My account", "web": "/profile", "app": "/profile", "icon": { "web": "team", "app": "squad" } }
   },
   "dock": [
-    { "key": "office", "ar": "المكتب", "en": "Office", "icon": "club", "items": ["club"] },
-    { "key": "team", "ar": "الفريق", "en": "Team", "icon": "team", "items": ["team", "lineup", "takers", "training", "specialists", "contracts"] },
-    { "key": "tactics", "ar": "التكتيك", "en": "Tactics", "icon": "tactics", "items": ["tactics"] },
-    { "key": "match", "ar": "المباراة", "en": "Match", "icon": "match", "items": ["match", "league", "fixtures", "friendlies", "spy", "alliance", "honours"] },
-    { "key": "market", "ar": "السوق", "en": "Market", "icon": "market", "items": ["market", "scout"] },
-    { "key": "club", "ar": "النادي", "en": "Club", "icon": "stadium", "items": ["finance", "stadium", "quests"] }
+    { "key": "office", "ar": "المكتب", "en": "Office", "icon": "club", "color": "gold", "ink": "dark", "items": ["club"] },
+    { "key": "team", "ar": "الفريق", "en": "Team", "icon": "team", "color": "brand", "ink": "light", "items": ["team", "lineup", "takers", "training", "specialists", "contracts"] },
+    { "key": "tactics", "ar": "التكتيك", "en": "Tactics", "icon": "tactics", "color": "ring", "ink": "dark", "items": ["tactics"] },
+    { "key": "match", "ar": "المباراة", "en": "Match", "icon": "match", "color": "live", "ink": "light", "items": ["match", "league", "fixtures", "friendlies", "spy", "alliance", "honours"] },
+    { "key": "market", "ar": "السوق", "en": "Market", "icon": "market", "color": "warning", "ink": "dark", "items": ["market", "scout"] },
+    { "key": "club", "ar": "النادي", "en": "Club", "icon": "stadium", "color": "chrome", "ink": "dark", "items": ["finance", "stadium", "quests"] }
   ],
   "more": { "ar": "المزيد", "en": "More", "in_slot": ["stats", "newspaper", "predictions", "invite"], "always": ["my_teams", "groups", "tournaments", "wallet", "store", "ideas", "profile"] }
 }

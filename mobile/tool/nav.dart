@@ -45,9 +45,12 @@ void main() {
     ..writeln()
     ..writeln('/// One section of the dock: its one name and its pages, the first where a tap goes.')
     ..writeln('class NavSection {')
-    ..writeln('  const NavSection(this.key, {required this.ar, required this.en, required this.pages, this.icon = \'more\'});')
+    ..writeln('  const NavSection(this.key, {required this.ar, required this.en, required this.pages, this.icon = \'more\', this.color, this.ink});')
     ..writeln()
     ..writeln('  final String key, ar, en, icon;')
+    ..writeln('')
+    ..writeln('  /// [Sprint 63 G4] Its tile in the dock: a palette colour\'s name (tokens.json color) and its icon\'s ink (dark, light).')
+    ..writeln('  final String? color, ink;')
     ..writeln('  final List<NavPage> pages;')
     ..writeln()
     ..writeln('  String label(String locale) => locale == \'ar\' ? ar : en;')
@@ -56,7 +59,7 @@ void main() {
     ..writeln('/// The six sections of the approved draft, and «More» (the league\'s pages, then everyone\'s).')
     ..writeln('const navDock = <NavSection>[');
   for (final s in (nav['dock'] as List<dynamic>).cast<Map<String, dynamic>>()) {
-    b.writeln("  NavSection(${q(s['key'])}, ar: ${q(s['ar'])}, en: ${q(s['en'])}, icon: ${q(s['icon'])}, pages: [");
+    b.writeln("  NavSection(${q(s['key'])}, ar: ${q(s['ar'])}, en: ${q(s['en'])}, icon: ${q(s['icon'])}, color: ${q(s['color'])}, ink: ${q(s['ink'])}, pages: [");
     for (final k in present(s['items'] as List<dynamic>)) {
       b.writeln('    ${entry(k)},');
     }

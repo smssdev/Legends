@@ -244,6 +244,9 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
   color: var(--color-text-soft);
   transition: color var(--duration-fast) var(--ease-soft), background-color var(--duration-fast) var(--ease-soft);
 }
+.dock-tile { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-broadcast-white) 35%, transparent), 0 3px 8px -3px var(--color-broadcast-ink); }
+.dock-tile.ink-dark { color: var(--color-broadcast-ink); }
+.dock-tile.ink-light { color: var(--color-broadcast-white); }
 .dock-item:hover { color: var(--color-text); background: color-mix(in srgb, var(--color-text) 6%, transparent); }
 .dock-item:focus-visible { outline: 2px solid var(--color-ring); outline-offset: -2px; }
 .dock-item.is-active { color: var(--color-gold-light); background: color-mix(in srgb, var(--color-gold) 14%, transparent); }
