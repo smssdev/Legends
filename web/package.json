@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "tokens": "node scripts/tokens.mjs",
-    "predev": "npm run tokens && npm run names",
+    "predev": "npm run tokens && npm run nav && npm run names",
     "dev": "vite",
-    "prebuild": "npm run tokens && npm run names && npm run i18n && npm run design && node scripts/safe-html.mjs && npm run frames && npm run feed && npm test",
+    "prebuild": "npm run tokens && npm run nav && npm run names && npm run i18n && npm run design && node scripts/safe-html.mjs && npm run frames && npm run feed && npm test",
     "build": "vue-tsc -b && vite build",
     "postbuild": "node scripts/sw.mjs && node scripts/budget.mjs && node --experimental-strip-types --no-warnings scripts/seo.mjs",
     "preview": "vite preview",
@@ -18,7 +18,8 @@
     "frames": "node --experimental-strip-types --no-warnings scripts/frames.mjs",
     "feed": "node --experimental-strip-types --no-warnings scripts/feed.mjs",
     "e2e": "playwright test",
-    "test": "vitest run"
+    "test": "vitest run",
+    "nav": "node scripts/nav.mjs"
   },
   "dependencies": {
     "laravel-echo": "^2.6.1",

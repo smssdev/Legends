@@ -5,9 +5,9 @@ name: Mobile
 on:
   push:
     branches: [main]
-    paths: ['mobile/**', 'docs/design/tokens.json', '.github/workflows/mobile.yml']
+    paths: ['mobile/**', 'docs/design/tokens.json', 'docs/design/nav.json', 'docs/api/openapi.yaml', '.github/workflows/mobile.yml']
   pull_request:
-    paths: ['mobile/**', 'docs/design/tokens.json', '.github/workflows/mobile.yml']
+    paths: ['mobile/**', 'docs/design/tokens.json', 'docs/design/nav.json', 'docs/api/openapi.yaml', '.github/workflows/mobile.yml']
 
 concurrency:
   group: mobile-${{ github.ref }}
@@ -38,6 +38,9 @@ jobs:
       # [Sprint 59 F1] The models current with docs/api/openapi.yaml (as npm run api for the web).
       - name: Models from the contract
         run: dart run tool/api.dart && git diff --exit-code lib/api/gen/models.g.dart
+      # [Sprint 60 F1] The dock's sections current with docs/design/nav.json (the site's web/scripts/nav.mjs too).
+      - name: Frame from nav.json
+        run: dart run tool/nav.dart && git diff --exit-code lib/l10n/nav.g.dart
       # [Sprint 54 F4] No colour or font size of a screen's own outside lib/ui/ (the baseline only shrinks).
       - name: Design system binds
         run: dart run tool/design.dart
