@@ -99,7 +99,9 @@ class AdminToolsTest extends TestCase
             'image' => $png, 'cta_label' => 'شجع فريقك', 'cta_url' => '/leagues'], ['Accept' => 'application/json'])->assertCreated();
         $this->post('/api/v1/admin/announcements', ['title' => 'رابط سيئ', 'body' => 'نص', 'cta_label' => 'اضغط', 'cta_url' => 'javascript:alert(1)'], ['Accept' => 'application/json'])->assertStatus(422);
         $coach = User::factory()->create();
-        $card = $this->actingAs($coach)->getJson('/api/v1/announcements')->assertOk()->json('announcements.0');
+        $card = $this->actingAs($coach)->getJson('/api/v1/announcements')->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['announcements' => ['*' => ['id', 'title', 'body', 'image_url', 'cta', 'sent', 'at']]])->json('announcements.0');
         $this->assertSame('دوري الكرة الذهبية', $card['title']);
         $this->assertSame(['label' => 'شجع فريقك', 'url' => '/leagues'], $card['cta']);
         $this->assertNotNull($card['image_url']);
@@ -137,7 +139,9 @@ class AdminToolsTest extends TestCase
         $this->actingAs($this->admin)->postJson("/api/v1/admin/conversations/{$coach->id}", ['body' => 'أهلاً كريم، كيف نساعدك؟'])->assertOk()
             ->assertJsonPath('messages.0.sender.username', 'Owner-Sliman');
         $this->assertSame('official_message', DB::table('messages')->where('user_id', $coach->id)->value('type'));
-        $this->actingAs($coach)->getJson('/api/v1/support')->assertOk()->assertJsonPath('messages.0.from_team', true);
+        $this->actingAs($coach)->getJson('/api/v1/support')->assertOk()->assertJsonPath('messages.0.from_team', true)
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['messages' => ['*' => ['id', 'body', 'from_team', 'read', 'at']]]);
         $this->postJson('/api/v1/support', ['body' => 'شكراً، عندي سؤال عن التدريب.'])->assertOk()->assertJsonCount(2, 'messages');
         $this->actingAs($this->admin)->getJson('/api/v1/admin/conversations')->assertJsonPath('conversations.0.user.id', $coach->id)
             ->assertJsonPath('conversations.0.unread', 1)->assertJsonPath('conversations.0.from_team', false);

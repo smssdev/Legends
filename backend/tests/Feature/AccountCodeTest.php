@@ -60,7 +60,10 @@ class AccountCodeTest extends TestCase
         $numbers = $users->pluck('account_no');
         $this->assertCount(30, $numbers->unique());
         $numbers->each(fn ($n) => $this->assertTrue($n >= 10000 && $n <= 99999));
-        $this->actingAs($users[0])->getJson('/api/v1/auth/me')->assertJsonPath('user.account_no', $users[0]->account_no);
+        $this->actingAs($users[0])->getJson('/api/v1/auth/me')->assertJsonPath('user.account_no', $users[0]->account_no)
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['user' => ['id', 'account_no', 'name', 'username', 'official', 'avatar_url', 'email', 'email_verified', 'has_password',
+                'viewing' => ['coach_look'], 'referral' => ['link', 'coins', 'paid', 'max'], 'verification' => ['verified', 'welcome_coins'], 'vacation' => ['on', 'pending', 'max_days']]]);
     }
 
     public function test_the_code_comes_by_email_works_once_and_dies_after_five_wrong_tries_or_its_time(): void

@@ -47,7 +47,9 @@ class HomeDashboardTest extends TestCase
     {
         // [Sprint 30 G4] A new coach has every badge ahead of him; an accepted idea earns its own.
         $coach = User::factory()->create();
-        $all = collect($this->actingAs($coach)->getJson('/api/v1/home/achievements')->assertOk()->json('achievements'));
+        $all = collect($this->actingAs($coach)->getJson('/api/v1/home/achievements')->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['achievements' => ['*' => ['key', 'tier', 'goal', 'progress', 'earned', 'reward', 'paid']]])->json('achievements'));
         $this->assertSame(array_keys(config('game.achievements')), $all->pluck('key')->all());
         $this->assertFalse($all->contains('earned', true));
         $this->assertSame((int) config('game.rating.tiers.legend'), $all->firstWhere('key', 'legend')['goal']);

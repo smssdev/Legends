@@ -38,7 +38,9 @@ class SeasonStatsTest extends TestCase
             MatchRunner::step();
         }
 
-        $s = $this->getJson("/api/v1/leagues/{$league['id']}/stats")->assertOk()->json();
+        $s = $this->getJson("/api/v1/leagues/{$league['id']}/stats")->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['scorers', 'assists', 'value' => ['*' => ['position', 'club' => ['id', 'name', 'code', 'crest_url'], 'value', 'players']]])->json();
         $league_fixtures = DB::table('fixtures')->where('season_id', $season)->where('competition', 'league')->where('status', 'finished')->where('is_bye', false)->get();
         $this->assertGreaterThanOrEqual(6, $league_fixtures->count());
         $goals = $league_fixtures->sum('home_goals') + $league_fixtures->sum('away_goals');

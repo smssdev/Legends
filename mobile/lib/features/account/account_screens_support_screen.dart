@@ -39,31 +39,26 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                   const SizedBox(height: 10),
                   for (final m in messages)
                     Align(
-                      alignment: (m as Map<dynamic, dynamic>)['from_team'] == true
-                          ? AlignmentDirectional.centerEnd
-                          : AlignmentDirectional.centerStart,
+                      alignment: m.fromTeam ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 6),
                         padding: const EdgeInsets.all(10),
                         constraints: const BoxConstraints(maxWidth: 300),
                         decoration: BoxDecoration(
-                          color: m['from_team'] == true ? p.gold.withValues(alpha: .14) : p.surface,
+                          color: m.fromTeam ? p.gold.withValues(alpha: .14) : p.surface,
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (m['from_team'] == true)
+                            if (m.fromTeam)
                               Text(
                                 l.fromTeam,
                                 style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12),
                               ),
-                            Text('${m['body']}'),
-                            if (DateTime.tryParse('${m['at']}') != null)
-                              Text(
-                                when(context, DateTime.parse('${m['at']}').toLocal()),
-                                style: TextStyle(color: p.textMuted, fontSize: 11),
-                              ),
+                            Text(m.body),
+                            if (DateTime.tryParse(m.at) != null)
+                              Text(when(context, DateTime.parse(m.at).toLocal()), style: TextStyle(color: p.textMuted, fontSize: 11)),
                           ],
                         ),
                       ),
@@ -131,28 +126,25 @@ class AnnouncementsScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            if ((a as Map<dynamic, dynamic>)['image_url'] != null)
+                            if (a.imageUrl != null)
                               ClipRRect(
                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                                child: Image.network('${a['image_url']}', fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox()),
+                                child: Image.network(a.imageUrl!, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox()),
                               ),
                             Padding(
                               padding: const EdgeInsets.all(14),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Text('${a['title']}', style: context.text.titleMedium),
+                                  Text(a.title, style: context.text.titleMedium),
                                   const SizedBox(height: 4),
-                                  Text('${a['body']}'),
-                                  if (a['cta'] is Map<dynamic, dynamic>) ...[
+                                  Text(a.body),
+                                  if (a.cta case final cta?) ...[
                                     const SizedBox(height: 8),
                                     GlmButton(
-                                      label: '${(a['cta'] as Map<dynamic, dynamic>)['label']}',
+                                      label: cta.label,
                                       variant: GlmButtonVariant.brand,
-                                      onPressed: () => launchUrl(
-                                        Uri.parse('${(a['cta'] as Map<dynamic, dynamic>)['url']}'),
-                                        mode: LaunchMode.externalApplication,
-                                      ),
+                                      onPressed: () => launchUrl(Uri.parse(cta.url), mode: LaunchMode.externalApplication),
                                     ),
                                   ],
                                 ],
