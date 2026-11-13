@@ -5377,6 +5377,18 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'لا اتصال: تعرض الشاشات آخر ما وصلها، وتتحدث وحدها حين يعود الاتصال'**
   String get offlineBar;
+
+  /// No description provided for @soundInterface.
+  ///
+  /// In ar, this message translates to:
+  /// **'الواجهة'**
+  String get soundInterface;
+
+  /// No description provided for @soundStadium.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملعب'**
+  String get soundStadium;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

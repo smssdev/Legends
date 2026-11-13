@@ -2967,4 +2967,10 @@ class LEn extends L {
 
   @override
   String get offlineBar => 'Offline: the screens show the last they received, and update by themselves when the connection is back';
+
+  @override
+  String get soundInterface => 'Interface';
+
+  @override
+  String get soundStadium => 'Stadium';
 }

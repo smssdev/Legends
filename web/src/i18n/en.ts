@@ -2982,4 +2982,10 @@ export const EN: Record<string, string> = {
   'صمت في المدرجات...': 'Silence in the stands...',
   // [Sprint 58 W7] A balance that could not be loaded.
   '{v0}: غير معروف الآن': '{v0}: unknown right now',
+  'مستوى الصوت': 'Sound level',
+  'الواجهة': 'Interface',
+  'النغمات والنقرات والإشعارات': 'Tones, taps and notifications',
+  'الجمهور والكرة في المباراة': 'The crowd and the ball in a match',
+  'المعلق': 'Commentator',
+  'صوت المعلق في المباراة': 'The commentator\'s voice in a match',
 }

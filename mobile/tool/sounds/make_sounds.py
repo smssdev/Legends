@@ -1,11 +1,13 @@
 """The app's own sounds, synthesized from nothing (no recording, no licence): run from mobile/ with
-python3 tool/sounds/make_sounds.py — it writes assets/sounds/*.ogg (needs numpy and ffmpeg).
+python3 tool/sounds/make_sounds.py — it writes assets/sounds/*.ogg (needs numpy and ffmpeg), and [Sprint 63 G12] the
+site's same sounds in web/public/sounds/ui (.ogg, and .mp3 for the browsers without Vorbis).
 
 [2026-11-06] The Legend sound: a stadium at night. The intro switches the floodlights on (two heavy clunks and their
 hum), the referee whistles, the crowd rises and a gold chord rings; the taps are a soft stud on turf, success a
 two-bell chime, coins a bright double ding, an error a low muted knock, and the whistle opens a match.
 """
 import os
+import shutil
 import subprocess
 import tempfile
 import wave
@@ -14,6 +16,7 @@ import numpy as np
 
 RATE = 44100
 OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'sounds')
+WEB = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'web', 'public', 'sounds', 'ui')
 rng = np.random.default_rng(7)
 
 
@@ -104,6 +107,10 @@ def save(name, x):
         w.setframerate(RATE)
         w.writeframes(pcm.tobytes())
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', path, '-c:a', 'libvorbis', '-q:a', '3', os.path.join(OUT, f'{name}.ogg')], check=True)
+    # The site plays the same files (lib/soundLevels.ts).
+    os.makedirs(WEB, exist_ok=True)
+    shutil.copy(os.path.join(OUT, f'{name}.ogg'), os.path.join(WEB, f'{name}.ogg'))
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', path, '-c:a', 'libmp3lame', '-q:a', '6', os.path.join(WEB, f'{name}.mp3')], check=True)
     os.unlink(path)
     print(name, f'{len(x) / RATE:.2f}s')
 
