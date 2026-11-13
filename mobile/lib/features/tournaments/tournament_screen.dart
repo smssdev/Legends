@@ -15,13 +15,12 @@ class TournamentScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(tournamentProvider(id)),
         data: (t) {
           final p = context.palette;
-          final entry = t['entry'] as Map<dynamic, dynamic>? ?? const {};
-          final teams = (t['teams'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>();
-          final groups = <String, List<Map<dynamic, dynamic>>>{};
-          for (final x in teams) {
-            if (x['group'] != null) (groups['${x['group']}'] ??= []).add(x);
+          final entry = t.entry;
+          final groups = <String, List<api.TournamentTeam>>{};
+          for (final x in t.teams) {
+            if (x.group case final g?) (groups[g] ??= []).add(x);
           }
-          final code = '${t['code'] ?? ''}';
+          final code = t.code;
           Future<void> act(Future<Object?> Function() a) async {
             await _try(context, a);
             ref.invalidate(tournamentProvider(id));
@@ -35,13 +34,9 @@ class TournamentScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('${t['name']}', style: context.text.titleLarge),
-                    Text(
-                      '${templateName(l, '${t['template']}')} · ${l.teamsCount(t['team_count'] as int? ?? 0)}',
-                      style: TextStyle(color: p.textMuted),
-                    ),
-                    if (DateTime.tryParse('${t['starts_at']}') != null)
-                      Text('${l.startsOn}: ${when(context, DateTime.parse('${t['starts_at']}').toLocal())}'),
+                    Text(t.name, style: context.text.titleLarge),
+                    Text('${templateName(l, t.template ?? '')} · ${l.teamsCount(t.teamCount)}', style: TextStyle(color: p.textMuted)),
+                    if (DateTime.tryParse(t.startsAt) case final at?) Text('${l.startsOn}: ${when(context, at.toLocal())}'),
                     const SizedBox(height: 10),
                     Text(l.tournamentCode, style: TextStyle(color: p.textMuted, fontSize: 12)),
                     SelectableText(
@@ -82,13 +77,13 @@ class TournamentScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              if (entry['mode'] == 'draw' && (entry['can_enter'] == true || entry['is_entrant'] == true))
+              if (entry.mode == 'draw' && (entry.canEnter || entry.isEntrant))
                 GlmButton(
-                  label: entry['is_entrant'] == true ? l.leaveEntry : l.enter,
-                  variant: entry['is_entrant'] == true ? GlmButtonVariant.outline : GlmButtonVariant.primary,
+                  label: entry.isEntrant ? l.leaveEntry : l.enter,
+                  variant: entry.isEntrant ? GlmButtonVariant.outline : GlmButtonVariant.primary,
                   block: true,
                   onPressed: () => act(
-                    () => entry['is_entrant'] == true
+                    () => entry.isEntrant
                         ? ref.read(apiProvider).delete('/tournaments/$id/entry')
                         : ref.read(apiProvider).post('/tournaments/$id/entry'),
                   ),
@@ -101,7 +96,7 @@ class TournamentScreen extends ConsumerWidget {
                 block: true,
                 onPressed: () => context.push('/tournaments/$id/draw'),
               ),
-              if (entry['is_member'] == true && t['status'] != 'waiting') ...[
+              if (entry.isMember && t.status != 'waiting') ...[
                 const SizedBox(height: 8),
                 GlmButton(
                   label: l.openLeague,
@@ -125,16 +120,12 @@ class TournamentScreen extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(vertical: 3),
                             child: Row(
                               children: [
-                                ClubCrest(url: x['crest_url'] as String?, name: '${x['code']}', size: 24),
+                                ClubCrest(url: x.crestUrl, name: x.code, size: 24),
                                 const SizedBox(width: 8),
                                 Expanded(
-                                  child: Text('${x['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
+                                  child: Text(x.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                                 ),
-                                if (x['coach'] != null)
-                                  Text(
-                                    '${(x['coach'] as Map<dynamic, dynamic>?)?['name'] ?? x['coach']}',
-                                    style: TextStyle(color: p.textMuted, fontSize: 12),
-                                  ),
+                                if (x.coach case final coach?) Text(coach, style: TextStyle(color: p.textMuted, fontSize: 12)),
                               ],
                             ),
                           ),
@@ -188,20 +179,20 @@ class _DrawScreenState extends ConsumerState<DrawScreen> {
         onRetry: () => ref.invalidate(drawProvider(widget.id)),
         data: (d) {
           final p = context.palette;
-          _offset = ((d['server_now'] as num?)?.toInt() ?? DateTime.now().millisecondsSinceEpoch) - DateTime.now().millisecondsSinceEpoch;
-          final steps = (d['steps'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>();
-          final drawnAt = DateTime.tryParse('${d['drawn_at'] ?? ''}');
-          final drawAt = DateTime.tryParse('${d['draw_at'] ?? ''}');
-          final revealMs = d['reveal_ms'] as int? ?? 3500;
+          _offset = d.serverNow - DateTime.now().millisecondsSinceEpoch;
+          final steps = d.steps;
+          final drawnAt = DateTime.tryParse(d.drawnAt ?? '');
+          final drawAt = DateTime.tryParse(d.drawAt ?? '');
+          final revealMs = d.revealMs;
           final now = DateTime.now().millisecondsSinceEpoch + _offset;
           final shown = drawnAt == null ? 0 : ((now - drawnAt.millisecondsSinceEpoch) ~/ revealMs + 1).clamp(0, steps.length);
           if (drawnAt == null && drawAt != null && now >= drawAt.millisecondsSinceEpoch) {
             // Its time has come: ask again for the balls.
             Future.microtask(() => ref.invalidate(drawProvider(widget.id)));
           }
-          final groups = <int, List<Map<dynamic, dynamic>>>{};
+          final groups = <int, List<api.TournamentsDrawAnswerStepsItem>>{};
           for (final s in steps.take(shown)) {
-            if (s['group'] != null) (groups[s['group'] as int] ??= []).add(s);
+            if (s.group case final g?) (groups[g] ??= []).add(s);
           }
           final last = shown == 0 ? null : steps[shown - 1];
           return ListView(
@@ -213,7 +204,7 @@ class _DrawScreenState extends ConsumerState<DrawScreen> {
                   textAlign: TextAlign.center,
                   style: context.text.titleMedium,
                 ),
-                if (d['can_schedule'] == true) ...[
+                if (d.canSchedule) ...[
                   const SizedBox(height: 10),
                   GlmButton(
                     label: l.scheduleDraw,
@@ -240,20 +231,12 @@ class _DrawScreenState extends ConsumerState<DrawScreen> {
                     gold: true,
                     child: Column(
                       children: [
-                        ClubCrest(
-                          url: (last['club'] as Map<dynamic, dynamic>?)?['crest_url'] as String?,
-                          name: '${(last['club'] as Map<dynamic, dynamic>?)?['code'] ?? ''}',
-                          size: 64,
-                        ),
+                        ClubCrest(url: last.club?.crestUrl, name: last.club?.code ?? '', size: 64),
                         const SizedBox(height: 6),
-                        Text(
-                          '${(last['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                          textDirection: TextDirection.ltr,
-                          style: context.text.titleLarge,
-                        ),
-                        if (last['group'] != null)
+                        Text(last.club?.name ?? '', textDirection: TextDirection.ltr, style: context.text.titleLarge),
+                        if (last.group case final g?)
                           Text(
-                            l.groupN(String.fromCharCode(64 + (last['group'] as int))),
+                            l.groupN(String.fromCharCode(64 + g)),
                             style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800),
                           ),
                       ],
@@ -270,11 +253,7 @@ class _DrawScreenState extends ConsumerState<DrawScreen> {
                         children: [
                           Text(l.groupN(String.fromCharCode(64 + g)), style: const TextStyle(fontWeight: FontWeight.w800)),
                           for (final s in groups[g]!)
-                            Text(
-                              '${(s['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                              textDirection: TextDirection.ltr,
-                              textAlign: TextAlign.start,
-                            ),
+                            Text(s.club?.name ?? '', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                         ],
                       ),
                     ),

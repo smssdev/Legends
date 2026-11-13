@@ -63,7 +63,10 @@ class AlliancePlannedTest extends TestCase
         Alliance::tick();
         $members = DB::table('alliance_members')->where('tournament_id', $t->id)->pluck('alliance', 'club_id')->map(fn ($v) => $v)->all();
         $this->assertSame(['a', 'a', 'b', 'b'], [$members[$mine], $members[$clubs['ali']], $members[$clubs['omar']], $members[$clubs['sara']]]);
-        $this->getJson("/api/v1/leagues/{$league['id']}/alliance")->assertJsonPath('tournament.formed', true);
+        $this->getJson("/api/v1/leagues/{$league['id']}/alliance")->assertJsonPath('tournament.formed', true)
+            // [Sprint 59 F1] The fields the app reads through AllianceAnswer (openapi.yaml).
+            ->assertJsonStructure(['can_create', 'sizes', 'default_size', 'coaches', 'tournament' => ['id', 'name', 'status', 'size', 'first_round_at', 'alliances' => ['a', 'b'],
+                'ties' => ['*' => ['id', 'round', 'kind', 'scheduled_at', 'winner_id', 'score', 'home' => ['id', 'name', 'code', 'coach', 'crest_url']]]]]);
         foreach (DB::table('alliance_ties')->where('tournament_id', $t->id)->get() as $tie) {
             $this->assertSame('match', $tie->kind);
             $this->assertNotSame($members[$tie->home_id], $members[$tie->away_id]);

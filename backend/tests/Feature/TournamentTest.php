@@ -137,7 +137,10 @@ class TournamentTest extends TestCase
                 'team_count', 'status', 'owner', 'starts_at', 'draw_at', 'drawn_at', 'coaches', 'entry_mode', 'entrants']]]);
 
         // Its page: the groups and the bracket.
-        $page = $this->actingAs(User::factory()->create())->getJson("/api/v1/tournaments/{$league->id}")->assertOk()->json('tournament');
+        $page = $this->actingAs(User::factory()->create())->getJson("/api/v1/tournaments/{$league->id}")->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['tournament' => ['id', 'name', 'code', 'status', 'team_count', 'starts_at', 'entry' => ['mode', 'is_entrant', 'can_enter', 'is_member'],
+                'teams' => ['*' => ['id', 'name', 'code', 'strength_cp', 'group', 'colors', 'crest_url', 'coach']], 'groups', 'table', 'bracket']])->json('tournament');
         $this->assertSame(['A', 'B'], array_column($page['groups'], 'group'));
         $this->assertSame(['sf', 'final'], array_column($page['bracket'], 'stage'));
     }
@@ -152,7 +155,9 @@ class TournamentTest extends TestCase
         $this->assertFalse($before['can_schedule']);
         // No time set: drawn at the start.
         $this->assertTrue(LeagueStarter::start(League::findOrFail($t['id'])));
-        $after = $this->getJson("/api/v1/tournaments/{$t['id']}/draw")->assertOk()->json();
+        $after = $this->getJson("/api/v1/tournaments/{$t['id']}/draw")->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['server_now', 'drawn_at', 'draw_at', 'reveal_ms', 'can_schedule', 'steps' => ['*' => ['type', 'club' => ['id', 'name', 'code', 'strength_cp', 'group', 'colors', 'crest_url', 'coach']]]])->json();
         $this->assertNotNull($after['drawn_at']);
         $this->assertCount(8, $after['steps']);
         $this->assertSame(2, $after['pots'] > 0 ? 2 : 0);

@@ -1242,9 +1242,9 @@ class AllianceAnswerTournamentTiesItem {
     final r = JsonReader(json, 'AllianceAnswerTournamentTiesItem');
     return AllianceAnswerTournamentTiesItem(
       alliance: r.stringOrNull('alliance'),
-      away: r.mapOrNull('away', JsonReader.anyOf),
+      away: r.objectOrNull('away', AllianceClub.fromJson),
       awayPick: r.intOrNull('away_pick'),
-      home: r.mapOrNull('home', JsonReader.anyOf),
+      home: r.objectOrNull('home', AllianceClub.fromJson),
       homePick: r.intOrNull('home_pick'),
       id: r.int_('id'),
       kind: r.string('kind'),
@@ -1260,9 +1260,9 @@ class AllianceAnswerTournamentTiesItem {
 
   /// The home club's alliance
   final String? alliance;
-  final Map<String, Object?>? away;
+  final AllianceClub? away;
   final int? awayPick;
-  final Map<String, Object?>? home;
+  final AllianceClub? home;
 
   /// [Sprint 40 D2] The home coach's pick of who goes on
   final int? homePick;
@@ -1287,6 +1287,28 @@ class AllianceAnswerTournamentTiesItemScore {
 
   final int away;
   final int home;
+}
+
+/// [Sprint 59 F1] A club in the alliance tournament (AllianceController card)
+class AllianceClub {
+  const AllianceClub({this.coach, required this.code, required this.crestUrl, required this.id, required this.name});
+
+  factory AllianceClub.fromJson(Object? json) {
+    final r = JsonReader(json, 'AllianceClub');
+    return AllianceClub(
+      coach: r.stringOrNull('coach'),
+      code: r.string('code'),
+      crestUrl: r.string('crest_url'),
+      id: r.int_('id'),
+      name: r.string('name'),
+    );
+  }
+
+  final String? coach;
+  final String code;
+  final String crestUrl;
+  final int id;
+  final String name;
 }
 
 class AllianceSide {
@@ -11487,7 +11509,7 @@ class TournamentPageAnswerTournament {
       status: r.string('status'),
       table: r.list('table', TournamentRow.fromJson),
       teamCount: r.int_('team_count'),
-      teams: r.list('teams', JsonReader.anyOf),
+      teams: r.list('teams', TournamentTeam.fromJson),
       template: r.stringOrNull('template'),
     );
   }
@@ -11517,7 +11539,7 @@ class TournamentPageAnswerTournament {
   final String status;
   final List<TournamentRow> table;
   final int teamCount;
-  final List<Object?> teams;
+  final List<TournamentTeam> teams;
   final String? template;
 }
 
@@ -11553,10 +11575,10 @@ class TournamentPageAnswerTournamentBracketItemTiesItem {
     final r = JsonReader(json, 'TournamentPageAnswerTournamentBracketItemTiesItem');
     return TournamentPageAnswerTournamentBracketItemTiesItem(
       at: r.string('at'),
-      away: r.mapOrNull('away', JsonReader.anyOf),
+      away: r.objectOrNull('away', TournamentTeam.fromJson),
       awayFrom: r.stringOrNull('away_from'),
       fixtureId: r.int_('fixture_id'),
-      home: r.mapOrNull('home', JsonReader.anyOf),
+      home: r.objectOrNull('home', TournamentTeam.fromJson),
       homeFrom: r.stringOrNull('home_from'),
       score: r.listOrNull('score', JsonReader.intOf),
       slot: r.int_('slot'),
@@ -11565,10 +11587,10 @@ class TournamentPageAnswerTournamentBracketItemTiesItem {
   }
 
   final String at;
-  final Map<String, Object?>? away;
+  final TournamentTeam? away;
   final String? awayFrom;
   final int fixtureId;
-  final Map<String, Object?>? home;
+  final TournamentTeam? home;
 
   /// A group place ("A1"), or the n-th best third ("3:n", Sprint 43 A3)
   final String? homeFrom;
@@ -11670,7 +11692,7 @@ class TournamentRow {
   factory TournamentRow.fromJson(Object? json) {
     final r = JsonReader(json, 'TournamentRow');
     return TournamentRow(
-      club: r.mapOrNull('club', JsonReader.anyOf),
+      club: r.objectOrNull('club', TournamentTeam.fromJson),
       drawn: r.int_('drawn'),
       goalsAgainst: r.int_('goals_against'),
       goalsFor: r.int_('goals_for'),
@@ -11681,7 +11703,7 @@ class TournamentRow {
     );
   }
 
-  final Map<String, Object?>? club;
+  final TournamentTeam? club;
   final int drawn;
   final int goalsAgainst;
   final int goalsFor;
@@ -11689,6 +11711,45 @@ class TournamentRow {
   final int played;
   final int points;
   final int won;
+}
+
+/// [Sprint 59 F1] A tournament's team as the screens show it (TournamentController::cards)
+class TournamentTeam {
+  const TournamentTeam({
+    this.coach,
+    required this.code,
+    required this.colors,
+    required this.crestUrl,
+    this.group,
+    required this.id,
+    required this.name,
+    required this.strengthCp,
+  });
+
+  factory TournamentTeam.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentTeam');
+    return TournamentTeam(
+      coach: r.stringOrNull('coach'),
+      code: r.string('code'),
+      colors: r.list('colors', JsonReader.stringOf),
+      crestUrl: r.string('crest_url'),
+      group: r.stringOrNull('group'),
+      id: r.int_('id'),
+      name: r.string('name'),
+      strengthCp: r.int_('strength_cp'),
+    );
+  }
+
+  final String? coach;
+  final String code;
+  final List<String> colors;
+  final String crestUrl;
+
+  /// Its group's letter once drawn
+  final String? group;
+  final int id;
+  final String name;
+  final int strengthCp;
 }
 
 class TournamentsAnswer {
@@ -11938,7 +11999,7 @@ class TournamentsDrawAnswerStepsItem {
   factory TournamentsDrawAnswerStepsItem.fromJson(Object? json) {
     final r = JsonReader(json, 'TournamentsDrawAnswerStepsItem');
     return TournamentsDrawAnswerStepsItem(
-      club: r.mapOrNull('club', JsonReader.anyOf),
+      club: r.objectOrNull('club', TournamentTeam.fromJson),
       group: r.intOrNull('group'),
       position: r.intOrNull('position'),
       pot: r.intOrNull('pot'),
@@ -11950,7 +12011,7 @@ class TournamentsDrawAnswerStepsItem {
     );
   }
 
-  final Map<String, Object?>? club;
+  final TournamentTeam? club;
   final int? group;
   final int? position;
   final int? pot;

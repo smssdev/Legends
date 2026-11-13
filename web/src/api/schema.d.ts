@@ -12558,9 +12558,7 @@ export interface paths {
                                     id: number;
                                     name: string;
                                 };
-                                club: {
-                                    [key: string]: unknown;
-                                } | null;
+                                club: components["schemas"]["TournamentTeam"] | null;
                                 pot?: number;
                                 group?: number;
                                 position?: number;
@@ -13590,9 +13588,7 @@ export interface components {
             confederation: string | null;
         };
         TournamentRow: {
-            club: {
-                [key: string]: unknown;
-            } | null;
+            club: components["schemas"]["TournamentTeam"] | null;
             played: number;
             won: number;
             drawn: number;
@@ -16468,6 +16464,26 @@ export interface components {
             /** Format: date-time */
             at: string;
         };
+        /** @description [Sprint 59 F1] A club in the alliance tournament (AllianceController card) */
+        AllianceClub: {
+            id: number;
+            name: string;
+            code: string;
+            coach: string | null;
+            crest_url: string;
+        };
+        /** @description [Sprint 59 F1] A tournament's team as the screens show it (TournamentController::cards) */
+        TournamentTeam: {
+            id: number;
+            name: string;
+            code: string;
+            strength_cp: number;
+            /** @description Its group's letter once drawn */
+            group: string | null;
+            colors: string[];
+            crest_url: string;
+            coach: string | null;
+        };
         /** @description [Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model */
         LeagueMatch: {
             id: number;
@@ -16698,9 +16714,7 @@ export interface components {
                             /** @description May open the tournament's group */
                             is_member: boolean;
                         };
-                        teams: {
-                            [key: string]: unknown;
-                        }[];
+                        teams: components["schemas"]["TournamentTeam"][];
                         groups: {
                             group: string;
                             rows: components["schemas"]["TournamentRow"][];
@@ -16710,12 +16724,8 @@ export interface components {
                             stage: string;
                             ties: {
                                 slot: number;
-                                home: {
-                                    [key: string]: unknown;
-                                } | null;
-                                away: {
-                                    [key: string]: unknown;
-                                } | null;
+                                home: components["schemas"]["TournamentTeam"] | null;
+                                away: components["schemas"]["TournamentTeam"] | null;
                                 /** @description A group place ("A1"), or the n-th best third ("3:n", Sprint 43 A3) */
                                 home_from: string | null;
                                 away_from: string | null;
@@ -16931,12 +16941,8 @@ export interface components {
                             round: number;
                             /** @enum {string} */
                             kind: "match" | "bye" | "captain" | "walkover";
-                            home: {
-                                [key: string]: unknown;
-                            } | null;
-                            away: {
-                                [key: string]: unknown;
-                            } | null;
+                            home: components["schemas"]["AllianceClub"] | null;
+                            away: components["schemas"]["AllianceClub"] | null;
                             /**
                              * @description The home club's alliance
                              * @enum {string|null}
