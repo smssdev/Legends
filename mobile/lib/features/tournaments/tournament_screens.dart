@@ -31,15 +31,25 @@ part 'tournament_screens_alliance_screen.dart';
 final tournamentsProvider = FutureProvider.autoDispose<List<api.Tournament>>(
   (ref) async => JsonReader(await ref.read(apiProvider).get('/tournaments'), 'Tournaments').list('tournaments', api.Tournament.fromJson),
 );
-final catalogProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) => ref.read(apiProvider).get('/tournaments/catalog'));
-final tournamentProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
-  (ref, id) async => (await ref.read(apiProvider).get('/tournaments/$id'))['tournament'] as Map<String, dynamic>,
+
+/// [Sprint 59 F1] The tournament catalog through the generated model (`TournamentsCatalogAnswer`).
+final catalogProvider = FutureProvider.autoDispose<api.TournamentsCatalogAnswer>(
+  (ref) async => api.TournamentsCatalogAnswer.fromJson(await ref.read(apiProvider).get('/tournaments/catalog')),
 );
-final drawProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
-  (ref, id) => ref.read(apiProvider).get('/tournaments/$id/draw'),
+
+/// [Sprint 59 F1] A tournament's page through the generated model (`TournamentPageAnswer`).
+final tournamentProvider = FutureProvider.autoDispose.family<api.TournamentPageAnswerTournament, int>(
+  (ref, id) async => api.TournamentPageAnswer.fromJson(await ref.read(apiProvider).get('/tournaments/$id')).tournament,
 );
-final allianceProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
-  (ref, id) => ref.read(apiProvider).get('/leagues/$id/alliance'),
+
+/// [Sprint 59 F1] A tournament's live draw through the generated model (`TournamentsDrawAnswer`).
+final drawProvider = FutureProvider.autoDispose.family<api.TournamentsDrawAnswer, int>(
+  (ref, id) async => api.TournamentsDrawAnswer.fromJson(await ref.read(apiProvider).get('/tournaments/$id/draw')),
+);
+
+/// [Sprint 59 F1] The alliance tournament through the generated model (`AllianceAnswer`).
+final allianceProvider = FutureProvider.autoDispose.family<api.AllianceAnswer, int>(
+  (ref, id) async => api.AllianceAnswer.fromJson(await ref.read(apiProvider).get('/leagues/$id/alliance')),
 );
 
 Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
@@ -146,7 +156,7 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
   int _groups = 4;
   bool _clubs = false;
   String _q = '';
-  List<Map<dynamic, dynamic>> _found = const [];
+  List<api.TeamCard> _found = const [];
   DateTime? _starts;
   final _name = TextEditingController();
   bool _busy = false;
@@ -157,16 +167,11 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
     super.dispose();
   }
 
-  List<Widget> _custom(BuildContext context, Map<String, dynamic> c) {
+  List<Widget> _custom(BuildContext context, api.TournamentsCatalogAnswer c) {
     final l = L.of(context);
     final p = context.palette;
-    final groupCounts = ((c['limits'] as Map<dynamic, dynamic>?)?['group_counts'] as List<dynamic>? ?? const [1, 2, 4, 8]).cast<int>();
-    final pool = _clubs
-        ? _found
-        : (c['nations'] as List<dynamic>? ?? const [])
-              .cast<Map<dynamic, dynamic>>()
-              .where((n) => _q.isEmpty || '${n['name']}'.toLowerCase().contains(_q.toLowerCase()))
-              .toList();
+    final groupCounts = c.limits.groupCounts.isEmpty ? const [1, 2, 4, 8] : c.limits.groupCounts;
+    final pool = _clubs ? _found : c.nations.where((n) => _q.isEmpty || n.name.toLowerCase().contains(_q.toLowerCase())).toList();
     return [
       const SizedBox(height: 10),
       SegmentedButton<String>(
@@ -202,8 +207,11 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
         onChanged: (v) async {
           setState(() => _q = v.trim());
           if (_clubs && v.trim().length >= 2) {
-            final r = await ref.read(apiProvider).get('/tournaments/clubs', query: {'q': v.trim()}).catchError((_) => <String, dynamic>{});
-            if (mounted) setState(() => _found = (r['clubs'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>());
+            final r = await ref
+                .read(apiProvider)
+                .get('/tournaments/clubs', query: {'q': v.trim()})
+                .catchError((_) => <String, dynamic>{'clubs': <Object>[]});
+            if (mounted) setState(() => _found = api.TournamentsClubsAnswer.fromJson(r).clubs);
           }
         },
       ),
@@ -230,11 +238,11 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
             for (final t in pool.take(60))
               CheckboxListTile(
                 dense: true,
-                value: _picked.containsKey(t['id']),
+                value: _picked.containsKey(t.id),
                 activeColor: p.gold,
-                title: Text('${t['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
-                subtitle: Text('${t['league'] ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 11)),
-                onChanged: (on) => setState(() => on == true ? _picked[t['id'] as int] = '${t['name']}' : _picked.remove(t['id'])),
+                title: Text(t.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
+                subtitle: Text(t.league, style: TextStyle(color: p.textMuted, fontSize: 11)),
+                onChanged: (on) => setState(() => on == true ? _picked[t.id] = t.name : _picked.remove(t.id)),
               ),
           ],
         ),
@@ -253,11 +261,11 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
         data: (c) {
           final p = context.palette;
           final templates = [
-            for (final t in (c['templates'] as List<dynamic>? ?? const []))
-              if ((t as Map<dynamic, dynamic>)['key'] != 'custom' && (t['teams'] as List<dynamic>).isNotEmpty) t,
+            for (final t in c.templates)
+              if (t.key != 'custom' && t.teams.isNotEmpty) t,
           ];
-          final chosen = templates.where((t) => t['key'] == _template).firstOrNull;
-          final perTeam = (c['limits'] as Map<dynamic, dynamic>?)?['coins_per_team'] as int? ?? 0;
+          final chosen = templates.where((t) => t.key == _template).firstOrNull;
+          final perTeam = c.limits.coinsPerTeam;
           return ListView(
             padding: const EdgeInsets.all(12),
             children: [
@@ -272,10 +280,10 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
                 children: [
                   for (final t in templates)
                     ChoiceChip(
-                      label: Text('${templateName(l, '${t['key']}')} · ${(t['teams'] as List<dynamic>).length}'),
-                      selected: _template == t['key'],
+                      label: Text('${templateName(l, t.key)} · ${t.teams.length}'),
+                      selected: _template == t.key,
                       selectedColor: p.gold.withValues(alpha: .28),
-                      onSelected: (_) => setState(() => _template = '${t['key']}'),
+                      onSelected: (_) => setState(() => _template = t.key),
                     ),
                   ChoiceChip(
                     label: Text(l.customTeams),
@@ -309,7 +317,7 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
               ),
               if (chosen != null)
                 Text(
-                  l.tournamentCost(perTeam * (chosen['teams'] as List<dynamic>).length),
+                  l.tournamentCost(perTeam * chosen.teams.length),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: context.glm.goldText),
                 ),
@@ -337,13 +345,13 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
                                 'legs': 1,
                               }
                             : {
-                                'template': chosen['key'],
-                                'teams': chosen['teams'],
-                                'format': chosen['format'],
-                                'group_count': chosen['group_count'],
-                                'advance_per_group': chosen['advance_per_group'],
-                                'best_thirds': chosen['best_thirds'],
-                                'legs': chosen['legs'],
+                                'template': chosen.key,
+                                'teams': chosen.teams,
+                                'format': chosen.format,
+                                'group_count': chosen.groupCount,
+                                'advance_per_group': chosen.advancePerGroup,
+                                'best_thirds': chosen.bestThirds,
+                                'legs': chosen.legs,
                               };
                         final r = await _try(
                           context,
@@ -357,7 +365,9 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
                         );
                         if (mounted) setState(() => _busy = false);
                         ref.invalidate(tournamentsProvider);
-                        final id = ((r?['tournament'] as Map<dynamic, dynamic>?)?['id']) as int?;
+                        final id = r == null
+                            ? null
+                            : JsonReader(r, 'NewTournament').objectOrNull('tournament', (j) => JsonReader(j, 'Tournament').int_('id'));
                         if (id != null && context.mounted) context.pushReplacement('/tournaments/$id');
                       },
               ),

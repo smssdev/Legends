@@ -4480,7 +4480,7 @@ paths:
                           properties:
                             type: { type: string, enum: [owner, group, slot, tie], description: 'owner - a team given to a player (X68), before the shape''s balls' }
                             user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
-                            club: { type: object, nullable: true, additionalProperties: true }
+                            club: { allOf: [{ $ref: '#/components/schemas/TournamentTeam' }], nullable: true }
                             pot: { type: integer }
                             group: { type: integer }
                             position: { type: integer }
@@ -4806,7 +4806,7 @@ components:
                           is_owner: { type: boolean }
                           my_club_id: { type: integer, nullable: true }
                           is_member: { type: boolean, description: May open the tournament's group }
-                      teams: { type: array, items: { type: object, additionalProperties: true } }
+                      teams: { type: array, items: { $ref: '#/components/schemas/TournamentTeam' } }
                       groups:
                         type: array
                         items: { type: object, required: [group, rows], properties: { group: { type: string }, rows: { type: array, items: { $ref: '#/components/schemas/TournamentRow' } } } }
@@ -4825,8 +4825,8 @@ components:
                                 required: [slot, home, away, home_from, away_from, winner_id, score, at, fixture_id]
                                 properties:
                                   slot: { type: integer }
-                                  home: { type: object, nullable: true, additionalProperties: true }
-                                  away: { type: object, nullable: true, additionalProperties: true }
+                                  home: { allOf: [{ $ref: '#/components/schemas/TournamentTeam' }], nullable: true }
+                                  away: { allOf: [{ $ref: '#/components/schemas/TournamentTeam' }], nullable: true }
                                   home_from: { type: string, nullable: true, description: "A group place (\"A1\"), or the n-th best third (\"3:n\", Sprint 43 A3)" }
                                   away_from: { type: string, nullable: true }
                                   winner_id: { type: integer, nullable: true }
@@ -4985,8 +4985,8 @@ components:
                         id: { type: integer }
                         round: { type: integer }
                         kind: { type: string, enum: [match, bye, captain, walkover] }
-                        home: { type: object, nullable: true, additionalProperties: true }
-                        away: { type: object, nullable: true, additionalProperties: true }
+                        home: { allOf: [{ $ref: '#/components/schemas/AllianceClub' }], nullable: true }
+                        away: { allOf: [{ $ref: '#/components/schemas/AllianceClub' }], nullable: true }
                         alliance: { type: string, nullable: true, enum: [a, b, null], description: The home club's alliance }
                         scheduled_at: { type: string, format: date-time }
                         winner_id: { type: integer, nullable: true }
@@ -5235,7 +5235,7 @@ components:
       type: object
       required: [club, played, won, drawn, lost, goals_for, goals_against, points]
       properties:
-        club: { type: object, nullable: true, additionalProperties: true }
+        club: { allOf: [{ $ref: '#/components/schemas/TournamentTeam' }], nullable: true }
         played: { type: integer }
         won: { type: integer }
         drawn: { type: integer }
@@ -7411,6 +7411,29 @@ components:
         status: { type: string, enum: [pending, published, rejected] }
         author: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string }, username: { type: string, nullable: true } } }
         at: { type: string, format: date-time }
+    AllianceClub:
+      type: object
+      description: '[Sprint 59 F1] A club in the alliance tournament (AllianceController card)'
+      required: [id, name, code, coach, crest_url]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        coach: { type: string, nullable: true }
+        crest_url: { type: string }
+    TournamentTeam:
+      type: object
+      description: '[Sprint 59 F1] A tournament''s team as the screens show it (TournamentController::cards)'
+      required: [id, name, code, strength_cp, group, colors, crest_url, coach]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        strength_cp: { type: integer }
+        group: { type: string, nullable: true, description: Its group's letter once drawn }
+        colors: { type: array, items: { type: string } }
+        crest_url: { type: string }
+        coach: { type: string, nullable: true }
     LeagueMatch:
       type: object
       description: '[Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model'
