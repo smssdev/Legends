@@ -29,7 +29,9 @@ class DailyTasksTest extends TestCase
         $league = $this->makeLeague($owner, ['team_count' => 4, 'starts_at' => '2026-11-14T10:00:00Z']);
         $url = "/api/v1/leagues/{$league['id']}/daily-tasks";
 
-        $view = $this->actingAs($owner)->getJson($url)->assertOk()->assertJsonCount(4, 'tasks')->json();
+        $view = $this->actingAs($owner)->getJson($url)->assertOk()->assertJsonCount(4, 'tasks')
+            // [Sprint 59 F1] The fields the app reads through DailyTasks (openapi.yaml).
+            ->assertJsonStructure(['day', 'renews_at', 'done', 'total', 'tasks' => ['*' => ['task', 'complete', 'claimed', 'coins']]])->json();
         $this->assertSame('2026-11-10', $view['day']);
         $chat = collect($view['tasks'])->firstWhere('task', 'chat');
         $this->assertFalse($chat['complete']);

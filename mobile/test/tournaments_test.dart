@@ -11,6 +11,7 @@ import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
@@ -41,7 +42,9 @@ Future<void> pump(WidgetTester t, Widget screen, {Map<String, dynamic>? draw}) a
     ProviderScope(
       overrides: [
         preferencesProvider.overrideWithValue(prefs),
-        tournamentsProvider.overrideWith((ref) async => (json('tournaments')['tournaments'] as List<dynamic>).cast<Map<String, dynamic>>()),
+        tournamentsProvider.overrideWith(
+          (ref) async => [for (final t in json('tournaments')['tournaments'] as List<dynamic>) api.Tournament.fromJson(t)],
+        ),
         catalogProvider.overrideWith((ref) async => json('tournaments_catalog')),
         tournamentProvider.overrideWith((ref, id) async => json('tournament')['tournament'] as Map<String, dynamic>),
         drawProvider.overrideWith((ref, id) async => draw ?? json('tournament_draw')),

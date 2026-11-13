@@ -23,6 +23,7 @@ class FakeConsole implements ConsoleRepository {
 
   @override
   Future<DailyTasks> dailyTasks(int league) async => DailyTasks.fromJson({
+    'day': '2026-11-10',
     'done': 1,
     'total': 4,
     'renews_at': '2026-11-10T22:00:00Z',

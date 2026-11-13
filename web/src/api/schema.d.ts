@@ -14317,6 +14317,8 @@ export interface components {
             status: "open" | "closed" | "done";
             /** Format: date-time */
             expires_at: string;
+            /** @description After an offer: the club took it and the player is mine */
+            bought?: boolean;
         };
         Chest: {
             /** @enum {string} */

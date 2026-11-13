@@ -5792,6 +5792,7 @@ components:
         rounds: { type: integer }
         status: { type: string, enum: [open, closed, done] }
         expires_at: { type: string, format: date-time }
+        bought: { type: boolean, description: 'After an offer: the club took it and the player is mine' }
     Chest:
       type: object
       required: [chest, coins, odds]
