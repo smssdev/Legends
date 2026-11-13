@@ -286,7 +286,7 @@ onMounted(async () => {
 
 <style scoped>
 .score-board {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 40%, transparent), var(--color-panel)), url("/art/stadium-blur.jpg") center / cover;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 40%, transparent), var(--color-panel)), url("/art/stadium-blur-1920.webp") center / cover;
   border: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
   box-shadow: 0 24px 50px -24px color-mix(in srgb, var(--color-shade) 90%, transparent);
 }

@@ -46,7 +46,7 @@ import { emblemSrc } from '../lib/i18n'
     url("/art/pattern-star.svg") center / 40px 40px repeat,
     radial-gradient(ellipse 80% 60% at 60% 30%, color-mix(in srgb, var(--color-brand) 45%, transparent), transparent 70%),
     linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 35%, transparent), var(--color-bg-deep)),
-    url("/art/stadium-blur.jpg") center / cover no-repeat;
+    url("/art/stadium-blur-1920.webp") center / cover no-repeat;
   background-blend-mode: soft-light, normal, normal, normal;
 }
 .auth-art::after {
@@ -61,7 +61,7 @@ import { emblemSrc } from '../lib/i18n'
   background:
     linear-gradient(180deg, transparent 40%, var(--color-bg)),
     radial-gradient(ellipse 90% 70% at 50% 20%, color-mix(in srgb, var(--color-brand) 40%, transparent), transparent 70%),
-    url("/art/stadium-blur-m.jpg") center top / cover no-repeat;
+    url("/art/stadium-blur-900.webp") center top / cover no-repeat;
 }
 .auth-panel {
   background: color-mix(in srgb, var(--color-panel) 85%, transparent);
