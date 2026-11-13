@@ -86,7 +86,7 @@ void main() {
       for (var i = 0; i < ms; i += 50) {
         await t.pump(const Duration(milliseconds: 50));
       }
-      await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/$name.png'));
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/$name.png'));
       await t.pumpWidget(const SizedBox());
     });
   }

@@ -1,4 +1,19 @@
-part of 'sim_screens.dart';
+import 'dart:async';
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../core/sounds.dart';
+import '../../l10n/app_localizations.dart';
+import '../../ui/theme.dart';
+import '../../ui/tokens.g.dart';
+import '../../ui/widgets/brand.dart';
+import '../../ui/widgets/glm_button.dart';
+import '../../ui/widgets/motion.dart';
+import 'sim_repository.dart';
+import 'sim_versus_art.dart';
 
 /// [Sprint 47] The face-off before the match, the approved design's motion graphic: the screen split on a gold
 /// diagonal in the two sides' colours, speed lines running, the crests slamming in one after the other, the VS
@@ -267,10 +282,10 @@ class _SimVersusScreenState extends State<SimVersusScreen> with TickerProviderSt
             fit: StackFit.expand,
             children: [
               CustomPaint(
-                painter: _Split(home: homeColor, away: awayColor, gold: p.gold, run: _loop.value, wide: wide),
+                painter: SimSplit(home: homeColor, away: awayColor, gold: p.gold, run: _loop.value, wide: wide),
               ),
               CustomPaint(
-                painter: _Sparks(t: _loop.value, colors: [p.gold, p.ring, p.text]),
+                painter: SimSparks(t: _loop.value, colors: [p.gold, p.ring, p.text]),
               ),
               SafeArea(
                 child: Center(

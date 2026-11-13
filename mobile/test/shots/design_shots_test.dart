@@ -16,7 +16,9 @@ import 'package:glm/features/leagues/league_screen.dart';
 import 'package:glm/features/leagues/leagues_repository.dart';
 import 'package:glm/features/leagues/models.dart';
 import 'package:glm/features/leagues/shell.dart';
-import 'package:glm/features/sim/sim_screens.dart';
+import 'package:glm/features/sim/sim_repository.dart';
+import 'package:glm/features/sim/sim_setup_screen.dart';
+import 'package:glm/features/sim/sim_versus_screen.dart';
 
 import 'shots_test.dart' show homeJson, json, shot;
 import '../home_answer.dart';
