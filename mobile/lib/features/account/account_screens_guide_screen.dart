@@ -21,13 +21,13 @@ class GuideScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: ExpansionTile(
                     shape: const Border(),
-                    title: Text('${(s as Map<dynamic, dynamic>)['title']}', style: context.text.titleMedium),
+                    title: Text(s.title, style: context.text.titleMedium),
                     children: [
-                      for (final t in (s['topics'] as List<dynamic>? ?? const []))
+                      for (final t in s.topics)
                         ExpansionTile(
                           shape: const Border(),
-                          title: Text('${(t as Map<dynamic, dynamic>)['q']}', style: const TextStyle(fontWeight: FontWeight.w700)),
-                          children: [Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 12), child: Text('${t['a']}'))],
+                          title: Text(t.q, style: const TextStyle(fontWeight: FontWeight.w700)),
+                          children: [Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 12), child: Text(t.a))],
                         ),
                     ],
                   ),

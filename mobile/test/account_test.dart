@@ -26,20 +26,20 @@ Future<void> pump(WidgetTester t, Widget screen) async {
     ProviderScope(
       overrides: [
         preferencesProvider.overrideWithValue(prefs),
-        meProvider.overrideWith((ref) async => json('auth_me')['user'] as Map<String, dynamic>),
-        achievementsProvider.overrideWith((ref) async => json('home_achievements')['achievements'] as List<dynamic>),
+        meProvider.overrideWith((ref) async => api.Account.fromJson(json('auth_me')['user'])),
+        achievementsProvider.overrideWith((ref) async => api.HomeAchievementsAnswer.fromJson(json('home_achievements')).achievements),
         statsProvider.overrideWith(
-          (ref, l) async => {
+          (ref, l) async => api.LeagueStats.fromJson({
             ...json('stats'),
             'scorers': [
               {
                 'player': {'id': 1, 'name': 'Mohamed Salah'},
-                'club': {'id': 141, 'code': 'LIV'},
+                'club': {'id': 141, 'code': 'LIV', 'name': 'Liverpool', 'crest_url': '/crests/1.svg'},
                 'goals': 7,
                 'assists': 2,
               },
             ],
-          },
+          }),
         ),
         ideasProvider.overrideWith(
           (ref) async => api.IdeasAnswer.fromJson({
@@ -65,16 +65,27 @@ Future<void> pump(WidgetTester t, Widget screen) async {
         ),
         supportProvider.overrideWith(
           (ref) async => [
-            {'id': 1, 'body': 'Hello team', 'from_team': false, 'at': '2026-11-06T08:00:00Z'},
-            {'id': 2, 'body': 'Welcome!', 'from_team': true, 'at': '2026-11-06T08:05:00Z'},
+            for (final m in [
+              {'id': 1, 'body': 'Hello team', 'from_team': false, 'read': true, 'at': '2026-11-06T08:00:00Z'},
+              {'id': 2, 'body': 'Welcome!', 'from_team': true, 'read': true, 'at': '2026-11-06T08:05:00Z'},
+            ])
+              api.SupportMessage.fromJson(m),
           ],
         ),
         announcementsProvider.overrideWith(
           (ref) async => [
-            {'id': 1, 'title': 'Season two', 'body': 'Starts on Friday.', 'image_url': null, 'cta': null},
+            api.AnnouncementCard.fromJson({
+              'id': 1,
+              'title': 'Season two',
+              'body': 'Starts on Friday.',
+              'image_url': null,
+              'cta': null,
+              'sent': 1,
+              'at': '2026-11-06T08:00:00Z',
+            }),
           ],
         ),
-        guideProvider.overrideWith((ref) async => json('guide')['sections'] as List<dynamic>),
+        guideProvider.overrideWith((ref) async => api.GuideAnswer.fromJson(json('guide')).sections),
         rankingProvider.overrideWith((ref) async => api.RankingsCoachesAnswer.fromJson(json('ranking')).coaches),
       ],
       child: MaterialApp(

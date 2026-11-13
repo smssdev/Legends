@@ -12,7 +12,9 @@ class PublicGuideTest extends TestCase
 
     public function test_a_visitor_reads_the_whole_guide_in_sections(): void
     {
-        $ar = $this->getJson('/api/v1/guide')->assertOk()->assertJsonPath('sections.0.id', 'start')->json('sections');
+        $ar = $this->getJson('/api/v1/guide')->assertOk()->assertJsonPath('sections.0.id', 'start')
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['sections' => ['*' => ['id', 'title', 'topics' => ['*' => ['id', 'q', 'a']]]]])->json('sections');
         $ids = collect($ar)->flatMap(fn ($s) => collect($s['topics'])->pluck('id'));
         $this->assertNotContains('about', $ids);
         $this->assertContains('tactics', collect($ar)->pluck('id'));

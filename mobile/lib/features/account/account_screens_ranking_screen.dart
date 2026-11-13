@@ -47,7 +47,7 @@ class StatsScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(statsProvider(leagueId)),
         data: (s) {
           final p = context.palette;
-          Widget list(String title, List<dynamic> rows, String key, String unit) => GlmCard(
+          Widget list(String title, List<api.StatsPlayer> rows, int? Function(api.StatsPlayer) count, String unit) => GlmCard(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -71,18 +71,11 @@ class StatsScreen extends ConsumerWidget {
                           ),
                         ),
                         Expanded(
-                          child: Text(
-                            '${((r as Map<dynamic, dynamic>)['player'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                            textDirection: TextDirection.ltr,
-                            textAlign: TextAlign.start,
-                          ),
+                          child: Text(r.player.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                         ),
+                        Text('${r.club.code}  ', style: TextStyle(color: p.textMuted, fontSize: 12)),
                         Text(
-                          '${(r['club'] as Map<dynamic, dynamic>?)?['code'] ?? ''}  ',
-                          style: TextStyle(color: p.textMuted, fontSize: 12),
-                        ),
-                        Text(
-                          '${r[key]} $unit',
+                          '${count(r) ?? 0} $unit',
                           style: TextStyle(fontWeight: FontWeight.w800, color: context.glm.goldText),
                         ),
                       ],
@@ -91,13 +84,13 @@ class StatsScreen extends ConsumerWidget {
               ],
             ),
           );
-          final values = s['value'] as List<dynamic>? ?? const [];
+          final values = s.value;
           return ListView(
             padding: const EdgeInsets.all(12),
             children: [
-              list(l.scorers, s['scorers'] as List<dynamic>? ?? const [], 'goals', l.goalsShort),
+              list(l.scorers, s.scorers, (r) => r.goals, l.goalsShort),
               const SizedBox(height: 10),
-              list(l.assistsTitle, s['assists'] as List<dynamic>? ?? const [], 'assists', l.assistsShort),
+              list(l.assistsTitle, s.assists, (r) => r.assists, l.assistsShort),
               const SizedBox(height: 10),
               GlmCard(
                 padding: const EdgeInsets.all(12),
@@ -113,19 +106,15 @@ class StatsScreen extends ConsumerWidget {
                             SizedBox(
                               width: 24,
                               child: Text(
-                                '${(v as Map<dynamic, dynamic>)['position']}',
+                                '${v.position}',
                                 style: TextStyle(color: p.textMuted, fontFamily: GlmFonts.numbers),
                               ),
                             ),
                             Expanded(
-                              child: Text(
-                                '${(v['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                                textDirection: TextDirection.ltr,
-                                textAlign: TextAlign.start,
-                              ),
+                              child: Text(v.club.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                             ),
                             Text(
-                              money(context, (v['value'] as num? ?? 0).toInt()),
+                              money(context, v.value),
                               textDirection: TextDirection.ltr,
                               style: const TextStyle(fontWeight: FontWeight.w800),
                             ),
