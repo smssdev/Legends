@@ -63,10 +63,17 @@ class ApiClient {
 
   /// A GET: asked again after [retryDelays] when the network or the server failed (never for a refusal, 4xx), and
   /// stopped by [cancel] (the screen gone).
-  Future<Map<String, dynamic>> get(String path, {Map<String, dynamic>? query, CancelToken? cancel}) async {
+  Future<Map<String, dynamic>> get(String path, {Map<String, dynamic>? query, CancelToken? cancel, Map<String, String>? headers}) async {
     for (var attempt = 0; ; attempt++) {
       try {
-        return await _call(() => dio.get(path, queryParameters: query, cancelToken: cancel));
+        return await _call(
+          () => dio.get(
+            path,
+            queryParameters: query,
+            cancelToken: cancel,
+            options: headers == null ? null : Options(headers: headers),
+          ),
+        );
       } on ApiError catch (e) {
         final again = e.offline || (e.status ?? 0) >= 500;
         if (!again || attempt >= retryDelays.length || (cancel?.isCancelled ?? false)) rethrow;
@@ -111,7 +118,13 @@ class ApiClient {
     return saved;
   }
 
-  Future<Map<String, dynamic>> post(String path, [Object? body]) => _call(() => dio.post(path, data: body));
+  Future<Map<String, dynamic>> post(String path, [Object? body, Map<String, String>? headers]) => _call(
+    () => dio.post(
+      path,
+      data: body,
+      options: headers == null ? null : Options(headers: headers),
+    ),
+  );
   Future<Map<String, dynamic>> put(String path, [Object? body]) => _call(() => dio.put(path, data: body));
   Future<Map<String, dynamic>> patch(String path, [Object? body]) => _call(() => dio.patch(path, data: body));
   Future<Map<String, dynamic>> delete(String path, [Object? body]) => _call(() => dio.delete(path, data: body));

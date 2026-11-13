@@ -135,7 +135,8 @@ class MatchRepository {
 }
 
 final matchRepositoryProvider = Provider<MatchRepository>((ref) => MatchRepository(ref.watch(apiProvider)));
-final matchProvider = FutureProvider.autoDispose.family<MatchView, int>((ref, id) => ref.read(matchRepositoryProvider).show(id));
+// [Sprint 61 F10] Through matchSourceProvider: a sim match (a negative number) from the simulator's API.
+final matchProvider = FutureProvider.autoDispose.family<MatchView, int>((ref, id) => ref.read(matchSourceProvider(id)).show(id));
 final myLiveMatchesProvider = FutureProvider.autoDispose((ref) => ref.read(matchRepositoryProvider).mine());
 final reportProvider = FutureProvider.autoDispose.family<MatchReport, (int, bool)>(
   (ref, k) => ref.read(matchRepositoryProvider).report(k.$1, coach: k.$2),

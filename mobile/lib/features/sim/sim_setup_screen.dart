@@ -55,7 +55,8 @@ class _SimSetupScreenState extends ConsumerState<SimSetupScreen> {
             home: me,
             away: them,
             friend: _friend,
-            matchUrl: '${AppConfig.siteUrl}/sim/${m.id}${m.home == null ? '' : '?seat=${m.home}'}',
+            // [Sprint 61 F10] Played here, on the live match screen (no browser).
+            matchPath: '/sim/match/${m.id}${m.home == null ? '' : '?seat=${m.home}'}',
             inviteUrl: m.away == null ? null : '${AppConfig.siteUrl}/sim/${m.id}?seat=${m.away}',
           ),
           transitionsBuilder: (_, a, _, child) => FadeTransition(opacity: a, child: child),

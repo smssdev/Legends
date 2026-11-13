@@ -1,7 +1,7 @@
 part of 'live_screen.dart';
 
 class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
-  late final MatchRepository _repo = ref.read(matchRepositoryProvider);
+  late final MatchRepository _repo = ref.read(matchSourceProvider(widget.view.id));
   late (int, int) _score = widget.view.score;
   late Map<String, MatchTeam> _teams = widget.view.teams;
   late bool _finished = widget.view.finished;
@@ -42,6 +42,9 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   static const _pushedPollMs = 12000, _breakPollMs = 2000;
 
   int get _id => widget.view.id;
+
+  /// [Sprint 61 F10] A simulator match (SimMatches): no league channel, timeout, side chat, break or report.
+  bool get _sim => _id < 0;
   String? get _you => widget.view.you;
 
   @override
@@ -50,7 +53,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     unawaited(WakelockPlus.enable().catchError((_) {}));
     _poll();
-    if (!widget.view.finished) {
+    if (!widget.view.finished && !_sim) {
       _channel = ref.read(liveFeedProvider).join('match.$_id', {'minute': _pushed, 'chat': _pushedChat, 'reaction': _pushedReaction});
       _channel!.subscribed.addListener(_channelChanged);
     }
@@ -295,18 +298,9 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
             );
             final controls = <Widget>[
               if (_timeoutUntil != null && _timeoutUntil! > DateTime.now().millisecondsSinceEpoch + _offset && !_finished) _timeoutBar(l),
-              if (_pause != null && _you != null && !_finished) _breakBar(l),
+              if (_pause != null && _you != null && !_finished && !_sim) _breakBar(l),
               if (_you != null && !_finished) _coachBar(l),
-              if (_finished)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-                  child: GlmButton(
-                    label: l.matchReport,
-                    variant: GlmButtonVariant.brand,
-                    block: true,
-                    onPressed: () => context.push('/match/$_id/report?coach=${_you != null}'),
-                  ),
-                ),
+              if (_finished) Padding(padding: const EdgeInsets.fromLTRB(12, 10, 12, 0), child: _endButton(l)),
               if (!_finished && _started) _socialBar(l),
             ];
             if (box.maxWidth > box.maxHeight) {
@@ -351,6 +345,14 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     'cheer': '📣',
     'boo': '👎',
   };
+
+  /// At the end: the report of a league match; a sim match goes back to the simulator.
+  Widget _endButton(L l) => GlmButton(
+    label: _sim ? l.close : l.matchReport,
+    variant: GlmButtonVariant.brand,
+    block: true,
+    onPressed: _sim ? () => Navigator.of(context).maybePop() : () => context.push('/match/$_id/report?coach=${_you != null}'),
+  );
 
   Widget _breakBar(L l) {
     final ready = _pause!.ready.contains(_you);
@@ -439,7 +441,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
               (Icons.tune_rounded, l.tactics, busy ? null : _tacticsSheet),
               (Icons.grid_view_rounded, l.formation, busy || widget.view.formations.isEmpty ? null : _formationSheet),
               // [Sprint 50 M14] The one timeout: play waits, the changes open for both coaches.
-              (Icons.timer_rounded, _timeoutUsed ? l.timeoutUsed : l.timeout, _busy || _timeoutUsed || !_started ? null : _takeTimeout),
+              if (!_sim)
+                (Icons.timer_rounded, _timeoutUsed ? l.timeoutUsed : l.timeout, _busy || _timeoutUsed || !_started ? null : _takeTimeout),
             ])
               Expanded(
                 child: Padding(

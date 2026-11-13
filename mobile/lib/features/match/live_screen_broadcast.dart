@@ -12,17 +12,8 @@ extension _LiveBroadcast on _LiveState {
     final last = _feed.where((e) => e.text != null && e.text!.isNotEmpty).firstOrNull;
     final urgent = <Widget>[
       if (_timeoutUntil != null && _timeoutUntil! > DateTime.now().millisecondsSinceEpoch + _offset && !_finished) _timeoutBar(l),
-      if (_pause != null && _you != null && !_finished) _breakBar(l),
-      if (_finished)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-          child: GlmButton(
-            label: l.matchReport,
-            variant: GlmButtonVariant.brand,
-            block: true,
-            onPressed: () => context.push('/match/$_id/report?coach=${_you != null}'),
-          ),
-        ),
+      if (_pause != null && _you != null && !_finished && !_sim) _breakBar(l),
+      if (_finished) Padding(padding: const EdgeInsets.fromLTRB(12, 10, 12, 0), child: _endButton(l)),
     ];
     return ColoredBox(
       color: GlmBroadcast.tvDeep,
@@ -176,7 +167,8 @@ extension _LiveBroadcast on _LiveState {
       (Icons.swap_vert_rounded, l.substitute, l.subsLeft(team.subsUsed, team.subsMax), busy ? null : _subSheet),
       (Icons.tune_rounded, l.tactics, null, busy ? null : _tacticsSheet),
       (Icons.grid_view_rounded, l.formation, null, busy || widget.view.formations.isEmpty ? null : _formationSheet),
-      (Icons.timer_rounded, l.timeout, _timeoutUsed ? l.timeoutUsed : null, _busy || _timeoutUsed || !_started ? null : _takeTimeout),
+      if (!_sim)
+        (Icons.timer_rounded, l.timeout, _timeoutUsed ? l.timeoutUsed : null, _busy || _timeoutUsed || !_started ? null : _takeTimeout),
     ];
     final p = context.palette;
     return ListView(
@@ -235,7 +227,7 @@ extension _LiveBroadcast on _LiveState {
               for (final e in _LiveState.reactions.entries)
                 if (e.key != 'cheer' && e.key != 'boo')
                   react(e.key, Text(e.value, style: glmText(GlmType.headline)), () => _send(() => _repo.react(_id, e.key), quiet: true)),
-              for (final side in ['home', 'away']) ...[
+              for (final side in _sim ? const <String>[] : ['home', 'away']) ...[
                 react(
                   'cheer $side',
                   FittedBox(child: Text('📣${widget.view.club(side).code}', style: glmText(GlmType.body))),
@@ -259,7 +251,7 @@ extension _LiveBroadcast on _LiveState {
             ),
           const SizedBox(height: GlmSpace.sm),
         ],
-        GlmButton(label: '${l.matchChat} ${_chat.length}', variant: GlmButtonVariant.quiet, block: true, onPressed: _chatSheet),
+        if (!_sim) GlmButton(label: '${l.matchChat} ${_chat.length}', variant: GlmButtonVariant.quiet, block: true, onPressed: _chatSheet),
         if (_started && _wave.isNotEmpty) ...[
           const SizedBox(height: GlmSpace.sm),
           _MomentumStrip(wave: _wave, homePct: _homePct, view: widget.view),
