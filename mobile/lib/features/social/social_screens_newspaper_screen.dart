@@ -15,9 +15,9 @@ class NewspaperScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(newspaperProvider(leagueId)),
         data: (d) {
           final p = context.palette;
-          final e = d['edition'] as Map<dynamic, dynamic>?;
-          final articles = d['articles'] as List<dynamic>? ?? const [];
-          final pending = d['pending'] as List<dynamic>? ?? const [];
+          final e = d.edition;
+          final articles = d.articles;
+          final pending = d.pending;
           Future<void> decide(int id, bool publish) async {
             await _try(context, () => ref.read(socialRepositoryProvider).decide(leagueId, id, publish));
             ref.invalidate(newspaperProvider(leagueId));
@@ -36,7 +36,7 @@ class NewspaperScreen extends ConsumerWidget {
                   ),
                 )
               else ...[
-                for (final s in (e['stories'] as List<dynamic>? ?? const []))
+                for (final s in e.stories)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: GlmCard(
@@ -44,36 +44,32 @@ class NewspaperScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('${(s as Map<dynamic, dynamic>)['title']}', style: context.text.titleMedium),
-                          Text('${s['text']}', style: TextStyle(color: p.textMuted)),
+                          Text(s.title, style: context.text.titleMedium),
+                          Text(s.text, style: TextStyle(color: p.textMuted)),
                         ],
                       ),
                     ),
                   ),
-                SectionTitle(l.roundResults(e['round'] as int? ?? 0)),
+                SectionTitle(l.roundResults(e.round)),
                 GlmCard(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Column(
                     children: [
-                      for (final r in (e['results'] as List<dynamic>? ?? const []))
+                      for (final r in e.results)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
                             children: [
                               Expanded(
-                                child: Text(
-                                  '${(r as Map<dynamic, dynamic>)['home']}',
-                                  textDirection: TextDirection.ltr,
-                                  textAlign: TextAlign.start,
-                                ),
+                                child: Text(r.home, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                               ),
                               Text(
-                                '${r['home_goals']} - ${r['away_goals']}',
+                                '${r.homeGoals} - ${r.awayGoals}',
                                 textDirection: TextDirection.ltr,
                                 style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
                               ),
                               Expanded(
-                                child: Text('${r['away']}', textDirection: TextDirection.ltr, textAlign: TextAlign.end),
+                                child: Text(r.away, textDirection: TextDirection.ltr, textAlign: TextAlign.end),
                               ),
                             ],
                           ),
@@ -81,44 +77,35 @@ class NewspaperScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                if (e['coach'] is Map<dynamic, dynamic>) ...[
+                if (e.coach case final c?) ...[
                   const SizedBox(height: 8),
                   ListTile(
                     leading: const Text('🎩', style: TextStyle(fontSize: 22)),
                     title: Text(l.coachOfRound),
-                    subtitle: Text(
-                      '${((e['coach'] as Map<dynamic, dynamic>)['coach'] as Map<dynamic, dynamic>?)?['name'] ?? ''} · ${(e['coach'] as Map<dynamic, dynamic>)['club'] ?? ''}',
-                    ),
+                    subtitle: Text('${c.coach.name} · ${c.club}'),
                   ),
                 ],
               ],
               const SizedBox(height: 8),
-              if (d['is_owner'] == true && pending.isNotEmpty) ...[
+              if (d.isOwner && pending.isNotEmpty) ...[
                 SectionTitle(l.pendingArticles),
                 for (final a in pending)
                   GlmCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('${(a as Map<dynamic, dynamic>)['title']}', style: context.text.titleMedium),
-                        Text('${a['body']}'),
-                        Text(
-                          '${(a['author'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                          style: TextStyle(color: p.textMuted, fontSize: 12),
-                        ),
+                        Text(a.title, style: context.text.titleMedium),
+                        Text(a.body),
+                        Text(a.author.name, style: TextStyle(color: p.textMuted, fontSize: 12)),
                         const SizedBox(height: 8),
                         Row(
                           children: [
                             Expanded(
-                              child: GlmButton(label: l.publish, onPressed: () => decide(a['id'] as int, true)),
+                              child: GlmButton(label: l.publish, onPressed: () => decide(a.id, true)),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: GlmButton(
-                                label: l.reject,
-                                variant: GlmButtonVariant.outline,
-                                onPressed: () => decide(a['id'] as int, false),
-                              ),
+                              child: GlmButton(label: l.reject, variant: GlmButtonVariant.outline, onPressed: () => decide(a.id, false)),
                             ),
                           ],
                         ),
@@ -135,27 +122,24 @@ class NewspaperScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('${(a as Map<dynamic, dynamic>)['title']}', style: context.text.titleMedium),
+                        Text(a.title, style: context.text.titleMedium),
                         const SizedBox(height: 4),
-                        Text('${a['body']}'),
+                        Text(a.body),
                         const SizedBox(height: 4),
                         Text(
-                          [
-                            (a['author'] as Map<dynamic, dynamic>?)?['name'] ?? '',
-                            if (DateTime.tryParse('${a['at']}') != null) when(context, DateTime.parse('${a['at']}').toLocal()),
-                          ].join(' · '),
+                          [a.author.name, if (DateTime.tryParse(a.at) != null) when(context, DateTime.parse(a.at).toLocal())].join(' · '),
                           style: TextStyle(color: p.textMuted, fontSize: 12),
                         ),
                       ],
                     ),
                   ),
                 ),
-              if (d['wrote_this_round'] != true)
+              if (!d.wroteThisRound)
                 GlmButton(
                   label: l.writeArticle,
                   variant: GlmButtonVariant.outline,
                   icon: const Icon(Icons.edit_rounded),
-                  onPressed: () => _write(context, ref, d['max'] as int? ?? 2000),
+                  onPressed: () => _write(context, ref, d.max),
                 ),
             ],
           );

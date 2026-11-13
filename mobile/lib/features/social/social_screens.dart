@@ -33,6 +33,7 @@ import '../leagues/widgets.dart' show when;
 import '../leagues/shell.dart';
 
 import 'chat_controller.dart';
+import '../../api/gen/models.g.dart' as api;
 
 part 'social_screens_quick_match_screen.dart';
 part 'social_screens_newspaper_screen.dart';
@@ -54,7 +55,9 @@ class SocialRepository {
   Future<Map<String, dynamic>> predictions(int league) => _api.get('/leagues/$league/predictions');
   Future<Map<String, dynamic>> predict(int league, int fixture, String pick) =>
       _api.post('/leagues/$league/predictions', {'fixture_id': fixture, 'pick': pick});
-  Future<Map<String, dynamic>> newspaper(int league) => _api.get('/leagues/$league/newspaper');
+
+  /// [Sprint 59 F1] The newspaper through the generated model (`Newspaper`).
+  Future<api.Newspaper> newspaper(int league) async => api.Newspaper.fromJson(await _api.get('/leagues/$league/newspaper'));
   Future<Map<String, dynamic>> write(int league, String title, String body) =>
       _api.post('/leagues/$league/newspaper/articles', {'title': title, 'body': body});
   Future<Map<String, dynamic>> decide(int league, int article, bool publish) =>

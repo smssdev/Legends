@@ -1592,7 +1592,7 @@ paths:
       parameters:
         - { name: round, in: query, required: false, schema: { type: integer } }
       responses:
-        '200': { description: The newspaper, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+        '200': { description: The newspaper, content: { application/json: { schema: { $ref: '#/components/schemas/Newspaper' } } } }
   /leagues/{league}/newspaper/articles:
     parameters: [{ $ref: '#/components/parameters/League' }]
     post:
@@ -1602,7 +1602,7 @@ paths:
         required: true
         content: { application/json: { schema: { type: object, required: [title, body], properties: { title: { type: string, minLength: 3, maxLength: 120 }, body: { type: string, minLength: 10, maxLength: 2000 } } } } }
       responses:
-        '200': { description: The newspaper after it, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+        '200': { description: The newspaper after it, content: { application/json: { schema: { $ref: '#/components/schemas/Newspaper' } } } }
         '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/newspaper/articles/{article}/decide:
     parameters:
@@ -7365,6 +7365,52 @@ components:
         said: { type: object, required: [home, away], properties: { home: { type: string, nullable: true }, away: { type: string, nullable: true } }, description: The statement each side made, or null }
         mine: { type: string, nullable: true, enum: [home, away, null] }
         morale: { type: integer }
+    Newspaper:
+      type: object
+      description: '[UP12, Sprint 59 F1] The league''s newspaper (PressController::newspaper): the edition of a played round, and the coaches'' articles'
+      required: [edition, articles, pending, is_owner, max, wrote_this_round, round]
+      properties:
+        edition: { allOf: [{ $ref: '#/components/schemas/NewspaperEdition' }], nullable: true, description: 'Null before any round is played' }
+        articles: { type: array, items: { $ref: '#/components/schemas/NewspaperArticle' }, description: The published ones, newest first }
+        pending: { type: array, items: { $ref: '#/components/schemas/NewspaperArticle' }, description: 'Waiting for the owner: all of them for the owner, one''s own for a coach' }
+        is_owner: { type: boolean }
+        max: { type: integer, description: An article's longest body }
+        wrote_this_round: { type: boolean, description: '[Sprint 21 E4.5] One article a round' }
+        round: { type: integer, description: The round an article is written for }
+    NewspaperEdition:
+      type: object
+      required: [round, rounds, results, stories, team, best_matches, player, coach, scandals]
+      properties:
+        round: { type: integer }
+        rounds: { type: array, items: { type: integer }, description: The rounds played, for the picker }
+        results: { type: array, items: { type: object, required: [home, away, home_goals, away_goals, match_id], properties: { home: { type: string }, away: { type: string }, home_goals: { type: integer }, away_goals: { type: integer }, match_id: { type: integer, nullable: true } } } }
+        stories: { type: array, items: { type: object, required: [kind, title, text], properties: { kind: { type: string }, title: { type: string }, text: { type: string } } } }
+        team: { type: object, additionalProperties: true, description: The team of the week }
+        best_matches: { type: array, items: { type: object, additionalProperties: true }, description: '[Sprint 21 E4.6] score, home, away, goals, upset, comeback, match_id' }
+        player: { type: object, nullable: true, additionalProperties: true, description: The player of the round }
+        coach:
+          type: object
+          nullable: true
+          description: The coach of the round
+          required: [score, coach, club, opponent, goals, away]
+          properties:
+            score: { type: integer }
+            coach: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+            club: { type: string }
+            opponent: { type: string }
+            goals: { type: array, items: { type: integer } }
+            away: { type: boolean }
+        scandals: { type: array, items: { type: object, additionalProperties: true }, description: 'The bribes an opponent exposed: club, coach, accuser, points, fine, at' }
+    NewspaperArticle:
+      type: object
+      required: [id, title, body, status, author, at]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        body: { type: string }
+        status: { type: string, enum: [pending, published, rejected] }
+        author: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string }, username: { type: string, nullable: true } } }
+        at: { type: string, format: date-time }
     LeagueMatch:
       type: object
       description: '[Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model'

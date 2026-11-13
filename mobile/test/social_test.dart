@@ -15,6 +15,8 @@ import 'package:glm/core/live/live_channels.dart';
 
 import 'fakes/live_feed.dart';
 
+import 'package:glm/api/gen/models.g.dart' as api;
+
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
 /// Real replies from a local server (league 8: a friendly played, the round's predictions, a group's message).
@@ -38,7 +40,7 @@ class FakeSocial implements SocialRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> newspaper(int league) async => {
+  Future<api.Newspaper> newspaper(int league) async => api.Newspaper.fromJson({
     ...json('newspaper'),
     'pending': [
       {
@@ -47,9 +49,10 @@ class FakeSocial implements SocialRepository {
         'body': 'A great start for the reds this season.',
         'status': 'pending',
         'author': {'id': 9, 'name': 'Hamza'},
+        'at': '2026-11-06T08:00:00Z',
       },
     ],
-  };
+  });
   @override
   Future<Map<String, dynamic>> write(int league, String title, String body) async => json('newspaper');
   @override

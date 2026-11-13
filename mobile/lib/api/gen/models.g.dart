@@ -8103,6 +8103,227 @@ class Negotiation {
   final String status;
 }
 
+/// [UP12, Sprint 59 F1] The league's newspaper (PressController::newspaper): the edition of a played round, and the coaches' articles
+class Newspaper {
+  const Newspaper({
+    required this.articles,
+    this.edition,
+    required this.isOwner,
+    required this.max,
+    required this.pending,
+    required this.round,
+    required this.wroteThisRound,
+  });
+
+  factory Newspaper.fromJson(Object? json) {
+    final r = JsonReader(json, 'Newspaper');
+    return Newspaper(
+      articles: r.list('articles', NewspaperArticle.fromJson),
+      edition: r.objectOrNull('edition', NewspaperEdition.fromJson),
+      isOwner: r.bool_('is_owner'),
+      max: r.int_('max'),
+      pending: r.list('pending', NewspaperArticle.fromJson),
+      round: r.int_('round'),
+      wroteThisRound: r.bool_('wrote_this_round'),
+    );
+  }
+
+  /// The published ones
+  final List<NewspaperArticle> articles;
+
+  /// Null before any round is played
+  final NewspaperEdition? edition;
+  final bool isOwner;
+
+  /// An article's longest body
+  final int max;
+
+  /// Waiting for the owner: all of them for the owner, one's own for a coach
+  final List<NewspaperArticle> pending;
+
+  /// The round an article is written for
+  final int round;
+
+  /// [Sprint 21 E4.5] One article a round
+  final bool wroteThisRound;
+}
+
+class NewspaperArticle {
+  const NewspaperArticle({
+    required this.at,
+    required this.author,
+    required this.body,
+    required this.id,
+    required this.status,
+    required this.title,
+  });
+
+  factory NewspaperArticle.fromJson(Object? json) {
+    final r = JsonReader(json, 'NewspaperArticle');
+    return NewspaperArticle(
+      at: r.string('at'),
+      author: r.object('author', NewspaperArticleAuthor.fromJson),
+      body: r.string('body'),
+      id: r.int_('id'),
+      status: r.string('status'),
+      title: r.string('title'),
+    );
+  }
+
+  final String at;
+  final NewspaperArticleAuthor author;
+  final String body;
+  final int id;
+  final String status;
+  final String title;
+}
+
+class NewspaperArticleAuthor {
+  const NewspaperArticleAuthor({required this.id, required this.name, this.username});
+
+  factory NewspaperArticleAuthor.fromJson(Object? json) {
+    final r = JsonReader(json, 'NewspaperArticleAuthor');
+    return NewspaperArticleAuthor(id: r.int_('id'), name: r.string('name'), username: r.stringOrNull('username'));
+  }
+
+  final int id;
+  final String name;
+  final String? username;
+}
+
+class NewspaperEdition {
+  const NewspaperEdition({
+    required this.bestMatches,
+    this.coach,
+    this.player,
+    required this.results,
+    required this.round,
+    required this.rounds,
+    required this.scandals,
+    required this.stories,
+    required this.team,
+  });
+
+  factory NewspaperEdition.fromJson(Object? json) {
+    final r = JsonReader(json, 'NewspaperEdition');
+    return NewspaperEdition(
+      bestMatches: r.list('best_matches', JsonReader.anyOf),
+      coach: r.objectOrNull('coach', NewspaperEditionCoach.fromJson),
+      player: r.mapOrNull('player', JsonReader.anyOf),
+      results: r.list('results', NewspaperEditionResultsItem.fromJson),
+      round: r.int_('round'),
+      rounds: r.list('rounds', JsonReader.intOf),
+      scandals: r.list('scandals', JsonReader.anyOf),
+      stories: r.list('stories', NewspaperEditionStoriesItem.fromJson),
+      team: r.map('team', JsonReader.anyOf),
+    );
+  }
+
+  /// [Sprint 21 E4.6] score, home, away, goals, upset, comeback, match_id
+  final List<Object?> bestMatches;
+
+  /// The coach of the round
+  final NewspaperEditionCoach? coach;
+
+  /// The player of the round
+  final Map<String, Object?>? player;
+  final List<NewspaperEditionResultsItem> results;
+  final int round;
+
+  /// The rounds played
+  final List<int> rounds;
+
+  /// The bribes an opponent exposed: club, coach, accuser, points, fine, at
+  final List<Object?> scandals;
+  final List<NewspaperEditionStoriesItem> stories;
+
+  /// The team of the week
+  final Map<String, Object?> team;
+}
+
+/// The coach of the round
+class NewspaperEditionCoach {
+  const NewspaperEditionCoach({
+    required this.away,
+    required this.club,
+    required this.coach,
+    required this.goals,
+    required this.opponent,
+    required this.score,
+  });
+
+  factory NewspaperEditionCoach.fromJson(Object? json) {
+    final r = JsonReader(json, 'NewspaperEditionCoach');
+    return NewspaperEditionCoach(
+      away: r.bool_('away'),
+      club: r.string('club'),
+      coach: r.object('coach', NewspaperEditionCoachCoach.fromJson),
+      goals: r.list('goals', JsonReader.intOf),
+      opponent: r.string('opponent'),
+      score: r.int_('score'),
+    );
+  }
+
+  final bool away;
+  final String club;
+  final NewspaperEditionCoachCoach coach;
+  final List<int> goals;
+  final String opponent;
+  final int score;
+}
+
+class NewspaperEditionCoachCoach {
+  const NewspaperEditionCoachCoach({required this.id, required this.name});
+
+  factory NewspaperEditionCoachCoach.fromJson(Object? json) {
+    final r = JsonReader(json, 'NewspaperEditionCoachCoach');
+    return NewspaperEditionCoachCoach(id: r.int_('id'), name: r.string('name'));
+  }
+
+  final int id;
+  final String name;
+}
+
+class NewspaperEditionResultsItem {
+  const NewspaperEditionResultsItem({
+    required this.away,
+    required this.awayGoals,
+    required this.home,
+    required this.homeGoals,
+    this.matchId,
+  });
+
+  factory NewspaperEditionResultsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'NewspaperEditionResultsItem');
+    return NewspaperEditionResultsItem(
+      away: r.string('away'),
+      awayGoals: r.int_('away_goals'),
+      home: r.string('home'),
+      homeGoals: r.int_('home_goals'),
+      matchId: r.intOrNull('match_id'),
+    );
+  }
+
+  final String away;
+  final int awayGoals;
+  final String home;
+  final int homeGoals;
+  final int? matchId;
+}
+
+class NewspaperEditionStoriesItem {
+  const NewspaperEditionStoriesItem({required this.kind, required this.text, required this.title});
+
+  factory NewspaperEditionStoriesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'NewspaperEditionStoriesItem');
+    return NewspaperEditionStoriesItem(kind: r.string('kind'), text: r.string('text'), title: r.string('title'));
+  }
+
+  final String kind;
+  final String text;
+  final String title;
+}
+
 /// [Sprint 59 F1] My next match (GET /leagues/{league}/team/next-match), read by the app through its generated model
 class NextMatch {
   const NextMatch({
