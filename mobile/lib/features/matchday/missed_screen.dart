@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/api/api_client.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
+import '../../ui/widgets/action_bar.dart';
+import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_card.dart';
@@ -25,18 +27,21 @@ class MissedScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = L.of(context);
     return Scaffold(
-      appBar: GameBar(
-        title: Text(l.missedTitle),
-        actions: [
-          TextButton(
+      appBar: GameBar(title: Text(l.missedTitle)),
+      // [Sprint 60 F7] The screen's one action in the bar at its foot, not in a corner of the top bar.
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: GlmActionBar(
+          actions: const [],
+          main: GlmButton(
+            label: l.markSeen,
             onPressed: () async {
               await tryAction(context, () => ref.read(apiProvider).post('/leagues/$leagueId/team/missed/seen'));
               ref.invalidate(missedProvider(leagueId));
               if (context.mounted) Navigator.of(context).maybePop();
             },
-            child: Text(l.markSeen),
           ),
-        ],
+        ),
       ),
       body: GlmBackground(
         child: AsyncView(

@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
+import '../../ui/widgets/action_bar.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../leagues/widgets.dart' show when;
@@ -74,20 +75,24 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
     final l = L.of(context);
     final p = context.palette;
     return Scaffold(
-      appBar: GameBar(
-        title: Text(l.inbox),
-        actions: [
-          if (_items.any((m) => !m.read))
-            TextButton(
-              onPressed: () async {
-                setState(() => _items.setAll(0, _items.map((m) => m.asRead())));
-                await _repo.readAll();
-                ref.invalidate(unreadProvider);
-              },
-              child: Text(l.readAll),
-            ),
-        ],
-      ),
+      appBar: GameBar(title: Text(l.inbox)),
+      // [Sprint 60 F7] «قرأت الكل» in the bar at the foot while something is unread.
+      bottomNavigationBar: _items.any((m) => !m.read)
+          ? SafeArea(
+              top: false,
+              child: GlmActionBar(
+                actions: const [],
+                main: GlmButton(
+                  label: l.readAll,
+                  onPressed: () async {
+                    setState(() => _items.setAll(0, _items.map((m) => m.asRead())));
+                    await _repo.readAll();
+                    ref.invalidate(unreadProvider);
+                  },
+                ),
+              ),
+            )
+          : null,
       body: GlmBackground(
         child: RefreshIndicator(
           color: p.gold,

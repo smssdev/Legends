@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
+import '../../ui/widgets/action_bar.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
@@ -50,10 +51,12 @@ class _PickTeamScreenState extends ConsumerState<PickTeamScreen> {
     final l = L.of(context);
     return Scaffold(
       appBar: GameBar(title: Text(l.pickClub)),
+      // [Sprint 60 F7] The screen's action in the one bar at the foot.
       bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: GlmButton(label: l.takeClub, block: true, loading: _busy, onPressed: _club == null ? null : _take),
+        top: false,
+        child: GlmActionBar(
+          actions: const [],
+          main: GlmButton(label: l.takeClub, loading: _busy, onPressed: _club == null ? null : _take),
         ),
       ),
       body: GlmBackground(
