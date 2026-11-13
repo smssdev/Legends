@@ -2066,5 +2066,6 @@
   "marketAnyPrice": "أي سعر",
   "marketApply": "طبّق",
   "marketClear": "امسح الفلاتر",
-  "liveOrders": "الأوامر"
+  "liveOrders": "الأوامر",
+  "offlineBar": "لا اتصال: تعرض الشاشات آخر ما وصلها، وتتحدث وحدها حين يعود الاتصال"
 }

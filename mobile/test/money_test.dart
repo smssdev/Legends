@@ -48,7 +48,7 @@ class FakeInbox implements InboxRepository {
   final List<int> reads = [];
 
   @override
-  Future<InboxPage> page({int? before}) async => InboxPage.fromJson(json('messages'));
+  Future<InboxPage> page({int? before, void Function()? onNewer}) async => InboxPage.fromJson(json('messages'));
   @override
   Future<int> unread() async => 1;
   @override

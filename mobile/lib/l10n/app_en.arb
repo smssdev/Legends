@@ -899,5 +899,6 @@
   "marketAnyPrice": "Any price",
   "marketApply": "Apply",
   "marketClear": "Clear filters",
-  "liveOrders": "Orders"
+  "liveOrders": "Orders",
+  "offlineBar": "Offline: the screens show the last they received, and update by themselves when the connection is back"
 }

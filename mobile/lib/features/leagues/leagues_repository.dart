@@ -52,8 +52,11 @@ class LeaguesRepository {
   ];
   Future<void> claim(int league, int club) => _api.post('/leagues/$league/clubs/$club/claim');
 
-  Future<List<StandingRow>> standings(int league) async => [
-    ...JsonReader(await _api.get('/leagues/$league/standings'), 'Standings').list('table', StandingRow.fromJson),
+  Future<List<StandingRow>> standings(int league, {void Function()? onNewer}) async => [
+    ...JsonReader(
+      onNewer == null ? await _api.get('/leagues/$league/standings') : await _api.getSaved('/leagues/$league/standings', onNewer: onNewer),
+      'Standings',
+    ).list('table', StandingRow.fromJson),
   ];
   Future<List<Fixture>> fixtures(int league) async => [
     for (final f in JsonReader(await _api.get('/leagues/$league/fixtures'), 'Fixtures').list('fixtures', api.Fixture.fromJson))
@@ -74,7 +77,7 @@ final leaguesRepositoryProvider = Provider<LeaguesRepository>((ref) => LeaguesRe
 final myLeaguesProvider = FutureProvider.autoDispose<List<League>>((ref) => ref.read(leaguesRepositoryProvider).mine());
 final leagueProvider = FutureProvider.autoDispose.family<League, int>((ref, id) => ref.read(leaguesRepositoryProvider).show(id));
 final standingsProvider = FutureProvider.autoDispose.family<List<StandingRow>, int>(
-  (ref, id) => ref.read(leaguesRepositoryProvider).standings(id),
+  (ref, id) => ref.read(leaguesRepositoryProvider).standings(id, onNewer: ref.newerRebuilds()),
 );
 final fixturesProvider = FutureProvider.autoDispose.family<List<Fixture>, int>(
   (ref, id) => ref.read(leaguesRepositoryProvider).fixtures(id),

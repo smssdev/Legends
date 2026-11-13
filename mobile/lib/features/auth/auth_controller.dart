@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
+import '../../core/api/response_cache.dart';
 import '../notifications/push.dart';
 import 'account.dart';
 import 'auth_repository.dart';
@@ -43,18 +44,22 @@ class AuthController extends AsyncNotifier<Account?> {
     // [Sprint 19 F1] This phone stops getting the account's pushes (while the token is still good).
     await ref.read(pushProvider).forget();
     await ref.read(authRepositoryProvider).signOut();
+    // [Sprint 61 F7] The account's saved answers go with it.
+    await ref.read(responseCacheProvider).clear();
     state = const AsyncData(null);
   }
 
   /// The account is gone (deleted): forget it on this phone.
   Future<void> forgetHere() async {
     await ref.read(tokenStoreProvider).clear();
+    await ref.read(responseCacheProvider).clear();
     state = const AsyncData(null);
   }
 
   Future<void> _forget() async {
     if (state.value == null) return;
     await ref.read(tokenStoreProvider).clear();
+    await ref.read(responseCacheProvider).clear();
     state = const AsyncData(null);
   }
 }

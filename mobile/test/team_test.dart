@@ -30,7 +30,7 @@ class FakeTeamRepository implements TeamRepository {
   List<int>? startersSent;
 
   @override
-  Future<TeamData> team(int league) async => sample;
+  Future<TeamData> team(int league, {void Function()? onNewer}) async => sample;
   @override
   Future<List<Formation>> formations() async => [
     Formation(name: sample.lineup.formation, label: sample.lineup.formation, slots: sample.lineup.slots),

@@ -15,6 +15,7 @@ import 'features/health/status_screens.dart';
 import 'features/inbox/inbox_data.dart';
 import 'features/notifications/push.dart';
 import 'l10n/app_localizations.dart';
+import 'features/health/offline_bar.dart';
 import 'router.dart';
 import 'ui/theme.dart';
 
@@ -91,8 +92,12 @@ class _GlmAppState extends ConsumerState<GlmApp> {
       ],
       routerConfig: ref.watch(routerProvider),
       // [Sprint 18 H] The assistant coach over every screen.
-      builder: (context, child) =>
-          update ? const UpdateRequiredScreen() : AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
+      // [Sprint 61 F9] The one «لا اتصال» bar above the frame.
+      builder: (context, child) => update
+          ? const UpdateRequiredScreen()
+          : OfflineBar(
+              child: AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
+            ),
     );
   }
 }
