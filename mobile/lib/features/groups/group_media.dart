@@ -101,6 +101,7 @@ class _GroupVoiceState extends ConsumerState<GroupVoice> {
     mainAxisSize: MainAxisSize.min,
     children: [
       IconButton(
+        tooltip: L.of(context).voiceNote(widget.seconds),
         onPressed: _loading ? null : _toggle,
         icon: _loading
             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))

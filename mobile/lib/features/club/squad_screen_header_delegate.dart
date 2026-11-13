@@ -100,12 +100,15 @@ class _Head extends StatelessWidget {
     final text = Row(
       mainAxisAlignment: col == _Col.name ? MainAxisAlignment.start : MainAxisAlignment.center,
       children: [
+        // [Sprint 60 T2] A column's title shrinks to its width (a larger system text) rather than being cut.
         Flexible(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: glmText(GlmType.body, fontWeight: FontWeight.w800, color: on ? GlmSheet.sortOn : Colors.white),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              maxLines: 1,
+              style: glmText(GlmType.body, fontWeight: FontWeight.w800, color: on ? GlmSheet.sortOn : Colors.white),
+            ),
           ),
         ),
         if (on) Icon(state._desc ? Icons.arrow_drop_down_rounded : Icons.arrow_drop_up_rounded, size: 20, color: GlmSheet.sortOn),

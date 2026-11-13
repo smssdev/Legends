@@ -48,6 +48,9 @@ import '../match_test.dart' show FakeMatchRepository;
 import '../team_test.dart' show FakeTeamRepository;
 import '../home_answer.dart';
 
+import 'package:glm/features/matchday/matchday_data.dart' show nextMatchProvider, pressProvider, integrityProvider;
+import 'package:glm/features/matchday/matchday_screen.dart';
+
 import 'package:glm/features/tournaments/tournaments_data.dart' show tournamentsProvider;
 import 'package:glm/features/tournaments/tournaments_screen.dart';
 
@@ -119,6 +122,10 @@ List<String> cutTexts(WidgetTester t) {
   ];
 }
 
+/// [Sprint 60 T2] The system's text size the screens are drawn at (1 for the reference shots).
+double _scale = 1;
+String _lang = 'ar';
+
 Future<void> shot(
   WidgetTester t,
   String name,
@@ -144,7 +151,7 @@ Future<void> shot(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: glmTheme(day: false),
-        locale: const Locale('ar'),
+        locale: Locale(_lang),
         supportedLocales: L.supportedLocales,
         localizationsDelegates: const [
           L.delegate,
@@ -152,6 +159,10 @@ Future<void> shot(
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(_scale)),
+          child: child!,
+        ),
         home: screen,
       ),
     ),
@@ -192,14 +203,22 @@ Future<void> shot(
     }
   }
   // [Sprint 60 F8] No text cut on any screen (it was «تُفتح مجاناً بعد 1144 يو…» and «وقت مستـ…»).
-  expect(cutTexts(t), isEmpty, reason: '$name: a text is cut');
-  await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/$name.png'));
+  expect(cutTexts(t), isEmpty, reason: '$name ($_lang): a text is cut${_scale == 1 ? '' : ' at the text size $_scale'}');
+  if (_scale == 1 && _lang == 'ar') await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/$name.png'));
   await t.pumpWidget(const SizedBox());
   // [Sprint 59 F8] The requests still answering when the screen goes (a refused one schedules its error) end here.
   await t.pump(const Duration(seconds: 1));
 }
 
 void main() {
+  // [Sprint 60 T2] The eight screens compared with the site (T1): each one's reference shot, and again at the phone's
+  // text set 30% larger (textScaler 1.3) with no text cut.
+  final eight = <String, Future<void> Function(WidgetTester)>{};
+  void screen(String name, Future<void> Function(WidgetTester) body) {
+    eight[name] = body;
+    testWidgets(name, body);
+  }
+
   for (final (name, ms) in [('intro-1', 300), ('intro-2', 1450), ('intro-3', 2300)]) {
     testWidgets(name, (t) async {
       Ambient.on = true;
@@ -208,11 +227,11 @@ void main() {
       await shot(t, name, const IntroScreen(), [], at: Duration(milliseconds: ms));
     });
   }
-  testWidgets(
+  screen(
     'home',
     (t) => shot(t, 'home', const HomeScreen(), [homeProvider.overrideWith((ref) async => HomeData.fromJson(homeAnswer(homeJson)))]),
   );
-  testWidgets(
+  screen(
     'league',
     (t) => shot(t, 'league', const LeagueShell(leagueId: 8, location: '/leagues/8', child: LeagueScreen(id: 8)), [
       leagueProvider.overrideWith((ref, id) async => League.of(api.League.fromJson(json('league')['league']))),
@@ -252,7 +271,7 @@ void main() {
     ], tap: 'الفريق'), // [Sprint 59 F8] The dock's team section opens its pages (the old menu button is gone).
   );
   testWidgets('login', (t) => shot(t, 'login', const LoginScreen(), []));
-  testWidgets(
+  screen(
     'squad',
     (t) => shot(t, 'squad', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [
       teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
@@ -268,7 +287,7 @@ void main() {
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
     ], scroll: 300),
   );
-  testWidgets(
+  screen(
     'lineup',
     (t) => shot(t, 'lineup', const LeagueShell(leagueId: 8, location: '/leagues/8/lineup', child: LineupScreen(leagueId: 8)), [
       teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
@@ -276,7 +295,7 @@ void main() {
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
     ]),
   );
-  testWidgets(
+  screen(
     'tactics',
     (t) => shot(t, 'tactics', const TacticsScreen(leagueId: 8), [
       teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
@@ -329,15 +348,25 @@ void main() {
       financeProvider.overrideWith((ref, id) async => Finance.fromJson(json('finance'))),
     ]),
   );
-  testWidgets(
-    'market',
-    (t) => shot(t, 'market', const MarketScreen(leagueId: 8), [marketRepositoryProvider.overrideWithValue(FakeMarket())]),
-  );
+  screen('market', (t) => shot(t, 'market', const MarketScreen(leagueId: 8), [marketRepositoryProvider.overrideWithValue(FakeMarket())]));
   testWidgets(
     'market-filters',
     (t) => shot(t, 'market-filters', const MarketScreen(leagueId: 8), [
       marketRepositoryProvider.overrideWithValue(FakeMarket()),
     ], tap: 'الفلاتر'),
+  );
+  // [Sprint 60 T1] The next match, one of the eight screens compared side by side with the site.
+  screen(
+    'next-match',
+    (t) => shot(t, 'next-match', const MatchdayScreen(leagueId: 8), [
+      nextMatchProvider.overrideWith(
+        (ref, l) async => api.NextMatch.fromJson({...json('next_match')['match'] as Map<String, dynamic>, 'referee': 'strict'}),
+      ),
+      pressProvider.overrideWith(
+        (ref, k) async => api.PressConference.fromJson({...json('press_2794')['press'] as Map<String, dynamic>, 'open': true}),
+      ),
+      integrityProvider.overrideWith((ref, l) async => api.IntegrityAnswer.fromJson(json('integrity'))),
+    ]),
   );
   // [Sprint 60 F7] A screen with its action in the bar at the foot (it was a floating button in a corner).
   testWidgets(
@@ -348,7 +377,7 @@ void main() {
       ),
     ]),
   );
-  testWidgets(
+  screen(
     'live',
     (t) => shot(t, 'live', const LiveMatchScreen(matchId: 77), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())]),
   );
@@ -358,5 +387,17 @@ void main() {
       (t) =>
           shot(t, name, const LiveMatchScreen(matchId: 77), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())], tap: tab),
     );
+  }
+  for (final name in eight.keys) {
+    testWidgets('$name at 1.3', (t) async {
+      _scale = 1.3;
+      addTearDown(() => _scale = 1);
+      await eight[name]!(t);
+    });
+    testWidgets('$name in English', (t) async {
+      _lang = 'en';
+      addTearDown(() => _lang = 'ar');
+      await eight[name]!(t);
+    });
   }
 }
