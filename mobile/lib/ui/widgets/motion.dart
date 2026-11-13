@@ -240,3 +240,71 @@ class BallPainter extends CustomPainter {
   @override
   bool shouldRepaint(BallPainter old) => false;
 }
+
+/// [Sprint 63 G2] The passage between the two worlds (the quiet management and the bright pitch), the site's same
+/// (web/src/components/match/MatchCurtain.vue): a curtain in the two clubs' shirts, the home side's from the start and
+/// the away side's from the end, parting in 420ms when the match shows; [MatchCurtainState.close] draws it shut before
+/// leaving. Not drawn with the motion reduced.
+class MatchCurtain extends StatefulWidget {
+  const MatchCurtain({super.key, required this.home, required this.away});
+
+  final Color home, away;
+
+  static const length = Duration(milliseconds: 420);
+
+  @override
+  State<MatchCurtain> createState() => MatchCurtainState();
+}
+
+class MatchCurtainState extends State<MatchCurtain> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: MatchCurtain.length);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_still(context) || !Ambient.on) {
+      _c.value = 1;
+    } else if (_c.value == 0 && !_c.isAnimating) {
+      unawaited(_c.forward());
+    }
+  }
+
+  /// Draws the curtain shut (at once with the motion reduced), then completes.
+  Future<void> close() async {
+    if (_still(context) || !Ambient.on) return;
+    await _c.reverse();
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(
+    child: AnimatedBuilder(
+      animation: _c,
+      builder: (context, _) {
+        final t = Curves.easeInOutCubic.transform(_c.value);
+        if (t >= 1) return const SizedBox.shrink();
+        return Row(
+          children: [
+            for (final (colour, toStart) in [(widget.home, true), (widget.away, false)])
+              Expanded(
+                child: FractionalTranslation(
+                  translation: Offset((toStart ? -1 : 1) * t * (Directionality.of(context) == TextDirection.rtl ? -1 : 1), 0),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: colour,
+                      boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 40)],
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    ),
+  );
+}
