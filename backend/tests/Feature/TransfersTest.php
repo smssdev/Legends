@@ -203,7 +203,10 @@ class TransfersTest extends TestCase
         $fee = intdiv((int) $p->value, 10);
         $this->actingAs($this->coach)->postJson($this->url('/loans'), ['player_id' => $p->id, 'rounds' => 9, 'fee' => $fee])->assertStatus(422);
         $this->postJson($this->url('/loans'), ['player_id' => $p->id, 'rounds' => 2, 'fee' => (int) $p->value])->assertStatus(422);
-        $loans = $this->postJson($this->url('/loans'), ['player_id' => $p->id, 'rounds' => 2, 'fee' => $fee])->assertOk()->json('loans');
+        $loans = $this->postJson($this->url('/loans'), ['player_id' => $p->id, 'rounds' => 2, 'fee' => $fee])->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['max_rounds', 'max_fee_bp', 'loans' => ['*' => ['id', 'status', 'mine', 'player' => ['id', 'name', 'position'], 'owner', 'borrower', 'rounds', 'fee', 'until_round']]])
+            ->json('loans');
         $this->assertSame('pending', $loans[0]['status']);
         $this->postJson($this->url('/loans'), ['player_id' => $p->id, 'rounds' => 1, 'fee' => 0])->assertConflict();
         $this->postJson($this->url("/loans/{$loans[0]['id']}/answer"), ['accept' => true])->assertNotFound();

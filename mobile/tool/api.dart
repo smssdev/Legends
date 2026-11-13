@@ -261,7 +261,10 @@ void main() {
     final schema = at(at(at(at(at(paths[path], 'get'), 'responses'), '200'), 'content'), 'application/json');
     final inner = at(schema, 'schema');
     if (inner is! Map<dynamic, dynamic> || _refName(inner) != null || !_isObject(inner)) continue;
-    final name = '${_pascal(path.split('/').where((p) => p.isNotEmpty && !p.startsWith('{')).join('_'))}Answer';
+    // A path ending on a parameter (one of a list) says so: /leagues/{league}/clubs/{club} is LeaguesClubsByClubAnswer.
+    final parts = path.split('/').where((p) => p.isNotEmpty).toList();
+    final last = parts.isNotEmpty && parts.last.startsWith('{') ? '_by_${parts.last.substring(1, parts.last.length - 1)}' : '';
+    final name = '${_pascal(parts.where((p) => !p.startsWith('{')).join('_') + last)}Answer';
     if (!_classes.containsKey(name)) _class(name, inner);
   }
   // [Sprint 59 F1] A shared response's own inline object too (components/responses), as `<Name>Answer`.

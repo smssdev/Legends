@@ -33,7 +33,9 @@ class AcademyTest extends TestCase
         DB::table('master_players')->whereIn('id', $outside)->update(['age' => 18]);
         $url = "/api/v1/leagues/{$league['id']}/market/academy";
 
-        $a = $this->actingAs($owner)->getJson($url)->assertOk()->json();
+        $a = $this->actingAs($owner)->getJson($url)->assertOk()
+            // [Sprint 59 F1] The fields the app reads through Academy (openapi.yaml).
+            ->assertJsonStructure(['renews_at', 'signed', 'per_season', 'prospects' => ['*' => ['id', 'name', 'position', 'line', 'age', 'overall', 'potential_from', 'potential_to', 'price', 'nationality']]])->json();
         $this->assertCount(3, $a['prospects']);
         foreach ($a['prospects'] as $p) {
             $this->assertLessThanOrEqual(19, $p['age']);

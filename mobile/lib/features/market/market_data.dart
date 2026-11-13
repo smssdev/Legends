@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/api/intents.dart';
+import '../../api/gen/models.g.dart' as api;
+import '../../api/read.dart';
 
 // [Sprint 59 F1] The buy quote is the generated model (docs/api/openapi.yaml → lib/api/gen/models.g.dart).
 import '../../api/gen/models.g.dart'
@@ -52,32 +54,6 @@ class MarketPlayer {
     star: p.star,
     attributes: {for (final e in p.attributes.entries) e.key: e.value ?? 0},
   );
-
-  /// The scout's players and the older answers (not yet in the contract's models).
-  factory MarketPlayer.fromJson(Map<String, dynamic> j) {
-    final s = j['seller'] as Map<String, dynamic>?;
-    return MarketPlayer(
-      id: j['id'] as int,
-      name: '${j['name']}',
-      position: '${j['position'] ?? ''}',
-      line: '${j['line'] ?? 'mid'}',
-      age: j['age'] as int? ?? 0,
-      overall: j['overall'] as int? ?? 0,
-      potential: j['potential'] as int?,
-      value: (j['value'] as num?)?.toInt() ?? 0,
-      price: (j['price'] as num?)?.toInt() ?? 0,
-      wasPrice: (j['was_price'] as num?)?.toInt(),
-      nationality: j['nationality'] as String?,
-      sellerKind: s?['kind'] as String?,
-      sellerClub: s?['club'] as String? ?? (j['club'] as Map<dynamic, dynamic>?)?['name'] as String?,
-      sellerCoach: s?['coach'] as String?,
-      fits: j['fits'] == true,
-      star: j['star'] == true,
-      attributes: {
-        for (final e in ((j['attributes'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num?)?.toInt() ?? 0,
-      },
-    );
-  }
 
   final int id, age, overall, value, price;
   final int? potential, wasPrice;
@@ -160,14 +136,9 @@ class OfferPlayer {
   /// [Sprint 59 F1] From the generated model (an offer's or a listing's player).
   factory OfferPlayer.of(TradePlayer p) => OfferPlayer(id: p.id, name: p.name, position: p.position, overall: p.overall, value: p.value);
 
-  /// A club's players (`/clubs/{id}`, not yet in the contract's models).
-  factory OfferPlayer.fromJson(Map<String, dynamic> j) => OfferPlayer(
-    id: j['id'] as int,
-    name: '${j['name']}',
-    position: '${j['position'] ?? ''}',
-    overall: j['overall'] as int? ?? 0,
-    value: (j['value'] as num?)?.toInt() ?? 0,
-  );
+  /// [Sprint 59 F1] A club's player (`LeaguePlayer`, GET /leagues/{league}/clubs/{club}).
+  factory OfferPlayer.ofClub(api.LeaguePlayer p) =>
+      OfferPlayer(id: p.id ?? 0, name: p.name ?? '', position: p.position ?? '', overall: p.overall ?? 0, value: p.value ?? 0);
 
   final int id, overall, value;
   final String name, position;
@@ -259,17 +230,21 @@ class Loan {
     this.untilRound,
   });
 
-  factory Loan.fromJson(Map<String, dynamic> j) => Loan(
-    id: j['id'] as int,
-    status: '${j['status']}',
-    mine: j['mine'] == true,
-    player: '${(j['player'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-    owner: '${j['owner'] ?? ''}',
-    borrower: '${j['borrower'] ?? ''}',
-    rounds: j['rounds'] as int? ?? 0,
-    fee: (j['fee'] as num?)?.toInt() ?? 0,
-    untilRound: j['until_round'] as int?,
-  );
+  /// [Sprint 59 F1] From the generated model (`Loans`).
+  factory Loan.fromJson(Object? json) {
+    final l = api.LoansLoansItem.fromJson(json);
+    return Loan(
+      id: l.id,
+      status: l.status,
+      mine: l.mine,
+      player: l.player.name,
+      owner: l.owner,
+      borrower: l.borrower,
+      rounds: l.rounds,
+      fee: l.fee,
+      untilRound: l.untilRound,
+    );
+  }
 
   final int id, rounds, fee;
   final int? untilRound;
@@ -294,18 +269,22 @@ class Prospect {
     this.nationality,
   });
 
-  factory Prospect.fromJson(Map<String, dynamic> j) => Prospect(
-    id: j['id'] as int,
-    name: '${j['name']}',
-    position: '${j['position'] ?? ''}',
-    line: '${j['line'] ?? 'mid'}',
-    age: j['age'] as int? ?? 0,
-    overall: j['overall'] as int? ?? 0,
-    potentialFrom: j['potential_from'] as int? ?? 0,
-    potentialTo: j['potential_to'] as int? ?? 0,
-    price: (j['price'] as num?)?.toInt() ?? 0,
-    nationality: j['nationality'] as String?,
-  );
+  /// [Sprint 59 F1] From the generated model (`Academy`).
+  factory Prospect.fromJson(Object? json) {
+    final p = api.AcademyProspectsItem.fromJson(json);
+    return Prospect(
+      id: p.id,
+      name: p.name,
+      position: p.position,
+      line: p.line,
+      age: p.age,
+      overall: p.overall,
+      potentialFrom: p.potentialFrom,
+      potentialTo: p.potentialTo,
+      price: p.price,
+      nationality: p.nationality,
+    );
+  }
 
   final int id, age, overall, potentialFrom, potentialTo, price;
   final String name, position, line;
@@ -338,13 +317,10 @@ class MarketRepository {
   Future<Selling> selling(int league) async =>
       Selling.fromJson(await _api.get('/leagues/$league/market', query: {'source': 'pool', 'line': 'gk'}));
   Future<({int floor, int cap, bool ok, int waitHours})> sellQuote(int league, int player, int price) async {
-    final j = await _api.get('/leagues/$league/market/quote', query: {'player_id': player, 'price': price});
-    return (
-      floor: (j['floor'] as num).toInt(),
-      cap: (j['cap'] as num).toInt(),
-      ok: j['ok'] == true,
-      waitHours: j['wait_hours'] as int? ?? 0,
+    final q = api.LeaguesMarketQuoteAnswer.fromJson(
+      await _api.get('/leagues/$league/market/quote', query: {'player_id': player, 'price': price}),
     );
+    return (floor: q.floor, cap: q.cap, ok: q.ok, waitHours: q.waitHours);
   }
 
   Future<void> listForSale(int league, int player, int price) =>
@@ -360,8 +336,7 @@ class MarketRepository {
 
   /// [Sprint 18 D] Another coach's squad, to ask for his players.
   Future<List<OfferPlayer>> clubPlayers(int league, int club) async => [
-    for (final p in ((await _api.get('/leagues/$league/clubs/$club'))['players'] as List<dynamic>? ?? const []))
-      OfferPlayer.fromJson(p as Map<String, dynamic>),
+    for (final p in api.LeaguesClubsByClubAnswer.fromJson(await _api.get('/leagues/$league/clubs/$club')).players) OfferPlayer.ofClub(p),
   ];
 
   /// A new offer to a coach's club, or (counterOf) an answer with my own terms: `in` his players I want, `out` mine I give.
@@ -376,11 +351,8 @@ class MarketRepository {
 
   Future<({List<Loan> loans, int maxRounds, int maxFeeBp})> loans(int league) async {
     final j = await _api.get('/leagues/$league/transfers/loans');
-    return (
-      loans: [for (final l in (j['loans'] as List<dynamic>? ?? const [])) Loan.fromJson(l as Map<String, dynamic>)],
-      maxRounds: j['max_rounds'] as int? ?? 6,
-      maxFeeBp: j['max_fee_bp'] as int? ?? 2000,
-    );
+    final v = api.Loans.fromJson(j);
+    return (loans: JsonReader(j, 'Loans').list('loans', Loan.fromJson), maxRounds: v.maxRounds, maxFeeBp: v.maxFeeBp);
   }
 
   Future<void> askLoan(int league, int player, int rounds, int fee) =>
@@ -390,11 +362,12 @@ class MarketRepository {
 
   Future<({List<Prospect> prospects, DateTime? renewsAt, int signed, int perSeason})> academy(int league) async {
     final j = await _api.get('/leagues/$league/market/academy');
+    final a = api.Academy.fromJson(j);
     return (
-      prospects: [for (final p in (j['prospects'] as List<dynamic>? ?? const [])) Prospect.fromJson(p as Map<String, dynamic>)],
-      renewsAt: DateTime.tryParse('${j['renews_at'] ?? ''}'),
-      signed: j['signed'] as int? ?? 0,
-      perSeason: j['per_season'] as int? ?? 0,
+      prospects: JsonReader(j, 'Academy').list('prospects', Prospect.fromJson),
+      renewsAt: DateTime.tryParse(a.renewsAt),
+      signed: a.signed,
+      perSeason: a.perSeason,
     );
   }
 
