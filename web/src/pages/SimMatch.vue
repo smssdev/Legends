@@ -4,6 +4,8 @@
        [Sprint 57 W1, W2] The page only wires its parts: the state and the pace in match/use*.ts, the panels in
        components/match/. -->
   <main class="match-root">
+    <!-- [Sprint 63 G2] Into the pitch's world: a curtain in the two shirts, parting. -->
+    <MatchCurtain v-if="view" ref="curtain" :home="feedKits.home.kit" :away="feedKits.away.kit" />
     <!-- [Sprint 43 W3] Sideways on a phone: upright, it asks to turn (and locks it on Android). -->
     <TurnPhone v-if="view" />
     <MatchTopBar :player="P" :live="L" :league="!!league" :seed="view?.seed" :mine-name="mine && view ? view.clubs[mine].name : ''" :settings-open="settingsOpen" @settings="settingsOpen = true" />
@@ -70,9 +72,10 @@
 </template>
 
 <script setup lang="ts">
+import MatchCurtain from '../components/match/MatchCurtain.vue'
 import Icon from '../components/Icon.vue'
 import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { scoreText } from '../lib/format'
 import { nm } from '../lib/names'
 import { t } from '../lib/i18n'
@@ -165,6 +168,12 @@ const feedKits = computed(() => {
 const windows = computed(() => (live.value ? view.value?.timing.windows ?? [] : []))
 const canChange = computed(() => !windows.value.length || !started.value || minute.value[0] === 0 || halftime.value || (windowOn.value && P.halftimeLeft.value > 2))
 const nextWindow = computed(() => [...windows.value, 45].sort((a, b) => a - b).find((w) => w > minute.value[0]) ?? null)
+
+// [Sprint 63 G2] Back to the management's world: the curtain closes first (420ms), then the page goes.
+const curtain = ref<InstanceType<typeof MatchCurtain> | null>(null)
+onBeforeRouteLeave(async () => {
+  await curtain.value?.close()
+})
 
 onMounted(async () => {
   // A friend's link carries his seat once: keep it on this device and take it out of the address.

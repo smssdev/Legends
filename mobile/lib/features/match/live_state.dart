@@ -4,6 +4,10 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   late final MatchRepository _repo = ref.read(matchSourceProvider(widget.view.id));
   bool _busy = false;
 
+  /// [Sprint 63 G2] The curtain over the match, and whether it has closed (the screen may go).
+  final _curtain = GlobalKey<MatchCurtainState>();
+  bool _leaving = false;
+
   /// [Sprint 61 F4] The match as it goes lives in LiveMatch (live_controller.dart): each part of the screen watches its
   /// own of it (`select`), and the screen only what changes its shape. These read it as it is now.
   LiveMatchState get _s => ref.read(liveMatchProvider(_id));
@@ -107,61 +111,84 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     final kits = matchKits(v);
     final size = MediaQuery.sizeOf(context);
     final landscape = size.width > size.height;
-    return Scaffold(
-      // [Sprint 60 F6] On a landscape screen the picture has no frame (the draft's «bare» screen).
-      appBar: landscape ? null : GameBar(title: Text(_finished ? l.fullTime : l.liveNow)),
-      body: GlmBackground(
-        wide: true,
-        child: LayoutBuilder(
-          builder: (context, box) {
-            Widget bug({bool compact = false}) => Consumer(
-              builder: (context, ref, _) {
-                final s = ref.watch(liveMatchProvider(_id).select((s) => (s.score, s.clock, s.finished)));
-                return _ScoreBug(view: v, score: s.$1, minute: s.$2, finished: s.$3, compact: compact);
-              },
-            );
-            // [Sprint 44] The broadcast over the pitch: each moment's cartoon scene, the director's cutaways, the studio
-            // before kick-off. It rebuilds with the minutes (the light pitch) and the scenes queued.
-            final pitch = AspectRatio(
-              aspectRatio: 105 / 68,
-              child: Consumer(
-                builder: (context, ref, _) {
-                  final s = ref.watch(liveMatchProvider(_id).select((s) => (s.recent, s.playsVersion, s.offset, s.teams)));
-                  final st = ref.read(liveMatchProvider(_id));
-                  final numbers = {
-                    for (final side in ['home', 'away'])
-                      for (final p in s.$4[side]!.players) '${p.id}': (side, p.no),
-                  };
-                  return BroadcastStage(
-                    look: _clipLook(context, kits),
-                    queue: _live.plays,
-                    onKey: _live.keyed,
-                    studio: st.started || st.finished ? null : (score: '${st.score.$1} - ${st.score.$2}', clock: L.of(context).notStarted),
-                    child: LivePitch(ticks: List.of(s.$1), tickMs: v.tickMs, serverOffset: s.$3, kits: kits, numbers: numbers),
+    // [Sprint 63 G2] Into the pitch's world and out of it: a curtain in the two shirts, parting as the match shows, and
+    // shut before the screen goes back.
+    return PopScope(
+      canPop: _leaving,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        final nav = Navigator.of(context);
+        await _curtain.currentState?.close();
+        if (!mounted) return;
+        setState(() => _leaving = true);
+        nav.pop();
+      },
+      child: Stack(
+        children: [
+          Scaffold(
+            // [Sprint 60 F6] On a landscape screen the picture has no frame (the draft's «bare» screen).
+            appBar: landscape ? null : GameBar(title: Text(_finished ? l.fullTime : l.liveNow)),
+            body: GlmBackground(
+              wide: true,
+              child: LayoutBuilder(
+                builder: (context, box) {
+                  Widget bug({bool compact = false}) => Consumer(
+                    builder: (context, ref, _) {
+                      final s = ref.watch(liveMatchProvider(_id).select((s) => (s.score, s.clock, s.finished)));
+                      return _ScoreBug(view: v, score: s.$1, minute: s.$2, finished: s.$3, compact: compact);
+                    },
+                  );
+                  // [Sprint 44] The broadcast over the pitch: each moment's cartoon scene, the director's cutaways, the studio
+                  // before kick-off. It rebuilds with the minutes (the light pitch) and the scenes queued.
+                  final pitch = AspectRatio(
+                    aspectRatio: 105 / 68,
+                    child: Consumer(
+                      builder: (context, ref, _) {
+                        final s = ref.watch(liveMatchProvider(_id).select((s) => (s.recent, s.playsVersion, s.offset, s.teams)));
+                        final st = ref.read(liveMatchProvider(_id));
+                        final numbers = {
+                          for (final side in ['home', 'away'])
+                            for (final p in s.$4[side]!.players) '${p.id}': (side, p.no),
+                        };
+                        return BroadcastStage(
+                          look: _clipLook(context, kits),
+                          queue: _live.plays,
+                          onKey: _live.keyed,
+                          studio: st.started || st.finished
+                              ? null
+                              : (score: '${st.score.$1} - ${st.score.$2}', clock: L.of(context).notStarted),
+                          child: LivePitch(ticks: List.of(s.$1), tickMs: v.tickMs, serverOffset: s.$3, kits: kits, numbers: numbers),
+                        );
+                      },
+                    ),
+                  );
+                  final controls = <Widget>[
+                    if (_timeoutUntil != null && _timeoutUntil! > DateTime.now().millisecondsSinceEpoch + _offset && !_finished)
+                      _timeoutBar(l),
+                    if (_pause != null && _you != null && !_finished && !_sim) _breakBar(l),
+                    if (_you != null && !_finished) _watch((s) => s.teams, () => _coachBar(l)),
+                    if (_finished) Padding(padding: const EdgeInsets.fromLTRB(12, 10, 12, 0), child: _endButton(l)),
+                    if (!_finished && _started) _watch((s) => (s.chat, s.reactions), () => _socialBar(l)),
+                  ];
+                  if (box.maxWidth > box.maxHeight) {
+                    return _broadcast(l, pitch, bug(compact: true));
+                  }
+                  return Column(
+                    children: [
+                      bug(),
+                      Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: pitch),
+                      ...controls,
+                      Expanded(child: _watch((s) => (s.feed, s.readings), () => _feedList(l))),
+                    ],
                   );
                 },
               ),
-            );
-            final controls = <Widget>[
-              if (_timeoutUntil != null && _timeoutUntil! > DateTime.now().millisecondsSinceEpoch + _offset && !_finished) _timeoutBar(l),
-              if (_pause != null && _you != null && !_finished && !_sim) _breakBar(l),
-              if (_you != null && !_finished) _watch((s) => s.teams, () => _coachBar(l)),
-              if (_finished) Padding(padding: const EdgeInsets.fromLTRB(12, 10, 12, 0), child: _endButton(l)),
-              if (!_finished && _started) _watch((s) => (s.chat, s.reactions), () => _socialBar(l)),
-            ];
-            if (box.maxWidth > box.maxHeight) {
-              return _broadcast(l, pitch, bug(compact: true));
-            }
-            return Column(
-              children: [
-                bug(),
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: pitch),
-                ...controls,
-                Expanded(child: _watch((s) => (s.feed, s.readings), () => _feedList(l))),
-              ],
-            );
-          },
-        ),
+            ),
+          ),
+          Positioned.fill(
+            child: MatchCurtain(key: _curtain, home: kits['home']!.$1, away: kits['away']!.$1),
+          ),
+        ],
       ),
     );
   }
