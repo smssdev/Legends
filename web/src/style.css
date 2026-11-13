@@ -198,14 +198,14 @@
     pointer-events: none;
     background:
       linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 35%, transparent) 22%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
-      url("/art/stadium-blur.jpg") center top / cover no-repeat,
+      url("/art/stadium-blur-1920.webp") center top / cover no-repeat,
       var(--color-bg-deep);
   }
   @media (max-width: 767px) {
     body::after {
       background:
         linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 75%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 40%, transparent) 22%, color-mix(in srgb, var(--color-bg) 60%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
-        url("/art/stadium-blur-m.jpg") center top / cover no-repeat,
+        url("/art/stadium-blur-900.webp") center top / cover no-repeat,
         var(--color-bg-deep);
     }
   }
@@ -213,16 +213,40 @@
   html.light body::after {
     background:
       linear-gradient(180deg, color-mix(in srgb, var(--color-bg) 88%, transparent) 0%, color-mix(in srgb, var(--color-bg) 95%, transparent) 45%, var(--color-bg) 100%),
-      url("/art/stadium-blur.jpg") center top / cover no-repeat,
+      url("/art/stadium-blur-1920.webp") center top / cover no-repeat,
       var(--color-bg);
   }
   @media (max-width: 767px) {
     html.light body::after {
       background:
         linear-gradient(180deg, color-mix(in srgb, var(--color-bg) 88%, transparent) 0%, color-mix(in srgb, var(--color-bg) 95%, transparent) 45%, var(--color-bg) 100%),
-        url("/art/stadium-blur-m.jpg") center top / cover no-repeat,
+        url("/art/stadium-blur-900.webp") center top / cover no-repeat,
         var(--color-bg);
     }
+  }
+
+  /* [Sprint 63 G10] The ground in the screen's width: 900 on a phone (above), 1440 between, 1920 on a large screen. */
+  @media (min-width: 768px) and (max-width: 1439px) {
+    body::after {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 35%, transparent) 22%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
+        url("/art/stadium-blur-1440.webp") center top / cover no-repeat,
+        var(--color-bg-deep);
+    }
+    html.light body::after {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--color-bg) 88%, transparent) 0%, color-mix(in srgb, var(--color-bg) 95%, transparent) 45%, var(--color-bg) 100%),
+        url("/art/stadium-blur-1440.webp") center top / cover no-repeat,
+        var(--color-bg);
+    }
+  }
+  /* [Sprint 63 G10] A weak device (the drawing tier `low`: the root's `smooth`, match/perf.ts): the ground's colours
+     alone, no picture. */
+  html.smooth body::after {
+    background: linear-gradient(180deg, var(--color-bg-deep) 0%, var(--color-bg) 50%, var(--color-bg-deep) 100%);
+  }
+  html.smooth.light body::after {
+    background: var(--color-bg);
   }
 
   /* One visible focus ring for keyboards, none for taps. */

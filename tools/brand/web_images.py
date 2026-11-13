@@ -33,3 +33,10 @@ src = ROOT / 'brand' / 'current' / 'og-invite.png'
 Image.open(src).convert('RGB').quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.FLOYDSTEINBERG).save(
     og, 'PNG', optimize=True)
 print(f'og-invite: {og.stat().st_size // 1024} KB')
+
+art = ROOT / 'web' / 'public' / 'art'
+ground = Image.open(ROOT / 'brand' / 'art' / 'stadium-blur.jpg').convert('RGB')
+for w in (900, 1440, 1920):
+    target = art / f'stadium-blur-{w}.webp'
+    ground.resize((w, round(w * ground.height / ground.width)), Image.LANCZOS).save(target, 'WEBP', quality=70, method=6)
+    print(f'{target.name}: {target.stat().st_size // 1024} KB')

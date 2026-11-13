@@ -60,6 +60,9 @@ class GlmAsync<T> extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // [Sprint 63 G9] The mascot worried, or asleep when there is no connection.
+                  GlmStateArt(ApiError.from(value.error!).offline ? 'offline' : 'error', size: 72),
+                  const SizedBox(height: GlmSpace.sm),
                   Text(
                     ApiError.from(value.error!).message,
                     textAlign: TextAlign.center,
@@ -99,7 +102,7 @@ class _Empty extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.inbox_outlined, size: 40, color: context.palette.textMuted),
+          const GlmStateArt('empty'),
           const SizedBox(height: GlmSpace.md),
           Text(title, textAlign: TextAlign.center, style: context.type.title),
           if (text != null) ...[const SizedBox(height: GlmSpace.xs), Text(text!, textAlign: TextAlign.center, style: context.type.caption)],
@@ -310,4 +313,22 @@ class _GlmLoaderState extends State<GlmLoader> with SingleTickerProviderStateMix
       ),
     );
   }
+}
+
+/// [Sprint 63 G9] The mascot in a screen's state, the site's same drawing (its EmptyState and AsyncState draw it live;
+/// tools/brand/states.cjs renders it for the app): empty, error, offline, slow, celebrate, welcome.
+class GlmStateArt extends StatelessWidget {
+  const GlmStateArt(this.state, {super.key, this.size = 96});
+
+  final String state;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: Image.asset(
+      'assets/states/$state.webp',
+      height: size,
+      errorBuilder: (_, _, _) => SizedBox(height: size),
+    ),
+  );
 }

@@ -52,8 +52,10 @@ flutter:
     - assets/sounds/
     # [Sprint 46] The opening's squad, rendered in Unity (unity/build.ps1 splash).
     - assets/splash/
-    # [Sprint 50 M23] The 3D models, made from code (tools/models/make_models.py).
+    # [Sprint 50 M23] The 3D models, made from code (tools/models/make_models.py); [Sprint 61 F2] as spinning strips.
     - assets/models/
+    # [Sprint 63 G9] The mascot in the screens' states, drawn by the site's code (tools/brand/states.cjs).
+    - assets/states/
   # [Sprint 15 F1] The game's fonts, bundled (the web serves the same, X100): Tajawal for the words, Barlow Condensed for
   # the numbers. Both SIL Open Font License.
   fonts:

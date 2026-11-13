@@ -126,7 +126,7 @@ const FAQ = [
     url("/art/pattern-star.svg") center / 40px 40px repeat,
     radial-gradient(ellipse 80% 60% at 50% 30%, color-mix(in srgb, var(--color-brand) 45%, transparent), transparent 70%),
     linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 35%, transparent), var(--color-bg-deep)),
-    url("/art/stadium-blur.jpg") center / cover no-repeat;
+    url("/art/stadium-blur-1920.webp") center / cover no-repeat;
   background-blend-mode: soft-light, normal, normal, normal;
 }
 </style>

@@ -2988,4 +2988,5 @@ export const EN: Record<string, string> = {
   'الجمهور والكرة في المباراة': 'The crowd and the ball in a match',
   'المعلق': 'Commentator',
   'صوت المعلق في المباراة': 'The commentator\'s voice in a match',
+  'يأخذ وقتاً أطول من المعتاد…': 'Taking longer than usual…',
 }
