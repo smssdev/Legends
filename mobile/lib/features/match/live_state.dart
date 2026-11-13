@@ -445,37 +445,42 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     final team = _teams[_you]!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-      child: Row(
-        children: [
-          for (final (icon, label, onTap) in [
-            (Icons.swap_vert_rounded, '${l.substitute} ${team.subsMax - team.subsUsed}', busy ? null : _subSheet),
-            (Icons.tune_rounded, l.tactics, busy ? null : _tacticsSheet),
-            (Icons.grid_view_rounded, l.formation, busy || widget.view.formations.isEmpty ? null : _formationSheet),
-            // [Sprint 50 M14] The one timeout: play waits, the changes open for both coaches.
-            (Icons.timer_rounded, _timeoutUsed ? l.timeoutUsed : l.timeout, _busy || _timeoutUsed || !_started ? null : _takeTimeout),
-          ])
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 3),
-                child: GlmCard(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                  onTap: onTap,
-                  child: Column(
-                    children: [
-                      Icon(icon, color: onTap == null ? context.palette.textMuted : context.palette.gold),
-                      const SizedBox(height: 2),
-                      Text(
-                        label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: glmText(GlmType.caption, fontWeight: FontWeight.w800),
-                      ),
-                    ],
+      // [Sprint 60 F8] Each command's name whole on two lines if need be, the four cards one height.
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final (icon, label, onTap) in [
+              (Icons.swap_vert_rounded, '${l.substitute} ${team.subsMax - team.subsUsed}', busy ? null : _subSheet),
+              (Icons.tune_rounded, l.tactics, busy ? null : _tacticsSheet),
+              (Icons.grid_view_rounded, l.formation, busy || widget.view.formations.isEmpty ? null : _formationSheet),
+              // [Sprint 50 M14] The one timeout: play waits, the changes open for both coaches.
+              (Icons.timer_rounded, _timeoutUsed ? l.timeoutUsed : l.timeout, _busy || _timeoutUsed || !_started ? null : _takeTimeout),
+            ])
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                  child: GlmCard(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                    onTap: onTap,
+                    child: Column(
+                      children: [
+                        Icon(icon, color: onTap == null ? context.palette.textMuted : context.palette.gold),
+                        const SizedBox(height: 2),
+                        Text(
+                          label,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: glmText(GlmType.caption, fontWeight: FontWeight.w800, height: 1.2),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

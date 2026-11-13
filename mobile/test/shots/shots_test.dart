@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -103,6 +104,12 @@ const homeJson = {
   ],
 };
 
+/// [Sprint 60 F8, T2] Every text the screen cut (past its lines, or past its width on one line): what reads «…».
+List<String> cutTexts(WidgetTester t) => [
+  for (final e in find.byType(RichText).evaluate())
+    if ((t.renderObject(find.byWidget(e.widget)) as RenderParagraph).didExceedMaxLines) (e.widget as RichText).text.toPlainText(),
+];
+
 Future<void> shot(
   WidgetTester t,
   String name,
@@ -175,6 +182,8 @@ Future<void> shot(
       await t.pump(const Duration(milliseconds: 100));
     }
   }
+  // [Sprint 60 F8] No text cut on any screen (it was «تُفتح مجاناً بعد 1144 يو…» and «وقت مستـ…»).
+  expect(cutTexts(t), isEmpty, reason: '$name: a text is cut');
   await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/$name.png'));
   await t.pumpWidget(const SizedBox());
   // [Sprint 59 F8] The requests still answering when the screen goes (a refused one schedules its error) end here.

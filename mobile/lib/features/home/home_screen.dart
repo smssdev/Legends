@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/span.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../core/config.dart';

@@ -22,6 +22,7 @@ class RankingScreen extends ConsumerWidget {
       AsyncView(
         value: ref.watch(rankingProvider),
         onRetry: () => ref.invalidate(rankingProvider),
+        isEmpty: (rows) => rows.isEmpty,
         data: (rows) => ListView(
           padding: const EdgeInsets.all(12),
           children: [

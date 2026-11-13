@@ -1989,5 +1989,56 @@
         "type": "String"
       }
     }
+  },
+  "spanYears": "{n, plural, =1{سنة} =2{سنتان} few{{n} سنوات} many{{n} سنة} other{{n} سنة}}",
+  "@spanYears": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "spanMonths": "{n, plural, =1{شهر} =2{شهران} few{{n} أشهر} many{{n} شهراً} other{{n} شهر}}",
+  "@spanMonths": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "spanDays": "{n, plural, =1{يوم} =2{يومان} few{{n} أيام} many{{n} يوماً} other{{n} يوم}}",
+  "@spanDays": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "spanHours": "{n, plural, =1{ساعة} =2{ساعتان} few{{n} ساعات} many{{n} ساعة} other{{n} ساعة}}",
+  "@spanHours": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "spanMinutes": "{n, plural, =1{دقيقة} =2{دقيقتان} few{{n} دقائق} many{{n} دقيقة} other{{n} دقيقة}}",
+  "@spanMinutes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "spanJoin": "{a} و{b}",
+  "@spanJoin": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -2851,4 +2851,39 @@ class LEn extends L {
   String friendlyBlockedSoon(String at) {
     return 'Your match is about to start: friendlies are back after it ($at).';
   }
+
+  @override
+  String spanYears(int n) {
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n years', one: '1 year');
+    return '$_temp0';
+  }
+
+  @override
+  String spanMonths(int n) {
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n months', one: '1 month');
+    return '$_temp0';
+  }
+
+  @override
+  String spanDays(int n) {
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n days', one: '1 day');
+    return '$_temp0';
+  }
+
+  @override
+  String spanHours(int n) {
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n hours', one: '1 hour');
+    return '$_temp0';
+  }
+
+  @override
+  String spanMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n minutes', one: '1 minute');
+    return '$_temp0';
+  }
+
+  @override
+  String spanJoin(String a, String b) {
+    return '$a $b';
+  }
 }

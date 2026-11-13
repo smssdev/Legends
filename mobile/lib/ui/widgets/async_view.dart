@@ -42,35 +42,45 @@ class GlmAsync<T> extends StatelessWidget {
       return data(v);
     }
     if (value.hasError) {
+      // [Sprint 60 F9] As the site's AsyncState: the reason in a box tinted by the alarm, and «حاول مجدداً».
+      final p = context.palette;
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(GlmSpace.xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.error_outline_rounded, size: 40, color: context.palette.textMuted),
-              const SizedBox(height: GlmSpace.md),
-              Text(
-                ApiError.from(value.error!).message,
-                textAlign: TextAlign.center,
-                style: context.type.body.copyWith(color: context.palette.textSoft),
+          padding: const EdgeInsets.all(GlmSpace.lg),
+          child: Semantics(
+            liveRegion: true,
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 520),
+              padding: const EdgeInsets.symmetric(horizontal: GlmSpace.lg, vertical: GlmSpace.xl),
+              decoration: BoxDecoration(
+                color: p.live.withValues(alpha: .10),
+                borderRadius: BorderRadius.circular(GlmRadius.xl),
+                border: Border.all(color: p.live.withValues(alpha: .30)),
               ),
-              if (onRetry != null) ...[
-                const SizedBox(height: GlmSpace.lg),
-                GlmButton(label: L.of(context).retry, variant: GlmButtonVariant.quiet, onPressed: onRetry),
-              ],
-            ],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    ApiError.from(value.error!).message,
+                    textAlign: TextAlign.center,
+                    style: context.type.body.copyWith(fontWeight: FontWeight.w700, color: p.text),
+                  ),
+                  if (onRetry != null) ...[
+                    const SizedBox(height: GlmSpace.md),
+                    GlmButton(label: L.of(context).retry, variant: GlmButtonVariant.quiet, onPressed: onRetry),
+                  ],
+                ],
+              ),
+            ),
           ),
         ),
       );
     }
-    if (skeleton != null) {
-      return Semantics(
-        label: L.of(context).loading,
-        child: GlmSkeleton(kind: skeleton!, count: rows),
-      );
-    }
-    return const Center(child: GlmLoader());
+    // [Sprint 60 F9] Loading in the shape of what comes, rows unless the screen says (the site's AsyncState too).
+    return Semantics(
+      label: L.of(context).loading,
+      child: GlmSkeleton(kind: skeleton ?? GlmSkeletonKind.row, count: rows),
+    );
   }
 }
 

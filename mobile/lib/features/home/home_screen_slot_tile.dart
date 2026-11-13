@@ -148,35 +148,13 @@ class _SlotTile extends ConsumerWidget {
             child: Icon(Icons.lock_rounded, color: p.textMuted),
           ),
           const SizedBox(width: 12),
+          // [Sprint 60 F8] The wait in words takes the width (its price went up to the slot's band: it was «بعد 3 سنوا…»).
           Expanded(
             child: Text(
               s.opensAt == null ? l.slotLocked : l.slotOpensIn(_left(context, s.opensAt!)),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: glmText(GlmType.body, color: p.textSoft, fontWeight: FontWeight.w700),
             ),
           ),
-          if (s.unlockCoins != null)
-            Container(
-              height: 40,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: p.gold),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset('assets/brand/coin.png', width: 18, height: 18),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${s.unlockCoins}',
-                    style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: context.glm.goldText),
-                  ),
-                ],
-              ),
-            ),
         ],
       ),
       _ => Row(
@@ -216,6 +194,7 @@ class _SlotTile extends ConsumerWidget {
                           style: glmText(GlmType.caption, fontWeight: FontWeight.w700, color: club ? Colors.white : p.textMuted),
                         ),
                       ),
+                      if (locked && s.unlockCoins != null) _price(context),
                       if (s.live)
                         Pulse(
                           child: Row(
@@ -270,11 +249,31 @@ class _SlotTile extends ConsumerWidget {
     );
   }
 
-  String _left(BuildContext context, DateTime at) {
-    final l = L.of(context);
-    final left = at.difference(DateTime.now());
-    if (left.inDays >= 1) return l.days(left.inDays);
-    if (left.inHours >= 1) return l.hours(left.inHours);
-    return l.minutes(left.inMinutes.clamp(1, 59));
+  /// Open it now, at the server's price in coins.
+  Widget _price(BuildContext context) {
+    final p = context.palette;
+    return Container(
+      height: 26,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: p.gold),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset('assets/brand/coin.png', width: 18, height: 18),
+          const SizedBox(width: 4),
+          Text(
+            '${s.unlockCoins}',
+            style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: context.glm.goldText),
+          ),
+        ],
+      ),
+    );
   }
+
+  // [Sprint 60 F8] In its two largest units (core/span.dart): «3 سنوات وشهر», never a cut «1144 يو…».
+  String _left(BuildContext context, DateTime at) => spanText(L.of(context), at.difference(DateTime.now()));
 }
