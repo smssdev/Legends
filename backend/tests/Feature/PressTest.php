@@ -58,7 +58,10 @@ class PressTest extends TestCase
     public function test_the_conference_opens_half_an_hour_before_and_a_statement_lifts_the_morale_once(): void
     {
         $f = $this->myFixture();
-        $press = $this->actingAs($this->owner)->getJson($this->url("/press/{$f->id}"))->assertOk()->json('press');
+        $press = $this->actingAs($this->owner)->getJson($this->url("/press/{$f->id}"))->assertOk()
+            // [Sprint 59 F1] The fields the app reads through PressConference (openapi.yaml).
+            ->assertJsonStructure(['enabled', 'press' => ['fixture_id', 'opens_at', 'open', 'chances' => ['home', 'draw', 'away'], 'reading' => ['home', 'away'],
+                'lines', 'statements' => ['*' => ['kind', 'text', 'stakes' => ['win', 'draw', 'loss']]], 'said' => ['home', 'away'], 'mine', 'morale']])->json('press');
         $this->assertFalse($press['open']);
         $this->assertSame(100, array_sum($press['chances']));
         $this->assertCount(3, $press['statements']);

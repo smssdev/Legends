@@ -1554,7 +1554,7 @@ paths:
       responses:
         '200':
           description: The conference (enabled false when the league switched them off)
-          content: { application/json: { schema: { type: object, required: [press, enabled], properties: { press: { type: object, additionalProperties: true }, enabled: { type: boolean } } } } }
+          content: { application/json: { schema: { type: object, required: [press, enabled], properties: { press: { allOf: [{ $ref: '#/components/schemas/PressConference' }], nullable: true }, enabled: { type: boolean } } } } }
         '404': { $ref: '#/components/responses/Error' }
     post:
       tags: [media]
@@ -7342,6 +7342,29 @@ components:
             bench: { type: array, items: { type: integer } }
             tactics: { $ref: '#/components/schemas/TacticsSet' }
             fixes: { type: array, items: { type: object, properties: { slot: { type: integer }, out: { type: integer, nullable: true }, in: { type: integer }, out_name: { type: string, nullable: true }, in_name: { type: string, nullable: true } } } }
+    PressConference:
+      type: object
+      description: '[UP12, Sprint 59 F1] The press conference before a match, as one coach sees it (App\\League\\PressRoom::of)'
+      required: [fixture_id, opens_at, open, chances, reading, lines, statements, said, mine, morale]
+      properties:
+        fixture_id: { type: integer }
+        opens_at: { type: string, format: date-time }
+        open: { type: boolean, description: Statements are given from the opening until the lock }
+        chances: { type: object, required: [home, draw, away], properties: { home: { type: integer }, draw: { type: integer }, away: { type: integer } }, description: Each result's chance in percent }
+        reading: { type: object, required: [home, away], properties: { home: { type: string }, away: { type: string } } }
+        lines: { type: object, required: [home, away], properties: { home: { type: object, additionalProperties: { type: integer } }, away: { type: object, additionalProperties: { type: integer } } } }
+        statements:
+          type: array
+          items:
+            type: object
+            required: [kind, text, stakes]
+            properties:
+              kind: { type: string }
+              text: { type: string }
+              stakes: { type: object, required: [win, draw, loss], properties: { win: { type: integer }, draw: { type: integer }, loss: { type: integer } }, description: '[X61 E9] What it stakes on each result (morale)' }
+        said: { type: object, required: [home, away], properties: { home: { type: string, nullable: true }, away: { type: string, nullable: true } }, description: The statement each side made, or null }
+        mine: { type: string, nullable: true, enum: [home, away, null] }
+        morale: { type: integer }
     LeagueMatch:
       type: object
       description: '[Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model'

@@ -6226,6 +6226,138 @@ class PollOptionsItem {
   final int? votes;
 }
 
+/// [UP12, Sprint 59 F1] The press conference before a match, as one coach sees it (App\\League\\PressRoom::of)
+class PressConference {
+  const PressConference({
+    required this.chances,
+    required this.fixtureId,
+    required this.lines,
+    this.mine,
+    required this.morale,
+    required this.open,
+    required this.opensAt,
+    required this.reading,
+    required this.said,
+    required this.statements,
+  });
+
+  factory PressConference.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConference');
+    return PressConference(
+      chances: r.object('chances', PressConferenceChances.fromJson),
+      fixtureId: r.int_('fixture_id'),
+      lines: r.object('lines', PressConferenceLines.fromJson),
+      mine: r.stringOrNull('mine'),
+      morale: r.int_('morale'),
+      open: r.bool_('open'),
+      opensAt: r.string('opens_at'),
+      reading: r.object('reading', PressConferenceReading.fromJson),
+      said: r.object('said', PressConferenceSaid.fromJson),
+      statements: r.list('statements', PressConferenceStatementsItem.fromJson),
+    );
+  }
+
+  /// Each result's chance in percent
+  final PressConferenceChances chances;
+  final int fixtureId;
+  final PressConferenceLines lines;
+  final String? mine;
+  final int morale;
+
+  /// Statements are given from the opening until the lock
+  final bool open;
+  final String opensAt;
+  final PressConferenceReading reading;
+
+  /// The statement each side made
+  final PressConferenceSaid said;
+  final List<PressConferenceStatementsItem> statements;
+}
+
+/// Each result's chance in percent
+class PressConferenceChances {
+  const PressConferenceChances({required this.away, required this.draw, required this.home});
+
+  factory PressConferenceChances.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceChances');
+    return PressConferenceChances(away: r.int_('away'), draw: r.int_('draw'), home: r.int_('home'));
+  }
+
+  final int away;
+  final int draw;
+  final int home;
+}
+
+class PressConferenceLines {
+  const PressConferenceLines({required this.away, required this.home});
+
+  factory PressConferenceLines.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceLines');
+    return PressConferenceLines(away: r.map('away', JsonReader.intOf), home: r.map('home', JsonReader.intOf));
+  }
+
+  final Map<String, int> away;
+  final Map<String, int> home;
+}
+
+class PressConferenceReading {
+  const PressConferenceReading({required this.away, required this.home});
+
+  factory PressConferenceReading.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceReading');
+    return PressConferenceReading(away: r.string('away'), home: r.string('home'));
+  }
+
+  final String away;
+  final String home;
+}
+
+/// The statement each side made
+class PressConferenceSaid {
+  const PressConferenceSaid({this.away, this.home});
+
+  factory PressConferenceSaid.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceSaid');
+    return PressConferenceSaid(away: r.stringOrNull('away'), home: r.stringOrNull('home'));
+  }
+
+  final String? away;
+  final String? home;
+}
+
+class PressConferenceStatementsItem {
+  const PressConferenceStatementsItem({required this.kind, required this.stakes, required this.text});
+
+  factory PressConferenceStatementsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceStatementsItem');
+    return PressConferenceStatementsItem(
+      kind: r.string('kind'),
+      stakes: r.object('stakes', PressConferenceStatementsItemStakes.fromJson),
+      text: r.string('text'),
+    );
+  }
+
+  final String kind;
+
+  /// [X61 E9] What it stakes on each result (morale)
+  final PressConferenceStatementsItemStakes stakes;
+  final String text;
+}
+
+/// [X61 E9] What it stakes on each result (morale)
+class PressConferenceStatementsItemStakes {
+  const PressConferenceStatementsItemStakes({required this.draw, required this.loss, required this.win});
+
+  factory PressConferenceStatementsItemStakes.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceStatementsItemStakes');
+    return PressConferenceStatementsItemStakes(draw: r.int_('draw'), loss: r.int_('loss'), win: r.int_('win'));
+  }
+
+  final int draw;
+  final int loss;
+  final int win;
+}
+
 /// The only tactics the opponent ever sees
 class PublicTactics {
   const PublicTactics({required this.marking, required this.plan, required this.tackling, required this.trap});

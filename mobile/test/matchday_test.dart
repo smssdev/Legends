@@ -32,7 +32,9 @@ Future<void> pump(WidgetTester t, Widget screen) async {
         nextMatchProvider.overrideWith(
           (ref, l) async => api.NextMatch.fromJson({...json('next_match')['match'] as Map<String, dynamic>, 'referee': 'strict'}),
         ),
-        pressProvider.overrideWith((ref, k) async => {...json('press_2794')['press'] as Map<String, dynamic>, 'open': true}),
+        pressProvider.overrideWith(
+          (ref, k) async => api.PressConference.fromJson({...json('press_2794')['press'] as Map<String, dynamic>, 'open': true}),
+        ),
         integrityProvider.overrideWith(
           (ref, l) async => {
             ...json('integrity'),

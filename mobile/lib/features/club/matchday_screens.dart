@@ -31,8 +31,13 @@ final nextMatchProvider = FutureProvider.autoDispose.family<api.NextMatch?, int>
     'NextMatchAnswer',
   ).objectOrNull('match', api.NextMatch.fromJson),
 );
-final pressProvider = FutureProvider.autoDispose.family<Map<String, dynamic>?, (int, int)>(
-  (ref, k) async => (await ref.read(apiProvider).get('/leagues/${k.$1}/press/${k.$2}'))['press'] as Map<String, dynamic>?,
+
+/// [Sprint 59 F1] The press conference through the generated model (`PressConference`).
+final pressProvider = FutureProvider.autoDispose.family<api.PressConference?, (int, int)>(
+  (ref, k) async => JsonReader(
+    await ref.read(apiProvider).get('/leagues/${k.$1}/press/${k.$2}'),
+    'PressAnswer',
+  ).objectOrNull('press', api.PressConference.fromJson),
 );
 final integrityProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
   (ref, l) => ref.read(apiProvider).get('/leagues/$l/integrity'),
@@ -208,10 +213,10 @@ class MatchdayScreen extends ConsumerWidget {
                 ),
               ],
               ...?ref.watch(pressProvider((leagueId, fixture))).value?.let((pr) {
-                final mine = '${pr['mine']}';
-                final said = (pr['said'] as Map<dynamic, dynamic>?)?[mine];
-                final ch = pr['chances'] as Map<dynamic, dynamic>? ?? const {};
-                final mineFirst = mine == 'home';
+                final mineFirst = pr.mine == 'home';
+                final said = mineFirst ? pr.said.home : pr.said.away;
+                final reading = mineFirst ? pr.reading.home : pr.reading.away;
+                final ch = pr.chances;
                 return [
                   SectionTitle(l.press),
                   GlmCard(
@@ -219,40 +224,26 @@ class MatchdayScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          l.chances(
-                            ch[mineFirst ? 'home' : 'away'] as int? ?? 0,
-                            ch['draw'] as int? ?? 0,
-                            ch[mineFirst ? 'away' : 'home'] as int? ?? 0,
-                          ),
+                          l.chances(mineFirst ? ch.home : ch.away, ch.draw, mineFirst ? ch.away : ch.home),
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
-                        if ((pr['reading'] as Map<dynamic, dynamic>?)?[mine] != null)
-                          Text('${(pr['reading'] as Map<dynamic, dynamic>)[mine]}', style: TextStyle(color: p.textMuted)),
+                        if (pr.mine != null) Text(reading, style: TextStyle(color: p.textMuted)),
                         const SizedBox(height: 8),
                         if (said != null)
                           Text(
-                            '${l.youSaid}: ${(pr['statements'] as List<dynamic>).cast<Map<dynamic, dynamic>>().firstWhere((s) => s['kind'] == said, orElse: () => {'text': said})['text']}',
+                            '${l.youSaid}: ${pr.statements.where((s) => s.kind == said).firstOrNull?.text ?? said}',
                             style: TextStyle(color: context.glm.goldText),
                           )
-                        else if (pr['open'] != true)
-                          Text(
-                            l.pressOpensAt(when(context, DateTime.parse('${pr['opens_at']}').toLocal())),
-                            style: TextStyle(color: p.textMuted),
-                          )
+                        else if (!pr.open)
+                          Text(l.pressOpensAt(when(context, DateTime.parse(pr.opensAt).toLocal())), style: TextStyle(color: p.textMuted))
                         else
-                          for (final s in (pr['statements'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>())
+                          for (final s in pr.statements)
                             ListTile(
                               contentPadding: EdgeInsets.zero,
-                              title: Text('${s['text']}'),
-                              subtitle: Text(
-                                l.stakes(
-                                  (s['stakes'] as Map<dynamic, dynamic>?)?['win'] as int? ?? 0,
-                                  (s['stakes'] as Map<dynamic, dynamic>?)?['draw'] as int? ?? 0,
-                                  (s['stakes'] as Map<dynamic, dynamic>?)?['loss'] as int? ?? 0,
-                                ),
-                              ),
+                              title: Text(s.text),
+                              subtitle: Text(l.stakes(s.stakes.win, s.stakes.draw, s.stakes.loss)),
                               trailing: const Icon(Icons.mic_rounded),
-                              onTap: () => act(() => api.post('/leagues/$leagueId/press/$fixture', {'kind': s['kind']})),
+                              onTap: () => act(() => api.post('/leagues/$leagueId/press/$fixture', {'kind': s.kind})),
                             ),
                       ],
                     ),

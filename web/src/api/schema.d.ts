@@ -3657,9 +3657,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            press: {
-                                [key: string]: unknown;
-                            };
+                            press: components["schemas"]["PressConference"] | null;
                             enabled: boolean;
                         };
                     };
@@ -16354,6 +16352,50 @@ export interface components {
                     in_name?: string | null;
                 }[];
             } | null;
+        };
+        /** @description [UP12, Sprint 59 F1] The press conference before a match, as one coach sees it (App\\League\\PressRoom::of) */
+        PressConference: {
+            fixture_id: number;
+            /** Format: date-time */
+            opens_at: string;
+            /** @description Statements are given from the opening until the lock */
+            open: boolean;
+            /** @description Each result's chance in percent */
+            chances: {
+                home: number;
+                draw: number;
+                away: number;
+            };
+            reading: {
+                home: string;
+                away: string;
+            };
+            lines: {
+                home: {
+                    [key: string]: number;
+                };
+                away: {
+                    [key: string]: number;
+                };
+            };
+            statements: {
+                kind: string;
+                text: string;
+                /** @description [X61 E9] What it stakes on each result (morale) */
+                stakes: {
+                    win: number;
+                    draw: number;
+                    loss: number;
+                };
+            }[];
+            /** @description The statement each side made */
+            said: {
+                home: string | null;
+                away: string | null;
+            };
+            /** @enum {string|null} */
+            mine: "home" | "away" | null;
+            morale: number;
         };
         /** @description [Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model */
         LeagueMatch: {
