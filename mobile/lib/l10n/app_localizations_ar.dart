@@ -3000,4 +3000,7 @@ class LAr extends L {
 
   @override
   String get marketClear => 'امسح الفلاتر';
+
+  @override
+  String get liveOrders => 'الأوامر';
 }

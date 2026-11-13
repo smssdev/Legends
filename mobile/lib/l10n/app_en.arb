@@ -898,5 +898,6 @@
   "marketMaxPrice": "Highest price",
   "marketAnyPrice": "Any price",
   "marketApply": "Apply",
-  "marketClear": "Clear filters"
+  "marketClear": "Clear filters",
+  "liveOrders": "Orders"
 }

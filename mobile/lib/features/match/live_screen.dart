@@ -35,6 +35,7 @@ part 'live_screen_sheets.dart';
 part 'live_screen_social.dart';
 part 'live_screen_momentum_strip.dart';
 part 'live_screen_event_line.dart';
+part 'live_screen_broadcast.dart';
 
 /// [Sprint 17 F2] The live match in the app (the web's /live/{id}): the score bug, the light pitch, the commentary
 /// line by line from the server (`text`), and for a coach of either side his orders (a substitution, the tactics or

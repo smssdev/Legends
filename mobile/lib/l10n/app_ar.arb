@@ -2065,5 +2065,6 @@
   "marketMaxPrice": "أعلى سعر",
   "marketAnyPrice": "أي سعر",
   "marketApply": "طبّق",
-  "marketClear": "امسح الفلاتر"
+  "marketClear": "امسح الفلاتر",
+  "liveOrders": "الأوامر"
 }

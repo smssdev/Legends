@@ -14,6 +14,11 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   int _tick = 0, _offset = 0, _minute = 0, _added = 0;
   bool _started = false, _busy = false;
 
+  /// [Sprint 60 F6] The drawer open over the picture on a landscape screen: 'orders', 'chat' or none.
+  String? _drawer;
+
+  void _openDrawer(String? d) => setState(() => _drawer = d);
+
   /// [Sprint 50 M14, M15] The momentum wave (each minute's danger, the home side's share), and the timeout held.
   final List<int> _wave = [];
   int? _homePct;
@@ -260,8 +265,11 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
       for (final side in ['home', 'away'])
         for (final p in _teams[side]!.players) '${p.id}': (side, p.no),
     };
+    final size = MediaQuery.sizeOf(context);
+    final landscape = size.width > size.height;
     return Scaffold(
-      appBar: GameBar(title: Text(_finished ? l.fullTime : l.liveNow)),
+      // [Sprint 60 F6] On a landscape screen the picture has no frame (the draft's «bare» screen).
+      appBar: landscape ? null : GameBar(title: Text(_finished ? l.fullTime : l.liveNow)),
       body: GlmBackground(
         wide: true,
         child: LayoutBuilder(
@@ -301,41 +309,17 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
                 ),
               if (!_finished && _started) _socialBar(l),
             ];
-            // [2026-11-06] Landscape, as a broadcast: the score and the pitch filling one side, the coach's controls and
-            // the commentary on the other.
             if (box.maxWidth > box.maxHeight) {
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 6,
-                    child: Column(
-                      children: [
-                        bug,
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
-                            child: Center(child: pitch),
-                          ),
-                        ),
-                        if (_started && _wave.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-                            child: _MomentumStrip(wave: _wave, homePct: _homePct, view: v),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 5,
-                    child: Column(
-                      children: [
-                        ...controls,
-                        Expanded(child: _feedList(l)),
-                      ],
-                    ),
-                  ),
-                ],
+              return _broadcast(
+                l,
+                pitch,
+                _ScoreBug(
+                  view: v,
+                  score: _score,
+                  minute: _started ? (_added > 0 ? "$_minute+$_added'" : "$_minute'") : null,
+                  finished: _finished,
+                  compact: true,
+                ),
               );
             }
             return Column(

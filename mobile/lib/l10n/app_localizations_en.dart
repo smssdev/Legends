@@ -2961,4 +2961,7 @@ class LEn extends L {
 
   @override
   String get marketClear => 'Clear filters';
+
+  @override
+  String get liveOrders => 'Orders';
 }

@@ -89,18 +89,69 @@ class _Wave extends CustomPainter {
 }
 
 class _ScoreBug extends StatelessWidget {
-  const _ScoreBug({required this.view, required this.score, this.minute, required this.finished});
+  const _ScoreBug({required this.view, required this.score, this.minute, required this.finished, this.compact = false});
 
   final MatchView view;
   final (int, int) score;
   final String? minute;
   final bool finished;
 
+  /// [Sprint 60 F6] One line over the picture (the draft's score): both codes on their shirts, the score, the minute.
+  final bool compact;
+
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
     final p = context.palette;
     final kits = matchKits(view);
+    if (compact) {
+      Widget code(String key, MatchClub c) {
+        final (shirt, ink) = kits[key]!;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: GlmSpace.sm, vertical: 2),
+          decoration: ShapeDecoration(
+            color: shirt,
+            shape: GlmCut.shape(GlmCut.chip + 2, side: view.you == key ? BorderSide(color: p.gold, width: 2) : BorderSide.none),
+          ),
+          child: Text(c.code, style: context.type.numbers(context.type.title).copyWith(color: ink, height: 1.1)),
+        );
+      }
+
+      return Container(
+        height: 40,
+        padding: const EdgeInsets.symmetric(horizontal: GlmSpace.sm),
+        decoration: ShapeDecoration(
+          color: GlmBroadcast.tv.withValues(alpha: .92),
+          shape: GlmCut.shape(GlmCut.badge),
+          shadows: const [BoxShadow(color: GlmBroadcast.ink, blurRadius: 20, offset: Offset(0, 6), spreadRadius: -8)],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          textDirection: TextDirection.ltr,
+          children: [
+            code('home', view.home),
+            const SizedBox(width: GlmSpace.sm),
+            Text(
+              '${score.$1} - ${score.$2}',
+              textDirection: TextDirection.ltr,
+              style: context.type.numbers(context.type.headline).copyWith(color: GlmBroadcast.goldLight, height: 1),
+            ),
+            const SizedBox(width: GlmSpace.sm),
+            code('away', view.away),
+            const SizedBox(width: GlmSpace.sm),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: GlmSpace.xs + 2, vertical: 1),
+              decoration: ShapeDecoration(color: finished ? p.surfaceRaised : p.danger, shape: GlmCut.shape(GlmCut.chip + 2)),
+              child: Text(
+                finished ? l.fullTime : (minute ?? l.notStarted),
+                textDirection: minute != null && !finished ? TextDirection.ltr : null,
+                style: glmText(GlmType.caption, color: GlmBroadcast.white, fontWeight: FontWeight.w800),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     Widget side(MatchClub c, String key) {
       final (shirt, ink) = kits[key]!;
       final mine = view.you == key;
