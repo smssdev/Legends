@@ -47,26 +47,32 @@ Future<void> pump(WidgetTester t, Widget screen) async {
             ],
           },
         ),
-        contractsProvider.overrideWith((ref, l) async => json('team_contracts')),
+        contractsProvider.overrideWith((ref, l) async => api.Contracts.fromJson(json('team_contracts'))),
         ticketsProvider.overrideWith((ref, l) async => json('tickets')),
         missedProvider.overrideWith(
           (ref, l) async => [
-            {
+            // [Sprint 59 F1] As the contract has it (MissedMatch), read through the generated model.
+            api.MissedMatch.fromJson({
               'match_id': 77,
+              'competition': 'league',
+              'round': 3,
+              'venue': 'home',
+              'at': '2026-11-08T19:00:00Z',
               'result': 1,
-              'home': {'name': 'Liverpool'},
-              'away': {'name': 'Arsenal'},
+              'home': {'id': 141, 'name': 'Liverpool', 'code': 'LIV', 'crest_url': '/crests/1.svg'},
+              'away': {'id': 142, 'name': 'Arsenal', 'code': 'ARS', 'crest_url': '/crests/8.svg'},
               'home_goals': 2,
               'away_goals': 1,
               'goals': [
                 {'minute': 18, 'side': 'home', 'scorer': 'Mohamed Salah'},
               ],
-              'man_of_the_match': {'name': 'Mohamed Salah'},
+              'man_of_the_match': {'id': 1, 'name': 'Mohamed Salah', 'rating': 820, 'mine': true},
               'coins': 3,
               'changes': [
                 {'kind': 'injury', 'player': 'Cody Gakpo'},
               ],
-            },
+              'mood': 'joy',
+            }),
           ],
         ),
       ],

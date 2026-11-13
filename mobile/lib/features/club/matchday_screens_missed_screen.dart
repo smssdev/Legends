@@ -31,12 +31,12 @@ class MissedScreen extends ConsumerWidget {
           data: (list) => ListView(
             padding: const EdgeInsets.all(12),
             children: [
-              for (final m in list.cast<Map<dynamic, dynamic>>())
+              for (final m in list)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: GlmCard(
-                    gold: m['result'] == 1,
-                    onTap: () => GoRouter.of(context).push('/match/${m['match_id']}/report?coach=true'),
+                    gold: m.result == 1,
+                    onTap: () => GoRouter.of(context).push('/match/${m.matchId}/report?coach=true'),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -44,19 +44,19 @@ class MissedScreen extends ConsumerWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                '${(m['home'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
+                                m.home.name,
                                 textDirection: TextDirection.ltr,
                                 style: const TextStyle(fontWeight: FontWeight.w700),
                               ),
                             ),
                             Text(
-                              '${m['home_goals']} - ${m['away_goals']}',
+                              '${m.homeGoals} - ${m.awayGoals}',
                               textDirection: TextDirection.ltr,
                               style: const TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800),
                             ),
                             Expanded(
                               child: Text(
-                                '${(m['away'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
+                                m.away.name,
                                 textDirection: TextDirection.ltr,
                                 textAlign: TextAlign.end,
                                 style: const TextStyle(fontWeight: FontWeight.w700),
@@ -64,20 +64,18 @@ class MissedScreen extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        for (final g in (m['goals'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>())
+                        for (final g in m.goals)
                           Text(
-                            "⚽ ${g['minute']}' ${g['scorer'] ?? ''}",
+                            "⚽ ${g.minute}' ${g.scorer ?? ''}",
                             textDirection: TextDirection.ltr,
-                            textAlign: g['side'] == 'home' ? TextAlign.left : TextAlign.right,
+                            textAlign: g.side == 'home' ? TextAlign.left : TextAlign.right,
                             style: TextStyle(color: context.palette.textMuted, fontSize: 12),
                           ),
-                        if (m['man_of_the_match'] is Map<dynamic, dynamic>)
-                          Text('${l.manOfMatch}: ${(m['man_of_the_match'] as Map<dynamic, dynamic>)['name'] ?? ''}'),
-                        if ((m['coins'] as int? ?? 0) != 0)
-                          Text(l.coinsWord(m['coins'] as int), style: TextStyle(color: context.glm.goldText)),
-                        for (final c in (m['changes'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>())
+                        if (m.manOfTheMatch case final motm?) Text('${l.manOfMatch}: ${motm.name ?? ''}'),
+                        if (m.coins != 0) Text(l.coinsWord(m.coins), style: TextStyle(color: context.glm.goldText)),
+                        for (final c in m.changes)
                           Text(
-                            '${c['kind'] == 'injury' ? '🩹 ${l.injured}' : '🟥 ${l.sentOff}'}: ${c['player'] ?? ''}',
+                            '${c.kind == 'injury' ? '🩹 ${l.injured}' : '🟥 ${l.sentOff}'}: ${c.player ?? ''}',
                             style: TextStyle(color: context.glm.liveText, fontSize: 12),
                           ),
                       ],

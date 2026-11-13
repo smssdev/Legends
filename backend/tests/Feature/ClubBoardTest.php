@@ -100,7 +100,11 @@ class ClubBoardTest extends TestCase
             DB::table('match_events')->insert(['match_id' => $match, 'tick' => $minute, 'minute' => $minute, 'type' => 'goal', 'club_id' => $this->mine, 'player_id' => $scorer, 'payload' => '{}']);
         }
 
-        $missed = $this->getJson($this->url('missed'))->assertOk()->assertJsonCount(1, 'matches')->json('matches.0');
+        $missed = $this->getJson($this->url('missed'))->assertOk()->assertJsonCount(1, 'matches')
+            // [Sprint 59 F1] The fields the app reads through MissedMatch (openapi.yaml).
+            ->assertJsonStructure(['matches' => ['*' => ['match_id', 'competition', 'round', 'venue', 'at', 'home' => ['id', 'name', 'code', 'crest_url'],
+                'away' => ['id', 'name', 'code', 'crest_url'], 'home_goals', 'away_goals', 'result', 'goals' => ['*' => ['minute', 'side', 'scorer']],
+                'man_of_the_match', 'coins', 'changes', 'mood']]])->json('matches.0');
         $this->assertSame($match, $missed['match_id']);
         $this->assertSame(1, $missed['result']);
         // [Sprint 26 B2] A 2-0 win: the mascot is happy.
