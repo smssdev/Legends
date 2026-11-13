@@ -1,3 +1,5 @@
+import '../../ui/art_palette.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -66,7 +68,7 @@ class _LivePitchState extends State<LivePitch> with SingleTickerProviderStateMix
       () => TextPainter(
         text: TextSpan(
           text: '$number',
-          style: TextStyle(color: ink, fontSize: size, fontWeight: FontWeight.w800, fontFamily: GlmFonts.numbers),
+          style: glmDrawnText(size, color: ink, fontWeight: FontWeight.w800, fontFamily: GlmFonts.numbers),
         ),
         textDirection: TextDirection.ltr,
       )..layout(),
@@ -153,7 +155,7 @@ class _PitchPainter extends CustomPainter {
       tp.paint(canvas, c - Offset(tp.width / 2, tp.height / 2));
     }
     for (final o in f.officials ?? const <Point2>[]) {
-      canvas.drawCircle(Offset(o.$1 * sx, o.$2 * sy), r * .6, Paint()..color = const Color(0xFF111111));
+      canvas.drawCircle(Offset(o.$1 * sx, o.$2 * sy), r * .6, Paint()..color = GlmArt.black);
     }
     final (bx, by, bz) = f.ball;
     final lift = bz * sy * .6;
@@ -171,11 +173,11 @@ Color hexColor(String? hex, [Color fallback = Colors.white]) {
   final h = hex?.replaceFirst('#', '');
   if (h == null || h.length != 6) return fallback;
   final v = int.tryParse(h, radix: 16);
-  return v == null ? fallback : Color(0xFF000000 | v);
+  return v == null ? fallback : Color(v).withAlpha(255);
 }
 
 /// Black or white numbers, whichever reads on the shirt.
-Color inkOn(Color shirt) => shirt.computeLuminance() > .5 ? const Color(0xFF111111) : Colors.white;
+Color inkOn(Color shirt) => shirt.computeLuminance() > .5 ? GlmArt.black : Colors.white;
 
 /// [2026-11-06, Sprint 57 F1] Both sides' shirts and numbers, as the server decided them (MatchKits) for every screen.
 Map<String, (Color, Color)> matchKits(MatchView v) {

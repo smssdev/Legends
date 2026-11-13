@@ -41,7 +41,7 @@ class FixtureTile extends StatelessWidget {
               s.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontWeight: s.id == mine ? FontWeight.w800 : FontWeight.w600, fontSize: 14),
+              style: glmText(GlmType.body, fontWeight: s.id == mine ? FontWeight.w800 : FontWeight.w600),
             ),
           ),
           if (end) ...[const SizedBox(width: 8), ClubCrest(url: s.crestUrl, name: s.code, size: 28)],
@@ -52,16 +52,16 @@ class FixtureTile extends StatelessWidget {
         ? Text(
             '${f.homeGoals ?? 0} - ${f.awayGoals ?? 0}',
             textDirection: TextDirection.ltr,
-            style: TextStyle(
+            style: glmText(
+              GlmType.title,
               fontFamily: GlmFonts.numbers,
               fontWeight: FontWeight.w800,
-              fontSize: 20,
               color: f.live ? context.glm.liveText : p.text,
             ),
           )
         : Text(
             f.at == null ? '—' : latinDigits(DateFormat.jm(Localizations.localeOf(context).toLanguageTag()).format(f.at!)),
-            style: TextStyle(color: p.textMuted, fontSize: 13, fontWeight: FontWeight.w700),
+            style: glmText(GlmType.caption, color: p.textMuted, fontWeight: FontWeight.w700),
           );
     // [Sprint 17 F2] A match under way or played opens: live, or its report afterwards.
     final open = f.matchId == null
@@ -124,7 +124,7 @@ class ClubChoice extends StatelessWidget {
                     Text(club.name, style: context.text.titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
                     Text(
                       [l.strength(club.strength ~/ 100), if (club.goal != null) goalText(l, club.goal)].join(' · '),
-                      style: TextStyle(color: p.textMuted, fontSize: 12),
+                      style: glmText(GlmType.caption, color: p.textMuted),
                     ),
                   ],
                 ),

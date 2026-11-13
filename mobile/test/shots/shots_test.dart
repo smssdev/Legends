@@ -270,7 +270,7 @@ void main() {
     (t) => shot(t, 'tactics-lines', const TacticsScreen(leagueId: 8), [
       teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
       clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
-    ], scroll: 520),
+    ], scroll: 495),
   );
   testWidgets(
     'tactics-plan',

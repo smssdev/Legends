@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -114,7 +116,7 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
                 value: _picked.containsKey(t.id),
                 activeColor: p.gold,
                 title: Text(t.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
-                subtitle: Text(t.league, style: TextStyle(color: p.textMuted, fontSize: 11)),
+                subtitle: Text(t.league, style: glmText(GlmType.caption, color: p.textMuted)),
                 onChanged: (on) => setState(() => on == true ? _picked[t.id] = t.name : _picked.remove(t.id)),
               ),
           ],

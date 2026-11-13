@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -63,11 +65,11 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                             if (m.fromTeam)
                               Text(
                                 l.fromTeam,
-                                style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12),
+                                style: glmText(GlmType.caption, color: context.glm.goldText, fontWeight: FontWeight.w800),
                               ),
                             Text(m.body),
                             if (DateTime.tryParse(m.at) != null)
-                              Text(when(context, DateTime.parse(m.at).toLocal()), style: TextStyle(color: p.textMuted, fontSize: 11)),
+                              Text(when(context, DateTime.parse(m.at).toLocal()), style: glmText(GlmType.caption, color: p.textMuted)),
                           ],
                         ),
                       ),

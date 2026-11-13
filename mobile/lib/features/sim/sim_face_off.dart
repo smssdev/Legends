@@ -1,3 +1,5 @@
+import '../../ui/art_palette.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -73,7 +75,7 @@ class _FaceOffState extends State<FaceOff> with TickerProviderStateMixin {
                       name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: p.text),
+                      style: glmText(GlmType.caption, fontWeight: FontWeight.w800, color: p.text),
                     ),
                   ),
                 ],
@@ -91,7 +93,7 @@ class _FaceOffState extends State<FaceOff> with TickerProviderStateMixin {
                   ),
                   child: Text(
                     '?',
-                    style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 30, fontWeight: FontWeight.w700, color: p.gold),
+                    style: glmText(GlmType.display, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.gold),
                   ),
                 )
               : widget.away != null
@@ -119,10 +121,10 @@ class _FaceOffState extends State<FaceOff> with TickerProviderStateMixin {
                       angle: .07 * w,
                       child: Text(
                         'VS',
-                        style: TextStyle(
+                        style: glmText(
+                          GlmType.displayLg,
                           fontFamily: GlmFonts.numbers,
                           fontWeight: FontWeight.w700,
-                          fontSize: 40,
                           color: p.gold,
                           shadows: [
                             Shadow(color: p.goldDark, offset: const Offset(0, 2)),
@@ -172,7 +174,7 @@ class _NightPitch extends CustomPainter {
           ..shader = const LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0x47FFF0C8), Color(0x00FFF0C8)],
+            colors: GlmArt.floodlightGlow,
           ).createShader(Rect.fromLTWH(-70, 0, 140, s.height)),
       );
       canvas.restore();

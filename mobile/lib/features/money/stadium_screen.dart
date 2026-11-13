@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -126,7 +128,7 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
                         Text(
                           l.partTime(partTime),
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: p.textMuted, fontSize: 12),
+                          style: glmText(GlmType.caption, color: p.textMuted),
                         ),
                       ],
                     ),
@@ -154,10 +156,10 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
                           const SizedBox(height: 6),
                           Text(
                             l.endsIn(_left(left)),
-                            style: TextStyle(
+                            style: glmText(
+                              GlmType.title,
                               fontFamily: GlmFonts.numbers,
                               fontFamilyFallback: const [GlmFonts.body],
-                              fontSize: 20,
                               fontWeight: FontWeight.w800,
                               color: context.glm.goldText,
                             ),
@@ -192,9 +194,9 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
                                 Expanded(child: Text(names[sec.section] ?? sec.section, style: context.text.titleMedium)),
                                 Text(
                                   '${sec.stage}/3',
-                                  style: TextStyle(
+                                  style: glmText(
+                                    GlmType.title,
                                     fontFamily: GlmFonts.numbers,
-                                    fontSize: 18,
                                     fontWeight: FontWeight.w800,
                                     color: context.glm.goldText,
                                   ),
@@ -229,7 +231,7 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
                                   Expanded(
                                     child: Text(
                                       '${l.stageOf(sec.next!.stage)} · ${l.partOf(sec.next!.part)}',
-                                      style: TextStyle(color: p.textMuted, fontSize: 13),
+                                      style: glmText(GlmType.caption, color: p.textMuted),
                                     ),
                                   ),
                                   GlmButton(
@@ -268,12 +270,12 @@ class _Fact extends StatelessWidget {
       Text(
         value,
         textDirection: TextDirection.ltr,
-        style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800, color: context.palette.text),
+        style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.palette.text),
       ),
       Text(
         label,
         textAlign: TextAlign.center,
-        style: TextStyle(color: context.palette.textMuted, fontSize: 12),
+        style: glmText(GlmType.caption, color: context.palette.textMuted),
       ),
     ],
   );

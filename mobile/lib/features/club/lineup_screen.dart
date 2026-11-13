@@ -1,3 +1,5 @@
+import '../../ui/art_palette.dart';
+
 import 'dart:async';
 
 import 'dart:math' as math;
@@ -171,7 +173,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                               child: Text(
                                 f.label,
                                 textDirection: TextDirection.ltr,
-                                style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18),
+                                style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
                               ),
                             ),
                         ],
@@ -188,7 +190,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                     Icon(Icons.touch_app_rounded, size: 16, color: context.palette.textMuted),
                     const SizedBox(width: 6),
                     Expanded(
-                      child: Text(l.dragHint, style: TextStyle(color: context.palette.textMuted, fontSize: 12)),
+                      child: Text(l.dragHint, style: glmText(GlmType.caption, color: context.palette.textMuted)),
                     ),
                   ],
                 ),
@@ -369,7 +371,7 @@ class _Token extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textDirection: TextDirection.ltr,
-              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700, decoration: TextDecoration.none),
+              style: glmText(GlmType.caption, color: Colors.white, fontWeight: FontWeight.w700, decoration: TextDecoration.none),
             ),
           ),
         ],

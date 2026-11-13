@@ -127,10 +127,10 @@ class _PitchHead extends StatelessWidget {
                       child: Text(
                         'GAME LEGEND MANAGER',
                         textDirection: TextDirection.ltr,
-                        style: TextStyle(
+                        style: glmText(
+                          tall ? GlmType.headline : GlmType.title,
                           fontFamily: GlmFonts.numbers,
                           fontWeight: FontWeight.w700,
-                          fontSize: tall ? 24 : 18,
                           letterSpacing: 1,
                           color: p.text,
                         ),
@@ -156,13 +156,13 @@ class _PitchHead extends StatelessWidget {
               Text(
                 title,
                 textAlign: tall ? TextAlign.center : TextAlign.start,
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 28, height: 1.25, color: p.text),
+                style: glmText(GlmType.display, fontWeight: FontWeight.w800, height: 1.25, color: p.text),
               ),
               const SizedBox(height: 4),
               Text(
                 lead,
                 textAlign: tall ? TextAlign.center : TextAlign.start,
-                style: TextStyle(fontSize: 15, color: p.textSoft),
+                style: glmText(GlmType.body, color: p.textSoft),
               ),
             ],
           ),
@@ -245,7 +245,7 @@ class _Tabs extends StatelessWidget {
                 child: Center(
                   child: Text(
                     label,
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: on ? p.onGold : p.textSoft),
+                    style: glmText(GlmType.body, fontWeight: FontWeight.w700, color: on ? p.onGold : p.textSoft),
                   ),
                 ),
               ),

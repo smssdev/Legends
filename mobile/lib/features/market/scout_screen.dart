@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -196,10 +198,10 @@ class _ScoutScreenState extends ConsumerState<ScoutScreen> {
                             const Spacer(),
                             Text(
                               '${_min.round()}',
-                              style: TextStyle(
+                              style: glmText(
+                                GlmType.title,
                                 fontFamily: GlmFonts.numbers,
                                 fontWeight: FontWeight.w800,
-                                fontSize: 18,
                                 color: context.glm.goldText,
                               ),
                             ),
@@ -219,10 +221,10 @@ class _ScoutScreenState extends ConsumerState<ScoutScreen> {
                             const Spacer(),
                             Text(
                               '${_age.round()}',
-                              style: TextStyle(
+                              style: glmText(
+                                GlmType.title,
                                 fontFamily: GlmFonts.numbers,
                                 fontWeight: FontWeight.w800,
-                                fontSize: 18,
                                 color: context.glm.goldText,
                               ),
                             ),
@@ -315,10 +317,10 @@ class _ScoutScreenState extends ConsumerState<ScoutScreen> {
                                         'available' => Text(
                                           money(context, e.player.price),
                                           textDirection: TextDirection.ltr,
-                                          style: TextStyle(
+                                          style: glmText(
+                                            GlmType.bodyLg,
                                             fontFamily: GlmFonts.numbers,
                                             fontWeight: FontWeight.w800,
-                                            fontSize: 17,
                                             color: context.glm.goldText,
                                           ),
                                         ),

@@ -29,7 +29,7 @@ class PlayerCardArt extends StatelessWidget {
             children: [
               Text(
                 '$overall',
-                style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 30, color: p.onGold),
+                style: glmText(GlmType.display, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: p.onGold),
               ),
               Text(
                 position,
@@ -43,7 +43,7 @@ class PlayerCardArt extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textDirection: TextDirection.ltr,
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: p.onGold),
+                  style: glmText(GlmType.caption, fontWeight: FontWeight.w800, color: p.onGold),
                 ),
               ),
             ],
@@ -186,11 +186,11 @@ class _NegotiationState extends ConsumerState<_Negotiation> {
       children: [
         Text(
           l.theyAsk(money(context, n.ask)),
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: p.goldLight),
+          style: glmText(GlmType.bodyLg, fontWeight: FontWeight.w800, color: p.goldLight),
         ),
         Text(
           closed ? l.talkClosed : l.roundOf(n.round + 1, n.rounds + 1),
-          style: TextStyle(color: closed ? p.danger : p.textMuted, fontSize: 12),
+          style: glmText(GlmType.caption, color: closed ? p.danger : p.textMuted),
         ),
         const SizedBox(height: 10),
         GlmCompactField(

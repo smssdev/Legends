@@ -281,7 +281,7 @@ class _SellSheetState extends State<_SellSheet> {
               Text(
                 l.listedAt(money(context, pl.listedPrice!)),
                 textAlign: TextAlign.center,
-                style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 18),
+                style: glmText(GlmType.title, color: context.glm.goldText, fontWeight: FontWeight.w800),
               ),
               if (pl.sellsAt != null)
                 Text(
@@ -301,10 +301,10 @@ class _SellSheetState extends State<_SellSheet> {
               Text(
                 '${l.price}: ${money(context, _price.round())}',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: glmText(
+                  GlmType.headline,
                   fontFamily: GlmFonts.numbers,
                   fontFamilyFallback: const [GlmFonts.body],
-                  fontSize: 22,
                   fontWeight: FontWeight.w800,
                   color: context.glm.goldText,
                 ),
@@ -323,13 +323,13 @@ class _SellSheetState extends State<_SellSheet> {
               Text(
                 l.priceRange(money(context, pl.floor), money(context, pl.cap)),
                 textAlign: TextAlign.center,
-                style: TextStyle(color: p.textMuted, fontSize: 12),
+                style: glmText(GlmType.caption, color: p.textMuted),
               ),
               if (_wait != null)
                 Text(
                   l.waitAbout(_wait!),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: p.textMuted, fontSize: 12),
+                  style: glmText(GlmType.caption, color: p.textMuted),
                 ),
               const SizedBox(height: 10),
               GlmButton(

@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -141,7 +143,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                         children: [
                           const SizedBox(height: 2),
                           Text(m.body),
-                          if (m.at != null) Text(when(context, m.at!.toLocal()), style: TextStyle(color: p.textMuted, fontSize: 12)),
+                          if (m.at != null) Text(when(context, m.at!.toLocal()), style: glmText(GlmType.caption, color: p.textMuted)),
                         ],
                       ),
                       isThreeLine: true,

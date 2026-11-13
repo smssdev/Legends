@@ -72,10 +72,10 @@ class HubTiles extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.start,
-                      style: TextStyle(
+                      style: glmText(
+                        GlmType.body,
                         fontFamily: GlmFonts.numbers,
                         fontWeight: FontWeight.w800,
-                        fontSize: 14,
                         height: 1.2,
                         color: r.mine ? p.goldLight : Colors.white,
                       ),
@@ -191,7 +191,7 @@ class HubTiles extends StatelessWidget {
                             : s.lineupAuto
                             ? l.prepAuto
                             : l.prepReady,
-                        style: TextStyle(color: missing ? p.danger : Colors.white70, fontWeight: FontWeight.w700, fontSize: 12),
+                        style: glmText(GlmType.caption, color: missing ? p.danger : Colors.white70, fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 6),
                       _Progress(
@@ -295,7 +295,7 @@ class _Form extends StatelessWidget {
             ),
             child: Text(
               {'W': L.of(context).formWin, 'D': L.of(context).formDraw, 'L': L.of(context).formLoss}[r] ?? r,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11, height: 1),
+              style: glmText(GlmType.caption, color: Colors.white, fontWeight: FontWeight.w900, height: 1),
             ),
           ),
       ],
@@ -355,11 +355,11 @@ class _HubTile extends StatelessWidget {
                       child: Text(
                         title,
                         maxLines: 1,
-                        style: TextStyle(
+                        style: glmText(
+                          GlmType.body,
                           fontFamily: GlmFonts.body,
                           color: gold ? p.onGold : Colors.white,
                           fontWeight: FontWeight.w700,
-                          fontSize: 14,
                           height: 1.2,
                         ),
                       ),
@@ -388,7 +388,7 @@ class _HubTile extends StatelessWidget {
                                   title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(color: gold ? p.onGold : p.goldLight, fontWeight: FontWeight.w800, fontSize: 17),
+                                  style: glmText(GlmType.bodyLg, color: gold ? p.onGold : p.goldLight, fontWeight: FontWeight.w800),
                                 ),
                                 const SizedBox(height: 3),
                                 ?child,
@@ -397,10 +397,10 @@ class _HubTile extends StatelessWidget {
                                     sub!,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
+                                    style: glmText(
+                                      GlmType.caption,
                                       color: gold ? p.onGold.withValues(alpha: .8) : Colors.white70,
                                       fontWeight: FontWeight.w700,
-                                      fontSize: 12.5,
                                     ),
                                   ),
                               ],
@@ -434,9 +434,9 @@ class _HubTile extends StatelessWidget {
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 4)],
                 ),
-                child: const Text(
+                child: Text(
                   '!',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, height: 1),
+                  style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w900, height: 1),
                 ),
               ),
             ),

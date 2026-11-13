@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,7 +45,7 @@ class FinanceScreen extends ConsumerWidget {
           onRetry: () => ref.invalidate(financeProvider(leagueId)),
           data: (f) {
             final p = context.palette;
-            final num = TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 20, color: p.text);
+            final num = glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: p.text);
             const gap = SizedBox(height: 12);
             Widget stat(String label, int v, {Color? color}) => Expanded(
               child: Column(
@@ -56,7 +58,7 @@ class FinanceScreen extends ConsumerWidget {
                   Text(
                     label,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: p.textMuted, fontSize: 12),
+                    style: glmText(GlmType.caption, color: p.textMuted),
                   ),
                 ],
               ),
@@ -85,7 +87,7 @@ class FinanceScreen extends ConsumerWidget {
                         CountUp(
                           f.balance,
                           format: (v) => money(context, v),
-                          style: num.copyWith(fontSize: 44, color: f.balance < 0 ? context.glm.liveText : context.glm.goldText),
+                          style: num.merge(glmText(GlmType.displayLg, color: f.balance < 0 ? context.glm.liveText : context.glm.goldText)),
                         ),
                         if (!f.canSpend) ...[
                           const SizedBox(height: 6),
@@ -196,9 +198,9 @@ class FinanceScreen extends ConsumerWidget {
                             trailing: Text(
                               '${t.amount > 0 ? '+' : ''}${money(context, t.amount)}',
                               textDirection: TextDirection.ltr,
-                              style: TextStyle(
+                              style: glmText(
+                                GlmType.bodyLg,
                                 fontFamily: GlmFonts.numbers,
-                                fontSize: 17,
                                 fontWeight: FontWeight.w800,
                                 color: t.amount >= 0 ? context.glm.successText : context.glm.liveText,
                               ),

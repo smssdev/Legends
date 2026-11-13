@@ -8,8 +8,8 @@ extension _LiveSocial on _LiveState {
     final taken = [kits['home']!.$1, kits['away']!.$1];
     return ClipLook(
       kits: kits,
-      keeper: farFrom(taken, const [Color(0xFF7CB342), Color(0xFFFF8F00), Color(0xFF8E24AA), Color(0xFF00ACC1)]),
-      referee: farFrom(taken, const [Color(0xFF111111), Color(0xFFFFD600), Color(0xFF00BFA5)]),
+      keeper: farFrom(taken, GlmArt.keeperKits),
+      referee: farFrom(taken, GlmArt.refereeKits),
       grass: p.pitch,
       grassDark: p.pitchDark,
       gold: p.gold,
@@ -30,7 +30,7 @@ extension _LiveSocial on _LiveState {
               latest.map((r) => '${_LiveState.reactions[r.key] ?? ''} ${r.who}').join('   '),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: p.textMuted, fontSize: 12),
+              style: glmText(GlmType.caption, color: p.textMuted),
             ),
           SizedBox(
             height: 44,
@@ -48,18 +48,18 @@ extension _LiveSocial on _LiveState {
                     IconButton(
                       tooltip: e.key,
                       onPressed: () => _send(() => _repo.react(_id, e.key), quiet: true),
-                      icon: Text(e.value, style: const TextStyle(fontSize: 22)),
+                      icon: Text(e.value, style: glmText(GlmType.headline)),
                     ),
                 for (final side in ['home', 'away']) ...[
                   IconButton(
                     tooltip: 'cheer $side',
                     onPressed: () => _send(() => _repo.react(_id, 'cheer', target: side), quiet: true),
-                    icon: Text('📣${widget.view.club(side).code}', style: const TextStyle(fontSize: 14)),
+                    icon: Text('📣${widget.view.club(side).code}', style: glmText(GlmType.body)),
                   ),
                   IconButton(
                     tooltip: 'boo $side',
                     onPressed: () => _send(() => _repo.react(_id, 'boo', target: side), quiet: true),
-                    icon: Text('👎${widget.view.club(side).code}', style: const TextStyle(fontSize: 14)),
+                    icon: Text('👎${widget.view.club(side).code}', style: glmText(GlmType.body)),
                   ),
                 ],
               ],

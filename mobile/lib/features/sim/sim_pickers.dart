@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,15 +43,15 @@ class TeamChip extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textDirection: TextDirection.ltr,
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                  style: glmText(GlmType.caption, fontWeight: FontWeight.w700),
                 ),
                 if (club.strength != null)
                   Text(
                     '${club.strength}',
-                    style: TextStyle(
+                    style: glmText(
+                      GlmType.body,
                       fontFamily: GlmFonts.numbers,
                       fontWeight: FontWeight.w700,
-                      fontSize: 14,
                       color: on ? context.glm.goldText : p.textMuted,
                     ),
                   ),
@@ -106,10 +108,10 @@ class OpponentRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textDirection: club == null ? null : TextDirection.ltr,
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                  style: glmText(GlmType.body, fontWeight: FontWeight.w700),
                 ),
               ),
-              if (club?.strength != null) Text(l.simStrength(club!.strength!), style: TextStyle(color: p.textMuted, fontSize: 13)),
+              if (club?.strength != null) Text(l.simStrength(club!.strength!), style: glmText(GlmType.caption, color: p.textMuted)),
               if (onClear != null)
                 IconButton(
                   onPressed: onClear,
@@ -173,13 +175,13 @@ class _ClubSearchState extends ConsumerState<ClubSearch> {
                                 c.league!,
                                 textDirection: TextDirection.ltr,
                                 textAlign: TextAlign.start,
-                                style: TextStyle(color: p.textMuted, fontSize: 12),
+                                style: glmText(GlmType.caption, color: p.textMuted),
                               ),
                         trailing: c.strength == null
                             ? null
                             : Text(
                                 '${c.strength}',
-                                style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 18),
+                                style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700),
                               ),
                         onTap: () => Navigator.pop(context, c),
                       ),

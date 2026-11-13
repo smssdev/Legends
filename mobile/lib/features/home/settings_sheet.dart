@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -124,7 +126,7 @@ class _SettingsSheet extends ConsumerWidget {
               builder: (_, v) => Text(
                 v.hasData ? l.version(v.data!.version) : '',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: context.palette.textMuted, fontSize: 12),
+                style: glmText(GlmType.caption, color: context.palette.textMuted),
               ),
             ),
             const SizedBox(height: 16),

@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,7 +29,7 @@ class RankingScreen extends ConsumerWidget {
               ListTile(
                 leading: Text(
                   '${r.position}',
-                  style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800, color: context.glm.goldText),
+                  style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
                 ),
                 title: Text(r.coach.name, style: const TextStyle(fontWeight: FontWeight.w700)),
                 subtitle: Text('${l.trophiesShort(r.trophies.total)} · ${r.won}/${r.played} · ${r.rating.points}'),

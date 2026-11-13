@@ -71,7 +71,7 @@ void _corner(_Scene s) {
 /// The fourth official's board: the number going off in red, the one coming on in green.
 void _ledBoard(Canvas c, Offset at, String top, String bottom, double k, ClipLook l) {
   final r = Rect.fromCenter(center: at, width: 150 * k, height: 120 * k);
-  c.drawRRect(RRect.fromRectAndRadius(r, Radius.circular(8 * k)), Paint()..color = const Color(0xFF101010));
+  c.drawRRect(RRect.fromRectAndRadius(r, Radius.circular(8 * k)), Paint()..color = GlmArt.ledBoard);
   c.drawRRect(
     RRect.fromRectAndRadius(r, Radius.circular(8 * k)),
     Paint()
@@ -79,9 +79,9 @@ void _ledBoard(Canvas c, Offset at, String top, String bottom, double k, ClipLoo
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2,
   );
-  text(c, top, r.center - Offset(0, 28 * k), size: 44 * k, color: const Color(0xFFFF5252), family: 'BarlowCondensed');
+  text(c, top, r.center - Offset(0, 28 * k), size: 44 * k, color: GlmArt.alarm, family: 'BarlowCondensed');
   if (bottom.isNotEmpty) {
-    text(c, bottom, r.center + Offset(0, 28 * k), size: 44 * k, color: const Color(0xFF69F0AE), family: 'BarlowCondensed');
+    text(c, bottom, r.center + Offset(0, 28 * k), size: 44 * k, color: GlmArt.ledIn, family: 'BarlowCondensed');
   }
 }
 
@@ -141,9 +141,9 @@ void _injury(_Scene s) {
         s.c,
         lerp(900, 450, medic),
         432,
-        shirt: const Color(0xFFF3F3F3),
+        shirt: GlmArt.keeperShirt,
         ink: Colors.red,
-        shorts: const Color(0xFF2E7D32),
+        shorts: GlmArt.keeperShorts,
         front: true,
         run: medic < 1 ? u * 13 : null,
         face: 'worried',
@@ -151,7 +151,7 @@ void _injury(_Scene s) {
       final bag = Offset(lerp(900, 450, medic) + 18, 432 - 40);
       s.c.drawRRect(
         RRect.fromRectAndRadius(Rect.fromCenter(center: bag, width: 22, height: 16), const Radius.circular(3)),
-        Paint()..color = const Color(0xFFE53935),
+        Paint()..color = GlmArt.redCard,
       );
       s.c.drawLine(
         bag - const Offset(5, 0),
@@ -208,9 +208,9 @@ void _coach(_Scene s, {required bool rant}) {
         s.c,
         500,
         540,
-        shirt: const Color(0xFF1E2A3A),
+        shirt: GlmArt.bib,
         ink: Colors.white,
-        shorts: const Color(0xFF1E2A3A),
+        shorts: GlmArt.bib,
         front: true,
         armOut: .6 + .4 * gesture.abs(),
         arms: rant ? .6 : (gesture > .3 ? .4 : 0),
@@ -226,7 +226,7 @@ void _coach(_Scene s, {required bool rant}) {
             ..lineTo(m.dx + 46, m.dy - 18)
             ..lineTo(m.dx + 46, m.dy + 18)
             ..close(),
-          Paint()..color = const Color(0xFFE0E0E0),
+          Paint()..color = GlmArt.boardFace,
         );
         for (var i = 0; i < 3; i++) {
           final r = 30.0 + ((u * 90 + i * 30) % 90);
@@ -255,7 +255,7 @@ void _coach(_Scene s, {required bool rant}) {
             s.c.drawCircle(
               Offset(x + 16 + i * 4, 440 - 104 * depth(440) + t * 30),
               3,
-              Paint()..color = const Color(0xFF81D4FA).withValues(alpha: 1 - t),
+              Paint()..color = GlmArt.water.withValues(alpha: 1 - t),
             );
           }
         },
@@ -275,7 +275,7 @@ void _whistle(_Scene s) {
   final k = seg(u, 1.0, 1.5, Curves.easeOutBack);
   if (k <= 0) return;
   final r = Rect.fromCenter(center: Offset(500, lerp(-120, 270, k)), width: 560, height: 230);
-  s.c.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(16)), Paint()..color = const Color(0xFF0B1220).withValues(alpha: .95));
+  s.c.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(16)), Paint()..color = GlmArt.panel.withValues(alpha: .95));
   s.c.drawRRect(
     RRect.fromRectAndRadius(r, const Radius.circular(16)),
     Paint()
@@ -301,17 +301,7 @@ void _board(_Scene s) {
   final up = seg(u, .2, .6, Curves.easeOutBack);
   s.actors.add((
     470,
-    () => drawPlayer(
-      s.c,
-      760,
-      470,
-      shirt: s.l.referee,
-      ink: Colors.white,
-      shorts: const Color(0xFF111111),
-      front: true,
-      arms: up,
-      face: 'idle',
-    ),
+    () => drawPlayer(s.c, 760, 470, shirt: s.l.referee, ink: Colors.white, shorts: GlmArt.black, front: true, arms: up, face: 'idle'),
   ));
   s.flush();
   if (up > 0) _ledBoard(s.c, Offset(760, lerp(470, 300, up)), '+${s.d['plus'] ?? ''}', '', up * 1.2, s.l);
@@ -340,7 +330,7 @@ void _slip(_Scene s) {
   s.player(lerp(620, 300, take), lerp(430, 400, take), s.other, no: s.str('defNo'), run: u * 14, front: true, face: 'joy');
   s.ball(u < slipT + .2 ? cx + 16 : lerp(612, 292, take), u < slipT + .2 ? cy + 4 : lerp(436, 406, take));
   s.flush();
-  drawBurst(s.c, Offset(cx + 120, cy - 100), 'SPLASH!', seg(u, slipT + .2, slipT + 1.4), size: 36, color: const Color(0xFF81D4FA));
+  drawBurst(s.c, Offset(cx + 120, cy - 100), 'SPLASH!', seg(u, slipT + .2, slipT + 1.4), size: 36, color: GlmArt.water);
 }
 
 // ---------------------------------------------------------------- the director's cutaways
@@ -390,10 +380,10 @@ void _crowd(_Scene s) {
         f,
         90,
         Paint()
-          ..shader = RadialGradient(colors: [const Color(0xFFFF5722).withValues(alpha: .65), const Color(0xFFFF5722).withValues(alpha: 0)])
+          ..shader = RadialGradient(colors: [GlmArt.flare.withValues(alpha: .65), GlmArt.flare.withValues(alpha: 0)])
               .createShader(Rect.fromCircle(center: f, radius: 90)),
       );
-      s.c.drawCircle(f, 10, Paint()..color = const Color(0xFFFFF3E0));
+      s.c.drawCircle(f, 10, Paint()..color = GlmArt.flareCore);
       for (var i = 0; i < 6; i++) {
         final t = (u * .6 + i / 6) % 1;
         s.c.drawCircle(

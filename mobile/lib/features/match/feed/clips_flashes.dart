@@ -65,7 +65,7 @@ void _var(_Scene s) {
     final screen = seg(u, 5.0, 5.4, Curves.easeOutBack);
     if (screen > 0) {
       final r = Rect.fromCenter(center: const Offset(500, 250), width: 420 * screen, height: 200 * screen);
-      s.c.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(10)), Paint()..color = const Color(0xFF0B1220).withValues(alpha: .94));
+      s.c.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(10)), Paint()..color = GlmArt.panel.withValues(alpha: .94));
       s.c.drawRRect(
         RRect.fromRectAndRadius(r, const Radius.circular(10)),
         Paint()
@@ -83,7 +83,7 @@ void _var(_Scene s) {
             r.centerLeft + const Offset(30, 74),
             r.centerRight + const Offset(-30, 74),
             Paint()
-              ..color = const Color(0xFFFF5252)
+              ..color = GlmArt.alarm
               ..strokeWidth = 3,
           );
         }
@@ -95,11 +95,11 @@ void _var(_Scene s) {
         s.c.drawRRect(
           RRect.fromRectAndRadius(Rect.fromCenter(center: Offset.zero, width: 260, height: 64), const Radius.circular(8)),
           Paint()
-            ..color = const Color(0xFFE53935)
+            ..color = GlmArt.redCard
             ..style = PaintingStyle.stroke
             ..strokeWidth = 6,
         );
-        text(s.c, 'NO GOAL', Offset.zero, size: 44, color: const Color(0xFFE53935), family: 'BarlowCondensed', letter: 3);
+        text(s.c, 'NO GOAL', Offset.zero, size: 44, color: GlmArt.redCard, family: 'BarlowCondensed', letter: 3);
         s.c.restore();
       }
     }
@@ -288,7 +288,7 @@ void _card(_Scene s) {
     face: u > cardT ? 'angry' : 'surprise',
   );
   if (drama == 'flying' && slideIn > .8 && u < contact + .4) {
-    s.actors.add((999, () => drawBurst(s.c, Offset(vx, vy - 120), 'OUCH!', seg(u, contact, contact + .9), color: const Color(0xFFFF8A65))));
+    s.actors.add((999, () => drawBurst(s.c, Offset(vx, vy - 120), 'OUCH!', seg(u, contact, contact + .9), color: GlmArt.burst)));
   }
   // The crowd around the referee, pointing, when the server tells it so.
   final gather = seg(u, 2.0, 3.0, Curves.easeOut);
@@ -315,7 +315,7 @@ void _card(_Scene s) {
     lerp(760, 590, refIn),
     lerp(380, 452, refIn),
     run: refIn > 0 && refIn < 1 ? u * 13 : null,
-    hold: cardUp ? (red ? const Color(0xFFE53935) : const Color(0xFFFFD600)) : null,
+    hold: cardUp ? (red ? GlmArt.redCard : GlmArt.yellowCard) : null,
     face: 'angry',
   );
   // A red card: the long walk off.
@@ -415,17 +415,7 @@ void _offside(_Scene s, {required bool trap}) {
   s.actors.add((
     470,
     () {
-      drawPlayer(
-        s.c,
-        930,
-        470,
-        shirt: s.l.referee,
-        ink: Colors.white,
-        shorts: const Color(0xFF111111),
-        front: true,
-        arms: flag ? 1 : 0,
-        face: 'idle',
-      );
+      drawPlayer(s.c, 930, 470, shirt: s.l.referee, ink: Colors.white, shorts: GlmArt.black, front: true, arms: flag ? 1 : 0, face: 'idle');
       final hand = Offset(930 + 26 * depth(470), 470 - (flag ? 122 : 50) * depth(470));
       s.c.drawLine(
         hand,
@@ -442,7 +432,7 @@ void _offside(_Scene s, {required bool trap}) {
           ..lineTo(cloth.dx + 24, cloth.dy + 6 + wave)
           ..lineTo(cloth.dx, cloth.dy + 16)
           ..close(),
-        Paint()..color = const Color(0xFFFF6D00),
+        Paint()..color = GlmArt.smoke,
       );
     },
   ));
@@ -451,7 +441,7 @@ void _offside(_Scene s, {required bool trap}) {
   if (flag) {
     final k = seg(u, keyT, keyT + .3);
     final pen = Paint()
-      ..color = const Color(0xFFFFD600).withValues(alpha: .9 * k)
+      ..color = GlmArt.yellowCard.withValues(alpha: .9 * k)
       ..strokeWidth = 3;
     for (var x = 0.0; x < frameW; x += 24) {
       s.c.drawLine(Offset(x, lineY + 2), Offset(x + 14, lineY + 2), pen);
@@ -460,7 +450,7 @@ void _offside(_Scene s, {required bool trap}) {
       Offset(ax, ay),
       22 * k,
       Paint()
-        ..color = const Color(0xFFFF5252).withValues(alpha: .6)
+        ..color = GlmArt.alarm.withValues(alpha: .6)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3,
     );

@@ -53,6 +53,53 @@ class GlmTypeStyles extends ThemeExtension<GlmTypeStyles> {
   GlmTypeStyles lerp(ThemeExtension<GlmTypeStyles>? other, double t) => t < .5 || other is! GlmTypeStyles ? this : other;
 }
 
+/// [Sprint 60 F2] A screen's text on a role of the scale: the role's size, and the rest as given (its line height and
+/// face, unless given, as the text around it). The only way a screen sizes its text (tool/design.dart: no `fontSize:` of
+/// a screen's own).
+TextStyle glmText(
+  GlmTypeRole role, {
+  Color? color,
+  FontWeight? fontWeight,
+  String? fontFamily,
+  List<String>? fontFamilyFallback,
+  double? height,
+  double? letterSpacing,
+  List<Shadow>? shadows,
+  TextDecoration? decoration,
+  Paint? foreground,
+}) => TextStyle(
+  fontSize: role.size,
+  color: color,
+  fontWeight: fontWeight,
+  fontFamily: fontFamily,
+  fontFamilyFallback: fontFamilyFallback,
+  height: height,
+  letterSpacing: letterSpacing,
+  shadows: shadows,
+  decoration: decoration,
+  foreground: foreground,
+);
+
+/// [Sprint 60 F2] A label inside a picture drawn to scale (a shirt number on the pitch, a board in the broadcast art):
+/// its size follows the drawing, not the type scale. Never a screen's own text (that is [glmText]).
+TextStyle glmDrawnText(
+  double size, {
+  Color? color,
+  FontWeight? fontWeight,
+  String? fontFamily,
+  double? height,
+  double? letterSpacing,
+  List<Shadow>? shadows,
+}) => TextStyle(
+  fontSize: size,
+  color: color,
+  fontWeight: fontWeight,
+  fontFamily: fontFamily,
+  height: height,
+  letterSpacing: letterSpacing,
+  shadows: shadows,
+);
+
 /// One role of the scale as a TextStyle.
 TextStyle glmStyle(GlmTypeRole r, Color color) => TextStyle(
   fontFamily: GlmFonts.body,

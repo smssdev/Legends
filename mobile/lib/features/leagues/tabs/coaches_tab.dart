@@ -1,3 +1,5 @@
+import '../../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,9 +40,9 @@ class CoachesTab extends ConsumerWidget {
               SelectableText(
                 lg.code,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: glmText(
+                  GlmType.display,
                   fontFamily: GlmFonts.numbers,
-                  fontSize: 30,
                   letterSpacing: 4,
                   fontWeight: FontWeight.w800,
                   color: context.glm.goldText,
@@ -146,7 +148,7 @@ class CoachesTab extends ConsumerWidget {
                   if (m.vacationRequest != null) ...[
                     Text(
                       l.vacationAsk(m.vacationRequest!.days, m.vacationRequest!.reason),
-                      style: TextStyle(color: p.textMuted, fontSize: 12),
+                      style: glmText(GlmType.caption, color: p.textMuted),
                     ),
                     TextButton(
                       onPressed: () => ownerAction(context, ref, '/leagues/${lg.id}/members/${m.id}/vacation/approve'),

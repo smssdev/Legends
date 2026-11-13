@@ -1,3 +1,5 @@
+import '../../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -109,7 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Expanded(child: Divider(color: p.surfaceRaised)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(l.orWord, style: TextStyle(color: p.textMuted, fontSize: 13)),
+                child: Text(l.orWord, style: glmText(GlmType.caption, color: p.textMuted)),
               ),
               Expanded(child: Divider(color: p.surfaceRaised)),
             ],
@@ -134,7 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 label: l.google,
                 variant: GlmButtonVariant.outline,
                 block: true,
-                icon: const Text('G', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+                icon: Text('G', style: glmText(GlmType.title, fontWeight: FontWeight.w900)),
                 onPressed: () => showGlmToast(context, l.googleSoon),
               ),
             ),

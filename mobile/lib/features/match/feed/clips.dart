@@ -1,3 +1,5 @@
+import '../../../ui/art_palette.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -122,7 +124,7 @@ class _Scene {
       y,
       shirt: l.referee,
       ink: Colors.white,
-      shorts: const Color(0xFF111111),
+      shorts: GlmArt.black,
       front: true,
       run: run,
       hold: hold,
@@ -313,10 +315,7 @@ void _attack(_Scene s, {required String outcome, double? shotAt}) {
           final r = seg(u, keyT, keyT + .8, Curves.easeOut);
           s.ball(lerp(465, 465 + aim * 260, r), lerp(368, 470, r), z: math.sin(r * math.pi) * 60);
         }
-        s.actors.add((
-          999,
-          () => drawBurst(s.c, const Offset(470, 300), 'BLOCK!', seg(u, keyT, keyT + .9), color: const Color(0xFFFF8A65)),
-        ));
+        s.actors.add((999, () => drawBurst(s.c, const Offset(470, 300), 'BLOCK!', seg(u, keyT, keyT + .9), color: GlmArt.burst)));
       case 'clearance':
         // Rolling toward the empty goal, a defender running back to the line.
         final roll = seg(u, kickT, keyT + .05);

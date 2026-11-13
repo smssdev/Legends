@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -41,7 +43,7 @@ class TournamentsScreen extends ConsumerWidget {
                                   Text(t.name, style: const TextStyle(fontWeight: FontWeight.w800)),
                                   Text(
                                     '${templateName(l, t.template ?? '')} · ${l.teamsCount(t.teamCount)}',
-                                    style: TextStyle(color: context.palette.textMuted, fontSize: 12),
+                                    style: glmText(GlmType.caption, color: context.palette.textMuted),
                                   ),
                                 ],
                               ),

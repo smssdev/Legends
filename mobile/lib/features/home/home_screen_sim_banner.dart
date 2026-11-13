@@ -39,9 +39,9 @@ class SimBanner extends StatelessWidget {
                     children: [
                       Text(
                         l.simQuickTitle,
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white),
+                        style: glmText(GlmType.bodyLg, fontWeight: FontWeight.w800, color: Colors.white),
                       ),
-                      Text(l.simQuickLead, style: TextStyle(fontSize: 13, color: p.chrome)),
+                      Text(l.simQuickLead, style: glmText(GlmType.caption, color: p.chrome)),
                     ],
                   ),
                 ),
@@ -52,7 +52,7 @@ class SimBanner extends StatelessWidget {
                   decoration: BoxDecoration(color: p.gold, borderRadius: BorderRadius.circular(10)),
                   child: Text(
                     l.simPlay,
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: p.onGold),
+                    style: glmText(GlmType.body, fontWeight: FontWeight.w800, color: p.onGold),
                   ),
                 ),
               ],
@@ -83,7 +83,7 @@ class _SlotCard extends ConsumerWidget {
     final p = context.palette;
     final number = Text(
       '${s.number}',
-      style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: p.textMuted),
+      style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: p.textMuted),
     );
     switch (s.state) {
       case SlotState.club:
@@ -106,7 +106,7 @@ class _SlotCard extends ConsumerWidget {
                         '${l.slotN(s.number)} · ${s.leagueName ?? ''}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white),
+                        style: glmText(GlmType.body, fontWeight: FontWeight.w700, color: Colors.white),
                       ),
                     ),
                     if (s.live)
@@ -122,7 +122,7 @@ class _SlotCard extends ConsumerWidget {
                             const SizedBox(width: 6),
                             Text(
                               l.liveNow,
-                              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Colors.white),
+                              style: glmText(GlmType.caption, fontWeight: FontWeight.w700, color: Colors.white),
                             ),
                           ],
                         ),
@@ -143,7 +143,7 @@ class _SlotCard extends ConsumerWidget {
                         children: [
                           Text(
                             s.clubName ?? '',
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                            style: glmText(GlmType.title, fontWeight: FontWeight.w800),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textDirection: TextDirection.ltr,
@@ -153,12 +153,12 @@ class _SlotCard extends ConsumerWidget {
                               '${l.vs(s.opponent ?? '')} · ${latinDigits(DateFormat.E(locale).add_jm().format(s.matchAt!.toLocal()))}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: p.textSoft, fontSize: 13),
+                              style: glmText(GlmType.caption, color: p.textSoft),
                             )
                           else
                             Text(
                               s.leagueName ?? '',
-                              style: TextStyle(color: p.textMuted, fontSize: 13),
+                              style: glmText(GlmType.caption, color: p.textMuted),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -180,9 +180,9 @@ class _SlotCard extends ConsumerWidget {
                             children: [
                               Text(
                                 '${s.position}',
-                                style: TextStyle(
+                                style: glmText(
+                                  GlmType.headline,
                                   fontFamily: GlmFonts.numbers,
-                                  fontSize: 24,
                                   fontWeight: FontWeight.w700,
                                   height: 1,
                                   color: s.position! <= 3 ? p.onGold : p.text,
@@ -190,8 +190,8 @@ class _SlotCard extends ConsumerWidget {
                               ),
                               Text(
                                 l.positionWord,
-                                style: TextStyle(
-                                  fontSize: 11,
+                                style: glmText(
+                                  GlmType.caption,
                                   fontWeight: FontWeight.w700,
                                   color: s.position! <= 3 ? p.onGold : p.textMuted,
                                 ),
@@ -260,7 +260,7 @@ class _SlotCard extends ConsumerWidget {
                   children: [
                     Text(l.slotLocked, style: context.text.titleMedium),
                     if (s.opensAt != null)
-                      Text(l.slotOpensIn(_when(context, s.opensAt!)), style: TextStyle(color: p.textMuted, fontSize: 13)),
+                      Text(l.slotOpensIn(_when(context, s.opensAt!)), style: glmText(GlmType.caption, color: p.textMuted)),
                     // [Sprint 24 B3] Open it now for coins, at the server's price; it stays open for good.
                     if (s.unlockCoins != null)
                       Padding(
@@ -302,7 +302,7 @@ class _Label extends StatelessWidget {
     padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
     child: Text(
       text,
-      style: TextStyle(color: context.palette.textSoft, fontWeight: FontWeight.w800, fontSize: 15),
+      style: glmText(GlmType.body, color: context.palette.textSoft, fontWeight: FontWeight.w800),
     ),
   );
 }
@@ -355,7 +355,7 @@ class _ArenaBar extends ConsumerWidget {
                 child: Text(
                   '$badge',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11),
+                  style: glmText(GlmType.caption, color: Colors.white, fontWeight: FontWeight.w900),
                 ),
               ),
             ),
@@ -416,11 +416,11 @@ class _ShopTile extends StatelessWidget {
                   children: [
                     Text(
                       l.shopTile,
-                      style: TextStyle(color: p.onGold, fontWeight: FontWeight.w800, fontSize: 19),
+                      style: glmText(GlmType.title, color: p.onGold, fontWeight: FontWeight.w800),
                     ),
                     Text(
                       l.shopSub,
-                      style: TextStyle(color: p.onGold.withValues(alpha: .75), fontWeight: FontWeight.w700, fontSize: 13),
+                      style: glmText(GlmType.caption, color: p.onGold.withValues(alpha: .75), fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),

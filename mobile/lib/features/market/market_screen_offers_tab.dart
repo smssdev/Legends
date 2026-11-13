@@ -133,20 +133,20 @@ class _OffersTab extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(l.theyWant, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                      Text(l.theyWant, style: glmText(GlmType.caption, color: p.textMuted)),
                       for (final pl in o.players)
                         Text('${pl.name} (${pl.position} ${pl.overall})', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                       if (o.give.isNotEmpty || o.money > 0) ...[
                         const SizedBox(height: 6),
-                        Text(l.theyGive, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                        Text(l.theyGive, style: glmText(GlmType.caption, color: p.textMuted)),
                         if (o.money > 0)
                           Text(
                             money(context, o.money),
                             textDirection: TextDirection.ltr,
-                            style: TextStyle(
+                            style: glmText(
+                              GlmType.title,
                               fontFamily: GlmFonts.numbers,
                               fontWeight: FontWeight.w800,
-                              fontSize: 18,
                               color: context.glm.goldText,
                             ),
                           ),
@@ -274,7 +274,7 @@ class _AcademyTab extends ConsumerWidget {
             Text(
               l.renewsAt(when(context, a.renewsAt!.toLocal())),
               textAlign: TextAlign.center,
-              style: TextStyle(color: p.textMuted, fontSize: 12),
+              style: glmText(GlmType.caption, color: p.textMuted),
             ),
           const SizedBox(height: 12),
           GameGrid(
@@ -310,10 +310,10 @@ class _AcademyTab extends ConsumerWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                Text('${x.age} · ${x.nationality ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 12)),
+                                Text('${x.age} · ${x.nationality ?? ''}', style: glmText(GlmType.caption, color: p.textMuted)),
                                 Text(
                                   l.potentialRange(x.potentialFrom, x.potentialTo),
-                                  style: TextStyle(color: context.glm.goldText, fontSize: 12, fontWeight: FontWeight.w700),
+                                  style: glmText(GlmType.caption, color: context.glm.goldText, fontWeight: FontWeight.w700),
                                 ),
                               ],
                             ),

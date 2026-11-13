@@ -98,7 +98,7 @@ class GameBar extends ConsumerWidget implements PreferredSizeWidget {
       titleSpacing: titleSpacing,
       // [Sprint 51 F1] The game's font: AppBar replaces the theme's title style instead of merging into it, so without its
       // family the title fell back to the system's.
-      titleTextStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white),
+      titleTextStyle: glmText(GlmType.bodyLg, fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, color: Colors.white),
       title: title,
       bottom: bottom,
       flexibleSpace: const _TopBarGround(),
@@ -188,7 +188,7 @@ class CoinsPill extends StatelessWidget {
                     child: Text(
                       value,
                       textDirection: TextDirection.ltr,
-                      style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 16, color: p.onGold),
+                      style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.onGold),
                     ),
                   ),
                   _Plus(bg: p.bg, fg: p.goldLight),

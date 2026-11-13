@@ -49,7 +49,7 @@ class PlayerRow extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 textDirection: TextDirection.ltr,
-                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                                style: glmText(GlmType.body, fontWeight: FontWeight.w800),
                               ),
                             ),
                           ],
@@ -68,16 +68,16 @@ class PlayerRow extends StatelessWidget {
                                           : l.reserve}',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
+                                style: glmText(
+                                  GlmType.caption,
                                   color: p.available ? (starter ? context.glm.successText : c.textMuted) : context.glm.liveText,
-                                  fontSize: 12,
                                   fontWeight: starter ? FontWeight.w700 : FontWeight.w500,
                                 ),
                               ),
                             ),
                             Text(
                               '${p.fitness}%',
-                              style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 13, color: c.textMuted),
+                              style: glmText(GlmType.caption, fontFamily: GlmFonts.numbers, color: c.textMuted),
                             ),
                             const SizedBox(width: 6),
                             LevelBar(p.fitness / 100, color: fitnessColor(p.fitness)),
@@ -146,7 +146,7 @@ Future<void> showPlayerCard(BuildContext context, Player p) => showModalBottomSh
                       child: Text(
                         a.key.toUpperCase(),
                         textDirection: TextDirection.ltr,
-                        style: TextStyle(color: c.textSoft, fontWeight: FontWeight.w700, fontSize: 12),
+                        style: glmText(GlmType.caption, color: c.textSoft, fontWeight: FontWeight.w700),
                       ),
                     ),
                     Expanded(
@@ -169,7 +169,7 @@ Future<void> showPlayerCard(BuildContext context, Player p) => showModalBottomSh
                       child: Text(
                         '${a.value}',
                         textAlign: TextAlign.end,
-                        style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 16),
+                        style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
                       ),
                     ),
                   ],
@@ -186,8 +186,8 @@ Widget _big(BuildContext context, String v, String label) => Column(
   children: [
     Text(
       v,
-      style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 26, fontWeight: FontWeight.w800, color: context.glm.goldText),
+      style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
     ),
-    Text(label, style: TextStyle(color: context.palette.textMuted, fontSize: 11)),
+    Text(label, style: glmText(GlmType.caption, color: context.palette.textMuted)),
   ],
 );

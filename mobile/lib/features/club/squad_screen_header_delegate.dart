@@ -42,12 +42,12 @@ class _GroupTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    color: const Color(0xFFEFF2F7),
+    color: GlmSheet.paper,
     padding: const EdgeInsets.symmetric(vertical: 6),
     alignment: Alignment.center,
     child: Text(
       title,
-      style: const TextStyle(color: Color(0xFF8C96A8), fontWeight: FontWeight.w700, fontSize: 16),
+      style: glmText(GlmType.bodyLg, color: GlmSheet.label, fontWeight: FontWeight.w700),
     ),
   );
 }
@@ -105,10 +105,10 @@ class _Head extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: on ? const Color(0xFFFFE36E) : Colors.white),
+            style: glmText(GlmType.body, fontWeight: FontWeight.w800, color: on ? GlmSheet.sortOn : Colors.white),
           ),
         ),
-        if (on) Icon(state._desc ? Icons.arrow_drop_down_rounded : Icons.arrow_drop_up_rounded, size: 20, color: const Color(0xFFFFE36E)),
+        if (on) Icon(state._desc ? Icons.arrow_drop_down_rounded : Icons.arrow_drop_up_rounded, size: 20, color: GlmSheet.sortOn),
       ],
     );
     return col == null ? text : InkWell(onTap: () => state._by(col!), child: text);
@@ -126,14 +126,14 @@ class _Row extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const ink = Color(0xFF14203A), soft = Color(0xFFA2ABBB);
-    const num = TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 24, color: ink);
+    const ink = GlmSheet.ink, soft = GlmSheet.soft;
+    final num = glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: ink);
     final starter = p.role == 'starter', bench = p.role == 'bench';
     final c = context.palette;
     Widget bar(double v, Color color) => Container(
       width: 46,
       height: 20,
-      decoration: BoxDecoration(color: const Color(0xFFE3E7EE), borderRadius: BorderRadius.circular(3)),
+      decoration: BoxDecoration(color: GlmSheet.chip, borderRadius: BorderRadius.circular(3)),
       alignment: AlignmentDirectional.centerStart,
       child: FractionallySizedBox(
         widthFactor: v.clamp(.05, 1),
@@ -152,11 +152,11 @@ class _Row extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             border: BorderDirectional(
-              bottom: const BorderSide(color: Color(0xFFEFF2F7)),
-              start: BorderSide(color: starter ? const Color(0xFF6BE04A) : Colors.transparent, width: 5),
+              bottom: const BorderSide(color: GlmSheet.paper),
+              start: BorderSide(color: starter ? GlmSheet.starter : Colors.transparent, width: 5),
             ),
             gradient: starter
-                ? LinearGradient(colors: [const Color(0xFF6BE04A).withValues(alpha: .10), Colors.white], stops: const [0, .35])
+                ? LinearGradient(colors: [GlmSheet.starter.withValues(alpha: .10), Colors.white], stops: const [0, .35])
                 : null,
           ),
           child: _Cells(
@@ -169,9 +169,9 @@ class _Row extends StatelessWidget {
                       color: starter
                           ? GlmStage.pill
                           : bench
-                          ? const Color(0xFF9AA4B5)
-                          : const Color(0xFFD9DEE6),
-                      trim: starter ? const Color(0xFFF3B71F) : Colors.white,
+                          ? GlmSheet.bench
+                          : GlmSheet.reserve,
+                      trim: starter ? GlmSheet.captainTrim : Colors.white,
                       size: 38,
                     ),
                     if (captain)
@@ -181,9 +181,9 @@ class _Row extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 3),
                           decoration: BoxDecoration(color: c.gold, borderRadius: BorderRadius.circular(3)),
-                          child: const Text(
+                          child: Text(
                             'C',
-                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: ink),
+                            style: glmText(GlmType.caption, fontWeight: FontWeight.w900, color: ink),
                           ),
                         ),
                       ),
@@ -196,7 +196,7 @@ class _Row extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.start,
-                    style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 24, color: ink),
+                    style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: ink),
                   ),
                 ),
                 if (!p.available) ...[
@@ -221,7 +221,7 @@ class _Row extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.ltr,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: soft),
+                    style: glmText(GlmType.caption, fontWeight: FontWeight.w700, color: soft),
                   )
                 : Center(
                     child: Tooltip(
@@ -255,7 +255,7 @@ class _Row extends StatelessWidget {
                 children: [
                   bar(p.fitness / 100, fitnessColor(p.fitness)),
                   const SizedBox(width: 6),
-                  bar(p.available ? 1 : .15, p.available ? const Color(0xFF8BE04E) : c.live),
+                  bar(p.available ? 1 : .15, p.available ? GlmSheet.fit : c.live),
                 ],
               ),
             ),
@@ -266,7 +266,7 @@ class _Row extends StatelessWidget {
                   child: Text(
                     money(context, p.value),
                     textDirection: TextDirection.ltr,
-                    style: num.copyWith(fontSize: 22, fontWeight: FontWeight.w600),
+                    style: num.merge(glmText(GlmType.headline, fontWeight: FontWeight.w600)),
                   ),
                 ),
                 const SizedBox(width: 3),

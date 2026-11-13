@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -93,7 +95,7 @@ class NewspaperScreen extends ConsumerWidget {
                 if (e.coach case final c?) ...[
                   const SizedBox(height: 8),
                   ListTile(
-                    leading: const Text('🎩', style: TextStyle(fontSize: 22)),
+                    leading: Text('🎩', style: glmText(GlmType.headline)),
                     title: Text(l.coachOfRound),
                     subtitle: Text('${c.coach.name} · ${c.club}'),
                   ),
@@ -109,7 +111,7 @@ class NewspaperScreen extends ConsumerWidget {
                       children: [
                         Text(a.title, style: context.text.titleMedium),
                         Text(a.body),
-                        Text(a.author.name, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                        Text(a.author.name, style: glmText(GlmType.caption, color: p.textMuted)),
                         const SizedBox(height: 8),
                         Row(
                           children: [
@@ -141,7 +143,7 @@ class NewspaperScreen extends ConsumerWidget {
                         const SizedBox(height: 4),
                         Text(
                           [a.author.name, if (DateTime.tryParse(a.at) != null) when(context, DateTime.parse(a.at).toLocal())].join(' · '),
-                          style: TextStyle(color: p.textMuted, fontSize: 12),
+                          style: glmText(GlmType.caption, color: p.textMuted),
                         ),
                       ],
                     ),

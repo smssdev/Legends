@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -75,7 +77,7 @@ class MyLeaguesScreen extends ConsumerWidget {
                                       : lg.canPick
                                       ? l.requestApproved
                                       : '${l.clubsCount(lg.teamCount)} · ${lg.code}',
-                                  style: TextStyle(color: lg.canPick ? context.glm.goldText : p.textMuted, fontSize: 13),
+                                  style: glmText(GlmType.caption, color: lg.canPick ? context.glm.goldText : p.textMuted),
                                 ),
                               ],
                             ),
@@ -86,7 +88,7 @@ class MyLeaguesScreen extends ConsumerWidget {
                               backgroundColor: p.live,
                               child: Text(
                                 '${lg.pendingRequests}',
-                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800),
+                                style: glmText(GlmType.caption, color: Colors.white, fontWeight: FontWeight.w800),
                               ),
                             ),
                           const Icon(Icons.chevron_left_rounded),

@@ -32,7 +32,7 @@ class SimClub {
   static Color? _hex(Object? v) {
     final s = '${v ?? ''}'.replaceFirst('#', '');
     final n = int.tryParse(s, radix: 16);
-    return n == null || s.length != 6 ? null : Color(0xFF000000 | n);
+    return n == null || s.length != 6 ? null : Color(n).withAlpha(255);
   }
 }
 

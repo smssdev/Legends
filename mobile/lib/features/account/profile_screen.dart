@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -116,7 +118,7 @@ class ProfileScreen extends ConsumerWidget {
                           foregroundImage: me.avatarUrl == null ? null : NetworkImage(me.avatarUrl!),
                           child: Text(
                             me.name.characters.take(1).toString(),
-                            style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800),
+                            style: glmText(GlmType.headline, color: Colors.white, fontWeight: FontWeight.w800),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -263,7 +265,7 @@ class ProfileScreen extends ConsumerWidget {
                     color: p.gold,
                     backgroundColor: p.surfaceRaised,
                   ),
-                  trailing: Text(l.coinsWord(m.reward), style: TextStyle(color: context.glm.goldText, fontSize: 12)),
+                  trailing: Text(l.coinsWord(m.reward), style: glmText(GlmType.caption, color: context.glm.goldText)),
                 );
               }),
               const SizedBox(height: 12),

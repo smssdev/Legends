@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -34,7 +36,7 @@ class StadiumPanorama extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: edge),
       ),
-      child: Text(text, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+      child: Text(text, style: glmText(GlmType.caption, fontWeight: FontWeight.w700)),
     );
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
@@ -133,7 +135,7 @@ class _ChestCardState extends ConsumerState<_ChestCard> {
           content: Text(
             _rewardText(l, got.reward, got.amount),
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: d.palette.goldLight),
+            style: glmText(GlmType.title, fontWeight: FontWeight.w800, color: d.palette.goldLight),
           ),
           actions: [TextButton(onPressed: () => Navigator.pop(d), child: Text(l.confirm))],
         ),
@@ -193,12 +195,12 @@ class _ChestCardState extends ConsumerState<_ChestCard> {
                     _rewardText(l, o.reward, o.amount),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: p.textMuted, fontSize: 10),
+                    style: glmText(GlmType.caption, color: p.textMuted),
                   ),
                 ),
                 Text(
                   '${(o.pctBp / 100).toStringAsFixed(o.pctBp % 100 == 0 ? 0 : 1)}%',
-                  style: TextStyle(color: p.textSoft, fontSize: 10, fontWeight: FontWeight.w700),
+                  style: glmText(GlmType.caption, color: p.textSoft, fontWeight: FontWeight.w700),
                 ),
               ],
             ),

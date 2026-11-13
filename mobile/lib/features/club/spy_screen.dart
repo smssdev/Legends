@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -84,7 +86,7 @@ class SpyScreen extends ConsumerWidget {
                         Text(
                           tactics.entries.map((e) => '${e.key}: ${e.value}').join(' · '),
                           textDirection: TextDirection.ltr,
-                          style: TextStyle(color: p.textMuted, fontSize: 12),
+                          style: glmText(GlmType.caption, color: p.textMuted),
                         ),
                       ],
                       const SizedBox(height: 10),

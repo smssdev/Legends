@@ -1,3 +1,5 @@
+import '../../ui/tokens.g.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -210,7 +212,7 @@ class MatchdayScreen extends ConsumerWidget {
                               }
                             },
                           ),
-                          Text(l.bribeNote(bribe.varPercent), style: TextStyle(color: p.textMuted, fontSize: 12)),
+                          Text(l.bribeNote(bribe.varPercent), style: glmText(GlmType.caption, color: p.textMuted)),
                         ],
                         const SizedBox(height: 10),
                         if (!security.sees)

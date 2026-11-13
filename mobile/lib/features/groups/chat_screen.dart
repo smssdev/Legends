@@ -176,7 +176,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                             shape: BoxShape.circle,
                             color: m.myReaction == e.key ? ctx.palette.brand : ctx.palette.surfaceRaised,
                           ),
-                          child: Text(e.value, style: const TextStyle(fontSize: 26)),
+                          child: Text(e.value, style: glmText(GlmType.headline)),
                         ),
                       ),
                     ),
@@ -228,7 +228,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                     l.replyingTo(_replyTo!.body),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: p.textSoft, fontSize: 12),
+                    style: glmText(GlmType.caption, color: p.textSoft),
                   ),
                 ),
                 IconButton(
@@ -333,7 +333,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
           if (!mine)
             Text(
               m.user?.name ?? '',
-              style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12),
+              style: glmText(GlmType.caption, color: context.glm.goldText, fontWeight: FontWeight.w800),
             ),
           if (reply != null)
             Container(
@@ -346,7 +346,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                 reply.body,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: p.textSoft, fontSize: 11),
+                style: glmText(GlmType.caption, color: p.textSoft),
               ),
             ),
           if (!m.deleted && m.kind == 'image')
@@ -385,7 +385,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                       color: m.myReaction == e.key ? p.brand : p.surfaceRaised,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text('${_reactions[e.key] ?? ''} ${e.value}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+                    child: Text('${_reactions[e.key] ?? ''} ${e.value}', style: glmText(GlmType.caption, fontWeight: FontWeight.w700)),
                   ),
               ],
             ),
