@@ -187,6 +187,7 @@ class ConsoleDock extends ConsumerWidget {
     _Section section(NavSection x) => (
       // [Sprint 63 G3] The site's same icons, from brand/icons (nav.json names them for both).
       icon: GlmIcons.values.byName(_camel(x.icon)),
+      tile: x.color == null ? null : (colour: _tileColour(context, x.color!), dark: x.ink == 'dark'),
       label: x.label(lang),
       entries: [
         for (final y in x.pages)
@@ -254,7 +255,22 @@ class ConsoleDock extends ConsumerWidget {
   }
 }
 
-typedef _Section = ({GlmIcons icon, String label, List<_Entry> entries, String? badge});
+typedef _Section = ({GlmIcons icon, ({Color colour, bool dark})? tile, String label, List<_Entry> entries, String? badge});
+
+/// [Sprint 63 G4] A dock tile's colour by its token's name (docs/design/nav.json), from the palette.
+Color _tileColour(BuildContext context, String name) {
+  final p = context.palette;
+  return switch (name) {
+    'gold' => p.gold,
+    'brand' => p.brand,
+    'ring' => p.ring,
+    'live' => p.live,
+    'warning' => p.warning,
+    'brand-light' => p.brandLight,
+    'chrome' => p.chrome,
+    _ => p.surfaceRaised,
+  };
+}
 
 /// An icon's file name (brand/icons/chevron_down.svg) as the app's name (GlmIcons.chevronDown).
 String _camel(String name) {
@@ -297,7 +313,21 @@ class _DockItem extends StatelessWidget {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    GlmIcon(section.icon, size: 22, color: p.gold),
+                    // [Sprint 63 G4] On its section's tile, as the site's dock (AppShell.vue .dock-tile).
+                    if (section.tile case final t?)
+                      Container(
+                        width: 26,
+                        height: 26,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: t.colour,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: const [BoxShadow(color: GlmBroadcast.ink, blurRadius: 8, offset: Offset(0, 3), spreadRadius: -3)],
+                        ),
+                        child: GlmIcon(section.icon, size: 16, color: t.dark ? GlmBroadcast.ink : GlmBroadcast.white),
+                      )
+                    else
+                      GlmIcon(section.icon, size: 22, color: p.gold),
                     const SizedBox(height: 2),
                     Text(
                       section.label,

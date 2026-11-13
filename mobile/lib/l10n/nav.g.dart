@@ -14,9 +14,12 @@ class NavPage {
 
 /// One section of the dock: its one name and its pages, the first where a tap goes.
 class NavSection {
-  const NavSection(this.key, {required this.ar, required this.en, required this.pages, this.icon = 'more'});
+  const NavSection(this.key, {required this.ar, required this.en, required this.pages, this.icon = 'more', this.color, this.ink});
 
   final String key, ar, en, icon;
+
+  /// [Sprint 63 G4] Its tile in the dock: a palette colour's name (tokens.json color) and its icon's ink (dark, light).
+  final String? color, ink;
   final List<NavPage> pages;
 
   String label(String locale) => locale == 'ar' ? ar : en;
@@ -29,6 +32,8 @@ const navDock = <NavSection>[
     ar: 'المكتب',
     en: 'Office',
     icon: 'club',
+    color: 'gold',
+    ink: 'dark',
     pages: [NavPage('club', ar: 'لوحة النادي', en: 'Club board', path: '/leagues/{league}', glyph: 'office', icon: 'club')],
   ),
   NavSection(
@@ -36,6 +41,8 @@ const navDock = <NavSection>[
     ar: 'الفريق',
     en: 'Team',
     icon: 'team',
+    color: 'brand',
+    ink: 'light',
     pages: [
       NavPage('team', ar: 'الفريق', en: 'Team', path: '/leagues/{league}/squad', glyph: 'squad', icon: 'team'),
       NavPage('lineup', ar: 'التشكيلة', en: 'Lineup', path: '/leagues/{league}/lineup', glyph: 'lineup', icon: 'lineup'),
@@ -57,6 +64,8 @@ const navDock = <NavSection>[
     ar: 'التكتيك',
     en: 'Tactics',
     icon: 'tactics',
+    color: 'ring',
+    ink: 'dark',
     pages: [NavPage('tactics', ar: 'التكتيك', en: 'Tactics', path: '/leagues/{league}/tactics', glyph: 'tactics', icon: 'tactics')],
   ),
   NavSection(
@@ -64,6 +73,8 @@ const navDock = <NavSection>[
     ar: 'المباراة',
     en: 'Match',
     icon: 'match',
+    color: 'live',
+    ink: 'light',
     pages: [
       NavPage('match', ar: 'المباراة', en: 'Match', path: '/leagues/{league}/matchday', glyph: 'match', icon: 'match'),
       NavPage('league', ar: 'الدوري والكأس', en: 'League and cup', path: '/leagues/{league}?tab=matches', glyph: 'table', icon: 'league'),
@@ -85,6 +96,8 @@ const navDock = <NavSection>[
     ar: 'السوق',
     en: 'Market',
     icon: 'market',
+    color: 'warning',
+    ink: 'dark',
     pages: [
       NavPage('market', ar: 'السوق', en: 'Market', path: '/leagues/{league}/market', glyph: 'transfers', icon: 'market'),
       NavPage('scout', ar: 'الكشاف', en: 'Scout', path: '/leagues/{league}/scout', glyph: 'scout', icon: 'scout'),
@@ -95,6 +108,8 @@ const navDock = <NavSection>[
     ar: 'النادي',
     en: 'Club',
     icon: 'stadium',
+    color: 'chrome',
+    ink: 'dark',
     pages: [
       NavPage('finance', ar: 'المالية', en: 'Finance', path: '/leagues/{league}/finance', glyph: 'finance', icon: 'finance'),
       NavPage('stadium', ar: 'الملعب', en: 'Stadium', path: '/leagues/{league}/stadium', glyph: 'stadium', icon: 'stadium'),
