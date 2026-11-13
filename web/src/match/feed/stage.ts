@@ -190,13 +190,13 @@ export function studio(kits: Record<Side, Kit>, seed = 1, day = false) {
   const desk = el('g', {}, svg)
   desk.innerHTML = `<path d="M40 236 Q320 206 600 236 L620 340 L20 340 Z" fill="url(#${id}desk)" stroke="url(#gold${id})" stroke-width="3"/>
     <path d="M70 262 Q320 236 570 262" fill="none" stroke="rgba(127,180,255,.25)" stroke-width="2"/>
-    <text x="320" y="262" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-size="22" letter-spacing="6" fill="url(#gold${id})">GLM TV</text>
+    <text x="320" y="262" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="22" letter-spacing="6" fill="url(#gold${id})">GLM TV</text>
     <rect x="290" y="214" width="60" height="22" rx="3" fill="#0A0F1C" stroke="#3A4256"/><rect x="294" y="217" width="52" height="15" fill="#123A7A" opacity=".8"/>
     <g fill="#111"><rect x="196" y="206" width="4" height="26"/><ellipse cx="198" cy="204" rx="6" ry="8"/><rect x="438" y="206" width="4" height="26"/><ellipse cx="440" cy="204" rx="6" ry="8"/></g>`
   const score = svg.querySelector<SvgNode>('[data-score]')!, clockT = svg.querySelector<SvgNode>('[data-clock]')!, spot = svg.querySelector<SvgNode>('[data-spot]')!
   const POS = [[190, 196], [450, 196]]
   // [Sprint 42 J2] Over each head, the word of his reaction.
-  const syms = [0, 1].map(() => el('text', { 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 22, fill: '#FFD36B', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, svg))
+  const syms = [0, 1].map(() => el('text', { 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 800, 'font-size': 22, fill: '#FFD36B', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, svg))
   let lastScore: string | null = null, react: StudioState['react'] = null, picks: string[] | null = null
   return {
     svg,

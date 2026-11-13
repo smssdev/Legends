@@ -127,7 +127,7 @@ const mine = (m: Line) => m.user?.id === auth.user?.id
       </div>
       <form class="flex gap-2" @submit.prevent="say('text', draft)">
         <input v-model="draft" maxlength="200" :placeholder="$t('علّق على القرعة…')" :aria-label="$t('علّق على القرعة…')" class="h-touch min-w-0 flex-1 rounded-full bg-surface-sunk px-4" />
-        <button type="submit" class="grid size-11 shrink-0 place-items-center rounded-full bg-gold font-black text-on-gold disabled:opacity-50" :disabled="!draft.trim()" :aria-label="$t('أرسل')">
+        <button type="submit" class="grid size-11 shrink-0 place-items-center rounded-full bg-gold font-extrabold text-on-gold disabled:opacity-50" :disabled="!draft.trim()" :aria-label="$t('أرسل')">
           <span class="rtl:-scale-x-100">➤</span></button>
       </form>
     </template>

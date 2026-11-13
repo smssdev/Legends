@@ -15,7 +15,7 @@ export function clearance(e: SceneData) {
   const mates = [0, 1].map(() => player(w, atk, '', 1, { look: Math.floor(R() * 40) }))
   const sh = player(w, atk, e.no, 1, { look: Math.floor(R() * 40) }), df = player(w, dfk, e.defNo ?? '', 1, { look: Math.floor(R() * 40) })
   const b = ball(svg), sl = speedLines(svg, w, 7), dst = dust(svg, w, 10), kick = boom(svg, w, 'WHACK!', '#E9EEF6', '#1E3A8A')
-  const bang = el('text', { 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 34, fill: '#FFD400', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, w); bang.textContent = '!'
+  const bang = el('text', { 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 800, 'font-size': 34, fill: '#FFD400', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, w); bang.textContent = '!'
   const tt = title(svg, tr('أنقذها من على الخط!'), '#7FB4FF')
   const KT = 2.4, dir = R() < 0.5 ? -1 : 1, from = [320 + dir * 30, 236], line = [320 - dir * 20, LINE + 4], away = [320 + dir * 230, 120]
   return { dur: 4.2, svg, update(t: number) {

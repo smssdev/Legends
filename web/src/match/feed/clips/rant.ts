@@ -15,7 +15,7 @@ export function rant(e: SceneData) {
   const mega = el('g', {}, w)
   mega.innerHTML = '<path d="M0 -6 L34 -22 L34 22 L0 6 Z" fill="#F5B82E" stroke="#8A5A00" stroke-width="2"/><rect x="-8" y="-6" width="10" height="12" rx="2" fill="#333"/><ellipse cx="34" cy="0" rx="5" ry="22" fill="#FFD36B" stroke="#8A5A00" stroke-width="2"/>'
   const SYM = ['#@!', '!!', '%&$', '?!', '@#!', '!!!']
-  const sym = SYM.map((x) => { const e2 = el('text', { 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 22, fill: '#EF4444', stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke', opacity: 0 }, w); e2.textContent = x; return e2 })
+  const sym = SYM.map((x) => { const e2 = el('text', { 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 800, 'font-size': 22, fill: '#EF4444', stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke', opacity: 0 }, w); e2.textContent = x; return e2 })
   const waves = burst(svg, w, '#FFD36B', 6), vn = vein(svg)
   const drops = pls.map(() => el('path', { d: 'M0 -5 Q4 1 0 3 Q-4 1 0 -5 Z', fill: '#9AD4FF', opacity: 0 }, w))
   const tt = title(svg, tr('المدرب غاضب!'), '#EF4444')

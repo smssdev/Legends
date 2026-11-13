@@ -297,7 +297,7 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
         <span class="flex min-h-touch flex-1 items-center gap-2 rounded-3xl bg-surface-sunk px-4" role="status">
           <span class="size-2.5 animate-pulse rounded-full bg-live" /><span class="font-numbers" dir="ltr">{{ mmss(recorded) }}</span>
           <span class="text-sm text-text-muted">{{ $t('يُسجَّل… اضغط ➤ للإرسال') }}</span></span>
-        <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-black text-on-gold" :aria-label="$t('أرسل الرسالة الصوتية')" @click="record">
+        <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-extrabold text-on-gold" :aria-label="$t('أرسل الرسالة الصوتية')" @click="record">
           <span class="rtl:-scale-x-100">➤</span></button>
       </template>
       <template v-else>
@@ -306,7 +306,7 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
         :aria-label="$t('أرسل صورة')" @click="picker?.click()">📷</button>
       <textarea v-model="draft" rows="1" maxlength="1000" :placeholder="$t('اكتب رسالة…')" :aria-label="$t('اكتب رسالة…')"
         class="max-h-32 min-h-touch flex-1 resize-none rounded-3xl bg-surface-sunk px-4 py-3" @keydown.enter.exact.prevent="send" />
-      <button type="submit" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-black text-on-gold disabled:opacity-50"
+      <button type="submit" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-extrabold text-on-gold disabled:opacity-50"
         :disabled="sending" :aria-label="draft.trim() ? $t('أرسل') : $t('سجّل رسالة صوتية')" @click="!draft.trim() && ($event.preventDefault(), record())">
         <span v-if="draft.trim()" class="rtl:-scale-x-100">➤</span><span v-else>🎤</span></button>
       </template>
