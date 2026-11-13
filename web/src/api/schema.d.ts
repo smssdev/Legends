@@ -3819,9 +3819,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
+                        "application/json": components["schemas"]["Newspaper"];
                     };
                 };
             };
@@ -3870,9 +3868,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
+                        "application/json": components["schemas"]["Newspaper"];
                     };
                 };
                 409: components["responses"]["Error"];
@@ -16396,6 +16392,81 @@ export interface components {
             /** @enum {string|null} */
             mine: "home" | "away" | null;
             morale: number;
+        };
+        /** @description [UP12, Sprint 59 F1] The league's newspaper (PressController::newspaper): the edition of a played round, and the coaches' articles */
+        Newspaper: {
+            /** @description Null before any round is played */
+            edition: components["schemas"]["NewspaperEdition"] | null;
+            /** @description The published ones */
+            articles: components["schemas"]["NewspaperArticle"][];
+            /** @description Waiting for the owner: all of them for the owner, one's own for a coach */
+            pending: components["schemas"]["NewspaperArticle"][];
+            is_owner: boolean;
+            /** @description An article's longest body */
+            max: number;
+            /** @description [Sprint 21 E4.5] One article a round */
+            wrote_this_round: boolean;
+            /** @description The round an article is written for */
+            round: number;
+        };
+        NewspaperEdition: {
+            round: number;
+            /** @description The rounds played */
+            rounds: number[];
+            results: {
+                home: string;
+                away: string;
+                home_goals: number;
+                away_goals: number;
+                match_id: number | null;
+            }[];
+            stories: {
+                kind: string;
+                title: string;
+                text: string;
+            }[];
+            /** @description The team of the week */
+            team: {
+                [key: string]: unknown;
+            };
+            /** @description [Sprint 21 E4.6] score, home, away, goals, upset, comeback, match_id */
+            best_matches: {
+                [key: string]: unknown;
+            }[];
+            /** @description The player of the round */
+            player: {
+                [key: string]: unknown;
+            } | null;
+            /** @description The coach of the round */
+            coach: {
+                score: number;
+                coach: {
+                    id: number;
+                    name: string;
+                };
+                club: string;
+                opponent: string;
+                goals: number[];
+                away: boolean;
+            } | null;
+            /** @description The bribes an opponent exposed: club, coach, accuser, points, fine, at */
+            scandals: {
+                [key: string]: unknown;
+            }[];
+        };
+        NewspaperArticle: {
+            id: number;
+            title: string;
+            body: string;
+            /** @enum {string} */
+            status: "pending" | "published" | "rejected";
+            author: {
+                id: number;
+                name: string;
+                username?: string | null;
+            };
+            /** Format: date-time */
+            at: string;
         };
         /** @description [Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model */
         LeagueMatch: {

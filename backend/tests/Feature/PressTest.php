@@ -118,7 +118,10 @@ class PressTest extends TestCase
             [$h, $a] = $goals[$i % 3];
             DB::table('fixtures')->where('id', $f->id)->update(['status' => 'finished', 'home_goals' => $h, 'away_goals' => $a]);
         }
-        $paper = $this->getJson($this->url('/newspaper'))->assertOk()->json();
+        $paper = $this->getJson($this->url('/newspaper'))->assertOk()
+            // [Sprint 59 F1] The fields the app reads through Newspaper (openapi.yaml).
+            ->assertJsonStructure(['articles', 'pending', 'is_owner', 'max', 'wrote_this_round', 'round', 'edition' => ['round', 'rounds', 'team', 'best_matches', 'player', 'coach', 'scandals',
+                'results' => ['*' => ['home', 'away', 'home_goals', 'away_goals', 'match_id']], 'stories' => ['*' => ['kind', 'title', 'text']]]])->json();
         $this->assertSame(1, $paper['edition']['round']);
         $this->assertContains('big_win', array_column($paper['edition']['stories'], 'kind'));
         // [X73] Its score as the winner's, whoever was at home («3-0», never «0-3»).
