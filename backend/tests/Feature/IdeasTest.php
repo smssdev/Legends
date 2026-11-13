@@ -51,7 +51,9 @@ class IdeasTest extends TestCase
         $this->suggest('الثانية');
         $this->postJson('/api/v1/ideas/suggestions', ['title' => 'الثالثة', 'body' => 'نص طويل بما يكفي للاقتراح.'])->assertStatus(429);
         $this->postJson('/api/v1/ideas/suggestions', ['title' => 'قصير', 'body' => 'قصير'])->assertStatus(422);
-        $this->getJson('/api/v1/ideas')->assertOk()->assertJsonCount(2, 'suggestions')->assertJsonPath('left_today', 0)->assertJsonPath('suggestions.0.title', 'الثانية');
+        $this->getJson('/api/v1/ideas')->assertOk()->assertJsonCount(2, 'suggestions')
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['per_day', 'left_today', 'polls', 'honours', 'suggestions' => ['*' => ['id', 'title', 'body', 'status', 'coins', 'reply', 'at']]])->assertJsonPath('left_today', 0)->assertJsonPath('suggestions.0.title', 'الثانية');
         // A day later the limit opens again.
         Carbon::setTestNow('2026-10-31 10:01:00');
         $this->getJson('/api/v1/ideas')->assertJsonPath('left_today', 2);

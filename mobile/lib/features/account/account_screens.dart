@@ -18,6 +18,7 @@ import '../auth/auth_controller.dart';
 import '../home/home_data.dart';
 import '../leagues/widgets.dart' show when;
 import '../leagues/shell.dart';
+import '../../api/gen/models.g.dart' as api;
 
 part 'account_screens_ranking_screen.dart';
 part 'account_screens_support_screen.dart';
@@ -34,15 +35,21 @@ final achievementsProvider = FutureProvider.autoDispose<List<dynamic>>(
 final statsProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
   (ref, l) => ref.read(apiProvider).get('/leagues/$l/stats'),
 );
-final ideasProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) => ref.read(apiProvider).get('/ideas'));
+
+/// [Sprint 59 F1] The ideas page through the generated model (`IdeasAnswer`).
+final ideasProvider = FutureProvider.autoDispose<api.IdeasAnswer>(
+  (ref) async => api.IdeasAnswer.fromJson(await ref.read(apiProvider).get('/ideas')),
+);
 final supportProvider = FutureProvider.autoDispose<List<dynamic>>(
   (ref) async => (await ref.read(apiProvider).get('/support'))['messages'] as List<dynamic>? ?? const [],
 );
 final announcementsProvider = FutureProvider.autoDispose<List<dynamic>>(
   (ref) async => (await ref.read(apiProvider).get('/announcements'))['announcements'] as List<dynamic>? ?? const [],
 );
-final rankingProvider = FutureProvider.autoDispose<List<dynamic>>(
-  (ref) async => (await ref.read(apiProvider).get('/rankings/coaches'))['coaches'] as List<dynamic>? ?? const [],
+
+/// [Sprint 59 F1] The coaches' ranking through the generated model (`RankedCoach`).
+final rankingProvider = FutureProvider.autoDispose<List<api.RankedCoach>>(
+  (ref) async => api.RankingsCoachesAnswer.fromJson(await ref.read(apiProvider).get('/rankings/coaches')).coaches,
 );
 final guideProvider = FutureProvider.autoDispose<List<dynamic>>(
   (ref) async => (await ref.read(apiProvider).get('/guide'))['sections'] as List<dynamic>? ?? const [],

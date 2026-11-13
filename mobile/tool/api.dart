@@ -253,6 +253,17 @@ void main() {
     final s = _schemas[n];
     if (s is Map && _isObject(s)) _class(n, s);
   }
+  // [Sprint 59 F1] A GET's own inline answer too, named after its path without its parameters: GET /rankings/coaches
+  // answers RankingsCoachesAnswer, GET /leagues/{league}/team/summary LeaguesTeamSummaryAnswer.
+  final paths = api['paths'] as YamlMap;
+  for (final path in paths.keys.map((k) => '$k').toList()..sort()) {
+    Object? at(Object? m, String k) => m is Map<dynamic, dynamic> ? m[k] : null;
+    final schema = at(at(at(at(at(paths[path], 'get'), 'responses'), '200'), 'content'), 'application/json');
+    final inner = at(schema, 'schema');
+    if (inner is! Map<dynamic, dynamic> || _refName(inner) != null || !_isObject(inner)) continue;
+    final name = '${_pascal(path.split('/').where((p) => p.isNotEmpty && !p.startsWith('{')).join('_'))}Answer';
+    if (!_classes.containsKey(name)) _class(name, inner);
+  }
   // [Sprint 59 F1] A shared response's own inline object too (components/responses), as `<Name>Answer`.
   final responses = (api['components'] as YamlMap)['responses'] as YamlMap? ?? YamlMap();
   for (final n in responses.keys.map((k) => '$k').toList()..sort()) {

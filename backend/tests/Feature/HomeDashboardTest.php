@@ -129,7 +129,10 @@ class HomeDashboardTest extends TestCase
         DB::table('titles')->insert(['league_id' => $la['id'], 'season_id' => $season, 'user_id' => $b->id, 'club_id' => $club, 'competition' => 'cup', 'position' => 1,
             'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
 
-        $r = $this->actingAs($a)->getJson('/api/v1/rankings/coaches')->assertOk()->json();
+        $r = $this->actingAs($a)->getJson('/api/v1/rankings/coaches')->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['by', 'me', 'coaches' => ['*' => ['position', 'coach' => ['id', 'name', 'username', 'official'], 'level', 'played', 'won',
+                'trophies' => ['total', 'league', 'cup'], 'rating' => ['points', 'tier']]]])->json();
         $this->assertSame(['ب', 'أ'], array_column(array_column($r['coaches'], 'coach'), 'name'));
         $this->assertSame(2, $r['me']['position']);
         $this->assertSame(1, $r['coaches'][0]['trophies']['cup']);
