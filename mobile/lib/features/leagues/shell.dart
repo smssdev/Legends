@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
+import '../../l10n/nav.g.dart';
 import '../../ui/theme.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/brand.dart';

@@ -183,65 +183,19 @@ class ConsoleDock extends ConsumerWidget {
     final p = context.palette;
     final s = ref.watch(clubSummaryProvider(leagueId)).value;
     final base = '/leagues/$leagueId';
-    _Entry e(GameGlyph icon, String label, String path, {bool push = false}) => (icon: icon, label: label, path: path, push: push);
-    final sections = <_Section>[
-      (icon: Icons.home_rounded, label: l.navOffice, entries: [e(GameGlyph.office, l.navOffice, base)], badge: null),
-      (
-        icon: Icons.checkroom_rounded,
-        label: l.navTeam,
-        entries: [
-          e(GameGlyph.squad, l.squad, '$base/squad'),
-          e(GameGlyph.lineup, l.lineup, '$base/lineup'),
-          e(GameGlyph.specialists, l.specialists, '$base/specialists'),
-          e(GameGlyph.training, l.training, '$base/training'),
-          e(GameGlyph.contracts, l.contracts, '$base/contracts'),
-        ],
-        badge: null,
-      ),
-      (icon: Icons.tune_rounded, label: l.tactics, entries: [e(GameGlyph.tactics, l.tactics, '$base/tactics')], badge: null),
-      (
-        icon: Icons.sports_soccer_rounded,
-        label: l.secCompete,
-        entries: [
-          e(GameGlyph.match, l.matchday, '$base/matchday'),
-          e(GameGlyph.table, l.leagueTable, '$base?tab=matches'),
-          e(GameGlyph.friendlies, l.friendlies, '$base/friendlies'),
-          e(GameGlyph.predict, l.predictions, '$base/predictions'),
-          e(GameGlyph.quests, l.quests, '$base/quests'),
-          e(GameGlyph.spy, l.spy, '$base/spy'),
-          e(GameGlyph.alliance, l.alliance, '$base/alliance'),
-          e(GameGlyph.honours, l.honours, '$base/honours'),
-        ],
-        badge: s?.matchStatus == 'live' ? 'live' : null,
-      ),
-      (
-        icon: Icons.storefront_rounded,
-        label: l.secDeals,
-        entries: [e(GameGlyph.transfers, l.market, '$base/market'), e(GameGlyph.scout, l.scout, '$base/scout')],
-        badge: null,
-      ),
-      (
-        icon: Icons.stadium_rounded,
-        label: l.secMoney,
-        entries: [
-          e(GameGlyph.stadium, l.stadium, '$base/stadium'),
-          e(GameGlyph.finance, l.finance, '$base/finance'),
-          e(GameGlyph.shop, l.wallet, '/wallet', push: true),
-        ],
-        badge: null,
-      ),
-      (
-        icon: Icons.forum_rounded,
-        label: l.secCommunity,
-        entries: [
-          e(GameGlyph.groups, l.groups, '/groups', push: true),
-          e(GameGlyph.newspaper, l.newspaper, '$base/newspaper'),
-          e(GameGlyph.results, l.stats, '$base/stats'),
-          e(GameGlyph.quick, l.tournaments, '/tournaments', push: true),
-          e(GameGlyph.invite, l.invite, '$base?tab=more'),
-        ],
-        badge: null,
-      ),
+    // [Sprint 60 F1] The six sections and «More» from docs/design/nav.json (lib/l10n/nav.g.dart), the site's too: each
+    // page by the one name the site gives it, in this language.
+    final lang = Localizations.localeOf(context).languageCode;
+    _Section section(NavSection x) => (
+      icon: _sectionIcons[x.key] ?? Icons.more_horiz_rounded,
+      label: x.label(lang),
+      entries: [
+        for (final y in x.pages) (icon: GameGlyph.values.byName(y.glyph), label: y.label(lang), path: y.route(leagueId), push: y.push),
+      ],
+      badge: x.key == 'match' && s?.matchStatus == 'live' ? 'live' : null,
+    );
+    final sections = [
+      for (final x in [...navDock, navMore]) section(x),
     ];
     return Container(
       width: 72,
@@ -301,6 +255,17 @@ class ConsoleDock extends ConsumerWidget {
 }
 
 typedef _Section = ({IconData icon, String label, List<_Entry> entries, String? badge});
+
+/// Each section's icon in the dock (the site draws its own from Icon.vue).
+const _sectionIcons = {
+  'office': Icons.home_rounded,
+  'team': Icons.checkroom_rounded,
+  'tactics': Icons.tune_rounded,
+  'match': Icons.sports_soccer_rounded,
+  'market': Icons.storefront_rounded,
+  'club': Icons.stadium_rounded,
+  'more': Icons.more_horiz_rounded,
+};
 
 /// A section in the dock: its gold icon over its name; several pages open their list beside it.
 class _DockItem extends StatelessWidget {

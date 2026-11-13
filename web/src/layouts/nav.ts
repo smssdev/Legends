@@ -45,20 +45,8 @@ export const SECTIONS: Section[] = [
 
 // ── [Sprint 55 W1, D2] The one frame: six sections by one name on the web and in the app, «المزيد» for the rest ──
 // (sprints/55-landscape-design.md, docs/design/legends-ui/landscape/LandscapeShell.html, approved 2026-11-11).
-// Each dock section is a list of SECTIONS names (or extra links): one opens its page, several open a list beside the
-// dock. The first is where a tap on the section goes on the computer's wide dock as well.
-export type DockKey = 'office' | 'team' | 'tactics' | 'match' | 'market' | 'club'
-export interface DockSection { key: DockKey; label: string; icon: keyof typeof PATHS; items: string[] }
-export const DOCK: DockSection[] = [
-  { key: 'office', label: 'المكتب', icon: 'club', items: ['club'] },
-  { key: 'team', label: 'الفريق', icon: 'team', items: ['team', 'lineup', 'takers', 'training', 'specialists'] },
-  { key: 'tactics', label: 'التكتيك', icon: 'tactics', items: ['tactics'] },
-  { key: 'match', label: 'المباراة', icon: 'match', items: ['match', 'league', 'fixtures', 'friendlies'] },
-  { key: 'market', label: 'السوق', icon: 'market', items: ['market', 'scout'] },
-  { key: 'club', label: 'النادي', icon: 'stadium', items: ['finance', 'stadium', 'quests'] },
-]
-/** «المزيد» inside a slot: the league's pages (by SECTIONS name), then the links the frame keeps for everyone. */
-export const MORE_IN_SLOT = ['stats', 'newspaper', 'predictions']
+// [Sprint 60 F1] Written from docs/design/nav.json, the app's source too (npm run nav: src/layouts/dock.g.ts).
+export { DOCK, MORE_ALWAYS, MORE_IN_SLOT, MORE_LABEL, PAGE_LABELS, type DockKey, type DockSection } from './dock.g'
 /** Outside a slot (the home screen, my leagues, the account…): the dock's own five. */
 export const DOCK_OUTSIDE: { path: string; label: string; icon: keyof typeof PATHS }[] = [
   { path: '/', label: 'الرئيسية', icon: 'home' },
@@ -66,14 +54,4 @@ export const DOCK_OUTSIDE: { path: string; label: string; icon: keyof typeof PAT
   { path: '/leagues/new', label: 'أنشئ دورياً', icon: 'league' },
   { path: '/tournaments', label: 'البطولات', icon: 'trophy' },
   { path: '/inbox', label: 'الرسائل', icon: 'inbox' },
-]
-/** «المزيد» for everyone: the community, the shop, the account. */
-export const MORE_ALWAYS: { path: string; label: string; icon: keyof typeof PATHS }[] = [
-  { path: '/', label: 'فرقي', icon: 'home' },
-  { path: '/groups', label: 'الجروبات', icon: 'chat' },
-  { path: '/tournaments', label: 'البطولات', icon: 'trophy' },
-  { path: '/wallet', label: 'المحفظة', icon: 'finance' },
-  { path: '/store', label: 'العروض', icon: 'megaphone' },
-  { path: '/ideas', label: 'اقتراحات التطوير', icon: 'idea' },
-  { path: '/profile', label: 'حسابي', icon: 'team' },
 ]
