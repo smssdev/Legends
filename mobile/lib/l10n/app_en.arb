@@ -878,5 +878,19 @@
   "opponentReport": "Opponent report",
   "stadiumWorks": "Stadium expansion",
   "dailyReady": "Today's coins are ready",
-  "close": "Close"
+  "close": "Close",
+  "takersTitle": "Specialists",
+  "roleCaptain": "Captain",
+  "rolePenalty": "Penalties",
+  "roleFreeKick": "Free kicks",
+  "roleCorner": "Corners",
+  "skillCaptain": "Leadership",
+  "skillPenalty": "Penalty",
+  "skillFreeKick": "Free kick",
+  "skillCorner": "Crossing",
+  "changePlayer": "Change player",
+  "takerAuto": "Automatic: the best of the eleven",
+  "takerAutoBadge": "Auto",
+  "inEleven": "In the eleven",
+  "outOfEleven": "Not in the eleven"
 }

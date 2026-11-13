@@ -2940,4 +2940,46 @@ class LAr extends L {
 
   @override
   String get close => 'إغلاق';
+
+  @override
+  String get takersTitle => 'المتخصصون';
+
+  @override
+  String get roleCaptain => 'قائد الفريق';
+
+  @override
+  String get rolePenalty => 'ضربات الجزاء';
+
+  @override
+  String get roleFreeKick => 'الضربات الحرة';
+
+  @override
+  String get roleCorner => 'الركنيات';
+
+  @override
+  String get skillCaptain => 'القيادة';
+
+  @override
+  String get skillPenalty => 'الجزاء';
+
+  @override
+  String get skillFreeKick => 'الحرة';
+
+  @override
+  String get skillCorner => 'العرضيات';
+
+  @override
+  String get changePlayer => 'تبديل اللاعب';
+
+  @override
+  String get takerAuto => 'تلقائي: الأفضل في التشكيلة';
+
+  @override
+  String get takerAutoBadge => 'تلقائي';
+
+  @override
+  String get inEleven => 'في التشكيلة';
+
+  @override
+  String get outOfEleven => 'خارج التشكيلة';
 }

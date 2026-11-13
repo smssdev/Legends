@@ -19,6 +19,7 @@ import 'features/matchday/contracts_screen.dart';
 import 'features/matchday/tickets_screen.dart';
 import 'features/matchday/missed_screen.dart';
 import 'features/club/squad_screen.dart';
+import 'features/club/takers_screen.dart';
 import 'features/club/training_screen.dart';
 import 'features/club/specialists_screen.dart';
 import 'features/club/spy_screen.dart';
@@ -187,6 +188,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/leagues/:id/training',
             builder: (_, s) => _withId(s, (id) => TrainingScreen(leagueId: id)),
+          ),
+          GoRoute(
+            path: '/leagues/:id/takers',
+            builder: (_, s) => _withId(s, (id) => TakersScreen(leagueId: id)),
           ),
           GoRoute(
             path: '/leagues/:id/specialists',

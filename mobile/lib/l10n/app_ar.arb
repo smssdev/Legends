@@ -2045,5 +2045,19 @@
   "opponentReport": "تقرير الخصم",
   "stadiumWorks": "توسعة الملعب",
   "dailyReady": "كوينز اليوم جاهزة",
-  "close": "إغلاق"
+  "close": "إغلاق",
+  "takersTitle": "المتخصصون",
+  "roleCaptain": "قائد الفريق",
+  "rolePenalty": "ضربات الجزاء",
+  "roleFreeKick": "الضربات الحرة",
+  "roleCorner": "الركنيات",
+  "skillCaptain": "القيادة",
+  "skillPenalty": "الجزاء",
+  "skillFreeKick": "الحرة",
+  "skillCorner": "العرضيات",
+  "changePlayer": "تبديل اللاعب",
+  "takerAuto": "تلقائي: الأفضل في التشكيلة",
+  "takerAutoBadge": "تلقائي",
+  "inEleven": "في التشكيلة",
+  "outOfEleven": "خارج التشكيلة"
 }

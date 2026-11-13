@@ -37,6 +37,7 @@ const navDock = <NavSection>[
     pages: [
       NavPage('team', ar: 'الفريق', en: 'Team', path: '/leagues/{league}/squad', glyph: 'squad'),
       NavPage('lineup', ar: 'التشكيلة', en: 'Lineup', path: '/leagues/{league}/lineup', glyph: 'lineup'),
+      NavPage('takers', ar: 'المتخصصون', en: 'Specialists', path: '/leagues/{league}/takers', glyph: 'lineup'),
       NavPage('training', ar: 'التدريب', en: 'Training', path: '/leagues/{league}/training', glyph: 'training'),
       NavPage('specialists', ar: 'الجهاز الفني', en: 'Technical staff', path: '/leagues/{league}/specialists', glyph: 'specialists'),
       NavPage('contracts', ar: 'العقود', en: 'Contracts', path: '/leagues/{league}/contracts', glyph: 'contracts'),
