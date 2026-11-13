@@ -43,6 +43,11 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
   bool _desc = false;
   String? _line;
 
+  /// [Sprint 60 F4] The player whose card is open beside the table, and whether the screen is too narrow for it (the
+  /// room the screen has, not the window's: a sheet then).
+  Player? _card;
+  bool _narrow = false;
+
   static const _lineOrder = {'gk': 0, 'def': 1, 'mid': 2, 'att': 3};
 
   void _by(_Col c) => setState(() {
@@ -89,7 +94,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
               final groups = [('att', l.groupAtt), ('mid', l.groupMid), ('def', l.groupDef), ('gk', l.groupGk)];
               // [Sprint 46, the owner's screenshots] The squad as the manager games show it: a band of the club's facts, the
               // team's rating with each line's over a little pitch and its key players, then the white table by line.
-              return CustomScrollView(
+              final table = CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
                     child: _Fit(
@@ -112,13 +117,35 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
                           return FadeSlideIn(
                             index: i,
                             offset: 12,
-                            child: _Row(pl, captain: team.captain == pl.id, onTap: () => showPlayerCard(context, pl)),
+                            child: _Row(
+                              pl,
+                              captain: team.captain == pl.id,
+                              // [Sprint 60 F4] Beside the table on a landscape screen; a sheet where there is no room.
+                              onTap: () => _narrow ? showPlayerCard(context, pl) : setState(() => _card = pl),
+                            ),
                           );
                         },
                       ),
                     ],
                   const SliverToBoxAdapter(child: SizedBox(height: 24)),
                 ],
+              );
+              final card = _card == null ? null : team.players.where((x) => x.id == _card!.id).firstOrNull ?? _card;
+              return LayoutBuilder(
+                builder: (context, box) {
+                  _narrow = box.maxWidth < 600;
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(child: table),
+                      if (card != null && !_narrow)
+                        SizedBox(
+                          width: (box.maxWidth * .46).clamp(0.0, 340.0),
+                          child: PlayerCardPanel(player: card, close: () => setState(() => _card = null)),
+                        ),
+                    ],
+                  );
+                },
               );
             },
           ),

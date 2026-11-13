@@ -100,6 +100,27 @@ void main() {
     expect(find.text('المهارات'), findsOneWidget);
   });
 
+  testWidgets('[Sprint 60 F4] landscape: the card is a panel beside the table, another row swaps it', (t) async {
+    await pump(t, const SquadScreen(leagueId: 1), FakeTeamRepository());
+    await t.binding.setSurfaceSize(const Size(1000, 2400));
+    await t.pumpAndSettle();
+    final first = sample.players.first, other = sample.players[1];
+    await t.ensureVisible(find.text(first.name));
+    await t.pumpAndSettle();
+    await t.tap(find.text(first.name));
+    await t.pumpAndSettle();
+    expect(find.byType(PlayerCardPanel), findsOneWidget);
+    expect(find.text('حراس المرمى'), findsOneWidget);
+    await t.ensureVisible(find.text(other.name).first);
+    await t.pumpAndSettle();
+    await t.tap(find.text(other.name).first);
+    await t.pumpAndSettle();
+    expect(find.descendant(of: find.byType(PlayerCardPanel), matching: find.text(other.name)), findsOneWidget);
+    await t.tap(find.byTooltip('إغلاق'));
+    await t.pumpAndSettle();
+    expect(find.byType(PlayerCardPanel), findsNothing);
+  });
+
   testWidgets('the lineup: two players swapped, then saved with the new eleven', (t) async {
     final repo = FakeTeamRepository();
     await pump(t, const LineupScreen(leagueId: 1), repo);

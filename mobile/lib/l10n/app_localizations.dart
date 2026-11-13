@@ -5239,6 +5239,12 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'كوينز اليوم جاهزة'**
   String get dailyReady;
+
+  /// No description provided for @close.
+  ///
+  /// In ar, this message translates to:
+  /// **'إغلاق'**
+  String get close;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {
