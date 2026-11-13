@@ -127,35 +127,38 @@ class _CountdownState extends State<_Countdown> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return StreamBuilder<int>(
-      stream: _tick,
-      builder: (context, _) {
-        final left = widget.at.difference(DateTime.now());
-        if (left.isNegative || left.inHours >= 100) return const SizedBox.shrink();
-        String two(int n) => n.toString().padLeft(2, '0');
-        final text = '${two(left.inHours)}:${two(left.inMinutes % 60)}:${two(left.inSeconds % 60)}';
-        return Semantics(
-          label: '${L.of(context).nextMatch}: $text',
-          excludeSemantics: true,
-          child: Container(
-            height: 32,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(color: p.text.withValues(alpha: .1), borderRadius: BorderRadius.circular(16)),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.schedule_rounded, size: 16, color: p.gold),
-                const SizedBox(width: 5),
-                Text(
-                  text,
-                  textDirection: TextDirection.ltr,
-                  style: glmText(GlmType.body, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.text),
-                ),
-              ],
+    // [Sprint 61 F5] The second's tick repaints only the clock.
+    return RepaintBoundary(
+      child: StreamBuilder<int>(
+        stream: _tick,
+        builder: (context, _) {
+          final left = widget.at.difference(DateTime.now());
+          if (left.isNegative || left.inHours >= 100) return const SizedBox.shrink();
+          String two(int n) => n.toString().padLeft(2, '0');
+          final text = '${two(left.inHours)}:${two(left.inMinutes % 60)}:${two(left.inSeconds % 60)}';
+          return Semantics(
+            label: '${L.of(context).nextMatch}: $text',
+            excludeSemantics: true,
+            child: Container(
+              height: 32,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(color: p.text.withValues(alpha: .1), borderRadius: BorderRadius.circular(16)),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.schedule_rounded, size: 16, color: p.gold),
+                  const SizedBox(width: 5),
+                  Text(
+                    text,
+                    textDirection: TextDirection.ltr,
+                    style: glmText(GlmType.body, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.text),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
@@ -375,20 +378,22 @@ class _LiveDotState extends State<_LiveDot> with SingleTickerProviderStateMixin 
   @override
   Widget build(BuildContext context) {
     final live = context.palette.live;
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (_, _) => Container(
-        width: 9,
-        height: 9,
-        decoration: BoxDecoration(
-          color: live,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: live.withValues(alpha: 1 - _c.value),
-              spreadRadius: 6 * _c.value,
-            ),
-          ],
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (_, _) => Container(
+          width: 9,
+          height: 9,
+          decoration: BoxDecoration(
+            color: live,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: live.withValues(alpha: 1 - _c.value),
+                spreadRadius: 6 * _c.value,
+              ),
+            ],
+          ),
         ),
       ),
     );

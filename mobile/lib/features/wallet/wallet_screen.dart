@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../api/gen/models.g.dart' as api;
+import '../../core/disk_images.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../core/sounds.dart';
@@ -226,8 +227,8 @@ class WalletScreen extends ConsumerWidget {
                                   child: AspectRatio(
                                     aspectRatio: isWide(context) ? 2.4 : 16 / 9,
                                     // Until the picture arrives, or when it cannot: the night stadium with the coin.
-                                    child: Image.network(
-                                      i.imageUrl!,
+                                    child: Image(
+                                      image: DiskImage(i.imageUrl!),
                                       fit: BoxFit.cover,
                                       errorBuilder: (_, _, _) => StadiumBackdrop(
                                         pitch: false,

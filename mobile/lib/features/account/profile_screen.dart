@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/disk_images.dart';
 import '../../core/api/api_client.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
@@ -115,7 +116,7 @@ class ProfileScreen extends ConsumerWidget {
                         CircleAvatar(
                           radius: 32,
                           backgroundColor: p.brand,
-                          foregroundImage: me.avatarUrl == null ? null : NetworkImage(me.avatarUrl!),
+                          foregroundImage: me.avatarUrl == null ? null : DiskImage(me.avatarUrl!),
                           child: Text(
                             me.name.characters.take(1).toString(),
                             style: glmText(GlmType.headline, color: Colors.white, fontWeight: FontWeight.w800),

@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/core/api/api_client.dart';
 import 'package:glm/core/api/api_error.dart';
 import 'package:glm/core/api/response_cache.dart';
+import 'package:glm/core/disk_images.dart';
 import 'package:glm/core/storage/token_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -182,5 +183,34 @@ void main() {
     expect(find.byIcon(Icons.wifi_off_rounded), findsNothing);
     expect(container.read(reconnectedProvider), before + 1);
     await t.pumpWidget(const SizedBox());
+  });
+
+  test('[Sprint 61 F6] a picture fetched once, then read from the phone; past the limit the least used go', () async {
+    final fetched = <String>[];
+    DiskImages store() => DiskImages(
+      dir: () async => dir,
+      fetch: (url) async {
+        fetched.add(url);
+        return Uint8List.fromList(List.filled(1024 * 1024, url.length));
+      },
+    );
+    final a = store();
+    expect(await a.load('https://site/crests/1.svg?v=1'), hasLength(1024 * 1024));
+    expect(await a.load('https://site/crests/1.svg?v=1'), hasLength(1024 * 1024));
+    // Another session (a new store) reads it from the disk.
+    await store().load('https://site/crests/1.svg?v=1');
+    expect(fetched, ['https://site/crests/1.svg?v=1']);
+    // A new version is a new picture.
+    await store().load('https://site/crests/1.svg?v=2');
+    expect(fetched, hasLength(2));
+
+    // 60 pictures of 1 MB: past 50 MB the store goes down to three quarters, the oldest first.
+    final big = store();
+    for (var i = 0; i < 60; i++) {
+      await big.load('https://site/items/$i.webp');
+    }
+    await big.trim();
+    final left = dir.listSync().whereType<File>().fold<int>(0, (s, f) => s + f.lengthSync());
+    expect(left, lessThanOrEqualTo(DiskImages.maxBytes));
   });
 }

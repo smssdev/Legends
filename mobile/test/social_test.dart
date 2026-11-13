@@ -69,7 +69,7 @@ class FakeSocial implements SocialRepository {
   Future<api.GroupsAnswer> groups() async => api.GroupsAnswer.fromJson(json('groups'));
   int loads = 0;
   @override
-  Future<List<api.ChatMessage>> messages(int group) async => [
+  Future<List<api.ChatMessage>> messages(int group, {int? before}) async => [
     if (++loads < 0) api.ChatMessage.fromJson(const <String, dynamic>{}),
     for (final m in json('group_messages')['messages'] as List<dynamic>) api.ChatMessage.fromJson(m),
     api.ChatMessage.fromJson({

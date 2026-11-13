@@ -331,6 +331,62 @@ class GameGrid extends StatelessWidget {
   );
 }
 
+/// [Sprint 61 F3] [GameGrid] as a scrolling list that builds only the rows in view (a market of 60 players, a long
+/// squad): the [header] first, then the cards [itemCount] long, as many to a row as fit ([minWidth] each), laid as
+/// GameGrid lays them.
+class GameGridList extends StatelessWidget {
+  const GameGridList({
+    super.key,
+    this.header = const [],
+    required this.itemCount,
+    required this.itemBuilder,
+    this.minWidth = 340,
+    this.spacing = 10,
+    this.maxColumns = 3,
+    this.padding = EdgeInsets.zero,
+  });
+
+  final List<Widget> header;
+  final int itemCount;
+  final Widget Function(BuildContext context, int index) itemBuilder;
+  final double minWidth, spacing;
+  final int maxColumns;
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      final cols = ((box.maxWidth - padding.horizontal) / minWidth).floor().clamp(1, maxColumns);
+      final rows = (itemCount / cols).ceil();
+      return ListView.builder(
+        padding: padding,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: header.length + rows,
+        itemBuilder: (context, i) {
+          if (i < header.length) return header[i];
+          final row = i - header.length;
+          return Padding(
+            padding: EdgeInsets.only(bottom: row == rows - 1 ? 0 : spacing),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var c = 0; c < cols; c++) ...[
+                  if (c > 0) SizedBox(width: spacing),
+                  Expanded(
+                    child: row * cols + c < itemCount
+                        ? FadeSlideIn(index: c, child: itemBuilder(context, row * cols + c))
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
 /// An icon on a glossy square in its colour: the game's icon style everywhere (menus, rails, headers, empty states).
 class IconTile extends StatelessWidget {
   const IconTile(this.icon, {super.key, this.color, this.size = 38});

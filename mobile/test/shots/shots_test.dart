@@ -48,6 +48,8 @@ import '../match_test.dart' show FakeMatchRepository;
 import '../team_test.dart' show FakeTeamRepository;
 import '../home_answer.dart';
 
+import 'package:glm/core/disk_images.dart';
+
 import 'package:glm/features/matchday/matchday_data.dart' show nextMatchProvider, pressProvider, integrityProvider;
 import 'package:glm/features/matchday/matchday_screen.dart';
 
@@ -140,6 +142,7 @@ Future<void> shot(
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
+  DiskImages.instance = DiskImages.none();
   t.view.physicalSize = size * 2;
   t.view.devicePixelRatio = 2;
   addTearDown(t.view.reset);

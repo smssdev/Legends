@@ -30,7 +30,9 @@ class _MomentumStrip extends StatelessWidget {
             Text(l.momentum, style: glmText(GlmType.caption, color: p.textMuted)),
             const SizedBox(width: 8),
             Expanded(
-              child: CustomPaint(painter: _Wave(wave, p.brandLight, p.warning), size: Size.infinite),
+              child: RepaintBoundary(
+                child: CustomPaint(painter: _Wave(wave, p.brandLight, p.warning), size: Size.infinite),
+              ),
             ),
             const SizedBox(width: 8),
             Text(

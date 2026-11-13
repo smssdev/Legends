@@ -38,8 +38,11 @@ class SocialRepository {
   Future<api.GroupsAnswer> groups() async => api.GroupsAnswer.fromJson(await _api.get('/groups'));
 
   /// [Sprint 59 F1] A group's messages through the generated model (`ChatMessage`).
-  Future<List<api.ChatMessage>> messages(int group) async =>
-      JsonReader(await _api.get('/groups/$group/messages'), 'GroupMessages').list('messages', api.ChatMessage.fromJson);
+  /// [Sprint 61 F3] The latest page, or the one older than [before] (scrolling up).
+  Future<List<api.ChatMessage>> messages(int group, {int? before}) async => JsonReader(
+    await _api.get('/groups/$group/messages', query: {'before': ?before}),
+    'GroupMessages',
+  ).list('messages', api.ChatMessage.fromJson);
   Future<void> say(int group, String body, {int? replyTo}) => _api.post('/groups/$group/messages', {'body': body, 'reply_to': ?replyTo});
   Future<void> read(int group) => _api.post('/groups/$group/read');
 }

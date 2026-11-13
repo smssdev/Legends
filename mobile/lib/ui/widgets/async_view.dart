@@ -151,31 +151,34 @@ class _GlmSkeletonState extends State<GlmSkeleton> with SingleTickerProviderStat
       GlmSkeletonKind.card => (160.0, GlmRadius.xl),
       GlmSkeletonKind.hero => (224.0, GlmRadius.xxl),
     };
+    // [Sprint 61 F5] The shimmer repaints only the skeleton.
     return ExcludeSemantics(
-      child: AnimatedBuilder(
-        animation: _c,
-        builder: (context, _) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (var i = 1; i <= widget.count; i++)
-              Padding(
-                padding: const EdgeInsets.only(bottom: GlmSpace.sm),
-                child: FractionallySizedBox(
-                  widthFactor: widget.kind == GlmSkeletonKind.line ? (100 - (i * 17) % 40) / 100 : 1,
-                  child: Container(
-                    height: h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(r),
-                      gradient: LinearGradient(
-                        begin: Alignment(-3 + _c.value * 4, 0),
-                        end: Alignment(-1 + _c.value * 4, 0),
-                        colors: [p.surfaceSunk, p.surfaceRaised, p.surfaceSunk],
+      child: RepaintBoundary(
+        child: AnimatedBuilder(
+          animation: _c,
+          builder: (context, _) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var i = 1; i <= widget.count; i++)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: GlmSpace.sm),
+                  child: FractionallySizedBox(
+                    widthFactor: widget.kind == GlmSkeletonKind.line ? (100 - (i * 17) % 40) / 100 : 1,
+                    child: Container(
+                      height: h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(r),
+                        gradient: LinearGradient(
+                          begin: Alignment(-3 + _c.value * 4, 0),
+                          end: Alignment(-1 + _c.value * 4, 0),
+                          colors: [p.surfaceSunk, p.surfaceRaised, p.surfaceSunk],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -264,43 +267,45 @@ class _GlmLoaderState extends State<GlmLoader> with SingleTickerProviderStateMix
     final p = context.palette;
     final still = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     final ball = Icon(Icons.sports_soccer_rounded, size: widget.size, color: p.text);
-    return Semantics(
-      label: '…',
-      child: SizedBox(
-        width: widget.size * 2,
-        height: widget.size * 1.9,
-        child: AnimatedBuilder(
-          animation: _c,
-          builder: (_, _) {
-            final t = still ? 0.0 : _c.value;
-            // A small bounce: up and down twice a turn.
-            final hop = still ? 0.0 : (1 - (2 * ((t * 2) % 1) - 1).abs()) * widget.size * .28;
-            return Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: widget.size * 1.8,
-                  height: widget.size * 1.8,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(colors: [p.goldLight.withValues(alpha: .18), p.goldLight.withValues(alpha: 0)]),
+    return RepaintBoundary(
+      child: Semantics(
+        label: '…',
+        child: SizedBox(
+          width: widget.size * 2,
+          height: widget.size * 1.9,
+          child: AnimatedBuilder(
+            animation: _c,
+            builder: (_, _) {
+              final t = still ? 0.0 : _c.value;
+              // A small bounce: up and down twice a turn.
+              final hop = still ? 0.0 : (1 - (2 * ((t * 2) % 1) - 1).abs()) * widget.size * .28;
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: widget.size * 1.8,
+                    height: widget.size * 1.8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(colors: [p.goldLight.withValues(alpha: .18), p.goldLight.withValues(alpha: 0)]),
+                    ),
                   ),
-                ),
-                Positioned(
-                  bottom: widget.size * .12,
-                  child: Container(
-                    width: widget.size * (.75 - hop / widget.size * .6),
-                    height: widget.size * .14,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(widget.size), color: p.shade.withValues(alpha: .45)),
+                  Positioned(
+                    bottom: widget.size * .12,
+                    child: Container(
+                      width: widget.size * (.75 - hop / widget.size * .6),
+                      height: widget.size * .14,
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(widget.size), color: p.shade.withValues(alpha: .45)),
+                    ),
                   ),
-                ),
-                Transform.translate(
-                  offset: Offset(0, -hop - widget.size * .1),
-                  child: Transform.rotate(angle: t * 6.283185307179586, child: ball),
-                ),
-              ],
-            );
-          },
+                  Transform.translate(
+                    offset: Offset(0, -hop - widget.size * .1),
+                    child: Transform.rotate(angle: t * 6.283185307179586, child: ball),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

@@ -218,9 +218,13 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
                   data: (m) => RefreshIndicator(
                     color: p.gold,
                     onRefresh: () => ref.refresh(marketListProvider(key).future),
-                    child: ListView(
+                    // [Sprint 61 F3] Only the rows in view are built.
+                    child: GameGridList(
                       padding: const EdgeInsets.fromLTRB(12, 6, 12, 24),
-                      children: [
+                      minWidth: 300,
+                      itemCount: m.players.length,
+                      itemBuilder: (context, i) => _buyCard(context, m.players[i]),
+                      header: [
                         if (m.closed != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8),
@@ -239,42 +243,6 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
                               style: glmText(GlmType.caption, color: p.textMuted),
                             ),
                           ),
-                        GameGrid(
-                          minWidth: 300,
-                          children: [
-                            for (final pl in m.players)
-                              _PlayerCard(
-                                overall: pl.overall,
-                                position: pl.position,
-                                line: pl.line,
-                                name: pl.name,
-                                sub: '${pl.age} · ${pl.sellerKind == 'world' ? l.sellerWorld : pl.sellerClub ?? ''}',
-                                gold: pl.fits,
-                                onTap: () => _buySheet(pl),
-                                end: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      money(context, pl.price),
-                                      textDirection: TextDirection.ltr,
-                                      style: glmText(
-                                        GlmType.title,
-                                        fontFamily: GlmFonts.numbers,
-                                        fontWeight: FontWeight.w800,
-                                        color: context.glm.goldText,
-                                      ),
-                                    ),
-                                    if (pl.wasPrice != null)
-                                      Text(
-                                        money(context, pl.wasPrice!),
-                                        textDirection: TextDirection.ltr,
-                                        style: glmText(GlmType.caption, color: p.textMuted, decoration: TextDecoration.lineThrough),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        ),
                       ],
                     ),
                   ),
@@ -302,6 +270,36 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buyCard(BuildContext context, MarketPlayer pl) {
+    final l = L.of(context);
+    final p = context.palette;
+    return _PlayerCard(
+      overall: pl.overall,
+      position: pl.position,
+      line: pl.line,
+      name: pl.name,
+      sub: '${pl.age} · ${pl.sellerKind == 'world' ? l.sellerWorld : pl.sellerClub ?? ''}',
+      gold: pl.fits,
+      onTap: () => _buySheet(pl),
+      end: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            money(context, pl.price),
+            textDirection: TextDirection.ltr,
+            style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
+          ),
+          if (pl.wasPrice != null)
+            Text(
+              money(context, pl.wasPrice!),
+              textDirection: TextDirection.ltr,
+              style: glmText(GlmType.caption, color: p.textMuted, decoration: TextDecoration.lineThrough),
+            ),
+        ],
+      ),
     );
   }
 

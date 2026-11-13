@@ -23,20 +23,22 @@ class RankingScreen extends ConsumerWidget {
         value: ref.watch(rankingProvider),
         onRetry: () => ref.invalidate(rankingProvider),
         isEmpty: (rows) => rows.isEmpty,
-        data: (rows) => ListView(
+        // [Sprint 61 F3] Only the coaches in view are built.
+        data: (rows) => ListView.builder(
           padding: const EdgeInsets.all(12),
-          children: [
-            for (final r in rows)
-              ListTile(
-                leading: Text(
-                  '${r.position}',
-                  style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
-                ),
-                title: Text(r.coach.name, style: const TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: Text('${l.trophiesShort(r.trophies.total)} · ${r.won}/${r.played} · ${r.rating.points}'),
-                onTap: () => context.push('/coaches/${r.coach.id}'),
+          itemCount: rows.length,
+          itemBuilder: (context, i) {
+            final r = rows[i];
+            return ListTile(
+              leading: Text(
+                '${r.position}',
+                style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
               ),
-          ],
+              title: Text(r.coach.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: Text('${l.trophiesShort(r.trophies.total)} · ${r.won}/${r.played} · ${r.rating.points}'),
+              onTap: () => context.push('/coaches/${r.coach.id}'),
+            );
+          },
         ),
       ),
     );

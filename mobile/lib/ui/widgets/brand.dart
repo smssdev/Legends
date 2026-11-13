@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart' show Uint8List;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/config.dart';
+import '../../core/disk_images.dart';
 
 import '../theme.dart';
 import '../tokens.g.dart';
@@ -129,15 +131,17 @@ class ClubCrest extends StatelessWidget {
     // (/logos/....webp, ClubLogo) where the club has one, else with its drawn badge (SVG). The picture first, the SVG
     // when it is not one, our shield while either loads.
     final full = url!.startsWith('/') ? '${AppConfig.siteUrl}$url' : url!;
-    return Image.network(
-      full,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      semanticLabel: name,
-      loadingBuilder: (_, child, progress) => progress == null ? child : shield,
-      errorBuilder: (_, _, _) =>
-          SvgPicture.network(full, width: size, height: size, placeholderBuilder: (_) => shield, semanticsLabel: name),
+    // [Sprint 61 F6] Read once into the phone (DiskImages), then drawn as it is: an SVG or a picture.
+    return FutureBuilder<Uint8List>(
+      future: DiskImages.instance.load(full),
+      builder: (context, snap) {
+        final bytes = snap.data;
+        if (bytes == null || bytes.isEmpty) return shield;
+        final svg = bytes.length > 4 && String.fromCharCodes(bytes.take(256)).trimLeft().startsWith('<');
+        return svg
+            ? SvgPicture.memory(bytes, width: size, height: size, placeholderBuilder: (_) => shield, semanticsLabel: name)
+            : Image.memory(bytes, width: size, height: size, fit: BoxFit.contain, semanticLabel: name, errorBuilder: (_, _, _) => shield);
+      },
     );
   }
 }
