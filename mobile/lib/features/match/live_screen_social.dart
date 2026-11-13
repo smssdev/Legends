@@ -130,8 +130,7 @@ extension _LiveSocial on _LiveState {
                             if (body.isEmpty) return;
                             text.clear();
                             await _send(() => _repo.say(_id, body), quiet: true);
-                            _timer?.cancel();
-                            await _poll();
+                            await _live.now();
                             set(() {});
                           },
                         ),
