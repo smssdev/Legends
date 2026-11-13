@@ -57,9 +57,11 @@ class SocialRepository {
       'PlayFriendly',
     ).object('friendly', api.Friendly.fromJson),
   );
-  Future<Map<String, dynamic>> predictions(int league) => _api.get('/leagues/$league/predictions');
-  Future<Map<String, dynamic>> predict(int league, int fixture, String pick) =>
-      _api.post('/leagues/$league/predictions', {'fixture_id': fixture, 'pick': pick});
+
+  /// [Sprint 59 F1] The round to predict, and the round after a pick, through the generated model (`Predictions`).
+  Future<api.Predictions> predictions(int league) async => api.Predictions.fromJson(await _api.get('/leagues/$league/predictions'));
+  Future<api.Predictions> predict(int league, int fixture, String pick) async =>
+      api.Predictions.fromJson(await _api.post('/leagues/$league/predictions', {'fixture_id': fixture, 'pick': pick}));
 
   /// [Sprint 59 F1] The newspaper through the generated model (`Newspaper`).
   Future<api.Newspaper> newspaper(int league) async => api.Newspaper.fromJson(await _api.get('/leagues/$league/newspaper'));
@@ -68,9 +70,10 @@ class SocialRepository {
   Future<Map<String, dynamic>> decide(int league, int article, bool publish) =>
       _api.post('/leagues/$league/newspaper/articles/$article/decide', {'publish': publish});
   Future<api.GroupsAnswer> groups() async => api.GroupsAnswer.fromJson(await _api.get('/groups'));
-  Future<List<Map<String, dynamic>>> messages(int group) async => [
-    for (final m in ((await _api.get('/groups/$group/messages'))['messages'] as List<dynamic>? ?? const [])) m as Map<String, dynamic>,
-  ];
+
+  /// [Sprint 59 F1] A group's messages through the generated model (`ChatMessage`).
+  Future<List<api.ChatMessage>> messages(int group) async =>
+      JsonReader(await _api.get('/groups/$group/messages'), 'GroupMessages').list('messages', api.ChatMessage.fromJson);
   Future<void> say(int group, String body, {int? replyTo}) => _api.post('/groups/$group/messages', {'body': body, 'reply_to': ?replyTo});
   Future<void> read(int group) => _api.post('/groups/$group/read');
 }

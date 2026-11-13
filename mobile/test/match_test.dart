@@ -59,7 +59,15 @@ class FakeMatchRepository implements MatchRepository {
   Future<void> say(int id, String body) async => orders.add({'say': body});
   @override
   Future<MatchReport> report(int id, {required bool coach}) async => MatchReport.fromReport(json('report')).withMoments(
+    // [Sprint 59 F1] The recap in the server's shape (MatchRecap, every field it always sends).
     MatchReport.fromRecap({
+      'match_id': 77,
+      'competition': 'league',
+      'round': 5,
+      'home': {'id': 1, 'name': 'Arsenal', 'code': 'ARS', 'crest_url': '/crests/1.png'},
+      'away': {'id': 2, 'name': 'Chelsea', 'code': 'CHE', 'crest_url': '/crests/2.png'},
+      'man_of_the_match': null,
+      'shootout': null,
       'score': {'home': 1, 'away': 1},
       'result': 'draw',
       'side': 'home',
@@ -75,8 +83,28 @@ class FakeMatchRepository implements MatchRepository {
         },
       ],
       'stats': {
-        'home': {'possession': 52, 'shots': 13},
-        'away': {'possession': 48, 'shots': 14},
+        'home': {
+          'possession': 52,
+          'shots': 13,
+          'on_target': 5,
+          'big_chances': 2,
+          'corners': 6,
+          'fouls': 9,
+          'yellow': 1,
+          'red': 0,
+          'saves': 3,
+        },
+        'away': {
+          'possession': 48,
+          'shots': 14,
+          'on_target': 4,
+          'big_chances': 1,
+          'corners': 3,
+          'fouls': 11,
+          'yellow': 2,
+          'red': 0,
+          'saves': 4,
+        },
       },
       'best': {'home': <dynamic>[], 'away': <dynamic>[]},
     }),

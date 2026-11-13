@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_error.dart';
 import 'social_screens.dart';
 
 /// A chat on the screen: its messages (oldest first), a message on its way, and the last refusal.
-typedef ChatState = ({List<Map<String, dynamic>> messages, bool sending, String? error});
+typedef ChatState = ({List<api.ChatMessage> messages, bool sending, String? error});
 
 /// [Sprint 59 F5] A group's chat: the messages as the server lists them, and the coach's message sent once (a send
 /// while one is on its way is ignored), the text kept when it is refused. The screen draws [state] and calls the actions.

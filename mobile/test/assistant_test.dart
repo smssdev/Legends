@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/assistant/assistant.dart';
 import 'package:glm/l10n/app_localizations.dart';
@@ -19,9 +20,9 @@ class FakeAssistant implements AssistantRepository {
   final List<String> asked = [];
 
   @override
-  Future<Map<String, dynamic>> start(String page) async => json('assistant_start');
+  Future<api.AssistantStart> start(String page) async => api.AssistantStart.fromJson(json('assistant_start'));
   @override
-  Future<Map<String, dynamic>> ask(
+  Future<api.AssistantAnswer> ask(
     String question, {
     String? topic,
     required String page,
@@ -29,7 +30,7 @@ class FakeAssistant implements AssistantRepository {
     List<Map<String, String>> history = const [],
   }) async {
     asked.add('$question|$topic|$page|$leagueId');
-    return json('assistant_answer');
+    return api.AssistantAnswer.fromJson(json('assistant_answer'));
   }
 }
 

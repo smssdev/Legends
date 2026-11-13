@@ -55,7 +55,10 @@ class ChatGroupTest extends TestCase
         $this->deleteJson("/api/v1/groups/{$id}/messages/{$first['id']}")->assertForbidden();
         $reply = DB::table('chat_group_messages')->where('user_id', $omar->id)->value('id');
         $this->deleteJson("/api/v1/groups/{$id}/messages/{$reply}")->assertOk();
-        $this->assertTrue(collect($this->getJson("/api/v1/groups/{$id}/messages")->json('messages'))->firstWhere('id', $reply)['deleted']);
+        $this->assertTrue(collect($this->getJson("/api/v1/groups/{$id}/messages")
+            // [Sprint 59 F1] The fields the app reads through its generated model (ChatMessage in openapi.yaml).
+            ->assertJsonStructure(['messages' => ['*' => ['id', 'kind', 'deleted', 'body', 'user', 'reply_to', 'media_url', 'seconds', 'reactions', 'my_reaction', 'created_at']]])
+            ->json('messages'))->firstWhere('id', $reply)['deleted']);
         // A stranger sees nothing.
         $this->actingAs(User::factory()->create())->getJson("/api/v1/groups/{$id}")->assertNotFound();
         $this->postJson("/api/v1/groups/{$id}/messages", ['body' => 'hi'])->assertNotFound();

@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../api/gen/models.g.dart' as api;
+import '../../api/read.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../core/config.dart';
@@ -28,14 +30,15 @@ part 'sim_screens_split.dart';
 class SimClub {
   const SimClub({required this.id, required this.name, required this.code, this.league, this.strength, this.logo, this.color});
 
-  factory SimClub.fromJson(Map<String, dynamic> j) => SimClub(
-    id: j['id'] as int,
-    name: '${j['name'] ?? ''}',
-    code: '${j['code'] ?? ''}',
-    league: j['league_name'] as String?,
-    strength: (j['strength_cp'] as num?)?.toInt(),
-    logo: j['logo'] as String?,
-    color: _hex(j['color_primary']),
+  /// [Sprint 59 F1] From the generated model (`ClubSummary` in openapi.yaml).
+  factory SimClub.of(api.ClubSummary c) => SimClub(
+    id: c.id ?? 0,
+    name: c.name ?? '',
+    code: c.code ?? '',
+    league: c.leagueName,
+    strength: c.strengthCp,
+    logo: c.logo,
+    color: _hex(c.colorPrimary),
   );
 
   final int id;
@@ -60,7 +63,7 @@ class SimRepository {
   Future<List<SimClub>> clubs(String q) async {
     try {
       final r = await _api.dio.get<dynamic>('/sim/clubs', queryParameters: {if (q.trim().isNotEmpty) 'q': q.trim()});
-      return [for (final c in (r.data as List<dynamic>? ?? const [])) SimClub.fromJson(c as Map<String, dynamic>)];
+      return [for (final c in (r.data as List<dynamic>? ?? const [])) SimClub.of(api.ClubSummary.fromJson(c))];
     } catch (e) {
       throw ApiError.from(e);
     }
@@ -68,15 +71,19 @@ class SimRepository {
 
   /// A match against the computer (solo: the coach holds home), or against a friend (live: two seats, home here and
   /// away in the friend's link).
-  Future<({int id, String? home, String? away})> create({required SimClub me, required SimClub them, required bool friend}) async {
+  ///
+  /// [Sprint 59 F1] The match's id is a ULID (a string): read as an int, as it was, creating a match always failed.
+  Future<({String id, String? home, String? away})> create({required SimClub me, required SimClub them, required bool friend}) async {
     final j = await _api.post('/sim/matches', {
       'home_id': me.id,
       'away_id': them.id,
       'mode': friend ? 'live' : 'solo',
       'control': {'home': 'me', 'away': friend ? 'me' : 'cpu'},
     });
-    final seats = j['seats'] as Map<String, dynamic>?;
-    return (id: j['id'] as int, home: seats?['home'] as String?, away: seats?['away'] as String?);
+    // Only what the app needs of the match (MatchView): its id and the two seats.
+    final r = JsonReader(j, 'SimCreated');
+    final seats = r.objectOrNull('seats', api.MatchViewSeats.fromJson);
+    return (id: r.string('id'), home: seats?.home, away: seats?.away);
   }
 }
 

@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../api/gen/models.g.dart' as api;
+import '../../api/read.dart';
 import '../../core/api/api_error.dart';
 import '../../core/live/live_channels.dart';
 import '../../core/sounds.dart';

@@ -1,3 +1,5 @@
+import '../../api/gen/models.g.dart' as api;
+
 /// [Sprint 15 F3] The signed-in account, as `/auth/me` and the sign-in give it (only what the app uses).
 class Account {
   const Account({
@@ -11,15 +13,16 @@ class Account {
     this.guest = false,
   });
 
-  factory Account.fromJson(Map<String, dynamic> j) => Account(
-    id: j['id'] as int,
-    name: '${j['name'] ?? ''}',
-    username: '${j['username'] ?? ''}',
-    email: j['email'] as String?,
-    accountNo: j['account_no'] as int?,
-    avatarUrl: j['avatar_url'] as String?,
-    admin: j['role'] == 'admin',
-    guest: j['guest'] == true,
+  /// [Sprint 59 F1] From the generated model (`Account` in openapi.yaml).
+  factory Account.of(api.Account a) => Account(
+    id: a.id,
+    name: a.name,
+    username: a.username,
+    email: a.email,
+    accountNo: a.accountNo,
+    avatarUrl: a.avatarUrl,
+    admin: a.role == 'admin',
+    guest: a.guest ?? false,
   );
 
   final int id;

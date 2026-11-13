@@ -90,8 +90,12 @@ class JsonReader {
     return out;
   }
 
-  Map<String, T> map<T>(String f, T Function(Object? v) read) => _need(f, (v) => v is Map ? _entries(v, read) : null);
-  Map<String, T>? mapOrNull<T>(String f, T Function(Object? v) read) => _may(f, (v) => v is Map ? _entries(v, read) : null);
+  Map<String, T> map<T>(String f, T Function(Object? v) read) => _need(f, (v) => _asMap(v, read));
+  Map<String, T>? mapOrNull<T>(String f, T Function(Object? v) read) => _may(f, (v) => _asMap(v, read));
+
+  /// [Sprint 59 F1] PHP writes an empty map as `[]` (a chat message with no reactions), so an empty list is an empty map.
+  static Map<String, T>? _asMap<T>(Object? v, T Function(Object? v) read) =>
+      v is Map ? _entries(v, read) : (v is List && v.isEmpty ? <String, T>{} : null);
 
   static Map<String, T> _entries<T>(Map<dynamic, dynamic> v, T Function(Object? v) read) => {
     for (final e in v.entries) '${e.key}': read(e.value),

@@ -47,13 +47,15 @@ class FakeExtras implements ExtrasRepository {
     if (spied)
       'report': {
         'club': {'id': 160, 'name': 'Burnley'},
+        'at': '2026-11-08T18:00:00Z',
         'formation': '4-4-2',
         'fitness': 93,
         'form': ['W', 'L'],
-        'tactics': {'plan': 'counter', 'marking': 'zone'},
+        'tactics': {'plan': 'counter', 'marking': 'zone', 'tackling': 1, 'trap': 0},
         'starters': [
           {'id': 1, 'name': 'Zian Flemming', 'position': 'ST', 'line': 'att', 'overall': 77},
         ],
+        'bench': <dynamic>[],
       },
   });
   @override

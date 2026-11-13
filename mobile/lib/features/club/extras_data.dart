@@ -120,16 +120,15 @@ class Specialist {
 class SpyView {
   const SpyView({required this.cost, required this.currency, this.opponent, this.lockAt, this.report});
 
-  /// [Sprint 59 F1] The spy (`SpyView`), read through its generated model; its report stays a map for the screen.
+  /// [Sprint 59 F1] The spy and his report (`SpyView`, `SpyViewReport`), read through the generated model.
   factory SpyView.fromJson(Object? json) {
     final v = api.SpyView.fromJson(json);
-    final raw = json is Map<String, dynamic> ? json : const <String, dynamic>{};
     return SpyView(
       cost: v.cost,
       currency: v.currency,
       opponent: v.fixture?.opponent,
       lockAt: DateTime.tryParse(v.fixture?.lockAt ?? ''),
-      report: raw['report'] is Map<String, dynamic> ? raw['report'] as Map<String, dynamic> : null,
+      report: v.report,
     );
   }
 
@@ -137,7 +136,7 @@ class SpyView {
   final String currency;
   final String? opponent;
   final DateTime? lockAt;
-  final Map<String, dynamic>? report;
+  final api.SpyViewReport? report;
 }
 
 class Quest {
@@ -217,10 +216,7 @@ class ExtrasRepository {
   Future<void> resign(int league) => _api.post('/leagues/$league/resign');
 
   /// What finishing a thing now costs, from the wallet's price list.
-  Future<Map<String, int>> prices() async => {
-    for (final e in (((await _api.get('/wallet'))['prices'] as Map<dynamic, dynamic>?) ?? const {}).entries)
-      '${e.key}': (e.value as num).toInt(),
-  };
+  Future<Map<String, int>> prices() async => api.WalletView.fromJson(await _api.get('/wallet')).prices;
 }
 
 final extrasRepositoryProvider = Provider<ExtrasRepository>((ref) => ExtrasRepository(ref.watch(apiProvider)));

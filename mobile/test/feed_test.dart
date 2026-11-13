@@ -58,7 +58,17 @@ void main() {
     'score': {'home': 1, 'away': 0},
     'events': const <dynamic>[],
     'moment': {'kind': 'quiet', 'ms': 3000},
-    'story': ?story,
+    // [Sprint 59 F1] The fields the server always writes (MomentStory starts every minute with them).
+    if (story != null)
+      'story': {
+        'minute': "30'",
+        'items': const <dynamic>[],
+        'lines': const <dynamic>[],
+        'side': 'home',
+        'goal': false,
+        'data': const <String, dynamic>{},
+        ...story,
+      },
   });
   const cast = <String, CastMember>{
     '9': (name: 'Salah', no: 11, side: 'home'),

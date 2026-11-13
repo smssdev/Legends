@@ -1,11 +1,59 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/core/api/api_client.dart';
 import 'package:glm/core/api/api_error.dart';
+import 'package:glm/core/storage/token_store.dart';
 import 'package:glm/features/sim/sim_screens.dart';
 
 import 'screens_test.dart' show app;
 
 /// [Sprint 47] The simulator in the app: the two modes, the teams from the server, the gold button, the face-off.
+/// The server's answer to one request, whatever it is.
+class _Answer implements HttpClientAdapter {
+  _Answer(this.status, this.body);
+
+  final int status;
+  final Object body;
+  final List<String> asked = [];
+
+  @override
+  Future<ResponseBody> fetch(RequestOptions options, Stream<Uint8List>? requestStream, Future<void>? cancelFuture) async {
+    asked.add('${options.method} ${options.path}');
+    return ResponseBody.fromString(
+      jsonEncode(body),
+      status,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
 void main() {
+  test('a match made here: its id is the server\'s ULID (a string), and the two seats of a match with a friend', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final answer = _Answer(201, {
+      'id': '01JC8Z6K9Q4V2X7M3N5P8R1T0W',
+      'seats': {'home': 'h-seat', 'away': 'a-seat'},
+      'teams': <String, dynamic>{},
+    });
+    final repo = SimRepository(ApiClient(TokenStore(), dio: Dio()..httpClientAdapter = answer));
+    final m = await repo.create(
+      me: const SimClub(id: 1, name: 'Liverpool', code: 'LIV'),
+      them: const SimClub(id: 2, name: 'Arsenal', code: 'ARS'),
+      friend: true,
+    );
+    expect(answer.asked, ['POST /sim/matches']);
+    expect((m.id, m.home, m.away), ('01JC8Z6K9Q4V2X7M3N5P8R1T0W', 'h-seat', 'a-seat'));
+  });
+
   const clubs = [SimClub(id: 1, name: 'Liverpool', code: 'LIV', strength: 86), SimClub(id: 2, name: 'Arsenal', code: 'ARS', strength: 85)];
 
   testWidgets('the setup: against the computer by default, a friend at a tap; the clubs to pick', (t) async {

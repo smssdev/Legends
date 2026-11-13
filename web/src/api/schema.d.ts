@@ -3739,9 +3739,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
+                        "application/json": components["schemas"]["Predictions"];
                     };
                 };
             };
@@ -3773,9 +3771,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
+                        "application/json": components["schemas"]["Predictions"];
                     };
                 };
                 409: components["responses"]["Error"];
@@ -6666,60 +6662,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            started: boolean;
-                            finished: boolean;
-                            tick: number;
-                            server_now: number;
-                            next_at: number | null;
-                            gap: boolean;
-                            missed: {
-                                tick: number;
-                                /** @description The minute as shown (45+2 is 47) */
-                                minute: number;
-                                events: {
-                                    [key: string]: unknown;
-                                }[];
-                            }[];
-                            /** @description [E8.5] After a gap: the minutes missed and their goals and red cards (null without a gap) */
-                            summary?: {
-                                from_tick: number;
-                                to_tick: number;
-                                minutes: number;
-                                goals: {
-                                    minute: number;
-                                    /** @enum {string} */
-                                    team: "home" | "away";
-                                    scorer: number | null;
-                                }[];
-                                reds: {
-                                    minute: number;
-                                    /** @enum {string} */
-                                    team: "home" | "away";
-                                    player: number | null;
-                                }[];
-                            } | null;
-                            /** @description Each with at, match_time and server_ts [E8.3], and its story (MomentStory, Sprint 57 B2) */
-                            ticks: {
-                                [key: string]: unknown;
-                            }[];
-                            /** @description [E8.7] Under load (degradation level 3): poll no more often than this (ms). Null otherwise */
-                            poll_ms?: number | null;
-                            readings: components["schemas"]["MatchReading"][];
-                            /** @description The latest reactions [X24] */
-                            reactions?: components["schemas"]["BroadcastReaction"][];
-                            /** @description [UP17] The break under way: its end (ms), the coaches ready, whether it is a window, and each side's injured player waiting for his replacement */
-                            pause?: {
-                                until?: number;
-                                ready?: ("home" | "away")[];
-                                window?: boolean;
-                                injured?: {
-                                    [key: string]: number;
-                                };
-                            } | null;
-                            /** @description The side chat, the latest 50 [X24] */
-                            chat?: components["schemas"]["BroadcastChat"][];
-                        };
+                        "application/json": components["schemas"]["MatchLive"];
                     };
                 };
                 404: components["responses"]["Error"];
@@ -16065,6 +16008,8 @@ export interface components {
             strength_cp?: number;
             color_primary?: string;
             color_secondary?: string;
+            /** @description [UP3] Its real logo where it has one */
+            logo?: string | null;
         };
         Tactics: {
             /** @enum {string} */
@@ -16146,9 +16091,11 @@ export interface components {
             head: components["schemas"]["StoryText"];
             who: components["schemas"]["StoryText"];
             sub: components["schemas"]["StoryText"];
-            /** @description What the lower bar says until the key moment (head, who, sub as StoryText) */
+            /** @description What the lower bar says until the key moment */
             pre: {
-                [key: string]: unknown;
+                head?: components["schemas"]["StoryText"];
+                who?: components["schemas"]["StoryText"];
+                sub?: components["schemas"]["StoryText"];
             } | null;
             /** @description The timeline cards once the scene has played */
             items: {
@@ -16241,9 +16188,8 @@ export interface components {
                 home?: string | null;
                 away?: string | null;
             };
-            timeline: {
-                [key: string]: unknown;
-            }[];
+            /** @description The match's events, each with its minute and period */
+            timeline: components["schemas"]["LiveEvent"][];
             /** @description The readings during the match (a report stored before they existed has none: optional) */
             readings?: components["schemas"]["MatchReading"][];
         };
@@ -16609,7 +16555,10 @@ export interface components {
              */
             you?: "home" | "away" | null;
             /** @description Only in the answer to a live POST /sim/matches: {home, away} seats; the maker keeps home and sends away to the friend */
-            seats?: Record<string, never>;
+            seats?: {
+                home?: string;
+                away?: string;
+            };
             /** @description Always true for solo matches */
             started?: boolean;
             tick?: number;
@@ -16666,6 +16615,154 @@ export interface components {
             h?: number | null;
             /** @description [Sprint 31 D1] The officials: the referee, the far assistant (outside the far touchline, right half) and the near one (outside the near touchline, left half). They follow the ball only. Older recordings have none */
             r?: number[][];
+        };
+        /** @description [Sprint 59 F1] GET /matches/{match}/live: like the simulator's live sync, with the missed minutes, the pause and your readings */
+        MatchLive: {
+            started: boolean;
+            finished: boolean;
+            tick: number;
+            server_now: number;
+            next_at: number | null;
+            gap: boolean;
+            missed: {
+                tick: number;
+                /** @description The minute as shown (45+2 is 47) */
+                minute: number;
+                events: components["schemas"]["LiveEvent"][];
+            }[];
+            /** @description [E8.5] After a gap: the minutes missed and their goals and red cards (null without a gap) */
+            summary?: {
+                from_tick: number;
+                to_tick: number;
+                minutes: number;
+                goals: {
+                    minute: number;
+                    /** @enum {string} */
+                    team: "home" | "away";
+                    scorer: number | null;
+                }[];
+                reds: {
+                    minute: number;
+                    /** @enum {string} */
+                    team: "home" | "away";
+                    player: number | null;
+                }[];
+            } | null;
+            /** @description Each with at, match_time and server_ts [E8.3], and its story (MomentStory, Sprint 57 B2) */
+            ticks: components["schemas"]["LiveMinute"][];
+            /** @description [E8.7] Under load (degradation level 3): poll no more often than this (ms). Null otherwise */
+            poll_ms?: number | null;
+            readings: components["schemas"]["MatchReading"][];
+            /** @description The latest reactions [X24] */
+            reactions?: components["schemas"]["BroadcastReaction"][];
+            /** @description [UP17] The break under way: its end (ms), the coaches ready, whether it is a window, and each side's injured player waiting for his replacement */
+            pause?: {
+                until?: number;
+                ready?: ("home" | "away")[];
+                window?: boolean;
+                injured?: {
+                    [key: string]: number;
+                };
+            } | null;
+            /** @description The side chat, the latest 50 [X24] */
+            chat?: components["schemas"]["BroadcastChat"][];
+        };
+        /** @description [UP12, Sprint 59 F1] The round's league matches to predict (App\League\Predictions::round); with no round ahead, round null and no matches */
+        Predictions: {
+            round: number | null;
+            /** @description What a right pick pays my club */
+            reward?: number;
+            /** @description [Sprint 21 E4.4] How many coaches have predicted this round */
+            predictors?: number;
+            matches: {
+                fixture_id: number;
+                status: string;
+                /** @description Picks open until the lineups lock */
+                open: boolean;
+                home: components["schemas"]["PredictionClub"];
+                away: components["schemas"]["PredictionClub"];
+                /** @enum {string|null} */
+                mine: "home" | "draw" | "away" | null;
+                split: {
+                    home: number;
+                    draw: number;
+                    away: number;
+                };
+            }[];
+        };
+        PredictionClub: {
+            id: number;
+            name: string;
+            code: string;
+        };
+        /** @description [Sprint 59 F1] One minute as the server sends it (Simulator::shown: the engine's minute with its commentary, frames, teams, moment, voice and story); here, on the channel match.{id} (MatchMinute's live) and in the simulator. Hidden tactics only for your own side */
+        LiveMinute: {
+            tick: number;
+            /** @description 1 or 2 */
+            period?: number;
+            /** @description The clock as shown: [minute] or [minute, added] (45+2 is [45, 2]); a minute saved long ago may be a bare integer */
+            minute?: unknown;
+            score: {
+                home: number;
+                away: number;
+            };
+            events: components["schemas"]["LiveEvent"][];
+            danger?: number;
+            finished?: boolean;
+            teams?: {
+                home?: components["schemas"]["MatchViewTeam"];
+                away?: components["schemas"]["MatchViewTeam"];
+            };
+            frames?: components["schemas"]["Keyframe"][];
+            moment?: components["schemas"]["LiveMoment"];
+            /** @description The commentator's line (a place in voice.json); null under load [E8.7] */
+            voice?: {
+                /** @description Where a missed shot went: wide, over or post */
+                how?: string | null;
+            } | null;
+            /** @description A coach's window opens after this minute */
+            window?: boolean;
+            /** @description Each coach's mood after it (App\Characters\Mood) */
+            moods?: {
+                [key: string]: string;
+            };
+            /** @description [Sprint 50 M15] This minute's danger (+ home, - away) and the home side's share of the last minutes */
+            momentum?: {
+                now?: number;
+                home_pct?: number;
+            };
+            /** @description When it starts on the server clock (ms) */
+            at?: number;
+            match_time?: number;
+            server_ts?: number;
+            story?: components["schemas"]["MomentStory"];
+        };
+        /** @description [Sprint 59 F1] One event of a minute (goal, shot, card, sub, injury, penalty, period...): its own fields by its type, and its commentary line */
+        LiveEvent: {
+            type: string;
+            /** @enum {string|null} */
+            team?: "home" | "away" | null;
+            /** @description The commentary line */
+            text?: string | null;
+            /** @description A card's colour (yellow or red) */
+            color?: string | null;
+            /** @description In a report's timeline: its clock, [minute] or [minute, added] (a bare integer in an old one) */
+            minute?: unknown;
+            /** @description In a report's timeline */
+            period?: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description The minute's shot and its length on the broadcast (MomentClock::moment) */
+        LiveMoment: {
+            kind: string;
+            ms: number;
+            /** @description Only its card */
+            brief?: boolean;
+            /** @description How a card or a foul is told [Sprint 42] */
+            drama?: string | null;
+            /** @description Why VAR ruled the goal out: offside or foul */
+            var?: string | null;
         };
         LiveSync: {
             started?: boolean;

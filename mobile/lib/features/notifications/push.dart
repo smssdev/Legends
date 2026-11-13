@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 import '../inbox/inbox_data.dart';
 
@@ -40,15 +41,16 @@ class PushService {
   Future<void> start() async {
     if (_ready) return;
     try {
-      final f = (await _api.get('/app'))['firebase'] as Map<String, dynamic>?;
+      // [Sprint 59 F1] The server's Firebase settings through the generated model (`AppAnswer`).
+      final f = api.AppAnswer.fromJson(await _api.get('/app')).firebase;
       if (f == null) return;
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp(
           options: FirebaseOptions(
-            apiKey: '${f['api_key']}',
-            appId: '${f['app_id']}',
-            messagingSenderId: '${f['sender_id']}',
-            projectId: '${f['project_id']}',
+            apiKey: f.apiKey ?? '',
+            appId: f.appId ?? '',
+            messagingSenderId: f.senderId ?? '',
+            projectId: f.projectId ?? '',
           ),
         );
       }

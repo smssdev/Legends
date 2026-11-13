@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 import 'package:glm/core/api/api_error.dart';
 import 'package:glm/core/api/intents.dart';
 import 'package:glm/features/club/lineup_controller.dart';
@@ -85,8 +86,8 @@ class FakeChat extends Fake implements SocialRepository {
   int failures = 0;
 
   @override
-  Future<List<Map<String, dynamic>>> messages(int group) async => [
-    for (final (i, b) in said.indexed) {'id': i + 1, 'body': b},
+  Future<List<api.ChatMessage>> messages(int group) async => [
+    for (final (i, b) in said.indexed) api.ChatMessage(id: i + 1, body: b, kind: 'text', deleted: false, createdAt: '2026-11-06T08:00:00Z'),
   ];
 
   @override
@@ -215,7 +216,7 @@ void main() {
       expect(await chat.send('مرحبا'), isFalse);
       expect(sub.read().error, 'مرفوض');
       expect(await chat.send('مرحبا'), isTrue);
-      expect(sub.read().messages.single['body'], 'مرحبا');
+      expect(sub.read().messages.single.body, 'مرحبا');
       expect(sub.read().sending, isFalse);
       expect(sub.read().error, isNull);
     });

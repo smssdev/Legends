@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import '../../api/gen/models.g.dart' as api;
+
 /// [Sprint 17 F3] RenderFrames from Keyframes: the same rule as the web (`web/src/match/frames.ts`) and Unity
 /// (`MatchScene.Sample`), checked against `docs/api/frame-golden.json` (test/frames_test.dart). A minute's Keyframes
 /// are evenly spaced over its scene; between two of them each coordinate follows a cubic Hermite curve that never
@@ -9,6 +11,18 @@ typedef Point2 = (double, double);
 class Keyframe {
   const Keyframe({required this.ball, required this.players, this.officials});
 
+  /// [Sprint 59 F1] A live minute's Keyframe through its generated model (`Keyframe` in openapi.yaml).
+  factory Keyframe.of(api.Keyframe k) {
+    Point2 at(Object? v) => v is List<dynamic> && v.length > 1 ? ((v[0] as num).toDouble(), (v[1] as num).toDouble()) : (0, 0);
+    double ball(int i) => i < k.b.length ? k.b[i].toDouble() : 0;
+    return Keyframe(
+      ball: (ball(0), ball(1), ball(2)),
+      players: {for (final e in k.p.entries) e.key: at(e.value)},
+      officials: k.r?.map(at).toList(),
+    );
+  }
+
+  /// A recorded Keyframe (docs/api/frame-golden.json, without its place `t`).
   factory Keyframe.fromJson(Map<String, dynamic> j) {
     final b = (j['b'] as List<dynamic>).map((v) => (v as num).toDouble()).toList();
     return Keyframe(

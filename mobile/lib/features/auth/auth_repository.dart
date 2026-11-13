@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 import '../../core/config.dart';
 import '../../core/storage/token_store.dart';
@@ -15,9 +16,8 @@ class AuthRepository {
 
   Future<Account?> current() async {
     if (await _tokens.read() == null) return null;
-    final data = await _api.get('/auth/me');
-    final user = data['user'];
-    return user is Map<String, dynamic> ? Account.fromJson(user) : null;
+    final user = api.AccountAnswer.fromJson(await _api.get('/auth/me')).user;
+    return user == null ? null : Account.of(user);
   }
 
   Future<Account> signIn(String login, String password) async {
@@ -47,7 +47,7 @@ class AuthRepository {
       if (email != null && email.trim().isNotEmpty) 'email': email.trim(),
       'password': password,
     });
-    return Account.fromJson(data['user'] as Map<String, dynamic>);
+    return Account.of(api.AccountAnswer.fromJson(data).user!);
   }
 
   Future<void> forgot(String email) => _api.post('/auth/forgot-password', {'email': email.trim()});
@@ -62,8 +62,9 @@ class AuthRepository {
   }
 
   Future<Account> _keep(Map<String, dynamic> data) async {
-    await _tokens.write(data['token'] as String);
-    return Account.fromJson(data['user'] as Map<String, dynamic>);
+    final answer = api.AccountTokenAnswer.fromJson(data);
+    await _tokens.write(answer.token!);
+    return Account.of(answer.user);
   }
 }
 

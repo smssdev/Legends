@@ -96,7 +96,10 @@ class SpyScreen extends ConsumerWidget {
           final p = context.palette;
           final r = s.report;
           final cost = s.currency == 'coins' ? l.coinsWord(s.cost) : money(context, s.cost);
-          final tactics = (r?['tactics'] as Map<dynamic, dynamic>?) ?? const {};
+          final t = r?.tactics;
+          final tactics = t == null
+              ? const <String, Object>{}
+              : {'plan': t.plan, 'marking': t.marking, 'tackling': t.tackling, 'trap': t.trap};
           return ListView(
             padding: const EdgeInsets.all(12),
             children: [
@@ -133,18 +136,15 @@ class SpyScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        l.spyReportOn('${(r['club'] as Map<dynamic, dynamic>?)?['name'] ?? s.opponent}'),
-                        style: context.text.titleMedium,
-                      ),
+                      Text(l.spyReportOn(r.club.name), style: context.text.titleMedium),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 16,
                         runSpacing: 6,
                         children: [
-                          Text('${l.formation}: ${r['formation'] ?? '—'}'),
-                          if (r['fitness'] != null) Text('${l.fitness}: ${r['fitness']}%'),
-                          Text('${l.form}: ${((r['form'] as List<dynamic>?) ?? const []).join(' ')}', textDirection: TextDirection.ltr),
+                          Text('${l.formation}: ${r.formation}'),
+                          if (r.fitness != null) Text('${l.fitness}: ${r.fitness}%'),
+                          Text('${l.form}: ${r.form.join(' ')}', textDirection: TextDirection.ltr),
                         ],
                       ),
                       if (tactics.isNotEmpty) ...[
@@ -156,18 +156,18 @@ class SpyScreen extends ConsumerWidget {
                         ),
                       ],
                       const SizedBox(height: 10),
-                      for (final pl in (r['starters'] as List<dynamic>? ?? const []))
+                      for (final pl in r.starters)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 3),
                           child: Row(
                             children: [
-                              Container(width: 8, height: 18, color: lineColor('${(pl as Map<dynamic, dynamic>)['line']}').bg),
+                              Container(width: 8, height: 18, color: lineColor(pl.line).bg),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: Text('${pl['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
+                                child: Text(pl.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                               ),
                               Text(
-                                '${pl['position']} ${pl['overall']}',
+                                '${pl.position} ${pl.overall}',
                                 textDirection: TextDirection.ltr,
                                 style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
                               ),

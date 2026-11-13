@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 
 /// [Sprint 15 F1] Whether this app may still talk to the server: `/health` says the oldest app version it accepts
@@ -8,8 +9,8 @@ import '../../core/api/api_client.dart';
 final updateRequiredProvider = FutureProvider<bool>((ref) async {
   final info = await PackageInfo.fromPlatform();
   try {
-    final health = await ref.read(apiProvider).get('/health');
-    return olderThan(info.version, '${health['min_app_version'] ?? '0.0.0'}');
+    final health = api.HealthAnswer.fromJson(await ref.read(apiProvider).get('/health'));
+    return olderThan(info.version, health.minAppVersion);
   } catch (_) {
     // Offline: the screens say so themselves; never block on the check.
     return false;

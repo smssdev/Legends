@@ -31,11 +31,11 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
   // [Sprint 59 F5] The messages and the send live in ChatController.
   ChatController get _chat => ref.read(chatControllerProvider(widget.groupId).notifier);
   late ChatState _state;
-  List<Map<String, dynamic>> get _messages => _state.messages;
+  List<api.ChatMessage> get _messages => _state.messages;
   bool get _sending => _state.sending;
   final _text = TextEditingController();
   Timer? _poll;
-  Map<String, dynamic>? _replyTo;
+  api.ChatMessage? _replyTo;
 
   /// [Sprint 53 F2] The group's channel: a new message (or one changed) comes at once, and the 4-second poll runs only
   /// while the channel is down; with it, a check every 30 seconds as a safety net.
@@ -105,7 +105,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
   }
 
   Future<void> _send() async {
-    final sent = await _chat.send(_text.text, replyTo: _replyTo?['id'] as int?);
+    final sent = await _chat.send(_text.text, replyTo: _replyTo?.id);
     if (!mounted) return;
     if (sent) {
       _text.clear();
@@ -115,9 +115,9 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
     }
   }
 
-  Future<void> _react(Map<String, dynamic> m, String key) async {
+  Future<void> _react(api.ChatMessage m, String key) async {
     try {
-      await ref.read(consoleRepositoryProvider).react(widget.groupId, m['id'] as int, key);
+      await ref.read(consoleRepositoryProvider).react(widget.groupId, m.id, key);
       unawaited(HapticFeedback.selectionClick());
       await _load();
     } on ApiError catch (e) {
@@ -125,7 +125,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
     }
   }
 
-  Future<void> _actions(Map<String, dynamic> m) async {
+  Future<void> _actions(api.ChatMessage m) async {
     final l = L.of(context);
     final pick = await showModalBottomSheet<String>(
       context: context,
@@ -142,7 +142,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                   for (final e in _reactions.entries)
                     Semantics(
                       button: true,
-                      selected: m['my_reaction'] == e.key,
+                      selected: m.myReaction == e.key,
                       label: {'ball': l.reactBall, 'fire': l.reactFire, 'cup': l.reactCup, 'laugh': l.reactLaugh}[e.key],
                       child: InkResponse(
                         onTap: () => Navigator.pop(ctx, e.key),
@@ -153,7 +153,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: m['my_reaction'] == e.key ? ctx.palette.brand : ctx.palette.surfaceRaised,
+                            color: m.myReaction == e.key ? ctx.palette.brand : ctx.palette.surfaceRaised,
                           ),
                           child: Text(e.value, style: const TextStyle(fontSize: 26)),
                         ),
@@ -187,10 +187,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
             padding: const EdgeInsets.all(12),
             children: [
               for (final m in _messages.reversed)
-                if (m['kind'] == 'note')
-                  const SizedBox.shrink()
-                else
-                  _bubble(context, l, p, m, mine: (m['user'] as Map<dynamic, dynamic>?)?['id'] == me),
+                if (m.kind == 'note') const SizedBox.shrink() else _bubble(context, l, p, m, mine: m.user?.id == me),
             ],
           ),
         ),
@@ -207,7 +204,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
               children: [
                 Expanded(
                   child: Text(
-                    l.replyingTo('${_replyTo!['body'] ?? ''}'),
+                    l.replyingTo(_replyTo!.body),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(color: p.textSoft, fontSize: 12),
@@ -297,9 +294,9 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
     );
   }
 
-  Widget _bubble(BuildContext context, L l, GlmPalette p, Map<String, dynamic> m, {required bool mine}) {
-    final reactions = ((m['reactions'] as Map<dynamic, dynamic>?) ?? const {}).entries.where((e) => (e.value as num) > 0).toList();
-    final reply = m['reply_to'] as Map<dynamic, dynamic>?;
+  Widget _bubble(BuildContext context, L l, GlmPalette p, api.ChatMessage m, {required bool mine}) {
+    final reactions = (m.reactions ?? const {}).entries.where((e) => e.value > 0).toList();
+    final reply = m.replyTo;
     final bubble = Container(
       margin: EdgeInsets.only(bottom: reactions.isEmpty ? 6 : 16),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -314,7 +311,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
         children: [
           if (!mine)
             Text(
-              '${(m['user'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
+              m.user?.name ?? '',
               style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12),
             ),
           if (reply != null)
@@ -325,26 +322,26 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                 border: BorderDirectional(start: BorderSide(color: p.brandLight, width: 2)),
               ),
               child: Text(
-                '${reply['body'] ?? ''}',
+                reply.body,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: p.textSoft, fontSize: 11),
               ),
             ),
-          if (m['deleted'] != true && m['kind'] == 'image')
-            _GroupImage(path: '/groups/${widget.groupId}/media/${m['id']}')
-          else if (m['deleted'] != true && m['kind'] == 'audio')
-            _GroupVoice(path: '/groups/${widget.groupId}/media/${m['id']}', seconds: m['seconds'] as int? ?? 0)
+          if (!m.deleted && m.kind == 'image')
+            _GroupImage(path: '/groups/${widget.groupId}/media/${m.id}')
+          else if (!m.deleted && m.kind == 'audio')
+            _GroupVoice(path: '/groups/${widget.groupId}/media/${m.id}', seconds: m.seconds ?? 0)
           else
             Text(
-              m['deleted'] == true
+              m.deleted
                   ? l.messageDeleted
-                  : m['kind'] == 'text'
-                  ? '${m['body'] ?? ''}'
+                  : m.kind == 'text'
+                  ? m.body
                   : l.mediaOnWeb,
-              style: TextStyle(fontStyle: m['deleted'] == true || m['kind'] != 'text' ? FontStyle.italic : null),
+              style: TextStyle(fontStyle: m.deleted || m.kind != 'text' ? FontStyle.italic : null),
             ),
-          if (m['deleted'] != true && m['kind'] == 'image' && (m['body'] ?? '') != '') Text('${m['body']}'),
+          if (!m.deleted && m.kind == 'image' && m.body != '') Text(m.body),
         ],
       ),
     );
@@ -364,7 +361,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                     margin: const EdgeInsetsDirectional.only(start: 3),
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     decoration: BoxDecoration(
-                      color: m['my_reaction'] == e.key ? p.brand : p.surfaceRaised,
+                      color: m.myReaction == e.key ? p.brand : p.surfaceRaised,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text('${_reactions[e.key] ?? ''} ${e.value}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
@@ -378,8 +375,8 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
     return Align(
       alignment: mine ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
       child: Dismissible(
-        key: ValueKey('m${m['id']}'),
-        direction: m['deleted'] == true ? DismissDirection.none : DismissDirection.startToEnd,
+        key: ValueKey('m${m.id}'),
+        direction: m.deleted ? DismissDirection.none : DismissDirection.startToEnd,
         confirmDismiss: (_) async {
           unawaited(HapticFeedback.selectionClick());
           setState(() => _replyTo = m);
@@ -389,7 +386,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
           alignment: AlignmentDirectional.centerStart,
           child: Icon(Icons.reply_rounded, color: p.brandLight),
         ),
-        child: GestureDetector(onLongPress: m['deleted'] == true ? null : () => _actions(m), child: withReactions),
+        child: GestureDetector(onLongPress: m.deleted ? null : () => _actions(m), child: withReactions),
       ),
     );
   }

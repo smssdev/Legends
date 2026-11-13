@@ -60,9 +60,11 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
 
   /// [Sprint 53 F2] A minute pushed whole (App\Events\MatchMinute's `live`): told as if the poll had brought it.
   void _pushed(Map<String, dynamic> e) {
-    final raw = e['live'];
-    if (!mounted || _finished || raw is! Map<String, dynamic>) return;
-    final t = LiveTick.fromJson(raw);
+    // [Sprint 59 F1] The event's minute through its generated model (`LiveMinute`); one that does not read is left to the poll.
+    final r = JsonReader(e, 'MatchMinute');
+    final live = r.objectOrNull('live', api.LiveMinute.fromJson);
+    if (!mounted || _finished || live == null) return;
+    final t = LiveTick.of(live);
     if (t.tick <= _tick) return;
     // A minute missing in between (a message lost): the poll brings everything after the last one told.
     if (t.tick > _tick + 1) {
@@ -76,7 +78,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
           finished: t.finished,
           tick: t.tick,
           serverNow: DateTime.now().millisecondsSinceEpoch + _offset,
-          nextAt: (e['next_at'] as num?)?.toInt(),
+          nextAt: r.intOrNull('next_at'),
           ticks: [t],
           pause: _pause,
           chat: _chat,
@@ -92,20 +94,15 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   }
 
   void _pushedChat(Map<String, dynamic> e) {
-    final c = e['item'];
-    if (!mounted || c is! Map || _chat.any((x) => x.id == c['id'])) return;
-    setState(
-      () =>
-          _chat = [..._chat, (id: c['id'] as int, who: '${c['who']}', body: '${c['body']}', side: c['side'] as String?)].take(50).toList(),
-    );
+    final c = JsonReader(e, 'MatchSocialPosted').objectOrNull('item', api.BroadcastChat.fromJson);
+    if (!mounted || c == null || _chat.any((x) => x.id == c.id)) return;
+    setState(() => _chat = [..._chat, LiveSync.chatOf(c)].take(50).toList());
   }
 
   void _pushedReaction(Map<String, dynamic> e) {
-    final r = e['item'];
-    if (!mounted || r is! Map || _reactions.any((x) => x.id == r['id'])) return;
-    setState(
-      () => _reactions = [..._reactions, (id: r['id'] as int, who: '${r['who']}', key: '${r['key']}', target: r['target'] as String?)],
-    );
+    final r = JsonReader(e, 'MatchSocialPosted').objectOrNull('item', api.BroadcastReaction.fromJson);
+    if (!mounted || r == null || _reactions.any((x) => x.id == r.id)) return;
+    setState(() => _reactions = [..._reactions, LiveSync.reactionOf(r)]);
   }
 
   @override
