@@ -32,11 +32,11 @@ class FakeSocial implements SocialRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> predictions(int league) async => json('predictions');
+  Future<api.Predictions> predictions(int league) async => api.Predictions.fromJson(json('predictions'));
   @override
-  Future<Map<String, dynamic>> predict(int league, int fixture, String pick) async {
+  Future<api.Predictions> predict(int league, int fixture, String pick) async {
     sent.add('predict $fixture $pick');
-    return json('predictions');
+    return api.Predictions.fromJson(json('predictions'));
   }
 
   @override

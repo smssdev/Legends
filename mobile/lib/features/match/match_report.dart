@@ -29,15 +29,9 @@ class MatchReport {
       motm: r.manOfTheMatch?.name,
       stats: {'home': r.stats.home, 'away': r.stats.away},
       moments: [
-        for (final t in r.timeline.whereType<Map<String, dynamic>>())
-          if (t['type'] case 'goal' || 'card' || 'sub' || 'injury' || 'penalty')
-            MatchEvent.fromJson(
-              t,
-              minute: ((t['minute'] is List<dynamic> ? (t['minute'] as List<dynamic>)[0] : t['minute']) as num? ?? 0).toInt(),
-              added: t['minute'] is List<dynamic> && (t['minute'] as List<dynamic>).length > 1
-                  ? ((t['minute'] as List<dynamic>)[1] as num).toInt()
-                  : 0,
-            ),
+        for (final t in r.timeline)
+          if (t.type case 'goal' || 'card' || 'sub' || 'injury' || 'penalty')
+            MatchEvent.of(t, minute: clockOf(t.minute).$1, added: clockOf(t.minute).$2),
       ],
       ratings: {
         'home': [for (final p in r.ratings.home) (name: p.name, rating: p.rating)],
@@ -46,31 +40,22 @@ class MatchReport {
     );
   }
 
-  factory MatchReport.fromRecap(Map<String, dynamic> j) => MatchReport(
-    score: _score(j['score']),
-    result: j['result'] as String?,
-    side: j['side'] as String?,
-    motm: j['man_of_the_match'] is Map<dynamic, dynamic> ? '${(j['man_of_the_match'] as Map<dynamic, dynamic>)['name'] ?? ''}' : null,
-    stats: _stats(j['stats']),
-    moments: [
-      for (final m in (j['moments'] as List<dynamic>? ?? const []))
-        MatchEvent(
-          type: '${(m as Map<dynamic, dynamic>)['type']}',
-          team: m['team'] as String?,
-          minute: (m['minute'] as num?)?.toInt() ?? 0,
-          color: m['color'] as String?,
-          text: _moment(m),
-          raw: Map<String, dynamic>.from(m),
-        ),
-    ],
-    ratings: {
-      for (final side in ['home', 'away'])
-        side: [
-          for (final r in ((j['best'] as Map<dynamic, dynamic>?)?[side] as List<dynamic>? ?? const []))
-            (name: '${(r as Map<dynamic, dynamic>)['name']}', rating: (r['rating'] as num?)?.toInt() ?? 0),
-        ],
-    },
-  );
+  /// [Sprint 59 F1] The recap for every member (`MatchRecap`), read through its generated model.
+  factory MatchReport.fromRecap(Object? json) {
+    final j = MatchRecap.fromJson(json);
+    return MatchReport(
+      score: (j.score.home, j.score.away),
+      result: j.result,
+      side: j.side,
+      motm: j.manOfTheMatch?.name,
+      stats: {'home': _stats(j.stats.home), 'away': _stats(j.stats.away)},
+      moments: [for (final m in j.moments) MatchEvent(type: m.type, team: m.team, minute: m.minute, color: m.color, text: _moment(m))],
+      ratings: {
+        'home': [for (final r in j.best.home) (name: r.name ?? '', rating: r.rating)],
+        'away': [for (final r in j.best.away) (name: r.name ?? '', rating: r.rating)],
+      },
+    );
+  }
 
   /// The report with the recap's key moments, which carry the players' names.
   MatchReport withMoments(MatchReport recap) => MatchReport(
@@ -97,21 +82,26 @@ class MatchReport {
 }
 
 /// A recap moment in a line (names in English): the scorer and his assist, who came on for whom, the booked player.
-String _moment(Map<dynamic, dynamic> m) {
-  final who = m['player'] as String? ?? '', other = m['other'] as String?;
-  return switch (m['type']) {
+String _moment(MatchRecapMomentsItem m) {
+  final who = m.player ?? '', other = m.other;
+  return switch (m.type) {
     'goal' => other == null ? who : '$who ($other)',
     'sub' => other == null ? who : '$other ⇄ $who',
     _ => who,
   };
 }
 
-Map<String, Map<String, int>> _stats(Object? s) => {
-  for (final side in ['home', 'away'])
-    side: {
-      for (final e in (((s as Map<dynamic, dynamic>?)?[side] as Map<dynamic, dynamic>?) ?? const {}).entries)
-        if (e.value is num) '${e.key}': (e.value as num).toInt(),
-    },
+/// A side's numbers by the names the report screen looks for.
+Map<String, int> _stats(RecapStats s) => {
+  'possession': s.possession,
+  'shots': s.shots,
+  'on_target': s.onTarget,
+  'big_chances': s.bigChances,
+  'corners': s.corners,
+  'fouls': s.fouls,
+  'saves': s.saves,
+  'yellow': s.yellow,
+  'red': s.red,
 };
 
 class MatchRepository {
@@ -140,8 +130,7 @@ class MatchRepository {
 
   /// My matches being played now, in every league (the switcher).
   Future<List<({int id, String home, String away})>> mine() async => [
-    for (final m in ((await _api.get('/matches/live'))['matches'] as List<dynamic>? ?? const []))
-      (id: (m as Map<dynamic, dynamic>)['id'] as int, home: '${m['home']}', away: '${m['away']}'),
+    for (final m in MatchesLiveAnswer.fromJson(await _api.get('/matches/live')).matches) (id: m.id, home: m.home, away: m.away),
   ];
 }
 

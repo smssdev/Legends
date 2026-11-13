@@ -2735,7 +2735,7 @@ class ClubFinanceTransactionsItem {
 }
 
 class ClubSummary {
-  const ClubSummary({this.code, this.colorPrimary, this.colorSecondary, this.id, this.leagueName, this.name, this.strengthCp});
+  const ClubSummary({this.code, this.colorPrimary, this.colorSecondary, this.id, this.leagueName, this.logo, this.name, this.strengthCp});
 
   factory ClubSummary.fromJson(Object? json) {
     final r = JsonReader(json, 'ClubSummary');
@@ -2745,6 +2745,7 @@ class ClubSummary {
       colorSecondary: r.stringOrNull('color_secondary'),
       id: r.intOrNull('id'),
       leagueName: r.stringOrNull('league_name'),
+      logo: r.stringOrNull('logo'),
       name: r.stringOrNull('name'),
       strengthCp: r.intOrNull('strength_cp'),
     );
@@ -2755,6 +2756,9 @@ class ClubSummary {
   final String? colorSecondary;
   final int? id;
   final String? leagueName;
+
+  /// [UP3] Its real logo where it has one
+  final String? logo;
   final String? name;
 
   /// Average of the best 18 in hundredths
@@ -6719,6 +6723,194 @@ class LineupLines {
   final int mid;
 }
 
+/// [Sprint 59 F1] One event of a minute (goal, shot, card, sub, injury, penalty, period...): its own fields by its type, and its commentary line
+class LiveEvent {
+  const LiveEvent({this.color, this.minute, this.period, this.team, this.text, required this.type});
+
+  factory LiveEvent.fromJson(Object? json) {
+    final r = JsonReader(json, 'LiveEvent');
+    return LiveEvent(
+      color: r.stringOrNull('color'),
+      minute: r.any('minute'),
+      period: r.intOrNull('period'),
+      team: r.stringOrNull('team'),
+      text: r.stringOrNull('text'),
+      type: r.string('type'),
+    );
+  }
+
+  /// A card's colour (yellow or red)
+  final String? color;
+
+  /// In a report's timeline: its clock, [minute] or [minute, added] (a bare integer in an old one)
+  final Object? minute;
+
+  /// In a report's timeline
+  final int? period;
+  final String? team;
+
+  /// The commentary line
+  final String? text;
+  final String type;
+}
+
+/// [Sprint 59 F1] One minute as the server sends it (Simulator::shown: the engine's minute with its commentary, frames, teams, moment, voice and story); here, on the channel match.{id} (MatchMinute's live) and in the simulator. Hidden tactics only for your own side
+class LiveMinute {
+  const LiveMinute({
+    this.at,
+    this.danger,
+    required this.events,
+    this.finished,
+    this.frames,
+    this.matchTime,
+    this.minute,
+    this.moment,
+    this.momentum,
+    this.moods,
+    this.period,
+    required this.score,
+    this.serverTs,
+    this.story,
+    this.teams,
+    required this.tick,
+    this.voice,
+    this.window,
+  });
+
+  factory LiveMinute.fromJson(Object? json) {
+    final r = JsonReader(json, 'LiveMinute');
+    return LiveMinute(
+      at: r.intOrNull('at'),
+      danger: r.intOrNull('danger'),
+      events: r.list('events', LiveEvent.fromJson),
+      finished: r.boolOrNull('finished'),
+      frames: r.listOrNull('frames', Keyframe.fromJson),
+      matchTime: r.intOrNull('match_time'),
+      minute: r.any('minute'),
+      moment: r.objectOrNull('moment', LiveMoment.fromJson),
+      momentum: r.objectOrNull('momentum', LiveMinuteMomentum.fromJson),
+      moods: r.mapOrNull('moods', JsonReader.stringOf),
+      period: r.intOrNull('period'),
+      score: r.object('score', LiveMinuteScore.fromJson),
+      serverTs: r.intOrNull('server_ts'),
+      story: r.objectOrNull('story', MomentStory.fromJson),
+      teams: r.objectOrNull('teams', LiveMinuteTeams.fromJson),
+      tick: r.int_('tick'),
+      voice: r.objectOrNull('voice', LiveMinuteVoice.fromJson),
+      window: r.boolOrNull('window'),
+    );
+  }
+
+  /// When it starts on the server clock (ms)
+  final int? at;
+  final int? danger;
+  final List<LiveEvent> events;
+  final bool? finished;
+  final List<Keyframe>? frames;
+  final int? matchTime;
+
+  /// The clock as shown: [minute] or [minute, added] (45+2 is [45, 2]); a minute saved long ago may be a bare integer
+  final Object? minute;
+  final LiveMoment? moment;
+
+  /// [Sprint 50 M15] This minute's danger (+ home, - away) and the home side's share of the last minutes
+  final LiveMinuteMomentum? momentum;
+
+  /// Each coach's mood after it (App\Characters\Mood)
+  final Map<String, String>? moods;
+
+  /// 1 or 2
+  final int? period;
+  final LiveMinuteScore score;
+  final int? serverTs;
+  final MomentStory? story;
+  final LiveMinuteTeams? teams;
+  final int tick;
+
+  /// The commentator's line (a place in voice.json); null under load [E8.7]
+  final LiveMinuteVoice? voice;
+
+  /// A coach's window opens after this minute
+  final bool? window;
+}
+
+/// [Sprint 50 M15] This minute's danger (+ home, - away) and the home side's share of the last minutes
+class LiveMinuteMomentum {
+  const LiveMinuteMomentum({this.homePct, this.now});
+
+  factory LiveMinuteMomentum.fromJson(Object? json) {
+    final r = JsonReader(json, 'LiveMinuteMomentum');
+    return LiveMinuteMomentum(homePct: r.intOrNull('home_pct'), now: r.intOrNull('now'));
+  }
+
+  final int? homePct;
+  final int? now;
+}
+
+class LiveMinuteScore {
+  const LiveMinuteScore({required this.away, required this.home});
+
+  factory LiveMinuteScore.fromJson(Object? json) {
+    final r = JsonReader(json, 'LiveMinuteScore');
+    return LiveMinuteScore(away: r.int_('away'), home: r.int_('home'));
+  }
+
+  final int away;
+  final int home;
+}
+
+class LiveMinuteTeams {
+  const LiveMinuteTeams({this.away, this.home});
+
+  factory LiveMinuteTeams.fromJson(Object? json) {
+    final r = JsonReader(json, 'LiveMinuteTeams');
+    return LiveMinuteTeams(away: r.objectOrNull('away', MatchViewTeam.fromJson), home: r.objectOrNull('home', MatchViewTeam.fromJson));
+  }
+
+  final MatchViewTeam? away;
+  final MatchViewTeam? home;
+}
+
+/// The commentator's line (a place in voice.json); null under load [E8.7]
+class LiveMinuteVoice {
+  const LiveMinuteVoice({this.how});
+
+  factory LiveMinuteVoice.fromJson(Object? json) {
+    final r = JsonReader(json, 'LiveMinuteVoice');
+    return LiveMinuteVoice(how: r.stringOrNull('how'));
+  }
+
+  /// Where a missed shot went: wide, over or post
+  final String? how;
+}
+
+/// The minute's shot and its length on the broadcast (MomentClock::moment)
+class LiveMoment {
+  const LiveMoment({this.brief, this.drama, required this.kind, required this.ms, this.var_});
+
+  factory LiveMoment.fromJson(Object? json) {
+    final r = JsonReader(json, 'LiveMoment');
+    return LiveMoment(
+      brief: r.boolOrNull('brief'),
+      drama: r.stringOrNull('drama'),
+      kind: r.string('kind'),
+      ms: r.int_('ms'),
+      var_: r.stringOrNull('var'),
+    );
+  }
+
+  /// Only its card
+  final bool? brief;
+
+  /// How a card or a foul is told [Sprint 42]
+  final String? drama;
+  final String kind;
+  final int ms;
+
+  /// Why VAR ruled the goal out: offside or foul
+  final String? var_;
+}
+
 class LiveSync {
   const LiveSync({this.finished, this.gap, this.nextAt, this.reactions, this.serverNow, this.started, this.tick, this.ticks});
 
@@ -7141,7 +7333,7 @@ class MatchCoachReport {
       side: r.string('side'),
       stats: r.object('stats', MatchCoachReportStats.fromJson),
       thirds: r.listOrNull('thirds', JsonReader.intOf),
-      timeline: r.list('timeline', JsonReader.anyOf),
+      timeline: r.list('timeline', LiveEvent.fromJson),
       verdict: r.list('verdict', MatchCoachReportVerdictItem.fromJson),
     );
   }
@@ -7167,7 +7359,9 @@ class MatchCoachReport {
   /// Each side's numbers (xg ×10000)
   final MatchCoachReportStats stats;
   final List<int>? thirds;
-  final List<Object?> timeline;
+
+  /// The match's events, each with its minute and period
+  final List<LiveEvent> timeline;
   final List<MatchCoachReportVerdictItem> verdict;
 }
 
@@ -7303,6 +7497,155 @@ class MatchKits {
 
   final MatchKit away;
   final MatchKit home;
+}
+
+/// [Sprint 59 F1] GET /matches/{match}/live: like the simulator's live sync, with the missed minutes, the pause and your readings
+class MatchLive {
+  const MatchLive({
+    this.chat,
+    required this.finished,
+    required this.gap,
+    required this.missed,
+    this.nextAt,
+    this.pause,
+    this.pollMs,
+    this.reactions,
+    required this.readings,
+    required this.serverNow,
+    required this.started,
+    this.summary,
+    required this.tick,
+    required this.ticks,
+  });
+
+  factory MatchLive.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchLive');
+    return MatchLive(
+      chat: r.listOrNull('chat', BroadcastChat.fromJson),
+      finished: r.bool_('finished'),
+      gap: r.bool_('gap'),
+      missed: r.list('missed', MatchLiveMissedItem.fromJson),
+      nextAt: r.intOrNull('next_at'),
+      pause: r.objectOrNull('pause', MatchLivePause.fromJson),
+      pollMs: r.intOrNull('poll_ms'),
+      reactions: r.listOrNull('reactions', BroadcastReaction.fromJson),
+      readings: r.list('readings', MatchReading.fromJson),
+      serverNow: r.int_('server_now'),
+      started: r.bool_('started'),
+      summary: r.objectOrNull('summary', MatchLiveSummary.fromJson),
+      tick: r.int_('tick'),
+      ticks: r.list('ticks', LiveMinute.fromJson),
+    );
+  }
+
+  /// The side chat, the latest 50 [X24]
+  final List<BroadcastChat>? chat;
+  final bool finished;
+  final bool gap;
+  final List<MatchLiveMissedItem> missed;
+  final int? nextAt;
+
+  /// [UP17] The break under way: its end (ms), the coaches ready, whether it is a window, and each side's injured player waiting for his replacement
+  final MatchLivePause? pause;
+
+  /// [E8.7] Under load (degradation level 3): poll no more often than this (ms). Null otherwise
+  final int? pollMs;
+
+  /// The latest reactions [X24]
+  final List<BroadcastReaction>? reactions;
+  final List<MatchReading> readings;
+  final int serverNow;
+  final bool started;
+
+  /// [E8.5] After a gap: the minutes missed and their goals and red cards (null without a gap)
+  final MatchLiveSummary? summary;
+  final int tick;
+
+  /// Each with at, match_time and server_ts [E8.3], and its story (MomentStory, Sprint 57 B2)
+  final List<LiveMinute> ticks;
+}
+
+class MatchLiveMissedItem {
+  const MatchLiveMissedItem({required this.events, required this.minute, required this.tick});
+
+  factory MatchLiveMissedItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchLiveMissedItem');
+    return MatchLiveMissedItem(events: r.list('events', LiveEvent.fromJson), minute: r.int_('minute'), tick: r.int_('tick'));
+  }
+
+  final List<LiveEvent> events;
+
+  /// The minute as shown (45+2 is 47)
+  final int minute;
+  final int tick;
+}
+
+/// [UP17] The break under way: its end (ms), the coaches ready, whether it is a window, and each side's injured player waiting for his replacement
+class MatchLivePause {
+  const MatchLivePause({this.injured, this.ready, this.until, this.window});
+
+  factory MatchLivePause.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchLivePause');
+    return MatchLivePause(
+      injured: r.mapOrNull('injured', JsonReader.intOf),
+      ready: r.listOrNull('ready', JsonReader.stringOf),
+      until: r.intOrNull('until'),
+      window: r.boolOrNull('window'),
+    );
+  }
+
+  final Map<String, int>? injured;
+  final List<String>? ready;
+  final int? until;
+  final bool? window;
+}
+
+/// [E8.5] After a gap: the minutes missed and their goals and red cards (null without a gap)
+class MatchLiveSummary {
+  const MatchLiveSummary({required this.fromTick, required this.goals, required this.minutes, required this.reds, required this.toTick});
+
+  factory MatchLiveSummary.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchLiveSummary');
+    return MatchLiveSummary(
+      fromTick: r.int_('from_tick'),
+      goals: r.list('goals', MatchLiveSummaryGoalsItem.fromJson),
+      minutes: r.int_('minutes'),
+      reds: r.list('reds', MatchLiveSummaryRedsItem.fromJson),
+      toTick: r.int_('to_tick'),
+    );
+  }
+
+  final int fromTick;
+  final List<MatchLiveSummaryGoalsItem> goals;
+  final int minutes;
+  final List<MatchLiveSummaryRedsItem> reds;
+  final int toTick;
+}
+
+class MatchLiveSummaryGoalsItem {
+  const MatchLiveSummaryGoalsItem({required this.minute, this.scorer, required this.team});
+
+  factory MatchLiveSummaryGoalsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchLiveSummaryGoalsItem');
+    return MatchLiveSummaryGoalsItem(minute: r.int_('minute'), scorer: r.intOrNull('scorer'), team: r.string('team'));
+  }
+
+  final int minute;
+  final int? scorer;
+  final String team;
+}
+
+class MatchLiveSummaryRedsItem {
+  const MatchLiveSummaryRedsItem({required this.minute, this.player, required this.team});
+
+  factory MatchLiveSummaryRedsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchLiveSummaryRedsItem');
+    return MatchLiveSummaryRedsItem(minute: r.int_('minute'), player: r.intOrNull('player'), team: r.string('team'));
+  }
+
+  final int minute;
+  final int? player;
+  final String team;
 }
 
 class MatchMove {
@@ -7631,7 +7974,7 @@ class MatchView {
       mode: r.stringOrNull('mode'),
       referee: r.intOrNull('referee'),
       score: r.mapOrNull('score', JsonReader.anyOf),
-      seats: r.mapOrNull('seats', JsonReader.anyOf),
+      seats: r.objectOrNull('seats', MatchViewSeats.fromJson),
       seed: r.intOrNull('seed'),
       slots: r.mapOrNull('slots', JsonReader.anyOf),
       started: r.boolOrNull('started'),
@@ -7665,7 +8008,7 @@ class MatchView {
   final Map<String, Object?>? score;
 
   /// Only in the answer to a live POST /sim/matches: {home, away} seats; the maker keeps home and sends away to the friend
-  final Map<String, Object?>? seats;
+  final MatchViewSeats? seats;
   final int? seed;
   final Map<String, Object?>? slots;
 
@@ -7766,6 +8109,19 @@ class MatchViewPlayer {
   /// The match rating ×100
   final int? rating;
   final int? yc;
+}
+
+/// Only in the answer to a live POST /sim/matches: {home, away} seats; the maker keeps home and sends away to the friend
+class MatchViewSeats {
+  const MatchViewSeats({this.away, this.home});
+
+  factory MatchViewSeats.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchViewSeats');
+    return MatchViewSeats(away: r.stringOrNull('away'), home: r.stringOrNull('home'));
+  }
+
+  final String? away;
+  final String? home;
 }
 
 class MatchViewTeam {
@@ -8177,7 +8533,7 @@ class MomentStory {
       items: r.list('items', MomentStoryItemsItem.fromJson),
       lines: r.list('lines', MomentStoryLinesItem.fromJson),
       minute: r.string('minute'),
-      pre: r.mapOrNull('pre', JsonReader.anyOf),
+      pre: r.objectOrNull('pre', MomentStoryPre.fromJson),
       scene: r.stringOrNull('scene'),
       side: r.string('side'),
       sub: r.any('sub'),
@@ -8198,8 +8554,8 @@ class MomentStory {
   final List<MomentStoryLinesItem> lines;
   final String minute;
 
-  /// What the lower bar says until the key moment (head, who, sub as StoryText)
-  final Map<String, Object?>? pre;
+  /// What the lower bar says until the key moment
+  final MomentStoryPre? pre;
 
   /// The scene to play (goal, save, penalty, freekick, card, foul, miss, blocked, clearance, var, offside, trap, corner, sub, injury, coach, rant, whistle, slip, board), or none
   final String? scene;
@@ -8262,6 +8618,20 @@ class MomentStoryLinesItem {
   /// p, q (players), A (side), n (StoryText)
   final Map<String, Object?> vars;
   final bool x;
+}
+
+/// What the lower bar says until the key moment
+class MomentStoryPre {
+  const MomentStoryPre({this.head, this.sub, this.who});
+
+  factory MomentStoryPre.fromJson(Object? json) {
+    final r = JsonReader(json, 'MomentStoryPre');
+    return MomentStoryPre(head: r.any('head'), sub: r.any('sub'), who: r.any('who'));
+  }
+
+  final Object? head;
+  final Object? sub;
+  final Object? who;
 }
 
 class Negotiation {
@@ -8971,6 +9341,91 @@ class PollOptionsItem {
 
   /// Null for a coach who has not voted while it is open
   final int? votes;
+}
+
+class PredictionClub {
+  const PredictionClub({required this.code, required this.id, required this.name});
+
+  factory PredictionClub.fromJson(Object? json) {
+    final r = JsonReader(json, 'PredictionClub');
+    return PredictionClub(code: r.string('code'), id: r.int_('id'), name: r.string('name'));
+  }
+
+  final String code;
+  final int id;
+  final String name;
+}
+
+/// [UP12, Sprint 59 F1] The round's league matches to predict (App\League\Predictions::round); with no round ahead, round null and no matches
+class Predictions {
+  const Predictions({required this.matches, this.predictors, this.reward, this.round});
+
+  factory Predictions.fromJson(Object? json) {
+    final r = JsonReader(json, 'Predictions');
+    return Predictions(
+      matches: r.list('matches', PredictionsMatchesItem.fromJson),
+      predictors: r.intOrNull('predictors'),
+      reward: r.intOrNull('reward'),
+      round: r.intOrNull('round'),
+    );
+  }
+
+  final List<PredictionsMatchesItem> matches;
+
+  /// [Sprint 21 E4.4] How many coaches have predicted this round
+  final int? predictors;
+
+  /// What a right pick pays my club
+  final int? reward;
+  final int? round;
+}
+
+class PredictionsMatchesItem {
+  const PredictionsMatchesItem({
+    required this.away,
+    required this.fixtureId,
+    required this.home,
+    this.mine,
+    required this.open,
+    required this.split,
+    required this.status,
+  });
+
+  factory PredictionsMatchesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'PredictionsMatchesItem');
+    return PredictionsMatchesItem(
+      away: r.object('away', PredictionClub.fromJson),
+      fixtureId: r.int_('fixture_id'),
+      home: r.object('home', PredictionClub.fromJson),
+      mine: r.stringOrNull('mine'),
+      open: r.bool_('open'),
+      split: r.object('split', PredictionsMatchesItemSplit.fromJson),
+      status: r.string('status'),
+    );
+  }
+
+  final PredictionClub away;
+  final int fixtureId;
+  final PredictionClub home;
+  final String? mine;
+
+  /// Picks open until the lineups lock
+  final bool open;
+  final PredictionsMatchesItemSplit split;
+  final String status;
+}
+
+class PredictionsMatchesItemSplit {
+  const PredictionsMatchesItemSplit({required this.away, required this.draw, required this.home});
+
+  factory PredictionsMatchesItemSplit.fromJson(Object? json) {
+    final r = JsonReader(json, 'PredictionsMatchesItemSplit');
+    return PredictionsMatchesItemSplit(away: r.int_('away'), draw: r.int_('draw'), home: r.int_('home'));
+  }
+
+  final int away;
+  final int draw;
+  final int home;
 }
 
 /// [UP12, Sprint 59 F1] The press conference before a match, as one coach sees it (App\\League\\PressRoom::of)

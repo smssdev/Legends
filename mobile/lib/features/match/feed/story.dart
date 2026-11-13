@@ -94,7 +94,7 @@ FeedStory feedStory(LiveTick tick, {required Map<String, CastMember> cast, requi
   final s = tick.story;
   if (s == null) return FeedStory();
   String w(Object? x) => storyText(x, cast: cast, clubs: clubs, ar: ar);
-  final data = <String, Object?>{...(s['data'] as Map<dynamic, dynamic>? ?? const {}).cast<String, Object?>()};
+  final data = <String, Object?>{...s.data};
   // The shirt numbers as the clips print them; the whistle's board in the clip's own shape.
   for (final k in ['no', 'passNo', 'defNo', 'victimNo', 'inNo', 'outNo']) {
     if (data.containsKey(k)) data[k] = '${data[k] ?? ''}';
@@ -111,16 +111,16 @@ FeedStory feedStory(LiveTick tick, {required Map<String, CastMember> cast, requi
       for (final r in data['stats'] as List<dynamic>) (w((r as List<dynamic>)[0]), (r[1] as num).toInt(), (r[2] as num).toInt()),
     ];
   }
-  final pre = s['pre'] as Map<dynamic, dynamic>?;
+  final pre = s.pre;
   return FeedStory(
-    scene: s['scene'] as String?,
-    side: '${s['side'] ?? 'home'}',
+    scene: s.scene,
+    side: s.side,
     data: data,
-    head: w(s['head']),
-    who: w(s['who']),
-    sub: w(s['sub']),
-    pre: pre == null ? null : (head: w(pre['head']), who: w(pre['who']), sub: w(pre['sub'])),
-    goal: s['goal'] == true,
+    head: w(s.head),
+    who: w(s.who),
+    sub: w(s.sub),
+    pre: pre == null ? null : (head: w(pre.head), who: w(pre.who), sub: w(pre.sub)),
+    goal: s.goal,
   );
 }
 

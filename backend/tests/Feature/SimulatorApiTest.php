@@ -40,7 +40,9 @@ class SimulatorApiTest extends TestCase
         $home = $this->club('Alpha', 82);
         $away = $this->club('Beta', 79);
 
-        $this->getJson('/api/v1/sim/clubs?q=Alp')->assertOk()->assertJsonPath('0.name', 'Alpha');
+        $this->getJson('/api/v1/sim/clubs?q=Alp')->assertOk()->assertJsonPath('0.name', 'Alpha')
+            // [Sprint 59 F1] The fields the app reads through its generated model (ClubSummary in openapi.yaml).
+            ->assertJsonStructure(['*' => ['id', 'name', 'code', 'league_name', 'strength_cp', 'color_primary', 'logo']]);
         $this->getJson("/api/v1/sim/clubs/$home")->assertOk()->assertJsonCount(11, 'starters');
 
         $match = $this->postJson('/api/v1/sim/matches', [
@@ -110,7 +112,9 @@ class SimulatorApiTest extends TestCase
         $away = $this->club('Beta', 79);
         $made = $this->postJson('/api/v1/sim/matches', ['home_id' => $home, 'away_id' => $away, 'seed' => 5, 'mode' => 'live'])
             ->assertCreated()->assertJsonPath('mode', 'live')->assertJsonPath('started', false)->assertJsonPath('you', 'home')
-            ->assertJsonPath('control', ['home' => 'me', 'away' => 'me'])->json();
+            ->assertJsonPath('control', ['home' => 'me', 'away' => 'me'])->assertJsonStructure(['id', 'seats' => ['home', 'away']])->json();
+        // [Sprint 59 F1] The app reads the id as the ULID it is (it read an int, so making a match in the app failed).
+        $this->assertIsString($made['id']);
         $id = $made['id'];
         $away_seat = ['X-Seat' => $made['seats']['away']];
 

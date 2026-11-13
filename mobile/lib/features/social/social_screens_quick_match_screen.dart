@@ -154,7 +154,7 @@ class PredictionsScreen extends ConsumerStatefulWidget {
 }
 
 class _PredictionsScreenState extends ConsumerState<PredictionsScreen> {
-  Map<String, dynamic>? _fresh;
+  api.Predictions? _fresh;
 
   @override
   Widget build(BuildContext context) {
@@ -171,12 +171,12 @@ class _PredictionsScreenState extends ConsumerState<PredictionsScreen> {
             padding: const EdgeInsets.all(12),
             children: [
               Text(
-                l.predictionsLead(d['round'] as int? ?? 0, money(context, (d['reward'] as num? ?? 0).toInt())),
+                l.predictionsLead(d.round ?? 0, money(context, d.reward ?? 0)),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: p.textMuted),
               ),
               const SizedBox(height: 12),
-              for (final m in (d['matches'] as List<dynamic>? ?? const []))
+              for (final m in d.matches)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: GlmCard(
@@ -188,7 +188,7 @@ class _PredictionsScreenState extends ConsumerState<PredictionsScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                '${((m as Map<dynamic, dynamic>)['home'] as Map<dynamic, dynamic>)['name']}',
+                                m.home.name,
                                 textDirection: TextDirection.ltr,
                                 style: const TextStyle(fontWeight: FontWeight.w800),
                               ),
@@ -196,7 +196,7 @@ class _PredictionsScreenState extends ConsumerState<PredictionsScreen> {
                             const Text(' — '),
                             Expanded(
                               child: Text(
-                                '${(m['away'] as Map<dynamic, dynamic>)['name']}',
+                                m.away.name,
                                 textDirection: TextDirection.ltr,
                                 textAlign: TextAlign.end,
                                 style: const TextStyle(fontWeight: FontWeight.w800),
@@ -205,7 +205,7 @@ class _PredictionsScreenState extends ConsumerState<PredictionsScreen> {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        if (m['open'] != true)
+                        if (!m.open)
                           Text(
                             l.predictionClosed,
                             textAlign: TextAlign.center,
@@ -218,23 +218,20 @@ class _PredictionsScreenState extends ConsumerState<PredictionsScreen> {
                             segments: [
                               ButtonSegment(
                                 value: 'home',
-                                label: Text('${(m['home'] as Map<dynamic, dynamic>)['code']}', textDirection: TextDirection.ltr),
+                                label: Text(m.home.code, textDirection: TextDirection.ltr),
                               ),
                               ButtonSegment(value: 'draw', label: Text(l.draw)),
                               ButtonSegment(
                                 value: 'away',
-                                label: Text('${(m['away'] as Map<dynamic, dynamic>)['code']}', textDirection: TextDirection.ltr),
+                                label: Text(m.away.code, textDirection: TextDirection.ltr),
                               ),
                             ],
-                            selected: {
-                              if (m['mine'] != null)
-                                '${m['mine'] is Map<dynamic, dynamic> ? (m['mine'] as Map<dynamic, dynamic>)['pick'] : m['mine']}',
-                            },
+                            selected: {?m.mine},
                             onSelectionChanged: (s) async {
                               if (s.isEmpty) return;
                               final r = await _try(
                                 context,
-                                () => ref.read(socialRepositoryProvider).predict(widget.leagueId, m['fixture_id'] as int, s.first),
+                                () => ref.read(socialRepositoryProvider).predict(widget.leagueId, m.fixtureId, s.first),
                               );
                               if (r != null && mounted) setState(() => _fresh = r);
                             },

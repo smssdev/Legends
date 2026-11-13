@@ -89,7 +89,10 @@ class PressTest extends TestCase
 
     public function test_a_right_prediction_pays_the_club_and_counts_on_the_career(): void
     {
-        $round = $this->actingAs($this->owner)->getJson($this->url('/predictions'))->assertOk()->json();
+        $round = $this->actingAs($this->owner)->getJson($this->url('/predictions'))->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (Predictions in openapi.yaml).
+            ->assertJsonStructure(['round', 'reward', 'predictors', 'matches' => ['*' => ['fixture_id', 'status', 'open', 'home' => ['id', 'name', 'code'],
+                'away' => ['id', 'name', 'code'], 'mine', 'split' => ['home', 'draw', 'away']]]])->json();
         $this->assertSame(1, $round['round']);
         $f = $round['matches'][0];
         $this->postJson($this->url('/predictions'), ['fixture_id' => $f['fixture_id'], 'pick' => 'home'])->assertOk();

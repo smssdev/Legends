@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glm/api/gen/models.g.dart' hide MatchView, TrainingView;
+import 'package:glm/api/gen/models.g.dart' hide LiveSync, MatchView, TrainingView;
 import 'package:glm/api/read.dart';
 import 'package:glm/features/club/extras_data.dart';
 import 'package:glm/features/console/console_data.dart' as console;
@@ -126,6 +126,19 @@ void main() {
     expect(ChatMessage.fromJson(first).reactions, isNull);
     final none = ChatMessage.fromJson({...first, 'reactions': <dynamic>[]});
     expect(none.reactions, isEmpty);
+    expect(modelErrors, isEmpty);
+  });
+
+  test('a live minute in play (recorded from a server match: goals, cards, the whistles) reads with nothing logged', () {
+    modelErrors.clear();
+    final sync = LiveSync.fromJson(jsonDecode(File('test/fixtures/live_play.json').readAsStringSync()));
+    expect(sync.ticks, hasLength(6));
+    expect(sync.ticks.expand((t) => t.events).where((e) => e.type == 'goal'), hasLength(2));
+    final goal = sync.ticks.first;
+    expect(goal.story?.scene, 'goal');
+    expect(goal.frames, isNotEmpty);
+    expect(goal.teams!['home']!.players, isNotEmpty);
+    expect(goal.moment?.kind, isNotEmpty);
     expect(modelErrors, isEmpty);
   });
 }

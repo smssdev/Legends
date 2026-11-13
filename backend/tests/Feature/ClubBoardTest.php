@@ -144,7 +144,12 @@ class ClubBoardTest extends TestCase
         $recap = $this->getJson("/api/v1/matches/{$match}/recap")->assertOk()
             ->assertJsonPath('side', $side)->assertJsonPath('score.home', 1)->assertJsonPath('home.id', $f->home_id)
             ->assertJsonPath('moments.0.player', 'Scorer')->assertJsonPath('moments.0.score.home', 1)
-            ->assertJsonPath('stats.home.possession', 60)->assertJsonPath('stats.away.shots', 4)->json();
+            ->assertJsonPath('stats.home.possession', 60)->assertJsonPath('stats.away.shots', 4)
+            // [Sprint 59 F1] The fields the app reads through its generated model (MatchRecap in openapi.yaml).
+            ->assertJsonStructure(['match_id', 'competition', 'round', 'result', 'side', 'score' => ['home', 'away'],
+                'home' => ['id', 'name', 'code', 'crest_url'], 'away' => ['id', 'name', 'code', 'crest_url'], 'best' => ['home', 'away'],
+                'moments' => ['*' => ['minute', 'type', 'team', 'player', 'other', 'color', 'score']],
+                'stats' => ['home' => ['possession', 'shots', 'on_target', 'big_chances', 'corners', 'fouls', 'yellow', 'red', 'saves'], 'away']])->json();
         $this->assertSame(['Scorer'], array_column($recap['best']['home'], 'name'));
         // Seen: the after-round window no longer offers it.
         $this->getJson($this->url('missed'))->assertJsonCount(0, 'matches');

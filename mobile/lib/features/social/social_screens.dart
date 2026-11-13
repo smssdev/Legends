@@ -57,9 +57,11 @@ class SocialRepository {
       'PlayFriendly',
     ).object('friendly', api.Friendly.fromJson),
   );
-  Future<Map<String, dynamic>> predictions(int league) => _api.get('/leagues/$league/predictions');
-  Future<Map<String, dynamic>> predict(int league, int fixture, String pick) =>
-      _api.post('/leagues/$league/predictions', {'fixture_id': fixture, 'pick': pick});
+
+  /// [Sprint 59 F1] The round to predict, and the round after a pick, through the generated model (`Predictions`).
+  Future<api.Predictions> predictions(int league) async => api.Predictions.fromJson(await _api.get('/leagues/$league/predictions'));
+  Future<api.Predictions> predict(int league, int fixture, String pick) async =>
+      api.Predictions.fromJson(await _api.post('/leagues/$league/predictions', {'fixture_id': fixture, 'pick': pick}));
 
   /// [Sprint 59 F1] The newspaper through the generated model (`Newspaper`).
   Future<api.Newspaper> newspaper(int league) async => api.Newspaper.fromJson(await _api.get('/leagues/$league/newspaper'));

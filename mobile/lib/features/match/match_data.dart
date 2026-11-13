@@ -2,7 +2,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
 import '../../api/gen/models.g.dart'
-    show LeagueMatch, LeagueMatchTimeoutsItem, MatchCoachReport, ReportNote, MatchKit, MatchViewClub, MatchViewPlayer, MatchViewTeam;
+    show
+        LeagueMatch,
+        LeagueMatchTimeoutsItem,
+        MatchCoachReport,
+        MatchesLiveAnswer,
+        MatchRecap,
+        MatchRecapMomentsItem,
+        RecapStats,
+        ReportNote,
+        MatchKit,
+        MatchViewClub,
+        MatchViewPlayer,
+        MatchViewTeam;
+import '../../api/gen/models.g.dart' as api;
 import 'frames.dart';
 
 part 'match_event.dart';
@@ -53,20 +66,6 @@ class MatchPlayer {
     rating: p.rating,
   );
 
-  /// A minute's teams as the live sync sends them (not yet in the contract's models).
-  factory MatchPlayer.fromJson(Map<String, dynamic> j) => MatchPlayer(
-    id: j['id'] as int,
-    name: '${j['name']}',
-    no: j['no'] as int? ?? 0,
-    pos: '${j['pos'] ?? ''}',
-    line: '${j['line'] ?? 'mid'}',
-    on: j['on'] == true,
-    out: '${j['out'] ?? ''}',
-    fit: j['fit'] as int? ?? 100,
-    yc: j['yc'] as int? ?? 0,
-    rating: j['rating'] as int?,
-  );
-
   final int id, no, fit, yc;
   final String name, pos, line, out;
   final bool on;
@@ -92,15 +91,6 @@ class MatchTeam {
     subsMax: t.subsMax ?? 3,
     players: [for (final p in t.players) MatchPlayer.of(p)],
     stats: {for (final e in (t.stats ?? const <String, int?>{}).entries) e.key: e.value ?? 0},
-  );
-
-  factory MatchTeam.fromJson(Map<String, dynamic>? j) => MatchTeam(
-    formation: j?['formation'] as String?,
-    tactics: j?['tactics'] == null ? null : Map<String, Object>.from(j!['tactics'] as Map<dynamic, dynamic>),
-    subsUsed: j?['subs_used'] as int? ?? 0,
-    subsMax: j?['subs_max'] as int? ?? 3,
-    players: [for (final p in (j?['players'] as List<dynamic>? ?? const [])) MatchPlayer.fromJson(p as Map<String, dynamic>)],
-    stats: {for (final e in ((j?['stats'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num?)?.toInt() ?? 0},
   );
 
   final String? formation;
@@ -196,6 +186,3 @@ class MatchView {
 
   MatchClub club(String side) => side == 'home' ? home : away;
 }
-
-(int, int) _score(Object? s) =>
-    s is Map<dynamic, dynamic> ? ((s['home'] as num?)?.toInt() ?? 0, (s['away'] as num?)?.toInt() ?? 0) : (0, 0);

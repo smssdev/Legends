@@ -1573,7 +1573,7 @@ paths:
       summary: '[UP12] The round''s matches with my pick and the league''s split'
       description: '[Sprint 21 E4.4] predictors: how many coaches have predicted this round.'
       responses:
-        '200': { description: The round, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+        '200': { description: The round, content: { application/json: { schema: { $ref: '#/components/schemas/Predictions' } } } }
     post:
       tags: [media]
       summary: '[UP12] Pick a match''s winner (or a draw) until its lock; a right pick pays my club and counts on my career'
@@ -1581,7 +1581,7 @@ paths:
         required: true
         content: { application/json: { schema: { type: object, required: [fixture_id, pick], properties: { fixture_id: { type: integer }, pick: { type: string, enum: [home, draw, away] } } } } }
       responses:
-        '200': { description: The round after it, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+        '200': { description: The round after it, content: { application/json: { schema: { $ref: '#/components/schemas/Predictions' } } } }
         '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/newspaper:
     parameters: [{ $ref: '#/components/parameters/League' }]
@@ -2504,54 +2504,7 @@ paths:
           description: Like the simulator's live sync, with the missed minutes and your readings
           content:
             application/json:
-              schema:
-                type: object
-                required: [started, finished, tick, server_now, next_at, gap, missed, ticks, readings]
-                properties:
-                  started: { type: boolean }
-                  finished: { type: boolean }
-                  tick: { type: integer }
-                  server_now: { type: integer }
-                  next_at: { type: integer, nullable: true }
-                  gap: { type: boolean }
-                  missed:
-                    type: array
-                    items:
-                      type: object
-                      required: [tick, minute, events]
-                      properties:
-                        tick: { type: integer }
-                        minute: { type: integer, description: The minute as shown (45+2 is 47) }
-                        events: { type: array, items: { type: object, additionalProperties: true } }
-                  summary:
-                    type: object
-                    nullable: true
-                    description: '[E8.5] After a gap: the minutes missed and their goals and red cards (null without a gap)'
-                    required: [from_tick, to_tick, minutes, goals, reds]
-                    properties:
-                      from_tick: { type: integer }
-                      to_tick: { type: integer }
-                      minutes: { type: integer }
-                      goals:
-                        type: array
-                        items: { type: object, required: [minute, team, scorer], properties: { minute: { type: integer }, team: { type: string, enum: [home, away] }, scorer: { type: integer, nullable: true } } }
-                      reds:
-                        type: array
-                        items: { type: object, required: [minute, team, player], properties: { minute: { type: integer }, team: { type: string, enum: [home, away] }, player: { type: integer, nullable: true } } }
-                  ticks: { type: array, items: { type: object, additionalProperties: true }, description: 'Each with at, match_time and server_ts [E8.3], and its story (MomentStory, Sprint 57 B2)' }
-                  poll_ms: { type: integer, nullable: true, description: '[E8.7] Under load (degradation level 3): poll no more often than this (ms). Null otherwise' }
-                  readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
-                  reactions: { type: array, items: { $ref: '#/components/schemas/BroadcastReaction' }, description: 'The latest reactions [X24]' }
-                  pause:
-                    type: object
-                    nullable: true
-                    description: '[UP17] The break under way: its end (ms), the coaches ready, whether it is a window, and each side''s injured player waiting for his replacement'
-                    properties:
-                      until: { type: integer }
-                      ready: { type: array, items: { type: string, enum: [home, away] } }
-                      window: { type: boolean }
-                      injured: { type: object, additionalProperties: { type: integer } }
-                  chat: { type: array, items: { $ref: '#/components/schemas/BroadcastChat' }, description: 'The side chat, the latest 50 [X24]' }
+              schema: { $ref: '#/components/schemas/MatchLive' }
         '404': { $ref: '#/components/responses/Error' }
   /home/starter-gift:
     post:
@@ -7142,6 +7095,7 @@ components:
         strength_cp: { type: integer, description: Average of the best 18 in hundredths }
         color_primary: { type: string }
         color_secondary: { type: string }
+        logo: { type: string, nullable: true, description: '[UP3] Its real logo where it has one' }
     Tactics:
       type: object
       properties:
@@ -7216,7 +7170,7 @@ components:
         head: { $ref: '#/components/schemas/StoryText' }
         who: { $ref: '#/components/schemas/StoryText' }
         sub: { $ref: '#/components/schemas/StoryText' }
-        pre: { type: object, nullable: true, description: 'What the lower bar says until the key moment (head, who, sub as StoryText)', additionalProperties: true }
+        pre: { type: object, nullable: true, description: 'What the lower bar says until the key moment', properties: { head: { $ref: '#/components/schemas/StoryText' }, who: { $ref: '#/components/schemas/StoryText' }, sub: { $ref: '#/components/schemas/StoryText' } } }
         items: { type: array, items: { type: object, required: [side, icon, name, label, minute], properties: { side: { type: string, enum: [home, away] }, icon: { type: string }, name: { $ref: '#/components/schemas/StoryText' }, label: { $ref: '#/components/schemas/StoryText' }, minute: { type: string }, goal: { type: boolean }, center: { type: boolean } } }, description: The timeline cards once the scene has played }
         lines: { type: array, items: { type: object, required: [at, en, ar, x, vars], properties: { at: { type: number }, en: { type: integer, nullable: true, description: 'The English variant in voice.json' }, ar: { type: integer, nullable: true }, x: { type: boolean }, vars: { type: object, additionalProperties: true, description: 'p, q (players), A (side), n (StoryText)' }, m: { type: string, description: 'The line in voice.json (none: the kick-off)' }, s: { type: string, enum: [pre, key, post] } } } }
         bubble: { $ref: '#/components/schemas/StoryText' }
@@ -7261,7 +7215,7 @@ components:
         thirds: { type: array, items: { type: integer } }
         momentum: { type: array, items: { type: integer } }
         formations: { type: object, description: '[Sprint 30 G5] Both shapes as they ended (never the tactics)', properties: { home: { type: [string, 'null'] }, away: { type: [string, 'null'] } } }
-        timeline: { type: array, items: { type: object, additionalProperties: true } }
+        timeline: { type: array, items: { $ref: '#/components/schemas/LiveEvent' }, description: 'The match''s events, each with its minute and period' }
         readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' }, description: 'The readings during the match (a report stored before they existed has none: optional)' }
     ReportNote:
       type: object
@@ -7522,7 +7476,7 @@ components:
         control: { type: object }
         mode: { type: string, enum: [solo, live] }
         you: { type: [string, 'null'], enum: [home, away, null], description: 'Live: the side the request''s seat manages; null for a viewer. In a live match the other side''s tactics are null' }
-        seats: { type: object, description: 'Only in the answer to a live POST /sim/matches: {home, away} seats; the maker keeps home and sends away to the friend' }
+        seats: { type: object, description: 'Only in the answer to a live POST /sim/matches: {home, away} seats; the maker keeps home and sends away to the friend', properties: { home: { type: string }, away: { type: string } } }
         started: { type: boolean, description: Always true for solo matches }
         tick: { type: integer }
         finished: { type: boolean }
@@ -7567,6 +7521,128 @@ components:
         p: { type: object, additionalProperties: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }, description: Every player on the pitch by id, his x and y }
         h: { type: [integer, 'null'], description: 'The player on the ball; null while it is in flight (a pass or a shot, Sprint 33 B1)' }
         r: { type: array, items: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }, minItems: 3, maxItems: 3, description: '[Sprint 31 D1] The officials: the referee, the far assistant (outside the far touchline, right half) and the near one (outside the near touchline, left half). They follow the ball only. Older recordings have none' }
+    MatchLive:
+      description: "[Sprint 59 F1] GET /matches/{match}/live: like the simulator's live sync, with the missed minutes, the pause and your readings"
+      type: object
+      required: [started, finished, tick, server_now, next_at, gap, missed, ticks, readings]
+      properties:
+        started: { type: boolean }
+        finished: { type: boolean }
+        tick: { type: integer }
+        server_now: { type: integer }
+        next_at: { type: integer, nullable: true }
+        gap: { type: boolean }
+        missed:
+          type: array
+          items:
+            type: object
+            required: [tick, minute, events]
+            properties:
+              tick: { type: integer }
+              minute: { type: integer, description: The minute as shown (45+2 is 47) }
+              events: { type: array, items: { $ref: '#/components/schemas/LiveEvent' } }
+        summary:
+          type: object
+          nullable: true
+          description: '[E8.5] After a gap: the minutes missed and their goals and red cards (null without a gap)'
+          required: [from_tick, to_tick, minutes, goals, reds]
+          properties:
+            from_tick: { type: integer }
+            to_tick: { type: integer }
+            minutes: { type: integer }
+            goals:
+              type: array
+              items: { type: object, required: [minute, team, scorer], properties: { minute: { type: integer }, team: { type: string, enum: [home, away] }, scorer: { type: integer, nullable: true } } }
+            reds:
+              type: array
+              items: { type: object, required: [minute, team, player], properties: { minute: { type: integer }, team: { type: string, enum: [home, away] }, player: { type: integer, nullable: true } } }
+        ticks: { type: array, items: { $ref: '#/components/schemas/LiveMinute' }, description: 'Each with at, match_time and server_ts [E8.3], and its story (MomentStory, Sprint 57 B2)' }
+        poll_ms: { type: integer, nullable: true, description: '[E8.7] Under load (degradation level 3): poll no more often than this (ms). Null otherwise' }
+        readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
+        reactions: { type: array, items: { $ref: '#/components/schemas/BroadcastReaction' }, description: 'The latest reactions [X24]' }
+        pause:
+          type: object
+          nullable: true
+          description: '[UP17] The break under way: its end (ms), the coaches ready, whether it is a window, and each side''s injured player waiting for his replacement'
+          properties:
+            until: { type: integer }
+            ready: { type: array, items: { type: string, enum: [home, away] } }
+            window: { type: boolean }
+            injured: { type: object, additionalProperties: { type: integer } }
+        chat: { type: array, items: { $ref: '#/components/schemas/BroadcastChat' }, description: 'The side chat, the latest 50 [X24]' }
+    Predictions:
+      type: object
+      description: '[UP12, Sprint 59 F1] The round''s league matches to predict (App\League\Predictions::round); with no round ahead, round null and no matches'
+      required: [round, matches]
+      properties:
+        round: { type: integer, nullable: true }
+        reward: { type: integer, description: What a right pick pays my club }
+        predictors: { type: integer, description: '[Sprint 21 E4.4] How many coaches have predicted this round' }
+        matches:
+          type: array
+          items:
+            type: object
+            required: [fixture_id, status, open, home, away, mine, split]
+            properties:
+              fixture_id: { type: integer }
+              status: { type: string }
+              open: { type: boolean, description: Picks open until the lineups lock }
+              home: { $ref: '#/components/schemas/PredictionClub' }
+              away: { $ref: '#/components/schemas/PredictionClub' }
+              mine: { type: string, nullable: true, enum: [home, draw, away, null] }
+              split: { type: object, required: [home, draw, away], properties: { home: { type: integer }, draw: { type: integer }, away: { type: integer } } }
+    PredictionClub:
+      type: object
+      required: [id, name, code]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+    LiveMinute:
+      type: object
+      description: '[Sprint 59 F1] One minute as the server sends it (Simulator::shown: the engine''s minute with its commentary, frames, teams, moment, voice and story); here, on the channel match.{id} (MatchMinute''s live) and in the simulator. Hidden tactics only for your own side'
+      required: [tick, score, events]
+      properties:
+        tick: { type: integer }
+        period: { type: integer, description: 1 or 2, then 3 and 4 in extra time and 5 for penalties }
+        minute: { description: 'The clock as shown: [minute] or [minute, added] (45+2 is [45, 2]); a minute saved long ago may be a bare integer' }
+        score: { type: object, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
+        events: { type: array, items: { $ref: '#/components/schemas/LiveEvent' } }
+        danger: { type: integer }
+        finished: { type: boolean }
+        teams: { type: object, properties: { home: { $ref: '#/components/schemas/MatchViewTeam' }, away: { $ref: '#/components/schemas/MatchViewTeam' } } }
+        frames: { type: array, items: { $ref: '#/components/schemas/Keyframe' } }
+        moment: { $ref: '#/components/schemas/LiveMoment' }
+        voice: { type: object, nullable: true, description: 'The commentator''s line (a place in voice.json); null under load [E8.7]', properties: { how: { type: string, nullable: true, description: 'Where a missed shot went: wide, over or post' } } }
+        window: { type: boolean, description: A coach's window opens after this minute }
+        moods: { type: object, description: 'Each coach''s mood after it (App\Characters\Mood)', additionalProperties: { type: string } }
+        momentum: { type: object, description: '[Sprint 50 M15] This minute''s danger (+ home, - away) and the home side''s share of the last minutes', properties: { now: { type: integer }, home_pct: { type: integer } } }
+        at: { type: integer, description: When it starts on the server clock (ms) }
+        match_time: { type: integer }
+        server_ts: { type: integer }
+        story: { $ref: '#/components/schemas/MomentStory' }
+    LiveEvent:
+      type: object
+      description: '[Sprint 59 F1] One event of a minute (goal, shot, card, sub, injury, penalty, period...): its own fields by its type, and its commentary line'
+      required: [type]
+      additionalProperties: true
+      properties:
+        type: { type: string }
+        team: { type: string, nullable: true, enum: [home, away, null] }
+        text: { type: string, nullable: true, description: The commentary line, the same for everyone }
+        color: { type: string, nullable: true, description: A card's colour (yellow or red) }
+        minute: { description: 'In a report''s timeline: its clock, [minute] or [minute, added] (a bare integer in an old one)' }
+        period: { type: integer, description: In a report's timeline }
+    LiveMoment:
+      type: object
+      description: The minute's shot and its length on the broadcast (MomentClock::moment)
+      required: [kind, ms]
+      properties:
+        kind: { type: string }
+        ms: { type: integer }
+        brief: { type: boolean, description: Only its card }
+        drama: { type: string, nullable: true, description: 'How a card or a foul is told [Sprint 42]' }
+        var: { type: string, nullable: true, description: 'Why VAR ruled the goal out: offside or foul' }
     LiveSync:
       type: object
       properties:

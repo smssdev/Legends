@@ -78,7 +78,13 @@ class MatchRunnerTest extends TestCase
             $seen++;
             if ($seen === 40) {
                 // Followed live: the viewer gets the minutes made so far, with their frames.
-                $live = $this->getJson("/api/v1/matches/{$match->id}/live?since=0")->assertOk()->json();
+                $live = $this->getJson("/api/v1/matches/{$match->id}/live?since=0")->assertOk()
+                    // [Sprint 59 F1] The fields the app reads through its generated models (MatchLive, LiveMinute, LiveEvent).
+                    ->assertJsonStructure(['started', 'finished', 'tick', 'server_now', 'next_at', 'gap', 'missed', 'readings', 'chat', 'reactions',
+                        'ticks' => ['*' => ['tick', 'period', 'minute', 'score' => ['home', 'away'], 'events' => ['*' => ['type']], 'finished', 'at',
+                            'frames' => ['*' => ['t', 'b', 'p']], 'moment' => ['kind', 'ms'], 'window', 'moods', 'momentum' => ['now', 'home_pct'],
+                            'teams' => ['home' => ['players' => ['*' => ['id', 'name', 'no', 'pos', 'line', 'on']]], 'away'],
+                            'story' => ['scene', 'data', 'side', 'goal', 'minute', 'items', 'lines']]]])->json();
                 $this->assertTrue($live['started']);
                 $this->assertNotEmpty($live['ticks']);
                 $this->assertArrayHasKey('frames', $live['ticks'][0]);
