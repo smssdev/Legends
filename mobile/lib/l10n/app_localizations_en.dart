@@ -2843,4 +2843,12 @@ class LEn extends L {
 
   @override
   String get refereeVeryStrict => 'Very strict';
+
+  @override
+  String get friendlyBlockedLive => 'Your match is on now: friendlies after it.';
+
+  @override
+  String friendlyBlockedSoon(String at) {
+    return 'Your match is about to start: friendlies are back after it ($at).';
+  }
 }

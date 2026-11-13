@@ -41,7 +41,9 @@ class ChatGroupTest extends TestCase
         $this->assertSame(1, DB::table('messages')->where('user_id', $omar->id)->where('type', 'chat_invite')->count());
         $this->actingAs($sara)->postJson("/api/v1/groups/{$id}/messages", ['body' => 'مين جاهز للقرعة؟ 🔥'])->assertCreated();
         Event::assertDispatched(ChatMessageSent::class, fn ($e) => $e->groupId === $id && $e->message['body'] === 'مين جاهز للقرعة؟ 🔥');
-        $mine = $this->actingAs($omar)->getJson('/api/v1/groups')->assertOk()->json('groups');
+        $mine = $this->actingAs($omar)->getJson('/api/v1/groups')->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['groups' => ['*' => ['id', 'name', 'league_id', 'is_admin', 'members_count', 'unread', 'last']]])->json('groups');
         $this->assertSame(1, $mine[0]['unread']);
         $this->assertSame('مين جاهز للقرعة؟ 🔥', $mine[0]['last']['body']);
         // Opening it reads it; a reply quotes what it answers.

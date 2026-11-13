@@ -24,11 +24,11 @@ class FakeSocial implements SocialRepository {
   final List<String> sent = [];
 
   @override
-  Future<Map<String, dynamic>> friendlies(int league) async => json('friendlies');
+  Future<api.Friendlies> friendlies(int league) async => api.Friendlies.fromJson(json('friendlies'));
   @override
-  Future<Map<String, dynamic>> playFriendly(int league, int opponent) async {
+  Future<api.Friendly> playFriendly(int league, int opponent) async {
     sent.add('friendly $opponent');
-    return json('friendly_played');
+    return api.Friendly.fromJson(json('friendly_played')['friendly']);
   }
 
   @override
@@ -62,7 +62,7 @@ class FakeSocial implements SocialRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> groups() async => json('groups');
+  Future<api.GroupsAnswer> groups() async => api.GroupsAnswer.fromJson(json('groups'));
   int loads = 0;
   @override
   Future<List<Map<String, dynamic>>> messages(int group) async => [

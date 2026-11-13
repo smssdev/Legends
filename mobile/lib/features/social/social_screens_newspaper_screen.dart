@@ -193,11 +193,11 @@ class NewspaperScreen extends ConsumerWidget {
 Future<void> joinGroup(BuildContext context, WidgetRef ref, String code) async {
   final r = await _try(context, () => ref.read(apiProvider).post('/groups/join/${code.trim().toLowerCase()}'));
   ref.invalidate(groupsProvider);
-  final g = r?['group'] as Map<dynamic, dynamic>?;
+  final g = r == null ? null : JsonReader(r, 'JoinGroup').objectOrNull('group', api.ChatGroup.fromJson);
   if (g != null && context.mounted) {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}'),
+        builder: (_) => ChatScreen(groupId: g.id, name: g.name),
       ),
     );
   }

@@ -5,17 +5,16 @@ class QuickMatchScreen extends StatefulWidget {
   const QuickMatchScreen({super.key, required this.home, required this.played});
 
   final String home;
-  final Map<String, dynamic> played;
+
+  /// [Sprint 59 F1] The friendly as the generated model reads it (`Friendly`).
+  final api.Friendly played;
 
   @override
   State<QuickMatchScreen> createState() => _QuickMatchScreenState();
 }
 
 class _QuickMatchScreenState extends State<QuickMatchScreen> {
-  late final List<Map<dynamic, dynamic>> _timeline = [
-    for (final e in ((widget.played['report'] as Map<dynamic, dynamic>?)?['timeline'] as List<dynamic>? ?? const []))
-      e as Map<dynamic, dynamic>,
-  ];
+  late final List<api.FriendlyReportTimelineItem> _timeline = widget.played.report.timeline ?? const [];
   int _at = 0;
   Timer? _timer;
 
@@ -39,11 +38,11 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
     final l = L.of(context);
     final p = context.palette;
     final done = _at >= _timeline.length;
-    final shown = _timeline.take(_at).where((e) => e['k'] != 'quiet' && e['k'] != 'attack').toList().reversed;
+    final shown = _timeline.take(_at).where((e) => e.k != 'quiet' && e.k != 'attack').toList().reversed;
     final last = _at == 0 ? null : _timeline[_at - 1];
-    final score = done ? [widget.played['goals_for'], widget.played['goals_against']] : (last?['score'] as List<dynamic>? ?? const [0, 0]);
-    final away = '${(widget.played['opponent'] as Map<dynamic, dynamic>?)?['name'] ?? ''}';
-    final best = (widget.played['report'] as Map<dynamic, dynamic>?)?['best'] as List<dynamic>? ?? const [];
+    final score = done ? [widget.played.goalsFor, widget.played.goalsAgainst] : (last?.score ?? const [0, 0]);
+    final away = widget.played.opponent.name;
+    final best = widget.played.report.best;
     String kind(String k) => switch (k) {
       'goal' => '⚽ ${l.kGoal}',
       'saved' => '🧤 ${l.kSaved}',
@@ -77,7 +76,7 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
                       style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 36, fontWeight: FontWeight.w800, color: p.text),
                     ),
                     Text(
-                      done ? l.fullTime : "${last?['m'] ?? 0}'",
+                      done ? l.fullTime : "${last?.m ?? 0}'",
                       style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800),
                     ),
                   ],
@@ -109,14 +108,10 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
                           Row(
                             children: [
                               Expanded(
-                                child: Text(
-                                  '${(b as Map<dynamic, dynamic>)['name']}',
-                                  textDirection: TextDirection.ltr,
-                                  textAlign: TextAlign.start,
-                                ),
+                                child: Text(b.name ?? '', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                               ),
                               Text(
-                                ((b['rating'] as num? ?? 0) / 100).toStringAsFixed(1),
+                                (b.rating / 100).toStringAsFixed(1),
                                 style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
                               ),
                             ],
@@ -129,13 +124,13 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
                   ListTile(
                     dense: true,
                     leading: Text(
-                      "${e['m']}'",
+                      "${e.m}'",
                       style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
                     ),
-                    title: Text(kind('${e['k']}'), style: TextStyle(fontWeight: e['k'] == 'goal' ? FontWeight.w800 : FontWeight.w500)),
-                    subtitle: e['name'] == null ? null : Text('${e['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
+                    title: Text(kind(e.k), style: TextStyle(fontWeight: e.k == 'goal' ? FontWeight.w800 : FontWeight.w500)),
+                    subtitle: e.name == null ? null : Text(e.name!, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                     trailing: Text(
-                      e['s'] == 'home' ? widget.home : away,
+                      e.s == 'home' ? widget.home : away,
                       textDirection: TextDirection.ltr,
                       style: TextStyle(color: p.textMuted, fontSize: 12),
                     ),

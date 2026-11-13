@@ -16,6 +16,7 @@ import '../money/finance_screen.dart' show confirm;
 import 'extras_data.dart';
 import 'squad_screen.dart' show money, lineColor;
 import '../leagues/shell.dart';
+import '../../api/gen/models.g.dart' as api;
 
 part 'extras_screens_specialists_screen.dart';
 part 'extras_screens_quests_screen.dart';

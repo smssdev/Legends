@@ -13,6 +13,7 @@ import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
@@ -111,12 +112,12 @@ Future<void> pump(WidgetTester t, Widget screen, {FakeExtras? extras, FakeWallet
         extrasRepositoryProvider.overrideWithValue(extras ?? FakeExtras()),
         walletRepositoryProvider.overrideWithValue(wallet ?? FakeWallet()),
         coachProfileProvider.overrideWith(
-          (ref, id) async => {
+          (ref, id) async => api.CoachProfile.fromJson({
             ...json('coach'),
             'titles': [
               {'league': 'Premier League', 'season': 1, 'competition': 'league', 'position': 1, 'club': 'Liverpool'},
             ],
-          },
+          }),
         ),
       ],
       child: MaterialApp(

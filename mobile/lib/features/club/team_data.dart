@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../api/gen/models.g.dart' show SquadPlayer;
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 
 /// [Sprint 17 F1] My team as the API gives it (`/team`): the squad with each player's numbers, the lineup (formation,
@@ -29,7 +29,7 @@ class Player {
   /// [Sprint 59 F1] A squad player from the generated model. `overall` already counts the training (the server's
   /// Training::boosted); the hand-written reader added training_bonus again, so a trained player showed higher here
   /// than on the site.
-  factory Player.of(SquadPlayer p) => Player(
+  factory Player.of(api.SquadPlayer p) => Player(
     id: p.id,
     name: p.name,
     position: p.position,
@@ -63,13 +63,11 @@ class Player {
 class Slot {
   const Slot({required this.role, required this.line, required this.x, required this.y, this.allowed = const []});
 
-  factory Slot.fromJson(Map<String, dynamic> j) => Slot(
-    role: '${j['role']}',
-    line: '${j['line']}',
-    x: (j['x'] as num).toInt(),
-    y: (j['y'] as num).toInt(),
-    allowed: [for (final l in j['allowed'] as List<dynamic>? ?? const []) '$l'],
-  );
+  /// [Sprint 59 F1] A slot from the generated model.
+  factory Slot.of(api.Slot s) => Slot(role: s.role, line: s.line, x: s.x, y: s.y, allowed: s.allowed ?? const []);
+
+  /// A slot as JSON (the tests' own), read through the generated model.
+  factory Slot.fromJson(Object? json) => Slot.of(api.Slot.fromJson(json));
 
   final String role, line;
 
@@ -86,12 +84,13 @@ class Slot {
 class Lineup {
   const Lineup({required this.formation, required this.auto, required this.slots, required this.starters, required this.bench});
 
-  factory Lineup.fromJson(Map<String, dynamic> j) => Lineup(
-    formation: '${j['formation']}',
-    auto: j['auto'] == true,
-    slots: [for (final s in j['slots'] as List<dynamic>) Slot.fromJson(s as Map<String, dynamic>)],
-    starters: [for (final id in j['starters'] as List<dynamic>) id as int],
-    bench: [for (final id in j['bench'] as List<dynamic>) id as int],
+  /// [Sprint 59 F1] From the generated model (an empty place reads as 0: no player).
+  factory Lineup.of(api.Lineup l) => Lineup(
+    formation: l.formation,
+    auto: l.auto,
+    slots: [for (final s in l.slots) Slot.of(s)],
+    starters: [for (final id in l.starters) id ?? 0],
+    bench: l.bench,
   );
 
   final String formation;
@@ -110,14 +109,18 @@ class TeamData {
     this.captain,
   });
 
-  factory TeamData.fromJson(Map<String, dynamic> j) => TeamData(
-    players: [for (final p in j['players'] as List<dynamic>) Player.of(SquadPlayer.fromJson(p))],
-    lineup: Lineup.fromJson(j['lineup'] as Map<String, dynamic>),
-    morale: (j['morale'] as Map<dynamic, dynamic>?)?['value'] as int? ?? 70,
-    squadValue: j['squad_value'] as int? ?? 0,
-    lines: {for (final e in ((j['lines'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()},
-    captain: ((j['takers'] as Map<dynamic, dynamic>?)?['captain'] as Map<dynamic, dynamic>?)?['player_id'] as int?,
-  );
+  /// [Sprint 59 F1] My team (`Team`), read through its generated model.
+  factory TeamData.fromJson(Object? json) {
+    final t = api.TeamAnswer.fromJson(json);
+    return TeamData(
+      players: [for (final p in t.players) Player.of(p)],
+      lineup: Lineup.of(t.lineup),
+      morale: t.morale.value,
+      squadValue: t.squadValue,
+      lines: {'gk': t.lines.gk, 'def': t.lines.def, 'mid': t.lines.mid, 'att': t.lines.att},
+      captain: t.takers['captain']?.playerId,
+    );
+  }
 
   final List<Player> players;
   final Lineup lineup;
@@ -133,11 +136,8 @@ class TeamData {
 class Formation {
   const Formation({required this.name, required this.label, required this.slots});
 
-  factory Formation.fromJson(Map<String, dynamic> j) => Formation(
-    name: '${j['name']}',
-    label: '${j['label'] ?? j['name']}',
-    slots: [for (final s in j['slots'] as List<dynamic>) Slot.fromJson(s as Map<String, dynamic>)],
-  );
+  /// [Sprint 59 F1] From the generated model.
+  factory Formation.of(api.Formation f) => Formation(name: f.name, label: f.label, slots: [for (final s in f.slots) Slot.of(s)]);
 
   final String name, label;
   final List<Slot> slots;
@@ -148,11 +148,27 @@ class Formation {
 class Tactics {
   const Tactics(this.values, {this.preset, this.presets = const []});
 
-  factory Tactics.fromJson(Map<String, dynamic> j) => Tactics(
-    Map<String, Object>.from(j['tactics'] as Map<dynamic, dynamic>),
-    preset: j['preset'] as String?,
-    presets: [for (final p in (j['presets'] as List<dynamic>? ?? const [])) '$p'],
-  );
+  /// [Sprint 59 F1] My tactics (`Tactics`), read through the generated model; kept as the engine's keys.
+  factory Tactics.fromJson(Object? json) {
+    final a = api.TacticsAnswer.fromJson(json);
+    final t = a.tactics;
+    return Tactics(
+      {
+        'plan': ?t.plan,
+        'tackling': ?t.tackling,
+        'pressing': ?t.pressing,
+        'style': ?t.style,
+        'tempo': ?t.tempo,
+        'att': ?t.att,
+        'mid': ?t.mid,
+        'def': ?t.def,
+        'trap': ?t.trap,
+        'marking': ?t.marking,
+      },
+      preset: a.preset,
+      presets: a.presets ?? const [],
+    );
+  }
 
   final Map<String, Object> values;
 
@@ -170,7 +186,7 @@ class TeamRepository {
 
   Future<TeamData> team(int league) async => TeamData.fromJson(await _api.get('/leagues/$league/team'));
   Future<List<Formation>> formations() async => [
-    for (final f in (await _api.get('/data/formations'))['formations'] as List<dynamic>) Formation.fromJson(f as Map<String, dynamic>),
+    for (final f in api.DataFormationsAnswer.fromJson(await _api.get('/data/formations')).formations) Formation.of(f),
   ];
 
   /// [positions] the ten outfield places [x, y] (the keeper stays in goal); without them the server goes back to the

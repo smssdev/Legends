@@ -56,7 +56,10 @@ class FriendliesTest extends TestCase
         $this->assertSame(0, Wallet::balance($this->owner->id));   // the league's coins all spent on making it
         Wallet::post($this->owner->id, 'admin_gift', 22, 'gift:1');
         $view = $this->actingAs($this->owner)->getJson($this->url())->assertOk()->assertJsonPath('coins', 5)->assertJsonPath('balance', 22)
-            ->assertJsonPath('fitness', 5)->assertJsonPath('blocked', null)->json();
+            ->assertJsonPath('fitness', 5)->assertJsonPath('blocked', null)
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['club' => ['name', 'crest_url'], 'coins', 'first_free', 'balance', 'blocked', 'fitness', 'recent',
+                'opponents' => ['*' => ['id', 'name', 'code', 'crest_url', 'strength_cp', 'coach', 'recommended', 'played_today']]])->json();
         $this->assertCount(3, $view['opponents']);
         $this->assertCount(1, array_filter($view['opponents'], fn ($o) => $o['recommended']));
         $opponent = $view['opponents'][0]['id'];

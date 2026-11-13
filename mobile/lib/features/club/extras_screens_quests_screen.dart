@@ -147,8 +147,9 @@ class HonoursScreen extends ConsumerWidget {
 }
 
 /// [Sprint 18 F1] A coach's profile (`/coaches/{id}`, Sprint 33): his record, his titles and his board objectives.
-final coachProfileProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
-  (ref, id) => ref.read(apiProvider).get('/coaches/$id'),
+/// [Sprint 59 F1] A coach's profile through the generated model (`CoachProfile`).
+final coachProfileProvider = FutureProvider.autoDispose.family<api.CoachProfile, int>(
+  (ref, id) async => api.CoachProfile.fromJson(await ref.read(apiProvider).get('/coaches/$id')),
 );
 
 class CoachProfileScreen extends ConsumerWidget {
@@ -166,10 +167,10 @@ class CoachProfileScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(coachProfileProvider(userId)),
         data: (j) {
           final p = context.palette;
-          final coach = j['coach'] as Map<dynamic, dynamic>? ?? const {};
-          final r = j['record'] as Map<dynamic, dynamic>? ?? const {};
-          final titles = j['titles'] as List<dynamic>? ?? const [];
-          final obj = j['objectives'] as Map<dynamic, dynamic>? ?? const {};
+          final coach = j.coach;
+          final r = j.record;
+          final titles = j.titles;
+          final obj = j.objectives;
           Widget stat(String label, Object? v) => Expanded(
             child: Column(
               children: [
@@ -192,22 +193,21 @@ class CoachProfileScreen extends ConsumerWidget {
                       radius: 32,
                       backgroundColor: p.brand,
                       child: Text(
-                        '${coach['name'] ?? ''}'.characters.take(1).toString(),
+                        coach.name.characters.take(1).toString(),
                         style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text('${coach['name'] ?? ''}', style: context.text.titleLarge),
-                    if (coach['account_no'] != null)
-                      Text(l.accountNumber(coach['account_no'] as int), style: TextStyle(color: p.textMuted)),
+                    Text(coach.name, style: context.text.titleLarge),
+                    if (coach.accountNo case final no?) Text(l.accountNumber(no), style: TextStyle(color: p.textMuted)),
                     const SizedBox(height: 14),
                     Row(
                       children: [
-                        stat(l.seasonsPlayed, r['seasons']),
-                        stat(l.played, r['played']),
-                        stat(l.won, r['won']),
-                        stat(l.drawn, r['drawn']),
-                        stat(l.lost, r['lost']),
+                        stat(l.seasonsPlayed, r.seasons),
+                        stat(l.played, r.played),
+                        stat(l.won, r.won),
+                        stat(l.drawn, r.drawn),
+                        stat(l.lost, r.lost),
                       ],
                     ),
                   ],
@@ -226,20 +226,18 @@ class CoachProfileScreen extends ConsumerWidget {
                 ),
               for (final t in titles)
                 ListTile(
-                  leading: Text((t as Map<dynamic, dynamic>)['position'] == 1 ? '🏆' : '🥈', style: const TextStyle(fontSize: 22)),
+                  leading: Text(t.position == 1 ? '🏆' : '🥈', style: const TextStyle(fontSize: 22)),
                   title: Text(
-                    '${t['club']}',
+                    t.club,
                     textDirection: TextDirection.ltr,
                     textAlign: TextAlign.start,
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
-                  subtitle: Text(
-                    '${t['league']} · ${l.seasonN(t['season'] as int? ?? 1)} · ${t['competition'] == 'cup' ? l.cup : l.competitionLeague}',
-                  ),
+                  subtitle: Text('${t.league} · ${l.seasonN(t.season)} · ${t.competition == 'cup' ? l.cup : l.competitionLeague}'),
                 ),
               const SizedBox(height: 8),
               Text(
-                l.objectivesMet(obj['met'] as int? ?? 0, obj['total'] as int? ?? 0),
+                l.objectivesMet(obj.met, obj.total),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: p.textMuted),
               ),
