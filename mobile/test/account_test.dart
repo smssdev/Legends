@@ -11,6 +11,7 @@ import 'package:glm/features/inbox/inbox_data.dart';
 import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
@@ -41,7 +42,7 @@ Future<void> pump(WidgetTester t, Widget screen) async {
           },
         ),
         ideasProvider.overrideWith(
-          (ref) async => {
+          (ref) async => api.IdeasAnswer.fromJson({
             ...json('ideas'),
             'polls': [
               {
@@ -54,9 +55,13 @@ Future<void> pump(WidgetTester t, Widget screen) async {
                   {'id': 2, 'label': 'Leagues', 'votes': null},
                 ],
                 'my_vote': null,
+                'starts_at': '2026-11-10T10:00:00Z',
+                'ends_at': '2026-11-20T10:00:00Z',
+                'total': null,
+                'winners': <int>[],
               },
             ],
-          },
+          }),
         ),
         supportProvider.overrideWith(
           (ref) async => [
@@ -70,7 +75,7 @@ Future<void> pump(WidgetTester t, Widget screen) async {
           ],
         ),
         guideProvider.overrideWith((ref) async => json('guide')['sections'] as List<dynamic>),
-        rankingProvider.overrideWith((ref) async => json('ranking')['coaches'] as List<dynamic>),
+        rankingProvider.overrideWith((ref) async => api.RankingsCoachesAnswer.fromJson(json('ranking')).coaches),
       ],
       child: MaterialApp(
         theme: glmTheme(day: false),

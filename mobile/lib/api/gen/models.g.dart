@@ -340,6 +340,72 @@ class AdminAccess {
   final List<String>? sections;
 }
 
+class AdminActivityAnswer {
+  const AdminActivityAnswer({required this.days, required this.log});
+
+  factory AdminActivityAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminActivityAnswer');
+    return AdminActivityAnswer(
+      days: r.list('days', AdminActivityAnswerDaysItem.fromJson),
+      log: r.list('log', AdminActivityAnswerLogItem.fromJson),
+    );
+  }
+
+  final List<AdminActivityAnswerDaysItem> days;
+  final List<AdminActivityAnswerLogItem> log;
+}
+
+class AdminActivityAnswerDaysItem {
+  const AdminActivityAnswerDaysItem({
+    required this.active,
+    required this.day,
+    required this.joined,
+    required this.logins,
+    required this.orders,
+    required this.watched,
+  });
+
+  factory AdminActivityAnswerDaysItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminActivityAnswerDaysItem');
+    return AdminActivityAnswerDaysItem(
+      active: r.int_('active'),
+      day: r.string('day'),
+      joined: r.int_('joined'),
+      logins: r.int_('logins'),
+      orders: r.int_('orders'),
+      watched: r.int_('watched'),
+    );
+  }
+
+  final int active;
+  final String day;
+  final int joined;
+  final int logins;
+  final int orders;
+  final int watched;
+}
+
+class AdminActivityAnswerLogItem {
+  const AdminActivityAnswerLogItem({required this.action, this.admin, required this.at, this.details, this.target});
+
+  factory AdminActivityAnswerLogItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminActivityAnswerLogItem');
+    return AdminActivityAnswerLogItem(
+      action: r.string('action'),
+      admin: r.stringOrNull('admin'),
+      at: r.string('at'),
+      details: r.stringOrNull('details'),
+      target: r.stringOrNull('target'),
+    );
+  }
+
+  final String action;
+  final String? admin;
+  final String at;
+  final String? details;
+  final String? target;
+}
+
 class AdminAlliancesAnswer {
   const AdminAlliancesAnswer({required this.tournaments});
 
@@ -388,6 +454,30 @@ class AdminAlliancesAnswerTournamentsItem {
   final String? reviewNote;
   final int size;
   final String status;
+}
+
+class AdminAnnouncementsAnswer {
+  const AdminAnnouncementsAnswer({required this.announcements});
+
+  factory AdminAnnouncementsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminAnnouncementsAnswer');
+    return AdminAnnouncementsAnswer(announcements: r.list('announcements', AnnouncementCard.fromJson));
+  }
+
+  final List<AnnouncementCard> announcements;
+}
+
+class AdminAppReleasesAnswer {
+  const AdminAppReleasesAnswer({required this.chunkKb, required this.maxMb, required this.releases});
+
+  factory AdminAppReleasesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminAppReleasesAnswer');
+    return AdminAppReleasesAnswer(chunkKb: r.int_('chunk_kb'), maxMb: r.int_('max_mb'), releases: r.list('releases', AppRelease.fromJson));
+  }
+
+  final int chunkKb;
+  final int maxMb;
+  final List<AppRelease> releases;
 }
 
 class AdminBackups {
@@ -448,6 +538,392 @@ class AdminChatAnswer {
   final int messages;
   final String? oldest;
   final int retentionDays;
+}
+
+class AdminCommentaryAnswer {
+  const AdminCommentaryAnswer({required this.keys});
+
+  factory AdminCommentaryAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminCommentaryAnswer');
+    return AdminCommentaryAnswer(keys: r.list('keys', AdminCommentaryAnswerKeysItem.fromJson));
+  }
+
+  final List<AdminCommentaryAnswerKeysItem> keys;
+}
+
+class AdminCommentaryAnswerKeysItem {
+  const AdminCommentaryAnswerKeysItem({required this.count, required this.key, required this.lines});
+
+  factory AdminCommentaryAnswerKeysItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminCommentaryAnswerKeysItem');
+    return AdminCommentaryAnswerKeysItem(count: r.int_('count'), key: r.string('key'), lines: r.list('lines', JsonReader.stringOf));
+  }
+
+  final int count;
+  final String key;
+  final List<String> lines;
+}
+
+class AdminConversationsAnswer {
+  const AdminConversationsAnswer({required this.conversations});
+
+  factory AdminConversationsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminConversationsAnswer');
+    return AdminConversationsAnswer(conversations: r.list('conversations', AdminConversationsAnswerConversationsItem.fromJson));
+  }
+
+  final List<AdminConversationsAnswerConversationsItem> conversations;
+}
+
+class AdminConversationsAnswerConversationsItem {
+  const AdminConversationsAnswerConversationsItem({
+    required this.at,
+    required this.fromTeam,
+    required this.last,
+    required this.unread,
+    required this.user,
+  });
+
+  factory AdminConversationsAnswerConversationsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminConversationsAnswerConversationsItem');
+    return AdminConversationsAnswerConversationsItem(
+      at: r.string('at'),
+      fromTeam: r.bool_('from_team'),
+      last: r.string('last'),
+      unread: r.int_('unread'),
+      user: r.object('user', AdminConversationsAnswerConversationsItemUser.fromJson),
+    );
+  }
+
+  final String at;
+  final bool fromTeam;
+  final String last;
+  final int unread;
+  final AdminConversationsAnswerConversationsItemUser user;
+}
+
+class AdminConversationsAnswerConversationsItemUser {
+  const AdminConversationsAnswerConversationsItemUser({this.accountNo, required this.id, required this.name, required this.username});
+
+  factory AdminConversationsAnswerConversationsItemUser.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminConversationsAnswerConversationsItemUser');
+    return AdminConversationsAnswerConversationsItemUser(
+      accountNo: r.intOrNull('account_no'),
+      id: r.int_('id'),
+      name: r.string('name'),
+      username: r.string('username'),
+    );
+  }
+
+  final int? accountNo;
+  final int id;
+  final String name;
+  final String username;
+}
+
+class AdminDataAnswer {
+  const AdminDataAnswer({required this.rows});
+
+  factory AdminDataAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminDataAnswer');
+    return AdminDataAnswer(rows: r.list('rows', JsonReader.anyOf));
+  }
+
+  final List<Object?> rows;
+}
+
+class AdminDataLeaguesAnswer {
+  const AdminDataLeaguesAnswer({required this.leagues});
+
+  factory AdminDataLeaguesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminDataLeaguesAnswer');
+    return AdminDataLeaguesAnswer(leagues: r.list('leagues', AdminDataLeaguesAnswerLeaguesItem.fromJson));
+  }
+
+  final List<AdminDataLeaguesAnswerLeaguesItem> leagues;
+}
+
+class AdminDataLeaguesAnswerLeaguesItem {
+  const AdminDataLeaguesAnswerLeaguesItem({required this.clubs, required this.name, required this.tooSmall});
+
+  factory AdminDataLeaguesAnswerLeaguesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminDataLeaguesAnswerLeaguesItem');
+    return AdminDataLeaguesAnswerLeaguesItem(clubs: r.int_('clubs'), name: r.string('name'), tooSmall: r.bool_('too_small'));
+  }
+
+  final int clubs;
+  final String name;
+  final bool tooSmall;
+}
+
+class AdminEventsAnswer {
+  const AdminEventsAnswer({required this.events, required this.kinds, required this.maxDays});
+
+  factory AdminEventsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminEventsAnswer');
+    return AdminEventsAnswer(
+      events: r.list('events', TimedEvent.fromJson),
+      kinds: r.map('kinds', JsonReader.anyOf),
+      maxDays: r.int_('max_days'),
+    );
+  }
+
+  final List<TimedEvent> events;
+  final Map<String, Object?> kinds;
+  final int maxDays;
+}
+
+class AdminHouseAdsAnswer {
+  const AdminHouseAdsAnswer({required this.ads, required this.defaults, required this.enabled});
+
+  factory AdminHouseAdsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminHouseAdsAnswer');
+    return AdminHouseAdsAnswer(ads: r.list('ads', HouseAd.fromJson), defaults: r.int_('defaults'), enabled: r.bool_('enabled'));
+  }
+
+  final List<HouseAd> ads;
+
+  /// The built-in ads shown while none is active
+  final int defaults;
+  final bool enabled;
+}
+
+class AdminIdeasAnswer {
+  const AdminIdeasAnswer({required this.counts, required this.rewardDefault, required this.rewardMax, required this.suggestions});
+
+  factory AdminIdeasAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminIdeasAnswer');
+    return AdminIdeasAnswer(
+      counts: r.object('counts', AdminIdeasAnswerCounts.fromJson),
+      rewardDefault: r.int_('reward_default'),
+      rewardMax: r.int_('reward_max'),
+      suggestions: r.list('suggestions', PanelSuggestion.fromJson),
+    );
+  }
+
+  final AdminIdeasAnswerCounts counts;
+  final int rewardDefault;
+  final int rewardMax;
+  final List<PanelSuggestion> suggestions;
+}
+
+class AdminIdeasAnswerCounts {
+  const AdminIdeasAnswerCounts({required this.accepted, required this.built, required this.pending, required this.rejected});
+
+  factory AdminIdeasAnswerCounts.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminIdeasAnswerCounts');
+    return AdminIdeasAnswerCounts(
+      accepted: r.int_('accepted'),
+      built: r.int_('built'),
+      pending: r.int_('pending'),
+      rejected: r.int_('rejected'),
+    );
+  }
+
+  final int accepted;
+  final int built;
+  final int pending;
+  final int rejected;
+}
+
+class AdminJunkAnswer {
+  const AdminJunkAnswer({required this.announcements, required this.houseAds, required this.leagues});
+
+  factory AdminJunkAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminJunkAnswer');
+    return AdminJunkAnswer(
+      announcements: r.list('announcements', JunkRow.fromJson),
+      houseAds: r.list('house_ads', JunkRow.fromJson),
+      leagues: r.list('leagues', JunkRow.fromJson),
+    );
+  }
+
+  final List<JunkRow> announcements;
+  final List<JunkRow> houseAds;
+  final List<JunkRow> leagues;
+}
+
+class AdminLeaguesAnswer {
+  const AdminLeaguesAnswer({required this.leagues});
+
+  factory AdminLeaguesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminLeaguesAnswer');
+    return AdminLeaguesAnswer(leagues: r.list('leagues', AdminLeaguesAnswerLeaguesItem.fromJson));
+  }
+
+  final List<AdminLeaguesAnswerLeaguesItem> leagues;
+}
+
+class AdminLeaguesAnswerLeaguesItem {
+  const AdminLeaguesAnswerLeaguesItem({
+    required this.coaches,
+    required this.dev,
+    required this.id,
+    required this.name,
+    this.owner,
+    this.ownerNo,
+    required this.season,
+    required this.status,
+    required this.teams,
+  });
+
+  factory AdminLeaguesAnswerLeaguesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminLeaguesAnswerLeaguesItem');
+    return AdminLeaguesAnswerLeaguesItem(
+      coaches: r.int_('coaches'),
+      dev: r.bool_('dev'),
+      id: r.int_('id'),
+      name: r.string('name'),
+      owner: r.stringOrNull('owner'),
+      ownerNo: r.intOrNull('owner_no'),
+      season: r.int_('season'),
+      status: r.string('status'),
+      teams: r.int_('teams'),
+    );
+  }
+
+  final int coaches;
+  final bool dev;
+  final int id;
+  final String name;
+  final String? owner;
+
+  /// [Sprint 21 E7.6] The creator's account number
+  final int? ownerNo;
+  final int season;
+  final String status;
+  final int teams;
+}
+
+class AdminOverviewAnswer {
+  const AdminOverviewAnswer({
+    required this.activeToday,
+    required this.deploy,
+    required this.leagues,
+    required this.liveMatches,
+    required this.users,
+    required this.weeks,
+  });
+
+  factory AdminOverviewAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminOverviewAnswer');
+    return AdminOverviewAnswer(
+      activeToday: r.int_('active_today'),
+      deploy: r.object('deploy', AdminOverviewAnswerDeploy.fromJson),
+      leagues: r.object('leagues', AdminOverviewAnswerLeagues.fromJson),
+      liveMatches: r.int_('live_matches'),
+      users: r.int_('users'),
+      weeks: r.list('weeks', AdminOverviewAnswerWeeksItem.fromJson),
+    );
+  }
+
+  final int activeToday;
+
+  /// Whether a deploy now is safe [X33]: nothing live nor kicking off within 30 minutes (busy 0), and until when
+  final AdminOverviewAnswerDeploy deploy;
+  final AdminOverviewAnswerLeagues leagues;
+  final int liveMatches;
+  final int users;
+  final List<AdminOverviewAnswerWeeksItem> weeks;
+}
+
+/// Whether a deploy now is safe [X33]: nothing live nor kicking off within 30 minutes (busy 0), and until when
+class AdminOverviewAnswerDeploy {
+  const AdminOverviewAnswerDeploy({required this.busy, this.nextKickoff});
+
+  factory AdminOverviewAnswerDeploy.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminOverviewAnswerDeploy');
+    return AdminOverviewAnswerDeploy(busy: r.int_('busy'), nextKickoff: r.stringOrNull('next_kickoff'));
+  }
+
+  /// Matches live or kicking off within 30 minutes
+  final int busy;
+  final String? nextKickoff;
+}
+
+class AdminOverviewAnswerLeagues {
+  const AdminOverviewAnswerLeagues({required this.running, required this.total});
+
+  factory AdminOverviewAnswerLeagues.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminOverviewAnswerLeagues');
+    return AdminOverviewAnswerLeagues(running: r.int_('running'), total: r.int_('total'));
+  }
+
+  final int running;
+  final int total;
+}
+
+class AdminOverviewAnswerWeeksItem {
+  const AdminOverviewAnswerWeeksItem({required this.active, required this.live, required this.returning, required this.week});
+
+  factory AdminOverviewAnswerWeeksItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminOverviewAnswerWeeksItem');
+    return AdminOverviewAnswerWeeksItem(
+      active: r.int_('active'),
+      live: r.int_('live'),
+      returning: r.int_('returning'),
+      week: r.string('week'),
+    );
+  }
+
+  final int active;
+
+  /// Watched a match live
+  final int live;
+
+  /// Active the week before too
+  final int returning;
+
+  /// The last day of the week (Cairo date)
+  final String week;
+}
+
+class AdminPollsAnswer {
+  const AdminPollsAnswer({required this.maxDays, required this.optionsMax, required this.optionsMin, required this.polls});
+
+  factory AdminPollsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminPollsAnswer');
+    return AdminPollsAnswer(
+      maxDays: r.int_('max_days'),
+      optionsMax: r.int_('options_max'),
+      optionsMin: r.int_('options_min'),
+      polls: r.list('polls', Poll.fromJson),
+    );
+  }
+
+  final int maxDays;
+  final int optionsMax;
+  final int optionsMin;
+  final List<Poll> polls;
+}
+
+class AdminStoreAnswer {
+  const AdminStoreAnswer({required this.currency, required this.image, required this.items});
+
+  factory AdminStoreAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminStoreAnswer');
+    return AdminStoreAnswer(
+      currency: r.string('currency'),
+      image: r.object('image', AdminStoreAnswerImage.fromJson),
+      items: r.list('items', StoreItem.fromJson),
+    );
+  }
+
+  final String currency;
+  final AdminStoreAnswerImage image;
+  final List<StoreItem> items;
+}
+
+class AdminStoreAnswerImage {
+  const AdminStoreAnswerImage({required this.height, required this.width});
+
+  factory AdminStoreAnswerImage.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminStoreAnswerImage');
+    return AdminStoreAnswerImage(height: r.int_('height'), width: r.int_('width'));
+  }
+
+  final int height;
+  final int width;
 }
 
 class AdminThread {
@@ -539,6 +1015,99 @@ class AdminUserSuspended {
 
   final String at;
   final String? reason;
+}
+
+class AdminUsersAnswer {
+  const AdminUsersAnswer({required this.admins, required this.hasMore, required this.page, required this.users});
+
+  factory AdminUsersAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminUsersAnswer');
+    return AdminUsersAnswer(
+      admins: r.list('admins', AdminUser.fromJson),
+      hasMore: r.bool_('has_more'),
+      page: r.int_('page'),
+      users: r.list('users', AdminUser.fromJson),
+    );
+  }
+
+  final List<AdminUser> admins;
+
+  /// More coaches on the next page
+  final bool hasMore;
+  final int page;
+  final List<AdminUser> users;
+}
+
+class AdminVacationsAnswer {
+  const AdminVacationsAnswer({required this.vacations});
+
+  factory AdminVacationsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminVacationsAnswer');
+    return AdminVacationsAnswer(vacations: r.list('vacations', AdminVacationsAnswerVacationsItem.fromJson));
+  }
+
+  final List<AdminVacationsAnswerVacationsItem> vacations;
+}
+
+class AdminVacationsAnswerVacationsItem {
+  const AdminVacationsAnswerVacationsItem({
+    required this.askedAt,
+    required this.days,
+    this.decidedAt,
+    this.decidedBy,
+    this.endsAt,
+    required this.id,
+    required this.reason,
+    this.startsAt,
+    required this.status,
+    required this.user,
+  });
+
+  factory AdminVacationsAnswerVacationsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminVacationsAnswerVacationsItem');
+    return AdminVacationsAnswerVacationsItem(
+      askedAt: r.string('asked_at'),
+      days: r.int_('days'),
+      decidedAt: r.stringOrNull('decided_at'),
+      decidedBy: r.stringOrNull('decided_by'),
+      endsAt: r.stringOrNull('ends_at'),
+      id: r.int_('id'),
+      reason: r.string('reason'),
+      startsAt: r.stringOrNull('starts_at'),
+      status: r.string('status'),
+      user: r.object('user', AdminVacationsAnswerVacationsItemUser.fromJson),
+    );
+  }
+
+  final String askedAt;
+  final int days;
+  final String? decidedAt;
+  final String? decidedBy;
+  final String? endsAt;
+  final int id;
+  final String reason;
+  final String? startsAt;
+  final String status;
+  final AdminVacationsAnswerVacationsItemUser user;
+}
+
+class AdminVacationsAnswerVacationsItemUser {
+  const AdminVacationsAnswerVacationsItemUser({this.accountNo, required this.id, required this.name, required this.username});
+
+  factory AdminVacationsAnswerVacationsItemUser.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminVacationsAnswerVacationsItemUser');
+    return AdminVacationsAnswerVacationsItemUser(
+      accountNo: r.intOrNull('account_no'),
+      id: r.int_('id'),
+      name: r.string('name'),
+      username: r.string('username'),
+    );
+  }
+
+  final int? accountNo;
+  final int id;
+  final String name;
+  final String username;
 }
 
 class AllianceAnswer {
@@ -793,6 +1362,56 @@ class AnnouncementCardSender {
   final String username;
 }
 
+class AnnouncementsAnswer {
+  const AnnouncementsAnswer({required this.announcements});
+
+  factory AnnouncementsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AnnouncementsAnswer');
+    return AnnouncementsAnswer(announcements: r.list('announcements', AnnouncementCard.fromJson));
+  }
+
+  final List<AnnouncementCard> announcements;
+}
+
+class AppAnswer {
+  const AppAnswer({this.android, this.firebase, this.ios});
+
+  factory AppAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AppAnswer');
+    return AppAnswer(
+      android: r.objectOrNull('android', AppRelease.fromJson),
+      firebase: r.objectOrNull('firebase', AppAnswerFirebase.fromJson),
+      ios: r.mapOrNull('ios', JsonReader.anyOf),
+    );
+  }
+
+  final AppRelease? android;
+
+  /// [Sprint 19 B1] The app's Firebase settings (not secret), null until set on the server
+  final AppAnswerFirebase? firebase;
+  final Map<String, Object?>? ios;
+}
+
+/// [Sprint 19 B1] The app's Firebase settings (not secret), null until set on the server
+class AppAnswerFirebase {
+  const AppAnswerFirebase({this.apiKey, this.appId, this.projectId, this.senderId});
+
+  factory AppAnswerFirebase.fromJson(Object? json) {
+    final r = JsonReader(json, 'AppAnswerFirebase');
+    return AppAnswerFirebase(
+      apiKey: r.stringOrNull('api_key'),
+      appId: r.stringOrNull('app_id'),
+      projectId: r.stringOrNull('project_id'),
+      senderId: r.stringOrNull('sender_id'),
+    );
+  }
+
+  final String? apiKey;
+  final String? appId;
+  final String? projectId;
+  final String? senderId;
+}
+
 /// [Sprint 15 D1] A version of the app to download
 class AppRelease {
   const AppRelease({
@@ -979,6 +1598,25 @@ class Auction {
   final int value;
 }
 
+class AuthUsernameAnswer {
+  const AuthUsernameAnswer({required this.available, this.reason, required this.suggestions});
+
+  factory AuthUsernameAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AuthUsernameAnswer');
+    return AuthUsernameAnswer(
+      available: r.bool_('available'),
+      reason: r.stringOrNull('reason'),
+      suggestions: r.list('suggestions', JsonReader.stringOf),
+    );
+  }
+
+  final bool available;
+
+  /// Why not
+  final String? reason;
+  final List<String> suggestions;
+}
+
 class AwardCard {
   const AwardCard({
     this.assists,
@@ -1078,6 +1716,43 @@ class AwardsRun {
 
   final StatsClub club;
   final int wins;
+}
+
+class BootstrapAnswer {
+  const BootstrapAnswer({required this.config, this.home, required this.unread, this.user, this.wallet});
+
+  factory BootstrapAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'BootstrapAnswer');
+    return BootstrapAnswer(
+      config: r.map('config', JsonReader.anyOf),
+      home: r.objectOrNull('home', BootstrapAnswerHome.fromJson),
+      unread: r.int_('unread'),
+      user: r.objectOrNull('user', Account.fromJson),
+      wallet: r.objectOrNull('wallet', WalletView.fromJson),
+    );
+  }
+
+  /// GET /health's version, time, clock_offset, broadcast, support, adsense and analytics
+  final Map<String, Object?> config;
+  final BootstrapAnswerHome? home;
+  final int unread;
+  final Account? user;
+  final WalletView? wallet;
+}
+
+class BootstrapAnswerHome {
+  const BootstrapAnswerHome({required this.coach, required this.slots});
+
+  factory BootstrapAnswerHome.fromJson(Object? json) {
+    final r = JsonReader(json, 'BootstrapAnswerHome');
+    return BootstrapAnswerHome(coach: r.map('coach', JsonReader.anyOf), slots: r.list('slots', JsonReader.anyOf));
+  }
+
+  /// GET /home's coach
+  final Map<String, Object?> coach;
+
+  /// GET /home's slots
+  final List<Object?> slots;
 }
 
 class BroadcastChat {
@@ -2457,6 +3132,69 @@ class DataClub {
   final int strengthCp;
 }
 
+class DataClubsAnswer {
+  const DataClubsAnswer({this.clubs, this.league});
+
+  factory DataClubsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'DataClubsAnswer');
+    return DataClubsAnswer(clubs: r.listOrNull('clubs', DataClub.fromJson), league: r.stringOrNull('league'));
+  }
+
+  final List<DataClub>? clubs;
+  final String? league;
+}
+
+class DataFormationsAnswer {
+  const DataFormationsAnswer({
+    required this.across,
+    required this.bands,
+    required this.farLineBp,
+    required this.formations,
+    this.grid,
+    required this.limits,
+    required this.offLineBp,
+  });
+
+  factory DataFormationsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'DataFormationsAnswer');
+    return DataFormationsAnswer(
+      across: r.list('across', JsonReader.intOf),
+      bands: r.map('bands', JsonReader.anyOf),
+      farLineBp: r.int_('far_line_bp'),
+      formations: r.list('formations', Formation.fromJson),
+      grid: r.mapOrNull('grid', JsonReader.anyOf),
+      limits: r.map('limits', JsonReader.anyOf),
+      offLineBp: r.int_('off_line_bp'),
+    );
+  }
+
+  /// The width (y) a player may be dragged to, [from, to]
+  final List<int> across;
+
+  /// The depth (x) a player of each line may be dragged to, [from, to]
+  final Map<String, Object?> bands;
+
+  /// [Sprint 39 E1] What an outfield player gives two lines away (a defender up front), bp
+  final int farLineBp;
+  final List<Formation> formations;
+  final Map<String, Object?>? grid;
+  final Map<String, Object?> limits;
+
+  /// [Sprint 27 W4] What an outfield player gives one line away from his own (bp of his ability), as the engine plays him (7000 since Sprint 39 E1)
+  final int offLineBp;
+}
+
+class DataGlossaryAnswer {
+  const DataGlossaryAnswer({required this.terms});
+
+  factory DataGlossaryAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'DataGlossaryAnswer');
+    return DataGlossaryAnswer(terms: r.map('terms', JsonReader.stringOf));
+  }
+
+  final Map<String, String> terms;
+}
+
 class DataPlayer {
   const DataPlayer({
     required this.age,
@@ -2506,6 +3244,75 @@ class DataPlayer {
 
   /// Club money
   final int value;
+}
+
+class DataQuickOrdersAnswer {
+  const DataQuickOrdersAnswer({required this.orders});
+
+  factory DataQuickOrdersAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'DataQuickOrdersAnswer');
+    return DataQuickOrdersAnswer(orders: r.list('orders', DataQuickOrdersAnswerOrdersItem.fromJson));
+  }
+
+  final List<DataQuickOrdersAnswerOrdersItem> orders;
+}
+
+class DataQuickOrdersAnswerOrdersItem {
+  const DataQuickOrdersAnswerOrdersItem({required this.hint, required this.label, this.tactics});
+
+  factory DataQuickOrdersAnswerOrdersItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'DataQuickOrdersAnswerOrdersItem');
+    return DataQuickOrdersAnswerOrdersItem(
+      hint: r.string('hint'),
+      label: r.string('label'),
+      tactics: r.mapOrNull('tactics', JsonReader.anyOf),
+    );
+  }
+
+  final String hint;
+  final String label;
+  final Map<String, Object?>? tactics;
+}
+
+class DataTemplatesAnswer {
+  const DataTemplatesAnswer({this.dataVersion, this.templates});
+
+  factory DataTemplatesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'DataTemplatesAnswer');
+    return DataTemplatesAnswer(
+      dataVersion: r.stringOrNull('data_version'),
+      templates: r.listOrNull('templates', DataTemplatesAnswerTemplatesItem.fromJson),
+    );
+  }
+
+  final String? dataVersion;
+  final List<DataTemplatesAnswerTemplatesItem>? templates;
+}
+
+class DataTemplatesAnswerTemplatesItem {
+  const DataTemplatesAnswerTemplatesItem({
+    required this.avgStrengthCp,
+    required this.clubs,
+    required this.name,
+    required this.topStrengthCp,
+  });
+
+  factory DataTemplatesAnswerTemplatesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'DataTemplatesAnswerTemplatesItem');
+    return DataTemplatesAnswerTemplatesItem(
+      avgStrengthCp: r.int_('avg_strength_cp'),
+      clubs: r.int_('clubs'),
+      name: r.string('name'),
+      topStrengthCp: r.int_('top_strength_cp'),
+    );
+  }
+
+  final int avgStrengthCp;
+  final int clubs;
+  final String name;
+
+  /// The strongest club
+  final int topStrengthCp;
 }
 
 class DrawAnswer {
@@ -3182,6 +3989,39 @@ class FriendlyReportTimelineItem {
   final int? x;
 }
 
+class GroupsAnswer {
+  const GroupsAnswer({required this.groups});
+
+  factory GroupsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'GroupsAnswer');
+    return GroupsAnswer(groups: r.list('groups', ChatGroupItem.fromJson));
+  }
+
+  final List<ChatGroupItem> groups;
+}
+
+class GroupsMessagesAnswer {
+  const GroupsMessagesAnswer({required this.messages});
+
+  factory GroupsMessagesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'GroupsMessagesAnswer');
+    return GroupsMessagesAnswer(messages: r.list('messages', ChatMessage.fromJson));
+  }
+
+  final List<ChatMessage> messages;
+}
+
+class GuideAnswer {
+  const GuideAnswer({required this.sections});
+
+  factory GuideAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'GuideAnswer');
+    return GuideAnswer(sections: r.list('sections', GuideSection.fromJson));
+  }
+
+  final List<GuideSection> sections;
+}
+
 /// [X59] A section of the public guide
 class GuideSection {
   const GuideSection({required this.id, required this.title, required this.topics});
@@ -3207,6 +4047,175 @@ class GuideSectionTopicsItem {
   final String a;
   final String id;
   final String q;
+}
+
+class HealthAnswer {
+  const HealthAnswer({
+    this.adsense,
+    this.analytics,
+    required this.broadcast,
+    required this.clockOffset,
+    required this.engineVersion,
+    required this.minAppVersion,
+    required this.status,
+    this.support,
+    required this.time,
+    required this.version,
+  });
+
+  factory HealthAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'HealthAnswer');
+    return HealthAnswer(
+      adsense: r.objectOrNull('adsense', HealthAnswerAdsense.fromJson),
+      analytics: r.objectOrNull('analytics', HealthAnswerAnalytics.fromJson),
+      broadcast: r.object('broadcast', HealthAnswerBroadcast.fromJson),
+      clockOffset: r.int_('clock_offset'),
+      engineVersion: r.int_('engine_version'),
+      minAppVersion: r.string('min_app_version'),
+      status: r.string('status'),
+      support: r.objectOrNull('support', HealthAnswerSupport.fromJson),
+      time: r.string('time'),
+      version: r.string('version'),
+    );
+  }
+
+  /// [X57] Google AdSense for the web: null until the owner's account (ADSENSE_CLIENT) is set on the server
+  final HealthAnswerAdsense? adsense;
+
+  /// [X81] The site's measurement for the web, null when both are off
+  final HealthAnswerAnalytics? analytics;
+
+  /// Where the test event of POST /health/ping arrives
+  final HealthAnswerBroadcast broadcast;
+
+  /// Seconds the game clock is ahead of real time (clock:travel
+  final int clockOffset;
+  final int engineVersion;
+  final String minAppVersion;
+  final String status;
+
+  /// The support buttons [X13]: a link per channel, null when not set
+  final HealthAnswerSupport? support;
+
+  /// The game time (GameClock) in UTC
+  final String time;
+  final String version;
+}
+
+/// [X57] Google AdSense for the web: null until the owner's account (ADSENSE_CLIENT) is set on the server
+class HealthAnswerAdsense {
+  const HealthAnswerAdsense({required this.client, required this.rewarded, this.slot, required this.test});
+
+  factory HealthAnswerAdsense.fromJson(Object? json) {
+    final r = JsonReader(json, 'HealthAnswerAdsense');
+    return HealthAnswerAdsense(
+      client: r.string('client'),
+      rewarded: r.bool_('rewarded'),
+      slot: r.stringOrNull('slot'),
+      test: r.bool_('test'),
+    );
+  }
+
+  final String client;
+
+  /// Google's rewarded video (H5 Games Ads) is tried before the game's own ad
+  final bool rewarded;
+
+  /// The display unit's id
+  final String? slot;
+
+  /// Google's test ads
+  final bool test;
+}
+
+/// [X81] The site's measurement for the web, null when both are off
+class HealthAnswerAnalytics {
+  const HealthAnswerAnalytics({this.ga, this.pixel});
+
+  factory HealthAnswerAnalytics.fromJson(Object? json) {
+    final r = JsonReader(json, 'HealthAnswerAnalytics');
+    return HealthAnswerAnalytics(ga: r.stringOrNull('ga'), pixel: r.stringOrNull('pixel'));
+  }
+
+  /// Google Analytics 4 measurement id
+  final String? ga;
+
+  /// Meta Pixel id
+  final String? pixel;
+}
+
+/// Where the test event of POST /health/ping arrives
+class HealthAnswerBroadcast {
+  const HealthAnswerBroadcast({this.channel, this.event});
+
+  factory HealthAnswerBroadcast.fromJson(Object? json) {
+    final r = JsonReader(json, 'HealthAnswerBroadcast');
+    return HealthAnswerBroadcast(channel: r.stringOrNull('channel'), event: r.stringOrNull('event'));
+  }
+
+  final String? channel;
+  final String? event;
+}
+
+/// The support buttons [X13]: a link per channel, null when not set
+class HealthAnswerSupport {
+  const HealthAnswerSupport({this.telegram, this.whatsapp});
+
+  factory HealthAnswerSupport.fromJson(Object? json) {
+    final r = JsonReader(json, 'HealthAnswerSupport');
+    return HealthAnswerSupport(telegram: r.stringOrNull('telegram'), whatsapp: r.stringOrNull('whatsapp'));
+  }
+
+  final String? telegram;
+  final String? whatsapp;
+}
+
+class HomeAchievementsAnswer {
+  const HomeAchievementsAnswer({required this.achievements});
+
+  factory HomeAchievementsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'HomeAchievementsAnswer');
+    return HomeAchievementsAnswer(achievements: r.list('achievements', HomeAchievementsAnswerAchievementsItem.fromJson));
+  }
+
+  final List<HomeAchievementsAnswerAchievementsItem> achievements;
+}
+
+class HomeAchievementsAnswerAchievementsItem {
+  const HomeAchievementsAnswerAchievementsItem({
+    required this.earned,
+    required this.goal,
+    required this.key,
+    required this.paid,
+    required this.progress,
+    required this.reward,
+    required this.tier,
+  });
+
+  factory HomeAchievementsAnswerAchievementsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'HomeAchievementsAnswerAchievementsItem');
+    return HomeAchievementsAnswerAchievementsItem(
+      earned: r.bool_('earned'),
+      goal: r.int_('goal'),
+      key: r.string('key'),
+      paid: r.bool_('paid'),
+      progress: r.int_('progress'),
+      reward: r.int_('reward'),
+      tier: r.string('tier'),
+    );
+  }
+
+  final bool earned;
+  final int goal;
+  final String key;
+  final bool paid;
+  final int progress;
+
+  /// Its coins, given once when reached
+  final int reward;
+
+  /// [Sprint 40 A1] The badge's level
+  final String tier;
 }
 
 class HomeScreen {
@@ -3669,6 +4678,29 @@ class HouseAd {
   final int seconds;
   final String title;
   final int views;
+}
+
+class IdeasAnswer {
+  const IdeasAnswer({required this.honours, required this.leftToday, required this.perDay, required this.polls, required this.suggestions});
+
+  factory IdeasAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'IdeasAnswer');
+    return IdeasAnswer(
+      honours: r.list('honours', HonourContributor.fromJson),
+      leftToday: r.int_('left_today'),
+      perDay: r.int_('per_day'),
+      polls: r.list('polls', Poll.fromJson),
+      suggestions: r.list('suggestions', Suggestion.fromJson),
+    );
+  }
+
+  final List<HonourContributor> honours;
+
+  /// The suggestions left in the last 24 hours
+  final int leftToday;
+  final int perDay;
+  final List<Poll> polls;
+  final List<Suggestion> suggestions;
 }
 
 class IntegrityAnswer {
@@ -4941,6 +5973,473 @@ class LeagueStatsValueItem {
   final int value;
 }
 
+class LeaguesAnswer {
+  const LeaguesAnswer({
+    required this.activeTeams,
+    required this.leagues,
+    required this.maxActiveTeams,
+    this.nextSlotAt,
+    required this.slotsTotal,
+  });
+
+  factory LeaguesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesAnswer');
+    return LeaguesAnswer(
+      activeTeams: r.int_('active_teams'),
+      leagues: r.list('leagues', League.fromJson),
+      maxActiveTeams: r.int_('max_active_teams'),
+      nextSlotAt: r.stringOrNull('next_slot_at'),
+      slotsTotal: r.int_('slots_total'),
+    );
+  }
+
+  final int activeTeams;
+  final List<League> leagues;
+
+  /// [Sprint 24 B3] The slots open now for the account's age (2, then one more every 10 days)
+  final int maxActiveTeams;
+
+  /// When the next slot opens (null when all are open)
+  final String? nextSlotAt;
+
+  /// All the slots (game.league.max_active_teams)
+  final int slotsTotal;
+}
+
+class LeaguesAuctionsAnswer {
+  const LeaguesAuctionsAnswer({required this.auctions, required this.minutes});
+
+  factory LeaguesAuctionsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesAuctionsAnswer');
+    return LeaguesAuctionsAnswer(auctions: r.list('auctions', Auction.fromJson), minutes: r.list('minutes', JsonReader.intOf));
+  }
+
+  final List<Auction> auctions;
+  final List<int> minutes;
+}
+
+class LeaguesChestsAnswer {
+  const LeaguesChestsAnswer({required this.chests});
+
+  factory LeaguesChestsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesChestsAnswer');
+    return LeaguesChestsAnswer(chests: r.list('chests', Chest.fromJson));
+  }
+
+  final List<Chest> chests;
+}
+
+class LeaguesClubsAnswer {
+  const LeaguesClubsAnswer({required this.clubs});
+
+  factory LeaguesClubsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesClubsAnswer');
+    return LeaguesClubsAnswer(clubs: r.list('clubs', LeagueClub.fromJson));
+  }
+
+  final List<LeagueClub> clubs;
+}
+
+class LeaguesCupAnswer {
+  const LeaguesCupAnswer({required this.stages});
+
+  factory LeaguesCupAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesCupAnswer');
+    return LeaguesCupAnswer(stages: r.list('stages', LeaguesCupAnswerStagesItem.fromJson));
+  }
+
+  final List<LeaguesCupAnswerStagesItem> stages;
+}
+
+class LeaguesCupAnswerStagesItem {
+  const LeaguesCupAnswerStagesItem({required this.scheduledAt, required this.stage, required this.ties});
+
+  factory LeaguesCupAnswerStagesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesCupAnswerStagesItem');
+    return LeaguesCupAnswerStagesItem(
+      scheduledAt: r.string('scheduled_at'),
+      stage: r.string('stage'),
+      ties: r.list('ties', LeaguesCupAnswerStagesItemTiesItem.fromJson),
+    );
+  }
+
+  final String scheduledAt;
+  final String stage;
+  final List<LeaguesCupAnswerStagesItemTiesItem> ties;
+}
+
+class LeaguesCupAnswerStagesItemTiesItem {
+  const LeaguesCupAnswerStagesItemTiesItem({
+    this.away,
+    this.awayGoals,
+    this.home,
+    this.homeGoals,
+    required this.id,
+    this.next,
+    required this.slot,
+    required this.status,
+    this.winnerId,
+  });
+
+  factory LeaguesCupAnswerStagesItemTiesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesCupAnswerStagesItemTiesItem');
+    return LeaguesCupAnswerStagesItemTiesItem(
+      away: r.objectOrNull('away', FixtureClub.fromJson),
+      awayGoals: r.intOrNull('away_goals'),
+      home: r.objectOrNull('home', FixtureClub.fromJson),
+      homeGoals: r.intOrNull('home_goals'),
+      id: r.int_('id'),
+      next: r.objectOrNull('next', LeaguesCupAnswerStagesItemTiesItemNext.fromJson),
+      slot: r.int_('slot'),
+      status: r.string('status'),
+      winnerId: r.intOrNull('winner_id'),
+    );
+  }
+
+  final FixtureClub? away;
+  final int? awayGoals;
+  final FixtureClub? home;
+  final int? homeGoals;
+  final int id;
+  final LeaguesCupAnswerStagesItemTiesItemNext? next;
+  final int slot;
+  final String status;
+  final int? winnerId;
+}
+
+class LeaguesCupAnswerStagesItemTiesItemNext {
+  const LeaguesCupAnswerStagesItemTiesItemNext({required this.side, required this.slot});
+
+  factory LeaguesCupAnswerStagesItemTiesItemNext.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesCupAnswerStagesItemTiesItemNext');
+    return LeaguesCupAnswerStagesItemTiesItemNext(side: r.string('side'), slot: r.int_('slot'));
+  }
+
+  final String side;
+  final int slot;
+}
+
+class LeaguesFixturesAnswer {
+  const LeaguesFixturesAnswer({required this.fixtures, required this.season});
+
+  factory LeaguesFixturesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesFixturesAnswer');
+    return LeaguesFixturesAnswer(fixtures: r.list('fixtures', Fixture.fromJson), season: r.object('season', SeasonCalendar.fromJson));
+  }
+
+  final List<Fixture> fixtures;
+  final SeasonCalendar season;
+}
+
+class LeaguesMarketDoneAnswer {
+  const LeaguesMarketDoneAnswer({required this.transfers});
+
+  factory LeaguesMarketDoneAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesMarketDoneAnswer');
+    return LeaguesMarketDoneAnswer(transfers: r.list('transfers', LeaguesMarketDoneAnswerTransfersItem.fromJson));
+  }
+
+  final List<LeaguesMarketDoneAnswerTransfersItem> transfers;
+}
+
+class LeaguesMarketDoneAnswerTransfersItem {
+  const LeaguesMarketDoneAnswerTransfersItem({required this.at, this.from, required this.player, required this.price, required this.to});
+
+  factory LeaguesMarketDoneAnswerTransfersItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesMarketDoneAnswerTransfersItem');
+    return LeaguesMarketDoneAnswerTransfersItem(
+      at: r.string('at'),
+      from: r.stringOrNull('from'),
+      player: r.string('player'),
+      price: r.int_('price'),
+      to: r.string('to'),
+    );
+  }
+
+  final String at;
+
+  /// Null: from outside the league
+  final String? from;
+  final String player;
+  final int price;
+  final String to;
+}
+
+class LeaguesMarketQuoteAnswer {
+  const LeaguesMarketQuoteAnswer({required this.cap, required this.floor, required this.ok, required this.waitHours});
+
+  factory LeaguesMarketQuoteAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesMarketQuoteAnswer');
+    return LeaguesMarketQuoteAnswer(cap: r.int_('cap'), floor: r.int_('floor'), ok: r.bool_('ok'), waitHours: r.int_('wait_hours'));
+  }
+
+  final int cap;
+  final int floor;
+  final bool ok;
+  final int waitHours;
+}
+
+class LeaguesPressAnswer {
+  const LeaguesPressAnswer({required this.enabled, this.press});
+
+  factory LeaguesPressAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesPressAnswer');
+    return LeaguesPressAnswer(enabled: r.bool_('enabled'), press: r.objectOrNull('press', PressConference.fromJson));
+  }
+
+  final bool enabled;
+  final PressConference? press;
+}
+
+class LeaguesReleaseAnswer {
+  const LeaguesReleaseAnswer({required this.can, required this.clause, required this.club, required this.playerId, this.why});
+
+  factory LeaguesReleaseAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesReleaseAnswer');
+    return LeaguesReleaseAnswer(
+      can: r.bool_('can'),
+      clause: r.int_('clause'),
+      club: r.object('club', LeaguesReleaseAnswerClub.fromJson),
+      playerId: r.int_('player_id'),
+      why: r.stringOrNull('why'),
+    );
+  }
+
+  final bool can;
+  final int clause;
+  final LeaguesReleaseAnswerClub club;
+  final int playerId;
+  final String? why;
+}
+
+class LeaguesReleaseAnswerClub {
+  const LeaguesReleaseAnswerClub({this.id, this.name});
+
+  factory LeaguesReleaseAnswerClub.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesReleaseAnswerClub');
+    return LeaguesReleaseAnswerClub(id: r.intOrNull('id'), name: r.stringOrNull('name'));
+  }
+
+  final int? id;
+  final String? name;
+}
+
+class LeaguesRequestsAnswer {
+  const LeaguesRequestsAnswer({required this.requests});
+
+  factory LeaguesRequestsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesRequestsAnswer');
+    return LeaguesRequestsAnswer(requests: r.list('requests', JoinRequest.fromJson));
+  }
+
+  final List<JoinRequest> requests;
+}
+
+class LeaguesStandingsAnswer {
+  const LeaguesStandingsAnswer({this.nextRound, required this.season, required this.table});
+
+  factory LeaguesStandingsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesStandingsAnswer');
+    return LeaguesStandingsAnswer(
+      nextRound: r.intOrNull('next_round'),
+      season: r.object('season', SeasonCalendar.fromJson),
+      table: r.list('table', LeaguesStandingsAnswerTableItem.fromJson),
+    );
+  }
+
+  final int? nextRound;
+  final SeasonCalendar season;
+  final List<LeaguesStandingsAnswerTableItem> table;
+}
+
+class LeaguesStandingsAnswerTableItem {
+  const LeaguesStandingsAnswerTableItem({
+    this.coach,
+    required this.code,
+    required this.crestUrl,
+    this.deducted,
+    required this.drawn,
+    required this.goalDifference,
+    required this.goalsAgainst,
+    required this.goalsFor,
+    required this.id,
+    required this.lost,
+    required this.name,
+    required this.played,
+    required this.points,
+    required this.position,
+    required this.restsNext,
+    required this.strengthCp,
+    required this.won,
+  });
+
+  factory LeaguesStandingsAnswerTableItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesStandingsAnswerTableItem');
+    return LeaguesStandingsAnswerTableItem(
+      coach: r.stringOrNull('coach'),
+      code: r.string('code'),
+      crestUrl: r.string('crest_url'),
+      deducted: r.intOrNull('deducted'),
+      drawn: r.int_('drawn'),
+      goalDifference: r.int_('goal_difference'),
+      goalsAgainst: r.int_('goals_against'),
+      goalsFor: r.int_('goals_for'),
+      id: r.int_('id'),
+      lost: r.int_('lost'),
+      name: r.string('name'),
+      played: r.int_('played'),
+      points: r.int_('points'),
+      position: r.int_('position'),
+      restsNext: r.bool_('rests_next'),
+      strengthCp: r.int_('strength_cp'),
+      won: r.int_('won'),
+    );
+  }
+
+  final String? coach;
+  final String code;
+  final String crestUrl;
+
+  /// Points the FA took off [X28]
+  final int? deducted;
+  final int drawn;
+  final int goalDifference;
+  final int goalsAgainst;
+  final int goalsFor;
+  final int id;
+  final int lost;
+  final String name;
+  final int played;
+  final int points;
+  final int position;
+
+  /// Rests in the next round (odd team count)
+  final bool restsNext;
+  final int strengthCp;
+  final int won;
+}
+
+class LeaguesTeamMissedAnswer {
+  const LeaguesTeamMissedAnswer({required this.matches});
+
+  factory LeaguesTeamMissedAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesTeamMissedAnswer');
+    return LeaguesTeamMissedAnswer(matches: r.list('matches', MissedMatch.fromJson));
+  }
+
+  final List<MissedMatch> matches;
+}
+
+class LeaguesTeamNextMatchAnswer {
+  const LeaguesTeamNextMatchAnswer({this.match});
+
+  factory LeaguesTeamNextMatchAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesTeamNextMatchAnswer');
+    return LeaguesTeamNextMatchAnswer(match: r.objectOrNull('match', NextMatch.fromJson));
+  }
+
+  final NextMatch? match;
+}
+
+class LeaguesTeamSeasonAnswer {
+  const LeaguesTeamSeasonAnswer({required this.players, required this.rounds, required this.transfers});
+
+  factory LeaguesTeamSeasonAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesTeamSeasonAnswer');
+    return LeaguesTeamSeasonAnswer(
+      players: r.map('players', LeaguesTeamSeasonAnswerPlayersValue.fromJson),
+      rounds: r.int_('rounds'),
+      transfers: r.list('transfers', LeaguesTeamSeasonAnswerTransfersItem.fromJson),
+    );
+  }
+
+  /// By player id
+  final Map<String, LeaguesTeamSeasonAnswerPlayersValue> players;
+
+  /// The last league round played
+  final int rounds;
+  final List<LeaguesTeamSeasonAnswerTransfersItem> transfers;
+}
+
+class LeaguesTeamSeasonAnswerPlayersValue {
+  const LeaguesTeamSeasonAnswerPlayersValue({
+    required this.assists,
+    this.average,
+    required this.goals,
+    required this.played,
+    required this.ratings,
+  });
+
+  factory LeaguesTeamSeasonAnswerPlayersValue.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesTeamSeasonAnswerPlayersValue');
+    return LeaguesTeamSeasonAnswerPlayersValue(
+      assists: r.int_('assists'),
+      average: r.intOrNull('average'),
+      goals: r.int_('goals'),
+      played: r.int_('played'),
+      ratings: r.map('ratings', JsonReader.intOf),
+    );
+  }
+
+  final int assists;
+  final int? average;
+  final int goals;
+  final int played;
+
+  /// By league round
+  final Map<String, int> ratings;
+}
+
+class LeaguesTeamSeasonAnswerTransfersItem {
+  const LeaguesTeamSeasonAnswerTransfersItem({
+    required this.at,
+    this.from,
+    required this.id,
+    required this.name,
+    required this.playerId,
+    required this.position,
+    required this.price,
+    this.to,
+    required this.value,
+  });
+
+  factory LeaguesTeamSeasonAnswerTransfersItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesTeamSeasonAnswerTransfersItem');
+    return LeaguesTeamSeasonAnswerTransfersItem(
+      at: r.string('at'),
+      from: r.stringOrNull('from'),
+      id: r.int_('id'),
+      name: r.string('name'),
+      playerId: r.int_('player_id'),
+      position: r.string('position'),
+      price: r.int_('price'),
+      to: r.stringOrNull('to'),
+      value: r.int_('value'),
+    );
+  }
+
+  final String at;
+  final String? from;
+  final int id;
+  final String name;
+  final int playerId;
+  final String position;
+  final int price;
+  final String? to;
+  final int value;
+}
+
+class LeaguesTeamSuggestionAnswer {
+  const LeaguesTeamSuggestionAnswer({required this.lineup});
+
+  factory LeaguesTeamSuggestionAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesTeamSuggestionAnswer');
+    return LeaguesTeamSuggestionAnswer(lineup: r.object('lineup', Lineup.fromJson));
+  }
+
+  final Lineup lineup;
+}
+
 class Lineup {
   const Lineup({
     required this.auto,
@@ -6092,6 +7591,152 @@ class MatchViewTeam {
   final Map<String, Object?>? tactics;
 }
 
+class MatchesLiveAnswer {
+  const MatchesLiveAnswer({required this.matches});
+
+  factory MatchesLiveAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchesLiveAnswer');
+    return MatchesLiveAnswer(matches: r.list('matches', MatchesLiveAnswerMatchesItem.fromJson));
+  }
+
+  final List<MatchesLiveAnswerMatchesItem> matches;
+}
+
+class MatchesLiveAnswerMatchesItem {
+  const MatchesLiveAnswerMatchesItem({required this.away, required this.competition, required this.home, required this.id});
+
+  factory MatchesLiveAnswerMatchesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchesLiveAnswerMatchesItem');
+    return MatchesLiveAnswerMatchesItem(
+      away: r.string('away'),
+      competition: r.string('competition'),
+      home: r.string('home'),
+      id: r.int_('id'),
+    );
+  }
+
+  final String away;
+  final String competition;
+
+  /// The home club's code
+  final String home;
+  final int id;
+}
+
+class MatchesReplayAnswer {
+  const MatchesReplayAnswer({this.events, this.expired, required this.replayable, this.ticks});
+
+  factory MatchesReplayAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchesReplayAnswer');
+    return MatchesReplayAnswer(
+      events: r.listOrNull('events', JsonReader.anyOf),
+      expired: r.boolOrNull('expired'),
+      replayable: r.bool_('replayable'),
+      ticks: r.listOrNull('ticks', JsonReader.anyOf),
+    );
+  }
+
+  final List<Object?>? events;
+
+  /// [Sprint 43 C6] The next round has started: the result and its events only, no longer the match again
+  final bool? expired;
+  final bool replayable;
+  final List<Object?>? ticks;
+}
+
+class MatchesSceneAnswer {
+  const MatchesSceneAnswer({
+    required this.captains,
+    required this.clubs,
+    required this.coachLooks,
+    required this.id,
+    required this.kickoffAt,
+    this.kits,
+    required this.light,
+    required this.players,
+    required this.stadium,
+    required this.tickMs,
+  });
+
+  factory MatchesSceneAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchesSceneAnswer');
+    return MatchesSceneAnswer(
+      captains: r.object('captains', MatchesSceneAnswerCaptains.fromJson),
+      clubs: r.object('clubs', MatchesSceneAnswerClubs.fromJson),
+      coachLooks: r.object('coach_looks', MatchesSceneAnswerCoachLooks.fromJson),
+      id: r.int_('id'),
+      kickoffAt: r.string('kickoff_at'),
+      kits: r.objectOrNull('kits', MatchKits.fromJson),
+      light: r.string('light'),
+      players: r.object('players', MatchesSceneAnswerPlayers.fromJson),
+      stadium: r.string('stadium'),
+      tickMs: r.int_('tick_ms'),
+    );
+  }
+
+  final MatchesSceneAnswerCaptains captains;
+  final MatchesSceneAnswerClubs clubs;
+
+  /// C1 to C3; null for a club with no coach
+  final MatchesSceneAnswerCoachLooks coachLooks;
+  final int id;
+  final String kickoffAt;
+  final MatchKits? kits;
+  final String light;
+  final MatchesSceneAnswerPlayers players;
+  final String stadium;
+  final int tickMs;
+}
+
+class MatchesSceneAnswerCaptains {
+  const MatchesSceneAnswerCaptains({this.away, this.home});
+
+  factory MatchesSceneAnswerCaptains.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchesSceneAnswerCaptains');
+    return MatchesSceneAnswerCaptains(away: r.intOrNull('away'), home: r.intOrNull('home'));
+  }
+
+  final int? away;
+  final int? home;
+}
+
+class MatchesSceneAnswerClubs {
+  const MatchesSceneAnswerClubs({this.away, this.home});
+
+  factory MatchesSceneAnswerClubs.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchesSceneAnswerClubs');
+    return MatchesSceneAnswerClubs(away: r.objectOrNull('away', SceneClub.fromJson), home: r.objectOrNull('home', SceneClub.fromJson));
+  }
+
+  final SceneClub? away;
+  final SceneClub? home;
+}
+
+/// C1 to C3; null for a club with no coach
+class MatchesSceneAnswerCoachLooks {
+  const MatchesSceneAnswerCoachLooks({this.away, this.home});
+
+  factory MatchesSceneAnswerCoachLooks.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchesSceneAnswerCoachLooks');
+    return MatchesSceneAnswerCoachLooks(away: r.stringOrNull('away'), home: r.stringOrNull('home'));
+  }
+
+  final String? away;
+  final String? home;
+}
+
+class MatchesSceneAnswerPlayers {
+  const MatchesSceneAnswerPlayers({this.away, this.home});
+
+  factory MatchesSceneAnswerPlayers.fromJson(Object? json) {
+    final r = JsonReader(json, 'MatchesSceneAnswerPlayers');
+    return MatchesSceneAnswerPlayers(away: r.listOrNull('away', ScenePlayer.fromJson), home: r.listOrNull('home', ScenePlayer.fromJson));
+  }
+
+  final List<ScenePlayer>? away;
+  final List<ScenePlayer>? home;
+}
+
 class Message {
   const Message({
     required this.body,
@@ -6149,6 +7794,30 @@ class MessageSender {
   final String name;
   final bool official;
   final String username;
+}
+
+class MessagesAnswer {
+  const MessagesAnswer({required this.messages, required this.more, required this.unread});
+
+  factory MessagesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'MessagesAnswer');
+    return MessagesAnswer(messages: r.list('messages', Message.fromJson), more: r.bool_('more'), unread: r.int_('unread'));
+  }
+
+  final List<Message> messages;
+  final bool more;
+  final int unread;
+}
+
+class MessagesUnreadAnswer {
+  const MessagesUnreadAnswer({required this.unread});
+
+  factory MessagesUnreadAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'MessagesUnreadAnswer');
+    return MessagesUnreadAnswer(unread: r.int_('unread'));
+  }
+
+  final int unread;
 }
 
 class MissedMatch {
@@ -7159,6 +8828,23 @@ class RankedCoachRating {
   final String tier;
 }
 
+class RankingsCoachesAnswer {
+  const RankingsCoachesAnswer({required this.by, required this.coaches, this.me});
+
+  factory RankingsCoachesAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'RankingsCoachesAnswer');
+    return RankingsCoachesAnswer(
+      by: r.string('by'),
+      coaches: r.list('coaches', RankedCoach.fromJson),
+      me: r.objectOrNull('me', RankedCoach.fromJson),
+    );
+  }
+
+  final String by;
+  final List<RankedCoach> coaches;
+  final RankedCoach? me;
+}
+
 /// [Sprint 25] Where the points stand: the tier, its division, and the way to the next division or tier
 class RatingTier {
   const RatingTier({
@@ -7693,6 +9379,27 @@ class SeasonCalendarWindowsItem {
   final String closesAt;
   final String kind;
   final String opensAt;
+}
+
+class SimClubsAnswer {
+  const SimClubsAnswer({this.bench, this.club, this.formation, this.players, this.starters});
+
+  factory SimClubsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'SimClubsAnswer');
+    return SimClubsAnswer(
+      bench: r.listOrNull('bench', JsonReader.intOf),
+      club: r.mapOrNull('club', JsonReader.anyOf),
+      formation: r.stringOrNull('formation'),
+      players: r.listOrNull('players', JsonReader.anyOf),
+      starters: r.listOrNull('starters', JsonReader.intOf),
+    );
+  }
+
+  final List<int>? bench;
+  final Map<String, Object?>? club;
+  final String? formation;
+  final List<Object?>? players;
+  final List<int>? starters;
 }
 
 class Slot {
@@ -8290,6 +9997,83 @@ class StatsPlayerPlayer {
   final String name;
 }
 
+class StoreAnswer {
+  const StoreAnswer({required this.items, required this.whatsapp});
+
+  factory StoreAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'StoreAnswer');
+    return StoreAnswer(items: r.list('items', StoreAnswerItemsItem.fromJson), whatsapp: r.string('whatsapp'));
+  }
+
+  final List<StoreAnswerItemsItem> items;
+  final String whatsapp;
+}
+
+class StoreAnswerItemsItem {
+  const StoreAnswerItemsItem({
+    required this.currency,
+    required this.description,
+    this.discount,
+    this.emailedAt,
+    required this.ended,
+    this.endsAt,
+    required this.id,
+    this.imageUrl,
+    required this.kind,
+    this.oldPrice,
+    required this.price,
+    required this.sort,
+    required this.title,
+    required this.visible,
+    required this.whatsappUrl,
+  });
+
+  factory StoreAnswerItemsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'StoreAnswerItemsItem');
+    return StoreAnswerItemsItem(
+      currency: r.string('currency'),
+      description: r.string('description'),
+      discount: r.intOrNull('discount'),
+      emailedAt: r.stringOrNull('emailed_at'),
+      ended: r.bool_('ended'),
+      endsAt: r.stringOrNull('ends_at'),
+      id: r.int_('id'),
+      imageUrl: r.stringOrNull('image_url'),
+      kind: r.string('kind'),
+      oldPrice: r.intOrNull('old_price'),
+      price: r.int_('price'),
+      sort: r.int_('sort'),
+      title: r.string('title'),
+      visible: r.bool_('visible'),
+      whatsappUrl: r.string('whatsapp_url'),
+    );
+  }
+
+  final String currency;
+  final String description;
+
+  /// Whole per cent
+  final int? discount;
+  final String? emailedAt;
+  final bool ended;
+
+  /// An offer's end; null for a package
+  final String? endsAt;
+  final int id;
+  final String? imageUrl;
+  final String kind;
+
+  /// The price before the discount
+  final int? oldPrice;
+  final int price;
+  final int sort;
+  final String title;
+  final bool visible;
+
+  /// wa.me with the item and the account number
+  final String whatsappUrl;
+}
+
 /// [Sprint 43 W2] A store package (it stays) or timed offer
 class StoreItem {
   const StoreItem({
@@ -8436,6 +10220,17 @@ class Suggestion {
   final String? reply;
   final String status;
   final String title;
+}
+
+class SupportAnswer {
+  const SupportAnswer({required this.messages});
+
+  factory SupportAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'SupportAnswer');
+    return SupportAnswer(messages: r.list('messages', SupportMessage.fromJson));
+  }
+
+  final List<SupportMessage> messages;
 }
 
 class SupportMessage {
@@ -9493,6 +11288,323 @@ class TournamentRow {
   final int played;
   final int points;
   final int won;
+}
+
+class TournamentsAnswer {
+  const TournamentsAnswer({required this.tournaments});
+
+  factory TournamentsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsAnswer');
+    return TournamentsAnswer(tournaments: r.list('tournaments', Tournament.fromJson));
+  }
+
+  final List<Tournament> tournaments;
+}
+
+class TournamentsCatalogAnswer {
+  const TournamentsCatalogAnswer({required this.limits, required this.missing, required this.nations, required this.templates});
+
+  factory TournamentsCatalogAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsCatalogAnswer');
+    return TournamentsCatalogAnswer(
+      limits: r.object('limits', TournamentsCatalogAnswerLimits.fromJson),
+      missing: r.list('missing', TournamentsCatalogAnswerMissingItem.fromJson),
+      nations: r.list('nations', TeamCard.fromJson),
+      templates: r.list('templates', TournamentsCatalogAnswerTemplatesItem.fromJson),
+    );
+  }
+
+  final TournamentsCatalogAnswerLimits limits;
+  final List<TournamentsCatalogAnswerMissingItem> missing;
+  final List<TeamCard> nations;
+  final List<TournamentsCatalogAnswerTemplatesItem> templates;
+}
+
+class TournamentsCatalogAnswerLimits {
+  const TournamentsCatalogAnswerLimits({
+    required this.advance,
+    required this.coinsPerTeam,
+    required this.groupCounts,
+    required this.maxTeams,
+    required this.minTeams,
+  });
+
+  factory TournamentsCatalogAnswerLimits.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsCatalogAnswerLimits');
+    return TournamentsCatalogAnswerLimits(
+      advance: r.list('advance', JsonReader.intOf),
+      coinsPerTeam: r.int_('coins_per_team'),
+      groupCounts: r.list('group_counts', JsonReader.intOf),
+      maxTeams: r.int_('max_teams'),
+      minTeams: r.int_('min_teams'),
+    );
+  }
+
+  final List<int> advance;
+
+  /// [X65] The tournament's price: this many coins for each team
+  final int coinsPerTeam;
+  final List<int> groupCounts;
+  final int maxTeams;
+  final int minTeams;
+}
+
+class TournamentsCatalogAnswerMissingItem {
+  const TournamentsCatalogAnswerMissingItem({required this.keepers, required this.name, required this.players});
+
+  factory TournamentsCatalogAnswerMissingItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsCatalogAnswerMissingItem');
+    return TournamentsCatalogAnswerMissingItem(keepers: r.int_('keepers'), name: r.string('name'), players: r.int_('players'));
+  }
+
+  final int keepers;
+  final String name;
+  final int players;
+}
+
+class TournamentsCatalogAnswerTemplatesItem {
+  const TournamentsCatalogAnswerTemplatesItem({
+    required this.advancePerGroup,
+    this.bestThirds,
+    this.confederation,
+    required this.format,
+    required this.groupCount,
+    required this.key,
+    required this.legs,
+    required this.pool,
+    required this.teams,
+  });
+
+  factory TournamentsCatalogAnswerTemplatesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsCatalogAnswerTemplatesItem');
+    return TournamentsCatalogAnswerTemplatesItem(
+      advancePerGroup: r.int_('advance_per_group'),
+      bestThirds: r.intOrNull('best_thirds'),
+      confederation: r.stringOrNull('confederation'),
+      format: r.string('format'),
+      groupCount: r.int_('group_count'),
+      key: r.string('key'),
+      legs: r.int_('legs'),
+      pool: r.string('pool'),
+      teams: r.list('teams', JsonReader.intOf),
+    );
+  }
+
+  final int advancePerGroup;
+  final int? bestThirds;
+  final String? confederation;
+  final String format;
+  final int groupCount;
+  final String key;
+  final int legs;
+  final String pool;
+  final List<int> teams;
+}
+
+class TournamentsClubsAnswer {
+  const TournamentsClubsAnswer({required this.clubs});
+
+  factory TournamentsClubsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsClubsAnswer');
+    return TournamentsClubsAnswer(clubs: r.list('clubs', TeamCard.fromJson));
+  }
+
+  final List<TeamCard> clubs;
+}
+
+class TournamentsDrawAnswer {
+  const TournamentsDrawAnswer({
+    this.advancePerGroup,
+    this.bestThirds,
+    required this.canSchedule,
+    required this.coaches,
+    required this.code,
+    this.commit,
+    this.drawAt,
+    this.drawnAt,
+    required this.entrants,
+    required this.entryMode,
+    this.format,
+    this.groupCount,
+    required this.id,
+    required this.isOwner,
+    this.legs,
+    required this.name,
+    this.owner,
+    required this.pots,
+    required this.revealMs,
+    this.seed,
+    required this.serverNow,
+    required this.stages,
+    required this.startsAt,
+    required this.status,
+    required this.steps,
+    required this.teamCount,
+    this.template,
+  });
+
+  factory TournamentsDrawAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsDrawAnswer');
+    return TournamentsDrawAnswer(
+      advancePerGroup: r.intOrNull('advance_per_group'),
+      bestThirds: r.intOrNull('best_thirds'),
+      canSchedule: r.bool_('can_schedule'),
+      coaches: r.int_('coaches'),
+      code: r.string('code'),
+      commit: r.stringOrNull('commit'),
+      drawAt: r.stringOrNull('draw_at'),
+      drawnAt: r.stringOrNull('drawn_at'),
+      entrants: r.int_('entrants'),
+      entryMode: r.string('entry_mode'),
+      format: r.stringOrNull('format'),
+      groupCount: r.intOrNull('group_count'),
+      id: r.int_('id'),
+      isOwner: r.bool_('is_owner'),
+      legs: r.intOrNull('legs'),
+      name: r.string('name'),
+      owner: r.objectOrNull('owner', TournamentsDrawAnswerOwner.fromJson),
+      pots: r.int_('pots'),
+      revealMs: r.int_('reveal_ms'),
+      seed: r.intOrNull('seed'),
+      serverNow: r.int_('server_now'),
+      stages: r.list('stages', JsonReader.stringOf),
+      startsAt: r.string('starts_at'),
+      status: r.string('status'),
+      steps: r.list('steps', TournamentsDrawAnswerStepsItem.fromJson),
+      teamCount: r.int_('team_count'),
+      template: r.stringOrNull('template'),
+    );
+  }
+
+  final int? advancePerGroup;
+  final int? bestThirds;
+  final bool canSchedule;
+  final int coaches;
+  final String code;
+  final String? commit;
+  final String? drawAt;
+  final String? drawnAt;
+
+  /// Players who entered (draw)
+  final int entrants;
+
+  /// [X68] pick - each coach asks and takes a team; draw - the live draw shares the teams among the players who entered; assign - the organizer names each coach
+  final String entryMode;
+  final String? format;
+  final int? groupCount;
+  final int id;
+  final bool isOwner;
+  final int? legs;
+  final String name;
+  final TournamentsDrawAnswerOwner? owner;
+  final int pots;
+  final int revealMs;
+  final int? seed;
+  final int serverNow;
+  final List<String> stages;
+  final String startsAt;
+  final String status;
+  final List<TournamentsDrawAnswerStepsItem> steps;
+  final int teamCount;
+  final String? template;
+}
+
+class TournamentsDrawAnswerOwner {
+  const TournamentsDrawAnswerOwner({required this.id, required this.name});
+
+  factory TournamentsDrawAnswerOwner.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsDrawAnswerOwner');
+    return TournamentsDrawAnswerOwner(id: r.int_('id'), name: r.string('name'));
+  }
+
+  final int id;
+  final String name;
+}
+
+class TournamentsDrawAnswerStepsItem {
+  const TournamentsDrawAnswerStepsItem({
+    this.club,
+    this.group,
+    this.position,
+    this.pot,
+    this.side,
+    this.slot,
+    this.stage,
+    required this.type,
+    this.user,
+  });
+
+  factory TournamentsDrawAnswerStepsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsDrawAnswerStepsItem');
+    return TournamentsDrawAnswerStepsItem(
+      club: r.mapOrNull('club', JsonReader.anyOf),
+      group: r.intOrNull('group'),
+      position: r.intOrNull('position'),
+      pot: r.intOrNull('pot'),
+      side: r.stringOrNull('side'),
+      slot: r.intOrNull('slot'),
+      stage: r.stringOrNull('stage'),
+      type: r.string('type'),
+      user: r.objectOrNull('user', TournamentsDrawAnswerStepsItemUser.fromJson),
+    );
+  }
+
+  final Map<String, Object?>? club;
+  final int? group;
+  final int? position;
+  final int? pot;
+  final String? side;
+  final int? slot;
+  final String? stage;
+
+  /// owner - a team given to a player (X68), before the shape's balls
+  final String type;
+  final TournamentsDrawAnswerStepsItemUser? user;
+}
+
+class TournamentsDrawAnswerStepsItemUser {
+  const TournamentsDrawAnswerStepsItemUser({required this.id, required this.name});
+
+  factory TournamentsDrawAnswerStepsItemUser.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsDrawAnswerStepsItemUser');
+    return TournamentsDrawAnswerStepsItemUser(id: r.int_('id'), name: r.string('name'));
+  }
+
+  final int id;
+  final String name;
+}
+
+class TournamentsDrawChatAnswer {
+  const TournamentsDrawChatAnswer({
+    required this.canModerate,
+    required this.closesAt,
+    required this.messages,
+    required this.open,
+    required this.opensAt,
+    required this.reactions,
+  });
+
+  factory TournamentsDrawChatAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'TournamentsDrawChatAnswer');
+    return TournamentsDrawChatAnswer(
+      canModerate: r.bool_('can_moderate'),
+      closesAt: r.string('closes_at'),
+      messages: r.list('messages', DrawChatLine.fromJson),
+      open: r.bool_('open'),
+      opensAt: r.string('opens_at'),
+      reactions: r.list('reactions', JsonReader.stringOf),
+    );
+  }
+
+  /// The tournament's maker or an admin
+  final bool canModerate;
+  final String closesAt;
+  final List<DrawChatLine> messages;
+
+  /// From an hour before the draw to half an hour after its last ball
+  final bool open;
+  final String opensAt;
+  final List<String> reactions;
 }
 
 class TradePlayer {

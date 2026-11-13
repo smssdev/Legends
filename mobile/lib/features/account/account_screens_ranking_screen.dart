@@ -15,22 +15,15 @@ class RankingScreen extends ConsumerWidget {
         data: (rows) => ListView(
           padding: const EdgeInsets.all(12),
           children: [
-            for (final r in rows.cast<Map<dynamic, dynamic>>())
+            for (final r in rows)
               ListTile(
                 leading: Text(
-                  '${r['position']}',
+                  '${r.position}',
                   style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800, color: context.glm.goldText),
                 ),
-                title: Text(
-                  '${(r['coach'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                subtitle: Text(
-                  '${l.trophiesShort(((r['trophies'] as Map<dynamic, dynamic>?)?['total'] as int?) ?? 0)} · ${r['won']}/${r['played']} · ${((r['rating'] as Map<dynamic, dynamic>?)?['points']) ?? 0}',
-                ),
-                onTap: (r['coach'] as Map<dynamic, dynamic>?)?['id'] == null
-                    ? null
-                    : () => context.push('/coaches/${(r['coach'] as Map<dynamic, dynamic>)['id']}'),
+                title: Text(r.coach.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+                subtitle: Text('${l.trophiesShort(r.trophies.total)} · ${r.won}/${r.played} · ${r.rating.points}'),
+                onTap: () => context.push('/coaches/${r.coach.id}'),
               ),
           ],
         ),
@@ -181,30 +174,27 @@ class _IdeasScreenState extends ConsumerState<IdeasScreen> {
           return ListView(
             padding: const EdgeInsets.all(12),
             children: [
-              for (final poll in (d['polls'] as List<dynamic>? ?? const []))
+              for (final poll in d.polls)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: GlmCard(
-                    gold: (poll as Map<dynamic, dynamic>)['state'] == 'open',
+                    gold: poll.state == 'open',
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('${poll['question']}', style: context.text.titleMedium),
-                        if (poll['body'] != null) Text('${poll['body']}', style: TextStyle(color: p.textMuted)),
-                        for (final o in (poll['options'] as List<dynamic>? ?? const []))
+                        Text(poll.question, style: context.text.titleMedium),
+                        if (poll.body case final b?) Text(b, style: TextStyle(color: p.textMuted)),
+                        for (final o in poll.options)
                           ListTile(
                             dense: true,
                             contentPadding: EdgeInsets.zero,
-                            leading: Icon(
-                              poll['my_vote'] == (o as Map<dynamic, dynamic>)['id'] ? Icons.radio_button_checked : Icons.radio_button_off,
-                              color: p.gold,
-                            ),
-                            title: Text('${o['label']}'),
-                            trailing: o['votes'] == null ? null : Text(l.votes(o['votes'] as int), style: TextStyle(color: p.textMuted)),
-                            onTap: poll['state'] != 'open' || poll['my_vote'] != null
+                            leading: Icon(poll.myVote == o.id ? Icons.radio_button_checked : Icons.radio_button_off, color: p.gold),
+                            title: Text(o.label),
+                            trailing: o.votes == null ? null : Text(l.votes(o.votes!), style: TextStyle(color: p.textMuted)),
+                            onTap: poll.state != 'open' || poll.myVote != null
                                 ? null
                                 : () async {
-                                    await _try(context, () => api.post('/ideas/polls/${poll['id']}/vote', {'option_id': o['id']}));
+                                    await _try(context, () => api.post('/ideas/polls/${poll.id}/vote', {'option_id': o.id}));
                                     ref.invalidate(ideasProvider);
                                   },
                           ),
@@ -216,7 +206,7 @@ class _IdeasScreenState extends ConsumerState<IdeasScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(l.ideasLead(d['left_today'] as int? ?? 0), style: TextStyle(color: p.textMuted)),
+                    Text(l.ideasLead(d.leftToday), style: TextStyle(color: p.textMuted)),
                     TextField(
                       controller: title,
                       maxLength: 120,
@@ -231,7 +221,7 @@ class _IdeasScreenState extends ConsumerState<IdeasScreen> {
                     ),
                     GlmButton(
                       label: l.suggest,
-                      onPressed: (d['left_today'] as int? ?? 0) == 0
+                      onPressed: d.leftToday == 0
                           ? null
                           : () async {
                               final r = await _try(
@@ -250,34 +240,34 @@ class _IdeasScreenState extends ConsumerState<IdeasScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              for (final sgg in (d['suggestions'] as List<dynamic>? ?? const []))
+              for (final sgg in d.suggestions)
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text('${(sgg as Map<dynamic, dynamic>)['title']}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                  title: Text(sgg.title, style: const TextStyle(fontWeight: FontWeight.w700)),
                   subtitle: Text(
                     [
-                      switch (sgg['status']) {
+                      switch (sgg.status) {
                         'accepted' => l.statusAccepted,
                         'built' => l.statusBuilt,
                         'rejected' => l.statusRejected,
                         _ => l.statusPending,
                       },
-                      if ((sgg['coins'] as int? ?? 0) > 0) l.coinsWord(sgg['coins'] as int),
-                      if (sgg['reply'] != null) '${sgg['reply']}',
+                      if (sgg.coins > 0) l.coinsWord(sgg.coins),
+                      ?sgg.reply,
                     ].join(' · '),
                   ),
                 ),
-              if ((d['honours'] as List<dynamic>? ?? const []).isNotEmpty) ...[
+              if (d.honours.isNotEmpty) ...[
                 SectionTitle(l.honourRoll),
-                for (final h in d['honours'] as List<dynamic>)
+                for (final h in d.honours)
                   ListTile(
                     dense: true,
                     leading: Text(
-                      '${(h as Map<dynamic, dynamic>)['rank']}',
+                      '${h.rank}',
                       style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
                     ),
-                    title: Text('${(h['user'] as Map<dynamic, dynamic>?)?['name'] ?? ''}'),
-                    trailing: Text('${h['count']}'),
+                    title: Text(h.user.name),
+                    trailing: Text('${h.count}'),
                   ),
               ],
             ],
