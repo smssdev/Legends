@@ -99,12 +99,16 @@ class LeagueTest extends TestCase
         $this->postJson("/api/v1/leagues/{$league['id']}/clubs/{$this->botClub($league['id'])}/claim")->assertForbidden();
         $this->getJson("/api/v1/leagues/{$league['id']}/requests")->assertForbidden();
 
-        $this->actingAs($owner)->getJson("/api/v1/leagues/{$league['id']}/requests")->assertOk()->assertJsonPath('requests.0.user.name', $coach->name);
+        $this->actingAs($owner)->getJson("/api/v1/leagues/{$league['id']}/requests")->assertOk()->assertJsonPath('requests.0.user.name', $coach->name)
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['requests' => ['*' => ['id', 'league_id', 'status', 'user' => ['id', 'name']]]]);
         $this->postJson("/api/v1/leagues/{$league['id']}/requests/{$asked->json('request.id')}/approve")->assertOk()->assertJsonPath('request.status', 'approved');
         $this->postJson("/api/v1/leagues/{$league['id']}/requests/{$asked->json('request.id')}/reject")->assertConflict();
 
         // Approved: every club with its data, the owner's shown as taken.
-        $clubs = $this->actingAs($coach)->getJson("/api/v1/leagues/{$league['id']}/clubs")->assertOk()->json('clubs');
+        $clubs = $this->actingAs($coach)->getJson("/api/v1/leagues/{$league['id']}/clubs")->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['clubs' => ['*' => ['id', 'name', 'code', 'crest_url', 'strength_cp', 'bot', 'coach']]])->json('clubs');
         $this->assertCount(6, $clubs);
         $this->assertSame([false, $owner->name], [$clubs[0]['bot'], $clubs[0]['coach']['name']]);
         $this->assertSame([true, 3_000_000, 4_000_004], [$clubs[1]['bot'], $clubs[1]['balance'], $clubs[1]['squad_value']]);

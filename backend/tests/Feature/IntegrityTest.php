@@ -127,7 +127,10 @@ class IntegrityTest extends TestCase
 
         // The headline for everyone in the league, and the points off in the table.
         $this->assertStringContainsString('فضيحة الموسم', $this->actingAs($this->owner)->getJson("/api/v1/leagues/{$this->league['id']}")->json('league.headlines.0.text'));
-        $this->assertSame(-3, collect($this->getJson("/api/v1/leagues/{$this->league['id']}/standings")->json('table'))->firstWhere('id', $this->mine)['points']);
+        $this->assertSame(-3, collect($this->getJson("/api/v1/leagues/{$this->league['id']}/standings")
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['table' => ['*' => ['position', 'id', 'name', 'code', 'crest_url', 'coach', 'played', 'won', 'drawn', 'lost', 'goal_difference', 'points']]])
+            ->json('table'))->firstWhere('id', $this->mine)['points']);
         $this->assertSame($this->mine, Standings::order($this->fixture->season_id)[3]);
 
         // Out of the market for a day.

@@ -19,43 +19,41 @@ class LeaguesRepository {
       League.of(JsonReader(await _api.get('/leagues/$id'), 'LeagueAnswer').object('league', api.League.fromJson));
 
   Future<List<({String name, int clubs})>> templates() async => [
-    for (final t in (await _api.get('/data/templates'))['templates'] as List<dynamic>)
-      (name: '${(t as Map<String, dynamic>)['name']}', clubs: t['clubs'] as int? ?? 0),
+    for (final t
+        in api.DataTemplatesAnswer.fromJson(await _api.get('/data/templates')).templates ?? const <api.DataTemplatesAnswerTemplatesItem>[])
+      (name: t.name, clubs: t.clubs),
   ];
   Future<List<ClubCardData>> templateClubs(String template) async => [
-    for (final c in (await _api.get('/data/clubs', query: {'league': template}))['clubs'] as List<dynamic>)
-      ClubCardData.fromJson(c as Map<String, dynamic>),
+    for (final c
+        in api.DataClubsAnswer.fromJson(await _api.get('/data/clubs', query: {'league': template})).clubs ?? const <api.DataClub>[])
+      ClubCardData.ofData(c),
   ];
 
   /// The free league (UP9): every setting left to the game's own; the paid custom options stay on the site.
   Future<League> create({required String template, required int masterClubId, String? name, required DateTime startsAt}) async =>
-      League.fromJson(
-        (await _api.post('/leagues', {
-              'template': template,
-              'club_id': masterClubId,
-              if (name != null && name.trim().isNotEmpty) 'name': name.trim(),
-              'starts_at': startsAt.toUtc().toIso8601String(),
-            }))['league']
-            as Map<String, dynamic>,
-      );
+      JsonReader(
+        await _api.post('/leagues', {
+          'template': template,
+          'club_id': masterClubId,
+          if (name != null && name.trim().isNotEmpty) 'name': name.trim(),
+          'starts_at': startsAt.toUtc().toIso8601String(),
+        }),
+        'NewLeague',
+      ).object('league', League.fromJson);
 
   Future<({League league, String status})> join(String code) async {
-    final d = await _api.post('/leagues/join', {'code': code});
-    return (
-      league: League.fromJson(d['league'] as Map<String, dynamic>),
-      status: '${(d['request'] as Map<dynamic, dynamic>?)?['status'] ?? 'pending'}',
-    );
+    final r = JsonReader(await _api.post('/leagues/join', {'code': code}), 'Join');
+    return (league: r.object('league', League.fromJson), status: r.objectOrNull('request', api.JoinRequest.fromJson)?.status ?? 'pending');
   }
 
   Future<void> cancelRequest(int league) => _api.delete('/leagues/$league/request');
   Future<List<ClubCardData>> clubs(int league) async => [
-    for (final c in (await _api.get('/leagues/$league/clubs'))['clubs'] as List<dynamic>) ClubCardData.fromJson(c as Map<String, dynamic>),
+    for (final c in api.LeaguesClubsAnswer.fromJson(await _api.get('/leagues/$league/clubs')).clubs) ClubCardData.of(c),
   ];
   Future<void> claim(int league, int club) => _api.post('/leagues/$league/clubs/$club/claim');
 
   Future<List<StandingRow>> standings(int league) async => [
-    for (final r in (await _api.get('/leagues/$league/standings'))['table'] as List<dynamic>)
-      StandingRow.fromJson(r as Map<String, dynamic>),
+    ...JsonReader(await _api.get('/leagues/$league/standings'), 'Standings').list('table', StandingRow.fromJson),
   ];
   Future<List<Fixture>> fixtures(int league) async => [
     for (final f in JsonReader(await _api.get('/leagues/$league/fixtures'), 'Fixtures').list('fixtures', api.Fixture.fromJson))
@@ -63,8 +61,7 @@ class LeaguesRepository {
   ];
 
   Future<List<JoinRequest>> requests(int league) async => [
-    for (final r in (await _api.get('/leagues/$league/requests'))['requests'] as List<dynamic>? ?? const [])
-      JoinRequest.fromJson(r as Map<String, dynamic>),
+    for (final r in api.LeaguesRequestsAnswer.fromJson(await _api.get('/leagues/$league/requests')).requests) JoinRequest.of(r),
   ];
   Future<void> decide(int league, int request, bool approve) =>
       _api.post('/leagues/$league/requests/$request/${approve ? 'approve' : 'reject'}');
