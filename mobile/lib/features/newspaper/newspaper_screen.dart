@@ -1,3 +1,4 @@
+import '../../ui/widgets/glm_icon.dart';
 import '../../ui/tokens.g.dart';
 
 import 'dart:async';
@@ -95,7 +96,8 @@ class NewspaperScreen extends ConsumerWidget {
                 if (e.coach case final c?) ...[
                   const SizedBox(height: 8),
                   ListTile(
-                    leading: Text('🎩', style: glmText(GlmType.headline)),
+                    // [Sprint 63 G5] The coach of the round's mark from the icon set (it was an emoji).
+                    leading: GlmIcon(GlmIcons.crown, size: 26, color: context.palette.gold),
                     title: Text(l.coachOfRound),
                     subtitle: Text('${c.coach.name} · ${c.club}'),
                   ),

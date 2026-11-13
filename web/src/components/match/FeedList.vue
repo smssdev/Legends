@@ -16,7 +16,7 @@
   </section>
   <section v-if="dev" class="rounded-xl border border-gold/40 bg-surface-sunk p-4 font-mono text-xs leading-6" dir="ltr" :aria-label="$t('لوحة المطور')">
     <div>tick {{ last?.tick }} · period {{ last?.period }} · danger {{ last?.danger }} · rate {{ last?.debug?.initiative?.rate }} · home share {{ last?.debug?.initiative?.home_share }}</div>
-    <div v-for="(a, i) in attacks" :key="i">{{ a.team }} {{ a.plan }}{{ a.counter ? ' (counter)' : '' }} → {{ a.result }} · {{ a.phases.map((p: any) => `${p.n}:${p.p ?? '-'}${p.ok ? '✓' : '✗'}`).join(' ') }}</div>
+    <div v-for="(a, i) in attacks" :key="i">{{ a.team }} {{ a.plan }}{{ a.counter ? ' (counter)' : '' }} → {{ a.result }} · {{ a.phases.map((p: any) => `${p.n}:${p.p ?? '-'}${p.ok ? '+' : '-'}`).join(' ') }}</div>
     <div>home tactics {{ JSON.stringify(teams.home.tactics) }}</div>
     <div>away tactics {{ JSON.stringify(teams.away.tactics) }}</div>
   </section>

@@ -437,7 +437,7 @@ onMounted(load)
         <!-- The overview: deploy safety, the counts, and the email test. -->
         <template v-if="tab === 'overview' && overview">
           <div class="flex items-center gap-3 rounded-xl p-4" :class="overview.deploy.busy ? 'bg-live/15' : 'bg-success/15'" role="status">
-            <span class="text-2xl" aria-hidden="true">{{ overview.deploy.busy ? '⛔' : '✅' }}</span>
+            <span class="text-2xl" aria-hidden="true"><Icon :name="overview.deploy.busy ? 'ban' : 'check'" :size="26" /></span>
             <div class="text-sm">
               <b class="block">{{ overview.deploy.busy ? $t('لا تنشر الآن: {v0} مباراة مباشرة أو تبدأ خلال نصف ساعة', { v0: overview.deploy.busy }) : $t('آمن للنشر الآن') }}</b>
               <span class="text-text-muted">{{ overview.deploy.next_kickoff ? $t('أقرب مباراة: {v0}', { v0: when(overview.deploy.next_kickoff) }) : $t('لا مباريات مجدولة') }}</span>
@@ -610,7 +610,7 @@ onMounted(load)
             <button type="button" class="flex w-full flex-wrap items-center gap-2 p-4 text-start" :aria-expanded="openAnnouncement === a.id" @click="openAnnouncement = openAnnouncement === a.id ? null : a.id">
               <b class="min-w-0 flex-1 font-display">{{ a.title }}</b>
               <span class="text-xs text-text-muted">{{ a.sender?.name }} <OfficialBadge v-if="a.sender?.official" /> · <span dir="ltr">{{ when(a.at) }}</span></span>
-              <span class="text-gold" aria-hidden="true">{{ openAnnouncement === a.id ? '▲' : '▼' }}</span>
+              <span class="text-gold" aria-hidden="true"><Icon :name="openAnnouncement === a.id ? 'chevron_up' : 'chevron_down'" :size="16" /></span>
             </button>
             <div v-if="openAnnouncement === a.id" class="flex flex-col gap-2 border-t border-text/5 px-4 pb-4 pt-3 text-sm">
               <AnnouncementCard :title="a.title" :body="a.body" :at="a.at" :image-url="a.image_url" :cta="a.cta" />

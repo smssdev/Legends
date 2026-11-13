@@ -68,7 +68,7 @@ const waiting = computed(() => b.value?.pending.length ?? 0)
           <RouterLink to="/lineup" class="office-ready flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-1" :class="b.lineup.ready ? 'is-ready' : 'ring-1 ring-live/60'">
             <span class="min-w-0 flex-1 truncate"><b class="text-body">{{ $t(b.lineup.ready ? 'التشكيلة جاهزة' : 'في تشكيلتك مصاب أو موقوف') }}</b>
               <span class="text-caption text-text-muted"> · <bdi dir="ltr">{{ b.lineup.formation.replace(/^custom:.*/, '') }}</bdi><template v-if="b.lineup.auto"> · {{ $t('اختارها المساعد') }}</template></span></span>
-            <span :class="b.lineup.ready ? 'text-success' : 'text-live'" aria-hidden="true">{{ b.lineup.ready ? '✓' : '!' }}</span>
+            <span :class="b.lineup.ready ? 'text-success' : 'text-live'" aria-hidden="true"><Icon v-if="b.lineup.ready" name="check" :size="16" /><template v-else>!</template></span>
           </RouterLink>
           <div class="grid grid-cols-[1.3fr_1fr_1fr] gap-2">
             <UiButton to="/lineup" size="sm">{{ $t('التشكيلة') }}<span v-if="b.lineup.ready" aria-hidden="true"><Icon name="check" :size="16" /></span></UiButton>

@@ -100,7 +100,7 @@ const lastRound = computed(() => {
           <span class="sr-only">{{ $t('النادي') }}</span>
           <select v-model="club" class="h-touch w-36 rounded-lg bg-surface px-2 text-caption text-text">
             <option value="all">{{ $t('كل الأندية') }}</option>
-            <option v-for="c in clubs" :key="c.id" :value="c.id">{{ $nm(c.name) }}{{ c.id === mine ? ' ★' : '' }}</option>
+            <option v-for="c in clubs" :key="c.id" :value="c.id">{{ $nm(c.name) }}{{ c.id === mine ? ' · ' + $t('فريقك') : '' }}</option>
           </select>
         </label>
       </div>

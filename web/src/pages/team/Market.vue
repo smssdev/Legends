@@ -385,7 +385,7 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
               </span>
               <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
               <!-- [X84] A listed player shows it on his button; a tap opens withdraw or keep. -->
-              <button v-if="p.listed" type="button" class="h-touch min-w-20 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :aria-expanded="open === p.id" @click="openSell(p)">{{ $t('معروض للبيع ✓') }}</button>
+              <button v-if="p.listed" type="button" class="h-touch min-w-20 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :aria-expanded="open === p.id" @click="openSell(p)">{{ $t('معروض للبيع') }}</button>
               <button v-else type="button" class="h-touch min-w-20 rounded-md border border-warning/60 px-3 font-bold text-warning disabled:opacity-40" :aria-expanded="open === p.id" :disabled="!!m.closed" @click="openSell(p)">{{ $t('بيع') }}</button>
             </div>
             <!-- [Sprint 39 S1] The same panel as the player's card on the squad page. -->

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon, { type PATHS } from '../components/Icon.vue'
 // The inbox (Sprint 22 W1): the game's messages, newest first, the unread ones marked, each one leading to
 // its screen. No draft of its own: the design system's cards and the "الرسائل" section of WebHome's side bar.
 import EmptyState from '../components/ui/EmptyState.vue'
@@ -12,8 +13,9 @@ import { useInbox, type Message } from '../stores/inbox'
 
 const inbox = useInbox()
 const router = useRouter()
-const ICON: Record<string, string> = {
-  referee: '🟨', absence_warning: '⏰', left_absent: '🚪', kicked: '⛔', join_request: '✋', join_approved: '✅', join_rejected: '✖️', match_report: '📊',
+// [Sprint 63 G5] Each kind's mark from the icon set (they were emoji).
+const ICON: Record<string, keyof typeof PATHS> = {
+  referee: 'card', absence_warning: 'clock', left_absent: 'exit', kicked: 'ban', join_request: 'key', join_approved: 'check', join_rejected: 'close', match_report: 'chart',
 }
 const when = stamp   // [X61] the same on every list
 
@@ -64,7 +66,7 @@ onMounted(() => inbox.load())
           :class="m.read ? 'bg-surface' : 'border-s-4 border-gold bg-surface-raised'"
           @click="open(m)"
         >
-          <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-sunk text-xl" aria-hidden="true">{{ ICON[m.type] ?? '✉️' }}</span>
+          <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-sunk text-xl" aria-hidden="true"><Icon :name="ICON[m.type] ?? 'mail'" :size="22" /></span>
           <span class="min-w-0 flex-1">
             <span class="flex flex-wrap items-baseline justify-between gap-x-3">
               <b class="font-display" :class="m.read ? 'font-bold text-text-soft' : 'font-extrabold'">{{ $t(m.title) }}</b>

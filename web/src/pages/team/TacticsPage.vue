@@ -190,7 +190,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         <section class="tactics-list" :aria-label="$t('الإيقاع والضغط')">
           <div class="flex items-center gap-2 text-caption text-text-muted">
             <span class="min-w-0 flex-1 truncate">{{ $t('الحكم: {v0}', { v0: referee ? $t(REFEREE[referee]) : $t('يُعيَّن قبل المباراة بنصف ساعة') }) }}</span>
-            <span role="status">{{ saving || dirty ? $t('يحفظ…') : $t('محفوظ ✓') }}</span>
+            <span role="status">{{ saving || dirty ? $t('يحفظ…') : $t('محفوظ') }}</span>
           </div>
           <p v-if="message" class="rounded-lg bg-surface-raised px-3 py-2 text-caption" role="status">{{ $t(message) }}</p>
           <section v-for="sl in SLIDERS" :key="sl.key" class="flex flex-col gap-2 rounded-xl border border-text/10 ui-card p-4">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 // [Sprint 43 W3, Hamza 2026-11-05] The match is watched sideways on a phone (Sprint43Drafts.html): held upright, this
 // covers it and asks to turn the phone. On Android one tap opens the match full screen and locks it sideways (the
 // browser allows the lock only full screen, after a tap); Safari on the iPhone never locks, so the message stays until
@@ -57,7 +58,7 @@ onBeforeUnmount(() => { media?.removeEventListener('change', update); release() 
   <div v-if="upright && !(props.game && chose)" class="turn fixed inset-0 z-[60] grid place-items-center p-6 text-center" role="dialog" aria-modal="true" :aria-label="$t('لفّ جوالك')">
     <div class="flex max-w-xs flex-col items-center gap-4">
       <div class="device" aria-hidden="true" />
-      <b class="font-display text-2xl">{{ $t('لفّ جوالك') }} 🔄</b>
+      <b class="font-display text-2xl">{{ $t('لفّ جوالك') }} <Icon name="swap" :size="22" class="inline-block align-[-3px]" /></b>
       <span class="text-sm leading-relaxed text-text-muted">{{ props.game ? $t('اللعبة تُلعب بالعرض. أدر الجوال وتكمل فوراً.') : $t('المباراة تُلعب بالعرض. أدر الجوال وتبدأ فوراً.') }}</span>
       <UiButton v-if="lockable" @click="turn">{{ props.game ? $t('العب بالعرض وملء الشاشة') : $t('شاهد بالعرض وملء الشاشة') }}</UiButton>
       <UiButton v-if="props.game" variant="quiet" size="sm" @click="stayUpright">{{ $t('تابع عمودياً') }}</UiButton>

@@ -148,7 +148,7 @@
         <ol class="timeline relative flex flex-col gap-1">
           <li v-for="(e, i) in events" :key="i" class="relative flex min-h-10 items-center gap-3 rounded-md px-2" :class="e.team === 'home' ? '' : 'flex-row-reverse text-end'">
             <span class="w-12 shrink-0 text-center font-numbers text-lg text-gold" dir="ltr">{{ $t(e.label) }}</span>
-            <span class="text-lg" aria-hidden="true">{{ e.icon }}</span>
+            <Icon :name="e.icon" :size="20" :class="e.tone" />
             <span class="text-sm">{{ $t(e.text) }}</span>
           </li>
         </ol>
@@ -251,15 +251,15 @@ const events = computed(() =>
     const label = extra ? `${m}+${extra}` : `${m}'`
     switch (e.type) {
       case 'goal':
-        return { ...e, label, icon: '⚽', text: `${n(e.scorer)}${e.kind === 'penalty' ? ' (جزاء)' : e.kind === 'free_kick' ? ' (ركلة حرة)' : ''}${e.assist ? ` · صناعة ${n(e.assist)}` : ''}` }
+        return { ...e, label, icon: 'ball' as const, tone: '', text: `${n(e.scorer)}${e.kind === 'penalty' ? ' (جزاء)' : e.kind === 'free_kick' ? ' (ركلة حرة)' : ''}${e.assist ? ` · صناعة ${n(e.assist)}` : ''}` }
       case 'card':
-        return { ...e, label, icon: e.color === 'red' ? '🟥' : '🟨', text: `${n(e.player)}${e.second_yellow ? ' (إنذار ثانٍ)' : ''}` }
+        return { ...e, label, icon: 'card' as const, tone: e.color === 'red' ? 'text-live' : 'text-card-yellow', text: `${n(e.player)}${e.second_yellow ? ' (إنذار ثانٍ)' : ''}` }
       case 'sub':
-        return { ...e, label, icon: '🔁', text: `دخل ${n(e.in)} وخرج ${n(e.out)}` }
+        return { ...e, label, icon: 'swap' as const, tone: 'text-brand-light', text: `دخل ${n(e.in)} وخرج ${n(e.out)}` }
       case 'injury':
-        return { ...e, label, icon: '🩹', text: `إصابة ${n(e.player)}` }
+        return { ...e, label, icon: 'injury' as const, tone: 'text-danger', text: `إصابة ${n(e.player)}` }
       default:
-        return { ...e, label, icon: '🎯', text: `ركلة جزاء ${e.scored ? 'سجلها' : 'أضاعها'} ${n(e.taker)}` }
+        return { ...e, label, icon: 'target' as const, tone: '', text: `ركلة جزاء ${e.scored ? 'سجلها' : 'أضاعها'} ${n(e.taker)}` }
     }
   }),
 )

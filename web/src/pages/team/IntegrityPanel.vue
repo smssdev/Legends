@@ -81,7 +81,7 @@ const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
           <p v-if="!view.spies_on_me.length" class="text-sm text-text-muted">{{ $t('لا جواسيس على مباراتك القادمة حتى الآن.') }}</p>
           <div v-for="s in view.spies_on_me" :key="s.id" class="flex items-center justify-between gap-2 text-sm">
             <span>{{ $t('جاسوس من') }} <b>{{ s.club }}</b></span>
-            <span v-if="s.turned" class="text-gold">{{ $t('مزدوج ✓') }}</span>
+            <span v-if="s.turned" class="text-gold">{{ $t('مزدوج') }}</span>
             <UiButton size="sm" v-else :disabled="busy" @click="turn(s.id)">
               {{ $t('اجعله مزدوجاً ·') }} <PriceTag :amount="view.double_agent.amount" :currency="view.double_agent.currency" />
             </UiButton>
