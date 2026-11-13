@@ -873,5 +873,9 @@
   "spanDays": "{n, plural, =1{1 day} other{{n} days}}",
   "spanHours": "{n, plural, =1{1 hour} other{{n} hours}}",
   "spanMinutes": "{n, plural, =1{1 minute} other{{n} minutes}}",
-  "spanJoin": "{a} {b}"
+  "spanJoin": "{a} {b}",
+  "counters": "Timers",
+  "opponentReport": "Opponent report",
+  "stadiumWorks": "Stadium expansion",
+  "dailyReady": "Today's coins are ready"
 }

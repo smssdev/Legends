@@ -1,7 +1,5 @@
 import '../../../ui/tokens.g.dart';
 
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,19 +7,18 @@ import 'package:go_router/go_router.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../ui/theme.dart';
 import '../../../ui/widgets/async_view.dart';
-import '../../../ui/widgets/brand.dart';
 import '../../../ui/widgets/console.dart';
 import '../../../ui/widgets/game.dart';
 import '../../../ui/widgets/glm_button.dart';
 import '../../../ui/widgets/glm_card.dart';
 import '../../club/club_data.dart';
-import '../../club/squad_screen.dart' show money;
 import '../leagues_repository.dart';
 import '../models.dart';
 import '../widgets.dart';
 import 'coaches_tab.dart';
 import 'daily_tasks_card.dart';
 import 'hub_tiles.dart';
+import 'office.dart';
 
 class ClubTab extends ConsumerWidget {
   const ClubTab(this.lg, {super.key});
@@ -75,17 +72,6 @@ class ClubTab extends ConsumerWidget {
         data: (s) => LayoutBuilder(
           builder: (context, box) {
             final stage = LeagueVersus(s: s, leagueId: lg.id);
-            final tiles = HubTiles(
-              s: s,
-              go: (path) => context.push(go(path)),
-              table: () => context.go('/leagues/${lg.id}?tab=matches'),
-              contract: lg.contract == null
-                  ? null
-                  : () async {
-                      await ref.read(leaguesRepositoryProvider).signContract(lg.id);
-                      ref.invalidate(leagueProvider(lg.id));
-                    },
-            );
             final contract = lg.contract == null
                 ? null
                 : GlmCard(
@@ -132,158 +118,57 @@ class ClubTab extends ConsumerWidget {
                 ],
               );
             }
-            // [Sprint 50 M9] The console's office: three columns at a glance, no scrolling: the club and the coach, the
-            // next match on its stadium, and the operations (today's tasks, then what waits for the coach). The sections
-            // are the dock's; the tiles stay on a short screen only.
-            if (box.maxWidth >= 760) {
-              return Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      flex: 26,
-                      child: _ClubColumn(s: s, leagueId: lg.id),
+            // [Sprint 60 F3] The office as the approved draft draws it (Office.html): the next match and its countdown first,
+            // the clocks under it, the table around my place on a wide screen, and what waits for the coach beside.
+            final wide = box.maxWidth >= 900;
+            return Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    flex: 14,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        OfficeNextMatch(s: s, leagueId: lg.id),
+                        const SizedBox(height: 8),
+                        Flexible(
+                          child: OfficeCounters(s: s, leagueId: lg.id),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(flex: 46, child: stage),
+                  ),
+                  if (wide) ...[
                     const SizedBox(width: 8),
                     Expanded(
-                      flex: 28,
-                      child: ListView(
-                        padding: EdgeInsets.zero,
-                        children: [
-                          ?contract,
-                          if (contract != null) const SizedBox(height: 8),
-                          DailyTasksCard(leagueId: lg.id),
-                          const SizedBox(height: 8),
-                          GlmSectionTitle(l.needsYou),
-                          const SizedBox(height: 6),
-                          _Needs(s: s, leagueId: lg.id),
-                        ],
-                      ),
+                      flex: 10,
+                      child: OfficeTable(s: s, leagueId: lg.id),
                     ),
                   ],
-                ),
-              );
-            }
-            return Column(
-              children: [
-                Expanded(child: stage),
-                SizedBox(height: math.min(250, box.maxHeight * .52), child: tiles),
-              ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 10,
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: [
+                        ?contract,
+                        if (contract != null) const SizedBox(height: 8),
+                        GlmSectionTitle(
+                          '${l.needsYou}${s.needs.isEmpty && s.missed == 0 ? '' : ' (${s.needs.length + (s.missed > 0 ? 1 : 0)})'}',
+                        ),
+                        const SizedBox(height: 6),
+                        _Needs(s: s, leagueId: lg.id),
+                        const SizedBox(height: 8),
+                        DailyTasksCard(leagueId: lg.id),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-/// [Sprint 50 M9] The office's first column: the club's crest and its coach's place, the treasury, the way to set the
-/// team, and the table's top.
-class _ClubColumn extends StatelessWidget {
-  const _ClubColumn({required this.s, required this.leagueId});
-
-  final ClubSummary s;
-  final int leagueId;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = L.of(context);
-    final p = context.palette;
-    return GlmCard(
-      padding: const EdgeInsets.all(10),
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          GlmSectionTitle(l.clubAndCoach),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              ClubCrest(url: s.club.crestUrl, name: s.club.code, size: 42),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      s.club.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textDirection: TextDirection.ltr,
-                      style: glmText(GlmType.body, fontWeight: FontWeight.w800),
-                    ),
-                    if (s.position != null && s.teams != null)
-                      Text(l.position(s.position!, s.teams!), style: glmText(GlmType.caption, color: p.goldLight)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(color: p.surfaceSunk, borderRadius: BorderRadius.circular(10)),
-            child: Row(
-              children: [
-                Text(l.treasury, style: glmText(GlmType.caption, color: p.textMuted)),
-                const Spacer(),
-                Text(
-                  money(context, s.cash),
-                  textDirection: TextDirection.ltr,
-                  style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.success),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          GlmButton(
-            label: l.setTeam,
-            variant: GlmButtonVariant.brand,
-            block: true,
-            onPressed: () => context.go('/leagues/$leagueId/lineup'),
-          ),
-          if (s.top.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Text(l.leagueTable, style: glmText(GlmType.caption, color: p.textMuted)),
-            const SizedBox(height: 4),
-            for (final r in s.top)
-              Container(
-                margin: const EdgeInsets.only(bottom: 2),
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                decoration: BoxDecoration(color: r.mine ? p.gold.withValues(alpha: .14) : null, borderRadius: BorderRadius.circular(6)),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 20,
-                      child: Text(
-                        '${r.position}',
-                        style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: Text(
-                          r.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textDirection: TextDirection.ltr,
-                          style: glmText(GlmType.caption, color: r.mine ? p.goldLight : p.text),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${r.points}',
-                      style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ],
       ),
     );
   }

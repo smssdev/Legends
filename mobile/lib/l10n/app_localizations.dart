@@ -5215,6 +5215,30 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'{a} و{b}'**
   String spanJoin(String a, String b);
+
+  /// No description provided for @counters.
+  ///
+  /// In ar, this message translates to:
+  /// **'العدّادات'**
+  String get counters;
+
+  /// No description provided for @opponentReport.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقرير الخصم'**
+  String get opponentReport;
+
+  /// No description provided for @stadiumWorks.
+  ///
+  /// In ar, this message translates to:
+  /// **'توسعة الملعب'**
+  String get stadiumWorks;
+
+  /// No description provided for @dailyReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'كوينز اليوم جاهزة'**
+  String get dailyReady;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

@@ -2040,5 +2040,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "counters": "العدّادات",
+  "opponentReport": "تقرير الخصم",
+  "stadiumWorks": "توسعة الملعب",
+  "dailyReady": "كوينز اليوم جاهزة"
 }

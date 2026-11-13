@@ -159,40 +159,24 @@ class _Home extends ConsumerWidget {
             builder: (context, box) {
               // [Sprint 46] Landscape, the manager games' way: the manager's file (his card, his record, the gift) on one
               // side, his slots as big numbered tiles on the stadium on the other, under the arena's top bar.
+              // [Sprint 60 F3] The approved draft's home (Home.html): the coach in one line (M-D06), then the slots first, as
+              // big numbered tiles on the stadium, and the gift, the simulator and the shop at the side.
               if (box.maxWidth >= 700) {
-                final side = (box.maxWidth * .44).clamp(320.0, 470.0);
+                final side = (box.maxWidth * .32).clamp(260.0, 380.0);
                 return Column(
                   children: [
                     _ArenaBar(h),
+                    Padding(padding: const EdgeInsets.fromLTRB(16, 4, 16, 0), child: _CoachLine(h.coach)),
                     Expanded(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: side,
-                            child: ListView(
-                              padding: const EdgeInsets.fromLTRB(16, 6, 8, 20),
-                              children: [
-                                _Label(l.coachFile),
-                                // [Sprint 47] The approved design's coach card, then the simulator's door.
-                                FadeSlideIn(child: _CoachCard(h.coach)),
-                                const SizedBox(height: 10),
-                                const FadeSlideIn(index: 1, child: SimBanner()),
-                                for (final (i, w) in extras.indexed) FadeSlideIn(index: i + 2, child: w),
-                                if (h.starterClaimed || h.starterCoins == 0)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 10),
-                                    child: FadeSlideIn(index: 3, child: _ShopTile()),
-                                  ),
-                              ],
-                            ),
-                          ),
                           Expanded(
                             child: LayoutBuilder(
                               builder: (context, pane) {
                                 final w = (pane.maxWidth - 24 - 12) / 2;
                                 return ListView(
-                                  padding: const EdgeInsets.fromLTRB(8, 6, 16, 20),
+                                  padding: const EdgeInsets.fromLTRB(16, 6, 8, 20),
                                   children: [
                                     _Label('${l.coachSlots} · ${h.slotsOpen}/${h.slots.length}'),
                                     Wrap(
@@ -210,6 +194,24 @@ class _Home extends ConsumerWidget {
                                   ],
                                 );
                               },
+                            ),
+                          ),
+                          SizedBox(
+                            width: side,
+                            child: ListView(
+                              padding: const EdgeInsets.fromLTRB(8, 6, 16, 20),
+                              children: [
+                                for (final (i, w) in extras.indexed) FadeSlideIn(index: i, child: w),
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 12),
+                                  child: FadeSlideIn(index: 2, child: SimBanner()),
+                                ),
+                                if (h.starterClaimed || h.starterCoins == 0)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: FadeSlideIn(index: 3, child: _ShopTile()),
+                                  ),
+                              ],
                             ),
                           ),
                         ],
@@ -284,6 +286,73 @@ class _TopBar extends ConsumerWidget {
 
 /// [Sprint 47] The coach's card in the approved design: his initial in a mint ring, his name, his rank in gold with
 /// its bar toward the next level, his points large, and his record under it.
+/// [Sprint 60 F3] The coach in one line (the approved draft's home): his initial, his name, his tier and points, and
+/// his record; a tap opens his account. The card with it all stays for the phone held upright.
+class _CoachLine extends StatelessWidget {
+  const _CoachLine(this.c);
+
+  final Coach c;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final tier = switch (c.tierKey) {
+      'tactician' => l.tierTactician,
+      'professional' => l.tierProfessional,
+      'elite' => l.tierElite,
+      'mastermind' => l.tierMastermind,
+      'icon' => l.tierIcon,
+      'legend' => l.tierLegend,
+      _ => l.tierProspect,
+    };
+    final division = c.division == null ? '' : ' ${['', 'I', 'II', 'III'][c.division!.clamp(0, 3)]}';
+    final numbers = context.type.numbers(context.type.body).copyWith(fontWeight: FontWeight.w800);
+    return Semantics(
+      button: true,
+      label: '${c.name}, $tier$division, ${c.points} ${l.pointsWord}',
+      child: InkWell(
+        onTap: () => context.push('/profile'),
+        borderRadius: BorderRadius.circular(GlmRadius.lg),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: GlmTouch.app),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: p.surfaceRaised,
+                child: Text(c.name.characters.take(1).toString(), style: context.type.title.copyWith(color: context.glm.goldText)),
+              ),
+              const SizedBox(width: GlmSpace.sm),
+              Flexible(
+                child: Text(
+                  c.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.type.bodyLg.copyWith(fontWeight: FontWeight.w800),
+                ),
+              ),
+              const SizedBox(width: GlmSpace.sm),
+              Icon(Icons.star_rounded, size: 16, color: context.glm.goldText),
+              // Each part its own text: the Latin division (III) between Arabic words would turn the line around.
+              Text(' $tier$division', style: context.type.caption.copyWith(color: context.glm.goldText)),
+              Text(' · ', style: context.type.caption),
+              Text('${c.points} ${l.pointsWord}', style: context.type.caption.copyWith(color: context.glm.goldText)),
+              const Spacer(),
+              Text('${c.won}', style: numbers.copyWith(color: context.glm.successText)),
+              Text(' ${l.won}  ', style: context.type.caption),
+              Text('${c.drawn}', style: numbers.copyWith(color: context.glm.goldText)),
+              Text(' ${l.drawn}  ', style: context.type.caption),
+              Text('${c.lost}', style: numbers.copyWith(color: p.warning)),
+              Text(' ${l.lost}', style: context.type.caption),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _CoachCard extends StatelessWidget {
   const _CoachCard(this.c);
 
