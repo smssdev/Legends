@@ -340,4 +340,11 @@ void main() {
     'live',
     (t) => shot(t, 'live', const LiveMatchScreen(matchId: 77), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())]),
   );
+  for (final (name, tab) in [('live-orders', 'الأوامر'), ('live-chat', 'الدردشة')]) {
+    testWidgets(
+      name,
+      (t) =>
+          shot(t, name, const LiveMatchScreen(matchId: 77), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())], tap: tab),
+    );
+  }
 }

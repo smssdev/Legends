@@ -5365,6 +5365,12 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'امسح الفلاتر'**
   String get marketClear;
+
+  /// No description provided for @liveOrders.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأوامر'**
+  String get liveOrders;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

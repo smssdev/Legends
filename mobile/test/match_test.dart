@@ -113,10 +113,10 @@ class FakeMatchRepository implements MatchRepository {
   Future<List<({int id, String home, String away})>> mine() async => const [];
 }
 
-Future<void> pump(WidgetTester t, Widget screen, FakeMatchRepository repo, {FakeFeed? feed}) async {
+Future<void> pump(WidgetTester t, Widget screen, FakeMatchRepository repo, {FakeFeed? feed, Size size = const Size(420, 1600)}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
-  t.view.physicalSize = const Size(420 * 3, 1600 * 3);
+  t.view.physicalSize = size * 3;
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
   await t.pumpWidget(
@@ -229,6 +229,34 @@ void main() {
     expect(repo.orders.single, {'type': 'sub', 'out': 1, 'in': 9});
 
     // A reaction for every viewer's screen.
+    await t.tap(find.text('🔥'));
+    await wait(t);
+    expect(repo.orders.last, {'react': 'fire'});
+    await leave(t);
+  });
+
+  testWidgets('[Sprint 60 F6] landscape: the picture alone, the score once, the orders and the chat in edge drawers', (t) async {
+    final repo = FakeMatchRepository();
+    await pump(t, const LiveMatchScreen(matchId: 77), repo, size: const Size(844, 390));
+    expect(find.text('1 - 1'), findsOneWidget);
+    // No frame: the score's bar is the only one, and the last event a line at the foot.
+    expect(find.text('مباشر'), findsNothing);
+    expect(find.textContaining('Alexander Isak'), findsNothing, reason: 'the break bar takes the foot in a break');
+    expect(find.text('أنا مستعد'), findsOneWidget);
+    // The orders' drawer: the substitution with what is left, and the assistant's notes.
+    await t.tap(find.text('الأوامر'));
+    await wait(t);
+    expect(find.text('0 من 3 تبديلات'), findsOneWidget);
+    expect(find.textContaining('لاعبك في الوسط تعب'), findsOneWidget);
+    await t.tap(find.text('تبديل'));
+    await wait(t);
+    expect(find.text('يخرج'), findsOneWidget);
+    await t.tapAt(const Offset(5, 5));
+    await wait(t);
+    // The chat's drawer: the reactions and the commentary.
+    await t.tap(find.text('الدردشة').first);
+    await wait(t);
+    expect(find.textContaining('Alexander Isak'), findsOneWidget);
     await t.tap(find.text('🔥'));
     await wait(t);
     expect(repo.orders.last, {'react': 'fire'});
