@@ -1,9 +1,4 @@
-import '../../ui/art_palette.dart';
-
 import 'dart:async';
-
-import 'dart:math' as math;
-import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +7,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
+import '../../ui/widgets/pitch_name.dart';
 import '../../ui/widgets/action_bar.dart';
+import '../../ui/widgets/console.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/cut.dart';
@@ -29,7 +26,6 @@ import 'team_data.dart';
 import '../leagues/shell.dart';
 
 part 'lineup_screen_drag_row.dart';
-part 'lineup_screen_arena_pitch.dart';
 
 /// [Sprint 17 F1] The lineup on a pitch (the web's Lineup): the formation from the book, the eleven at their slots and
 /// the bench under it. A tap on a player then on another swaps them (between the pitch, the bench and the rest), any
@@ -48,16 +44,26 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
   int? _picked;
   LineupDraft? _draft;
 
+  /// [Sprint 60 F4] The lineup saves itself a moment after each change (as the site's), the approved draft's way.
+  Timer? _autosave;
+
+  void _changed() {
+    _autosave?.cancel();
+    _autosave = Timer(const Duration(milliseconds: 600), () => _save(quiet: true));
+  }
+
+  @override
+  void dispose() {
+    _autosave?.cancel();
+    super.dispose();
+  }
+
   LineupEditor get _editor => ref.read(lineupEditorProvider(widget.leagueId).notifier);
   TeamData? get _team => ref.read(teamProvider(widget.leagueId)).value;
   String? get _formation => _draft?.formation;
   List<int>? get _starters => _draft?.starters;
   List<int>? get _bench => _draft?.bench;
   bool get _busy => _draft?.busy ?? false;
-  bool get _dirty {
-    final t = _team;
-    return t != null && _draft != null && _draft!.changedFrom(t.lineup);
-  }
 
   /// [2026-11-09] The places on the pitch: the saved formation at the places the coach dragged it to (on the site), or
   /// another formation at its own.
@@ -67,7 +73,10 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
 
   void _pickFormation(String? f) {
     final t = _team;
-    if (f != null && t != null) _editor.formation(f, t.lineup);
+    if (f != null && t != null) {
+      _editor.formation(f, t.lineup);
+      _changed();
+    }
   }
 
   /// [Sprint 45 M4] A player dropped on another: the two swap (as two taps would).
@@ -87,10 +96,11 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     if (t == null) return;
     final slots = _slots(t, ref.read(formationsProvider).value ?? const []);
     final done = _editor.swap(a, id, t.lineup, slots, (x) => t.players.where((p) => p.id == x).firstOrNull?.line);
-    if (!done) showGlmToast(context, L.of(context).keeperSlotOnly, error: true);
+    if (!done) return showGlmToast(context, L.of(context).keeperSlotOnly, error: true);
+    _changed();
   }
 
-  Future<void> _save({bool auto = false}) async {
+  Future<void> _save({bool auto = false, bool quiet = false}) async {
     final t = _team;
     if (t == null) return;
     // [2026-11-09] The ten outfield places go with the lineup, as the site sends them: without them the server would
@@ -101,7 +111,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     final e = await _editor.save(t.lineup, auto: auto, positions: positions.length == 10 ? positions : null);
     if (!mounted) return;
     if (e == null) {
-      showGlmToast(context, L.of(context).saved);
+      if (!quiet) showGlmToast(context, L.of(context).saved);
     } else {
       showGlmToast(context, e.fields.values.firstOrNull ?? e.message, error: true);
     }
@@ -114,29 +124,16 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     final edited = ref.watch(lineupEditorProvider(widget.leagueId));
     _draft = edited ?? (team.value == null ? null : LineupDraft.of(team.value!.lineup));
     final formations = ref.watch(formationsProvider).value ?? const <Formation>[];
-    final save = GlmButton(
-      label: l.save,
+    // [Sprint 60 F4] Saving is automatic: the main action is the game's own lineup.
+    final auto = GlmButton(
+      label: l.autoLineup,
       block: true,
       loading: _busy,
-      icon: const Icon(Icons.check_rounded),
-      onPressed: _formation != null && _dirty ? _save : null,
+      icon: const Icon(Icons.auto_awesome_rounded),
+      onPressed: _busy ? null : () => _save(auto: true),
     );
     return Scaffold(
-      appBar: GameBar(
-        title: Text(l.lineup),
-        actions: [
-          // In landscape «automatic» is one of the pitch's round buttons.
-          if (MediaQuery.sizeOf(context).width < 560)
-            TextButton.icon(
-              onPressed: _busy ? null : () => _save(auto: true),
-              icon: Icon(Icons.auto_awesome_rounded, color: context.glm.goldText, size: 18),
-              label: Text(
-                l.autoLineup,
-                style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800),
-              ),
-            ),
-        ],
-      ),
+      appBar: GameBar(title: Text(l.lineup)),
       body: GlmBackground(
         wide: true,
         child: AsyncView(
@@ -203,7 +200,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                 picked: _picked,
                 onTap: _tap,
                 onDrop: _drop,
-                horizontal: wide,
+                horizontal: false,
               );
               final lists = [
                 GameHeader(l.bench, icon: Icons.event_seat_rounded),
@@ -230,30 +227,81 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                     ),
                     SafeArea(
                       top: false,
-                      child: Padding(padding: const EdgeInsets.all(12), child: save),
+                      child: Padding(padding: const EdgeInsets.all(12), child: auto),
                     ),
                   ],
                 );
               }
-              // [Sprint 46, the owner's screenshots] Landscape as the manager games lay it out: the pitch in perspective on
-              // the stadium filling the screen, each of the eleven a card at his place, the formation at the corner, the
-              // tactics and specialists at the side, the bench's panel and «improve» below, and what the cards show
-              // (fitness, age and nation, value) changed with a tap.
-              return _Arena(
-                slots: slots,
-                starters: _starters!,
-                others: [for (final id in _bench!) ?t.byId(id), ...others],
-                team: t,
-                picked: _picked,
-                onTap: _tap,
-                onDrop: _drop,
-                formations: formations,
-                formation: _formation,
-                onFormation: _pickFormation,
-                leagueId: widget.leagueId,
-                save: _formation != null && _dirty ? _save : null,
-                busy: _busy,
-                auto: () => _save(auto: true),
+              // [Sprint 60 F4] The approved draft's lineup (Lineup.html): the pitch at the screen's height in the middle, the
+              // same flat pitch as the tactics', the formations in a column at one side, the bench and the rest in a column
+              // at the other, and every action in the bar at the foot, the game's own lineup the main one.
+              return Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: GlmCard(
+                        padding: const EdgeInsets.all(GlmSpace.sm),
+                        child: ListView(
+                          padding: EdgeInsets.zero,
+                          children: [
+                            GlmSectionTitle(l.formation),
+                            const SizedBox(height: GlmSpace.xs),
+                            Wrap(
+                              spacing: GlmSpace.xs,
+                              runSpacing: GlmSpace.xs,
+                              children: [
+                                for (final f in formations)
+                                  ChoiceChip(
+                                    label: Text(f.label, textDirection: TextDirection.ltr),
+                                    selected: f.name == _formation,
+                                    onSelected: (_) => _pickFormation(f.name),
+                                  ),
+                              ],
+                            ),
+                            hint,
+                            const SizedBox(height: GlmSpace.sm),
+                            // The lineup's other pages, by their names (no circle without a name).
+                            Wrap(
+                              children: [
+                                GlmActionItem(
+                                  icon: const GameIcon(GameGlyph.tactics, size: 24),
+                                  label: l.tactics,
+                                  onTap: () => context.push('/leagues/${widget.leagueId}/tactics'),
+                                ),
+                                GlmActionItem(
+                                  icon: const GameIcon(GameGlyph.specialists, size: 24),
+                                  label: l.specialists,
+                                  onTap: () => context.push('/leagues/${widget.leagueId}/specialists'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    AspectRatio(aspectRatio: 68 / 105, child: pitch),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: GlmCard(
+                        padding: const EdgeInsets.all(GlmSpace.sm),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: ListView(padding: EdgeInsets.zero, children: lists),
+                            ),
+                            const SizedBox(height: GlmSpace.sm),
+                            // The approved draft's main action at the screen's foot, at its end: the game's own lineup.
+                            auto,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           ),
@@ -293,7 +341,7 @@ class _Pitch extends StatelessWidget {
     final body = LayoutBuilder(
       builder: (context, box) {
         final w = box.maxWidth, h = box.maxHeight;
-        const tokenW = 76.0, tokenH = 66.0;
+        const tokenW = 56.0, tokenH = 48.0;
         return Container(
           decoration: ShapeDecoration(
             shape: GlmCut.shape(GlmCut.card + 4, side: BorderSide(color: Colors.white.withValues(alpha: .12))),
@@ -353,28 +401,29 @@ class _Token extends StatelessWidget {
     final c = lineColor(line);
     Widget shirt({bool lit = false, bool ghost = false}) => Opacity(
       opacity: ghost ? .35 : 1,
+      // [Sprint 60 F4] The approved draft's place on the pitch: a disc with his rating (gold when picked), his name under it.
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          KitShirt(
-            color: picked || lit ? context.palette.gold : c.bg,
-            trim: Colors.white,
-            label: '${player.overall}',
-            size: 44,
-            picked: picked || lit,
-          ),
-          const SizedBox(height: 2),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-            decoration: BoxDecoration(color: Colors.black.withValues(alpha: .55), borderRadius: BorderRadius.circular(5)),
+            width: 30,
+            height: 30,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: picked || lit ? context.palette.gold : c.bg,
+              border: Border.all(color: Colors.white, width: 1.5),
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .5), blurRadius: 6, offset: const Offset(0, 2))],
+            ),
             child: Text(
-              player.name.split(' ').last,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textDirection: TextDirection.ltr,
-              style: glmText(GlmType.caption, color: Colors.white, fontWeight: FontWeight.w700, decoration: TextDecoration.none),
+              '${player.overall}',
+              style: context.type
+                  .numbers(context.type.caption)
+                  .copyWith(color: picked || lit ? context.palette.onGold : c.fg, fontWeight: FontWeight.w800, height: 1),
             ),
           ),
+          const SizedBox(height: 1),
+          PitchName(player.name.split(' ').last, width: 56),
         ],
       ),
     );

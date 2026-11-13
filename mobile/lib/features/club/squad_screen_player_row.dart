@@ -46,7 +46,8 @@ class PlayerRow extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 p.name,
-                                maxLines: 1,
+                                // [Sprint 60 F8] A long name takes a second line in a narrow column, never «…».
+                                maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 textDirection: TextDirection.ltr,
                                 style: glmText(GlmType.body, fontWeight: FontWeight.w800),

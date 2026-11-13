@@ -121,7 +121,7 @@ void main() {
     expect(find.byType(PlayerCardPanel), findsNothing);
   });
 
-  testWidgets('the lineup: two players swapped, then saved with the new eleven', (t) async {
+  testWidgets('the lineup: two players swapped, then saved by itself with the new eleven', (t) async {
     final repo = FakeTeamRepository();
     await pump(t, const LineupScreen(leagueId: 1), repo);
     final starter = sample.byId(sample.lineup.starters[5])!;
@@ -130,7 +130,9 @@ void main() {
     await t.pump();
     await t.tap(find.text(sub.name));
     await t.pump();
-    await t.tap(find.text('احفظ'));
+    // [Sprint 60 F4] The lineup saves itself a moment after the change.
+    expect(repo.startersSent, isNull);
+    await t.pump(const Duration(seconds: 1));
     await t.pumpAndSettle();
     expect(repo.startersSent![5], sub.id);
   });
@@ -146,7 +148,9 @@ void main() {
     await t.pump();
     await g.up();
     await t.pump();
-    await t.tap(find.text('احفظ'));
+    // [Sprint 60 F4] The lineup saves itself a moment after the change.
+    expect(repo.startersSent, isNull);
+    await t.pump(const Duration(seconds: 1));
     await t.pumpAndSettle();
     expect(repo.startersSent![5], sub.id);
   });
