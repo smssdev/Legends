@@ -5245,6 +5245,90 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'إغلاق'**
   String get close;
+
+  /// No description provided for @takersTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتخصصون'**
+  String get takersTitle;
+
+  /// No description provided for @roleCaptain.
+  ///
+  /// In ar, this message translates to:
+  /// **'قائد الفريق'**
+  String get roleCaptain;
+
+  /// No description provided for @rolePenalty.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضربات الجزاء'**
+  String get rolePenalty;
+
+  /// No description provided for @roleFreeKick.
+  ///
+  /// In ar, this message translates to:
+  /// **'الضربات الحرة'**
+  String get roleFreeKick;
+
+  /// No description provided for @roleCorner.
+  ///
+  /// In ar, this message translates to:
+  /// **'الركنيات'**
+  String get roleCorner;
+
+  /// No description provided for @skillCaptain.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيادة'**
+  String get skillCaptain;
+
+  /// No description provided for @skillPenalty.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجزاء'**
+  String get skillPenalty;
+
+  /// No description provided for @skillFreeKick.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحرة'**
+  String get skillFreeKick;
+
+  /// No description provided for @skillCorner.
+  ///
+  /// In ar, this message translates to:
+  /// **'العرضيات'**
+  String get skillCorner;
+
+  /// No description provided for @changePlayer.
+  ///
+  /// In ar, this message translates to:
+  /// **'تبديل اللاعب'**
+  String get changePlayer;
+
+  /// No description provided for @takerAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'تلقائي: الأفضل في التشكيلة'**
+  String get takerAuto;
+
+  /// No description provided for @takerAutoBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'تلقائي'**
+  String get takerAutoBadge;
+
+  /// No description provided for @inEleven.
+  ///
+  /// In ar, this message translates to:
+  /// **'في التشكيلة'**
+  String get inEleven;
+
+  /// No description provided for @outOfEleven.
+  ///
+  /// In ar, this message translates to:
+  /// **'خارج التشكيلة'**
+  String get outOfEleven;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

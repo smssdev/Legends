@@ -4,7 +4,7 @@
     "club": { "ar": "لوحة النادي", "en": "Club board", "web": "club", "app": "/leagues/{league}", "icon": { "web": "club", "app": "office" } },
     "team": { "ar": "الفريق", "en": "Team", "web": "team", "app": "/leagues/{league}/squad", "icon": { "web": "team", "app": "squad" } },
     "lineup": { "ar": "التشكيلة", "en": "Lineup", "web": "lineup", "app": "/leagues/{league}/lineup", "icon": { "web": "lineup", "app": "lineup" } },
-    "takers": { "ar": "المتخصصون", "en": "Specialists", "web": "takers", "app": null, "icon": { "web": "lineup", "app": "lineup" } },
+    "takers": { "ar": "المتخصصون", "en": "Specialists", "web": "takers", "app": "/leagues/{league}/takers", "icon": { "web": "lineup", "app": "lineup" } },
     "training": { "ar": "التدريب", "en": "Training", "web": "training", "app": "/leagues/{league}/training", "icon": { "web": "training", "app": "training" } },
     "specialists": { "ar": "الجهاز الفني", "en": "Technical staff", "web": "specialists", "app": "/leagues/{league}/specialists", "icon": { "web": "staff", "app": "specialists" } },
     "contracts": { "ar": "العقود", "en": "Contracts", "web": null, "app": "/leagues/{league}/contracts", "icon": { "web": "team", "app": "contracts" } },

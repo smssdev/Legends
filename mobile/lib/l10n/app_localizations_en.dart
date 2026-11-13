@@ -2901,4 +2901,46 @@ class LEn extends L {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get takersTitle => 'Specialists';
+
+  @override
+  String get roleCaptain => 'Captain';
+
+  @override
+  String get rolePenalty => 'Penalties';
+
+  @override
+  String get roleFreeKick => 'Free kicks';
+
+  @override
+  String get roleCorner => 'Corners';
+
+  @override
+  String get skillCaptain => 'Leadership';
+
+  @override
+  String get skillPenalty => 'Penalty';
+
+  @override
+  String get skillFreeKick => 'Free kick';
+
+  @override
+  String get skillCorner => 'Crossing';
+
+  @override
+  String get changePlayer => 'Change player';
+
+  @override
+  String get takerAuto => 'Automatic: the best of the eleven';
+
+  @override
+  String get takerAutoBadge => 'Auto';
+
+  @override
+  String get inEleven => 'In the eleven';
+
+  @override
+  String get outOfEleven => 'Not in the eleven';
 }

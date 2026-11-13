@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/core/settings.dart';
+import 'package:glm/features/club/takers_screen.dart';
 import 'package:glm/features/club/lineup_screen.dart';
 import 'package:glm/features/club/squad_screen.dart';
 import 'package:glm/features/club/tactics_screen.dart';
@@ -18,6 +19,13 @@ final sample = TeamData.fromJson(jsonDecode(File('test/fixtures/team.json').read
 
 /// Records what the screens send, answers as the API would.
 class FakeTeamRepository implements TeamRepository {
+  Map<String, int?>? takersSent;
+  @override
+  Future<TeamData> saveTakers(int league, Map<String, int?> roles) async {
+    takersSent = roles;
+    return sample;
+  }
+
   final List<Map<String, Object>> tacticsSent = [];
   List<int>? startersSent;
 
@@ -119,6 +127,22 @@ void main() {
     await t.tap(find.byTooltip('إغلاق'));
     await t.pumpAndSettle();
     expect(find.byType(PlayerCardPanel), findsNothing);
+  });
+
+  testWidgets('[Sprint 60 F4] the takers: the four roles, and a player chosen for one goes with the others as they were', (t) async {
+    final repo = FakeTeamRepository();
+    await pump(t, const TakersScreen(leagueId: 1), repo);
+    for (final role in ['قائد الفريق', 'ضربات الجزاء', 'الضربات الحرة', 'الركنيات']) {
+      expect(find.text(role), findsOneWidget);
+    }
+    final penalty = sample.takers['penalty']!;
+    final pick = penalty.candidates.firstWhere((c) => c.id != penalty.playerId);
+    await t.tap(find.text('تبديل اللاعب').at(1));
+    await t.pumpAndSettle();
+    await t.tap(find.text(sample.byId(pick.id)!.name).last);
+    await t.pumpAndSettle();
+    expect(repo.takersSent!['penalty'], pick.id);
+    expect(repo.takersSent!['captain'], sample.takers['captain']!.chosenId);
   });
 
   testWidgets('the lineup: two players swapped, then saved by itself with the new eleven', (t) async {

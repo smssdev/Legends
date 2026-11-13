@@ -107,6 +107,7 @@ class TeamData {
     required this.squadValue,
     this.lines = const {},
     this.captain,
+    this.takers = const {},
   });
 
   /// [Sprint 59 F1] My team (`Team`), read through its generated model.
@@ -119,6 +120,18 @@ class TeamData {
       squadValue: t.squadValue,
       lines: {'gk': t.lines.gk, 'def': t.lines.def, 'mid': t.lines.mid, 'att': t.lines.att},
       captain: t.takers['captain']?.playerId,
+      takers: {
+        for (final e in t.takers.entries)
+          e.key: Taker(
+            playerId: e.value.playerId,
+            auto: e.value.auto,
+            chosenId: e.value.chosenId,
+            candidates: [
+              for (final c in e.value.candidates ?? const <api.TeamAnswerTakersValueCandidatesItem>[])
+                (id: c.id, skill: c.skill, on: c.on_),
+            ],
+          ),
+      },
     );
   }
 
@@ -130,7 +143,20 @@ class TeamData {
   final Map<String, int> lines;
   final int? captain;
 
+  /// [Sprint 60 F4] The captain and the set-piece takers (captain, penalty, free_kick, corner), as the site's TakersPage.
+  final Map<String, Taker> takers;
+
   Player? byId(int id) => players.where((p) => p.id == id).firstOrNull;
+}
+
+/// [Sprint 27 W5, Sprint 60 F4] One role: who takes it in the next match, whether the server picks him (auto), the
+/// coach's own choice (playing or not), and the squad ranked by the role's skill (the server's).
+class Taker {
+  const Taker({this.playerId, required this.auto, this.chosenId, this.candidates = const []});
+
+  final int? playerId, chosenId;
+  final bool auto;
+  final List<({int id, int skill, bool on})> candidates;
 }
 
 class Formation {
@@ -200,6 +226,10 @@ class TeamRepository {
           'positions': ?positions,
         }),
       );
+
+  /// [Sprint 60 F4] The four roles at once ([roles]: each role's player, or null for the server's own pick).
+  Future<TeamData> saveTakers(int league, Map<String, int?> roles) async =>
+      TeamData.fromJson(await _api.put('/leagues/$league/team/takers', roles));
   Future<TeamData> autoLineup(int league) async => TeamData.fromJson(await _api.delete('/leagues/$league/team/lineup'));
   Future<Tactics> tactics(int league) async => Tactics.fromJson(await _api.get('/leagues/$league/team/tactics'));
   Future<Tactics> saveTactics(int league, Map<String, Object> changes) async =>
