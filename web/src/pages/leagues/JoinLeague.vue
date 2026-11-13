@@ -96,7 +96,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
         <span
           class="flex size-8 shrink-0 items-center justify-center rounded-full font-numbers text-base font-bold"
           :class="i + 1 < step ? 'bg-success text-on-gold' : i + 1 === step ? 'bg-gold text-on-gold' : 'bg-surface-raised text-text-soft'"
-        >{{ i + 1 < step ? '✓' : i + 1 }}</span>
+        ><Icon v-if="i + 1 < step" name="check" :size="14" /><template v-else>{{ i + 1 }}</template></span>
         <span class="hidden min-w-0 sm:block">
           <span class="block font-bold">{{ $t(s.title) }}</span>
           <span class="block truncate text-xs text-text-muted" :dir="i === 0 && clean ? 'ltr' : undefined">{{ s.note }}</span>

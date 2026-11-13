@@ -121,7 +121,7 @@ onBeforeUnmount(() => clearInterval(tick))
               </span>
               <span class="min-w-0 flex-1">
                 <b class="block font-display text-lg">{{ s.name }}</b>
-                <span v-if="s.stars" class="text-sm text-gold" :aria-label="$t('{v0} نجوم', { v0: s.stars })">{{ '★'.repeat(s.stars) }}<span class="text-text/20">{{ '★'.repeat(5 - s.stars) }}</span></span>
+                <span v-if="s.stars" class="text-sm text-gold" :aria-label="$t('{v0} نجوم', { v0: s.stars })"><Icon v-for="k in s.stars" :key="k" name="star" :size="14" class="inline-block" /><span class="text-text/20"><Icon v-for="k in 5 - s.stars" :key="k" name="star" :size="14" class="inline-block" /></span></span>
                 <span class="block text-sm text-text-muted">{{ offer(s).effect }}</span>
               </span>
             </div>
@@ -135,7 +135,7 @@ onBeforeUnmount(() => clearInterval(tick))
                 <button v-for="n in 5" :key="n" type="button" role="radio" :aria-checked="chosen(s) === n" :aria-label="$t('{v0} نجوم', { v0: n })" class="grid h-touch flex-1 place-items-center rounded-lg text-xl transition-colors" :class="n <= chosen(s) ? 'bg-gold/15 text-gold' : 'bg-surface-sunk text-text/25'" @click="pick[s.type] = n"><Icon name="star" :size="16" /></button>
               </div>
               <UiButton variant="brand" :disabled="isBusy(`hire:${s.type}`) || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
-                {{ s.ends_at ? $t('جدّد العقد') : $t('تعاقد') }} · {{ chosen(s) }} ★ · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></UiButton>
+                {{ s.ends_at ? $t('جدّد العقد') : $t('تعاقد') }} · {{ chosen(s) }} <Icon name="star" :size="14" class="inline-block align-[-2px]" /> · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></UiButton>
             </template>
           </article>
         </div>

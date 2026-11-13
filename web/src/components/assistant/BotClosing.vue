@@ -98,7 +98,7 @@ async function rate(helpful: boolean, withNote = false) {
             <button v-if="next || bot.followed" type="button" class="btn-closing bg-gold text-on-gold" @click="go(next ? next.to : pathFor(bot.followed!))">{{ next ? next.label : $t('افتح {v0}', { v0: $t(labelOf(bot.followed!)) }) }}</button>
             <div class="grid grid-cols-2 gap-2">
               <button type="button" class="btn-closing bg-surface-raised" @click="go('/lineup')">{{ $t('شوف التشكيلة') }}</button>
-              <button type="button" class="btn-closing bg-surface-raised" :disabled="savedNow" @click="keep">{{ savedNow ? $t('حُفظت ✓') : $t('احفظ وتابع لاحقاً') }}</button>
+              <button type="button" class="btn-closing bg-surface-raised" :disabled="savedNow" @click="keep">{{ savedNow ? $t('حُفظت') : $t('احفظ وتابع لاحقاً') }}</button>
             </div>
           </div>
 

@@ -112,7 +112,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
         <!-- [X88] Trained from here: in his line's slot at once (in place of whoever was there, «تراجع» puts him back). -->
         <UiButton :disabled="isBusy(`train-card:${player.id}`)" @click="trainNow">
           {{ isBusy(`train-card:${player.id}`) ? '...' : $t('درّبه الآن') }}</UiButton>
-        <button type="button" class="flex h-12 items-center justify-center rounded-lg font-bold disabled:opacity-40" :class="player.listed ? 'bg-gold/15 text-gold' : 'border border-warning/60 text-warning'" :aria-expanded="!!selling" :disabled="loadingSale" @click="openSale">{{ loadingSale ? '...' : player.listed ? $t('معروض للبيع ✓') : $t('بيع اللاعب') }}</button>
+        <button type="button" class="flex h-12 items-center justify-center rounded-lg font-bold disabled:opacity-40" :class="player.listed ? 'bg-gold/15 text-gold' : 'border border-warning/60 text-warning'" :aria-expanded="!!selling" :disabled="loadingSale" @click="openSale">{{ loadingSale ? '...' : player.listed ? $t('معروض للبيع') : $t('بيع اللاعب') }}</button>
       </div>
       <p v-if="sellError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(sellError) }}</p>
       <SellPanel v-if="selling" :league-id="selling.league" :player="selling.mine" @done="(n: string) => emit('sold', n)" @error="(e: string) => (sellError = e)" @keep="selling = null" />

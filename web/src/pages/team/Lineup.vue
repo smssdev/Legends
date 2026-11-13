@@ -437,7 +437,7 @@ async function saveCustom() {
       <div class="lineup">
         <section class="lineup-side" :aria-label="$t('أدوات التشكيلة')">
           <div class="flex items-center gap-2">
-            <span class="min-w-0 flex-1 truncate text-caption text-text-muted" role="status">{{ saving || queued ? $t('يحفظ…') : dirty ? '' : $t('محفوظة ✓') }}<template v-if="team.lineup.auto && !dirty"> {{ $t('· تلقائية («تحسين»)') }}</template></span>
+            <span class="min-w-0 flex-1 truncate text-caption text-text-muted" role="status">{{ saving || queued ? $t('يحفظ…') : dirty ? '' : $t('محفوظة') }}<template v-if="team.lineup.auto && !dirty"> {{ $t('· تلقائية («تحسين»)') }}</template></span>
             <UiButton size="sm" variant="outline" class="!px-3" :disabled="!history.length || saving" @click="undo">{{ $t('تراجع') }}</UiButton>
           </div>
           <button type="button" class="side-row" :aria-label="$t('الطريقة')" @click="formationsOpen = true">

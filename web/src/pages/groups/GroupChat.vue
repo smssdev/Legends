@@ -297,7 +297,7 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
         <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk" :aria-label="$t('ألغِ التسجيل')" @click="dropRecording"><Icon name="close" :size="18" /></button>
         <span class="flex min-h-touch flex-1 items-center gap-2 rounded-3xl bg-surface-sunk px-4" role="status">
           <span class="size-2.5 animate-pulse rounded-full bg-live" /><span class="font-numbers" dir="ltr">{{ mmss(recorded) }}</span>
-          <span class="text-sm text-text-muted">{{ $t('يُسجَّل… اضغط ➤ للإرسال') }}</span></span>
+          <span class="text-sm text-text-muted">{{ $t('يُسجَّل… اضغط زر الإرسال') }}</span></span>
         <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-extrabold text-on-gold" :aria-label="$t('أرسل الرسالة الصوتية')" @click="record">
           <span class="rtl:-scale-x-100"><Icon name="send" :size="18" class="inline-block align-[-3px]" /></span></button>
       </template>

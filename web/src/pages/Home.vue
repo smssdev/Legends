@@ -263,7 +263,7 @@ async function openRanking(by: By) {
             </span>
             <span v-if="s.state === 'club'" class="slot-foot" :class="s.next_match?.live ? 'is-live' : ''">
               <!-- [Sprint 20 W1] Within a day, the countdown itself. -->
-              <template v-if="s.next_match">{{ s.next_match.live ? '● ' + $t('مباشر الآن') : soon(s.next_match.scheduled_at) ? countdown(s.next_match.scheduled_at, now) : when(s.next_match.scheduled_at) }} · {{ $t(s.next_match.venue === 'home' ? $t('ضد') : $t('عند')) }} {{ $nm(s.next_match.opponent) }}</template>
+              <template v-if="s.next_match"><Icon v-if="s.next_match.live" name="dot" :size="12" class="inline-block align-[-1px] text-live" /> {{ s.next_match.live ? $t('مباشر الآن') : soon(s.next_match.scheduled_at) ? countdown(s.next_match.scheduled_at, now) : when(s.next_match.scheduled_at) }} · {{ $t(s.next_match.venue === 'home' ? $t('ضد') : $t('عند')) }} {{ $nm(s.next_match.opponent) }}</template>
               <template v-else>{{ $t('لا مباريات قادمة') }}</template>
             </span>
           </button>
@@ -277,7 +277,7 @@ async function openRanking(by: By) {
       <!-- [Sprint 30 Q9, Sprint 56 W8] The next match, under the slots: who, when (counting down), and the way to get ready. -->
       <section v-if="nextUp?.next_match" class="next-hero flex flex-col gap-3 rounded-2xl border border-gold/30 p-4" :aria-label="$t('مباراتك القادمة')">
         <div class="flex items-center justify-between gap-2 text-sm">
-          <b class="text-gold">{{ nextUp.next_match.live ? '● ' + $t('مباشر الآن') : $t('مباراتك القادمة') }}</b>
+          <b class="text-gold"><Icon v-if="nextUp.next_match.live" name="dot" :size="12" class="inline-block align-[-1px] text-live" /> {{ nextUp.next_match.live ? $t('مباشر الآن') : $t('مباراتك القادمة') }}</b>
           <span class="text-text-muted">{{ when(nextUp.next_match.scheduled_at) }}</span>
         </div>
         <div class="flex items-center gap-3">

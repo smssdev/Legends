@@ -203,9 +203,9 @@ function exportCsv() {
       <section v-if="tab === 'awards'" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3" :aria-label="$t('الأوسمة')">
         <p v-if="!awards" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
         <template v-else>
-          <article v-for="[key, title, icon] in ([['mvp', 'أفضل لاعب', '🏆'], ['young', 'أفضل لاعب شاب', '🌱'], ['of_the_round', 'نجم الجولة', '⭐'], ['scorer', 'الهداف', '⚽'], ['assister', 'صانع الألعاب', '🎯']] as const)" :key="key"
+          <article v-for="[key, title, icon] in ([['mvp', 'أفضل لاعب', 'trophy'], ['young', 'أفضل لاعب شاب', 'seedling'], ['of_the_round', 'نجم الجولة', 'star'], ['scorer', 'الهداف', 'ball'], ['assister', 'صانع الألعاب', 'target']] as const)" :key="key"
             class="flex animate-pop-in items-center gap-3 rounded-xl border border-gold/25 ui-card p-3">
-            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true">{{ icon }}</span>
+            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true"><Icon :name="icon" :size="24" /></span>
             <span class="min-w-0 flex-1">
               <span class="block text-xs text-text-muted">{{ $t(title) }}<template v-if="key === 'of_the_round' && awards.of_the_round"> · {{ $t('الجولة {v0}', { v0: awards.of_the_round.round }) }}</template></span>
               <template v-if="awards[key]">
