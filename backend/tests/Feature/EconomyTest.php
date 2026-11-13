@@ -217,7 +217,10 @@ class EconomyTest extends TestCase
         // [X61 E1] Each wage is the player's share of the club's wages; the cap stops a buy; ending a contract pays half
         // of the wages left and sends the player to the market.
         $url = "/api/v1/leagues/{$this->league['id']}/team/contracts";
-        $c = $this->actingAs($this->owner)->getJson($url)->assertOk()->json();
+        $c = $this->actingAs($this->owner)->getJson($url)->assertOk()
+            // [Sprint 59 F1] The fields the app reads through Contracts (openapi.yaml).
+            ->assertJsonStructure(['season', 'max_seasons', 'wages_per_round', 'cap_per_round', 'room',
+                'players' => ['*' => ['id', 'name', 'position', 'age', 'value', 'wage', 'until', 'renew_one', 'release']]])->json();
         $rounds = (int) DB::table('seasons')->where('league_id', $this->league['id'])->value('rounds');
         $this->assertSame(Money::fromConfig()->wages(Economy::squadValue($this->mine), $rounds), $c['wages_per_round']);
         $this->assertGreaterThanOrEqual($c['wages_per_round'], $c['cap_per_round']);

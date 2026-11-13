@@ -42,11 +42,16 @@ final pressProvider = FutureProvider.autoDispose.family<api.PressConference?, (i
 final integrityProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
   (ref, l) => ref.read(apiProvider).get('/leagues/$l/integrity'),
 );
-final contractsProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
-  (ref, l) => ref.read(apiProvider).get('/leagues/$l/team/contracts'),
+
+/// [Sprint 59 F1] The contracts through the generated model (`Contracts`).
+final contractsProvider = FutureProvider.autoDispose.family<api.Contracts, int>(
+  (ref, l) async => api.Contracts.fromJson(await ref.read(apiProvider).get('/leagues/$l/team/contracts')),
 );
-final missedProvider = FutureProvider.autoDispose.family<List<dynamic>, int>(
-  (ref, l) async => (await ref.read(apiProvider).get('/leagues/$l/team/missed'))['matches'] as List<dynamic>? ?? const [],
+
+/// [Sprint 59 F1] The matches I missed through the generated model (`MissedMatch`).
+final missedProvider = FutureProvider.autoDispose.family<List<api.MissedMatch>, int>(
+  (ref, l) async =>
+      JsonReader(await ref.read(apiProvider).get('/leagues/$l/team/missed'), 'Missed').list('matches', api.MissedMatch.fromJson),
 );
 final ticketsProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, int>(
   (ref, l) => ref.read(apiProvider).get('/leagues/$l/tickets'),

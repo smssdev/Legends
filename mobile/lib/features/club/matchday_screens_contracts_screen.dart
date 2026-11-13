@@ -16,8 +16,8 @@ class ContractsScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(contractsProvider(leagueId)),
         data: (c) {
           final p = context.palette;
-          final season = c['season'] as int? ?? 1;
-          final max = c['max_seasons'] as int? ?? 3;
+          final season = c.season;
+          final max = c.maxSeasons;
           Future<void> act(Future<Object?> Function() a) async {
             await _try(context, a);
             ref.invalidate(contractsProvider(leagueId));
@@ -27,10 +27,7 @@ class ContractsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(12),
             children: [
               Text(
-                l.contractsLead(
-                  money(context, (c['wages_per_round'] as num? ?? 0).toInt()),
-                  money(context, (c['cap_per_round'] as num? ?? 0).toInt()),
-                ),
+                l.contractsLead(money(context, c.wagesPerRound), money(context, c.capPerRound)),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: p.textMuted),
               ),
@@ -41,7 +38,7 @@ class ContractsScreen extends ConsumerWidget {
                 onPressed: () => act(() => api.post('/leagues/$leagueId/team/contracts/renew-ending')),
               ),
               const SizedBox(height: 8),
-              for (final x in (c['players'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>())
+              for (final x in c.players)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: GlmCard(
@@ -53,43 +50,34 @@ class ContractsScreen extends ConsumerWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                '${x['name']}',
+                                x.name,
                                 textDirection: TextDirection.ltr,
                                 textAlign: TextAlign.start,
                                 style: const TextStyle(fontWeight: FontWeight.w800),
                               ),
                             ),
                             Text(
-                              l.untilSeason(x['until'] as int? ?? 0),
-                              style: TextStyle(
-                                color: (x['until'] as int? ?? 0) <= season ? context.glm.liveText : p.textMuted,
-                                fontSize: 12,
-                              ),
+                              l.untilSeason(x.until),
+                              style: TextStyle(color: x.until <= season ? context.glm.liveText : p.textMuted, fontSize: 12),
                             ),
                           ],
                         ),
-                        Text(
-                          '${x['position']} · ${x['age']} · ${money(context, (x['wage'] as num? ?? 0).toInt())}',
-                          style: TextStyle(color: p.textMuted, fontSize: 12),
-                        ),
+                        Text('${x.position} · ${x.age} · ${money(context, x.wage)}', style: TextStyle(color: p.textMuted, fontSize: 12)),
                         Wrap(
                           spacing: 6,
                           children: [
-                            for (var n = 1; n <= max - ((x['until'] as int? ?? season) - season); n++)
+                            for (var n = 1; n <= max - (x.until - season); n++)
                               TextButton(
-                                onPressed: () => act(() => api.post('/leagues/$leagueId/team/contracts/${x['id']}/renew', {'seasons': n})),
-                                child: Text(l.renewSeasons(n, money(context, n * (x['renew_one'] as num? ?? 0).toInt()))),
+                                onPressed: () => act(() => api.post('/leagues/$leagueId/team/contracts/${x.id}/renew', {'seasons': n})),
+                                child: Text(l.renewSeasons(n, money(context, n * x.renewOne))),
                               ),
                             TextButton(
                               onPressed: () async {
-                                if (await confirm(context, l.releaseConfirm('${x['name']}')) && context.mounted) {
-                                  await act(() => api.post('/leagues/$leagueId/team/contracts/${x['id']}/release'));
+                                if (await confirm(context, l.releaseConfirm(x.name)) && context.mounted) {
+                                  await act(() => api.post('/leagues/$leagueId/team/contracts/${x.id}/release'));
                                 }
                               },
-                              child: Text(
-                                l.releasePlayer(money(context, (x['release'] as num? ?? 0).toInt())),
-                                style: TextStyle(color: context.glm.liveText),
-                              ),
+                              child: Text(l.releasePlayer(money(context, x.release)), style: TextStyle(color: context.glm.liveText)),
                             ),
                           ],
                         ),
