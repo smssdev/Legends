@@ -16,19 +16,35 @@ import '../money/finance_screen.dart' show confirm;
 import 'market_data.dart';
 import 'market_screen.dart' show BuySheet;
 import '../leagues/shell.dart';
+import '../../api/gen/models.g.dart' as api;
 
 /// [Sprint 18 F1] The scout (Sprint 26): the coach's terms, the price and the time from the server, the search under
 /// way (finished now for coins at the server's price) and the reports, whose players he buys at the pool price.
 class ScoutRequest {
   const ScoutRequest({required this.id, required this.status, required this.finishesAt, required this.players});
 
-  factory ScoutRequest.fromJson(Map<String, dynamic> j) => ScoutRequest(
-    id: j['id'] as int,
-    status: '${j['status']}',
-    finishesAt: DateTime.tryParse('${j['finishes_at'] ?? ''}'),
+  /// [Sprint 59 F1] From the generated model (`ScoutView`).
+  factory ScoutRequest.of(api.ScoutViewRequestsItem r) => ScoutRequest(
+    id: r.id,
+    status: r.status,
+    finishesAt: DateTime.tryParse(r.finishesAt),
     players: [
-      for (final p in (j['players'] as List<dynamic>? ?? const []))
-        (player: MarketPlayer.fromJson(p as Map<String, dynamic>), state: '${p['state']}'),
+      for (final p in r.players)
+        (
+          player: MarketPlayer(
+            id: p.id,
+            name: p.name,
+            position: p.position,
+            line: p.line,
+            age: p.age,
+            overall: p.overall,
+            potential: p.potential,
+            value: p.value,
+            price: p.price ?? p.value,
+            nationality: p.nationality,
+          ),
+          state: p.state,
+        ),
     ],
   );
 
@@ -50,15 +66,16 @@ class ScoutView {
     required this.requests,
   });
 
-  factory ScoutView.fromJson(Map<String, dynamic> j) {
-    final o = j['options'] as Map<String, dynamic>? ?? const {};
+  /// [Sprint 59 F1] The scout (`ScoutView`), read through its generated model.
+  factory ScoutView.fromJson(Object? json) {
+    final v = api.ScoutView.fromJson(json);
     return ScoutView(
-      cost: (j['cost'] as num?)?.toInt() ?? 0,
-      hours: j['hours'] as int? ?? 0,
-      finishCoins: j['finish_coins'] as int? ?? 0,
-      nationalities: [for (final n in (o['nationalities'] as List<dynamic>? ?? const [])) '$n'],
-      leagues: [for (final n in (o['leagues'] as List<dynamic>? ?? const [])) '$n'],
-      requests: [for (final r in (j['requests'] as List<dynamic>? ?? const [])) ScoutRequest.fromJson(r as Map<String, dynamic>)],
+      cost: v.cost,
+      hours: v.hours,
+      finishCoins: v.finishCoins ?? 0,
+      nationalities: v.options.nationalities,
+      leagues: v.options.leagues,
+      requests: [for (final r in v.requests) ScoutRequest.of(r)],
     );
   }
 

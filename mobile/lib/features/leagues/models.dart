@@ -3,9 +3,6 @@ import '../../api/gen/models.g.dart' as api;
 /// [Sprint 16] The leagues as the API gives them (only what the app shows).
 DateTime? date(Object? v) => v is String ? DateTime.tryParse(v)?.toLocal() : null;
 
-/// A coach as the API gives him: his name, or an object with it (the clubs list).
-String? _name(Object? v) => v is Map<dynamic, dynamic> ? v['name'] as String? : v as String?;
-
 class League {
   const League({
     required this.id,
@@ -52,32 +49,8 @@ class League {
     locked: l.locked,
   );
 
-  /// A league in a smaller answer (a new league, a join), not yet in the contract's models.
-  factory League.fromJson(Map<String, dynamic> j) {
-    final season = j['season'] as Map<String, dynamic>?;
-    final me = j['me'] as Map<String, dynamic>?;
-    return League(
-      id: j['id'] as int,
-      name: '${j['name']}',
-      code: '${j['code']}',
-      status: '${j['status']}',
-      isOwner: j['is_owner'] == true,
-      myClubId: j['my_club_id'] as int?,
-      myRequest: j['my_request'] as String?,
-      freeClubs: j['free_clubs'] as int? ?? 0,
-      pendingRequests: j['pending_requests'] as int? ?? 0,
-      inviteUrl: j['invite_url'] as String?,
-      startsAt: date(j['starts_at']),
-      teamCount: j['team_count'] as int? ?? 0,
-      coaches: j['coaches'] as int? ?? 0,
-      members: [for (final m in (j['members'] as List<dynamic>? ?? const [])) Member.fromJson(m as Map<String, dynamic>)],
-      seasonNumber: season?['number'] as int?,
-      roundsPlayed: season?['rounds_played'] as int?,
-      rounds: season?['rounds'] as int?,
-      contract: me?['contract'] == null ? null : api.LeagueMeContract.fromJson(me!['contract']),
-      locked: j['locked'] != false,
-    );
-  }
+  /// Any answer with a league (a new one, a join, a change): the server sends them all through leagueData().
+  factory League.fromJson(Object? json) => League.of(api.League.fromJson(json));
 
   final int id;
   final String name, code, status;
@@ -122,26 +95,6 @@ class Member {
     vacationRequest: m.vacationRequest == null ? null : (days: m.vacationRequest!.days ?? 0, reason: m.vacationRequest!.reason ?? ''),
   );
 
-  factory Member.fromJson(Map<String, dynamic> j) {
-    final u = j['user'] as Map<String, dynamic>? ?? const {};
-    final c = j['club'] as Map<String, dynamic>?;
-    return Member(
-      id: j['id'] as int,
-      name: '${u['name'] ?? ''}',
-      username: u['username'] as String?,
-      club: c?['name'] as String?,
-      isOwner: j['is_owner'] == true,
-      onHoliday: j['on_holiday'] == true,
-      userId: u['id'] as int?,
-      vacationRequest: j['vacation_request'] is Map<dynamic, dynamic>
-          ? (
-              days: (j['vacation_request'] as Map<dynamic, dynamic>)['days'] as int? ?? 0,
-              reason: '${(j['vacation_request'] as Map<dynamic, dynamic>)['reason'] ?? ''}',
-            )
-          : null,
-    );
-  }
-
   final int id;
   final String name;
   final String? username, club;
@@ -166,19 +119,21 @@ class ClubCardData {
     this.goal,
   });
 
-  factory ClubCardData.fromJson(Map<String, dynamic> j) {
-    final league = (j['objectives'] as Map<String, dynamic>?)?['league'] as Map<String, dynamic>?;
-    return ClubCardData(
-      id: j['id'] as int,
-      name: '${j['name']}',
-      code: '${j['code'] ?? ''}',
-      crestUrl: j['crest_url'] as String?,
-      strength: j['strength_cp'] as int? ?? 0,
-      coach: _name(j['coach']),
-      bot: j['bot'] != false,
-      goal: league == null ? null : (kind: '${league['kind']}', target: league['target'] as int? ?? 0),
-    );
-  }
+  /// [Sprint 59 F1] A league's club (`LeagueClub`): its coach and its board's goal.
+  factory ClubCardData.of(api.LeagueClub c) => ClubCardData(
+    id: c.id,
+    name: c.name,
+    code: c.code,
+    crestUrl: c.crestUrl,
+    strength: c.strengthCp,
+    coach: c.coach?.name,
+    bot: c.bot,
+    goal: c.objectives == null ? null : (kind: c.objectives!.league.kind, target: c.objectives!.league.target),
+  );
+
+  /// A data club to start a league with (`DataClub`): no coach, no goal yet.
+  factory ClubCardData.ofData(api.DataClub c) =>
+      ClubCardData(id: c.id, name: c.name, code: c.code, crestUrl: c.crestUrl, strength: c.strengthCp);
 
   final int id;
   final String name, code;
@@ -204,20 +159,24 @@ class StandingRow {
     required this.points,
   });
 
-  factory StandingRow.fromJson(Map<String, dynamic> j) => StandingRow(
-    position: j['position'] as int,
-    id: j['id'] as int,
-    name: '${j['name']}',
-    code: '${j['code'] ?? ''}',
-    crestUrl: j['crest_url'] as String?,
-    coach: _name(j['coach']),
-    played: j['played'] as int? ?? 0,
-    won: j['won'] as int? ?? 0,
-    drawn: j['drawn'] as int? ?? 0,
-    lost: j['lost'] as int? ?? 0,
-    gd: j['goal_difference'] as int? ?? 0,
-    points: j['points'] as int? ?? 0,
-  );
+  /// [Sprint 59 F1] A row of the table, from the generated model.
+  factory StandingRow.fromJson(Object? json) {
+    final r = api.LeaguesStandingsAnswerTableItem.fromJson(json);
+    return StandingRow(
+      position: r.position,
+      id: r.id,
+      name: r.name,
+      code: r.code,
+      crestUrl: r.crestUrl,
+      coach: r.coach,
+      played: r.played,
+      won: r.won,
+      drawn: r.drawn,
+      lost: r.lost,
+      gd: r.goalDifference,
+      points: r.points,
+    );
+  }
 
   final int position, id, played, won, drawn, lost, gd, points;
   final String name, code;
@@ -282,10 +241,8 @@ class Fixture {
 class JoinRequest {
   const JoinRequest({required this.id, required this.name, this.username, required this.status});
 
-  factory JoinRequest.fromJson(Map<String, dynamic> j) {
-    final u = j['user'] as Map<String, dynamic>? ?? const {};
-    return JoinRequest(id: j['id'] as int, name: '${u['name'] ?? ''}', username: u['username'] as String?, status: '${j['status']}');
-  }
+  /// [Sprint 59 F1] From the generated model (the server sends no username with a request).
+  factory JoinRequest.of(api.JoinRequest r) => JoinRequest(id: r.id, name: r.user?.name ?? '', status: r.status);
 
   final int id;
   final String name, status;

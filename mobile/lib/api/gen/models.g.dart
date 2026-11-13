@@ -3144,6 +3144,55 @@ class DataClubsAnswer {
   final String? league;
 }
 
+class DataClubsByClubAnswer {
+  const DataClubsByClubAnswer({
+    required this.code,
+    required this.colors,
+    required this.crestUrl,
+    required this.id,
+    required this.league,
+    this.logo,
+    required this.name,
+    required this.players,
+    required this.squadValue,
+    required this.strengthCp,
+  });
+
+  factory DataClubsByClubAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'DataClubsByClubAnswer');
+    return DataClubsByClubAnswer(
+      code: r.string('code'),
+      colors: r.list('colors', JsonReader.stringOf),
+      crestUrl: r.string('crest_url'),
+      id: r.int_('id'),
+      league: r.string('league'),
+      logo: r.stringOrNull('logo'),
+      name: r.string('name'),
+      players: r.list('players', DataPlayer.fromJson),
+      squadValue: r.int_('squad_value'),
+      strengthCp: r.int_('strength_cp'),
+    );
+  }
+
+  /// Three letters
+  final String code;
+  final List<String> colors;
+  final String crestUrl;
+  final int id;
+  final String league;
+
+  /// [UP3] The real logo (/logos/...), null for a club the pack has not; crest_url sends it too
+  final String? logo;
+  final String name;
+  final List<DataPlayer> players;
+
+  /// Club money
+  final int squadValue;
+
+  /// The average of the best 18
+  final int strengthCp;
+}
+
 class DataFormationsAnswer {
   const DataFormationsAnswer({
     required this.across,
@@ -3998,6 +4047,18 @@ class GroupsAnswer {
   }
 
   final List<ChatGroupItem> groups;
+}
+
+class GroupsByGroupAnswer {
+  const GroupsByGroupAnswer({required this.group, required this.messages});
+
+  factory GroupsByGroupAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'GroupsByGroupAnswer');
+    return GroupsByGroupAnswer(group: r.object('group', ChatGroup.fromJson), messages: r.list('messages', ChatMessage.fromJson));
+  }
+
+  final ChatGroup group;
+  final List<ChatMessage> messages;
 }
 
 class GroupsMessagesAnswer {
@@ -6040,6 +6101,125 @@ class LeaguesClubsAnswer {
   final List<LeagueClub> clubs;
 }
 
+class LeaguesClubsByClubAnswer {
+  const LeaguesClubsByClubAnswer({
+    required this.balance,
+    required this.bot,
+    this.coach,
+    required this.code,
+    required this.colors,
+    required this.crestUrl,
+    required this.id,
+    required this.name,
+    this.objectives,
+    required this.players,
+    required this.playersCount,
+    required this.squadValue,
+    required this.strengthCp,
+  });
+
+  factory LeaguesClubsByClubAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesClubsByClubAnswer');
+    return LeaguesClubsByClubAnswer(
+      balance: r.int_('balance'),
+      bot: r.bool_('bot'),
+      coach: r.objectOrNull('coach', LeaguesClubsByClubAnswerCoach.fromJson),
+      code: r.string('code'),
+      colors: r.list('colors', JsonReader.stringOf),
+      crestUrl: r.string('crest_url'),
+      id: r.int_('id'),
+      name: r.string('name'),
+      objectives: r.objectOrNull('objectives', LeaguesClubsByClubAnswerObjectives.fromJson),
+      players: r.list('players', LeaguePlayer.fromJson),
+      playersCount: r.int_('players_count'),
+      squadValue: r.int_('squad_value'),
+      strengthCp: r.int_('strength_cp'),
+    );
+  }
+
+  /// Club money
+  final int balance;
+
+  /// No coach; a bot runs it and it can be taken
+  final bool bot;
+  final LeaguesClubsByClubAnswerCoach? coach;
+  final String code;
+  final List<String> colors;
+  final String crestUrl;
+  final int id;
+  final String name;
+
+  /// This season's objectives (Sprint 33), shown when a coach picks a team
+  final LeaguesClubsByClubAnswerObjectives? objectives;
+  final List<LeaguePlayer> players;
+  final int playersCount;
+  final int squadValue;
+
+  /// At the league's making
+  final int strengthCp;
+}
+
+class LeaguesClubsByClubAnswerCoach {
+  const LeaguesClubsByClubAnswerCoach({required this.id, required this.name, this.official, this.verified});
+
+  factory LeaguesClubsByClubAnswerCoach.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesClubsByClubAnswerCoach');
+    return LeaguesClubsByClubAnswerCoach(
+      id: r.int_('id'),
+      name: r.string('name'),
+      official: r.boolOrNull('official'),
+      verified: r.boolOrNull('verified'),
+    );
+  }
+
+  final int id;
+  final String name;
+  final bool? official;
+  final bool? verified;
+}
+
+/// This season's objectives (Sprint 33), shown when a coach picks a team
+class LeaguesClubsByClubAnswerObjectives {
+  const LeaguesClubsByClubAnswerObjectives({required this.cup, required this.league});
+
+  factory LeaguesClubsByClubAnswerObjectives.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesClubsByClubAnswerObjectives');
+    return LeaguesClubsByClubAnswerObjectives(
+      cup: r.object('cup', LeaguesClubsByClubAnswerObjectivesCup.fromJson),
+      league: r.object('league', LeaguesClubsByClubAnswerObjectivesLeague.fromJson),
+    );
+  }
+
+  final LeaguesClubsByClubAnswerObjectivesCup cup;
+  final LeaguesClubsByClubAnswerObjectivesLeague league;
+}
+
+class LeaguesClubsByClubAnswerObjectivesCup {
+  const LeaguesClubsByClubAnswerObjectivesCup({required this.target});
+
+  factory LeaguesClubsByClubAnswerObjectivesCup.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesClubsByClubAnswerObjectivesCup');
+    return LeaguesClubsByClubAnswerObjectivesCup(target: r.string('target'));
+  }
+
+  /// The stage to reach
+  final String target;
+}
+
+class LeaguesClubsByClubAnswerObjectivesLeague {
+  const LeaguesClubsByClubAnswerObjectivesLeague({required this.kind, required this.target});
+
+  factory LeaguesClubsByClubAnswerObjectivesLeague.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesClubsByClubAnswerObjectivesLeague');
+    return LeaguesClubsByClubAnswerObjectivesLeague(kind: r.string('kind'), target: r.int_('target'));
+  }
+
+  final String kind;
+
+  /// The place to finish in or above
+  final int target;
+}
+
 class LeaguesCupAnswer {
   const LeaguesCupAnswer({required this.stages});
 
@@ -6179,27 +6359,27 @@ class LeaguesMarketQuoteAnswer {
   final int waitHours;
 }
 
-class LeaguesPressAnswer {
-  const LeaguesPressAnswer({required this.enabled, this.press});
+class LeaguesPressByFixtureAnswer {
+  const LeaguesPressByFixtureAnswer({required this.enabled, this.press});
 
-  factory LeaguesPressAnswer.fromJson(Object? json) {
-    final r = JsonReader(json, 'LeaguesPressAnswer');
-    return LeaguesPressAnswer(enabled: r.bool_('enabled'), press: r.objectOrNull('press', PressConference.fromJson));
+  factory LeaguesPressByFixtureAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesPressByFixtureAnswer');
+    return LeaguesPressByFixtureAnswer(enabled: r.bool_('enabled'), press: r.objectOrNull('press', PressConference.fromJson));
   }
 
   final bool enabled;
   final PressConference? press;
 }
 
-class LeaguesReleaseAnswer {
-  const LeaguesReleaseAnswer({required this.can, required this.clause, required this.club, required this.playerId, this.why});
+class LeaguesReleaseByPlayerAnswer {
+  const LeaguesReleaseByPlayerAnswer({required this.can, required this.clause, required this.club, required this.playerId, this.why});
 
-  factory LeaguesReleaseAnswer.fromJson(Object? json) {
-    final r = JsonReader(json, 'LeaguesReleaseAnswer');
-    return LeaguesReleaseAnswer(
+  factory LeaguesReleaseByPlayerAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesReleaseByPlayerAnswer');
+    return LeaguesReleaseByPlayerAnswer(
       can: r.bool_('can'),
       clause: r.int_('clause'),
-      club: r.object('club', LeaguesReleaseAnswerClub.fromJson),
+      club: r.object('club', LeaguesReleaseByPlayerAnswerClub.fromJson),
       playerId: r.int_('player_id'),
       why: r.stringOrNull('why'),
     );
@@ -6207,17 +6387,17 @@ class LeaguesReleaseAnswer {
 
   final bool can;
   final int clause;
-  final LeaguesReleaseAnswerClub club;
+  final LeaguesReleaseByPlayerAnswerClub club;
   final int playerId;
   final String? why;
 }
 
-class LeaguesReleaseAnswerClub {
-  const LeaguesReleaseAnswerClub({this.id, this.name});
+class LeaguesReleaseByPlayerAnswerClub {
+  const LeaguesReleaseByPlayerAnswerClub({this.id, this.name});
 
-  factory LeaguesReleaseAnswerClub.fromJson(Object? json) {
-    final r = JsonReader(json, 'LeaguesReleaseAnswerClub');
-    return LeaguesReleaseAnswerClub(id: r.intOrNull('id'), name: r.stringOrNull('name'));
+  factory LeaguesReleaseByPlayerAnswerClub.fromJson(Object? json) {
+    final r = JsonReader(json, 'LeaguesReleaseByPlayerAnswerClub');
+    return LeaguesReleaseByPlayerAnswerClub(id: r.intOrNull('id'), name: r.stringOrNull('name'));
   }
 
   final int? id;
@@ -9602,12 +9782,12 @@ class SeasonCalendarWindowsItem {
   final String opensAt;
 }
 
-class SimClubsAnswer {
-  const SimClubsAnswer({this.bench, this.club, this.formation, this.players, this.starters});
+class SimClubsByClubAnswer {
+  const SimClubsByClubAnswer({this.bench, this.club, this.formation, this.players, this.starters});
 
-  factory SimClubsAnswer.fromJson(Object? json) {
-    final r = JsonReader(json, 'SimClubsAnswer');
-    return SimClubsAnswer(
+  factory SimClubsByClubAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'SimClubsByClubAnswer');
+    return SimClubsByClubAnswer(
       bench: r.listOrNull('bench', JsonReader.intOf),
       club: r.mapOrNull('club', JsonReader.anyOf),
       formation: r.stringOrNull('formation'),

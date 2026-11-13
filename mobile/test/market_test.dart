@@ -14,6 +14,7 @@ import 'package:glm/features/market/scout_screen.dart';
 import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
@@ -56,7 +57,7 @@ class FakeMarket implements MarketRepository {
   Future<void> answer(int league, int offer, String action) async => sent.add('$action $offer');
   @override
   Future<List<OfferPlayer>> clubPlayers(int league, int club) async => [
-    for (final p in json('club_142')['players'] as List<dynamic>) OfferPlayer.fromJson(p as Map<String, dynamic>),
+    for (final p in json('club_142')['players'] as List<dynamic>) OfferPlayer.ofClub(api.LeaguePlayer.fromJson(p)),
   ];
   @override
   Future<void> offer(int league, {int? to, int? counterOf, required int money, required List<int> want, required List<int> give}) async =>
@@ -86,12 +87,7 @@ class FakeMarket implements MarketRepository {
   @override
   Future<({List<Prospect> prospects, DateTime? renewsAt, int signed, int perSeason})> academy(int league) async {
     final j = json('academy');
-    return (
-      prospects: [for (final p in j['prospects'] as List<dynamic>) Prospect.fromJson(p as Map<String, dynamic>)],
-      renewsAt: null,
-      signed: 0,
-      perSeason: 2,
-    );
+    return (prospects: [for (final p in j['prospects'] as List<dynamic>) Prospect.fromJson(p)], renewsAt: null, signed: 0, perSeason: 2);
   }
 
   @override

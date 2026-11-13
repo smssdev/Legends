@@ -105,7 +105,11 @@ class ScoutTest extends TestCase
     {
         $this->ask()->assertOk();
         Scout::report((int) DB::table('scout_requests')->value('id'));
-        $page = $this->getJson($this->url())->assertOk()->json('requests.0.players');
+        $page = $this->getJson($this->url())->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['cost', 'hours', 'balance', 'options' => ['leagues', 'nationalities', 'positions'],
+                'requests' => ['*' => ['id', 'status', 'cost', 'criteria', 'finishes_at', 'players' => ['*' => ['id', 'name', 'position', 'line', 'age', 'overall', 'potential', 'value', 'price', 'state']]]]])
+            ->json('requests.0.players');
         $this->assertCount(5, $page);
         $this->assertSame('available', $page[0]['state']);
         $this->assertSame($page[0]['value'], $page[0]['price']);

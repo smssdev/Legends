@@ -216,9 +216,7 @@ void main() {
           leagueProvider.overrideWith((ref, id) async => League.of(api.League.fromJson(json('league')['league']))),
           clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
           standingsProvider.overrideWith(
-            (ref, id) async => [
-              for (final r in json('standings')['table'] as List<dynamic>) StandingRow.fromJson(r as Map<String, dynamic>),
-            ],
+            (ref, id) async => [for (final r in json('standings')['table'] as List<dynamic>) StandingRow.fromJson(r)],
           ),
           fixturesProvider.overrideWith(
             (ref, id) async => [for (final f in json('fixtures')['fixtures'] as List<dynamic>) Fixture.of(api.Fixture.fromJson(f))],
