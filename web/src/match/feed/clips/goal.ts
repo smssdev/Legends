@@ -16,7 +16,7 @@ export function goal(e: SceneData) {
   // [Sprint 42 F9] The blackout: the lights go just before the shot, only eyes in the dark, a click, and the lights
   // come back with the ball in the net.
   const black = dark ? el('g', { opacity: 0 }, svg) : null
-  if (black!) black!.innerHTML = '<rect width="640" height="340" fill="#02030A"/>' + [[320, 120], [250, 210], [400, 200], [180, 250], [470, 260], [330, 230]].map(([x, y], i) => `<g data-eyes="${i}" transform="translate(${x} ${y})"><ellipse cx="-6" rx="4.5" ry="5.5" fill="#fff"/><ellipse cx="6" rx="4.5" ry="5.5" fill="#fff"/><circle data-p="1" cx="-6" r="2" fill="#000"/><circle data-p="1" cx="6" r="2" fill="#000"/></g>`).join('') + '<text data-click="1" x="320" y="70" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-size="34" fill="#FFD400" opacity="0">*CLICK*</text>'
+  if (black!) black!.innerHTML = '<rect width="640" height="340" fill="#02030A"/>' + [[320, 120], [250, 210], [400, 200], [180, 250], [470, 260], [330, 230]].map(([x, y], i) => `<g data-eyes="${i}" transform="translate(${x} ${y})"><ellipse cx="-6" rx="4.5" ry="5.5" fill="#fff"/><ellipse cx="6" rx="4.5" ry="5.5" fill="#fff"/><circle data-p="1" cx="-6" r="2" fill="#000"/><circle data-p="1" cx="6" r="2" fill="#000"/></g>`).join('') + '<text data-click="1" x="320" y="70" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="34" fill="#FFD400" opacity="0">*CLICK*</text>'
   const pupils = black ? [...black.querySelectorAll<SvgNode>('[data-p]')] : [], click = black?.querySelector<SvgNode>('[data-click]')!
   const num = bigNumber(svg, e.no, K(e.side).kit), fl = flash(svg), cf = flashes(svg), tt = title(svg, tr('هدف!'))
   let last: number[] | null = null

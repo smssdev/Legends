@@ -39,7 +39,7 @@ export function confetti(svg: Svg, n = 46) {
 export function boom(svg: Svg, p = svg.world, word = 'POW!', fill = '#FFD400', ink = '#B91C1C') {
   const g = el('g', { opacity: 0 }, p)
   const pts = Array.from({ length: 18 }, (_, i) => { const r = i % 2 ? 15 : 31, a = (i * Math.PI) / 9; return `${(Math.cos(a) * r).toFixed(1)},${(Math.sin(a) * r).toFixed(1)}` }).join(' ')
-  g.innerHTML = `<polygon points="${pts}" fill="${fill}" stroke="#E2531F" stroke-width="3" stroke-linejoin="round"/><text y="5" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-style="italic" font-size="15" fill="${ink}">${esc(word)}</text>`
+  g.innerHTML = `<polygon points="${pts}" fill="${fill}" stroke="#E2531F" stroke-width="3" stroke-linejoin="round"/><text y="5" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-style="italic" font-size="15" fill="${ink}">${esc(word)}</text>`
   return (x: number, y: number, f: number) => { const on = f > 0 && f < 1; sa(g, 'opacity', on ? 1 - seg(f, 0.6, 1) : 0); if (on) sa(g, 'transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(0.3 + ease(Math.min(1, f * 2.2)) * 0.9).toFixed(2)}) rotate(${Math.round(f * 20)})`) }
 }
 // A puff of dust on the grass (a slide, a fall, the medics' sprint).
@@ -67,7 +67,7 @@ export function popEyes(svg: Svg, p = svg.world) {
 // A speech bubble of comic swearing (or a scream); k scales it.
 export function bubbleOf(svg: Svg, p = svg.world, text = '#@!%&!', ink = '#D21F1F') {
   const g = el('g', { opacity: 0 }, p)
-  g.innerHTML = `<path d="M-32 -14 Q-32 -27 -18 -27 H18 Q32 -27 32 -14 V-3 Q32 8 18 8 H-2 L-12 19 L-9 8 H-18 Q-32 8 -32 -3 Z" fill="#fff" stroke="#0A1F42" stroke-width="2"/><text y="-4" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-size="16" fill="${ink}">${esc(text)}</text>`
+  g.innerHTML = `<path d="M-32 -14 Q-32 -27 -18 -27 H18 Q32 -27 32 -14 V-3 Q32 8 18 8 H-2 L-12 19 L-9 8 H-18 Q-32 8 -32 -3 Z" fill="#fff" stroke="#0A1F42" stroke-width="2"/><text y="-4" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="16" fill="${ink}">${esc(text)}</text>`
   return (x: number, y: number, f: number, k = 1, wob = 0) => { sa(g, 'opacity', Math.max(0, f)); if (f > 0) sa(g, 'transform', `translate(${(x + wob).toFixed(1)} ${y.toFixed(1)}) scale(${(k * (0.7 + 0.3 * ease(Math.min(1, f)))).toFixed(2)})`) }
 }
 // The anger mark over a head, throbbing.

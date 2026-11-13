@@ -14,7 +14,7 @@ export function foul(e: SceneData) {
   const pl = player(w, K(e.side).kit, e.no, k, { look: Math.floor(R() * 40) }), rf = referee(w, k)
   const fx = { dust: dust(svg), slide: dust(svg, w, 5), ouch: bubbleOf(svg, w, '!!!') }
   const scream = bubbleOf(svg, w, 'AAAAH!'), huh = bubbleOf(svg, w, '?!', '#0A1F42'), blow = burst(svg, w), roll = dust(svg, w, 6)
-  const q = el('text', { 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 18, fill: '#FFD400', stroke: '#040B1C', 'stroke-width': 3, 'paint-order': 'stroke', opacity: 0 }, w); q.textContent = '?'
+  const q = el('text', { 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 800, 'font-size': 18, fill: '#FFD400', stroke: '#040B1C', 'stroke-width': 3, 'paint-order': 'stroke', opacity: 0 }, w); q.textContent = '?'
   const tt = title(svg, dive ? tr('سقوط مثير!') : tr('خطأ'), '#F2994A')
   return { dur: 5.2, svg, update(t: number) {
     roll(0, 0, 0)

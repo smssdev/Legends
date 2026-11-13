@@ -187,7 +187,7 @@ export function title(svg: Svg, text: string, color?: string) {
   // [Sprint 42 J1] The stamp: a box behind the word, at a slant.
   const box = style === 3 ? el('rect', { x: 200, y: 10, width: 240, height: 56, rx: 6, fill: 'rgba(4,11,28,.82)', stroke: fill, 'stroke-width': 4, opacity: 0 }, svg) : null
   // [Sprint 30 Q8] A dark edge under the word: read whole over the pitch, the flashes and the band.
-  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 900, 'font-size': 36, fill, stroke: '#040B1C', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round', opacity: 0 }, svg)
+  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 700, 'font-size': 36, fill, stroke: '#040B1C', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round', opacity: 0 }, svg)
   t.textContent = text
   // [Sprint 42 J1] Four looks for the headline, one per scene (VARIANT.title): the gold band sliding in; the slam (the
   // word drops in big, no band); neon (a thin band in its colour, the word flickering on); the stamp (a box at a slant).

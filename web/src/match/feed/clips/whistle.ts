@@ -6,7 +6,7 @@ export function whistle(e: SceneData) {
   // Half time and full time: the score and the numbers of the match so far.
   const svg = stage('home'), g = el('g', {}, svg)
   el('rect', { x: 110, y: 26, width: 420, height: 296, rx: 18, fill: 'rgba(4,11,28,.9)', stroke: 'rgba(245,184,46,.35)' }, g)
-  el('text', { x: 320, y: 66, 'text-anchor': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 900, 'font-size': 28, fill: ref(svg, 'gold') }, g).textContent = e.big ?? ''
+  el('text', { x: 320, y: 66, 'text-anchor': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 700, 'font-size': 28, fill: ref(svg, 'gold') }, g).textContent = e.big ?? ''
   el('text', { x: 320, y: 108, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 800, 'font-size': 42, fill: '#fff', direction: 'ltr' }, g).textContent = e.score ?? ''
   const rows = (e.stats ?? []).slice(0, 4)
   const bars = rows.map(([label, h, a], i: number) => {
