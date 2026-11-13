@@ -115,7 +115,10 @@ class MoraleTest extends TestCase
 
         // A coach of another club in the league buys a ticket for my match? Mine is mine: I buy one for theirs.
         $url = "/api/v1/leagues/{$this->league['id']}/tickets";
-        $list = $this->getJson($url)->assertOk()->json();
+        $list = $this->getJson($url)->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['boost', 'price', 'balance', 'fixtures' => ['*' => ['id', 'competition', 'round', 'scheduled_at', 'mine',
+                'home' => ['id', 'name', 'code', 'crest_url'], 'away' => ['id', 'name', 'code', 'crest_url'], 'cheering' => ['home', 'away']]]])->json();
         $this->assertNotContains($f->id, array_column($list['fixtures'], 'id'));
         $this->assertNotEmpty($list['fixtures']);
         $other = DB::table('fixtures')->where('id', $list['fixtures'][0]['id'])->first();

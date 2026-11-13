@@ -112,46 +112,36 @@ class TicketsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(12),
             children: [
               Text(
-                l.cheerLead(t['boost'] as int? ?? 0, money(context, (t['price'] as num? ?? 0).toInt())),
+                l.cheerLead(t.boost, money(context, t.price)),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: p.textMuted),
               ),
               const SizedBox(height: 10),
-              for (final f in (t['fixtures'] as List<dynamic>? ?? const []).cast<Map<dynamic, dynamic>>())
+              for (final f in t.fixtures)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: GlmCard(
                     padding: const EdgeInsets.all(10),
                     child: Row(
                       children: [
-                        for (final side in ['home', 'away']) ...[
+                        for (final (side, club, cheering) in [
+                          ('home', (name: f.home.name, code: f.home.code, crest: f.home.crestUrl), f.cheering.home),
+                          ('away', (name: f.away.name, code: f.away.code, crest: f.away.crestUrl), f.cheering.away),
+                        ]) ...[
                           Expanded(
                             child: Column(
                               children: [
-                                ClubCrest(
-                                  url: (f[side] as Map<dynamic, dynamic>?)?['crest_url'] as String?,
-                                  name: '${(f[side] as Map<dynamic, dynamic>?)?['code'] ?? ''}',
-                                  size: 34,
-                                ),
-                                Text(
-                                  '${(f[side] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-                                  textDirection: TextDirection.ltr,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  '${(f['cheering'] as Map<dynamic, dynamic>?)?[side] ?? 0} 📣',
-                                  style: TextStyle(color: p.textMuted, fontSize: 12),
-                                ),
-                                if (f['mine'] == side)
+                                ClubCrest(url: club.crest, name: club.code, size: 34),
+                                Text(club.name, textDirection: TextDirection.ltr, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                Text('$cheering 📣', style: TextStyle(color: p.textMuted, fontSize: 12)),
+                                if (f.mine == side)
                                   Icon(Icons.check_circle_rounded, color: p.gold)
-                                else if (f['mine'] == null)
+                                else if (f.mine == null)
                                   TextButton(
                                     onPressed: () async {
                                       await _try(
                                         context,
-                                        () =>
-                                            ref.read(apiProvider).post('/leagues/$leagueId/tickets', {'fixture_id': f['id'], 'side': side}),
+                                        () => ref.read(apiProvider).post('/leagues/$leagueId/tickets', {'fixture_id': f.id, 'side': side}),
                                       );
                                       ref.invalidate(ticketsProvider(leagueId));
                                     },

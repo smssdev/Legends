@@ -69,7 +69,10 @@ class IntegrityTest extends TestCase
     public function test_a_bribe_costs_money_and_coins_and_only_where_the_owner_allows_it(): void
     {
         $this->actingAs($this->owner);
-        $view = $this->getJson($this->url)->assertOk()->json();
+        $view = $this->getJson($this->url)->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (openapi.yaml).
+            ->assertJsonStructure(['on', 'fixture', 'bribe' => ['paid', 'money', 'extra' => ['currency', 'amount'], 'var_percent'],
+                'security' => ['sees', 'cost' => ['currency', 'amount']], 'double_agent' => ['currency', 'amount'], 'spies_on_me', 'proofs', 'banned_until', 'headlines'])->json();
         $this->assertTrue($view['on']);
         $this->assertSame($this->fixture->id, $view['fixture']['id']);
         $before = $this->balance($this->mine);

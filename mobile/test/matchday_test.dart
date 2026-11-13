@@ -36,7 +36,7 @@ Future<void> pump(WidgetTester t, Widget screen) async {
           (ref, k) async => api.PressConference.fromJson({...json('press_2794')['press'] as Map<String, dynamic>, 'open': true}),
         ),
         integrityProvider.overrideWith(
-          (ref, l) async => {
+          (ref, l) async => api.IntegrityAnswer.fromJson({
             ...json('integrity'),
             'security': {
               'sees': true,
@@ -45,10 +45,10 @@ Future<void> pump(WidgetTester t, Widget screen) async {
             'spies_on_me': [
               {'id': 3, 'club': 'Burnley', 'turned': false},
             ],
-          },
+          }),
         ),
         contractsProvider.overrideWith((ref, l) async => api.Contracts.fromJson(json('team_contracts'))),
-        ticketsProvider.overrideWith((ref, l) async => json('tickets')),
+        ticketsProvider.overrideWith((ref, l) async => api.TicketsAnswer.fromJson(json('tickets'))),
         missedProvider.overrideWith(
           (ref, l) async => [
             // [Sprint 59 F1] As the contract has it (MissedMatch), read through the generated model.
