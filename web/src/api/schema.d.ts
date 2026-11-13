@@ -3657,9 +3657,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            press: {
-                                [key: string]: unknown;
-                            };
+                            press: components["schemas"]["PressConference"] | null;
                             enabled: boolean;
                         };
                     };
@@ -6488,83 +6486,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            match?: {
-                                fixture_id: number;
-                                /** @description Once it kicks off: watch it at GET /matches/{id} */
-                                match_id?: number | null;
-                                /** @enum {string} */
-                                competition: "league" | "cup" | "alliance";
-                                round: number;
-                                /** @enum {string} */
-                                venue: "home" | "away";
-                                /** Format: date-time */
-                                scheduled_at: string;
-                                /** @enum {string} */
-                                status: "scheduled" | "locked" | "live";
-                                /** Format: date-time */
-                                referee_at: string;
-                                /** Format: date-time */
-                                lock_at: string;
-                                /** @enum {string|null} */
-                                referee?: "very_lenient" | "lenient" | "medium" | "strict" | "very_strict" | null;
-                                /** @description My morale for this match with my crowd and the tickets cheering me [X25] */
-                                morale: number;
-                                /**
-                                 * @description The round's first or second time slot [X31]
-                                 * @enum {integer}
-                                 */
-                                slot?: 1 | 2;
-                                /** @description The night's big match of the round [X31] */
-                                match_of_day?: boolean;
-                                move?: components["schemas"]["MatchMoveView"];
-                                /** @description My club, for the VS card [X29] */
-                                club: {
-                                    id: number;
-                                    name: string;
-                                    code: string;
-                                    strength_cp: number;
-                                    crest_url: string;
-                                    /** @description [Sprint 20 S1] My name */
-                                    coach: string;
-                                    /** @description [Sprint 20 S1] The last five results, newest first */
-                                    form: ("W" | "D" | "L")[];
-                                    /** @description [Sprint 20 S1] My formation now (the locked one after the lock) */
-                                    formation: string;
-                                };
-                                opponent: {
-                                    id: number;
-                                    name: string;
-                                    code: string;
-                                    strength_cp: number;
-                                    crest_url: string;
-                                    coach?: string | null;
-                                    /** @description [Sprint 20 S1] The last five results, newest first (public) */
-                                    form?: ("W" | "D" | "L")[];
-                                    /** @description Only after the lock */
-                                    sheet?: {
-                                        formation: string;
-                                        starters: {
-                                            id?: number;
-                                            name?: string | null;
-                                        }[];
-                                        tactics: components["schemas"]["PublicTactics"];
-                                    } | null;
-                                };
-                                /** @description My frozen sheet after the lock, with who came in for whom */
-                                mine?: {
-                                    formation?: string;
-                                    starters?: number[];
-                                    bench?: number[];
-                                    tactics?: components["schemas"]["TacticsSet"];
-                                    fixes?: {
-                                        slot?: number;
-                                        out?: number | null;
-                                        in?: number;
-                                        out_name?: string | null;
-                                        in_name?: string | null;
-                                    }[];
-                                } | null;
-                            } | null;
+                            match?: components["schemas"]["NextMatch"] | null;
                         };
                     };
                 };
@@ -16352,6 +16274,128 @@ export interface components {
             goals?: number;
             assists?: number;
             shots?: number;
+        };
+        /** @description [Sprint 59 F1] My next match (GET /leagues/{league}/team/next-match), read by the app through its generated model */
+        NextMatch: {
+            fixture_id: number;
+            /** @description Once it kicks off: watch it at GET /matches/{id} */
+            match_id?: number | null;
+            /** @enum {string} */
+            competition: "league" | "cup" | "alliance";
+            round: number;
+            /** @enum {string} */
+            venue: "home" | "away";
+            /** Format: date-time */
+            scheduled_at: string;
+            /** @enum {string} */
+            status: "scheduled" | "locked" | "live";
+            /** Format: date-time */
+            referee_at: string;
+            /** Format: date-time */
+            lock_at: string;
+            /** @enum {string|null} */
+            referee?: "very_lenient" | "lenient" | "medium" | "strict" | "very_strict" | null;
+            /** @description My morale for this match with my crowd and the tickets cheering me [X25] */
+            morale: number;
+            /**
+             * @description The round's first or second time slot [X31]
+             * @enum {integer}
+             */
+            slot?: 1 | 2;
+            /** @description The night's big match of the round [X31] */
+            match_of_day?: boolean;
+            move?: components["schemas"]["MatchMoveView"];
+            /** @description My club, for the VS card [X29] */
+            club: {
+                id: number;
+                name: string;
+                code: string;
+                strength_cp: number;
+                crest_url: string;
+                /** @description [Sprint 20 S1] My name */
+                coach: string;
+                /** @description [Sprint 20 S1] The last five results, newest first */
+                form: ("W" | "D" | "L")[];
+                /** @description [Sprint 20 S1] My formation now (the locked one after the lock) */
+                formation: string;
+            };
+            opponent: {
+                id: number;
+                name: string;
+                code: string;
+                strength_cp: number;
+                crest_url: string;
+                coach?: string | null;
+                /** @description [Sprint 20 S1] The last five results, newest first (public) */
+                form?: ("W" | "D" | "L")[];
+                /** @description Only after the lock */
+                sheet?: {
+                    formation: string;
+                    starters: {
+                        id?: number;
+                        name?: string | null;
+                    }[];
+                    tactics: components["schemas"]["PublicTactics"];
+                } | null;
+            };
+            /** @description My frozen sheet after the lock, with who came in for whom */
+            mine?: {
+                formation?: string;
+                starters?: number[];
+                bench?: number[];
+                tactics?: components["schemas"]["TacticsSet"];
+                fixes?: {
+                    slot?: number;
+                    out?: number | null;
+                    in?: number;
+                    out_name?: string | null;
+                    in_name?: string | null;
+                }[];
+            } | null;
+        };
+        /** @description [UP12, Sprint 59 F1] The press conference before a match, as one coach sees it (App\\League\\PressRoom::of) */
+        PressConference: {
+            fixture_id: number;
+            /** Format: date-time */
+            opens_at: string;
+            /** @description Statements are given from the opening until the lock */
+            open: boolean;
+            /** @description Each result's chance in percent */
+            chances: {
+                home: number;
+                draw: number;
+                away: number;
+            };
+            reading: {
+                home: string;
+                away: string;
+            };
+            lines: {
+                home: {
+                    [key: string]: number;
+                };
+                away: {
+                    [key: string]: number;
+                };
+            };
+            statements: {
+                kind: string;
+                text: string;
+                /** @description [X61 E9] What it stakes on each result (morale) */
+                stakes: {
+                    win: number;
+                    draw: number;
+                    loss: number;
+                };
+            }[];
+            /** @description The statement each side made */
+            said: {
+                home: string | null;
+                away: string | null;
+            };
+            /** @enum {string|null} */
+            mine: "home" | "away" | null;
+            morale: number;
         };
         /** @description [Sprint 59 F1] A league match for its viewer (GET /matches/{match}): the app reads it through its generated model */
         LeagueMatch: {

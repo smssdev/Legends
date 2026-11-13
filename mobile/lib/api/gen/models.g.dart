@@ -5779,6 +5779,236 @@ class Negotiation {
   final String status;
 }
 
+/// [Sprint 59 F1] My next match (GET /leagues/{league}/team/next-match), read by the app through its generated model
+class NextMatch {
+  const NextMatch({
+    required this.club,
+    required this.competition,
+    required this.fixtureId,
+    required this.lockAt,
+    this.matchId,
+    this.matchOfDay,
+    this.mine,
+    required this.morale,
+    this.move,
+    required this.opponent,
+    this.referee,
+    required this.refereeAt,
+    required this.round,
+    required this.scheduledAt,
+    this.slot,
+    required this.status,
+    required this.venue,
+  });
+
+  factory NextMatch.fromJson(Object? json) {
+    final r = JsonReader(json, 'NextMatch');
+    return NextMatch(
+      club: r.object('club', NextMatchClub.fromJson),
+      competition: r.string('competition'),
+      fixtureId: r.int_('fixture_id'),
+      lockAt: r.string('lock_at'),
+      matchId: r.intOrNull('match_id'),
+      matchOfDay: r.boolOrNull('match_of_day'),
+      mine: r.objectOrNull('mine', NextMatchMine.fromJson),
+      morale: r.int_('morale'),
+      move: r.objectOrNull('move', MatchMoveView.fromJson),
+      opponent: r.object('opponent', NextMatchOpponent.fromJson),
+      referee: r.stringOrNull('referee'),
+      refereeAt: r.string('referee_at'),
+      round: r.int_('round'),
+      scheduledAt: r.string('scheduled_at'),
+      slot: r.intOrNull('slot'),
+      status: r.string('status'),
+      venue: r.string('venue'),
+    );
+  }
+
+  /// My club, for the VS card [X29]
+  final NextMatchClub club;
+  final String competition;
+  final int fixtureId;
+  final String lockAt;
+
+  /// Once it kicks off: watch it at GET /matches/{id}
+  final int? matchId;
+
+  /// The night's big match of the round [X31]
+  final bool? matchOfDay;
+
+  /// My frozen sheet after the lock, with who came in for whom
+  final NextMatchMine? mine;
+
+  /// My morale for this match with my crowd and the tickets cheering me [X25]
+  final int morale;
+  final MatchMoveView? move;
+  final NextMatchOpponent opponent;
+  final String? referee;
+  final String refereeAt;
+  final int round;
+  final String scheduledAt;
+
+  /// The round's first or second time slot [X31]
+  final int? slot;
+  final String status;
+  final String venue;
+}
+
+/// My club, for the VS card [X29]
+class NextMatchClub {
+  const NextMatchClub({
+    required this.coach,
+    required this.code,
+    required this.crestUrl,
+    required this.form,
+    required this.formation,
+    required this.id,
+    required this.name,
+    required this.strengthCp,
+  });
+
+  factory NextMatchClub.fromJson(Object? json) {
+    final r = JsonReader(json, 'NextMatchClub');
+    return NextMatchClub(
+      coach: r.string('coach'),
+      code: r.string('code'),
+      crestUrl: r.string('crest_url'),
+      form: r.list('form', JsonReader.stringOf),
+      formation: r.string('formation'),
+      id: r.int_('id'),
+      name: r.string('name'),
+      strengthCp: r.int_('strength_cp'),
+    );
+  }
+
+  /// [Sprint 20 S1] My name
+  final String coach;
+  final String code;
+  final String crestUrl;
+
+  /// [Sprint 20 S1] The last five results, newest first
+  final List<String> form;
+
+  /// [Sprint 20 S1] My formation now (the locked one after the lock)
+  final String formation;
+  final int id;
+  final String name;
+  final int strengthCp;
+}
+
+/// My frozen sheet after the lock, with who came in for whom
+class NextMatchMine {
+  const NextMatchMine({this.bench, this.fixes, this.formation, this.starters, this.tactics});
+
+  factory NextMatchMine.fromJson(Object? json) {
+    final r = JsonReader(json, 'NextMatchMine');
+    return NextMatchMine(
+      bench: r.listOrNull('bench', JsonReader.intOf),
+      fixes: r.listOrNull('fixes', NextMatchMineFixesItem.fromJson),
+      formation: r.stringOrNull('formation'),
+      starters: r.listOrNull('starters', JsonReader.intOf),
+      tactics: r.objectOrNull('tactics', TacticsSet.fromJson),
+    );
+  }
+
+  final List<int>? bench;
+  final List<NextMatchMineFixesItem>? fixes;
+  final String? formation;
+  final List<int>? starters;
+  final TacticsSet? tactics;
+}
+
+class NextMatchMineFixesItem {
+  const NextMatchMineFixesItem({this.in_, this.inName, this.out, this.outName, this.slot});
+
+  factory NextMatchMineFixesItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'NextMatchMineFixesItem');
+    return NextMatchMineFixesItem(
+      in_: r.intOrNull('in'),
+      inName: r.stringOrNull('in_name'),
+      out: r.intOrNull('out'),
+      outName: r.stringOrNull('out_name'),
+      slot: r.intOrNull('slot'),
+    );
+  }
+
+  final int? in_;
+  final String? inName;
+  final int? out;
+  final String? outName;
+  final int? slot;
+}
+
+class NextMatchOpponent {
+  const NextMatchOpponent({
+    this.coach,
+    required this.code,
+    required this.crestUrl,
+    this.form,
+    required this.id,
+    required this.name,
+    this.sheet,
+    required this.strengthCp,
+  });
+
+  factory NextMatchOpponent.fromJson(Object? json) {
+    final r = JsonReader(json, 'NextMatchOpponent');
+    return NextMatchOpponent(
+      coach: r.stringOrNull('coach'),
+      code: r.string('code'),
+      crestUrl: r.string('crest_url'),
+      form: r.listOrNull('form', JsonReader.stringOf),
+      id: r.int_('id'),
+      name: r.string('name'),
+      sheet: r.objectOrNull('sheet', NextMatchOpponentSheet.fromJson),
+      strengthCp: r.int_('strength_cp'),
+    );
+  }
+
+  final String? coach;
+  final String code;
+  final String crestUrl;
+
+  /// [Sprint 20 S1] The last five results, newest first (public)
+  final List<String>? form;
+  final int id;
+  final String name;
+
+  /// Only after the lock
+  final NextMatchOpponentSheet? sheet;
+  final int strengthCp;
+}
+
+/// Only after the lock
+class NextMatchOpponentSheet {
+  const NextMatchOpponentSheet({required this.formation, required this.starters, required this.tactics});
+
+  factory NextMatchOpponentSheet.fromJson(Object? json) {
+    final r = JsonReader(json, 'NextMatchOpponentSheet');
+    return NextMatchOpponentSheet(
+      formation: r.string('formation'),
+      starters: r.list('starters', NextMatchOpponentSheetStartersItem.fromJson),
+      tactics: r.object('tactics', PublicTactics.fromJson),
+    );
+  }
+
+  final String formation;
+  final List<NextMatchOpponentSheetStartersItem> starters;
+  final PublicTactics tactics;
+}
+
+class NextMatchOpponentSheetStartersItem {
+  const NextMatchOpponentSheetStartersItem({this.id, this.name});
+
+  factory NextMatchOpponentSheetStartersItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'NextMatchOpponentSheetStartersItem');
+    return NextMatchOpponentSheetStartersItem(id: r.intOrNull('id'), name: r.stringOrNull('name'));
+  }
+
+  final int? id;
+  final String? name;
+}
+
 class NotificationSettings {
   const NotificationSettings({
     this.appEnabled,
@@ -5994,6 +6224,138 @@ class PollOptionsItem {
 
   /// Null for a coach who has not voted while it is open
   final int? votes;
+}
+
+/// [UP12, Sprint 59 F1] The press conference before a match, as one coach sees it (App\\League\\PressRoom::of)
+class PressConference {
+  const PressConference({
+    required this.chances,
+    required this.fixtureId,
+    required this.lines,
+    this.mine,
+    required this.morale,
+    required this.open,
+    required this.opensAt,
+    required this.reading,
+    required this.said,
+    required this.statements,
+  });
+
+  factory PressConference.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConference');
+    return PressConference(
+      chances: r.object('chances', PressConferenceChances.fromJson),
+      fixtureId: r.int_('fixture_id'),
+      lines: r.object('lines', PressConferenceLines.fromJson),
+      mine: r.stringOrNull('mine'),
+      morale: r.int_('morale'),
+      open: r.bool_('open'),
+      opensAt: r.string('opens_at'),
+      reading: r.object('reading', PressConferenceReading.fromJson),
+      said: r.object('said', PressConferenceSaid.fromJson),
+      statements: r.list('statements', PressConferenceStatementsItem.fromJson),
+    );
+  }
+
+  /// Each result's chance in percent
+  final PressConferenceChances chances;
+  final int fixtureId;
+  final PressConferenceLines lines;
+  final String? mine;
+  final int morale;
+
+  /// Statements are given from the opening until the lock
+  final bool open;
+  final String opensAt;
+  final PressConferenceReading reading;
+
+  /// The statement each side made
+  final PressConferenceSaid said;
+  final List<PressConferenceStatementsItem> statements;
+}
+
+/// Each result's chance in percent
+class PressConferenceChances {
+  const PressConferenceChances({required this.away, required this.draw, required this.home});
+
+  factory PressConferenceChances.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceChances');
+    return PressConferenceChances(away: r.int_('away'), draw: r.int_('draw'), home: r.int_('home'));
+  }
+
+  final int away;
+  final int draw;
+  final int home;
+}
+
+class PressConferenceLines {
+  const PressConferenceLines({required this.away, required this.home});
+
+  factory PressConferenceLines.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceLines');
+    return PressConferenceLines(away: r.map('away', JsonReader.intOf), home: r.map('home', JsonReader.intOf));
+  }
+
+  final Map<String, int> away;
+  final Map<String, int> home;
+}
+
+class PressConferenceReading {
+  const PressConferenceReading({required this.away, required this.home});
+
+  factory PressConferenceReading.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceReading');
+    return PressConferenceReading(away: r.string('away'), home: r.string('home'));
+  }
+
+  final String away;
+  final String home;
+}
+
+/// The statement each side made
+class PressConferenceSaid {
+  const PressConferenceSaid({this.away, this.home});
+
+  factory PressConferenceSaid.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceSaid');
+    return PressConferenceSaid(away: r.stringOrNull('away'), home: r.stringOrNull('home'));
+  }
+
+  final String? away;
+  final String? home;
+}
+
+class PressConferenceStatementsItem {
+  const PressConferenceStatementsItem({required this.kind, required this.stakes, required this.text});
+
+  factory PressConferenceStatementsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceStatementsItem');
+    return PressConferenceStatementsItem(
+      kind: r.string('kind'),
+      stakes: r.object('stakes', PressConferenceStatementsItemStakes.fromJson),
+      text: r.string('text'),
+    );
+  }
+
+  final String kind;
+
+  /// [X61 E9] What it stakes on each result (morale)
+  final PressConferenceStatementsItemStakes stakes;
+  final String text;
+}
+
+/// [X61 E9] What it stakes on each result (morale)
+class PressConferenceStatementsItemStakes {
+  const PressConferenceStatementsItemStakes({required this.draw, required this.loss, required this.win});
+
+  factory PressConferenceStatementsItemStakes.fromJson(Object? json) {
+    final r = JsonReader(json, 'PressConferenceStatementsItemStakes');
+    return PressConferenceStatementsItemStakes(draw: r.int_('draw'), loss: r.int_('loss'), win: r.int_('win'));
+  }
+
+  final int draw;
+  final int loss;
+  final int win;
 }
 
 /// The only tactics the opponent ever sees

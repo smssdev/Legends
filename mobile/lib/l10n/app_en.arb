@@ -853,5 +853,10 @@
   "leftDaysHoursMinutes": "{d}d {h}h {m}m",
   "formWin": "W",
   "formDraw": "D",
-  "formLoss": "L"
+  "formLoss": "L",
+  "refereeVeryLenient": "Very lenient",
+  "refereeLenient": "Lenient",
+  "refereeMedium": "Medium",
+  "refereeStrict": "Strict",
+  "refereeVeryStrict": "Very strict"
 }

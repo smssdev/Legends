@@ -11,6 +11,7 @@ import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:glm/api/gen/models.g.dart' as api;
 
 Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
@@ -27,8 +28,13 @@ Future<void> pump(WidgetTester t, Widget screen) async {
     ProviderScope(
       overrides: [
         preferencesProvider.overrideWithValue(prefs),
-        nextMatchProvider.overrideWith((ref, l) async => json('next_match')['match'] as Map<String, dynamic>),
-        pressProvider.overrideWith((ref, k) async => {...json('press_2794')['press'] as Map<String, dynamic>, 'open': true}),
+        // [Sprint 59 F1] The referee as the server sends it: his strictness, a word.
+        nextMatchProvider.overrideWith(
+          (ref, l) async => api.NextMatch.fromJson({...json('next_match')['match'] as Map<String, dynamic>, 'referee': 'strict'}),
+        ),
+        pressProvider.overrideWith(
+          (ref, k) async => api.PressConference.fromJson({...json('press_2794')['press'] as Map<String, dynamic>, 'open': true}),
+        ),
         integrityProvider.overrideWith(
           (ref, l) async => {
             ...json('integrity'),
@@ -85,6 +91,7 @@ void main() {
   testWidgets('match day: the move\'s hours, the press conference and the spies on my match', (t) async {
     await pump(t, const MatchdayScreen(leagueId: 8));
     expect(find.text('Burnley'), findsWidgets);
+    expect(find.textContaining(': صارم'), findsOneWidget, reason: 'the referee drawn for the match');
     expect(find.text('قدّم المباراة أو أخّرها'), findsOneWidget);
     expect(find.textContaining('أبكر 6 س'), findsOneWidget);
     expect(find.text('المؤتمر الصحفي'), findsOneWidget);
