@@ -240,10 +240,9 @@ class _InspectorState extends ConsumerState<_Inspector> {
         children: [
           SizedBox(
             width: 100,
-            child: GlmModel3D(
+            child: GlmModelSpin(
               model: 'player_card',
               label: a.name,
-              orbit: '0deg 80deg 2.6m',
               fallback: PlayerCardArt(overall: a.overall, position: a.position, name: a.name),
             ),
           ),

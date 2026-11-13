@@ -98,7 +98,7 @@ Future<void> pump(WidgetTester t, Widget child, FakeConsole fake, {Size size = c
   t.view.devicePixelRatio = 2;
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;
-  GlmModel3D.enabled = false;
+  GlmModelSpin.enabled = false;
   await t.pumpWidget(
     ProviderScope(
       overrides: [consoleRepositoryProvider.overrideWithValue(fake)],

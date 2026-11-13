@@ -45,10 +45,9 @@ class StadiumPanorama extends StatelessWidget {
         child: Stack(
           children: [
             Positioned.fill(
-              child: GlmModel3D(
+              child: GlmModelSpin(
                 model: 'stadium',
                 label: l.stadium,
-                orbit: '30deg 62deg 6m',
                 fallback: const StadiumBackdrop(child: SizedBox.expand()),
               ),
             ),
@@ -172,7 +171,7 @@ class _ChestCardState extends ConsumerState<_ChestCard> {
         children: [
           SizedBox(
             height: 92,
-            child: GlmModel3D(
+            child: GlmModelSpin(
               model: 'chest_${c.chest}',
               label: _name(l, c.chest),
               fallback: Icon(Icons.inventory_2_rounded, size: 64, color: colour),

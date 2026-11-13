@@ -1,7 +1,9 @@
 import 'dart:io' show Platform;
+import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:flutter/scheduler.dart' show Ticker;
 
 import '../theme.dart';
 
@@ -213,45 +215,135 @@ Future<T?> showCompactInputSheet<T>(BuildContext context, {required String title
   );
 }
 
-/// [Sprint 50 M23] A 3D model of ours (mobile/assets/models, made by tools/models/make_models.py), turning slowly and
-/// turned by the finger. Under widget tests, with reduced motion (no turning) or where the phone has no web view, the
-/// drawn [fallback] stands in its place, so the screen never waits on it.
-class GlmModel3D extends StatelessWidget {
-  const GlmModel3D({super.key, required this.model, required this.label, required this.fallback, this.turn = true, this.orbit});
+/// [Sprint 61 F2] A model of ours (tools/models: made by make_models.py, turned once around by render_spins.cjs) as
+/// pictures, not a web view: a strip of 24 frames (`assets/models/<model>_spin_<size>.webp`) turned slowly, each frame
+/// fading into the next, and turned by the finger. Under widget tests or with reduced motion it stands still (and the
+/// drawn [fallback] holds its place until the strip is read).
+class GlmModelSpin extends StatefulWidget {
+  const GlmModelSpin({super.key, required this.model, required this.label, required this.fallback, this.turn = true});
 
-  /// The file's name in assets/models, without .glb.
+  /// The model's name in assets/models (its strips are `<model>_spin_512.webp` and `_256.webp`).
   final String model;
   final String label;
   final Widget fallback;
   final bool turn;
 
-  /// Where the camera looks from ("0deg 75deg 105%"), the model's default otherwise.
-  final String? orbit;
+  static const frames = 24;
 
-  /// Off under the widget tests (no web view there).
+  /// Frames a second while it turns by itself (30° a second).
+  static const pace = 2.0;
+
+  /// Off under the widget tests (their clock never reads the strip): the fallback stands.
   static bool enabled = !Platform.environment.containsKey('FLUTTER_TEST');
 
   @override
-  Widget build(BuildContext context) {
-    if (!enabled || !(Platform.isAndroid || Platform.isIOS)) return Semantics(label: label, child: fallback);
+  State<GlmModelSpin> createState() => _GlmModelSpinState();
+}
+
+class _GlmModelSpinState extends State<GlmModelSpin> with SingleTickerProviderStateMixin {
+  late final Ticker _ticker = createTicker(_tick);
+  Duration _last = Duration.zero;
+  double _at = 0;
+  bool _held = false;
+  ui.Image? _strip;
+  ImageStream? _stream;
+  ImageStreamListener? _listener;
+  int? _size;
+
+  void _tick(Duration now) {
+    final dt = (now - _last).inMicroseconds / 1e6;
+    _last = now;
+    if (!_held) setState(() => _at = (_at + dt * GlmModelSpin.pace) % GlmModelSpin.frames);
+  }
+
+  void _read(int size) {
+    if (_size == size) return;
+    _size = size;
+    _stop();
+    final stream = AssetImage('assets/models/${widget.model}_spin_$size.webp').resolve(createLocalImageConfiguration(context));
+    final listener = ImageStreamListener((info, _) {
+      if (mounted) setState(() => _strip = info.image);
+    });
+    stream.addListener(listener);
+    _stream = stream;
+    _listener = listener;
+  }
+
+  void _stop() {
+    if (_stream != null && _listener != null) _stream!.removeListener(_listener!);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     final still = MediaQuery.of(context).disableAnimations;
+    if (widget.turn && !still && GlmModelSpin.enabled) {
+      if (!_ticker.isActive) {
+        _last = Duration.zero;
+        _ticker.start();
+      }
+    } else if (_ticker.isActive) {
+      _ticker.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    _stop();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!GlmModelSpin.enabled) return Semantics(label: widget.label, child: widget.fallback);
     return Semantics(
-      label: label,
-      child: ModelViewer(
-        src: 'assets/models/$model.glb',
-        alt: label,
-        autoRotate: turn && !still,
-        autoRotateDelay: 0,
-        rotationPerSecond: '18deg',
-        cameraControls: true,
-        disableZoom: true,
-        cameraOrbit: orbit,
-        backgroundColor: Colors.transparent,
-        shadowIntensity: .6,
-        exposure: 1.1,
-        interactionPrompt: InteractionPrompt.none,
-        loading: Loading.eager,
+      label: widget.label,
+      image: true,
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final side = math.min(box.maxWidth, box.maxHeight) * MediaQuery.devicePixelRatioOf(context);
+          _read(side > 256 ? 512 : 256);
+          final strip = _strip;
+          return GestureDetector(
+            onHorizontalDragStart: (_) => _held = true,
+            // One frame for every 16 points the finger moves.
+            onHorizontalDragUpdate: (d) => setState(() => _at = (_at - d.delta.dx / 16) % GlmModelSpin.frames),
+            onHorizontalDragEnd: (_) => _held = false,
+            child: strip == null
+                ? widget.fallback
+                : RepaintBoundary(
+                    child: CustomPaint(size: box.biggest, painter: _SpinPainter(strip, _at)),
+                  ),
+          );
+        },
       ),
     );
   }
+}
+
+class _SpinPainter extends CustomPainter {
+  _SpinPainter(this.strip, this.at);
+
+  final ui.Image strip;
+  final double at;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final frame = strip.height.toDouble();
+    final side = math.min(size.width, size.height);
+    final dst = Rect.fromCenter(center: size.center(Offset.zero), width: side, height: side);
+    final i = at.floor() % GlmModelSpin.frames;
+    final next = (i + 1) % GlmModelSpin.frames;
+    final mix = at - at.floor();
+    final paint = Paint()..filterQuality = FilterQuality.medium;
+    canvas.drawImageRect(strip, Rect.fromLTWH(i * frame, 0, frame, frame), dst, paint);
+    // The next frame fading in: the turn reads as smooth between the 24 pictures.
+    if (mix > 0.01) {
+      canvas.drawImageRect(strip, Rect.fromLTWH(next * frame, 0, frame, frame), dst, paint..color = Colors.black.withValues(alpha: mix));
+    }
+  }
+
+  @override
+  bool shouldRepaint(_SpinPainter old) => old.at != at || old.strip != strip;
 }

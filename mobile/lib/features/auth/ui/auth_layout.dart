@@ -144,10 +144,9 @@ class _PitchHead extends StatelessWidget {
                 SizedBox(
                   height: 150,
                   width: 150,
-                  child: GlmModel3D(
+                  child: GlmModelSpin(
                     model: 'trophy',
                     label: 'GLM',
-                    orbit: '0deg 78deg 3.4m',
                     fallback: Icon(Icons.emoji_events_rounded, size: 110, color: p.gold),
                   ),
                 )
