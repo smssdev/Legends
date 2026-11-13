@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [UP12] The press conference before my match (the owner's spec 6): the chances of each side, a reading of where each
 // is strong and weak, and my one statement (it lifts my team's morale in this match). It opens half an hour before.
 import { intlLocale, t } from '../../lib/i18n'
@@ -37,7 +38,7 @@ onMounted(load)
 
 <template>
   <section v-if="press && enabled" class="flex flex-col gap-3 rounded-xl border border-brand/40 ui-card p-4" aria-labelledby="h-press">
-    <h2 id="h-press" class="font-display text-xl font-extrabold">{{ $t('🎙️ المؤتمر الصحفي') }}</h2>
+    <h2 id="h-press" class="font-display text-xl font-extrabold"><Icon name="mic" :size="16" class="inline-block align-[-3px]" /> {{ $t('المؤتمر الصحفي') }}</h2>
     <div class="flex h-8 overflow-hidden rounded-lg text-xs font-bold" role="img" :aria-label="$t('ترجيح الفوز: {v0} {v1}٪، التعادل {v2}٪، {v3} {v4}٪', { v0: home, v1: press.chances.home, v2: press.chances.draw, v3: away, v4: press.chances.away })">
       <span class="flex items-center justify-center bg-brand text-white" :style="{ width: press.chances.home + '%' }">{{ press.chances.home }}%</span>
       <span class="flex items-center justify-center bg-surface-raised" :style="{ width: press.chances.draw + '%' }">{{ press.chances.draw }}%</span>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // One league (Sprints 13 to 15): the table, calendar and cup (LeagueTabs), its card, the invite to share, my club, my presence and holiday,
 // the coaches (the owner can send one away with a reason), who left and why, and the join requests.
 // Sprint 14's parts have no draft yet: built with the same cards, waiting for approval like Sprint 10's. The table, fixtures and cup of the draft MobileLeague come with the schedule (Sprint 15).
@@ -254,7 +255,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
 
       <!-- The FA's verdicts of the last day: a breaking headline for everyone in the league [X28]. -->
       <p v-for="(h, i) in league.headlines ?? []" :key="i" class="flex items-start gap-2 rounded-xl bg-live px-4 py-3 text-sm font-bold text-white" role="alert">
-        <span class="shrink-0 rounded bg-white/20 px-1.5 text-xs">{{ $t('📰 عاجل') }}</span><span>{{ $t(h.text) }} <span class="font-normal">{{ $t('(خصم {v0} نقاط)', { v0: h.points }) }}</span></span>
+        <span class="shrink-0 rounded bg-white/20 px-1.5 text-xs"><Icon name="news" :size="16" class="inline-block align-[-3px]" /> {{ $t('عاجل') }}</span><span>{{ $t(h.text) }} <span class="font-normal">{{ $t('(خصم {v0} نقاط)', { v0: h.points }) }}</span></span>
       </p>
 
       <section v-if="mine?.objectives" :aria-label="$t('هدف الإدارة')" class="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm">

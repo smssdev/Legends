@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // The league's three tabs (Sprint 15 W1), after the draft MobileLeague: the table (with "played" and
 // "rests" when the count is odd), the calendar in the device's own time, and the cup's bracket.
 import { intlLocale } from '../../lib/i18n'
@@ -130,7 +131,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
           <UiChip :tone="f.competition === 'cup' ? 'gold' : 'neutral'">
             {{ f.competition === 'cup' ? STAGES[f.stage ?? ''] : f.competition === 'alliance' ? $t('التحالفات {v0}', { v0: f.round }) : $t('الجولة {v0}', { v0: f.round }) }}{{ f.slot === 2 ? $t(' · السهرة') : '' }}
           </UiChip>
-          <UiChip v-if="f.match_of_day" tone="gold">{{ $t('⭐ قمة الجولة') }}</UiChip>
+          <UiChip v-if="f.match_of_day" tone="gold"><Icon name="star" :size="16" class="inline-block align-[-3px]" /> {{ $t('قمة الجولة') }}</UiChip>
           <span v-if="f.is_bye" class="text-text-muted">{{ $t('استراحة: {v0}', { v0: $nm(f.home?.name) }) }}</span>
           <span v-else class="flex min-w-0 flex-1 items-center justify-center gap-2">
             <span class="flex-1 text-end">{{ f.home?.name ?? $t('يتحدد') }}</span>

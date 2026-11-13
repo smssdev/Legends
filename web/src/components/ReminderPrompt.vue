@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from './Icon.vue'
 // [Sprint 30 G1] The match reminder half an hour before kick-off (MatchPrep, Web Push) works only once the coach allows
 // notifications, and the switch was deep in «حسابي». A coach with a club who has not allowed them on this device sees
 // one card on the home screen: allow, or «لاحقاً» (hidden on this device for a week).
@@ -53,7 +54,7 @@ function later() {
 
 <template>
   <section v-if="show" class="flex animate-fade-up flex-wrap items-center gap-3 rounded-2xl border border-brand-light/40 bg-brand/15 p-4" :aria-label="$t('تذكير المباراة')">
-    <span class="text-3xl" aria-hidden="true">⏰</span>
+    <span class="text-3xl" aria-hidden="true"><Icon name="clock" :size="18" class="inline-block align-[-3px]" /></span>
     <span class="min-w-0 flex-1">
       <b class="block">{{ $t('ذكّرني قبل مباراتي') }}</b>
       <span class="text-sm text-text-muted">{{ $t('إشعار قبل كل مباراة بنصف ساعة، لتضبط تشكيلتك في وقتها.') }}</span>

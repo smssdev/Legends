@@ -119,12 +119,12 @@ function go(to: string) {
               <li v-for="p in r.best[side]" :key="p.id" class="flex items-center gap-1"><bdi class="min-w-0 flex-1 truncate">{{ $nm(p.name ?? '') }}</bdi><span class="font-numbers text-gold">{{ rating(p.rating) }}</span></li>
             </ul>
           </div>
-          <p v-if="r.man_of_the_match" class="text-center text-sm">⭐ {{ $t('رجل المباراة') }}: <b><bdi>{{ $nm(r.man_of_the_match.name ?? '') }}</bdi></b> <span class="font-numbers text-gold">{{ rating(r.man_of_the_match.rating ?? 0) }}</span></p>
+          <p v-if="r.man_of_the_match" class="text-center text-sm"><Icon name="star" :size="16" class="inline-block align-[-3px]" /> {{ $t('رجل المباراة') }}: <b><bdi>{{ $nm(r.man_of_the_match.name ?? '') }}</bdi></b> <span class="font-numbers text-gold">{{ rating(r.man_of_the_match.rating ?? 0) }}</span></p>
         </template>
 
         <div class="flex flex-wrap gap-2">
           <button v-if="!ended" type="button" class="h-touch flex-1 rounded-lg bg-surface-raised font-bold" @click="finish">{{ $t('تخطَّ إلى النتيجة') }}</button>
-          <button v-if="props.watch" type="button" class="h-touch flex-1 rounded-lg font-bold" :class="ended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" @click="go(`/live/${props.matchId}`)">▶ {{ $t('شاهد المحاكاة كاملة') }}</button>
+          <button v-if="props.watch" type="button" class="h-touch flex-1 rounded-lg font-bold" :class="ended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" @click="go(`/live/${props.matchId}`)"><Icon name="play" :size="16" class="inline-block align-[-3px]" /> {{ $t('شاهد المحاكاة كاملة') }}</button>
           <button v-if="r.side" type="button" class="h-touch flex-1 rounded-lg font-bold" :class="ended && !props.watch ? 'bg-gold text-on-gold' : 'text-text-muted'" @click="go(`/live/${props.matchId}/report`)">{{ $t('التقرير الكامل') }}</button>
         </div>
       </template>

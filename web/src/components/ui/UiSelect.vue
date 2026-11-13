@@ -39,7 +39,7 @@ const ITEM = 'group flex min-h-touch cursor-pointer items-center gap-2 rounded-l
         <ComboboxEmpty class="px-3 py-2 text-sm text-text-muted">{{ $t('لا نتائج') }}</ComboboxEmpty>
         <ComboboxItem v-for="o in filtered" :key="o.value" :value="o.value" :class="ITEM" :dir="ltr && o.value !== NONE ? 'ltr' : undefined">
           <span class="min-w-0 flex-1 truncate group-data-[state=checked]:font-bold group-data-[state=checked]:text-gold">{{ o.label }}</span>
-          <span class="hidden text-gold group-data-[state=checked]:inline" aria-hidden="true">✓</span>
+          <span class="hidden text-gold group-data-[state=checked]:inline" aria-hidden="true"><Icon name="check" :size="16" /></span>
         </ComboboxItem>
       </ComboboxViewport>
     </ComboboxContent>
@@ -54,7 +54,7 @@ const ITEM = 'group flex min-h-touch cursor-pointer items-center gap-2 rounded-l
         <SelectViewport>
           <SelectItem v-for="o in all" :key="o.value" :value="o.value" :class="ITEM" :dir="ltr && o.value !== NONE ? 'ltr' : undefined">
             <SelectItemText class="min-w-0 flex-1 truncate group-data-[state=checked]:font-bold group-data-[state=checked]:text-gold">{{ o.label }}</SelectItemText>
-            <SelectItemIndicator class="text-gold" aria-hidden="true">✓</SelectItemIndicator>
+            <SelectItemIndicator class="text-gold" aria-hidden="true"><Icon name="check" :size="16" /></SelectItemIndicator>
           </SelectItem>
         </SelectViewport>
       </SelectContent>

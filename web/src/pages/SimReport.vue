@@ -5,9 +5,9 @@
         <BrandMark />
       </RouterLink>
       <span class="rounded-pill bg-brand px-3 py-1 text-sm font-bold text-white">{{ $t('تقرير المباراة') }}</span>
-      <button v-if="league" type="button" class="h-10 rounded-lg bg-gold px-3 text-sm font-bold text-on-gold" @click="recap = true">⚡ {{ $t('الملخص السريع') }}</button>
+      <button v-if="league" type="button" class="h-10 rounded-lg bg-gold px-3 text-sm font-bold text-on-gold" @click="recap = true"><Icon name="bolt" :size="16" class="inline-block align-[-3px]" /> {{ $t('الملخص السريع') }}</button>
       <!-- [Sprint 30 G2] The result as a picture, for WhatsApp and the rest. -->
-      <button v-if="report && view" type="button" class="h-10 rounded-lg bg-surface px-3 text-sm font-bold" :disabled="sharing" @click="share">📤 {{ $t('شارك كصورة') }}</button>
+      <button v-if="report && view" type="button" class="h-10 rounded-lg bg-surface px-3 text-sm font-bold" :disabled="sharing" @click="share"><Icon name="share" :size="16" class="inline-block align-[-3px]" /> {{ $t('شارك كصورة') }}</button>
       <div v-if="view && !league" role="radiogroup" :aria-label="$t('التقرير من وجهة نظر')" class="ms-auto flex gap-1 rounded-md bg-surface p-1">
         <button v-for="s in sides" :key="s" type="button" role="radio" :aria-checked="side === s" class="h-10 rounded-sm px-3 text-sm font-bold" :class="side === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="load(s)">
           {{ $nm(view.clubs[s].name) }}
@@ -74,7 +74,7 @@
         </section>
         <section v-if="report.man_of_the_match" class="relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border border-gold/50 bg-gradient-to-b from-gold/25 to-surface p-4 text-center shadow-lg shadow-black/40" aria-labelledby="motm">
           <span class="absolute inset-x-0 top-0 h-1 bg-gold" aria-hidden="true" />
-          <span class="text-2xl" aria-hidden="true">⭐</span>
+          <span class="text-2xl" aria-hidden="true"><Icon name="star" :size="16" /></span>
           <h2 id="motm" class="text-sm font-bold text-gold">{{ $t('رجل المباراة') }}</h2>
           <span class="font-display text-2xl font-extrabold">{{ $nm(report.man_of_the_match.name) }}</span>
           <span class="text-sm text-text-muted">{{ view.clubs[report.man_of_the_match.team as Side].name }}</span>
@@ -160,7 +160,7 @@
           <div v-for="p in report.ratings[s]" :key="p.id" class="flex min-h-9 items-center gap-2 text-sm">
             <span class="w-7 text-center font-numbers text-text-muted">{{ p.no }}</span>
             <span class="flex-1 truncate">{{ $nm(p.name) }}</span>
-            <span v-if="p.goals" class="text-xs" :aria-label="$t('{v0} هدف', { v0: p.goals })">⚽{{ p.goals > 1 ? p.goals : '' }}</span>
+            <span v-if="p.goals" class="text-xs" :aria-label="$t('{v0} هدف', { v0: p.goals })"><Icon name="ball" :size="16" class="inline-block align-[-3px]" /> {{ p.goals > 1 ? p.goals : '' }}</span>
             <span v-if="p.assists" class="text-xs text-text-muted">{{ $t('صناعة {v0}', { v0: p.assists }) }}</span>
             <span class="w-10 rounded-sm text-center font-numbers text-lg" :class="p.rating >= 750 ? 'bg-pitch/30 text-success' : p.rating < 600 ? 'bg-live/20 text-danger' : 'bg-surface-raised'">{{ rating(p.rating) }}</span>
           </div>
@@ -182,6 +182,7 @@
 </template>
 
 <script setup lang="ts">
+import Icon from '../components/Icon.vue'
 import { scoreText } from '../lib/format'
 import { t } from '../lib/i18n'
 import { nm } from '../lib/names'

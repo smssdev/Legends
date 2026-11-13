@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [UP12] The league's newspaper (the owner's spec 6): the round's own report (written on the server from the round:
 // the results, its stories and the team of the week), and the coaches' articles, which the owner publishes.
 // [Sprint 21 E4.5, E4.6] «أخبار الدوري»: the round's best matches, its player and its coach, the bribes an opponent
@@ -78,12 +79,12 @@ onMounted(() => load())
       <!-- [Sprint 21 E4.6] The round's player and coach. -->
       <div v-if="p.edition.player || p.edition.coach" class="grid gap-3 sm:grid-cols-2">
         <div v-if="p.edition.player" class="flex items-center gap-3 rounded-lg bg-gold/10 p-3">
-          <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-2xl" aria-hidden="true">⭐</span>
+          <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-2xl" aria-hidden="true"><Icon name="star" :size="16" /></span>
           <span class="min-w-0"><span class="block text-xs font-bold text-gold">{{ $t('رجل الجولة') }}</span><b class="block truncate font-display text-lg"><bdi>{{ $nm(p.edition.player.name) }}</bdi></b>
             <span class="text-xs text-text-muted">{{ $nm(p.edition.player.club) }} · <span class="font-numbers text-gold">{{ (p.edition.player.rating / 100).toFixed(1) }}</span><template v-if="p.edition.player.goals || p.edition.player.assists"> · {{ $t('{v0} هدف · {v1} صناعة', { v0: p.edition.player.goals ?? 0, v1: p.edition.player.assists ?? 0 }) }}</template></span></span>
         </div>
         <div v-if="p.edition.coach" class="flex items-center gap-3 rounded-lg bg-brand/15 p-3">
-          <span class="grid size-12 shrink-0 place-items-center rounded-full bg-brand text-2xl" aria-hidden="true">🧠</span>
+          <span class="grid size-12 shrink-0 place-items-center rounded-full bg-brand text-2xl" aria-hidden="true"><Icon name="idea" :size="18" class="inline-block align-[-3px]" /></span>
           <span class="min-w-0"><span class="block text-xs font-bold text-brand-light">{{ $t('أفضل مدرب في الجولة') }}</span><b class="block truncate font-display text-lg">{{ p.edition.coach.coach.name }}</b>
             <span class="text-xs text-text-muted">{{ $t('{v0} فاز على {v1}', { v0: $nm(p.edition.coach.club), v1: $nm(p.edition.coach.opponent) }) }} <b class="font-numbers" dir="ltr">{{ scoreText(p.edition.coach.goals[0], p.edition.coach.goals[1]) }}</b><template v-if="p.edition.coach.away"> {{ $t('خارج أرضه') }}</template></span></span>
         </div>

@@ -15,7 +15,7 @@
       <button v-if="halftime && !isLive" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="player.endHalftime">{{ $t('ابدأ الشوط الثاني') }} <span class="font-numbers">({{ halftimeLeft }})</span></button>
       <button v-if="finished && keyCount" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="player.highlights">{{ $t('ملخص المباراة · {v0} لقطة', { v0: keyCount }) }}</button>
       <RouterLink v-if="finished && !league" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">{{ $t('تقرير المباراة') }}</RouterLink>
-      <button v-if="finished && league" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="emit('recap')">⚡ {{ $t('الملخص السريع') }}</button>
+      <button v-if="finished && league" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="emit('recap')"><Icon name="bolt" :size="16" class="inline-block align-[-3px]" /> {{ $t('الملخص السريع') }}</button>
       <button v-if="finished && rerun" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="player.watchAgain">{{ $t('شاهدها من جديد') }}</button>
       <RouterLink v-if="finished && league && mine" :to="{ name: 'league-report', params: { id } }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">{{ $t('تقرير المباراة') }}</RouterLink>
       <RouterLink v-if="finished && league" to="/fixtures" class="flex h-12 items-center rounded-md bg-surface-raised px-5">{{ $t('مباريات الدوري') }}</RouterLink>
@@ -28,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 import { scoreText } from '../../lib/format'
 import type { Side } from '../../api/sim'
 import type { MatchPlayer } from '../../match/useMatchPlayer'

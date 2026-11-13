@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [UP12] The coaches' predictions (the owner's spec 6): the round's matches, a pick for each until its lock, and how
 // the league picked. A right pick pays the predictor's club and counts on his career; the server decides it all.
 import { onMounted, ref } from 'vue'
@@ -42,7 +43,7 @@ onMounted(load)
       <p v-if="r?.round" class="text-sm text-text-muted">{{ $t('الجولة {v0} · التوقع الصحيح يمنح ناديك', { v0: r.round }) }} <b dir="ltr" class="font-numbers text-gold">{{ money(r.reward ?? 0) }}</b> {{ $t('ونقطة خبرة') }}</p>
       <!-- [Sprint 21 E4.4] How many coaches have predicted this round. -->
       <p v-if="r?.round" class="mt-2 inline-flex items-center gap-2 rounded-pill bg-surface px-3 py-1.5 text-sm">
-        <span aria-hidden="true">👥</span>{{ $t('توقّع {v0} من المدربين هذه الجولة', { v0: r.predictors ?? 0 }) }}
+        <span aria-hidden="true"><Icon name="team" :size="18" class="inline-block align-[-3px]" /></span>{{ $t('توقّع {v0} من المدربين هذه الجولة', { v0: r.predictors ?? 0 }) }}
       </p>
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>

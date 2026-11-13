@@ -311,12 +311,12 @@ const field = (name: string) => error.value?.field(name) ?? ''
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-free">
           <h2 id="h-free" class="font-display text-xl font-extrabold">{{ $t('الدوري القياسي') }} <span class="rounded-pill bg-success/15 px-2.5 py-0.5 align-middle text-xs text-success">{{ $t('مجاني') }}</span></h2>
           <ul class="grid gap-2 text-sm text-text-soft md:grid-cols-2">
-            <li>{{ $t('⚽ كل أندية الدوري الأصلي ({v0})', { v0: fullTeams }) }}</li>
-            <li>{{ $t('🕘 جولة واحدة يومياً في التاسعة مساءً بتوقيتك') }}</li>
-            <li>{{ $t('📅 يومان للإعداد قبل أول جولة') }}</li>
-            <li>{{ $t('🎙️ المؤتمرات الصحفية ومنظومة النزاهة مفعّلتان') }}</li>
-            <li>{{ $t('🏁 موسم واحد ثم ينتهي الدوري') }}</li>
-            <li>{{ $t('⚖️ لا دوري نزيه ولا جولة على فترتين') }}</li>
+            <li><Icon name="ball" :size="16" class="inline-block align-[-3px]" /> {{ $t('كل أندية الدوري الأصلي ({v0})', { v0: fullTeams }) }}</li>
+            <li><Icon name="clock" :size="16" class="inline-block align-[-3px]" /> {{ $t('جولة واحدة يومياً في التاسعة مساءً بتوقيتك') }}</li>
+            <li><Icon name="calendar" :size="16" class="inline-block align-[-3px]" /> {{ $t('يومان للإعداد قبل أول جولة') }}</li>
+            <li><Icon name="mic" :size="16" class="inline-block align-[-3px]" /> {{ $t('المؤتمرات الصحفية ومنظومة النزاهة مفعّلتان') }}</li>
+            <li><Icon name="flag" :size="16" class="inline-block align-[-3px]" /> {{ $t('موسم واحد ثم ينتهي الدوري') }}</li>
+            <li><Icon name="tactics" :size="16" class="inline-block align-[-3px]" /> {{ $t('لا دوري نزيه ولا جولة على فترتين') }}</li>
           </ul>
           <UiToggle v-model="custom" class="rounded-lg bg-surface-sunk p-3" :hint="$t('عدد الأندية، والإعداد، والساعة، والميزانية، والمزايا، والتجديد')"><b>{{ $t('أريد تخصيص الدوري') }}</b></UiToggle>
         </section>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../components/Icon.vue'
 // [Sprint 15 D1, the owner's request 2026-11-06] The app from the site itself: the Android app (the latest APK the
 // admins uploaded, from our own server), and on the iPhone the game added to the home screen from Safari, where it
 // opens as an app, until the App Store version (README section 11). The visitor's own phone comes first.
@@ -45,7 +46,7 @@ onMounted(async () => {
                 <p v-if="android" class="text-sm text-text-muted"><span dir="ltr">{{ android.version }}</span> · {{ $t('{n} ميجا', { n: mb(android.bytes) }) }}<template v-if="android.published_at"> · {{ day(android.published_at) }}</template></p></div>
             </div>
             <template v-if="android?.url">
-              <a :href="android.url" download class="flex min-h-touch items-center justify-center gap-2 rounded-xl bg-gold px-5 py-3 font-display text-lg font-extrabold text-on-gold">⬇ {{ $t('نزّل التطبيق') }}</a>
+              <a :href="android.url" download class="flex min-h-touch items-center justify-center gap-2 rounded-xl bg-gold px-5 py-3 font-display text-lg font-extrabold text-on-gold"><Icon name="download" :size="16" class="inline-block align-[-3px]" /> {{ $t('نزّل التطبيق') }}</a>
               <ol class="flex list-decimal flex-col gap-1.5 ps-5 text-sm leading-relaxed text-text-soft">
                 <li>{{ $t('اضغط «نزّل التطبيق» وانتظر حتى يكتمل التنزيل.') }}</li>
                 <li>{{ $t('افتح الملف من الإشعارات أو «التنزيلات»، وإن سألك الجوال فاسمح بالتثبيت من هذا المصدر.') }}</li>

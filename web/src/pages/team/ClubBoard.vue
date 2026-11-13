@@ -71,7 +71,7 @@ const waiting = computed(() => b.value?.pending.length ?? 0)
             <span :class="b.lineup.ready ? 'text-success' : 'text-live'" aria-hidden="true">{{ b.lineup.ready ? '✓' : '!' }}</span>
           </RouterLink>
           <div class="grid grid-cols-[1.3fr_1fr_1fr] gap-2">
-            <UiButton to="/lineup" size="sm">{{ $t('التشكيلة') }}<span v-if="b.lineup.ready" aria-hidden="true">✓</span></UiButton>
+            <UiButton to="/lineup" size="sm">{{ $t('التشكيلة') }}<span v-if="b.lineup.ready" aria-hidden="true"><Icon name="check" :size="16" /></span></UiButton>
             <UiButton to="/tactics" size="sm" variant="quiet">{{ $t('التكتيك') }}</UiButton>
             <UiButton to="/match" size="sm" variant="quiet" class="!px-2">{{ $t('الخصم') }}</UiButton>
           </div>

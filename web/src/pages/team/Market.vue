@@ -232,8 +232,8 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
       <template v-else-if="tab === 'list'">
         <div class="flex items-center gap-2">
           <UiTabs v-model="line" :items="LINES.map((l) => ({ key: l.id, label: l.label }))" label="المراكز" tone="brand" size="sm" class="min-w-0 flex-1" />
-          <span v-if="list?.renews_at" class="flex h-touch shrink-0 items-center gap-1.5 rounded-lg border border-gold/40 bg-surface px-2 text-caption" :title="$t('الصفقات التالية بعد')"><span class="max-lg:hidden">{{ $t('الصفقات التالية بعد') }}</span><span aria-hidden="true" class="lg:hidden">⏱</span> <b class="font-numbers text-body-lg text-gold" dir="ltr">{{ renewsIn }}</b></span>
-          <UiButton size="sm" :variant="filtering ? 'primary' : 'quiet'" class="shrink-0" :aria-expanded="filtersOpen" @click="filtersOpen = true">⚙ {{ $t('الفلاتر') }}<span v-if="filterCount" class="font-numbers">({{ filterCount }})</span></UiButton>
+          <span v-if="list?.renews_at" class="flex h-touch shrink-0 items-center gap-1.5 rounded-lg border border-gold/40 bg-surface px-2 text-caption" :title="$t('الصفقات التالية بعد')"><span class="max-lg:hidden">{{ $t('الصفقات التالية بعد') }}</span><span aria-hidden="true" class="lg:hidden"><Icon name="clock" :size="18" class="inline-block align-[-3px]" /></span> <b class="font-numbers text-body-lg text-gold" dir="ltr">{{ renewsIn }}</b></span>
+          <UiButton size="sm" :variant="filtering ? 'primary' : 'quiet'" class="shrink-0" :aria-expanded="filtersOpen" @click="filtersOpen = true"><Icon name="settings" :size="16" class="inline-block align-[-3px]" /> {{ $t('الفلاتر') }}<span v-if="filterCount" class="font-numbers">({{ filterCount }})</span></UiButton>
         </div>
         <!-- [Sprint 23] The admin's events running in this league. -->
         <EventsBar :events="list?.events" @ended="loadList" />
@@ -287,7 +287,7 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
               <button type="button" class="flex min-h-touch w-full items-center gap-2 border-t border-text/5 px-2 py-1 text-start transition-transform first:border-0 hover:bg-surface-raised sm:gap-3" @click="pick(p)">
                 <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
                 <span class="min-w-0 flex-1">
-                  <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-caption font-bold text-on-gold">⭐ {{ $t('نجم') }}</span><span v-if="p.special" class="shrink-0 rounded-pill bg-brand px-1.5 text-caption font-bold text-white">{{ $t(SPECIAL[p.special]) }}</span></b>
+                  <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-caption font-bold text-on-gold"><Icon name="star" :size="16" class="inline-block align-[-3px]" /> {{ $t('نجم') }}</span><span v-if="p.special" class="shrink-0 rounded-pill bg-brand px-1.5 text-caption font-bold text-white">{{ $t(SPECIAL[p.special]) }}</span></b>
                   <span v-if="p.fits" class="me-1 inline-block rounded-pill bg-success/15 px-1.5 text-caption font-bold text-success">{{ $t('يناسب تشكيلتك') }}</span>
                   <span class="block text-xs text-text-muted"><span class="sm:hidden">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · </template></span><template v-if="p.nationality">{{ $nm(p.nationality) }}</template></span>
                 </span>
@@ -360,7 +360,7 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
       <!-- The celebration. -->
       <div v-if="celebrate" class="fixed inset-0 z-50 flex items-center justify-center bg-bg-deep/85 p-4" role="alertdialog" :aria-label="$t('تمت الصفقة')" @click="celebrate = ''">
         <div class="celebrate flex max-w-sm flex-col items-center gap-3 rounded-2xl border border-gold/50 ui-card p-6 text-center">
-          <span class="text-5xl" aria-hidden="true">🎉</span>
+          <span class="text-5xl" aria-hidden="true"><Icon name="star" :size="18" class="inline-block align-[-3px]" /></span>
           <b class="font-display text-2xl text-gold"><bdi>{{ $nm(celebrate) }}</bdi></b>
           <p>{{ $t('تم شراء هذا اللاعب وإضافته للفريق بنجاح') }}</p>
           <UiButton @click="celebrate = ''">{{ $t('رائع') }}</UiButton>

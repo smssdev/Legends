@@ -143,7 +143,7 @@ const INFO = computed(() => [
           <div class="rounded-lg bg-surface-sunk p-1.5"><dt class="text-text-muted">{{ $t('المعنويات') }}</dt><dd class="font-numbers text-body-lg font-bold" :class="match.morale >= 75 ? 'text-success' : match.morale < 50 ? 'text-danger' : 'text-gold'">{{ match.morale }}</dd></div>
           <div class="rounded-lg bg-surface-sunk p-1.5"><dt class="text-text-muted">{{ $t('الحكم') }}</dt><dd class="font-bold">{{ match.referee ? $t(REFEREE[match.referee]) : $t('قبلها بنصف ساعة') }}</dd></div>
         </dl>
-        <p v-if="match.match_of_day" class="mx-2 mb-2 rounded-lg bg-gold/15 px-3 py-1.5 text-center text-caption font-bold text-gold">{{ $t('⭐ قمة الجولة: كل مدربي الدوري مدعوون لمشاهدتها الليلة') }}</p>
+        <p v-if="match.match_of_day" class="mx-2 mb-2 rounded-lg bg-gold/15 px-3 py-1.5 text-center text-caption font-bold text-gold"><Icon name="star" :size="16" class="inline-block align-[-3px]" /> {{ $t('قمة الجولة: كل مدربي الدوري مدعوون لمشاهدتها الليلة') }}</p>
       </section>
 
       <section class="nm-info">

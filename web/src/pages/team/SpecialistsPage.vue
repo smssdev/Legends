@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // The staff (Sprint 31 W1, docs/features/specialists.md, X20): the line coaches, then the medical and the admin staff,
 // each with 1 to 5 stars to choose (the price and the effect from the server), the contract working now with a countdown
 // on the server's clock, and the renewal in its last day. No draft of its own: the stadium's cards.
@@ -131,7 +132,7 @@ onBeforeUnmount(() => clearInterval(tick))
             <template v-if="!s.ends_at || renewable(s)">
               <!-- Five stars to choose: the price and the effect follow. -->
               <div class="flex items-center gap-1" role="radiogroup" :aria-label="$t('نجوم {v0}', { v0: s.name })">
-                <button v-for="n in 5" :key="n" type="button" role="radio" :aria-checked="chosen(s) === n" :aria-label="$t('{v0} نجوم', { v0: n })" class="grid h-touch flex-1 place-items-center rounded-lg text-xl transition-colors" :class="n <= chosen(s) ? 'bg-gold/15 text-gold' : 'bg-surface-sunk text-text/25'" @click="pick[s.type] = n">★</button>
+                <button v-for="n in 5" :key="n" type="button" role="radio" :aria-checked="chosen(s) === n" :aria-label="$t('{v0} نجوم', { v0: n })" class="grid h-touch flex-1 place-items-center rounded-lg text-xl transition-colors" :class="n <= chosen(s) ? 'bg-gold/15 text-gold' : 'bg-surface-sunk text-text/25'" @click="pick[s.type] = n"><Icon name="star" :size="16" /></button>
               </div>
               <UiButton variant="brand" :disabled="isBusy(`hire:${s.type}`) || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
                 {{ s.ends_at ? $t('جدّد العقد') : $t('تعاقد') }} · {{ chosen(s) }} ★ · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></UiButton>

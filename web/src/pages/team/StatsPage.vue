@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // The league table and its statistics [X17; «جدول الدوري» since Sprint 21 E4.2, with the leaders on top]: the season's table in detail, the scorers and the assists, the cards, each club's
 // buying and selling, the squads' value and the runs of results. A club's name opens its squad (what anyone in the
 // league may see: no tactic). No draft of its own: the design system's cards and the league table's look.
@@ -156,7 +157,7 @@ function exportCsv() {
           <h2 class="mb-1 font-display text-lg font-bold">{{ $t(title) }}</h2>
           <div v-for="p in s.discipline[key]" :key="p.player.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 first:border-0">
             <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ $nm(p.player.name) }}</bdi></b><span class="text-xs text-text-muted">{{ $nm(p.club.name) }}</span></span>
-            <span class="font-numbers">🟨 {{ p.yellow }} · 🟥 {{ p.red }}</span>
+            <span class="font-numbers"><Icon name="card" :size="16" class="inline-block align-[-3px] text-card-yellow" /> {{ p.yellow }} · <Icon name="card" :size="16" class="inline-block align-[-3px] text-live" /> {{ p.red }}</span>
           </div>
           <p v-if="!s.discipline[key].length" class="text-text-muted">{{ $t('لا أحد بعد.') }}</p>
         </section>
@@ -216,7 +217,7 @@ function exportCsv() {
             <b v-if="awards[key]" class="font-numbers text-xl text-gold" dir="ltr">{{ key === 'scorer' ? awards.scorer!.goals : key === 'assister' ? awards.assister!.assists : key === 'of_the_round' ? rating(awards.of_the_round!.rating_x10 ?? 0) : rating(awards[key]!.average_x10) }}</b>
           </article>
           <article class="flex items-center gap-3 rounded-xl border border-gold/25 ui-card p-3">
-            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true">🔥</span>
+            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true"><Icon name="fire" :size="18" class="inline-block align-[-3px]" /></span>
             <span class="min-w-0 flex-1"><span class="block text-xs text-text-muted">{{ $t('أطول سلسلة انتصارات') }}</span>
               <b v-if="awards.run" class="block truncate">{{ $nm(awards.run.club.name) }}</b><span v-else class="text-sm text-text-muted">{{ $t('لم يُحسم بعد') }}</span></span>
             <b v-if="awards.run" class="font-numbers text-xl text-gold">{{ awards.run.wins }}</b>

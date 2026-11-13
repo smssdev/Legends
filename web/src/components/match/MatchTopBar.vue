@@ -22,11 +22,12 @@
       <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="finished" @click="player.skipMoment">{{ $t('تخطَّ اللقطة') }}</button>
       <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="skipping" @click="player.skip">{{ skipping ? '...' : $t('تخطٍّ للنهاية') }}</button>
     </div>
-    <button type="button" class="match-btn" :aria-label="$t('إعدادات العرض')" :aria-expanded="settingsOpen" @click="emit('settings')">⚙</button>
+    <button type="button" class="match-btn" :aria-label="$t('إعدادات العرض')" :aria-expanded="settingsOpen" @click="emit('settings')"><Icon name="settings" :size="18" /></button>
   </header>
 </template>
 
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 import { computed } from 'vue'
 import { t } from '../../lib/i18n'
 import type { MatchPlayer } from '../../match/useMatchPlayer'
