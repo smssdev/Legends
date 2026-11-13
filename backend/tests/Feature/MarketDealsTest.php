@@ -106,7 +106,9 @@ class MarketDealsTest extends TestCase
     {
         $p = $this->cheapest($this->theirs);
         $clause = intdiv((int) $p->value * (int) config('game.economy.release_clause_bp'), 10000);
-        $this->actingAs($this->owner)->getJson($this->url("/release/{$p->id}"))->assertOk()->assertJsonPath('clause', $clause);
+        $this->actingAs($this->owner)->getJson($this->url("/release/{$p->id}"))->assertOk()->assertJsonPath('clause', $clause)
+            // [Sprint 59 F1] The fields the app reads through its generated model (LeaguesReleaseByPlayerAnswer).
+            ->assertJsonStructure(['player_id', 'clause', 'club' => ['id', 'name'], 'can', 'why']);
         $before = (int) DB::table('clubs')->where('id', $this->theirs)->value('balance');
         $this->postJson($this->url("/release/{$p->id}"), ['idempotency_key' => 'r1'])->assertOk()->assertJsonPath('price', $clause);
         $this->assertSame($this->mine, (int) DB::table('players')->where('id', $p->id)->value('club_id'));
@@ -153,7 +155,8 @@ class MarketDealsTest extends TestCase
         DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => false]);
         Wallet::post($this->owner->id, 'admin_gift', 500, 'gift:chest');
         $coins = Wallet::balance($this->owner->id);
-        $opened = $this->postJson($this->url('/chests/bronze/open'), ['idempotency_key' => 'c1'])->assertOk()->json('opened');
+        $opened = $this->postJson($this->url('/chests/bronze/open'), ['idempotency_key' => 'c1'])->assertOk()
+            ->assertJsonStructure(['opened' => ['chest', 'reward', 'amount']])->json('opened');   // [Sprint 59 F1] what the app reads
         $this->assertContains($opened['reward'], Chests::REWARDS);
         $back = $opened['reward'] === 'coins' ? $opened['amount'] : 0;
         $this->assertSame($coins - (int) config('game.chests.bronze.coins') + $back, Wallet::balance($this->owner->id));

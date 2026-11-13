@@ -166,13 +166,8 @@ class ConsoleRepository {
       _api.post('/leagues/$league/transfers/listings', {'player_id': player, 'price': price, 'auction_minutes': minutes});
 
   Future<({int clause, String club, bool can, String? why})> releaseQuote(int league, int player) async {
-    final j = await _api.get('/leagues/$league/release/$player');
-    return (
-      clause: (j['clause'] as num?)?.toInt() ?? 0,
-      club: '${(j['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}',
-      can: j['can'] == true,
-      why: j['why'] as String?,
-    );
+    final q = api.LeaguesReleaseByPlayerAnswer.fromJson(await _api.get('/leagues/$league/release/$player'));
+    return (clause: q.clause, club: q.club.name ?? '', can: q.can, why: q.why);
   }
 
   Future<void> payRelease(int league, int player) =>
@@ -193,18 +188,21 @@ class ConsoleRepository {
 
   /// Opens a chest: what it gave ({reward, amount}).
   Future<({String reward, int amount})> openChest(int league, String chest) => Intents.run('chest:$league:$chest', (key) async {
-    final o = (await _api.post('/leagues/$league/chests/$chest/open', {'idempotency_key': key}))['opened'] as Map<dynamic, dynamic>;
-    return (reward: '${o['reward']}', amount: (o['amount'] as num?)?.toInt() ?? 0);
+    final j = await _api.post('/leagues/$league/chests/$chest/open', {'idempotency_key': key});
+    return JsonReader(j, 'ChestOpen').object('opened', (o) {
+      final r = JsonReader(o, 'ChestOpened');
+      return (reward: r.string('reward'), amount: r.int_('amount'));
+    });
   });
 
   /// The coach's one timeout in a live match: when play goes on (ms since the epoch).
   Future<int> timeout(int match) async =>
-      ((await _api.post('/matches/$match/timeout'))['timeout'] as Map<dynamic, dynamic>)['until'] as int;
+      JsonReader(await _api.post('/matches/$match/timeout'), 'Timeout').object('timeout', api.MatchTimeout.fromJson).until;
 
   /// A reaction on a group message (the same again, or null, takes it back): the message's counts after it.
   Future<Map<String, int>> react(int group, int message, String? reaction) async {
-    final m = (await _api.post('/groups/$group/messages/$message/reaction', {'reaction': reaction}))['message'] as Map<dynamic, dynamic>;
-    return {for (final e in ((m['reactions'] as Map<dynamic, dynamic>?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()};
+    final j = await _api.post('/groups/$group/messages/$message/reaction', {'reaction': reaction});
+    return JsonReader(j, 'Reacted').object('message', api.ChatMessage.fromJson).reactions ?? const {};
   }
 }
 

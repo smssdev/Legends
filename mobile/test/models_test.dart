@@ -118,4 +118,14 @@ void main() {
     expect(g.id, 4);
     expect(g.name, 'Friends');
   });
+
+  test('PHP\'s empty map comes as [] (a message with no reactions): read as an empty map, nothing logged', () {
+    modelErrors.clear();
+    final saved = jsonDecode(File('test/fixtures/group_messages.json').readAsStringSync()) as Map<String, dynamic>;
+    final first = (saved['messages'] as List<dynamic>).first as Map<String, dynamic>;
+    expect(ChatMessage.fromJson(first).reactions, isNull);
+    final none = ChatMessage.fromJson({...first, 'reactions': <dynamic>[]});
+    expect(none.reactions, isEmpty);
+    expect(modelErrors, isEmpty);
+  });
 }

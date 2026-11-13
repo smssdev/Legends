@@ -83,7 +83,10 @@ class SpyTest extends TestCase
     public function test_2_the_report_has_the_five_items_as_they_were_then(): void
     {
         $this->rivalTactics(['tackling' => 2, 'marking' => 'man', 'trap' => 1]);
-        $report = $this->send()->assertOk()->json('report');
+        $report = $this->send()->assertOk()
+            // [Sprint 59 F1] The fields the app reads through its generated model (SpyViewReport in openapi.yaml).
+            ->assertJsonStructure(['cost', 'currency', 'report' => ['club' => ['id', 'name'], 'at', 'formation', 'fitness', 'form',
+                'tactics' => ['plan', 'marking', 'tackling', 'trap'], 'starters' => ['*' => ['id', 'name', 'position', 'line', 'overall']], 'bench']])->json('report');
         $this->assertSame(['club', 'at', 'formation', 'starters', 'bench', 'tactics', 'form', 'fitness'], array_keys($report));
         $this->assertCount(11, $report['starters']);
         $this->assertSame(['tackling', 'marking', 'plan', 'trap'], array_keys($report['tactics']));

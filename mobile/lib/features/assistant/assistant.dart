@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
@@ -18,14 +19,18 @@ class AssistantRepository {
 
   final ApiClient _api;
 
-  Future<Map<String, dynamic>> start(String page) => _api.get('/assistant/start', query: {'page': page});
-  Future<Map<String, dynamic>> ask(
+  /// [Sprint 59 F1] Both replies read through their generated models (`AssistantStart`, `AssistantAnswer`).
+  Future<api.AssistantStart> start(String page) async =>
+      api.AssistantStart.fromJson(await _api.get('/assistant/start', query: {'page': page}));
+  Future<api.AssistantAnswer> ask(
     String question, {
     String? topic,
     required String page,
     int? leagueId,
     List<Map<String, String>> history = const [],
-  }) => _api.post('/assistant/ask', {'question': question, 'topic': ?topic, 'page': page, 'league_id': ?leagueId, 'history': history});
+  }) async => api.AssistantAnswer.fromJson(
+    await _api.post('/assistant/ask', {'question': question, 'topic': ?topic, 'page': page, 'league_id': ?leagueId, 'history': history}),
+  );
 }
 
 final assistantRepositoryProvider = Provider<AssistantRepository>((ref) => AssistantRepository(ref.watch(apiProvider)));
@@ -145,9 +150,9 @@ class _AssistantSheetState extends ConsumerState<AssistantSheet> {
           (s) {
             if (!mounted) return;
             setState(() {
-              _name = '${s['name'] ?? ''}';
-              _talk.add((me: false, text: '${s['intro'] ?? ''}', go: null));
-              _suggested = _questions(s['questions']);
+              _name = s.name;
+              _talk.add((me: false, text: s.intro, go: null));
+              _suggested = _questions(s.questions);
               _busy = false;
             });
           },
@@ -163,9 +168,8 @@ class _AssistantSheetState extends ConsumerState<AssistantSheet> {
     super.dispose();
   }
 
-  List<({String question, String? topic})> _questions(Object? list) => [
-    for (final q in (list as List<dynamic>? ?? const []))
-      (question: '${(q as Map<dynamic, dynamic>)['question']}', topic: q['topic'] as String?),
+  List<({String question, String? topic})> _questions(List<api.AssistantQuestion> list) => [
+    for (final q in list) (question: q.question, topic: q.topic),
   ];
 
   Future<void> _ask(String question, {String? topic}) async {
@@ -189,8 +193,8 @@ class _AssistantSheetState extends ConsumerState<AssistantSheet> {
       );
       if (!mounted) return;
       setState(() {
-        _talk.add((me: false, text: '${a['answer'] ?? ''}', go: a['go'] as String?));
-        _suggested = _questions(a['related']);
+        _talk.add((me: false, text: a.answer, go: a.go));
+        _suggested = _questions(a.related);
       });
     } on ApiError catch (e) {
       if (mounted) setState(() => _talk.add((me: false, text: e.message, go: null)));
