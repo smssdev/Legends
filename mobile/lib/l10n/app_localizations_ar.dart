@@ -2850,4 +2850,79 @@ class LAr extends L {
   String friendlyBlockedSoon(String at) {
     return 'مباراتك بعد قليل: الوديات تعود بعدها ($at).';
   }
+
+  @override
+  String spanYears(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n سنة',
+      many: '$n سنة',
+      few: '$n سنوات',
+      two: 'سنتان',
+      one: 'سنة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spanMonths(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n شهر',
+      many: '$n شهراً',
+      few: '$n أشهر',
+      two: 'شهران',
+      one: 'شهر',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spanDays(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n يوم',
+      many: '$n يوماً',
+      few: '$n أيام',
+      two: 'يومان',
+      one: 'يوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spanHours(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n ساعة',
+      many: '$n ساعة',
+      few: '$n ساعات',
+      two: 'ساعتان',
+      one: 'ساعة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spanMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n دقيقة',
+      many: '$n دقيقة',
+      few: '$n دقائق',
+      two: 'دقيقتان',
+      one: 'دقيقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spanJoin(String a, String b) {
+    return '$a و$b';
+  }
 }

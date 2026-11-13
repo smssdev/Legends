@@ -69,13 +69,8 @@ class _SlotCard extends ConsumerWidget {
 
   final Slot s;
 
-  String _when(BuildContext context, DateTime at) {
-    final l = L.of(context);
-    final left = at.difference(DateTime.now());
-    if (left.inDays >= 1) return '${l.days(left.inDays)} ${l.hours(left.inHours % 24)}';
-    if (left.inHours >= 1) return l.hours(left.inHours);
-    return l.minutes(left.inMinutes.clamp(1, 59));
-  }
+  // [Sprint 60 F8] In its two largest units (core/span.dart): «3 سنوات وشهر», never a cut «1144 يو…».
+  String _when(BuildContext context, DateTime at) => spanText(L.of(context), at.difference(DateTime.now()));
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

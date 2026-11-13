@@ -54,10 +54,13 @@ class GlmButton extends StatelessWidget {
             const SizedBox(width: 8),
           ],
           Flexible(
+            // [Sprint 60 F8] The label wraps to a second line before anything is cut («وقت مستقطع», not «وقت مستـ…»).
             child: Text(
               label,
+              maxLines: 2,
+              textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
-              style: context.text.labelLarge?.copyWith(color: fg, fontSize: 16),
+              style: context.text.labelLarge?.copyWith(color: fg, fontSize: 16, height: 1.2),
             ),
           ),
         ],

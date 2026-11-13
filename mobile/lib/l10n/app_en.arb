@@ -867,5 +867,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "spanYears": "{n, plural, =1{1 year} other{{n} years}}",
+  "spanMonths": "{n, plural, =1{1 month} other{{n} months}}",
+  "spanDays": "{n, plural, =1{1 day} other{{n} days}}",
+  "spanHours": "{n, plural, =1{1 hour} other{{n} hours}}",
+  "spanMinutes": "{n, plural, =1{1 minute} other{{n} minutes}}",
+  "spanJoin": "{a} {b}"
 }

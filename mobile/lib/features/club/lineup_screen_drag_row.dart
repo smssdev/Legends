@@ -125,7 +125,8 @@ class _ArenaState extends State<_Arena> {
     final p = context.palette;
     return LayoutBuilder(
       builder: (context, box) {
-        final w = box.maxWidth, h = box.maxHeight;
+        // [Sprint 60 F7] The pitch above the action bar, which holds every action at the screen's foot.
+        final w = box.maxWidth, h = box.maxHeight - GlmActionBar.height;
         // The pitch's trapezoid: its far line high and narrow, its near line low and wide.
         final top = h * .05, bottom = h * .98, farW = w * .56, nearW = w * 1.02;
         Offset place(double across, double fwd) {
@@ -197,50 +198,6 @@ class _ArenaState extends State<_Arena> {
           ));
         }
         cards.sort((a, b) => a.$1.compareTo(b.$1));
-        Widget round(Widget icon, String tip, VoidCallback onTap) => Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Tooltip(
-            message: tip,
-            child: Material(
-              shape: const CircleBorder(side: BorderSide(color: Colors.white, width: 3)),
-              color: GlmStage.cardRaised,
-              elevation: 4,
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                onTap: onTap,
-                child: SizedBox.square(dimension: 56, child: Center(child: icon)),
-              ),
-            ),
-          ),
-        );
-        Widget labelled(Widget icon, String label, VoidCallback onTap) => GestureDetector(
-          onTap: onTap,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56,
-                height: 44,
-                decoration: const BoxDecoration(
-                  color: GlmStage.card,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-                ),
-                child: Center(child: icon),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                decoration: ShapeDecoration(
-                  shape: GlmCut.shape(8, side: const BorderSide(color: GlmStage.edge)),
-                  color: GlmStage.card,
-                ),
-                child: Text(
-                  label,
-                  style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
-          ),
-        );
         final modeIcon = switch (_mode) {
           _Mode.fitness => Icons.fitness_center_rounded,
           _Mode.age => Icons.cake_rounded,
@@ -259,76 +216,70 @@ class _ArenaState extends State<_Arena> {
               ),
             ),
             for (final c in cards) c.$2,
-            // The tactics and the specialists at the side.
+            // [Sprint 60 F7] Every action of the lineup in one bar at its foot, each by its name (M-D07, M-D08).
             PositionedDirectional(
-              end: 14,
-              top: 10,
-              child: Column(
-                children: [
-                  round(const GameIcon(GameGlyph.tactics, size: 34), l.tactics, () => context.push('/leagues/${widget.leagueId}/tactics')),
-                  round(
-                    const GameIcon(GameGlyph.specialists, size: 34),
-                    l.specialists,
-                    () => context.push('/leagues/${widget.leagueId}/specialists'),
+              start: 0,
+              end: 0,
+              bottom: 0,
+              child: GlmActionBar(
+                actions: [
+                  PopupMenuButton<String>(
+                    onSelected: widget.onFormation,
+                    tooltip: l.formation,
+                    itemBuilder: (_) => [
+                      for (final f in widget.formations)
+                        PopupMenuItem(
+                          value: f.name,
+                          child: Text(
+                            f.label,
+                            textDirection: TextDirection.ltr,
+                            style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                    ],
+                    child: GlmActionItem(icon: const GameIcon(GameGlyph.lineup, size: 24), label: widget.formation ?? l.formation),
                   ),
-                  round(const Icon(Icons.auto_awesome_rounded, color: Colors.white), l.autoLineup, widget.auto),
-                ],
-              ),
-            ),
-            // The formation at the other corner.
-            PositionedDirectional(
-              start: 14,
-              top: 10,
-              child: PopupMenuButton<String>(
-                onSelected: widget.onFormation,
-                itemBuilder: (_) => [
-                  for (final f in widget.formations)
-                    PopupMenuItem(
-                      value: f.name,
-                      child: Text(
-                        f.label,
-                        textDirection: TextDirection.ltr,
-                        style: glmText(GlmType.title, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800),
-                      ),
-                    ),
-                ],
-                child: labelled(const GameIcon(GameGlyph.lineup, size: 30), widget.formation ?? '', () {}),
-              ),
-            ),
-            // The bench's panel and «save» below.
-            PositionedDirectional(
-              end: 14,
-              bottom: 10,
-              child: Row(
-                children: [
-                  labelled(
-                    const Icon(Icons.event_seat_rounded, color: Colors.white, size: 26),
-                    l.benchPanel,
-                    () => setState(() => _bench = !_bench),
+                  GlmActionItem(
+                    icon: Icon(modeIcon),
+                    label: modeLabel,
+                    onTap: () => setState(() => _mode = _Mode.values[(_mode.index + 1) % _Mode.values.length]),
                   ),
-                  const SizedBox(width: 12),
-                  if (widget.save != null || widget.busy)
-                    SizedBox(
-                      width: 150,
-                      child: GlmButton(label: l.save, loading: widget.busy, icon: const Icon(Icons.check_rounded), onPressed: widget.save),
-                    ),
+                  GlmActionItem(
+                    icon: const Icon(Icons.event_seat_rounded),
+                    label: l.benchPanel,
+                    on: _bench,
+                    onTap: () => setState(() => _bench = !_bench),
+                  ),
+                  GlmActionItem(
+                    icon: const GameIcon(GameGlyph.tactics, size: 24),
+                    label: l.tactics,
+                    onTap: () => context.push('/leagues/${widget.leagueId}/tactics'),
+                  ),
+                  GlmActionItem(
+                    icon: const GameIcon(GameGlyph.specialists, size: 24),
+                    label: l.specialists,
+                    onTap: () => context.push('/leagues/${widget.leagueId}/specialists'),
+                  ),
+                  GlmActionItem(icon: const Icon(Icons.auto_awesome_rounded), label: l.autoLineup, onTap: widget.auto),
                 ],
-              ),
-            ),
-            PositionedDirectional(
-              start: 14,
-              bottom: 10,
-              child: labelled(
-                Icon(modeIcon, color: Colors.white, size: 26),
-                modeLabel,
-                () => setState(() => _mode = _Mode.values[(_mode.index + 1) % _Mode.values.length]),
+                main: widget.save != null || widget.busy
+                    ? SizedBox(
+                        width: 150,
+                        child: GlmButton(
+                          label: l.save,
+                          loading: widget.busy,
+                          icon: const Icon(Icons.check_rounded),
+                          onPressed: widget.save,
+                        ),
+                      )
+                    : null,
               ),
             ),
             if (_bench)
               Positioned(
                 left: w * .06,
                 right: w * .06,
-                bottom: 12,
+                bottom: GlmActionBar.height + 8,
                 height: h * .5,
                 child: _BenchPanel(
                   others: widget.others,

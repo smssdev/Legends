@@ -5179,6 +5179,42 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'مباراتك بعد قليل: الوديات تعود بعدها ({at}).'**
   String friendlyBlockedSoon(String at);
+
+  /// No description provided for @spanYears.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n, plural, =1{سنة} =2{سنتان} few{{n} سنوات} many{{n} سنة} other{{n} سنة}}'**
+  String spanYears(int n);
+
+  /// No description provided for @spanMonths.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n, plural, =1{شهر} =2{شهران} few{{n} أشهر} many{{n} شهراً} other{{n} شهر}}'**
+  String spanMonths(int n);
+
+  /// No description provided for @spanDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n, plural, =1{يوم} =2{يومان} few{{n} أيام} many{{n} يوماً} other{{n} يوم}}'**
+  String spanDays(int n);
+
+  /// No description provided for @spanHours.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n, plural, =1{ساعة} =2{ساعتان} few{{n} ساعات} many{{n} ساعة} other{{n} ساعة}}'**
+  String spanHours(int n);
+
+  /// No description provided for @spanMinutes.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n, plural, =1{دقيقة} =2{دقيقتان} few{{n} دقائق} many{{n} دقيقة} other{{n} دقيقة}}'**
+  String spanMinutes(int n);
+
+  /// No description provided for @spanJoin.
+  ///
+  /// In ar, this message translates to:
+  /// **'{a} و{b}'**
+  String spanJoin(String a, String b);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {
