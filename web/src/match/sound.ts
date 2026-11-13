@@ -2,6 +2,9 @@
 // that follows attack danger, reactions, whistles and ball strikes. No audio
 // files, so nothing to license. Starts only after a user gesture.
 
+import { watch, type WatchStopHandle } from 'vue'
+import { gainOf, levels } from '../lib/soundLevels'
+
 export class MatchSound {
   private ctx: AudioContext | null = null
   private crowd: GainNode | null = null
@@ -9,6 +12,7 @@ export class MatchSound {
   private duckGain: GainNode | null = null
   private chanting = 0
   private master: GainNode | null = null
+  private stopLevel: WatchStopHandle | null = null
   muted = false
 
   start() {
@@ -16,7 +20,9 @@ export class MatchSound {
     const ctx = new AudioContext()
     this.ctx = ctx
     this.master = ctx.createGain()
-    this.master.gain.value = 0.6
+    // [Sprint 63 G13] At the stadium's level (lib/soundLevels.ts), followed as it moves.
+    this.master.gain.value = 0.6 * gainOf('stadium')
+    this.stopLevel = watch(() => levels.stadium, (v) => { if (this.master) this.master.gain.value = 0.6 * v / 100 })
     this.master.connect(ctx.destination)
 
     // Crowd bed: brown noise through a band-pass filter.
@@ -262,6 +268,8 @@ export class MatchSound {
   }
 
   stop() {
+    this.stopLevel?.()
+    this.stopLevel = null
     this.ctx?.close()
     this.ctx = null
   }

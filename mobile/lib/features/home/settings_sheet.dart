@@ -75,6 +75,35 @@ class _SettingsSheet extends ConsumerWidget {
                 if (v) GameSounds.play(Sfx.confirm);
               },
             ),
+            // [Sprint 63 G13] The levels, the site's same (its third, the commentator, waits for a voice in the app).
+            if (s.sounds)
+              for (final (which, label, value, sample) in [
+                ('ui', l.soundInterface, s.soundUi, Sfx.confirm),
+                ('stadium', l.soundStadium, s.soundStadium, Sfx.whistle),
+              ])
+                Row(
+                  children: [
+                    SizedBox(width: 96, child: Text(label, style: context.type.body)),
+                    Expanded(
+                      child: Slider(
+                        value: value.toDouble(),
+                        max: 100,
+                        divisions: 20,
+                        label: '$value%',
+                        activeColor: context.palette.gold,
+                        onChanged: (v) {
+                          settings.setLevel(which, v.round());
+                          if (which == 'ui') {
+                            GameSounds.ui = v.round();
+                          } else {
+                            GameSounds.stadium = v.round();
+                          }
+                        },
+                        onChangeEnd: (_) => GameSounds.play(sample),
+                      ),
+                    ),
+                  ],
+                ),
             const SizedBox(height: 4),
             // [Sprint 18 F] The account: name, look, password, invites and badges; and the community's pages from it.
             ListTile(

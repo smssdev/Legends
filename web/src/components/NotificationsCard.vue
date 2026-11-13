@@ -4,6 +4,7 @@
 // opens its screen (public/sw.js).
 import { setTone, toneOn } from '../lib/tone'
 import UiToggle from './ui/UiToggle.vue'
+import SoundToggle from './shell/SoundToggle.vue'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
@@ -103,6 +104,9 @@ onMounted(load)
 
     <!-- [Sprint 21 E3.6] The game's own tone when a message arrives, on this device. -->
     <UiToggle class="rounded-lg px-1" :model-value="toneOn" :label="$t('نغمة الإشعارات')" :hint="$t('نغمة قصيرة حين يُباع لاعبك، أو يصلك عرض أو رسالة أو كود، أو تبدأ مباراتك أو تنتهي، واللعبة مفتوحة')" @update:model-value="(on: boolean) => setTone(on)" />
+
+    <!-- [Sprint 63 G13] The sound in three levels, as in the app's settings. -->
+    <SoundToggle />
 
     <!-- [X79] The match summary by email: the score, the scorers and the way to the report. -->
     <UiToggle v-if="settings" class="rounded-lg px-1" :model-value="settings.email_match" :label="$t('ملخص المباراة بالبريد')"

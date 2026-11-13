@@ -65,12 +65,16 @@ const BASE = import.meta.env.BASE_URL + 'commentary/'
 
 const GAP = 0.07
 
+import { watch, type WatchStopHandle } from 'vue'
+import { gainOf, levels } from '../lib/soundLevels'
+
 export class Commentator {
   on = false
   /** Told when he starts and stops talking, so the crowd can step back [Sprint 35]. */
   onTalk: ((talking: boolean) => void) | null = null
   private ctx: AudioContext | null = null
   private out: GainNode | null = null
+  private stopLevel: WatchStopHandle | null = null
   private wanted: string[] = []
   private packs = new Map<string, Promise<Pack | null>>()
   private ready = new Map<string, Pack | null>()
@@ -101,7 +105,9 @@ export class Commentator {
     if (!this.ctx) {
       this.ctx = new AudioContext()
       this.out = this.ctx.createGain()
-      this.out.gain.value = 1.1
+      // [Sprint 63 G13] At the commentator's level (lib/soundLevels.ts), followed as it moves.
+      this.out.gain.value = 1.1 * gainOf('voice')
+      this.stopLevel = watch(() => levels.voice, (v) => { if (this.out) this.out.gain.value = 1.1 * v / 100 })
       this.out.connect(this.ctx.destination)
     }
     void this.ctx.resume()
@@ -171,6 +177,8 @@ export class Commentator {
    * few AudioContexts at once, so each match page closes its own.
    */
   dispose() {
+    this.stopLevel?.()
+    this.stopLevel = null
     this.on = false
     this.stop()
     this.onTalk = null

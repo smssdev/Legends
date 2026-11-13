@@ -4,6 +4,7 @@
 // [Sprint 39 N1] Browsers play no sound before the coach's first tap on the page (their autoplay policy): the first tap
 // anywhere, or «فعّلها» in the activation card (components/shell/SoundPrompt.vue), unlocks it; until then it stays silent
 // and nothing fails. The card asks once; the top bar's speaker (SoundToggle.vue) mutes or unmutes it at any time.
+import { gainOf } from './soundLevels'
 import { storage } from './storage'
 import { ref } from 'vue'
 
@@ -56,11 +57,12 @@ export function askLater() {
 let last = 0
 /** The tone, once for events close together (several messages at once ring once); `force` for the preview. */
 export function playTone(force = false) {
-  if (!toneOn.value || (!force && Date.now() - last < 2000)) return
+  // [Sprint 63 G13] At the interface's level (lib/soundLevels.ts).
+  if (!toneOn.value || gainOf('ui') <= 0 || (!force && Date.now() - last < 2000)) return
   last = Date.now()
   try {
     audio ??= new Audio(file())
-    audio.volume = 0.6
+    audio.volume = 0.6 * gainOf('ui')
     audio.currentTime = 0
     void audio.play().catch(() => {})
   } catch {}

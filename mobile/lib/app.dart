@@ -73,6 +73,8 @@ class _GlmAppState extends ConsumerState<GlmApp> {
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
     GameSounds.enabled = settings.sounds;
+    GameSounds.ui = settings.soundUi;
+    GameSounds.stadium = settings.soundStadium;
     final update = ref.watch(updateRequiredProvider).value ?? false;
     ApiError.locale = settings.locale;
     // [Sprint 59 F12] One MaterialApp: an update the server requires replaces the routed screens, not the app.

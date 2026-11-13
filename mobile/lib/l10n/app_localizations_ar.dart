@@ -3006,4 +3006,10 @@ class LAr extends L {
 
   @override
   String get offlineBar => 'لا اتصال: تعرض الشاشات آخر ما وصلها، وتتحدث وحدها حين يعود الاتصال';
+
+  @override
+  String get soundInterface => 'الواجهة';
+
+  @override
+  String get soundStadium => 'الملعب';
 }
