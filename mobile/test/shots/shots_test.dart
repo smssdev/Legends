@@ -12,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/ui/widgets/pitch_name.dart';
 import 'package:glm/core/settings.dart';
 import 'package:glm/core/sounds.dart';
 import 'package:glm/features/club/club_data.dart';
@@ -105,10 +106,15 @@ const homeJson = {
 };
 
 /// [Sprint 60 F8, T2] Every text the screen cut (past its lines, or past its width on one line): what reads «…».
-List<String> cutTexts(WidgetTester t) => [
-  for (final e in find.byType(RichText).evaluate())
-    if ((t.renderObject(find.byWidget(e.widget)) as RenderParagraph).didExceedMaxLines) (e.widget as RichText).text.toPlainText(),
-];
+/// The names under the places on the pitch (PitchName) may end in «…» as the approved drafts draw them: left out.
+List<String> cutTexts(WidgetTester t) {
+  final onPitch = find.descendant(of: find.byType(PitchName), matching: find.byType(RichText)).evaluate().toSet();
+  return [
+    for (final e in find.byType(RichText).evaluate())
+      if (!onPitch.contains(e) && (t.renderObject(find.byWidget(e.widget)) as RenderParagraph).didExceedMaxLines)
+        (e.widget as RichText).text.toPlainText(),
+  ];
+}
 
 Future<void> shot(
   WidgetTester t,
