@@ -1837,7 +1837,6 @@ export const EN: Record<string, string> = {
   'فرقي': 'My teams',
   'فرقي كلها': 'All my teams',
   'فريق نادٍ آخر': 'Another club\'s squad',
-  'فريق نادٍ آخر ▾': 'Another club\'s squad ▾',
   'في تشكيلتك مصاب أو موقوف': 'An injured or suspended player in your lineup',
   'كل سطر يفتح شاشته، ويختفي حين تنجزه': 'Each line opens its screen and goes away once done',
   'كوينز لكل مهمة، وأموال للنادي في الكبرى.': 'Coins for each quest, club money for the big one.',

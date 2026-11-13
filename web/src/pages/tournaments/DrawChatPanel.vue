@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // [X66] The live draw's chat: everyone watching says a line or taps a reaction, and every screen shows it at once
 // (channel draw.{id}); a reaction floats up over the draw. Open from an hour before until half an hour after; then kept,
 // and a replay (cutoff: the server time the replay has reached) shows each line and reaction at the moment it came.
@@ -116,7 +117,7 @@ const mine = (m: Line) => m.user?.id === auth.user?.id
       <li v-for="m in texts" :key="m.id" class="group flex items-start gap-2 text-sm">
         <b class="shrink-0" :class="mine(m) ? 'text-gold' : 'text-brand-light'">{{ m.user?.name ?? $t('عضو سابق') }}:</b>
         <span class="min-w-0 flex-1 break-words" :class="m.deleted ? 'italic text-text-muted' : ''">{{ m.deleted ? $t('هذه الرسالة حُذفت') : m.body }}</span>
-        <button v-if="!m.deleted && (mine(m) || chat?.can_moderate)" type="button" class="size-8 shrink-0 text-text-muted" :aria-label="$t('احذف الرسالة')" @click="remove(m)">✕</button>
+        <button v-if="!m.deleted && (mine(m) || chat?.can_moderate)" type="button" class="size-8 shrink-0 text-text-muted" :aria-label="$t('احذف الرسالة')" @click="remove(m)"><Icon name="close" :size="18" /></button>
       </li>
     </ul>
 

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../api/gen/models.g.dart' as api;
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
+import '../../ui/widgets/glm_icon.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../leagues/page.dart';
 
@@ -54,12 +55,12 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
     final away = widget.played.opponent.name;
     final best = widget.played.report.best;
     String kind(String k) => switch (k) {
-      'goal' => '⚽ ${l.kGoal}',
-      'saved' => '🧤 ${l.kSaved}',
+      'goal' => l.kGoal,
+      'saved' => l.kSaved,
       'missed' => l.kMissed,
-      'corner' => '⛳ ${l.kCorner}',
-      'yellow' => '🟨 ${l.kYellow}',
-      'red' => '🟥 ${l.kRed}',
+      'corner' => l.kCorner,
+      'yellow' => l.kYellow,
+      'red' => l.kRed,
       _ => l.kAttack,
     };
     return screenPage(
@@ -137,7 +138,17 @@ class _QuickMatchScreenState extends State<QuickMatchScreen> {
                       "${e.m}'",
                       style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText),
                     ),
-                    title: Text(kind(e.k), style: TextStyle(fontWeight: e.k == 'goal' ? FontWeight.w800 : FontWeight.w500)),
+                    title: Row(
+                      children: [
+                        if (const {'goal', 'saved', 'corner', 'yellow', 'red'}.contains(e.k)) ...[
+                          GlmEventMark(e.k),
+                          const SizedBox(width: 6),
+                        ],
+                        Flexible(
+                          child: Text(kind(e.k), style: TextStyle(fontWeight: e.k == 'goal' ? FontWeight.w800 : FontWeight.w500)),
+                        ),
+                      ],
+                    ),
                     subtitle: e.name == null ? null : Text(e.name!, textDirection: TextDirection.ltr, textAlign: TextAlign.start),
                     trailing: Text(
                       e.s == 'home' ? widget.home : away,

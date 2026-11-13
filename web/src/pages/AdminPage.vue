@@ -739,7 +739,7 @@ onMounted(load)
               <span class="text-sm">{{ $t('الخيارات (من {v0} إلى {v1})', { v0: pollLimits.options_min, v1: pollLimits.options_max }) }}</span>
               <div v-for="(o, i) in pollDraft.options" :key="i" class="flex gap-2">
                 <input v-model="o.label" maxlength="120" :placeholder="$t('الخيار {v0}', { v0: i + 1 })" :aria-label="$t('الخيار {v0}', { v0: i + 1 })" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3" />
-                <button v-if="pollDraft.options.length > pollLimits.options_min" type="button" class="size-touch shrink-0 rounded-md bg-surface-raised" :aria-label="$t('احذف الخيار')" @click="pollDraft.options.splice(i, 1)">✕</button>
+                <button v-if="pollDraft.options.length > pollLimits.options_min" type="button" class="size-touch shrink-0 rounded-md bg-surface-raised" :aria-label="$t('احذف الخيار')" @click="pollDraft.options.splice(i, 1)"><Icon name="close" :size="18" /></button>
               </div>
               <button v-if="pollDraft.options.length < pollLimits.options_max" type="button" class="h-10 self-start rounded-md bg-surface-raised px-3 text-xs font-bold" @click="pollDraft.options.push({ label: '', suggestion_id: null })">{{ $t('+ خيار') }}</button>
             </div>

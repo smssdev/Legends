@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // The market (Sprint 24 W1, [UP11] the owner's spec 5): four sections (the transfer list, the negotiations, the scout,
 // the transfers made) and my players to sell. The list is one per line (GK, DEF, MID, ATT, no search), renewed every
 // few hours with a countdown, each player with his seller: a club and its coach, a computer's club, or his own club
@@ -266,7 +267,7 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
             :disabled="comparing.length < 2" @click="compareOpen = true">
             <span class="truncate">{{ comparing.length === 2 ? $t('قارن بين {v0} و{v1}', { v0: comparing[0].name, v1: comparing[1].name }) : $t('اختر لاعباً آخر للمقارنة مع {v0}', { v0: comparing[0].name }) }}</span>
           </UiButton>
-          <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface" :aria-label="$t('ابدأ مقارنة جديدة')" @click="comparing = []">✕</button>
+          <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface" :aria-label="$t('ابدأ مقارنة جديدة')" @click="comparing = []"><Icon name="close" :size="18" /></button>
         </div>
         <section :aria-label="$t('قائمة الانتقالات')" class="market-list rounded-xl ui-card p-2">
           <AsyncState v-if="!list" loading skeleton="row" :rows="5" />

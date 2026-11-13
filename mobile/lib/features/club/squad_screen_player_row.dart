@@ -58,10 +58,12 @@ class PlayerRow extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
+                            // [Sprint 63 G5] Why he cannot play, by the set's mark (it was an emoji).
+                            if (!p.available) ...[GlmEventMark(p.injured > 0 ? 'injury' : 'red', size: 14), const SizedBox(width: 4)],
                             Expanded(
                               child: Text(
                                 !p.available
-                                    ? (p.injured > 0 ? '🩹 ${l.injuredFor(p.injured)}' : '🟥 ${l.suspendedFor(p.suspended)}')
+                                    ? (p.injured > 0 ? l.injuredFor(p.injured) : l.suspendedFor(p.suspended))
                                     : '${l.age(p.age)} · ${starter
                                           ? l.starter
                                           : p.role == 'bench'

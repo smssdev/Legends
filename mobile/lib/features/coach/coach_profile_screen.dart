@@ -1,3 +1,4 @@
+import '../../ui/widgets/glm_icon.dart';
 import '../../ui/tokens.g.dart';
 
 import 'package:flutter/material.dart';
@@ -91,7 +92,7 @@ class CoachProfileScreen extends ConsumerWidget {
                 ),
               for (final t in titles)
                 ListTile(
-                  leading: Text(t.position == 1 ? '🏆' : '🥈', style: glmText(GlmType.headline)),
+                  leading: GlmPlaceMark(t.position == 1 ? 1 : 2),
                   title: Text(
                     t.club,
                     textDirection: TextDirection.ltr,

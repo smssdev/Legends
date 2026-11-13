@@ -1,12 +1,13 @@
 <template>
   <!-- [Sprint 56 W7, Sprint 57 W2] A drawer over the match's picture, from one edge (never moving the picture). -->
   <aside class="match-drawer" :class="[side === 'end' ? 'is-end' : 'is-start', open ? 'is-open' : '']" :aria-label="$t(label)" :inert="!open">
-    <button type="button" class="match-close" :aria-label="$t('إغلاق')" @click="emit('close')">✕</button>
+    <button type="button" class="match-close" :aria-label="$t('إغلاق')" @click="emit('close')"><Icon name="close" :size="18" /></button>
     <slot />
   </aside>
 </template>
 
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 defineProps<{ open: boolean; side: 'start' | 'end'; label: string }>()
 const emit = defineEmits<{ close: [] }>()
 </script>

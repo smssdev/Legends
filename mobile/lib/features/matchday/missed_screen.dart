@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/api/api_client.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
+import '../../ui/widgets/glm_icon.dart';
 import '../../ui/widgets/action_bar.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/async_view.dart';
@@ -84,18 +85,33 @@ class MissedScreen extends ConsumerWidget {
                           ],
                         ),
                         for (final g in m.goals)
-                          Text(
-                            "⚽ ${g.minute}' ${g.scorer ?? ''}",
+                          Row(
+                            mainAxisAlignment: g.side == 'home' ? MainAxisAlignment.start : MainAxisAlignment.end,
                             textDirection: TextDirection.ltr,
-                            textAlign: g.side == 'home' ? TextAlign.left : TextAlign.right,
-                            style: glmText(GlmType.caption, color: context.palette.textMuted),
+                            children: [
+                              const GlmEventMark('goal', size: 14),
+                              const SizedBox(width: 4),
+                              Text(
+                                "${g.minute}' ${g.scorer ?? ''}",
+                                textDirection: TextDirection.ltr,
+                                style: glmText(GlmType.caption, color: context.palette.textMuted),
+                              ),
+                            ],
                           ),
                         if (m.manOfTheMatch case final motm?) Text('${l.manOfMatch}: ${motm.name ?? ''}'),
                         if (m.coins != 0) Text(l.coinsWord(m.coins), style: TextStyle(color: context.glm.goldText)),
                         for (final c in m.changes)
-                          Text(
-                            '${c.kind == 'injury' ? '🩹 ${l.injured}' : '🟥 ${l.sentOff}'}: ${c.player ?? ''}',
-                            style: glmText(GlmType.caption, color: context.glm.liveText),
+                          Row(
+                            children: [
+                              GlmEventMark(c.kind == 'injury' ? 'injury' : 'red', size: 14),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  '${c.kind == 'injury' ? l.injured : l.sentOff}: ${c.player ?? ''}',
+                                  style: glmText(GlmType.caption, color: context.glm.liveText),
+                                ),
+                              ),
+                            ],
                           ),
                       ],
                     ),

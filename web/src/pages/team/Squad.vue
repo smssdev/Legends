@@ -120,7 +120,7 @@ function status(p: SquadPlayer) {
           <label>
             <span class="sr-only">{{ $t('فريق نادٍ آخر') }}</span>
             <select class="h-touch w-28 rounded-lg bg-surface px-1 text-caption" :value="''" @focus="loadOthers" @pointerdown="loadOthers" @change="otherClub = Number(($event.target as HTMLSelectElement).value) || null; ($event.target as HTMLSelectElement).value = ''">
-              <option value="">{{ $t('فريق نادٍ آخر ▾') }}</option>
+              <option value="">{{ $t('فريق نادٍ آخر') }}</option>
               <option v-for="c in others" :key="c.id" :value="c.id">{{ $nm(c.name) }}</option>
             </select>
           </label>

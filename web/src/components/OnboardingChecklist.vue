@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from './Icon.vue'
 // [X61] The first steps of a new coach, on the home screen: seven steps, each a button to the right screen. [X75] A step
 // is done only when the server says it is done in the game (home.onboarding), never by tapping it. Folds away (reka-ui's Collapsible, Sprint 54 W4), and goes once every step is done. [Sprint 26 W4] The falcon (A1)
 // cheers each step.
@@ -55,9 +56,9 @@ function hide() {
         </span>
         <span class="min-w-0 flex-1"><b class="block font-display text-base">{{ $t('خطواتك الأولى') }}</b>
           <span class="text-xs text-text-muted">{{ open || !next ? $t('سبع خطوات تجهّز ناديك لأول مباراة') : $t('التالية: {v0}', { v0: $t(next.label) }) }}</span></span>
-        <span class="text-gold transition-transform duration-200" :class="open ? 'rotate-180' : ''" aria-hidden="true">▾</span>
+        <span class="text-gold transition-transform duration-200" :class="open ? 'rotate-180' : ''" aria-hidden="true"><Icon name="chevron_down" :size="16" /></span>
       </CollapsibleTrigger>
-      <button type="button" class="grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إخفاء')" @click="hide">✕</button>
+      <button type="button" class="grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إخفاء')" @click="hide"><Icon name="close" :size="18" /></button>
     </div>
     <CollapsibleContent as="ol" class="drop-panel mt-2 flex flex-col gap-1.5">
         <li v-for="(s, i) in STEPS" :key="s.key">

@@ -38,6 +38,10 @@ abstract final class GlmArt {
 
   /// The cards in a referee's hand, and the VAR's «no goal».
   static const redCard = Color(0xFFE53935);
+
+  /// [Sprint 63 G5] The second and third places' medals (the store's chests are the same metals).
+  static const silver = Color(0xFFC3CCDA);
+  static const bronze = Color(0xFFB4692A);
   static const yellowCard = Color(0xFFFFD600);
 
   /// The fourth official's LED board: its frame and its two numbers (off: the alarm red, also the offside line; on).

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../ui/widgets/glm_icon.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_button.dart';
@@ -47,11 +48,16 @@ class SpecialistsScreen extends ConsumerWidget {
                         Row(
                           children: [
                             Expanded(child: Text(sp.name, style: context.text.titleMedium)),
-                            if (sp.stars > 0)
-                              Text(
-                                '${'★' * sp.stars}${sp.endsAt != null ? '  ${l.hiredUntil(when(context, sp.endsAt!.toLocal()))}' : ''}',
-                                style: TextStyle(color: context.glm.goldText),
-                              ),
+                            if (sp.stars > 0) ...[
+                              GlmStars(sp.stars, color: context.glm.goldText),
+                              if (sp.endsAt != null)
+                                Flexible(
+                                  child: Text(
+                                    '  ${l.hiredUntil(when(context, sp.endsAt!.toLocal()))}',
+                                    style: TextStyle(color: context.glm.goldText),
+                                  ),
+                                ),
+                            ],
                           ],
                         ),
                         const SizedBox(height: 6),
@@ -59,7 +65,10 @@ class SpecialistsScreen extends ConsumerWidget {
                           ListTile(
                             dense: true,
                             contentPadding: EdgeInsets.zero,
-                            title: Text('★' * o.stars, style: TextStyle(color: p.gold)),
+                            title: Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: GlmStars(o.stars, color: p.gold),
+                            ),
                             subtitle: Text(o.effect),
                             trailing: GlmButton(
                               label: '${l.hire} ${o.currency == 'coins' ? l.coinsWord(o.cost) : money(context, o.cost)}',

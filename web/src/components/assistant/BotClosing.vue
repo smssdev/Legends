@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../Icon.vue'
 // [X61] The Assistant Coach's end: a card over the conversation, dropping from the top (reka-ui's Dialog, Sprint 54 W4, keeps
 // the focus inside and closes on Esc). What was done, what is next (the most urgent thing waiting, from the club
 // board), the coins and the club's money; the next step, the lineup, or keep it for later; and 👍/👎 with a note.
@@ -65,7 +66,7 @@ async function rate(helpful: boolean, withNote = false) {
     <div class="pointer-events-none fixed inset-x-0 top-0 z-[70] flex justify-center p-3 pt-[max(0.75rem,env(safe-area-inset-top))] md:inset-x-auto md:end-0 md:w-[23rem]">
       <DialogContent class="closing pointer-events-auto relative w-full max-w-md overflow-hidden rounded-2xl p-[1.5px] shadow-overlay" :aria-describedby="undefined">
         <div class="relative flex max-h-[85dvh] flex-col gap-3 overflow-y-auto overscroll-contain rounded-2xl bg-surface p-4">
-          <button type="button" class="absolute end-2 top-2 grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إغلاق')" @click="close">✕</button>
+          <button type="button" class="absolute end-2 top-2 grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إغلاق')" @click="close"><Icon name="close" :size="18" /></button>
           <header class="flex items-center gap-3 pe-10">
             <span class="relative grid size-14 shrink-0 pulse-ring place-items-center rounded-full bg-gold/15">
               <AppImage :src="slot.current?.club?.crest_url ?? '/brand/emblem-loader.svg'" alt="" class="size-11 animate-pop-in drop-shadow-[0_0_10px_var(--color-gold)]" :size="44" crest />

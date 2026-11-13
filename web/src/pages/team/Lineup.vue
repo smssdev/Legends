@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '../../components/Icon.vue'
 // The lineup editor (Sprint 16 W2), after the draft MobileLineup: the formation picker (24 and my own),
 // a counter per line, "تحسين", the pitch, the bench and the rest of the squad. A player moves by dragging
 // (pointer events: the same code for a finger and a mouse) or by tapping him and then the place he goes.
@@ -441,7 +442,7 @@ async function saveCustom() {
           </div>
           <button type="button" class="side-row" :aria-label="$t('الطريقة')" @click="formationsOpen = true">
             <span class="text-caption text-text-muted">{{ $t('الطريقة') }}</span>
-            <b class="flex-1 text-end font-numbers text-title text-gold" :dir="formation.startsWith('custom:') ? undefined : 'ltr'">{{ $t(all.find((f) => f.name === formation)?.label ?? formation) }}</b><span class="text-gold" aria-hidden="true">▾</span>
+            <b class="flex-1 text-end font-numbers text-title text-gold" :dir="formation.startsWith('custom:') ? undefined : 'ltr'">{{ $t(all.find((f) => f.name === formation)?.label ?? formation) }}</b><span class="text-gold" aria-hidden="true"><Icon name="chevron_down" :size="16" /></span>
           </button>
           <div class="flex gap-1">
             <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-lg bg-surface-sunk py-1 text-caption">

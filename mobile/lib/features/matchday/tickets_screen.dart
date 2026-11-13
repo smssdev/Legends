@@ -1,3 +1,4 @@
+import '../../ui/widgets/glm_icon.dart';
 import '../../ui/tokens.g.dart';
 
 import 'package:flutter/material.dart';
@@ -53,7 +54,13 @@ class TicketsScreen extends ConsumerWidget {
                               children: [
                                 ClubCrest(url: club.crest, name: club.code, size: 34),
                                 Text(club.name, textDirection: TextDirection.ltr, maxLines: 1, overflow: TextOverflow.ellipsis),
-                                Text('$cheering 📣', style: glmText(GlmType.caption, color: p.textMuted)),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('$cheering ', style: glmText(GlmType.caption, color: p.textMuted)),
+                                    GlmIcon(GlmIcons.megaphone, size: 14, color: p.textMuted),
+                                  ],
+                                ),
                                 if (f.mine == side)
                                   Icon(Icons.check_circle_rounded, color: p.gold)
                                 else if (f.mine == null)
