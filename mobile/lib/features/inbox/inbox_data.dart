@@ -99,7 +99,12 @@ class InboxRepository {
 
   final ApiClient _api;
 
-  Future<InboxPage> page({int? before}) async => InboxPage.fromJson(await _api.get('/messages', query: {'before': ?before}));
+  /// [Sprint 61 F7] The first page with [onNewer]: the saved one first, the server's behind it.
+  Future<InboxPage> page({int? before, void Function()? onNewer}) async => InboxPage.fromJson(
+    before == null && onNewer != null
+        ? await _api.getSaved('/messages', onNewer: onNewer)
+        : await _api.get('/messages', query: {'before': ?before}),
+  );
   Future<int> unread() async => api.MessagesUnreadAnswer.fromJson(await _api.get('/messages/unread')).unread;
   Future<void> read(int id) => _api.post('/messages/$id/read');
   Future<void> readAll() => _api.post('/messages/read-all');

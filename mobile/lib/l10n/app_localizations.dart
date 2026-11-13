@@ -5371,6 +5371,12 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'الأوامر'**
   String get liveOrders;
+
+  /// No description provided for @offlineBar.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا اتصال: تعرض الشاشات آخر ما وصلها، وتتحدث وحدها حين يعود الاتصال'**
+  String get offlineBar;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

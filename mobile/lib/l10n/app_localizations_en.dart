@@ -2964,4 +2964,7 @@ class LEn extends L {
 
   @override
   String get liveOrders => 'Orders';
+
+  @override
+  String get offlineBar => 'Offline: the screens show the last they received, and update by themselves when the connection is back';
 }

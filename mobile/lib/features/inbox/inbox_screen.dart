@@ -40,7 +40,14 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
   Future<void> _load({bool next = false}) async {
     setState(() => _loading = true);
     try {
-      final page = await _repo.page(before: next && _items.isNotEmpty ? _items.last.id : null);
+      final page = next && _items.isNotEmpty
+          ? await _repo.page(before: _items.last.id)
+          // [Sprint 61 F7] The first page saved on the phone first; the server's newer one reloads it.
+          : await _repo.page(
+              onNewer: () {
+                if (mounted) unawaited(_load());
+              },
+            );
       if (!mounted) return;
       setState(() {
         if (!next) _items.clear();

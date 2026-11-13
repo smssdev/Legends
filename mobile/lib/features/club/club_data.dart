@@ -98,5 +98,5 @@ class ClubSummary {
 }
 
 final clubSummaryProvider = FutureProvider.autoDispose.family<ClubSummary, int>(
-  (ref, league) async => ClubSummary.fromJson(await ref.read(apiProvider).get('/leagues/$league/team/summary')),
+  (ref, league) async => ClubSummary.fromJson(await ref.saved('/leagues/$league/team/summary')),
 );

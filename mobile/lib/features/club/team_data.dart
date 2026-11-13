@@ -210,7 +210,10 @@ class TeamRepository {
 
   final ApiClient _api;
 
-  Future<TeamData> team(int league) async => TeamData.fromJson(await _api.get('/leagues/$league/team'));
+  /// [Sprint 61 F7] With [onNewer], the saved answer first and the server's behind it (ApiClient.getSaved).
+  Future<TeamData> team(int league, {void Function()? onNewer}) async => TeamData.fromJson(
+    onNewer == null ? await _api.get('/leagues/$league/team') : await _api.getSaved('/leagues/$league/team', onNewer: onNewer),
+  );
   Future<List<Formation>> formations() async => [
     for (final f in api.DataFormationsAnswer.fromJson(await _api.get('/data/formations')).formations) Formation.of(f),
   ];
@@ -237,6 +240,8 @@ class TeamRepository {
 }
 
 final teamRepositoryProvider = Provider<TeamRepository>((ref) => TeamRepository(ref.watch(apiProvider)));
-final teamProvider = FutureProvider.autoDispose.family<TeamData, int>((ref, league) => ref.read(teamRepositoryProvider).team(league));
+final teamProvider = FutureProvider.autoDispose.family<TeamData, int>(
+  (ref, league) => ref.read(teamRepositoryProvider).team(league, onNewer: ref.newerRebuilds()),
+);
 final formationsProvider = FutureProvider<List<Formation>>((ref) => ref.read(teamRepositoryProvider).formations());
 final tacticsProvider = FutureProvider.autoDispose.family<Tactics, int>((ref, league) => ref.read(teamRepositoryProvider).tactics(league));

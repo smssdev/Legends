@@ -114,4 +114,4 @@ class Slot {
   final DateTime? matchAt, opensAt;
 }
 
-final homeProvider = FutureProvider.autoDispose<HomeData>((ref) async => HomeData.fromJson(await ref.read(apiProvider).get('/home')));
+final homeProvider = FutureProvider.autoDispose<HomeData>((ref) async => HomeData.fromJson(await ref.saved('/home')));

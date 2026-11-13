@@ -3003,4 +3003,7 @@ class LAr extends L {
 
   @override
   String get liveOrders => 'الأوامر';
+
+  @override
+  String get offlineBar => 'لا اتصال: تعرض الشاشات آخر ما وصلها، وتتحدث وحدها حين يعود الاتصال';
 }
