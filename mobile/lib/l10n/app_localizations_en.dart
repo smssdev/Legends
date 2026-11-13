@@ -2828,4 +2828,19 @@ class LEn extends L {
 
   @override
   String get formLoss => 'L';
+
+  @override
+  String get refereeVeryLenient => 'Very lenient';
+
+  @override
+  String get refereeLenient => 'Lenient';
+
+  @override
+  String get refereeMedium => 'Medium';
+
+  @override
+  String get refereeStrict => 'Strict';
+
+  @override
+  String get refereeVeryStrict => 'Very strict';
 }

@@ -5137,6 +5137,36 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'خ'**
   String get formLoss;
+
+  /// No description provided for @refereeVeryLenient.
+  ///
+  /// In ar, this message translates to:
+  /// **'متساهل جداً'**
+  String get refereeVeryLenient;
+
+  /// No description provided for @refereeLenient.
+  ///
+  /// In ar, this message translates to:
+  /// **'متساهل'**
+  String get refereeLenient;
+
+  /// No description provided for @refereeMedium.
+  ///
+  /// In ar, this message translates to:
+  /// **'متوسط'**
+  String get refereeMedium;
+
+  /// No description provided for @refereeStrict.
+  ///
+  /// In ar, this message translates to:
+  /// **'صارم'**
+  String get refereeStrict;
+
+  /// No description provided for @refereeVeryStrict.
+  ///
+  /// In ar, this message translates to:
+  /// **'صارم جداً'**
+  String get refereeVeryStrict;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

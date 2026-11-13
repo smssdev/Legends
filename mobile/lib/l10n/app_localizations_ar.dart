@@ -2827,4 +2827,19 @@ class LAr extends L {
 
   @override
   String get formLoss => 'خ';
+
+  @override
+  String get refereeVeryLenient => 'متساهل جداً';
+
+  @override
+  String get refereeLenient => 'متساهل';
+
+  @override
+  String get refereeMedium => 'متوسط';
+
+  @override
+  String get refereeStrict => 'صارم';
+
+  @override
+  String get refereeVeryStrict => 'صارم جداً';
 }

@@ -15,6 +15,8 @@ import '../leagues/widgets.dart' show when;
 import '../money/finance_screen.dart' show confirm;
 import 'squad_screen.dart' show money;
 import '../leagues/shell.dart';
+import '../../api/gen/models.g.dart' as api;
+import '../../api/read.dart';
 
 part 'matchday_screens_contracts_screen.dart';
 part 'matchday_screens_missed_screen.dart';
@@ -22,8 +24,12 @@ part 'matchday_screens_missed_screen.dart';
 /// [Sprint 18 I] The club's match-day panels in the app (the web's NextMatch, Contracts and Tickets panels): moving
 /// the next match by hours with the other coach's yes (Sprint 27 B2), the press conference (UP12), what goes on behind
 /// the scenes (X28: the referee, a security check, the spies), the contracts (X61 E1) and the cheer tickets (X25).
-final nextMatchProvider = FutureProvider.autoDispose.family<Map<String, dynamic>?, int>(
-  (ref, l) async => (await ref.read(apiProvider).get('/leagues/$l/team/next-match'))['match'] as Map<String, dynamic>?,
+/// [Sprint 59 F1] My next match through the generated model (`NextMatch`).
+final nextMatchProvider = FutureProvider.autoDispose.family<api.NextMatch?, int>(
+  (ref, l) async => JsonReader(
+    await ref.read(apiProvider).get('/leagues/$l/team/next-match'),
+    'NextMatchAnswer',
+  ).objectOrNull('match', api.NextMatch.fromJson),
 );
 final pressProvider = FutureProvider.autoDispose.family<Map<String, dynamic>?, (int, int)>(
   (ref, k) async => (await ref.read(apiProvider).get('/leagues/${k.$1}/press/${k.$2}'))['press'] as Map<String, dynamic>?,
@@ -57,6 +63,15 @@ String price(BuildContext context, Object? p) {
   return m['currency'] == 'coins' ? L.of(context).coinsWord(n) : money(context, n);
 }
 
+/// The referee's strictness in the coach's language.
+String refereeName(L l, String strictness) => switch (strictness) {
+  'very_lenient' => l.refereeVeryLenient,
+  'lenient' => l.refereeLenient,
+  'strict' => l.refereeStrict,
+  'very_strict' => l.refereeVeryStrict,
+  _ => l.refereeMedium,
+};
+
 Widget _page(String title, Widget body) => Scaffold(
   appBar: GameBar(title: Text(title)),
   body: GlmBackground(child: body),
@@ -79,10 +94,10 @@ class MatchdayScreen extends ConsumerWidget {
         data: (m) {
           if (m == null) return Center(child: Text(l.noNextMatch));
           final p = context.palette;
-          final fixture = m['fixture_id'] as int;
-          final at = DateTime.tryParse('${m['scheduled_at']}');
-          final move = m['move'] as Map<dynamic, dynamic>?;
-          final pending = move?['pending'] as Map<dynamic, dynamic>?;
+          final fixture = m.fixtureId;
+          final at = DateTime.tryParse(m.scheduledAt);
+          final move = m.move;
+          final pending = move?.pending;
           Future<void> act(Future<Object?> Function() a, [String? done]) async {
             final r = await _try(context, a);
             if (r != null && done != null && context.mounted) showGlmToast(context, done);
@@ -103,25 +118,17 @@ class MatchdayScreen extends ConsumerWidget {
                         Expanded(
                           child: Column(
                             children: [
-                              ClubCrest(
-                                url: (m['club'] as Map<dynamic, dynamic>?)?['crest_url'] as String?,
-                                name: '${(m['club'] as Map<dynamic, dynamic>?)?['code'] ?? ''}',
-                                size: 48,
-                              ),
-                              Text('${(m['club'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', textDirection: TextDirection.ltr),
+                              ClubCrest(url: m.club.crestUrl, name: m.club.code, size: 48),
+                              Text(m.club.name, textDirection: TextDirection.ltr),
                             ],
                           ),
                         ),
-                        Text(m['venue'] == 'away' ? l.away : l.home, style: TextStyle(color: p.textMuted)),
+                        Text(m.venue == 'away' ? l.away : l.home, style: TextStyle(color: p.textMuted)),
                         Expanded(
                           child: Column(
                             children: [
-                              ClubCrest(
-                                url: (m['opponent'] as Map<dynamic, dynamic>?)?['crest_url'] as String?,
-                                name: '${(m['opponent'] as Map<dynamic, dynamic>?)?['code'] ?? ''}',
-                                size: 48,
-                              ),
-                              Text('${(m['opponent'] as Map<dynamic, dynamic>?)?['name'] ?? ''}', textDirection: TextDirection.ltr),
+                              ClubCrest(url: m.opponent.crestUrl, name: m.opponent.code, size: 48),
+                              Text(m.opponent.name, textDirection: TextDirection.ltr),
                             ],
                           ),
                         ),
@@ -135,12 +142,12 @@ class MatchdayScreen extends ConsumerWidget {
                           style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700),
                         ),
                       ),
-                    if (m['referee'] is Map<dynamic, dynamic>)
-                      Text('${l.referee}: ${(m['referee'] as Map<dynamic, dynamic>)['name'] ?? ''}', style: TextStyle(color: p.textMuted)),
+                    // [Sprint 59 F1] The server sends the referee's strictness (a word), not a map: the app never showed it.
+                    if (m.referee case final r?) Text('${l.referee}: ${refereeName(l, r)}', style: TextStyle(color: p.textMuted)),
                   ],
                 ),
               ),
-              if (move != null && at != null && (pending != null || (move['hours'] as List<dynamic>? ?? const []).isNotEmpty)) ...[
+              if (move != null && at != null && (pending != null || move.hours.isNotEmpty)) ...[
                 SectionTitle(l.moveMatch),
                 GlmCard(
                   child: Column(
@@ -148,16 +155,16 @@ class MatchdayScreen extends ConsumerWidget {
                     children: [
                       if (pending != null) ...[
                         Text(
-                          pending['mine'] == true
-                              ? l.movePendingMine(when(context, DateTime.parse('${pending['to_at']}').toLocal()))
-                              : l.movePendingTheirs(when(context, DateTime.parse('${pending['to_at']}').toLocal())),
+                          pending.mine
+                              ? l.movePendingMine(when(context, DateTime.parse(pending.toAt).toLocal()))
+                              : l.movePendingTheirs(when(context, DateTime.parse(pending.toAt).toLocal())),
                         ),
                         const SizedBox(height: 8),
-                        if (pending['mine'] == true)
+                        if (pending.mine)
                           GlmButton(
                             label: l.cancelRequest,
                             variant: GlmButtonVariant.outline,
-                            onPressed: () => act(() => api.delete('/leagues/$leagueId/team/moves/${pending['id']}')),
+                            onPressed: () => act(() => api.delete('/leagues/$leagueId/team/moves/${pending.id}')),
                           )
                         else
                           Row(
@@ -165,7 +172,7 @@ class MatchdayScreen extends ConsumerWidget {
                               Expanded(
                                 child: GlmButton(
                                   label: l.accept,
-                                  onPressed: () => act(() => api.post('/leagues/$leagueId/team/moves/${pending['id']}/accept')),
+                                  onPressed: () => act(() => api.post('/leagues/$leagueId/team/moves/${pending.id}/accept')),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -173,19 +180,19 @@ class MatchdayScreen extends ConsumerWidget {
                                 child: GlmButton(
                                   label: l.reject,
                                   variant: GlmButtonVariant.outline,
-                                  onPressed: () => act(() => api.post('/leagues/$leagueId/team/moves/${pending['id']}/decline')),
+                                  onPressed: () => act(() => api.post('/leagues/$leagueId/team/moves/${pending.id}/decline')),
                                 ),
                               ),
                             ],
                           ),
                       ] else ...[
-                        Text(l.moveLead(move['moves_left'] as int? ?? 0), style: TextStyle(color: p.textMuted)),
+                        Text(l.moveLead(move.movesLeft), style: TextStyle(color: p.textMuted)),
                         const SizedBox(height: 8),
                         Wrap(
                           spacing: 6,
                           runSpacing: 6,
                           children: [
-                            for (final h in (move['hours'] as List<dynamic>).cast<int>())
+                            for (final h in move.hours)
                               ActionChip(
                                 label: Text(
                                   '${h < 0 ? l.hoursEarlier(-h) : l.hoursLater(h)} · ${when(context, at.toLocal().add(Duration(hours: h)))}',

@@ -84,7 +84,10 @@ class MatchPrepTest extends TestCase
         $this->at(30);
         $this->assertContains(DB::table('fixtures')->where('id', $this->fixture->id)->value('referee_strictness'), Tactics::REFEREES);
         $this->actingAs($this->owner)->getJson($this->url('/next-match'))->assertOk()->assertJsonPath('match.fixture_id', $this->fixture->id)
-            ->assertJsonPath('match.status', 'scheduled')->assertJsonPath('match.opponent.sheet', null);
+            ->assertJsonPath('match.status', 'scheduled')->assertJsonPath('match.opponent.sheet', null)
+            // [Sprint 59 F1] The fields the app reads through NextMatch (openapi.yaml).
+            ->assertJsonStructure(['match' => ['fixture_id', 'competition', 'round', 'venue', 'scheduled_at', 'status', 'referee_at', 'lock_at', 'referee', 'morale',
+                'club' => ['id', 'name', 'code', 'strength_cp', 'crest_url', 'coach', 'form', 'formation'], 'opponent' => ['id', 'name', 'code', 'strength_cp', 'crest_url']]]);
     }
 
     public function test_the_lock_replaces_the_injured_and_freezes_the_sheet(): void
