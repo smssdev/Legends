@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/core/live/live_channels.dart';
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/match/frames.dart';
+import 'package:glm/features/match/live_controller.dart';
 import 'package:glm/features/match/live_screen.dart';
 import 'package:glm/features/match/match_data.dart';
 import 'package:glm/features/match/report_screen.dart';
@@ -313,5 +314,32 @@ void main() {
     expect(find.text('لماذا هذه النتيجة'), findsOneWidget);
     expect(find.textContaining('Bukayo Saka (Martin Ødegaard)'), findsOneWidget);
     expect(find.textContaining('Mohamed Salah'), findsWidgets);
+  });
+
+  test('[Sprint 61 F4] the live match as one value: its minutes told, its parts read apart, the channel left with it', () async {
+    final repo = FakeMatchRepository();
+    final feed = FakeFeed();
+    final c = ProviderContainer(overrides: [matchRepositoryProvider.overrideWithValue(repo), liveFeedProvider.overrideWithValue(feed)]);
+    addTearDown(c.dispose);
+    final view = await c.read(matchProvider(77).future);
+    final sub = c.listen(liveMatchProvider(77), (_, _) {});
+    final scores = <(int, int)>[];
+    c.listen(liveMatchProvider(77).select((s) => s.score), (_, s) => scores.add(s));
+    for (var i = 0; i < 5; i++) {
+      await Future<void>.delayed(Duration.zero);
+    }
+    final s = sub.read();
+    expect(s.started, isTrue);
+    expect(s.tick, greaterThan(0));
+    expect(s.score, (1, 1), reason: 'the minutes already played when the screen opened are told at once');
+    expect(s.feed, isNotEmpty);
+    expect(s.pause, isNotNull);
+    expect(s.clock, isNotNull);
+    expect(scores, [(1, 1)], reason: 'the score\'s watchers hear of it once');
+    expect(view.id, 77);
+    expect(feed.channels, ['match.77']);
+    sub.close();
+    c.dispose();
+    expect(feed.sub.left, isTrue);
   });
 }

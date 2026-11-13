@@ -9,7 +9,6 @@ extension _LiveBroadcast on _LiveState {
 
   Widget _broadcast(L l, Widget pitch, Widget bug) {
     final coach = _you != null && !_finished;
-    final last = _feed.where((e) => e.text != null && e.text!.isNotEmpty).firstOrNull;
     final urgent = <Widget>[
       if (_timeoutUntil != null && _timeoutUntil! > DateTime.now().millisecondsSinceEpoch + _offset && !_finished) _timeoutBar(l),
       if (_pause != null && _you != null && !_finished && !_sim) _breakBar(l),
@@ -61,15 +60,34 @@ extension _LiveBroadcast on _LiveState {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [...urgent, if (urgent.isEmpty && last != null && _drawer == null) _lastLine(last)],
+                    children: [
+                      ...urgent,
+                      if (urgent.isEmpty && _drawer == null)
+                        _watch((s) => s.feed, () {
+                          final last = _feed.where((e) => e.text != null && e.text!.isNotEmpty).firstOrNull;
+                          return last == null ? const SizedBox.shrink() : _lastLine(last);
+                        }),
+                    ],
                   ),
                 ),
               ),
             ),
             if (_drawer == 'chat')
-              PositionedDirectional(start: 0, top: 0, bottom: 0, width: _chatWidth, child: _panel(l.matchChat, _chatDrawer(l))),
+              PositionedDirectional(
+                start: 0,
+                top: 0,
+                bottom: 0,
+                width: _chatWidth,
+                child: _panel(l.matchChat, _watch((s) => (s.chat, s.reactions, s.wave, s.feed), () => _chatDrawer(l))),
+              ),
             if (_drawer == 'orders' && coach)
-              PositionedDirectional(end: 0, top: 0, bottom: 0, width: _ordersWidth, child: _panel(l.liveOrders, _ordersDrawer(l))),
+              PositionedDirectional(
+                end: 0,
+                top: 0,
+                bottom: 0,
+                width: _ordersWidth,
+                child: _panel(l.liveOrders, _watch((s) => (s.teams, s.readings), () => _ordersDrawer(l))),
+              ),
           ],
         ),
       ),

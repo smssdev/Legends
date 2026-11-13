@@ -2,124 +2,59 @@ part of 'live_screen.dart';
 
 class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   late final MatchRepository _repo = ref.read(matchSourceProvider(widget.view.id));
-  late (int, int) _score = widget.view.score;
-  late Map<String, MatchTeam> _teams = widget.view.teams;
-  late bool _finished = widget.view.finished;
-  final List<LiveTick> _recent = [];
-  final List<MatchEvent> _feed = [];
-  List<String> _readings = const [];
-  List<({int id, String who, String body, String? side})> _chat = const [];
-  List<({int id, String who, String key, String? target})> _reactions = const [];
-  MatchPause? _pause;
-  int _tick = 0, _offset = 0, _minute = 0, _added = 0;
-  bool _started = false, _busy = false;
+  bool _busy = false;
+
+  /// [Sprint 61 F4] The match as it goes lives in LiveMatch (live_controller.dart): each part of the screen watches its
+  /// own of it (`select`), and the screen only what changes its shape. These read it as it is now.
+  LiveMatchState get _s => ref.read(liveMatchProvider(_id));
+  LiveMatch get _live => ref.read(liveMatchProvider(_id).notifier);
+  Map<String, MatchTeam> get _teams => _s.teams;
+  bool get _finished => _s.finished;
+  bool get _started => _s.started;
+  List<MatchEvent> get _feed => _s.feed;
+  List<String> get _readings => _s.readings;
+  List<({int id, String who, String body, String? side})> get _chat => _s.chat;
+  List<({int id, String who, String key, String? target})> get _reactions => _s.reactions;
+  MatchPause? get _pause => _s.pause;
+  int get _offset => _s.offset;
+  List<int> get _wave => _s.wave;
+  int? get _homePct => _s.homePct;
 
   /// [Sprint 60 F6] The drawer open over the picture on a landscape screen: 'orders', 'chat' or none.
   String? _drawer;
 
   void _openDrawer(String? d) => setState(() => _drawer = d);
 
-  /// [Sprint 50 M14, M15] The momentum wave (each minute's danger, the home side's share), and the timeout held.
-  final List<int> _wave = [];
-  int? _homePct;
+  /// [Sprint 50 M14] The timeout held.
   int? _timeoutUntil;
   late bool _timeoutUsed = widget.view.you != null && widget.view.timeoutsUsed.contains(widget.view.you);
-
-  /// [Sprint 44 C1] The broadcast: the minutes waiting for their scene, and the minutes not yet told (in order), whose
-  /// score and events show when their scene reaches its key moment, so the result never comes before the ball.
-  final List<BroadcastPlay> _plays = [];
-  final List<(LiveTick, bool)> _untold = [];
-  bool _synced = false;
-  Timer? _timer;
 
   /// [Sprint 51 F2] The timeout bar's end, cancelled with the screen.
   Timer? _timeoutEnd;
 
-  /// [Sprint 53 F2] The match's channel: the minutes, the chat and the reactions pushed. While it is subscribed the poll
-  /// only checks now and then (every [_pushedPollMs], or [_breakPollMs] in a break, for who is ready); without it the
-  /// poll runs as before.
-  LiveSubscription? _channel;
-  static const _pushedPollMs = 12000, _breakPollMs = 2000;
-
   int get _id => widget.view.id;
+  String? get _you => widget.view.you;
 
   /// [Sprint 61 F10] A simulator match (SimMatches): no league channel, timeout, side chat, break or report.
   bool get _sim => _id < 0;
-  String? get _you => widget.view.you;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     unawaited(WakelockPlus.enable().catchError((_) {}));
-    _poll();
-    if (!widget.view.finished && !_sim) {
-      _channel = ref.read(liveFeedProvider).join('match.$_id', {'minute': _pushed, 'chat': _pushedChat, 'reaction': _pushedReaction});
-      _channel!.subscribed.addListener(_channelChanged);
-    }
   }
 
-  /// The channel came (ask once for what it may have missed) or went (back to the poll's own pace at once).
-  void _channelChanged() {
-    if (!mounted || _finished) return;
-    _timer?.cancel();
-    _poll();
-  }
-
-  /// [Sprint 53 F2] A minute pushed whole (App\Events\MatchMinute's `live`): told as if the poll had brought it.
-  void _pushed(Map<String, dynamic> e) {
-    // [Sprint 59 F1] The event's minute through its generated model (`LiveMinute`); one that does not read is left to the poll.
-    final r = JsonReader(e, 'MatchMinute');
-    final live = r.objectOrNull('live', api.LiveMinute.fromJson);
-    if (!mounted || _finished || live == null) return;
-    final t = LiveTick.of(live);
-    if (t.tick <= _tick) return;
-    // A minute missing in between (a message lost): the poll brings everything after the last one told.
-    if (t.tick > _tick + 1) {
-      _timer?.cancel();
-      _poll();
-      return;
-    }
-    setState(
-      () => _apply(
-        LiveSync(
-          finished: t.finished,
-          tick: t.tick,
-          serverNow: DateTime.now().millisecondsSinceEpoch + _offset,
-          nextAt: r.intOrNull('next_at'),
-          ticks: [t],
-          pause: _pause,
-          chat: _chat,
-          reactions: _reactions,
-        ),
-      ),
-    );
-    // A break opens or the match ends: the details (who is ready, the window) from the poll, now.
-    if (t.window || t.finished || t.period != null && t.events.any((x) => x.type == 'period')) {
-      _timer?.cancel();
-      _poll();
-    }
-  }
-
-  void _pushedChat(Map<String, dynamic> e) {
-    final c = JsonReader(e, 'MatchSocialPosted').objectOrNull('item', api.BroadcastChat.fromJson);
-    if (!mounted || c == null || _chat.any((x) => x.id == c.id)) return;
-    setState(() => _chat = [..._chat, LiveSync.chatOf(c)].take(50).toList());
-  }
-
-  void _pushedReaction(Map<String, dynamic> e) {
-    final r = JsonReader(e, 'MatchSocialPosted').objectOrNull('item', api.BroadcastReaction.fromJson);
-    if (!mounted || r == null || _reactions.any((x) => x.id == r.id)) return;
-    setState(() => _reactions = [..._reactions, LiveSync.reactionOf(r)]);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _live.ar = Localizations.localeOf(context).languageCode == 'ar';
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _timer?.cancel();
     _timeoutEnd?.cancel();
-    _channel?.subscribed.removeListener(_channelChanged);
-    _channel?.leave();
     unawaited(WakelockPlus.disable().catchError((_) {}));
     super.dispose();
   }
@@ -127,107 +62,10 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Back from the background: straight to now (the server sends what was missed).
-    if (state == AppLifecycleState.resumed && !_finished) {
-      _timer?.cancel();
-      _poll();
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_live.now());
     } else if (state == AppLifecycleState.paused) {
-      _timer?.cancel();
-    }
-  }
-
-  Future<void> _poll() async {
-    var wait = 1500;
-    try {
-      final s = await _repo.live(_id, _tick);
-      if (!mounted) return;
-      setState(() => _apply(s));
-      wait = s.pollMs ?? wait;
-      // [Sprint 53 F2] On the channel the minutes come by themselves.
-      if (_channel?.subscribed.value == true && _started) {
-        wait = wait > (_pause != null ? _breakPollMs : _pushedPollMs) ? wait : (_pause != null ? _breakPollMs : _pushedPollMs);
-      }
-    } on ApiError {
-      wait = 4000;
-    } catch (_) {
-      // [2026-11-09] Any other failure (a field the app did not expect) must not stop the match: try again shortly.
-      wait = 4000;
-    }
-    if (mounted && !_finished) _timer = Timer(Duration(milliseconds: wait), _poll);
-  }
-
-  void _apply(LiveSync s) {
-    _offset = s.serverNow - DateTime.now().millisecondsSinceEpoch;
-    _pause = s.pause;
-    if (s.readings.isNotEmpty) _readings = s.readings;
-    _chat = s.chat;
-    _reactions = s.reactions;
-    // A gap (a locked phone, a lost connection): the events of the minutes missed, then the minutes themselves.
-    _feed.insertAll(0, s.missed.reversed);
-    for (final t in s.ticks) {
-      if (t.tick <= _tick) continue;
-      _tick = t.tick;
-      _started = true;
-      _minute = t.minute;
-      _added = t.added;
-      if (t.teams != null) _teams = t.teams!;
-      _wave.add(t.momentumNow);
-      if (_wave.length > 30) _wave.removeAt(0);
-      if (t.momentumPct != null) _homePct = t.momentumPct;
-      _recent.add(t);
-      // A minute with a scene waits for it (not the minutes already played when the page opened); the rest is told
-      // in its turn.
-      final story = _synced ? _story(t) : null;
-      if (story?.scene != null) {
-        _plays.add(
-          BroadcastPlay.of(
-            t.tick,
-            story!,
-            total: (t.moment?.ms ?? widget.view.tickMs) / 1000,
-            moods: t.moods,
-            tier: Tier.high,
-            seed: widget.view.seed ?? 1,
-          ),
-        );
-        _untold.add((t, false));
-      } else {
-        _untold.add((t, true));
-      }
-      if (t.finished) _finished = true;
-    }
-    _synced = true;
-    _tell();
-    if (_recent.length > 3) _recent.removeRange(0, _recent.length - 3);
-    if (s.finished) _finished = true;
-    if (_feed.length > 200) _feed.removeRange(200, _feed.length);
-  }
-
-  /// The minute's story for the broadcast (feed/story.dart): the names, numbers and clubs as this match has them.
-  FeedStory _story(LiveTick t) {
-    final v = widget.view;
-    return feedStory(
-      t,
-      cast: {
-        for (final side in ['home', 'away'])
-          for (final p in (t.teams ?? _teams)[side]!.players) '${p.id}': (name: p.name, no: p.no, side: side),
-      },
-      clubs: {'home': v.home.name, 'away': v.away.name},
-      ar: Localizations.localeOf(context).languageCode == 'ar',
-    );
-  }
-
-  /// A minute's key moment has come: it, and every minute after it already told, show their score and events.
-  void _keyed(int tick) {
-    final i = _untold.indexWhere((u) => u.$1.tick == tick);
-    if (i >= 0) _untold[i] = (_untold[i].$1, true);
-    _tell();
-    if (mounted) setState(() {});
-  }
-
-  void _tell() {
-    while (_untold.isNotEmpty && _untold.first.$2) {
-      final t = _untold.removeAt(0).$1;
-      _score = t.score;
-      _feed.insertAll(0, t.events.reversed);
+      _live.hold();
     }
   }
 
@@ -263,11 +101,10 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     final v = widget.view;
     // LiveOrders lives while the screen is open.
     ref.watch(liveOrdersProvider(_id));
+    // [Sprint 61 F4] The screen itself rebuilds only when its shape changes (the start, a break, the end); the score,
+    // the pitch, the feed and the wave each watch their own below.
+    ref.watch(liveMatchProvider(_id).select((s) => (s.started, s.finished, s.pause)));
     final kits = matchKits(v);
-    final numbers = {
-      for (final side in ['home', 'away'])
-        for (final p in _teams[side]!.players) '${p.id}': (side, p.no),
-    };
     final size = MediaQuery.sizeOf(context);
     final landscape = size.width > size.height;
     return Scaffold(
@@ -277,51 +114,50 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
         wide: true,
         child: LayoutBuilder(
           builder: (context, box) {
-            final bug = _ScoreBug(
-              view: v,
-              score: _score,
-              minute: _started ? (_added > 0 ? "$_minute+$_added'" : "$_minute'") : null,
-              finished: _finished,
+            Widget bug({bool compact = false}) => Consumer(
+              builder: (context, ref, _) {
+                final s = ref.watch(liveMatchProvider(_id).select((s) => (s.score, s.clock, s.finished)));
+                return _ScoreBug(view: v, score: s.$1, minute: s.$2, finished: s.$3, compact: compact);
+              },
             );
-            final light = LivePitch(ticks: List.of(_recent), tickMs: v.tickMs, serverOffset: _offset, kits: kits, numbers: numbers);
             // [Sprint 44] The broadcast over the pitch: each moment's cartoon scene, the director's cutaways, the studio
-            // before kick-off.
+            // before kick-off. It rebuilds with the minutes (the light pitch) and the scenes queued.
             final pitch = AspectRatio(
               aspectRatio: 105 / 68,
-              child: BroadcastStage(
-                look: _clipLook(context, kits),
-                queue: _plays,
-                onKey: _keyed,
-                studio: _started || _finished ? null : (score: '${_score.$1} - ${_score.$2}', clock: L.of(context).notStarted),
-                child: light,
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final s = ref.watch(liveMatchProvider(_id).select((s) => (s.recent, s.playsVersion, s.offset, s.teams)));
+                  final st = ref.read(liveMatchProvider(_id));
+                  final numbers = {
+                    for (final side in ['home', 'away'])
+                      for (final p in s.$4[side]!.players) '${p.id}': (side, p.no),
+                  };
+                  return BroadcastStage(
+                    look: _clipLook(context, kits),
+                    queue: _live.plays,
+                    onKey: _live.keyed,
+                    studio: st.started || st.finished ? null : (score: '${st.score.$1} - ${st.score.$2}', clock: L.of(context).notStarted),
+                    child: LivePitch(ticks: List.of(s.$1), tickMs: v.tickMs, serverOffset: s.$3, kits: kits, numbers: numbers),
+                  );
+                },
               ),
             );
             final controls = <Widget>[
               if (_timeoutUntil != null && _timeoutUntil! > DateTime.now().millisecondsSinceEpoch + _offset && !_finished) _timeoutBar(l),
               if (_pause != null && _you != null && !_finished && !_sim) _breakBar(l),
-              if (_you != null && !_finished) _coachBar(l),
+              if (_you != null && !_finished) _watch((s) => s.teams, () => _coachBar(l)),
               if (_finished) Padding(padding: const EdgeInsets.fromLTRB(12, 10, 12, 0), child: _endButton(l)),
-              if (!_finished && _started) _socialBar(l),
+              if (!_finished && _started) _watch((s) => (s.chat, s.reactions), () => _socialBar(l)),
             ];
             if (box.maxWidth > box.maxHeight) {
-              return _broadcast(
-                l,
-                pitch,
-                _ScoreBug(
-                  view: v,
-                  score: _score,
-                  minute: _started ? (_added > 0 ? "$_minute+$_added'" : "$_minute'") : null,
-                  finished: _finished,
-                  compact: true,
-                ),
-              );
+              return _broadcast(l, pitch, bug(compact: true));
             }
             return Column(
               children: [
-                bug,
+                bug(),
                 Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: pitch),
                 ...controls,
-                Expanded(child: _feedList(l)),
+                Expanded(child: _watch((s) => (s.feed, s.readings), () => _feedList(l))),
               ],
             );
           },
@@ -345,6 +181,14 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     'cheer': '📣',
     'boo': '👎',
   };
+
+  /// [Sprint 61 F4] A part of the screen rebuilt only when its [slice] of the match changes.
+  Widget _watch(Object? Function(LiveMatchState s) slice, Widget Function() build) => Consumer(
+    builder: (context, ref, _) {
+      ref.watch(liveMatchProvider(_id).select(slice));
+      return build();
+    },
+  );
 
   /// At the end: the report of a league match; a sim match goes back to the simulator.
   Widget _endButton(L l) => GlmButton(
