@@ -107,8 +107,7 @@ class _PlayerCard extends StatelessWidget {
                   Flexible(
                     child: Text(
                       name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                       textDirection: TextDirection.ltr,
                       style: glmText(GlmType.body, fontWeight: FontWeight.w800),
                     ),

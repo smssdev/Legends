@@ -196,9 +196,8 @@ class _InfoBand extends StatelessWidget {
             Flexible(
               child: Text(
                 label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w700),
+                maxLines: 2,
+                style: glmText(GlmType.body, color: Colors.white, fontWeight: FontWeight.w700, height: 1.15),
               ),
             ),
             const SizedBox(width: 8),

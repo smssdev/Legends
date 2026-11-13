@@ -67,8 +67,7 @@ class PlayerRow extends StatelessWidget {
                                           : p.role == 'bench'
                                           ? l.bench
                                           : l.reserve}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
                                 style: glmText(
                                   GlmType.caption,
                                   color: p.available ? (starter ? context.glm.successText : c.textMuted) : context.glm.liveText,

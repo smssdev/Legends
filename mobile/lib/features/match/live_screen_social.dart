@@ -121,6 +121,7 @@ extension _LiveSocial on _LiveState {
                           ),
                         ),
                         IconButton(
+                          tooltip: l.send,
                           icon: Icon(Icons.send_rounded, color: ctx.palette.gold),
                           onPressed: () async {
                             final body = text.text.trim();
