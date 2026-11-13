@@ -86,7 +86,7 @@ class FakeChat extends Fake implements SocialRepository {
   int failures = 0;
 
   @override
-  Future<List<api.ChatMessage>> messages(int group) async => [
+  Future<List<api.ChatMessage>> messages(int group, {int? before}) async => [
     for (final (i, b) in said.indexed) api.ChatMessage(id: i + 1, body: b, kind: 'text', deleted: false, createdAt: '2026-11-06T08:00:00Z'),
   ];
 
@@ -219,6 +219,19 @@ void main() {
       expect(sub.read().messages.single.body, 'مرحبا');
       expect(sub.read().sending, isFalse);
       expect(sub.read().error, isNull);
+    });
+
+    test('[Sprint 61 F3] the older page above the latest, and none left ends the asking', () async {
+      final repo = FakeChat()..said.addAll(['أ', 'ب']);
+      final c = await container([socialRepositoryProvider.overrideWithValue(repo)]);
+      final sub = c.listen(chatControllerProvider(3), (_, _) {});
+      final chat = c.read(chatControllerProvider(3).notifier);
+      await chat.load();
+      expect(sub.read().messages.map((m) => m.body), ['أ', 'ب']);
+      // The fake has nothing older than its first: the asking ends.
+      await chat.loadOlder();
+      expect(sub.read().messages, hasLength(2));
+      expect(sub.read().more, isFalse);
     });
   });
 }

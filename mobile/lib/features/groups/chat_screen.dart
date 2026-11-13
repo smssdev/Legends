@@ -203,13 +203,16 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
     return Column(
       children: [
         Expanded(
-          child: ListView(
+          // [Sprint 61 F3] Only the messages in view are built; near the oldest, the page before it is asked for.
+          child: ListView.builder(
             reverse: true,
             padding: const EdgeInsets.all(12),
-            children: [
-              for (final m in _messages.reversed)
-                if (m.kind == 'note') const SizedBox.shrink() else _bubble(context, l, p, m, mine: m.user?.id == me),
-            ],
+            itemCount: _messages.length,
+            itemBuilder: (context, i) {
+              if (i >= _messages.length - 5) unawaited(ref.read(chatControllerProvider(widget.groupId).notifier).loadOlder());
+              final m = _messages[_messages.length - 1 - i];
+              return m.kind == 'note' ? const SizedBox.shrink() : _bubble(context, l, p, m, mine: m.user?.id == me);
+            },
           ),
         ),
         if (_replyTo != null)

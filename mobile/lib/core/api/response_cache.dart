@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../hash.dart';
+
 /// [Sprint 61 F7] The last answer of a screen's GET, kept on the phone (a small JSON file a path), so the screen shows
 /// it at once and asks the server behind it. Shown only: every action still asks the server. Forgotten with the
 /// account (sign-out) and kept apart by language.
@@ -20,14 +22,7 @@ class ResponseCache {
 
   static String keyOf(String path, Map<String, dynamic>? query, String language) {
     final q = query == null || query.isEmpty ? '' : '?${(query.keys.toList()..sort()).map((k) => '$k=${query[k]}').join('&')}';
-    // FNV-1a over the bytes, 64 bits (the phone's ints wrap): a short, steady file name.
-    var h = 0xcbf29ce484222325;
-    for (final b in utf8.encode('$language $path$q')) {
-      h = (h ^ b) * 0x100000001b3;
-    }
-    // Dart's ints are signed: the two halves written apart.
-    String half(int v) => v.toRadixString(16).padLeft(8, '0');
-    return half((h >>> 32) & 0xffffffff) + half(h & 0xffffffff);
+    return fnv64('$language $path$q');
   }
 
   Future<File> _file(String key) async {

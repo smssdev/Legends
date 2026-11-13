@@ -41,19 +41,22 @@ class FixturesTab extends ConsumerWidget {
             groups.putIfAbsent(f.competition == 'cup' ? '${l.cup} · ${f.stage ?? ''}' : l.round(f.round ?? 0), () => []).add(f);
           }
           final firstOpen = groups.keys.toList().indexWhere((k) => groups[k]!.any((f) => !f.finished));
-          return ListView(
+          final keys = groups.keys.toList();
+          // [Sprint 61 F3] Only the rounds in view are built.
+          return ListView.builder(
             padding: const EdgeInsets.all(12),
-            children: [
-              for (final (i, k) in groups.keys.indexed)
-                ExpansionTile(
-                  initiallyExpanded: i == firstOpen || (firstOpen == -1 && i == groups.length - 1),
-                  title: Text(k, style: context.text.titleMedium),
-                  subtitle: groups[k]!.first.at == null
-                      ? null
-                      : Text(when(context, groups[k]!.first.at!), style: glmText(GlmType.caption, color: context.palette.textMuted)),
-                  children: [for (final f in groups[k]!) FixtureTile(f, mine: lg.myClubId)],
-                ),
-            ],
+            itemCount: keys.length,
+            itemBuilder: (context, i) {
+              final k = keys[i];
+              return ExpansionTile(
+                initiallyExpanded: i == firstOpen || (firstOpen == -1 && i == groups.length - 1),
+                title: Text(k, style: context.text.titleMedium),
+                subtitle: groups[k]!.first.at == null
+                    ? null
+                    : Text(when(context, groups[k]!.first.at!), style: glmText(GlmType.caption, color: context.palette.textMuted)),
+                children: [for (final f in groups[k]!) FixtureTile(f, mine: lg.myClubId)],
+              );
+            },
           );
         },
       ),

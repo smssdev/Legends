@@ -92,38 +92,41 @@ class _ShineState extends State<Shine> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     if (!widget.enabled || !_c.isAnimating) return widget.child;
-    return Stack(
-      children: [
-        widget.child,
-        Positioned.fill(
-          child: IgnorePointer(
-            child: _clip(
-              AnimatedBuilder(
-                animation: _c,
-                builder: (_, _) {
-                  // The light crosses in the first third of the period, then rests.
-                  final t = (_c.value * 3).clamp(0.0, 1.0);
-                  if (t <= 0 || t >= 1) return const SizedBox();
-                  final x = -1.6 + t * 3.2;
-                  return DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment(x - .5, -1),
-                        end: Alignment(x + .5, 1),
-                        colors: [
-                          Colors.white.withValues(alpha: 0),
-                          Colors.white.withValues(alpha: widget.strength),
-                          Colors.white.withValues(alpha: 0),
-                        ],
+    // [Sprint 61 F5] The passing light repaints only itself.
+    return RepaintBoundary(
+      child: Stack(
+        children: [
+          widget.child,
+          Positioned.fill(
+            child: IgnorePointer(
+              child: _clip(
+                AnimatedBuilder(
+                  animation: _c,
+                  builder: (_, _) {
+                    // The light crosses in the first third of the period, then rests.
+                    final t = (_c.value * 3).clamp(0.0, 1.0);
+                    if (t <= 0 || t >= 1) return const SizedBox();
+                    final x = -1.6 + t * 3.2;
+                    return DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment(x - .5, -1),
+                          end: Alignment(x + .5, 1),
+                          colors: [
+                            Colors.white.withValues(alpha: 0),
+                            Colors.white.withValues(alpha: widget.strength),
+                            Colors.white.withValues(alpha: 0),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

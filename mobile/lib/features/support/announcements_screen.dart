@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/disk_images.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
@@ -37,7 +38,7 @@ class AnnouncementsScreen extends ConsumerWidget {
                             if (a.imageUrl != null)
                               ClipRRect(
                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                                child: Image.network(a.imageUrl!, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox()),
+                                child: Image(image: DiskImage(a.imageUrl!), fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox()),
                               ),
                             Padding(
                               padding: const EdgeInsets.all(14),

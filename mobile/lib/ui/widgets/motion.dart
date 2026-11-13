@@ -84,9 +84,12 @@ class _PulseState extends State<Pulse> with SingleTickerProviderStateMixin {
       _c.stop();
       return widget.child;
     }
-    return FadeTransition(
-      opacity: Tween(begin: widget.min, end: 1.0).animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut)),
-      child: widget.child,
+    // [Sprint 61 F5] The pulse repaints only itself.
+    return RepaintBoundary(
+      child: FadeTransition(
+        opacity: Tween(begin: widget.min, end: 1.0).animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut)),
+        child: widget.child,
+      ),
     );
   }
 }
@@ -189,17 +192,19 @@ class _RollingBallState extends State<RollingBall> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final ball = CustomPaint(size: Size.square(widget.size), painter: BallPainter());
     if (!_c.isAnimating) return ball;
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (_, child) {
-        final t = Curves.easeInOut.transform(_c.value) * 2 - 1;
-        final dx = t * widget.travel;
-        return Transform.translate(
-          offset: Offset(dx, 0),
-          child: Transform.rotate(angle: dx / (widget.size / 2), child: child),
-        );
-      },
-      child: ball,
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (_, child) {
+          final t = Curves.easeInOut.transform(_c.value) * 2 - 1;
+          final dx = t * widget.travel;
+          return Transform.translate(
+            offset: Offset(dx, 0),
+            child: Transform.rotate(angle: dx / (widget.size / 2), child: child),
+          );
+        },
+        child: ball,
+      ),
     );
   }
 }

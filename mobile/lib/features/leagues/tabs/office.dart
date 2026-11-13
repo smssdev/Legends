@@ -259,8 +259,11 @@ class _OfficeClockState extends State<OfficeClock> {
     super.dispose();
   }
 
+  // [Sprint 61 F5] The second's tick repaints only the clock.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => RepaintBoundary(child: _text(context));
+
+  Widget _text(BuildContext context) {
     final at = widget.at;
     if (at == null) return const SizedBox.shrink();
     final left = at.difference(DateTime.now());
