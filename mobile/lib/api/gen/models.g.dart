@@ -540,6 +540,56 @@ class AdminChatAnswer {
   final int retentionDays;
 }
 
+class AdminClientErrorsAnswer {
+  const AdminClientErrorsAnswer({required this.errors});
+
+  factory AdminClientErrorsAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminClientErrorsAnswer');
+    return AdminClientErrorsAnswer(errors: r.list('errors', AdminClientErrorsAnswerErrorsItem.fromJson));
+  }
+
+  final List<AdminClientErrorsAnswerErrorsItem> errors;
+}
+
+class AdminClientErrorsAnswerErrorsItem {
+  const AdminClientErrorsAnswerErrorsItem({
+    required this.count,
+    required this.firstSeenAt,
+    required this.id,
+    required this.lastSeenAt,
+    required this.message,
+    required this.path,
+    required this.platform,
+    required this.stack,
+    required this.version,
+  });
+
+  factory AdminClientErrorsAnswerErrorsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminClientErrorsAnswerErrorsItem');
+    return AdminClientErrorsAnswerErrorsItem(
+      count: r.int_('count'),
+      firstSeenAt: r.string('first_seen_at'),
+      id: r.int_('id'),
+      lastSeenAt: r.string('last_seen_at'),
+      message: r.string('message'),
+      path: r.string('path'),
+      platform: r.string('platform'),
+      stack: r.string('stack'),
+      version: r.string('version'),
+    );
+  }
+
+  final int count;
+  final String firstSeenAt;
+  final int id;
+  final String lastSeenAt;
+  final String message;
+  final String path;
+  final String platform;
+  final String stack;
+  final String version;
+}
+
 class AdminCommentaryAnswer {
   const AdminCommentaryAnswer({required this.keys});
 
@@ -922,6 +972,36 @@ class AdminPollsAnswer {
   final int optionsMax;
   final int optionsMin;
   final List<Poll> polls;
+}
+
+class AdminServerAnswer {
+  const AdminServerAnswer({required this.live, this.queue, this.reverbConnections});
+
+  factory AdminServerAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminServerAnswer');
+    return AdminServerAnswer(
+      live: r.object('live', AdminServerAnswerLive.fromJson),
+      queue: r.intOrNull('queue'),
+      reverbConnections: r.intOrNull('reverb_connections'),
+    );
+  }
+
+  final AdminServerAnswerLive live;
+  final int? queue;
+  final int? reverbConnections;
+}
+
+class AdminServerAnswerLive {
+  const AdminServerAnswerLive({this.p50Ms, this.p95Ms, required this.samples});
+
+  factory AdminServerAnswerLive.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminServerAnswerLive');
+    return AdminServerAnswerLive(p50Ms: r.intOrNull('p50_ms'), p95Ms: r.intOrNull('p95_ms'), samples: r.int_('samples'));
+  }
+
+  final int? p50Ms;
+  final int? p95Ms;
+  final int samples;
 }
 
 class AdminStoreAnswer {
@@ -1661,7 +1741,7 @@ class AuthUsernameAnswer {
 
   final bool available;
 
-  /// Why not
+  /// Why not, in Arabic
   final String? reason;
   final List<String> suggestions;
 }
@@ -1846,7 +1926,7 @@ class BroadcastReaction {
   final int id;
   final String key;
 
-  /// The coach's side
+  /// The coach's side, or null for a league member who watches
   final String? side;
   final String? target;
   final String who;
@@ -2933,7 +3013,7 @@ class CoachLevel {
   /// The points the next level needs
   final int next;
 
-  /// The way to the next level
+  /// The way to the next level, out of 10000
   final int progressBp;
 
   /// Points: 3 a win, 1 a draw, 30 a trophy (config game.career)
@@ -3327,7 +3407,7 @@ class DataClub {
   final String? logo;
   final String name;
 
-  /// The average of the best 18
+  /// The average of the best 18, in hundredths
   final int strengthCp;
 }
 
@@ -3388,7 +3468,7 @@ class DataClubsByClubAnswer {
   /// Club money
   final int squadValue;
 
-  /// The average of the best 18
+  /// The average of the best 18, in hundredths
   final int strengthCp;
 }
 
@@ -3559,7 +3639,7 @@ class DataTemplatesAnswerTemplatesItem {
   final int clubs;
   final String name;
 
-  /// The strongest club
+  /// The strongest club, in hundredths (8480 = 84.8)
   final int topStrengthCp;
 }
 
@@ -3738,7 +3818,7 @@ class DrawChatLine {
     );
   }
 
-  /// When it was said
+  /// When it was said, in milliseconds on the server's clock (a replay shows it then)
   final int at;
   final String body;
   final bool deleted;
@@ -4382,7 +4462,7 @@ class HealthAnswer {
   /// Where the test event of POST /health/ping arrives
   final HealthAnswerBroadcast broadcast;
 
-  /// Seconds the game clock is ahead of real time (clock:travel
+  /// Seconds the game clock is ahead of real time (clock:travel, development only; 0 in production)
   final int clockOffset;
   final int engineVersion;
   final String minAppVersion;
@@ -4415,10 +4495,10 @@ class HealthAnswerAdsense {
   /// Google's rewarded video (H5 Games Ads) is tried before the game's own ad
   final bool rewarded;
 
-  /// The display unit's id
+  /// The display unit's id, null for none
   final String? slot;
 
-  /// Google's test ads
+  /// Google's test ads, until H5 Games Ads approves the site
   final bool test;
 }
 
@@ -5266,7 +5346,7 @@ class Keyframe {
   /// The player on the ball; null while it is in flight (a pass or a shot, Sprint 33 B1)
   final int? h;
 
-  /// Every player on the pitch by id
+  /// Every player on the pitch by id, his x and y
   final Map<String, Object?> p;
 
   /// [Sprint 31 D1] The officials: the referee, the far assistant (outside the far touchline, right half) and the near one (outside the near touchline, left half). They follow the ball only. Older recordings have none
@@ -5507,7 +5587,7 @@ class LeagueClub {
   final int playersCount;
   final int squadValue;
 
-  /// At the league's making
+  /// At the league's making, in hundredths
   final int strengthCp;
 }
 
@@ -6091,7 +6171,7 @@ class LeagueStats {
   final LeagueStatsDiscipline discipline;
   final List<LeagueStatsFinanceItem> finance;
 
-  /// Finished matches this season
+  /// Finished matches this season, every competition
   final int matches;
   final List<StatsPlayer> scorers;
   final SeasonCalendar season;
@@ -6202,7 +6282,7 @@ class LeagueStatsStreaksItem {
   final StatsClub club;
   final LeagueStatsStreaksItemCurrent? current;
 
-  /// The last five
+  /// The last five, oldest first
   final List<String> form;
 }
 
@@ -6421,7 +6501,7 @@ class LeaguesClubsByClubAnswer {
   final int playersCount;
   final int squadValue;
 
-  /// At the league's making
+  /// At the league's making, in hundredths
   final int strengthCp;
 }
 
@@ -6989,7 +7069,7 @@ class LiveEvent {
   final int? period;
   final String? team;
 
-  /// The commentary line
+  /// The commentary line, the same for everyone
   final String? text;
   final String type;
 }
@@ -7059,7 +7139,7 @@ class LiveMinute {
   /// Each coach's mood after it (App\Characters\Mood)
   final Map<String, String>? moods;
 
-  /// 1 or 2
+  /// 1 or 2, then 3 and 4 in extra time and 5 for penalties
   final int? period;
   final LiveMinuteScore score;
   final int? serverTs;
@@ -7173,7 +7253,7 @@ class LiveSync {
   /// Some minutes after `since` are no longer kept; jump to the latest
   final bool? gap;
 
-  /// When the next minute is due (ms)
+  /// When the next minute is due (ms), null before the start or after the end
   final int? nextAt;
 
   /// The last few seconds of reactions
@@ -7392,7 +7472,7 @@ class MarketMineItem {
   /// The instant sale
   final MarketMineItemQuick quick;
 
-  /// His value now
+  /// His value now, training counted
   final int value;
 
   /// About how long the outside buyer takes at his value and at his cap (his age and rating, and a transfer madness, counted) [Sprint 23]
@@ -8945,7 +9025,7 @@ class Newspaper {
     );
   }
 
-  /// The published ones
+  /// The published ones, newest first
   final List<NewspaperArticle> articles;
 
   /// Null before any round is played
@@ -9047,7 +9127,7 @@ class NewspaperEdition {
   final List<NewspaperEditionResultsItem> results;
   final int round;
 
-  /// The rounds played
+  /// The rounds played, for the picker
   final List<int> rounds;
 
   /// The bribes an opponent exposed: club, coach, accuser, points, fine, at
@@ -9738,7 +9818,7 @@ class PressConference {
   final String opensAt;
   final PressConferenceReading reading;
 
-  /// The statement each side made
+  /// The statement each side made, or null
   final PressConferenceSaid said;
   final List<PressConferenceStatementsItem> statements;
 }
@@ -9781,7 +9861,7 @@ class PressConferenceReading {
   final String home;
 }
 
-/// The statement each side made
+/// The statement each side made, or null
 class PressConferenceSaid {
   const PressConferenceSaid({this.away, this.home});
 
@@ -10028,10 +10108,10 @@ class RatingTier {
   /// The points the next division or tier starts at; none for the legend
   final int? next;
 
-  /// The way to the next
+  /// The way to the next, out of 10000
   final int progressBp;
 
-  /// The tier's place
+  /// The tier's place, 1 (prospect) to 7 (legend)
   final int rank;
 }
 
@@ -10201,7 +10281,7 @@ class Room {
   final RoomHost? host;
   final String? id;
 
-  /// Set once the friend joins; the host manages home
+  /// Set once the friend joins; the host manages home, the guest away
   final String? matchId;
 
   /// Only in the answer to POST /sim/rooms (the home seat) and to /join (the away seat): keep it on the device and send it as X-Seat
@@ -10602,10 +10682,10 @@ class Slot {
   final String line;
   final String role;
 
-  /// Depth towards the opponent's goal
+  /// Depth towards the opponent's goal, decimetres (0 to 1050)
   final int x;
 
-  /// Across the pitch
+  /// Across the pitch, decimetres (0 far touchline, 680 near); right-sided roles sit high
   final int y;
 }
 
@@ -10700,7 +10780,7 @@ class SpecialistsViewSpecialistsItemOffersItem {
   final int cost;
   final String currency;
 
-  /// What it gives
+  /// What it gives, in Arabic
   final String effect;
   final SpendQuote? quote;
   final int stars;
@@ -10800,7 +10880,7 @@ class SpyView {
 
   final int cost;
 
-  /// Coins
+  /// Coins, or club money in a fair league (Sprint 34)
   final String currency;
   final SpyViewFixture? fixture;
   final SpyViewReport? report;
@@ -11031,7 +11111,7 @@ class StadiumView {
   final StadiumViewBuilding? building;
   final StadiumViewFacts facts;
 
-  /// The game clock
+  /// The game clock, for the countdown
   final String now;
   final int partMinutes;
   final int partsTotal;
@@ -11132,7 +11212,7 @@ class StadiumViewSectionsItem {
   final int parts;
   final String section;
 
-  /// Stages finished
+  /// Stages finished, 0 to 3
   final int stage;
 }
 
@@ -11272,7 +11352,7 @@ class StoreAnswerItemsItem {
   final String currency;
   final String description;
 
-  /// Whole per cent
+  /// Whole per cent, from the two prices
   final int? discount;
   final String? emailedAt;
   final bool ended;
@@ -11336,7 +11416,7 @@ class StoreItem {
   final String currency;
   final String description;
 
-  /// Whole per cent
+  /// Whole per cent, from the two prices
   final int? discount;
   final String? emailedAt;
   final bool ended;
@@ -11711,7 +11791,7 @@ class TacticsSet {
   /// 0 defensive to 100 attacking
   final int? style;
 
-  /// 0 legal
+  /// 0 legal, 1 normal, 2 eager, 3 hard
   final int? tackling;
   final int? tempo;
   final int? trap;
@@ -12957,7 +13037,7 @@ class TrainingPlayer {
   final String position;
   final int potential;
 
-  /// The bar
+  /// The bar, 0 to 100
   final int progress;
 
   /// About how many sessions a +1 takes at his rating and age [Sprint 23]
@@ -13002,7 +13082,7 @@ class TrainingView {
   final List<TimedEventNow>? events;
   final int intervalMinutes;
 
-  /// The game clock
+  /// The game clock, for the countdowns
   final String now;
   final List<TrainingPlayer> players;
   final SpendQuote? quote;
@@ -13105,7 +13185,7 @@ class TransferList {
 
   final int balance;
 
-  /// Why the market is shut
+  /// Why the market is shut, or null
   final String? closed;
   final List<TimedEventNow> events;
   final String line;
@@ -13180,7 +13260,7 @@ class TransferListPlayer {
   /// [Sprint 23] An event's special player
   final String? special;
 
-  /// A star from a parallel league
+  /// A star from a parallel league, in the pool from mid-season
   final bool star;
   final int value;
 

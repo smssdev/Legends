@@ -414,7 +414,7 @@ paths:
                 required: [available, reason, suggestions]
                 properties:
                   available: { type: boolean }
-                  reason: { type: string, nullable: true, description: Why not, in Arabic }
+                  reason: { type: string, nullable: true, description: 'Why not, in Arabic' }
                   suggestions: { type: array, items: { type: string } }
         '422': { $ref: '#/components/responses/ValidationError' }
   /auth/email/resend:
@@ -486,7 +486,7 @@ paths:
                       properties:
                         name: { type: string }
                         clubs: { type: integer }
-                        top_strength_cp: { type: integer, description: The strongest club, in hundredths (8480 = 84.8) }
+                        top_strength_cp: { type: integer, description: 'The strongest club, in hundredths (8480 = 84.8)' }
                         avg_strength_cp: { type: integer }
   /data/clubs:
     get:
@@ -617,7 +617,7 @@ paths:
                   min_app_version: { type: string, example: 1.0.0 }
                   engine_version: { type: integer }
                   time: { type: string, format: date-time, description: The game time (GameClock) in UTC }
-                  clock_offset: { type: integer, description: Seconds the game clock is ahead of real time (clock:travel, development only; 0 in production) }
+                  clock_offset: { type: integer, description: 'Seconds the game clock is ahead of real time (clock:travel, development only; 0 in production)' }
                   broadcast:
                     type: object
                     description: Where the test event of POST /health/ping arrives
@@ -638,9 +638,9 @@ paths:
                     required: [client, slot, rewarded, test]
                     properties:
                       client: { type: string, example: ca-pub-1234567890123456 }
-                      slot: { type: string, nullable: true, description: The display unit's id, null for none }
+                      slot: { type: string, nullable: true, description: 'The display unit''s id, null for none' }
                       rewarded: { type: boolean, description: 'Google''s rewarded video (H5 Games Ads) is tried before the game''s own ad' }
-                      test: { type: boolean, description: Google's test ads, until H5 Games Ads approves the site }
+                      test: { type: boolean, description: 'Google''s test ads, until H5 Games Ads approves the site' }
                   analytics:
                     type: object
                     nullable: true
@@ -771,7 +771,7 @@ paths:
                 template: { type: string, description: A name from GET /data/templates }
                 team_count: { type: integer, minimum: 2, maximum: 20, description: '[Sprint 40 B2] From two to all the template''s clubs' }
                 rounds_per_day: { type: integer, minimum: 1, maximum: 1, description: 'One round a day [UP17]' }
-                round_times: { type: array, items: { type: string, example: '21:00' }, description: One HH:MM, Cairo time }
+                round_times: { type: array, items: { type: string, example: '21:00' }, description: 'One HH:MM, Cairo time' }
                 rest_days: { type: array, maxItems: 3, items: { type: integer, minimum: 1, maximum: 7 }, description: '[Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo (5 Friday). Free' }
                 prep_days: { type: integer, enum: [0, 2, 4, 6], description: '[Sprint 40 B1] 0: no preparation' }
                 timezone: { type: string, nullable: true, description: 'The creator''s IANA zone: the free league plays at 21:00 there' }
@@ -1455,7 +1455,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, required: [give, take], properties: { give: { type: array, items: { type: integer }, description: His players }, take: { type: array, items: { type: integer }, description: The other team's, as many } } }
+            schema: { type: object, required: [give, take], properties: { give: { type: array, items: { type: integer }, description: His players }, take: { type: array, items: { type: integer }, description: 'The other team''s, as many' } } }
       responses:
         '200': { $ref: '#/components/responses/Alliance' }
         '403': { $ref: '#/components/responses/Error' }
@@ -2770,6 +2770,30 @@ paths:
       responses:
         '200': { description: The access, content: { application/json: { schema: { $ref: '#/components/schemas/AdminAccess' } } } }
         '403': { $ref: '#/components/responses/Error' }
+  /admin/server:
+    get:
+      tags: [admin]
+      summary: '[Sprint 66 B3] The server''s pulse: the live match''s speed over five minutes, the queue, Reverb''s sockets'
+      description: Each part is null when it cannot be read (no Reverb in development, a queue without a size).
+      responses:
+        '200':
+          description: The pulse
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [live, queue, reverb_connections]
+                properties:
+                  live:
+                    type: object
+                    required: [samples, p50_ms, p95_ms]
+                    properties:
+                      samples: { type: integer }
+                      p50_ms: { type: integer, nullable: true }
+                      p95_ms: { type: integer, nullable: true }
+                  queue: { type: integer, nullable: true }
+                  reverb_connections: { type: integer, nullable: true }
+        '403': { $ref: '#/components/responses/Error' }
   /admin/client-errors:
     get:
       tags: [admin]
@@ -3621,7 +3645,7 @@ paths:
                 properties:
                   mailer: { type: string }
                   from: { type: string }
-                  key: { type: string, enum: [none, api, smtp, other], description: The kind of key set, never the key }
+                  key: { type: string, enum: [none, api, smtp, other], description: 'The kind of key set, never the key' }
                   problems: { type: array, items: { type: string } }
                   sent: { type: boolean }
                   error: { type: string, nullable: true }
@@ -4184,7 +4208,7 @@ paths:
                 away_id: { type: integer }
                 seed: { type: integer, minimum: 1 }
                 competition: { type: string, enum: [league, cup, alliance] }
-                referee: { type: integer, enum: [0, 1, 2], description: 0 soft, 1 medium, 2 strict }
+                referee: { type: integer, enum: [0, 1, 2], description: '0 soft, 1 medium, 2 strict' }
                 venue: { type: string, enum: [home, neutral] }
                 mode: { type: string, enum: [solo, live], description: 'solo: the client drives the clock. live: two devices, the server keeps the clock and both coaches are "me".' }
                 control:
@@ -4332,7 +4356,7 @@ paths:
         '201': { description: The reaction, content: { application/json: { schema: { $ref: '#/components/schemas/Reaction' } } } }
         '403': { description: No seat }
         '409': { description: Not a live match }
-        '422': { description: Unknown key, or too soon after this coach's last one (game.match.reaction_gap_ms) }
+        '422': { description: 'Unknown key, or too soon after this coach''s last one (game.match.reaction_gap_ms)' }
   /sim/matches/{match}/report:
     get:
       tags: [simulator]
@@ -4341,7 +4365,7 @@ paths:
         - { $ref: '#/components/parameters/Match' }
         - { name: side, in: query, schema: { type: string, enum: [home, away] } }
       responses:
-        '200': { description: Reasons, verdict, man of the match, ratings, stats, thirds, momentum, timeline }
+        '200': { description: 'Reasons, verdict, man of the match, ratings, stats, thirds, momentum, timeline' }
         '409': { description: The match has not finished }
   /sim/rooms:
     post:
@@ -4406,7 +4430,7 @@ paths:
               properties:
                 name: { type: string, nullable: true }
                 template: { type: string, enum: [world_cup, world_cup_48, club_world_cup, afcon, euro, asian_cup, custom] }
-                teams: { type: array, items: { type: integer }, description: Master club ids, clubs and national teams together }
+                teams: { type: array, items: { type: integer }, description: 'Master club ids, clubs and national teams together' }
                 format: { type: string, enum: [league, groups, knockout] }
                 group_count: { type: integer, nullable: true, enum: [1, 2, 4, 8, 12, null] }
                 advance_per_group: { type: integer, nullable: true, enum: [1, 2, null] }
@@ -4418,7 +4442,7 @@ paths:
                 starts_at: { type: string, format: date-time }
                 draw_at: { type: string, format: date-time, nullable: true }
                 starting_budget: { type: integer }
-                club_id: { type: integer, nullable: true, description: The maker's own team (a master club id of the tournament), or none }
+                club_id: { type: integer, nullable: true, description: 'The maker''s own team (a master club id of the tournament), or none' }
                 entry_mode: { type: string, nullable: true, enum: [pick, draw, assign, null] }
                 owners: { type: object, nullable: true, additionalProperties: { type: string }, description: '[X68] assign - master club id => the coach''s username' }
                 timezone: { type: string, nullable: true }
@@ -5264,7 +5288,7 @@ components:
         deleted: { type: boolean }
         body: { type: string }
         user: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
-        at: { type: integer, description: When it was said, in milliseconds on the server's clock (a replay shows it then) }
+        at: { type: integer, description: 'When it was said, in milliseconds on the server''s clock (a replay shows it then)' }
     Tournament:
       type: object
       required: [id, name, code, template, format, group_count, advance_per_group, legs, team_count, status, owner, starts_at, draw_at, drawn_at, coaches, entry_mode, entrants]
@@ -5483,7 +5507,7 @@ components:
       description: '[UP11, Sprint 59 F1] The transfer list of one line (GET /leagues/{league}/market, source=list): the app reads it through its generated model'
       required: [closed, line, balance, renews_at, events, players]
       properties:
-        closed: { type: string, nullable: true, description: Why the market is shut, or null }
+        closed: { type: string, nullable: true, description: 'Why the market is shut, or null' }
         line: { type: string, enum: [gk, def, mid, att] }
         balance: { type: integer }
         renews_at: { type: string, format: date-time, nullable: true, description: When the world's offers renew }
@@ -5514,7 +5538,7 @@ components:
             club: { type: string, nullable: true }
             coach: { type: string, nullable: true }
             logo: { type: string, nullable: true }
-        star: { type: boolean, description: A star from a parallel league, in the pool from mid-season }
+        star: { type: boolean, description: 'A star from a parallel league, in the pool from mid-season' }
         special: { type: string, nullable: true, enum: [offer, in_form, legend, null], description: '[Sprint 23] An event''s special player' }
         fits: { type: boolean, description: '[Sprint 30 Q6] Stronger than the weakest of my usual starters in the line' }
         attributes: { type: object, additionalProperties: { type: integer, nullable: true }, description: 'The six attributes, or the keeper''s five [X29]' }
@@ -5556,7 +5580,7 @@ components:
               position: { type: string }
               line: { type: string }
               overall: { type: integer }
-              value: { type: integer, description: His value now, training counted }
+              value: { type: integer, description: 'His value now, training counted' }
               cost: { type: integer, description: '[Sprint 23] His cost to the club (what it paid, or his value at the season''s start): the profit of selling him outside is counted from it' }
               floor: { type: integer, description: The least a listing asks }
               cap: { type: integer, description: 'The most a listing asks: 250% of his value, within the season''s profit room [Sprint 23]' }
@@ -5827,7 +5851,7 @@ components:
       description: The engine's own keys (docs/ENGINE.md 5)
       properties:
         plan: { type: string, enum: [counter, long, passing, wings, shots] }
-        tackling: { type: integer, minimum: 0, maximum: 3, description: 0 legal, 1 normal, 2 eager, 3 hard }
+        tackling: { type: integer, minimum: 0, maximum: 3, description: '0 legal, 1 normal, 2 eager, 3 hard' }
         pressing: { type: integer, minimum: 0, maximum: 100 }
         style: { type: integer, minimum: 0, maximum: 100, description: 0 defensive to 100 attacking }
         tempo: { type: integer, minimum: 0, maximum: 100 }
@@ -5851,8 +5875,8 @@ components:
       properties:
         role: { type: string, example: CB }
         line: { type: string, enum: [gk, def, mid, att] }
-        x: { type: integer, description: Depth towards the opponent's goal, decimetres (0 to 1050) }
-        y: { type: integer, description: Across the pitch, decimetres (0 far touchline, 680 near); right-sided roles sit high }
+        x: { type: integer, description: 'Depth towards the opponent''s goal, decimetres (0 to 1050)' }
+        y: { type: integer, description: 'Across the pitch, decimetres (0 far touchline, 680 near); right-sided roles sit high' }
         allowed:
           type: array
           items: { type: string, enum: [gk, def, mid, att] }
@@ -5913,7 +5937,7 @@ components:
                 items:
                   type: object
                   required: [stars, cost, currency, effect]
-                  properties: { stars: { type: integer }, cost: { type: integer }, currency: { type: string, enum: [coins, money] }, effect: { type: string, description: What it gives, in Arabic }, quote: { $ref: '#/components/schemas/SpendQuote' } }
+                  properties: { stars: { type: integer }, cost: { type: integer }, currency: { type: string, enum: [coins, money] }, effect: { type: string, description: 'What it gives, in Arabic' }, quote: { $ref: '#/components/schemas/SpendQuote' } }
               stars: { type: integer, description: 'The contract working now (0 without one)' }
               renewed: { type: boolean, description: A renewal is signed and starts when this contract ends }
               ends_at: { type: string, format: date-time, nullable: true, description: While a contract works }
@@ -5942,7 +5966,7 @@ components:
       required: [cost, currency, fixture, report]
       properties:
         cost: { type: integer }
-        currency: { type: string, enum: [coins, money], description: Coins, or club money in a fair league (Sprint 34) }
+        currency: { type: string, enum: [coins, money], description: 'Coins, or club money in a fair league (Sprint 34)' }
         fixture:
           type: object
           nullable: true
@@ -6309,7 +6333,7 @@ components:
         price: { type: integer }
         old_price: { type: integer, nullable: true, description: The price before the discount }
         currency: { type: string }
-        discount: { type: integer, nullable: true, description: Whole per cent, from the two prices }
+        discount: { type: integer, nullable: true, description: 'Whole per cent, from the two prices' }
         visible: { type: boolean }
         sort: { type: integer }
         ends_at: { type: string, format: date-time, nullable: true, description: An offer's end; null for a package }
@@ -6464,7 +6488,7 @@ components:
       required: [balance, now, part_minutes, parts_total, facts, sections, building]
       properties:
         balance: { type: integer }
-        now: { type: string, format: date-time, description: The game clock, for the countdown }
+        now: { type: string, format: date-time, description: 'The game clock, for the countdown' }
         part_minutes: { type: integer }
         parts_total: { type: integer }
         facts:
@@ -6483,7 +6507,7 @@ components:
             required: [section, stage, parts, done, effects, next]
             properties:
               section: { type: string, enum: [seats, pitch, training] }
-              stage: { type: integer, description: Stages finished, 0 to 3 }
+              stage: { type: integer, description: 'Stages finished, 0 to 3' }
               parts: { type: integer, description: Parts finished of the next stage }
               done: { type: integer, description: Parts finished in all }
               effects: { type: array, items: { type: integer }, description: 'The effect at stage 0 to 3: tickets per match, extra home advantage (bp), or the most training speeds up (bp)' }
@@ -6519,7 +6543,7 @@ components:
         overall: { type: integer, description: With the training on top }
         training_bonus: { type: integer }
         potential: { type: integer }
-        progress: { type: integer, description: The bar, 0 to 100 }
+        progress: { type: integer, description: 'The bar, 0 to 100' }
         sessions: { type: integer, description: 'About how many sessions a +1 takes at his rating and age [Sprint 23]' }
         age_bp: { type: integer, description: '[Sprint 23] How big his sessions are at his age, in bp (10000 = the average)' }
         injured: { type: boolean }
@@ -6606,7 +6630,7 @@ components:
         quote: { $ref: '#/components/schemas/SpendQuote' }
         balance: { type: integer }
         interval_minutes: { type: integer }
-        now: { type: string, format: date-time, description: The game clock, for the countdowns }
+        now: { type: string, format: date-time, description: 'The game clock, for the countdowns' }
         events: { type: array, items: { $ref: '#/components/schemas/TimedEventNow' }, description: '[Sprint 23] An extreme progression running in this league (the strongest)' }
         slots:
           type: array
@@ -6821,7 +6845,7 @@ components:
       required: [season, matches, table, scorers, assists, discipline, finance, value, streaks, split]
       properties:
         season: { $ref: '#/components/schemas/SeasonCalendar' }
-        matches: { type: integer, description: Finished matches this season, every competition }
+        matches: { type: integer, description: 'Finished matches this season, every competition' }
         table:
           type: array
           items:
@@ -6875,7 +6899,7 @@ components:
               club: { $ref: '#/components/schemas/StatsClub' }
               current: { type: object, nullable: true, required: [kind, length], properties: { kind: { type: string, enum: [W, D, L] }, length: { type: integer } } }
               best: { type: object, required: [W, D, L], properties: { W: { type: integer }, D: { type: integer }, L: { type: integer } } }
-              form: { type: array, items: { type: string, enum: [W, D, L] }, description: The last five, oldest first }
+              form: { type: array, items: { type: string, enum: [W, D, L] }, description: 'The last five, oldest first' }
         split:
           type: array
           description: '[X61 E12] Each club at home and away in the league'
@@ -6926,7 +6950,7 @@ components:
         xp: { type: integer, description: 'Points: 3 a win, 1 a draw, 30 a trophy (config game.career)' }
         from: { type: integer, description: The points where this level began }
         next: { type: integer, description: The points the next level needs }
-        progress_bp: { type: integer, description: The way to the next level, out of 10000 }
+        progress_bp: { type: integer, description: 'The way to the next level, out of 10000' }
     RatingTierKey: { type: string, enum: [prospect, tactician, professional, elite, mastermind, icon, legend] }
     RatingTier:
       type: object
@@ -6934,12 +6958,12 @@ components:
       required: [key, rank, division, min, from, next, progress_bp]
       properties:
         key: { $ref: '#/components/schemas/RatingTierKey' }
-        rank: { type: integer, description: The tier's place, 1 (prospect) to 7 (legend) }
+        rank: { type: integer, description: 'The tier''s place, 1 (prospect) to 7 (legend)' }
         division: { type: integer, nullable: true, description: '3 = III (the first) to 1 = I; none for the legend' }
         min: { type: integer, description: The points the tier starts at; the points never fall below it once reached }
         from: { type: integer, description: The points this division starts at }
         next: { type: integer, nullable: true, description: The points the next division or tier starts at; none for the legend }
-        progress_bp: { type: integer, description: The way to the next, out of 10000 }
+        progress_bp: { type: integer, description: 'The way to the next, out of 10000' }
     CoachRating:
       type: object
       description: '[Sprint 25] The coach''s rating: points that rise and fall with every league or cup match by the opponent''s strength, and trophies (config game.rating)'
@@ -7103,7 +7127,7 @@ components:
         code: { type: string }
         colors: { type: array, items: { type: string }, minItems: 2, maxItems: 2 }
         crest_url: { type: string }
-        strength_cp: { type: integer, description: At the league's making, in hundredths }
+        strength_cp: { type: integer, description: 'At the league''s making, in hundredths' }
         coach: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string }, official: { type: boolean }, verified: { type: boolean } } }
         bot: { type: boolean, description: No coach; a bot runs it and it can be taken }
         balance: { type: integer, description: Club money }
@@ -7149,7 +7173,7 @@ components:
         name: { type: string }
         code: { type: string, description: Three letters }
         league: { type: string }
-        strength_cp: { type: integer, description: The average of the best 18, in hundredths }
+        strength_cp: { type: integer, description: 'The average of the best 18, in hundredths' }
         colors: { type: array, items: { type: string }, minItems: 2, maxItems: 2 }
         crest_url: { type: string }
         logo: { type: string, nullable: true, description: '[UP3] The real logo (/logos/...), null for a club the pack has not; crest_url sends it too' }
@@ -7282,7 +7306,7 @@ components:
         id: { type: string }
         host: { type: object, properties: { name: { type: string }, club: { type: object } } }
         guest: { type: object, nullable: true, properties: { name: { type: string }, club: { type: object } } }
-        match_id: { type: string, nullable: true, description: Set once the friend joins; the host manages home, the guest away }
+        match_id: { type: string, nullable: true, description: 'Set once the friend joins; the host manages home, the guest away' }
         seat: { type: string, description: 'Only in the answer to POST /sim/rooms (the home seat) and to /join (the away seat): keep it on the device and send it as X-Seat' }
     Reaction:
       type: object
@@ -7320,7 +7344,7 @@ components:
       required: [id, side, key, target, who, at]
       properties:
         id: { type: integer }
-        side: { type: string, nullable: true, enum: [home, away, null], description: The coach's side, or null for a league member who watches }
+        side: { type: string, nullable: true, enum: [home, away, null], description: 'The coach''s side, or null for a league member who watches' }
         key: { type: string }
         target: { type: string, nullable: true, enum: [home, away, null] }
         who: { type: string }
@@ -7524,7 +7548,7 @@ components:
               kind: { type: string }
               text: { type: string }
               stakes: { type: object, required: [win, draw, loss], properties: { win: { type: integer }, draw: { type: integer }, loss: { type: integer } }, description: '[X61 E9] What it stakes on each result (morale)' }
-        said: { type: object, required: [home, away], properties: { home: { type: string, nullable: true }, away: { type: string, nullable: true } }, description: The statement each side made, or null }
+        said: { type: object, required: [home, away], properties: { home: { type: string, nullable: true }, away: { type: string, nullable: true } }, description: 'The statement each side made, or null' }
         mine: { type: string, nullable: true, enum: [home, away, null] }
         morale: { type: integer }
     Newspaper:
@@ -7533,7 +7557,7 @@ components:
       required: [edition, articles, pending, is_owner, max, wrote_this_round, round]
       properties:
         edition: { allOf: [{ $ref: '#/components/schemas/NewspaperEdition' }], nullable: true, description: 'Null before any round is played' }
-        articles: { type: array, items: { $ref: '#/components/schemas/NewspaperArticle' }, description: The published ones, newest first }
+        articles: { type: array, items: { $ref: '#/components/schemas/NewspaperArticle' }, description: 'The published ones, newest first' }
         pending: { type: array, items: { $ref: '#/components/schemas/NewspaperArticle' }, description: 'Waiting for the owner: all of them for the owner, one''s own for a coach' }
         is_owner: { type: boolean }
         max: { type: integer, description: An article's longest body }
@@ -7544,7 +7568,7 @@ components:
       required: [round, rounds, results, stories, team, best_matches, player, coach, scandals]
       properties:
         round: { type: integer }
-        rounds: { type: array, items: { type: integer }, description: The rounds played, for the picker }
+        rounds: { type: array, items: { type: integer }, description: 'The rounds played, for the picker' }
         results: { type: array, items: { type: object, required: [home, away, home_goals, away_goals, match_id], properties: { home: { type: string }, away: { type: string }, home_goals: { type: integer }, away_goals: { type: integer }, match_id: { type: integer, nullable: true } } } }
         stories: { type: array, items: { type: object, required: [kind, title, text], properties: { kind: { type: string }, title: { type: string }, text: { type: string } } } }
         team: { type: object, additionalProperties: true, description: The team of the week }
@@ -7727,7 +7751,7 @@ components:
       properties:
         t: { type: integer, description: 'Its place among the minute''s Keyframes from 0: six, or ten in a minute with a chance, a corner, a free kick, a penalty or a goal (Sprint 32 R4)' }
         b: { type: array, items: { type: integer }, minItems: 2, maxItems: 3, description: 'The ball: x, y and its height' }
-        p: { type: object, additionalProperties: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }, description: Every player on the pitch by id, his x and y }
+        p: { type: object, additionalProperties: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }, description: 'Every player on the pitch by id, his x and y' }
         h: { type: [integer, 'null'], description: 'The player on the ball; null while it is in flight (a pass or a shot, Sprint 33 B1)' }
         r: { type: array, items: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }, minItems: 3, maxItems: 3, description: '[Sprint 31 D1] The officials: the referee, the far assistant (outside the far touchline, right half) and the near one (outside the near touchline, left half). They follow the ball only. Older recordings have none' }
     MatchLive:
@@ -7813,7 +7837,7 @@ components:
       required: [tick, score, events]
       properties:
         tick: { type: integer }
-        period: { type: integer, description: 1 or 2, then 3 and 4 in extra time and 5 for penalties }
+        period: { type: integer, description: '1 or 2, then 3 and 4 in extra time and 5 for penalties' }
         minute: { description: 'The clock as shown: [minute] or [minute, added] (45+2 is [45, 2]); a minute saved long ago may be a bare integer' }
         score: { type: object, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
         events: { type: array, items: { $ref: '#/components/schemas/LiveEvent' } }
@@ -7838,7 +7862,7 @@ components:
       properties:
         type: { type: string }
         team: { type: string, nullable: true, enum: [home, away, null] }
-        text: { type: string, nullable: true, description: The commentary line, the same for everyone }
+        text: { type: string, nullable: true, description: 'The commentary line, the same for everyone' }
         color: { type: string, nullable: true, description: A card's colour (yellow or red) }
         minute: { description: 'In a report''s timeline: its clock, [minute] or [minute, added] (a bare integer in an old one)' }
         period: { type: integer, description: In a report's timeline }
@@ -7859,7 +7883,7 @@ components:
         finished: { type: boolean }
         tick: { type: integer, description: The minute playing now (minutes made ahead of time do not count yet) }
         server_now: { type: integer, description: Server clock in ms }
-        next_at: { type: [integer, 'null'], description: When the next minute is due (ms), null before the start or after the end }
+        next_at: { type: [integer, 'null'], description: 'When the next minute is due (ms), null before the start or after the end' }
         gap: { type: boolean, description: Some minutes after `since` are no longer kept; jump to the latest }
         ticks: { type: array, items: { type: object, properties: { frames: { type: array, items: { $ref: '#/components/schemas/Keyframe' } }, story: { $ref: '#/components/schemas/MomentStory' }, moment: { type: object, description: 'The minute''s shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul. [Sprint 42] kind foul (a foul told as its own scene, matches made since), and drama, how a card or a foul is told: yellow tackle or swarm, red tackle, brawl, swarm or spit, foul tackle or dive; and the gags (Sprint 42 F): goal blackout, bicycle, nolook or nutmeg, save double, miss clearance, offside trap, coach rant. kind slip: a ball lost in a rainy match (matches made since)' } } }, description: 'Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant' }
         reactions: { type: array, items: { $ref: '#/components/schemas/Reaction' }, description: The last few seconds of reactions }

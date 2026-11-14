@@ -42,6 +42,7 @@ use App\Http\Controllers\Api\TournamentController;
 use App\Http\Controllers\Api\TrainingController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\WalletController;
+use App\Http\Middleware\TimeLive;
 use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Support\Facades\Route;
 
@@ -340,7 +341,8 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
 Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchController::class)->group(function () {
     Route::get('live', 'mine')->middleware('throttle:120,1,match-mine');
     Route::get('{match}', 'show')->whereNumber('match')->middleware('throttle:120,1,match-show');
-    Route::get('{match}/live', 'live')->whereNumber('match')->middleware('throttle:720,1,match-live');
+    // [Sprint 66 B3] Timed for the admin panel's pulse (App\Admin\ServerPulse).
+    Route::get('{match}/live', 'live')->whereNumber('match')->middleware(['throttle:720,1,match-live', TimeLive::class]);
     // [Sprint 02 B1] What the Unity scene draws, once per match.
     Route::get('{match}/scene', 'scene')->whereNumber('match')->middleware('throttle:60,1,match-scene');
     Route::post('{match}/actions', 'order')->whereNumber('match')->middleware('throttle:120,1,match-orders');
@@ -373,6 +375,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('funnel', 'funnel');
         // [Sprint 66 W2] The devices' errors, gathered.
         Route::get('client-errors', 'clientErrors');
+        // [Sprint 66 B3] The server's pulse: the live match's speed, the queue, Reverb's sockets.
+        Route::get('server', 'server');
         Route::get('alliances', 'alliances');
         Route::post('alliances/{id}/review', 'reviewAlliance')->whereNumber('id');
         Route::get('users', 'users');

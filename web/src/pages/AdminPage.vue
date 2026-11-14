@@ -6,6 +6,7 @@
 // the alliances, the backups and the commentary templates.
 import FunnelPanel from '../components/admin/FunnelPanel.vue'
 import ClientErrorsPanel from '../components/admin/ClientErrorsPanel.vue'
+import ServerPulsePanel from '../components/admin/ServerPulsePanel.vue'
 import { scrollToTop } from '../lib/scroll'
 import { useAuth } from '../stores/auth'
 import { uuid } from '../lib/uuid'
@@ -688,6 +689,8 @@ onMounted(load)
               <p v-for="p in mail.problems" :key="p" class="rounded-lg bg-warning/10 px-3 py-2">{{ p }}</p>
             </div>
           </section>
+          <!-- [Sprint 66 B3] The server's pulse. -->
+          <ServerPulsePanel />
         </template>
 
         <!-- [Sprint 21 E7.5] The activity: day by day, the weeks' return, and what the admins did. -->
