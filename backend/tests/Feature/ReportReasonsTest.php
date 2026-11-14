@@ -36,7 +36,7 @@ class ReportReasonsTest extends TestCase
         $state['teams']['away']['stats']['big_chances'] = 6;   // the other side made the better chances
         $report = Report::build($state, [], 'home');
         foreach ($report['reasons'] as $r) {
-            $this->assertContains($r['go'], ['lineup', 'tactics', 'training', null]);
+            $this->assertContains($r['go'], ['lineup', 'plan', 'training', null]);
         }
         $this->assertNotNull($report['improve']);
         $this->assertArrayHasKey('go', $report['improve']);

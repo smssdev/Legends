@@ -111,6 +111,7 @@ class MatchCommentaryTest extends TestCase
                 'reasons' => ['*' => ['title', 'text', 'big']], 'ratings' => ['home' => ['*' => ['team', 'id', 'name', 'rating']], 'away'],
                 'stats' => ['home', 'away']])->json();
         $this->assertSame($side, $report['side']);
+        $this->assertSame($this->league['id'], $report['league_id']);
         $this->assertNotEmpty($report['reasons']);
         $this->assertCount($readings->count(), $report['readings']);
         $this->assertSame(2, DB::table('match_reports')->where('match_id', $match->id)->count());

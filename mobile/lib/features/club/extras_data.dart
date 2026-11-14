@@ -79,6 +79,7 @@ class TrainingView {
     required this.slots,
     required this.players,
     required this.recommended,
+    this.quote,
   });
 
   /// [Sprint 59 F1] Training (`TrainingView`), read through its generated model.
@@ -91,6 +92,7 @@ class TrainingView {
       slots: [for (final s in v.slots) TrainingSlot.of(s)],
       players: [for (final p in v.players) Trainee.of(p)],
       recommended: {'gk': ?r.gk, 'def': ?r.def, 'mid': ?r.mid, 'att': ?r.att},
+      quote: v.quote,
     );
   }
 
@@ -98,6 +100,9 @@ class TrainingView {
   final List<TrainingSlot> slots;
   final List<Trainee> players;
   final Map<String, int> recommended;
+
+  /// [Sprint 64 B4] A session's spend before it is made.
+  final api.SpendQuote? quote;
 }
 
 class Specialist {
@@ -108,13 +113,13 @@ class Specialist {
     name: s.name,
     stars: s.stars,
     endsAt: DateTime.tryParse(s.endsAt ?? ''),
-    offers: [for (final o in s.offers) (stars: o.stars, cost: o.cost, currency: o.currency, effect: o.effect)],
+    offers: [for (final o in s.offers) (stars: o.stars, cost: o.cost, currency: o.currency, effect: o.effect, quote: o.quote)],
   );
 
   final String type, name;
   final int stars;
   final DateTime? endsAt;
-  final List<({int stars, int cost, String currency, String effect})> offers;
+  final List<({int stars, int cost, String currency, String effect, api.SpendQuote? quote})> offers;
 }
 
 class SpyView {

@@ -1,5 +1,7 @@
 import '../../ui/tokens.g.dart';
 
+import '../leagues/spend_note.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -66,6 +68,7 @@ class ScoutView {
     required this.nationalities,
     required this.leagues,
     required this.requests,
+    this.quote,
   });
 
   /// [Sprint 59 F1] The scout (`ScoutView`), read through its generated model.
@@ -78,10 +81,14 @@ class ScoutView {
       nationalities: v.options.nationalities,
       leagues: v.options.leagues,
       requests: [for (final r in v.requests) ScoutRequest.of(r)],
+      quote: v.quote,
     );
   }
 
   final int cost, hours, finishCoins;
+
+  /// [Sprint 64 B4] A search's spend before it is made.
+  final api.SpendQuote? quote;
   final List<String> nationalities, leagues;
   final List<ScoutRequest> requests;
 }
@@ -258,6 +265,7 @@ class _ScoutScreenState extends ConsumerState<ScoutScreen> {
                                   }),
                                 ),
                         ),
+                        if (s.quote case final q?) Padding(padding: const EdgeInsets.only(top: 6), child: SpendNote(q)),
                       ],
                     ),
                   ),

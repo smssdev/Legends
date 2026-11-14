@@ -902,5 +902,17 @@
   "liveOrders": "Orders",
   "offlineBar": "Offline: the screens show the last they received, and update by themselves when the connection is back",
   "soundInterface": "Interface",
-  "soundStadium": "Stadium"
+  "soundStadium": "Stadium",
+  "goLineup": "To the lineup",
+  "goTactics": "To the tactics",
+  "goTraining": "To training",
+  "headToHead": "Between us",
+  "headToHeadNone": "You have not met yet.",
+  "headToHeadLine": "Played {played}: you won {won}, drew {drawn} and lost {lost}",
+  "spendLeft": "Left after: {amount}",
+  "spendShort": "You are short {amount}",
+  "spendEnds": "Ends {when}",
+  "h2hW": "W",
+  "h2hD": "D",
+  "h2hL": "L"
 }

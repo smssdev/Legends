@@ -7344,6 +7344,7 @@ class MatchCoachReport {
   const MatchCoachReport({
     this.formations,
     this.improve,
+    this.leagueId,
     this.manOfTheMatch,
     this.momentum,
     required this.ratings,
@@ -7365,6 +7366,7 @@ class MatchCoachReport {
     return MatchCoachReport(
       formations: r.objectOrNull('formations', MatchCoachReportFormations.fromJson),
       improve: r.objectOrNull('improve', ReportNote.fromJson),
+      leagueId: r.intOrNull('league_id'),
       manOfTheMatch: r.objectOrNull('man_of_the_match', ReportPlayer.fromJson),
       momentum: r.listOrNull('momentum', JsonReader.intOf),
       ratings: r.object('ratings', MatchCoachReportRatings.fromJson),
@@ -7385,6 +7387,9 @@ class MatchCoachReport {
   /// [Sprint 30 G5] Both shapes as they ended (never the tactics)
   final MatchCoachReportFormations? formations;
   final ReportNote? improve;
+
+  /// [Sprint 64 F9] The match's league (where the suggestion's button goes)
+  final int? leagueId;
   final ReportPlayer? manOfTheMatch;
   final List<int>? momentum;
   final MatchCoachReportRatings ratings;
@@ -9915,7 +9920,7 @@ class ReportNote {
   /// The number in large type
   final String big;
 
-  /// [Sprint 64 B6] Where a coach acts on it (the suggestion's button); none for luck
+  /// [Sprint 64 B6] Where a coach acts on it (plan: the tactics screen; the word stays out of reports, MatchCommentaryTest) (the suggestion's button); none for luck
   final String? go;
   final String text;
   final String title;

@@ -4,6 +4,7 @@
 // the server; the countdown reloads when a session is due. "Finish now" waits for the premium coins.
 // [X83] A slot's «اختر لاعباً» or «استبدل اللاعب» opens the picker (TrainingPicker.vue): its line's players with a search,
 // four orders and a filter, one tap to train; a taken slot is replaced in the same tap, the other keeping his progress.
+import SpendNote from '../../components/ui/SpendNote.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import { t } from '../../lib/i18n'
 import AdReward from '../../components/ads/AdReward.vue'
@@ -133,6 +134,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
       </div>
       <!-- [X85] The club's money is on the top bar; here only what a session costs. -->
       <span v-if="v" class="rounded-pill bg-surface px-3 py-1.5 text-xs text-text-muted">{{ $t('الجلسة') }} <b class="font-numbers text-text" dir="ltr">{{ count(v.cost) }}</b></span>
+      <SpendNote v-if="v?.quote" :quote="v.quote" class="basis-full" />
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>

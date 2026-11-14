@@ -4,6 +4,7 @@ import Icon from '../../components/Icon.vue'
 // on, in every league. What stays from season to season. No draft of its own: the design system's cards.
 import OfficialBadge from '../../components/OfficialBadge.vue'
 import VerifiedBadge from '../../components/VerifiedBadge.vue'
+import UiCard from '../../components/ui/UiCard.vue'
 import { onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -12,6 +13,7 @@ import { cupGoal, cupStage, leagueGoal } from '../../api/leagues'
 const props = defineProps<{ id: string }>()
 const coach = ref<components['schemas']['CoachProfile'] | null>(null)
 const error = ref('')
+const LAST: Record<string, string> = { W: 'ف', D: 'ت', L: 'خ' }
 const TITLES: Record<string, string[]> = { league: ['', 'بطل الدوري', 'المركز الثاني', 'المركز الثالث'], cup: ['', 'بطل الكأس', 'وصيف الكأس'] }
 
 onMounted(async () => {
@@ -42,6 +44,18 @@ onMounted(async () => {
         </div>
       </section>
 
+      <!-- [Sprint 64 W10] Between you and him, from the matches (none on your own profile). -->
+      <UiCard v-if="coach.head_to_head" :aria-label="$t('بيني وبينه')" class="h2h">
+        <h2 class="font-display text-title">{{ $t('بيني وبينه') }}</h2>
+        <p v-if="!coach.head_to_head.played" class="text-caption text-text-muted">{{ $t('لم تتقابلا بعد.') }}</p>
+        <template v-else>
+          <p class="text-body">{{ $t('لعبتما {v0}: فزت {v1}، وتعادلتما {v2}، وخسرت {v3}', { v0: coach.head_to_head.played, v1: coach.head_to_head.won, v2: coach.head_to_head.drawn, v3: coach.head_to_head.lost }) }}</p>
+          <ol class="h2h-last" :aria-label="$t('آخر المواجهات')">
+            <li v-for="(r, i) in coach.head_to_head.last" :key="i" :class="`h2h-${r}`">{{ $t(LAST[r]) }}</li>
+          </ol>
+        </template>
+      </UiCard>
+
       <section :aria-label="$t('الألقاب')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
         <h2 class="font-display text-xl font-extrabold">{{ $t('الألقاب') }}</h2>
         <p v-if="!coach.titles.length" class="text-sm text-text-muted">{{ $t('لا ألقاب بعد.') }}</p>
@@ -67,3 +81,12 @@ onMounted(async () => {
     </template>
   </div>
 </template>
+
+<style scoped>
+.h2h { display: flex; flex-direction: column; gap: var(--space-2); }
+.h2h-last { display: flex; gap: var(--space-1); }
+.h2h-last li { display: grid; place-items: center; inline-size: 28px; block-size: 28px; border-radius: var(--radius-pill); font-weight: 700; color: var(--color-on-gold); }
+.h2h-W { background: var(--color-success); }
+.h2h-D { background: var(--color-text-muted); }
+.h2h-L { background: var(--color-danger); }
+</style>

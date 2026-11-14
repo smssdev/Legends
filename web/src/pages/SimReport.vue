@@ -61,6 +61,8 @@
           <span class="text-sm font-bold text-gold">{{ $t('نقطة للتحسين') }}</span>
           <h3 class="font-bold">{{ $t(report.improve.title) }}</h3>
           <p class="text-sm text-text-soft">{{ $t(report.improve.text) }}</p>
+          <!-- [Sprint 64 W9] The one suggestion has its place to act, from the server. -->
+          <UiButton v-if="league && report.improve.go" class="self-start" size="sm" :to="GO[report.improve.go]![0]">{{ $t(GO[report.improve.go]![1]) }}</UiButton>
         </article>
       </section>
 
@@ -183,6 +185,7 @@
 
 <script setup lang="ts">
 import Icon from '../components/Icon.vue'
+import UiButton from '../components/ui/UiButton.vue'
 import { scoreText } from '../lib/format'
 import { t } from '../lib/i18n'
 import { nm } from '../lib/names'
@@ -205,6 +208,8 @@ const id = String(route.params.id)
 const sides: Side[] = ['home', 'away']
 const view = ref<MatchView | null>(null)
 const report = ref<any>(null)
+// The suggestion's place to act (`plan` is the tactics screen: the word stays out of reports).
+const GO: Record<string, [string, string]> = { lineup: ['/lineup', 'إلى التشكيلة'], plan: ['/tactics', 'إلى التكتيك'], training: ['/training', 'إلى التدريب'] }
 const error = ref('')
 const side = ref<Side>((route.query.side as Side) || 'home')
 // [Sprint 24 W1] A league match's quick recap, over the report.

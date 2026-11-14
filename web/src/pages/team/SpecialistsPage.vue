@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SpendNote from '../../components/ui/SpendNote.vue'
 import Icon from '../../components/Icon.vue'
 // The staff (Sprint 31 W1, docs/features/specialists.md, X20): the line coaches, then the medical and the admin staff,
 // each with 1 to 5 stars to choose (the price and the effect from the server), the contract working now with a countdown
@@ -136,6 +137,7 @@ onBeforeUnmount(() => clearInterval(tick))
               </div>
               <UiButton variant="brand" :disabled="isBusy(`hire:${s.type}`) || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
                 {{ s.ends_at ? $t('جدّد العقد') : $t('تعاقد') }} · {{ chosen(s) }} <Icon name="star" :size="14" class="inline-block align-[-2px]" /> · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></UiButton>
+              <SpendNote v-if="offer(s).quote" :quote="offer(s).quote!" />
             </template>
           </article>
         </div>

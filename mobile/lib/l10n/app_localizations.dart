@@ -5389,6 +5389,78 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'الملعب'**
   String get soundStadium;
+
+  /// No description provided for @goLineup.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى التشكيلة'**
+  String get goLineup;
+
+  /// No description provided for @goTactics.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى التكتيك'**
+  String get goTactics;
+
+  /// No description provided for @goTraining.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى التدريب'**
+  String get goTraining;
+
+  /// No description provided for @headToHead.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيني وبينه'**
+  String get headToHead;
+
+  /// No description provided for @headToHeadNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تتقابلا بعد.'**
+  String get headToHeadNone;
+
+  /// No description provided for @headToHeadLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'لعبتما {played}: فزت {won}، وتعادلتما {drawn}، وخسرت {lost}'**
+  String headToHeadLine(int played, int won, int drawn, int lost);
+
+  /// No description provided for @spendLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبقى بعده {amount}'**
+  String spendLeft(String amount);
+
+  /// No description provided for @spendShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'ينقصك {amount}'**
+  String spendShort(String amount);
+
+  /// No description provided for @spendEnds.
+  ///
+  /// In ar, this message translates to:
+  /// **'ينتهي {when}'**
+  String spendEnds(String when);
+
+  /// No description provided for @h2hW.
+  ///
+  /// In ar, this message translates to:
+  /// **'ف'**
+  String get h2hW;
+
+  /// No description provided for @h2hD.
+  ///
+  /// In ar, this message translates to:
+  /// **'ت'**
+  String get h2hD;
+
+  /// No description provided for @h2hL.
+  ///
+  /// In ar, this message translates to:
+  /// **'خ'**
+  String get h2hL;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

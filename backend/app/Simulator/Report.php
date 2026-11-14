@@ -81,7 +81,7 @@ class Report
         $t = $them['stats'];
         $facts = [];
 
-        $facts[] = ['go' => 'tactics', 'weight' => ($m['presses_won'] - $t['presses_won']) * 3, 'big' => (string) $m['presses_won'], 'unit' => __('بناء مقطوع'),
+        $facts[] = ['go' => 'plan', 'weight' => ($m['presses_won'] - $t['presses_won']) * 3, 'big' => (string) $m['presses_won'], 'unit' => __('بناء مقطوع'),
             'title' => $m['presses_won'] >= $t['presses_won'] ? __('قطعت بناءهم كثيراً') : __('بناؤك قُطع كثيراً'),
             'text' => sprintf(__('قطعت %d من %d بناءً لهم، وقطعوا %d من %d بناءً لك.'), $m['presses_won'], $t['builds'], $t['presses_won'], $m['builds'])];
 
@@ -97,7 +97,7 @@ class Report
             'text' => sprintf(__('فرصك كانت تساوي حوالي %d.%d هدف وسجلت %d، وفرصهم حوالي %d.%d وسجلوا %d.'),
                 intdiv($expectedFor, 100), intdiv($expectedFor % 100, 10), $gf, intdiv($expectedAgainst, 100), intdiv($expectedAgainst % 100, 10), $ga)];
 
-        $facts[] = ['go' => 'tactics', 'weight' => ($m['counters'] - $t['counters']) * 3, 'big' => (string) $m['counters'], 'unit' => __('هجمات مرتدة'),
+        $facts[] = ['go' => 'plan', 'weight' => ($m['counters'] - $t['counters']) * 3, 'big' => (string) $m['counters'], 'unit' => __('هجمات مرتدة'),
             'title' => $m['counters'] >= $t['counters'] ? __('ارتداداتك فاجأتهم') : __('ارتداداتهم أتعبتك'),
             'text' => sprintf(__('هجمات مرتدة: %d لك مقابل %d.'), $m['counters'], $t['counters'])];
 
@@ -107,7 +107,7 @@ class Report
             'title' => $fitMe >= $fitThem ? __('أنهيت المباراة أنشط منهم') : __('الإرهاق أثّر عليك'),
             'text' => sprintf(__('متوسط اللياقة في النهاية: %d%% لك مقابل %d%%.'), intdiv($fitMe, 100), intdiv($fitThem, 100))];
 
-        $facts[] = ['go' => 'tactics', 'weight' => ($t['red'] - $m['red']) * 12 + ($t['yellow'] - $m['yellow']), 'big' => (string) ($m['yellow'] + $m['red']), 'unit' => __('بطاقات'),
+        $facts[] = ['go' => 'plan', 'weight' => ($t['red'] - $m['red']) * 12 + ($t['yellow'] - $m['yellow']), 'big' => (string) ($m['yellow'] + $m['red']), 'unit' => __('بطاقات'),
             'title' => $m['red'] > $t['red'] ? __('الطرد كلّفك') : ($t['red'] > $m['red'] ? __('لعبت بأفضلية عددية') : __('الانضباط')),
             'text' => sprintf(__('بطاقات: %d صفراء و%d حمراء لك، مقابل %d و%d.'), $m['yellow'], $m['red'], $t['yellow'], $t['red'])];
 

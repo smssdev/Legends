@@ -2,6 +2,7 @@
 // The stadium (Sprint 29 W1, PLAN 2.9), per the WebStadium and MobileStadium drafts: the facts on top, then the
 // three sections with their 3 × 5 parts (done gold, building green), each stage's effect, and the next part's
 // start with its price. One part at a time; the countdown runs on the server's clock.
+import SpendNote from '../../components/ui/SpendNote.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import TicketPrices from '../../components/TicketPrices.vue'
 import { uuid } from '../../lib/uuid'
@@ -140,6 +141,7 @@ onBeforeUnmount(() => clearInterval(tick))
           <UiButton variant="brand" v-if="s.next" class="mt-auto"
             :disabled="isBusy(`start:${s.section}`) || !!v.building || s.next.cost > v.balance" @click="start(s)">
             {{ $t('ابدأ الجزء التالي ·') }} <span class="font-numbers" dir="ltr">{{ money(s.next.cost) }}</span></UiButton>
+          <SpendNote v-if="s.next?.quote" :quote="s.next.quote" />
           <p v-else class="mt-auto rounded-md bg-gold/15 py-3 text-center font-bold text-gold">{{ $t('القسم مكتمل') }}</p>
         </article>
       </section>

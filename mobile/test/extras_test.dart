@@ -148,6 +148,8 @@ void main() {
     await pump(t, const TrainingScreen(leagueId: 8), extras: x);
     expect(find.textContaining('Ármin Pécsi'), findsOneWidget);
     expect(find.text('أنهِه الآن (5 كوينز)'), findsOneWidget);
+    // [Sprint 64 B4] A session's spend before it is made.
+    expect(find.textContaining('يبقى بعده'), findsOneWidget);
     await t.tap(find.text('اختر من يتدرب').at(1));
     await t.pumpAndSettle();
     expect(find.text('المقترح'), findsOneWidget);
@@ -197,6 +199,9 @@ void main() {
   testWidgets('a coach\'s profile: his record and titles', (t) async {
     await pump(t, const CoachProfileScreen(userId: 16));
     expect(find.text('حساب رقم 34537'), findsOneWidget);
+    // [Sprint 64 F10] Between us, from the matches.
+    expect(find.text('بيني وبينه'), findsOneWidget);
+    expect(find.text('لعبتما 3: فزت 1، وتعادلتما 1، وخسرت 1'), findsOneWidget);
     expect(find.text('Liverpool'), findsOneWidget);
     expect(find.text('أهداف الإدارة: 0 من 0'), findsOneWidget);
   });

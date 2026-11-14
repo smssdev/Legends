@@ -13,6 +13,8 @@ class MatchReport {
     this.stats = const {},
     this.moments = const [],
     this.ratings = const {},
+    this.go,
+    this.leagueId,
   });
 
   /// [Sprint 59 F1] The coach's report (`MatchCoachReport`), read through its generated model.
@@ -25,6 +27,8 @@ class MatchReport {
       side: r.side,
       reasons: [for (final n in r.reasons) note(n)],
       improve: r.improve == null ? null : note(r.improve!),
+      go: r.improve?.go,
+      leagueId: r.leagueId,
       verdict: [for (final v in r.verdict) (tag: v.tag, text: v.text)],
       motm: r.manOfTheMatch?.name,
       stats: {'home': r.stats.home, 'away': r.stats.away},
@@ -69,6 +73,8 @@ class MatchReport {
     stats: recap.stats,
     moments: recap.moments,
     ratings: ratings,
+    go: go,
+    leagueId: leagueId,
   );
 
   final (int, int) score;
@@ -78,6 +84,10 @@ class MatchReport {
   final List<({String tag, String text})> verdict;
   final Map<String, Map<String, int>> stats;
   final List<MatchEvent> moments;
+
+  /// [Sprint 64 F9] Where the one suggestion's button goes (`lineup`, `plan` for the tactics, `training`), in [leagueId].
+  final String? go;
+  final int? leagueId;
   final Map<String, List<({String name, int rating})>> ratings;
 }
 

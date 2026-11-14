@@ -1,4 +1,5 @@
 import '../../ui/widgets/glm_icon.dart';
+import '../leagues/spend_note.dart';
 import '../../ui/tokens.g.dart';
 
 import 'package:flutter/material.dart';
@@ -62,6 +63,7 @@ class TrainingScreen extends ConsumerWidget {
                   textAlign: TextAlign.center,
                   style: glmText(GlmType.caption, color: p.textMuted),
                 ),
+                if (t.quote case final q?) Center(child: SpendNote(q)),
                 const SizedBox(height: 12),
                 for (final s in t.slots)
                   Padding(

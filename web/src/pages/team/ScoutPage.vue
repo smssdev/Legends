@@ -2,6 +2,7 @@
 // The scout (Sprint 26 W1, docs/features/scout.md): the criteria with the cost and the time, the search under
 // way with its countdown, and the reports with their players to buy. No draft of its own: the market's table
 // and the design system's cards; the market's header links here ("اطلب تقرير الكشاف").
+import SpendNote from '../../components/ui/SpendNote.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import UiSelect from '../../components/ui/UiSelect.vue'
 import { uuid } from '../../lib/uuid'
@@ -132,6 +133,7 @@ onBeforeUnmount(() => clearInterval(tick))
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <UiButton :disabled="busy('scout:ask') || v.balance < v.cost" @click="ask">{{ busy('scout:ask') ? '...' : $t('اطلب التقرير ·') }} <span class="font-numbers" dir="ltr">{{ money(v.cost) }}</span></UiButton>
+          <SpendNote v-if="v.quote" :quote="v.quote" />
           <span class="text-sm text-text-muted">{{ $t('رحلة {v0} ساعة، ثم 5 خيارات مطابقة لطلبك كرسالة، ولو لم يجد أحداً يُرد لك المبلغ.', { v0: v.hours }) }}</span>
         </div>
       </section>

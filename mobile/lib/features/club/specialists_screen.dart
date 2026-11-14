@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../leagues/spend_note.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -69,7 +72,14 @@ class SpecialistsScreen extends ConsumerWidget {
                               alignment: AlignmentDirectional.centerStart,
                               child: GlmStars(o.stars, color: p.gold),
                             ),
-                            subtitle: Text(o.effect),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(o.effect),
+                                // [Sprint 64 B4] What is left after it, and when the contract ends.
+                                if (o.quote case final q? when sp.stars == 0) SpendNote(q),
+                              ],
+                            ),
                             trailing: GlmButton(
                               label: '${l.hire} ${o.currency == 'coins' ? l.coinsWord(o.cost) : money(context, o.cost)}',
                               variant: GlmButtonVariant.outline,

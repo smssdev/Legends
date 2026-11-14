@@ -1,5 +1,7 @@
 import '../../ui/tokens.g.dart';
 
+import '../leagues/spend_note.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -229,9 +231,15 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: Text(
-                                      '${l.stageOf(sec.next!.stage)} · ${l.partOf(sec.next!.part)}',
-                                      style: glmText(GlmType.caption, color: p.textMuted),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${l.stageOf(sec.next!.stage)} · ${l.partOf(sec.next!.part)}',
+                                          style: glmText(GlmType.caption, color: p.textMuted),
+                                        ),
+                                        if (sec.next!.quote case final q?) SpendNote(q),
+                                      ],
                                     ),
                                   ),
                                   GlmButton(
