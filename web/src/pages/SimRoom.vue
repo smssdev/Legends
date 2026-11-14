@@ -31,7 +31,7 @@
     </section>
 
     <!-- Open a room (host) or join one (guest): a name and a club. -->
-    <template v-else-if="!props.room || room">
+    <template v-else-if="!props.code || room">
       <div v-if="room" class="flex items-center gap-3 rounded-xl border border-gold/40 bg-gold/10 p-4">
         <Crest :logo="room.host.club.logo" :code="room.host.club.code" :primary="clubColors(room.host.club).primary" :secondary="clubColors(room.host.club).secondary" :size="48" />
         <div><b class="font-display text-lg">{{ $nm(room.host.name) }}</b> {{ $t('يتحداك بفريق') }} <b>{{ $nm(room.host.club.name) }}</b>{{ $t('. اكتب اسمك واختر فريقك.') }}</div>
@@ -84,7 +84,8 @@ import { useRouter } from 'vue-router'
 import Crest from '../components/Crest.vue'
 import { clubColors, seats, sim, type Club, type Room } from '../api/sim'
 
-const props = defineProps<{ room?: string }>()
+// [Sprint 66 T2] The room's code from the link (named apart from the room itself, below).
+const props = defineProps<{ code?: string }>()
 const router = useRouter()
 const room = ref<Room | null>(null)
 const name = ref(read('name') ?? '')
@@ -97,10 +98,10 @@ const copied = ref(false)
 let timer = 0
 
 // Which seat this device has in which room: kept in the browser, so a refresh keeps the seat.
-const seat = computed(() => (props.room ? read(`room.${props.room}`) : null))
+const seat = computed(() => (props.code ? read(`room.${props.code}`) : null))
 const isHost = computed(() => seat.value === 'host')
 const ready = computed(() => name.value.trim().length >= 2 && !!club.value)
-const link = computed(() => `${location.origin}/sim/room/${props.room}`)
+const link = computed(() => `${location.origin}/sim/room/${props.code}`)
 
 function read(k: string) { try { return storage.get(k) } catch { return null } }
 function write(k: string, v: string) { try { storage.set(k, v) } catch {} }
@@ -136,12 +137,12 @@ async function go() {
 
 async function load() {
   clearTimeout(timer)
-  if (!props.room) { room.value = null; return }
+  if (!props.code) { room.value = null; return }
   try {
-    room.value = await sim.room(props.room)
+    room.value = await sim.room(props.code)
     // Both go to the match once it exists, each with his own seat: the host manages home, the guest away.
     if (room.value.match_id && seat.value) {
-      const mine = read(`roomseat.${props.room}`)
+      const mine = read(`roomseat.${props.code}`)
       if (seat.value === 'host' && mine && !seats.get(room.value.match_id)) seats.set(room.value.match_id, mine)
       return router.replace({ name: 'sim-match', params: { id: room.value.match_id } })
     }
@@ -162,7 +163,7 @@ async function share() {
   }
 }
 
-watch(() => props.room, load)
+watch(() => props.code, load)
 onMounted(() => { load(); search() })
 onBeforeUnmount(() => clearTimeout(timer))
 </script>

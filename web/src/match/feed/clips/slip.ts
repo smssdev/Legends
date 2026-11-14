@@ -28,7 +28,8 @@ export function slip(e: SceneData) {
     splash(x + 30, 282, t > KT + 0.3 && t < 2.7 ? ((t - KT) % 0.32) / 0.32 : 0)
     splash2(300, 282, seg(t, KT + 0.25, KT + 0.9))
     // The ball stops where he left it; the defender comes in and takes it away.
-    let bx = t < KT ? x + 14 : lerp(294, 300, seg(t, KT, KT + 0.4)), by = 284 - 0
+    let bx = t < KT ? x + 14 : lerp(294, 300, seg(t, KT, KT + 0.4))
+    const by = 284
     const dx = t < 1.9 ? lerp(-60, 260, seg(t, 1.2, 1.9)) : lerp(290, -60, seg(t, 2.4, 3.6))
     df.face?.('side', t < 2.4 ? 1 : -1); df.mood(t > 2.0 ? 'joy' : 'focus'); df.at(dx, 200, 0, k); df.run(t * 13, t > 1.2 ? 1 : 0)
     if (t > 2.4) bx = dx - 16

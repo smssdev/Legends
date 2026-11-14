@@ -131,7 +131,7 @@ const notReady = computed(() =>
   !pick.home.club || !pick.away.club ? 'اختر نادياً لكل فريق من القائمتين.' : pick.home.club.id === pick.away.club.id ? 'اختر ناديين مختلفين.' : '',
 )
 
-let timers: Record<Side, number> = { home: 0, away: 0 }
+const timers: Record<Side, number> = { home: 0, away: 0 }
 async function load(side: Side) {
   try {
     pick[side].results = await sim.clubs({ q: pick[side].q, league: pick[side].league })
