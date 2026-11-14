@@ -3,7 +3,8 @@
 // the taps and chimes), the stadium (the match's crowd and ball) and the commentator. Kept on this device
 // (lib/soundLevels.ts); each moved plays a sample of it, so the coach hears what he set.
 import UiSlider from '../ui/UiSlider.vue'
-import { levels, uiSound } from '../../lib/soundLevels'
+import UiToggle from '../ui/UiToggle.vue'
+import { levels, touchFeedback, uiSound } from '../../lib/soundLevels'
 
 const rows = [
   { key: 'ui', label: 'الواجهة', hint: 'النغمات والنقرات والإشعارات' },
@@ -27,5 +28,7 @@ function sample(key: (typeof rows)[number]['key']) {
       <UiSlider v-model="levels[r.key]" :label="r.label" :value-text="`${levels[r.key]}%`" :step="5" @pointerup="sample(r.key)" @keyup="sample(r.key)" />
       <span class="text-caption text-text-muted">{{ $t(r.hint) }}</span>
     </div>
+    <!-- [Sprint 64 W12] The buttons' buzz and tap, one switch. -->
+    <UiToggle v-model="touchFeedback" label="اهتزاز الأزرار وصوتها" hint="لمسة خفيفة ونقرة مع كل زر" />
   </fieldset>
 </template>

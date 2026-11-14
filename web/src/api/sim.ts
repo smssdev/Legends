@@ -149,6 +149,9 @@ export interface MatchView {
   seed: number
   /** [Sprint 32 V3] When it kicks off (UTC). */
   kickoff_at?: string | null
+  /** [Sprint 64 W6] A league match's fixture and league (the waiting room's predictions). */
+  fixture_id?: number
+  league_id?: number
   competition: 'league' | 'cup'
   referee: number
   venue: 'home' | 'neutral'
@@ -181,6 +184,9 @@ export const seats = {
   set: (match: string, seat: string) => { try { storage.set(`seat.${match}`, seat) } catch {} },
 }
 
+/** [Sprint 64 B1] A moment of the intro match: its minute, and the guide's words for it. */
+export type IntroMoment = { kind: 'style' | 'sub' | 'effect'; minute: number; title: string; text: string }
+
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   const match = path.match(/^\/matches\/([^/?]+)/)?.[1]
   const seat = match ? seats.get(match) : null
@@ -206,6 +212,9 @@ export const sim = {
     call<Club[]>('GET', '/clubs?' + new URLSearchParams(Object.entries(params).filter(([, v]) => v) as [string, string][])),
   squad: (id: number) => call<{ club: Club; formation: string; starters: number[]; bench: number[]; players: any[] }>('GET', `/clubs/${id}`),
   create: (body: Record<string, unknown>) => call<MatchView>('POST', '/matches', body),
+  // [Sprint 64 B1, W1] The new coach's first match and its three teaching moments; then that it was played or skipped.
+  intro: () => call<MatchView & { intro: { moments: IntroMoment[] } }>('POST', '/intro'),
+  introFinished: () => call<{ ok: boolean }>('POST', '/intro/finished'),
   show: (id: string) => call<MatchView>('GET', `/matches/${id}`),
   ticks: (id: string, count = 1) => call<{ ticks: Tick[] }>('POST', `/matches/${id}/ticks`, { count }),
   start: (id: string) => call<LiveSync>('POST', `/matches/${id}/start`),

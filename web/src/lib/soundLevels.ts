@@ -2,7 +2,7 @@
 // notification tone, the taps and chimes), the stadium (the crowd and the ball in a match) and the commentator (the
 // match's voice). Each from 0 to 100, kept on this device (lib/storage.ts). The interface's sounds are the app's own
 // files (mobile/tool/sounds/make_sounds.py writes both), so a tap sounds the same on both.
-import { reactive, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { storage } from './storage'
 
 export type SoundLevel = 'ui' | 'stadium' | 'voice'
@@ -38,4 +38,14 @@ export function uiSound(name: UiSound, level: SoundLevel = 'ui') {
     a.currentTime = 0
     void a.play().catch(() => {})
   } catch {}
+}
+
+/** [Sprint 64 W12] The buttons' touch: a short buzz and the interface's tap (at its level), one switch for both, kept on
+ * this device. UiButton calls it on every press; the app's GlmButton does the same. */
+export const touchFeedback = ref((() => { try { return storage.get('touch') !== 'off' } catch { return true } })())
+watch(touchFeedback, (on) => { try { storage.set('touch', on ? 'on' : 'off') } catch {} })
+export function tapFeedback() {
+  if (!touchFeedback.value) return
+  try { navigator.vibrate?.(8) } catch {}
+  uiSound('tap')
 }

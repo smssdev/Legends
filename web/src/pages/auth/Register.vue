@@ -26,7 +26,8 @@ async function submit() {
   try {
     await usernameField.value?.settle()
     await auth.register(name.value.trim(), username.value.trim(), password.value)
-    router.replace('/profile?welcome=1')
+    // [Sprint 64 W1] Play first: the intro match, then a club (a skip goes to the welcome as before).
+    router.replace('/intro')
   } catch (e) {
     const err = asApiError(e)
     errors.value = Object.fromEntries(['name', 'username', 'password'].map((k) => [k, err.field(k)]))

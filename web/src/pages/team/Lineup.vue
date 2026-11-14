@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Explain from '../../components/ui/Explain.vue'
+import { useBoard as useExplainBoard } from '../../stores/board'
 import Icon from '../../components/Icon.vue'
 // The lineup editor (Sprint 16 W2), after the draft MobileLineup: the formation picker (24 and my own),
 // a counter per line, "تحسين", the pitch, the bench and the rest of the squad. A player moves by dragging
@@ -22,6 +24,8 @@ import { money } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { useLineupDrag, type Spot } from './useLineupDrag'
 import { barColor, useTeam, type Formation, type SquadPlayer } from './team'
+// [Sprint 64 W5] The league whose club the numbers explain.
+const explainBoard = useExplainBoard()
 
 const { leagueId, team, error, loaded, load } = useTeam()
 const formations = ref<Formation[]>([])
@@ -454,7 +458,7 @@ async function saveCustom() {
             <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="chemistry.score" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('الكيمياء')">
               <span class="block h-full rounded-full" :style="{ width: `${chemistry.score}%`, background: chemColor(chemistry.score) }" />
             </span>
-            <b class="font-numbers text-body-lg" :style="{ color: chemColor(chemistry.score) }">{{ chemistry.score }}</b>
+            <Explain what="chemistry" :league-id="explainBoard.league"><b class="font-numbers text-body-lg" :style="{ color: chemColor(chemistry.score) }">{{ chemistry.score }}</b></Explain>
           </div>
           <span class="text-caption text-text-muted">{{ $t('العرض') }}</span>
           <div class="grid grid-cols-2 gap-1" role="group" :aria-label="$t('العرض')">

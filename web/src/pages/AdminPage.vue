@@ -4,6 +4,7 @@
 // the activity day by day, the accounts (admins apart, search by number, suspend, delete), the leagues, the
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
 // the alliances, the backups and the commentary templates.
+import FunnelPanel from '../components/admin/FunnelPanel.vue'
 import { scrollToTop } from '../lib/scroll'
 import { useAuth } from '../stores/auth'
 import { uuid } from '../lib/uuid'
@@ -70,6 +71,8 @@ const busy = ref(false)
 const SECTIONS = {
   overview: { label: 'الرئيسية', icon: 'home' },
   activity: { label: 'النشاط', icon: 'league' },
+  // [Sprint 64 B2] The new coaches' first five minutes.
+  funnel: { label: 'خطوات اللاعب الجديد', icon: 'league' },
   users: { label: 'المستخدمون', icon: 'team' },
   leagues: { label: 'الدوريات', icon: 'leagues' },
   announcements: { label: 'الإعلانات', icon: 'bell' },
@@ -435,6 +438,7 @@ onMounted(load)
 
       <div class="flex min-w-0 flex-col gap-4">
         <!-- The overview: deploy safety, the counts, and the email test. -->
+        <FunnelPanel v-if="tab === 'funnel'" />
         <template v-if="tab === 'overview' && overview">
           <div class="flex items-center gap-3 rounded-xl p-4" :class="overview.deploy.busy ? 'bg-live/15' : 'bg-success/15'" role="status">
             <span class="text-2xl" aria-hidden="true"><Icon :name="overview.deploy.busy ? 'ban' : 'check'" :size="26" /></span>

@@ -14,6 +14,8 @@
     <p v-if="!mine" class="text-sm text-text-muted">{{ isLive ? $t('أنت تشاهد فقط: كل مدرب يدير فريقه من جهازه.') : $t('الحاسوب يدير الفريقين. اختر "أنا" لأحدهما في شاشة الإعداد لتديره.') }}</p>
 
     <template v-else>
+      <!-- [Sprint 64 W7] The window that opened this drawer, and its seconds left. -->
+      <p v-if="windowOn && !finished" class="rounded-md bg-gold/15 px-3 py-2 text-sm font-bold text-gold" role="timer">{{ $t('النافذة مفتوحة') }} · <span class="font-numbers" dir="ltr">{{ halftimeLeft }}</span> {{ $t('ث') }}</p>
       <p v-if="!canChange && !finished" class="rounded-md bg-surface-sunk px-3 py-2 text-xs leading-5 text-text-muted" role="status">{{ $t('التغيير في فترات التوقف فقط: الدقائق 15 و30 و60 و75 والاستراحة.') }}<span v-if="nextWindow"> {{ $t('القادمة:') }} <b class="font-numbers text-text">{{ nextWindow }}</b>'</span></p>
       <div role="tablist" class="grid grid-cols-4 gap-1 rounded-md bg-surface-sunk p-1">
         <button v-for="t in TABS" :key="t.id" type="button" role="tab" :aria-selected="tab === t.id" class="h-10 rounded-sm text-sm font-bold" :class="tab === t.id ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="tab = t.id">{{ $t(t.label) }}</button>
@@ -89,7 +91,7 @@ import { LINE_NAMES, PLANS, POSITIONING, SLIDERS, TABS, TACKLES, formationLabel,
 
 const props = defineProps<{ player: MatchPlayer; orders: CoachOrders; view: MatchView; mine: Side | null; league: boolean; canChange: boolean; nextWindow: number | null; readings: Reading[] }>()
 const emit = defineEmits<{ choose: [side: Side] }>()
-const { teams, finished, minute, moods, live: isLive } = props.player
+const { teams, finished, minute, moods, live: isLive, windowOn, halftimeLeft } = props.player
 const { tab, quickOrders, draft, draftTrap, draftMan, onPitch, bench, subOut, pending, applied, rejected } = props.orders
 const lineClass = (l: string) => ({ gk: 'bg-line-gk text-line-gk-fg', def: 'bg-line-def text-line-def-fg', mid: 'bg-line-mid text-line-mid-fg', att: 'bg-line-att text-line-att-fg' })[l] ?? ''
 const fitClass = (f: number) => (f >= 75 ? 'text-success' : f >= 60 ? 'text-gold' : 'text-warning')
