@@ -95,8 +95,22 @@ class ClubAgenda
             $out[] = ['kind' => 'training_done', 'severity' => 'low', 'count' => $done];
         }
 
+        // [Sprint 64 B3] Each with its rank (the most pressing first) and where its one action goes, so every screen
+        // orders and opens them the same.
+        foreach ($out as &$item) {
+            $item += ['priority' => self::PRIORITY[$item['kind']], 'go' => self::GO[$item['kind']]];
+        }
+        unset($item);
+        usort($out, fn ($a, $b) => $b['priority'] <=> $a['priority']);
+
         return $out;
     }
+
+    /** [Sprint 64 B3] How pressing each kind is: a window closing in seconds before all, an empty slot last. */
+    private const PRIORITY = ['window' => 100, 'lineup' => 90, 'offers' => 60, 'requests' => 50, 'training_empty' => 30, 'training_done' => 20];
+
+    /** [Sprint 64 B3] The page each kind's action opens (the screens' own names: match, lineup, offers, requests, training). */
+    private const GO = ['window' => 'match', 'lineup' => 'lineup', 'offers' => 'offers', 'requests' => 'requests', 'training_empty' => 'training', 'training_done' => 'training'];
 
     /** The board's mood [Sprint 20, question 5]: the league place against its objective, after three rounds. */
     public static function board(Club $club, int $seasonId, ?int $position, int $played): ?array

@@ -13,6 +13,7 @@ use App\TimedEvents\TimedEvents;
 use App\Training\Gain;
 use App\Training\Training;
 use App\Wallet\Finish;
+use App\Wallet\SpendQuote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -65,6 +66,8 @@ class TrainingController extends Controller
         return response()->json([
             'recommended' => $recommended,
             'cost' => Training::cost($league->id),
+            // [Sprint 64 B4] A session's spend before it is made: what is left after, and when it ends.
+            'quote' => SpendQuote::money($club->id, Training::cost($league->id), Training::interval($league->id)),
             'balance' => (int) DB::table('clubs')->where('id', $club->id)->value('balance'),
             'interval_minutes' => intdiv(Training::interval($league->id), 60),
             'now' => GameClock::now()->toIso8601ZuluString(),

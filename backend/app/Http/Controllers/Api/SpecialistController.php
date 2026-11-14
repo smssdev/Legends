@@ -9,6 +9,7 @@ use App\Models\League;
 use App\Staff\Specialists;
 use App\Support\GameClock;
 use App\Wallet\Price;
+use App\Wallet\SpendQuote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -30,10 +31,13 @@ class SpecialistController extends Controller
                 $c = Specialists::current($club->id, $type);
                 $next = Specialists::next($club->id, $type);
                 // A price for each number of stars, and what each gives [X20].
-                $offers = array_map(function ($stars) use ($league, $type) {
+                // [Sprint 64 B4] A renewal starts when the contract ends; each offer says what is left after it, and when it ends.
+                $ends = ($c ? Carbon::parse($c->ends_at, 'UTC') : GameClock::now())->addSeconds(Specialists::seconds($league->id));
+                $offers = array_map(function ($stars) use ($league, $type, $club, $ends) {
                     $q = Price::quote($league->id, 'specialist', Specialists::cost($league->id, $type, $stars), (int) config("game.specialists.stars_cost_bp.{$stars}"));
 
-                    return ['stars' => $stars, 'cost' => $q['amount'], 'currency' => $q['currency'], 'effect' => self::effect($type, $stars)];
+                    return ['stars' => $stars, 'cost' => $q['amount'], 'currency' => $q['currency'], 'effect' => self::effect($type, $stars),
+                        'quote' => SpendQuote::of($club->id, $q, $ends)];
                 }, [1, 2, 3, 4, 5]);
                 $three = $offers[2];
 

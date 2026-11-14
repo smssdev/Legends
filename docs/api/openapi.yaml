@@ -5266,6 +5266,7 @@ components:
         hours: { type: integer }
         balance: { type: integer }
         finish_coins: { type: integer, description: "[Sprint 18 F1] The coins to finish a search under way now" }
+        quote: { $ref: '#/components/schemas/SpendQuote' }
         options:
           type: object
           required: [leagues, nationalities, positions]
@@ -5795,10 +5796,21 @@ components:
                 items:
                   type: object
                   required: [stars, cost, currency, effect]
-                  properties: { stars: { type: integer }, cost: { type: integer }, currency: { type: string, enum: [coins, money] }, effect: { type: string, description: What it gives, in Arabic } }
+                  properties: { stars: { type: integer }, cost: { type: integer }, currency: { type: string, enum: [coins, money] }, effect: { type: string, description: What it gives, in Arabic }, quote: { $ref: '#/components/schemas/SpendQuote' } }
               stars: { type: integer, description: 'The contract working now (0 without one)' }
               renewed: { type: boolean, description: A renewal is signed and starts when this contract ends }
               ends_at: { type: string, format: date-time, nullable: true, description: While a contract works }
+    SpendQuote:
+      type: object
+      description: '[Sprint 64 B4] A spend before it is made, as buying a player shows it: the price, what the club (or its coach, in coins) has, what is left after, and when what it buys ends'
+      required: [currency, amount, have, after, can, ends_at]
+      properties:
+        currency: { type: string, enum: [coins, money] }
+        amount: { type: integer }
+        have: { type: integer }
+        after: { type: integer, description: Below zero when it cannot be paid }
+        can: { type: boolean }
+        ends_at: { type: string, format: date-time, nullable: true }
     SpyPlayer:
       type: object
       required: [id, name, position, line, overall]
@@ -5899,13 +5911,15 @@ components:
               amount: { type: integer }
         pending:
           type: array
-          description: The most urgent first
+          description: '[Sprint 64 B3] Ranked by the server, the most pressing first (priority), each with where its one action goes (go)'
           items:
             type: object
-            required: [kind, severity]
+            required: [kind, severity, priority, go]
             properties:
               kind: { type: string, enum: [window, lineup, offers, requests, training_empty, training_done] }
               severity: { type: string, enum: [high, mid, low] }
+              priority: { type: integer, description: 'Higher first: window 100, lineup 90, offers 60, requests 50, training_empty 30, training_done 20' }
+              go: { type: string, enum: [match, lineup, offers, requests, training], description: The page its action opens }
               count: { type: integer }
               match_id: { type: integer }
               until: { type: integer, description: ms }
@@ -6301,6 +6315,7 @@ components:
                   stage: { type: integer }
                   part: { type: integer }
                   cost: { type: integer }
+                  quote: { $ref: '#/components/schemas/SpendQuote' }
         building:
           type: object
           nullable: true
@@ -6408,6 +6423,7 @@ components:
           description: '[Sprint 30 G5] Per line, the player whose +1 comes soonest (fewest sessions, the younger on a tie), never injured, at the ceiling or training; null for a line already training'
           properties: { gk: { type: [integer, 'null'] }, def: { type: [integer, 'null'] }, mid: { type: [integer, 'null'] }, att: { type: [integer, 'null'] } }
         cost: { type: integer, description: One session's price }
+        quote: { $ref: '#/components/schemas/SpendQuote' }
         balance: { type: integer }
         interval_minutes: { type: integer }
         now: { type: string, format: date-time, description: The game clock, for the countdowns }
@@ -6847,6 +6863,16 @@ components:
       type: object
       required: [coach, record, titles, objectives]
       properties:
+        head_to_head:
+          type: [object, 'null']
+          description: '[Sprint 64 B7] The viewer against this coach: every finished match between their clubs (by their memberships at its date), from the viewer''s side, the last five newest first. Null on one''s own profile.'
+          required: [played, won, drawn, lost, last]
+          properties:
+            played: { type: integer }
+            won: { type: integer }
+            drawn: { type: integer }
+            lost: { type: integer }
+            last: { type: array, items: { type: string, enum: [W, D, L] } }
         coach: { type: object, required: [id, name], properties: { id: { type: integer }, account_no: { type: integer }, name: { type: string }, official: { type: boolean, description: 'A developer account [X11]' }, verified: { type: boolean, description: '[Sprint 21 E2.5] A verified account' } } }
         record:
           type: object
@@ -7226,6 +7252,7 @@ components:
         text: { type: string }
         big: { type: string, description: The number in large type }
         unit: { type: string, nullable: true }
+        go: { type: [string, 'null'], enum: [lineup, tactics, training, null], description: '[Sprint 64 B6] Where a coach acts on it (the suggestion''s button); none for luck' }
     ReportPlayer:
       type: object
       required: [team, id, name, rating]

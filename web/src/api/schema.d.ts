@@ -13629,6 +13629,7 @@ export interface components {
             balance: number;
             /** @description [Sprint 18 F1] The coins to finish a search under way now */
             finish_coins?: number;
+            quote?: components["schemas"]["SpendQuote"];
             options: {
                 leagues: string[];
                 nationalities: string[];
@@ -14297,6 +14298,7 @@ export interface components {
                     currency: "coins" | "money";
                     /** @description What it gives */
                     effect: string;
+                    quote?: components["schemas"]["SpendQuote"];
                 }[];
                 /** @description The contract working now (0 without one) */
                 stars: number;
@@ -14308,6 +14310,18 @@ export interface components {
                  */
                 ends_at: string | null;
             }[];
+        };
+        /** @description [Sprint 64 B4] A spend before it is made, as buying a player shows it: the price, what the club (or its coach, in coins) has, what is left after, and when what it buys ends */
+        SpendQuote: {
+            /** @enum {string} */
+            currency: "coins" | "money";
+            amount: number;
+            have: number;
+            /** @description Below zero when it cannot be paid */
+            after: number;
+            can: boolean;
+            /** Format: date-time */
+            ends_at: string | null;
         };
         SpyPlayer: {
             id: number;
@@ -14453,12 +14467,19 @@ export interface components {
                 stage?: number;
                 amount?: number;
             }[];
-            /** @description The most urgent first */
+            /** @description [Sprint 64 B3] Ranked by the server, the most pressing first (priority), each with where its one action goes (go) */
             pending: {
                 /** @enum {string} */
                 kind: "window" | "lineup" | "offers" | "requests" | "training_empty" | "training_done";
                 /** @enum {string} */
                 severity: "high" | "mid" | "low";
+                /** @description Higher first: window 100, lineup 90, offers 60, requests 50, training_empty 30, training_done 20 */
+                priority: number;
+                /**
+                 * @description The page its action opens
+                 * @enum {string}
+                 */
+                go: "match" | "lineup" | "offers" | "requests" | "training";
                 count?: number;
                 match_id?: number;
                 /** @description ms */
@@ -15008,6 +15029,7 @@ export interface components {
                     stage: number;
                     part: number;
                     cost: number;
+                    quote?: components["schemas"]["SpendQuote"];
                 } | null;
             }[];
             building: {
@@ -15160,6 +15182,7 @@ export interface components {
             };
             /** @description One session's price */
             cost: number;
+            quote?: components["schemas"]["SpendQuote"];
             balance: number;
             interval_minutes: number;
             /**
@@ -15698,6 +15721,14 @@ export interface components {
             }[];
         };
         CoachProfile: {
+            /** @description [Sprint 64 B7] The viewer against this coach: every finished match between their clubs (by their memberships at its date), from the viewer's side, the last five newest first. Null on one's own profile. */
+            head_to_head?: {
+                played: number;
+                won: number;
+                drawn: number;
+                lost: number;
+                last: ("W" | "D" | "L")[];
+            } | null;
             coach: {
                 id: number;
                 account_no?: number;
@@ -16200,6 +16231,11 @@ export interface components {
             /** @description The number in large type */
             big: string;
             unit?: string | null;
+            /**
+             * @description [Sprint 64 B6] Where a coach acts on it (the suggestion's button); none for luck
+             * @enum {string|null}
+             */
+            go?: "lineup" | "tactics" | "training" | null;
         };
         ReportPlayer: {
             /** @enum {string} */

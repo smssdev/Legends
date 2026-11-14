@@ -361,7 +361,7 @@
   "pushReady": "Notifications reach this phone",
   "pushNotReady": "Phone notifications are not switched on on the server yet; every message is in your inbox",
   "kindReferee": "Your next match's referee",
-  "kindMatchSoon": "Your match soon, and moves",
+  "kindMatchSoon": "Your match soon, your lineup an hour before, and moves",
   "kindOffers": "Offers, sales and loans",
   "kindDone": "Training, stadium and scout done",
   "kindNews": "Game news and the developers' messages",

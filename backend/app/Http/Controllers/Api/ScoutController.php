@@ -9,6 +9,7 @@ use App\Models\Club;
 use App\Models\League;
 use App\Support\Nation;
 use App\Wallet\Finish;
+use App\Wallet\SpendQuote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -28,6 +29,8 @@ class ScoutController extends Controller
             'cost' => Scout::cost($league->id),
             'hours' => intdiv((int) config('game.scout.hours') * max(1, (int) $league->timer_scale), 10000),
             'balance' => (int) $club->balance,
+            // [Sprint 64 B4] A search's spend before it is made: what is left after, and when it reports.
+            'quote' => SpendQuote::money($club->id, Scout::cost($league->id), intdiv((int) config('game.scout.hours') * 3600 * max(1, (int) $league->timer_scale), 10000)),
             // [Sprint 18 F1] The coins to finish a search under way now.
             'finish_coins' => (int) config('game.premium.price.finish_scout'),
             'options' => [

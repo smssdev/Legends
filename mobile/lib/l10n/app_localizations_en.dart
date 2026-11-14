@@ -1231,7 +1231,7 @@ class LEn extends L {
   String get kindReferee => 'Your next match\'s referee';
 
   @override
-  String get kindMatchSoon => 'Your match soon, and moves';
+  String get kindMatchSoon => 'Your match soon, your lineup an hour before, and moves';
 
   @override
   String get kindOffers => 'Offers, sales and loans';

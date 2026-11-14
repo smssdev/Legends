@@ -2261,7 +2261,7 @@ abstract class L {
   /// No description provided for @kindMatchSoon.
   ///
   /// In ar, this message translates to:
-  /// **'مباراتك بعد قليل وتقديمها'**
+  /// **'مباراتك بعد قليل، وتشكيلتك قبلها بساعة، وتقديمها'**
   String get kindMatchSoon;
 
   /// No description provided for @kindOffers.

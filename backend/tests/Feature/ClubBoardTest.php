@@ -74,6 +74,11 @@ class ClubBoardTest extends TestCase
         $board = $this->getJson($this->url('summary'))->json();
         $this->assertSame('lineup', $board['pending'][0]['kind']);
         $this->assertSame('injured', $board['pending'][0]['players'][0]['why']);
+        // [Sprint 64 B3] Ranked by the server, each with where its action goes: the lineup first, then the empty slots.
+        $this->assertSame(['priority' => 90, 'go' => 'lineup'], array_intersect_key($board['pending'][0], ['priority' => 1, 'go' => 1]));
+        $ranks = array_column($board['pending'], 'priority');
+        $this->assertSame($ranks, collect($ranks)->sortDesc()->values()->all());
+        $this->assertContains('training', array_column($board['pending'], 'go'));
         $this->assertFalse($board['lineup']['ready']);
         $slot = collect($this->getJson('/api/v1/home')->assertOk()
             // [Sprint 59 F1] The fields the app reads through HomeScreen (openapi.yaml).
