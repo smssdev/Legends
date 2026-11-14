@@ -13,3 +13,4 @@ tools/unity/players/downloads/
 
 # [Sprint 52 B7] The Android app lives on the server (the downloads volume), never in the repository.
 web/public/downloads/
+tools/promo/out/

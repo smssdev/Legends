@@ -1,0 +1,315 @@
+<!doctype html>
+<!-- The promo video's stage [2026-11-15]: 40 seconds in seven scenes, drawn by render(t) from the time alone (no CSS
+     animation runs by itself), so render.mjs takes each frame exactly. ?format=wide (1920x1080) or tall (1080x1920).
+     The art and the screens come from out/assets/ (prepare.py). The game's colours (docs/design/tokens.json). -->
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<style>
+  @font-face { font-family: 'Tajawal'; font-weight: 700; src: url(out/assets/tajawal-700-arabic.woff2) format('woff2'); }
+  @font-face { font-family: 'Tajawal'; font-weight: 500; src: url(out/assets/tajawal-500-arabic.woff2) format('woff2'); }
+  @font-face { font-family: 'Barlow'; font-weight: 800; src: url(out/assets/barlow-800.woff2) format('woff2'); }
+  @font-face { font-family: 'Barlow'; font-weight: 700; src: url(out/assets/barlow-700.woff2) format('woff2'); }
+  :root { --bg: #0B1A2C; --deep: #06111E; --gold: #F5B82E; --gold-light: #FFD36B; --brand: #12A07E; --mint: #4FE0B5; --text: #F7F4EA; --muted: #A9B6CC; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--deep); }
+  #stage { position: absolute; inset: 0; overflow: hidden; font-family: 'Tajawal', sans-serif; color: var(--text); }
+  .abs { position: absolute; will-change: transform, opacity; }
+  #bg { inset: -6%; background: url(out/assets/bg-stadium.jpg) center / cover; }
+  #shade { inset: 0; background: radial-gradient(ellipse at 50% 40%, rgba(11,26,44,.35) 0%, rgba(6,17,30,.86) 62%, rgba(6,17,30,.97) 100%); }
+  .beam { top: -20%; width: 22%; height: 140%; background: linear-gradient(180deg, rgba(255,230,160,.16), rgba(255,230,160,0) 70%); filter: blur(40px); transform-origin: 50% 0; mix-blend-mode: screen; }
+  .spark { width: 6px; height: 6px; border-radius: 50%; background: var(--gold-light); box-shadow: 0 0 12px 3px rgba(255,211,107,.7); }
+  .scene { inset: 0; opacity: 0; }
+  .center { left: 50%; top: 50%; }
+  .headline { font-weight: 700; line-height: 1.15; text-align: center; direction: rtl; text-shadow: 0 6px 30px rgba(0,0,0,.6); white-space: nowrap; }
+  .headline em { font-style: normal; color: var(--gold); }
+  .sub { font-weight: 500; color: var(--muted); text-align: center; direction: rtl; white-space: nowrap; }
+  .bar { height: 8px; border-radius: 8px; background: linear-gradient(90deg, var(--mint), var(--gold)); transform-origin: 50% 50%; }
+  .phone { border-radius: 4.2% / 9.5%; padding: 1.6% 1.4%; background: linear-gradient(145deg, #1d2e44, #050c16 60%); box-shadow: 0 40px 90px rgba(0,0,0,.65), 0 0 0 2px rgba(255,255,255,.08) inset, 0 0 60px rgba(79,224,181,.12); }
+  .phone img { display: block; width: 100%; border-radius: 2.6% / 5.8%; }
+  .card { border-radius: 26px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,.7), 0 0 0 3px rgba(245,184,46,.55); }
+  .card img { display: block; width: 100%; }
+  .chip { direction: rtl; font-weight: 700; padding: .35em .9em; border-radius: 999px; background: rgba(11,26,44,.85); border: 2px solid rgba(79,224,181,.6); color: var(--text); white-space: nowrap; box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+  .chip b { color: var(--gold); font-family: 'Barlow', sans-serif; font-weight: 800; }
+  .stamp { font-weight: 700; color: var(--gold); text-shadow: 0 0 40px rgba(245,184,46,.8), 0 8px 0 #7F5700; white-space: nowrap; }
+  .latin { font-family: 'Barlow', sans-serif; font-weight: 800; letter-spacing: .04em; white-space: nowrap; }
+  .pill { direction: ltr; font-family: 'Barlow', sans-serif; font-weight: 700; padding: .35em 1.1em; border-radius: 999px; background: var(--gold); color: var(--bg); white-space: nowrap; box-shadow: 0 16px 40px rgba(245,184,46,.35); }
+  .flash { inset: 0; background: #fff; opacity: 0; mix-blend-mode: screen; }
+  .confetti { width: 14px; height: 22px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg" class="abs"></div>
+  <div id="beams"></div>
+  <div id="shade" class="abs"></div>
+  <div id="sparks"></div>
+
+  <!-- 1. The logo -->
+  <div id="s1" class="scene abs">
+    <img id="s1-logo" class="abs center" src="out/assets/emblem-ar.svg" alt="" />
+    <div id="s1-ring" class="abs center" style="border-radius:50%;border:6px solid var(--gold);"></div>
+    <div id="s1-name" class="abs latin center" style="color:var(--text)">GAME LEGEND <span style="color:var(--gold)">MANAGER</span></div>
+    <div id="s1-ar" class="abs headline center">المدرب الأسطورة</div>
+    <div id="s1-tag" class="abs sub center">لعبة إدارة كرة القدم العربية</div>
+  </div>
+
+  <!-- 2. The team -->
+  <div id="s2" class="scene abs">
+    <div id="s2-h" class="abs headline center">ابنِ <em>فريق أحلامك</em></div>
+    <div id="s2-bar" class="abs bar center"></div>
+    <div id="s2-back" class="abs phone center"><img src="out/assets/squad.jpg" alt="" /></div>
+    <div id="s2-front" class="abs phone center"><img src="out/assets/lineup.jpg" alt="" /></div>
+    <div id="s2-c1" class="abs chip center"><b>53</b> دورياً حقيقياً</div>
+    <div id="s2-c2" class="abs chip center"><b>400</b> نادٍ ولاعبوها</div>
+  </div>
+
+  <!-- 3. The tactics -->
+  <div id="s3" class="scene abs">
+    <div id="s3-h" class="abs headline center">خطّط <em>لكل مباراة</em></div>
+    <div id="s3-bar" class="abs bar center"></div>
+    <div id="s3-phone" class="abs phone center"><img src="out/assets/tactics.jpg" alt="" /></div>
+    <img id="s3-coach" class="abs center" src="out/assets/coach-think.webp" alt="" />
+    <div id="s3-c1" class="abs chip center">الضغط على الخصم</div>
+    <div id="s3-c2" class="abs chip center">الأسلوب</div>
+    <div id="s3-c3" class="abs chip center">إيقاع اللعب</div>
+  </div>
+
+  <!-- 4. The live match -->
+  <div id="s4" class="scene abs">
+    <div id="s4-h" class="abs headline center">أدر المباراة <em>حيّة</em></div>
+    <div id="s4-bar" class="abs bar center"></div>
+    <div id="s4-vs" class="abs phone center"><img src="out/assets/versus.jpg" alt="" /></div>
+    <div id="s4-card" class="abs card center"><img id="s4-img" src="out/assets/clip-attack.jpg" alt="" /></div>
+    <div id="s4-stamp" class="abs stamp center">هدف!</div>
+    <img id="s4-joy" class="abs center" src="out/assets/coach-joy.webp" alt="" />
+    <img id="s4-angry" class="abs center" src="out/assets/coach-angry.webp" alt="" />
+    <div id="s4-sub" class="abs sub center">أوامرك في فترات التوقف · تبديلات · تكتيك · الفار</div>
+    <div id="s4-confetti"></div>
+  </div>
+
+  <!-- 5. The club -->
+  <div id="s5" class="scene abs">
+    <div id="s5-h" class="abs headline center">السوق <em>والتدريب</em> والملعب</div>
+    <div id="s5-bar" class="abs bar center"></div>
+    <div id="s5-a" class="abs phone center"><img src="out/assets/market.jpg" alt="" /></div>
+    <div id="s5-b" class="abs phone center"><img src="out/assets/training.jpg" alt="" /></div>
+    <div id="s5-c" class="abs phone center"><img src="out/assets/stadium.jpg" alt="" /></div>
+  </div>
+
+  <!-- 6. Friends and tournaments -->
+  <div id="s6" class="scene abs">
+    <div id="s6-h" class="abs headline center">دوري خاص <em>مع أصحابك</em></div>
+    <div id="s6-bar" class="abs bar center"></div>
+    <div id="s6-a" class="abs phone center"><img src="out/assets/league-picker.jpg" alt="" /></div>
+    <div id="s6-b" class="abs phone center"><img src="out/assets/tournament.jpg" alt="" /></div>
+    <div id="s6-sub" class="abs sub center">وبطولات كأس العالم بقرعة مباشرة يشاهدها الجميع</div>
+    <img id="s6-mascot" class="abs center" src="out/assets/mascot-celebrate.png" alt="" />
+  </div>
+
+  <!-- 7. The call -->
+  <div id="s7" class="scene abs">
+    <img id="s7-logo" class="abs center" src="out/assets/emblem-ar.svg" alt="" />
+    <div id="s7-h" class="abs headline center">العب <em>الآن مجاناً</em></div>
+    <div id="s7-url" class="abs pill center">gamelegendmanager.online</div>
+    <div id="s7-sub" class="abs sub center">على الموقع وتطبيق أندرويد</div>
+    <img id="s7-mascot" class="abs center" src="out/assets/mascot-welcome.png" alt="" />
+    <img id="s7-coin" class="abs center" src="out/assets/coin.svg" alt="" />
+  </div>
+
+  <div id="flash" class="abs flash"></div>
+</div>
+
+<script>
+const TALL = new URLSearchParams(location.search).get('format') === 'tall'
+const W = TALL ? 1080 : 1920, H = TALL ? 1920 : 1080
+const U = Math.min(W, H) / 1080          // the unit: 1 at 1080 on the short side
+const $ = (id) => document.getElementById(id)
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+const lerp = (a, b, k) => a + (b - a) * k
+const p = (t, a, b) => clamp((t - a) / (b - a))                      // progress of t from a to b
+const out3 = (k) => 1 - Math.pow(1 - k, 3)
+const inOut = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2)
+const back = (k) => { const c = 1.6; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2) }
+// A seeded random (the same every frame): the sparks, the confetti.
+const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2147483647) })()
+
+/** Puts an element: centre (x, y) in px from the stage's centre, scale, rotation, opacity, width (px). */
+function put(id, { x = 0, y = 0, s = 1, r = 0, o = 1, w } = {}) {
+  const el = $(id)
+  if (w !== undefined) el.style.width = w + 'px'
+  el.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${r}deg) scale(${s})`
+  el.style.opacity = o
+}
+function font(id, px) { $(id).style.fontSize = px * U + 'px' }
+
+const SCENES = [['s1', 0, 4.2], ['s2', 4.2, 10], ['s3', 10, 15], ['s4', 15, 25], ['s5', 25, 30], ['s6', 30, 35], ['s7', 35, 40]]
+const FADE = 0.35
+
+// The light beams and the sparks, made once.
+const beams = Array.from({ length: 4 }, (_, i) => { const b = document.createElement('div'); b.className = 'abs beam'; b.style.left = (12 + i * 22) + '%'; $('beams').appendChild(b); return b })
+const sparks = Array.from({ length: 46 }, () => { const s = document.createElement('div'); s.className = 'abs spark'; $('sparks').appendChild(s); return { el: s, x: rnd(), y: rnd(), v: 0.02 + rnd() * 0.05, ph: rnd() * 6.28, z: 0.4 + rnd() * 1.2 } })
+const confetti = Array.from({ length: 70 }, () => { const c = document.createElement('div'); c.className = 'abs confetti'; c.style.background = ['#F5B82E', '#4FE0B5', '#FFFFFF', '#12A07E', '#FFD36B'][Math.floor(rnd() * 5)]; $('s4-confetti').appendChild(c); return { el: c, x: rnd() * 2 - 1, v: 0.5 + rnd(), sp: rnd() * 720 - 360, d: rnd() * 0.4 } })
+
+function scene(id, a, b, t) {
+  const o = Math.min(p(t, a, a + FADE), 1 - p(t, b - FADE, b))
+  $(id).style.opacity = t >= a && t < b ? o : 0
+  $(id).style.visibility = t >= a - 0.01 && t < b + 0.01 ? 'visible' : 'hidden'
+  return t - a
+}
+
+/** The headline, its bar and its subline: in from below at `at`, the bar wiping across. */
+function headline(prefix, lt, y, size = 92) {
+  const k = out3(p(lt, 0.15, 0.85))
+  font(prefix + '-h', size)
+  put(prefix + '-h', { y: y + (1 - k) * 60 * U, o: k })
+  const bar = $(prefix + '-bar')
+  if (bar) { put(prefix + '-bar', { y: y + size * 0.78 * U, w: 220 * U, o: k }); bar.style.transform += ` scaleX(${out3(p(lt, 0.45, 1.1))})` }
+}
+
+function render(t) {
+  // The ground: the stadium slowly closer, the beams sweeping, the sparks rising.
+  put('bg', { s: 1 + t * 0.006, x: Math.sin(t * 0.2) * 18 * U })
+  beams.forEach((b, i) => { b.style.transform = `rotate(${Math.sin(t * 0.55 + i * 1.7) * 16}deg)`; b.style.opacity = 0.35 + 0.2 * Math.sin(t * 0.9 + i) })
+  sparks.forEach((s) => {
+    const y = (s.y - t * s.v) % 1
+    s.el.style.transform = `translate(${s.x * W + Math.sin(t + s.ph) * 20}px, ${(y < 0 ? y + 1 : y) * H}px) scale(${s.z})`
+    s.el.style.opacity = 0.25 + 0.5 * (0.5 + 0.5 * Math.sin(t * 2 + s.ph))
+  })
+
+  // 1. The logo: it lands, a ring opens, the names come.
+  let lt = scene('s1', 0, 4.2, t)
+  if (lt >= 0 && lt < 4.3) {
+    const k = back(p(lt, 0.25, 1.25))
+    const logo = (TALL ? 520 : 400) * U
+    put('s1-logo', { y: (TALL ? -260 : -120) * U, w: logo, s: 0.5 + 0.5 * k + lt * 0.02, o: p(lt, 0.25, 0.6) })
+    const r = p(lt, 0.9, 2.2)
+    put('s1-ring', { y: (TALL ? -260 : -120) * U, w: logo * 1.1, s: 0.8 + r * 0.9, o: (1 - r) * 0.8 })
+    $('s1-ring').style.height = logo * 1.1 + 'px'
+    font('s1-name', TALL ? 76 : 64); put('s1-name', { y: (TALL ? 120 : 160) * U + (1 - out3(p(lt, 1.2, 1.9))) * 40 * U, o: p(lt, 1.2, 1.8) })
+    font('s1-ar', TALL ? 110 : 96); put('s1-ar', { y: (TALL ? 260 : 270) * U + (1 - out3(p(lt, 1.7, 2.4))) * 40 * U, o: p(lt, 1.7, 2.3) })
+    font('s1-tag', 40); put('s1-tag', { y: (TALL ? 380 : 360) * U, o: p(lt, 2.3, 2.9) })
+  }
+
+  // 2. The team: the lineup in front, the squad behind, the numbers of the game's data.
+  lt = scene('s2', 4.2, 10, t)
+  if (lt >= 0 && lt < 6) {
+    headline('s2', lt, (TALL ? -700 : -400) * U)
+    const pw = (TALL ? 960 : 1060) * U
+    const k = out3(p(lt, 0.4, 1.3)), k2 = out3(p(lt, 0.7, 1.6))
+    put('s2-back', { x: (TALL ? 0 : 230) * U, y: (TALL ? 320 : 30) * U + (1 - k2) * 200 * U, w: pw * 0.82, r: TALL ? 3 : 5, o: k2 * 0.85 })
+    put('s2-front', { x: (TALL ? 0 : -150) * U + (1 - k) * -300 * U * (TALL ? 0 : 1), y: (TALL ? -170 : 90) * U + (TALL ? (1 - k) * 300 * U : 0), w: pw, r: TALL ? -2 : -3, s: 1 + lt * 0.01, o: k })
+    font('s2-c1', 46); font('s2-c2', 46)
+    put('s2-c1', { x: (TALL ? -200 : 640) * U, y: (TALL ? 700 : -180) * U, s: back(p(lt, 1.8, 2.4)), o: p(lt, 1.8, 2.0) })
+    put('s2-c2', { x: (TALL ? 200 : 640) * U, y: (TALL ? 800 : 330) * U, s: back(p(lt, 2.3, 2.9)), o: p(lt, 2.3, 2.5) })
+  }
+
+  // 3. The tactics: the screen, the coach thinking, three of the coach's dials.
+  lt = scene('s3', 10, 15, t)
+  if (lt >= 0 && lt < 5.1) {
+    headline('s3', lt, (TALL ? -700 : -400) * U)
+    const k = out3(p(lt, 0.3, 1.2))
+    put('s3-phone', { x: (TALL ? 0 : 120) * U, y: (TALL ? -120 : 70) * U + (1 - k) * 260 * U, w: (TALL ? 980 : 1100) * U, s: 1 + lt * 0.012, o: k })
+    put('s3-coach', { x: (TALL ? -330 : -700) * U, y: (TALL ? 560 : 160) * U + (1 - out3(p(lt, 0.8, 1.6))) * 300 * U, w: (TALL ? 300 : 300) * U, o: p(lt, 0.8, 1.2) })
+    ;[['s3-c1', 1.4, -1], ['s3-c2', 1.9, 0], ['s3-c3', 2.4, 1]].forEach(([id, at, i]) => {
+      font(id, 44)
+      const kk = back(p(lt, at, at + 0.6))
+      put(id, TALL ? { x: 170 * U, y: (560 + i * 120) * U, s: kk, o: p(lt, at, at + 0.2) } : { x: 800 * U, y: (60 + i * 130) * U, s: kk, o: p(lt, at, at + 0.2) })
+    })
+  }
+
+  // 4. The live match: the two teams, then its moments as the broadcast tells them: a dangerous attack, two goals, a
+  // ball kept off the line; the coaches feel it.
+  lt = scene('s4', 15, 25, t)
+  if (lt >= 0 && lt < 10.1) {
+    headline('s4', lt, (TALL ? -700 : -420) * U)
+    font('s4-sub', 40); put('s4-sub', { y: (TALL ? 880 : 440) * U, o: p(lt, 1.0, 1.6) })
+    const vsOut = p(lt, 1.8, 2.3)
+    put('s4-vs', { y: (TALL ? -60 : 60) * U, w: (TALL ? 980 : 1200) * U, s: 1 + lt * 0.02 - vsOut * 0.15, o: Math.min(p(lt, 0.3, 0.8), 1 - vsOut) })
+    // The clips: [start, end, image]
+    const CLIPS = [[2.1, 3.3, 'attack'], [3.3, 5.4, 'goal1'], [5.4, 7.6, 'goal2'], [7.6, 10, 'save']]
+    const cur = CLIPS.find(([a, b]) => lt >= a && lt < b)
+    if (cur) {
+      const img = 'out/assets/clip-' + cur[2] + '.jpg'
+      if (!$('s4-img').src.endsWith(img)) $('s4-img').src = img
+      const k = out3(p(lt, cur[0], cur[0] + 0.35))
+      put('s4-card', { y: (TALL ? -40 : 70) * U, w: (TALL ? 940 : 900) * U, s: 0.92 + 0.08 * k + (lt - cur[0]) * 0.015, r: (1 - k) * (cur[2] === 'goal2' ? 4 : -4), o: Math.min(k, 1 - p(lt, 9.6, 10)) })
+    } else put('s4-card', { o: 0 })
+    // «هدف!» stamps on each goal, the flash and the confetti.
+    const goalAt = lt >= 3.3 && lt < 7.6 ? (lt < 5.4 ? 3.45 : 5.55) : null
+    if (goalAt !== null) {
+      const g = lt - goalAt
+      $('s4-stamp').textContent = 'هدف!'
+      font('s4-stamp', TALL ? 190 : 170)
+      put('s4-stamp', { x: (TALL ? 0 : -720) * U, y: (TALL ? 390 : -150) * U, s: g < 0 ? 0 : back(p(g, 0, 0.45)) * (1 + 0.04 * Math.sin(g * 9)), r: -6, o: g < 0 ? 0 : Math.min(1, 1 - p(g, 1.7, 2.0)) })
+      $('flash').style.opacity = g >= 0 && g < 0.25 ? 0.55 * (1 - g / 0.25) : 0
+      confetti.forEach((c) => {
+        const f = g - c.d
+        c.el.style.opacity = f > 0 && f < 2 ? 1 : 0
+        c.el.style.transform = `translate(${W / 2 + c.x * W * 0.45}px, ${-40 + f * c.v * H * 0.55}px) rotate(${f * c.sp}deg)`
+      })
+    } else if (lt >= 7.6 && lt < 10) {
+      const g = lt - 7.8
+      $('s4-stamp').textContent = 'تصدٍّ!'
+      font('s4-stamp', TALL ? 160 : 140)
+      put('s4-stamp', { x: (TALL ? 0 : -720) * U, y: (TALL ? 390 : -150) * U, s: g < 0 ? 0 : back(p(g, 0, 0.45)), r: 5, o: g < 0 ? 0 : 1 - p(g, 1.6, 1.9) })
+      $('flash').style.opacity = 0
+      confetti.forEach((c) => (c.el.style.opacity = 0))
+    } else { put('s4-stamp', { o: 0 }); $('flash').style.opacity = 0; confetti.forEach((c) => (c.el.style.opacity = 0)) }
+    // The coaches: the scorers' one jumps, the other is furious.
+    const cj = out3(p(lt, 3.5, 4.0)) * (1 - p(lt, 9.4, 9.9)), ca = out3(p(lt, 3.7, 4.2)) * (1 - p(lt, 9.4, 9.9))
+    put('s4-joy', { x: (TALL ? -330 : -760) * U, y: (TALL ? 640 : 220) * U + (1 - cj) * 400 * U - Math.abs(Math.sin(lt * 6)) * 24 * U * cj, w: 300 * U, o: cj })
+    put('s4-angry', { x: (TALL ? 330 : 760) * U, y: (TALL ? 640 : 160) * U + (1 - ca) * 400 * U, w: 300 * U, o: ca })
+  } else $('flash').style.opacity = 0
+
+  // 5. The club: three screens fanned like cards.
+  lt = scene('s5', 25, 30, t)
+  if (lt >= 0 && lt < 5.1) {
+    headline('s5', lt, (TALL ? -700 : -400) * U)
+    const pw = (TALL ? 860 : 760) * U
+    ;[['s5-a', 0.3, -1], ['s5-b', 0.55, 0], ['s5-c', 0.8, 1]].forEach(([id, at, i]) => {
+      const k = out3(p(lt, at, at + 0.8))
+      put(id, TALL
+        ? { x: i * 40 * U, y: (i * 420 + 60) * U + (1 - k) * 400 * U, w: pw, r: i * 3, o: k }
+        : { x: i * 560 * U, y: (110 + Math.abs(i) * 40) * U + (1 - k) * 400 * U, w: pw, r: i * 6, s: i === 0 ? 1.06 : 0.94, o: k })
+    })
+  }
+
+  // 6. Friends and tournaments: the league picker, the World Cup, the mascot cheering.
+  lt = scene('s6', 30, 35, t)
+  if (lt >= 0 && lt < 5.1) {
+    headline('s6', lt, (TALL ? -700 : -420) * U)
+    const pw = (TALL ? 940 : 900) * U
+    const ka = out3(p(lt, 0.3, 1.1)), kb = out3(p(lt, 0.8, 1.6))
+    put('s6-a', TALL ? { y: -170 * U + (1 - ka) * 300 * U, w: pw, r: -2, o: ka } : { x: -420 * U, y: 60 * U + (1 - ka) * 300 * U, w: pw, r: -4, o: ka })
+    put('s6-b', TALL ? { y: 320 * U + (1 - kb) * 300 * U, w: pw, r: 2, o: kb } : { x: 420 * U, y: 90 * U + (1 - kb) * 300 * U, w: pw, r: 4, o: kb })
+    font('s6-sub', 40); put('s6-sub', { y: (TALL ? 620 : 430) * U, o: p(lt, 1.6, 2.2) })
+    const km = back(p(lt, 1.8, 2.5))
+    put('s6-mascot', { x: (TALL ? 0 : 0) * U, y: (TALL ? 780 : 250) * U - Math.abs(Math.sin(lt * 5)) * 30 * U * km, w: (TALL ? 230 : 210) * U, s: km, o: p(lt, 1.8, 2.0) })
+  }
+
+  // 7. The call: the logo, play now for free, the address.
+  lt = scene('s7', 35, 40, t)
+  if (lt >= 0 && lt < 5.1) {
+    const k = back(p(lt, 0.2, 1.0))
+    put('s7-logo', { y: (TALL ? -480 : -230) * U, w: (TALL ? 420 : 300) * U, s: k, o: p(lt, 0.2, 0.5) })
+    font('s7-h', TALL ? 130 : 120); put('s7-h', { y: (TALL ? -130 : 30) * U + (1 - out3(p(lt, 0.7, 1.3))) * 50 * U, o: p(lt, 0.7, 1.2) })
+    font('s7-url', TALL ? 62 : 56); put('s7-url', { y: (TALL ? 70 : 190) * U, s: back(p(lt, 1.3, 1.9)) * (1 + 0.03 * Math.sin(lt * 4)), o: p(lt, 1.3, 1.5) })
+    font('s7-sub', 44); put('s7-sub', { y: (TALL ? 200 : 300) * U, o: p(lt, 1.9, 2.4) })
+    put('s7-mascot', { x: (TALL ? 0 : -700) * U, y: (TALL ? 560 : 170) * U + (1 - out3(p(lt, 1.0, 1.8))) * 400 * U, w: (TALL ? 380 : 320) * U, o: p(lt, 1.0, 1.4) })
+    put('s7-coin', { x: (TALL ? 300 : 700) * U, y: (TALL ? 520 : 120) * U, w: 150 * U, r: lt * 90, s: back(p(lt, 1.5, 2.1)), o: p(lt, 1.5, 1.7) })
+    // The last half second fades to the night.
+    $('stage').style.opacity = 1 - p(lt, 4.6, 5)
+  } else $('stage').style.opacity = 1
+}
+
+window.render = render
+// Every moment's picture decoded before the first frame (the card swaps between them).
+const PRELOAD = ['attack', 'goal1', 'goal2', 'save'].map((n) => { const i = new Image(); i.src = 'out/assets/clip-' + n + '.jpg'; return i })
+window.ready = Promise.all([document.fonts.ready, ...[...document.images, ...PRELOAD].map((i) => i.decode().catch(() => {}))])
+document.body.style.width = W + 'px'
+document.body.style.height = H + 'px'
+render(0)
+</script>
+</body>
+</html>
