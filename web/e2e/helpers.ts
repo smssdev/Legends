@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { expect, type Page } from '@playwright/test'
 
 /** Past the splash (it waits for the server's first answer). */
@@ -30,4 +31,38 @@ export async function signUp(page: Page): Promise<string> {
   await page.getByRole('button', { name: 'إنشاء الحساب' }).click()
   await expect(page).not.toHaveURL(/register/, { timeout: 20_000 })
   return username
+}
+
+/** [Sprint 66 T5] A league with the coach's club in it (the first league and club offered); its path. */
+export async function makeLeague(page: Page): Promise<string> {
+  await page.goto('/leagues/new')
+  await ready(page)
+  await page.locator('.league-tile').first().click()
+  await page.getByRole('button', { name: 'أنشئ الدوري واختر فريقك' }).click()
+  await page.locator('section[aria-label="أندية الدوري"] button').first().click()
+  await page.getByRole('button', { name: /أنشئ الدوري بـ/ }).click()
+  await expect(page).toHaveURL(/\/leagues\/\d+/, { timeout: 20_000 })
+  return new URL(page.url()).pathname
+}
+
+/** [Sprint 66 T5] The contract a coach signs on taking his club (Sprint 43), signed with the keys (Sprint 65 W5). */
+export async function signContract(page: Page) {
+  const pad = page.getByRole('button', { name: /وقّع بإصبعك هنا/ })
+  if (!(await pad.isVisible({ timeout: 5000 }).catch(() => false))) return
+  await pad.focus()
+  await page.keyboard.press('Enter')
+  await page.getByRole('button', { name: 'وقّع وتولَّ القيادة' }).click()
+  await page.getByRole('button', { name: 'إلى غرفة الملابس' }).click()
+  await expect(pad).toHaveCount(0)
+}
+
+/** [Sprint 66 T5] The local server's artisan (the journeys' server is on this machine, in CI as here). */
+export function artisan(...args: string[]): string {
+  return execFileSync('php', ['artisan', ...args], { cwd: '../backend', stdio: 'pipe' }).toString()
+}
+
+/** [Sprint 66 T5] Coins to a coach as the admin gives them (the ledger's admin_gift, once per key). */
+export function giveCoins(username: string, amount: number) {
+  const code = `App\\Wallet\\Wallet::post(App\\Models\\User::where('username', '${username}')->value('id'), 'admin_gift', ${amount}, 'e2e:${username}', 'e2e');`
+  artisan('tinker', `--execute=${code}`)
 }

@@ -474,6 +474,10 @@ return [
         'stoppage' => [1 => [1, 3], 2 => [2, 6], 3 => [0, 2], 4 => [0, 2]],
         'bot_personalities' => ['giants', 'defenders', 'pressers', 'hard', 'wingers', 'adaptive'],
     ],
+    // [Sprint 10 B3, Sprint 66 T5] Sign-in, sign-up and password attempts a minute: per email (or, signing up by username,
+    // per address) and per address. The browser journeys' server raises them (web/playwright.config.ts): they sign up a
+    // coach each.
+    'auth_limits' => ['per_email' => (int) env('AUTH_PER_MINUTE', 5), 'per_ip' => (int) env('AUTH_IP_PER_MINUTE', 20)],
     'clock' => ['dev_round_minutes' => 1, 'file' => env('GAME_CLOCK_FILE', storage_path('app/game-clock.json'))],
     // [Sprint 52 B9] A visitor without an account makes at most guest_matches_per_day trial matches a day per address
     // (each one is the engine's work for the whole match); a signed-in coach keeps the per-minute limit alone.

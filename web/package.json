@@ -18,6 +18,8 @@
     "frames": "node --experimental-strip-types --no-warnings scripts/frames.mjs",
     "feed": "node --experimental-strip-types --no-warnings scripts/feed.mjs",
     "e2e": "playwright test",
+    "e2e:journeys": "playwright test e2e/critical.spec.ts e2e/market.spec.ts e2e/training.spec.ts e2e/live.spec.ts e2e/invite.spec.ts e2e/group.spec.ts e2e/tournament.spec.ts e2e/account.spec.ts",
+    "e2e:screens": "playwright test e2e/a11y.spec.ts e2e/layout.spec.ts e2e/visual.spec.ts e2e/budget.spec.ts e2e/intro.spec.ts",
     "test": "vitest run",
     "nav": "node scripts/nav.mjs",
     "lint": "eslint .",
