@@ -1,3 +1,5 @@
+import java.io.File
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -15,7 +17,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "online.gamelegendmanager.glm"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -29,11 +30,25 @@ android {
         versionName = flutter.versionName
     }
 
+    // [Sprint 62 F1] The release signed with the game's one fixed key, so each new version installs over the last and
+    // the invitation links open the app (assetlinks.json carries its fingerprint). The key never lives in the
+    // repository: CI writes it from GitHub Secrets (mobile.yml), Sulaiman's machine from its own copy, through four
+    // variables. Without them (a local build) the release falls back to the debug key, as before.
+    val keystore = System.getenv("GLM_KEYSTORE")?.takeIf { it.isNotBlank() && File(it).exists() }
+    signingConfigs {
+        if (keystore != null) {
+            create("release") {
+                storeFile = File(keystore)
+                storePassword = System.getenv("GLM_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("GLM_KEY_ALIAS")
+                keyPassword = System.getenv("GLM_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(if (keystore != null) "release" else "debug")
         }
     }
 }

@@ -109,7 +109,8 @@ class LEn extends L {
   String get updateTitle => 'Update the app';
 
   @override
-  String get updateBody => 'A new version of the game is out, and this one no longer works with it. Update the app to carry on.';
+  String get updateBody =>
+      'A new version of the game is out, and this one no longer works with it. Update the app to carry on. If the phone refuses to install it over this one, remove this one once and install it: your account is on the server.';
 
   @override
   String get update => 'Update now';

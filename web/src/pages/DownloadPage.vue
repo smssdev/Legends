@@ -2,7 +2,7 @@
 import Icon from '../components/Icon.vue'
 // [Sprint 15 D1, the owner's request 2026-11-06] The app from the site itself: the Android app (the latest APK the
 // admins uploaded, from our own server), and on the iPhone the game added to the home screen from Safari, where it
-// opens as an app, until the App Store version (README section 11). The visitor's own phone comes first.
+// opens as an app (README section 0: no App Store, 2026-11-14). The visitor's own phone comes first.
 import { computed, onMounted, ref } from 'vue'
 import { api } from '../api/client'
 import PublicFooter from '../components/PublicFooter.vue'
@@ -53,6 +53,8 @@ onMounted(async () => {
                 <li>{{ $t('افتح «المدرب الأسطورة» وادخل بحسابك.') }}</li>
               </ol>
               <p v-if="android.notes" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm text-text-muted">{{ android.notes }}</p>
+              <!-- [Sprint 62 F2] The move to the game's fixed key: the signed version does not install over the earlier one. -->
+              <p class="rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-sm text-text-soft">{{ $t('ثبّتّ التطبيق من قبل ورفض الجوال التحديث؟ احذف النسخة القديمة مرة واحدة ثم ثبّت هذه: حسابك ودورياتك على الخادم فلا يضيع شيء، وكل نسخة بعدها تُثبَّت فوق التي قبلها.') }}</p>
               <a v-if="android.old_phones_url" :href="android.old_phones_url" download class="text-sm text-text-muted underline">{{ $t('جوال قديم لا يقبل التثبيت؟ نزّل نسخة الجوالات القديمة') }}</a>
             </template>
             <template v-else-if="loaded">
@@ -61,11 +63,11 @@ onMounted(async () => {
             </template>
           </section>
 
-          <!-- iPhone: the site on the home screen from Safari, until the App Store. -->
+          <!-- iPhone: the site on the home screen from Safari, the game's way on the iPhone (the owner, 2026-11-14: no paid Apple account, no App Store). -->
           <section v-else class="flex flex-col gap-4 rounded-2xl border bg-surface p-5" :class="ios ? 'border-gold/60' : 'border-surface-raised'" :aria-label="$t('آيفون')">
             <div class="flex items-center gap-3">
               <svg viewBox="0 0 24 24" class="size-10 fill-text" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9a4.8 4.8 0 0 0-3.8-2c-1.6-.2-3.1.9-3.9.9s-2-.9-3.4-.9a5 5 0 0 0-4.2 2.6c-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.5s1.7-.8 3.2-.8 1.9.8 3.2.8 2.2-1.2 3-2.5a10.6 10.6 0 0 0 1.4-2.8 4.3 4.3 0 0 1-2.1-4.1ZM14 5.1a4.4 4.4 0 0 0 1-3.1 4.4 4.4 0 0 0-2.9 1.5 4.1 4.1 0 0 0-1 3 3.6 3.6 0 0 0 2.9-1.4Z"/></svg>
-              <div><h2 class="font-display text-2xl font-bold">{{ $t('آيفون') }}</h2><p class="text-sm text-text-muted">{{ $t('تطبيق App Store قريباً') }}</p></div>
+              <div><h2 class="font-display text-2xl font-bold">{{ $t('آيفون') }}</h2><p class="text-sm text-text-muted">{{ $t('من Safari، بلا متجر') }}</p></div>
             </div>
             <p class="text-text-soft">{{ $t('ثبّت اللعبة من Safari على شاشتك الرئيسية، فتفتح كتطبيق بأيقونتها وتصلك التذكيرات:') }}</p>
             <ol class="flex list-decimal flex-col gap-1.5 ps-5 text-sm leading-relaxed text-text-soft">

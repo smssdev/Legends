@@ -487,7 +487,11 @@ return [
     // [Sprint 15 D1] The app to download from the site: its files on the server's downloads volume, at most max_mb each,
     // uploaded in pieces of chunk_kb (under any upload limit of PHP or nginx).
     'app' => ['min_version' => env('MIN_APP_VERSION', env('APP_VERSION', '0.1.0')), 'token_ttl_days' => 30,
-        'downloads_dir' => env('APP_DOWNLOADS_DIR', storage_path('app/downloads')), 'max_mb' => 200, 'chunk_kb' => 1536],
+        'downloads_dir' => env('APP_DOWNLOADS_DIR', storage_path('app/downloads')), 'max_mb' => 200, 'chunk_kb' => 1536,
+        // [Sprint 62 B1] The Android app's id and its release key's SHA-256 fingerprint (keytool -list -v, «AA:BB:…»; not a
+        // secret: anyone can read it from the APK), several separated by commas while two keys live. Set on the server
+        // (legends-set ANDROID_CERT_SHA256); until then /.well-known/assetlinks.json answers 404 and the links open the site.
+        'android_package' => 'online.gamelegendmanager.glm', 'android_cert_sha256' => env('ANDROID_CERT_SHA256', '')],
     // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
     'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'xp_prediction' => 1, 'level_step' => 20],
     // [Sprint 25] The coach's rating (App\Season\CoachRating): points that rise and fall with every league or cup match.

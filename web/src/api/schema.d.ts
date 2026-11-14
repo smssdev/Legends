@@ -8551,7 +8551,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** [Sprint 15 D1] The app to download from the site: the latest Android version (null before the first), and the iPhone (null: it installs from Safari until the App Store) */
+        /** [Sprint 15 D1] The app to download from the site: the latest Android version (null before the first), and the iPhone (null: it installs the web app from Safari, the owner's decision 2026-11-14: no App Store) */
         get: {
             parameters: {
                 query?: never;

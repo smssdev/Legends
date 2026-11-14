@@ -3144,7 +3144,7 @@ paths:
   /app:
     get:
       tags: [account]
-      summary: '[Sprint 15 D1] The app to download from the site: the latest Android version (null before the first), and the iPhone (null: it installs from Safari until the App Store)'
+      summary: '[Sprint 15 D1] The app to download from the site: the latest Android version (null before the first), and the iPhone (null: it installs the web app from Safari, the owner''s decision 2026-11-14: no App Store)'
       security: []
       responses:
         '200': { description: The versions, content: { application/json: { schema: { type: object, required: [android, ios, firebase], properties: { android: { allOf: [{ $ref: '#/components/schemas/AppRelease' }], nullable: true }, ios: { type: object, nullable: true }, firebase: { type: object, nullable: true, description: '[Sprint 19 B1] The app''s Firebase settings (not secret), null until set on the server', properties: { api_key: { type: string }, app_id: { type: string }, project_id: { type: string }, sender_id: { type: string } } } } } } } }

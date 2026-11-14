@@ -41,7 +41,8 @@ $file = realpath($public.$uri);
 
 // Laravel's own paths: the API, sign-in, broadcasting, the links opened from emails and WhatsApp, the health check.
 // [X57] And Google's /ads.txt, written from the AdSense account set on the server.
-const LARAVEL = ['/api/', '/sanctum/', '/broadcasting/', '/auth/google/', '/email/verify/', '/join/', '/up', '/ads.txt'];
+// [Sprint 62 B1] And Android's /.well-known/assetlinks.json, from the release key's fingerprint set on the server.
+const LARAVEL = ['/api/', '/sanctum/', '/broadcasting/', '/auth/google/', '/email/verify/', '/join/', '/up', '/ads.txt', '/.well-known/'];
 
 const TYPES = ['js' => 'text/javascript; charset=utf-8', 'mjs' => 'text/javascript; charset=utf-8', 'css' => 'text/css; charset=utf-8',
     'json' => 'application/json; charset=utf-8', 'svg' => 'image/svg+xml', 'webp' => 'image/webp', 'png' => 'image/png',
