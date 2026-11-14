@@ -2,8 +2,10 @@
 
 namespace App\Messenger;
 
+use App\Jobs\HandleInline;
 use App\Jobs\HandleMessenger;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
@@ -18,6 +20,12 @@ class Inbound
     {
         $id = (string) ($update['update_id'] ?? '');
         if ($id === '' || ! Cache::add("messenger:seen:telegram:{$id}", true, 86400)) {
+            return;
+        }
+        // [Sprint 69] «@bot» typed in any chat: answered on the queue, quickly.
+        if (isset($update['inline_query']['id'], $update['inline_query']['from']['id'])) {
+            HandleInline::dispatch((string) $update['inline_query']['id'], (string) $update['inline_query']['from']['id'], (string) ($update['inline_query']['query'] ?? ''));
+
             return;
         }
         if (isset($update['callback_query'])) {
@@ -40,8 +48,12 @@ class Inbound
 
             return;
         }
-        // In a group only the bot's own commands are read; the members' talk is not the game's business.
-        if (str_starts_with($text, '/') && isset($m['from']['id'])) {
+        // In a group only the bot's own commands are read; the members' talk is not the game's business, unless the
+        // league's owner joined the group to the game's chat [Sprint 69] (each writer within his own limit).
+        if (! isset($m['from']['id']) || $text === '') {
+            return;
+        }
+        if (str_starts_with($text, '/') || DB::table('messenger_groups')->where('chat_id', (string) $m['chat']['id'])->where('bridge', true)->exists()) {
             self::queue('telegram', (string) $m['chat']['id'], $text, (string) $m['from']['id']);
         }
     }
@@ -72,7 +84,7 @@ class Inbound
 
     private static function queue(string $platform, string $chatId, string $text, ?string $from = null): void
     {
-        $key = "messenger:{$platform}:{$chatId}";
+        $key = "messenger:{$platform}:{$chatId}".($from !== null ? ":{$from}" : '');
         if (RateLimiter::tooManyAttempts($key, (int) config('game.messenger.per_minute'))) {
             return;
         }

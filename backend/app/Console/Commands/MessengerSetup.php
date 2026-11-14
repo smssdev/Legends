@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Messenger\Messenger;
+use App\Messenger\Replies;
 use App\Messenger\Telegram;
 use App\Messenger\WhatsApp;
 use Illuminate\Console\Command;
@@ -22,6 +24,11 @@ class MessengerSetup extends Command
         if (Telegram::configured()) {
             $r = Telegram::setWebhook("{$base}/telegram");
             $this->line($r['ok'] ? "Telegram: the webhook is {$base}/telegram." : 'Telegram: failed: '.$r['description']);
+            $this->channel();
+            // [Sprint 68] The menu by «/», in Arabic (the default) and in English.
+            $ar = Telegram::setCommands(array_map(fn ($d) => $d[0], Replies::TELEGRAM_COMMANDS));
+            $en = Telegram::setCommands(array_map(fn ($d) => $d[1], Replies::TELEGRAM_COMMANDS), 'en');
+            $this->line($ar && $en ? 'Telegram: the commands menu is set.' : 'Telegram: the commands menu failed.');
             $name = Telegram::me();
             if ($name && $name !== Telegram::username()) {
                 $this->warn("Telegram: the bot is @{$name}: set TELEGRAM_BOT_USERNAME={$name} with legends-set.");
@@ -40,5 +47,26 @@ class MessengerSetup extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /** [Sprint 67 X] The public channel: the link the site shows, and whether the bot can post there. */
+    private function channel(): void
+    {
+        if (trim((string) config('services.telegram.channel')) === '') {
+            $this->line('Telegram channel: none (TELEGRAM_CHANNEL is not set).');
+
+            return;
+        }
+        ['chat' => $chat, 'url' => $url] = Messenger::telegramChannel();
+        $this->line('Telegram channel: the site links to '.($url ?? 'nothing (set TELEGRAM_CHANNEL_URL to its invite link)').'.');
+        if ($chat === null) {
+            $this->warn('Telegram channel: an invite link cannot be posted to: set TELEGRAM_CHANNEL to the channel\'s @name, or to its number (-100…) for a private one.');
+
+            return;
+        }
+        $why = Telegram::canPost($chat);
+        $why === null
+            ? $this->line("Telegram channel: the bot posts to {$chat}.")
+            : $this->warn("Telegram channel: the bot cannot post to {$chat}: {$why}. Add the bot to the channel as an admin.");
     }
 }

@@ -20,16 +20,24 @@ class SendMessenger implements ShouldQueue
 
     public int $tries = 2;
 
-    public function __construct(public string $platform, public string $chatId, public string $text, public bool $channel = false) {}
+    /**
+     * [Sprint 68] $buttons under the message (as Telegram::send), $replyTo the message it answers, and $stopPoll a
+     * poll of the same chat to close first (the round's poll, settled with the result).
+     */
+    public function __construct(public string $platform, public string $chatId, public string $text, public bool $channel = false,
+        public array $buttons = [], public ?int $replyTo = null, public ?int $stopPoll = null) {}
 
     public function handle(): void
     {
         if ($this->platform === 'whatsapp') {
-            WhatsApp::send($this->chatId, $this->text);
+            WhatsApp::send($this->chatId, $this->text, $this->buttons);
 
             return;
         }
-        if (Telegram::send($this->chatId, $this->text) === 'gone' && ! $this->channel) {
+        if ($this->stopPoll) {
+            Telegram::stopPoll($this->chatId, $this->stopPoll);
+        }
+        if (Telegram::send($this->chatId, $this->text, $this->buttons, null, $this->replyTo) === 'gone' && ! $this->channel) {
             DB::table('messenger_links')->where('platform', 'telegram')->where('chat_id', $this->chatId)->delete();
             DB::table('messenger_groups')->where('chat_id', $this->chatId)->delete();
         }

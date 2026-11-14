@@ -119,10 +119,12 @@ class MessengerTest extends TestCase
         $this->assertStringContainsString($club->name, last($this->sent('api.telegram.org')));
         $this->telegram('1');
         $this->assertStringContainsString($club->name, last($this->sent('api.telegram.org')));
-        // The menu comes with its buttons.
+        // The menu comes with the buttons that stay under the chat [Sprint 68], and an answer with its own.
         $this->telegram('مساعدة');
         $menu = Http::recorded()->last()[0];
-        $this->assertSame('next', $menu['reply_markup']['inline_keyboard'][0][0]['callback_data']);
+        $this->assertSame('مباراتي القادمة', $menu['reply_markup']['keyboard'][0][0]['text']);
+        $this->telegram('1');
+        $this->assertSame('next', Http::recorded()->last()[0]['reply_markup']['inline_keyboard'][0][0]['callback_data']);
     }
 
     public function test_a_question_without_a_link_is_answered_from_the_guide_with_how_to_link(): void
@@ -220,9 +222,11 @@ class MessengerTest extends TestCase
         LeagueGroups::roundDone($season);
         LeagueGroups::roundDone($season);
         $texts = $this->sent('api.telegram.org');
-        $this->assertCount($before + 1, $texts);
-        $this->assertStringContainsString('الجولة 1', last($texts));
-        $this->assertStringContainsString('2 - 1', last($texts));
+        // The results, then the round's stars [Sprint 69], once.
+        $this->assertCount($before + 2, $texts);
+        $this->assertStringContainsString('الجولة 1', $texts[$before]);
+        $this->assertStringContainsString('2 - 1', $texts[$before]);
+        $this->assertStringContainsString('نجوم الجولة 1', last($texts));
 
         $this->telegram('/unleague', -100, 'supergroup', 777);
         $this->assertSame(0, DB::table('messenger_groups')->count());
@@ -265,11 +269,33 @@ class MessengerTest extends TestCase
         $this->getJson('/api/v1/health')->assertJsonPath('bots.telegram', null);
     }
 
+    public function test_the_channel_is_read_in_any_usual_form(): void
+    {
+        foreach (['glm_news', '@glm_news', 't.me/glm_news', 'https://t.me/glm_news', 'https://t.me/glm_news/12', ' https://telegram.me/s/glm_news '] as $form) {
+            config(['services.telegram.channel' => $form]);
+            $this->assertSame(['chat' => '@glm_news', 'url' => 'https://t.me/glm_news'], Messenger::telegramChannel(), $form);
+        }
+        // A private channel: posted to by its number, opened by its invite link.
+        config(['services.telegram.channel' => '-1001234567890', 'services.telegram.channel_url' => 'https://t.me/+AbCdEf']);
+        $this->assertSame(['chat' => '-1001234567890', 'url' => 'https://t.me/+AbCdEf'], Messenger::telegramChannel());
+        // An invite link alone: people open it, the bot does not post.
+        config(['services.telegram.channel' => 'https://t.me/+AbCdEf', 'services.telegram.channel_url' => null]);
+        $this->assertSame(['chat' => null, 'url' => 'https://t.me/+AbCdEf'], Messenger::telegramChannel());
+        Messenger::post('weekly', 'x');
+        $this->assertSame([], $this->sent('api.telegram.org'));
+    }
+
     public function test_unlinking_from_the_profile(): void
     {
         $this->linkTelegram($this->owner);
         $this->actingAs($this->owner)->deleteJson('/api/v1/messenger/telegram')->assertOk()->assertJsonPath('telegram.linked', false);
         $this->actingAs($this->owner)->putJson('/api/v1/messenger/whatsapp', ['muted' => true])->assertOk();
+        // [Sprint 68] The live matches and the daily summary's hour, from the profile.
+        $this->linkTelegram($this->owner);
+        $this->actingAs($this->owner)->putJson('/api/v1/messenger/telegram', ['live' => false, 'daily_hour' => 8])->assertOk()
+            ->assertJsonPath('telegram.live', false)->assertJsonPath('telegram.daily_hour', 8);
+        $this->actingAs($this->owner)->putJson('/api/v1/messenger/telegram', ['daily_hour' => 24])->assertUnprocessable();
+        $this->actingAs($this->owner)->putJson('/api/v1/messenger/telegram', ['daily_hour' => null])->assertOk()->assertJsonPath('telegram.daily_hour', null);
         $this->actingAs($this->owner)->deleteJson('/api/v1/messenger/signal')->assertNotFound();
     }
 }

@@ -5,6 +5,7 @@ namespace App\League;
 use App\Characters\Mood;
 use App\Events\ClubReading;
 use App\Events\MatchMinute;
+use App\Messenger\LiveFeed;
 use App\Simulator\CoachWindows;
 use App\Simulator\Commentary;
 use App\Simulator\MatchChoreographer;
@@ -239,6 +240,8 @@ class MatchRunner
             $n++;
             LiveEvents::send(new MatchMinute($fixture, $id, Simulator::shown(LiveDegrade::voice() ? $tick : ['voice' => null] + $tick, null, (int) $state['seed']), (int) $live['next_at']));
             $live['said'] = self::readings($id, $fixture, $state, $tick, $live['control'], $live['said'] ?? null);
+            // [Sprint 68] Its goals, red cards, half-time and result to the coaches' bots and the league's group.
+            LiveFeed::minute($fixture, $id, $state, $tick);
             $halftime = collect($tick['events'])->contains(fn ($e) => $e['type'] === 'period' && $e['name'] === 'halftime');
             if ($halftime || $state['finished']) {
                 self::save($id, $state, $live['events']);

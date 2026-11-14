@@ -10,7 +10,6 @@ use App\Auth\Username;
 use App\League\NextFixture;
 use App\League\Standings;
 use App\Models\User;
-use App\Support\GameClock;
 use App\Wallet\Wallet;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,8 @@ use Illuminate\Support\Facades\DB;
  * Coach (the guide, and the AI within his day's smart answers). Not linked yet: the guide answers, and he is told how
  * to link. The bot reads; it changes nothing in the game but the link itself and its own silence.
  *
- * @phpstan-type Reply array{text: string, buttons: array<int, array{0: string, 1: string}>}
+ * @phpstan-type Reply array{text: string, buttons: array<int, array{0: string, 1: string}>, keyboard?: array, more?: array}
+ * [Sprint 68] keyboard: the buttons that stay under a Telegram chat; more: the messages sent after this one.
  */
 class Replies
 {
@@ -36,6 +36,18 @@ class Replies
         'resume' => ['resume', 'unmute', 'تشغيل'],
         'unlink' => ['unlink', 'فك الربط', 'إلغاء الربط', 'الغاء الربط'],
         'channel' => ['channel', 'قناة', 'القناة'],
+        // [Sprint 68] More readings, and «تحسين» (asked before it is done).
+        'squad' => ['squad', '6', 'فريقي', 'my squad', 'الإصابات'],
+        'training' => ['training', '7', 'التدريب', 'تدريبي'],
+        'offers' => ['offers', '8', 'العروض', 'عروضي'],
+        'fixtures' => ['fixtures', '9', 'مبارياتي', 'my matches', 'جدولي'],
+        'scorers' => ['scorers', '10', 'الهدافون', 'الهدافين', 'top scorers'],
+        'inbox' => ['inbox', '11', 'رسائلي', 'الرسائل', 'my messages'],
+        'fix' => ['fix', 'improve', 'تحسين'],
+        // [Sprint 69] The daily tasks and the round's predictions.
+        'tasks' => ['tasks', '12', 'مهامي', 'المهام', 'my tasks'],
+        'predict' => ['predict', '13', 'توقعاتي', 'توقع', 'التوقعات', 'predictions'],
+        'cancel' => ['cancel', 'إلغاء', 'الغاء'],
     ];
 
     private const LABELS = [
@@ -45,7 +57,39 @@ class Replies
         'last' => ['آخر نتيجة', 'Last result'],
         'now' => ['ماذا أفعل الآن؟', 'What now?'],
         'help' => ['القائمة', 'Menu'],
+        'squad' => ['فريقي', 'My squad'],
+        'training' => ['التدريب', 'Training'],
+        'offers' => ['العروض', 'Offers'],
+        'fixtures' => ['مبارياتي', 'My matches'],
+        'scorers' => ['الهدافون', 'Top scorers'],
+        'inbox' => ['رسائلي', 'My messages'],
+        'fix' => ['تحسين', 'Improve'],
+        'tasks' => ['مهامي', 'My tasks'],
+        'predict' => ['توقعاتي', 'Predictions'],
     ];
+
+    /** [Sprint 68] The buttons that stay under a Telegram chat (each sends its label). */
+    private const KEYBOARD = [['next', 'table', 'now'], ['squad', 'offers', 'training'], ['fixtures', 'scorers', 'inbox'], ['tasks', 'predict', 'fix']];
+
+    /** [Sprint 68] The menu Telegram shows by «/» (the commands' English words, which the bot reads too). */
+    public const TELEGRAM_COMMANDS = [
+        'next' => ['مباراتي القادمة', 'My next match'], 'table' => ['ترتيبي في الدوري', 'My place in the table'],
+        'balance' => ['الكوينز وأموال النادي', 'Coins and club money'], 'last' => ['آخر نتيجة', 'My last result'],
+        'now' => ['ماذا أفعل الآن؟', 'What should I do now?'], 'squad' => ['المصابون والموقوفون والمرهقون', 'Injured, suspended and tired'],
+        'training' => ['التدريب الآن', 'Training now'], 'offers' => ['العروض التي تنتظر ردك', 'Offers waiting for you'],
+        'fixtures' => ['مبارياتي القادمة', 'My coming matches'], 'scorers' => ['هدافو الدوري', 'The league\'s top scorers'],
+        'inbox' => ['رسائلي غير المقروءة', 'My unread messages'], 'fix' => ['التشكيلة التلقائية الأفضل', 'The automatic best lineup'],
+        'tasks' => ['مهام اليوم ومكافآتها', 'Today\'s tasks and their coins'], 'predict' => ['توقع مباريات الجولة', 'Predict the round\'s matches'],
+        'daily' => ['الملخص اليومي: /daily 8 أو /daily off', 'Daily summary: /daily 8 or /daily off'],
+        'live' => ['أحداث مبارياتي الحية: /live on أو off', 'My live matches: /live on or off'],
+        'help' => ['القائمة', 'Menu'],
+    ];
+
+    /** The labels under the chat, in the coach's language. */
+    public static function keyboard(string $l): array
+    {
+        return array_map(fn ($row) => array_map(fn ($k) => self::LABELS[$k][$l === 'en' ? 1 : 0], $row), self::KEYBOARD);
+    }
 
     public function __construct(private Assistant $assistant) {}
 
@@ -105,7 +149,45 @@ class Replies
         }
         $l = self::language($user, $text);
         $en = $l === 'en';
+        // [Sprint 68] A tapped action (ask:… then do:…), and the two settings with their word.
+        if ($user && preg_match('/^(ask|do):/', trim($text))) {
+            return Actions::run($user->id, trim($text), $en);
+        }
+        // [Sprint 69] The match's quick orders and «جاهز», the training's choice, a task's coins, a prediction.
+        if ($user && preg_match('/^(q|ready|pick|claim|pr):/', trim($text), $m)) {
+            return match ($m[1]) {
+                'q', 'ready' => ['text' => MatchControl::run($user->id, trim($text), $en), 'buttons' => []],
+                'pick' => Actions::trainingChoices($user->id, trim($text), $en),
+                'claim' => Plays::claim($user->id, trim($text), $en),
+                'pr' => Plays::predict($user->id, trim($text), $en),
+            };
+        }
+        if ($user && ($setting = $this->setting($user, $platform, $text, $en)) !== null) {
+            return ['text' => $setting, 'buttons' => []];
+        }
         $cmd = self::command($text);
+        if ($cmd === 'cancel') {
+            return ['text' => $en ? 'Nothing was done.' : 'لم يتغير شيء.', 'buttons' => []];
+        }
+        if ($user && $cmd === 'offers') {
+            $all = Actions::offers($user->id, $en);
+
+            return $all[0] + ['more' => array_slice($all, 1)];
+        }
+        if ($user && $cmd === 'fix') {
+            return Actions::fixChoices($user->id, $en);
+        }
+        if ($user && $cmd === 'tasks') {
+            return Plays::tasks($user->id, $en);
+        }
+        if ($user && $cmd === 'predict') {
+            $all = Plays::predictions($user->id, $en);
+
+            return $all[0] + ['more' => array_slice($all, 1)];
+        }
+        if ($user && $cmd === 'training') {
+            return ['text' => Reads::training($user->id, $en), 'buttons' => Actions::trainingButtons($user->id, $en)];
+        }
         if ($cmd === 'help' || ($cmd === null && trim($text) === '')) {
             return $this->menu($platform, $user, $l);
         }
@@ -123,6 +205,11 @@ class Replies
                 'resume' => $this->silence($user, $platform, false, $en),
                 'unlink' => Messenger::unlink($user->id, $platform) ? ($en ? 'Unlinked. Send a new code from your profile to link again.' : 'تم فك الربط. أرسل كوداً جديداً من ملفك لتربط مجدداً.') : '',
                 'channel' => $this->channel($user, $en),
+                'squad' => Reads::squad($user->id, $en),
+                'training' => Reads::training($user->id, $en),
+                'fixtures' => Reads::fixtures($user->id, $en),
+                'scorers' => Reads::scorers($user->id, $en),
+                'inbox' => Reads::inbox($user->id, $l, $en),
                 default => null,
             };
             if ($reply !== null) {
@@ -160,10 +247,16 @@ class Replies
                 .($en ? "\nUntil then, ask me anything about how the game is played." : "\nوحتى ذلك اسألني عن أي شيء في طريقة اللعب."), 'buttons' => []];
         }
         $lines = $en
-            ? ['1 Next match', '2 My table', '3 Balance', '4 Last result', '5 What now?', 'Or ask me anything about the game.', 'stop / resume: the notifications here.']
-            : ['1 مباراتي القادمة', '2 ترتيبي', '3 رصيدي', '4 آخر نتيجة', '5 ماذا أفعل الآن؟', 'أو اسألني أي سؤال عن اللعبة.', '«إيقاف» و«تشغيل»: الإشعارات هنا.'];
+            ? ['1 Next match', '2 My table', '3 Balance', '4 Last result', '5 What now?', '6 My squad', '7 Training', '8 Offers (accept or reject)',
+                '9 My matches', '10 Top scorers', '11 My messages', '12 My tasks', '13 Predictions', 'improve: the automatic best lineup', 'Or ask me anything about the game.',
+                'daily 8: a summary every morning at 8 (Cairo time); daily off', 'live on / live off: your live matches here', 'stop / resume: all notifications here.']
+            : ['1 مباراتي القادمة', '2 ترتيبي', '3 رصيدي', '4 آخر نتيجة', '5 ماذا أفعل الآن؟', '6 فريقي', '7 التدريب', '8 العروض (قبول أو رفض)',
+                '9 مبارياتي', '10 الهدافون', '11 رسائلي', '12 مهامي', '13 توقعاتي', '«تحسين»: التشكيلة التلقائية الأفضل', 'أو اسألني أي سؤال عن اللعبة.',
+                '«ملخص 8»: ملخص كل صباح الساعة 8 بتوقيت القاهرة، و«ملخص إيقاف»', '«المباشر تشغيل» و«المباشر إيقاف»: أحداث مبارياتك الحية هنا', '«إيقاف» و«تشغيل»: كل الإشعارات هنا.'];
+        $text = ($en ? "Hello {$user->name}! Send a number or a word:\n" : "أهلاً {$user->name}! أرسل رقماً أو كلمة:\n").implode("\n", $lines);
 
-        return ['text' => ($en ? "Hello {$user->name}! Send a number or a word:\n" : "أهلاً {$user->name}! أرسل رقماً أو كلمة:\n").implode("\n", $lines), 'buttons' => self::buttons($platform, $l)];
+        // On Telegram the buttons stay under the chat; WhatsApp shows its three.
+        return $platform === 'telegram' ? ['text' => $text, 'buttons' => [], 'keyboard' => self::keyboard($l)] : ['text' => $text, 'buttons' => self::buttons($platform, $l)];
     }
 
     public static function howToLink(string $l): string
@@ -175,17 +268,14 @@ class Replies
             : "لأقرأ أنديتك اربط حسابك: افتح ملفك في اللعبة ({$url})، واضغط «اربط البوت»، ثم أرسل لي الكود.";
     }
 
-    /** The account's clubs in leagues not over, each with its league. */
     private static function clubs(int $userId)
     {
-        return DB::table('clubs')->join('leagues', 'leagues.id', '=', 'clubs.league_id')->where('clubs.user_id', $userId)
-            ->where('leagues.status', '!=', 'finished')->orderBy('clubs.id')
-            ->get(['clubs.id', 'clubs.name', 'clubs.balance', 'leagues.id as league_id', 'leagues.name as league_name']);
+        return Reads::clubs($userId);
     }
 
     private static function noClub(bool $en): string
     {
-        return $en ? 'You coach no club now. Open the game to join or create a league.' : 'لا نادي لك الآن. افتح اللعبة وانضم إلى دوري أو أنشئ واحداً.';
+        return Reads::noClub($en);
     }
 
     private function next(User $user, bool $en): string
@@ -211,25 +301,14 @@ class Replies
         return implode("\n", $lines);
     }
 
-    /** "in 3 h 20 min": the time to it, so no time zone is needed. */
     private static function in(Carbon $at, bool $en): string
     {
-        $min = max(0, (int) floor(GameClock::now()->diffInMinutes($at, false)));
-        $d = intdiv($min, 1440);
-        $h = intdiv($min % 1440, 60);
-        $m = $min % 60;
-        if ($en) {
-            return 'in '.trim(($d ? "{$d} d " : '').($h ? "{$h} h " : '').($d ? '' : "{$m} min"));
-        }
-
-        return 'بعد '.implode(' و', array_filter([$d ? "{$d} يوم" : null, $h ? "{$h} ساعة" : null, $d ? null : "{$m} دقيقة"]));
+        return Reads::in($at, $en);
     }
 
     private static function season(int $leagueId): ?int
     {
-        $id = DB::table('seasons')->where('league_id', $leagueId)->orderByDesc('id')->value('id');
-
-        return $id ? (int) $id : null;
+        return Reads::season($leagueId);
     }
 
     private function table(User $user, bool $en): string
@@ -304,6 +383,48 @@ class Replies
         return $muted
             ? ($en ? 'Notifications stopped here. Send «resume» to have them again.' : 'أوقفت الإشعارات هنا. أرسل «تشغيل» لتعود.')
             : ($en ? 'Notifications are on here again.' : 'عادت الإشعارات هنا.');
+    }
+
+    /**
+     * [Sprint 68] «daily 8» / «ملخص 8» (a summary every morning at that Cairo hour), «daily off» / «ملخص إيقاف»;
+     * «live on|off» / «المباشر تشغيل|إيقاف» (his live matches here). Null when the text is neither.
+     */
+    private function setting(User $user, string $platform, string $text, bool $en): ?string
+    {
+        $parts = explode(' ', self::normal($text));
+        $off = ['off', 'stop', 'إيقاف', 'ايقاف'];
+        $on = ['on', 'تشغيل'];
+        $link = DB::table('messenger_links')->where('user_id', $user->id)->where('platform', $platform);
+        if (in_array($parts[0], ['daily', 'ملخص', 'الملخص'], true)) {
+            $arg = $parts[1] ?? null;
+            if ($arg !== null && in_array($arg, $off, true)) {
+                $link->update(['daily_hour' => null]);
+
+                return $en ? 'The daily summary is off.' : 'أوقفت الملخص اليومي.';
+            }
+            if ($arg !== null && preg_match('/^\d{1,2}$/', $arg) && (int) $arg <= 23) {
+                $link->update(['daily_hour' => (int) $arg]);
+
+                return $en ? "Your summary comes every day at {$arg}:00, Cairo time." : "يصلك ملخصك كل يوم الساعة {$arg}:00 بتوقيت القاهرة.";
+            }
+            $hour = $link->value('daily_hour');
+
+            return ($hour === null ? ($en ? 'The daily summary is off.' : 'الملخص اليومي متوقف.') : ($en ? "Your summary comes at {$hour}:00, Cairo time." : "ملخصك الساعة {$hour}:00 بتوقيت القاهرة."))
+                ."\n".($en ? 'Send «daily 8» for 8 in the morning (0 to 23), or «daily off».' : 'أرسل «ملخص 8» للساعة 8 صباحاً (من 0 إلى 23)، أو «ملخص إيقاف».');
+        }
+        if (in_array($parts[0], ['live', 'المباشر'], true) && ! (isset($parts[1]) && in_array($parts[1], [...$on, ...$off], true))) {
+            return ($link->value('live') ? ($en ? 'Your live matches reach you here.' : 'أحداث مبارياتك الحية تصلك هنا.') : ($en ? 'Your live matches are off here.' : 'أحداث مبارياتك الحية متوقفة هنا.'))
+                ."\n".($en ? 'Send «live on» or «live off».' : 'أرسل «المباشر تشغيل» أو «المباشر إيقاف».');
+        }
+        if (in_array($parts[0], ['live', 'المباشر'], true)) {
+            $link->update(['live' => in_array($parts[1], $on, true)]);
+
+            return in_array($parts[1], $on, true)
+                ? ($en ? 'Your live matches reach you here: goals, red cards, half-time and the result.' : 'تصلك أحداث مبارياتك الحية هنا: الأهداف والطرد ونهاية الشوط والنتيجة.')
+                : ($en ? 'Your live matches no longer reach you here.' : 'أوقفت أحداث مبارياتك الحية هنا.');
+        }
+
+        return null;
     }
 
     /** [Sprint 67] For the developers' official accounts: the last channel posts, to copy into the WhatsApp channel. */

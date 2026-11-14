@@ -40,6 +40,8 @@ class MatchResult
         DB::table('fixtures')->where('id', $f->id)->update(['status' => 'finished', 'home_goals' => $state['score']['home'],
             'away_goals' => $state['score']['away'], 'updated_at' => $now]);
 
+        // [Sprint 68] A league group's poll on this match: closed, and its answer posted.
+        LeagueGroups::fixtureDone($f);
         // [UP12] The coaches' predictions of this match.
         Predictions::settle($f, (int) $state['score']['home'], (int) $state['score']['away']);
         if ($f->competition === 'league') {

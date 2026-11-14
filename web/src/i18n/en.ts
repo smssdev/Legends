@@ -3085,4 +3085,7 @@ export const EN: Record<string, string> = {
   'بوت اللعبة على تيليجرام': 'The game\'s bot on Telegram',
   'بوت اللعبة على واتساب': 'The game\'s bot on WhatsApp',
   'اسأل بوت اللعبة، وتابع قنواتنا:': 'Ask the game\'s bot, and follow our channels:',
+  'مبارياتي الحية على البوت': 'My live matches on the bot',
+  'الأهداف والطرد ونهاية الشوط والنتيجة، حين تظهر في المباراة': 'Goals, red cards, half-time and the result, as the match shows them',
+  'الملخص اليومي (بتوقيت القاهرة)': 'Daily summary (Cairo time)',
 }

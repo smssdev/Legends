@@ -4,6 +4,7 @@ namespace App\Chat;
 
 use App\Events\ChatMessageSent;
 use App\Messages\Inbox;
+use App\Messenger\ChatBridge;
 use App\Models\League;
 use App\Models\User;
 use App\Support\Avatar;
@@ -272,6 +273,8 @@ class ChatGroups
         DB::table('chat_groups')->where('id', $groupId)->update(['updated_at' => GameClock::now()]);
         $view = self::views(collect([DB::table('chat_group_messages')->find($id)]))[0];
         LiveEvents::send(new ChatMessageSent($groupId, $view));
+        // [Sprint 69] And to the league's Telegram group, when its owner joined the two chats.
+        ChatBridge::fromGame($groupId, $user, $kind, $body);
 
         return $view;
     }

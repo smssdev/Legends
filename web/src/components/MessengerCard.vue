@@ -5,6 +5,7 @@
 import UiButton from './ui/UiButton.vue'
 import UiCard from './ui/UiCard.vue'
 import UiToggle from './ui/UiToggle.vue'
+import UiSelect from './ui/UiSelect.vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
@@ -40,10 +41,13 @@ async function link(platform: Platform) {
   busy.value = false
 }
 
-async function mute(platform: Platform, muted: boolean) {
+async function save(platform: Platform, body: { muted?: boolean; live?: boolean; daily_hour?: number | null }) {
   await ensureCsrf()
-  status.value = (await api.PUT('/messenger/{platform}', { params: { path: { platform } }, body: { muted } })).data!
+  status.value = (await api.PUT('/messenger/{platform}', { params: { path: { platform } }, body })).data!
 }
+const mute = (platform: Platform, muted: boolean) => save(platform, { muted })
+// [Sprint 68] The daily summary's hour (Cairo time), or off.
+const HOURS = Array.from({ length: 24 }, (_, h) => ({ value: String(h), label: `${String(h).padStart(2, '0')}:00` }))
 
 async function unlink(platform: Platform) {
   await ensureCsrf()
@@ -86,6 +90,23 @@ onBeforeUnmount(() => window.removeEventListener('focus', onFocus))
               : $t('الأنواع نفسها التي اخترتها في الإشعارات')
           "
           @update:model-value="(on: boolean) => mute(p, !on)"
+        />
+        <UiToggle
+          v-if="status[p].linked"
+          class="rounded-lg px-1"
+          :model-value="status[p].live"
+          :label="$t('مبارياتي الحية على البوت')"
+          :hint="$t('الأهداف والطرد ونهاية الشوط والنتيجة، حين تظهر في المباراة')"
+          @update:model-value="(on: boolean) => save(p, { live: on })"
+        />
+        <UiSelect
+          v-if="status[p].linked"
+          :model-value="status[p].daily_hour === null ? '' : String(status[p].daily_hour)"
+          :options="HOURS"
+          :label="$t('الملخص اليومي (بتوقيت القاهرة)')"
+          none="متوقف"
+          ltr
+          @update:model-value="(v: string) => save(p, { daily_hour: v === '' ? null : Number(v) })"
         />
       </div>
     </template>

@@ -10926,7 +10926,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** [Sprint 67] Silence the notifications on that bot, or turn them on again */
+        /** [Sprint 67] Silence the notifications on that bot, or turn them on again; [Sprint 68] its live matches and the daily summary's hour */
         put: {
             parameters: {
                 query?: never;
@@ -10939,7 +10939,11 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        muted: boolean;
+                        muted?: boolean;
+                        /** @description His own live matches on this bot: goals, red cards, half-time, the result */
+                        live?: boolean;
+                        /** @description The daily summary's Cairo hour; null turns it off */
+                        daily_hour?: number | null;
                     };
                 };
             };
@@ -16085,6 +16089,10 @@ export interface components {
             linked: boolean;
             /** @description He silenced the notifications on it */
             muted: boolean;
+            /** @description [Sprint 68] His live matches reach him on it */
+            live: boolean;
+            /** @description [Sprint 68] The daily summary's Cairo hour, null when off */
+            daily_hour: number | null;
             /** @description The link that opens the bot's chat */
             open_url: string | null;
         };

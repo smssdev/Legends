@@ -36,7 +36,9 @@ class MessengerController extends Controller
     public function update(Request $request, string $platform): JsonResponse
     {
         abort_unless(in_array($platform, Messenger::PLATFORMS, true), 404);
-        Messenger::mute($request->user()->id, $platform, $request->validate(['muted' => ['required', 'boolean']])['muted']);
+        // [Sprint 68] And his live matches and the daily summary's hour.
+        Messenger::settings($request->user()->id, $platform, $request->validate(['muted' => ['sometimes', 'boolean'], 'live' => ['sometimes', 'boolean'],
+            'daily_hour' => ['sometimes', 'nullable', 'integer', 'between:0,23']]));
 
         return response()->json(Messenger::status($request->user()->id));
     }
