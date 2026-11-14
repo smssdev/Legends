@@ -3064,4 +3064,10 @@ export const EN: Record<string, string> = {
   '{v0} عطلاً مختلفاً، ظهرت {v1} مرة': '{v0} distinct errors, seen {v1} times',
   'أول مرة {v0}، وآخر مرة {v1}': 'First {v0}, last {v1}',
   'ارمِ خطأً تجريبياً': 'Throw a test error',
+  'صحة الخادم': 'Server health',
+  'المباراة المباشرة: الوسيط': 'Live match: median',
+  'المباراة المباشرة: 95%': 'Live match: 95%',
+  'الطابور': 'Queue',
+  'اتصالات البث': 'Live connections',
+  'من {v0} طلباً في آخر 5 دقائق': 'From {v0} requests in the last 5 minutes',
 }

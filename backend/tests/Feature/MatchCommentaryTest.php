@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Admin\ServerPulse;
 use App\Characters\Mood;
 use App\Events\ClubReading;
 use App\Events\MatchMinute;
@@ -136,6 +137,21 @@ class MatchCommentaryTest extends TestCase
             ->whereNotIn('id', [$this->fixture->home_id, $this->fixture->away_id])->value('id');
         $this->actingAs($member)->postJson("/api/v1/leagues/{$this->league['id']}/clubs/{$free}/claim")->assertCreated();
         $this->actingAs($member)->getJson("/api/v1/matches/{$match->id}/report")->assertForbidden()->assertJsonPath('message', 'التقرير لمدربي الفريقين فقط.');
+    }
+
+    public function test_each_live_answer_is_timed_for_the_admin_pulse(): void
+    {
+        // [Sprint 66 B3] The pulse in the admin panel: the live answer's time, counted.
+        $match = $this->kickOff();
+        $this->playTo($match->id, 2);
+        $before = ServerPulse::read()['live']['samples'];
+        for ($i = 0; $i < 3; $i++) {
+            $this->getJson("/api/v1/matches/{$match->id}/live?since=0")->assertOk();
+        }
+        $live = ServerPulse::read()['live'];
+        $this->assertSame($before + 3, $live['samples']);
+        $this->assertIsInt($live['p50_ms']);
+        $this->assertGreaterThanOrEqual($live['p50_ms'], $live['p95_ms']);
     }
 
     public function test_watching_a_match_uses_up_no_other_limit(): void

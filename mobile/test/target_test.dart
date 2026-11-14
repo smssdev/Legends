@@ -15,11 +15,7 @@ void main() {
               child: Semantics(
                 button: true,
                 label: 'Wallet: 120',
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => taps++,
-                  child: const SizedBox(width: 60, height: 32),
-                ),
+                child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: () => taps++, child: const SizedBox(width: 60, height: 32)),
               ),
             ),
           ),

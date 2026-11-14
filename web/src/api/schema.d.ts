@@ -881,7 +881,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             available: boolean;
-                            /** @description Why not */
+                            /** @description Why not, in Arabic */
                             reason: string | null;
                             suggestions: string[];
                         };
@@ -1047,7 +1047,7 @@ export interface paths {
                             templates?: {
                                 name: string;
                                 clubs: number;
-                                /** @description The strongest club */
+                                /** @description The strongest club, in hundredths (8480 = 84.8) */
                                 top_strength_cp: number;
                                 avg_strength_cp: number;
                             }[];
@@ -1348,7 +1348,7 @@ export interface paths {
                              * @description The game time (GameClock) in UTC
                              */
                             time: string;
-                            /** @description Seconds the game clock is ahead of real time (clock:travel */
+                            /** @description Seconds the game clock is ahead of real time (clock:travel, development only; 0 in production) */
                             clock_offset: number;
                             /** @description Where the test event of POST /health/ping arrives */
                             broadcast: {
@@ -1368,11 +1368,11 @@ export interface paths {
                             adsense?: {
                                 /** @example ca-pub-1234567890123456 */
                                 client: string;
-                                /** @description The display unit's id */
+                                /** @description The display unit's id, null for none */
                                 slot: string | null;
                                 /** @description Google's rewarded video (H5 Games Ads) is tried before the game's own ad */
                                 rewarded: boolean;
-                                /** @description Google's test ads */
+                                /** @description Google's test ads, until H5 Games Ads approves the site */
                                 test: boolean;
                             } | null;
                             /** @description [X81] The site's measurement for the web, null when both are off */
@@ -1664,7 +1664,7 @@ export interface paths {
                         team_count?: number;
                         /** @description One round a day [UP17] */
                         rounds_per_day?: number;
-                        /** @description One HH:MM */
+                        /** @description One HH:MM, Cairo time */
                         round_times?: string[];
                         /** @description [Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo (5 Friday). Free */
                         rest_days?: number[];
@@ -3363,7 +3363,7 @@ export interface paths {
                     "application/json": {
                         /** @description His players */
                         give: number[];
-                        /** @description The other team's */
+                        /** @description The other team's, as many */
                         take: number[];
                     };
                 };
@@ -7477,6 +7477,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/server": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * [Sprint 66 B3] The server's pulse: the live match's speed over five minutes, the queue, Reverb's sockets
+         * @description Each part is null when it cannot be read (no Reverb in development, a queue without a size).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The pulse */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            live: {
+                                samples: number;
+                                p50_ms: number | null;
+                                p95_ms: number | null;
+                            };
+                            queue: number | null;
+                            reverb_connections: number | null;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/client-errors": {
         parameters: {
             query?: never;
@@ -10117,7 +10165,7 @@ export interface paths {
                             mailer: string;
                             from: string;
                             /**
-                             * @description The kind of key set
+                             * @description The kind of key set, never the key
                              * @enum {string}
                              */
                             key: "none" | "api" | "smtp" | "other";
@@ -11805,7 +11853,7 @@ export interface paths {
                         /** @enum {string} */
                         competition?: "league" | "cup" | "alliance";
                         /**
-                         * @description 0 soft
+                         * @description 0 soft, 1 medium, 2 strict
                          * @enum {integer}
                          */
                         referee?: 0 | 1 | 2;
@@ -12247,7 +12295,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Unknown key */
+                /** @description Unknown key, or too soon after this coach's last one (game.match.reaction_gap_ms) */
                 422: {
                     headers: {
                         [name: string]: unknown;
@@ -12283,7 +12331,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Reasons */
+                /** @description Reasons, verdict, man of the match, ratings, stats, thirds, momentum, timeline */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -12489,7 +12537,7 @@ export interface paths {
                         name?: string | null;
                         /** @enum {string} */
                         template: "world_cup" | "world_cup_48" | "club_world_cup" | "afcon" | "euro" | "asian_cup" | "custom";
-                        /** @description Master club ids */
+                        /** @description Master club ids, clubs and national teams together */
                         teams: number[];
                         /** @enum {string} */
                         format: "league" | "groups" | "knockout";
@@ -12509,7 +12557,7 @@ export interface paths {
                         /** Format: date-time */
                         draw_at?: string | null;
                         starting_budget?: number;
-                        /** @description The maker's own team (a master club id of the tournament) */
+                        /** @description The maker's own team (a master club id of the tournament), or none */
                         club_id?: number | null;
                         /** @enum {string|null} */
                         entry_mode?: "pick" | "draw" | "assign" | null;
@@ -13809,7 +13857,7 @@ export interface components {
                 id: number;
                 name: string;
             } | null;
-            /** @description When it was said */
+            /** @description When it was said, in milliseconds on the server's clock (a replay shows it then) */
             at: number;
         };
         Tournament: {
@@ -14070,7 +14118,7 @@ export interface components {
         };
         /** @description [UP11, Sprint 59 F1] The transfer list of one line (GET /leagues/{league}/market, source=list): the app reads it through its generated model */
         TransferList: {
-            /** @description Why the market is shut */
+            /** @description Why the market is shut, or null */
             closed: string | null;
             /** @enum {string} */
             line: "gk" | "def" | "mid" | "att";
@@ -14107,7 +14155,7 @@ export interface components {
                 coach: string | null;
                 logo: string | null;
             };
-            /** @description A star from a parallel league */
+            /** @description A star from a parallel league, in the pool from mid-season */
             star: boolean;
             /**
              * @description [Sprint 23] An event's special player
@@ -14161,7 +14209,7 @@ export interface components {
                 position: string;
                 line: string;
                 overall: number;
-                /** @description His value now */
+                /** @description His value now, training counted */
                 value: number;
                 /** @description [Sprint 23] His cost to the club (what it paid, or his value at the season's start): the profit of selling him outside is counted from it */
                 cost?: number;
@@ -14527,7 +14575,7 @@ export interface components {
         TacticsSet: {
             /** @enum {string} */
             plan?: "counter" | "long" | "passing" | "wings" | "shots";
-            /** @description 0 legal */
+            /** @description 0 legal, 1 normal, 2 eager, 3 hard */
             tackling?: number;
             pressing?: number;
             /** @description 0 defensive to 100 attacking */
@@ -14557,9 +14605,9 @@ export interface components {
             role: string;
             /** @enum {string} */
             line: "gk" | "def" | "mid" | "att";
-            /** @description Depth towards the opponent's goal */
+            /** @description Depth towards the opponent's goal, decimetres (0 to 1050) */
             x: number;
-            /** @description Across the pitch */
+            /** @description Across the pitch, decimetres (0 far touchline, 680 near); right-sided roles sit high */
             y: number;
             /** @description [Sprint 59 F6] The player lines this slot takes (sent with the team's lineup and formations): the screens apply it, the save enforces it. */
             allowed?: ("gk" | "def" | "mid" | "att")[];
@@ -14621,7 +14669,7 @@ export interface components {
                     cost: number;
                     /** @enum {string} */
                     currency: "coins" | "money";
-                    /** @description What it gives */
+                    /** @description What it gives, in Arabic */
                     effect: string;
                     quote?: components["schemas"]["SpendQuote"];
                 }[];
@@ -14659,7 +14707,7 @@ export interface components {
         SpyView: {
             cost: number;
             /**
-             * @description Coins
+             * @description Coins, or club money in a fair league (Sprint 34)
              * @enum {string}
              */
             currency: "coins" | "money";
@@ -15186,7 +15234,7 @@ export interface components {
             /** @description The price before the discount */
             old_price: number | null;
             currency: string;
-            /** @description Whole per cent */
+            /** @description Whole per cent, from the two prices */
             discount: number | null;
             visible: boolean;
             sort: number;
@@ -15393,7 +15441,7 @@ export interface components {
             balance: number;
             /**
              * Format: date-time
-             * @description The game clock
+             * @description The game clock, for the countdown
              */
             now: string;
             part_minutes: number;
@@ -15409,7 +15457,7 @@ export interface components {
             sections: {
                 /** @enum {string} */
                 section: "seats" | "pitch" | "training";
-                /** @description Stages finished */
+                /** @description Stages finished, 0 to 3 */
                 stage: number;
                 /** @description Parts finished of the next stage */
                 parts: number;
@@ -15447,7 +15495,7 @@ export interface components {
             overall: number;
             training_bonus: number;
             potential: number;
-            /** @description The bar */
+            /** @description The bar, 0 to 100 */
             progress: number;
             /** @description About how many sessions a +1 takes at his rating and age [Sprint 23] */
             sessions: number;
@@ -15579,7 +15627,7 @@ export interface components {
             interval_minutes: number;
             /**
              * Format: date-time
-             * @description The game clock
+             * @description The game clock, for the countdowns
              */
             now: string;
             /** @description [Sprint 23] An extreme progression running in this league (the strongest) */
@@ -15826,7 +15874,7 @@ export interface components {
         };
         LeagueStats: {
             season: components["schemas"]["SeasonCalendar"];
-            /** @description Finished matches this season */
+            /** @description Finished matches this season, every competition */
             matches: number;
             table: {
                 position: number;
@@ -15883,7 +15931,7 @@ export interface components {
                     D: number;
                     L: number;
                 };
-                /** @description The last five */
+                /** @description The last five, oldest first */
                 form: ("W" | "D" | "L")[];
             }[];
             /** @description [X61 E12] Each club at home and away in the league */
@@ -15946,7 +15994,7 @@ export interface components {
             from: number;
             /** @description The points the next level needs */
             next: number;
-            /** @description The way to the next level */
+            /** @description The way to the next level, out of 10000 */
             progress_bp: number;
         };
         /** @enum {string} */
@@ -15954,7 +16002,7 @@ export interface components {
         /** @description [Sprint 25] Where the points stand: the tier, its division, and the way to the next division or tier */
         RatingTier: {
             key: components["schemas"]["RatingTierKey"];
-            /** @description The tier's place */
+            /** @description The tier's place, 1 (prospect) to 7 (legend) */
             rank: number;
             /** @description 3 = III (the first) to 1 = I; none for the legend */
             division: number | null;
@@ -15964,7 +16012,7 @@ export interface components {
             from: number;
             /** @description The points the next division or tier starts at; none for the legend */
             next: number | null;
-            /** @description The way to the next */
+            /** @description The way to the next, out of 10000 */
             progress_bp: number;
         };
         /** @description [Sprint 25] The coach's rating: points that rise and fall with every league or cup match by the opponent's strength, and trophies (config game.rating) */
@@ -16171,7 +16219,7 @@ export interface components {
             code: string;
             colors: string[];
             crest_url: string;
-            /** @description At the league's making */
+            /** @description At the league's making, in hundredths */
             strength_cp: number;
             coach?: {
                 id: number;
@@ -16223,7 +16271,7 @@ export interface components {
             /** @description Three letters */
             code: string;
             league: string;
-            /** @description The average of the best 18 */
+            /** @description The average of the best 18, in hundredths */
             strength_cp: number;
             colors: string[];
             crest_url: string;
@@ -16413,7 +16461,7 @@ export interface components {
                 name?: string;
                 club?: Record<string, never>;
             } | null;
-            /** @description Set once the friend joins; the host manages home */
+            /** @description Set once the friend joins; the host manages home, the guest away */
             match_id?: string | null;
             /** @description Only in the answer to POST /sim/rooms (the home seat) and to /join (the away seat): keep it on the device and send it as X-Seat */
             seat?: string;
@@ -16459,7 +16507,7 @@ export interface components {
         BroadcastReaction: {
             id: number;
             /**
-             * @description The coach's side
+             * @description The coach's side, or null for a league member who watches
              * @enum {string|null}
              */
             side: "home" | "away" | null;
@@ -16760,7 +16808,7 @@ export interface components {
                     loss: number;
                 };
             }[];
-            /** @description The statement each side made */
+            /** @description The statement each side made, or null */
             said: {
                 home: string | null;
                 away: string | null;
@@ -16773,7 +16821,7 @@ export interface components {
         Newspaper: {
             /** @description Null before any round is played */
             edition: components["schemas"]["NewspaperEdition"] | null;
-            /** @description The published ones */
+            /** @description The published ones, newest first */
             articles: components["schemas"]["NewspaperArticle"][];
             /** @description Waiting for the owner: all of them for the owner, one's own for a coach */
             pending: components["schemas"]["NewspaperArticle"][];
@@ -16787,7 +16835,7 @@ export interface components {
         };
         NewspaperEdition: {
             round: number;
-            /** @description The rounds played */
+            /** @description The rounds played, for the picker */
             rounds: number[];
             results: {
                 home: string;
@@ -17043,7 +17091,7 @@ export interface components {
             t: number;
             /** @description The ball: x, y and its height */
             b: number[];
-            /** @description Every player on the pitch by id */
+            /** @description Every player on the pitch by id, his x and y */
             p: {
                 [key: string]: number[];
             };
@@ -17134,7 +17182,7 @@ export interface components {
         /** @description [Sprint 59 F1] One minute as the server sends it (Simulator::shown: the engine's minute with its commentary, frames, teams, moment, voice and story); here, on the channel match.{id} (MatchMinute's live) and in the simulator. Hidden tactics only for your own side */
         LiveMinute: {
             tick: number;
-            /** @description 1 or 2 */
+            /** @description 1 or 2, then 3 and 4 in extra time and 5 for penalties */
             period?: number;
             /** @description The clock as shown: [minute] or [minute, added] (45+2 is [45, 2]); a minute saved long ago may be a bare integer */
             minute?: unknown;
@@ -17178,7 +17226,7 @@ export interface components {
             type: string;
             /** @enum {string|null} */
             team?: "home" | "away" | null;
-            /** @description The commentary line */
+            /** @description The commentary line, the same for everyone */
             text?: string | null;
             /** @description A card's colour (yellow or red) */
             color?: string | null;
@@ -17207,7 +17255,7 @@ export interface components {
             tick?: number;
             /** @description Server clock in ms */
             server_now?: number;
-            /** @description When the next minute is due (ms) */
+            /** @description When the next minute is due (ms), null before the start or after the end */
             next_at?: number | null;
             /** @description Some minutes after `since` are no longer kept; jump to the latest */
             gap?: boolean;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Admin\Announcements;
 use App\Admin\Conversations;
 use App\Admin\JunkContent;
+use App\Admin\ServerPulse;
 use App\Auth\AccountDeletion;
 use App\Auth\AccountHolidays;
 use App\Auth\AccountVerification;
@@ -66,6 +67,12 @@ class AdminController extends Controller
         $days = (int) ($request->validate(['days' => 'sometimes|integer|min:1|max:365'])['days'] ?? 30);
 
         return response()->json(Funnel::of($days));
+    }
+
+    /** [Sprint 66 B3] The server's pulse: the live match's speed (median and 95%), the queue, Reverb's sockets. */
+    public function server(): JsonResponse
+    {
+        return response()->json(ServerPulse::read());
     }
 
     /** [Sprint 66 W2] The errors the devices reported in the last `days` days (7 by default), the latest first. */

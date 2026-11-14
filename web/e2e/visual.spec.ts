@@ -16,11 +16,14 @@ const SCREENS: [string, string][] = [
   ['/fixtures', 'fixtures'],
   ['/', 'home'],
 ]
+// [Sprint 66 T6] Every size at night and by day.
 const SIZES: [number, number, 'dark' | 'light'][] = [
   [667, 375, 'dark'],
   [915, 412, 'dark'],
   [1440, 900, 'dark'],
+  [667, 375, 'light'],
   [915, 412, 'light'],
+  [1440, 900, 'light'],
 ]
 
 const masks = (page: Page) => [
@@ -31,6 +34,9 @@ const masks = (page: Page) => [
   page.locator('.dock-crest'),
   page.locator('.shell-bar'),
   page.locator('.skeleton'),
+  // [Sprint 66 T6] The players on the transfer list are each new league's own: their rows as boxes (where they sit is
+  // still compared, not who is in them).
+  page.getByRole('region', { name: 'قائمة الانتقالات' }).getByRole('listitem'),
 ]
 
 test('the rebuilt screens keep their shape', async ({ page }) => {
@@ -58,7 +64,8 @@ test('the rebuilt screens keep their shape', async ({ page }) => {
       await expect(page).toHaveScreenshot(`${name}-${width}-${scheme}.png`, {
         mask: masks(page),
         animations: 'disabled',
-        maxDiffPixelRatio: 0.03,
+        // [Sprint 66 T6] Small: a button's colour is seen (0.2% of the picture, the masks taking what moves).
+        maxDiffPixelRatio: 0.002,
       })
     }
   }
