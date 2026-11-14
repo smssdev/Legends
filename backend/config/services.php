@@ -62,7 +62,7 @@ return [
     'telegram' => [
         'token' => env('TELEGRAM_BOT_TOKEN'),
         'secret' => env('TELEGRAM_WEBHOOK_SECRET'),
-        'username' => env('TELEGRAM_BOT_USERNAME'),
+        'username' => env('TELEGRAM_BOT_USERNAME', 'GameLegendManagerBot'),
         'channel' => env('TELEGRAM_CHANNEL'),
         'url' => 'https://api.telegram.org',
         'timeout' => 10,
