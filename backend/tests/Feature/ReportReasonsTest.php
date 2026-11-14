@@ -26,4 +26,19 @@ class ReportReasonsTest extends TestCase
             $this->assertNotEmpty($report['reasons']);
         }
     }
+
+    public function test_the_one_suggestion_says_where_to_act(): void
+    {
+        $this->template(2, full: true);
+        [$home, $away] = MasterClub::orderBy('id')->get()->all();
+        $state = MatchFactory::make($home, $away, ['seed' => 1]);
+        // [Sprint 64 B6] Every reason knows where a coach acts on it; luck nowhere.
+        $state['teams']['away']['stats']['big_chances'] = 6;   // the other side made the better chances
+        $report = Report::build($state, [], 'home');
+        foreach ($report['reasons'] as $r) {
+            $this->assertContains($r['go'], ['lineup', 'tactics', 'training', null]);
+        }
+        $this->assertNotNull($report['improve']);
+        $this->assertArrayHasKey('go', $report['improve']);
+    }
 }

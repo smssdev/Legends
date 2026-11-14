@@ -71,40 +71,43 @@ class Report
         ];
     }
 
-    /** Each fact: a number, a short title and a sentence; weight > 0 favours $me. */
+    /**
+     * Each fact: a number, a short title and a sentence; weight > 0 favours $me. [Sprint 64 B6] And where a coach acts on
+     * it (go: the lineup or the tactics; none for luck), so the report's one suggestion (improve) has its button.
+     */
     private static function facts(array $me, array $them, int $gf, int $ga): array
     {
         $m = $me['stats'];
         $t = $them['stats'];
         $facts = [];
 
-        $facts[] = ['weight' => ($m['presses_won'] - $t['presses_won']) * 3, 'big' => (string) $m['presses_won'], 'unit' => __('بناء مقطوع'),
+        $facts[] = ['go' => 'tactics', 'weight' => ($m['presses_won'] - $t['presses_won']) * 3, 'big' => (string) $m['presses_won'], 'unit' => __('بناء مقطوع'),
             'title' => $m['presses_won'] >= $t['presses_won'] ? __('قطعت بناءهم كثيراً') : __('بناؤك قُطع كثيراً'),
             'text' => sprintf(__('قطعت %d من %d بناءً لهم، وقطعوا %d من %d بناءً لك.'), $m['presses_won'], $t['builds'], $t['presses_won'], $m['builds'])];
 
-        $facts[] = ['weight' => ($m['big_chances'] - $t['big_chances']) * 5, 'big' => $m['big_chances'].' / '.$t['big_chances'], 'unit' => __('فرص محققة'),
+        $facts[] = ['go' => 'lineup', 'weight' => ($m['big_chances'] - $t['big_chances']) * 5, 'big' => $m['big_chances'].' / '.$t['big_chances'], 'unit' => __('فرص محققة'),
             'title' => $m['big_chances'] >= $t['big_chances'] ? __('صنعت الفرص الأخطر') : __('فرصهم كانت أخطر'),
             'text' => sprintf(__('فرص محققة: %d لك مقابل %d، وتسديدات %d مقابل %d.'), $m['big_chances'], $t['big_chances'], $m['shots'], $t['shots'])];
 
         $expectedFor = intdiv($m['xg'], 100);
         $expectedAgainst = intdiv($t['xg'], 100);
         $luck = ($gf * 100 - $expectedFor) - ($ga * 100 - $expectedAgainst);
-        $facts[] = ['weight' => intdiv($luck, 20), 'big' => sprintf('%d.%d', intdiv($expectedFor, 100), intdiv($expectedFor % 100, 10)), 'unit' => __('أهداف متوقعة'),
+        $facts[] = ['go' => null, 'weight' => intdiv($luck, 20), 'big' => sprintf('%d.%d', intdiv($expectedFor, 100), intdiv($expectedFor % 100, 10)), 'unit' => __('أهداف متوقعة'),
             'title' => abs($luck) < 60 ? __('النتيجة تعكس المباراة') : ($luck > 0 ? __('الحظ والفعالية معك') : __('الحظ لم يكن معك')),
             'text' => sprintf(__('فرصك كانت تساوي حوالي %d.%d هدف وسجلت %d، وفرصهم حوالي %d.%d وسجلوا %d.'),
                 intdiv($expectedFor, 100), intdiv($expectedFor % 100, 10), $gf, intdiv($expectedAgainst, 100), intdiv($expectedAgainst % 100, 10), $ga)];
 
-        $facts[] = ['weight' => ($m['counters'] - $t['counters']) * 3, 'big' => (string) $m['counters'], 'unit' => __('هجمات مرتدة'),
+        $facts[] = ['go' => 'tactics', 'weight' => ($m['counters'] - $t['counters']) * 3, 'big' => (string) $m['counters'], 'unit' => __('هجمات مرتدة'),
             'title' => $m['counters'] >= $t['counters'] ? __('ارتداداتك فاجأتهم') : __('ارتداداتهم أتعبتك'),
             'text' => sprintf(__('هجمات مرتدة: %d لك مقابل %d.'), $m['counters'], $t['counters'])];
 
         $fitMe = self::fitness($me);
         $fitThem = self::fitness($them);
-        $facts[] = ['weight' => intdiv($fitMe - $fitThem, 150), 'big' => intdiv($fitMe, 100).'%', 'unit' => __('لياقة في النهاية'),
+        $facts[] = ['go' => 'training', 'weight' => intdiv($fitMe - $fitThem, 150), 'big' => intdiv($fitMe, 100).'%', 'unit' => __('لياقة في النهاية'),
             'title' => $fitMe >= $fitThem ? __('أنهيت المباراة أنشط منهم') : __('الإرهاق أثّر عليك'),
             'text' => sprintf(__('متوسط اللياقة في النهاية: %d%% لك مقابل %d%%.'), intdiv($fitMe, 100), intdiv($fitThem, 100))];
 
-        $facts[] = ['weight' => ($t['red'] - $m['red']) * 12 + ($t['yellow'] - $m['yellow']), 'big' => (string) ($m['yellow'] + $m['red']), 'unit' => __('بطاقات'),
+        $facts[] = ['go' => 'tactics', 'weight' => ($t['red'] - $m['red']) * 12 + ($t['yellow'] - $m['yellow']), 'big' => (string) ($m['yellow'] + $m['red']), 'unit' => __('بطاقات'),
             'title' => $m['red'] > $t['red'] ? __('الطرد كلّفك') : ($t['red'] > $m['red'] ? __('لعبت بأفضلية عددية') : __('الانضباط')),
             'text' => sprintf(__('بطاقات: %d صفراء و%d حمراء لك، مقابل %d و%d.'), $m['yellow'], $m['red'], $t['yellow'], $t['red'])];
 

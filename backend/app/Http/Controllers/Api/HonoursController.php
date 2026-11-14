@@ -68,6 +68,8 @@ class HonoursController extends Controller
         return response()->json([
             'coach' => ['id' => $user->id, 'account_no' => $user->account_no, 'name' => $user->name, 'official' => Username::official($user->username), 'verified' => $user->account_verified_at !== null],
             'record' => Career::record($user->id),
+            // [Sprint 64 B7] The viewer's own record against this coach (none on one's own profile).
+            'head_to_head' => $request->user()->id === $user->id ? null : Career::headToHead($request->user()->id, $user->id),
             'titles' => $titles->map(fn ($t) => ['league' => $t->league, 'season' => (int) $t->number, 'competition' => $t->competition,
                 'position' => (int) $t->position, 'club' => $t->club])->all(),
             'objectives' => [

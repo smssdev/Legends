@@ -72,7 +72,7 @@ class NotificationsTest extends TestCase
     {
         foreach (config('game.notifications.kinds') as $kind => $types) {
             foreach ($types as $type) {
-                if ($type === 'match_soon') {
+                if (in_array($type, ['match_soon', 'lineup_soon'], true)) {
                     continue;
                 }
                 $this->assertContains($type, MessageText::TYPES, $type);
@@ -101,6 +101,31 @@ class NotificationsTest extends TestCase
         Queue::assertPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'match_soon' && $j->payload['link'] === '/match' && $j->payload['title'] === 'مباراتك بعد 30 دقيقة');
         Queue::assertPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'match_soon', 1);
         $this->assertNotNull(DB::table('fixtures')->where('id', $f->id)->value('soon_at'));
+    }
+
+    public function test_is_your_lineup_ready_an_hour_before_once_and_never_when_turned_off(): void
+    {
+        $this->template(full: true);
+        $league = $this->makeLeague($this->owner, ['team_count' => 4, 'rounds_per_day' => 1, 'round_times' => ['21:00']]);
+        $f = NextFixture::of($league['my_club_id']);
+        $this->subscribe($this->owner);
+        // [Sprint 64 B5] An hour before kick-off, the tap opens the lineup.
+        Carbon::setTestNow(Carbon::parse($f->scheduled_at, 'UTC')->subMinutes(61));
+        $this->artisan('matches:prepare');
+        Queue::assertNotPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'lineup_soon');
+        Carbon::setTestNow(Carbon::parse($f->scheduled_at, 'UTC')->subMinutes(60));
+        $this->artisan('matches:prepare');
+        $this->artisan('matches:prepare');
+        Queue::assertPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'lineup_soon' && $j->payload['link'] === '/lineup'
+            && $j->payload['title'] === 'تشكيلتك جاهزة؟' && $j->payload['league'] === $league['id']);
+        Queue::assertPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'lineup_soon', 1);
+
+        // The match_soon kind off: no reminder for the next fixture.
+        $this->actingAs($this->owner)->putJson('/api/v1/notifications', ['kinds' => ['match_soon' => false]])->assertOk();
+        Queue::fake();
+        DB::table('fixtures')->where('id', $f->id)->update(['lineup_reminded_at' => null]);
+        $this->artisan('matches:prepare');
+        Queue::assertNotPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'lineup_soon');
     }
 
     public function test_the_job_without_keys_sends_nothing_and_fails_nothing(): void

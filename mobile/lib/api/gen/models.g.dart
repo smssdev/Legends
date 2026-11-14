@@ -2240,7 +2240,7 @@ class ClubBoard {
   final int missed;
   final ClubBoardMoney money;
 
-  /// The most urgent first
+  /// [Sprint 64 B3] Ranked by the server, the most pressing first (priority), each with where its one action goes (go)
   final List<ClubBoardPendingItem> pending;
   final ClubBoardStandings standings;
 
@@ -2432,26 +2432,44 @@ class ClubBoardMoney {
 }
 
 class ClubBoardPendingItem {
-  const ClubBoardPendingItem({this.count, required this.kind, this.lines, this.matchId, this.players, required this.severity, this.until});
+  const ClubBoardPendingItem({
+    this.count,
+    required this.go,
+    required this.kind,
+    this.lines,
+    this.matchId,
+    this.players,
+    required this.priority,
+    required this.severity,
+    this.until,
+  });
 
   factory ClubBoardPendingItem.fromJson(Object? json) {
     final r = JsonReader(json, 'ClubBoardPendingItem');
     return ClubBoardPendingItem(
       count: r.intOrNull('count'),
+      go: r.string('go'),
       kind: r.string('kind'),
       lines: r.listOrNull('lines', JsonReader.stringOf),
       matchId: r.intOrNull('match_id'),
       players: r.listOrNull('players', ClubBoardPendingItemPlayersItem.fromJson),
+      priority: r.int_('priority'),
       severity: r.string('severity'),
       until: r.intOrNull('until'),
     );
   }
 
   final int? count;
+
+  /// The page its action opens
+  final String go;
   final String kind;
   final List<String>? lines;
   final int? matchId;
   final List<ClubBoardPendingItemPlayersItem>? players;
+
+  /// Higher first: window 100, lineup 90, offers 60, requests 50, training_empty 30, training_done 20
+  final int priority;
   final String severity;
 
   /// ms
@@ -2794,12 +2812,13 @@ class CoachLevel {
 }
 
 class CoachProfile {
-  const CoachProfile({required this.coach, required this.objectives, required this.record, required this.titles});
+  const CoachProfile({required this.coach, this.headToHead, required this.objectives, required this.record, required this.titles});
 
   factory CoachProfile.fromJson(Object? json) {
     final r = JsonReader(json, 'CoachProfile');
     return CoachProfile(
       coach: r.object('coach', CoachProfileCoach.fromJson),
+      headToHead: r.objectOrNull('head_to_head', CoachProfileHeadToHead.fromJson),
       objectives: r.object('objectives', CoachProfileObjectives.fromJson),
       record: r.object('record', CoachProfileRecord.fromJson),
       titles: r.list('titles', CoachProfileTitlesItem.fromJson),
@@ -2807,6 +2826,9 @@ class CoachProfile {
   }
 
   final CoachProfileCoach coach;
+
+  /// [Sprint 64 B7] The viewer against this coach: every finished match between their clubs (by their memberships at its date), from the viewer's side, the last five newest first. Null on one's own profile.
+  final CoachProfileHeadToHead? headToHead;
   final CoachProfileObjectives objectives;
   final CoachProfileRecord record;
   final List<CoachProfileTitlesItem> titles;
@@ -2835,6 +2857,28 @@ class CoachProfileCoach {
 
   /// [Sprint 21 E2.5] A verified account
   final bool? verified;
+}
+
+/// [Sprint 64 B7] The viewer against this coach: every finished match between their clubs (by their memberships at its date), from the viewer's side, the last five newest first. Null on one's own profile.
+class CoachProfileHeadToHead {
+  const CoachProfileHeadToHead({required this.drawn, required this.last, required this.lost, required this.played, required this.won});
+
+  factory CoachProfileHeadToHead.fromJson(Object? json) {
+    final r = JsonReader(json, 'CoachProfileHeadToHead');
+    return CoachProfileHeadToHead(
+      drawn: r.int_('drawn'),
+      last: r.list('last', JsonReader.stringOf),
+      lost: r.int_('lost'),
+      played: r.int_('played'),
+      won: r.int_('won'),
+    );
+  }
+
+  final int drawn;
+  final List<String> last;
+  final int lost;
+  final int played;
+  final int won;
 }
 
 class CoachProfileObjectives {
@@ -9855,15 +9899,24 @@ class RecapStats {
 
 /// A reason for the result, or the one thing to improve
 class ReportNote {
-  const ReportNote({required this.big, required this.text, required this.title, this.unit});
+  const ReportNote({required this.big, this.go, required this.text, required this.title, this.unit});
 
   factory ReportNote.fromJson(Object? json) {
     final r = JsonReader(json, 'ReportNote');
-    return ReportNote(big: r.string('big'), text: r.string('text'), title: r.string('title'), unit: r.stringOrNull('unit'));
+    return ReportNote(
+      big: r.string('big'),
+      go: r.stringOrNull('go'),
+      text: r.string('text'),
+      title: r.string('title'),
+      unit: r.stringOrNull('unit'),
+    );
   }
 
   /// The number in large type
   final String big;
+
+  /// [Sprint 64 B6] Where a coach acts on it (the suggestion's button); none for luck
+  final String? go;
   final String text;
   final String title;
   final String? unit;
@@ -10083,6 +10136,7 @@ class ScoutView {
     this.finishCoins,
     required this.hours,
     required this.options,
+    this.quote,
     required this.requests,
   });
 
@@ -10094,6 +10148,7 @@ class ScoutView {
       finishCoins: r.intOrNull('finish_coins'),
       hours: r.int_('hours'),
       options: r.object('options', ScoutViewOptions.fromJson),
+      quote: r.objectOrNull('quote', SpendQuote.fromJson),
       requests: r.list('requests', ScoutViewRequestsItem.fromJson),
     );
   }
@@ -10105,6 +10160,7 @@ class ScoutView {
   final int? finishCoins;
   final int hours;
   final ScoutViewOptions options;
+  final SpendQuote? quote;
   final List<ScoutViewRequestsItem> requests;
 }
 
@@ -10375,7 +10431,13 @@ class SpecialistsViewSpecialistsItem {
 }
 
 class SpecialistsViewSpecialistsItemOffersItem {
-  const SpecialistsViewSpecialistsItemOffersItem({required this.cost, required this.currency, required this.effect, required this.stars});
+  const SpecialistsViewSpecialistsItemOffersItem({
+    required this.cost,
+    required this.currency,
+    required this.effect,
+    this.quote,
+    required this.stars,
+  });
 
   factory SpecialistsViewSpecialistsItemOffersItem.fromJson(Object? json) {
     final r = JsonReader(json, 'SpecialistsViewSpecialistsItemOffersItem');
@@ -10383,6 +10445,7 @@ class SpecialistsViewSpecialistsItemOffersItem {
       cost: r.int_('cost'),
       currency: r.string('currency'),
       effect: r.string('effect'),
+      quote: r.objectOrNull('quote', SpendQuote.fromJson),
       stars: r.int_('stars'),
     );
   }
@@ -10392,7 +10455,33 @@ class SpecialistsViewSpecialistsItemOffersItem {
 
   /// What it gives
   final String effect;
+  final SpendQuote? quote;
   final int stars;
+}
+
+/// [Sprint 64 B4] A spend before it is made, as buying a player shows it: the price, what the club (or its coach, in coins) has, what is left after, and when what it buys ends
+class SpendQuote {
+  const SpendQuote({required this.after, required this.amount, required this.can, required this.currency, this.endsAt, required this.have});
+
+  factory SpendQuote.fromJson(Object? json) {
+    final r = JsonReader(json, 'SpendQuote');
+    return SpendQuote(
+      after: r.int_('after'),
+      amount: r.int_('amount'),
+      can: r.bool_('can'),
+      currency: r.string('currency'),
+      endsAt: r.stringOrNull('ends_at'),
+      have: r.int_('have'),
+    );
+  }
+
+  /// Below zero when it cannot be paid
+  final int after;
+  final int amount;
+  final bool can;
+  final String currency;
+  final String? endsAt;
+  final int have;
 }
 
 class SplitRow {
@@ -10801,15 +10890,21 @@ class StadiumViewSectionsItem {
 }
 
 class StadiumViewSectionsItemNext {
-  const StadiumViewSectionsItemNext({required this.cost, required this.part_, required this.stage});
+  const StadiumViewSectionsItemNext({required this.cost, required this.part_, this.quote, required this.stage});
 
   factory StadiumViewSectionsItemNext.fromJson(Object? json) {
     final r = JsonReader(json, 'StadiumViewSectionsItemNext');
-    return StadiumViewSectionsItemNext(cost: r.int_('cost'), part_: r.int_('part'), stage: r.int_('stage'));
+    return StadiumViewSectionsItemNext(
+      cost: r.int_('cost'),
+      part_: r.int_('part'),
+      quote: r.objectOrNull('quote', SpendQuote.fromJson),
+      stage: r.int_('stage'),
+    );
   }
 
   final int cost;
   final int part_;
+  final SpendQuote? quote;
   final int stage;
 }
 
@@ -12631,6 +12726,7 @@ class TrainingView {
     required this.intervalMinutes,
     required this.now,
     required this.players,
+    this.quote,
     required this.recommended,
     required this.slots,
   });
@@ -12644,6 +12740,7 @@ class TrainingView {
       intervalMinutes: r.int_('interval_minutes'),
       now: r.string('now'),
       players: r.list('players', TrainingPlayer.fromJson),
+      quote: r.objectOrNull('quote', SpendQuote.fromJson),
       recommended: r.object('recommended', TrainingViewRecommended.fromJson),
       slots: r.list('slots', TrainingViewSlotsItem.fromJson),
     );
@@ -12661,6 +12758,7 @@ class TrainingView {
   /// The game clock
   final String now;
   final List<TrainingPlayer> players;
+  final SpendQuote? quote;
 
   /// [Sprint 30 G5] Per line, the player whose +1 comes soonest (fewest sessions, the younger on a tie), never injured, at the ceiling or training; null for a line already training
   final TrainingViewRecommended recommended;

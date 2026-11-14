@@ -1230,7 +1230,7 @@ class LAr extends L {
   String get kindReferee => 'حكم مباراتك القادمة';
 
   @override
-  String get kindMatchSoon => 'مباراتك بعد قليل وتقديمها';
+  String get kindMatchSoon => 'مباراتك بعد قليل، وتشكيلتك قبلها بساعة، وتقديمها';
 
   @override
   String get kindOffers => 'العروض والبيع والإعارة';

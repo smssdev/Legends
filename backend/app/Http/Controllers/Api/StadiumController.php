@@ -12,6 +12,7 @@ use App\Models\League;
 use App\Stadium\Stadium;
 use App\Support\GameClock;
 use App\Wallet\Finish;
+use App\Wallet\SpendQuote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -62,7 +63,9 @@ class StadiumController extends Controller
                     'section' => $s, 'stage' => $stages[$s], 'parts' => (int) ($parts[$s] ?? 0),
                     'done' => $stages[$s] * $per + (int) ($parts[$s] ?? 0),
                     'effects' => $effects[$s],
-                    'next' => $next ? ['stage' => $next[0], 'part' => $next[1], 'cost' => Stadium::partCost($league->id, $next[0])] : null,
+                    'next' => $next ? ['stage' => $next[0], 'part' => $next[1], 'cost' => Stadium::partCost($league->id, $next[0]),
+                        // [Sprint 64 B4] What is left after the part, and when it is built.
+                        'quote' => SpendQuote::money($club->id, Stadium::partCost($league->id, $next[0]), Stadium::partSeconds($league->id))] : null,
                 ];
             }, Stadium::SECTIONS),
             'building' => $building ? [

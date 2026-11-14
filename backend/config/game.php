@@ -678,7 +678,7 @@ return [
     'notifications' => [
         'kinds' => [
             'referee' => ['referee'],
-            'match_soon' => ['match_soon', 'match_move'],
+            'match_soon' => ['match_soon', 'match_move', 'lineup_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold', 'loan'],
             'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward', 'slot_opened'],
             // [Sprint 21 E7.2, E7.7] The developers' announcements and their messages to the coach.
@@ -687,6 +687,8 @@ return [
         ],
         // [Sprint 21 E4.7] Half an hour before kick-off, as the owner asked (was 10 minutes).
         'match_soon_minutes' => 30,
+        // [Sprint 64 B5] "Is your lineup ready?" this long before kick-off (opens the lineup).
+        'lineup_soon_minutes' => 60,
         'vapid' => ['public' => env('WEBPUSH_VAPID_PUBLIC'), 'private' => env('WEBPUSH_VAPID_PRIVATE'), 'subject' => env('WEBPUSH_SUBJECT', 'mailto:admin@legends.local')],
         // [Sprint 19 B1] The Android app's pushes (App\Notify\Fcm): the service account's JSON file on the server (a
         // secret, set with legends-set), and the app's Firebase settings, which are not secret and reach it from /app.

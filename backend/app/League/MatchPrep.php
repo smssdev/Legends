@@ -43,6 +43,7 @@ class MatchPrep
             }
         }
         self::soon($now);
+        self::lineupSoon($now);
         self::remind($now);
         $locks = 0;
         $due = DB::table('fixtures')->where('status', 'scheduled')->where('is_bye', false)->whereNotNull('home_id')->whereNotNull('away_id')
@@ -149,6 +150,33 @@ class MatchPrep
                     Push::send($coach, 'match_soon', self::english($coach) ? "Your match in {$minutes} minutes" : "مباراتك بعد {$minutes} ".($minutes > 10 ? 'دقيقة' : 'دقائق'),
                         self::english($coach) ? 'Against '.($names[$other] ?? '').'. Get in to follow it and manage your team.'
                             : 'ضد '.($names[$other] ?? '').'. ادخل لتتابعها وتدير فريقك.', '/match', (int) DB::table('clubs')->where('id', $club)->value('league_id'));
+                }
+            }
+        }
+    }
+
+    /**
+     * [Sprint 64 B5] "Is your lineup ready?" (game.notifications.lineup_soon_minutes) before kick-off, once per fixture,
+     * to both coaches' devices; the tap opens the lineup. A round in two slots has its own reminder before its lock [X31].
+     */
+    private static function lineupSoon($now): void
+    {
+        $minutes = (int) config('game.notifications.lineup_soon_minutes');
+        $due = DB::table('fixtures')->where('status', 'scheduled')->where('is_bye', false)->whereNull('lineup_reminded_at')->whereNull('lock_at')
+            ->whereNotNull('home_id')->whereNotNull('away_id')->where('scheduled_at', '>', $now->copy()->addMinutes((int) config('game.notifications.match_soon_minutes')))
+            ->where('scheduled_at', '<=', $now->copy()->addMinutes($minutes))->get();
+        foreach ($due as $f) {
+            if (DB::table('fixtures')->where('id', $f->id)->whereNull('lineup_reminded_at')->update(['lineup_reminded_at' => $now]) !== 1) {
+                continue;
+            }
+            $names = DB::table('clubs')->whereIn('id', [$f->home_id, $f->away_id])->pluck('name', 'id');
+            foreach ([[$f->home_id, $f->away_id], [$f->away_id, $f->home_id]] as [$club, $other]) {
+                if ($coach = Inbox::coachOf($club)) {
+                    $en = self::english($coach);
+                    $who = $names[$other] ?? '';
+                    Push::send($coach, 'lineup_soon', $en ? 'Is your lineup ready?' : 'تشكيلتك جاهزة؟',
+                        $en ? "Your match against {$who} kicks off in an hour: check your lineup and plan."
+                            : "مباراتك ضد {$who} بعد ساعة: تفقد تشكيلتك وخطتك.", '/lineup', (int) DB::table('clubs')->where('id', $club)->value('league_id'));
                 }
             }
         }
