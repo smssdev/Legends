@@ -6,9 +6,14 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
 // The drawing's own: colours (the server's checked #RRGGBB, the theme's constants), fragments it builds, numbers.
-const SAFE = /^(esc\(|ref\(|led\(|K\(|keeperKit\(|kitPatternSvg\(|k\.(kit|trim)|o\.trim|kit$|c$|A$|H$|TH\[|TRIM\[|day \?|shirt$|shorts$|fill$|ink$|pts$|id$|i$|st\.(defs|body)$|svg\.dataset\.id$|skins\[|Array\.from|i % 2|-?\d|\(320 \+|\(170 \+|dx|x$|y$|\(\(|a\b|r0\b)/
+const SAFE =
+  /^(esc\(|ref\(|led\(|K\(|keeperKit\(|kitPatternSvg\(|k\.(kit|trim)|o\.trim|kit$|c$|A$|H$|TH\[|TRIM\[|day \?|shirt$|shorts$|fill$|ink$|pts$|id$|i$|st\.(defs|body)$|svg\.dataset\.id$|skins\[|Array\.from|i % 2|-?\d|\(320 \+|\(170 \+|dx|x$|y$|\(\(|a\b|r0\b)/
 const files = []
-const walk = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); statSync(p).isDirectory() ? walk(p) : /\.(ts|vue)$/.test(f) && !f.endsWith('.d.ts') && files.push(p) })
+const walk = (d) =>
+  readdirSync(d).forEach((f) => {
+    const p = join(d, f)
+    statSync(p).isDirectory() ? walk(p) : /\.(ts|vue)$/.test(f) && !f.endsWith('.d.ts') && files.push(p)
+  })
 walk('src')
 const bad = []
 for (const f of files) {

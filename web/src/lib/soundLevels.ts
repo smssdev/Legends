@@ -10,12 +10,16 @@ const read = (k: SoundLevel, fallback: number) => {
   try {
     const v = Number(storage.get('sound.' + k))
     return storage.get('sound.' + k) !== null && Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : fallback
-  } catch { return fallback }
+  } catch {
+    return fallback
+  }
 }
 
 export const levels = reactive<Record<SoundLevel, number>>({ ui: read('ui', 80), stadium: read('stadium', 80), voice: read('voice', 80) })
 watch(levels, (l) => {
-  try { for (const k of ['ui', 'stadium', 'voice'] as const) storage.set('sound.' + k, String(l[k])) } catch {}
+  try {
+    for (const k of ['ui', 'stadium', 'voice'] as const) storage.set('sound.' + k, String(l[k]))
+  } catch {}
 })
 
 /** A level as a gain, 0 to 1. */
@@ -42,10 +46,24 @@ export function uiSound(name: UiSound, level: SoundLevel = 'ui') {
 
 /** [Sprint 64 W12] The buttons' touch: a short buzz and the interface's tap (at its level), one switch for both, kept on
  * this device. UiButton calls it on every press; the app's GlmButton does the same. */
-export const touchFeedback = ref((() => { try { return storage.get('touch') !== 'off' } catch { return true } })())
-watch(touchFeedback, (on) => { try { storage.set('touch', on ? 'on' : 'off') } catch {} })
+export const touchFeedback = ref(
+  (() => {
+    try {
+      return storage.get('touch') !== 'off'
+    } catch {
+      return true
+    }
+  })(),
+)
+watch(touchFeedback, (on) => {
+  try {
+    storage.set('touch', on ? 'on' : 'off')
+  } catch {}
+})
 export function tapFeedback() {
   if (!touchFeedback.value) return
-  try { navigator.vibrate?.(8) } catch {}
+  try {
+    navigator.vibrate?.(8)
+  } catch {}
   uiSound('tap')
 }

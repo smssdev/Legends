@@ -12,11 +12,30 @@ function make() {
   const settle = vi.fn()
   const sound = { danger() {}, chant() {}, whistle: vi.fn() }
   const audio = { sound, voice: { remainingMs: () => 0, stop() {} }, soundOn: ref(true), toggleSound() {} } as any
-  const P = useMatchPlayer({ id: '1', league: false, pitch: ref({ play, skip() {}, prepare() {}, react() {} }), audio, replay: useReplay(), orders: () => ({ settle }) as any, speed: 1 })
-  P.view.value = { mode: 'solo', timing: { tick_ms: 3000, halftime_seconds: 30 }, clubs: { home: { name: 'A' }, away: { name: 'B' } } } as any
+  const P = useMatchPlayer({
+    id: '1',
+    league: false,
+    pitch: ref({ play, skip() {}, prepare() {}, react() {} }),
+    audio,
+    replay: useReplay(),
+    orders: () => ({ settle }) as any,
+    speed: 1,
+  })
+  P.view.value = {
+    mode: 'solo',
+    timing: { tick_ms: 3000, halftime_seconds: 30 },
+    clubs: { home: { name: 'A' }, away: { name: 'B' } },
+  } as any
   return { P, play, settle, sound }
 }
-const goal = { tick: 20, minute: [20, 0], score: { home: 1, away: 0 }, danger: 3, events: [{ type: 'goal', team: 'home', text: 'GOAL' }], moment: { kind: 'goal', ms: 9000 } } as any
+const goal = {
+  tick: 20,
+  minute: [20, 0],
+  score: { home: 1, away: 0 },
+  danger: 3,
+  events: [{ type: 'goal', team: 'home', text: 'GOAL' }],
+  moment: { kind: 'goal', ms: 9000 },
+} as any
 
 describe('useMatchPlayer', () => {
   it('the score changes when the ball crosses the line, and the feed waits for the scene', () => {

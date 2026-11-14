@@ -6,24 +6,47 @@ import { LINES, money, type Line } from '../../lib/format'
 import LineBadge from './LineBadge.vue'
 import RatingBox from './RatingBox.vue'
 
-const props = defineProps<{ name: string; line: Line; position: string; age: number; overall: number; potential: number; value: number; selected?: boolean }>()
+const props = defineProps<{
+  name: string
+  line: Line
+  position: string
+  age: number
+  overall: number
+  potential: number
+  value: number
+  selected?: boolean
+}>()
 const room = computed(() => props.potential - props.overall)
 const fill = computed(() => Math.max(6, Math.min(100, 100 - room.value * 6)))
 </script>
 
 <template>
   <!-- [X32] The line's colour along the start edge, as the management games colour their squad rows. -->
-  <div class="relative flex min-h-touch items-center gap-3 overflow-hidden rounded-xl p-3 ps-4" :class="selected ? 'bg-surface-raised ring-1 ring-gold/60' : 'bg-surface'">
+  <div
+    class="relative flex min-h-touch items-center gap-3 overflow-hidden rounded-xl p-3 ps-4"
+    :class="selected ? 'bg-surface-raised ring-1 ring-gold/60' : 'bg-surface'"
+  >
     <span class="absolute inset-y-0 start-0 w-1" :style="{ background: `var(--color-line-${line})` }" aria-hidden="true" />
     <LineBadge :line="line" />
     <div class="min-w-0 flex-1">
       <div class="truncate font-display text-base font-extrabold">{{ $nm(name) }}</div>
       <div class="mt-1 flex items-center gap-2 text-xs text-text-muted">
-        <span>{{ $t(LINES[line].name) }} · <span dir="ltr">{{ position }}</span> {{ $t('· {v0} سنة', { v0: age }) }}</span>
-        <span class="hidden h-1.5 w-20 overflow-hidden rounded-pill bg-surface-sunk sm:block" :title="$t('الإمكانية {v0}', { v0: potential })">
-          <span class="block h-full rounded-pill" :class="room >= 6 ? 'bg-success' : room >= 2 ? 'bg-gold' : 'bg-warning'" :style="{ width: fill + '%' }" />
+        <span
+          >{{ $t(LINES[line].name) }} · <span dir="ltr">{{ position }}</span> {{ $t('· {v0} سنة', { v0: age }) }}</span
+        >
+        <span
+          class="hidden h-1.5 w-20 overflow-hidden rounded-pill bg-surface-sunk sm:block"
+          :title="$t('الإمكانية {v0}', { v0: potential })"
+        >
+          <span
+            class="block h-full rounded-pill"
+            :class="room >= 6 ? 'bg-success' : room >= 2 ? 'bg-gold' : 'bg-warning'"
+            :style="{ width: fill + '%' }"
+          />
         </span>
-        <span v-if="room > 0" class="font-numbers text-sm text-success" dir="ltr" :aria-label="$t('يتطور حتى {v0}', { v0: potential })">+{{ room }}</span>
+        <span v-if="room > 0" class="font-numbers text-sm text-success" dir="ltr" :aria-label="$t('يتطور حتى {v0}', { v0: potential })"
+          >+{{ room }}</span
+        >
       </div>
     </div>
     <span class="font-numbers text-lg text-text-soft" :aria-label="$t('القيمة {v0}', { v0: value })">{{ money(value) }}</span>

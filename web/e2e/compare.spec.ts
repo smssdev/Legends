@@ -5,13 +5,19 @@ import { expect, test } from '@playwright/test'
 import { ready, signUp } from './helpers'
 
 const SCREENS: [string, string][] = [
-  ['/club', 'office'], ['/team', 'squad'], ['/lineup', 'lineup'], ['/tactics', 'tactics'],
-  ['/market', 'market'], ['/match', 'next-match'], ['/fixtures', 'fixtures'], ['/', 'home'],
+  ['/club', 'office'],
+  ['/team', 'squad'],
+  ['/lineup', 'lineup'],
+  ['/tactics', 'tactics'],
+  ['/market', 'market'],
+  ['/match', 'next-match'],
+  ['/fixtures', 'fixtures'],
+  ['/', 'home'],
 ]
 
 test.skip(!process.env.COMPARE, 'COMPARE=1 to take the comparison shots')
 
-test('the site at the app\'s size, for the comparison page', async ({ page }) => {
+test("the site at the app's size, for the comparison page", async ({ page }) => {
   test.setTimeout(300_000)
   await signUp(page)
   await page.goto('/leagues/new')

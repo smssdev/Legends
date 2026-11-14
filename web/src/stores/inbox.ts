@@ -92,7 +92,8 @@ export const useInbox = defineStore('inbox', () => {
     // [Sprint 58 W6] Not while the page is hidden: the channel brings what comes, and a return asks again.
     timer = window.setInterval(() => document.visibilityState === 'visible' && count(), 60_000)
     try {
-      live().private(`App.Models.User.${id}`)
+      live()
+        .private(`App.Models.User.${id}`)
         .listen('.message', (e: { message: Message; unread: number }) => {
           if (!messages.value.some((m) => m.id === e.message.id)) messages.value.unshift(e.message)
           unread.value = e.unread
@@ -103,7 +104,8 @@ export const useInbox = defineStore('inbox', () => {
       /* no live connection: the minute count keeps the badge */
     }
   }
-  if (typeof document !== 'undefined') document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && userId && count())
+  if (typeof document !== 'undefined')
+    document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && userId && count())
 
   return { unread, messages, more, loaded, error, load, read, readAll, follow, count }
 })

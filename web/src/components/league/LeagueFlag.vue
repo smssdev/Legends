@@ -8,8 +8,10 @@ const props = withDefaults(defineProps<{ country: string; label?: string; size?:
 const id = useId()
 
 // Each flag on a 96 × 64 field, its middle under the badge.
-const H = (...c: string[]) => c.map((f, i) => `<rect y="${(64 / c.length) * i}" width="96" height="${64 / c.length + 0.5}" fill="${f}"/>`).join('')
-const V = (...c: string[]) => c.map((f, i) => `<rect x="${(96 / c.length) * i}" width="${96 / c.length + 0.5}" height="64" fill="${f}"/>`).join('')
+const H = (...c: string[]) =>
+  c.map((f, i) => `<rect y="${(64 / c.length) * i}" width="96" height="${64 / c.length + 0.5}" fill="${f}"/>`).join('')
+const V = (...c: string[]) =>
+  c.map((f, i) => `<rect x="${(96 / c.length) * i}" width="${96 / c.length + 0.5}" height="64" fill="${f}"/>`).join('')
 const nordic = (bg: string, cross: string, inner?: string) =>
   `<rect width="96" height="64" fill="${bg}"/><rect x="30" width="12" height="64" fill="${cross}"/><rect y="26" width="96" height="12" fill="${cross}"/>` +
   (inner ? `<rect x="33" width="6" height="64" fill="${inner}"/><rect y="29" width="96" height="6" fill="${inner}"/>` : '')
@@ -91,10 +93,20 @@ const HEX = 'M32 3.5L56.7 17.75V46.25L32 60.5L7.3 46.25V17.75Z'
       <rect width="64" height="34" :fill="`url(#l${id})`" />
     </g>
     <path :d="HEX" fill="none" :stroke="`url(#g${id})`" stroke-width="4" stroke-linejoin="round" />
-    <path :d="HEX" fill="none" stroke="#3a2606" stroke-opacity="0.5" stroke-width="0.8" stroke-linejoin="round" transform="translate(32 32) scale(0.88) translate(-32 -32)" />
+    <path
+      :d="HEX"
+      fill="none"
+      stroke="#3a2606"
+      stroke-opacity="0.5"
+      stroke-width="0.8"
+      stroke-linejoin="round"
+      transform="translate(32 32) scale(0.88) translate(-32 -32)"
+    />
   </svg>
 </template>
 
 <style scoped>
-.league-flag { filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.45)); }
+.league-flag {
+  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.45));
+}
 </style>

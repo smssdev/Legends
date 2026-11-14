@@ -23,6 +23,9 @@ test('opening the club costs at most three API requests and no crest through Lar
   await page.goto('/club')
   await ready(page)
   await page.waitForTimeout(3000)
-  expect(api.filter((p) => p.includes('/crest.svg')), 'crests through Laravel').toEqual([])
+  expect(
+    api.filter((p) => p.includes('/crest.svg')),
+    'crests through Laravel',
+  ).toEqual([])
   expect(api.length, api.join(', ')).toBeLessThanOrEqual(3)
 })

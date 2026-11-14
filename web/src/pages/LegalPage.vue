@@ -18,7 +18,9 @@ const doc = computed(() => LEGAL[props.kind][locale.value])
     <main class="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <div class="flex flex-col gap-2">
         <h1 class="font-display text-3xl font-extrabold">{{ doc.title }}</h1>
-        <p class="text-sm text-text-muted">{{ $t('آخر تحديث:') }} <span class="font-numbers" dir="ltr">{{ UPDATED }}</span></p>
+        <p class="text-sm text-text-muted">
+          {{ $t('آخر تحديث:') }} <span class="font-numbers" dir="ltr">{{ UPDATED }}</span>
+        </p>
         <p class="leading-relaxed text-text-soft">{{ doc.intro }}</p>
       </div>
       <section v-for="(s, i) in doc.sections" :key="s.h" class="flex flex-col gap-2" :aria-labelledby="`legal-${i}`">

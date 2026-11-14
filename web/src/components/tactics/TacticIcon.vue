@@ -6,11 +6,19 @@ defineProps<{ name: string; active?: boolean }>()
 type Art = { color: string; d: string; fill?: string }
 const ART: Record<string, Art> = {
   // The mentality
-  all_out: { color: 'var(--color-live)', d: 'M4 22l6-6-6-6M12 22l6-6-6-6M20 22l6-6-6-6', fill: 'M24 6c1 2 3 3 3 5a3 3 0 0 1-6 0c0-1 1-2 1-3 1 1 2 1 2-2z' },
+  all_out: {
+    color: 'var(--color-live)',
+    d: 'M4 22l6-6-6-6M12 22l6-6-6-6M20 22l6-6-6-6',
+    fill: 'M24 6c1 2 3 3 3 5a3 3 0 0 1-6 0c0-1 1-2 1-3 1 1 2 1 2-2z',
+  },
   attacking: { color: 'var(--color-warning)', d: 'M7 22l7-6-7-6M16 22l7-6-7-6' },
   balanced: { color: 'var(--color-line-def)', d: 'M16 5v22M8 27h16M6 10h20M6 10l-3 7h6zM26 10l-3 7h6z' },
   defensive: { color: 'var(--color-line-def)', d: 'M16 4l10 4v7c0 7-5 11-10 13C11 26 6 22 6 15V8zM20 16h-8m3-3-3 3 3 3' },
-  park_bus: { color: 'var(--color-text-muted)', d: 'M4 9h24v13H4zM4 15h24M10 9v6M16 9v6M22 9v6', fill: 'M9 24a2 2 0 1 0 0 .1zM23 24a2 2 0 1 0 0 .1z' },
+  park_bus: {
+    color: 'var(--color-text-muted)',
+    d: 'M4 9h24v13H4zM4 15h24M10 9v6M16 9v6M22 9v6',
+    fill: 'M9 24a2 2 0 1 0 0 .1zM23 24a2 2 0 1 0 0 .1z',
+  },
   counter: { color: 'var(--color-gold)', d: 'M18 3L8 17h7l-2 12 11-16h-7z' },
   wings: { color: 'var(--color-brand-light)', d: 'M4 4v24M28 4v24M6 24c6-2 8-8 8-14M26 24c-6-2-8-8-8-14M12 12l2-3 2 3M16 12l2-3 2 3' },
   shots: { color: 'var(--color-live)', d: 'M10 8h12v6H10zM16 22v-6M8 26l6-8M24 26l-6-8M16 30v-4', fill: 'M16 22a2 2 0 1 0 0 .1z' },
@@ -42,7 +50,11 @@ const ART: Record<string, Art> = {
   tackle_3: { color: 'var(--color-live)', d: 'M24 4c2 3 4 4 4 7a4 4 0 0 1-8 0c0-2 1-3 2-4', fill: 'M6 8h10v14H6z' },
   // The marking and the trap
   zone: { color: 'var(--color-line-def)', d: 'M4 4h24v24H4zM12 4v24M20 4v24M4 12h24M4 20h24' },
-  man: { color: 'var(--color-warning)', d: 'M11 26v-8M21 26v-8M14 14h4M14 12v-2a2 2 0 0 1 4 0v2', fill: 'M11 9a3 3 0 1 0 0 .1zM21 9a3 3 0 1 0 0 .1z' },
+  man: {
+    color: 'var(--color-warning)',
+    d: 'M11 26v-8M21 26v-8M14 14h4M14 12v-2a2 2 0 0 1 4 0v2',
+    fill: 'M11 9a3 3 0 1 0 0 .1zM21 9a3 3 0 1 0 0 .1z',
+  },
   trap_on: { color: 'var(--color-success)', d: 'M8 28V4', fill: 'M8 4h16l-4 5 4 5H8z' },
   trap_off: { color: 'var(--color-text-muted)', d: 'M8 28V12M18 22l8 8M26 22l-8 8', fill: 'M8 12l14 6-14 4z' },
 }
@@ -51,13 +63,35 @@ const ART: Record<string, Art> = {
 <template>
   <svg viewBox="0 0 32 32" class="tactic-icon" :class="{ active }" :style="{ '--c': (ART[name] ?? ART.balanced).color }" aria-hidden="true">
     <path v-if="ART[name]?.fill" :d="ART[name].fill" fill="currentColor" />
-    <path :d="(ART[name] ?? ART.balanced).d" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path
+      :d="(ART[name] ?? ART.balanced).d"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
   </svg>
 </template>
 
 <style scoped>
-.tactic-icon { width: 2rem; height: 2rem; color: var(--color-text-muted); transition: color 0.2s, transform 0.2s; flex: none }
-.tactic-icon.active { color: var(--c); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--c) 65%, transparent)); transform: scale(1.06) }
+.tactic-icon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-text-muted);
+  transition:
+    color 0.2s,
+    transform 0.2s;
+  flex: none;
+}
+.tactic-icon.active {
+  color: var(--c);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--c) 65%, transparent));
+  transform: scale(1.06);
+}
 /* [X56] On paper the bright accents (the mint, the gold) take some of the ink, so the icon keeps its contrast. */
-:global(html.light .tactic-icon.active) { color: color-mix(in srgb, var(--c) 72%, var(--color-text)); filter: none }
+:global(html.light .tactic-icon.active) {
+  color: color-mix(in srgb, var(--c) 72%, var(--color-text));
+  filter: none;
+}
 </style>

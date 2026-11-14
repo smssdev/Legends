@@ -9,13 +9,27 @@ withDefaults(defineProps<{ size?: 'sm' | 'md' }>(), { size: 'md' })
 
 <template>
   <span class="inline-flex items-center gap-2.5" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
-    <AppImage :src="locale === 'ar' ? emblemSrc : '/brand/emblem.svg'" alt="" :class="size === 'sm' ? 'size-9' : 'size-11'" :size="44" eager />
+    <AppImage
+      :src="locale === 'ar' ? emblemSrc : '/brand/emblem.svg'"
+      alt=""
+      :class="size === 'sm' ? 'size-9' : 'size-11'"
+      :size="44"
+      eager
+    />
     <span class="brand-words flex flex-col leading-tight">
-      <span class="whitespace-nowrap font-display font-extrabold uppercase tracking-wide text-text" :class="size === 'sm' ? 'text-sm' : 'text-base'" dir="ltr">
+      <span
+        class="whitespace-nowrap font-display font-extrabold uppercase tracking-wide text-text"
+        :class="size === 'sm' ? 'text-sm' : 'text-base'"
+        dir="ltr"
+      >
         Game Legend <span class="text-gold">Manager</span>
       </span>
-      <span v-if="locale === 'ar'" class="text-caption font-bold text-text-soft" :class="size === 'sm' ? 'max-sm:hidden' : ''">المدرب الأسطورة · لعبة إدارة كرة القدم</span>
-      <span v-else :class="size === 'sm' ? 'max-sm:hidden' : ''" class="font-display text-caption font-bold tracking-wide text-text-soft">ONLINE FOOTBALL MANAGER</span>
+      <span v-if="locale === 'ar'" class="text-caption font-bold text-text-soft" :class="size === 'sm' ? 'max-sm:hidden' : ''"
+        >المدرب الأسطورة · لعبة إدارة كرة القدم</span
+      >
+      <span v-else :class="size === 'sm' ? 'max-sm:hidden' : ''" class="font-display text-caption font-bold tracking-wide text-text-soft"
+        >ONLINE FOOTBALL MANAGER</span
+      >
     </span>
   </span>
 </template>

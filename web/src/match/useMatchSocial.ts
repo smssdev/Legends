@@ -46,7 +46,7 @@ export function useMatchSocial(d: SocialDeps) {
     // A boo or a cheer rises on its target's side; a member who watches has no side: by turns.
     const side: Side = x.target ?? x.side ?? (x.id % 2 ? 'home' : 'away')
     const mineToo = mineIds.has(x.id) || (!d.league && x.side === d.mine.value)
-    d.show(side, r.emoji, r.text, mineToo ? 'أنت' : x.who ?? (x.side ? d.sideName(x.side) : ''))
+    d.show(side, r.emoji, r.text, mineToo ? 'أنت' : (x.who ?? (x.side ? d.sideName(x.side) : '')))
     if (!mineToo) d.pop()
   }
 
@@ -63,7 +63,9 @@ export function useMatchSocial(d: SocialDeps) {
       if (cheer) {
         cheerLeft.value = 30
         window.clearInterval(cheerTimer)
-        cheerTimer = window.setInterval(() => { if (--cheerLeft.value <= 0) window.clearInterval(cheerTimer) }, 1000)
+        cheerTimer = window.setInterval(() => {
+          if (--cheerLeft.value <= 0) window.clearInterval(cheerTimer)
+        }, 1000)
       }
     } catch {
       /* too soon: the button comes back in a moment */

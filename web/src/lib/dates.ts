@@ -12,6 +12,10 @@ export function stamp(iso: string, now = new Date()): string {
   const diff = Math.round((day(now) - day(d)) / 86400000)
   if (diff === 0) return t('اليوم {v0}', { v0: time })
   if (diff === 1) return t('أمس {v0}', { v0: time })
-  const date = new Intl.DateTimeFormat(dateLocale(), { day: 'numeric', month: 'long', ...(d.getFullYear() !== now.getFullYear() ? { year: 'numeric' } : {}) }).format(d)
+  const date = new Intl.DateTimeFormat(dateLocale(), {
+    day: 'numeric',
+    month: 'long',
+    ...(d.getFullYear() !== now.getFullYear() ? { year: 'numeric' } : {}),
+  }).format(d)
   return `${date}${locale.value === 'en' ? ',' : '،'} ${time}`
 }

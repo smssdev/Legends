@@ -17,6 +17,11 @@ defineProps<{ quote: components['schemas']['SpendQuote'] }>()
 </template>
 
 <style scoped>
-.spend-note { font-size: var(--text-caption); color: var(--color-text-muted); }
-.spend-short { color: var(--color-danger); }
+.spend-note {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+.spend-short {
+  color: var(--color-danger);
+}
 </style>

@@ -17,7 +17,13 @@ const taken = new Set<string>()
 
 /** The visit's start (one request, shared); a failure rejects (ApiError: signed out, or the server not reached). */
 export function boot(): Promise<Boot> {
-  return (first ??= api.GET('/bootstrap').then(({ data }) => (got = data!)).catch((e) => { first = null; throw e }))
+  return (first ??= api
+    .GET('/bootstrap')
+    .then(({ data }) => (got = data!))
+    .catch((e) => {
+      first = null
+      throw e
+    }))
 }
 
 /** Asked again (after a sign-in, a sign-out, or «try again»). */
@@ -28,10 +34,16 @@ export function rebootSession() {
 }
 
 /** The site's settings, or null when the server was not reached. */
-export const siteConfig = (): Promise<SiteConfig | null> => boot().then((b) => b.config as SiteConfig).catch(() => null)
+export const siteConfig = (): Promise<SiteConfig | null> =>
+  boot()
+    .then((b) => b.config as SiteConfig)
+    .catch(() => null)
 
 /** A store's part of the start, once, for the account it was made for; undefined when it should ask its own route. */
-export function takeBoot<K extends 'wallet' | 'home' | 'unread'>(key: K, userId: number | null | undefined): NonNullable<Boot[K]> | undefined {
+export function takeBoot<K extends 'wallet' | 'home' | 'unread'>(
+  key: K,
+  userId: number | null | undefined,
+): NonNullable<Boot[K]> | undefined {
   if (!got || !userId || got.user?.id !== userId || taken.has(key) || got[key] == null) return undefined
   taken.add(key)
   return got[key] as NonNullable<Boot[K]>

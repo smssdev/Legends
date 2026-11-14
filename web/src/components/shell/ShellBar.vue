@@ -30,9 +30,17 @@ defineProps<{
     <div v-if="inSlot" class="bar-club"><ClubSwitcher in-bar /></div>
     <component :is="heading ? 'h1' : 'p'" class="shell-title">{{ title ? $t(title) : '' }}</component>
     <span class="flex-1" />
-    <RouterLink v-if="next" to="/match" class="bar-next" :aria-label="next.live ? $t('مباراتك مباشرة الآن') : $t('المباراة القادمة ضد {o}', { o: next.opponent })">
+    <RouterLink
+      v-if="next"
+      to="/match"
+      class="bar-next"
+      :aria-label="next.live ? $t('مباراتك مباشرة الآن') : $t('المباراة القادمة ضد {o}', { o: next.opponent })"
+    >
       <span v-if="next.live" class="bar-live">{{ $t('مباشر') }}</span>
-      <template v-else><span class="bar-wide truncate">{{ $t('ضد {o}', { o: next.opponent }) }}</span><CountdownChip :to="next.at" /></template>
+      <template v-else
+        ><span class="bar-wide truncate">{{ $t('ضد {o}', { o: next.opponent }) }}</span
+        ><CountdownChip :to="next.at"
+      /></template>
     </RouterLink>
     <MoneyPill kind="coins" to="/wallet" :value="coins" :label="$t('المحفظة')" />
     <MoneyPill v-if="cash" kind="cash" to="/finance" :value="cash.value" caption="أموال النادي" :title="cash.title" :label="cash.label" />
@@ -40,7 +48,9 @@ defineProps<{
       <Icon name="inbox" /><span v-if="unread" class="bar-badge bg-live text-on-gold">{{ unread }}</span>
     </RouterLink>
     <RouterLink to="/profile" class="bar-avatar" :aria-label="unverified ? $t('حسابي: وثّق حسابك') : $t('حسابي')">
-      <img v-if="avatar" :src="avatar" alt="" class="size-full rounded-full object-cover" decoding="async" /><template v-else>{{ initial }}</template>
+      <img v-if="avatar" :src="avatar" alt="" class="size-full rounded-full object-cover" decoding="async" /><template v-else>{{
+        initial
+      }}</template>
       <span v-if="unverified" class="bar-avatar-dot" aria-hidden="true" />
     </RouterLink>
   </header>

@@ -11,8 +11,9 @@ if (!/<!-- seo:[^>]*-->[\s\S]*?<!-- \/seo -->/.test(index) || !index.includes('<
   process.exit(1)
 }
 for (const page of Object.values(PAGES)) {
-  const html = index.replace(/(<!-- seo:[^>]*-->)[\s\S]*?(<!-- \/seo -->)/, (_, open, close) => `${open}\n    ${seoHead(page)}\n    ${close}`)
-    .replace('<div id="app"></div>', () => `<div id="app">${seoBody(page)}</div>`)   // [X97] the page's words before the app
+  const html = index
+    .replace(/(<!-- seo:[^>]*-->)[\s\S]*?(<!-- \/seo -->)/, (_, open, close) => `${open}\n    ${seoHead(page)}\n    ${close}`)
+    .replace('<div id="app"></div>', () => `<div id="app">${seoBody(page)}</div>`) // [X97] the page's words before the app
   const dir = new URL('.' + page.path + (page.path.endsWith('/') ? '' : '/'), dist)
   mkdirSync(dir, { recursive: true })
   writeFileSync(new URL('index.html', dir), html)

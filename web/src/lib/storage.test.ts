@@ -10,7 +10,12 @@ describe('storage', () => {
     localStorage.setItem('glm.league', '9')
     localStorage.setItem('other', 'x')
     migrateStorage()
-    expect([localStorage.getItem('glm.theme'), localStorage.getItem('glm.league'), localStorage.getItem('legends.theme'), localStorage.getItem('other')]).toEqual(['light', '9', null, 'x'])
+    expect([
+      localStorage.getItem('glm.theme'),
+      localStorage.getItem('glm.league'),
+      localStorage.getItem('legends.theme'),
+      localStorage.getItem('other'),
+    ]).toEqual(['light', '9', null, 'x'])
     localStorage.setItem('legends.late', '1')
     migrateStorage()
     expect(localStorage.getItem('legends.late')).toBe('1') // once only

@@ -35,21 +35,49 @@ async function enable() {
 
 <template>
   <Transition name="drop">
-    <section v-if="!toneAsked" class="fixed inset-x-3 bottom-24 z-40 mx-auto flex max-w-md flex-col gap-3 rounded-2xl border border-gold/40 bg-surface p-4 shadow-2xl md:bottom-6"
-      role="dialog" aria-labelledby="sound-prompt-title">
+    <section
+      v-if="!toneAsked"
+      class="fixed inset-x-3 bottom-24 z-40 mx-auto flex max-w-md flex-col gap-3 rounded-2xl border border-gold/40 bg-surface p-4 shadow-2xl md:bottom-6"
+      role="dialog"
+      aria-labelledby="sound-prompt-title"
+    >
       <div class="flex items-start gap-3">
         <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold" aria-hidden="true">
-          <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /></svg>
+          <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" />
+          </svg>
         </span>
         <div class="min-w-0">
           <h2 id="sound-prompt-title" class="font-display text-lg font-extrabold">{{ $t('فعّل الأصوات والإشعارات') }}</h2>
-          <p class="text-sm text-text-muted">{{ $t('نغمة قصيرة حين يُباع لاعبك، أو يصلك عرض أو رسالة أو كود، أو تبدأ مباراتك أو تنتهي. تكتمها متى شئت من زر السماعة في الأعلى.') }}</p>
+          <p class="text-sm text-text-muted">
+            {{
+              $t(
+                'نغمة قصيرة حين يُباع لاعبك، أو يصلك عرض أو رسالة أو كود، أو تبدأ مباراتك أو تنتهي. تكتمها متى شئت من زر السماعة في الأعلى.',
+              )
+            }}
+          </p>
         </div>
       </div>
       <div class="flex flex-wrap gap-2">
-        <button type="button" class="h-touch flex-1 rounded-lg bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="enable">{{ busy ? '...' : $t('فعّلها') }}</button>
-        <button type="button" class="h-touch rounded-lg bg-surface-raised px-4 font-bold" :disabled="busy" @click="askLater">{{ $t('لاحقاً') }}</button>
-        <button type="button" class="h-touch rounded-lg px-3 text-sm text-text-muted hover:text-text" :disabled="busy" @click="setTone(false)">{{ $t('بدون صوت') }}</button>
+        <button
+          type="button"
+          class="h-touch flex-1 rounded-lg bg-gold px-4 font-bold text-on-gold disabled:opacity-40"
+          :disabled="busy"
+          @click="enable"
+        >
+          {{ busy ? '...' : $t('فعّلها') }}
+        </button>
+        <button type="button" class="h-touch rounded-lg bg-surface-raised px-4 font-bold" :disabled="busy" @click="askLater">
+          {{ $t('لاحقاً') }}
+        </button>
+        <button
+          type="button"
+          class="h-touch rounded-lg px-3 text-sm text-text-muted hover:text-text"
+          :disabled="busy"
+          @click="setTone(false)"
+        >
+          {{ $t('بدون صوت') }}
+        </button>
       </div>
     </section>
   </Transition>

@@ -7,7 +7,17 @@ import type { PATHS } from '../components/Icon.vue'
 
 // [Sprint 55] `group` is the old frame's portal (kept on the sections as their family); the dock is DOCK below.
 export type Group = 'team' | 'club' | 'comps' | 'media'
-export interface Section { name: string; path: string; label: string; icon: keyof typeof PATHS; sprint?: number; dev?: boolean; club?: boolean; group?: Group; inLeague?: boolean }
+export interface Section {
+  name: string
+  path: string
+  label: string
+  icon: keyof typeof PATHS
+  sprint?: number
+  dev?: boolean
+  club?: boolean
+  group?: Group
+  inLeague?: boolean
+}
 
 export const SECTIONS: Section[] = [
   { name: 'home', path: '/', label: 'الرئيسية', icon: 'home' },

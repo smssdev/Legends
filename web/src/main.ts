@@ -8,9 +8,9 @@ import BrandMark from './components/BrandMark.vue'
 import AppImage from './components/ui/AppImage.vue'
 import { router } from './router'
 import { useSeo } from './lib/seo'
-import './lib/pwa'   // the install offer comes early: keep it for our button [Sprint 36]
-import './match/perf'   // the smooth mode on weak phones, for the whole app [X30]
-import './lib/theme'   // the night or the day look [X56]
+import './lib/pwa' // the install offer comes early: keep it for our button [Sprint 36]
+import './match/perf' // the smooth mode on weak phones, for the whole app [X30]
+import './lib/theme' // the night or the day look [X56]
 import { vueHandler, watchErrors } from './lib/errors'
 
 // The names switch [X40]: $nm, $pn, $cn and $ln in every template, and the dictionary fetched once.
@@ -21,7 +21,7 @@ app.config.errorHandler = vueHandler
 watchErrors()
 Object.assign(app.config.globalProperties, { $pn: pn, $cn: cn, $ln: ln, $nm: nm, $t: t })
 app.component('BrandMark', BrandMark).component('AppImage', AppImage).use(createPinia()).use(router)
-useSeo(router)   // each page's title, description and keywords for Google [SEO]
+useSeo(router) // each page's title, description and keywords for Google [SEO]
 // [X81] Google Analytics 4 and the Meta Pixel, with Google's Consent Mode; [Sprint 58 T1] loaded after the first paint.
 void import('./lib/analytics').then((m) => m.useAnalytics(router))
 // [E1.4] In English, once the dictionary is here (it loads on its own, only for English).
@@ -39,7 +39,9 @@ function freshBuild(path?: string) {
   else location.reload()
   return true
 }
-window.addEventListener('vite:preloadError', (e) => { if (freshBuild()) e.preventDefault() })
+window.addEventListener('vite:preloadError', (e) => {
+  if (freshBuild()) e.preventDefault()
+})
 router.onError((err, to) => {
   if (/dynamically imported module|Importing a module script failed|Failed to fetch/i.test(String(err?.message))) freshBuild(to.fullPath)
 })

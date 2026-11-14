@@ -93,7 +93,9 @@ onMounted(load)
     <div v-if="!app" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3 text-sm">
       <b>{{ $t('ثبّت Game Legend Manager على شاشتك الرئيسية') }}</b>
       <span class="text-text-muted">{{ $t('يفتح كتطبيق بملء الشاشة، وتصلك الإشعارات.') }}</span>
-      <button v-if="installable" type="button" class="h-touch rounded-md bg-gold font-bold text-on-gold" @click="install">{{ $t('ثبّت الآن') }}</button>
+      <button v-if="installable" type="button" class="h-touch rounded-md bg-gold font-bold text-on-gold" @click="install">
+        {{ $t('ثبّت الآن') }}
+      </button>
       <ol v-else-if="ios" class="list-decimal ps-5 text-text-muted">
         <li>{{ $t('افتح الموقع في Safari.') }}</li>
         <li>{{ $t('اضغط زر المشاركة (المربع والسهم).') }}</li>
@@ -103,18 +105,38 @@ onMounted(load)
     </div>
 
     <!-- [Sprint 21 E3.6] The game's own tone when a message arrives, on this device. -->
-    <UiToggle class="rounded-lg px-1" :model-value="toneOn" :label="$t('نغمة الإشعارات')" :hint="$t('نغمة قصيرة حين يُباع لاعبك، أو يصلك عرض أو رسالة أو كود، أو تبدأ مباراتك أو تنتهي، واللعبة مفتوحة')" @update:model-value="(on: boolean) => setTone(on)" />
+    <UiToggle
+      class="rounded-lg px-1"
+      :model-value="toneOn"
+      :label="$t('نغمة الإشعارات')"
+      :hint="$t('نغمة قصيرة حين يُباع لاعبك، أو يصلك عرض أو رسالة أو كود، أو تبدأ مباراتك أو تنتهي، واللعبة مفتوحة')"
+      @update:model-value="(on: boolean) => setTone(on)"
+    />
 
     <!-- [Sprint 63 G13] The sound in three levels, as in the app's settings. -->
     <SoundToggle />
 
     <!-- [X79] The match summary by email: the score, the scorers and the way to the report. -->
-    <UiToggle v-if="settings" class="rounded-lg px-1" :model-value="settings.email_match" :label="$t('ملخص المباراة بالبريد')"
-      :hint="settings.email_ready ? $t('النتيجة والهدافون ورابط التقرير بعد كل مباراة لك') : $t('أكّد بريدك أولاً من صفحة حسابك ليصلك الملخص')"
-      @update:model-value="(on: boolean) => toggleEmail(on)" />
-    <UiToggle v-if="settings" class="rounded-lg px-1" :model-value="settings.email_offers" :label="$t('عروض المتجر بالبريد')"
-      :hint="settings.email_ready ? $t('العروض الجديدة بصورها وأسعارها حين ينشرها فريق اللعبة') : $t('أكّد بريدك أولاً من صفحة حسابك لتصلك العروض')"
-      @update:model-value="(on: boolean) => toggleOffers(on)" />
+    <UiToggle
+      v-if="settings"
+      class="rounded-lg px-1"
+      :model-value="settings.email_match"
+      :label="$t('ملخص المباراة بالبريد')"
+      :hint="
+        settings.email_ready ? $t('النتيجة والهدافون ورابط التقرير بعد كل مباراة لك') : $t('أكّد بريدك أولاً من صفحة حسابك ليصلك الملخص')
+      "
+      @update:model-value="(on: boolean) => toggleEmail(on)"
+    />
+    <UiToggle
+      v-if="settings"
+      class="rounded-lg px-1"
+      :model-value="settings.email_offers"
+      :label="$t('عروض المتجر بالبريد')"
+      :hint="
+        settings.email_ready ? $t('العروض الجديدة بصورها وأسعارها حين ينشرها فريق اللعبة') : $t('أكّد بريدك أولاً من صفحة حسابك لتصلك العروض')
+      "
+      @update:model-value="(on: boolean) => toggleOffers(on)"
+    />
 
     <template v-if="settings">
       <p v-if="!settings.enabled" class="text-sm text-text-muted">{{ $t('الإشعارات غير مفعلة على الخادم بعد.') }}</p>
@@ -122,13 +144,33 @@ onMounted(load)
         {{ ios && !app ? $t('على iPhone تعمل الإشعارات بعد تثبيت الموقع على الشاشة الرئيسية.') : $t('هذا المتصفح لا يدعم الإشعارات.') }}
       </p>
       <div v-else class="flex flex-wrap items-center gap-3">
-        <span class="flex-1 text-sm">{{ here ? $t('الإشعارات تعمل على هذا الجهاز') : $t('الإشعارات متوقفة على هذا الجهاز') }}
-          <span v-if="settings.devices" class="text-text-muted"> {{ $t('· {v0} جهاز', { v0: settings.devices }) }}</span></span>
-        <button v-if="!here" type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="enable">{{ $t('فعّلها') }}</button>
-        <button v-else type="button" class="h-touch rounded-md px-4 text-text-muted hover:text-text" :disabled="busy" @click="disable">{{ $t('أوقفها هنا') }}</button>
+        <span class="flex-1 text-sm"
+          >{{ here ? $t('الإشعارات تعمل على هذا الجهاز') : $t('الإشعارات متوقفة على هذا الجهاز') }}
+          <span v-if="settings.devices" class="text-text-muted"> {{ $t('· {v0} جهاز', { v0: settings.devices }) }}</span></span
+        >
+        <button
+          v-if="!here"
+          type="button"
+          class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40"
+          :disabled="busy"
+          @click="enable"
+        >
+          {{ $t('فعّلها') }}
+        </button>
+        <button v-else type="button" class="h-touch rounded-md px-4 text-text-muted hover:text-text" :disabled="busy" @click="disable">
+          {{ $t('أوقفها هنا') }}
+        </button>
       </div>
       <div class="flex flex-col gap-1">
-        <UiToggle v-for="k in settings.kinds" :key="k.kind" class="rounded-lg px-1" :model-value="k.on" :label="LABELS[k.kind]?.[0]" :hint="LABELS[k.kind]?.[1]" @update:model-value="(on: boolean) => toggle(k.kind, on)" />
+        <UiToggle
+          v-for="k in settings.kinds"
+          :key="k.kind"
+          class="rounded-lg px-1"
+          :model-value="k.on"
+          :label="LABELS[k.kind]?.[0]"
+          :hint="LABELS[k.kind]?.[1]"
+          @update:model-value="(on: boolean) => toggle(k.kind, on)"
+        />
       </div>
     </template>
   </section>

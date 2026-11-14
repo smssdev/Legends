@@ -9,10 +9,18 @@ const key = (id: string) => `intro.${id}`
 
 /** The moments kept for this match when its page opened from /intro (none for any other match). */
 export function introMoments(id: string): IntroMoment[] {
-  try { return JSON.parse(storage.get(key(id)) ?? '[]') as IntroMoment[] } catch { return [] }
+  try {
+    return JSON.parse(storage.get(key(id)) ?? '[]') as IntroMoment[]
+  } catch {
+    return []
+  }
 }
 export function keepIntroMoments(id: string, moments: IntroMoment[]) {
-  try { storage.set(key(id), JSON.stringify(moments)) } catch { /* private mode: the match plays without its moments */ }
+  try {
+    storage.set(key(id), JSON.stringify(moments))
+  } catch {
+    /* private mode: the match plays without its moments */
+  }
 }
 
 export function useIntroMatch(o: { id: string; minute: Ref<number>; finished: Ref<boolean>; done: () => Promise<unknown> }) {
@@ -20,7 +28,9 @@ export function useIntroMatch(o: { id: string; minute: Ref<number>; finished: Re
   const answered = ref<IntroMoment['kind'][]>([])
   const over = ref(false)
   const on = computed(() => moments.value.length > 0)
-  const current = computed(() => (over.value ? null : moments.value.find((m) => m.minute <= o.minute.value && !answered.value.includes(m.kind)) ?? null))
+  const current = computed(() =>
+    over.value ? null : (moments.value.find((m) => m.minute <= o.minute.value && !answered.value.includes(m.kind)) ?? null),
+  )
   let told = false
 
   function answer() {
@@ -30,10 +40,20 @@ export function useIntroMatch(o: { id: string; minute: Ref<number>; finished: Re
     if (told || !on.value) return
     told = true
     over.value = true
-    try { storage.remove(key(o.id)) } catch { /* nothing kept */ }
+    try {
+      storage.remove(key(o.id))
+    } catch {
+      /* nothing kept */
+    }
     await o.done().catch(() => undefined)
   }
-  watch(o.finished, (f) => { if (f) void end() }, { immediate: true })
+  watch(
+    o.finished,
+    (f) => {
+      if (f) void end()
+    },
+    { immediate: true },
+  )
 
   return { on, current, over, answer, skip: end }
 }

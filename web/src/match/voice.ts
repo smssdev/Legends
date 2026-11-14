@@ -13,10 +13,18 @@ type Clip = { pack: Pack; at: [number, number]; rate: number }
 
 // Keep these three in step with tools/commentary/generate.py.
 export function slug(name: string) {
-  return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+  return name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 export function phraseKey(text: string) {
-  return text.replace(/^[\s!.,?…]+/, '').replace(/\s+/g, ' ').trim()
+  return text
+    .replace(/^[\s!.,?…]+/, '')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 const PARTICLES = new Set(['de', 'da', 'di', 'do', 'dos', 'van', 'von', 'der', 'den', 'ten', 'le', 'la', 'el', 'al', 'ben', 'mac', 'bin'])
 export function surname(full: string) {
@@ -36,9 +44,15 @@ export function surname(full: string) {
 const LATIN = /^[\p{Script=Latin}\p{M}\p{N}\p{P}\p{S}\s]+$/u
 export const sayable = (name: string | undefined | null) => !!name && LATIN.test(name.trim())
 
-export function voiceLine(lang: Lang, l: { en: string | null; x: boolean; vars: any; m?: string; s?: string }, players: Record<string, { name: string; side: string }>, clubs: Record<string, string>): Line | null {
+export function voiceLine(
+  lang: Lang,
+  l: { en: string | null; x: boolean; vars: any; m?: string; s?: string },
+  players: Record<string, { name: string; side: string }>,
+  clubs: Record<string, string>,
+): Line | null {
   if (!l.en) return null
-  const v = l.vars, other = v.A === 'home' ? 'away' : 'home'
+  const v = l.vars,
+    other = v.A === 'home' ? 'away' : 'home'
   const parts: Part[] = []
   let text = ''
   for (const piece of l.en.replace(/\{n\}/g, v.n ?? '').split(/(\{[pqAB]\})/)) {
@@ -92,7 +106,11 @@ export class Commentator {
     if (!this.synth) return
     const pick = () => {
       const vs = this.synth!.getVoices()
-      this.synthVoice = vs.find((v) => /en-GB/i.test(v.lang) && /male|daniel|george|arthur|ryan/i.test(v.name)) ?? vs.find((v) => /en-GB/i.test(v.lang)) ?? vs.find((v) => /^en/i.test(v.lang)) ?? null
+      this.synthVoice =
+        vs.find((v) => /en-GB/i.test(v.lang) && /male|daniel|george|arthur|ryan/i.test(v.name)) ??
+        vs.find((v) => /en-GB/i.test(v.lang)) ??
+        vs.find((v) => /^en/i.test(v.lang)) ??
+        null
     }
     pick()
     this.synth.addEventListener?.('voiceschanged', pick)
@@ -107,7 +125,12 @@ export class Commentator {
       this.out = this.ctx.createGain()
       // [Sprint 63 G13] At the commentator's level (lib/soundLevels.ts), followed as it moves.
       this.out.gain.value = 1.1 * gainOf('voice')
-      this.stopLevel = watch(() => levels.voice, (v) => { if (this.out) this.out.gain.value = 1.1 * v / 100 })
+      this.stopLevel = watch(
+        () => levels.voice,
+        (v) => {
+          if (this.out) this.out.gain.value = (1.1 * v) / 100
+        },
+      )
       this.out.connect(this.ctx.destination)
     }
     void this.ctx.resume()
@@ -146,10 +169,16 @@ export class Commentator {
     clearTimeout(this.timer)
     const now = this.ctx?.currentTime ?? 0
     this.lineGain?.gain.setTargetAtTime(0, now, 0.05)
-    for (const s of this.sources) try { s.stop(now + 0.25) } catch {}
+    for (const s of this.sources)
+      try {
+        s.stop(now + 0.25)
+      } catch {}
     this.sources = []
     this.lineGain = null
-    if (this.utter) { this.utter = null; this.synth?.cancel() }
+    if (this.utter) {
+      this.utter = null
+      this.synth?.cancel()
+    }
   }
 
   /** How long until the commentator has finished what he is saying (ms). */
@@ -166,7 +195,10 @@ export class Commentator {
     if (this.busy) this.onTalk?.(false)
     this.busy = false
     clearTimeout(this.timer)
-    for (const s of this.sources) try { s.stop() } catch {}
+    for (const s of this.sources)
+      try {
+        s.stop()
+      } catch {}
     this.sources = []
     this.utter = null
     this.synth?.cancel()
@@ -213,7 +245,10 @@ export class Commentator {
     for (const p of line.parts) {
       const name = p.club ? 'clubs/' + p.club : 'phrases'
       const pack = this.ready.get(name)
-      if (pack === undefined) { this.pack(name); return 'wait' }
+      if (pack === undefined) {
+        this.pack(name)
+        return 'wait'
+      }
       const at = pack?.map[p.club ? p.key : (line.excited ? '!' : '') + p.key] ?? pack?.map[p.key]
       if (!pack || !at) return null
       out.push({ pack, at, rate: p.club && line.excited ? 1.07 : 1 })
@@ -251,7 +286,12 @@ export class Commentator {
     u.lang = v?.lang ?? 'en-GB'
     u.rate = line.excited ? 1.12 : 1
     u.pitch = line.excited ? 1.2 : 1
-    u.onend = u.onerror = () => { if (this.utter === u) { this.utter = null; this.next() } }
+    u.onend = u.onerror = () => {
+      if (this.utter === u) {
+        this.utter = null
+        this.next()
+      }
+    }
     this.utter = u
     this.endsAt = (this.ctx?.currentTime ?? 0) + line.text.length * 0.065
     this.synth.speak(u)

@@ -4,7 +4,11 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
 const files = []
-const walk = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); statSync(p).isDirectory() ? walk(p) : /\.(vue|ts)$/.test(f) && files.push(p) })
+const walk = (d) =>
+  readdirSync(d).forEach((f) => {
+    const p = join(d, f)
+    statSync(p).isDirectory() ? walk(p) : /\.(vue|ts)$/.test(f) && files.push(p)
+  })
 walk('src')
 const ARABIC = /[؀-ۿ]/
 const unq = (s) => s.replace(/\\'/g, "'").replace(/\\\\/g, '\\')
@@ -13,7 +17,8 @@ const lost = []
 const missing = (k, f) => lost.push(`${f}: ${k}`)
 
 // The sections' names are shown through $t in the shell.
-for (const m of readFileSync('src/layouts/nav.ts', 'utf8').matchAll(/label: '([^']*)'/g)) if (!en.has(m[1])) missing(m[1], 'src/layouts/nav.ts')
+for (const m of readFileSync('src/layouts/nav.ts', 'utf8').matchAll(/label: '([^']*)'/g))
+  if (!en.has(m[1])) missing(m[1], 'src/layouts/nav.ts')
 
 for (const f of files) {
   if (f.endsWith(join('i18n', 'en.ts'))) continue

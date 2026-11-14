@@ -5,7 +5,8 @@ export function money(v: number): string {
   // [Sprint 30 Q10] In the Arabic game the amount in words: «3 ملايين»، «3.5 مليون»، «750 ألف» (isolated right to left,
   // U+2067..U+2069, so it reads well inside the left-to-right number spans it sits in). In English 3M and 750K.
   if (locale.value !== 'en' && v >= 1_000) {
-    const [n, one, few] = v >= 1_000_000 ? [trim(v / 1_000_000, v >= 10_000_000 ? 1 : 2), 'مليون', 'ملايين'] : [trim(v / 1_000, 0), 'ألف', 'آلاف']
+    const [n, one, few] =
+      v >= 1_000_000 ? [trim(v / 1_000_000, v >= 10_000_000 ? 1 : 2), 'مليون', 'ملايين'] : [trim(v / 1_000, 0), 'ألف', 'آلاف']
     const whole = Number(n)
     return `\u2067${n} ${Number.isInteger(whole) && whole >= 3 && whole <= 10 ? few : one}\u2069`
   }
@@ -41,8 +42,24 @@ export function scoreText(first: number | string | null | undefined, second: num
 }
 
 /** [Sprint 39 E7] The five referees, from very lenient (green) to very strict (red), as the server names them. */
-export const REFEREE: Record<string, string> = { very_lenient: 'متساهل جداً', lenient: 'متساهل', medium: 'متوسط', strict: 'صارم', very_strict: 'صارم جداً' }
+export const REFEREE: Record<string, string> = {
+  very_lenient: 'متساهل جداً',
+  lenient: 'متساهل',
+  medium: 'متوسط',
+  strict: 'صارم',
+  very_strict: 'صارم جداً',
+}
 
 /** [Sprint 39 E2] The fitness lines: full from 90, slower from 75 to 90, a sharp drop and injuries under 75. */
 export const fitnessTone = (v: number, kind: 'bg' | 'text' = 'bg') =>
-  kind === 'bg' ? (v >= 90 ? 'bg-success' : v >= 75 ? 'bg-gold' : 'bg-live') : v >= 90 ? 'text-success' : v >= 75 ? 'text-warning' : 'text-danger'
+  kind === 'bg'
+    ? v >= 90
+      ? 'bg-success'
+      : v >= 75
+        ? 'bg-gold'
+        : 'bg-live'
+    : v >= 90
+      ? 'text-success'
+      : v >= 75
+        ? 'text-warning'
+        : 'text-danger'

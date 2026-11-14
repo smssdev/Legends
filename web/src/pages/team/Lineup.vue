@@ -86,7 +86,10 @@ const current = computed(() => {
   const f = all.value.find((x) => x.name === formation.value)
   if (!f) return undefined
   // The places the coach dragged them to.
-  return { ...f, slots: f.slots.map((s, i) => (i > 0 && places.value[i - 1] ? { ...s, x: places.value[i - 1][0], y: places.value[i - 1][1] } : s)) }
+  return {
+    ...f,
+    slots: f.slots.map((s, i) => (i > 0 && places.value[i - 1] ? { ...s, x: places.value[i - 1][0], y: places.value[i - 1][1] } : s)),
+  }
 })
 const reserves = computed(() => {
   const used = new Set([...starters.value, ...bench.value])
@@ -94,14 +97,21 @@ const reserves = computed(() => {
 })
 // [Sprint 48 T3] Outside the lineup by line, attack first as on the pitch; each keeps its index in reserves (its spot).
 const LINE_PLURAL = { att: 'المهاجمون', mid: 'لاعبو الوسط', def: 'المدافعون', gk: 'حراس المرمى' } as const
-const reserveGroups = computed(() => (['att', 'mid', 'def', 'gk'] as const)
-  .map((line) => ({ line, items: reserves.value.map((p, i) => ({ p, i })).filter((x) => x.p.line === line) }))
-  .filter((g) => g.items.length))
+const reserveGroups = computed(() =>
+  (['att', 'mid', 'def', 'gk'] as const)
+    .map((line) => ({ line, items: reserves.value.map((p, i) => ({ p, i })).filter((x) => x.p.line === line) }))
+    .filter((g) => g.items.length),
+)
 
 /** A slot's place on the vertical pitch: depth up the screen, right-sided roles on the right. */
 const place = (s: { x: number; y: number }) => ({ top: `${100 - (s.x / 720) * 100}%`, left: `${(s.y / 680) * 100}%` })
 // [Sprint 30 Q7] Why a player cannot play, in words, wherever he is listed.
-const unavailable = (p: SquadPlayer) => p.injured_matches ? t('مصاب: {v0} مباراة', { v0: p.injured_matches }) : p.suspended_matches ? t('موقوف: {v0} مباراة', { v0: p.suspended_matches }) : t('غير جاهز')
+const unavailable = (p: SquadPlayer) =>
+  p.injured_matches
+    ? t('مصاب: {v0} مباراة', { v0: p.injured_matches })
+    : p.suspended_matches
+      ? t('موقوف: {v0} مباراة', { v0: p.suspended_matches })
+      : t('غير جاهز')
 const shown = (p: SquadPlayer) => ({ overall: p.overall, fitness: `${p.fitness}%`, age: p.age, value: money(p.value) })[view.value]
 /** The name on the pitch: the last word, or the last two when it is short ("Vinícius Jr." → "Vinícius Jr."). */
 const short = (latin: string) => {
@@ -145,8 +155,12 @@ function playerAt(s: Spot): number | null {
 const said = ref('')
 function tellMove(id: number, to: Spot) {
   const name = nm(players.value.get(id)?.name ?? '')
-  said.value = to.zone === 'slot' ? t('{v0} أساسي في الخانة {v1}', { v0: name, v1: to.index + 1 })
-    : to.zone === 'bench' ? t('{v0} على الدكة', { v0: name }) : t('{v0} خارج القائمة', { v0: name })
+  said.value =
+    to.zone === 'slot'
+      ? t('{v0} أساسي في الخانة {v1}', { v0: name, v1: to.index + 1 })
+      : to.zone === 'bench'
+        ? t('{v0} على الدكة', { v0: name })
+        : t('{v0} خارج القائمة', { v0: name })
 }
 
 /** Move a player to another spot; whoever stood there takes his place. Dropping on the rest of the squad takes him out. */
@@ -248,7 +262,8 @@ function spotOf(id: number): Spot {
 /** The rating a player plays at in a line: the server's share of his ability there (100% in his own line). */
 const ratingAt = (p: SquadPlayer, line: string | undefined) =>
   line ? Math.floor((p.overall * ((p.place_bp as Record<string, number> | undefined)?.[line] ?? 10000)) / 10000) : p.overall
-const shareAt = (p: SquadPlayer, line: string | undefined) => (line ? ((p.place_bp as Record<string, number> | undefined)?.[line] ?? 10000) / 100 : 100)
+const shareAt = (p: SquadPlayer, line: string | undefined) =>
+  line ? ((p.place_bp as Record<string, number> | undefined)?.[line] ?? 10000) / 100 : 100
 /** [Sprint 59 F6] The lines a slot takes, as the server sends them with each slot (the rule the save enforces). */
 const takes = (line: string | undefined, slot: number) => !!line && (current.value?.slots[slot]?.allowed ?? []).includes(line as 'gk')
 const allowed = (p: SquadPlayer, slot: number) => takes(p.line, slot)
@@ -273,7 +288,13 @@ const places_ = computed(() => {
   const p = players.value.get(pk.id)
   if (!p) return []
   return current.value.slots
-    .map((slot, i) => ({ i, slot, rating: ratingAt(p, slot.line), share: shareAt(p, slot.line), now: starters.value[i] ? players.value.get(starters.value[i]!) : undefined }))
+    .map((slot, i) => ({
+      i,
+      slot,
+      rating: ratingAt(p, slot.line),
+      share: shareAt(p, slot.line),
+      now: starters.value[i] ? players.value.get(starters.value[i]!) : undefined,
+    }))
     .filter((x) => allowed(p, x.i) && x.now?.id !== p.id)
     .sort((a, b) => b.rating - a.rating || a.i - b.i)
 })
@@ -316,7 +337,12 @@ const offLine = (i: number) => {
 
 // Dragging: useLineupDrag.ts (Sprint 56 W3: moved out as it was).
 const listBox = ref<HTMLElement | null>(null)
-const { drag, down, cancel: cancelDrag, justDragged } = useLineupDrag({ editing, listBox, playerAt, move, remember, later, dropOnGrass: (slot, e) => place_(slot, e) })
+const {
+  drag,
+  down,
+  cancel: cancelDrag,
+  justDragged,
+} = useLineupDrag({ editing, listBox, playerAt, move, remember, later, dropOnGrass: (slot, e) => place_(slot, e) })
 // [2026-11-09] Leaving the page: a drag in the middle lets go of the window, and a change waiting for its save is
 // saved now (not lost, and not sent later by a page that is gone; a failure still shows in the app's toast).
 onBeforeUnmount(() => {
@@ -349,7 +375,9 @@ const band = computed(() => {
   return from === undefined ? null : { top: `${100 - (to / 720) * 100}%`, height: `${((to - from) / 720) * 100}%` }
 })
 const click = (s: Spot) => !justDragged() && tap(s)
-const isSelected = (s: Spot) => (choosing.value?.zone === s.zone && choosing.value.index === s.index) || (picking.value?.mode === 'player' && playerAt(s) === picking.value.id)
+const isSelected = (s: Spot) =>
+  (choosing.value?.zone === s.zone && choosing.value.index === s.index) ||
+  (picking.value?.mode === 'player' && playerAt(s) === picking.value.id)
 
 async function improve() {
   if (!leagueId.value) return
@@ -375,7 +403,13 @@ async function save() {
     saved.value = ''
     // A change made while this one was saving waits for its own save: the screen keeps it.
     if (!dirtyAgainst(team.value!.lineup)) apply(team.value!.lineup)
-    else saved.value = JSON.stringify([team.value!.lineup.formation, team.value!.lineup.starters, team.value!.lineup.bench, team.value!.lineup.slots.slice(1).map((x) => [x.x, x.y])])
+    else
+      saved.value = JSON.stringify([
+        team.value!.lineup.formation,
+        team.value!.lineup.starters,
+        team.value!.lineup.bench,
+        team.value!.lineup.slots.slice(1).map((x) => [x.x, x.y]),
+      ])
   } catch (e) {
     const err = asApiError(e)
     message.value = Object.values(err.errors)[0]?.[0] ?? err.message
@@ -391,7 +425,12 @@ const dirtyAgainst = (l: { formation: string; starters: (number | null)[]; bench
 // [Sprint 48 T4] The captain and the set-piece takers have their own page (TakersPage.vue).
 
 // My own formations: ten cells on a 4 × 5 grid, the goalkeeper fixed [PLAN 2.15].
-const ROWS = [['att', 'هجوم'], ['am', 'وسط هجومي'], ['dm', 'وسط دفاعي'], ['def', 'دفاع']] as const
+const ROWS = [
+  ['att', 'هجوم'],
+  ['am', 'وسط هجومي'],
+  ['dm', 'وسط دفاعي'],
+  ['def', 'دفاع'],
+] as const
 const customOpen = ref(false)
 const customNumber = ref(1)
 const customName = ref('')
@@ -443,7 +482,15 @@ async function saveCustom() {
 <template>
   <div class="lineup-root">
     <!-- [Sprint 56 W11] The states as every screen's: the error with a retry, no team with the way to one. -->
-    <AsyncState v-if="error || (loaded && !team)" :error="error || null" :empty="!error" empty-icon="lineup" empty-title="ليس لديك فريق بعد." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" @retry="load" />
+    <AsyncState
+      v-if="error || (loaded && !team)"
+      :error="error || null"
+      :empty="!error"
+      empty-icon="lineup"
+      empty-title="ليس لديك فريق بعد."
+      :empty-cta="{ label: 'دورياتي', to: '/leagues' }"
+      @retry="load"
+    />
     <template v-else-if="team && current">
       <h1 class="sr-only">{{ $t('التشكيلة') }}</h1>
       <!-- [Sprint 56 W3] Lineup.html: three columns on one screen. The formation, the chemistry and the tools; the pitch
@@ -452,28 +499,63 @@ async function saveCustom() {
       <div class="lineup">
         <section class="lineup-side" :aria-label="$t('أدوات التشكيلة')">
           <div class="flex items-center gap-2">
-            <span class="min-w-0 flex-1 truncate text-caption text-text-muted" role="status">{{ saving || queued ? $t('يحفظ…') : dirty ? '' : $t('محفوظة') }}<template v-if="team.lineup.auto && !dirty"> {{ $t('· تلقائية («تحسين»)') }}</template></span>
-            <UiButton size="sm" variant="outline" class="!px-3" :disabled="!history.length || saving" @click="undo">{{ $t('تراجع') }}</UiButton>
+            <span class="min-w-0 flex-1 truncate text-caption text-text-muted" role="status"
+              >{{ saving || queued ? $t('يحفظ…') : dirty ? '' : $t('محفوظة')
+              }}<template v-if="team.lineup.auto && !dirty"> {{ $t('· تلقائية («تحسين»)') }}</template></span
+            >
+            <UiButton size="sm" variant="outline" class="!px-3" :disabled="!history.length || saving" @click="undo">{{
+              $t('تراجع')
+            }}</UiButton>
           </div>
           <button type="button" class="side-row" :aria-label="$t('الطريقة')" @click="formationsOpen = true">
             <span class="text-caption text-text-muted">{{ $t('الطريقة') }}</span>
-            <b class="flex-1 text-end font-numbers text-title text-gold" :dir="formation.startsWith('custom:') ? undefined : 'ltr'">{{ $t(all.find((f) => f.name === formation)?.label ?? formation) }}</b><span class="text-gold" aria-hidden="true"><Icon name="chevron_down" :size="16" /></span>
+            <b class="flex-1 text-end font-numbers text-title text-gold" :dir="formation.startsWith('custom:') ? undefined : 'ltr'">{{
+              $t(all.find((f) => f.name === formation)?.label ?? formation)
+            }}</b><span class="text-gold" aria-hidden="true"><Icon name="chevron_down" :size="16" /></span>
           </button>
           <div class="flex gap-1">
-            <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-lg bg-surface-sunk py-1 text-caption">
-              <span class="size-2 rounded-full" :class="{ def: 'bg-line-def', mid: 'bg-line-mid', att: 'bg-line-att' }[l]" />{{ $t(label) }}<b class="font-numbers">{{ current.lines[l] }}</b>
+            <span
+              v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }"
+              :key="l"
+              class="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-lg bg-surface-sunk py-1 text-caption"
+            >
+              <span class="size-2 rounded-full" :class="{ def: 'bg-line-def', mid: 'bg-line-mid', att: 'bg-line-att' }[l]" />{{ $t(label)
+              }}<b class="font-numbers">{{ current.lines[l] }}</b>
             </span>
           </div>
-          <div v-if="chemistry" class="flex items-center gap-2" :title="dirty ? $t('احفظ التشكيلة لتُحسب الكيمياء وروابطها من جديد.') : undefined">
+          <div
+            v-if="chemistry"
+            class="flex items-center gap-2"
+            :title="dirty ? $t('احفظ التشكيلة لتُحسب الكيمياء وروابطها من جديد.') : undefined"
+          >
             <span class="text-caption font-bold">{{ $t('الكيمياء') }}</span>
-            <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="chemistry.score" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('الكيمياء')">
+            <span
+              class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk"
+              role="meter"
+              :aria-valuenow="chemistry.score"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              :aria-label="$t('الكيمياء')"
+            >
               <span class="block h-full rounded-full" :style="{ width: `${chemistry.score}%`, background: chemColor(chemistry.score) }" />
             </span>
-            <Explain what="chemistry" :league-id="explainBoard.league"><b class="font-numbers text-body-lg" :style="{ color: chemColor(chemistry.score) }">{{ chemistry.score }}</b></Explain>
+            <Explain what="chemistry" :league-id="explainBoard.league"
+              ><b class="font-numbers text-body-lg" :style="{ color: chemColor(chemistry.score) }">{{ chemistry.score }}</b></Explain
+            >
           </div>
           <span class="text-caption text-text-muted">{{ $t('العرض') }}</span>
           <div class="grid grid-cols-2 gap-1" role="group" :aria-label="$t('العرض')">
-            <button v-for="(label, v) in { overall: 'القوة', fitness: 'اللياقة', age: 'السن', value: 'القيمة' }" :key="v" type="button" class="view-btn" :class="view === v ? 'is-on' : ''" :aria-pressed="view === v" @click="view = v">{{ $t(label) }}</button>
+            <button
+              v-for="(label, v) in { overall: 'القوة', fitness: 'اللياقة', age: 'السن', value: 'القيمة' }"
+              :key="v"
+              type="button"
+              class="view-btn"
+              :class="view === v ? 'is-on' : ''"
+              :aria-pressed="view === v"
+              @click="view = v"
+            >
+              {{ $t(label) }}
+            </button>
           </div>
           <div class="mt-auto grid grid-cols-2 gap-1">
             <UiButton :to="{ name: 'tactics' }" size="sm" variant="quiet">{{ $t('التكتيك') }}</UiButton>
@@ -486,12 +568,37 @@ async function saveCustom() {
           <div ref="pitch" class="lineup-pitch relative select-none overflow-hidden rounded-xxl">
             <div class="pointer-events-none absolute inset-3 rounded-md border-2 border-white/40" />
             <div class="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/40" />
-            <div class="pointer-events-none absolute left-1/2 top-1/2 size-[26%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/40" style="aspect-ratio: 1; height: auto" />
+            <div
+              class="pointer-events-none absolute left-1/2 top-1/2 size-[26%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/40"
+              style="aspect-ratio: 1; height: auto"
+            />
             <div class="pointer-events-none absolute inset-x-[28%] bottom-3 h-[13%] border-2 border-b-0 border-white/40" />
             <div class="pointer-events-none absolute inset-x-[28%] top-3 h-[13%] border-2 border-t-0 border-white/40" />
-            <div v-if="band" class="pointer-events-none absolute inset-x-0 border-y-2 border-dashed border-gold/70 bg-gold/15" :style="band" />
-            <svg v-if="links.length" class="pointer-events-none absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-              <line v-for="l in links" :key="`${l.a}-${l.b}`" :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2" :stroke="LINK_COLOR[l.color]" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.85" />
+            <div
+              v-if="band"
+              class="pointer-events-none absolute inset-x-0 border-y-2 border-dashed border-gold/70 bg-gold/15"
+              :style="band"
+            />
+            <svg
+              v-if="links.length"
+              class="pointer-events-none absolute inset-0 size-full"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <line
+                v-for="l in links"
+                :key="`${l.a}-${l.b}`"
+                :x1="l.x1"
+                :y1="l.y1"
+                :x2="l.x2"
+                :y2="l.y2"
+                :stroke="LINK_COLOR[l.color]"
+                stroke-width="3"
+                stroke-linecap="round"
+                vector-effect="non-scaling-stroke"
+                opacity="0.85"
+              />
             </svg>
             <button
               v-for="(slot, i) in current.slots"
@@ -511,67 +618,126 @@ async function saveCustom() {
                 <!-- A mini card [X29]: gold, silver or bronze by rating, its line's colour on top, the number and the slot's role. -->
                 <span
                   class="mini-card relative flex flex-col items-center justify-center overflow-hidden rounded-lg border-2 bg-gradient-to-b shadow-lg shadow-shade/50"
-                  :class="[MINI[tier(players.get(starters[i]!)!.overall)], isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '', players.get(starters[i]!)!.available ? '' : 'opacity-60']"
+                  :class="[
+                    MINI[tier(players.get(starters[i]!)!.overall)],
+                    isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '',
+                    players.get(starters[i]!)!.available ? '' : 'opacity-60',
+                  ]"
                 >
                   <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${slot.line})` }" aria-hidden="true" />
                   <b class="font-numbers text-body-lg leading-none">{{ shown(players.get(starters[i]!)!) }}</b>
                   <!-- [Sprint 27 W4] Out of his lines: he plays at the engine's lower share. -->
-                  <span v-if="offLine(i)" class="mini-flag end-0.5 bg-warning text-on-gold" :title="$t('خارج مركزه: {v0}% من مستواه', { v0: shareAt(players.get(starters[i]!)!, slot.line) })">{{ shareAt(players.get(starters[i]!)!, slot.line) }}%</span>
+                  <span
+                    v-if="offLine(i)"
+                    class="mini-flag end-0.5 bg-warning text-on-gold"
+                    :title="$t('خارج مركزه: {v0}% من مستواه', { v0: shareAt(players.get(starters[i]!)!, slot.line) })"
+                    >{{ shareAt(players.get(starters[i]!)!, slot.line) }}%</span
+                  >
                   <span class="mini-role font-numbers leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
                   <!-- [Sprint 30 Q7] Why he cannot play, on the card itself: injured or suspended, and for how many matches. -->
-                  <span v-if="players.get(starters[i]!)!.injured_matches" class="mini-flag start-0.5 bg-live text-on-gold" :title="$t('مصاب: {v0} مباراة', { v0: players.get(starters[i]!)!.injured_matches })"><Icon name="injury" :size="16" class="inline-block align-[-3px]" /> {{ players.get(starters[i]!)!.injured_matches }}</span>
-                  <span v-else-if="players.get(starters[i]!)!.suspended_matches" class="mini-flag start-0.5 bg-live text-on-gold" :title="$t('موقوف: {v0} مباراة', { v0: players.get(starters[i]!)!.suspended_matches })"><Icon name="card" :size="16" class="inline-block align-[-3px]" /> {{ players.get(starters[i]!)!.suspended_matches }}</span>
+                  <span
+                    v-if="players.get(starters[i]!)!.injured_matches"
+                    class="mini-flag start-0.5 bg-live text-on-gold"
+                    :title="$t('مصاب: {v0} مباراة', { v0: players.get(starters[i]!)!.injured_matches })"
+                    ><Icon name="injury" :size="16" class="inline-block align-[-3px]" />
+                    {{ players.get(starters[i]!)!.injured_matches }}</span
+                  >
+                  <span
+                    v-else-if="players.get(starters[i]!)!.suspended_matches"
+                    class="mini-flag start-0.5 bg-live text-on-gold"
+                    :title="$t('موقوف: {v0} مباراة', { v0: players.get(starters[i]!)!.suspended_matches })"
+                    ><Icon name="card" :size="16" class="inline-block align-[-3px]" />
+                    {{ players.get(starters[i]!)!.suspended_matches }}</span
+                  >
                 </span>
-                <span class="mini-name max-w-full truncate rounded bg-chrome px-1 font-extrabold text-on-chrome shadow" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
+                <span class="mini-name max-w-full truncate rounded bg-chrome px-1 font-extrabold text-on-chrome shadow" dir="auto">{{
+                  short(players.get(starters[i]!)!.name)
+                }}</span>
               </template>
-              <span v-else class="mini-empty flex items-center justify-center rounded-full border-2 border-dashed border-white/70 text-white">+</span>
+              <span
+                v-else
+                class="mini-empty flex items-center justify-center rounded-full border-2 border-dashed border-white/70 text-white"
+                >+</span
+              >
             </button>
           </div>
         </div>
 
         <section ref="listBox" class="lineup-list" data-spot="reserve:-1" :aria-label="$t('الاحتياط وخارج التشكيلة')">
-          <h2 id="h-bench" class="flex items-center gap-2 text-body font-extrabold">{{ $t('الاحتياط') }} <span class="font-numbers text-text-muted">{{ bench.length }}/7</span></h2>
+          <h2 id="h-bench" class="flex items-center gap-2 text-body font-extrabold">
+            {{ $t('الاحتياط') }} <span class="font-numbers text-text-muted">{{ bench.length }}/7</span>
+          </h2>
           <button
             v-for="(id, i) in bench"
             :key="id"
             type="button"
             :data-spot="`bench:${i}`"
             class="list-row bench-row"
-            :class="[isSelected({ zone: 'bench', index: i }) ? 'ring-2 ring-gold' : '', editing ? 'touch-none' : '', players.get(id)!.available ? '' : 'opacity-60']"
+            :class="[
+              isSelected({ zone: 'bench', index: i }) ? 'ring-2 ring-gold' : '',
+              editing ? 'touch-none' : '',
+              players.get(id)!.available ? '' : 'opacity-60',
+            ]"
             :style="{ '--line': `var(--color-line-${players.get(id)!.line})` }"
             @touchmove="editing && $event.preventDefault()"
             @pointerdown="down($event, { zone: 'bench', index: i })"
             @click="click({ zone: 'bench', index: i })"
           >
             <span class="w-8 font-numbers text-body-lg font-bold text-gold">{{ shown(players.get(id)!) }}</span>
-            <span class="min-w-0 flex-1 truncate font-bold">{{ short(players.get(id)!.name) }}<span v-if="!players.get(id)!.available" class="block truncate text-caption font-bold text-danger">{{ unavailable(players.get(id)!) }}</span></span>
+            <span class="min-w-0 flex-1 truncate font-bold"
+              >{{ short(players.get(id)!.name)
+              }}<span v-if="!players.get(id)!.available" class="block truncate text-caption font-bold text-danger">{{
+                unavailable(players.get(id)!)
+              }}</span></span
+            >
             <span class="text-caption text-text-muted" dir="ltr">{{ players.get(id)!.position }}</span>
           </button>
-          <button v-if="bench.length < 7" type="button" :data-spot="`bench:${bench.length}`" class="list-row justify-center border-2 border-dashed border-text/20 text-caption text-text-muted" @click="click({ zone: 'bench', index: bench.length })">{{ $t('مكان فارغ') }}</button>
+          <button
+            v-if="bench.length < 7"
+            type="button"
+            :data-spot="`bench:${bench.length}`"
+            class="list-row justify-center border-2 border-dashed border-text/20 text-caption text-text-muted"
+            @click="click({ zone: 'bench', index: bench.length })"
+          >
+            {{ $t('مكان فارغ') }}
+          </button>
 
-          <h2 id="h-rest" class="mt-2 flex items-center gap-2 text-body font-extrabold">{{ $t('خارج التشكيلة') }} <span class="font-numbers text-text-muted">{{ reserves.length }}</span></h2>
+          <h2 id="h-rest" class="mt-2 flex items-center gap-2 text-body font-extrabold">
+            {{ $t('خارج التشكيلة') }} <span class="font-numbers text-text-muted">{{ reserves.length }}</span>
+          </h2>
           <p v-if="!reserves.length" class="text-caption text-text-muted">{{ $t('كل الفريق في التشكيلة أو على الدكة.') }}</p>
           <template v-for="grp in reserveGroups" :key="grp.line">
-            <h3 class="flex items-center gap-2 text-caption font-bold text-text-soft"><span class="size-2 rounded-full" :style="{ background: `var(--color-line-${grp.line})` }" />{{ $t(LINE_PLURAL[grp.line]) }}</h3>
+            <h3 class="flex items-center gap-2 text-caption font-bold text-text-soft">
+              <span class="size-2 rounded-full" :style="{ background: `var(--color-line-${grp.line})` }" />{{ $t(LINE_PLURAL[grp.line]) }}
+            </h3>
             <button
               v-for="x in grp.items"
               :key="x.p.id"
               type="button"
               :data-spot="`reserve:${x.i}`"
               class="list-row"
-              :class="[isSelected({ zone: 'reserve', index: x.i }) ? 'ring-2 ring-gold' : '', x.p.available ? '' : 'opacity-60', editing ? 'touch-none' : '']"
+              :class="[
+                isSelected({ zone: 'reserve', index: x.i }) ? 'ring-2 ring-gold' : '',
+                x.p.available ? '' : 'opacity-60',
+                editing ? 'touch-none' : '',
+              ]"
               @touchmove="editing && $event.preventDefault()"
               @pointerdown="down($event, { zone: 'reserve', index: x.i })"
               @click="click({ zone: 'reserve', index: x.i })"
               @dblclick="card = x.p"
             >
               <span class="w-8 font-numbers text-body-lg font-bold text-gold">{{ shown(x.p) }}</span>
-              <span class="min-w-0 flex-1 truncate font-bold">{{ $nm(x.p.name) }}<span v-if="!x.p.available" class="block text-caption font-bold text-danger">{{ unavailable(x.p) }}</span></span>
+              <span class="min-w-0 flex-1 truncate font-bold"
+                >{{ $nm(x.p.name)
+                }}<span v-if="!x.p.available" class="block text-caption font-bold text-danger">{{ unavailable(x.p) }}</span></span
+              >
               <span class="text-caption text-text-muted" dir="ltr">{{ x.p.position }}</span>
             </button>
           </template>
         </section>
-        <UiButton class="lineup-improve" size="sm" :title="$t('أفضل اللاعبين المناسبين للطريقة المختارة')" @click="improve">{{ $t('تحسين') }}</UiButton>
+        <UiButton class="lineup-improve" size="sm" :title="$t('أفضل اللاعبين المناسبين للطريقة المختارة')" @click="improve">{{
+          $t('تحسين')
+        }}</UiButton>
       </div>
       <p v-if="message" class="lineup-message">{{ $t(message) }}</p>
       <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ message ? $t(message) : said }}</p>
@@ -587,12 +753,19 @@ async function saveCustom() {
             :class="f.name === formation ? 'border-gold bg-surface-raised text-gold' : 'border-transparent bg-surface text-text-soft'"
             :aria-pressed="f.name === formation"
             :dir="f.name.startsWith('custom:') ? undefined : 'ltr'"
-            @click="pick(f.name); formationsOpen = false"
-          >{{ $t(f.label) }}</button>
-          <button type="button" class="h-12 min-w-0 rounded-xl border border-dashed border-gold/50 px-2 text-sm font-bold text-gold" @click="formationsOpen = false; openCustom()">{{ $t('+ مخصصة') }}</button>
+            @click="(pick(f.name), (formationsOpen = false))"
+          >
+            {{ $t(f.label) }}
+          </button>
+          <button
+            type="button"
+            class="h-12 min-w-0 rounded-xl border border-dashed border-gold/50 px-2 text-sm font-bold text-gold"
+            @click="((formationsOpen = false), openCustom())"
+          >
+            {{ $t('+ مخصصة') }}
+          </button>
         </div>
       </UiDialog>
-
     </template>
     <AsyncState v-else loading skeleton="card" :rows="3" />
 
@@ -600,33 +773,72 @@ async function saveCustom() {
       v-if="drag?.moved && players.get(drag.id)"
       class="pointer-events-none fixed z-50 flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[3px] border-gold bg-bg font-numbers text-lg font-bold shadow-lg"
       :style="{ left: `${drag.x}px`, top: `${drag.y}px` }"
-    >{{ shown(players.get(drag.id)!) }}</div>
+    >
+      {{ shown(players.get(drag.id)!) }}
+    </div>
 
     <!-- [Sprint 27 W3, X2] Who plays here? Each with the rating he will play at in this place. -->
-    <UiDialog :open="!!choosing" :title="choosing?.zone === 'slot' ? $t('من يلعب {v0}؟', { v0: slotLabel(choosing.index) }) : $t('من يجلس على الدكة؟')" @close="picking = null">
+    <UiDialog
+      :open="!!choosing"
+      :title="choosing?.zone === 'slot' ? $t('من يلعب {v0}؟', { v0: slotLabel(choosing.index) }) : $t('من يجلس على الدكة؟')"
+      @close="picking = null"
+    >
       <div v-if="choosing" class="flex flex-col gap-2">
         <div v-if="playerAt(choosing) !== null" class="grid grid-cols-3 gap-2">
-          <button type="button" class="h-touch rounded-lg bg-surface-raised px-1 text-xs font-bold" @click="moveOccupant">{{ $t('انقله لمكان آخر') }}</button>
-          <button type="button" class="h-touch rounded-lg bg-surface-raised px-1 text-xs font-bold" @click="takeOut">{{ $t('أخرجه من القائمة') }}</button>
-          <button type="button" class="h-touch rounded-lg bg-surface-raised px-1 text-xs font-bold" @click="card = players.get(playerAt(choosing!)!) ?? null; picking = null">{{ $t('بطاقته') }}</button>
+          <button type="button" class="h-touch rounded-lg bg-surface-raised px-1 text-xs font-bold" @click="moveOccupant">
+            {{ $t('انقله لمكان آخر') }}
+          </button>
+          <button type="button" class="h-touch rounded-lg bg-surface-raised px-1 text-xs font-bold" @click="takeOut">
+            {{ $t('أخرجه من القائمة') }}
+          </button>
+          <button
+            type="button"
+            class="h-touch rounded-lg bg-surface-raised px-1 text-xs font-bold"
+            @click="((card = players.get(playerAt(choosing!)!) ?? null), (picking = null))"
+          >
+            {{ $t('بطاقته') }}
+          </button>
         </div>
         <div class="flex gap-1 rounded-lg bg-surface-sunk p-1 text-sm" role="group" :aria-label="$t('العرض')">
-          <button v-for="(label, f) in { best: 'الأنسب', ...LINES }" :key="f" type="button" class="h-10 flex-1 rounded-md font-bold" :class="filter === f ? 'bg-surface-raised text-gold' : 'text-text-soft'" :aria-pressed="filter === f" @click="filter = f">{{ $t(label) }}</button>
+          <button
+            v-for="(label, f) in { best: 'الأنسب', ...LINES }"
+            :key="f"
+            type="button"
+            class="h-10 flex-1 rounded-md font-bold"
+            :class="filter === f ? 'bg-surface-raised text-gold' : 'text-text-soft'"
+            :aria-pressed="filter === f"
+            @click="filter = f"
+          >
+            {{ $t(label) }}
+          </button>
         </div>
         <ul class="flex max-h-[58vh] flex-col gap-1 overflow-y-auto">
           <li v-for="o in options" :key="o.p.id">
-            <button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-lg bg-surface px-3 py-2 text-start active:bg-surface-raised" :class="o.p.available ? '' : 'opacity-60'" @click="choose(o.p.id)">
+            <button
+              type="button"
+              class="flex min-h-14 w-full items-center gap-3 rounded-lg bg-surface px-3 py-2 text-start active:bg-surface-raised"
+              :class="o.p.available ? '' : 'opacity-60'"
+              @click="choose(o.p.id)"
+            >
               <span class="flex w-12 shrink-0 flex-col items-center leading-none">
                 <b class="font-numbers text-2xl" :class="o.share < 100 ? 'text-warning' : 'text-gold'">{{ o.rating }}</b>
-                <span v-if="o.share < 100" class="font-numbers text-caption text-text-muted"><s>{{ o.p.overall }}</s> · {{ o.share }}%</span>
+                <span v-if="o.share < 100" class="font-numbers text-caption text-text-muted"
+                  ><s>{{ o.p.overall }}</s> · {{ o.share }}%</span
+                >
               </span>
-              <span class="min-w-0 flex-1"><b class="block truncate">{{ $nm(o.p.name) }}</b>
+              <span class="min-w-0 flex-1"
+                ><b class="block truncate">{{ $nm(o.p.name) }}</b>
                 <span class="text-xs text-text-muted" dir="ltr">{{ o.p.position }}</span>
                 <span v-if="o.share < 100" class="ms-1 text-xs text-warning">{{ $t('خارج مركزه') }}</span>
-                <span v-if="!o.p.available" class="ms-1 text-xs text-danger">{{ $t('غير متاح') }}</span></span>
+                <span v-if="!o.p.available" class="ms-1 text-xs text-danger">{{ $t('غير متاح') }}</span></span
+              >
               <span class="flex shrink-0 flex-col items-end gap-1">
-                <span class="h-1 w-10 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(o.p.fitness)" :style="{ width: `${o.p.fitness}%` }" /></span>
-                <span v-if="o.from.zone === 'slot'" class="text-caption text-text-muted">{{ $t('يتبادل مع {v0}', { v0: slotLabel(o.from.index) }) }}</span>
+                <span class="h-1 w-10 rounded-full bg-bg/60"
+                  ><span class="block h-full rounded-full" :class="barColor(o.p.fitness)" :style="{ width: `${o.p.fitness}%` }"
+                /></span>
+                <span v-if="o.from.zone === 'slot'" class="text-caption text-text-muted">{{
+                  $t('يتبادل مع {v0}', { v0: slotLabel(o.from.index) })
+                }}</span>
                 <span v-else-if="WHERE[o.from.zone]" class="text-caption text-text-muted">{{ $t(WHERE[o.from.zone]) }}</span>
               </span>
             </button>
@@ -637,28 +849,61 @@ async function saveCustom() {
     </UiDialog>
 
     <!-- [X2] Where does he play? Every place with his rating there, the best first; or the bench, or out. -->
-    <UiDialog :open="!!pickedPlayer" :title="pickedPlayer ? $t('أين يلعب {v0}؟', { v0: short(pickedPlayer.name) }) : ''" @close="picking = null">
+    <UiDialog
+      :open="!!pickedPlayer"
+      :title="pickedPlayer ? $t('أين يلعب {v0}؟', { v0: short(pickedPlayer.name) }) : ''"
+      @close="picking = null"
+    >
       <div v-if="pickedPlayer" class="flex flex-col gap-2">
-        <p class="text-sm text-text-muted"><span dir="ltr">{{ pickedPlayer.position }}</span> · {{ $t('القوة') }} <b class="font-numbers text-gold">{{ pickedPlayer.overall }}</b></p>
+        <p class="text-sm text-text-muted">
+          <span dir="ltr">{{ pickedPlayer.position }}</span> · {{ $t('القوة') }}
+          <b class="font-numbers text-gold">{{ pickedPlayer.overall }}</b>
+        </p>
         <ul class="grid max-h-[58vh] grid-cols-2 gap-1.5 overflow-y-auto">
           <li v-for="x in places_" :key="x.i">
-            <button type="button" class="flex min-h-16 w-full flex-col items-start gap-0.5 rounded-lg bg-surface p-2 text-start active:bg-surface-raised" @click="goTo({ zone: 'slot', index: x.i })">
+            <button
+              type="button"
+              class="flex min-h-16 w-full flex-col items-start gap-0.5 rounded-lg bg-surface p-2 text-start active:bg-surface-raised"
+              @click="goTo({ zone: 'slot', index: x.i })"
+            >
               <span class="flex w-full items-center justify-between">
                 <b class="font-numbers text-sm" dir="ltr" :style="{ color: `var(--color-line-${x.slot.line})` }">{{ x.slot.role }}</b>
                 <b class="font-numbers text-xl" :class="x.share < 100 ? 'text-warning' : 'text-gold'">{{ x.rating }}</b>
               </span>
-              <span class="w-full truncate text-xs text-text-muted">{{ x.now ? $t('بدل {v0}', { v0: short(x.now.name) }) : $t('مكان فارغ') }}<template v-if="x.share < 100"> · {{ x.share }}%</template></span>
+              <span class="w-full truncate text-xs text-text-muted"
+                >{{ x.now ? $t('بدل {v0}', { v0: short(x.now.name) }) : $t('مكان فارغ')
+                }}<template v-if="x.share < 100"> · {{ x.share }}%</template></span
+              >
             </button>
           </li>
         </ul>
         <div class="grid grid-cols-2 gap-2">
-          <button v-if="!bench.includes(pickedPlayer.id) && bench.length < 7" type="button" class="h-touch rounded-lg bg-surface-raised text-sm font-bold" @click="goTo({ zone: 'bench', index: bench.length })">{{ $t('إلى الاحتياط') }}</button>
-          <button v-if="spotOf(pickedPlayer.id).zone !== 'reserve'" type="button" class="h-touch rounded-lg bg-surface-raised text-sm font-bold" @click="goTo({ zone: 'reserve', index: -1 })">{{ $t('أخرجه من القائمة') }}</button>
-          <button type="button" class="h-touch rounded-lg bg-surface-raised text-sm font-bold" @click="card = pickedPlayer ?? null; picking = null">{{ $t('بطاقته') }}</button>
+          <button
+            v-if="!bench.includes(pickedPlayer.id) && bench.length < 7"
+            type="button"
+            class="h-touch rounded-lg bg-surface-raised text-sm font-bold"
+            @click="goTo({ zone: 'bench', index: bench.length })"
+          >
+            {{ $t('إلى الاحتياط') }}
+          </button>
+          <button
+            v-if="spotOf(pickedPlayer.id).zone !== 'reserve'"
+            type="button"
+            class="h-touch rounded-lg bg-surface-raised text-sm font-bold"
+            @click="goTo({ zone: 'reserve', index: -1 })"
+          >
+            {{ $t('أخرجه من القائمة') }}
+          </button>
+          <button
+            type="button"
+            class="h-touch rounded-lg bg-surface-raised text-sm font-bold"
+            @click="((card = pickedPlayer ?? null), (picking = null))"
+          >
+            {{ $t('بطاقته') }}
+          </button>
         </div>
       </div>
     </UiDialog>
-
 
     <PlayerCard v-if="card" :player="card" @close="card = null" />
 
@@ -666,11 +911,27 @@ async function saveCustom() {
     <UiDialog :open="customOpen" title="تشكيلة مخصصة" @close="customOpen = false">
       <form class="flex flex-col gap-3" @submit.prevent="saveCustom">
         <div class="flex gap-2">
-          <input v-model="customName" maxlength="30" class="h-12 flex-1 rounded-lg border border-text/10 bg-surface-sunk px-3" :aria-label="$t('الاسم')" />
-          <UiSelect :model-value="String(customNumber)" label="الرقم" class="w-20" :options="[1, 2, 3].map((n) => ({ value: String(n), label: String(n) }))" @update:model-value="(v) => (customNumber = Number(v))" />
+          <input
+            v-model="customName"
+            maxlength="30"
+            class="h-12 flex-1 rounded-lg border border-text/10 bg-surface-sunk px-3"
+            :aria-label="$t('الاسم')"
+          />
+          <UiSelect
+            :model-value="String(customNumber)"
+            label="الرقم"
+            class="w-20"
+            :options="[1, 2, 3].map((n) => ({ value: String(n), label: String(n) }))"
+            @update:model-value="(v) => (customNumber = Number(v))"
+          />
         </div>
         <div class="flex gap-2 text-sm">
-          <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="rounded-lg px-2 py-1" :class="within(l) ? 'bg-success/15 text-success' : 'bg-live/15 text-danger'">
+          <span
+            v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }"
+            :key="l"
+            class="rounded-lg px-2 py-1"
+            :class="within(l) ? 'bg-success/15 text-success' : 'bg-live/15 text-danger'"
+          >
             {{ $t(label) }} <span class="font-numbers">{{ customLines[l] }}</span> ({{ LIMITS[l][0] }}–{{ LIMITS[l][1] }})
           </span>
           <span class="ms-auto font-numbers">{{ cells.length }}/10</span>
@@ -704,51 +965,181 @@ async function saveCustom() {
 
 <style scoped>
 /* [Sprint 56 W3] Lineup.html: the side, the pitch at the screen's height, and the list; «تحسين» under the list. */
-.lineup-root { position: relative; display: flex; flex-direction: column; }
-.lineup-root > .lineup { flex: 1; min-height: 0; }
+.lineup-root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.lineup-root > .lineup {
+  flex: 1;
+  min-height: 0;
+}
 .lineup {
   display: grid;
   gap: var(--space-sm);
   grid-template-columns: minmax(8.5rem, 1fr) auto minmax(9.5rem, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
-  grid-template-areas: "side field list" "side field improve";
+  grid-template-areas: 'side field list' 'side field improve';
 }
-@media (min-width: 1200px) { .lineup { gap: var(--space-lg); grid-template-columns: minmax(12rem, 1fr) auto minmax(14rem, 1fr); } }
-.lineup-side { position: relative; grid-area: side; display: flex; min-height: 0; flex-direction: column; gap: var(--space-sm); overflow-y: auto; padding: var(--space-sm); border-radius: var(--radius-xl); background: var(--color-surface); }
-.lineup-list { position: relative; grid-area: list; display: flex; min-height: 0; flex-direction: column; gap: 3px; overflow-y: auto; overscroll-behavior: contain; padding: var(--space-sm); border-radius: var(--radius-xl); background: var(--color-surface); }
-.lineup-improve { grid-area: improve; }
-.lineup-field { grid-area: field; display: flex; min-height: 0; justify-content: center; }
-.lineup-pitch { height: 100%; aspect-ratio: 68 / 90; max-width: 100%; }
-.lineup-message { position: absolute; inset-inline: 25%; bottom: 0.5rem; z-index: 5; padding: 0.4rem 0.75rem; border-radius: var(--radius-lg); text-align: center; font-size: var(--text-caption); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); }
-.side-row { display: flex; min-height: var(--spacing-touch); align-items: center; gap: var(--space-sm); padding: 0 var(--space-sm); border-radius: var(--radius-lg); background: var(--color-surface-sunk); }
-.view-btn { min-height: var(--spacing-touch); border-radius: var(--radius-md); font-size: var(--text-caption); font-weight: 800; color: var(--color-text-soft); background: var(--color-surface-sunk); }
-.view-btn.is-on { color: var(--color-on-gold); background: var(--color-gold); }
-.list-row { display: flex; min-height: var(--spacing-touch); flex: none; align-items: center; gap: var(--space-sm); padding: 0 var(--space-sm); border-radius: var(--radius-lg); text-align: start; font-size: var(--text-body); background: var(--color-surface-sunk); }
-.bench-row { box-shadow: inset -3px 0 0 var(--line); }
-:dir(ltr) .bench-row { box-shadow: inset 3px 0 0 var(--line); }
+@media (min-width: 1200px) {
+  .lineup {
+    gap: var(--space-lg);
+    grid-template-columns: minmax(12rem, 1fr) auto minmax(14rem, 1fr);
+  }
+}
+.lineup-side {
+  position: relative;
+  grid-area: side;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--space-sm);
+  overflow-y: auto;
+  padding: var(--space-sm);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+.lineup-list {
+  position: relative;
+  grid-area: list;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 3px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-sm);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+.lineup-improve {
+  grid-area: improve;
+}
+.lineup-field {
+  grid-area: field;
+  display: flex;
+  min-height: 0;
+  justify-content: center;
+}
+.lineup-pitch {
+  height: 100%;
+  aspect-ratio: 68 / 90;
+  max-width: 100%;
+}
+.lineup-message {
+  position: absolute;
+  inset-inline: 25%;
+  bottom: 0.5rem;
+  z-index: 5;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  font-size: var(--text-caption);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-raised);
+}
+.side-row {
+  display: flex;
+  min-height: var(--spacing-touch);
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunk);
+}
+.view-btn {
+  min-height: var(--spacing-touch);
+  border-radius: var(--radius-md);
+  font-size: var(--text-caption);
+  font-weight: 800;
+  color: var(--color-text-soft);
+  background: var(--color-surface-sunk);
+}
+.view-btn.is-on {
+  color: var(--color-on-gold);
+  background: var(--color-gold);
+}
+.list-row {
+  display: flex;
+  min-height: var(--spacing-touch);
+  flex: none;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-lg);
+  text-align: start;
+  font-size: var(--text-body);
+  background: var(--color-surface-sunk);
+}
+.bench-row {
+  box-shadow: inset -3px 0 0 var(--line);
+}
+:dir(ltr) .bench-row {
+  box-shadow: inset 3px 0 0 var(--line);
+}
 /* The pitch's cards grow with the screen: small on a phone held sideways, full on a computer. */
-.pitch-spot { width: 4rem; }
-.mini-card { width: 2.75rem; height: 3.25rem; }
+.pitch-spot {
+  width: 4rem;
+}
+.mini-card {
+  width: 2.75rem;
+  height: 3.25rem;
+}
 /* No text under 12px (the design system's floor), the small cards too. */
-.mini-role, .mini-flag { font-size: var(--text-caption); }
-.mini-flag { position: absolute; top: 0.3rem; padding: 0 2px; border-radius: 3px; font-family: var(--font-numbers); font-weight: 700; line-height: 1.2; }
-.mini-name { font-size: var(--text-caption); line-height: 1.25; }
-.mini-empty { width: 2.25rem; height: 2.25rem; font-size: var(--text-title); }
+.mini-role,
+.mini-flag {
+  font-size: var(--text-caption);
+}
+.mini-flag {
+  position: absolute;
+  top: 0.3rem;
+  padding: 0 2px;
+  border-radius: 3px;
+  font-family: var(--font-numbers);
+  font-weight: 700;
+  line-height: 1.2;
+}
+.mini-name {
+  font-size: var(--text-caption);
+  line-height: 1.25;
+}
+.mini-empty {
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: var(--text-title);
+}
 @media (min-height: 600px) {
-  .pitch-spot { width: 5rem; }
-  .mini-card { width: 3.5rem; height: 4.5rem; }
-  .mini-empty { width: 3rem; height: 3rem; }
+  .pitch-spot {
+    width: 5rem;
+  }
+  .mini-card {
+    width: 3.5rem;
+    height: 4.5rem;
+  }
+  .mini-empty {
+    width: 3rem;
+    height: 3rem;
+  }
 }
 .lineup-pitch {
   background:
     radial-gradient(ellipse 70% 45% at 50% 50%, rgb(255 255 255 / 0.12), transparent 70%),
     radial-gradient(ellipse 120% 90% at 50% 50%, transparent 60%, rgb(0 0 0 / 0.35)),
-    repeating-linear-gradient(0deg, var(--color-pitch-dark) 0, var(--color-pitch-dark) 7.5%, var(--color-pitch) 7.5%, var(--color-pitch) 15%);
-  box-shadow: 0 0 0 3px var(--color-brand-dark), 0 0 0 5px color-mix(in srgb, var(--color-gold) 45%, transparent), 0 30px 60px -30px color-mix(in srgb, var(--color-shade) 90%, transparent);
+    repeating-linear-gradient(
+      0deg,
+      var(--color-pitch-dark) 0,
+      var(--color-pitch-dark) 7.5%,
+      var(--color-pitch) 7.5%,
+      var(--color-pitch) 15%
+    );
+  box-shadow:
+    0 0 0 3px var(--color-brand-dark),
+    0 0 0 5px color-mix(in srgb, var(--color-gold) 45%, transparent),
+    0 30px 60px -30px color-mix(in srgb, var(--color-shade) 90%, transparent);
 }
 /* A sheen across the top of each mini card, as on a printed card. */
 .mini-card::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0 0 55% 0;
   background: linear-gradient(180deg, rgb(255 255 255 / 0.22), transparent);

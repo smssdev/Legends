@@ -6,17 +6,45 @@ import { api } from '../api/client'
 import { uuid } from '../lib/uuid'
 import { leagueMatch, sim, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 
-export const TABS = [{ id: 'quick', label: 'سريع' }, { id: 'subs', label: 'تبديل' }, { id: 'tactics', label: 'تكتيك' }, { id: 'shape', label: 'الطريقة' }] as const
-export const PLANS = [{ v: 'passing', label: 'تمريرات' }, { v: 'wings', label: 'الأجنحة' }, { v: 'counter', label: 'هجوم مرتد' }, { v: 'long', label: 'كرات طويلة' }, { v: 'shots', label: 'تسديد من بعيد' }]
+export const TABS = [
+  { id: 'quick', label: 'سريع' },
+  { id: 'subs', label: 'تبديل' },
+  { id: 'tactics', label: 'تكتيك' },
+  { id: 'shape', label: 'الطريقة' },
+] as const
+export const PLANS = [
+  { v: 'passing', label: 'تمريرات' },
+  { v: 'wings', label: 'الأجنحة' },
+  { v: 'counter', label: 'هجوم مرتد' },
+  { v: 'long', label: 'كرات طويلة' },
+  { v: 'shots', label: 'تسديد من بعيد' },
+]
 export const TACKLES = ['قانوني', 'عادي', 'حماس', 'خشونة']
 export const SLIDERS = { pressing: 'الضغط على الخصم', style: 'الأسلوب (دفاعي إلى هجومي)', tempo: 'إيقاع اللعب' }
 export const LINE_NAMES = { att: 'المهاجمون', mid: 'الوسط', def: 'المدافعون' }
 export const POSITIONING = {
-  att: [{ v: 'back', label: 'ارتداد' }, { v: 'support', label: 'مساندة الوسط' }, { v: 'only', label: 'هجوم فقط' }],
-  mid: [{ v: 'def', label: 'مساندة الدفاع' }, { v: 'stay', label: 'بقاء' }, { v: 'push', label: 'اندفاع' }],
-  def: [{ v: 'stay', label: 'بقاء' }, { v: 'fullbacks', label: 'هجوم الظهيرين' }, { v: 'mid', label: 'مساندة الوسط' }],
+  att: [
+    { v: 'back', label: 'ارتداد' },
+    { v: 'support', label: 'مساندة الوسط' },
+    { v: 'only', label: 'هجوم فقط' },
+  ],
+  mid: [
+    { v: 'def', label: 'مساندة الدفاع' },
+    { v: 'stay', label: 'بقاء' },
+    { v: 'push', label: 'اندفاع' },
+  ],
+  def: [
+    { v: 'stay', label: 'بقاء' },
+    { v: 'fullbacks', label: 'هجوم الظهيرين' },
+    { v: 'mid', label: 'مساندة الوسط' },
+  ],
 }
-const REFUSED: Record<string, string> = { no_subs_left: 'لا تبديلات متبقية', bad_players: 'اللاعب غير متاح', bad_tactics: 'تكتيك غير صالح', bad_formation: 'طريقة غير صالحة' }
+const REFUSED: Record<string, string> = {
+  no_subs_left: 'لا تبديلات متبقية',
+  bad_players: 'اللاعب غير متاح',
+  bad_tactics: 'تكتيك غير صالح',
+  bad_formation: 'طريقة غير صالحة',
+}
 
 export const formationLabel = (f: string) => (f.startsWith('custom:') ? `خاصة ${f.slice(7)}` : f)
 
@@ -35,9 +63,16 @@ export function useCoachOrders(d: OrdersDeps) {
   // [Sprint 57 B3, W7] The quick orders from the server; null tactics is «عودة للخطة», the coach's own pre-match
   // tactics, which only this screen holds.
   const serverOrders = ref<{ label: string; hint: string; tactics: Partial<Tactics> | null }[]>([])
-  const loadQuick = () => api.GET('/data/quick-orders').then((r) => { serverOrders.value = (r.data?.orders ?? []) as typeof serverOrders.value }).catch(() => {})
+  const loadQuick = () =>
+    api
+      .GET('/data/quick-orders')
+      .then((r) => {
+        serverOrders.value = (r.data?.orders ?? []) as typeof serverOrders.value
+      })
+      .catch(() => {})
   const quickOrders = computed<{ label: string; hint: string; tactics: Partial<Tactics> }[]>(() =>
-    serverOrders.value.map((o) => ({ label: o.label, hint: o.hint, tactics: o.tactics ?? initial.value ?? {} })))
+    serverOrders.value.map((o) => ({ label: o.label, hint: o.hint, tactics: o.tactics ?? initial.value ?? {} })),
+  )
   const draft = reactive<Tactics>({} as Tactics)
   const draftTrap = computed({ get: () => draft.trap === 1, set: (v) => (draft.trap = v ? 1 : 0) })
   const draftMan = computed({ get: () => draft.marking === 'man', set: (v) => (draft.marking = v ? 'man' : 'zone') })
@@ -104,6 +139,30 @@ export function useCoachOrders(d: OrdersDeps) {
   }
   const dispose = () => window.clearInterval(othersTimer)
 
-  return { tab, initial, loadQuick, quickOrders, draft, draftTrap, draftMan, onPitch, bench, subOut, pending, applied, rejected, order, sendTactics, sendFormation, sendSub, applyDraft, adopt, settle, others, loadOthers, dispose }
+  return {
+    tab,
+    initial,
+    loadQuick,
+    quickOrders,
+    draft,
+    draftTrap,
+    draftMan,
+    onPitch,
+    bench,
+    subOut,
+    pending,
+    applied,
+    rejected,
+    order,
+    sendTactics,
+    sendFormation,
+    sendSub,
+    applyDraft,
+    adopt,
+    settle,
+    others,
+    loadOthers,
+    dispose,
+  }
 }
 export type CoachOrders = ReturnType<typeof useCoachOrders>

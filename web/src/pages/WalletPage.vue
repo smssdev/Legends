@@ -9,7 +9,8 @@ import { useWallet } from '../stores/wallet'
 const wallet = useWallet()
 const error = ref('')
 const busy = ref(false)
-const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
+const when = (iso: string) =>
+  new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
 
 async function daily() {
   busy.value = true
@@ -37,7 +38,12 @@ onMounted(() => wallet.load())
           <span class="block text-sm text-text-muted">{{ $t('رصيدك من الكوينز') }}</span>
           <b class="font-numbers text-4xl text-gold" dir="ltr">{{ wallet.view.balance }}</b>
         </div>
-        <button type="button" class="h-12 rounded-md bg-gold px-5 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || wallet.view.daily.claimed" @click="daily">
+        <button
+          type="button"
+          class="h-12 rounded-md bg-gold px-5 font-display font-bold text-on-gold disabled:opacity-40"
+          :disabled="busy || wallet.view.daily.claimed"
+          @click="daily"
+        >
           {{ wallet.view.daily.claimed ? $t('استلمت مكافأة اليوم') : $t('استلم مكافأة اليوم · {v0}', { v0: wallet.view.daily.amount }) }}
         </button>
       </section>
@@ -47,10 +53,14 @@ onMounted(() => wallet.load())
         <!-- [X61] The cap said in words, not a bare number. -->
         <p class="text-xs text-text-muted">{{ $t('سقف الصرف: {v0} كوينز في كل دوري هذا الموسم', { v0: wallet.view.cap }) }}</p>
         <div v-for="l in wallet.view.leagues" :key="l.id" class="flex flex-col gap-1">
-          <div class="flex items-center justify-between text-sm"><span class="font-bold">{{ $nm(l.name) }}</span>
+          <div class="flex items-center justify-between text-sm">
+            <span class="font-bold">{{ $nm(l.name) }}</span>
             <span v-if="l.fair" class="text-text-muted">{{ $t('دوري نزيه: لا كوينز فيه') }}</span>
-            <span v-else class="text-text-muted">{{ $t('صرفت {v0} من {v1} كوينز', { v0: l.spent, v1: wallet.view.cap }) }}</span></div>
-          <div v-if="!l.fair" class="h-2 overflow-hidden rounded-full bg-surface-sunk"><div class="h-full rounded-full bg-gold" :style="{ width: Math.min(100, (l.spent * 100) / wallet.view.cap) + '%' }" /></div>
+            <span v-else class="text-text-muted">{{ $t('صرفت {v0} من {v1} كوينز', { v0: l.spent, v1: wallet.view.cap }) }}</span>
+          </div>
+          <div v-if="!l.fair" class="h-2 overflow-hidden rounded-full bg-surface-sunk">
+            <div class="h-full rounded-full bg-gold" :style="{ width: Math.min(100, (l.spent * 100) / wallet.view.cap) + '%' }" />
+          </div>
         </div>
       </section>
 
@@ -61,7 +71,9 @@ onMounted(() => wallet.load())
             <AppImage src="/brand/coin.svg" alt="" class="size-10" :size="40" />
             <b class="font-numbers text-2xl" dir="ltr">{{ p.coins }}</b>
             <span class="text-sm text-text-muted">{{ $t(p.label) }}</span>
-            <button type="button" disabled class="h-touch w-full rounded-md bg-surface-raised font-bold text-text-muted">{{ $t('قريباً') }}</button>
+            <button type="button" disabled class="h-touch w-full rounded-md bg-surface-raised font-bold text-text-muted">
+              {{ $t('قريباً') }}
+            </button>
           </div>
         </div>
       </section>
@@ -69,10 +81,16 @@ onMounted(() => wallet.load())
       <section :aria-label="$t('الحركات')" class="flex flex-col gap-1 rounded-xl bg-surface p-4">
         <h2 class="font-display text-lg font-bold">{{ $t('الحركات') }}</h2>
         <p v-if="!wallet.view.transactions.length" class="text-sm text-text-muted">{{ $t('لا حركات بعد.') }}</p>
-        <div v-for="(t, i) in wallet.view.transactions" :key="i" class="flex min-h-touch items-center gap-2 border-b border-text/5 text-sm last:border-0">
+        <div
+          v-for="(t, i) in wallet.view.transactions"
+          :key="i"
+          class="flex min-h-touch items-center gap-2 border-b border-text/5 text-sm last:border-0"
+        >
           <span class="flex-1">{{ $t(t.label) }}</span>
           <span class="text-xs text-text-muted">{{ when(t.at) }}</span>
-          <b class="w-14 text-end font-numbers" :class="t.amount > 0 ? 'text-success' : 'text-danger'" dir="ltr">{{ t.amount > 0 ? '+' : '' }}{{ t.amount }}</b>
+          <b class="w-14 text-end font-numbers" :class="t.amount > 0 ? 'text-success' : 'text-danger'" dir="ltr"
+            >{{ t.amount > 0 ? '+' : '' }}{{ t.amount }}</b
+          >
         </div>
       </section>
     </template>

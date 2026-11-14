@@ -37,7 +37,8 @@ async function entry(enter: boolean, userId?: number) {
   try {
     await ensureCsrf()
     const path = { params: { path: { league: Number(props.id) } } }
-    const { data } = enter ? await api.POST('/tournaments/{league}/entry', path)
+    const { data } = enter
+      ? await api.POST('/tournaments/{league}/entry', path)
       : await api.DELETE('/tournaments/{league}/entry', { params: { ...path.params, query: userId ? { user_id: userId } : {} } })
     page.value = data!.tournament
   } catch (e) {
@@ -65,7 +66,7 @@ const tabs = computed(() => {
   list.push({ key: 'teams', label: 'الفرق' })
   return list
 })
-const tables = computed(() => (page.value?.format === 'league' ? [{ group: '', rows: page.value.table }] : page.value?.groups ?? []))
+const tables = computed(() => (page.value?.format === 'league' ? [{ group: '', rows: page.value.table }] : (page.value?.groups ?? [])))
 const through = computed(() => page.value?.advance_per_group ?? (page.value?.format === 'league' ? 1 : 0))
 </script>
 
@@ -75,40 +76,112 @@ const through = computed(() => page.value?.advance_per_group ?? (page.value?.for
     <template v-if="page">
       <header class="flex flex-col gap-1">
         <h1 class="font-display text-3xl font-extrabold">{{ page.name }}</h1>
-        <p class="text-sm text-text-muted">{{ $t(TEMPLATES[page.template ?? 'custom'] ?? 'بطولة مخصصة') }} · {{ $t('{n} فريقاً', { n: page.team_count }) }} · {{ $t(FORMATS[page.format ?? 'groups']) }}
-          · {{ $t('المنظم: {v0}', { v0: page.owner?.name ?? '' }) }}</p>
+        <p class="text-sm text-text-muted">
+          {{ $t(TEMPLATES[page.template ?? 'custom'] ?? 'بطولة مخصصة') }} · {{ $t('{n} فريقاً', { n: page.team_count }) }} ·
+          {{ $t(FORMATS[page.format ?? 'groups']) }} · {{ $t('المنظم: {v0}', { v0: page.owner?.name ?? '' }) }}
+        </p>
       </header>
       <nav class="grid grid-cols-3 gap-2">
-        <RouterLink :to="{ name: 'tournament-draw', params: { id } }" class="flex min-h-touch items-center justify-center rounded-xl bg-gold px-2 text-center text-sm font-extrabold text-on-gold">
-          {{ page.drawn_at ? $t('شاهد القرعة') : page.draw_at ? $t('القرعة {v0}', { v0: when(page.draw_at) }) : $t('القرعة') }}</RouterLink>
-        <RouterLink v-if="page.entry.mode === 'pick' && !page.entry.my_club_id" :to="{ name: 'join', params: { code: page.code } }" class="flex min-h-touch items-center justify-center rounded-xl bg-surface px-2 text-sm font-bold">{{ $t('اطلب فريقاً') }}</RouterLink>
-        <RouterLink v-else-if="page.entry.my_club_id" :to="{ name: 'league-home', params: { id } }" class="flex min-h-touch items-center justify-center rounded-xl bg-surface px-2 text-sm font-bold">{{ $t('فريقي') }}</RouterLink>
-        <button v-if="page.entry.is_member" type="button" class="flex min-h-touch items-center justify-center rounded-xl bg-surface px-2 text-sm font-bold" @click="openGroup">{{ $t('جروب البطولة') }}</button>
+        <RouterLink
+          :to="{ name: 'tournament-draw', params: { id } }"
+          class="flex min-h-touch items-center justify-center rounded-xl bg-gold px-2 text-center text-sm font-extrabold text-on-gold"
+        >
+          {{ page.drawn_at ? $t('شاهد القرعة') : page.draw_at ? $t('القرعة {v0}', { v0: when(page.draw_at) }) : $t('القرعة') }}</RouterLink
+        >
+        <RouterLink
+          v-if="page.entry.mode === 'pick' && !page.entry.my_club_id"
+          :to="{ name: 'join', params: { code: page.code } }"
+          class="flex min-h-touch items-center justify-center rounded-xl bg-surface px-2 text-sm font-bold"
+          >{{ $t('اطلب فريقاً') }}</RouterLink
+        >
+        <RouterLink
+          v-else-if="page.entry.my_club_id"
+          :to="{ name: 'league-home', params: { id } }"
+          class="flex min-h-touch items-center justify-center rounded-xl bg-surface px-2 text-sm font-bold"
+          >{{ $t('فريقي') }}</RouterLink
+        >
+        <button
+          v-if="page.entry.is_member"
+          type="button"
+          class="flex min-h-touch items-center justify-center rounded-xl bg-surface px-2 text-sm font-bold"
+          @click="openGroup"
+        >
+          {{ $t('جروب البطولة') }}
+        </button>
       </nav>
 
       <!-- [X68] The players entered so far, when the draw shares the teams among them. -->
-      <section v-if="page.entry.mode === 'draw'" class="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-surface p-4" :aria-label="$t('المشاركون')">
+      <section
+        v-if="page.entry.mode === 'draw'"
+        class="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-surface p-4"
+        :aria-label="$t('المشاركون')"
+      >
         <div class="flex items-center justify-between gap-2">
-          <h2 class="font-bold">{{ $t('المشاركون') }} <span class="font-numbers text-gold" dir="ltr">{{ page.entry.entrants.length }} / {{ page.team_count }}</span></h2>
-          <span class="text-xs text-text-muted">{{ page.drawn_at ? $t('وزعت القرعة الفرق') : page.draw_at ? $t('القرعة {v0}', { v0: when(page.draw_at) }) : $t('تُسحب القرعة حين يكتمل العدد') }}</span>
+          <h2 class="font-bold">
+            {{ $t('المشاركون') }}
+            <span class="font-numbers text-gold" dir="ltr">{{ page.entry.entrants.length }} / {{ page.team_count }}</span>
+          </h2>
+          <span class="text-xs text-text-muted">{{
+            page.drawn_at
+              ? $t('وزعت القرعة الفرق')
+              : page.draw_at
+                ? $t('القرعة {v0}', { v0: when(page.draw_at) })
+                : $t('تُسحب القرعة حين يكتمل العدد')
+          }}</span>
         </div>
-        <div class="h-2 overflow-hidden rounded-full bg-surface-sunk"><div class="h-full rounded-full bg-gold transition-all" :style="{ width: Math.min(100, page.entry.entrants.length * 100 / page.team_count) + '%' }" /></div>
+        <div class="h-2 overflow-hidden rounded-full bg-surface-sunk">
+          <div
+            class="h-full rounded-full bg-gold transition-all"
+            :style="{ width: Math.min(100, (page.entry.entrants.length * 100) / page.team_count) + '%' }"
+          />
+        </div>
         <ul class="flex flex-wrap gap-2">
-          <li v-for="e in page.entry.entrants" :key="e.id" class="flex min-h-[36px] items-center gap-1 rounded-full bg-surface-sunk px-3 text-sm">
+          <li
+            v-for="e in page.entry.entrants"
+            :key="e.id"
+            class="flex min-h-[36px] items-center gap-1 rounded-full bg-surface-sunk px-3 text-sm"
+          >
             <b>{{ e.name }}</b><span v-if="e.club_id" class="text-text-muted">← {{ $nm(teamName(e.club_id)) }}</span>
-            <button v-if="page.entry.is_owner && page.entry.can_enter" type="button" class="size-8" :aria-label="$t('أخرج {v0}', { v0: e.name })" @click="entry(false, e.id)"><Icon name="close" :size="18" /></button>
+            <button
+              v-if="page.entry.is_owner && page.entry.can_enter"
+              type="button"
+              class="size-8"
+              :aria-label="$t('أخرج {v0}', { v0: e.name })"
+              @click="entry(false, e.id)"
+            >
+              <Icon name="close" :size="18" />
+            </button>
           </li>
         </ul>
         <template v-if="page.entry.can_enter">
-          <button v-if="!page.entry.is_entrant" type="button" class="min-h-touch rounded-xl bg-gold font-extrabold text-on-gold disabled:opacity-50"
-            :disabled="busy || page.entry.entrants.length >= page.team_count" @click="entry(true)">{{ $t('شارك في البطولة') }}</button>
-          <button v-else type="button" class="min-h-touch rounded-xl bg-surface-sunk font-bold" :disabled="busy" @click="entry(false)">{{ $t('انسحب قبل القرعة') }}</button>
+          <button
+            v-if="!page.entry.is_entrant"
+            type="button"
+            class="min-h-touch rounded-xl bg-gold font-extrabold text-on-gold disabled:opacity-50"
+            :disabled="busy || page.entry.entrants.length >= page.team_count"
+            @click="entry(true)"
+          >
+            {{ $t('شارك في البطولة') }}
+          </button>
+          <button v-else type="button" class="min-h-touch rounded-xl bg-surface-sunk font-bold" :disabled="busy" @click="entry(false)">
+            {{ $t('انسحب قبل القرعة') }}
+          </button>
         </template>
       </section>
 
       <div class="flex gap-2" role="tablist">
-        <button type="button" v-for="x in tabs" :key="x.key" role="tab" :aria-selected="tab === x.key" class="min-h-touch rounded-full px-4 text-sm font-bold"
-          :class="tab === x.key ? 'bg-brand' : 'bg-surface-sunk text-text-muted'" @click="tab = x.key">{{ $t(x.label) }}</button>
+        <button
+          type="button"
+          v-for="x in tabs"
+          :key="x.key"
+          role="tab"
+          :aria-selected="tab === x.key"
+          class="min-h-touch rounded-full px-4 text-sm font-bold"
+          :class="tab === x.key ? 'bg-brand' : 'bg-surface-sunk text-text-muted'"
+          @click="tab = x.key"
+        >
+          {{ $t(x.label) }}
+        </button>
       </div>
 
       <section v-if="tab === 'groups'" class="grid gap-3 md:grid-cols-2">
@@ -116,11 +189,24 @@ const through = computed(() => page.value?.advance_per_group ?? (page.value?.for
         <div v-for="g in tables" :key="g.group" class="rounded-2xl bg-surface p-3">
           <h2 v-if="g.group" class="mb-2 font-bold text-gold">{{ $t('المجموعة {v0}', { v0: g.group }) }}</h2>
           <table class="w-full text-sm">
-            <thead class="text-xs text-text-muted"><tr><th class="text-start">{{ $t('الفريق') }}</th><th>{{ $t('لعب') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('النقاط') }}</th></tr></thead>
+            <thead class="text-xs text-text-muted">
+              <tr>
+                <th class="text-start">{{ $t('الفريق') }}</th>
+                <th>{{ $t('لعب') }}</th>
+                <th>{{ $t('الفارق') }}</th>
+                <th>{{ $t('النقاط') }}</th>
+              </tr>
+            </thead>
             <tbody>
               <tr v-for="(r, i) in g.rows" :key="i" class="border-t border-text/5">
-                <td class="py-1.5"><span class="flex items-center gap-2" :class="i < through ? 'border-s-[3px] border-brand-light ps-2' : 'ps-[11px]'">
-                  <ClubCrest v-if="card(r.club)" :url="card(r.club)!.crest_url" :code="card(r.club)!.code" :size="22" /><span class="truncate">{{ $nm(card(r.club)?.name) }}</span></span></td>
+                <td class="py-1.5">
+                  <span class="flex items-center gap-2" :class="i < through ? 'border-s-[3px] border-brand-light ps-2' : 'ps-[11px]'">
+                    <ClubCrest v-if="card(r.club)" :url="card(r.club)!.crest_url" :code="card(r.club)!.code" :size="22" /><span
+                      class="truncate"
+                      >{{ $nm(card(r.club)?.name) }}</span
+                    ></span
+                  >
+                </td>
                 <td class="text-center font-numbers">{{ r.played }}</td>
                 <td class="text-center font-numbers" dir="ltr">{{ r.goals_for - r.goals_against }}</td>
                 <td class="text-center font-numbers font-bold">{{ r.points }}</td>
@@ -130,16 +216,34 @@ const through = computed(() => page.value?.advance_per_group ?? (page.value?.for
         </div>
       </section>
 
-      <p v-else-if="tab === 'bracket' && !page.bracket.length" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('تظهر المواجهات بعد القرعة.') }}</p>
+      <p v-else-if="tab === 'bracket' && !page.bracket.length" class="rounded-xl bg-surface p-4 text-text-muted">
+        {{ $t('تظهر المواجهات بعد القرعة.') }}
+      </p>
       <section v-else-if="tab === 'bracket'" class="flex gap-3 overflow-x-auto pb-2">
         <div v-for="s in page.bracket" :key="s.stage" class="flex min-w-[170px] flex-1 flex-col justify-around gap-2">
           <h2 class="text-center text-sm font-bold text-gold">{{ $t(STAGES[s.stage] ?? s.stage) }}</h2>
-          <div v-for="tie in s.ties" :key="tie.slot" class="rounded-xl bg-surface p-2 text-sm" :class="s.stage === 'final' ? 'ring-1 ring-gold' : ''">
-            <div v-for="side in (['home', 'away'] as const)" :key="side" class="flex min-h-[32px] items-center justify-between gap-2"
-              :class="tie.winner_id && card(tie[side])?.id === tie.winner_id ? 'font-bold' : ''">
+          <div
+            v-for="tie in s.ties"
+            :key="tie.slot"
+            class="rounded-xl bg-surface p-2 text-sm"
+            :class="s.stage === 'final' ? 'ring-1 ring-gold' : ''"
+          >
+            <div
+              v-for="side in ['home', 'away'] as const"
+              :key="side"
+              class="flex min-h-[32px] items-center justify-between gap-2"
+              :class="tie.winner_id && card(tie[side])?.id === tie.winner_id ? 'font-bold' : ''"
+            >
               <span class="flex min-w-0 items-center gap-1">
                 <ClubCrest v-if="card(tie[side])" :url="card(tie[side])!.crest_url" :code="card(tie[side])!.code" :size="20" />
-                <span class="truncate">{{ card(tie[side]) ? $nm(card(tie[side])!.name) : (tie[`${side}_from`]?.startsWith('3:') ? $t('أفضل ثالث {n}', { n: tie[`${side}_from`]!.slice(2) }) : (tie[`${side}_from`] ?? '؟')) }}</span></span>
+                <span class="truncate">{{
+                  card(tie[side])
+                    ? $nm(card(tie[side])!.name)
+                    : tie[`${side}_from`]?.startsWith('3:')
+                      ? $t('أفضل ثالث {n}', { n: tie[`${side}_from`]!.slice(2) })
+                      : (tie[`${side}_from`] ?? '؟')
+                }}</span></span
+              >
               <b v-if="tie.score" class="font-numbers">{{ tie.score[side === 'home' ? 0 : 1] }}</b>
             </div>
             <span class="block text-xs text-text-muted">{{ when(tie.at) }}</span>
@@ -150,7 +254,10 @@ const through = computed(() => page.value?.advance_per_group ?? (page.value?.for
       <section v-else class="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <div v-for="c in page.teams.map(card)" :key="c!.id" class="flex min-h-touch items-center gap-2 rounded-xl bg-surface p-2 text-sm">
           <ClubCrest :url="c!.crest_url" :code="c!.code" :size="28" />
-          <span class="min-w-0"><b class="block truncate">{{ $nm(c!.name) }}</b><span class="block truncate text-xs text-text-muted">{{ c!.coach ?? $t('الحاسوب') }}</span></span>
+          <span class="min-w-0"
+            ><b class="block truncate">{{ $nm(c!.name) }}</b
+            ><span class="block truncate text-xs text-text-muted">{{ c!.coach ?? $t('الحاسوب') }}</span></span
+          >
         </div>
       </section>
     </template>

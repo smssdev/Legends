@@ -10,8 +10,18 @@ import { ref } from 'vue'
 
 const KEY = 'tone'
 const ASKED = 'tone.asked'
-const read = (k: string) => { try { return storage.get(k) } catch { return null } }
-const write = (k: string, v: string) => { try { storage.set(k, v) } catch {} }
+const read = (k: string) => {
+  try {
+    return storage.get(k)
+  } catch {
+    return null
+  }
+}
+const write = (k: string, v: string) => {
+  try {
+    storage.set(k, v)
+  } catch {}
+}
 
 export const toneOn = ref(read(KEY) !== 'off')
 /** The coach answered the activation card (or chose in the account page), so it is not shown again. */
@@ -28,11 +38,25 @@ export function unlock() {
   try {
     audio ??= new Audio(file())
     audio.muted = true
-    void audio.play().then(() => { audio!.pause(); audio!.currentTime = 0; audio!.muted = false; unlocked.value = true }).catch(() => { if (audio) audio.muted = false })
+    void audio
+      .play()
+      .then(() => {
+        audio!.pause()
+        audio!.currentTime = 0
+        audio!.muted = false
+        unlocked.value = true
+      })
+      .catch(() => {
+        if (audio) audio.muted = false
+      })
   } catch {}
 }
 if (typeof document !== 'undefined') {
-  const first = () => { unlock(); document.removeEventListener('pointerdown', first); document.removeEventListener('keydown', first) }
+  const first = () => {
+    unlock()
+    document.removeEventListener('pointerdown', first)
+    document.removeEventListener('keydown', first)
+  }
   document.addEventListener('pointerdown', first, { passive: true })
   document.addEventListener('keydown', first)
 }

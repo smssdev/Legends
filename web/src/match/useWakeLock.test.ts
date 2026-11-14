@@ -2,7 +2,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useWakeLock } from './useWakeLock'
 
 describe('useWakeLock', () => {
-  afterEach(() => { delete (navigator as any).wakeLock })
+  afterEach(() => {
+    delete (navigator as any).wakeLock
+  })
 
   it('asks once while allowed, and again after letting go', async () => {
     const release = vi.fn(() => Promise.resolve())

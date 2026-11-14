@@ -9,7 +9,22 @@ describe('sound levels', () => {
     expect(gainOf('ui')).toBe(0.4)
     expect(gainOf('voice')).toBe(0)
     const made = vi.fn()
-    vi.stubGlobal('Audio', class { volume = 1; currentTime = 0; constructor() { made() } canPlayType() { return 'probably' } play() { return Promise.resolve() } })
+    vi.stubGlobal(
+      'Audio',
+      class {
+        volume = 1
+        currentTime = 0
+        constructor() {
+          made()
+        }
+        canPlayType() {
+          return 'probably'
+        }
+        play() {
+          return Promise.resolve()
+        }
+      },
+    )
     uiSound('tap', 'voice')
     expect(made).not.toHaveBeenCalled()
     uiSound('tap', 'ui')

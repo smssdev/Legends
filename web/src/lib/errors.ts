@@ -25,11 +25,21 @@ export function describe(err: unknown, path: string): ClientError {
   const e = err instanceof Error ? err : null
   const message = (e ? `${e.name}: ${e.message}` : typeof err === 'string' ? err : safeJson(err)).slice(0, 1000)
   const stack = (e?.stack ?? '').split('\n').slice(0, 8).join('\n').slice(0, 2000)
-  return { platform: 'web', version: __GLM_VERSION__, path: path.split(/[?#]/)[0]!.slice(0, 500), message: message || 'Unknown error', stack }
+  return {
+    platform: 'web',
+    version: __GLM_VERSION__,
+    path: path.split(/[?#]/)[0]!.slice(0, 500),
+    message: message || 'Unknown error',
+    stack,
+  }
 }
 
 function safeJson(v: unknown): string {
-  try { return JSON.stringify(v) ?? String(v) } catch { return String(v) }
+  try {
+    return JSON.stringify(v) ?? String(v)
+  } catch {
+    return String(v)
+  }
 }
 
 /** Sends one error (never throws, never waits: a report must not break what is left of the page). */
@@ -43,7 +53,7 @@ export function report(err: unknown, path: string = typeof location === 'undefin
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify(body),
       keepalive: true,
-      credentials: 'omit',   // no cookie: the report carries nobody
+      credentials: 'omit', // no cookie: the report carries nobody
     }).catch(() => {})
   } catch {}
 }
@@ -56,8 +66,12 @@ export function ignored(err: unknown): boolean {
 
 /** Listens for the page's errors (once, from main.ts); Vue's own errors come through `vueHandler`. */
 export function watchErrors(target: Window = window) {
-  target.addEventListener('error', (e) => { if (!ignored(e.error ?? e.message)) report(e.error ?? e.message) })
-  target.addEventListener('unhandledrejection', (e) => { if (!ignored(e.reason)) report(e.reason) })
+  target.addEventListener('error', (e) => {
+    if (!ignored(e.error ?? e.message)) report(e.error ?? e.message)
+  })
+  target.addEventListener('unhandledrejection', (e) => {
+    if (!ignored(e.reason)) report(e.reason)
+  })
 }
 
 export function vueHandler(err: unknown) {

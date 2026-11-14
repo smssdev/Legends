@@ -20,7 +20,12 @@ const status = ref<'pending' | 'approved' | 'rejected' | null>(null)
 const error = ref('')
 const sending = ref(false)
 
-const clean = computed(() => code.value.replace(/[\s#-]+/g, '').toUpperCase().slice(0, 8))
+const clean = computed(() =>
+  code.value
+    .replace(/[\s#-]+/g, '')
+    .toUpperCase()
+    .slice(0, 8),
+)
 const boxes = computed(() => Array.from({ length: 8 }, (_, i) => clean.value[i] ?? ''))
 const step = computed(() => (status.value === 'approved' ? 3 : status.value ? 2 : 1))
 const owner = computed(() => league.value?.owner?.name ?? 'منشئ الدوري')
@@ -85,7 +90,10 @@ onBeforeUnmount(() => window.clearInterval(timer))
       <li
         v-for="(s, i) in [
           { title: 'الكود', note: clean || '8 أحرف' },
-          { title: 'موافقة المنشئ', note: status === 'pending' ? `بانتظار ${owner}` : status === 'approved' ? 'وافق' : status === 'rejected' ? 'رُفض' : 'بعد الكود' },
+          {
+            title: 'موافقة المنشئ',
+            note: status === 'pending' ? `بانتظار ${owner}` : status === 'approved' ? 'وافق' : status === 'rejected' ? 'رُفض' : 'بعد الكود',
+          },
           { title: 'اختيار الفريق', note: 'بعد الموافقة' },
         ]"
         :key="s.title"
@@ -96,7 +104,8 @@ onBeforeUnmount(() => window.clearInterval(timer))
         <span
           class="flex size-8 shrink-0 items-center justify-center rounded-full font-numbers text-base font-bold"
           :class="i + 1 < step ? 'bg-success text-on-gold' : i + 1 === step ? 'bg-gold text-on-gold' : 'bg-surface-raised text-text-soft'"
-        ><Icon v-if="i + 1 < step" name="check" :size="14" /><template v-else>{{ i + 1 }}</template></span>
+          ><Icon v-if="i + 1 < step" name="check" :size="14" /><template v-else>{{ i + 1 }}</template></span
+        >
         <span class="hidden min-w-0 sm:block">
           <span class="block font-bold">{{ $t(s.title) }}</span>
           <span class="block truncate text-xs text-text-muted" :dir="i === 0 && clean ? 'ltr' : undefined">{{ s.note }}</span>
@@ -132,16 +141,21 @@ onBeforeUnmount(() => window.clearInterval(timer))
                 :key="i"
                 class="flex aspect-[4/5] items-center justify-center rounded-lg border bg-surface-sunk font-numbers text-2xl font-bold text-gold md:text-3xl"
                 :class="i === clean.length ? 'border-gold' : 'border-gold/40'"
-              >{{ c }}</span>
+                >{{ c }}</span
+              >
             </span>
           </label>
           <p v-if="error" id="code-err" class="text-sm text-danger" role="alert">{{ $t(error) }}</p>
-          <UiButton type="submit" block :disabled="sending || clean.length !== 8">{{ sending ? $t('يرسل…') : $t('أرسل طلب الانضمام') }}</UiButton>
+          <UiButton type="submit" block :disabled="sending || clean.length !== 8">{{
+            sending ? $t('يرسل…') : $t('أرسل طلب الانضمام')
+          }}</UiButton>
         </form>
 
         <article v-if="league" class="flex flex-col gap-3 rounded-xl bg-surface-sunk p-4">
           <header class="flex items-start gap-3">
-            <span class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-surface-raised text-gold"><Icon name="league" /></span>
+            <span class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-surface-raised text-gold"
+              ><Icon name="league"
+            /></span>
             <div class="min-w-0 flex-1">
               <h2 class="truncate font-display text-xl font-extrabold">{{ $nm(league.name) }}</h2>
               <p class="text-sm text-text-muted">{{ $t('أنشأه {v0}', { v0: owner }) }}</p>
@@ -149,26 +163,55 @@ onBeforeUnmount(() => window.clearInterval(timer))
             <UiChip v-if="league.fair_league" tone="win">{{ $t('دوري نزيه') }}</UiChip>
           </header>
           <dl class="grid grid-cols-2 gap-2 text-sm">
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('القالب') }}</dt><dd class="font-bold">{{ $ln(league.template) }}</dd></div>
+            <div class="rounded-lg bg-surface p-3">
+              <dt class="text-text-muted">{{ $t('القالب') }}</dt>
+              <dd class="font-bold">{{ $ln(league.template) }}</dd>
+            </div>
             <div class="rounded-lg bg-surface p-3">
               <dt class="text-text-muted">{{ $t('الفرق') }}</dt>
-              <dd class="font-bold"><span class="font-numbers">{{ league.team_count }}</span> {{ $t('· منها') }} <span class="font-numbers">{{ league.coaches }}</span> {{ $t('مدربين') }}</dd>
+              <dd class="font-bold">
+                <span class="font-numbers">{{ league.team_count }}</span> {{ $t('· منها') }}
+                <span class="font-numbers">{{ league.coaches }}</span> {{ $t('مدربين') }}
+              </dd>
             </div>
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('البداية') }}</dt><dd class="font-bold">{{ $t('{v0} بتوقيتك', { v0: when(league.starts_at) }) }}</dd></div>
+            <div class="rounded-lg bg-surface p-3">
+              <dt class="text-text-muted">{{ $t('البداية') }}</dt>
+              <dd class="font-bold">{{ $t('{v0} بتوقيتك', { v0: when(league.starts_at) }) }}</dd>
+            </div>
             <div class="rounded-lg bg-surface p-3">
               <dt class="text-text-muted">{{ $t('الجولات') }}</dt>
               <dd class="font-bold">{{ league.rounds_per_day === 1 ? $t('جولة يومياً') : $t('جولتان يومياً') }}</dd>
             </div>
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-bold">{{ budget(league.starting_budget) }}</dd></div>
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ $t(END_MODES[league.season_end_mode]) }}</dd></div>
+            <div class="rounded-lg bg-surface p-3">
+              <dt class="text-text-muted">{{ $t('الميزانية') }}</dt>
+              <dd class="font-bold">{{ budget(league.starting_budget) }}</dd>
+            </div>
+            <div class="rounded-lg bg-surface p-3">
+              <dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt>
+              <dd class="font-bold">{{ $t(END_MODES[league.season_end_mode]) }}</dd>
+            </div>
           </dl>
         </article>
       </section>
 
-      <section v-if="status" class="flex flex-col items-center gap-4 rounded-xl border border-gold/30 bg-surface p-6 text-center" role="status">
+      <section
+        v-if="status"
+        class="flex flex-col items-center gap-4 rounded-xl border border-gold/30 bg-surface p-6 text-center"
+        role="status"
+      >
         <span class="flex size-20 items-center justify-center rounded-full bg-surface-raised text-gold">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+          <svg
+            width="36"
+            height="36"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
           </svg>
         </span>
         <template v-if="status === 'pending'">

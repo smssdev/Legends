@@ -11,11 +11,53 @@ import { siteConfig } from './session'
 
 type Config = { ga: string | null; pixel: string | null }
 type Fn = (...args: unknown[]) => void
-type Tcf = (cmd: string, v: number, cb: (data: { gdprApplies?: boolean; eventStatus?: string; purpose?: { consents?: Record<string, boolean> } }, ok: boolean) => void) => void
-type W = Window & { dataLayer?: unknown[]; gtag?: Fn; fbq?: Fn & { queue?: unknown[]; callMethod?: Fn; loaded?: boolean; version?: string; push?: Fn }; _fbq?: unknown; __tcfapi?: Tcf }
+type Tcf = (
+  cmd: string,
+  v: number,
+  cb: (data: { gdprApplies?: boolean; eventStatus?: string; purpose?: { consents?: Record<string, boolean> } }, ok: boolean) => void,
+) => void
+type W = Window & {
+  dataLayer?: unknown[]
+  gtag?: Fn
+  fbq?: Fn & { queue?: unknown[]; callMethod?: Fn; loaded?: boolean; version?: string; push?: Fn }
+  _fbq?: unknown
+  __tcfapi?: Tcf
+}
 
-const EUROPE = ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
-  'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH']
+const EUROPE = [
+  'AT',
+  'BE',
+  'BG',
+  'HR',
+  'CY',
+  'CZ',
+  'DK',
+  'EE',
+  'FI',
+  'FR',
+  'DE',
+  'GR',
+  'HU',
+  'IE',
+  'IT',
+  'LV',
+  'LT',
+  'LU',
+  'MT',
+  'NL',
+  'PL',
+  'PT',
+  'RO',
+  'SK',
+  'SI',
+  'ES',
+  'SE',
+  'IS',
+  'LI',
+  'NO',
+  'GB',
+  'CH',
+]
 
 let cfg: Config | null = null
 let pixelOn = false
@@ -34,10 +76,24 @@ function startGoogle(id: string) {
   const win = w()
   win.dataLayer = win.dataLayer || []
   // gtag must push the arguments object itself, as Google's own snippet does.
-  // eslint-disable-next-line prefer-rest-params -- Google's tag reads the arguments object, not an array
-  win.gtag = function gtag() { win.dataLayer!.push(arguments) } as Fn
-  win.gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', region: EUROPE, wait_for_update: 500 })
-  win.gtag('consent', 'default', { ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', analytics_storage: 'granted' })
+  win.gtag = function gtag() {
+    // eslint-disable-next-line prefer-rest-params -- Google's tag reads the arguments object, not an array
+    win.dataLayer!.push(arguments)
+  } as Fn
+  win.gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    region: EUROPE,
+    wait_for_update: 500,
+  })
+  win.gtag('consent', 'default', {
+    ad_storage: 'granted',
+    ad_user_data: 'granted',
+    ad_personalization: 'granted',
+    analytics_storage: 'granted',
+  })
   win.gtag('js', new Date())
   // The pages are sent by hand below, one per screen.
   win.gtag('config', id, { send_page_view: false })
@@ -48,8 +104,13 @@ function startPixel(id: string) {
   const win = w()
   if (win.fbq) return
   // Meta's own loader, as a function: queue the calls until fbevents.js arrives.
-  const fbq = function (...args: unknown[]) { fbq.callMethod ? fbq.callMethod(...args) : fbq.queue!.push(args) } as NonNullable<W['fbq']>
-  fbq.push = fbq; fbq.loaded = true; fbq.version = '2.0'; fbq.queue = []
+  const fbq = function (...args: unknown[]) {
+    fbq.callMethod ? fbq.callMethod(...args) : fbq.queue!.push(args)
+  } as NonNullable<W['fbq']>
+  fbq.push = fbq
+  fbq.loaded = true
+  fbq.version = '2.0'
+  fbq.queue = []
   win.fbq = fbq
   win._fbq = fbq
   script('https://connect.facebook.net/en_US/fbevents.js')
@@ -61,17 +122,29 @@ function startPixel(id: string) {
 /** The Pixel only with consent where Google's consent message applies (TCF purpose 1, storage on the device). */
 function whenAllowed(go: () => void) {
   let done = false
-  const decide = (allowed: boolean) => { if (!done) { done = true; if (allowed) go() } }
-  const ask = () => w().__tcfapi?.('addEventListener', 2, (d, ok) => {
-    if (!ok) return
-    if (d.gdprApplies === false) return decide(true)
-    if (d.eventStatus === 'tcloaded' || d.eventStatus === 'useractioncomplete') decide(!!d.purpose?.consents?.['1'])
-  })
+  const decide = (allowed: boolean) => {
+    if (!done) {
+      done = true
+      if (allowed) go()
+    }
+  }
+  const ask = () =>
+    w().__tcfapi?.('addEventListener', 2, (d, ok) => {
+      if (!ok) return
+      if (d.gdprApplies === false) return decide(true)
+      if (d.eventStatus === 'tcloaded' || d.eventStatus === 'useractioncomplete') decide(!!d.purpose?.consents?.['1'])
+    })
   if (w().__tcfapi) return ask()
   // No consent tool on the page after a few seconds: outside the regions it serves.
   let tries = 0
   const t = window.setInterval(() => {
-    if (w().__tcfapi) { window.clearInterval(t); ask() } else if (++tries > 8) { window.clearInterval(t); decide(true) }
+    if (w().__tcfapi) {
+      window.clearInterval(t)
+      ask()
+    } else if (++tries > 8) {
+      window.clearInterval(t)
+      decide(true)
+    }
   }, 500)
 }
 
@@ -84,15 +157,19 @@ function page(path: string) {
 /** Once at the start: the server's ids, then Google and Meta, and a page for every screen after. */
 export function useAnalytics(router: Router) {
   if (typeof window === 'undefined' || navigator.webdriver) return
-  siteConfig().then((data) => {
-    cfg = (data?.analytics ?? null) as Config | null
-    if (!cfg) return
-    if (cfg.ga) startGoogle(cfg.ga)
-    if (cfg.pixel) whenAllowed(() => startPixel(cfg!.pixel!))
-    page(router.currentRoute.value.path)
-    // The title is set by the page's own SEO on the same navigation, so it is read a moment later.
-    router.afterEach((to, from) => { if (to.path !== from.path) window.setTimeout(() => page(to.path), 50) })
-  }).catch(() => {})
+  siteConfig()
+    .then((data) => {
+      cfg = (data?.analytics ?? null) as Config | null
+      if (!cfg) return
+      if (cfg.ga) startGoogle(cfg.ga)
+      if (cfg.pixel) whenAllowed(() => startPixel(cfg!.pixel!))
+      page(router.currentRoute.value.path)
+      // The title is set by the page's own SEO on the same navigation, so it is read a moment later.
+      router.afterEach((to, from) => {
+        if (to.path !== from.path) window.setTimeout(() => page(to.path), 50)
+      })
+    })
+    .catch(() => {})
 }
 
 /** The moments that count: a sign-up, a sign-in, a league made or joined (no name or email, only what happened). */

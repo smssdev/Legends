@@ -7,5 +7,6 @@ defineProps<{ value: number; size?: 'md' | 'lg' }>()
   <span
     class="inline-flex shrink-0 items-center justify-center rounded-xl bg-surface-raised font-numbers font-extrabold"
     :class="[size === 'lg' ? 'size-16 text-3xl' : 'size-12 text-2xl', value >= 88 ? 'text-gold' : 'text-text']"
-  >{{ value }}</span>
+    >{{ value }}</span
+  >
 </template>

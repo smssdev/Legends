@@ -10,7 +10,9 @@ const index = readFileSync(new URL('index.html', dist), 'utf8')
 copyFileSync(new URL('index.html', dist), new URL('shell.html', dist))
 // What the shell loads: its scripts, styles and preloads from /assets/ and /fonts/.
 const linked = [...index.matchAll(/(?:src|href)="(\/(?:assets|fonts)\/[^"]+)"/g)].map((m) => m[1])
-const fonts = readdirSync(new URL('fonts/', dist)).filter((f) => f.endsWith('.woff2')).map((f) => `/fonts/${f}`)
+const fonts = readdirSync(new URL('fonts/', dist))
+  .filter((f) => f.endsWith('.woff2'))
+  .map((f) => `/fonts/${f}`)
 // The emblems the splash and the bar show (offline too), and the coin.
 const brand = ['emblem.svg', 'emblem-ar.svg', 'emblem-loader.svg', 'emblem-loader-ar.svg', 'coin.svg'].map((f) => `/brand/${f}`)
 const precache = [...new Set(['/shell.html', '/site.webmanifest', '/icon-192.png', '/icon-512.png', ...linked, ...fonts, ...brand])]

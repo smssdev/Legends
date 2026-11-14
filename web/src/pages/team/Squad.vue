@@ -40,31 +40,56 @@ async function load() {
   await loadTeam()
   if (!leagueId.value || !team.value) return
   try {
-    season.value = ((await api.GET('/leagues/{league}/team/season', { params: { path: { league: leagueId.value } } })).data ?? null) as SeasonData | null
+    season.value = ((await api.GET('/leagues/{league}/team/season', { params: { path: { league: leagueId.value } } })).data ??
+      null) as SeasonData | null
   } catch {
     /* the tables still show the squad without the season */
   }
 }
 // [Sprint 48 T2] The three tabs of the owner's screenshots: the players, the league's transfers, the ratings by round.
 // [Sprint 56 W2] Plus the season's numbers as their own columns («الأداء»), as Squad.html.
-const TABS = [{ key: 'players', label: 'اللاعبون' }, { key: 'stats', label: 'الأداء' }, { key: 'ratings', label: 'التقييمات' }, { key: 'transfers', label: 'الانتقالات' }]
+const TABS = [
+  { key: 'players', label: 'اللاعبون' },
+  { key: 'stats', label: 'الأداء' },
+  { key: 'ratings', label: 'التقييمات' },
+  { key: 'transfers', label: 'الانتقالات' },
+]
 type Tab = 'players' | 'stats' | 'ratings' | 'transfers'
 const tab = ref<Tab>('players')
 // The line as text for the phone's list (UiSelect's value).
 const lineKey = computed({ get: () => line.value as string, set: (v: string) => (line.value = (v || 'all') as 'all' | Line) })
-const LINE_TABS = computed(() => (['all', 'gk', 'def', 'mid', 'att'] as const).map((l) => ({ key: l, label: l === 'all' ? 'الكل' : LINES[l].plural, n: l === 'all' ? team.value?.players.length ?? 0 : count(l) })))
+const LINE_TABS = computed(() =>
+  (['all', 'gk', 'def', 'mid', 'att'] as const).map((l) => ({
+    key: l,
+    label: l === 'all' ? 'الكل' : LINES[l].plural,
+    n: l === 'all' ? (team.value?.players.length ?? 0) : count(l),
+  })),
+)
 const line = ref<'all' | Line>('all')
 const open = ref<SquadPlayer | null>(null)
 // The list or the cards, remembered on this device [X29].
-const view = ref<'list' | 'cards'>((() => { try { return storage.get('squadView') === 'cards' ? 'cards' : 'list' } catch { return 'list' } })())
+const view = ref<'list' | 'cards'>(
+  (() => {
+    try {
+      return storage.get('squadView') === 'cards' ? 'cards' : 'list'
+    } catch {
+      return 'list'
+    }
+  })(),
+)
 function setView(v: 'list' | 'cards') {
   view.value = v
-  try { storage.set('squadView', v) } catch {}
+  try {
+    storage.set('squadView', v)
+  } catch {}
 }
 onMounted(load)
 // [X87] A change made elsewhere on the screen (an undo from the toast, after the card closed): the squad again.
 let again = 0
-const changed = () => { clearTimeout(again); again = window.setTimeout(() => load(), 450) }
+const changed = () => {
+  clearTimeout(again)
+  again = window.setTimeout(() => load(), 450)
+}
 onMounted(() => window.addEventListener('glm:league-changed', changed))
 onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
 // [Sprint 39 S1] A player sold or listed from his card: the word, and the squad again.
@@ -86,7 +111,11 @@ const captain = computed(() => team.value?.takers.captain?.player_id)
 // [Sprint 21 E3.5] The list by line, each under its own heading: keepers, defenders, midfield, attack.
 // [Sprint 39 S2] Each line's divider: its name and its letters, as the coach knows them.
 const LINE_TITLE = { gk: 'حراسة المرمى · GK', def: 'خط الدفاع · DEF', mid: 'خط الوسط · MID', att: 'خط الهجوم · FWD' } as const
-const groups = computed(() => (['gk', 'def', 'mid', 'att'] as const).map((l) => ({ line: l, players: players.value.filter((p) => p.line === l) })).filter((g) => g.players.length))
+const groups = computed(() =>
+  (['gk', 'def', 'mid', 'att'] as const)
+    .map((l) => ({ line: l, players: players.value.filter((p) => p.line === l) }))
+    .filter((g) => g.players.length),
+)
 
 function status(p: SquadPlayer) {
   if (p.injured_matches) return { text: t('مصاب · {n} مباريات', { n: p.injured_matches }), tone: 'text-danger' }
@@ -97,7 +126,10 @@ function status(p: SquadPlayer) {
   // The fatigue lines [Sprint 39 E2]: from 90% full, from 75% slower, under 75% a sharp drop and twice the injuries.
   if (p.fitness < 75) return { text: 'مرهق: خطر إصابة', tone: 'text-danger' }
   if (p.fitness < 90) return { text: 'متعب', tone: 'text-warning' }
-  return { text: { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' }[p.role], tone: p.role === 'starter' ? 'text-success' : 'text-text-muted' }
+  return {
+    text: { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' }[p.role],
+    tone: p.role === 'starter' ? 'text-success' : 'text-text-muted',
+  }
 }
 // [Sprint 66 T2] A player's attributes as the tile reads them (a cast the template cannot hold).
 const attrs = (p: { attributes?: unknown }) => p.attributes as Record<string, number | null>
@@ -108,32 +140,97 @@ const attrs = (p: { attributes?: unknown }) => p.attributes as Record<string, nu
        panel at the side; the team's card beside the table on a computer. -->
   <div class="squad">
     <h1 class="sr-only">{{ $t('الفريق') }}</h1>
-    <AsyncState v-if="error || !team" :loading="!loaded && !error" :error="error || null" :empty="loaded && !team && !error" skeleton="row" :rows="6"
-      empty-icon="team" empty-title="ليس لديك فريق بعد" empty-text="انضم لدوري أو أنشئ دورياً واختر فريقك." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" @retry="load" />
+    <AsyncState
+      v-if="error || !team"
+      :loading="!loaded && !error"
+      :error="error || null"
+      :empty="loaded && !team && !error"
+      skeleton="row"
+      :rows="6"
+      empty-icon="team"
+      empty-title="ليس لديك فريق بعد"
+      empty-text="انضم لدوري أو أنشئ دورياً واختر فريقك."
+      :empty-cta="{ label: 'دورياتي', to: '/leagues' }"
+      @retry="load"
+    />
     <template v-else>
       <div class="squad-main">
         <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
           <UiTabs v-model="tab" :items="TABS" label="الفريق" size="sm" />
           <!-- The lines: tabs where there is room, one list on a phone and a tablet (the table keeps its rows). -->
-          <UiTabs v-if="tab !== 'transfers'" v-model="line" :items="LINE_TABS" label="الخطوط" tone="brand" size="sm" class="min-w-0 max-w-full max-xl:hidden" />
-          <div v-if="tab !== 'transfers'" class="w-28 xl:hidden"><UiSelect v-model="lineKey" label="الخطوط" :options="LINE_TABS.map((l) => ({ value: l.key, label: `${$t(l.label)} ${l.n}` }))" /></div>
+          <UiTabs
+            v-if="tab !== 'transfers'"
+            v-model="line"
+            :items="LINE_TABS"
+            label="الخطوط"
+            tone="brand"
+            size="sm"
+            class="min-w-0 max-w-full max-xl:hidden"
+          />
+          <div v-if="tab !== 'transfers'" class="w-28 xl:hidden">
+            <UiSelect
+              v-model="lineKey"
+              label="الخطوط"
+              :options="LINE_TABS.map((l) => ({ value: l.key, label: `${$t(l.label)} ${l.n}` }))"
+            />
+          </div>
           <span class="flex-1" />
-          <span class="text-caption text-text-muted max-lg:hidden"><span class="font-numbers">{{ team.players.length }}</span> {{ $t('لاعباً · القوة') }} <b class="font-numbers text-gold">{{ strength(team.club.strength_cp) }}</b> {{ $t('· القيمة') }} <span class="font-numbers">{{ money(team.squad_value) }}</span></span>
+          <span class="text-caption text-text-muted max-lg:hidden"
+            ><span class="font-numbers">{{ team.players.length }}</span> {{ $t('لاعباً · القوة') }}
+            <b class="font-numbers text-gold">{{ strength(team.club.strength_cp) }}</b> {{ $t('· القيمة') }}
+            <span class="font-numbers">{{ money(team.squad_value) }}</span></span
+          >
           <label>
             <span class="sr-only">{{ $t('فريق نادٍ آخر') }}</span>
-            <select class="h-touch w-28 rounded-lg bg-surface px-1 text-caption" :value="''" @focus="loadOthers" @pointerdown="loadOthers" @change="otherClub = Number(($event.target as HTMLSelectElement).value) || null; ($event.target as HTMLSelectElement).value = ''">
+            <select
+              class="h-touch w-28 rounded-lg bg-surface px-1 text-caption"
+              :value="''"
+              @focus="loadOthers"
+              @pointerdown="loadOthers"
+              @change="
+                ((otherClub = Number(($event.target as HTMLSelectElement).value) || null),
+                (($event.target as HTMLSelectElement).value = ''))
+              "
+            >
               <option value="">{{ $t('فريق نادٍ آخر') }}</option>
               <option v-for="c in others" :key="c.id" :value="c.id">{{ $nm(c.name) }}</option>
             </select>
           </label>
-          <div v-if="tab === 'players'" class="flex shrink-0 gap-1 rounded-xl ui-card p-1 max-md:hidden" role="group" :aria-label="$t('طريقة العرض')">
-            <button v-for="[k, label, icon] in ([['list', 'جدول', 'M4 6h16M4 12h16M4 18h16'], ['cards', 'بطاقات', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z']] as const)" :key="k" type="button" class="ui-choice size-touch" :aria-pressed="view === k" :aria-label="$t(label)" @click="setView(k)">
-              <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path :d="icon" /></svg>
+          <div
+            v-if="tab === 'players'"
+            class="flex shrink-0 gap-1 rounded-xl ui-card p-1 max-md:hidden"
+            role="group"
+            :aria-label="$t('طريقة العرض')"
+          >
+            <button
+              v-for="[k, label, icon] in [
+                ['list', 'جدول', 'M4 6h16M4 12h16M4 18h16'],
+                ['cards', 'بطاقات', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z'],
+              ] as const"
+              :key="k"
+              type="button"
+              class="ui-choice size-touch"
+              :aria-pressed="view === k"
+              :aria-label="$t(label)"
+              @click="setView(k)"
+            >
+              <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path :d="icon" />
+              </svg>
             </button>
           </div>
         </div>
 
-        <PlayersTable v-if="(tab === 'players' && view === 'list') || tab === 'stats'" :groups="groups" :season="season?.players ?? null" :status="status" :cols="tab === 'stats' ? 'stats' : 'list'" class="squad-scroll" @open="open = $event" @sale="openSale" />
+        <PlayersTable
+          v-if="(tab === 'players' && view === 'list') || tab === 'stats'"
+          :groups="groups"
+          :season="season?.players ?? null"
+          :status="status"
+          :cols="tab === 'stats' ? 'stats' : 'list'"
+          class="squad-scroll"
+          @open="open = $event"
+          @sale="openSale"
+        />
         <!-- The cards, by line like the table. -->
         <div v-else-if="tab === 'players'" class="squad-scroll flex flex-col gap-5 overflow-y-auto overscroll-contain">
           <section v-for="grp in groups" :key="grp.line" class="flex flex-col gap-2" :aria-label="$t(LINES[grp.line].plural)">
@@ -144,31 +241,78 @@ const attrs = (p: { attributes?: unknown }) => p.attributes as Record<string, nu
             <ul class="grid grid-cols-3 gap-3 xl:grid-cols-4">
               <li v-for="p in grp.players" :key="p.id" class="v-card">
                 <button type="button" class="block w-full text-start" :aria-label="p.name" @click="open = p">
-                  <PlayerTile :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :fitness="p.fitness" :status="status(p).text" :status-tone="status(p).tone" :attributes="attrs(p)" />
+                  <PlayerTile
+                    :name="p.name"
+                    :line="p.line as Line"
+                    :position="p.position"
+                    :overall="p.overall"
+                    :value="p.value"
+                    :fitness="p.fitness"
+                    :status="status(p).text"
+                    :status-tone="status(p).tone"
+                    :attributes="attrs(p)"
+                  />
                 </button>
               </li>
             </ul>
           </section>
         </div>
-        <TransfersTable v-else-if="tab === 'transfers'" :transfers="season?.transfers ?? []" :club="team.club.name" class="squad-scroll overflow-y-auto" />
+        <TransfersTable
+          v-else-if="tab === 'transfers'"
+          :transfers="season?.transfers ?? []"
+          :club="team.club.name"
+          class="squad-scroll overflow-y-auto"
+        />
         <RatingsTable v-else-if="season" :groups="groups" :season="season" class="squad-scroll overflow-y-auto" @open="open = $event" />
         <AsyncState v-else loading skeleton="row" :rows="6" />
       </div>
 
       <TeamCard :team="team" :board="board.board" :season="season" class="squad-side" @open="open = $event" />
     </template>
-    <PlayerCard v-if="open" :player="open" :sell="saleOpen" @close="open = null; saleOpen = false" @sold="sold" />
+    <PlayerCard v-if="open" :player="open" :sell="saleOpen" @close="((open = null), (saleOpen = false))" @sold="sold" />
     <ClubSquadDialog v-if="otherClub && board.league" :league-id="board.league" :club-id="otherClub" @close="otherClub = null" />
   </div>
 </template>
 
 <style scoped>
-.squad { display: grid; gap: var(--space-md); grid-template-columns: minmax(0, 1fr); }
-.squad-main { display: flex; min-height: 0; flex-direction: column; gap: var(--space-sm); }
-.squad-scroll { position: relative; flex: 1; min-height: 0; }
-.squad-side { display: none; }
-@media (min-width: 1200px) { .squad { grid-template-columns: minmax(0, 1fr) 21rem; } .squad-side { display: block; min-height: 0; overflow-y: auto; } }
+.squad {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: minmax(0, 1fr);
+}
+.squad-main {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.squad-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.squad-side {
+  display: none;
+}
+@media (min-width: 1200px) {
+  .squad {
+    grid-template-columns: minmax(0, 1fr) 21rem;
+  }
+  .squad-side {
+    display: block;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
 /* [Sprint 39 S2] A line's divider: its colour first, then a hairline across to the end. */
-.line-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to left, transparent, var(--line)); opacity: 0.5; }
-:dir(rtl) .line-divider::after { background: linear-gradient(to right, transparent, var(--line)); }
+.line-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to left, transparent, var(--line));
+  opacity: 0.5;
+}
+:dir(rtl) .line-divider::after {
+  background: linear-gradient(to right, transparent, var(--line));
+}
 </style>

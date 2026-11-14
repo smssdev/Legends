@@ -8,7 +8,9 @@ defineProps<{ title: string; subtitle?: string }>()
   <header class="ui-page-title-row flex flex-wrap items-end justify-between gap-3">
     <div class="min-w-0">
       <h1 class="ui-page-title font-display text-headline">{{ $t(title) }}</h1>
-      <p v-if="subtitle || $slots.subtitle" class="mt-1 text-caption text-text-muted"><slot name="subtitle">{{ $t(subtitle) }}</slot></p>
+      <p v-if="subtitle || $slots.subtitle" class="mt-1 text-caption text-text-muted">
+        <slot name="subtitle">{{ $t(subtitle) }}</slot>
+      </p>
     </div>
     <div v-if="$slots.default" class="flex shrink-0 items-center gap-2"><slot /></div>
   </header>

@@ -2,15 +2,33 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
 
 const order = vi.fn(async () => ({ target_tick: 12 }))
-vi.mock('../api/sim', () => ({ sim: { order: (...a: unknown[]) => order(...(a as [])) }, leagueMatch: { order: (...a: unknown[]) => order(...(a as [])), mine: async () => [] } }))
-vi.mock('../api/client', () => ({ api: { GET: async () => ({ data: { orders: [{ label: 'هجوم', hint: 'h', tactics: { style: 80 } }, { label: 'عودة للخطة', hint: 'h', tactics: null }] } }) } }))
+vi.mock('../api/sim', () => ({
+  sim: { order: (...a: unknown[]) => order(...(a as [])) },
+  leagueMatch: { order: (...a: unknown[]) => order(...(a as [])), mine: async () => [] },
+}))
+vi.mock('../api/client', () => ({
+  api: {
+    GET: async () => ({
+      data: {
+        orders: [
+          { label: 'هجوم', hint: 'h', tactics: { style: 80 } },
+          { label: 'عودة للخطة', hint: 'h', tactics: null },
+        ],
+      },
+    }),
+  },
+}))
 
 import { useCoachOrders } from './useCoachOrders'
 
-const team = (tactics: Record<string, unknown>) => ({ tactics, players: [], formation: '4-4-2', subs_used: 0, subs_max: 5, stats: {} }) as any
+const team = (tactics: Record<string, unknown>) =>
+  ({ tactics, players: [], formation: '4-4-2', subs_used: 0, subs_max: 5, stats: {} }) as any
 
 describe('useCoachOrders', () => {
-  beforeEach(() => { vi.useFakeTimers(); order.mockClear() })
+  beforeEach(() => {
+    vi.useFakeTimers()
+    order.mockClear()
+  })
   afterEach(() => vi.useRealTimers())
 
   function make() {
@@ -18,7 +36,7 @@ describe('useCoachOrders', () => {
     return useCoachOrders({ league: false, id: '7', mine: ref('home' as const), teams, finished: ref(false), error: ref('') })
   }
 
-  it('sends only what changed in the tactics, and the plan to come back to is the coach\'s own', async () => {
+  it("sends only what changed in the tactics, and the plan to come back to is the coach's own", async () => {
     const o = make()
     o.adopt(true)
     await o.loadQuick()

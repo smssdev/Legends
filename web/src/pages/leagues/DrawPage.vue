@@ -45,7 +45,9 @@ const serverNow = () => now.value + skew
 const countdown = computed(() => {
   if (!draw.value?.draw_at || draw.value.drawn_at) return ''
   const s = Math.max(0, Math.ceil((new Date(draw.value.draw_at).getTime() - serverNow()) / 1000))
-  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60
+  const h = Math.floor(s / 3600),
+    m = Math.floor((s % 3600) / 60),
+    sec = s % 60
   return (h ? `${h}:` : '') + `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
 })
 // How many slots are shown now, on the shared clock.
@@ -61,14 +63,18 @@ async function schedule() {
   message.value = ''
   try {
     await ensureCsrf()
-    const { data } = await api.PUT('/leagues/{league}/draw', { params: { path: { league: Number(props.id) } }, body: { draw_at: new Date(when.value).toISOString() } })
+    const { data } = await api.PUT('/leagues/{league}/draw', {
+      params: { path: { league: Number(props.id) } },
+      body: { draw_at: new Date(when.value).toISOString() },
+    })
     draw.value = data!
     message.value = 'حُدد موعد القرعة.'
   } catch (e) {
     message.value = asApiError(e).message
   }
 }
-const local = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' })
+const local = (iso: string) =>
+  new Date(iso).toLocaleString(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' })
 </script>
 
 <template>
@@ -89,9 +95,13 @@ const local = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
           <p class="font-numbers text-5xl font-bold text-gold" dir="ltr" aria-live="polite">{{ countdown }}</p>
         </template>
         <template v-else>
-          <p class="flex items-center gap-2 font-bold"><span class="size-2 animate-pulse rounded-full bg-live" v-if="!done" />{{ done ? $t('انتهت القرعة') : $t('القرعة تُسحب الآن') }}</p>
+          <p class="flex items-center gap-2 font-bold">
+            <span class="size-2 animate-pulse rounded-full bg-live" v-if="!done" />{{ done ? $t('انتهت القرعة') : $t('القرعة تُسحب الآن') }}
+          </p>
         </template>
-        <p class="text-xs text-text-muted">{{ $t('اللجنة المنظمة:') }} <b class="text-text">{{ draw.committee.owner }}</b> {{ $t('(منشئ الدوري)') }}</p>
+        <p class="text-xs text-text-muted">
+          {{ $t('اللجنة المنظمة:') }} <b class="text-text">{{ draw.committee.owner }}</b> {{ $t('(منشئ الدوري)') }}
+        </p>
         <p v-if="draw.commit" class="w-full break-all rounded-lg bg-surface-sunk px-3 py-2 text-start text-xs text-text-muted">
           {{ $t('بصمة القرعة المعلنة قبلها (SHA-256):') }} <code dir="ltr" class="block font-numbers text-text">{{ draw.commit }}</code>
         </p>
@@ -99,9 +109,18 @@ const local = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
 
       <form v-if="draw.can_schedule" class="flex flex-col gap-2 rounded-xl bg-surface p-4" @submit.prevent="schedule">
         <label for="draw-at" class="font-bold">{{ draw.draw_at ? $t('غيّر موعد القرعة') : $t('حدد موعد القرعة') }}</label>
-        <p class="text-xs text-text-muted">{{ $t('قبل بداية الدوري ({v0}). تُعلن البصمة الآن، ولا يمكن لأحد تغيير النتيجة بعدها.', { v0: local(draw.starts_at) }) }}</p>
+        <p class="text-xs text-text-muted">
+          {{ $t('قبل بداية الدوري ({v0}). تُعلن البصمة الآن، ولا يمكن لأحد تغيير النتيجة بعدها.', { v0: local(draw.starts_at) }) }}
+        </p>
         <div class="flex gap-2">
-          <input id="draw-at" v-model="when" type="datetime-local" required class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" dir="ltr" />
+          <input
+            id="draw-at"
+            v-model="when"
+            type="datetime-local"
+            required
+            class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3"
+            dir="ltr"
+          />
           <UiButton type="submit">{{ $t('حفظ') }}</UiButton>
         </div>
         <p v-if="message" class="text-sm" role="status">{{ $t(message) }}</p>
@@ -111,11 +130,17 @@ const local = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
       <section v-if="draw.entry_mode === 'draw'" class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="h-players">
         <h2 id="h-players" class="font-display text-xl font-extrabold">{{ $t('اللاعبون والفرق') }}</h2>
         <ul v-if="!draw.drawn_at" class="flex flex-wrap gap-2">
-          <li v-for="e in draw.entrants ?? []" :key="e.id" class="rounded-pill bg-surface-sunk px-3 py-1 text-sm font-bold">{{ e.name }}</li>
+          <li v-for="e in draw.entrants ?? []" :key="e.id" class="rounded-pill bg-surface-sunk px-3 py-1 text-sm font-bold">
+            {{ e.name }}
+          </li>
         </ul>
         <ol v-else class="flex flex-col gap-2">
-          <li v-for="(o, i) in draw.owners ?? []" :key="o.user.id" class="flex min-h-touch items-center gap-3 rounded-lg p-2 transition-all duration-500"
-            :class="i < shown ? 'bg-surface-sunk' : 'opacity-50'">
+          <li
+            v-for="(o, i) in draw.owners ?? []"
+            :key="o.user.id"
+            class="flex min-h-touch items-center gap-3 rounded-lg p-2 transition-all duration-500"
+            :class="i < shown ? 'bg-surface-sunk' : 'opacity-50'"
+          >
             <b class="min-w-0 flex-1 truncate">{{ o.user.name }}</b>
             <template v-if="i < shown && o.club">
               <ClubCrest :url="card(o.club).crest_url" :code="card(o.club).code" :size="28" />
@@ -129,12 +154,21 @@ const local = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
       <section v-if="draw.drawn_at" class="flex flex-col gap-2" aria-labelledby="h-slots">
         <h2 id="h-slots" class="font-display text-xl font-extrabold">{{ $t('خانات الدوري') }}</h2>
         <ol class="grid gap-2 sm:grid-cols-2">
-          <li v-for="(s, i) in draw.slots" :key="s.slot" class="flex min-h-touch items-center gap-3 rounded-xl p-3 transition-all duration-500"
-            :class="i < shown ? 'bg-surface' : 'bg-surface-sunk opacity-60'">
-            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-gold/15 font-numbers font-bold text-gold">{{ s.slot }}</span>
+          <li
+            v-for="(s, i) in draw.slots"
+            :key="s.slot"
+            class="flex min-h-touch items-center gap-3 rounded-xl p-3 transition-all duration-500"
+            :class="i < shown ? 'bg-surface' : 'bg-surface-sunk opacity-60'"
+          >
+            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-gold/15 font-numbers font-bold text-gold">{{
+              s.slot
+            }}</span>
             <template v-if="i < shown">
               <ClubCrest :url="card(s.club).crest_url" :code="card(s.club).code" :size="36" />
-              <span class="min-w-0 flex-1"><b class="block truncate">{{ $nm(card(s.club).name) }}</b><span class="block truncate text-xs text-text-muted">{{ card(s.club).coach ?? $t('الحاسوب') }}</span></span>
+              <span class="min-w-0 flex-1"
+                ><b class="block truncate">{{ $nm(card(s.club).name) }}</b
+                ><span class="block truncate text-xs text-text-muted">{{ card(s.club).coach ?? $t('الحاسوب') }}</span></span
+              >
             </template>
             <span v-else class="text-sm text-text-muted">{{ i === shown ? $t('يُسحب…') : $t('؟') }}</span>
           </li>
@@ -144,19 +178,30 @@ const local = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
       <template v-if="done">
         <section class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="h-first">
           <h2 id="h-first" class="font-display text-lg font-extrabold">{{ $t('الجولة الأولى') }}</h2>
-          <p v-for="(m, i) in draw.league_round" :key="i" class="flex items-center justify-between gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
-            <b class="truncate">{{ $nm(card(m.home)?.name) }}</b><span class="text-text-muted">{{ $t('ضد') }}</span><b class="truncate">{{ $nm(card(m.away)?.name) }}</b>
+          <p
+            v-for="(m, i) in draw.league_round"
+            :key="i"
+            class="flex items-center justify-between gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm"
+          >
+            <b class="truncate">{{ $nm(card(m.home)?.name) }}</b><span class="text-text-muted">{{ $t('ضد') }}</span
+            ><b class="truncate">{{ $nm(card(m.away)?.name) }}</b>
           </p>
         </section>
         <section v-if="draw.cup_round.length" class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="h-cup">
           <h2 id="h-cup" class="font-display text-lg font-extrabold">{{ $t('الدور الأول من الكأس') }}</h2>
-          <p v-for="(m, i) in draw.cup_round" :key="i" class="flex items-center justify-between gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
-            <b class="truncate">{{ $nm(card(m.home)?.name) }}</b><span class="text-text-muted">{{ $t('ضد') }}</span><b class="truncate">{{ $nm(card(m.away)?.name) }}</b>
+          <p
+            v-for="(m, i) in draw.cup_round"
+            :key="i"
+            class="flex items-center justify-between gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm"
+          >
+            <b class="truncate">{{ $nm(card(m.home)?.name) }}</b><span class="text-text-muted">{{ $t('ضد') }}</span
+            ><b class="truncate">{{ $nm(card(m.away)?.name) }}</b>
           </p>
         </section>
         <p class="rounded-lg bg-surface-sunk px-3 py-2 text-xs text-text-muted">
           {{ $t('البذرة') }} <b class="font-numbers text-text" dir="ltr">{{ draw.seed }}</b>{{ $t('. تحقق بنفسك: SHA-256 للنص') }}
-          <code dir="ltr" class="font-numbers text-text">legends-draw:{{ id }}:{{ draw.seed }}</code> {{ $t('يساوي البصمة المعلنة أعلاه.') }}
+          <code dir="ltr" class="font-numbers text-text">legends-draw:{{ id }}:{{ draw.seed }}</code>
+          {{ $t('يساوي البصمة المعلنة أعلاه.') }}
         </p>
       </template>
     </template>

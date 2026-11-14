@@ -55,14 +55,23 @@ const LINES = [
 ] as const
 // [UP16] The quick presets of the spec (10): each sets the knobs the engine plays with.
 const MENTALITY = [
-  { id: 'all_out', label: 'الهجوم الكاسح', style: 95 }, { id: 'attacking', label: 'هجومي', style: 75 }, { id: 'balanced', label: 'متوازن', style: 50 },
-  { id: 'defensive', label: 'دفاعي', style: 25 }, { id: 'park_bus', label: 'ركن الحافلة', style: 5 },
+  { id: 'all_out', label: 'الهجوم الكاسح', style: 95 },
+  { id: 'attacking', label: 'هجومي', style: 75 },
+  { id: 'balanced', label: 'متوازن', style: 50 },
+  { id: 'defensive', label: 'دفاعي', style: 25 },
+  { id: 'park_bus', label: 'ركن الحافلة', style: 5 },
 ] as const
 const PASSING = [
-  { id: 'short', label: 'قصيرة وسريعة', plan: 'passing', tempo: 40 }, { id: 'through', label: 'بينية في المساحة', plan: 'counter', tempo: 70 },
-  { id: 'long', label: 'طولية وعالية', plan: 'long', tempo: 55 }, { id: 'direct', label: 'مباشرة', plan: 'long', tempo: 85 },
+  { id: 'short', label: 'قصيرة وسريعة', plan: 'passing', tempo: 40 },
+  { id: 'through', label: 'بينية في المساحة', plan: 'counter', tempo: 70 },
+  { id: 'long', label: 'طولية وعالية', plan: 'long', tempo: 55 },
+  { id: 'direct', label: 'مباشرة', plan: 'long', tempo: 85 },
 ] as const
-const PRESSING = [{ id: 'press_low', label: 'منخفض', value: 20 }, { id: 'press_mid', label: 'متوسط', value: 50 }, { id: 'press_high', label: 'خنق الخصم', value: 85 }] as const
+const PRESSING = [
+  { id: 'press_low', label: 'منخفض', value: 20 },
+  { id: 'press_mid', label: 'متوسط', value: 50 },
+  { id: 'press_high', label: 'خنق الخصم', value: 85 },
+] as const
 const near = (a: number, b: number) => Math.abs(a - b) <= 10
 // [S1] The board's words: each slider's value in five bands, and every choice for the arrows.
 const BANDS: Record<string, string[]> = {
@@ -72,14 +81,26 @@ const BANDS: Record<string, string[]> = {
 }
 const band = (key: string, v: number) => BANDS[key][Math.min(4, Math.floor(v / 20.0001))]
 const opts = <K extends string | number>(o: Record<K, string> | readonly string[]) =>
-  (Array.isArray(o) ? o.map((label, i) => ({ value: i as K, label })) : (Object.entries(o) as [K, string][]).map(([value, label]) => ({ value, label })))
+  Array.isArray(o)
+    ? o.map((label, i) => ({ value: i as K, label }))
+    : (Object.entries(o) as [K, string][]).map(([value, label]) => ({ value, label }))
 const PLAN_OPTS = opts(PLANS as Record<keyof typeof PLANS, string>)
 const TACKLING_OPTS = opts<number>(TACKLING)
-const TRAP_OPTS = [{ value: 1, label: 'نعم' }, { value: 0, label: 'لا' }]
-const MARKING_OPTS = [{ value: 'zone', label: 'دفاع المنطقة' }, { value: 'man', label: 'رجل لرجل' }]
+const TRAP_OPTS = [
+  { value: 1, label: 'نعم' },
+  { value: 0, label: 'لا' },
+]
+const MARKING_OPTS = [
+  { value: 'zone', label: 'دفاع المنطقة' },
+  { value: 'man', label: 'رجل لرجل' },
+]
 const LINE_LABEL = { att: 'المهاجمون', mid: 'لاعبو الوسط', def: 'المدافعون' } as const
 const LINE_TEXT = { att: 'text-line-att', mid: 'text-text', def: 'text-line-def' } as const
-const mentality = computed(() => MENTALITY.reduce((best, m) => (Math.abs(m.style - (t.value?.style ?? 50)) < Math.abs(best.style - (t.value?.style ?? 50)) ? m : best)).id)
+const mentality = computed(
+  () =>
+    MENTALITY.reduce((best, m) => (Math.abs(m.style - (t.value?.style ?? 50)) < Math.abs(best.style - (t.value?.style ?? 50)) ? m : best))
+      .id,
+)
 const dirty = computed(() => !!t.value && JSON.stringify(t.value) !== saved.value)
 
 async function load() {
@@ -89,7 +110,10 @@ async function load() {
     return
   }
   const path = { params: { path: { league: leagueId.value } } }
-  const [{ data }, nm] = await Promise.all([api.GET('/leagues/{league}/team/tactics', path), api.GET('/leagues/{league}/team/next-match', path).catch(() => null)])
+  const [{ data }, nm] = await Promise.all([
+    api.GET('/leagues/{league}/team/tactics', path),
+    api.GET('/leagues/{league}/team/next-match', path).catch(() => null),
+  ])
   next.value = nm?.data?.match ?? null
   apply(data!)
   scenarios.value = data!.scenarios
@@ -124,15 +148,19 @@ async function save() {
 const saving = ref(false)
 let timer = 0
 let waiting = false
-watch(t, () => {
-  if (!dirty.value) return
-  window.clearTimeout(timer)
-  waiting = true
-  timer = window.setTimeout(() => {
-    waiting = false
-    save()
-  }, 700)
-}, { deep: true })
+watch(
+  t,
+  () => {
+    if (!dirty.value) return
+    window.clearTimeout(timer)
+    waiting = true
+    timer = window.setTimeout(() => {
+      waiting = false
+      save()
+    }, 700)
+  },
+  { deep: true },
+)
 // [2026-11-09] Leaving the page before the save's moment: the change is saved now, not by a page that is gone.
 onBeforeUnmount(() => {
   window.clearTimeout(timer)
@@ -147,7 +175,13 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
 <template>
   <div class="tactics-root">
     <!-- [Sprint 56 W11] The states as every screen's. -->
-    <AsyncState v-if="loaded && !leagueId" empty empty-icon="tactics" empty-title="ليس لديك فريق بعد." :empty-cta="{ label: 'دورياتي', to: '/leagues' }" />
+    <AsyncState
+      v-if="loaded && !leagueId"
+      empty
+      empty-icon="tactics"
+      empty-title="ليس لديك فريق بعد."
+      :empty-cta="{ label: 'دورياتي', to: '/leagues' }"
+    />
     <template v-else-if="t">
       <h1 class="sr-only">{{ $t('التكتيك') }}</h1>
       <!-- [Sprint 56 W4] Tactics.html: the pitch in the same place and at the same size as the lineup's, so moving between
@@ -189,17 +223,30 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
 
         <section class="tactics-list" :aria-label="$t('الإيقاع والضغط')">
           <div class="flex items-center gap-2 text-caption text-text-muted">
-            <span class="min-w-0 flex-1 truncate">{{ $t('الحكم: {v0}', { v0: referee ? $t(REFEREE[referee]) : $t('يُعيَّن قبل المباراة بنصف ساعة') }) }}</span>
+            <span class="min-w-0 flex-1 truncate">{{
+              $t('الحكم: {v0}', { v0: referee ? $t(REFEREE[referee]) : $t('يُعيَّن قبل المباراة بنصف ساعة') })
+            }}</span>
             <span role="status">{{ saving || dirty ? $t('يحفظ…') : $t('محفوظ') }}</span>
           </div>
           <p v-if="message" class="rounded-lg bg-surface-raised px-3 py-2 text-caption" role="status">{{ $t(message) }}</p>
           <section v-for="sl in SLIDERS" :key="sl.key" class="flex flex-col gap-2 rounded-xl border border-text/10 ui-card p-4">
-            <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring"><label :for="`t-${sl.key}`">{{ $t(sl.label) }}</label></span>
+            <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring"
+              ><label :for="`t-${sl.key}`">{{ $t(sl.label) }}</label></span
+            >
             <b class="text-center font-display text-lg">{{ $t(band(sl.key, t[sl.key])) }}</b>
             <div class="flex items-center gap-3">
-              <output :for="`t-${sl.key}`" class="grid h-9 w-12 shrink-0 place-items-center rounded-md bg-bg-deep font-numbers text-lg">{{ t[sl.key] }}</output>
+              <output :for="`t-${sl.key}`" class="grid h-9 w-12 shrink-0 place-items-center rounded-md bg-bg-deep font-numbers text-lg">{{
+                t[sl.key]
+              }}</output>
               <!-- [Sprint 30 Q4] reka-ui's Slider: smooth under the finger, the right way in Arabic. -->
-              <UiSlider :id="`t-${sl.key}`" v-model="t[sl.key]" :step="5" :label="sl.label" :value-text="$t(band(sl.key, t[sl.key]))" class="flex-1" />
+              <UiSlider
+                :id="`t-${sl.key}`"
+                v-model="t[sl.key]"
+                :step="5"
+                :label="sl.label"
+                :value-text="$t(band(sl.key, t[sl.key]))"
+                class="flex-1"
+              />
             </div>
           </section>
           <section class="flex flex-col gap-3 rounded-xl border border-text/10 ui-card p-4">
@@ -208,96 +255,157 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
               <div class="contents">
                 <div v-for="l in LINES" :key="l.key" class="flex flex-col">
                   <span class="text-center text-xs font-bold" :class="LINE_TEXT[l.key]">{{ $t(LINE_LABEL[l.key]) }}</span>
-                  <TacticCycler v-model="(t as unknown as Record<string, string>)[l.key]" :options="opts(l.options as Record<string, string>)" :label="$t(LINE_LABEL[l.key])" />
+                  <TacticCycler
+                    v-model="(t as unknown as Record<string, string>)[l.key]"
+                    :options="opts(l.options as Record<string, string>)"
+                    :label="$t(LINE_LABEL[l.key])"
+                  />
                 </div>
               </div>
             </div>
           </section>
-      <section class="flex flex-col gap-2 rounded-xl border border-gold/30 ui-card p-4" aria-labelledby="h-tips">
-        <div class="flex flex-wrap items-center justify-between gap-x-2">
-          <h2 id="h-tips" class="text-sm text-text-muted">{{ $t('الأثر المتوقع في المباراة{v0}', { v0: dirty ? $t(' (يتحدث بعد الحفظ)') : '' }) }}</h2>
-        </div>
-        <ul class="flex flex-col gap-1.5 text-sm">
-          <li v-for="(tip, i) in tips" :key="i" class="rounded-lg bg-surface-sunk px-3 py-2">{{ tip }}</li>
-        </ul>
-      </section>
-      <!-- Quick presets [UP16]: each sets the knobs above. -->
-      <details class="rounded-xl ui-card p-4">
-        <summary class="min-h-touch cursor-pointer content-center font-bold">{{ $t('قوالب سريعة') }}</summary>
-        <div class="mt-3 flex flex-col gap-4">
-      <fieldset class="flex flex-col gap-2">
-        <legend class="mb-2 font-bold">{{ $t('العقلية') }}</legend>
-        <div class="grid grid-cols-2 gap-1">
-          <button v-for="m in MENTALITY" :key="m.id" type="button" class="flex min-h-touch flex-col items-center gap-1 rounded-xl border px-1 py-2 text-xs font-bold"
-            :class="mentality === m.id ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface'" :aria-pressed="mentality === m.id" @click="t.style = m.style">
-            <TacticIcon :name="m.id" :active="mentality === m.id" />{{ $t(m.label) }}</button>
-        </div>
-      </fieldset>
+          <section class="flex flex-col gap-2 rounded-xl border border-gold/30 ui-card p-4" aria-labelledby="h-tips">
+            <div class="flex flex-wrap items-center justify-between gap-x-2">
+              <h2 id="h-tips" class="text-sm text-text-muted">
+                {{ $t('الأثر المتوقع في المباراة{v0}', { v0: dirty ? $t(' (يتحدث بعد الحفظ)') : '' }) }}
+              </h2>
+            </div>
+            <ul class="flex flex-col gap-1.5 text-sm">
+              <li v-for="(tip, i) in tips" :key="i" class="rounded-lg bg-surface-sunk px-3 py-2">{{ tip }}</li>
+            </ul>
+          </section>
+          <!-- Quick presets [UP16]: each sets the knobs above. -->
+          <details class="rounded-xl ui-card p-4">
+            <summary class="min-h-touch cursor-pointer content-center font-bold">{{ $t('قوالب سريعة') }}</summary>
+            <div class="mt-3 flex flex-col gap-4">
+              <fieldset class="flex flex-col gap-2">
+                <legend class="mb-2 font-bold">{{ $t('العقلية') }}</legend>
+                <div class="grid grid-cols-2 gap-1">
+                  <button
+                    v-for="m in MENTALITY"
+                    :key="m.id"
+                    type="button"
+                    class="flex min-h-touch flex-col items-center gap-1 rounded-xl border px-1 py-2 text-xs font-bold"
+                    :class="mentality === m.id ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface'"
+                    :aria-pressed="mentality === m.id"
+                    @click="t.style = m.style"
+                  >
+                    <TacticIcon :name="m.id" :active="mentality === m.id" />{{ $t(m.label) }}
+                  </button>
+                </div>
+              </fieldset>
 
-      <fieldset class="flex flex-col gap-2">
-        <legend class="mb-2 font-bold">{{ $t('أسلوب التمرير') }}</legend>
-        <div class="grid grid-cols-2 gap-1">
-          <button v-for="ps in PASSING" :key="ps.id" type="button" class="flex min-h-touch flex-col items-center gap-1 rounded-xl border px-1 py-2 text-xs font-bold"
-            :class="t.plan === ps.plan && near(t.tempo, ps.tempo) ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface'" :aria-pressed="t.plan === ps.plan && near(t.tempo, ps.tempo)"
-            @click="t.plan = ps.plan; t.tempo = ps.tempo"><TacticIcon :name="ps.id" :active="t.plan === ps.plan && near(t.tempo, ps.tempo)" />{{ $t(ps.label) }}</button>
-        </div>
-      </fieldset>
+              <fieldset class="flex flex-col gap-2">
+                <legend class="mb-2 font-bold">{{ $t('أسلوب التمرير') }}</legend>
+                <div class="grid grid-cols-2 gap-1">
+                  <button
+                    v-for="ps in PASSING"
+                    :key="ps.id"
+                    type="button"
+                    class="flex min-h-touch flex-col items-center gap-1 rounded-xl border px-1 py-2 text-xs font-bold"
+                    :class="
+                      t.plan === ps.plan && near(t.tempo, ps.tempo) ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface'
+                    "
+                    :aria-pressed="t.plan === ps.plan && near(t.tempo, ps.tempo)"
+                    @click="((t.plan = ps.plan), (t.tempo = ps.tempo))"
+                  >
+                    <TacticIcon :name="ps.id" :active="t.plan === ps.plan && near(t.tempo, ps.tempo)" />{{ $t(ps.label) }}
+                  </button>
+                </div>
+              </fieldset>
 
-      <fieldset class="flex flex-col gap-2">
-        <legend class="mb-2 font-bold">{{ $t('درجة الضغط') }}</legend>
-        <div class="grid grid-cols-2 gap-1">
-          <button v-for="pr in PRESSING" :key="pr.id" type="button" class="flex min-h-touch flex-col items-center gap-1 rounded-xl border px-1 py-2 text-xs font-bold"
-            :class="near(t.pressing, pr.value) ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface'" :aria-pressed="near(t.pressing, pr.value)" @click="t.pressing = pr.value">
-            <TacticIcon :name="pr.id" :active="near(t.pressing, pr.value)" />{{ $t(pr.label) }}</button>
-        </div>
-      </fieldset>
-
-        </div>
-      </details>
-      <!-- [Sprint 21 E5.4] The tactics book: each plan against each defensive shape, and the answer to each shape. -->
-      <section v-if="book" class="flex flex-col gap-3 rounded-xl border border-gold/30 ui-card p-4" aria-labelledby="h-book">
-        <button type="button" class="flex min-h-touch items-center justify-between gap-2 text-start" :aria-expanded="bookOpen" aria-controls="book-body" @click="bookOpen = !bookOpen">
-          <span>
-            <h2 id="h-book" class="font-display text-xl font-extrabold">{{ $t('كتاب التكتيك') }}</h2>
-            <span class="text-xs text-text-muted">{{ $t('لكل خطة خطة تتفوق عليها: الأضعف يرد بالخطة المناسبة. التفوق في الفرص، لا في قوة اللاعبين.') }}</span>
-          </span>
-          <span class="text-xl text-gold" aria-hidden="true">{{ bookOpen ? '−' : '+' }}</span>
-        </button>
-        <div v-if="bookOpen" id="book-body" class="flex flex-col gap-3">
-          <p v-if="book.mine" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm">
-            {{ $t('تكتيكك المحفوظ يصنع: {v0}.', { v0: $t(SHAPES[book.mine]) }) }}
-            <template v-if="book.shapes.find((x) => x.shape === book!.mine)?.beaten_by.length">
-              {{ $t('يتفوق عليه: {v0}.', { v0: book.shapes.find((x) => x.shape === book!.mine)!.beaten_by.map((p) => $t(PLANS[p])).join('، ') }) }}
-            </template>
-          </p>
-          <ul class="grid gap-2">
-            <li v-for="sh in book.shapes" :key="sh.shape" class="flex flex-col gap-1 rounded-lg bg-surface-sunk p-3 text-sm">
-              <b>{{ $t('ضد {v0}', { v0: $t(SHAPES[sh.shape]) }) }}</b>
-              <span v-if="sh.beaten_by.length" class="text-success">{{ $t('العب: {v0}', { v0: sh.beaten_by.map((p) => $t(PLANS[p])).join('، ') }) }}</span>
-              <span v-if="sh.stops.length" class="text-danger">{{ $t('تجنّب: {v0}', { v0: sh.stops.map((p) => $t(PLANS[p])).join('، ') }) }}</span>
-            </li>
-          </ul>
-          <div class="overflow-x-auto">
-            <table class="w-full min-w-[20rem] text-sm">
-              <caption class="sr-only">{{ $t('كل خطة أمام كل شكل دفاعي') }}</caption>
-              <thead class="text-xs text-text-muted">
-                <tr><th scope="col" class="py-1 text-start">{{ $t('خطة اللعب') }}</th><th v-for="(label, k) in SHAPE_SHORT" :key="k" scope="col" class="py-1">{{ $t(label) }}</th></tr>
-              </thead>
-              <tbody>
-                <tr v-for="p in book.plans" :key="p.plan" class="border-t border-text/10" :class="p.plan === t.plan ? 'text-gold' : ''">
-                  <th scope="row" class="py-2 text-start font-bold">{{ $t(PLANS[p.plan]) }}</th>
-                  <td v-for="(_, k) in SHAPES" :key="k" class="py-2 text-center">
-                    <span v-if="p.edge[k] > 0" class="font-bold text-success" :title="$t('تتفوق')"><Icon name="chevron_up" :size="14" /></span>
-                    <span v-else-if="p.edge[k] < 0" class="font-bold text-danger" :title="$t('تتعثر')"><Icon name="chevron_down" :size="14" /></span>
-                    <span v-else class="text-text-muted" :title="$t('متعادلة')"><Icon name="dot" :size="12" /></span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-      <ScenariosPanel v-if="leagueId && scenarios" :league-id="leagueId" :scenarios="scenarios" :kinds="kinds" />
+              <fieldset class="flex flex-col gap-2">
+                <legend class="mb-2 font-bold">{{ $t('درجة الضغط') }}</legend>
+                <div class="grid grid-cols-2 gap-1">
+                  <button
+                    v-for="pr in PRESSING"
+                    :key="pr.id"
+                    type="button"
+                    class="flex min-h-touch flex-col items-center gap-1 rounded-xl border px-1 py-2 text-xs font-bold"
+                    :class="near(t.pressing, pr.value) ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface'"
+                    :aria-pressed="near(t.pressing, pr.value)"
+                    @click="t.pressing = pr.value"
+                  >
+                    <TacticIcon :name="pr.id" :active="near(t.pressing, pr.value)" />{{ $t(pr.label) }}
+                  </button>
+                </div>
+              </fieldset>
+            </div>
+          </details>
+          <!-- [Sprint 21 E5.4] The tactics book: each plan against each defensive shape, and the answer to each shape. -->
+          <section v-if="book" class="flex flex-col gap-3 rounded-xl border border-gold/30 ui-card p-4" aria-labelledby="h-book">
+            <button
+              type="button"
+              class="flex min-h-touch items-center justify-between gap-2 text-start"
+              :aria-expanded="bookOpen"
+              aria-controls="book-body"
+              @click="bookOpen = !bookOpen"
+            >
+              <span>
+                <h2 id="h-book" class="font-display text-xl font-extrabold">{{ $t('كتاب التكتيك') }}</h2>
+                <span class="text-xs text-text-muted">{{
+                  $t('لكل خطة خطة تتفوق عليها: الأضعف يرد بالخطة المناسبة. التفوق في الفرص، لا في قوة اللاعبين.')
+                }}</span>
+              </span>
+              <span class="text-xl text-gold" aria-hidden="true">{{ bookOpen ? '−' : '+' }}</span>
+            </button>
+            <div v-if="bookOpen" id="book-body" class="flex flex-col gap-3">
+              <p v-if="book.mine" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm">
+                {{ $t('تكتيكك المحفوظ يصنع: {v0}.', { v0: $t(SHAPES[book.mine]) }) }}
+                <template v-if="book.shapes.find((x) => x.shape === book!.mine)?.beaten_by.length">
+                  {{
+                    $t('يتفوق عليه: {v0}.', {
+                      v0: book.shapes
+                        .find((x) => x.shape === book!.mine)!
+                        .beaten_by.map((p) => $t(PLANS[p]))
+                        .join('، '),
+                    })
+                  }}
+                </template>
+              </p>
+              <ul class="grid gap-2">
+                <li v-for="sh in book.shapes" :key="sh.shape" class="flex flex-col gap-1 rounded-lg bg-surface-sunk p-3 text-sm">
+                  <b>{{ $t('ضد {v0}', { v0: $t(SHAPES[sh.shape]) }) }}</b>
+                  <span v-if="sh.beaten_by.length" class="text-success">{{
+                    $t('العب: {v0}', { v0: sh.beaten_by.map((p) => $t(PLANS[p])).join('، ') })
+                  }}</span>
+                  <span v-if="sh.stops.length" class="text-danger">{{
+                    $t('تجنّب: {v0}', { v0: sh.stops.map((p) => $t(PLANS[p])).join('، ') })
+                  }}</span>
+                </li>
+              </ul>
+              <div class="overflow-x-auto">
+                <table class="w-full min-w-[20rem] text-sm">
+                  <caption class="sr-only">
+                    {{
+                      $t('كل خطة أمام كل شكل دفاعي')
+                    }}
+                  </caption>
+                  <thead class="text-xs text-text-muted">
+                    <tr>
+                      <th scope="col" class="py-1 text-start">{{ $t('خطة اللعب') }}</th>
+                      <th v-for="(label, k) in SHAPE_SHORT" :key="k" scope="col" class="py-1">{{ $t(label) }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="p in book.plans" :key="p.plan" class="border-t border-text/10" :class="p.plan === t.plan ? 'text-gold' : ''">
+                      <th scope="row" class="py-2 text-start font-bold">{{ $t(PLANS[p.plan]) }}</th>
+                      <td v-for="(_, k) in SHAPES" :key="k" class="py-2 text-center">
+                        <span v-if="p.edge[k] > 0" class="font-bold text-success" :title="$t('تتفوق')"
+                          ><Icon name="chevron_up" :size="14"
+                        /></span>
+                        <span v-else-if="p.edge[k] < 0" class="font-bold text-danger" :title="$t('تتعثر')"
+                          ><Icon name="chevron_down" :size="14"
+                        /></span>
+                        <span v-else class="text-text-muted" :title="$t('متعادلة')"><Icon name="dot" :size="12" /></span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+          <ScenariosPanel v-if="leagueId && scenarios" :league-id="leagueId" :scenarios="scenarios" :kinds="kinds" />
         </section>
       </div>
     </template>
@@ -307,12 +415,62 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
 
 <style scoped>
 /* [Sprint 56 W4] The same three columns as the lineup (Lineup.vue), the pitch at the screen's height. */
-.tactics-root { display: flex; flex-direction: column; }
-.tactics-root > .tactics { flex: 1; min-height: 0; }
-.tactics { display: grid; gap: var(--space-sm); grid-template-columns: minmax(8.5rem, 1fr) auto minmax(9.5rem, 1fr); grid-template-rows: minmax(0, 1fr); }
-@media (min-width: 1200px) { .tactics { gap: var(--space-lg); grid-template-columns: minmax(12rem, 1fr) auto minmax(14rem, 1fr); } }
-.tactics-side, .tactics-list { position: relative; display: flex; min-height: 0; flex-direction: column; gap: var(--space-sm); overflow-y: auto; overscroll-behavior: contain; padding: var(--space-sm); border-radius: var(--radius-xl); background: var(--color-surface); }
-.tactics-side :deep(section), .tactics-list :deep(section) { padding: var(--space-sm); border-radius: var(--radius-lg); background: var(--color-surface-sunk); border-color: transparent; }
-.tactics-field { display: flex; min-height: 0; justify-content: center; }
-.tactics-pitch { display: grid; height: 100%; aspect-ratio: 68 / 90; max-width: 100%; place-items: center; overflow: hidden; border-radius: var(--radius-xxl); background: var(--color-pitch-dark); box-shadow: 0 0 0 3px var(--color-brand-dark), 0 0 0 5px color-mix(in srgb, var(--color-gold) 45%, transparent); }
+.tactics-root {
+  display: flex;
+  flex-direction: column;
+}
+.tactics-root > .tactics {
+  flex: 1;
+  min-height: 0;
+}
+.tactics {
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: minmax(8.5rem, 1fr) auto minmax(9.5rem, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+@media (min-width: 1200px) {
+  .tactics {
+    gap: var(--space-lg);
+    grid-template-columns: minmax(12rem, 1fr) auto minmax(14rem, 1fr);
+  }
+}
+.tactics-side,
+.tactics-list {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--space-sm);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-sm);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+.tactics-side :deep(section),
+.tactics-list :deep(section) {
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunk);
+  border-color: transparent;
+}
+.tactics-field {
+  display: flex;
+  min-height: 0;
+  justify-content: center;
+}
+.tactics-pitch {
+  display: grid;
+  height: 100%;
+  aspect-ratio: 68 / 90;
+  max-width: 100%;
+  place-items: center;
+  overflow: hidden;
+  border-radius: var(--radius-xxl);
+  background: var(--color-pitch-dark);
+  box-shadow:
+    0 0 0 3px var(--color-brand-dark),
+    0 0 0 5px color-mix(in srgb, var(--color-gold) 45%, transparent);
+}
 </style>

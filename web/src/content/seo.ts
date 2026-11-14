@@ -8,8 +8,9 @@
  * VITE_SITE_URL (Dockerfile, deploy/vps/compose.yml), so moving to gamelegendmanager.online is a server setting and a
  * deploy. The build (Vite, in the browser) and scripts/seo.mjs (Node, after it) read it each their own way.
  */
-const env = (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_SITE_URL
-  ?? (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.VITE_SITE_URL
+const env =
+  (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_SITE_URL ??
+  (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.VITE_SITE_URL
 export const SITE_URL = (env || 'https://gamelegendmanager.online').replace(/\/+$/, '')
 
 export const BRAND = { ar: 'Game Legend Manager · المدرب الأسطورة', en: 'Game Legend Manager' } as const
@@ -30,12 +31,46 @@ export interface PageSeo {
 // either language finds the game.
 const COMMON = {
   // [X97] The name as people type it: with and without the hamza, with ه for ة, and the short name GLM.
-  ar: ['Game Legend Manager', 'المدرب الأسطورة', 'المدرب الاسطورة', 'المدرب الاسطوره', 'لعبة المدرب الأسطورة', 'لعبة المدرب الاسطوره', 'GLM', 'لعبة GLM', 'لعبة مدرب كرة قدم', 'المدرب الأفضل', 'لعبة كرة قدم تكتيكية', 'تدريب أندية أونلاين',
-    'بيع وشراء لاعبين', 'لعبة إدارة كرة القدم', 'مدير كرة القدم', 'لعبة كرة قدم أونلاين', 'لعبة كورة اون لاين', 'لعبة كرة قدم عربية', 'لعبة مدرب كورة',
-    'Football Manager Web', 'Soccer Simulation Game', 'Best Online Football Tactics'],
-  en: ['Game Legend Manager', 'GLM', 'Football Manager Web', 'Soccer Simulation Game', 'Best Online Football Tactics', 'football manager game',
-    'online football manager', 'soccer manager game', 'football coach game', 'football tactics game', 'buy and sell players', 'online club management',
-    'Arabic football game', 'لعبة مدرب كرة قدم'],
+  ar: [
+    'Game Legend Manager',
+    'المدرب الأسطورة',
+    'المدرب الاسطورة',
+    'المدرب الاسطوره',
+    'لعبة المدرب الأسطورة',
+    'لعبة المدرب الاسطوره',
+    'GLM',
+    'لعبة GLM',
+    'لعبة مدرب كرة قدم',
+    'المدرب الأفضل',
+    'لعبة كرة قدم تكتيكية',
+    'تدريب أندية أونلاين',
+    'بيع وشراء لاعبين',
+    'لعبة إدارة كرة القدم',
+    'مدير كرة القدم',
+    'لعبة كرة قدم أونلاين',
+    'لعبة كورة اون لاين',
+    'لعبة كرة قدم عربية',
+    'لعبة مدرب كورة',
+    'Football Manager Web',
+    'Soccer Simulation Game',
+    'Best Online Football Tactics',
+  ],
+  en: [
+    'Game Legend Manager',
+    'GLM',
+    'Football Manager Web',
+    'Soccer Simulation Game',
+    'Best Online Football Tactics',
+    'football manager game',
+    'online football manager',
+    'soccer manager game',
+    'football coach game',
+    'football tactics game',
+    'buy and sell players',
+    'online club management',
+    'Arabic football game',
+    'لعبة مدرب كرة قدم',
+  ],
 }
 
 /** The public pages, by route name. Any other route (a club, a league, the admin) is noindex. */
@@ -52,8 +87,24 @@ export const PAGES: Record<string, PageSeo> = {
       en: 'Game Legend Manager (GLM, المدرب الأسطورة) is a free online football manager: pick a real club, start a private league with your friends, and run every match live with tactics and substitutions, plus the market, training and the stadium.',
     },
     keywords: {
-      ar: ['دوري خاص مع الأصدقاء', 'مباراة مباشرة', 'تكتيك كرة القدم', 'سوق الانتقالات', 'أندية حقيقية', 'لعبة مجانية', 'محاكاة مباريات كرة القدم'],
-      en: ['private league with friends', 'live match', 'football tactics', 'transfer market', 'real clubs', 'free game', 'football match simulator'],
+      ar: [
+        'دوري خاص مع الأصدقاء',
+        'مباراة مباشرة',
+        'تكتيك كرة القدم',
+        'سوق الانتقالات',
+        'أندية حقيقية',
+        'لعبة مجانية',
+        'محاكاة مباريات كرة القدم',
+      ],
+      en: [
+        'private league with friends',
+        'live match',
+        'football tactics',
+        'transfer market',
+        'real clubs',
+        'free game',
+        'football match simulator',
+      ],
     },
     sitemap: { priority: '1.0', changefreq: 'weekly' },
   },
@@ -114,7 +165,7 @@ export const PAGES: Record<string, PageSeo> = {
     title: { ar: 'سياسة الخصوصية | Game Legend Manager', en: 'Privacy policy | Game Legend Manager' },
     description: {
       ar: 'سياسة الخصوصية في المدرب الأسطورة: ما نجمعه من بيانات ولماذا، والإعلانات والكوكيز، وحقك في حذف حسابك.',
-      en: 'Game Legend Manager\'s privacy policy: what we collect and why, the ads and cookies, and your right to delete your account.',
+      en: "Game Legend Manager's privacy policy: what we collect and why, the ads and cookies, and your right to delete your account.",
     },
     keywords: { ar: ['سياسة الخصوصية', 'حذف الحساب'], en: ['privacy policy', 'delete account'] },
     sitemap: { priority: '0.3', changefreq: 'monthly' },
@@ -124,7 +175,7 @@ export const PAGES: Record<string, PageSeo> = {
     title: { ar: 'الشروط والأحكام | Game Legend Manager', en: 'Terms and conditions | Game Legend Manager' },
     description: {
       ar: 'شروط استخدام المدرب الأسطورة: اللعب النظيف، والكوينز، والحسابات، وحقوق المدربين.',
-      en: 'Game Legend Manager\'s terms of use: fair play, the coins, the accounts and the coaches\' rights.',
+      en: "Game Legend Manager's terms of use: fair play, the coins, the accounts and the coaches' rights.",
     },
     keywords: { ar: ['شروط الاستخدام', 'اللعب النظيف'], en: ['terms of use', 'fair play'] },
     sitemap: { priority: '0.3', changefreq: 'monthly' },
@@ -180,8 +231,10 @@ export function seoHead(page: PageSeo): string {
  */
 export function seoBody(page: PageSeo): string {
   const l = 'ar'
-  const links = Object.values(PAGES).filter((p) => p.sitemap && p.path !== page.path)
-    .map((p) => `<a href="${p.path}">${esc(p.title[l].split(/ \| |: /)[0])}</a>`).join(' · ')
+  const links = Object.values(PAGES)
+    .filter((p) => p.sitemap && p.path !== page.path)
+    .map((p) => `<a href="${p.path}">${esc(p.title[l].split(/ \| |: /)[0])}</a>`)
+    .join(' · ')
   return [
     `<main class="seo-static">`,
     `<img src="/icon-192.png" alt="المدرب الأسطورة · Game Legend Manager" width="96" height="96" />`,
@@ -194,16 +247,32 @@ export function seoBody(page: PageSeo): string {
 
 /** sitemap.xml: the public pages, each with its English twin. */
 export function sitemapXml(lastmod: string): string {
-  const urls = Object.values(PAGES).filter((p) => p.sitemap).map((p) => {
-    const alt = (['ar', 'en'] as const).map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${esc(urlOf(p.path, l))}" />`).join('\n')
-    return `  <url>\n    <loc>${urlOf(p.path, 'ar')}</loc>\n${alt}\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${p.sitemap!.changefreq}</changefreq>\n    <priority>${p.sitemap!.priority}</priority>\n  </url>`
-  })
+  const urls = Object.values(PAGES)
+    .filter((p) => p.sitemap)
+    .map((p) => {
+      const alt = (['ar', 'en'] as const)
+        .map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${esc(urlOf(p.path, l))}" />`)
+        .join('\n')
+      return `  <url>\n    <loc>${urlOf(p.path, 'ar')}</loc>\n${alt}\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${p.sitemap!.changefreq}</changefreq>\n    <priority>${p.sitemap!.priority}</priority>\n  </url>`
+    })
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`
 }
 
 /** robots.txt: the public pages open, the API and the private screens closed, and where the sitemap is. Google's
  * ads crawler (AdSense, X57) reads every page but the API, so the ads match the screens they show on. */
 export function robotsTxt(): string {
-  const closed = ['/api/', '/admin', '/sanctum/', '/broadcasting/', '/auth/google/', '/email/verify/', '/live/', '/sim/', '/dev/', '/reset-password', '/forgot-password']
+  const closed = [
+    '/api/',
+    '/admin',
+    '/sanctum/',
+    '/broadcasting/',
+    '/auth/google/',
+    '/email/verify/',
+    '/live/',
+    '/sim/',
+    '/dev/',
+    '/reset-password',
+    '/forgot-password',
+  ]
   return `User-agent: *\nAllow: /\n${closed.map((p) => `Disallow: ${p}`).join('\n')}\n\nUser-agent: Mediapartners-Google\nAllow: /\nDisallow: /api/\nDisallow: /admin\n\nSitemap: ${SITE_URL}/sitemap.xml\n`
 }

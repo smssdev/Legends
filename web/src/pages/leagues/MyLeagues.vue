@@ -45,10 +45,16 @@ function link(l: League) {
         <p class="mt-1 text-text-muted">
           <span class="font-numbers">{{ active }}</span> {{ $t('من') }} <span class="font-numbers">{{ max }}</span> {{ $t('فرق نشطة') }}
         </p>
-        <p v-if="nextSlot" class="mt-1 text-xs text-text-muted">{{ $t('فتحاتك المفتوحة {v0} من {v1}، والتالية {v2}', { v0: max, v1: total, v2: when(nextSlot) }) }}</p>
+        <p v-if="nextSlot" class="mt-1 text-xs text-text-muted">
+          {{ $t('فتحاتك المفتوحة {v0} من {v1}، والتالية {v2}', { v0: max, v1: total, v2: when(nextSlot) }) }}
+        </p>
       </div>
       <div class="flex gap-2">
-        <RouterLink :to="{ name: 'join' }" class="flex h-12 items-center rounded-lg border border-gold/70 px-5 font-display font-extrabold text-gold hover:bg-gold/10">{{ $t('انضم بكود') }}</RouterLink>
+        <RouterLink
+          :to="{ name: 'join' }"
+          class="flex h-12 items-center rounded-lg border border-gold/70 px-5 font-display font-extrabold text-gold hover:bg-gold/10"
+          >{{ $t('انضم بكود') }}</RouterLink
+        >
         <RouterLink
           v-if="active < max"
           :to="{ name: 'create-league' }"
@@ -68,16 +74,27 @@ function link(l: League) {
     </div>
 
     <div v-else class="grid gap-3 md:grid-cols-2">
-      <RouterLink v-for="l in leagues" :key="l.id" :to="link(l)" class="flex flex-col gap-3 rounded-xl border-t-4 !border-t-brand bg-surface p-4 hover:bg-surface-raised">
+      <RouterLink
+        v-for="l in leagues"
+        :key="l.id"
+        :to="link(l)"
+        class="flex flex-col gap-3 rounded-xl border-t-4 !border-t-brand bg-surface p-4 hover:bg-surface-raised"
+      >
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <h2 class="truncate font-display text-xl font-extrabold">{{ $nm(l.name) }}</h2>
-            <p class="text-sm text-text-muted">{{ $ln(l.template) }} · <span class="font-numbers">{{ l.team_count }}</span> {{ $t('فريقاً') }}</p>
+            <p class="text-sm text-text-muted">
+              {{ $ln(l.template) }} · <span class="font-numbers">{{ l.team_count }}</span> {{ $t('فريقاً') }}
+            </p>
           </div>
           <UiChip :tone="l.status === 'running' ? 'win' : 'neutral'">{{ $t(STATUS[l.status]) }}</UiChip>
         </div>
         <p v-if="l.me?.absence_warning" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">
-          {{ $t('لم تدخل هذا الدوري منذ يومين. ادخله قبل {v0} وإلا يعود فريقك للحاسوب.', { v0: l.me.away_deadline ? when(l.me.away_deadline) : $t('نهاية اليوم الثالث') }) }}
+          {{
+            $t('لم تدخل هذا الدوري منذ يومين. ادخله قبل {v0} وإلا يعود فريقك للحاسوب.', {
+              v0: l.me.away_deadline ? when(l.me.away_deadline) : $t('نهاية اليوم الثالث'),
+            })
+          }}
         </p>
         <div class="flex flex-wrap items-center gap-2 text-sm">
           <UiChip v-if="l.is_owner" tone="gold">{{ $t('أنشأته') }}</UiChip>

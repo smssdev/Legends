@@ -68,10 +68,13 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
 <template>
   <div class="flex flex-col gap-4 pb-36 md:pb-0">
     <header>
-      <p v-if="league && !league.is_owner" class="text-sm font-bold text-success">{{ $t('وافق {v0} على طلبك', { v0: league.owner?.name }) }}</p>
+      <p v-if="league && !league.is_owner" class="text-sm font-bold text-success">
+        {{ $t('وافق {v0} على طلبك', { v0: league.owner?.name }) }}
+      </p>
       <h1 class="font-display text-3xl font-extrabold">{{ $t('اختر فريقك') }}</h1>
       <p class="text-text-muted">
-        <span class="font-numbers">{{ free.length }}</span> {{ $t('نادياً متاحاً · الأقوى أولاً') }}<span v-if="league"> · {{ $nm(league.name) }}</span>
+        <span class="font-numbers">{{ free.length }}</span> {{ $t('نادياً متاحاً · الأقوى أولاً')
+        }}<span v-if="league"> · {{ $nm(league.name) }}</span>
       </p>
     </header>
 
@@ -98,8 +101,12 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
               <span v-else class="text-sm text-text-muted">{{ $t('مع {v0}', { v0: c.coach?.name }) }}</span>
             </span>
             <span class="hidden text-sm text-text-muted sm:block">
-              <span class="block">{{ $t('الميزانية') }} <span class="font-numbers text-base text-text">{{ money(c.balance) }}</span></span>
-              <span class="block">{{ $t('التشكيلة') }} <span class="font-numbers text-base text-text">{{ money(c.squad_value) }}</span></span>
+              <span class="block"
+                >{{ $t('الميزانية') }} <span class="font-numbers text-base text-text">{{ money(c.balance) }}</span></span
+              >
+              <span class="block"
+                >{{ $t('التشكيلة') }} <span class="font-numbers text-base text-text">{{ money(c.squad_value) }}</span></span
+              >
             </span>
             <span class="font-numbers text-3xl font-bold text-gold">{{ strength(c.strength_cp) }}</span>
           </button>
@@ -112,11 +119,24 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
           <h2 class="font-display text-xl font-extrabold">{{ $nm(chosen.name) }}</h2>
         </div>
         <dl class="grid grid-cols-3 gap-2 text-center text-sm">
-          <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">{{ $t('القوة') }}</dt><dd class="font-numbers text-lg">{{ strength(chosen.strength_cp) }}</dd></div>
-          <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-numbers text-lg">{{ money(chosen.balance) }}</dd></div>
-          <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">{{ $t('اللاعبون') }}</dt><dd class="font-numbers text-lg">{{ chosen.players_count }}</dd></div>
+          <div class="rounded-lg bg-surface-sunk p-2">
+            <dt class="text-text-muted">{{ $t('القوة') }}</dt>
+            <dd class="font-numbers text-lg">{{ strength(chosen.strength_cp) }}</dd>
+          </div>
+          <div class="rounded-lg bg-surface-sunk p-2">
+            <dt class="text-text-muted">{{ $t('الميزانية') }}</dt>
+            <dd class="font-numbers text-lg">{{ money(chosen.balance) }}</dd>
+          </div>
+          <div class="rounded-lg bg-surface-sunk p-2">
+            <dt class="text-text-muted">{{ $t('اللاعبون') }}</dt>
+            <dd class="font-numbers text-lg">{{ chosen.players_count }}</dd>
+          </div>
         </dl>
-        <div v-if="chosen.objectives" class="flex flex-col gap-1 rounded-lg border border-gold/30 bg-gold/10 p-3 text-sm" :aria-label="$t('هدف النادي')">
+        <div
+          v-if="chosen.objectives"
+          class="flex flex-col gap-1 rounded-lg border border-gold/30 bg-gold/10 p-3 text-sm"
+          :aria-label="$t('هدف النادي')"
+        >
           <b class="text-gold">{{ $t('هدف الإدارة هذا الموسم') }}</b>
           <span>{{ $t('الدوري: {v0}', { v0: leagueGoal(chosen.objectives.league) }) }}</span>
           <span>{{ $t('الكأس: {v0}', { v0: cupGoal(chosen.objectives.cup.target) }) }}</span>

@@ -35,10 +35,24 @@ async function run(work: () => Promise<unknown>, done: string) {
   }
   busy.value = false
 }
-const ask = () => run(() => api.POST('/leagues/{league}/team/moves', { ...path.value, body: { fixture_id: props.fixtureId, hours: chosen.value! } }), 'أُرسل طلبك للمدرب الآخر.')
-const answer = (accept: boolean) => run(() => api.POST(accept ? '/leagues/{league}/team/moves/{move}/accept' : '/leagues/{league}/team/moves/{move}/decline',
-  { params: { path: { league: props.leagueId, move: props.move.pending!.id } } }), accept ? 'تغيّر موعد المباراة.' : 'بقيت المباراة في موعدها.')
-const cancel = () => run(() => api.DELETE('/leagues/{league}/team/moves/{move}', { params: { path: { league: props.leagueId, move: props.move.pending!.id } } }), 'سحبت طلبك.')
+const ask = () =>
+  run(
+    () => api.POST('/leagues/{league}/team/moves', { ...path.value, body: { fixture_id: props.fixtureId, hours: chosen.value! } }),
+    'أُرسل طلبك للمدرب الآخر.',
+  )
+const answer = (accept: boolean) =>
+  run(
+    () =>
+      api.POST(accept ? '/leagues/{league}/team/moves/{move}/accept' : '/leagues/{league}/team/moves/{move}/decline', {
+        params: { path: { league: props.leagueId, move: props.move.pending!.id } },
+      }),
+    accept ? 'تغيّر موعد المباراة.' : 'بقيت المباراة في موعدها.',
+  )
+const cancel = () =>
+  run(
+    () => api.DELETE('/leagues/{league}/team/moves/{move}', { params: { path: { league: props.leagueId, move: props.move.pending!.id } } }),
+    'سحبت طلبك.',
+  )
 </script>
 
 <template>
@@ -48,21 +62,49 @@ const cancel = () => run(() => api.DELETE('/leagues/{league}/team/moves/{move}',
       <h2 class="font-display text-lg font-bold">{{ $t('طلب تغيير الموعد') }}</h2>
       <p class="text-sm">{{ $t('المدرب الآخر يطلب نقل المباراة إلى {v0} في اليوم نفسه.', { v0: time(move.pending.to_at) }) }}</p>
       <div class="grid grid-cols-2 gap-2">
-        <button type="button" class="h-touch rounded-lg bg-success font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="answer(true)">{{ $t('وافق') }}</button>
-        <button type="button" class="h-touch rounded-lg bg-surface-raised font-bold disabled:opacity-40" :disabled="busy" @click="answer(false)">{{ $t('ارفض') }}</button>
+        <button
+          type="button"
+          class="h-touch rounded-lg bg-success font-bold text-on-gold disabled:opacity-40"
+          :disabled="busy"
+          @click="answer(true)"
+        >
+          {{ $t('وافق') }}
+        </button>
+        <button
+          type="button"
+          class="h-touch rounded-lg bg-surface-raised font-bold disabled:opacity-40"
+          :disabled="busy"
+          @click="answer(false)"
+        >
+          {{ $t('ارفض') }}
+        </button>
       </div>
     </template>
     <!-- I asked: waiting. -->
     <template v-else-if="move.pending">
       <p class="text-sm">{{ $t('طلبت نقل المباراة إلى {v0}، وينتظر رد المدرب الآخر.', { v0: time(move.pending.to_at) }) }}</p>
-      <button type="button" class="h-touch rounded-lg bg-surface-raised font-bold disabled:opacity-40" :disabled="busy" @click="cancel">{{ $t('اسحب الطلب') }}</button>
+      <button type="button" class="h-touch rounded-lg bg-surface-raised font-bold disabled:opacity-40" :disabled="busy" @click="cancel">
+        {{ $t('اسحب الطلب') }}
+      </button>
     </template>
     <template v-else-if="move.hours.length">
-      <button type="button" class="flex h-touch items-center justify-between font-display text-lg font-bold" :aria-expanded="open" @click="open = !open">
+      <button
+        type="button"
+        class="flex h-touch items-center justify-between font-display text-lg font-bold"
+        :aria-expanded="open"
+        @click="open = !open"
+      >
         {{ $t('تقديم المباراة أو تأجيلها') }}<span aria-hidden="true">{{ open ? '−' : '+' }}</span>
       </button>
       <template v-if="open">
-        <div v-for="[label, list] in ([['أبكر', earlier], ['أبعد', later]] as const)" :key="label" class="flex flex-col gap-1">
+        <div
+          v-for="[label, list] in [
+            ['أبكر', earlier],
+            ['أبعد', later],
+          ] as const"
+          :key="label"
+          class="flex flex-col gap-1"
+        >
           <span v-if="list.length" class="text-xs text-text-muted">{{ $t(label) }}</span>
           <div class="flex flex-wrap gap-2">
             <button
@@ -72,7 +114,9 @@ const cancel = () => run(() => api.DELETE('/leagues/{league}/team/moves/{move}',
               class="ui-choice min-w-20 px-3 font-numbers"
               :aria-pressed="chosen === h"
               @click="chosen = chosen === h ? null : h"
-            >{{ time(at(h)) }}</button>
+            >
+              {{ time(at(h)) }}
+            </button>
           </div>
         </div>
         <UiButton variant="brand" v-if="chosen !== null" :disabled="busy" @click="ask">

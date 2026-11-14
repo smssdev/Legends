@@ -9,21 +9,41 @@ import { install, installable, isIos, standalone } from '../lib/pwa'
 import UiButton from './ui/UiButton.vue'
 
 const KEY = 'install.later'
-const later = ref((() => { try { return Date.now() - Number(storage.get(KEY) ?? 0) < 14 * 86400_000 } catch { return false } })())
+const later = ref(
+  (() => {
+    try {
+      return Date.now() - Number(storage.get(KEY) ?? 0) < 14 * 86400_000
+    } catch {
+      return false
+    }
+  })(),
+)
 const ios = isIos()
 const show = computed(() => !later.value && !standalone() && (installable.value || ios))
 function dismiss() {
-  try { storage.set(KEY, String(Date.now())) } catch { /* private mode */ }
+  try {
+    storage.set(KEY, String(Date.now()))
+  } catch {
+    /* private mode */
+  }
   later.value = true
 }
 </script>
 
 <template>
-  <section v-if="show" class="flex flex-wrap items-center gap-3 rounded-2xl border border-gold/30 bg-surface p-4" :aria-label="$t('ثبّت اللعبة')">
+  <section
+    v-if="show"
+    class="flex flex-wrap items-center gap-3 rounded-2xl border border-gold/30 bg-surface p-4"
+    :aria-label="$t('ثبّت اللعبة')"
+  >
     <AppImage src="/icon-192.png" alt="" class="size-12 shrink-0 rounded-xl" :size="48" />
     <span class="min-w-0 flex-1">
       <b class="block">{{ $t('ثبّت اللعبة على جوالك') }}</b>
-      <span class="text-sm text-text-muted">{{ ios ? $t('من زر المشاركة اختر «إضافة إلى الشاشة الرئيسية»، فتفتح كتطبيق وتصلك التذكيرات.') : $t('تفتح من الشاشة الرئيسية كتطبيق، أسرع وبلا شريط المتصفح.') }}</span>
+      <span class="text-sm text-text-muted">{{
+        ios
+          ? $t('من زر المشاركة اختر «إضافة إلى الشاشة الرئيسية»، فتفتح كتطبيق وتصلك التذكيرات.')
+          : $t('تفتح من الشاشة الرئيسية كتطبيق، أسرع وبلا شريط المتصفح.')
+      }}</span>
     </span>
     <div class="flex gap-2">
       <UiButton v-if="installable" @click="install">{{ $t('ثبّت الآن') }}</UiButton>

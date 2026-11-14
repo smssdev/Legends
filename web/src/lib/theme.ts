@@ -25,15 +25,25 @@ media?.addEventListener?.('change', (e) => (deviceLight.value = e.matches))
 
 export const themePref = ref<ThemePref>(readPref())
 /** The look on the screen now. */
-export const theme = computed<'dark' | 'light'>(() => (themePref.value === 'auto' ? (deviceLight.value ? 'light' : 'dark') : themePref.value))
+export const theme = computed<'dark' | 'light'>(() =>
+  themePref.value === 'auto' ? (deviceLight.value ? 'light' : 'dark') : themePref.value,
+)
 
-watch(theme, (v) => {
-  if (typeof document === 'undefined') return
-  document.documentElement.classList.toggle('light', v === 'light')
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', BAR[v])
-}, { immediate: true })
+watch(
+  theme,
+  (v) => {
+    if (typeof document === 'undefined') return
+    document.documentElement.classList.toggle('light', v === 'light')
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', BAR[v])
+  },
+  { immediate: true },
+)
 
 export function setThemePref(p: ThemePref) {
   themePref.value = p
-  try { storage.set(KEY, p) } catch { /* private mode: for this visit only */ }
+  try {
+    storage.set(KEY, p)
+  } catch {
+    /* private mode: for this visit only */
+  }
 }

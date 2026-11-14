@@ -21,7 +21,9 @@ async function takeClub() {
     await ensureCsrf()
     await api.POST('/home/starter-gift')
     useWallet().load()
-  } catch { /* the gift waits on the home screen */ }
+  } catch {
+    /* the gift waits on the home screen */
+  }
   void router.replace('/leagues')
 }
 </script>
@@ -36,7 +38,9 @@ async function takeClub() {
           <b class="intro-title">{{ current.title }}</b>
           <p class="intro-text">{{ current.text }}</p>
           <div class="intro-actions">
-            <UiButton v-if="current.kind !== 'effect'" size="sm" @click="emit('coach'); emit('answer')">{{ $t('افتح الأوامر') }}</UiButton>
+            <UiButton v-if="current.kind !== 'effect'" size="sm" @click="(emit('coach'), emit('answer'))">{{
+              $t('افتح الأوامر')
+            }}</UiButton>
             <UiButton size="sm" variant="quiet" @click="emit('answer')">{{ $t('حسناً') }}</UiButton>
           </div>
         </div>
@@ -46,7 +50,9 @@ async function takeClub() {
         <div class="intro-words">
           <b class="intro-title">{{ $t('أحسنت، هذه كانت مباراتك الأولى!') }}</b>
           <p class="intro-text">{{ $t('الآن خذ نادياً في دوري، ومعه هدية البداية.') }}</p>
-          <div class="intro-actions"><UiButton :loading="going" @click="takeClub">{{ $t('خذ نادياً') }}</UiButton></div>
+          <div class="intro-actions">
+            <UiButton :loading="going" @click="takeClub">{{ $t('خذ نادياً') }}</UiButton>
+          </div>
         </div>
       </aside>
     </Transition>
@@ -54,19 +60,67 @@ async function takeClub() {
 </template>
 
 <style scoped>
-.intro-coach { position: absolute; inset: 0; z-index: 46; pointer-events: none; }
-.intro-skip { position: absolute; inset-block-start: var(--space-sm); inset-inline-end: var(--space-sm); pointer-events: auto; }
-.intro-bubble {
-  position: absolute; inset-inline: var(--space-md); inset-block-end: var(--space-md); margin-inline: auto; max-inline-size: 28rem;
-  display: flex; gap: var(--space-md); align-items: flex-start; padding: var(--space-md); pointer-events: auto;
-  border: 1px solid color-mix(in srgb, var(--color-gold) 50%, transparent); border-radius: var(--radius-lg);
-  background: var(--color-panel); box-shadow: var(--shadow-overlay);
+.intro-coach {
+  position: absolute;
+  inset: 0;
+  z-index: 46;
+  pointer-events: none;
 }
-.intro-face { inline-size: 56px; block-size: 56px; flex-shrink: 0; }
-.intro-words { display: flex; min-inline-size: 0; flex: 1; flex-direction: column; gap: var(--space-sm); }
-.intro-title { color: var(--ink-gold); }
-.intro-text { font-size: var(--text-body); line-height: 1.6; }
-.intro-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
-.tip-enter-active, .tip-leave-active { transition: opacity 0.2s, transform 0.2s; }
-.tip-enter-from, .tip-leave-to { opacity: 0; transform: translateY(8px); }
+.intro-skip {
+  position: absolute;
+  inset-block-start: var(--space-sm);
+  inset-inline-end: var(--space-sm);
+  pointer-events: auto;
+}
+.intro-bubble {
+  position: absolute;
+  inset-inline: var(--space-md);
+  inset-block-end: var(--space-md);
+  margin-inline: auto;
+  max-inline-size: 28rem;
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  padding: var(--space-md);
+  pointer-events: auto;
+  border: 1px solid color-mix(in srgb, var(--color-gold) 50%, transparent);
+  border-radius: var(--radius-lg);
+  background: var(--color-panel);
+  box-shadow: var(--shadow-overlay);
+}
+.intro-face {
+  inline-size: 56px;
+  block-size: 56px;
+  flex-shrink: 0;
+}
+.intro-words {
+  display: flex;
+  min-inline-size: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.intro-title {
+  color: var(--ink-gold);
+}
+.intro-text {
+  font-size: var(--text-body);
+  line-height: 1.6;
+}
+.intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.tip-enter-active,
+.tip-leave-active {
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+.tip-enter-from,
+.tip-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
 </style>

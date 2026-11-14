@@ -18,7 +18,11 @@ const KEEP = new Set([
 ])
 const BASE = 'scripts/design-baseline.json'
 const files = []
-const walk = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); statSync(p).isDirectory() ? walk(p) : f.endsWith('.vue') && files.push(p) })
+const walk = (d) =>
+  readdirSync(d).forEach((f) => {
+    const p = join(d, f)
+    statSync(p).isDirectory() ? walk(p) : f.endsWith('.vue') && files.push(p)
+  })
 for (const d of ['src/pages', 'src/layouts', 'src/components']) walk(d)
 
 const TAG = /<(button|a|RouterLink)\b((?:[^>"']|"[^"]*"|'[^']*')*)>/g
@@ -27,10 +31,21 @@ const strong = (c) => /(?<![\w/-])bg-(gold|brand)(?![\w/-])/.test(c)
 
 function count(src) {
   const n = { button: 0, card: 0, 'px-text': 0, hex: 0 }
-  for (const m of src.matchAll(TAG)) for (const c of m[2].matchAll(CLASSES)) if (strong(c[1])) { n.button++; break }
-  for (const c of src.matchAll(CLASSES)) if (/(?<![\w-])rounded-(xl|2xl)(?![\w-])/.test(c[1]) && /(?<![\w/-])bg-surface(?![\w/-])/.test(c[1])) n.card++
+  for (const m of src.matchAll(TAG))
+    for (const c of m[2].matchAll(CLASSES))
+      if (strong(c[1])) {
+        n.button++
+        break
+      }
+  for (const c of src.matchAll(CLASSES))
+    if (/(?<![\w-])rounded-(xl|2xl)(?![\w-])/.test(c[1]) && /(?<![\w/-])bg-surface(?![\w/-])/.test(c[1])) n.card++
   n['px-text'] = [...src.matchAll(/text-\[\d*\.?\d+(px|rem)\]/g)].length
-  n.hex = [...src.replace(/<!--[\s\S]*?-->/g, '').replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/#[0-9a-fA-F]{3,8}(?![\w-])/g)].length
+  n.hex = [
+    ...src
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .matchAll(/#[0-9a-fA-F]{3,8}(?![\w-])/g),
+  ].length
   return n
 }
 
@@ -51,10 +66,13 @@ if (process.argv.includes('--write')) {
 
 const base = JSON.parse(readFileSync(BASE, 'utf8'))
 const bad = []
-for (const [f, hit] of Object.entries(now)) for (const [k, v] of Object.entries(hit)) if (v > (base[f]?.[k] ?? 0)) bad.push(`${f}: ${k} ${base[f]?.[k] ?? 0} → ${v}`)
+for (const [f, hit] of Object.entries(now))
+  for (const [k, v] of Object.entries(hit)) if (v > (base[f]?.[k] ?? 0)) bad.push(`${f}: ${k} ${base[f]?.[k] ?? 0} → ${v}`)
 const shrunk = Object.entries(base).filter(([f, hit]) => Object.entries(hit).some(([k, v]) => (now[f]?.[k] ?? 0) < v)).length
 if (bad.length) {
-  console.error('design: a screen drew a component\'s shape itself (use components/ui; see scripts/design.mjs):\n  ' + bad.join('\n  '))
+  console.error("design: a screen drew a component's shape itself (use components/ui; see scripts/design.mjs):\n  " + bad.join('\n  '))
   process.exit(1)
 }
-console.log(`design: OK (${Object.keys(now).length} files still to move${shrunk ? `; ${shrunk} went down, run npm run design -- --write` : ''})`)
+console.log(
+  `design: OK (${Object.keys(now).length} files still to move${shrunk ? `; ${shrunk} went down, run npm run design -- --write` : ''})`,
+)

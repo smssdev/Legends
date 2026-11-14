@@ -6,9 +6,19 @@ const s = (scene: string | null, data: Record<string, unknown> = {}, goal = fals
 
 describe('cues', () => {
   it('each scene its sounds, the dramas theirs', () => {
-    expect(soundsOf(s('goal'))).toEqual([[0.3, 'kick'], ['key', 'kick'], ['key', 'roar']])
-    expect(soundsOf(s('foul', { drama: 'dive' }))).toEqual([[0.25, 'groan'], [0.8, 'whistle']])
-    expect(soundsOf(s('card', { drama: 'brawl', type: 'red' })).slice(-2)).toEqual([[0.42, 'whistle'], [0.78, 'kick']])
+    expect(soundsOf(s('goal'))).toEqual([
+      [0.3, 'kick'],
+      ['key', 'kick'],
+      ['key', 'roar'],
+    ])
+    expect(soundsOf(s('foul', { drama: 'dive' }))).toEqual([
+      [0.25, 'groan'],
+      [0.8, 'whistle'],
+    ])
+    expect(soundsOf(s('card', { drama: 'brawl', type: 'red' })).slice(-2)).toEqual([
+      [0.42, 'whistle'],
+      [0.78, 'kick'],
+    ])
     expect(soundsOf(s(null))).toEqual([])
   })
 

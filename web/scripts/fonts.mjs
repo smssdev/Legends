@@ -11,7 +11,9 @@ const files = (dir) =>
   })
 const wrong = files('src').filter((f) => /font-weight['"]?\s*[:=]\s*['"]?900|font-black/.test(readFileSync(f, 'utf8')))
 if (wrong.length) {
-  console.error(`fonts: a weight of 900 the game does not ship (800 at most for Barlow Condensed, 700 for Tajawal):\n  ${wrong.join('\n  ')}`)
+  console.error(
+    `fonts: a weight of 900 the game does not ship (800 at most for Barlow Condensed, 700 for Tajawal):\n  ${wrong.join('\n  ')}`,
+  )
   process.exit(1)
 }
 console.log('fonts: OK (no weight above what public/fonts holds)')

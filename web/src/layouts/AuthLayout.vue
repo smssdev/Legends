@@ -12,45 +12,65 @@ import { emblemSrc } from '../lib/i18n'
 
 <template>
   <div>
-  <div class="grid min-h-dvh md:grid-cols-2">
-    <aside class="auth-art theme-night relative hidden overflow-hidden md:flex md:flex-col md:justify-center md:gap-6 md:p-14">
-      <AppImage :src="emblemSrc" alt="Game Legend Manager" class="relative size-48 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)]" :size="192" eager />
-      <h2 class="relative font-display text-5xl font-extrabold leading-tight">{{ $t('دوريك. فريقك.') }}<br /><span class="text-gold">{{ $t('أسطورتك.') }}</span></h2>
-      <p class="relative text-lg text-text-soft">{{ $t('درّب ناديك المفضل ضد أصحابك، وعِش كل مباراة لحظة بلحظة.') }}</p>
-      <ul class="relative flex flex-col gap-3 text-text-soft">
-        <li class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-full bg-brand text-on-gold shadow-md"><Icon name="target" :size="18" class="inline-block align-[-3px]" /></span>{{ $t('مباراة حية: تبدّل وتغيّر تكتيكك لحظياً') }}</li>
-        <li class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-full bg-brand text-on-gold shadow-md"><Icon name="flag" :size="18" class="inline-block align-[-3px]" /></span>{{ $t('دوريات خاصة بكود مع أصحابك') }}</li>
-        <li class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-full bg-brand text-on-gold shadow-md"><Icon name="star" :size="16" /></span>{{ $t('أندية ولاعبون حقيقيون، ودوري وكأس كل موسم') }}</li>
-      </ul>
-    </aside>
-    <main class="relative flex flex-col justify-center overflow-hidden px-4 py-8 md:px-14">
-      <!-- On the phone the stadium tops the form. -->
-      <div class="auth-top pointer-events-none absolute inset-x-0 top-0 h-72 md:hidden" aria-hidden="true" />
-      <div class="auth-panel relative mx-auto flex w-full max-w-md flex-col gap-5 rounded-2xl p-5 md:p-7">
-        <RouterLink to="/" class="flex items-center gap-3 md:hidden">
-          <BrandMark />
-        </RouterLink>
-        <RouterView />
-        <LegalLinks />
-      </div>
-    </main>
-  </div>
-  <!-- [X90] The game's footer here too, as on every screen. -->
-  <PublicFooter />
+    <div class="grid min-h-dvh md:grid-cols-2">
+      <aside class="auth-art theme-night relative hidden overflow-hidden md:flex md:flex-col md:justify-center md:gap-6 md:p-14">
+        <AppImage
+          :src="emblemSrc"
+          alt="Game Legend Manager"
+          class="relative size-48 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)]"
+          :size="192"
+          eager
+        />
+        <h2 class="relative font-display text-5xl font-extrabold leading-tight">
+          {{ $t('دوريك. فريقك.') }}<br /><span class="text-gold">{{ $t('أسطورتك.') }}</span>
+        </h2>
+        <p class="relative text-lg text-text-soft">{{ $t('درّب ناديك المفضل ضد أصحابك، وعِش كل مباراة لحظة بلحظة.') }}</p>
+        <ul class="relative flex flex-col gap-3 text-text-soft">
+          <li class="flex items-center gap-3">
+            <span class="flex size-9 items-center justify-center rounded-full bg-brand text-on-gold shadow-md"
+              ><Icon name="target" :size="18" class="inline-block align-[-3px]" /></span
+            >{{ $t('مباراة حية: تبدّل وتغيّر تكتيكك لحظياً') }}
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="flex size-9 items-center justify-center rounded-full bg-brand text-on-gold shadow-md"
+              ><Icon name="flag" :size="18" class="inline-block align-[-3px]" /></span
+            >{{ $t('دوريات خاصة بكود مع أصحابك') }}
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="flex size-9 items-center justify-center rounded-full bg-brand text-on-gold shadow-md"
+              ><Icon name="star" :size="16" /></span
+            >{{ $t('أندية ولاعبون حقيقيون، ودوري وكأس كل موسم') }}
+          </li>
+        </ul>
+      </aside>
+      <main class="relative flex flex-col justify-center overflow-hidden px-4 py-8 md:px-14">
+        <!-- On the phone the stadium tops the form. -->
+        <div class="auth-top pointer-events-none absolute inset-x-0 top-0 h-72 md:hidden" aria-hidden="true" />
+        <div class="auth-panel relative mx-auto flex w-full max-w-md flex-col gap-5 rounded-2xl p-5 md:p-7">
+          <RouterLink to="/" class="flex items-center gap-3 md:hidden">
+            <BrandMark />
+          </RouterLink>
+          <RouterView />
+          <LegalLinks />
+        </div>
+      </main>
+    </div>
+    <!-- [X90] The game's footer here too, as on every screen. -->
+    <PublicFooter />
   </div>
 </template>
 
 <style scoped>
 .auth-art {
   background:
-    url("/art/pattern-star.svg") center / 40px 40px repeat,
+    url('/art/pattern-star.svg') center / 40px 40px repeat,
     radial-gradient(ellipse 80% 60% at 60% 30%, color-mix(in srgb, var(--color-brand) 45%, transparent), transparent 70%),
     linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 35%, transparent), var(--color-bg-deep)),
-    url("/art/stadium-blur-1920.webp") center / cover no-repeat;
+    url('/art/stadium-blur-1920.webp') center / cover no-repeat;
   background-blend-mode: soft-light, normal, normal, normal;
 }
 .auth-art::after {
-  content: "";
+  content: '';
   position: absolute;
   inset-block: 0;
   inset-inline-end: 0;
@@ -61,7 +81,7 @@ import { emblemSrc } from '../lib/i18n'
   background:
     linear-gradient(180deg, transparent 40%, var(--color-bg)),
     radial-gradient(ellipse 90% 70% at 50% 20%, color-mix(in srgb, var(--color-brand) 40%, transparent), transparent 70%),
-    url("/art/stadium-blur-900.webp") center top / cover no-repeat;
+    url('/art/stadium-blur-900.webp') center top / cover no-repeat;
 }
 .auth-panel {
   background: color-mix(in srgb, var(--color-panel) 85%, transparent);

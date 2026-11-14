@@ -4,7 +4,13 @@
 
 export type Region = 'arab' | 'europe' | 'americas' | 'asia' | 'other'
 
-export interface LeaguePlace { country: string; ar: string; en: string; region: Region; tier: number }
+export interface LeaguePlace {
+  country: string
+  ar: string
+  en: string
+  region: Region
+  tier: number
+}
 
 const P = (country: string, ar: string, en: string, region: Region, tier = 1): LeaguePlace => ({ country, ar, en, region, tier })
 

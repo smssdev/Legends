@@ -7,7 +7,12 @@ import { execSync } from 'node:child_process'
 function version() {
   if (process.env.GLM_VERSION) return process.env.GLM_VERSION
   try {
-    return 'web-' + execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()
+    return (
+      'web-' +
+      execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+        .toString()
+        .trim()
+    )
   } catch {
     return 'web-' + new Date().toISOString().slice(0, 10)
   }
@@ -22,6 +27,8 @@ export default defineConfig({
     fs: { allow: ['..'] },
     // The Laravel API from `php artisan serve` (see backend composer dev).
     // and the links that open in the browser: Sanctum's cookie, Google, the email confirmation.
-    proxy: Object.fromEntries(['/api', '/sanctum', '/broadcasting', '/auth/google', '/email/verify', '/crests'].map((p) => [p, 'http://127.0.0.1:8000'])),
+    proxy: Object.fromEntries(
+      ['/api', '/sanctum', '/broadcasting', '/auth/google', '/email/verify', '/crests'].map((p) => [p, 'http://127.0.0.1:8000']),
+    ),
   },
 })

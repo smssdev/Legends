@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "./styles/tokens.css";
+@import 'tailwindcss';
+@import './styles/tokens.css';
 
 /* [UP7] A tighter type scale (the spec: 20-30% smaller, the big titles most), over Tailwind's own. The spacing stays,
    so every touch target keeps its 44px. [Sprint 54 W7] With the root back at 16px these are their true sizes, and the
@@ -24,14 +24,49 @@
   --animate-pulse-ring: pulse-ring 1.8s var(--ease-soft) infinite;
 }
 
-@keyframes pop-in { from { opacity: 0; transform: scale(0.94) translateY(8px); } to { opacity: 1; transform: none; } }
-@keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 /* [Sprint 58 W4, W-P13] On the compositor only: the light passes by transform, the ring grows by transform and fades. */
-@keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
-@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
 @keyframes pulse-ring {
-  0% { opacity: 0.8; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.45); }
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
 }
 
 /* [X61] What opens from the top bar (the club's list, the timers, what waits) drops from the top, under its button. */
@@ -41,7 +76,9 @@
 .drop-leave-active .agenda,
 .drop-enter-active .agenda-veil,
 .drop-leave-active .agenda-veil {
-  transition: opacity var(--duration-base) var(--ease-soft), transform var(--duration-base) var(--ease-soft);
+  transition:
+    opacity var(--duration-base) var(--ease-soft),
+    transform var(--duration-base) var(--ease-soft);
 }
 .drop-enter-from,
 .drop-leave-to,
@@ -51,23 +88,62 @@
   transform: translateY(-0.5rem) scale(0.97);
 }
 .drop-enter-from .agenda-veil,
-.drop-leave-to .agenda-veil { opacity: 0; }
-.drop-panel { transform-origin: top; }
+.drop-leave-to .agenda-veil {
+  opacity: 0;
+}
+.drop-panel {
+  transform-origin: top;
+}
 
 /* [Sprint 54 W4] What reka-ui opens (lists, windows, the bar's panels) animates from the state reka puts on it, so
    it leaves softly as well as arriving. */
-@keyframes drop-in { from { opacity: 0; transform: translateY(-0.5rem) scale(0.97); } }
-@keyframes drop-out { to { opacity: 0; transform: translateY(-0.5rem) scale(0.97); } }
-@keyframes veil-in { from { opacity: 0; } }
-@keyframes veil-out { to { opacity: 0; } }
-.drop-panel[data-state='open'], .ui-window[data-state='open'] { animation: drop-in var(--duration-base) var(--ease-soft); }
-.drop-panel[data-state='closed'], .ui-window[data-state='closed'] { animation: drop-out var(--duration-fast) var(--ease-soft); }
-.ui-veil[data-state='open'] { animation: veil-in var(--duration-base) var(--ease-soft); }
-.ui-veil[data-state='closed'] { animation: veil-out var(--duration-fast) var(--ease-soft); }
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.97);
+  }
+}
+@keyframes drop-out {
+  to {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.97);
+  }
+}
+@keyframes veil-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes veil-out {
+  to {
+    opacity: 0;
+  }
+}
+.drop-panel[data-state='open'],
+.ui-window[data-state='open'] {
+  animation: drop-in var(--duration-base) var(--ease-soft);
+}
+.drop-panel[data-state='closed'],
+.ui-window[data-state='closed'] {
+  animation: drop-out var(--duration-fast) var(--ease-soft);
+}
+.ui-veil[data-state='open'] {
+  animation: veil-in var(--duration-base) var(--ease-soft);
+}
+.ui-veil[data-state='closed'] {
+  animation: veil-out var(--duration-fast) var(--ease-soft);
+}
 
 /* [X61] Between screens: the new one rises in softly (the old one leaves at once, so nothing waits). */
-.page-enter-active { transition: opacity var(--duration-base) var(--ease-soft), transform var(--duration-base) var(--ease-soft); }
-.page-enter-from { opacity: 0; transform: translateY(8px); }
+.page-enter-active {
+  transition:
+    opacity var(--duration-base) var(--ease-soft),
+    transform var(--duration-base) var(--ease-soft);
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
 
 /* [X100] The game's font, Tajawal (Boutros, SIL Open Font License; the owner's choice 2026-11-05, in place of Amin, which
    had no colon and drew «·» as «\»). Four weights (400, 500, 700, 800), Arabic and Latin, from our own files; a heavier
@@ -77,56 +153,84 @@
   src: url('/fonts/tajawal-400-arabic.woff2') format('woff2');
   font-weight: 400;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74,
+    U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22,
+    U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52,
+    U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77,
+    U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
 }
 @font-face {
   font-family: 'Tajawal';
   src: url('/fonts/tajawal-400-latin.woff2') format('woff2');
   font-weight: 400;
   font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
   font-family: 'Tajawal';
   src: url('/fonts/tajawal-500-arabic.woff2') format('woff2');
   font-weight: 500;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74,
+    U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22,
+    U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52,
+    U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77,
+    U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
 }
 @font-face {
   font-family: 'Tajawal';
   src: url('/fonts/tajawal-500-latin.woff2') format('woff2');
   font-weight: 500;
   font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
   font-family: 'Tajawal';
   src: url('/fonts/tajawal-700-arabic.woff2') format('woff2');
   font-weight: 700;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74,
+    U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22,
+    U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52,
+    U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77,
+    U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
 }
 @font-face {
   font-family: 'Tajawal';
   src: url('/fonts/tajawal-700-latin.woff2') format('woff2');
   font-weight: 700;
   font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
   font-family: 'Tajawal';
   src: url('/fonts/tajawal-800-arabic.woff2') format('woff2');
   font-weight: 800;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74,
+    U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22,
+    U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52,
+    U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77,
+    U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
 }
 @font-face {
   font-family: 'Tajawal';
   src: url('/fonts/tajawal-800-latin.woff2') format('woff2');
   font-weight: 800;
   font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 /* [Sprint 58 W2, W-P05] Barlow Condensed for the scores and counters, from our own files too (it came from Google Fonts: a
    style sheet that held the first paint, and two outside connections). Latin only: the numbers and the Latin names. */
@@ -191,36 +295,58 @@
   }
   /* [X61] A darker band at the top: the floodlights under the top bar read as a white blur (D5). */
   body::after {
-    content: "";
+    content: '';
     position: fixed;
     inset: 0;
     z-index: -2;
     pointer-events: none;
     background:
-      linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 35%, transparent) 22%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
-      url("/art/stadium-blur-1920.webp") center top / cover no-repeat,
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 0%,
+        color-mix(in srgb, var(--color-bg-deep) 35%, transparent) 22%,
+        color-mix(in srgb, var(--color-bg) 55%, transparent) 50%,
+        color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%
+      ),
+      url('/art/stadium-blur-1920.webp') center top / cover no-repeat,
       var(--color-bg-deep);
   }
   @media (max-width: 767px) {
     body::after {
       background:
-        linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 75%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 40%, transparent) 22%, color-mix(in srgb, var(--color-bg) 60%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
-        url("/art/stadium-blur-900.webp") center top / cover no-repeat,
+        linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--color-bg-deep) 75%, transparent) 0%,
+          color-mix(in srgb, var(--color-bg-deep) 40%, transparent) 22%,
+          color-mix(in srgb, var(--color-bg) 60%, transparent) 50%,
+          color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%
+        ),
+        url('/art/stadium-blur-900.webp') center top / cover no-repeat,
         var(--color-bg-deep);
     }
   }
   /* [X56] The day: the same stadium faint behind a paper veil, so the ink stays readable on every screen. */
   html.light body::after {
     background:
-      linear-gradient(180deg, color-mix(in srgb, var(--color-bg) 88%, transparent) 0%, color-mix(in srgb, var(--color-bg) 95%, transparent) 45%, var(--color-bg) 100%),
-      url("/art/stadium-blur-1920.webp") center top / cover no-repeat,
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-bg) 88%, transparent) 0%,
+        color-mix(in srgb, var(--color-bg) 95%, transparent) 45%,
+        var(--color-bg) 100%
+      ),
+      url('/art/stadium-blur-1920.webp') center top / cover no-repeat,
       var(--color-bg);
   }
   @media (max-width: 767px) {
     html.light body::after {
       background:
-        linear-gradient(180deg, color-mix(in srgb, var(--color-bg) 88%, transparent) 0%, color-mix(in srgb, var(--color-bg) 95%, transparent) 45%, var(--color-bg) 100%),
-        url("/art/stadium-blur-900.webp") center top / cover no-repeat,
+        linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--color-bg) 88%, transparent) 0%,
+          color-mix(in srgb, var(--color-bg) 95%, transparent) 45%,
+          var(--color-bg) 100%
+        ),
+        url('/art/stadium-blur-900.webp') center top / cover no-repeat,
         var(--color-bg);
     }
   }
@@ -229,14 +355,25 @@
   @media (min-width: 768px) and (max-width: 1439px) {
     body::after {
       background:
-        linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 35%, transparent) 22%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
-        url("/art/stadium-blur-1440.webp") center top / cover no-repeat,
+        linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 0%,
+          color-mix(in srgb, var(--color-bg-deep) 35%, transparent) 22%,
+          color-mix(in srgb, var(--color-bg) 55%, transparent) 50%,
+          color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%
+        ),
+        url('/art/stadium-blur-1440.webp') center top / cover no-repeat,
         var(--color-bg-deep);
     }
     html.light body::after {
       background:
-        linear-gradient(180deg, color-mix(in srgb, var(--color-bg) 88%, transparent) 0%, color-mix(in srgb, var(--color-bg) 95%, transparent) 45%, var(--color-bg) 100%),
-        url("/art/stadium-blur-1440.webp") center top / cover no-repeat,
+        linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--color-bg) 88%, transparent) 0%,
+          color-mix(in srgb, var(--color-bg) 95%, transparent) 45%,
+          var(--color-bg) 100%
+        ),
+        url('/art/stadium-blur-1440.webp') center top / cover no-repeat,
         var(--color-bg);
     }
   }
@@ -258,7 +395,9 @@
   /* Buttons and links answer the touch: a quick press, colours that ease. */
   a,
   button {
-    transition: transform 0.1s ease, opacity 0.15s ease;   /* [UP15] the compositor's own properties only */
+    transition:
+      transform 0.1s ease,
+      opacity 0.15s ease; /* [UP15] the compositor's own properties only */
   }
   button:not(:disabled):active,
   a:active {
@@ -300,12 +439,16 @@
   background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 16%, transparent), transparent 70px);
   border: 1px solid color-mix(in srgb, var(--color-brand-light) 18%, transparent);
   border-top-color: color-mix(in srgb, var(--color-brand-light) 45%, transparent);
-  box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--color-shade) 80%, transparent);   /* [UP15] one shadow, and no blur under the cards */
+  box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--color-shade) 80%, transparent); /* [UP15] one shadow, and no blur under the cards */
 }
 /* [Sprint 30 Q5] The day's fields are seen at a glance: on paper a sunk field is barely darker than its card, so
    every text field, choice and long text gets a visible edge (3:1 against the paper, WCAG's line for a control's
    border) and a gold ring on focus. Not inside the broadcast (it stays at night). */
-html.light :is(input:not([type=checkbox], [type=radio], [type=range], [type=file], [type=color]), select, textarea, .ui-field):not([aria-invalid=true], .bg-transparent):not(:where(.theme-night, .theme-night *)) {
+html.light
+  :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color']), select, textarea, .ui-field):not(
+    [aria-invalid='true'],
+    .bg-transparent
+  ):not(:where(.theme-night, .theme-night *)) {
   border: 1px solid color-mix(in srgb, var(--color-text) 50%, transparent);
 }
 html.light :is(input, select, textarea):focus-visible:not(:where(.theme-night, .theme-night *)) {
@@ -349,12 +492,16 @@ html.smooth .backdrop-blur-md {
 button.bg-gold,
 a.bg-gold {
   background-image: linear-gradient(180deg, var(--color-gold-light), var(--color-gold) 55%, var(--color-gold-dark));
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 8px 22px -10px color-mix(in srgb, var(--color-gold) 80%, transparent);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.35) inset,
+    0 8px 22px -10px color-mix(in srgb, var(--color-gold) 80%, transparent);
 }
 button.bg-gold:not(:disabled):hover,
 a.bg-gold:hover {
   filter: brightness(1.06);
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 12px 30px -10px color-mix(in srgb, var(--color-gold) 90%, transparent);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.35) inset,
+    0 12px 30px -10px color-mix(in srgb, var(--color-gold) 90%, transparent);
 }
 
 /* A disabled call to action goes quiet rather than muddy [X32]. */
@@ -382,7 +529,9 @@ button.bg-brand,
 a.bg-brand {
   color: #fff;
   background-image: linear-gradient(180deg, var(--color-brand-light), var(--color-brand) 55%, var(--color-brand-dark));
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.3) inset, 0 8px 22px -10px var(--color-brand);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.3) inset,
+    0 8px 22px -10px var(--color-brand);
 }
 button.bg-brand:not(:disabled):hover,
 a.bg-brand:hover {
@@ -406,7 +555,7 @@ html.light main h1.font-display {
 }
 .ui-page-title::after,
 main h1.font-display::after {
-  content: "";
+  content: '';
   position: absolute;
   inset-inline-start: 0;
   bottom: 0;
@@ -424,7 +573,7 @@ main section > div > h2.font-display {
 }
 main section > h2.font-display::before,
 main section > div > h2.font-display::before {
-  content: "";
+  content: '';
   width: 4px;
   height: 1.1em;
   border-radius: 999px;
@@ -470,7 +619,7 @@ main table tbody tr.is-mine * {
 }
 
 /* Fields: a gold glow when typing. */
-main input:not([type="range"]):not([type="radio"]):focus,
+main input:not([type='range']):not([type='radio']):focus,
 main select:focus,
 main textarea:focus {
   border-color: var(--color-gold);
@@ -478,8 +627,8 @@ main textarea:focus {
   outline: none;
 }
 /* Sliders and radios in the theme's gold. */
-input[type="range"],
-input[type="radio"] {
+input[type='range'],
+input[type='radio'] {
   accent-color: var(--color-gold);
 }
 
@@ -496,24 +645,57 @@ input[type="radio"] {
 
 /* [X61] A list whose order changes (a league table after a round) slides each row to its new place: Vue's
    TransitionGroup measures before and after (FLIP), and this moves it by transform only. */
-.flip-move { transition: transform var(--duration-slow) var(--ease-soft); }
-.flip-enter-active { transition: opacity var(--duration-base) var(--ease-soft); }
-.flip-enter-from { opacity: 0; }
+.flip-move {
+  transition: transform var(--duration-slow) var(--ease-soft);
+}
+.flip-enter-active {
+  transition: opacity var(--duration-base) var(--ease-soft);
+}
+.flip-enter-from {
+  opacity: 0;
+}
 
 /* [X61] Lists come in one after the other: the children of .stagger, 40ms apart, the twelfth and after together. */
-.stagger > * { animation: fade-up var(--duration-base) var(--ease-soft) both; animation-delay: 480ms; }
-.stagger > :nth-child(1) { animation-delay: 0ms; }
-.stagger > :nth-child(2) { animation-delay: 40ms; }
-.stagger > :nth-child(3) { animation-delay: 80ms; }
-.stagger > :nth-child(4) { animation-delay: 120ms; }
-.stagger > :nth-child(5) { animation-delay: 160ms; }
-.stagger > :nth-child(6) { animation-delay: 200ms; }
-.stagger > :nth-child(7) { animation-delay: 240ms; }
-.stagger > :nth-child(8) { animation-delay: 280ms; }
-.stagger > :nth-child(9) { animation-delay: 320ms; }
-.stagger > :nth-child(10) { animation-delay: 360ms; }
-.stagger > :nth-child(11) { animation-delay: 400ms; }
-.stagger > :nth-child(12) { animation-delay: 440ms; }
+.stagger > * {
+  animation: fade-up var(--duration-base) var(--ease-soft) both;
+  animation-delay: 480ms;
+}
+.stagger > :nth-child(1) {
+  animation-delay: 0ms;
+}
+.stagger > :nth-child(2) {
+  animation-delay: 40ms;
+}
+.stagger > :nth-child(3) {
+  animation-delay: 80ms;
+}
+.stagger > :nth-child(4) {
+  animation-delay: 120ms;
+}
+.stagger > :nth-child(5) {
+  animation-delay: 160ms;
+}
+.stagger > :nth-child(6) {
+  animation-delay: 200ms;
+}
+.stagger > :nth-child(7) {
+  animation-delay: 240ms;
+}
+.stagger > :nth-child(8) {
+  animation-delay: 280ms;
+}
+.stagger > :nth-child(9) {
+  animation-delay: 320ms;
+}
+.stagger > :nth-child(10) {
+  animation-delay: 360ms;
+}
+.stagger > :nth-child(11) {
+  animation-delay: 400ms;
+}
+.stagger > :nth-child(12) {
+  animation-delay: 440ms;
+}
 
 /* [X61] A place held while it loads: a soft light passing over it. */
 .skeleton {
@@ -523,7 +705,7 @@ input[type="radio"] {
   background: color-mix(in srgb, var(--color-text) 5%, transparent);
 }
 .skeleton::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-text) 7%, transparent), transparent);
@@ -531,9 +713,11 @@ input[type="radio"] {
   animation: var(--animate-shimmer);
 }
 /* A ring that grows out of the element and fades (the Assistant's call to look). */
-.pulse-ring { position: relative; }
+.pulse-ring {
+  position: relative;
+}
 .pulse-ring::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
@@ -554,14 +738,26 @@ input[type="radio"] {
   font-weight: 800;
   color: var(--color-text);
   white-space: nowrap;
-  transition: color var(--duration-fast) var(--ease-soft), background-color var(--duration-fast) var(--ease-soft);
+  transition:
+    color var(--duration-fast) var(--ease-soft),
+    background-color var(--duration-fast) var(--ease-soft);
 }
-.ui-nav-icon { color: var(--ink-gold); filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35)); transition: transform var(--duration-fast) var(--ease-soft); }
-.ui-nav-item:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
-.ui-nav-item:hover .ui-nav-icon { transform: translateY(-2px) scale(1.08); }
-.ui-nav-item.is-active { color: var(--ink-gold-light); }
+.ui-nav-icon {
+  color: var(--ink-gold);
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
+  transition: transform var(--duration-fast) var(--ease-soft);
+}
+.ui-nav-item:hover {
+  background: color-mix(in srgb, var(--color-text) 6%, transparent);
+}
+.ui-nav-item:hover .ui-nav-icon {
+  transform: translateY(-2px) scale(1.08);
+}
+.ui-nav-item.is-active {
+  color: var(--ink-gold-light);
+}
 .ui-nav-item.is-active::after {
-  content: "";
+  content: '';
   position: absolute;
   inset-inline: var(--space-sm);
   bottom: -1px;
@@ -571,7 +767,11 @@ input[type="radio"] {
 }
 /* [Sprint 48 L1] A phone turned sideways is short: the menu row tightens so the page keeps its room. */
 @media (max-height: 520px) and (min-width: 768px) {
-  .ui-nav-item { min-height: var(--spacing-touch); font-size: var(--text-caption); padding: 0 0.6rem; }
+  .ui-nav-item {
+    min-height: var(--spacing-touch);
+    font-size: var(--text-caption);
+    padding: 0 0.6rem;
+  }
 }
 
 /* [Sprint 56 W10] A choice among a few (an hour, a line, an order, an amount, a view): the component's own look, quiet
@@ -587,9 +787,27 @@ input[type="radio"] {
   font-weight: 700;
   color: var(--color-text-soft);
   background: var(--color-surface-raised);
-  transition: background-color var(--duration-fast) var(--ease-soft), color var(--duration-fast) var(--ease-soft);
+  transition:
+    background-color var(--duration-fast) var(--ease-soft),
+    color var(--duration-fast) var(--ease-soft);
 }
-.ui-choice:hover { color: var(--color-text); }
-.ui-choice.is-on, .ui-choice[aria-pressed='true'], .ui-choice[aria-selected='true'], .ui-choice[aria-checked='true'] { color: var(--color-on-gold); background: var(--color-gold); }
-.ui-choice.brand.is-on, .ui-choice.brand[aria-pressed='true'], .ui-choice.brand[aria-selected='true'], .ui-choice.brand[aria-checked='true'] { color: var(--color-broadcast-white); background: var(--color-brand); }
-.ui-choice:disabled { opacity: 0.4; }
+.ui-choice:hover {
+  color: var(--color-text);
+}
+.ui-choice.is-on,
+.ui-choice[aria-pressed='true'],
+.ui-choice[aria-selected='true'],
+.ui-choice[aria-checked='true'] {
+  color: var(--color-on-gold);
+  background: var(--color-gold);
+}
+.ui-choice.brand.is-on,
+.ui-choice.brand[aria-pressed='true'],
+.ui-choice.brand[aria-selected='true'],
+.ui-choice.brand[aria-checked='true'] {
+  color: var(--color-broadcast-white);
+  background: var(--color-brand);
+}
+.ui-choice:disabled {
+  opacity: 0.4;
+}

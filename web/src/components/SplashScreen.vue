@@ -19,7 +19,7 @@ function dropBoot(fade: boolean) {
   setTimeout(() => bootEl.remove(), 400)
 }
 const state = ref<'checking' | 'failed' | 'leaving'>('checking')
-const MIN_MS = 900   // long enough to see the emblem, short enough not to wait for it
+const MIN_MS = 900 // long enough to see the emblem, short enough not to wait for it
 
 async function check() {
   state.value = 'checking'
@@ -50,10 +50,21 @@ onMounted(check)
 
 <template>
   <div class="splash" :class="[state === 'leaving' ? 'is-leaving' : '', overBoot ? 'over-boot' : '']" role="status" aria-live="polite">
-    <img v-if="!overBoot" :src="loaderSrc" alt="Game Legend Manager" class="splash-mark" :class="state === 'checking' ? 'is-turning' : ''" fetchpriority="high" />
+    <img
+      v-if="!overBoot"
+      :src="loaderSrc"
+      alt="Game Legend Manager"
+      class="splash-mark"
+      :class="state === 'checking' ? 'is-turning' : ''"
+      fetchpriority="high"
+    />
     <template v-if="state === 'failed'">
-      <p class="max-w-xs text-center text-sm leading-relaxed text-text-soft">{{ $t('تعذر الاتصال بالخادم، يرجى التحقق من اتصالك بالإنترنت') }}</p>
-      <button type="button" class="h-touch rounded-lg bg-gold px-6 font-bold text-on-gold" @click="check">{{ $t('إعادة المحاولة') }}</button>
+      <p class="max-w-xs text-center text-sm leading-relaxed text-text-soft">
+        {{ $t('تعذر الاتصال بالخادم، يرجى التحقق من اتصالك بالإنترنت') }}
+      </p>
+      <button type="button" class="h-touch rounded-lg bg-gold px-6 font-bold text-on-gold" @click="check">
+        {{ $t('إعادة المحاولة') }}
+      </button>
     </template>
     <span v-else class="sr-only">{{ $t('جارٍ الاتصال بالخادم...') }}</span>
   </div>
@@ -70,16 +81,38 @@ onMounted(check)
   justify-content: center;
   gap: 1.25rem;
   padding: 1rem;
-  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--color-brand) 30%, var(--color-bg-deep)), var(--color-bg-deep) 70%);
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in srgb, var(--color-brand) 30%, var(--color-bg-deep)),
+    var(--color-bg-deep) 70%
+  );
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
 }
-.splash.is-leaving { opacity: 0; transform: scale(1.06); pointer-events: none; }
+.splash.is-leaving {
+  opacity: 0;
+  transform: scale(1.06);
+  pointer-events: none;
+}
 /* Over the page's own splash (#boot): its background and emblem show through. */
-.splash.over-boot { background: transparent; }
-.splash-mark { width: min(11rem, 45vw); height: auto; }
-.splash-mark.is-turning { animation: splash-turn 1.6s ease-in-out infinite; }
+.splash.over-boot {
+  background: transparent;
+}
+.splash-mark {
+  width: min(11rem, 45vw);
+  height: auto;
+}
+.splash-mark.is-turning {
+  animation: splash-turn 1.6s ease-in-out infinite;
+}
 @keyframes splash-turn {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
 }
 </style>

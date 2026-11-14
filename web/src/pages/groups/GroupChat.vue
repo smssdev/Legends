@@ -60,7 +60,9 @@ async function older() {
   try {
     const el = list.value
     const before = el?.scrollHeight ?? 0
-    const { data } = await api.GET('/groups/{group}/messages', { params: { path: { group: gid.value }, query: { before: messages.value[0].id } } })
+    const { data } = await api.GET('/groups/{group}/messages', {
+      params: { path: { group: gid.value }, query: { before: messages.value[0].id } },
+    })
     more.value = data!.messages.length >= 50
     // Never the same message twice (one that also arrived live meanwhile).
     const have = new Set(messages.value.map((m) => m.id))
@@ -87,12 +89,33 @@ let channel = ''
 function follow() {
   try {
     channel = `chat.${gid.value}`
-    live().private(channel).listen('.chat', (e: { message: Message }) => arrived(e.message))
-  } catch { /* no live connection: the messages come on the next visit */ }
+    live()
+      .private(channel)
+      .listen('.chat', (e: { message: Message }) => arrived(e.message))
+  } catch {
+    /* no live connection: the messages come on the next visit */
+  }
 }
-onMounted(async () => { await load(); follow() })
-onBeforeUnmount(() => { try { if (channel) live().leave(channel) } catch { /* nothing to leave */ } })
-watch(gid, async () => { try { if (channel) live().leave(channel) } catch { /* nothing to leave */ } await load(); follow() })
+onMounted(async () => {
+  await load()
+  follow()
+})
+onBeforeUnmount(() => {
+  try {
+    if (channel) live().leave(channel)
+  } catch {
+    /* nothing to leave */
+  }
+})
+watch(gid, async () => {
+  try {
+    if (channel) live().leave(channel)
+  } catch {
+    /* nothing to leave */
+  }
+  await load()
+  follow()
+})
 
 /** [X65] A picture or a voice note, as the form the server reads; the caption is what is typed. */
 async function sendMedia(kind: 'image' | 'audio', file: Blob, name: string, seconds?: number) {
@@ -106,7 +129,11 @@ async function sendMedia(kind: 'image' | 'audio', file: Blob, name: string, seco
     if (draft.value.trim()) form.append('caption', draft.value.trim())
     if (seconds) form.append('seconds', String(seconds))
     if (replyTo.value) form.append('reply_to', String(replyTo.value.id))
-    const { data } = await api.POST('/groups/{group}/media', { params: { path: { group: gid.value } }, body: form as never, bodySerializer: (b: unknown) => b as FormData })
+    const { data } = await api.POST('/groups/{group}/media', {
+      params: { path: { group: gid.value } },
+      body: form as never,
+      bodySerializer: (b: unknown) => b as FormData,
+    })
     arrived(data!.message)
     draft.value = ''
     replyTo.value = null
@@ -147,7 +174,13 @@ async function record() {
       recording.value = false
       const secs = Math.max(1, Math.round((Date.now() - started) / 1000))
       const blob = new Blob(chunks, { type: recorder?.mimeType || 'audio/webm' })
-      if (!dropped && blob.size) void sendMedia('audio', blob, blob.type.includes('mp4') ? 'voice.m4a' : blob.type.includes('ogg') ? 'voice.ogg' : 'voice.webm', secs)
+      if (!dropped && blob.size)
+        void sendMedia(
+          'audio',
+          blob,
+          blob.type.includes('mp4') ? 'voice.m4a' : blob.type.includes('ogg') ? 'voice.ogg' : 'voice.webm',
+          secs,
+        )
     }
     recorder.start()
     started = Date.now()
@@ -161,8 +194,14 @@ async function record() {
     notice.value = t('اسمح للمتصفح باستخدام الميكروفون لتسجيل رسالة صوتية.')
   }
 }
-function dropRecording() { dropped = true; recorder?.stop() }
-onBeforeUnmount(() => { dropped = true; recorder?.state === 'recording' && recorder.stop() })
+function dropRecording() {
+  dropped = true
+  recorder?.stop()
+}
+onBeforeUnmount(() => {
+  dropped = true
+  recorder?.state === 'recording' && recorder.stop()
+})
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 const lightbox = ref<string | null>(null)
 
@@ -172,7 +211,10 @@ async function send() {
   sending.value = true
   try {
     await ensureCsrf()
-    const { data } = await api.POST('/groups/{group}/messages', { params: { path: { group: gid.value } }, body: { body, reply_to: replyTo.value?.id ?? null } })
+    const { data } = await api.POST('/groups/{group}/messages', {
+      params: { path: { group: gid.value } },
+      body: { body, reply_to: replyTo.value?.id ?? null },
+    })
     arrived(data!.message)
     draft.value = ''
     replyTo.value = null
@@ -189,11 +231,18 @@ const REPORT_REASONS = { abuse: 'سب أو إساءة', inappropriate: 'محتو
 const reporting = ref(false)
 const reportReason = ref<keyof typeof REPORT_REASONS | ''>('')
 const reportNote = ref('')
-watch(picked, () => { reporting.value = false; reportReason.value = ''; reportNote.value = '' })
+watch(picked, () => {
+  reporting.value = false
+  reportReason.value = ''
+  reportNote.value = ''
+})
 async function report(m: Message) {
   try {
     await ensureCsrf()
-    await api.POST('/groups/{group}/messages/{message}/report', { params: { path: { group: gid.value, message: m.id } }, body: { reason: reportReason.value as 'abuse', note: reportNote.value.trim() || null } })
+    await api.POST('/groups/{group}/messages/{message}/report', {
+      params: { path: { group: gid.value, message: m.id } },
+      body: { reason: reportReason.value as 'abuse', note: reportNote.value.trim() || null },
+    })
     useToast().show(t('وصل البلاغ للإدارة. شكراً لك.'))
     picked.value = null
   } catch (e) {
@@ -221,15 +270,23 @@ async function act(run: () => Promise<{ data?: { group: Group } }>) {
     notice.value = asApiError(e).message
   }
 }
-const add = () => act(async () => {
-  const r = await api.POST('/groups/{group}/members', { params: { path: { group: gid.value } }, body: { usernames: adding.value.split(/[\s,،]+/).filter(Boolean) } })
-  adding.value = ''
-  return r
-})
-const kick = async (user: number) => (await useConfirm().ask({ title: 'إخراج العضو من الجروب؟', action: 'أخرجه' })) && act(() => api.DELETE('/groups/{group}/members/{user}', { params: { path: { group: gid.value, user } } }))
-const admin = (user: number, on: boolean) => act(() => api.PUT('/groups/{group}/members/{user}/admin', { params: { path: { group: gid.value, user } }, body: { admin: on } }))
+const add = () =>
+  act(async () => {
+    const r = await api.POST('/groups/{group}/members', {
+      params: { path: { group: gid.value } },
+      body: { usernames: adding.value.split(/[\s,،]+/).filter(Boolean) },
+    })
+    adding.value = ''
+    return r
+  })
+const kick = async (user: number) =>
+  (await useConfirm().ask({ title: 'إخراج العضو من الجروب؟', action: 'أخرجه' })) &&
+  act(() => api.DELETE('/groups/{group}/members/{user}', { params: { path: { group: gid.value, user } } }))
+const admin = (user: number, on: boolean) =>
+  act(() => api.PUT('/groups/{group}/members/{user}/admin', { params: { path: { group: gid.value, user } }, body: { admin: on } }))
 async function leave() {
-  if (!(await useConfirm().ask({ title: 'مغادرة الجروب؟', text: 'لن تصلك رسائله، ويعيدك أي مشرف بالإضافة أو الرابط.', action: 'غادر' }))) return
+  if (!(await useConfirm().ask({ title: 'مغادرة الجروب؟', text: 'لن تصلك رسائله، ويعيدك أي مشرف بالإضافة أو الرابط.', action: 'غادر' })))
+    return
   try {
     await ensureCsrf()
     await api.POST('/groups/{group}/leave', { params: { path: { group: gid.value } } })
@@ -243,11 +300,18 @@ async function copyLink() {
   try {
     await navigator.clipboard.writeText(group.value.invite_url)
     notice.value = t('نُسخ رابط الجروب.')
-  } catch { notice.value = group.value.invite_url }
+  } catch {
+    notice.value = group.value.invite_url
+  }
 }
 
 const hhmm = (iso: string) => new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-const members = computed(() => (group.value?.members ?? []).map((m) => m.name).slice(0, 4).join('، '))
+const members = computed(() =>
+  (group.value?.members ?? [])
+    .map((m) => m.name)
+    .slice(0, 4)
+    .join('، '),
+)
 </script>
 
 <template>
@@ -258,24 +322,58 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
         <b class="block truncate">{{ group?.name }}</b>
         <small class="block truncate text-text-muted">{{ $t('{n} أعضاء', { n: group?.members_count ?? 0 }) }} · {{ members }}</small>
       </span>
-      <RouterLink v-if="group?.league_id" :to="{ name: 'league-home', params: { id: group.league_id } }" class="text-sm font-bold text-gold">{{ $t('الدوري') }}</RouterLink>
-      <button type="button" class="grid size-11 place-items-center rounded-full text-xl hover:bg-surface" :aria-label="$t('خيارات الجروب')" @click="menu = true">⋮</button>
+      <RouterLink
+        v-if="group?.league_id"
+        :to="{ name: 'league-home', params: { id: group.league_id } }"
+        class="text-sm font-bold text-gold"
+        >{{ $t('الدوري') }}</RouterLink
+      >
+      <button
+        type="button"
+        class="grid size-11 place-items-center rounded-full text-xl hover:bg-surface"
+        :aria-label="$t('خيارات الجروب')"
+        @click="menu = true"
+      >
+        ⋮
+      </button>
     </header>
     <p v-if="error" class="m-3 rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
-    <div ref="list" class="flex flex-1 flex-col gap-2 overflow-y-auto bg-bg px-3 py-3" aria-live="polite" @scroll.passive="list && list.scrollTop < 40 && older()">
+    <div
+      ref="list"
+      class="flex flex-1 flex-col gap-2 overflow-y-auto bg-bg px-3 py-3"
+      aria-live="polite"
+      @scroll.passive="list && list.scrollTop < 40 && older()"
+    >
       <template v-for="m in messages" :key="m.id">
-        <span v-if="m.kind === 'note'" class="self-center rounded-full bg-surface-sunk px-3 py-1 text-xs text-text-muted">{{ noteText(m.body) }}</span>
-        <button v-else type="button" class="max-w-[80%] rounded-2xl px-3 py-2 text-start text-[15px] leading-relaxed"
-          :class="m.user?.id === me ? 'self-start rounded-ee-md bg-brand' : 'self-end rounded-es-md bg-surface-raised'" @click="!m.deleted && (picked = m)">
+        <span v-if="m.kind === 'note'" class="self-center rounded-full bg-surface-sunk px-3 py-1 text-xs text-text-muted">{{
+          noteText(m.body)
+        }}</span>
+        <button
+          v-else
+          type="button"
+          class="max-w-[80%] rounded-2xl px-3 py-2 text-start text-[15px] leading-relaxed"
+          :class="m.user?.id === me ? 'self-start rounded-ee-md bg-brand' : 'self-end rounded-es-md bg-surface-raised'"
+          @click="!m.deleted && (picked = m)"
+        >
           <i v-if="m.user?.id !== me" class="block text-xs font-bold not-italic text-gold-light">{{ m.user?.name ?? $t('عضو سابق') }}</i>
-          <span v-if="m.reply_to" class="mb-1 block border-s-2 border-gold-light ps-2 text-xs opacity-80">{{ m.reply_to.body || $t('هذه الرسالة حُذفت') }}</span>
+          <span v-if="m.reply_to" class="mb-1 block border-s-2 border-gold-light ps-2 text-xs opacity-80">{{
+            m.reply_to.body || $t('هذه الرسالة حُذفت')
+          }}</span>
           <span v-if="m.deleted" class="italic text-text-muted">{{ $t('هذه الرسالة حُذفت') }}</span>
           <template v-else>
-            <img v-if="m.kind === 'image' && m.media_url" :src="m.media_url" :alt="m.body || $t('صورة')" loading="lazy"
-              class="mb-1 max-h-72 w-full rounded-xl object-cover" @click.stop="lightbox = m.media_url" decoding="async" />
+            <img
+              v-if="m.kind === 'image' && m.media_url"
+              :src="m.media_url"
+              :alt="m.body || $t('صورة')"
+              loading="lazy"
+              class="mb-1 max-h-72 w-full rounded-xl object-cover"
+              @click.stop="lightbox = m.media_url"
+              decoding="async"
+            />
             <span v-if="m.kind === 'audio' && m.media_url" class="mb-1 flex items-center gap-2" @click.stop>
-              <span aria-hidden="true"><Icon name="mic" :size="18" class="inline-block align-[-3px]" /></span><audio :src="m.media_url" controls preload="none" class="h-10 max-w-[230px]" />
+              <span aria-hidden="true"><Icon name="mic" :size="18" class="inline-block align-[-3px]" /></span
+              ><audio :src="m.media_url" controls preload="none" class="h-10 max-w-[230px]" />
               <span v-if="m.seconds" class="font-numbers text-xs opacity-80" dir="ltr">{{ mmss(m.seconds) }}</span>
             </span>
             <span v-if="m.body" class="whitespace-pre-wrap break-words">{{ m.body }}</span>
@@ -287,46 +385,110 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
 
     <p v-if="notice" class="bg-surface-sunk px-4 py-2 text-sm" role="status">{{ $t(notice) }}</p>
     <div v-if="replyTo" class="flex items-center gap-2 bg-panel px-4 pt-2 text-sm">
-      <span class="min-w-0 flex-1 truncate border-s-2 border-gold-light ps-2 text-text-muted">{{ replyTo.body || (replyTo.kind === 'image' ? $t('صورة') : replyTo.kind === 'audio' ? $t('رسالة صوتية') : '') }}</span>
+      <span class="min-w-0 flex-1 truncate border-s-2 border-gold-light ps-2 text-text-muted">{{
+        replyTo.body || (replyTo.kind === 'image' ? $t('صورة') : replyTo.kind === 'audio' ? $t('رسالة صوتية') : '')
+      }}</span>
       <button type="button" class="size-9" :aria-label="$t('إلغاء الرد')" @click="replyTo = null"><Icon name="close" :size="18" /></button>
     </div>
     <!-- [Sprint 40 B3] A finished league's group: kept to read, no more messages. -->
-    <p v-if="group?.closed" class="bg-panel p-4 text-center text-sm text-text-muted pb-[max(1rem,env(safe-area-inset-bottom))]" role="status">{{ $t('انتهى الدوري، وجروبه للقراءة فقط.') }}</p>
-    <form v-else class="flex items-end gap-2 bg-panel p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pe-20 md:pe-3" @submit.prevent="send">
+    <p
+      v-if="group?.closed"
+      class="bg-panel p-4 text-center text-sm text-text-muted pb-[max(1rem,env(safe-area-inset-bottom))]"
+      role="status"
+    >
+      {{ $t('انتهى الدوري، وجروبه للقراءة فقط.') }}
+    </p>
+    <form
+      v-else
+      class="flex items-end gap-2 bg-panel p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pe-20 md:pe-3"
+      @submit.prevent="send"
+    >
       <template v-if="recording">
-        <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk" :aria-label="$t('ألغِ التسجيل')" @click="dropRecording"><Icon name="close" :size="18" /></button>
+        <button
+          type="button"
+          class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk"
+          :aria-label="$t('ألغِ التسجيل')"
+          @click="dropRecording"
+        >
+          <Icon name="close" :size="18" />
+        </button>
         <span class="flex min-h-touch flex-1 items-center gap-2 rounded-3xl bg-surface-sunk px-4" role="status">
           <span class="size-2.5 animate-pulse rounded-full bg-live" /><span class="font-numbers" dir="ltr">{{ mmss(recorded) }}</span>
-          <span class="text-sm text-text-muted">{{ $t('يُسجَّل… اضغط زر الإرسال') }}</span></span>
-        <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-extrabold text-on-gold" :aria-label="$t('أرسل الرسالة الصوتية')" @click="record">
-          <span class="rtl:-scale-x-100"><Icon name="send" :size="18" class="inline-block align-[-3px]" /></span></button>
+          <span class="text-sm text-text-muted">{{ $t('يُسجَّل… اضغط زر الإرسال') }}</span></span
+        >
+        <button
+          type="button"
+          class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-extrabold text-on-gold"
+          :aria-label="$t('أرسل الرسالة الصوتية')"
+          @click="record"
+        >
+          <span class="rtl:-scale-x-100"><Icon name="send" :size="18" class="inline-block align-[-3px]" /></span>
+        </button>
       </template>
       <template v-else>
-      <input ref="picker" type="file" accept="image/*" class="hidden" @change="picture" />
-      <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk text-xl disabled:opacity-50" :disabled="sending"
-        :aria-label="$t('أرسل صورة')" @click="picker?.click()"><Icon name="camera" :size="18" class="inline-block align-[-3px]" /></button>
-      <textarea v-model="draft" rows="1" maxlength="1000" :placeholder="$t('اكتب رسالة…')" :aria-label="$t('اكتب رسالة…')"
-        class="max-h-32 min-h-touch flex-1 resize-none rounded-3xl bg-surface-sunk px-4 py-3" @keydown.enter.exact.prevent="send" />
-      <button type="submit" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-extrabold text-on-gold disabled:opacity-50"
-        :disabled="sending" :aria-label="draft.trim() ? $t('أرسل') : $t('سجّل رسالة صوتية')" @click="!draft.trim() && ($event.preventDefault(), record())">
-        <span v-if="draft.trim()" class="rtl:-scale-x-100"><Icon name="send" :size="18" class="inline-block align-[-3px]" /></span><span v-else><Icon name="mic" :size="18" class="inline-block align-[-3px]" /></span></button>
+        <input ref="picker" type="file" accept="image/*" class="hidden" @change="picture" />
+        <button
+          type="button"
+          class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk text-xl disabled:opacity-50"
+          :disabled="sending"
+          :aria-label="$t('أرسل صورة')"
+          @click="picker?.click()"
+        >
+          <Icon name="camera" :size="18" class="inline-block align-[-3px]" />
+        </button>
+        <textarea
+          v-model="draft"
+          rows="1"
+          maxlength="1000"
+          :placeholder="$t('اكتب رسالة…')"
+          :aria-label="$t('اكتب رسالة…')"
+          class="max-h-32 min-h-touch flex-1 resize-none rounded-3xl bg-surface-sunk px-4 py-3"
+          @keydown.enter.exact.prevent="send"
+        />
+        <button
+          type="submit"
+          class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-extrabold text-on-gold disabled:opacity-50"
+          :disabled="sending"
+          :aria-label="draft.trim() ? $t('أرسل') : $t('سجّل رسالة صوتية')"
+          @click="!draft.trim() && ($event.preventDefault(), record())"
+        >
+          <span v-if="draft.trim()" class="rtl:-scale-x-100"><Icon name="send" :size="18" class="inline-block align-[-3px]" /></span
+          ><span v-else><Icon name="mic" :size="18" class="inline-block align-[-3px]" /></span>
+        </button>
       </template>
     </form>
     <UiDialog :open="!!lightbox" bare @close="lightbox = null">
-      <img v-if="lightbox" :src="lightbox" :alt="$t('صورة')" class="max-h-[85vh] w-full rounded-xl object-contain" @click="lightbox = null" loading="lazy" decoding="async" />
+      <img
+        v-if="lightbox"
+        :src="lightbox"
+        :alt="$t('صورة')"
+        class="max-h-[85vh] w-full rounded-xl object-contain"
+        @click="lightbox = null"
+        loading="lazy"
+        decoding="async"
+      />
     </UiDialog>
 
     <UiDialog :open="!!picked" :title="$t('الرسالة')" @close="picked = null">
       <div class="flex flex-col gap-2">
-        <UiButton variant="outline" block @click="replyTo = picked; picked = null">{{ $t('رد') }}</UiButton>
-        <UiButton v-if="picked && (picked.user?.id === me || group?.is_admin)" variant="danger" block @click="remove(picked!)">{{ $t('احذف الرسالة') }}</UiButton>
+        <UiButton variant="outline" block @click="((replyTo = picked), (picked = null))">{{ $t('رد') }}</UiButton>
+        <UiButton v-if="picked && (picked.user?.id === me || group?.is_admin)" variant="danger" block @click="remove(picked!)">{{
+          $t('احذف الرسالة')
+        }}</UiButton>
         <!-- [Sprint 30 G6] Another's message to the admins: why, and a word if needed. -->
         <template v-if="picked && picked.user && picked.user.id !== me">
           <UiButton v-if="!reporting" variant="quiet" block @click="reporting = true">{{ $t('بلّغ عن الرسالة') }}</UiButton>
           <form v-else class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3" @submit.prevent="report(picked!)">
             <span class="text-sm font-bold">{{ $t('لماذا تبلّغ عنها؟') }}</span>
-            <label v-for="(label, k) in REPORT_REASONS" :key="k" class="flex min-h-touch items-center gap-2 text-sm"><input v-model="reportReason" type="radio" :value="k" class="size-5 accent-gold" />{{ $t(label) }}</label>
-            <input v-model="reportNote" maxlength="300" :placeholder="$t('تفاصيل (اختياري)')" class="h-touch rounded-md bg-surface px-3 text-sm" />
+            <label v-for="(label, k) in REPORT_REASONS" :key="k" class="flex min-h-touch items-center gap-2 text-sm"
+              ><input v-model="reportReason" type="radio" :value="k" class="size-5 accent-gold" />{{ $t(label) }}</label
+            >
+            <input
+              v-model="reportNote"
+              maxlength="300"
+              :placeholder="$t('تفاصيل (اختياري)')"
+              class="h-touch rounded-md bg-surface px-3 text-sm"
+            />
             <UiButton type="submit" variant="danger" block :disabled="!reportReason">{{ $t('أرسل البلاغ للإدارة') }}</UiButton>
           </form>
         </template>
@@ -340,16 +502,25 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
           <UiButton variant="outline" block @click="copyLink">{{ $t('انسخ رابط الجروب') }}</UiButton>
         </template>
         <form v-if="group?.is_admin && !group.league_id" class="flex gap-2" @submit.prevent="add">
-          <input v-model="adding" dir="ltr" :placeholder="$t('اسم المستخدم')" class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" />
+          <input
+            v-model="adding"
+            dir="ltr"
+            :placeholder="$t('اسم المستخدم')"
+            class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3"
+          />
           <UiButton type="submit">{{ $t('أضف') }}</UiButton>
         </form>
         <h3 class="font-bold">{{ $t('الأعضاء') }}</h3>
         <ul class="flex max-h-72 flex-col gap-1 overflow-y-auto">
           <li v-for="m in group?.members ?? []" :key="m.id" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3">
-            <span class="min-w-0 flex-1 truncate">{{ m.name }} <small class="text-text-muted" dir="ltr">@{{ m.username }}</small></span>
+            <span class="min-w-0 flex-1 truncate"
+              >{{ m.name }} <small class="text-text-muted" dir="ltr">@{{ m.username }}</small></span
+            >
             <span v-if="m.is_admin" class="rounded-full bg-gold/20 px-2 text-xs font-bold text-gold">{{ $t('مشرف') }}</span>
             <template v-if="group?.is_admin && !group.league_id && m.id !== me">
-              <button type="button" class="min-h-touch px-2 text-xs font-bold text-text-muted" @click="admin(m.id, !m.is_admin)">{{ m.is_admin ? $t('أزل الإشراف') : $t('اجعله مشرفاً') }}</button>
+              <button type="button" class="min-h-touch px-2 text-xs font-bold text-text-muted" @click="admin(m.id, !m.is_admin)">
+                {{ m.is_admin ? $t('أزل الإشراف') : $t('اجعله مشرفاً') }}
+              </button>
               <button type="button" class="min-h-touch px-2 text-xs font-bold text-danger" @click="kick(m.id)">{{ $t('أخرج') }}</button>
             </template>
           </li>

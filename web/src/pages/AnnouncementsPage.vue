@@ -16,9 +16,19 @@ onMounted(async () => {
 <template>
   <div class="mx-auto flex w-full max-w-4xl flex-col gap-4">
     <h1 class="ann-bar"><Icon name="megaphone" :size="26" />{{ $t('الإعلانات') }}</h1>
-    <div v-if="!cards" class="flex flex-col gap-4" aria-hidden="true"><div v-for="n in 2" :key="n" class="h-72 animate-pulse rounded-2xl bg-surface" /></div>
+    <div v-if="!cards" class="flex flex-col gap-4" aria-hidden="true">
+      <div v-for="n in 2" :key="n" class="h-72 animate-pulse rounded-2xl bg-surface" />
+    </div>
     <p v-else-if="!cards.length" class="rounded-xl bg-surface p-8 text-center text-text-muted">{{ $t('لا إعلانات بعد.') }}</p>
-    <AnnouncementCard v-for="a in cards ?? []" :key="a.id" :title="a.title" :body="a.body" :at="a.at" :image-url="a.image_url" :cta="a.cta" />
+    <AnnouncementCard
+      v-for="a in cards ?? []"
+      :key="a.id"
+      :title="a.title"
+      :body="a.body"
+      :at="a.at"
+      :image-url="a.image_url"
+      :cta="a.cta"
+    />
   </div>
 </template>
 

@@ -13,11 +13,7 @@ const moved = computed(() => {
   const { before, now } = props.since.position
   return before && now ? before - now : 0
 })
-const faces = computed(() => [
-  'result',
-  ...(props.since.position.now ? ['position'] : []),
-  ...(props.since.offers ? ['offers'] : []),
-])
+const faces = computed(() => ['result', ...(props.since.position.now ? ['position'] : []), ...(props.since.offers ? ['offers'] : [])])
 const face = computed(() => faces.value[at.value % faces.value.length])
 </script>
 
@@ -25,7 +21,9 @@ const face = computed(() => faces.value[at.value % faces.value.length])
   <button type="button" class="since" :aria-label="$t('منذ آخر زيارة')" @click="at++">
     <Transition name="flip" mode="out-in">
       <span :key="face" class="since-face">
-        <small class="since-kicker">{{ $t('منذ آخر زيارة') }} · <span class="font-numbers" dir="ltr">{{ (at % faces.length) + 1 }}/{{ faces.length }}</span></small>
+        <small class="since-kicker"
+          >{{ $t('منذ آخر زيارة') }} · <span class="font-numbers" dir="ltr">{{ (at % faces.length) + 1 }}/{{ faces.length }}</span></small
+        >
         <template v-if="face === 'result'">
           <b class="since-big font-numbers" dir="ltr">{{ scoreText(since.last.home_goals, since.last.away_goals) }}</b>
           <span>{{ $t(RESULT[since.last.result] ?? 'تعادل') }} · {{ $nm(since.last.home.name) }} - {{ $nm(since.last.away.name) }}</span>
@@ -33,7 +31,9 @@ const face = computed(() => faces.value[at.value % faces.value.length])
         </template>
         <template v-else-if="face === 'position'">
           <b class="since-big font-numbers" dir="ltr">{{ since.position.before ?? '-' }} → {{ since.position.now }}</b>
-          <span>{{ moved > 0 ? $t('تقدمت {v0} مراكز', { v0: moved }) : moved < 0 ? $t('تراجعت {v0} مراكز', { v0: -moved }) : $t('ترتيبك كما هو') }}</span>
+          <span>{{
+            moved > 0 ? $t('تقدمت {v0} مراكز', { v0: moved }) : moved < 0 ? $t('تراجعت {v0} مراكز', { v0: -moved }) : $t('ترتيبك كما هو')
+          }}</span>
         </template>
         <template v-else>
           <b class="since-big font-numbers" dir="ltr">{{ since.offers }}</b>
@@ -46,16 +46,53 @@ const face = computed(() => faces.value[at.value % faces.value.length])
 </template>
 
 <style scoped>
-.since { display: block; inline-size: 100%; min-block-size: 44px; perspective: 600px; text-align: center; }
-.since-face {
-  display: flex; flex-direction: column; align-items: center; gap: var(--space-xs); padding: var(--space-md);
-  border-radius: var(--radius-lg); background: var(--color-surface-sunk);
+.since {
+  display: block;
+  inline-size: 100%;
+  min-block-size: 44px;
+  perspective: 600px;
+  text-align: center;
 }
-.since-kicker { font-size: var(--text-caption); color: var(--color-text-muted); }
-.since-big { font-size: 32px; line-height: 1.1; color: var(--ink-gold); }
-.since-note { font-size: var(--text-caption); color: var(--color-text-muted); }
-.flip-enter-active, .flip-leave-active { transition: transform 0.18s ease, opacity 0.18s ease; }
-.flip-enter-from { transform: rotateY(-90deg); opacity: 0; }
-.flip-leave-to { transform: rotateY(90deg); opacity: 0; }
-@media (prefers-reduced-motion: reduce) { .flip-enter-active, .flip-leave-active { transition: none; } }
+.since-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunk);
+}
+.since-kicker {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+.since-big {
+  font-size: 32px;
+  line-height: 1.1;
+  color: var(--ink-gold);
+}
+.since-note {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+.flip-enter-active,
+.flip-leave-active {
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+}
+.flip-enter-from {
+  transform: rotateY(-90deg);
+  opacity: 0;
+}
+.flip-leave-to {
+  transform: rotateY(90deg);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-enter-active,
+  .flip-leave-active {
+    transition: none;
+  }
+}
 </style>

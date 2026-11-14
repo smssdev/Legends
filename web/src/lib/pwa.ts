@@ -46,5 +46,7 @@ export async function currentSubscription(): Promise<PushSubscription | null> {
 export async function subscribe(publicKey: string): Promise<PushSubscription | null> {
   if (!pushSupported() || (await Notification.requestPermission()) !== 'granted') return null
   const reg = await navigator.serviceWorker.ready
-  return (await reg.pushManager.getSubscription()) ?? reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key(publicKey) })
+  return (
+    (await reg.pushManager.getSubscription()) ?? reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key(publicKey) })
+  )
 }

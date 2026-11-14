@@ -138,11 +138,31 @@ export interface LiveSummary {
   reds: { minute: number; team: Side; player: number | null }[]
 }
 
-export interface Reading { id: number; tick: number; minute: number; kind: string; text: string }
+export interface Reading {
+  id: number
+  tick: number
+  minute: number
+  kind: string
+  text: string
+}
 
 /** side: the coach's (null for a league member who watches); target and who: the league's broadcast [X24]. */
-export interface Reaction { id: number; side: Side | null; key: string; at: number; target?: Side | null; who?: string }
-export interface ChatLine { id: number; side: Side | null; who: string; body: string; user_id: number; at: number }
+export interface Reaction {
+  id: number
+  side: Side | null
+  key: string
+  at: number
+  target?: Side | null
+  who?: string
+}
+export interface ChatLine {
+  id: number
+  side: Side | null
+  who: string
+  body: string
+  user_id: number
+  at: number
+}
 
 export interface MatchView {
   id: string
@@ -176,12 +196,28 @@ export interface MatchView {
   teams: Record<Side, TeamSnapshot>
 }
 
-export type Room = { id: string; host: { name: string; club: Club }; guest: { name: string; club: Club } | null; match_id: string | null; seat?: string }
+export type Room = {
+  id: string
+  host: { name: string; club: Club }
+  guest: { name: string; club: Club } | null
+  match_id: string | null
+  seat?: string
+}
 
 // A live match's seat: the secret that lets this device manage its side. Kept per match in the browser.
 export const seats = {
-  get: (match: string) => { try { return storage.get(`seat.${match}`) } catch { return null } },
-  set: (match: string, seat: string) => { try { storage.set(`seat.${match}`, seat) } catch {} },
+  get: (match: string) => {
+    try {
+      return storage.get(`seat.${match}`)
+    } catch {
+      return null
+    }
+  },
+  set: (match: string, seat: string) => {
+    try {
+      storage.set(`seat.${match}`, seat)
+    } catch {}
+  },
 }
 
 /** [Sprint 64 B1] A moment of the intro match: its minute, and the guide's words for it. */
@@ -191,15 +227,24 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
   const match = path.match(/^\/matches\/([^/?]+)/)?.[1]
   const seat = match ? seats.get(match) : null
   // With a session cookie (a signed-in player) Sanctum checks CSRF on every write: send the token when there is one.
-  const xsrf = document.cookie.split('; ').find((c) => c.startsWith('XSRF-TOKEN='))?.slice(11)
+  const xsrf = document.cookie
+    .split('; ')
+    .find((c) => c.startsWith('XSRF-TOKEN='))
+    ?.slice(11)
   const res = await fetch(`/api/v1/sim${path}`, {
     method,
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(seat ? { 'X-Seat': seat } : {}), ...(xsrf ? { 'X-XSRF-TOKEN': decodeURIComponent(xsrf) } : {}) },
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(seat ? { 'X-Seat': seat } : {}),
+      ...(xsrf ? { 'X-XSRF-TOKEN': decodeURIComponent(xsrf) } : {}),
+    },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
   if (!res.ok) {
     // On the free test server the disk is wiped on every restart, so an old match link can vanish.
-    if (res.status === 404 && (path.startsWith('/matches/') || path.startsWith('/rooms/'))) throw new Error('هذه المباراة لم تعد موجودة: أُعيد تشغيل سيرفر التجربة فمُسحت المباريات. ابدأ مباراة جديدة من صفحة المحاكي.')
+    if (res.status === 404 && (path.startsWith('/matches/') || path.startsWith('/rooms/')))
+      throw new Error('هذه المباراة لم تعد موجودة: أُعيد تشغيل سيرفر التجربة فمُسحت المباريات. ابدأ مباراة جديدة من صفحة المحاكي.')
     const data = await res.json().catch(() => ({}))
     throw new Error(data.message || `خطأ ${res.status}`)
   }
@@ -210,7 +255,8 @@ export const sim = {
   leagues: () => call<{ name: string; clubs: number; top: number }[]>('GET', '/leagues'),
   clubs: (params: { q?: string; league?: string }) =>
     call<Club[]>('GET', '/clubs?' + new URLSearchParams(Object.entries(params).filter(([, v]) => v) as [string, string][])),
-  squad: (id: number) => call<{ club: Club; formation: string; starters: number[]; bench: number[]; players: any[] }>('GET', `/clubs/${id}`),
+  squad: (id: number) =>
+    call<{ club: Club; formation: string; starters: number[]; bench: number[]; players: any[] }>('GET', `/clubs/${id}`),
   create: (body: Record<string, unknown>) => call<MatchView>('POST', '/matches', body),
   // [Sprint 64 B1, W1] The new coach's first match and its three teaching moments; then that it was played or skipped.
   intro: () => call<MatchView & { intro: { moments: IntroMoment[] } }>('POST', '/intro'),
@@ -245,7 +291,15 @@ async function leagueCall<T>(path: string): Promise<T> {
 }
 
 export const leagueMatch = {
-  show: async (id: string) => ({ seed: 0, referee: 1, venue: 'home', formations: [], ...(await leagueCall<Partial<MatchView>>(`/${id}`)), mode: 'live' }) as MatchView,
+  show: async (id: string) =>
+    ({
+      seed: 0,
+      referee: 1,
+      venue: 'home',
+      formations: [],
+      ...(await leagueCall<Partial<MatchView>>(`/${id}`)),
+      mode: 'live',
+    }) as MatchView,
   live: (id: string, since: number) => leagueCall<LiveSync>(`/${id}/live?since=${since}`),
   /** The coach's order for his side (the server knows which), with the session's XSRF token. */
   order: async (id: string, order: Record<string, unknown>) => {
@@ -264,7 +318,10 @@ export const leagueMatch = {
   react: async (id: string, key: string, target?: Side) => {
     await ensureCsrf()
     try {
-      const { data } = await api.POST('/matches/{match}/reactions', { params: { path: { match: Number(id) } }, body: { key: key as any, target } })
+      const { data } = await api.POST('/matches/{match}/reactions', {
+        params: { path: { match: Number(id) } },
+        body: { key: key as any, target },
+      })
       return data as Reaction
     } catch (e) {
       throw asApiError(e)
@@ -290,7 +347,8 @@ export const leagueMatch = {
     }
   },
   /** [X69] A finished match again, for any member: every minute with its frames (an older engine's: its events only). */
-  replay: (id: string) => leagueCall<{ replayable: boolean; expired?: boolean; ticks: Tick[] | null; events: MatchEvent[] | null }>(`/${id}/replay`),
+  replay: (id: string) =>
+    leagueCall<{ replayable: boolean; expired?: boolean; ticks: Tick[] | null; events: MatchEvent[] | null }>(`/${id}/replay`),
   /** "Why you won or lost", for a coach of either side (Sprint 20 B2). */
   report: (id: string) => leagueCall<any>(`/${id}/report`),
   /** My live matches, for the switcher. */

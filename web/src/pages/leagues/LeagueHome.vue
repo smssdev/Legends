@@ -82,7 +82,9 @@ async function approveAll() {
 }
 
 // The invite (Sprint 14 B2): the link opens the join screen with the code, and WhatsApp shows its card.
-const inviteText = computed(() => (league.value ? `انضم لدوري «${league.value.name}» في لعبة المدرب الأسطورة واختر ناديك: ${league.value.invite_url}` : ''))
+const inviteText = computed(() =>
+  league.value ? `انضم لدوري «${league.value.name}» في لعبة المدرب الأسطورة واختر ناديك: ${league.value.invite_url}` : '',
+)
 const whatsapp = computed(() => `https://wa.me/?text=${encodeURIComponent(inviteText.value)}`)
 /** [Sprint 29] The league's own group chat, made (and kept in step) as it opens. */
 async function openGroup() {
@@ -132,7 +134,7 @@ const router = useRouter()
 const section = ref<'standings' | 'coaches' | 'season' | 'more'>('standings')
 const sections = computed(() => [
   { key: 'standings' as const, label: 'الترتيب والمباريات' },
-  { key: 'coaches' as const, label: 'المدربون', n: league.value?.is_owner ? (league.value.pending_requests || null) : null },
+  { key: 'coaches' as const, label: 'المدربون', n: league.value?.is_owner ? league.value.pending_requests || null : null },
   { key: 'season' as const, label: 'الموسم' },
   { key: 'more' as const, label: 'المزيد' },
 ])
@@ -205,7 +207,9 @@ const restEdit = ref<number[] | null>(null)
 async function saveRest() {
   try {
     await ensureCsrf()
-    league.value = (await api.PATCH('/leagues/{league}', { params: { path: { league: leagueId.value } }, body: { rest_days: restEdit.value ?? [] } })).data!.league
+    league.value = (
+      await api.PATCH('/leagues/{league}', { params: { path: { league: leagueId.value } }, body: { rest_days: restEdit.value ?? [] } })
+    ).data!.league
     restEdit.value = null
   } catch (e) {
     error.value = asApiError(e).message
@@ -222,7 +226,12 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
     <!-- [Sprint 43 W1] The contract with the club, once a season, before anything else. -->
     <ContractDialog v-if="league?.me?.contract" :league-id="league.id" :contract="league.me.contract" @signed="league.me.contract = null" />
     <p v-if="route.query.welcome && mine" class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">
-      {{ $t('أهلاً بك مدرباً لـ{v0}. {v1}', { v0: $nm(mine.name), v1: league?.is_owner ? $t('شارك الكود مع أصحابك ليختاروا فرقهم.') : $t('بالتوفيق في الموسم!') }) }}
+      {{
+        $t('أهلاً بك مدرباً لـ{v0}. {v1}', {
+          v0: $nm(mine.name),
+          v1: league?.is_owner ? $t('شارك الكود مع أصحابك ليختاروا فرقهم.') : $t('بالتوفيق في الموسم!'),
+        })
+      }}
     </p>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
@@ -236,7 +245,8 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         <div class="min-w-0">
           <h1 class="font-display text-3xl font-extrabold">{{ $nm(league.name) }}</h1>
           <p class="text-text-muted">
-            {{ $ln(league.template) }} · <span class="font-numbers">{{ league.season?.rounds }}</span> {{ $t('جولة · منطقة القفل من الجولة') }}
+            {{ $ln(league.template) }} · <span class="font-numbers">{{ league.season?.rounds }}</span>
+            {{ $t('جولة · منطقة القفل من الجولة') }}
             <span class="font-numbers">{{ league.season?.lock_from_round }}</span>
           </p>
         </div>
@@ -246,19 +256,47 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
           <UiChip v-if="league.integrity" tone="loss">{{ $t('منظومة النزاهة') }}</UiChip>
           <UiChip v-if="league.is_dev" tone="gold">{{ $t('للتطوير') }}</UiChip>
           <!-- [Sprint 21 E2.2] Every member invites from the top of the league: shared on the phone, copied elsewhere. -->
-          <button v-if="league.invite_url" type="button" class="flex h-touch items-center gap-2 rounded-pill bg-gold px-4 font-bold text-on-gold" @click="share">
-            <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M16 11a4 4 0 1 0-8 0M12 15c-4 0-7 2-7 4v1h9M19 14v6M16 17h6" /></svg>
+          <button
+            v-if="league.invite_url"
+            type="button"
+            class="flex h-touch items-center gap-2 rounded-pill bg-gold px-4 font-bold text-on-gold"
+            @click="share"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              class="size-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M16 11a4 4 0 1 0-8 0M12 15c-4 0-7 2-7 4v1h9M19 14v6M16 17h6" />
+            </svg>
             {{ copied ? $t('نُسخ الرابط') : $t('ادعُ مدرباً') }}
           </button>
         </div>
       </header>
 
       <!-- The FA's verdicts of the last day: a breaking headline for everyone in the league [X28]. -->
-      <p v-for="(h, i) in league.headlines ?? []" :key="i" class="flex items-start gap-2 rounded-xl bg-live px-4 py-3 text-sm font-bold text-on-gold" role="alert">
-        <span class="shrink-0 rounded bg-white/20 px-1.5 text-xs"><Icon name="news" :size="16" class="inline-block align-[-3px]" /> {{ $t('عاجل') }}</span><span>{{ $t(h.text) }} <span class="font-normal">{{ $t('(خصم {v0} نقاط)', { v0: h.points }) }}</span></span>
+      <p
+        v-for="(h, i) in league.headlines ?? []"
+        :key="i"
+        class="flex items-start gap-2 rounded-xl bg-live px-4 py-3 text-sm font-bold text-on-gold"
+        role="alert"
+      >
+        <span class="shrink-0 rounded bg-white/20 px-1.5 text-xs"
+          ><Icon name="news" :size="16" class="inline-block align-[-3px]" /> {{ $t('عاجل') }}</span
+        ><span
+          >{{ $t(h.text) }} <span class="font-normal">{{ $t('(خصم {v0} نقاط)', { v0: h.points }) }}</span></span
+        >
       </p>
 
-      <section v-if="mine?.objectives" :aria-label="$t('هدف الإدارة')" class="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm">
+      <section
+        v-if="mine?.objectives"
+        :aria-label="$t('هدف الإدارة')"
+        class="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm"
+      >
         <b class="text-gold">{{ $t('هدف الإدارة هذا الموسم') }}</b>
         <span>{{ $t('الدوري: {v0}', { v0: leagueGoal(mine.objectives.league) }) }}</span>
         <span>{{ $t('الكأس: {v0}', { v0: cupGoal(mine.objectives.cup.target) }) }}</span>
@@ -268,48 +306,126 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
            season (invite, dates, holidays), and the rest (the clubs, the media, the draw and the alliances). -->
       <!-- No team yet: the way to one stays above the tabs, never hidden in one. -->
       <!-- [Sprint 40 C1] A league made with the draw: the team comes from the draw, not picked by hand. -->
-      <RouterLink v-if="!league.my_club_id && league.entry_mode === 'draw' && !league.drawn_at" :to="{ name: 'league-draw', params: { id } }"
-        class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-gold px-4 py-3 font-bold text-on-gold">{{ $t('فريقك من القرعة: تابعها') }} <span aria-hidden="true">←</span></RouterLink>
-      <RouterLink v-else-if="!league.my_club_id && (league.is_owner || league.my_request === 'approved') && league.free_clubs" :to="{ name: 'pick-team', params: { id } }"
-        class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-gold px-4 py-3 font-bold text-on-gold">{{ $t('اختر فريقك') }} <span aria-hidden="true">←</span></RouterLink>
+      <RouterLink
+        v-if="!league.my_club_id && league.entry_mode === 'draw' && !league.drawn_at"
+        :to="{ name: 'league-draw', params: { id } }"
+        class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-gold px-4 py-3 font-bold text-on-gold"
+        >{{ $t('فريقك من القرعة: تابعها') }} <span aria-hidden="true">←</span></RouterLink
+      >
+      <RouterLink
+        v-else-if="!league.my_club_id && (league.is_owner || league.my_request === 'approved') && league.free_clubs"
+        :to="{ name: 'pick-team', params: { id } }"
+        class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-gold px-4 py-3 font-bold text-on-gold"
+        >{{ $t('اختر فريقك') }} <span aria-hidden="true">←</span></RouterLink
+      >
       <UiTabs v-model="section" :items="sections" label="أقسام الدوري" fill size="sm" />
 
-      <LeagueTabs v-if="section === 'standings' && clubs.length" :league-id="leagueId" :my-club-id="league.my_club_id" :team-count="league.team_count" />
+      <LeagueTabs
+        v-if="section === 'standings' && clubs.length"
+        :league-id="leagueId"
+        :my-club-id="league.my_club_id"
+        :team-count="league.team_count"
+      />
 
       <div v-if="section === 'season'" class="grid gap-4 md:grid-cols-2">
         <UiCard v-if="league.code" :title="$t('ادعُ أصحابك')">
-          <span class="rounded-lg bg-surface-sunk px-4 py-3 text-center font-numbers text-3xl font-bold tracking-[0.3em] text-gold" dir="ltr">{{ league.code }}</span>
+          <span
+            class="rounded-lg bg-surface-sunk px-4 py-3 text-center font-numbers text-3xl font-bold tracking-[0.3em] text-gold"
+            dir="ltr"
+            >{{ league.code }}</span
+          >
           <div class="grid grid-cols-2 gap-2">
-            <a :href="whatsapp" target="_blank" rel="noopener" class="flex h-12 items-center justify-center rounded-lg bg-success font-display font-extrabold text-on-gold">{{ $t('واتساب') }}</a>
+            <a
+              :href="whatsapp"
+              target="_blank"
+              rel="noopener"
+              class="flex h-12 items-center justify-center rounded-lg bg-success font-display font-extrabold text-on-gold"
+              >{{ $t('واتساب') }}</a
+            >
             <UiButton variant="outline" @click="share">{{ copied ? $t('نُسخ الرابط') : $t('شارك الرابط') }}</UiButton>
           </div>
         </UiCard>
 
         <UiCard :title="$t('الموسم')">
           <dl class="grid grid-cols-2 gap-2 text-sm">
-            <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('البداية') }}</dt><dd class="font-bold">{{ when(league.starts_at) }}</dd>
+            <div class="rounded-lg bg-surface-sunk p-3">
+              <dt class="text-text-muted">{{ $t('البداية') }}</dt>
+              <dd class="font-bold">{{ when(league.starts_at) }}</dd>
               <!-- [X61] Before the start: the days left to get ready. -->
-              <dd v-if="prepDays(league.starts_at) > 0" class="text-xs text-gold">{{ prepDays(league.starts_at) === 1 ? $t('يوم واحد للإعداد') : $t('{v0} أيام للإعداد', { v0: prepDays(league.starts_at) }) }}</dd></div>
-            <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('الإعداد') }}</dt><dd class="font-bold">{{ league.prep_days === 0 ? $t('بلا إعداد') : league.prep_days === 1 ? $t('يوم') : league.prep_days === 2 ? $t('يومان') : $t('{v0} أيام', { v0: league.prep_days }) }}</dd></div>
+              <dd v-if="prepDays(league.starts_at) > 0" class="text-xs text-gold">
+                {{
+                  prepDays(league.starts_at) === 1 ? $t('يوم واحد للإعداد') : $t('{v0} أيام للإعداد', { v0: prepDays(league.starts_at) })
+                }}
+              </dd>
+            </div>
+            <div class="rounded-lg bg-surface-sunk p-3">
+              <dt class="text-text-muted">{{ $t('الإعداد') }}</dt>
+              <dd class="font-bold">
+                {{
+                  league.prep_days === 0
+                    ? $t('بلا إعداد')
+                    : league.prep_days === 1
+                      ? $t('يوم')
+                      : league.prep_days === 2
+                        ? $t('يومان')
+                        : $t('{v0} أيام', { v0: league.prep_days })
+                }}
+              </dd>
+            </div>
             <div class="rounded-lg bg-surface-sunk p-3">
               <dt class="text-text-muted">{{ $t('الجولات') }}</dt>
               <dd class="font-bold" dir="ltr">{{ league.round_times.join(' · ') }}</dd>
             </div>
-            <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-bold">{{ budget(league.starting_budget) }}</dd></div>
-            <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('المدربون') }}</dt><dd class="font-bold"><span class="font-numbers">{{ league.coaches }}</span> {{ $t('من') }} <span class="font-numbers">{{ league.team_count }}</span></dd></div>
-            <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ $t(END_MODES[league.season_end_mode]) }}</dd></div>
+            <div class="rounded-lg bg-surface-sunk p-3">
+              <dt class="text-text-muted">{{ $t('الميزانية') }}</dt>
+              <dd class="font-bold">{{ budget(league.starting_budget) }}</dd>
+            </div>
+            <div class="rounded-lg bg-surface-sunk p-3">
+              <dt class="text-text-muted">{{ $t('المدربون') }}</dt>
+              <dd class="font-bold">
+                <span class="font-numbers">{{ league.coaches }}</span> {{ $t('من') }}
+                <span class="font-numbers">{{ league.team_count }}</span>
+              </dd>
+            </div>
+            <div class="rounded-lg bg-surface-sunk p-3">
+              <dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt>
+              <dd class="font-bold">{{ $t(END_MODES[league.season_end_mode]) }}</dd>
+            </div>
             <div class="col-span-2 flex items-center gap-2 rounded-lg bg-surface-sunk p-3">
-              <div class="flex-1"><dt class="text-text-muted">{{ $t('أيام الإجازة') }}</dt>
-                <dd class="font-bold">{{ league.rest_days?.length ? league.rest_days.map((d) => $t(DAY_NAMES[d])).join('، ') : $t('لا إجازة: مباراة كل يوم') }}</dd></div>
-              <button v-if="league.is_owner && !league.locked && !restEdit" type="button" class="h-10 rounded-lg bg-surface-raised px-3 text-sm font-bold" @click="restEdit = [...(league.rest_days ?? [])]">{{ $t('تعديل') }}</button>
+              <div class="flex-1">
+                <dt class="text-text-muted">{{ $t('أيام الإجازة') }}</dt>
+                <dd class="font-bold">
+                  {{ league.rest_days?.length ? league.rest_days.map((d) => $t(DAY_NAMES[d])).join('، ') : $t('لا إجازة: مباراة كل يوم') }}
+                </dd>
+              </div>
+              <button
+                v-if="league.is_owner && !league.locked && !restEdit"
+                type="button"
+                class="h-10 rounded-lg bg-surface-raised px-3 text-sm font-bold"
+                @click="restEdit = [...(league.rest_days ?? [])]"
+              >
+                {{ $t('تعديل') }}
+              </button>
             </div>
           </dl>
           <div v-if="restEdit" class="flex flex-col gap-2">
             <RestDaysPicker v-model="restEdit" />
-            <div class="flex gap-2"><UiButton @click="saveRest">{{ $t('حفظ') }}</UiButton><UiButton variant="quiet" @click="restEdit = null">{{ $t('إلغاء') }}</UiButton></div>
+            <div class="flex gap-2">
+              <UiButton @click="saveRest">{{ $t('حفظ') }}</UiButton><UiButton variant="quiet" @click="restEdit = null">{{
+                $t('إلغاء')
+              }}</UiButton>
+            </div>
           </div>
-          <p class="text-xs text-text-muted">{{ $t('{v0} ساعات الجولات بتوقيت القاهرة.', { v0: league.locked ? $t('الإعدادات مقفلة منذ بداية الموسم.') : $t('الإعدادات تُقفل عند بداية الموسم.') }) }}</p>
-          <UiButton v-if="isDev && league.is_owner && !league.locked" variant="quiet" @click="startNow">{{ $t('ابدأ الآن (للتطوير)') }}</UiButton>
+          <p class="text-xs text-text-muted">
+            {{
+              $t('{v0} ساعات الجولات بتوقيت القاهرة.', {
+                v0: league.locked ? $t('الإعدادات مقفلة منذ بداية الموسم.') : $t('الإعدادات تُقفل عند بداية الموسم.'),
+              })
+            }}
+          </p>
+          <UiButton v-if="isDev && league.is_owner && !league.locked" variant="quiet" @click="startNow">{{
+            $t('ابدأ الآن (للتطوير)')
+          }}</UiButton>
         </UiCard>
       </div>
 
@@ -318,31 +434,50 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
           {{ $t('أنت في إجازة حتى {v0}. لا يُحسب غيابك، والمساعد يدير فريقك.', { v0: since(league.me.vacation_until) }) }}
         </p>
         <p v-else-if="league.me.away_deadline" class="text-sm text-text-muted">
-          {{ $t('كل دخول للدوري يُحسب حضوراً. لو غبت 3 أيام متواصلة يعود فريقك للحاسوب: آخر موعد الآن {v0}.', { v0: since(league.me.away_deadline) }) }}
+          {{
+            $t('كل دخول للدوري يُحسب حضوراً. لو غبت 3 أيام متواصلة يعود فريقك للحاسوب: آخر موعد الآن {v0}.', {
+              v0: since(league.me.away_deadline),
+            })
+          }}
         </p>
         <p v-else class="text-sm text-text-muted">{{ $t('عداد الغياب يبدأ مع بداية الموسم.') }}</p>
-        <UiButton v-if="league.me.on_holiday && !league.me.account_vacation" variant="quiet" @click="holiday(false)">{{ $t('عدت مبكراً، أنهِ الإجازة') }}</UiButton>
-        <p v-if="league.me.account_vacation" class="text-sm text-text-muted">{{ $t('إجازة حسابك تشمل هذا الدوري. تنهيها من') }} <RouterLink to="/profile" class="font-bold text-gold">{{ $t('حسابي') }}</RouterLink>.</p>
-        <p v-else-if="league.me.vacation_requested" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm">{{ $t('طلبت إجازة في هذا الدوري، وتنتظر موافقة مسؤوله.') }}</p>
+        <UiButton v-if="league.me.on_holiday && !league.me.account_vacation" variant="quiet" @click="holiday(false)">{{
+          $t('عدت مبكراً، أنهِ الإجازة')
+        }}</UiButton>
+        <p v-if="league.me.account_vacation" class="text-sm text-text-muted">
+          {{ $t('إجازة حسابك تشمل هذا الدوري. تنهيها من') }}
+          <RouterLink to="/profile" class="font-bold text-gold">{{ $t('حسابي') }}</RouterLink>.
+        </p>
+        <p v-else-if="league.me.vacation_requested" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm">
+          {{ $t('طلبت إجازة في هذا الدوري، وتنتظر موافقة مسؤوله.') }}
+        </p>
         <form v-else-if="!league.me.vacation_used && !league.me.on_holiday" class="flex flex-col gap-2" @submit.prevent="holiday(true)">
           <label class="flex flex-col gap-1.5">
             <span class="text-sm font-bold">{{ $t('المدة') }}</span>
             <select v-model.number="days" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4">
-              <option v-for="d in 7" :key="d" :value="d">{{ d === 1 ? $t('يوم') : d === 2 ? $t('يومان') : $t('{v0} أيام', { v0: d }) }}</option>
+              <option v-for="d in 7" :key="d" :value="d">
+                {{ d === 1 ? $t('يوم') : d === 2 ? $t('يومان') : $t('{v0} أيام', { v0: d }) }}
+              </option>
             </select>
           </label>
           <label class="flex flex-col gap-1.5">
             <span class="text-sm font-bold">{{ $t('السبب (يراه مسؤول الدوري)') }}</span>
             <textarea v-model="holidayReason" rows="2" maxlength="300" class="rounded-lg border border-text/10 bg-surface-sunk p-3" />
           </label>
-          <UiButton type="submit" variant="outline" :disabled="holidayReason.trim().length < 5">{{ league.is_owner ? $t('فعّل الإجازة') : $t('اطلب الإجازة') }}</UiButton>
+          <UiButton type="submit" variant="outline" :disabled="holidayReason.trim().length < 5">{{
+            league.is_owner ? $t('فعّل الإجازة') : $t('اطلب الإجازة')
+          }}</UiButton>
         </form>
-        <p v-else-if="league.me.vacation_used && !league.me.on_holiday" class="text-sm text-text-muted">{{ $t('استخدمت إجازة هذا الموسم.') }}</p>
+        <p v-else-if="league.me.vacation_used && !league.me.on_holiday" class="text-sm text-text-muted">
+          {{ $t('استخدمت إجازة هذا الموسم.') }}
+        </p>
         <div v-if="!league.is_owner" class="flex flex-col gap-2 border-t border-text/10 pt-3">
           <p v-if="resignError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(resignError) }}</p>
           <UiButton v-if="!confirmResign" variant="quiet" @click="confirmResign = true">{{ $t('الاستقالة من الدوري') }}</UiButton>
           <template v-else>
-            <p class="rounded-lg bg-live/15 px-3 py-2 text-sm">{{ $t('يعود فريقك للحاسوب بحالته، ولا تعود لهذا الدوري قبل الموسم الجديد. متأكد؟') }}</p>
+            <p class="rounded-lg bg-live/15 px-3 py-2 text-sm">
+              {{ $t('يعود فريقك للحاسوب بحالته، ولا تعود لهذا الدوري قبل الموسم الجديد. متأكد؟') }}
+            </p>
             <div class="flex gap-2">
               <UiButton variant="danger" @click="resign">{{ $t('نعم، أستقيل') }}</UiButton>
               <UiButton variant="quiet" @click="confirmResign = false">{{ $t('تراجع') }}</UiButton>
@@ -356,12 +491,29 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
           <li v-for="m in league.members" :key="m.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
             <div class="flex min-h-touch flex-wrap items-center gap-3">
               <AppImage v-if="m.user.avatar_url" :src="m.user.avatar_url" alt="" class="size-10 rounded-full object-cover" :size="40" />
-              <span v-else class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
+              <span v-else class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{
+                m.user.name.charAt(0)
+              }}</span>
               <span class="min-w-0 flex-1">
-                <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <OfficialBadge v-if="m.user.official" /><VerifiedBadge v-else-if="m.user.verified" /> <UiChip v-if="m.is_owner" tone="gold">{{ $t('المنشئ') }}</UiChip> <UiChip v-if="m.on_holiday" tone="warning">{{ $t('في إجازة') }}</UiChip></span>
-                <span class="block text-sm text-text-muted">{{ $nm(m.club?.name) }}<template v-if="league.is_owner && m.last_active_at"> {{ $t('· آخر دخول {v0}', { v0: since(m.last_active_at) }) }}</template></span>
+                <span class="block truncate font-bold"
+                  ><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink>
+                  <OfficialBadge v-if="m.user.official" /><VerifiedBadge v-else-if="m.user.verified" />
+                  <UiChip v-if="m.is_owner" tone="gold">{{ $t('المنشئ') }}</UiChip>
+                  <UiChip v-if="m.on_holiday" tone="warning">{{ $t('في إجازة') }}</UiChip></span
+                >
+                <span class="block text-sm text-text-muted"
+                  >{{ $nm(m.club?.name)
+                  }}<template v-if="league.is_owner && m.last_active_at">
+                    {{ $t('· آخر دخول {v0}', { v0: since(m.last_active_at) }) }}</template
+                  ></span
+                >
               </span>
-              <UiButton v-if="league.is_owner && !m.is_owner && kicking !== m.id" variant="quiet" @click="(kicking = m.id), (reason = ''), (reasonError = '')">{{ $t('اطرد') }}</UiButton>
+              <UiButton
+                v-if="league.is_owner && !m.is_owner && kicking !== m.id"
+                variant="quiet"
+                @click="((kicking = m.id), (reason = ''), (reasonError = ''))"
+                >{{ $t('اطرد') }}</UiButton
+              >
             </div>
             <div v-if="m.vacation_request" class="flex flex-col gap-2 rounded-lg bg-gold/10 p-3 text-sm">
               <p>{{ $t('يطلب إجازة {v0} أيام. السبب: «{v1}»', { v0: m.vacation_request.days, v1: m.vacation_request.reason }) }}</p>
@@ -373,7 +525,13 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
             <form v-if="kicking === m.id" class="flex flex-col gap-2" @submit.prevent="kick(m.id)">
               <label class="flex flex-col gap-1.5">
                 <span class="text-sm font-bold">{{ $t('سبب الطرد (يراه كل أعضاء الدوري)') }}</span>
-                <textarea v-model="reason" rows="2" maxlength="200" class="rounded-lg border border-text/10 bg-surface p-3" :aria-invalid="!!reasonError" />
+                <textarea
+                  v-model="reason"
+                  rows="2"
+                  maxlength="200"
+                  class="rounded-lg border border-text/10 bg-surface p-3"
+                  :aria-invalid="!!reasonError"
+                />
               </label>
               <p v-if="reasonError" class="text-sm text-danger" role="alert">{{ $t(reasonError) }}</p>
               <p class="text-xs text-text-muted">{{ $t('يعود فريقه للحاسوب بحالته، ولا يعود للدوري هذا الموسم.') }}</p>
@@ -389,7 +547,8 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
       <UiCard v-if="section === 'coaches' && league.departures.length" :title="$t('غادروا هذا الموسم')">
         <ul class="flex flex-col gap-2 text-sm">
           <li v-for="(d, i) in league.departures" :key="i" class="rounded-lg bg-surface-sunk p-3">
-            <span class="font-bold">{{ d.user }}</span><span v-if="d.club" class="text-text-muted"> ({{ d.club }})</span>: {{ $t(LEFT[d.reason]) }}
+            <span class="font-bold">{{ d.user }}</span><span v-if="d.club" class="text-text-muted"> ({{ d.club }})</span>:
+            {{ $t(LEFT[d.reason]) }}
             <span v-if="d.kick_reason" class="mt-1 block">{{ $t('السبب: «{v0}»', { v0: d.kick_reason }) }}</span>
             <span class="block text-xs text-text-muted">{{ since(d.left_at) }}</span>
           </li>
@@ -397,78 +556,129 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
       </UiCard>
 
       <UiCard v-if="section === 'coaches' && league.is_owner" :title="$t('طلبات الانضمام')">
-        <template #action><span class="flex items-center gap-2">
-          <UiChip v-if="waiting.length" tone="live">{{ $t('{v0} بانتظارك', { v0: waiting.length }) }}</UiChip>
-          <UiButton v-if="waiting.length > 1" :loading="approvingAll" @click="approveAll">{{ $t('وافق على الكل') }}</UiButton>
-        </span></template>
+        <template #action
+          ><span class="flex items-center gap-2">
+            <UiChip v-if="waiting.length" tone="live">{{ $t('{v0} بانتظارك', { v0: waiting.length }) }}</UiChip>
+            <UiButton v-if="waiting.length > 1" :loading="approvingAll" @click="approveAll">{{ $t('وافق على الكل') }}</UiButton>
+          </span></template
+        >
         <p v-if="!requests.length" class="text-sm text-text-muted">{{ $t('لا طلبات بعد. شارك الكود ليصل أصحابك.') }}</p>
         <ul v-else class="flex flex-col gap-2">
           <li v-for="r in requests" :key="r.id" class="flex min-h-touch flex-wrap items-center gap-3 rounded-lg bg-surface-sunk p-3">
-            <span class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ r.user?.name.charAt(0) }}</span>
+            <span class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{
+              r.user?.name.charAt(0)
+            }}</span>
             <span class="min-w-0 flex-1 truncate font-bold">{{ r.user?.name }}</span>
             <template v-if="r.status === 'pending'">
               <UiButton @click="decide(r, true)">{{ $t('وافق') }}</UiButton>
               <UiButton variant="quiet" @click="decide(r, false)">{{ $t('ارفض') }}</UiButton>
             </template>
-            <UiChip v-else :tone="r.status === 'approved' ? 'win' : 'loss'">{{ r.status === 'approved' ? $t('وافقت') : $t('رفضت') }}</UiChip>
+            <UiChip v-else :tone="r.status === 'approved' ? 'win' : 'loss'">{{
+              r.status === 'approved' ? $t('وافقت') : $t('رفضت')
+            }}</UiChip>
           </li>
         </ul>
       </UiCard>
 
       <!-- [Sprint 29] A tournament's own page and draw; every league's and tournament's group chat. -->
       <template v-if="section === 'more'">
-      <RouterLink v-if="league.kind === 'tournament'" :to="{ name: 'tournament', params: { id } }"
-        class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3">
-        <span><b class="block">{{ $t('صفحة البطولة') }}</b><span class="text-sm text-text-muted">{{ $t('المجموعات والأدوار الإقصائية والقرعة') }}</span></span>
-        <span class="font-bold text-gold">←</span>
-      </RouterLink>
-      <button v-if="league.my_club_id || league.is_owner" type="button" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 text-start" @click="openGroup">
-        <span><b class="block">{{ $t('جروب الدوري') }}</b><span class="text-sm text-text-muted">{{ $t('دردشة مدربي الدوري كلهم') }}</span></span>
-        <span class="font-bold text-gold">←</span>
-      </button>
-
-      <RouterLink v-if="league.kind !== 'tournament' && (league.draw_at || (league.is_owner && league.status === 'waiting'))" :to="{ name: 'league-draw', params: { id } }"
-        class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3">
-        <span><b class="block">{{ $t('القرعة المباشرة') }}</b><span class="text-sm text-text-muted">{{ league.drawn_at ? $t('سُحبت: شاهد النتيجة') : league.draw_at ? $t('موعدها محدد: تابعها حية') : $t('حدد موعدها قبل البداية') }}</span></span>
-        <span class="font-bold text-gold">←</span>
-      </RouterLink>
-
-      <!-- [UP12] The league's media. -->
-      <div class="grid gap-2 sm:grid-cols-2">
-        <RouterLink :to="{ name: 'league-newspaper', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
-          <span><b class="block">{{ $t('جريدة الدوري') }}</b><span class="text-sm text-text-muted">{{ $t('تقرير كل جولة وتشكيلتها المثالية ومقالات المدربين') }}</span></span><span class="font-bold text-gold">←</span>
-        </RouterLink>
-        <RouterLink :to="{ name: 'league-predictions', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
-          <span><b class="block">{{ $t('توقعات المدربين') }}</b><span class="text-sm text-text-muted">{{ $t('توقع فائزي الجولة واربح مكافأة لناديك') }}</span></span><span class="font-bold text-gold">←</span>
-        </RouterLink>
-      </div>
-
-      <!-- [Sprint 30 P5] Only when there is one to see, or for the owner who makes it. -->
-      <RouterLink v-if="league.is_owner || league.has_alliance" :to="{ name: 'league-alliance', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
-        <span><b class="block">{{ $t('بطولة التحالفات') }}</b><span class="text-sm text-text-muted">{{ $t('تحالفان من مدربي الدوري بقائد لكل منهما') }}</span></span>
-        <span class="font-bold text-gold">←</span>
-      </RouterLink>
-
-      <UiCard v-if="clubs.length" :title="$t('الأندية')">
-        <template #action>
-          <RouterLink v-if="!league.my_club_id" :to="{ name: 'pick-team', params: { id } }" class="font-bold text-gold">{{ $t('اختر فريقك') }}</RouterLink>
-        </template>
-        <ul class="flex flex-col gap-1">
-          <li
-            v-for="c in clubs"
-            :key="c.id"
-            class="flex min-h-touch items-center gap-3 rounded-lg px-2 py-1.5"
-            :class="c.id === league.my_club_id ? 'bg-surface-raised' : ''"
+        <RouterLink
+          v-if="league.kind === 'tournament'"
+          :to="{ name: 'tournament', params: { id } }"
+          class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3"
+        >
+          <span
+            ><b class="block">{{ $t('صفحة البطولة') }}</b
+            ><span class="text-sm text-text-muted">{{ $t('المجموعات والأدوار الإقصائية والقرعة') }}</span></span
           >
-            <ClubCrest :url="c.crest_url" :code="c.code" :size="32" />
-            <span class="min-w-0 flex-1 truncate font-bold">{{ $nm(c.name) }}</span>
-            <span class="text-sm text-text-muted">{{ c.id === league.my_club_id ? $t('أنت') : c.coach?.name ?? $t('الحاسوب') }}</span>
-            <span class="hidden w-16 text-end font-numbers sm:block">{{ money(c.balance) }}</span>
-            <span class="w-12 text-end font-numbers text-lg font-bold text-gold">{{ strength(c.strength_cp) }}</span>
-          </li>
-        </ul>
-        <p class="text-xs text-text-muted"><span class="font-numbers">{{ coaches.length }}</span> {{ $t('مدربين، والباقي يديره الحاسوب.') }}</p>
-      </UiCard>
+          <span class="font-bold text-gold">←</span>
+        </RouterLink>
+        <button
+          v-if="league.my_club_id || league.is_owner"
+          type="button"
+          class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 text-start"
+          @click="openGroup"
+        >
+          <span
+            ><b class="block">{{ $t('جروب الدوري') }}</b
+            ><span class="text-sm text-text-muted">{{ $t('دردشة مدربي الدوري كلهم') }}</span></span
+          >
+          <span class="font-bold text-gold">←</span>
+        </button>
+
+        <RouterLink
+          v-if="league.kind !== 'tournament' && (league.draw_at || (league.is_owner && league.status === 'waiting'))"
+          :to="{ name: 'league-draw', params: { id } }"
+          class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3"
+        >
+          <span
+            ><b class="block">{{ $t('القرعة المباشرة') }}</b
+            ><span class="text-sm text-text-muted">{{
+              league.drawn_at ? $t('سُحبت: شاهد النتيجة') : league.draw_at ? $t('موعدها محدد: تابعها حية') : $t('حدد موعدها قبل البداية')
+            }}</span></span
+          >
+          <span class="font-bold text-gold">←</span>
+        </RouterLink>
+
+        <!-- [UP12] The league's media. -->
+        <div class="grid gap-2 sm:grid-cols-2">
+          <RouterLink
+            :to="{ name: 'league-newspaper', params: { id } }"
+            class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3"
+          >
+            <span
+              ><b class="block">{{ $t('جريدة الدوري') }}</b
+              ><span class="text-sm text-text-muted">{{ $t('تقرير كل جولة وتشكيلتها المثالية ومقالات المدربين') }}</span></span
+            ><span class="font-bold text-gold">←</span>
+          </RouterLink>
+          <RouterLink
+            :to="{ name: 'league-predictions', params: { id } }"
+            class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3"
+          >
+            <span
+              ><b class="block">{{ $t('توقعات المدربين') }}</b
+              ><span class="text-sm text-text-muted">{{ $t('توقع فائزي الجولة واربح مكافأة لناديك') }}</span></span
+            ><span class="font-bold text-gold">←</span>
+          </RouterLink>
+        </div>
+
+        <!-- [Sprint 30 P5] Only when there is one to see, or for the owner who makes it. -->
+        <RouterLink
+          v-if="league.is_owner || league.has_alliance"
+          :to="{ name: 'league-alliance', params: { id } }"
+          class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3"
+        >
+          <span
+            ><b class="block">{{ $t('بطولة التحالفات') }}</b
+            ><span class="text-sm text-text-muted">{{ $t('تحالفان من مدربي الدوري بقائد لكل منهما') }}</span></span
+          >
+          <span class="font-bold text-gold">←</span>
+        </RouterLink>
+
+        <UiCard v-if="clubs.length" :title="$t('الأندية')">
+          <template #action>
+            <RouterLink v-if="!league.my_club_id" :to="{ name: 'pick-team', params: { id } }" class="font-bold text-gold">{{
+              $t('اختر فريقك')
+            }}</RouterLink>
+          </template>
+          <ul class="flex flex-col gap-1">
+            <li
+              v-for="c in clubs"
+              :key="c.id"
+              class="flex min-h-touch items-center gap-3 rounded-lg px-2 py-1.5"
+              :class="c.id === league.my_club_id ? 'bg-surface-raised' : ''"
+            >
+              <ClubCrest :url="c.crest_url" :code="c.code" :size="32" />
+              <span class="min-w-0 flex-1 truncate font-bold">{{ $nm(c.name) }}</span>
+              <span class="text-sm text-text-muted">{{ c.id === league.my_club_id ? $t('أنت') : (c.coach?.name ?? $t('الحاسوب')) }}</span>
+              <span class="hidden w-16 text-end font-numbers sm:block">{{ money(c.balance) }}</span>
+              <span class="w-12 text-end font-numbers text-lg font-bold text-gold">{{ strength(c.strength_cp) }}</span>
+            </li>
+          </ul>
+          <p class="text-xs text-text-muted">
+            <span class="font-numbers">{{ coaches.length }}</span> {{ $t('مدربين، والباقي يديره الحاسوب.') }}
+          </p>
+        </UiCard>
       </template>
     </template>
     <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>

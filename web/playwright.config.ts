@@ -18,7 +18,13 @@ export default defineConfig({
     launchOptions: process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {},
   },
   webServer: [
-    { command: 'php artisan serve --port=8000', cwd: '../backend', url: 'http://localhost:8000/api/v1/health', reuseExistingServer: true, timeout: 120_000 },
+    {
+      command: 'php artisan serve --port=8000',
+      cwd: '../backend',
+      url: 'http://localhost:8000/api/v1/health',
+      reuseExistingServer: true,
+      timeout: 120_000,
+    },
     { command: 'npx vite --port 5173', url: 'http://localhost:5173', reuseExistingServer: true, timeout: 120_000 },
   ],
 })

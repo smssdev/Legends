@@ -41,16 +41,39 @@ async function submit() {
 <template>
   <h1 class="font-display text-3xl font-extrabold">{{ $t('أنشئ حسابك') }}</h1>
   <GoogleButton :label="$t('الدخول السريع بحساب Google')" />
-  <div class="flex items-center gap-3 text-sm text-text-muted"><span class="h-px flex-1 bg-text/10" />{{ $t('أو بثلاث خانات') }}<span class="h-px flex-1 bg-text/10" /></div>
+  <div class="flex items-center gap-3 text-sm text-text-muted">
+    <span class="h-px flex-1 bg-text/10" />{{ $t('أو بثلاث خانات') }}<span class="h-px flex-1 bg-text/10" />
+  </div>
   <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-    <UiInput v-model="name" :label="$t('الاسم')" autocomplete="nickname" :placeholder="$t('مثلاً: كوتش حمزة')" :error="errors.name" :hint="$t('يظهر للآخرين في اللعبة')" />
+    <UiInput
+      v-model="name"
+      :label="$t('الاسم')"
+      autocomplete="nickname"
+      :placeholder="$t('مثلاً: كوتش حمزة')"
+      :error="errors.name"
+      :hint="$t('يظهر للآخرين في اللعبة')"
+    />
     <UsernameField ref="usernameField" v-model="username" :error="errors.username" />
-    <UiInput v-model="password" :label="$t('كلمة المرور')" type="password" autocomplete="new-password" :error="errors.password" :hint="$t('8 أحرف أو أرقام على الأقل')" />
+    <UiInput
+      v-model="password"
+      :label="$t('كلمة المرور')"
+      type="password"
+      autocomplete="new-password"
+      :error="errors.password"
+      :hint="$t('8 أحرف أو أرقام على الأقل')"
+    />
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الإنشاء…') : $t('إنشاء الحساب') }}</button>
+    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">
+      {{ busy ? $t('جارٍ الإنشاء…') : $t('إنشاء الحساب') }}
+    </button>
   </form>
   <!-- [X57] The account is made on the terms and the privacy policy. -->
-  <p class="text-center text-xs leading-relaxed text-text-muted">{{ $t('بإنشائك الحساب، بحساب Google أو بالخانات، فأنت توافق على') }}
-    <RouterLink to="/terms" class="font-bold text-gold underline">{{ $t('الشروط والأحكام') }}</RouterLink> {{ $t('وعلى') }} <RouterLink to="/privacy" class="font-bold text-gold underline">{{ $t('سياسة الخصوصية') }}</RouterLink>.</p>
-  <p class="text-center text-sm text-text-muted">{{ $t('عندك حساب؟') }} <RouterLink to="/login" class="font-bold text-gold">{{ $t('سجّل الدخول') }}</RouterLink></p>
+  <p class="text-center text-xs leading-relaxed text-text-muted">
+    {{ $t('بإنشائك الحساب، بحساب Google أو بالخانات، فأنت توافق على') }}
+    <RouterLink to="/terms" class="font-bold text-gold underline">{{ $t('الشروط والأحكام') }}</RouterLink> {{ $t('وعلى') }}
+    <RouterLink to="/privacy" class="font-bold text-gold underline">{{ $t('سياسة الخصوصية') }}</RouterLink>.
+  </p>
+  <p class="text-center text-sm text-text-muted">
+    {{ $t('عندك حساب؟') }} <RouterLink to="/login" class="font-bold text-gold">{{ $t('سجّل الدخول') }}</RouterLink>
+  </p>
 </template>

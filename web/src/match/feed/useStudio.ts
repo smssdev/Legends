@@ -14,7 +14,10 @@ export type StudioNow = { clock: string; score: string; frozen: boolean; covered
 
 export function useStudio(host: Ref<HTMLElement | undefined>, kits: () => Record<Side, Kit>, seed: () => number, now: () => StudioNow) {
   let view: ReturnType<typeof studio> | null = null
-  let talkTill = 0, talker = 1, hypeTill = 0, drawn = 0
+  let talkTill = 0,
+    talker = 1,
+    hypeTill = 0,
+    drawn = 0
   let reaction: { key: string; seed: number; t0: number } | null = null
 
   function draw(at: number, force = false) {
@@ -22,18 +25,42 @@ export function useStudio(host: Ref<HTMLElement | undefined>, kits: () => Record
     if (!view || (n.covered && !force) || (!force && at - drawn < (smooth.value ? 48 : 32))) return
     drawn = at
     const hype = Math.max(0, Math.min(1, (hypeTill - at) / 1000))
-    try { view.update(at / 1000, { clock: n.clock, score: n.score, frozen: n.frozen, talk: at < talkTill || n.talking ? talker : 0, hype, react: reaction }) } catch (e) { console.error(e); view = null }
+    try {
+      view.update(at / 1000, {
+        clock: n.clock,
+        score: n.score,
+        frozen: n.frozen,
+        talk: at < talkTill || n.talking ? talker : 0,
+        hype,
+        react: reaction,
+      })
+    } catch (e) {
+      console.error(e)
+      view = null
+    }
   }
 
   function build() {
     if (!host.value) return
-    try { view = studio(kits(), seed(), theme.value === 'light'); host.value.replaceChildren(view.svg); draw(performance.now(), true) } catch (e) { console.error(e); view = null }
+    try {
+      view = studio(kits(), seed(), theme.value === 'light')
+      host.value.replaceChildren(view.svg)
+      draw(performance.now(), true)
+    } catch (e) {
+      console.error(e)
+      view = null
+    }
   }
 
   /** A line said: the other commentator talks next, for a while. */
-  function talk() { talker = talker === 1 ? 2 : 1; talkTill = performance.now() + 2600 }
+  function talk() {
+    talker = talker === 1 ? 2 : 1
+    talkTill = performance.now() + 2600
+  }
   /** A goal: on their feet for six seconds. */
-  function hype() { hypeTill = performance.now() + 6000 }
+  function hype() {
+    hypeTill = performance.now() + 6000
+  }
   /** Back from a clip: what they react to. */
   function reactTo(s: Story | undefined, tick: number) {
     const key = s ? reactionKey(s) : null

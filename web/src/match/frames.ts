@@ -25,16 +25,20 @@ export function tangent(prev: number | undefined, cur: number, next: number | un
   if (prev === undefined && next === undefined) return 0
   if (prev === undefined) return next! - cur
   if (next === undefined) return cur - prev
-  const d0 = cur - prev, d1 = next - cur
+  const d0 = cur - prev,
+    d1 = next - cur
   if (d0 * d1 <= 0) return 0
-  const m = (d0 + d1) / 2, lim = 3 * Math.min(Math.abs(d0), Math.abs(d1))
+  const m = (d0 + d1) / 2,
+    lim = 3 * Math.min(Math.abs(d0), Math.abs(d1))
   return Math.sign(m) * Math.min(Math.abs(m), lim)
 }
 
 /** One coordinate between a (at k 0) and b (at k 1), with the Keyframes before a and after b when there are any. */
 export function curve(p: number | undefined, a: number, b: number, n: number | undefined, k: number): number {
-  const ma = tangent(p, a, b), mb = tangent(a, b, n)
-  const k2 = k * k, k3 = k2 * k
+  const ma = tangent(p, a, b),
+    mb = tangent(a, b, n)
+  const k2 = k * k,
+    k3 = k2 * k
   return (2 * k3 - 3 * k2 + 1) * a + (k3 - 2 * k2 + k) * ma + (-2 * k3 + 3 * k2) * b + (k3 - k2) * mb
 }
 
@@ -47,27 +51,45 @@ export function loft(a: [number, number, number?], b: [number, number, number?])
 }
 
 /** The RenderFrame at progress u: the ball (x, y, height) and every player's spot. Null with no Keyframes. */
-export function sample(frames: Keyframe[], u: number): { ball: [number, number, number]; players: Record<string, [number, number]>; officials?: [number, number][] } | null {
+export function sample(
+  frames: Keyframe[],
+  u: number,
+): { ball: [number, number, number]; players: Record<string, [number, number]>; officials?: [number, number][] } | null {
   if (!frames.length) return null
   const { i, k } = segment(frames.length, u)
-  const A = frames[i], B = frames[Math.min(frames.length - 1, i + 1)]
-  const P = i > 0 ? frames[i - 1] : undefined, N = i + 2 < frames.length ? frames[i + 2] : undefined
+  const A = frames[i],
+    B = frames[Math.min(frames.length - 1, i + 1)]
+  const P = i > 0 ? frames[i - 1] : undefined,
+    N = i + 2 < frames.length ? frames[i + 2] : undefined
   const players: Record<string, [number, number]> = {}
   for (const id in A.p) {
-    const a = A.p[id], b = B.p[id]
+    const a = A.p[id],
+      b = B.p[id]
     // A player in the first Keyframe only (sent off, replaced) stays where he was.
-    if (!b || B === A) { players[id] = [a[0], a[1]]; continue }
-    const p = P?.p[id], n = N?.p[id]
+    if (!b || B === A) {
+      players[id] = [a[0], a[1]]
+      continue
+    }
+    const p = P?.p[id],
+      n = N?.p[id]
     players[id] = [curve(p?.[0], a[0], b[0], n?.[0], k), curve(p?.[1], a[1], b[1], n?.[1], k)]
   }
   // [Sprint 31 D1] The referee and his assistants (r, when the server sends them) follow the same curve.
-  const officials = A.r && (B === A || !B.r ? A.r.map((o) => [o[0], o[1]] as [number, number])
-    : A.r.map((a, n) => { const b = B.r![n], p = P?.r?.[n], q = N?.r?.[n]; return [curve(p?.[0], a[0], b[0], q?.[0], k), curve(p?.[1], a[1], b[1], q?.[1], k)] as [number, number] }))
+  const officials =
+    A.r &&
+    (B === A || !B.r
+      ? A.r.map((o) => [o[0], o[1]] as [number, number])
+      : A.r.map((a, n) => {
+          const b = B.r![n],
+            p = P?.r?.[n],
+            q = N?.r?.[n]
+          return [curve(p?.[0], a[0], b[0], q?.[0], k), curve(p?.[1], a[1], b[1], q?.[1], k)] as [number, number]
+        }))
   if (B === A) return { ball: [A.b[0], A.b[1], A.b[2] ?? 0], players, ...(officials ? { officials } : {}) }
   const ball: [number, number, number] = [
     curve(P?.b[0], A.b[0], B.b[0], N?.b[0], k),
     curve(P?.b[1], A.b[1], B.b[1], N?.b[1], k),
-    curve(P ? P.b[2] ?? 0 : undefined, A.b[2] ?? 0, B.b[2] ?? 0, N ? N.b[2] ?? 0 : undefined, k) + 4 * k * (1 - k) * loft(A.b, B.b),
+    curve(P ? (P.b[2] ?? 0) : undefined, A.b[2] ?? 0, B.b[2] ?? 0, N ? (N.b[2] ?? 0) : undefined, k) + 4 * k * (1 - k) * loft(A.b, B.b),
   ]
   return { ball, players, ...(officials ? { officials } : {}) }
 }

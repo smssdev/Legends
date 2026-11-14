@@ -13,21 +13,60 @@ type SayVars = { p?: Id; q?: Id; A?: Side; n?: Txt }
 /** A text from the server: a key to translate, a name, or parts (see MomentStory). */
 /** A line of voice.json: its key, its slot, the language (a slot of lines) and the variant. */
 type Ref = { m: string; s: string; lang?: 'en' | 'ar'; i: number }
-export type Txt = string | { p: Id } | { c: Side } | { r: string } | { t: string; v: Txt[] } | { j: Txt[]; by: Txt } | { say: Ref; vars: SayVars }
+export type Txt =
+  string | { p: Id } | { c: Side } | { r: string } | { t: string; v: Txt[] } | { j: Txt[]; by: Txt } | { say: Ref; vars: SayVars }
 
 // The commentator's variants by their place in voice.json (no m: the kick-off line).
-export type ServerLine = { at: number; en: number | null; ar: number | null; x: boolean; vars: SayVars; m?: string; s?: 'pre' | 'key' | 'post' }
+export type ServerLine = {
+  at: number
+  en: number | null
+  ar: number | null
+  x: boolean
+  vars: SayVars
+  m?: string
+  s?: 'pre' | 'key' | 'post'
+}
 export type ServerItem = { side: Side; icon: string; name: Txt; label: Txt; minute: string; goal?: boolean; center?: boolean }
 export type ServerStory = {
-  scene: string | null; side: Side; data: Record<string, any>; head: Txt; who: Txt; sub: Txt
-  pre: { head: Txt; who: Txt; sub: Txt } | null; items: ServerItem[]; lines: ServerLine[]; bubble: Txt; bubble_en: Txt; goal: boolean; minute: string
+  scene: string | null
+  side: Side
+  data: Record<string, any>
+  head: Txt
+  who: Txt
+  sub: Txt
+  pre: { head: Txt; who: Txt; sub: Txt } | null
+  items: ServerItem[]
+  lines: ServerLine[]
+  bubble: Txt
+  bubble_en: Txt
+  goal: boolean
+  minute: string
 }
 
-export type Line = { at: number; en: string | null; ar: string | null; x: boolean; vars: { p: Id; q: Id; A: Side; n: string }; m?: string; s?: string }
+export type Line = {
+  at: number
+  en: string | null
+  ar: string | null
+  x: boolean
+  vars: { p: Id; q: Id; A: Side; n: string }
+  m?: string
+  s?: string
+}
 export type Item = { side: Side; icon: string; name: string; label: string; minute: string; goal?: boolean; center?: boolean }
 export type Story = {
-  scene: string | null; side: Side; data: Record<string, any>; head: string; who: string; sub: string
-  pre: { head: string; who: string; sub: string } | null; items: Item[]; lines: Line[]; bubble: string; keyAt: number; goal: boolean; minute: string
+  scene: string | null
+  side: Side
+  data: Record<string, any>
+  head: string
+  who: string
+  sub: string
+  pre: { head: string; who: string; sub: string } | null
+  items: Item[]
+  lines: Line[]
+  bubble: string
+  keyAt: number
+  goal: boolean
+  minute: string
 }
 export type StoryCtx = { players: Record<string, { name: string; no?: number | string }>; clubs: { home: string; away: string } }
 
@@ -43,19 +82,39 @@ const said = (r: Ref): string => {
 export function txt(x: Txt | null | undefined, ctx: StoryCtx): string {
   if (x == null) return ''
   if (typeof x === 'string') return x ? t(x) : ''
-  const name = (id: Id) => (id == null ? '' : ctx.players[String(id)]?.name ?? '')
+  const name = (id: Id) => (id == null ? '' : (ctx.players[String(id)]?.name ?? ''))
   const club = (s: Side | undefined) => cn(ctx.clubs[s ?? 'home'])
   if ('p' in x) return name(x.p)
   if ('c' in x) return club(x.c)
   if ('r' in x) return x.r
   if ('t' in x) return t(x.t, Object.fromEntries(x.v.map((v, i) => [`v${i}`, txt(v, ctx)])))
   if ('j' in x) return x.j.map((v) => txt(v, ctx)).join(txt(x.by, ctx))
-  const v = x.vars, A = v.A ?? 'home'
-  return said(x.say).replace(/\{p\}/g, name(v.p)).replace(/\{q\}/g, name(v.q)).replace(/\{A\}/g, club(A)).replace(/\{B\}/g, club(other(A))).replace(/\{n\}/g, txt(v.n ?? '', ctx))
+  const v = x.vars,
+    A = v.A ?? 'home'
+  return said(x.say)
+    .replace(/\{p\}/g, name(v.p))
+    .replace(/\{q\}/g, name(v.q))
+    .replace(/\{A\}/g, club(A))
+    .replace(/\{B\}/g, club(other(A)))
+    .replace(/\{n\}/g, txt(v.n ?? '', ctx))
 }
 
 /** A minute with nothing to tell (one sent without its story). */
-export const untold = (): Story => ({ scene: null, side: 'home', data: {}, head: '', who: '', sub: '', pre: null, items: [], lines: [], bubble: '', keyAt: 0, goal: false, minute: '' })
+export const untold = (): Story => ({
+  scene: null,
+  side: 'home',
+  data: {},
+  head: '',
+  who: '',
+  sub: '',
+  pre: null,
+  items: [],
+  lines: [],
+  bubble: '',
+  keyAt: 0,
+  goal: false,
+  minute: '',
+})
 
 /** The minute's story for this screen (null: an old minute without one, nothing to play). */
 export function told(s: ServerStory | null | undefined, ctx: StoryCtx): Story | null {
@@ -79,9 +138,18 @@ export function told(s: ServerStory | null | undefined, ctx: StoryCtx): Story | 
   if (Array.isArray(data.stats)) data.stats = data.stats.map(([l, h, a]: [Txt, number, number]) => [w(l), h, a])
   if (Array.isArray(data.score)) data.score = scoreText(data.score[0], data.score[1])
   return {
-    scene: s.scene, side: s.side, data, head: w(s.head), who: w(s.who), sub: w(s.sub),
+    scene: s.scene,
+    side: s.side,
+    data,
+    head: w(s.head),
+    who: w(s.who),
+    sub: w(s.sub),
     pre: s.pre ? { head: w(s.pre.head), who: w(s.pre.who), sub: w(s.pre.sub) } : null,
     items: s.items.map((i) => ({ ...i, name: w(i.name), label: w(i.label) })),
-    lines, bubble, keyAt: k, goal: s.goal, minute: s.minute,
+    lines,
+    bubble,
+    keyAt: k,
+    goal: s.goal,
+    minute: s.minute,
   }
 }

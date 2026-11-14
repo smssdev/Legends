@@ -13,10 +13,27 @@ defineProps<{ value: number | string }>()
 </template>
 
 <style scoped>
-.flip-num { position: relative; display: inline-grid; overflow: hidden; vertical-align: bottom; }
-.flip-num-in { grid-area: 1 / 1; }
+.flip-num {
+  position: relative;
+  display: inline-grid;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.flip-num-in {
+  grid-area: 1 / 1;
+}
 .flip-num-enter-active,
-.flip-num-leave-active { transition: transform var(--duration-slow) var(--ease-spring), opacity var(--duration-base) var(--ease-soft); }
-.flip-num-enter-from { transform: translateY(70%); opacity: 0; }
-.flip-num-leave-to { transform: translateY(-70%); opacity: 0; }
+.flip-num-leave-active {
+  transition:
+    transform var(--duration-slow) var(--ease-spring),
+    opacity var(--duration-base) var(--ease-soft);
+}
+.flip-num-enter-from {
+  transform: translateY(70%);
+  opacity: 0;
+}
+.flip-num-leave-to {
+  transform: translateY(-70%);
+  opacity: 0;
+}
 </style>

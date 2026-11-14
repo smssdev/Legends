@@ -19,5 +19,19 @@ export const TEMPLATE_NOTES: Record<string, string> = {
   custom: 'منتخبات وأندية تختارها، من فريقين',
 }
 export const FORMATS: Record<string, string> = { league: 'دوري', groups: 'مجموعات ثم إقصاء', knockout: 'خروج المغلوب' }
-export const STAGES: Record<string, string> = { preliminary: 'الدور التمهيدي', r32: 'دور الـ32', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي' }
-export const CONFEDERATIONS: Record<string, string> = { UEFA: 'أوروبا', CAF: 'أفريقيا', AFC: 'آسيا', CONMEBOL: 'أمريكا الجنوبية', CONCACAF: 'أمريكا الشمالية', OFC: 'أوقيانوسيا' }
+export const STAGES: Record<string, string> = {
+  preliminary: 'الدور التمهيدي',
+  r32: 'دور الـ32',
+  r16: 'دور الـ16',
+  qf: 'ربع النهائي',
+  sf: 'نصف النهائي',
+  final: 'النهائي',
+}
+export const CONFEDERATIONS: Record<string, string> = {
+  UEFA: 'أوروبا',
+  CAF: 'أفريقيا',
+  AFC: 'آسيا',
+  CONMEBOL: 'أمريكا الجنوبية',
+  CONCACAF: 'أمريكا الشمالية',
+  OFC: 'أوقيانوسيا',
+}

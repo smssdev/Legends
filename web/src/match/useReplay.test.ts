@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { isKey, useReplay } from './useReplay'
 import type { Tick } from '../api/sim'
 
-const tick = (n: number, kind: string, events: any[] = []) => ({ tick: n, minute: [n, 0], score: { home: 0, away: 0 }, events, moment: { kind, ms: 3000 } }) as unknown as Tick
+const tick = (n: number, kind: string, events: any[] = []) =>
+  ({ tick: n, minute: [n, 0], score: { home: 0, away: 0 }, events, moment: { kind, ms: 3000 } }) as unknown as Tick
 
 describe('useReplay', () => {
   it('keeps the goals and the big moments, and only the saves from big chances', () => {

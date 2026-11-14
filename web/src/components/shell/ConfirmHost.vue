@@ -7,6 +7,15 @@ const c = useConfirm()
 </script>
 
 <template>
-  <ConfirmDangerDialog :open="!!c.current" :title="c.current?.title ?? ''" :text="c.current?.text" :expected="c.current?.expected" :action="c.current?.action ?? ''"
-    :tone="c.current?.tone" :remember="!!c.current?.remember" @close="c.settle(false)" @confirm="(r: boolean) => c.settle(true, r)" />
+  <ConfirmDangerDialog
+    :open="!!c.current"
+    :title="c.current?.title ?? ''"
+    :text="c.current?.text"
+    :expected="c.current?.expected"
+    :action="c.current?.action ?? ''"
+    :tone="c.current?.tone"
+    :remember="!!c.current?.remember"
+    @close="c.settle(false)"
+    @confirm="(r: boolean) => c.settle(true, r)"
+  />
 </template>

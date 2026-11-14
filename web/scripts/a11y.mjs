@@ -6,7 +6,10 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const root = new URL('../src/', import.meta.url).pathname
-const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : e.name.endsWith('.vue') ? [path.join(d, e.name)] : []))
+const walk = (d) =>
+  fs
+    .readdirSync(d, { withFileTypes: true })
+    .flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : e.name.endsWith('.vue') ? [path.join(d, e.name)] : []))
 
 /** Every opening tag of a name, whole (quotes respected: a `>` inside an attribute does not close it). */
 function tags(src, name) {
@@ -18,7 +21,9 @@ function tags(src, name) {
     let q = null
     for (; i < src.length; i++) {
       const c = src[i]
-      if (q) { if (c === q) q = null } else if (c === '"' || c === "'") q = c
+      if (q) {
+        if (c === q) q = null
+      } else if (c === '"' || c === "'") q = c
       else if (c === '>') break
     }
     out.push({ tag: src.slice(m.index, i + 1), line: src.slice(0, m.index).split('\n').length })
@@ -31,7 +36,8 @@ for (const f of walk(root)) {
   const src = fs.readFileSync(f, 'utf8')
   const rel = path.relative(root, f)
   for (const { tag, line } of tags(src, 'button')) if (!/\s:?type=/.test(tag)) bad.push(`${rel}:${line} a <button> with no type`)
-  for (const { tag, line } of tags(src, 'tr')) if (/\stabindex=|@keydown/.test(tag)) bad.push(`${rel}:${line} a table row made a control: put a button in its name cell`)
+  for (const { tag, line } of tags(src, 'tr'))
+    if (/\stabindex=|@keydown/.test(tag)) bad.push(`${rel}:${line} a table row made a control: put a button in its name cell`)
 }
 if (bad.length) {
   console.error(`a11y: ${bad.length} problem(s)\n  ${bad.join('\n  ')}`)

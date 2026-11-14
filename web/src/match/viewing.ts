@@ -27,7 +27,9 @@ function local<T extends string>(key: string, allowed: readonly T[], fallback: T
   }
 }
 function keep(key: string, value: string) {
-  try { storage.set(key, value) } catch {}
+  try {
+    storage.set(key, value)
+  } catch {}
 }
 
 // This device's choice: a guest's only one, and a signed-in coach's until their account answers.

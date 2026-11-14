@@ -20,11 +20,16 @@ const id = useId(undefined, 'ui-toggle')
       class="relative h-7 w-12 shrink-0 rounded-pill transition-colors duration-200 after:absolute after:-inset-y-2 after:inset-x-0 after:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
       :class="model ? ON[tone] : 'bg-surface-raised ring-1 ring-text/15'"
     >
-      <SwitchThumb class="absolute start-1 top-1 block size-5 rounded-full bg-white shadow transition-transform duration-200 ease-soft" :class="model ? 'translate-x-5 rtl:-translate-x-5' : ''" />
+      <SwitchThumb
+        class="absolute start-1 top-1 block size-5 rounded-full bg-white shadow transition-transform duration-200 ease-soft"
+        :class="model ? 'translate-x-5 rtl:-translate-x-5' : ''"
+      />
       <span v-if="label && !$slots.default" class="sr-only">{{ $t(label) }}</span>
     </SwitchRoot>
     <span v-if="label || $slots.default" class="flex-1 text-sm">
-      <label :for="id" class="block cursor-pointer"><slot>{{ $t(label) }}</slot></label>
+      <label :for="id" class="block cursor-pointer"
+        ><slot>{{ $t(label) }}</slot></label
+      >
       <span v-if="hint" :id="`${id}-hint`" class="block text-xs text-text-muted">{{ $t(hint) }}</span>
     </span>
   </div>

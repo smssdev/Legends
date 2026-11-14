@@ -3,16 +3,49 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const calls: string[] = []
 vi.mock('./sound', () => ({
   MatchSound: class {
-    start() { calls.push('start') } setMuted(m: boolean) { calls.push('muted:' + m) } whistle(n?: number) { calls.push('whistle' + (n ?? '')) }
-    kick(c: boolean) { calls.push('kick:' + c) } duck() {} stop() { calls.push('stop') } roar() {} net() {} touch() {} groan() {} heart() {} post() {}
+    start() {
+      calls.push('start')
+    }
+    setMuted(m: boolean) {
+      calls.push('muted:' + m)
+    }
+    whistle(n?: number) {
+      calls.push('whistle' + (n ?? ''))
+    }
+    kick(c: boolean) {
+      calls.push('kick:' + c)
+    }
+    duck() {}
+    stop() {
+      calls.push('stop')
+    }
+    roar() {}
+    net() {}
+    touch() {}
+    groan() {}
+    heart() {}
+    post() {}
   },
 }))
-vi.mock('./voice', () => ({ Commentator: class { onTalk: unknown = null; setOn(on: boolean) { calls.push('voice:' + on) } dispose() { calls.push('dispose') } } }))
+vi.mock('./voice', () => ({
+  Commentator: class {
+    onTalk: unknown = null
+    setOn(on: boolean) {
+      calls.push('voice:' + on)
+    }
+    dispose() {
+      calls.push('dispose')
+    }
+  },
+}))
 
 import { useMatchAudio } from './useMatchAudio'
 
 describe('useMatchAudio', () => {
-  beforeEach(() => { calls.length = 0; localStorage.clear() })
+  beforeEach(() => {
+    calls.length = 0
+    localStorage.clear()
+  })
 
   it('the sound and the commentator turn on together, and the commentator can be left off', () => {
     const a = useMatchAudio()

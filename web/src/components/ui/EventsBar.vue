@@ -11,21 +11,27 @@ const now = ref(Date.now())
 let clock = 0
 // Once per ended event: the page reloads, and a late server clock does not make it reload every second.
 const told = new Set<string>()
-onMounted(() => { clock = window.setInterval(() => {
-  now.value = Date.now()
-  const ended = (props.events ?? []).filter((e) => new Date(e.ends_at).getTime() <= now.value && !told.has(e.kind + e.ends_at))
-  if (ended.length) { ended.forEach((e) => told.add(e.kind + e.ends_at)); emit('ended') }
-}, 1000) })
+onMounted(() => {
+  clock = window.setInterval(() => {
+    now.value = Date.now()
+    const ended = (props.events ?? []).filter((e) => new Date(e.ends_at).getTime() <= now.value && !told.has(e.kind + e.ends_at))
+    if (ended.length) {
+      ended.forEach((e) => told.add(e.kind + e.ends_at))
+      emit('ended')
+    }
+  }, 1000)
+})
 onBeforeUnmount(() => clearInterval(clock))
 
-const label = (e: Ev) => ({
-  madness: t('جنون الانتقالات: البيع وتجديد السوق أسرع {v0} مرة', { v0: e.power / 10000 }),
-  progression: t('التقدم الفائق: كل جلسة تدريب أكبر {v0} مرة', { v0: e.power / 10000 }),
-  discount: t('خصم السوق: لاعبو العالم أرخص {v0}%', { v0: e.power / 100 }),
-  offers: t('العروض الخاصة: لاعبون بخصم {v0}% حتى تجديد السوق', { v0: e.power / 100 }),
-  in_form: t('نجوم الأسبوع: لاعبون في قمة مستواهم +{v0}', { v0: e.power }),
-  legends: t('الأساطير: لاعبون أقوى من أفضل لاعبي دوريك'),
-})[e.kind]
+const label = (e: Ev) =>
+  ({
+    madness: t('جنون الانتقالات: البيع وتجديد السوق أسرع {v0} مرة', { v0: e.power / 10000 }),
+    progression: t('التقدم الفائق: كل جلسة تدريب أكبر {v0} مرة', { v0: e.power / 10000 }),
+    discount: t('خصم السوق: لاعبو العالم أرخص {v0}%', { v0: e.power / 100 }),
+    offers: t('العروض الخاصة: لاعبون بخصم {v0}% حتى تجديد السوق', { v0: e.power / 100 }),
+    in_form: t('نجوم الأسبوع: لاعبون في قمة مستواهم +{v0}', { v0: e.power }),
+    legends: t('الأساطير: لاعبون أقوى من أفضل لاعبي دوريك'),
+  })[e.kind]
 const icon = (e: Ev) => ({ madness: '⚡', progression: '🚀', discount: '🏷️', offers: '🎁', in_form: '🔥', legends: '👑' })[e.kind]
 const left = (iso: string) => {
   const s = Math.max(0, Math.floor((new Date(iso).getTime() - now.value) / 1000))
@@ -38,7 +44,11 @@ const running = computed(() => (props.events ?? []).filter((e) => new Date(e.end
 
 <template>
   <ul v-if="running.length" class="flex flex-col gap-1.5" :aria-label="t('الفعاليات الجارية')">
-    <li v-for="e in running" :key="e.kind + e.ends_at" class="flex flex-wrap items-center gap-2 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-sm">
+    <li
+      v-for="e in running"
+      :key="e.kind + e.ends_at"
+      class="flex flex-wrap items-center gap-2 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-sm"
+    >
       <span aria-hidden="true">{{ icon(e) }}</span>
       <b class="min-w-0 flex-1">{{ label(e) }}</b>
       <span class="text-xs text-text-muted">{{ t('تنتهي بعد') }}</span>

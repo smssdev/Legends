@@ -13,18 +13,22 @@ let loading: Promise<AdSenseConfig | null> | null = null
 
 /** The account's settings, once per visit; null when Google's ads are off (or the server is not reached). */
 export function adsense(): Promise<AdSenseConfig | null> {
-  return (loading ??= siteConfig().then((data) => {
-    const cfg = (data?.adsense ?? null) as AdSenseConfig | null
-    if (cfg) inject(cfg)
-    return cfg
-  }).catch(() => null))
+  return (loading ??= siteConfig()
+    .then((data) => {
+      const cfg = (data?.adsense ?? null) as AdSenseConfig | null
+      if (cfg) inject(cfg)
+      return cfg
+    })
+    .catch(() => null))
 }
 
 function inject(cfg: AdSenseConfig) {
   const w = window as AdsWindow
   w.adsbygoogle = w.adsbygoogle || []
   // The Ad Placement API (H5 Games Ads): adBreak and adConfig both queue into adsbygoogle.
-  w.adBreak = w.adConfig = (o: Placement) => { w.adsbygoogle!.push(o) }
+  w.adBreak = w.adConfig = (o: Placement) => {
+    w.adsbygoogle!.push(o)
+  }
   if (document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')) return
   const s = document.createElement('script')
   s.async = true
@@ -55,9 +59,16 @@ export function rewarded(ready: () => Promise<boolean>): Promise<'viewed' | 'dis
   return new Promise((resolve) => {
     let shown = false
     let settled = false
-    const done = (r: 'viewed' | 'dismissed' | 'none') => { if (!settled) { settled = true; resolve(r) } }
+    const done = (r: 'viewed' | 'dismissed' | 'none') => {
+      if (!settled) {
+        settled = true
+        resolve(r)
+      }
+    }
     // A blocked script never answers: our own ad after a few seconds.
-    const guard = setTimeout(() => { if (!shown) done('none') }, 5000)
+    const guard = setTimeout(() => {
+      if (!shown) done('none')
+    }, 5000)
     if (!w.adBreak) return done('none')
     w.adBreak({
       type: 'reward',
@@ -70,7 +81,10 @@ export function rewarded(ready: () => Promise<boolean>): Promise<'viewed' | 'dis
       },
       adViewed: () => done('viewed'),
       adDismissed: () => done('dismissed'),
-      adBreakDone: (info: AdBreakDone) => { clearTimeout(guard); done(info.breakStatus === 'viewed' ? 'viewed' : shown ? 'dismissed' : 'none') },
+      adBreakDone: (info: AdBreakDone) => {
+        clearTimeout(guard)
+        done(info.breakStatus === 'viewed' ? 'viewed' : shown ? 'dismissed' : 'none')
+      },
     })
   })
 }

@@ -6,7 +6,11 @@ const word = (h: number, a: number) => `${h}-${a}`
 
 describe('announcement', () => {
   it('says the newest important entry with the score, and nothing for the rest', () => {
-    const added = [{ minute: "52'", text: 'هدف لصلاح', important: true }, { minute: "51'", text: 'ركنية', important: false }, { minute: "50'", text: 'بطاقة صفراء', important: true }]
+    const added = [
+      { minute: "52'", text: 'هدف لصلاح', important: true },
+      { minute: "51'", text: 'ركنية', important: false },
+      { minute: "50'", text: 'بطاقة صفراء', important: true },
+    ]
     expect(announcement(added, { home: 2, away: 1 }, word)).toBe("52' هدف لصلاح 2-1")
     expect(announcement([{ minute: "3'", text: 'ركنية', important: false }], { home: 0, away: 0 }, word)).toBe('')
   })
@@ -38,7 +42,10 @@ describe('useMatchAnnouncer', () => {
     s.skipping.value = true
     await nextTick()
     s.score.value = { home: 0, away: 3 }
-    s.feed.value = [{ minute: "80'", text: 'هدف', important: true }, { minute: "40'", text: 'هدف', important: true }]
+    s.feed.value = [
+      { minute: "80'", text: 'هدف', important: true },
+      { minute: "40'", text: 'هدف', important: true },
+    ]
     await nextTick()
     expect(s.a.said.value).toBe('')
     s.skipping.value = false

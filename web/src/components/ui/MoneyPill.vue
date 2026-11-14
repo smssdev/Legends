@@ -14,13 +14,23 @@ defineProps<{ kind: 'coins' | 'cash'; value: number | null; to: string; label: s
     <AppImage v-if="kind === 'coins'" src="/brand/coin.svg" alt="" class="size-5" :size="20" />
     <span class="flex flex-col leading-none">
       <span v-if="caption" class="hidden text-caption font-bold opacity-80 md:block">{{ $t(caption) }}</span>
-      <b class="font-numbers text-body-lg" dir="ltr"><CountUp v-if="value !== null" :value="value" :format="kind === 'cash' ? money : undefined" /><template v-else>?</template></b>
+      <b class="font-numbers text-body-lg" dir="ltr"
+        ><CountUp v-if="value !== null" :value="value" :format="kind === 'cash' ? money : undefined" /><template v-else>?</template></b
+      >
     </span>
   </RouterLink>
 </template>
 
 <style scoped>
-.ui-money-warn { position: absolute; top: 2px; inset-inline-end: 2px; width: 8px; height: 8px; border-radius: 50%; background: var(--color-warning); }
+.ui-money-warn {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-warning);
+}
 .ui-money-pill {
   position: relative;
   display: flex;
@@ -33,7 +43,9 @@ defineProps<{ kind: 'coins' | 'cash'; value: number | null; to: string; label: s
 .ui-money-pill.coins {
   color: var(--color-on-gold);
   background: linear-gradient(180deg, var(--color-gold-light), var(--color-gold) 60%, var(--color-gold-dark));
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.45) inset, var(--shadow-raised);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.45) inset,
+    var(--shadow-raised);
 }
 .ui-money-pill.cash {
   padding: 0 0.7rem;
@@ -41,5 +53,9 @@ defineProps<{ kind: 'coins' | 'cash'; value: number | null; to: string; label: s
   background: color-mix(in srgb, var(--color-success) 18%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-success) 35%, transparent);
 }
-@media (max-width: 380px) { .ui-money-pill.cash { padding: 0 0.45rem } }
+@media (max-width: 380px) {
+  .ui-money-pill.cash {
+    padding: 0 0.45rem;
+  }
+}
 </style>

@@ -58,16 +58,31 @@ async function submit() {
   </div>
   <p v-if="notice" class="rounded-lg bg-surface px-4 py-3 text-sm" role="status">{{ $t(notice) }}</p>
   <GoogleButton :label="$t('المتابعة بحساب Google')" />
-  <div class="flex items-center gap-3 text-sm text-text-muted"><span class="h-px flex-1 bg-text/10" />{{ $t('أو بالبريد') }}<span class="h-px flex-1 bg-text/10" /></div>
+  <div class="flex items-center gap-3 text-sm text-text-muted">
+    <span class="h-px flex-1 bg-text/10" />{{ $t('أو بالبريد') }}<span class="h-px flex-1 bg-text/10" />
+  </div>
   <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-    <UiInput v-model="email" :label="$t('البريد أو اسم المستخدم')" type="username" autocomplete="username" placeholder="you@example.com" :error="errors.email" />
+    <UiInput
+      v-model="email"
+      :label="$t('البريد أو اسم المستخدم')"
+      type="username"
+      autocomplete="username"
+      placeholder="you@example.com"
+      :error="errors.email"
+    />
     <UiInput v-model="password" :label="$t('كلمة المرور')" type="password" autocomplete="current-password" :error="errors.password">
-      <template #aside><RouterLink to="/forgot-password" class="text-sm text-gold">{{ $t('نسيت كلمة المرور؟') }}</RouterLink></template>
+      <template #aside
+        ><RouterLink to="/forgot-password" class="text-sm text-gold">{{ $t('نسيت كلمة المرور؟') }}</RouterLink></template
+      >
     </UiInput>
     <UiToggle v-model="remember" :label="$t('تذكرني على هذا الجهاز')" />
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الدخول…') : $t('دخول') }}</button>
+    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">
+      {{ busy ? $t('جارٍ الدخول…') : $t('دخول') }}
+    </button>
   </form>
-  <p class="text-center text-sm text-text-muted">{{ $t('ليس لديك حساب؟') }} <RouterLink to="/register" class="font-bold text-gold">{{ $t('أنشئ حساباً') }}</RouterLink></p>
+  <p class="text-center text-sm text-text-muted">
+    {{ $t('ليس لديك حساب؟') }} <RouterLink to="/register" class="font-bold text-gold">{{ $t('أنشئ حساباً') }}</RouterLink>
+  </p>
   <SupportLinks />
 </template>

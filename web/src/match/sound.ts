@@ -22,7 +22,12 @@ export class MatchSound {
     this.master = ctx.createGain()
     // [Sprint 63 G13] At the stadium's level (lib/soundLevels.ts), followed as it moves.
     this.master.gain.value = 0.6 * gainOf('stadium')
-    this.stopLevel = watch(() => levels.stadium, (v) => { if (this.master) this.master.gain.value = 0.6 * v / 100 })
+    this.stopLevel = watch(
+      () => levels.stadium,
+      (v) => {
+        if (this.master) this.master.gain.value = (0.6 * v) / 100
+      },
+    )
     this.master.connect(ctx.destination)
 
     // Crowd bed: brown noise through a band-pass filter.
@@ -207,14 +212,25 @@ export class MatchSound {
   /** [Sprint 32 A2] The ball in the net: a short swish of the netting. */
   net() {
     if (!this.ctx || !this.master) return
-    const t = this.ctx.currentTime, n = Math.floor(this.ctx.sampleRate * 0.35)
-    const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate), d = buf.getChannelData(0)
+    const t = this.ctx.currentTime,
+      n = Math.floor(this.ctx.sampleRate * 0.35)
+    const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate),
+      d = buf.getChannelData(0)
     // A fixed pattern, not Math.random: the same swish every time.
     let r = 7
-    for (let i = 0; i < n; i++) { r = (r * 1103515245 + 12345) & 0x7fffffff; d[i] = (r / 0x3fffffff - 1) * (1 - i / n) }
-    const src = this.ctx.createBufferSource(), band = this.ctx.createBiquadFilter(), gain = this.ctx.createGain()
-    src.buffer = buf; band.type = 'bandpass'; band.frequency.value = 2400; band.Q.value = 0.8
-    gain.gain.setValueAtTime(0.35, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35)
+    for (let i = 0; i < n; i++) {
+      r = (r * 1103515245 + 12345) & 0x7fffffff
+      d[i] = (r / 0x3fffffff - 1) * (1 - i / n)
+    }
+    const src = this.ctx.createBufferSource(),
+      band = this.ctx.createBiquadFilter(),
+      gain = this.ctx.createGain()
+    src.buffer = buf
+    band.type = 'bandpass'
+    band.frequency.value = 2400
+    band.Q.value = 0.8
+    gain.gain.setValueAtTime(0.35, t)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35)
     src.connect(band).connect(gain).connect(this.master)
     src.start(t)
   }
@@ -222,7 +238,10 @@ export class MatchSound {
   /** A heartbeat before a penalty: two low thumps. */
   heart() {
     if (!this.ctx || !this.master) return
-    for (const [d, g] of [[0, 0.55], [0.18, 0.4]]) {
+    for (const [d, g] of [
+      [0, 0.55],
+      [0.18, 0.4],
+    ]) {
       const t = this.ctx.currentTime + d
       const osc = this.ctx.createOscillator()
       const gain = this.ctx.createGain()

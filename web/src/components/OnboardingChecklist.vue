@@ -38,47 +38,110 @@ const STEPS = computed(() => (week.value ? WEEK : FIRST))
 const count = computed(() => STEPS.value.filter(done).length)
 // [X86] Closed by default: the next step under its title, the list when opened.
 const next = computed(() => STEPS.value.find((s) => !done(s)) ?? null)
-const hidden = ref((() => { try { return storage.get(`${KEY.value}.hidden`) === '1' } catch { return false } })())
+const hidden = ref(
+  (() => {
+    try {
+      return storage.get(`${KEY.value}.hidden`) === '1'
+    } catch {
+      return false
+    }
+  })(),
+)
 
 function go(s: Step) {
   void router.push(s.club && !props.hasClub ? '/leagues' : s.to)
 }
 function hide() {
   hidden.value = true
-  try { storage.set(`${KEY.value}.hidden`, '1') } catch {}
+  try {
+    storage.set(`${KEY.value}.hidden`, '1')
+  } catch {}
 }
 </script>
 
 <template>
-  <CollapsibleRoot v-if="!hidden && count < STEPS.length" v-slot="{ open }" as="section" class="animate-fade-up rounded-xl border border-gold/30 bg-surface p-3" :aria-label="$t('خطواتك الأولى')">
+  <CollapsibleRoot
+    v-if="!hidden && count < STEPS.length"
+    v-slot="{ open }"
+    as="section"
+    class="animate-fade-up rounded-xl border border-gold/30 bg-surface p-3"
+    :aria-label="$t('خطواتك الأولى')"
+  >
     <div class="flex items-center gap-2">
       <Character model="A1" :mood="count ? 'cheer' : 'joy'" class="w-12 shrink-0" />
       <CollapsibleTrigger class="flex min-h-touch flex-1 items-center gap-3 text-start">
         <span class="relative grid size-11 shrink-0 place-items-center">
           <svg viewBox="0 0 36 36" class="absolute inset-0 -rotate-90" aria-hidden="true">
             <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" stroke-width="3" class="text-surface-sunk" />
-            <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" class="text-gold transition-[stroke-dashoffset] duration-700 ease-soft"
-              :stroke-dasharray="94.25" :stroke-dashoffset="94.25 * (1 - count / STEPS.length)" />
+            <circle
+              cx="18"
+              cy="18"
+              r="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              class="text-gold transition-[stroke-dashoffset] duration-700 ease-soft"
+              :stroke-dasharray="94.25"
+              :stroke-dashoffset="94.25 * (1 - count / STEPS.length)"
+            />
           </svg>
           <b class="font-numbers text-sm" dir="ltr">{{ count }}/{{ STEPS.length }}</b>
         </span>
-        <span class="min-w-0 flex-1"><b class="block font-display text-base">{{ week ? $t('مهام الأسبوع الأول') : $t('خطواتك الأولى') }}</b>
-          <span class="text-xs text-text-muted">{{ open || !next ? (week ? $t('تعرّف على التدريب والسوق والوديات') : $t('ثلاث خطوات إلى مباراتك الأولى')) : $t('التالية: {v0}', { v0: $t(next.label) }) }}</span></span>
-        <span class="text-gold transition-transform duration-200" :class="open ? 'rotate-180' : ''" aria-hidden="true"><Icon name="chevron_down" :size="16" /></span>
+        <span class="min-w-0 flex-1"
+          ><b class="block font-display text-base">{{ week ? $t('مهام الأسبوع الأول') : $t('خطواتك الأولى') }}</b>
+          <span class="text-xs text-text-muted">{{
+            open || !next
+              ? week
+                ? $t('تعرّف على التدريب والسوق والوديات')
+                : $t('ثلاث خطوات إلى مباراتك الأولى')
+              : $t('التالية: {v0}', { v0: $t(next.label) })
+          }}</span></span
+        >
+        <span class="text-gold transition-transform duration-200" :class="open ? 'rotate-180' : ''" aria-hidden="true"
+          ><Icon name="chevron_down" :size="16"
+        /></span>
       </CollapsibleTrigger>
-      <button type="button" class="grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إخفاء')" @click="hide"><Icon name="close" :size="18" /></button>
+      <button
+        type="button"
+        class="grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised"
+        :aria-label="$t('إخفاء')"
+        @click="hide"
+      >
+        <Icon name="close" :size="18" />
+      </button>
     </div>
     <CollapsibleContent as="ol" class="drop-panel mt-2 flex flex-col gap-1.5">
-        <li v-for="(s, i) in STEPS" :key="s.key">
-          <button type="button" class="flex min-h-touch w-full items-center gap-3 rounded-lg px-3 py-2 text-start transition-colors" :class="done(s) ? 'bg-success/10' : 'bg-surface-sunk hover:bg-surface-raised'" @click="go(s)">
-            <span class="grid size-7 shrink-0 place-items-center rounded-full font-numbers text-sm font-bold" :class="done(s) ? 'bg-success text-on-gold' : 'bg-gold/15 text-gold'">
-              <svg v-if="done(s)" viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-              <template v-else>{{ i + 1 }}</template>
-            </span>
-            <span class="min-w-0 flex-1 text-sm" :class="done(s) ? 'text-text-muted line-through' : 'font-bold'">{{ $t(s.label) }}</span>
-            <span v-if="!done(s)" aria-hidden="true" class="text-gold rtl:rotate-180">→</span>
-          </button>
-        </li>
+      <li v-for="(s, i) in STEPS" :key="s.key">
+        <button
+          type="button"
+          class="flex min-h-touch w-full items-center gap-3 rounded-lg px-3 py-2 text-start transition-colors"
+          :class="done(s) ? 'bg-success/10' : 'bg-surface-sunk hover:bg-surface-raised'"
+          @click="go(s)"
+        >
+          <span
+            class="grid size-7 shrink-0 place-items-center rounded-full font-numbers text-sm font-bold"
+            :class="done(s) ? 'bg-success text-on-gold' : 'bg-gold/15 text-gold'"
+          >
+            <svg
+              v-if="done(s)"
+              viewBox="0 0 24 24"
+              class="size-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+            <template v-else>{{ i + 1 }}</template>
+          </span>
+          <span class="min-w-0 flex-1 text-sm" :class="done(s) ? 'text-text-muted line-through' : 'font-bold'">{{ $t(s.label) }}</span>
+          <span v-if="!done(s)" aria-hidden="true" class="text-gold rtl:rotate-180">→</span>
+        </button>
+      </li>
     </CollapsibleContent>
   </CollapsibleRoot>
 </template>

@@ -36,7 +36,7 @@ const current = computed(() => slot.value?.player ?? null)
 const recommended = computed(() => (props.view.recommended as Record<string, number | null> | undefined)?.[props.line] ?? null)
 const ORDER: Record<Sort, (a: Player, b: Player) => number> = {
   quick: (a, b) => a.sessions - b.sessions || a.age - b.age,
-  room: (a, b) => (b.potential - b.overall) - (a.potential - a.overall) || a.age - b.age,
+  room: (a, b) => b.potential - b.overall - (a.potential - a.overall) || a.age - b.age,
   young: (a, b) => a.age - b.age || b.potential - a.potential,
   strong: (a, b) => b.overall - a.overall || a.age - b.age,
 }
@@ -44,41 +44,91 @@ const inLine = computed(() => props.view.players.filter((p) => p.line === props.
 const hidden = computed(() => inLine.value.filter((p) => p.maxed || p.injured).length)
 const players = computed(() => {
   const q = query.value.trim().toLowerCase()
-  return inLine.value
-    .filter((p) => all.value || (!p.maxed && !p.injured))
-    .filter((p) => !q || p.name.toLowerCase().includes(q) || nm(p.name).toLowerCase().includes(q) || p.position.toLowerCase().includes(q))
-    // The maxed last whatever the order, the recommended first.
-    .sort((a, b) => Number(a.maxed) - Number(b.maxed) || Number(b.id === recommended.value) - Number(a.id === recommended.value) || ORDER[sort.value](a, b))
+  return (
+    inLine.value
+      .filter((p) => all.value || (!p.maxed && !p.injured))
+      .filter((p) => !q || p.name.toLowerCase().includes(q) || nm(p.name).toLowerCase().includes(q) || p.position.toLowerCase().includes(q))
+      // The maxed last whatever the order, the recommended first.
+      .sort(
+        (a, b) =>
+          Number(a.maxed) - Number(b.maxed) ||
+          Number(b.id === recommended.value) - Number(a.id === recommended.value) ||
+          ORDER[sort.value](a, b),
+      )
+  )
 })
-const ageTone = (p: Player) => ((p.age_bp ?? 10000) > 10000 ? 'text-success' : (p.age_bp ?? 10000) < 10000 ? 'text-warning' : 'text-text-soft')
+const ageTone = (p: Player) =>
+  (p.age_bp ?? 10000) > 10000 ? 'text-success' : (p.age_bp ?? 10000) < 10000 ? 'text-warning' : 'text-text-soft'
 const growth = (p: Player) => Math.max(0, p.potential - p.overall)
 </script>
 
 <template>
   <UiDialog :open="true" bare @close="emit('close')">
-    <section class="flex max-h-[88dvh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-text/10 bg-bg shadow-2xl" :aria-label="$t('اختر من يتدرب')">
+    <section
+      class="flex max-h-[88dvh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-text/10 bg-bg shadow-2xl"
+      :aria-label="$t('اختر من يتدرب')"
+    >
       <!-- The line, the slot's player now, and the way to another line. -->
       <header class="flex flex-col gap-3 border-b border-text/10 p-4">
         <div class="flex items-center gap-2">
           <LineBadge :line="line" />
           <h2 class="flex-1 font-display text-xl font-extrabold">{{ $t('من يتدرب في خانة {v0}؟', { v0: $t(LINE_NAMES[line]) }) }}</h2>
-          <button type="button" class="grid size-touch place-items-center rounded-lg bg-surface" :aria-label="$t('إغلاق')" @click="emit('close')"><Icon name="close" /></button>
+          <button
+            type="button"
+            class="grid size-touch place-items-center rounded-lg bg-surface"
+            :aria-label="$t('إغلاق')"
+            @click="emit('close')"
+          >
+            <Icon name="close" />
+          </button>
         </div>
         <div class="flex gap-1 rounded-xl ui-card p-1" role="tablist" :aria-label="$t('الخط')">
-          <button v-for="l in LINES" :key="l" type="button" role="tab" :aria-selected="l === line" class="ui-choice flex-1 text-sm" @click="emit('line', l)">{{ $t(LINE_NAMES[l]) }}</button>
+          <button
+            v-for="l in LINES"
+            :key="l"
+            type="button"
+            role="tab"
+            :aria-selected="l === line"
+            class="ui-choice flex-1 text-sm"
+            @click="emit('line', l)"
+          >
+            {{ $t(LINE_NAMES[l]) }}
+          </button>
         </div>
         <p v-if="current" class="flex flex-wrap items-center gap-x-2 rounded-lg bg-surface px-3 py-2 text-sm">
           <span class="text-text-muted">{{ $t('يتدرب الآن:') }}</span>
-          <b><bdi>{{ $nm(current.name) }}</bdi></b>
-          <span class="font-numbers text-text-muted"><bdi dir="ltr">{{ current.overall }}</bdi> · <bdi dir="ltr">{{ current.progress }}%</bdi></span>
+          <b
+            ><bdi>{{ $nm(current.name) }}</bdi></b
+          >
+          <span class="font-numbers text-text-muted"
+            ><bdi dir="ltr">{{ current.overall }}</bdi> · <bdi dir="ltr">{{ current.progress }}%</bdi></span
+          >
           <span class="text-xs text-text-muted">{{ $t('اختر غيره ليأخذ مكانه، ويحتفظ هو بتقدمه.') }}</span>
         </p>
         <!-- The search and the orders. -->
-        <input v-model="query" type="search" class="h-touch rounded-lg bg-surface-sunk px-3 text-sm" :placeholder="$t('ابحث بالاسم أو المركز')" :aria-label="$t('ابحث بالاسم أو المركز')" />
+        <input
+          v-model="query"
+          type="search"
+          class="h-touch rounded-lg bg-surface-sunk px-3 text-sm"
+          :placeholder="$t('ابحث بالاسم أو المركز')"
+          :aria-label="$t('ابحث بالاسم أو المركز')"
+        />
         <div class="flex flex-wrap items-center gap-2" role="radiogroup" :aria-label="$t('الترتيب')">
-          <button v-for="s in SORTS" :key="s.key" type="button" role="radio" :aria-checked="sort === s.key" class="ui-choice brand rounded-pill px-3 text-xs" @click="sort = s.key">{{ $t(s.label) }}</button>
+          <button
+            v-for="s in SORTS"
+            :key="s.key"
+            type="button"
+            role="radio"
+            :aria-checked="sort === s.key"
+            class="ui-choice brand rounded-pill px-3 text-xs"
+            @click="sort = s.key"
+          >
+            {{ $t(s.label) }}
+          </button>
           <label v-if="hidden" class="ms-auto flex min-h-touch items-center gap-2 text-xs text-text-muted">
-            <input v-model="all" type="checkbox" class="size-4 accent-[var(--color-gold)]" />{{ $t('أظهر المصابين ومن بلغ 99 ({v0})', { v0: hidden }) }}
+            <input v-model="all" type="checkbox" class="size-4 accent-[var(--color-gold)]" />{{
+              $t('أظهر المصابين ومن بلغ 99 ({v0})', { v0: hidden })
+            }}
           </label>
         </div>
       </header>
@@ -86,27 +136,58 @@ const growth = (p: Player) => Math.max(0, p.potential - p.overall)
       <p v-if="error" class="mx-3 mt-3 rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(error) }}</p>
       <!-- The line's players. -->
       <ul class="flex flex-col gap-2 overflow-y-auto p-3">
-        <li v-for="p in players" :key="p.id" class="flex items-center gap-3 rounded-xl border ui-card px-3 py-2.5"
-          :class="p.id === recommended ? 'border-gold/50' : 'border-transparent'">
-          <span class="grid size-12 shrink-0 place-items-center rounded-lg bg-surface-sunk font-numbers text-xl font-bold" :class="p.overall >= 85 ? 'text-gold' : ''">{{ p.overall }}</span>
+        <li
+          v-for="p in players"
+          :key="p.id"
+          class="flex items-center gap-3 rounded-xl border ui-card px-3 py-2.5"
+          :class="p.id === recommended ? 'border-gold/50' : 'border-transparent'"
+        >
+          <span
+            class="grid size-12 shrink-0 place-items-center rounded-lg bg-surface-sunk font-numbers text-xl font-bold"
+            :class="p.overall >= 85 ? 'text-gold' : ''"
+            >{{ p.overall }}</span
+          >
           <span class="min-w-0 flex-1">
             <span class="flex items-center gap-1.5">
-              <b class="truncate"><bdi>{{ $nm(p.name) }}</bdi></b>
-              <span v-if="p.id === recommended" class="shrink-0 rounded-pill bg-gold px-1.5 text-caption font-bold text-on-gold">{{ $t('الموصى به') }}</span>
+              <b class="truncate"
+                ><bdi>{{ $nm(p.name) }}</bdi></b
+              >
+              <span v-if="p.id === recommended" class="shrink-0 rounded-pill bg-gold px-1.5 text-caption font-bold text-on-gold">{{
+                $t('الموصى به')
+              }}</span>
             </span>
             <span class="flex flex-wrap gap-x-2 text-xs text-text-muted">
               <span dir="ltr">{{ p.position }}</span>
-              <span :class="ageTone(p)" :title="$t('سرعة التدريب في عمره {v0}%', { v0: Math.round((p.age_bp ?? 10000) / 100) })">{{ $t('{v0} سنة', { v0: p.age }) }}</span>
-              <span :class="p.over_potential ? 'text-warning' : 'text-success'">{{ $t('الإمكانية {v0}', { v0: p.potential }) }}<bdi v-if="growth(p)" dir="ltr"> (+{{ growth(p) }})</bdi></span>
+              <span :class="ageTone(p)" :title="$t('سرعة التدريب في عمره {v0}%', { v0: Math.round((p.age_bp ?? 10000) / 100) })">{{
+                $t('{v0} سنة', { v0: p.age })
+              }}</span>
+              <span :class="p.over_potential ? 'text-warning' : 'text-success'"
+                >{{ $t('الإمكانية {v0}', { v0: p.potential }) }}<bdi v-if="growth(p)" dir="ltr"> (+{{ growth(p) }})</bdi></span
+              >
               <span>{{ $t('الدرجة التالية بعد نحو {v0} جلسة', { v0: p.sessions }) }}</span>
               <span v-if="p.injured" class="text-danger">{{ $t('مصاب') }}</span>
             </span>
-            <span v-if="p.progress" class="mt-1 block h-1.5 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="p.progress" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('التقدم')">
+            <span
+              v-if="p.progress"
+              class="mt-1 block h-1.5 overflow-hidden rounded-full bg-surface-sunk"
+              role="progressbar"
+              :aria-valuenow="p.progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              :aria-label="$t('التقدم')"
+            >
               <span class="block h-full rounded-full bg-gold" :style="{ width: p.progress + '%' }" />
             </span>
           </span>
           <span v-if="p.maxed" class="shrink-0 text-xs text-text-muted">{{ $t('بلغ 99') }}</span>
-          <UiButton v-else size="sm" :variant="current ? 'primary' : 'brand'" class="shrink-0" :disabled="busy" @click="emit('pick', p, !!current)">
+          <UiButton
+            v-else
+            size="sm"
+            :variant="current ? 'primary' : 'brand'"
+            class="shrink-0"
+            :disabled="busy"
+            @click="emit('pick', p, !!current)"
+          >
             {{ current ? $t('استبدل به') : $t('درّب') }}
           </UiButton>
         </li>

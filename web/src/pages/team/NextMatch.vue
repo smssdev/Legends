@@ -31,9 +31,18 @@ const error = ref('')
 const now = ref(Date.now())
 const leagueId = ref<number | null>(null)
 
-const PLANS: Record<string, string> = { counter: 'هجوم مرتد', shots: 'تسديد عن بعد', long: 'كرات طويلة', passing: 'تمريرات', wings: 'لعب على الأجنحة' }
+const PLANS: Record<string, string> = {
+  counter: 'هجوم مرتد',
+  shots: 'تسديد عن بعد',
+  long: 'كرات طويلة',
+  passing: 'تمريرات',
+  wings: 'لعب على الأجنحة',
+}
 const TACKLING = ['قانوني', 'عادي', 'حماس', 'خشونة']
-const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
+const when = (iso: string) =>
+  new Intl.DateTimeFormat(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).format(
+    new Date(iso),
+  )
 
 function left(iso: string) {
   const s = Math.max(0, Math.floor((Date.parse(iso) - now.value) / 1000))
@@ -44,7 +53,11 @@ function left(iso: string) {
 const locked = computed(() => match.value?.status !== 'scheduled')
 const spy = ref<components['schemas']['SpyView'] | null>(null)
 const spying = ref(false)
-const FORM: Record<string, [string, string]> = { W: ['ف', 'bg-success text-on-gold'], D: ['ت', 'bg-text/20'], L: ['خ', 'bg-live text-on-gold'] }
+const FORM: Record<string, [string, string]> = {
+  W: ['ف', 'bg-success text-on-gold'],
+  D: ['ت', 'bg-text/20'],
+  L: ['خ', 'bg-live text-on-gold'],
+}
 const spiedAt = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
 async function sendSpy() {
   spying.value = true
@@ -61,7 +74,8 @@ async function sendSpy() {
 
 // [Sprint 27 B2] After a move is asked, answered or taken back: the match again, with its time.
 async function reload() {
-  if (leagueId.value) match.value = (await api.GET('/leagues/{league}/team/next-match', { params: { path: { league: leagueId.value } } })).data!.match ?? null
+  if (leagueId.value)
+    match.value = (await api.GET('/leagues/{league}/team/next-match', { params: { path: { league: leagueId.value } } })).data!.match ?? null
 }
 
 let timer = 0
@@ -93,7 +107,10 @@ const ACTIONS = [
 const wide = ref(typeof matchMedia === 'function' && matchMedia('(min-width: 900px)').matches)
 let mq: MediaQueryList | null = null
 const onWide = () => (wide.value = !!mq?.matches)
-onMounted(() => { mq = matchMedia('(min-width: 900px)'); mq.addEventListener('change', onWide) })
+onMounted(() => {
+  mq = matchMedia('(min-width: 900px)')
+  mq.addEventListener('change', onWide)
+})
 onBeforeUnmount(() => mq?.removeEventListener('change', onWide))
 type Info = 'ready' | 'report' | 'tickets' | 'press' | 'integrity'
 const info = ref<Info>('report')
@@ -111,106 +128,218 @@ const INFO = computed(() => [
        and the integrity are tabs beside the report, not sections down the page (it was 7.3 screens). -->
   <div class="nm">
     <h1 class="sr-only">{{ $t('المباراة القادمة') }}</h1>
-    <AsyncState v-if="error || !match" :loading="!loaded && !error" :error="error || null" :empty="loaded && !error && !match"
-      :empty-title="leagueId ? 'لا مباريات قادمة الآن.' : 'ليس لديك فريق بعد.'" :empty-cta="leagueId ? undefined : { label: 'دورياتي', to: '/leagues' }" skeleton="card" :rows="2" class="nm-wait" />
+    <AsyncState
+      v-if="error || !match"
+      :loading="!loaded && !error"
+      :error="error || null"
+      :empty="loaded && !error && !match"
+      :empty-title="leagueId ? 'لا مباريات قادمة الآن.' : 'ليس لديك فريق بعد.'"
+      :empty-cta="leagueId ? undefined : { label: 'دورياتي', to: '/leagues' }"
+      skeleton="card"
+      :rows="2"
+      class="nm-wait"
+    />
     <template v-else>
       <!-- [X32] The VS card: the competition's band, both clubs on ivory discs with their strength in a ring, the
            countdown to the lock between them, then the facts. -->
       <section class="nm-hero overflow-hidden rounded-xl ui-card">
         <div class="vs-band flex items-center justify-center gap-2 px-3 py-1.5 text-caption font-extrabold text-white">
-          {{ match.competition === 'cup' ? $t('الكأس') : match.competition === 'alliance' ? $t('بطولة التحالفات · الدور {v0}', { v0: match.round }) : $t('الجولة {v0}', { v0: match.round }) }}{{ match.slot === 2 ? $t(' · السهرة') : '' }}
+          {{
+            match.competition === 'cup'
+              ? $t('الكأس')
+              : match.competition === 'alliance'
+                ? $t('بطولة التحالفات · الدور {v0}', { v0: match.round })
+                : $t('الجولة {v0}', { v0: match.round })
+          }}{{ match.slot === 2 ? $t(' · السهرة') : '' }}
           <span class="rounded bg-black/25 px-2 py-0.5">{{ match.venue === 'home' ? $t('على أرضك') : $t('خارج أرضك') }}</span>
         </div>
         <div class="relative isolate flex flex-1 flex-col justify-center px-3 py-1">
-          <img src="/art/stadium-banner.svg" alt="" aria-hidden="true" class="absolute inset-0 -z-10 size-full object-cover object-[50%_75%] opacity-40" loading="lazy" decoding="async" />
+          <img
+            src="/art/stadium-banner.svg"
+            alt=""
+            aria-hidden="true"
+            class="absolute inset-0 -z-10 size-full object-cover object-[50%_75%] opacity-40"
+            loading="lazy"
+            decoding="async"
+          />
           <div class="absolute inset-0 -z-10 bg-gradient-to-b from-transparent to-panel" aria-hidden="true" />
           <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
-            <div v-for="(side, i) in [match.club, match.opponent]" :key="i" class="flex min-w-0 flex-col items-center gap-1 text-center" :class="i === 1 ? 'order-last' : ''">
+            <div
+              v-for="(side, i) in [match.club, match.opponent]"
+              :key="i"
+              class="flex min-w-0 flex-col items-center gap-1 text-center"
+              :class="i === 1 ? 'order-last' : ''"
+            >
               <span class="vs-disc"><ClubCrest :url="side.crest_url" :code="side.code" :size="40" /></span>
               <b class="line-clamp-1 text-body-lg">{{ $nm(side.name) }}</b>
-              <span class="nm-coach max-w-full truncate text-caption text-text-muted">{{ i === 0 ? $t('فريقك') : match.opponent.coach ?? $t('الحاسوب') }}</span>
-              <RatingRing :value="Math.round(side.strength_cp / 100)" :label="$t('القوة')" :color="i === 0 ? 'var(--color-gold)' : 'var(--color-ring)'" :size="44" />
+              <span class="nm-coach max-w-full truncate text-caption text-text-muted">{{
+                i === 0 ? $t('فريقك') : (match.opponent.coach ?? $t('الحاسوب'))
+              }}</span>
+              <RatingRing
+                :value="Math.round(side.strength_cp / 100)"
+                :label="$t('القوة')"
+                :color="i === 0 ? 'var(--color-gold)' : 'var(--color-ring)'"
+                :size="44"
+              />
             </div>
             <div class="flex flex-col items-center gap-0.5">
               <span class="font-display text-headline font-extrabold italic drop-shadow">VS</span>
               <span class="text-caption font-bold text-text-muted">{{ locked ? $t('مقفلة') : $t('يُقفل بعد') }}</span>
-              <span class="nm-cd rounded-lg bg-bg-deep/70 px-2 py-0.5 font-numbers font-bold text-ring" dir="ltr"><Icon v-if="locked" name="lock" :size="14" class="inline" /><template v-else>{{ left(match.lock_at) }}</template></span>
+              <span class="nm-cd rounded-lg bg-bg-deep/70 px-2 py-0.5 font-numbers font-bold text-ring" dir="ltr"
+                ><Icon v-if="locked" name="lock" :size="14" class="inline" /><template v-else>{{ left(match.lock_at) }}</template></span
+              >
             </div>
           </div>
         </div>
         <dl class="grid grid-cols-3 gap-1.5 p-2 text-center text-caption">
-          <div class="rounded-lg bg-surface-sunk p-1.5"><dt class="text-text-muted">{{ $t('الموعد') }}</dt><dd class="font-bold">{{ when(match.scheduled_at) }}</dd></div>
-          <div class="rounded-lg bg-surface-sunk p-1.5"><dt class="text-text-muted">{{ $t('المعنويات') }}</dt><dd class="font-numbers text-body-lg font-bold" :class="match.morale >= 75 ? 'text-success' : match.morale < 50 ? 'text-danger' : 'text-gold'">{{ match.morale }}</dd></div>
-          <div class="rounded-lg bg-surface-sunk p-1.5"><dt class="text-text-muted">{{ $t('الحكم') }}</dt><dd class="font-bold">{{ match.referee ? $t(REFEREE[match.referee]) : $t('قبلها بنصف ساعة') }}</dd></div>
+          <div class="rounded-lg bg-surface-sunk p-1.5">
+            <dt class="text-text-muted">{{ $t('الموعد') }}</dt>
+            <dd class="font-bold">{{ when(match.scheduled_at) }}</dd>
+          </div>
+          <div class="rounded-lg bg-surface-sunk p-1.5">
+            <dt class="text-text-muted">{{ $t('المعنويات') }}</dt>
+            <dd
+              class="font-numbers text-body-lg font-bold"
+              :class="match.morale >= 75 ? 'text-success' : match.morale < 50 ? 'text-danger' : 'text-gold'"
+            >
+              {{ match.morale }}
+            </dd>
+          </div>
+          <div class="rounded-lg bg-surface-sunk p-1.5">
+            <dt class="text-text-muted">{{ $t('الحكم') }}</dt>
+            <dd class="font-bold">{{ match.referee ? $t(REFEREE[match.referee]) : $t('قبلها بنصف ساعة') }}</dd>
+          </div>
         </dl>
-        <p v-if="match.match_of_day" class="mx-2 mb-2 rounded-lg bg-gold/15 px-3 py-1.5 text-center text-caption font-bold text-gold"><Icon name="star" :size="16" class="inline-block align-[-3px]" /> {{ $t('قمة الجولة: كل مدربي الدوري مدعوون لمشاهدتها الليلة') }}</p>
+        <p v-if="match.match_of_day" class="mx-2 mb-2 rounded-lg bg-gold/15 px-3 py-1.5 text-center text-caption font-bold text-gold">
+          <Icon name="star" :size="16" class="inline-block align-[-3px]" /> {{ $t('قمة الجولة: كل مدربي الدوري مدعوون لمشاهدتها الليلة') }}
+        </p>
       </section>
 
       <section class="nm-info">
         <UiTabs v-model="info" :items="INFO" label="المباراة القادمة" size="sm" class="max-w-full" />
         <div class="nm-scroll">
           <template v-if="info === 'ready'">
-          <section class="flex flex-col gap-1.5" :aria-label="$t('جاهزيتك')">
-            <RouterLink v-for="c in ACTIONS" :key="c.name" :to="{ name: c.name }" class="ready-row" :class="locked ? 'pointer-events-none opacity-50' : ''">
-              <Icon :name="c.icon" :size="18" class="text-brand-light" /><span class="flex-1 font-bold">{{ $t(c.label) }}</span><span class="text-gold" aria-hidden="true">›</span>
-            </RouterLink>
-            <section v-if="match.mine?.fixes?.length" class="rounded-lg bg-warning/15 p-2 text-caption">
-        <h2 class="mb-1 font-bold">{{ $t('تصحيح تلقائي عند القفل') }}</h2>
-        <p v-for="(f, i) in match.mine.fixes" :key="i">{{ $t('دخل {v0} بدل {v1}.', { v0: f.in_name, v1: f.out_name ?? $t('خانة فارغة') }) }}</p>
-      </section>
-            <p class="text-caption text-text-muted">{{ match.slot === 2
-              ? $t('جولتك على فترتين ومباراتك في السهرة: تُقفل تشكيلات الجولة وتكتيكاتها كلها معاً قبل الفترة الأولى، ويُجمَّد الفريق كما هو عند القفل حتى صافرتك.')
-              : $t('قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.') }}</p>
-            <MovePanel v-if="leagueId && match.move && (match.move.pending || match.move.hours.length)" :league-id="leagueId" :fixture-id="match.fixture_id" :scheduled-at="match.scheduled_at" :move="match.move" @changed="reload" />
-          </section>
+            <section class="flex flex-col gap-1.5" :aria-label="$t('جاهزيتك')">
+              <RouterLink
+                v-for="c in ACTIONS"
+                :key="c.name"
+                :to="{ name: c.name }"
+                class="ready-row"
+                :class="locked ? 'pointer-events-none opacity-50' : ''"
+              >
+                <Icon :name="c.icon" :size="18" class="text-brand-light" /><span class="flex-1 font-bold">{{ $t(c.label) }}</span
+                ><span class="text-gold" aria-hidden="true">›</span>
+              </RouterLink>
+              <section v-if="match.mine?.fixes?.length" class="rounded-lg bg-warning/15 p-2 text-caption">
+                <h2 class="mb-1 font-bold">{{ $t('تصحيح تلقائي عند القفل') }}</h2>
+                <p v-for="(f, i) in match.mine.fixes" :key="i">
+                  {{ $t('دخل {v0} بدل {v1}.', { v0: f.in_name, v1: f.out_name ?? $t('خانة فارغة') }) }}
+                </p>
+              </section>
+              <p class="text-caption text-text-muted">
+                {{
+                  match.slot === 2
+                    ? $t(
+                        'جولتك على فترتين ومباراتك في السهرة: تُقفل تشكيلات الجولة وتكتيكاتها كلها معاً قبل الفترة الأولى، ويُجمَّد الفريق كما هو عند القفل حتى صافرتك.',
+                      )
+                    : $t('قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.')
+                }}
+              </p>
+              <MovePanel
+                v-if="leagueId && match.move && (match.move.pending || match.move.hours.length)"
+                :league-id="leagueId"
+                :fixture-id="match.fixture_id"
+                :scheduled-at="match.scheduled_at"
+                :move="match.move"
+                @changed="reload"
+              />
+            </section>
           </template>
           <template v-else-if="info === 'report'">
-      <section v-if="match.opponent.sheet" class="flex flex-col gap-2">
-        <h2 class="font-display text-xl font-extrabold">{{ $t('تشكيلة الخصم') }} <span class="font-numbers text-base text-text-muted" dir="ltr">{{ match.opponent.sheet.formation.replace(/([AB])$/, ' $1') }}</span></h2>
-        <div class="flex flex-wrap gap-2 text-sm">
-          <UiChip>{{ $t(PLANS[match.opponent.sheet.tactics.plan]) }}</UiChip>
-          <UiChip>{{ $t('قطع الكرة: {v0}', { v0: TACKLING[match.opponent.sheet.tactics.tackling] }) }}</UiChip>
-          <UiChip>{{ match.opponent.sheet.tactics.marking === 'man' ? $t('رجل لرجل') : $t('دفاع منطقة') }}</UiChip>
-          <UiChip v-if="match.opponent.sheet.tactics.trap">{{ $t('مصيدة التسلل') }}</UiChip>
-        </div>
-        <ol class="grid grid-cols-2 gap-1 text-sm">
-          <li v-for="p in match.opponent.sheet.starters" :key="p.id" class="truncate rounded bg-surface-sunk px-2 py-1">{{ $nm(p.name) }}</li>
-        </ol>
-      </section>
-      <section v-if="spy && !match.opponent.sheet" :aria-label="$t('تقرير الجاسوس')" class="flex flex-col gap-3">
-        <div class="flex flex-wrap items-center gap-2">
-          <h2 class="flex-1 font-display text-xl font-extrabold">{{ $t('تقرير الجاسوس') }}</h2>
-          <span v-if="spy.report" class="text-xs text-text-muted">{{ $t('كما كانت الساعة') }} <span class="font-numbers" dir="ltr">{{ spiedAt(spy.report.at) }}</span>{{ $t('، وقد يغيّرها الخصم') }}</span>
-        </div>
-        <template v-if="!spy.report">
-          <UiButton :disabled="spying || locked" @click="sendSpy">
-            {{ $t('أرسل جاسوساً ·') }} <PriceTag :amount="spy.cost" :currency="spy.currency" /></UiButton>
-        </template>
-        <template v-else>
-          <div class="flex flex-wrap items-center gap-2">
-            <UiChip><span dir="ltr">{{ spy.report.formation.replace(/([AB])$/, ' $1') }}</span></UiChip>
-            <UiChip>{{ $t(PLANS[spy.report.tactics.plan]) }}</UiChip>
-            <UiChip>{{ $t('قطع الكرة: {v0}', { v0: TACKLING[spy.report.tactics.tackling] }) }}</UiChip>
-            <UiChip>{{ spy.report.tactics.marking === 'man' ? $t('رجل لرجل') : $t('دفاع منطقة') }}</UiChip>
-            <UiChip v-if="spy.report.tactics.trap">{{ $t('مصيدة التسلل') }}</UiChip>
-            <UiChip v-if="spy.report.fitness !== null">{{ $t('لياقة الأحد عشر') }} <span class="font-numbers" dir="ltr">{{ spy.report.fitness }}%</span></UiChip>
-          </div>
-          <div class="flex items-center gap-1.5 text-sm"><span class="text-text-muted">{{ $t('آخر النتائج') }}</span>
-            <span v-for="(r, i) in spy.report.form" :key="i" class="grid size-7 place-items-center rounded-full text-xs font-bold" :class="FORM[r]![1]">{{ $t(FORM[r]![0]) }}</span>
-            <span v-if="!spy.report.form.length" class="text-text-muted">{{ $t('لم يلعب بعد') }}</span>
-          </div>
-          <ol class="grid gap-1 text-sm sm:grid-cols-2">
-            <li v-for="p in spy.report.starters" :key="p.id" class="flex items-center gap-2 rounded bg-surface-sunk px-2 py-1">
-              <span class="w-9 text-xs text-text-muted" dir="ltr">{{ p.position }}</span><span class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi></span><b class="font-numbers">{{ p.overall }}</b></li>
-          </ol>
-          <div class="flex flex-wrap items-center gap-1.5 text-sm"><span class="text-text-muted">{{ $t('البدلاء') }}</span>
-            <span v-for="p in spy.report.bench" :key="p.id" class="rounded-full bg-surface-sunk px-2.5 py-1 text-xs"><bdi>{{ $nm(p.name) }}</bdi></span></div>
-        </template>
-      </section>
-            <p v-if="!match.opponent.sheet && !spy" class="text-caption text-text-muted">{{ $t('تقرير الخصم يظهر هنا بعد القفل، أو قبله بجاسوس.') }}</p>
+            <section v-if="match.opponent.sheet" class="flex flex-col gap-2">
+              <h2 class="font-display text-xl font-extrabold">
+                {{ $t('تشكيلة الخصم') }}
+                <span class="font-numbers text-base text-text-muted" dir="ltr">{{
+                  match.opponent.sheet.formation.replace(/([AB])$/, ' $1')
+                }}</span>
+              </h2>
+              <div class="flex flex-wrap gap-2 text-sm">
+                <UiChip>{{ $t(PLANS[match.opponent.sheet.tactics.plan]) }}</UiChip>
+                <UiChip>{{ $t('قطع الكرة: {v0}', { v0: TACKLING[match.opponent.sheet.tactics.tackling] }) }}</UiChip>
+                <UiChip>{{ match.opponent.sheet.tactics.marking === 'man' ? $t('رجل لرجل') : $t('دفاع منطقة') }}</UiChip>
+                <UiChip v-if="match.opponent.sheet.tactics.trap">{{ $t('مصيدة التسلل') }}</UiChip>
+              </div>
+              <ol class="grid grid-cols-2 gap-1 text-sm">
+                <li v-for="p in match.opponent.sheet.starters" :key="p.id" class="truncate rounded bg-surface-sunk px-2 py-1">
+                  {{ $nm(p.name) }}
+                </li>
+              </ol>
+            </section>
+            <section v-if="spy && !match.opponent.sheet" :aria-label="$t('تقرير الجاسوس')" class="flex flex-col gap-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="flex-1 font-display text-xl font-extrabold">{{ $t('تقرير الجاسوس') }}</h2>
+                <span v-if="spy.report" class="text-xs text-text-muted"
+                  >{{ $t('كما كانت الساعة') }} <span class="font-numbers" dir="ltr">{{ spiedAt(spy.report.at) }}</span>{{
+                    $t('، وقد يغيّرها الخصم')
+                  }}</span
+                >
+              </div>
+              <template v-if="!spy.report">
+                <UiButton :disabled="spying || locked" @click="sendSpy">
+                  {{ $t('أرسل جاسوساً ·') }} <PriceTag :amount="spy.cost" :currency="spy.currency"
+                /></UiButton>
+              </template>
+              <template v-else>
+                <div class="flex flex-wrap items-center gap-2">
+                  <UiChip
+                    ><span dir="ltr">{{ spy.report.formation.replace(/([AB])$/, ' $1') }}</span></UiChip
+                  >
+                  <UiChip>{{ $t(PLANS[spy.report.tactics.plan]) }}</UiChip>
+                  <UiChip>{{ $t('قطع الكرة: {v0}', { v0: TACKLING[spy.report.tactics.tackling] }) }}</UiChip>
+                  <UiChip>{{ spy.report.tactics.marking === 'man' ? $t('رجل لرجل') : $t('دفاع منطقة') }}</UiChip>
+                  <UiChip v-if="spy.report.tactics.trap">{{ $t('مصيدة التسلل') }}</UiChip>
+                  <UiChip v-if="spy.report.fitness !== null"
+                    >{{ $t('لياقة الأحد عشر') }} <span class="font-numbers" dir="ltr">{{ spy.report.fitness }}%</span></UiChip
+                  >
+                </div>
+                <div class="flex items-center gap-1.5 text-sm">
+                  <span class="text-text-muted">{{ $t('آخر النتائج') }}</span>
+                  <span
+                    v-for="(r, i) in spy.report.form"
+                    :key="i"
+                    class="grid size-7 place-items-center rounded-full text-xs font-bold"
+                    :class="FORM[r]![1]"
+                    >{{ $t(FORM[r]![0]) }}</span
+                  >
+                  <span v-if="!spy.report.form.length" class="text-text-muted">{{ $t('لم يلعب بعد') }}</span>
+                </div>
+                <ol class="grid gap-1 text-sm sm:grid-cols-2">
+                  <li v-for="p in spy.report.starters" :key="p.id" class="flex items-center gap-2 rounded bg-surface-sunk px-2 py-1">
+                    <span class="w-9 text-xs text-text-muted" dir="ltr">{{ p.position }}</span><span class="min-w-0 flex-1 truncate"
+                      ><bdi>{{ $nm(p.name) }}</bdi></span
+                    ><b class="font-numbers">{{ p.overall }}</b>
+                  </li>
+                </ol>
+                <div class="flex flex-wrap items-center gap-1.5 text-sm">
+                  <span class="text-text-muted">{{ $t('البدلاء') }}</span>
+                  <span v-for="p in spy.report.bench" :key="p.id" class="rounded-full bg-surface-sunk px-2.5 py-1 text-xs"
+                    ><bdi>{{ $nm(p.name) }}</bdi></span
+                  >
+                </div>
+              </template>
+            </section>
+            <p v-if="!match.opponent.sheet && !spy" class="text-caption text-text-muted">
+              {{ $t('تقرير الخصم يظهر هنا بعد القفل، أو قبله بجاسوس.') }}
+            </p>
           </template>
           <TicketsPanel v-else-if="info === 'tickets' && leagueId" :league-id="leagueId" />
-          <PressPanel v-else-if="info === 'press' && leagueId" :league-id="leagueId" :fixture-id="match.fixture_id" :home="match.venue === 'home' ? match.club?.name ?? '' : match.opponent.name" :away="match.venue === 'home' ? match.opponent.name : match.club?.name ?? ''" />
+          <PressPanel
+            v-else-if="info === 'press' && leagueId"
+            :league-id="leagueId"
+            :fixture-id="match.fixture_id"
+            :home="match.venue === 'home' ? (match.club?.name ?? '') : match.opponent.name"
+            :away="match.venue === 'home' ? match.opponent.name : (match.club?.name ?? '')"
+          />
           <IntegrityPanel v-else-if="info === 'integrity' && leagueId" :league-id="leagueId" />
         </div>
       </section>
@@ -218,47 +347,151 @@ const INFO = computed(() => [
       <UiCard class="nm-ready" title="جاهزيتك">
         <div class="nm-scroll">
           <section class="flex flex-col gap-1.5" :aria-label="$t('جاهزيتك')">
-            <RouterLink v-for="c in ACTIONS" :key="c.name" :to="{ name: c.name }" class="ready-row" :class="locked ? 'pointer-events-none opacity-50' : ''">
-              <Icon :name="c.icon" :size="18" class="text-brand-light" /><span class="flex-1 font-bold">{{ $t(c.label) }}</span><span class="text-gold" aria-hidden="true">›</span>
+            <RouterLink
+              v-for="c in ACTIONS"
+              :key="c.name"
+              :to="{ name: c.name }"
+              class="ready-row"
+              :class="locked ? 'pointer-events-none opacity-50' : ''"
+            >
+              <Icon :name="c.icon" :size="18" class="text-brand-light" /><span class="flex-1 font-bold">{{ $t(c.label) }}</span
+              ><span class="text-gold" aria-hidden="true">›</span>
             </RouterLink>
             <section v-if="match.mine?.fixes?.length" class="rounded-lg bg-warning/15 p-2 text-caption">
-        <h2 class="mb-1 font-bold">{{ $t('تصحيح تلقائي عند القفل') }}</h2>
-        <p v-for="(f, i) in match.mine.fixes" :key="i">{{ $t('دخل {v0} بدل {v1}.', { v0: f.in_name, v1: f.out_name ?? $t('خانة فارغة') }) }}</p>
-      </section>
-            <p class="text-caption text-text-muted">{{ match.slot === 2
-              ? $t('جولتك على فترتين ومباراتك في السهرة: تُقفل تشكيلات الجولة وتكتيكاتها كلها معاً قبل الفترة الأولى، ويُجمَّد الفريق كما هو عند القفل حتى صافرتك.')
-              : $t('قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.') }}</p>
-            <MovePanel v-if="leagueId && match.move && (match.move.pending || match.move.hours.length)" :league-id="leagueId" :fixture-id="match.fixture_id" :scheduled-at="match.scheduled_at" :move="match.move" @changed="reload" />
+              <h2 class="mb-1 font-bold">{{ $t('تصحيح تلقائي عند القفل') }}</h2>
+              <p v-for="(f, i) in match.mine.fixes" :key="i">
+                {{ $t('دخل {v0} بدل {v1}.', { v0: f.in_name, v1: f.out_name ?? $t('خانة فارغة') }) }}
+              </p>
+            </section>
+            <p class="text-caption text-text-muted">
+              {{
+                match.slot === 2
+                  ? $t(
+                      'جولتك على فترتين ومباراتك في السهرة: تُقفل تشكيلات الجولة وتكتيكاتها كلها معاً قبل الفترة الأولى، ويُجمَّد الفريق كما هو عند القفل حتى صافرتك.',
+                    )
+                  : $t('قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.')
+              }}
+            </p>
+            <MovePanel
+              v-if="leagueId && match.move && (match.move.pending || match.move.hours.length)"
+              :league-id="leagueId"
+              :fixture-id="match.fixture_id"
+              :scheduled-at="match.scheduled_at"
+              :move="match.move"
+              @changed="reload"
+            />
           </section>
         </div>
       </UiCard>
 
       <!-- The one action, always in the same place: under the readiness (or the hero on a phone). -->
-      <UiButton v-if="match.status === 'live' && match.match_id" :to="{ name: 'league-match', params: { id: match.match_id } }" variant="danger" class="nm-go"><span class="size-2 animate-pulse rounded-full bg-white" />{{ $t('تابع المباراة مباشرة') }}</UiButton>
+      <UiButton
+        v-if="match.status === 'live' && match.match_id"
+        :to="{ name: 'league-match', params: { id: match.match_id } }"
+        variant="danger"
+        class="nm-go"
+        ><span class="size-2 animate-pulse rounded-full bg-white" />{{ $t('تابع المباراة مباشرة') }}</UiButton
+      >
       <UiButton v-else-if="!locked" :to="{ name: 'lineup' }" class="nm-go">{{ $t('جهّز التشكيلة') }}</UiButton>
     </template>
   </div>
 </template>
 
 <style scoped>
-.nm { display: grid; gap: var(--space-sm); grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "hero info" "go info"; }
-.nm-wait { grid-column: 1 / -1; }
-.nm-hero { grid-area: hero; display: flex; min-height: 0; flex-direction: column; }
-.nm-info { grid-area: info; display: flex; min-height: 0; flex-direction: column; gap: var(--space-sm); padding: var(--space-sm); border-radius: var(--radius-xl); background: var(--color-surface); }
-.nm-ready { display: none; grid-area: ready; min-height: 0; }
-.nm-go { grid-area: go; }
-.nm-scroll { position: relative; display: flex; flex: 1; min-height: 0; flex-direction: column; gap: var(--space-sm); overflow-y: auto; overscroll-behavior: contain; }
-.nm-cd { font-size: var(--text-title); }
-/* A phone held sideways is short: the discs smaller, the coaches' names left to the cards behind. */
-@media (max-height: 450px) { .vs-disc { width: 2.5rem !important; height: 2.5rem !important; } .nm-coach { display: none; } .nm-hero :deep(svg) { max-height: 2.5rem; } }
-.ready-row { display: flex; min-height: var(--spacing-touch); align-items: center; gap: var(--space-sm); padding: 0 var(--space-sm); border-radius: var(--radius-lg); background: var(--color-surface-sunk); }
-@media (min-width: 900px) {
-  .nm { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "hero info ready" "hero info go"; }
-  .nm-ready { display: flex; }
+.nm {
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: 'hero info' 'go info';
 }
-@media (min-width: 1200px) { .nm { gap: var(--space-lg); } .nm-cd { font-size: var(--text-display); } .vs-disc { width: 5.5rem; height: 5.5rem; } }
+.nm-wait {
+  grid-column: 1 / -1;
+}
+.nm-hero {
+  grid-area: hero;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+.nm-info {
+  grid-area: info;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+.nm-ready {
+  display: none;
+  grid-area: ready;
+  min-height: 0;
+}
+.nm-go {
+  grid-area: go;
+}
+.nm-scroll {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--space-sm);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.nm-cd {
+  font-size: var(--text-title);
+}
+/* A phone held sideways is short: the discs smaller, the coaches' names left to the cards behind. */
+@media (max-height: 450px) {
+  .vs-disc {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+  .nm-coach {
+    display: none;
+  }
+  .nm-hero :deep(svg) {
+    max-height: 2.5rem;
+  }
+}
+.ready-row {
+  display: flex;
+  min-height: var(--spacing-touch);
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunk);
+}
+@media (min-width: 900px) {
+  .nm {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: 'hero info ready' 'hero info go';
+  }
+  .nm-ready {
+    display: flex;
+  }
+}
+@media (min-width: 1200px) {
+  .nm {
+    gap: var(--space-lg);
+  }
+  .nm-cd {
+    font-size: var(--text-display);
+  }
+  .vs-disc {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+}
 .vs-band {
-  background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
+  background:
+    url('/art/pattern-star.svg') center / 40px 40px repeat,
+    linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
   background-blend-mode: soft-light, normal;
 }
 /* The crest on a ivory disc, as on a broadcast's match card. */
@@ -269,7 +502,9 @@ const INFO = computed(() => [
   height: 3.25rem;
   border-radius: 999px;
   background: radial-gradient(circle at 50% 30%, var(--color-broadcast-white), var(--color-chrome) 55%, var(--color-chrome-dark));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-light) 60%, transparent), 0 12px 26px -10px color-mix(in srgb, var(--color-shade) 80%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--color-brand-light) 60%, transparent),
+    0 12px 26px -10px color-mix(in srgb, var(--color-shade) 80%, transparent);
 }
 .action-card {
   display: flex;
@@ -279,7 +514,11 @@ const INFO = computed(() => [
   gap: 0.4rem;
   min-height: 6rem;
   border-radius: 0.75rem;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 22%, transparent), color-mix(in srgb, var(--color-bg-deep) 70%, transparent));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-brand) 22%, transparent),
+    color-mix(in srgb, var(--color-bg-deep) 70%, transparent)
+  );
   border: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
 }
 .action-card:hover {
