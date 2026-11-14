@@ -1,5 +1,5 @@
 // RenderFrames from Keyframes [Sprint 21 E8.4, curved in Sprint 31 M1]: one rule for the cartoon player and Unity,
-// checked against the golden vectors in docs/api/frame-golden.json (scripts/frames.mjs, in every build).
+// checked against the golden vectors in docs/api/frame-golden.json (frames.test.ts, Vitest, in every build).
 //
 // A MatchMinute's Keyframes are evenly spaced over its scene. The progress u (0..1) comes from the match's
 // clock (the minute's start `at` on the server clock), never from when the message arrived. u is clamped, so a

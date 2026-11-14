@@ -32,3 +32,4 @@ public/names/
 # [Sprint 30 G8] Playwright
 test-results
 playwright-report
+coverage/

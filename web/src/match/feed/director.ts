@@ -1,5 +1,5 @@
 // [Sprint 37 R1] The director (Sprint 35 C1): which cutaways follow a scene, as a pure function of the minute's story,
-// the device's tier and the time left, so the node check (scripts/feed.mjs) runs it without a screen.
+// the device's tier and the time left, so its unit test (director.test.ts, Vitest) runs it without a screen.
 import { SCENE_TIME } from './timing.ts'
 
 export type Tier = 'low' | 'mid' | 'high'

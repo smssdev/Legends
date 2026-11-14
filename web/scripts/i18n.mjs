@@ -21,7 +21,7 @@ for (const m of readFileSync('src/layouts/nav.ts', 'utf8').matchAll(/label: '([^
   if (!en.has(m[1])) missing(m[1], 'src/layouts/nav.ts')
 
 for (const f of files) {
-  if (f.endsWith(join('i18n', 'en.ts'))) continue
+  if (f.endsWith(join('i18n', 'en.ts')) || f.endsWith('.test.ts')) continue // a test's Arabic is its data, not a screen's
   const src = readFileSync(f, 'utf8')
   // Every Arabic literal inside t( ... ) up to its closing parenthesis, so a ternary's two sentences count too;
   // the vars object at the end is left out.

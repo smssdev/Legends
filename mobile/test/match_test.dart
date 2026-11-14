@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/core/api/api_error.dart';
 import 'package:glm/core/live/live_channels.dart';
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/match/frames.dart';
@@ -34,9 +37,20 @@ class FakeMatchRepository implements MatchRepository {
 
   /// The sample is in a coach's window; false answers with play going on.
   bool paused = true;
+
+  /// [Sprint 66 T8] The network gone: every poll fails as the client says it (offline).
+  bool offline = false;
   @override
   Future<LiveSync> live(int id, int since) async {
     polls++;
+    if (offline) {
+      throw ApiError.from(
+        DioException(
+          requestOptions: RequestOptions(path: '/live'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+    }
     return LiveSync.fromJson({
       ...json('live'),
       'finished': finished,
@@ -301,6 +315,24 @@ void main() {
     expect(repo.polls, polls + 1);
     await leave(t);
     expect(feed.sub.left, isTrue);
+  });
+
+  testWidgets('[Sprint 66 T8] with the network gone the poll keeps trying, and the match goes on when it is back', (t) async {
+    final repo = FakeMatchRepository();
+    await pump(t, const LiveMatchScreen(matchId: 77), repo);
+    expect(find.text('1 - 1'), findsOneWidget);
+    repo.offline = true;
+    await t.pump(const Duration(seconds: 2));
+    final failing = repo.polls;
+    // About every 4 s while it fails: never stopped, never in a hurry.
+    await t.pump(const Duration(seconds: 9));
+    expect(repo.polls - failing, inInclusiveRange(2, 3));
+    expect(find.text('1 - 1'), findsOneWidget, reason: 'the last known minute stays on the screen');
+    repo.offline = false;
+    await t.pump(const Duration(seconds: 5));
+    expect(repo.polls, greaterThan(failing + 2));
+    expect(find.text('1 - 1'), findsOneWidget);
+    await leave(t);
   });
 
   testWidgets('a played match: full time and its report', (t) async {
