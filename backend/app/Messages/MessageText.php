@@ -13,7 +13,7 @@ class MessageText
 
     private const TIER = ['beginner' => 'المبتدئ', 'intermediate' => 'المتوسط', 'pro' => 'المحترف'];
 
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team', 'achievement', 'draw_entry', 'league_owner', 'auction_outbid', 'auction_won', 'auction_sold', 'release_clause'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team', 'achievement', 'draw_entry', 'league_owner', 'auction_outbid', 'auction_won', 'auction_sold', 'release_clause', 'player_milestone'];
 
     private const STRICTNESS = ['very_lenient' => 'متساهل جداً', 'lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم', 'very_strict' => 'صارم جداً'];
 
@@ -271,6 +271,16 @@ class MessageText
             ],
             // [X54] The developers gave the account coins.
             // [Sprint 40 A1] A badge reached, and its coins.
+            // [Sprint 64 B8] A player's milestone with the club.
+            'player_milestone' => [
+                'title' => match ($p['kind'] ?? '') {
+                    'goals' => sprintf('%s يسجل هدفه رقم %d!', $p['player'] ?? '', $p['value'] ?? 0),
+                    'matches' => sprintf('%s يلعب مباراته رقم %d!', $p['player'] ?? '', $p['value'] ?? 0),
+                    default => ($p['value'] ?? 1) === 1 ? sprintf('%s رجل المباراة لأول مرة!', $p['player'] ?? '') : sprintf('%s رجل المباراة للمرة %d!', $p['player'] ?? '', $p['value'] ?? 0),
+                },
+                'body' => 'لحظة في مسيرته مع ناديك. هنّئه بمكانه في التشكيلة.',
+                'link' => '/squad',
+            ],
             'achievement' => [
                 'title' => sprintf('وسام جديد: %s', self::BADGE[$p['key'] ?? ''] ?? ''),
                 'body' => sprintf('بلغت وسام «%s» من مستوى %s، فوصلتك %s كوينز.', self::BADGE[$p['key'] ?? ''] ?? '', self::TIER[$p['tier'] ?? ''] ?? '', $p['coins'] ?? 0),

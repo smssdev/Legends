@@ -2193,6 +2193,23 @@ paths:
         content: { application/json: { schema: { type: object, properties: { match_ids: { type: array, maxItems: 20, items: { type: integer } } } } } }
       responses:
         '200': { description: What is still missed, content: { application/json: { schema: { type: object, required: [matches], properties: { matches: { type: array, items: { $ref: '#/components/schemas/MissedMatch' } } } } } } }
+  /leagues/{league}/team/milestones/seen:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: '[Sprint 64 B8] The milestones'' card was seen'
+      responses:
+        '200': { description: How many, content: { application/json: { schema: { type: object, required: [seen], properties: { seen: { type: integer } } } } } }
+  /leagues/{league}/team/explain/{what}:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: what, in: path, required: true, schema: { type: string, enum: [chemistry, strength, morale, rating] } }
+    get:
+      tags: [team]
+      summary: '[Sprint 64 W5] Where one of my club''s numbers comes from'
+      responses:
+        '200': { description: The number and its parts, content: { application/json: { schema: { $ref: '#/components/schemas/Explain' } } } }
+        '404': { description: Not one of the four }
   /leagues/{league}/friendlies:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -2729,6 +2746,30 @@ paths:
       responses:
         '200': { description: The access, content: { application/json: { schema: { $ref: '#/components/schemas/AdminAccess' } } } }
         '403': { $ref: '#/components/responses/Error' }
+  /admin/funnel:
+    get:
+      tags: [admin]
+      summary: '[Sprint 64 B2] The new coaches'' first five minutes: of the accounts made in the last days, how many reached each step'
+      parameters: [{ name: days, in: query, schema: { type: integer, minimum: 1, maximum: 365, default: 30 } }]
+      responses:
+        '200':
+          description: The steps in order
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [days, steps]
+                properties:
+                  days: { type: integer }
+                  steps:
+                    type: array
+                    items:
+                      type: object
+                      required: [step, count, pct]
+                      properties:
+                        step: { type: string, enum: [signed_up, intro_started, intro_finished, club_taken, first_lineup, first_match] }
+                        count: { type: integer }
+                        pct: { type: integer, description: Of the accounts signed up }
   /admin/overview:
     get:
       tags: [admin]
@@ -4104,6 +4145,42 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/MatchView' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /sim/intro:
+    post:
+      tags: [simulator]
+      summary: '[Sprint 64 B1] A new coach''s first match: two clubs of about the same strength, against the computer, with three teaching moments'
+      responses:
+        '201':
+          description: The match, and its moments
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/MatchView' }
+                  - type: object
+                    required: [intro]
+                    properties:
+                      intro:
+                        type: object
+                        required: [moments]
+                        properties:
+                          moments:
+                            type: array
+                            items:
+                              type: object
+                              required: [kind, minute, title, text]
+                              properties:
+                                kind: { type: string, enum: [style, sub, effect] }
+                                minute: { type: integer }
+                                title: { type: string, description: From the guide }
+                                text: { type: string, description: From the guide }
+        '401': { description: Signed in only }
+  /sim/intro/finished:
+    post:
+      tags: [simulator]
+      summary: '[Sprint 64 B2] The intro match was played to its end (or skipped)'
+      responses:
+        '200': { description: Noted, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
   /sim/matches/{match}:
     get:
       tags: [simulator]
@@ -5862,6 +5939,25 @@ components:
                 trap: { type: integer }
             form: { type: array, items: { type: string, enum: [W, D, L] }, description: Newest first }
             fitness: { type: integer, nullable: true, description: The eleven's average fitness }
+    PlayerMilestone:
+      type: object
+      description: '[Sprint 64 B8] A player''s milestone with the club'
+      required: [id, player_id, name, kind, value]
+      properties:
+        id: { type: integer }
+        player_id: { type: integer }
+        name: { type: string }
+        kind: { type: string, enum: [goals, matches, motm] }
+        value: { type: integer }
+    Explain:
+      type: object
+      description: '[Sprint 64 W5] A number of my club and its parts, as the server counts them'
+      required: [what, value, parts, topic]
+      properties:
+        what: { type: string, enum: [chemistry, strength, morale, rating] }
+        value: { type: integer }
+        parts: { type: array, items: { type: object, required: [label, value], properties: { label: { type: string }, value: { type: string } } } }
+        topic: { type: string, description: The guide's topic for more }
     ClubBoard:
       type: object
       required: [club, money, match, lineup, standings, board, timers, pending, missed]
@@ -5926,6 +6022,31 @@ components:
               lines: { type: array, items: { type: string } }
               players: { type: array, items: { type: object, required: [id, name, why], properties: { id: { type: integer }, name: { type: string }, why: { type: string, enum: [injured, suspended] } } } }
         missed: { type: integer, description: Matches missed (B3) }
+        since:
+          type: [object, 'null']
+          description: '[Sprint 64 W3] Since the last visit, while its matches are unseen (once per absence)'
+          required: [matches, last, position, offers]
+          properties:
+            matches: { type: integer }
+            last:
+              type: object
+              required: [match_id, home, away, home_goals, away_goals, result]
+              properties:
+                match_id: { type: integer }
+                home: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+                away: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+                home_goals: { type: integer }
+                away_goals: { type: integer }
+                result: { type: integer, description: '1 won, 0 drew, -1 lost' }
+            position:
+              type: object
+              required: [before, now]
+              properties: { before: { type: [integer, 'null'] }, now: { type: [integer, 'null'] } }
+            offers: { type: integer }
+        milestones:
+          type: array
+          description: '[Sprint 64 B8] The players'' milestones not yet seen, newest first'
+          items: { $ref: '#/components/schemas/PlayerMilestone' }
     MissedMatch:
       type: object
       required: [match_id, competition, round, venue, at, home, away, home_goals, away_goals, result, goals, man_of_the_match, coins, changes, mood]
@@ -6814,8 +6935,8 @@ components:
         onboarding:
           type: object
           description: '[X75] The first steps, each done in the game (never by tapping it): account verified or tied to Google, another coach in my league or a friend from my link, a line coach hired, a lineup and tactics saved by the coach, a picture of his own, a friendly played'
-          required: [account, invite, coach, lineup, tactics, name, friendly]
-          properties: { account: { type: boolean }, invite: { type: boolean }, coach: { type: boolean }, lineup: { type: boolean }, tactics: { type: boolean }, name: { type: boolean }, friendly: { type: boolean } }
+          required: [account, invite, coach, lineup, tactics, name, friendly, club, match]
+          properties: { account: { type: boolean }, invite: { type: boolean }, coach: { type: boolean }, lineup: { type: boolean }, tactics: { type: boolean }, name: { type: boolean }, friendly: { type: boolean }, club: { type: boolean, description: '[Sprint 64 W2] A club taken' }, match: { type: boolean, description: '[Sprint 64 W2] A match played with it' } }
         polls_waiting: { type: integer, description: '[Sprint 28] The open polls this coach has not voted in yet' }
         coach:
           type: object

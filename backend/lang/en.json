@@ -446,5 +446,17 @@
   "انتهت البطولة.": "The tournament is over.",
   "التبادل لمدرب الفريق الذي أكمل.": "The swap is for the coach of the team that went on.",
   "لاعب مقابل لاعب، حتى :n.": "One player for one, up to :n.",
-  "بعض اللاعبين ليسوا في الفريقين أو معارون.": "Some players are not in the two teams or are on loan."
+  "بعض اللاعبين ليسوا في الفريقين أو معارون.": "Some players are not in the two teams or are on loan.",
+  "روابط قوية (جنسية ونادٍ، أو مباريات معاً)": "Strong links (nationality and club, or matches together)",
+  "روابط متوسطة (جنسية أو دوري)": "Medium links (nationality or league)",
+  "روابط ضعيفة": "Weak links",
+  "الحارس": "Goalkeeper",
+  "بداية الموسم": "Season start",
+  "النتائج حتى الآن": "The results so far",
+  "مباريات بلا فوز": "Matches without a win",
+  "الجمهور والتذاكر والمؤتمر في المباراة القادمة": "The crowd, tickets and press in the next match",
+  "الدرجة": "Tier",
+  "أعلى نقاط بلغتها": "Your highest points",
+  "خسارة": "Loss",
+  "لا توجد أندية كافية للمباراة التعريفية.": "Not enough clubs for the intro match."
 }

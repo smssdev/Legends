@@ -206,6 +206,8 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::get('summary', [ClubBoardController::class, 'summary']);
         Route::get('missed', [ClubBoardController::class, 'missed']);
         Route::post('missed/seen', [ClubBoardController::class, 'seen'])->middleware('throttle:30,1,missed-seen');
+        Route::post('milestones/seen', [ClubBoardController::class, 'milestonesSeen'])->middleware('throttle:30,1,milestones-seen');
+        Route::get('explain/{what}', [ClubBoardController::class, 'explain']);
         // Club money [Sprint 23].
         Route::get('finance', 'finance');
         Route::post('sponsors', 'signSponsor');
@@ -364,6 +366,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
     Route::get('access', 'access');
     Route::middleware('admin')->group(function () {
         Route::get('overview', 'overview');
+        // [Sprint 64 B2] The new coaches' first five minutes.
+        Route::get('funnel', 'funnel');
         Route::get('alliances', 'alliances');
         Route::post('alliances/{id}/review', 'reviewAlliance')->whereNumber('id');
         Route::get('users', 'users');
@@ -518,6 +522,9 @@ Route::prefix('sim')->middleware('simulator')->controller(SimulatorController::c
     Route::get('clubs', 'clubs');
     Route::get('clubs/{club}', 'club');
     Route::post('matches', 'store')->middleware(['throttle:20,1,sim-store', 'throttle:sim-guest']);
+    // [Sprint 64 B1, B2] The new coach's first match.
+    Route::post('intro', 'intro')->middleware(['auth:sanctum', 'throttle:10,1,sim-intro']);
+    Route::post('intro/finished', 'introFinished')->middleware(['auth:sanctum', 'throttle:10,1,sim-intro']);
     Route::get('matches/{match}', 'show');
     Route::post('matches/{match}/actions', 'order')->middleware('throttle:120,1,sim-orders');
     Route::post('matches/{match}/ticks', 'ticks')->middleware('throttle:60,1,sim-ticks');

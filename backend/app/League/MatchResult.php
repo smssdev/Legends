@@ -4,6 +4,7 @@ namespace App\League;
 
 use App\Database\Sql;
 use App\Economy\Economy;
+use App\Experience\PlayerMilestones;
 use App\Market\Loans;
 use App\Market\Market;
 use App\Season\Achievements;
@@ -63,6 +64,8 @@ class MatchResult
                     'yc' => $p['yc'], 'out' => $p['out']], $team['players'])),
             ]);
             self::players($club[$side], $team, $m->seed, $matchId);
+            // [Sprint 64 B8] The milestones its players reached with the club.
+            PlayerMilestones::after($matchId, (int) $club[$side], $state);
             // Morale after the result [X25].
             // [Sprint 49] With the strength gap at kick-off (the other's minus ours), for a draw against a stronger side.
             $strength = DB::table('clubs')->whereIn('id', [$club['home'], $club['away']])->pluck('strength_snapshot', 'id');

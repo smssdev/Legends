@@ -37,6 +37,10 @@ class Onboarding
             'tactics' => DB::table('tactics')->whereIn('club_id', $clubs)->exists(),
             'name' => $user->avatarUrl() !== null,
             'friendly' => DB::table('friendlies')->where('user_id', $user->id)->exists(),
+            // [Sprint 64 W2] The three first steps: a club, a lineup (above), and a match played with it.
+            'club' => $clubs->isNotEmpty(),
+            'match' => $clubs->isNotEmpty() && DB::table('fixtures')->where('status', 'finished')->where('is_bye', false)
+                ->where(fn ($q) => $q->whereIn('home_id', $clubs)->orWhereIn('away_id', $clubs))->exists(),
         ];
     }
 }
