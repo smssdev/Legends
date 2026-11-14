@@ -74,6 +74,12 @@ class Telegram
         return (bool) ($r['ok'] ?? false);
     }
 
+    /** [Sprint 69] The answers to «@bot» typed in any chat: articles, each a text to send and a link button under it. */
+    public static function answerInline(string $queryId, array $results): void
+    {
+        self::call('answerInlineQuery', ['inline_query_id' => $queryId, 'results' => $results, 'cache_time' => 30, 'is_personal' => true]);
+    }
+
     public static function answerButton(string $callbackId): void
     {
         self::call('answerCallbackQuery', ['callback_query_id' => $callbackId]);
@@ -83,7 +89,7 @@ class Telegram
     public static function setWebhook(string $url): array
     {
         return self::call('setWebhook', ['url' => $url, 'secret_token' => config('services.telegram.secret'),
-            'allowed_updates' => ['message', 'callback_query'], 'drop_pending_updates' => true]) ?? ['ok' => false, 'status' => 0, 'description' => 'no answer'];
+            'allowed_updates' => ['message', 'callback_query', 'inline_query'], 'drop_pending_updates' => true]) ?? ['ok' => false, 'status' => 0, 'description' => 'no answer'];
     }
 
     /** The bot's own name, from its token (to fill TELEGRAM_BOT_USERNAME). */

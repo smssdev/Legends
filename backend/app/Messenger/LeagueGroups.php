@@ -3,8 +3,11 @@
 namespace App\Messenger;
 
 use App\Jobs\SendMessenger;
+use App\League\Newspaper;
 use App\League\Standings;
+use App\Models\League;
 use App\Support\GameClock;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -140,6 +143,48 @@ class LeagueGroups
             return;
         }
         SendMessenger::dispatch('telegram', $g->chat_id, self::roundText($seasonId, $round))->afterCommit();
+        // [Sprint 69] And the round's stars, from the league's newspaper.
+        $stars = self::starsText((int) $season->league_id, $round);
+        if ($stars !== null) {
+            SendMessenger::dispatch('telegram', $g->chat_id, $stars)->afterCommit();
+        }
+    }
+
+    /**
+     * [Sprint 69] The round's stars as the league's newspaper names them (Newspaper::edition): its player, its coach,
+     * its team (by line) and its big stories. Null before the round is fully played.
+     */
+    public static function starsText(int $leagueId, int $round): ?string
+    {
+        $league = League::find($leagueId);
+        $en = DB::table('users')->where('id', $league?->owner_id)->value('locale') === 'en';
+        $before = App::getLocale();
+        App::setLocale($en ? 'en' : 'ar');
+        try {
+            $e = $league ? Newspaper::edition($league, $round) : null;
+        } finally {
+            App::setLocale($before);
+        }
+        if (! $e || (int) $e['round'] !== $round) {
+            return null;
+        }
+        $out = [$en ? "The stars of round {$round}" : "نجوم الجولة {$round}", ''];
+        if ($e['player']) {
+            $p = $e['player'];
+            $out[] = ($en ? 'Player of the round: ' : 'لاعب الجولة: ')."{$p['name']} ({$p['club']})".($p['goals'] ? ($en ? ", {$p['goals']} goals" : "، {$p['goals']} أهداف") : '');
+        }
+        if ($e['coach']) {
+            $c = $e['coach'];
+            $out[] = ($en ? 'Coach of the round: ' : 'مدرب الجولة: ')."{$c['coach']['name']} ({$c['club']} {$c['goals'][0]}-{$c['goals'][1]} {$c['opponent']})";
+        }
+        if ($e['team']) {
+            $out[] = ($en ? 'Team of the round: ' : 'تشكيلة الجولة: ').implode('، ', array_map(fn ($p) => $p['name'], $e['team']));
+        }
+        foreach (array_slice($e['stories'], 0, 3) as $story) {
+            $out[] = '- '.$story['title'];
+        }
+
+        return count($out) > 2 ? implode("\n", $out) : null;
     }
 
     public static function roundText(int $seasonId, int $round): string

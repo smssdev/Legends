@@ -222,9 +222,11 @@ class MessengerTest extends TestCase
         LeagueGroups::roundDone($season);
         LeagueGroups::roundDone($season);
         $texts = $this->sent('api.telegram.org');
-        $this->assertCount($before + 1, $texts);
-        $this->assertStringContainsString('الجولة 1', last($texts));
-        $this->assertStringContainsString('2 - 1', last($texts));
+        // The results, then the round's stars [Sprint 69], once.
+        $this->assertCount($before + 2, $texts);
+        $this->assertStringContainsString('الجولة 1', $texts[$before]);
+        $this->assertStringContainsString('2 - 1', $texts[$before]);
+        $this->assertStringContainsString('نجوم الجولة 1', last($texts));
 
         $this->telegram('/unleague', -100, 'supergroup', 777);
         $this->assertSame(0, DB::table('messenger_groups')->count());

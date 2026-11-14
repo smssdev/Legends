@@ -27,6 +27,12 @@ class LiveFeed
 
     private static function send(object $fixture, int $matchId, array $state, array $tick): void
     {
+        $nowMs = GameClock::nowMs();
+        $delay = (int) ceil(max(0, (int) ($tick['at'] ?? $nowMs) + (int) ($tick['moment']['ms'] ?? 0) - $nowMs) / 1000);
+        // [Sprint 69] A break for orders opened: the quick orders and «جاهز» to the coaches.
+        if (Telegram::configured() || WhatsApp::configured()) {
+            MatchControl::window($fixture, $matchId, $state, $tick, $delay);
+        }
         $notable = array_values(array_filter($tick['events'] ?? [], fn ($e) => match ($e['type']) {
             'goal' => true,
             'card' => ($e['color'] ?? '') === 'red',
@@ -36,8 +42,6 @@ class LiveFeed
         if (! $notable || (! Telegram::configured() && ! WhatsApp::configured())) {
             return;
         }
-        $nowMs = GameClock::nowMs();
-        $delay = (int) ceil(max(0, (int) ($tick['at'] ?? $nowMs) + (int) ($tick['moment']['ms'] ?? 0) - $nowMs) / 1000);
         $names = DB::table('clubs')->whereIn('id', [$fixture->home_id, $fixture->away_id])->pluck('name', 'id');
         $club = ['home' => $names[$fixture->home_id] ?? '', 'away' => $names[$fixture->away_id] ?? ''];
         $players = [];
@@ -46,7 +50,8 @@ class LiveFeed
                 $players[$p['id']] = $p['name'] ?? '';
             }
         }
-        $minute = (int) ($tick['minute'] ?? 0);
+        // The engine's minute is [minute, second].
+        $minute = is_array($tick['minute'] ?? null) ? (int) $tick['minute'][0] : (int) ($tick['minute'] ?? 0);
         $url = rtrim((string) config('app.frontend_url'), '/')."/live/{$matchId}";
         $coaches = DB::table('clubs')->whereIn('id', [$fixture->home_id, $fixture->away_id])->whereNotNull('user_id')->pluck('user_id')->unique();
         $group = DB::table('messenger_groups')->join('seasons', 'seasons.league_id', '=', 'messenger_groups.league_id')

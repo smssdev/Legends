@@ -44,6 +44,9 @@ class Replies
         'scorers' => ['scorers', '10', 'الهدافون', 'الهدافين', 'top scorers'],
         'inbox' => ['inbox', '11', 'رسائلي', 'الرسائل', 'my messages'],
         'fix' => ['fix', 'improve', 'تحسين'],
+        // [Sprint 69] The daily tasks and the round's predictions.
+        'tasks' => ['tasks', '12', 'مهامي', 'المهام', 'my tasks'],
+        'predict' => ['predict', '13', 'توقعاتي', 'توقع', 'التوقعات', 'predictions'],
         'cancel' => ['cancel', 'إلغاء', 'الغاء'],
     ];
 
@@ -61,10 +64,12 @@ class Replies
         'scorers' => ['الهدافون', 'Top scorers'],
         'inbox' => ['رسائلي', 'My messages'],
         'fix' => ['تحسين', 'Improve'],
+        'tasks' => ['مهامي', 'My tasks'],
+        'predict' => ['توقعاتي', 'Predictions'],
     ];
 
     /** [Sprint 68] The buttons that stay under a Telegram chat (each sends its label). */
-    private const KEYBOARD = [['next', 'table', 'now'], ['squad', 'offers', 'training'], ['fixtures', 'scorers', 'inbox']];
+    private const KEYBOARD = [['next', 'table', 'now'], ['squad', 'offers', 'training'], ['fixtures', 'scorers', 'inbox'], ['tasks', 'predict', 'fix']];
 
     /** [Sprint 68] The menu Telegram shows by «/» (the commands' English words, which the bot reads too). */
     public const TELEGRAM_COMMANDS = [
@@ -74,6 +79,7 @@ class Replies
         'training' => ['التدريب الآن', 'Training now'], 'offers' => ['العروض التي تنتظر ردك', 'Offers waiting for you'],
         'fixtures' => ['مبارياتي القادمة', 'My coming matches'], 'scorers' => ['هدافو الدوري', 'The league\'s top scorers'],
         'inbox' => ['رسائلي غير المقروءة', 'My unread messages'], 'fix' => ['التشكيلة التلقائية الأفضل', 'The automatic best lineup'],
+        'tasks' => ['مهام اليوم ومكافآتها', 'Today\'s tasks and their coins'], 'predict' => ['توقع مباريات الجولة', 'Predict the round\'s matches'],
         'daily' => ['الملخص اليومي: /daily 8 أو /daily off', 'Daily summary: /daily 8 or /daily off'],
         'live' => ['أحداث مبارياتي الحية: /live on أو off', 'My live matches: /live on or off'],
         'help' => ['القائمة', 'Menu'],
@@ -147,6 +153,15 @@ class Replies
         if ($user && preg_match('/^(ask|do):/', trim($text))) {
             return Actions::run($user->id, trim($text), $en);
         }
+        // [Sprint 69] The match's quick orders and «جاهز», the training's choice, a task's coins, a prediction.
+        if ($user && preg_match('/^(q|ready|pick|claim|pr):/', trim($text), $m)) {
+            return match ($m[1]) {
+                'q', 'ready' => ['text' => MatchControl::run($user->id, trim($text), $en), 'buttons' => []],
+                'pick' => Actions::trainingChoices($user->id, trim($text), $en),
+                'claim' => Plays::claim($user->id, trim($text), $en),
+                'pr' => Plays::predict($user->id, trim($text), $en),
+            };
+        }
         if ($user && ($setting = $this->setting($user, $platform, $text, $en)) !== null) {
             return ['text' => $setting, 'buttons' => []];
         }
@@ -161,6 +176,17 @@ class Replies
         }
         if ($user && $cmd === 'fix') {
             return Actions::fixChoices($user->id, $en);
+        }
+        if ($user && $cmd === 'tasks') {
+            return Plays::tasks($user->id, $en);
+        }
+        if ($user && $cmd === 'predict') {
+            $all = Plays::predictions($user->id, $en);
+
+            return $all[0] + ['more' => array_slice($all, 1)];
+        }
+        if ($user && $cmd === 'training') {
+            return ['text' => Reads::training($user->id, $en), 'buttons' => Actions::trainingButtons($user->id, $en)];
         }
         if ($cmd === 'help' || ($cmd === null && trim($text) === '')) {
             return $this->menu($platform, $user, $l);
@@ -222,10 +248,10 @@ class Replies
         }
         $lines = $en
             ? ['1 Next match', '2 My table', '3 Balance', '4 Last result', '5 What now?', '6 My squad', '7 Training', '8 Offers (accept or reject)',
-                '9 My matches', '10 Top scorers', '11 My messages', 'improve: the automatic best lineup', 'Or ask me anything about the game.',
+                '9 My matches', '10 Top scorers', '11 My messages', '12 My tasks', '13 Predictions', 'improve: the automatic best lineup', 'Or ask me anything about the game.',
                 'daily 8: a summary every morning at 8 (Cairo time); daily off', 'live on / live off: your live matches here', 'stop / resume: all notifications here.']
             : ['1 مباراتي القادمة', '2 ترتيبي', '3 رصيدي', '4 آخر نتيجة', '5 ماذا أفعل الآن؟', '6 فريقي', '7 التدريب', '8 العروض (قبول أو رفض)',
-                '9 مبارياتي', '10 الهدافون', '11 رسائلي', '«تحسين»: التشكيلة التلقائية الأفضل', 'أو اسألني أي سؤال عن اللعبة.',
+                '9 مبارياتي', '10 الهدافون', '11 رسائلي', '12 مهامي', '13 توقعاتي', '«تحسين»: التشكيلة التلقائية الأفضل', 'أو اسألني أي سؤال عن اللعبة.',
                 '«ملخص 8»: ملخص كل صباح الساعة 8 بتوقيت القاهرة، و«ملخص إيقاف»', '«المباشر تشغيل» و«المباشر إيقاف»: أحداث مبارياتك الحية هنا', '«إيقاف» و«تشغيل»: كل الإشعارات هنا.'];
         $text = ($en ? "Hello {$user->name}! Send a number or a word:\n" : "أهلاً {$user->name}! أرسل رقماً أو كلمة:\n").implode("\n", $lines);
 
