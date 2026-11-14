@@ -19,6 +19,7 @@ import 'coaches_tab.dart';
 import 'daily_tasks_card.dart';
 import 'hub_tiles.dart';
 import 'office.dart';
+import 'office_extras.dart';
 
 class ClubTab extends ConsumerWidget {
   const ClubTab(this.lg, {super.key});
@@ -154,6 +155,9 @@ class ClubTab extends ConsumerWidget {
                       children: [
                         ?contract,
                         if (contract != null) const SizedBox(height: 8),
+                        // [Sprint 64 F3, F11] Since the last visit, and the players' milestones.
+                        if (s.since case final since?) ...[SinceVisitCard(since: since), const SizedBox(height: 8)],
+                        if (s.milestones.isNotEmpty) ...[MilestonesCard(items: s.milestones, leagueId: lg.id), const SizedBox(height: 8)],
                         GlmSectionTitle(
                           '${l.needsYou}${s.needs.isEmpty && s.missed == 0 ? '' : ' (${s.needs.length + (s.missed > 0 ? 1 : 0)})'}',
                         ),
@@ -199,20 +203,8 @@ class _Needs extends StatelessWidget {
           _ => (Icons.info_rounded, n.kind, base, p.textSoft),
         },
     ];
-    if (rows.isEmpty) {
-      return GlmCard(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Row(
-          children: [
-            IconTile(Icons.verified_rounded, color: p.success, size: 34),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(l.allClear, style: const TextStyle(fontWeight: FontWeight.w700)),
-            ),
-          ],
-        ),
-      );
-    }
+    // [Sprint 64 F4] Nothing waits: all ready, the next match, and its reminder.
+    if (rows.isEmpty) return AllReadyCard(matchAt: s.matchAt);
     return GlmCard(
       padding: EdgeInsets.zero,
       child: Column(

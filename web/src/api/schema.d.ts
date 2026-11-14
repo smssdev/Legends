@@ -11765,19 +11765,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["MatchView"] & {
-                            intro: {
-                                moments: {
-                                    /** @enum {string} */
-                                    kind: "style" | "sub" | "effect";
-                                    minute: number;
-                                    /** @description From the guide */
-                                    title: string;
-                                    /** @description From the guide */
-                                    text: string;
-                                }[];
-                            };
-                        };
+                        "application/json": components["schemas"]["MatchView"] & components["schemas"]["SimIntro"];
                     };
                 };
                 /** @description Signed in only */
@@ -14602,6 +14590,22 @@ export interface components {
                 fitness: number | null;
             } | null;
         };
+        /** @description [Sprint 64 B1] The intro match's id and its three teaching moments */
+        SimIntro: {
+            id: string;
+            intro: {
+                moments: components["schemas"]["IntroMoment"][];
+            };
+        };
+        IntroMoment: {
+            /** @enum {string} */
+            kind: "style" | "sub" | "effect";
+            minute: number;
+            /** @description From the guide */
+            title: string;
+            /** @description From the guide */
+            text: string;
+        };
         /** @description [Sprint 64 B8] A player's milestone with the club */
         PlayerMilestone: {
             id: number;
@@ -16758,6 +16762,8 @@ export interface components {
         LeagueMatch: {
             id: number;
             league_id?: number;
+            /** @description [Sprint 64 F6] Its fixture (the waiting room's predictions) */
+            fixture_id?: number;
             competition?: string;
             round?: number | null;
             /**

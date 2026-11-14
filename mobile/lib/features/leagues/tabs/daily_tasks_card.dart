@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../explain.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -165,7 +168,15 @@ class LeagueVersus extends StatelessWidget {
                   ),
                   child: ClubCrest(url: c.crestUrl, name: c.code, size: 84),
                 ),
-                if (strength != null) ...[const SizedBox(width: 10), _Ring(value: strength ~/ 100, mine: mine)],
+                // [Sprint 64 F5] My strength opens where it comes from.
+                if (strength != null) ...[
+                  const SizedBox(width: 10),
+                  ExplainTap(
+                    what: 'strength',
+                    leagueId: mine ? leagueId : null,
+                    child: _Ring(value: strength ~/ 100, mine: mine),
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 6),

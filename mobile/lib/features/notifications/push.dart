@@ -6,16 +6,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../api/gen/models.g.dart' as api;
 import '../../core/api/api_client.dart';
+import '../../core/settings.dart';
 import '../inbox/inbox_data.dart';
+
+/// [Sprint 64 F12] The coach agreed on the notifications' primer card (then the system asks).
+const pushPrimedKey = 'glm.push.primed';
+
+/// [Sprint 64 F12] «Later» on the primer card, for this many days.
+const pushLaterKey = 'glm.push.later';
 
 /// [Sprint 19 F1] Pushes on the phone, by FCM on the server's one channel (App\Notify\Push, Fcm). The app's Firebase
 /// settings come from the server (`/app` → `firebase`), so pushes start as soon as the owner sets them there, with no new
 /// build; until then this does nothing. After sign-in the device's token is sent (`channel: fcm`), and forgotten at
 /// sign-out. A tap on a push opens its screen (appRoute: the site's path inside its league).
 class PushService {
-  PushService(this._api);
+  PushService(this._api, {this.primed});
 
   final ApiClient _api;
+
+  /// [Sprint 64 F12] Whether the coach agreed on the primer card (asked by the system only after it), or null to ask
+  /// straight away (the tests and before this sprint's settings were read).
+  final bool Function()? primed;
   bool _ready = false;
   String? _token;
   final _taps = StreamController<String>.broadcast();
@@ -55,6 +66,9 @@ class PushService {
         );
       }
       final messaging = FirebaseMessaging.instance;
+      // [Sprint 64 F12, M-S07] The system's question only after the primer card explained it (or when already allowed).
+      final now = await messaging.getNotificationSettings();
+      if (now.authorizationStatus != AuthorizationStatus.authorized && primed != null && !primed!()) return;
       final allowed = await messaging.requestPermission();
       if (allowed.authorizationStatus == AuthorizationStatus.denied) return;
       _ready = true;
@@ -99,7 +113,8 @@ class PushService {
 }
 
 final pushProvider = Provider<PushService>((ref) {
-  final push = PushService(ref.watch(apiProvider));
+  final prefs = ref.watch(preferencesProvider);
+  final push = PushService(ref.watch(apiProvider), primed: () => prefs.getBool(pushPrimedKey) ?? false);
   ref.onDispose(() => unawaited(push.dispose()));
   return push;
 });

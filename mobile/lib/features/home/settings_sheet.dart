@@ -104,6 +104,18 @@ class _SettingsSheet extends ConsumerWidget {
                     ),
                   ],
                 ),
+            // [Sprint 64 F13] The buttons' buzz and tap.
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              secondary: Icon(Icons.vibration_rounded, color: context.palette.gold),
+              title: Text(l.touchFeedback),
+              value: s.touch,
+              activeThumbColor: context.palette.gold,
+              onChanged: (v) {
+                settings.setTouch(v);
+                GameSounds.touch = v;
+              },
+            ),
             const SizedBox(height: 4),
             // [Sprint 18 F] The account: name, look, password, invites and badges; and the community's pages from it.
             ListTile(

@@ -4157,23 +4157,7 @@ paths:
               schema:
                 allOf:
                   - { $ref: '#/components/schemas/MatchView' }
-                  - type: object
-                    required: [intro]
-                    properties:
-                      intro:
-                        type: object
-                        required: [moments]
-                        properties:
-                          moments:
-                            type: array
-                            items:
-                              type: object
-                              required: [kind, minute, title, text]
-                              properties:
-                                kind: { type: string, enum: [style, sub, effect] }
-                                minute: { type: integer }
-                                title: { type: string, description: From the guide }
-                                text: { type: string, description: From the guide }
+                  - { $ref: '#/components/schemas/SimIntro' }
         '401': { description: Signed in only }
   /sim/intro/finished:
     post:
@@ -5939,6 +5923,25 @@ components:
                 trap: { type: integer }
             form: { type: array, items: { type: string, enum: [W, D, L] }, description: Newest first }
             fitness: { type: integer, nullable: true, description: The eleven's average fitness }
+    SimIntro:
+      type: object
+      description: '[Sprint 64 B1] The intro match''s id and its three teaching moments'
+      required: [id, intro]
+      properties:
+        id: { type: string }
+        intro:
+          type: object
+          required: [moments]
+          properties:
+            moments: { type: array, items: { $ref: '#/components/schemas/IntroMoment' } }
+    IntroMoment:
+      type: object
+      required: [kind, minute, title, text]
+      properties:
+        kind: { type: string, enum: [style, sub, effect] }
+        minute: { type: integer }
+        title: { type: string, description: From the guide }
+        text: { type: string, description: From the guide }
     PlayerMilestone:
       type: object
       description: '[Sprint 64 B8] A player''s milestone with the club'
@@ -7544,6 +7547,7 @@ components:
       properties:
         id: { type: integer }
         league_id: { type: integer }
+        fixture_id: { type: integer, description: '[Sprint 64 F6] Its fixture (the waiting room''s predictions)' }
         competition: { type: string }
         round: { type: integer, nullable: true }
         you: { type: string, nullable: true, enum: [home, away, null], description: The side the viewer manages }

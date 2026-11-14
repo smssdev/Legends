@@ -30,6 +30,8 @@ class ClubSummary {
     this.timers = const [],
     this.round,
     this.form = const [],
+    this.since,
+    this.milestones = const [],
   });
 
   /// [Sprint 59 F1] The club's board (`ClubBoard`), read through its generated model.
@@ -62,6 +64,8 @@ class ClubSummary {
       round: m?.round,
       form: m?.club.form ?? const [],
       timers: [for (final t in v.timers) (kind: t.kind, at: date(t.at))],
+      since: v.since,
+      milestones: v.milestones ?? const [],
     );
   }
 
@@ -95,6 +99,10 @@ class ClubSummary {
   /// The next match's round, and my club's last results (W, D, L), newest last.
   final int? round;
   final List<String> form;
+
+  /// [Sprint 64 F3] Since the last visit, while its matches are unseen; [F11] the players' milestones not yet seen.
+  final api.ClubBoardSince? since;
+  final List<api.PlayerMilestone> milestones;
 }
 
 final clubSummaryProvider = FutureProvider.autoDispose.family<ClubSummary, int>(

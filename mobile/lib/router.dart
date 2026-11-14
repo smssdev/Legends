@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+
+import 'features/sim/first_match_screen.dart';
+import 'features/sim/first_match_controller.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -87,6 +91,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
       final from = state.uri.queryParameters['from'];
       if (from != null && guest.contains(here)) return from;
+      // [Sprint 64 F1] A new account plays its first match before the home screen.
+      if (guest.contains(here) && ref.read(firstMatchWantedProvider)) return '/first-match';
       return guest.contains(here) || here == '/start' || here == '/offline' ? '/' : null;
     },
     routes: [
@@ -242,6 +248,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
       // [Sprint 47] The simulator: a trial match against the computer or a friend.
       GoRoute(path: '/sim', builder: (_, _) => const SimSetupScreen()),
+      // [Sprint 64 F1] The new coach's first match.
+      GoRoute(path: '/first-match', builder: (_, _) => const FirstMatchScreen()),
       // [Sprint 61 F10] A simulator match played in the app (the live match screen), its seat for a match with a friend.
       GoRoute(
         path: '/sim/match/:id',

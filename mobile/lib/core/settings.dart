@@ -5,7 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// [Sprint 15 F1] This phone's choices, as on the web (X56, Sprint 43 A1): the look (the device's by default, or night or
 /// day) and the language (Arabic by default). Kept on the phone only.
 class Settings {
-  const Settings({this.theme = ThemeMode.system, this.language = 'ar', this.sounds = true, this.soundUi = 80, this.soundStadium = 80});
+  const Settings({
+    this.theme = ThemeMode.system,
+    this.language = 'ar',
+    this.sounds = true,
+    this.soundUi = 80,
+    this.soundStadium = 80,
+    this.touch = true,
+  });
 
   final ThemeMode theme;
   final String language;
@@ -18,13 +25,17 @@ class Settings {
   /// the app.
   final int soundUi, soundStadium;
 
+  /// [Sprint 64 F13] The buttons' buzz and tap (GlmButton), one switch, as on the site (lib/soundLevels.ts).
+  final bool touch;
+
   Locale get locale => Locale(language);
-  Settings copyWith({ThemeMode? theme, String? language, bool? sounds, int? soundUi, int? soundStadium}) => Settings(
+  Settings copyWith({ThemeMode? theme, String? language, bool? sounds, int? soundUi, int? soundStadium, bool? touch}) => Settings(
     theme: theme ?? this.theme,
     language: language ?? this.language,
     sounds: sounds ?? this.sounds,
     soundUi: soundUi ?? this.soundUi,
     soundStadium: soundStadium ?? this.soundStadium,
+    touch: touch ?? this.touch,
   );
 }
 
@@ -38,6 +49,7 @@ class SettingsController extends Notifier<Settings> {
   static const _sounds = 'glm.sounds';
   static const _soundUi = 'glm.sound.ui';
   static const _soundStadium = 'glm.sound.stadium';
+  static const _touch = 'glm.touch';
 
   @override
   Settings build() {
@@ -53,6 +65,7 @@ class SettingsController extends Notifier<Settings> {
       sounds: p.getBool(_sounds) ?? true,
       soundUi: (p.getInt(_soundUi) ?? 80).clamp(0, 100),
       soundStadium: (p.getInt(_soundStadium) ?? 80).clamp(0, 100),
+      touch: p.getBool(_touch) ?? true,
     );
   }
 
@@ -71,6 +84,12 @@ class SettingsController extends Notifier<Settings> {
     final v = level.clamp(0, 100);
     state = which == 'ui' ? state.copyWith(soundUi: v) : state.copyWith(soundStadium: v);
     await ref.read(preferencesProvider).setInt(which == 'ui' ? _soundUi : _soundStadium, v);
+  }
+
+  /// [Sprint 64 F13] The buttons' buzz and tap.
+  Future<void> setTouch(bool on) async {
+    state = state.copyWith(touch: on);
+    await ref.read(preferencesProvider).setBool(_touch, on);
   }
 
   Future<void> setLanguage(String language) async {

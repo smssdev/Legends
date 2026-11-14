@@ -29,6 +29,9 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
 
   void _openDrawer(String? d) => setState(() => _drawer = d);
 
+  /// [Sprint 64 F7] The orders drawer was opened by a window (so its end closes it).
+  bool _openedByWindow = false;
+
   /// [Sprint 50 M14] The timeout held.
   int? _timeoutUntil;
   late bool _timeoutUsed = widget.view.you != null && widget.view.timeoutsUsed.contains(widget.view.you);
@@ -108,6 +111,18 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     // [Sprint 61 F4] The screen itself rebuilds only when its shape changes (the start, a break, the end); the score,
     // the pitch, the feed and the wave each watch their own below.
     ref.watch(liveMatchProvider(_id).select((s) => (s.started, s.finished, s.pause)));
+    // [Sprint 64 F7] A coach's window opens his orders by itself (its countdown in the break bar), and its end closes
+    // them, if it was the window that opened them.
+    ref.listen(liveMatchProvider(_id).select((s) => s.pause?.window ?? false), (was, on) {
+      if (_you == null || _sim || _finished || was == on) return;
+      if (on && _drawer != 'orders') {
+        _openedByWindow = true;
+        _openDrawer('orders');
+      } else if (!on && _openedByWindow) {
+        _openedByWindow = false;
+        if (_drawer == 'orders') _openDrawer(null);
+      }
+    });
     final kits = matchKits(v);
     final size = MediaQuery.sizeOf(context);
     final landscape = size.width > size.height;
@@ -185,6 +200,23 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
               ),
             ),
           ),
+          // [Sprint 64 F6] A league match before its whistle: the waiting room, gone by itself at kick-off.
+          if (!_sim && !_started && !_finished && (widget.view.kickoffAt?.isAfter(DateTime.now()) ?? false))
+            Positioned.fill(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(GlmSpace.md),
+                  child: WaitingRoom(view: widget.view, onChat: () => _openDrawer('chat')),
+                ),
+              ),
+            ),
+          // [Sprint 64 F1] The intro match's assistant (nothing for any other match).
+          if (_sim)
+            Positioned.fill(
+              child: SafeArea(
+                child: IntroCoachOverlay(handle: _id, onOrders: () => _openDrawer('orders')),
+              ),
+            ),
           Positioned.fill(
             child: MatchCurtain(key: _curtain, home: kits['home']!.$1, away: kits['away']!.$1),
           ),

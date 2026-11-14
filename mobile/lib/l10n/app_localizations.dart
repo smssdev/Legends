@@ -5461,6 +5461,240 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'خ'**
   String get h2hL;
+
+  /// No description provided for @touchFeedback.
+  ///
+  /// In ar, this message translates to:
+  /// **'اهتزاز الأزرار وصوتها'**
+  String get touchFeedback;
+
+  /// No description provided for @introFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر تجهيز المباراة التعريفية الآن.'**
+  String get introFailed;
+
+  /// No description provided for @introPreparing.
+  ///
+  /// In ar, this message translates to:
+  /// **'نجهّز مباراتك الأولى...'**
+  String get introPreparing;
+
+  /// No description provided for @introContinue.
+  ///
+  /// In ar, this message translates to:
+  /// **'تابع'**
+  String get introContinue;
+
+  /// No description provided for @introSkip.
+  ///
+  /// In ar, this message translates to:
+  /// **'تخطَّ المباراة التعريفية'**
+  String get introSkip;
+
+  /// No description provided for @introDoneTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أحسنت، هذه كانت مباراتك الأولى!'**
+  String get introDoneTitle;
+
+  /// No description provided for @introDoneBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'الآن خذ نادياً في دوري، ومعه هدية البداية.'**
+  String get introDoneBody;
+
+  /// No description provided for @introOpenOrders.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتح الأوامر'**
+  String get introOpenOrders;
+
+  /// No description provided for @introOk.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسناً'**
+  String get introOk;
+
+  /// No description provided for @sinceTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'منذ آخر زيارة'**
+  String get sinceTitle;
+
+  /// No description provided for @sinceUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقدمت {n} مراكز'**
+  String sinceUp(int n);
+
+  /// No description provided for @sinceDown.
+  ///
+  /// In ar, this message translates to:
+  /// **'تراجعت {n} مراكز'**
+  String sinceDown(int n);
+
+  /// No description provided for @sinceSame.
+  ///
+  /// In ar, this message translates to:
+  /// **'ترتيبك كما هو'**
+  String get sinceSame;
+
+  /// No description provided for @sinceOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'عروض تنتظر ردك'**
+  String get sinceOffers;
+
+  /// No description provided for @sinceFlip.
+  ///
+  /// In ar, this message translates to:
+  /// **'المس لتقلب'**
+  String get sinceFlip;
+
+  /// No description provided for @milestoneGoals.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدفه رقم {n}'**
+  String milestoneGoals(int n);
+
+  /// No description provided for @milestoneMatches.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباراته رقم {n}'**
+  String milestoneMatches(int n);
+
+  /// No description provided for @milestoneMotmFirst.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجل المباراة لأول مرة'**
+  String get milestoneMotmFirst;
+
+  /// No description provided for @milestoneMotm.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجل المباراة للمرة {n}'**
+  String milestoneMotm(int n);
+
+  /// No description provided for @milestoneGreat.
+  ///
+  /// In ar, this message translates to:
+  /// **'رائع'**
+  String get milestoneGreat;
+
+  /// No description provided for @nextMatchAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباراتك القادمة {when}'**
+  String nextMatchAt(String when);
+
+  /// No description provided for @remindMe.
+  ///
+  /// In ar, this message translates to:
+  /// **'ذكّرني قبل المباراة'**
+  String get remindMe;
+
+  /// No description provided for @explainChemistry.
+  ///
+  /// In ar, this message translates to:
+  /// **'من أين جاءت الكيمياء؟'**
+  String get explainChemistry;
+
+  /// No description provided for @explainStrength.
+  ///
+  /// In ar, this message translates to:
+  /// **'من أين جاءت قوة فريقك؟'**
+  String get explainStrength;
+
+  /// No description provided for @explainMorale.
+  ///
+  /// In ar, this message translates to:
+  /// **'من أين جاءت المعنويات؟'**
+  String get explainMorale;
+
+  /// No description provided for @explainRating.
+  ///
+  /// In ar, this message translates to:
+  /// **'من أين جاءت نقاطك؟'**
+  String get explainRating;
+
+  /// No description provided for @readInGuide.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقرأ أكثر في الدليل'**
+  String get readInGuide;
+
+  /// No description provided for @waitingRoom.
+  ///
+  /// In ar, this message translates to:
+  /// **'غرفة الانتظار'**
+  String get waitingRoom;
+
+  /// No description provided for @membersPredictions.
+  ///
+  /// In ar, this message translates to:
+  /// **'توقعات الأعضاء'**
+  String get membersPredictions;
+
+  /// No description provided for @shareResult.
+  ///
+  /// In ar, this message translates to:
+  /// **'شارك النتيجة'**
+  String get shareResult;
+
+  /// No description provided for @shareResultLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'{result} {score} في Game Legend Manager'**
+  String shareResultLine(String result, String score);
+
+  /// No description provided for @firstStepsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطواتك الأولى'**
+  String get firstStepsTitle;
+
+  /// No description provided for @firstStepClub.
+  ///
+  /// In ar, this message translates to:
+  /// **'خذ نادياً في دوري'**
+  String get firstStepClub;
+
+  /// No description provided for @firstStepLineup.
+  ///
+  /// In ar, this message translates to:
+  /// **'اضبط التشكيلة'**
+  String get firstStepLineup;
+
+  /// No description provided for @firstStepMatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'العب مباراتك الأولى'**
+  String get firstStepMatch;
+
+  /// No description provided for @pushPrimerTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا تفوّت مباراتك'**
+  String get pushPrimerTitle;
+
+  /// No description provided for @pushPrimerBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'نذكّرك بتشكيلتك قبل المباراة بساعة، وبالمباراة قبلها بنصف ساعة، وبالعروض حين تصل.'**
+  String get pushPrimerBody;
+
+  /// No description provided for @pushPrimerAllow.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسمح بالإشعارات'**
+  String get pushPrimerAllow;
+
+  /// No description provided for @pushPrimerLater.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاحقاً'**
+  String get pushPrimerLater;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

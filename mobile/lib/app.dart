@@ -74,6 +74,7 @@ class _GlmAppState extends ConsumerState<GlmApp> {
     final settings = ref.watch(settingsProvider);
     GameSounds.enabled = settings.sounds;
     GameSounds.ui = settings.soundUi;
+    GameSounds.touch = settings.touch;
     GameSounds.stadium = settings.soundStadium;
     final update = ref.watch(updateRequiredProvider).value ?? false;
     ApiError.locale = settings.locale;
