@@ -99,6 +99,8 @@ function status(p: SquadPlayer) {
   if (p.fitness < 90) return { text: 'متعب', tone: 'text-warning' }
   return { text: { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' }[p.role], tone: p.role === 'starter' ? 'text-success' : 'text-text-muted' }
 }
+// [Sprint 66 T2] A player's attributes as the tile reads them (a cast the template cannot hold).
+const attrs = (p: { attributes?: unknown }) => p.attributes as Record<string, number | null>
 </script>
 
 <template>
@@ -142,7 +144,7 @@ function status(p: SquadPlayer) {
             <ul class="grid grid-cols-3 gap-3 xl:grid-cols-4">
               <li v-for="p in grp.players" :key="p.id" class="v-card">
                 <button type="button" class="block w-full text-start" :aria-label="p.name" @click="open = p">
-                  <PlayerTile :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :fitness="p.fitness" :status="status(p).text" :status-tone="status(p).tone" :attributes="p.attributes as Record<string, number | null>" />
+                  <PlayerTile :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :fitness="p.fitness" :status="status(p).text" :status-tone="status(p).tone" :attributes="attrs(p)" />
                 </button>
               </li>
             </ul>

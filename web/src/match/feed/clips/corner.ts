@@ -26,6 +26,7 @@ export function corner(e: SceneData) {
     // The taker at the flag, and the team-mate who comes short for it.
     put(tk, 606, 218); if (t < 0.62 && t > 0.3) tk.kick(seg(t, 0.3, 0.62)); else tk.pose()
     if (short) { put(sh2, lerp(520, lay[0] + 6, ease(seg(t, 0, 0.6))), lay[1] + 2); t > 0.75 && t < t0 + 0.1 ? sh2.kick(seg(t, 0.75, t0 + 0.08)) : t < 0.6 ? sh2.run(t * 12, 0.6) : sh2.pose() }
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions -- the clips' frames are written as comma sequences
     else put(sh2, 470, 236), sh2.idle(t * 3)
     const f = seg(t, t0, t0 + 1.1), jump = 24 * Math.sin(Math.PI * seg(t, 1.35 + dt, 2.05 + dt))
     put(hd, lerp(style === 'near' ? 330 : 346, head[0], ease(seg(t, 0, 1.4 + dt))), head[1], 0, 1, jump); jump > 1 ? hd.pose(10, -10, 70, -70, 0.4, 0.4) : hd.run(t * 12, 0.6)

@@ -27,9 +27,11 @@ export function trap(e: SceneData) {
     // The back line: level, then all four step up at once (a little hop) at 0.95 s.
     const up = inout(seg(t, 0.95, 1.25)), hop = Math.sin(Math.PI * seg(t, 0.95, 1.25)) * 8
     const dy = lerp(214, 250, up)
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions -- the clips' frames are written as comma sequences
     defs.forEach((d, i) => { const x = [214, 282, 358, 426][i]; put(d, x, dy, 0, 1, hop * persp(dy)); d.face?.('front'); t > 0.95 && t < 1.25 ? d.pose(10, -10, 40, -40, 0.4, 0.4) : t > 1.3 ? (d.mood('joy'), d.pose(3, -3, i % 2 ? 150 : 14, i % 2 ? -14 : -150)) : d.run(t * 9, 0.3) })
     // The striker sets off for the ball, and stops dead, skidding.
     const go = ease(seg(t, 0.8, 1.3)), sy = lerp(222, 196, go)
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions -- the clips' frames are written as comma sequences
     put(st, 330, sy); t < 1.3 ? st.run(t * 13, 0.3 + go) : (st.face?.('front'), st.mood('shock'), st.pose(20, -20, 60, -60))
     skid(330, sy + 4, seg(t, 1.3, 1.9))
     // The playmaker plays it through at 0.85 s.

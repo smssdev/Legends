@@ -1,0 +1,15 @@
+# [Sprint 66 T2] Prettier's look for the web (.prettierrc.json: 140 wide, no semicolons, single quotes): npm run format,
+# and CI runs format:check. What follows is generated, built or recorded, never formatted by hand.
+dist/
+public/
+node_modules/
+test-results/
+playwright-report/
+e2e/**/*-snapshots/
+package-lock.json
+index.html
+*.md
+src/api/schema.d.ts
+src/styles/tokens.css
+src/**/*.g.ts
+scripts/*-baseline.json

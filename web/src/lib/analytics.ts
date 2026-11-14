@@ -34,6 +34,7 @@ function startGoogle(id: string) {
   const win = w()
   win.dataLayer = win.dataLayer || []
   // gtag must push the arguments object itself, as Google's own snippet does.
+  // eslint-disable-next-line prefer-rest-params -- Google's tag reads the arguments object, not an array
   win.gtag = function gtag() { win.dataLayer!.push(arguments) } as Fn
   win.gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', region: EUROPE, wait_for_update: 500 })
   win.gtag('consent', 'default', { ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', analytics_storage: 'granted' })
