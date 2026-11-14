@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **الحالة** | ⏳ معتمد من صاحب المشروع (2026-11-11)، ولم يبدأ |
+| **الحالة** | 🔨 جارٍ (بدأ 2026-11-14 بطلب صاحب المشروع): كود القسم (أ) لأندرويد مبني، وينتظر مفتاح سليمان؛ ومهام iOS ملغاة بقراره |
 | **المدة** | 5 أيام عمل |
 | **المرحلة** | د. الإطلاق (والمهمتان F1 وF2 تُقدَّمان إلى المرحلة أ إن أُنشئ المفتاح) |
 | **المنصة** | تطبيق، خادم |
@@ -27,30 +27,30 @@ M-S01، M-S02، M-I01، M-I02، M-I03، M-I04، M-I05، M-B11، M-P09.
 
 | الرمز | المهمة | من | الملفات |
 |---|---|---|---|
-| F1 | **مفتاح ثابت:** سليمان ينشئ keystore على جهازه ويحفظه في GitHub Secrets (القسم 11 من README)، ونسخة احتياطية خارج الجهاز. `build.gradle.kts` يقرأ `signingConfigs.release` من متغيرات البيئة، ويبقى `debug` للبناء المحلي بلا مفتاح | سليمان، Claude | `android/app/build.gradle.kts`، `mobile.yml` |
-| F2 | **الانتقال من مفتاح التطوير:** النسخة الموقّعة لا تُثبَّت فوق القديمة. صفحة `/download` تشرح «احذف النسخة القديمة مرة واحدة»، والتطبيق القديم يعرض الرسالة نفسها عبر `min_app_version` | Claude | `web/src/pages/DownloadPage.vue`، `HealthController` |
-| B1 | **`/.well-known/assetlinks.json`** ببصمة SHA-256 للمفتاح (من إعداد على السيرفر `ANDROID_CERT_SHA256`، ليست سراً)، و`/.well-known/apple-app-site-association`. يخدمهما Nginx أو `router.php` بنوع `application/json` | Claude | `routes/web.php`، `deploy/` |
-| F3 | **iOS، الأذونات:** `NSMicrophoneUsageDescription` و`NSPhotoLibraryUsageDescription` (و`NSCameraUsageDescription` إن فُتحت الكاميرا) بالعربية والإنجليزية (`InfoPlist.strings`) | Claude | `ios/Runner/` |
-| F4 | **الأصوات تعمل على iOS:** `tool/sounds/make_sounds.py` يصدّر `.m4a` (أو `.wav` للقصيرة)، و`sounds.dart` يشغّلها على النظامين. واختبار يتأكد أن كل `Sfx` له ملف | Claude | `assets/sounds/`، `lib/core/sounds.dart` |
-| F5 | **iOS، الروابط:** `Runner.entitlements` بـ `applinks:gamelegendmanager.online`، وحذف المفتاح القديم من `Info.plist` | Claude | `ios/Runner/` |
-| F6 | **بناء iOS في CI بلا توقيع** (`flutter build ios --no-codesign` على `macos-latest`، مجاني للمستودعات العامة ومحدود للخاصة: يُشغَّل يدوياً لا مع كل PR) حتى لا ينكسر دون أن نعلم | Claude | `.github/workflows/mobile.yml` |
-| F7 | **حجم التطبيق في CI:** `--analyze-size`، ويفشل فوق 25 MB للمعمارية | Claude | `mobile.yml` |
-| F8 | **مجلد `assets/splash`:** الصور أو حذف تسجيله | Claude | `pubspec.yaml` |
+| F1 ✅ | **مفتاح ثابت:** سليمان ينشئ keystore على جهازه ويحفظه في GitHub Secrets (القسم 11 من README)، ونسخة احتياطية خارج الجهاز. `build.gradle.kts` يقرأ `signingConfigs.release` من متغيرات البيئة، ويبقى `debug` للبناء المحلي بلا مفتاح | سليمان، Claude | `android/app/build.gradle.kts`، `mobile.yml` |
+| F2 ✅ | **الانتقال من مفتاح التطوير:** النسخة الموقّعة لا تُثبَّت فوق القديمة. صفحة `/download` تشرح «احذف النسخة القديمة مرة واحدة»، والتطبيق القديم يعرض الرسالة نفسها عبر `min_app_version` | Claude | `web/src/pages/DownloadPage.vue`، `HealthController` |
+| B1 ✅ | **`/.well-known/assetlinks.json`** ببصمة SHA-256 للمفتاح (من إعداد على السيرفر `ANDROID_CERT_SHA256`، ليست سراً)، و`/.well-known/apple-app-site-association`. يخدمهما Nginx أو `router.php` بنوع `application/json` | Claude | `routes/web.php`، `deploy/` |
+| F3 ❌ | **iOS، الأذونات:** `NSMicrophoneUsageDescription` و`NSPhotoLibraryUsageDescription` (و`NSCameraUsageDescription` إن فُتحت الكاميرا) بالعربية والإنجليزية (`InfoPlist.strings`) | Claude | `ios/Runner/` |
+| F4 ❌ | **الأصوات تعمل على iOS:** `tool/sounds/make_sounds.py` يصدّر `.m4a` (أو `.wav` للقصيرة)، و`sounds.dart` يشغّلها على النظامين. واختبار يتأكد أن كل `Sfx` له ملف | Claude | `assets/sounds/`، `lib/core/sounds.dart` |
+| F5 ❌ | **iOS، الروابط:** `Runner.entitlements` بـ `applinks:gamelegendmanager.online`، وحذف المفتاح القديم من `Info.plist` | Claude | `ios/Runner/` |
+| F6 ❌ | **بناء iOS في CI بلا توقيع** (`flutter build ios --no-codesign` على `macos-latest`، مجاني للمستودعات العامة ومحدود للخاصة: يُشغَّل يدوياً لا مع كل PR) حتى لا ينكسر دون أن نعلم | Claude | `.github/workflows/mobile.yml` |
+| F7 ✅ | **حجم التطبيق في CI:** `--analyze-size`، ويفشل فوق 25 MB للمعمارية | Claude | `mobile.yml` |
+| F8 ✅ | **مجلد `assets/splash`:** الصور أو حذف تسجيله | Claude | `pubspec.yaml` |
 
 ### (ب) بقرارك
 
 | الرمز | المهمة | من |
 |---|---|---|
 | S1 | **Google Play:** `appbundle` بدل APK، وصفحة المتجر (العنوان، والوصف باللغتين، و8 لقطات بالعرض من `test/shots`، وأيقونة 512، وصورة مميزة 1024×500)، ونموذج أمان البيانات من سياسة الخصوصية، وتصنيف المحتوى | سليمان (الحساب)، Claude (المواد) |
-| S2 | **App Store:** الشهادات، وAPNs لـ Firebase (M-I05)، ولقطات iPhone وiPad، ومراجعة Apple (الدخول بجوجل يستلزم «الدخول مع Apple»، وقد أُلغي في Sprint 50 لأنه مدفوع: يُبحث عند القرار) | سليمان، Claude |
+| S2 ❌ | **App Store:** الشهادات، وAPNs لـ Firebase (M-I05)، ولقطات iPhone وiPad، ومراجعة Apple (الدخول بجوجل يستلزم «الدخول مع Apple»، وقد أُلغي في Sprint 50 لأنه مدفوع: يُبحث عند القرار) | سليمان، Claude |
 
 ## تعريف الانتهاء (القسم أ)
 
 - [ ] APK الإصدار موقّع بالمفتاح الثابت (`apksigner verify --print-certs` يطابق البصمة في `assetlinks.json`).
 - [ ] رابط `https://gamelegendmanager.online/join/CODE` يفتح التطبيق مباشرة على أندرويد 12 وما بعده (يُتحقق على جهاز).
 - [ ] نسخة جديدة تُثبَّت فوق النسخة الموقّعة السابقة دون حذف.
-- [ ] `flutter build ios --no-codesign` ينجح.
-- [ ] على iPhone (حين يتوفر): الأصوات تعمل، وتسجيل رسالة صوتية يطلب الإذن ولا يُغلق التطبيق. يُضاف إلى «التجارب المؤجلة» (README القسم 10) إن لم يتوفر جهاز.
+- [x] ~~`flutter build ios --no-codesign` ينجح.~~ ملغى: الآيفون من الموقع (قرار صاحب المشروع 2026-11-14).
+- [x] ~~على iPhone: الأصوات والتسجيل في التطبيق الأصلي.~~ ملغى: على الآيفون تطبيق الويب من Safari، وأصواته من الموقع (G12 في Sprint 63، بصيغة mp3 التي يقرؤها Safari).
 
 ## المخاطر
 
@@ -59,7 +59,43 @@ M-S01، M-S02، M-I01، M-I02، M-I03، M-I04، M-I05، M-B11، M-P09.
 
 ## ما أُنجز وكيف يُختبر
 
-لم يبدأ. يُكتب هنا مع كل PR: ما بُني، وأين، وكيف يُجرَّب، والاختبارات، وما بقي.
+### قرار صاحب المشروع (2026-11-14): الآيفون من الموقع
+
+**لا حساب Apple مدفوع ولا App Store.** على الآيفون تُثبَّت اللعبة من Safari على الشاشة الرئيسية (تطبيق ويب)، فتفتح كتطبيق بأيقونتها. ولذلك أُلغيت كل مهام iOS الأصلي:
+
+- F3 (الأذونات)، وF4 (الأصوات بصيغة iOS)، وF5 (الروابط)، وF6 (بناء iOS)، وS2 (App Store)، وملف `apple-app-site-association`.
+- **كُتب القرار** في README القسم 0.
+- **وأُزيل وعد «تطبيق App Store قريباً»** من صفحة التنزيل («من Safari، بلا متجر»)، ومن دليل المدرب المساعد، ومن وصف `/app` في العقد.
+
+### المرحلة 1 (2026-11-14): القسم (أ) لأندرويد
+
+- **F1، المفتاح الثابت:**
+  - `android/app/build.gradle.kts` يوقّع نسخة الإصدار بالمفتاح من أربعة متغيرات (`GLM_KEYSTORE` و`GLM_KEYSTORE_PASSWORD` و`GLM_KEY_ALIAS` و`GLM_KEY_PASSWORD`)، وبدونها بمفتاح التطوير كما كان.
+  - و`mobile.yml` يكتب الملف من سر GitHub (`GLM_KEYSTORE_B64`) قبل البناء.
+  - **والمفتاح نفسه بيد سليمان:** خطواته في README القسم 11. ولا مفتاح ولا كلمة مرور في المستودع.
+- **F2، الانتقال:** صفحة التنزيل تقول لمن ثبّت من قبل: «احذف النسخة القديمة مرة واحدة ثم ثبّت هذه، وحسابك على الخادم». ونص «حدّث التطبيق» في التطبيق يقول الشيء نفسه، للنسخ القادمة.
+- **B1، `/.well-known/assetlinks.json`:**
+  - بصمة المفتاح من إعداد على السيرفر (`ANDROID_CERT_SHA256`، ويقبل بصمتين مفصولتين بفاصلة)، و404 حتى تُكتب.
+  - و`router.php` يرسله إلى Laravel.
+  - والتطبيق يطلب التحقق من روابط `/join/` و`/groups/join/` منذ قبل (`autoVerify`).
+  - واختبار في `AssetLinksTest`.
+- **F7، الحجم:** `mobile.yml` يفشل إن زاد APK أي معمارية على 25 MB.
+- **F8، `assets/splash`:** كان مسجلاً فارغاً ولا تعرضه شاشة، فأُزيل تسجيله. وUnity (`build.ps1 splash`) ينشئه إن شُغّل، ويُسجَّل حين تعرضه شاشة.
+
+**كيف يُختبر (بعد أن يُنشئ سليمان المفتاح):**
+1. `apksigner verify --print-certs app-arm64-v8a-release.apk` يطابق البصمة في `https://gamelegendmanager.online/.well-known/assetlinks.json`.
+2. رابط دعوة على أندرويد 12 أو أحدث يفتح التطبيق مباشرة.
+3. النسخة التالية تُثبَّت فوق هذه بلا حذف.
+
+وهذه في التجارب المؤجلة (T34).
+
+**الفحوص:**
+- **الخادم:** `php artisan test` (595)، ومعها `AssetLinksTest`.
+- **التطبيق:** `flutter test` (120).
+- **الموقع:** `prebuild` والبناء.
+- **لم يُبنَ هنا:** تعديل `build.gradle.kts`، لأن الحاوية بلا Android SDK. يتحقق منه أول بناء على جهاز سليمان (`flutter build apk --release`، بالمتغيرات وبدونها).
+
+**ما بقي:** المفتاح (سليمان)، وT34 على جوال، وS1 (Google Play) بقرار صاحب المشروع.
 
 ## ملاحظات وتعديلات بالتوازي
 

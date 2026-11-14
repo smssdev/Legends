@@ -293,7 +293,7 @@ abstract class L {
   /// No description provided for @updateBody.
   ///
   /// In ar, this message translates to:
-  /// **'نسخة جديدة من اللعبة متاحة، ولا تعمل هذه النسخة معها. حدّث التطبيق لتكمل.'**
+  /// **'نسخة جديدة من اللعبة متاحة، ولا تعمل هذه النسخة معها. حدّث التطبيق لتكمل. وإن رفض الجوال تثبيتها فوق هذه فاحذف هذه مرة واحدة ثم ثبّتها: حسابك على الخادم.'**
   String get updateBody;
 
   /// No description provided for @update.

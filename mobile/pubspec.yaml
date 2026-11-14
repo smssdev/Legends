@@ -50,8 +50,7 @@ flutter:
     - assets/brand/
     # [2026-11-06] The game's own sounds (tool/sounds/make_sounds.py).
     - assets/sounds/
-    # [Sprint 46] The opening's squad, rendered in Unity (unity/build.ps1 splash).
-    - assets/splash/
+    # [Sprint 62 F8] assets/splash (Sprint 46's squad from unity/build.ps1 splash) is not registered: no screen shows it.
     # [Sprint 50 M23] The 3D models, made from code (tools/models/make_models.py); [Sprint 61 F2] as spinning strips.
     - assets/models/
     # [Sprint 63 G9] The mascot in the screens' states, drawn by the site's code (tools/brand/states.cjs).

@@ -35,6 +35,18 @@ Route::get('/ads.txt', function () {
     return response($line, 200, ['Content-Type' => 'text/plain; charset=UTF-8', 'Cache-Control' => 'public, max-age=3600']);
 });
 
+// [Sprint 62 B1] Android's App Links: the app may open this site's invitation links (/join/, /groups/join/), signed by
+// the release key whose fingerprint the server knows. The iPhone installs the web app (README section 0), so no Apple file.
+Route::get('/.well-known/assetlinks.json', function () {
+    $prints = array_values(array_filter(array_map('trim', explode(',', (string) config('game.app.android_cert_sha256')))));
+    abort_if($prints === [], 404);
+
+    return response()->json([[
+        'relation' => ['delegate_permission/common.handle_all_urls'],
+        'target' => ['namespace' => 'android_app', 'package_name' => config('game.app.android_package'), 'sha256_cert_fingerprints' => $prints],
+    ]], 200, ['Cache-Control' => 'public, max-age=3600']);
+});
+
 Route::get('/', $spa);
 Route::fallback(function () use ($spa) {
     abort_if(request()->is('api/*'), 404);

@@ -1135,7 +1135,7 @@ export const EN: Record<string, string> = {
   'افتح الملف من الإشعارات أو «التنزيلات»، وإن سألك الجوال فاسمح بالتثبيت من هذا المصدر.': 'Open the file from the notifications or «Downloads», and if the phone asks, allow installing from this source.',
   'اللعبة مثبتة على جوالك.': 'The game is installed on your phone.',
   'النسخة': 'Version',
-  'تطبيق App Store قريباً': 'App Store app coming soon',
+  'من Safari، بلا متجر': 'From Safari, no store needed',
   'تطبيق أندرويد قريباً هنا. والآن ثبّت الموقع على جوالك فيفتح كتطبيق.': 'The Android app is coming here soon. For now, install the site on your phone and it opens as an app.',
   'ثبّت اللعبة من Safari على شاشتك الرئيسية، فتفتح كتطبيق بأيقونتها وتصلك التذكيرات:': 'Install the game from Safari on your home screen: it opens as an app with its icon, and you get the reminders:',
   'حذف النسخة {v}؟': 'Delete version {v}?',
@@ -2987,4 +2987,5 @@ export const EN: Record<string, string> = {
   'المعلق': 'Commentator',
   'صوت المعلق في المباراة': 'The commentator\'s voice in a match',
   'يأخذ وقتاً أطول من المعتاد…': 'Taking longer than usual…',
+  'ثبّتّ التطبيق من قبل ورفض الجوال التحديث؟ احذف النسخة القديمة مرة واحدة ثم ثبّت هذه: حسابك ودورياتك على الخادم فلا يضيع شيء، وكل نسخة بعدها تُثبَّت فوق التي قبلها.': 'Installed the app before and the phone refuses the update? Remove the old version once, then install this one: your account and leagues are on the server, so nothing is lost, and every later version installs over the last.',
 }

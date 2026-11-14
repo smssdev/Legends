@@ -18,7 +18,7 @@ class AppReleaseController extends Controller
     {
         $android = AppReleases::latest();
 
-        // The iPhone has no file to download: it installs the web app from Safari until the App Store (README section 11).
+        // The iPhone has no file to download: it installs the web app from Safari (README section 0: no App Store, 2026-11-14).
         // [Sprint 19 B1] The app's Firebase settings (not secret), so pushes start without a new build; null until set.
         // An uploaded release first; else the one that ships with the site (web/public/downloads).
         return response()->json(['android' => $android ? AppReleases::card($android) : AppReleases::bundled(), 'ios' => null, 'firebase' => Fcm::client()]);
