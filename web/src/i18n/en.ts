@@ -3082,4 +3082,7 @@ export const EN: Record<string, string> = {
   'قنوات اللعبة: الإعلانات وترتيب المدربين كل أسبوع': 'The game\'s channels: the announcements and the coaches\' table every week',
   'قناة تيليجرام': 'Telegram channel',
   'قناة واتساب': 'WhatsApp channel',
+  'بوت اللعبة على تيليجرام': 'The game\'s bot on Telegram',
+  'بوت اللعبة على واتساب': 'The game\'s bot on WhatsApp',
+  'اسأل بوت اللعبة، وتابع قنواتنا:': 'Ask the game\'s bot, and follow our channels:',
 }

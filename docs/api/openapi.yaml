@@ -598,7 +598,7 @@ paths:
                       coach: { type: object, additionalProperties: true, description: "GET /home's coach" }
                       slots: { type: array, items: { type: object, additionalProperties: true }, description: "GET /home's slots" }
                   unread: { type: integer }
-                  config: { type: object, additionalProperties: true, description: "GET /health's version, time, clock_offset, broadcast, support, adsense and analytics" }
+                  config: { type: object, additionalProperties: true, description: "GET /health's version, time, clock_offset, broadcast, support, bots, adsense and analytics" }
         '401': { $ref: '#/components/responses/Error' }
   /health:
     get:
@@ -633,6 +633,15 @@ paths:
                     properties:
                       whatsapp: { type: string, nullable: true, example: 'https://wa.me/201000000000?text=...' }
                       telegram: { type: string, nullable: true, example: 'https://t.me/legends_support' }
+                  bots:
+                    type: object
+                    description: '[Sprint 67] The game''s bots and channels, straight from the site: a link each, null when that bot or channel is off'
+                    required: [telegram, whatsapp, telegram_channel, whatsapp_channel]
+                    properties:
+                      telegram: { type: string, nullable: true, example: 'https://t.me/GlmBot' }
+                      whatsapp: { type: string, nullable: true, example: 'https://wa.me/201000000000?text=...' }
+                      telegram_channel: { type: string, nullable: true }
+                      whatsapp_channel: { type: string, nullable: true }
                   adsense:
                     type: object
                     nullable: true

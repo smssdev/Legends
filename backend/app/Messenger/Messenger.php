@@ -54,7 +54,17 @@ class Messenger
         return $out;
     }
 
-    /** The link that opens the bot's chat, with the code already written when there is one. */
+    /** [Sprint 67] What every page of the site may open, signed in or not: the two bots and the two channels. */
+    public static function links(): array
+    {
+        return ['telegram' => self::openUrl('telegram', null), 'whatsapp' => self::openUrl('whatsapp', null),
+            'telegram_channel' => self::telegramChannelUrl(), 'whatsapp_channel' => ((string) config('services.whatsapp.channel')) ?: null];
+    }
+
+    /**
+     * The link that opens the bot's chat, with the code already written when there is one; on WhatsApp without a code
+     * a greeting is written, so one tap on send gets the menu (and opens the free window).
+     */
     public static function openUrl(string $platform, ?string $code): ?string
     {
         if (! self::available($platform)) {
@@ -64,7 +74,7 @@ class Messenger
             return 'https://t.me/'.Telegram::username().($code ? '?start='.$code : '');
         }
 
-        return 'https://wa.me/'.WhatsApp::number().($code ? '?text='.rawurlencode('ربط '.$code) : '');
+        return 'https://wa.me/'.WhatsApp::number().'?text='.rawurlencode($code ? 'ربط '.$code : 'مرحبا');
     }
 
     private static function telegramChannelUrl(): ?string

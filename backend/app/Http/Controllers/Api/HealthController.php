@@ -6,6 +6,7 @@ use App\Ads\AdSense;
 use App\Analytics\Tracking;
 use App\Events\ServerPing;
 use App\Http\Controllers\Controller;
+use App\Messenger\Messenger;
 use App\Support\GameClock;
 use Illuminate\Broadcasting\BroadcastException;
 use Illuminate\Http\JsonResponse;
@@ -27,6 +28,8 @@ class HealthController extends Controller
             'clock_offset' => GameClock::offset(),
             'broadcast' => ['channel' => ServerPing::CHANNEL, 'event' => ServerPing::NAME],
             'support' => self::support(),
+            // [Sprint 67] The game's bots and channels, opened straight from the site.
+            'bots' => Messenger::links(),
             // [X57] Google AdSense for the web, null until the owner's account is set on the server.
             'adsense' => AdSense::config(),
             // [X81] The site's measurement (Google Analytics 4, the Meta Pixel), null when both are off.

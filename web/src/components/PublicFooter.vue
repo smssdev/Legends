@@ -6,6 +6,7 @@ import Icon from './Icon.vue'
 // an account without its real address shows no button. Arabic first, right to left; one column on the phone.
 import { computed } from 'vue'
 import SupportLinks from './SupportLinks.vue'
+import BotLinks from './BotLinks.vue'
 import SocialIcon from './SocialIcon.vue'
 import { EMAIL, SOCIALS, TEAM } from '../content/site'
 import { useAuth } from '../stores/auth'
@@ -93,6 +94,7 @@ const LEGAL = [
           >{{ EMAIL }}
         </a>
         <SupportLinks compact no-whatsapp />
+        <BotLinks />
       </section>
     </div>
 

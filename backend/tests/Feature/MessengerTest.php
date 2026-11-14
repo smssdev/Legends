@@ -253,6 +253,18 @@ class MessengerTest extends TestCase
         $this->assertNull(Replies::linkCode('STANDARD'));
     }
 
+    public function test_every_page_can_open_the_bots_and_channels(): void
+    {
+        $this->getJson('/api/v1/health')->assertOk()
+            ->assertJsonPath('bots.telegram', 'https://t.me/GlmBot')
+            ->assertJsonPath('bots.whatsapp', 'https://wa.me/201000000000?text='.rawurlencode('مرحبا'))
+            ->assertJsonPath('bots.telegram_channel', 'https://t.me/glm_news')
+            ->assertJsonPath('bots.whatsapp_channel', null);
+        $this->getJson('/api/v1/bootstrap')->assertOk()->assertJsonPath('config.bots.telegram', 'https://t.me/GlmBot');
+        config(['services.telegram.token' => null]);
+        $this->getJson('/api/v1/health')->assertJsonPath('bots.telegram', null);
+    }
+
     public function test_unlinking_from_the_profile(): void
     {
         $this->linkTelegram($this->owner);

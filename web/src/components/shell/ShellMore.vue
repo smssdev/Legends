@@ -14,6 +14,21 @@ import {
 import Icon, { type PATHS } from '../Icon.vue'
 import { setTone, toneOn } from '../../lib/tone'
 import { dockSide } from './dockSide'
+import { onMounted, ref } from 'vue'
+import { siteConfig } from '../../lib/session'
+import { openBot, type BotPlatform } from '../../lib/bots'
+
+// [Sprint 67] The game's bots, opened from here: the chat comes with the link code when the account is not linked yet.
+const bots = ref<{ telegram: string | null; whatsapp: string | null } | null>(null)
+onMounted(async () => {
+  try {
+    bots.value = (await siteConfig())?.bots ?? null
+  } catch {}
+})
+const BOTS: [BotPlatform, string][] = [
+  ['telegram', 'بوت اللعبة على تيليجرام'],
+  ['whatsapp', 'بوت اللعبة على واتساب'],
+]
 
 export interface MoreGroup {
   label: string
@@ -43,6 +58,14 @@ defineProps<{ groups: MoreGroup[] }>()
               ><Icon :name="l.icon" :size="18" />{{ $t(l.label) }}</RouterLink
             >
           </DropdownMenuItem>
+        </template>
+        <template v-if="bots && (bots.telegram || bots.whatsapp)">
+          <DropdownMenuSeparator class="my-1 h-px bg-text/10" />
+          <template v-for="[p, label] in BOTS" :key="p">
+            <DropdownMenuItem v-if="bots[p]" class="nav-link cursor-pointer" @select="openBot(p, bots[p]!, true)">
+              <Icon name="bot" :size="18" />{{ $t(label) }}
+            </DropdownMenuItem>
+          </template>
         </template>
         <DropdownMenuSeparator class="my-1 h-px bg-text/10" />
         <DropdownMenuItem class="nav-link cursor-pointer" @select.prevent="setTone(!toneOn)">

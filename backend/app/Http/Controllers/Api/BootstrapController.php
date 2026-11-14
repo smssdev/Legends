@@ -21,7 +21,7 @@ class BootstrapController extends Controller
 {
     public function show(Request $request): JsonResponse
     {
-        $config = Arr::only(app(HealthController::class)->show()->getData(true), ['version', 'time', 'clock_offset', 'broadcast', 'support', 'adsense', 'analytics']);
+        $config = Arr::only(app(HealthController::class)->show()->getData(true), ['version', 'time', 'clock_offset', 'broadcast', 'support', 'bots', 'adsense', 'analytics']);
         $user = $request->user('sanctum');
         // A token that no longer works (the app's) gets the 401 that sends it to sign in again, as GET /auth/me.
         if (! $user && $request->bearerToken()) {

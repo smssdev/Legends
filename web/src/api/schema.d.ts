@@ -1291,7 +1291,7 @@ export interface paths {
                                 }[];
                             } | null;
                             unread: number;
-                            /** @description GET /health's version, time, clock_offset, broadcast, support, adsense and analytics */
+                            /** @description GET /health's version, time, clock_offset, broadcast, support, bots, adsense and analytics */
                             config: {
                                 [key: string]: unknown;
                             };
@@ -1363,6 +1363,15 @@ export interface paths {
                                 whatsapp: string | null;
                                 /** @example https://t.me/legends_support */
                                 telegram: string | null;
+                            };
+                            /** @description [Sprint 67] The game's bots and channels, straight from the site: a link each, null when that bot or channel is off */
+                            bots?: {
+                                /** @example https://t.me/GlmBot */
+                                telegram: string | null;
+                                /** @example https://wa.me/201000000000?text=... */
+                                whatsapp: string | null;
+                                telegram_channel: string | null;
+                                whatsapp_channel: string | null;
                             };
                             /** @description [X57] Google AdSense for the web: null until the owner's account (ADSENSE_CLIENT) is set on the server */
                             adsense?: {
