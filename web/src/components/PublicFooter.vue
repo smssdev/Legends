@@ -105,9 +105,9 @@ const LEGAL = [
 .foot-head::after { content: ''; position: absolute; inset-inline-start: 0; bottom: 0; width: 2rem; height: 2px; border-radius: 2px; background: var(--color-gold); }
 .foot-link { display: inline-flex; min-width: 2.75rem; min-height: 2.75rem; align-items: center; font-size: 0.9rem; color: var(--color-text-soft); transition: color 0.15s, transform 0.15s; border-radius: 0.375rem; }
 .foot-link-sm { min-height: 2.75rem; font-size: 0.8rem; }
-.foot-link:hover { color: var(--color-gold); transform: translateX(-3px); }
+.foot-link:hover { color: var(--ink-gold); transform: translateX(-3px); }
 :dir(ltr) .foot-link:hover { transform: translateX(3px); }
-.foot-link.router-link-exact-active { color: var(--color-gold); font-weight: 700; }
+.foot-link.router-link-exact-active { color: var(--ink-gold); font-weight: 700; }
 /* [X98] Each account its own coloured tile (SocialIcon.vue), lifted a little under the finger or the mouse. */
 .social { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; transition: transform 0.15s, filter 0.15s; }
 .social:hover { transform: translateY(-2px); filter: brightness(1.08) drop-shadow(0 4px 8px rgb(0 0 0 / 0.3)); }
@@ -115,7 +115,7 @@ const LEGAL = [
   border-radius: 0.25rem; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--color-gold) 40%, transparent); text-underline-offset: 3px; }
 .team:hover { text-decoration-color: var(--color-gold); }
 .copy { font-family: Arial, Helvetica, sans-serif; }
-.heart { color: var(--color-live); display: inline-block; animation: beat 1.6s ease-in-out infinite; }
+.heart { color: var(--ink-live); display: inline-block; animation: beat 1.6s ease-in-out infinite; }
 @keyframes beat { 0%, 100% { transform: scale(1) } 15% { transform: scale(1.2) } 30% { transform: scale(1) } }
 .foot-cta { transition: filter 0.15s; }
 .foot-cta:hover { filter: brightness(1.08); }

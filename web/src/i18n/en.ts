@@ -3045,4 +3045,15 @@ export const EN: Record<string, string> = {
   'صوت المعلق في المباراة': 'The commentator\'s voice in a match',
   'يأخذ وقتاً أطول من المعتاد…': 'Taking longer than usual…',
   'ثبّتّ التطبيق من قبل ورفض الجوال التحديث؟ احذف النسخة القديمة مرة واحدة ثم ثبّت هذه: حسابك ودورياتك على الخادم فلا يضيع شيء، وكل نسخة بعدها تُثبَّت فوق التي قبلها.': 'Installed the app before and the phone refuses the update? Remove the old version once, then install this one: your account and leagues are on the server, so nothing is lost, and every later version installs over the last.',
+  // [Sprint 65] Accessibility: names of the progress bars, the match told to a screen reader, the upright match.
+  'وقت الإعلان': 'Ad time',
+  'رفع النسخة': 'Upload progress',
+  'الرواتب من سقفها': 'Wages against the cap',
+  'الدعوات المكافأة': 'Rewarded invites',
+  'فترة التوقف: يمكنك تغيير التشكيلة والتكتيك الآن': 'A break in play: you can change the lineup and tactics now',
+  'شاهد عمودياً': 'Watch upright',
+  '{v0} أساسي في الخانة {v1}': '{v0} starts in place {v1}',
+  '{v0} على الدكة': '{v0} on the bench',
+  '{v0} خارج القائمة': '{v0} out of the squad',
+  'وقّع بإصبعك هنا، أو اضغط Enter ليُكتب اسمك': 'Sign here with your finger, or press Enter to write your name',
 }

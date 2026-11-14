@@ -58,7 +58,7 @@ const sides: Side[] = ['home', 'away']
   border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent); border-radius: var(--radius-lg); background: var(--color-panel); text-align: center;
 }
 .waiting-kicker { font-size: var(--text-caption); color: var(--color-text-muted); }
-.waiting-clock { font-size: 28px; color: var(--color-gold); }
+.waiting-clock { font-size: 28px; color: var(--ink-gold); }
 .waiting-sides { display: flex; justify-content: space-between; gap: var(--space-md); inline-size: 100%; }
 .waiting-side { display: flex; flex: 1; min-inline-size: 0; flex-direction: column; align-items: center; gap: var(--space-xs); font-size: var(--text-body); }
 .waiting-coach { inline-size: 64px; }

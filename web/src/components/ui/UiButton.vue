@@ -43,10 +43,10 @@ watch(() => props.success, (ok) => ok && navigator.vibrate?.(10))
       size === 'sm' ? 'h-touch px-4 text-sm' : 'h-12 px-5 text-base',
       {
         primary: 'bg-gold text-on-gold hover:bg-gold-light',
-        brand: 'bg-brand text-white',
+        brand: 'bg-brand text-on-gold',
         outline: 'border border-gold/70 text-gold hover:bg-gold/10',
         quiet: 'bg-surface-raised text-text hover:bg-surface-raised/80',
-        danger: 'bg-live text-white hover:bg-live/90',
+        danger: 'bg-live text-on-gold hover:bg-live/90',
       }[variant],
     ]"
     @pointerdown="ripple"

@@ -47,20 +47,56 @@ const ink = own(t.ink).map(([name, value]) => {
   return `:where(html.light :is(.${c}, .hover\\:${c}:hover, .focus-visible\\:${c}:focus-visible)):not(:where(.theme-night, .theme-night *)) { color: ${value}; }`;
 });
 
+// [Sprint 65 W3] The same rule for a scoped style: --ink-<name> is the accent at night and its ink by day.
+const inkVars = own(t.ink).map(([name]) => `--ink-${kebab(name)}: var(--color-${kebab(name)});`);
+const inkDay = own(t.ink).map(([name, value]) => `--ink-${kebab(name)}: ${value};`);
+
+// [Sprint 65 W3] Every pair in tokens.json contrast, at night and by day: the build stops below its ratio.
+const lum = (hex) => {
+  const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+};
+const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+const short = [];
+for (const look of ['night', 'day']) {
+  const pal = { ...t.color, ...(look === 'day' ? Object.fromEntries(own(t.colorLight)) : {}) };
+  const pick = (n) => (n.startsWith('ink:') ? (look === 'day' ? t.ink[n.slice(4)] ?? pal[n.slice(4)] : pal[n.slice(4)]) : pal[n]);
+  const check = (fg, bg, min, what) => {
+    const a = pick(fg) ?? fg, b = pal[bg] ?? bg;
+    if (!/^#[0-9A-Fa-f]{6}$/.test(a) || !/^#[0-9A-Fa-f]{6}$/.test(b)) { short.push(`${look}: ${what} is not a colour`); return; }
+    const r = ratio(a, b);
+    if (r < min) short.push(`${look}: ${what} ${r.toFixed(2)} < ${min}`);
+  };
+  for (const kind of ['text', 'marks']) for (const fg of t.contrast[kind].fg) for (const g of t.contrast.grounds) check(fg, g, t.contrast[kind].min, `${fg} on ${g}`);
+  for (const [fg, bg] of t.contrast.fills.pairs) {
+    if (fg.startsWith('line:')) { const l = t.line[fg.slice(5)]; check(l.fg, l.bg, t.contrast.fills.min, `${fg} badge`); }
+    else check(fg, bg, t.contrast.fills.min, `${fg} on ${bg}`);
+  }
+}
+if (short.length) {
+  console.error(`tokens: ${short.length} colour pair(s) under their contrast\n  ${short.join('\n  ')}`);
+  process.exit(1);
+}
+
 fs.mkdirSync(new URL('.', out), { recursive: true });
 fs.writeFileSync(out, `/* Generated from docs/design/tokens.json by scripts/tokens.mjs. Do not edit. */
 @theme {
   ${vars.join('\n  ')}
 }
+:root {
+  ${inkVars.join('\n  ')}
+}
 html.light {
   color-scheme: light;
   ${day.join('\n  ')}
+  ${inkDay.join('\n  ')}
 }
 html.light .theme-night {
   color-scheme: dark;
   color: var(--color-text);
   ${night.join('\n  ')}
+  ${inkVars.join('\n  ')}
 }
 ${ink.join('\n')}
 `);
-console.log(`tokens: ${vars.length} variables, ${day.length} for the day theme`);
+console.log(`tokens: ${vars.length} variables, ${day.length} for the day theme, every contrast pair met`);

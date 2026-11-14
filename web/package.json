@@ -7,7 +7,7 @@
     "tokens": "node scripts/tokens.mjs",
     "predev": "npm run tokens && npm run nav && npm run names",
     "dev": "vite",
-    "prebuild": "npm run tokens && npm run nav && npm run names && npm run i18n && npm run design && node scripts/safe-html.mjs && node scripts/fonts.mjs && node scripts/icons.mjs && node scripts/emoji.mjs && npm run frames && npm run feed && npm test",
+    "prebuild": "npm run tokens && npm run nav && npm run names && npm run i18n && npm run design && node scripts/safe-html.mjs && node scripts/a11y.mjs && node scripts/fonts.mjs && node scripts/icons.mjs && node scripts/emoji.mjs && npm run frames && npm run feed && npm test",
     "build": "vue-tsc -b && vite build",
     "postbuild": "node scripts/sw.mjs && node scripts/budget.mjs && node --experimental-strip-types --no-warnings scripts/seo.mjs",
     "preview": "vite preview",

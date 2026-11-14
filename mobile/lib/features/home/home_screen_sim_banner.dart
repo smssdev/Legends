@@ -319,18 +319,21 @@ class _ArenaBar extends ConsumerWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Material(
-            shape: GlmCut.shape(12, side: BorderSide(color: p.surfaceRaised)),
-            color: context.glm.day ? p.surface : GlmStage.card,
-            child: InkWell(
-              customBorder: GlmCut.shape(12),
-              onTap: onTap,
-              child: SizedBox(
-                width: 44,
-                height: 44,
-                child: Tooltip(
-                  message: tip,
-                  child: Icon(icon, color: p.text, size: 22),
+          // [Sprint 65 F3] Drawn 44, answering the finger over 48.
+          GlmTarget(
+            child: Material(
+              shape: GlmCut.shape(12, side: BorderSide(color: p.surfaceRaised)),
+              color: context.glm.day ? p.surface : GlmStage.card,
+              child: InkWell(
+                customBorder: GlmCut.shape(12),
+                onTap: onTap,
+                child: SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: Tooltip(
+                    message: tip,
+                    child: Icon(icon, color: p.text, size: 22),
+                  ),
                 ),
               ),
             ),

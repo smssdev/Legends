@@ -25,7 +25,7 @@ class RatingBadge extends StatelessWidget {
     final (bg, fg) = value >= 85
         ? (p.gold, p.onGold)
         : value >= 75
-        ? (p.success, Colors.white)
+        ? (p.success, p.onGold)
         : value >= 65
         ? (GlmLine.def.bg, Colors.white)
         : (p.surfaceRaised, p.text);

@@ -40,7 +40,7 @@ onMounted(load)
   <section v-if="press && enabled" class="flex flex-col gap-3 rounded-xl border border-brand/40 ui-card p-4" aria-labelledby="h-press">
     <h2 id="h-press" class="font-display text-xl font-extrabold"><Icon name="mic" :size="16" class="inline-block align-[-3px]" /> {{ $t('المؤتمر الصحفي') }}</h2>
     <div class="flex h-8 overflow-hidden rounded-lg text-xs font-bold" role="img" :aria-label="$t('ترجيح الفوز: {v0} {v1}٪، التعادل {v2}٪، {v3} {v4}٪', { v0: home, v1: press.chances.home, v2: press.chances.draw, v3: away, v4: press.chances.away })">
-      <span class="flex items-center justify-center bg-brand text-white" :style="{ width: press.chances.home + '%' }">{{ press.chances.home }}%</span>
+      <span class="flex items-center justify-center bg-brand text-on-gold" :style="{ width: press.chances.home + '%' }">{{ press.chances.home }}%</span>
       <span class="flex items-center justify-center bg-surface-raised" :style="{ width: press.chances.draw + '%' }">{{ press.chances.draw }}%</span>
       <span class="flex items-center justify-center bg-gold text-on-gold" :style="{ width: press.chances.away + '%' }">{{ press.chances.away }}%</span>
     </div>

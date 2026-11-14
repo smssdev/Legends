@@ -36,7 +36,7 @@ const squadOf = ref<number | null>(null)
 
 const avg = (x100: number) => (x100 / 100).toFixed(2)
 const RUN: Record<string, string> = { W: 'فوز', D: 'تعادل', L: 'خسارة' }
-const RUN_CLASS: Record<string, string> = { W: 'bg-success text-on-gold', D: 'bg-surface-raised', L: 'bg-live text-white' }
+const RUN_CLASS: Record<string, string> = { W: 'bg-success text-on-gold', D: 'bg-surface-raised', L: 'bg-live text-on-gold' }
 const empty = computed(() => !s.value || s.value.matches === 0)
 const leaders = computed(() => {
   const v = s.value
@@ -157,7 +157,7 @@ function exportCsv() {
           <h2 class="mb-1 font-display text-lg font-bold">{{ $t(title) }}</h2>
           <div v-for="p in s.discipline[key]" :key="p.player.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 first:border-0">
             <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ $nm(p.player.name) }}</bdi></b><span class="text-xs text-text-muted">{{ $nm(p.club.name) }}</span></span>
-            <span class="font-numbers"><Icon name="card" :size="16" class="inline-block align-[-3px] text-card-yellow" /> {{ p.yellow }} · <Icon name="card" :size="16" class="inline-block align-[-3px] text-live" /> {{ p.red }}</span>
+            <span class="font-numbers"><Icon name="card" :size="16" class="inline-block align-[-3px] text-card-yellow" /> {{ p.yellow }} · <Icon name="card" :size="16" class="inline-block align-[-3px] text-danger" /> {{ p.red }}</span>
           </div>
           <p v-if="!s.discipline[key].length" class="text-text-muted">{{ $t('لا أحد بعد.') }}</p>
         </section>

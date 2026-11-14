@@ -259,7 +259,7 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
         <small class="block truncate text-text-muted">{{ $t('{n} أعضاء', { n: group?.members_count ?? 0 }) }} · {{ members }}</small>
       </span>
       <RouterLink v-if="group?.league_id" :to="{ name: 'league-home', params: { id: group.league_id } }" class="text-sm font-bold text-gold">{{ $t('الدوري') }}</RouterLink>
-      <button class="grid size-11 place-items-center rounded-full text-xl hover:bg-surface" :aria-label="$t('خيارات الجروب')" @click="menu = true">⋮</button>
+      <button type="button" class="grid size-11 place-items-center rounded-full text-xl hover:bg-surface" :aria-label="$t('خيارات الجروب')" @click="menu = true">⋮</button>
     </header>
     <p v-if="error" class="m-3 rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
@@ -288,7 +288,7 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
     <p v-if="notice" class="bg-surface-sunk px-4 py-2 text-sm" role="status">{{ $t(notice) }}</p>
     <div v-if="replyTo" class="flex items-center gap-2 bg-panel px-4 pt-2 text-sm">
       <span class="min-w-0 flex-1 truncate border-s-2 border-gold-light ps-2 text-text-muted">{{ replyTo.body || (replyTo.kind === 'image' ? $t('صورة') : replyTo.kind === 'audio' ? $t('رسالة صوتية') : '') }}</span>
-      <button class="size-9" :aria-label="$t('إلغاء الرد')" @click="replyTo = null"><Icon name="close" :size="18" /></button>
+      <button type="button" class="size-9" :aria-label="$t('إلغاء الرد')" @click="replyTo = null"><Icon name="close" :size="18" /></button>
     </div>
     <!-- [Sprint 40 B3] A finished league's group: kept to read, no more messages. -->
     <p v-if="group?.closed" class="bg-panel p-4 text-center text-sm text-text-muted pb-[max(1rem,env(safe-area-inset-bottom))]" role="status">{{ $t('انتهى الدوري، وجروبه للقراءة فقط.') }}</p>
@@ -349,8 +349,8 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
             <span class="min-w-0 flex-1 truncate">{{ m.name }} <small class="text-text-muted" dir="ltr">@{{ m.username }}</small></span>
             <span v-if="m.is_admin" class="rounded-full bg-gold/20 px-2 text-xs font-bold text-gold">{{ $t('مشرف') }}</span>
             <template v-if="group?.is_admin && !group.league_id && m.id !== me">
-              <button class="min-h-touch px-2 text-xs font-bold text-text-muted" @click="admin(m.id, !m.is_admin)">{{ m.is_admin ? $t('أزل الإشراف') : $t('اجعله مشرفاً') }}</button>
-              <button class="min-h-touch px-2 text-xs font-bold text-danger" @click="kick(m.id)">{{ $t('أخرج') }}</button>
+              <button type="button" class="min-h-touch px-2 text-xs font-bold text-text-muted" @click="admin(m.id, !m.is_admin)">{{ m.is_admin ? $t('أزل الإشراف') : $t('اجعله مشرفاً') }}</button>
+              <button type="button" class="min-h-touch px-2 text-xs font-bold text-danger" @click="kick(m.id)">{{ $t('أخرج') }}</button>
             </template>
           </li>
         </ul>

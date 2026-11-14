@@ -42,7 +42,7 @@ function pick(leagueId: number) {
           <span class="min-w-0 flex-1"><b class="block truncate text-sm">{{ $nm(s.club!.name) }}</b>
             <span class="block truncate text-xs text-text-muted">{{ $nm(s.league!.name) }}<template v-if="s.position"> · {{ $t('المركز {v0}', { v0: s.position }) }}</template></span></span>
           <span v-if="s.league!.id === slot.current?.league?.id" class="text-gold" aria-hidden="true"><Icon name="check" :size="16" /></span>
-          <span v-else-if="s.pending" class="min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-xs text-white">{{ s.pending }}</span>
+          <span v-else-if="s.pending" class="min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-xs text-on-gold">{{ s.pending }}</span>
         </DropdownMenuItem>
         <DropdownMenuItem as-child>
           <RouterLink to="/" class="flex min-h-touch items-center gap-2 rounded-lg px-2 text-sm font-bold text-brand-light outline-none data-[highlighted]:bg-surface-raised"><Icon name="home" :size="18" />{{ $t('فرقي كلها') }}</RouterLink>

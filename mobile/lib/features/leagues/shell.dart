@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +15,8 @@ import '../../ui/widgets/glm_icon.dart';
 import '../club/club_data.dart';
 import '../club/squad_screen.dart' show money;
 import 'leagues_repository.dart';
+import '../../ui/widgets/target.dart';
+import '../../ui/widgets/motion.dart';
 
 part 'shell_money_pill.dart';
 
@@ -159,40 +163,43 @@ class CoinsPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Semantics(
-      button: true,
-      label: '${L.of(context).wallet}: $value',
-      child: Material(
-        shape: const StadiumBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [p.goldLight, p.gold, p.goldDark],
-              stops: const [0, .6, 1],
+    // [Sprint 65 F3] Drawn 32 high in the 42 bar, answering the finger over 48.
+    return GlmTarget(
+      child: Semantics(
+        button: true,
+        label: '${L.of(context).wallet}: $value',
+        child: Material(
+          shape: const StadiumBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: Ink(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [p.goldLight, p.gold, p.goldDark],
+                stops: const [0, .6, 1],
+              ),
             ),
-          ),
-          child: InkWell(
-            onTap: onTap,
-            child: Container(
-              height: 32,
-              padding: const EdgeInsetsDirectional.fromSTEB(4, 0, 4, 0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset('assets/brand/coin.png', width: 20, height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Text(
-                      value,
-                      textDirection: TextDirection.ltr,
-                      style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.onGold),
+            child: InkWell(
+              onTap: onTap,
+              child: Container(
+                height: 32,
+                padding: const EdgeInsetsDirectional.fromSTEB(4, 0, 4, 0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset('assets/brand/coin.png', width: 20, height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(
+                        value,
+                        textDirection: TextDirection.ltr,
+                        style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.onGold),
+                      ),
                     ),
-                  ),
-                  _Plus(bg: p.bg, fg: p.goldLight),
-                ],
+                    _Plus(bg: p.bg, fg: p.goldLight),
+                  ],
+                ),
               ),
             ),
           ),

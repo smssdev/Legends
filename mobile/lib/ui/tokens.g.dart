@@ -126,7 +126,7 @@ const glmDay = GlmPalette(
   chromeDark: Color(0xFFCDB98C),
   onChrome: Color(0xFF13241D),
   panel: Color(0xFFFFFDF8),
-  danger: Color(0xFFB62424),
+  danger: Color(0xFFA61F1F),
   bronze: Color(0xFFB4692A),
   silver: Color(0xFFC3CCDA),
   cardYellow: Color(0xFFF5D90A),
@@ -135,13 +135,14 @@ const glmDay = GlmPalette(
 
 /// By day, an accent's text takes this darker ink (4.5:1 on paper); at night the accent itself.
 abstract final class GlmInk {
-  static const gold = Color(0xFF7F5700);
-  static const success = Color(0xFF126D41);
+  static const gold = Color(0xFF6E4B00);
+  static const goldLight = Color(0xFF6E4B00);
+  static const success = Color(0xFF0F6339);
   static const warning = Color(0xFF98490E);
-  static const live = Color(0xFFB62424);
-  static const brand = Color(0xFF096C52);
-  static const brandLight = Color(0xFF096C52);
-  static const ring = Color(0xFF096C52);
+  static const live = Color(0xFFA61F1F);
+  static const brand = Color(0xFF075F48);
+  static const brandLight = Color(0xFF075F48);
+  static const ring = Color(0xFF075F48);
 }
 
 /// [Sprint 47] The app's stage in the approved design: the night ground, the navy cards, the mint accent, the pills.
@@ -165,7 +166,7 @@ abstract final class GlmStage {
 abstract final class GlmLine {
   static const gk = (bg: Color(0xFFF5B82E), fg: Color(0xFF0B1A2C));
   static const def = (bg: Color(0xFF2F6FDB), fg: Color(0xFFFFFFFF));
-  static const mid = (bg: Color(0xFF1E9E4A), fg: Color(0xFFFFFFFF));
+  static const mid = (bg: Color(0xFF1E9E4A), fg: Color(0xFF0B1A2C));
   static const att = (bg: Color(0xFFF2994A), fg: Color(0xFF2A1300));
 }
 

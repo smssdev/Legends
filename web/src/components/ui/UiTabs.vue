@@ -8,7 +8,7 @@ export interface TabItem<T extends string = string> { key: T; label: string; n?:
 
 withDefaults(defineProps<{ items: TabItem<K>[]; label?: string; tone?: 'gold' | 'brand'; fill?: boolean; size?: 'md' | 'sm' }>(), { tone: 'gold', size: 'md' })
 const model = defineModel<K>({ required: true })
-const ON = { gold: 'data-[state=active]:bg-gold data-[state=active]:text-on-gold', brand: 'data-[state=active]:bg-brand data-[state=active]:text-white' }
+const ON = { gold: 'data-[state=active]:bg-gold data-[state=active]:text-on-gold', brand: 'data-[state=active]:bg-brand data-[state=active]:text-on-gold' }
 </script>
 
 <template>

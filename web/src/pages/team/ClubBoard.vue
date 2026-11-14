@@ -26,7 +26,7 @@ const now = useNow()
 const b = computed(() => store.board)
 onMounted(() => store.load(slot.current?.league?.id ?? store.league, true))
 const strength = (cp: number) => Math.round(cp / 100)
-const FORM: Record<string, [string, string]> = { W: ['ف', 'bg-success text-on-gold'], D: ['ت', 'bg-surface-raised'], L: ['خ', 'bg-live text-white'] }
+const FORM: Record<string, [string, string]> = { W: ['ف', 'bg-success text-on-gold'], D: ['ت', 'bg-surface-raised'], L: ['خ', 'bg-live text-on-gold'] }
 const MOOD: Record<string, [string, string, string]> = {
   calm: ['هادئة', 'تنتظر بداية الموسم', 'bg-surface-raised text-text-soft'],
   happy: ['مسرورة', 'أنت في الهدف أو أعلى', 'bg-success/20 text-success'],
@@ -54,12 +54,12 @@ const waiting = computed(() => b.value?.pending.length ?? 0)
               <img :src="side.crest_url" alt="" class="office-crest drop-shadow" loading="lazy" decoding="async" />
               <b class="max-w-full truncate text-body-lg">{{ $nm(side.name) }}</b>
               <span class="flex items-center gap-1.5"><Explain v-if="i === 0" what="strength" :league-id="leagueId"><span class="font-numbers text-title text-brand-light">{{ strength(side.strength_cp) }}</span></Explain><span v-else class="font-numbers text-title text-brand-light">{{ strength(side.strength_cp) }}</span>
-                <span class="flex gap-0.5 max-md:hidden" :aria-label="$t('آخر النتائج')">
+                <span class="flex gap-0.5 max-md:hidden" role="group" :aria-label="$t('آخر النتائج')">
                   <span v-for="(r, j) in side.form" :key="j" class="grid size-5 place-items-center rounded-full text-caption font-bold leading-none" :class="FORM[r][1]">{{ $t(FORM[r][0]) }}</span>
                 </span></span>
             </div>
             <div class="order-1 flex flex-col items-center gap-0.5">
-              <RouterLink v-if="b.match.status === 'live'" :to="b.match.match_id ? `/live/${b.match.match_id}` : '/match'" class="flex min-h-touch items-center gap-1.5 rounded-pill bg-live px-3 font-bold text-white"><span class="size-2 animate-pulse rounded-full bg-white" />{{ $t('مباشر الآن') }}</RouterLink>
+              <RouterLink v-if="b.match.status === 'live'" :to="b.match.match_id ? `/live/${b.match.match_id}` : '/match'" class="flex min-h-touch items-center gap-1.5 rounded-pill bg-live px-3 font-bold text-on-gold"><span class="size-2 animate-pulse rounded-full bg-white" />{{ $t('مباشر الآن') }}</RouterLink>
               <template v-else>
                 <span class="text-caption text-text-muted">{{ $t('تبدأ بعد') }}</span>
                 <b class="office-cd font-numbers leading-none text-gold" dir="ltr">{{ countdown(b.match.scheduled_at, now) || '00:00:00' }}</b>
@@ -70,7 +70,7 @@ const waiting = computed(() => b.value?.pending.length ?? 0)
           <RouterLink to="/lineup" class="office-ready flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-1" :class="b.lineup.ready ? 'is-ready' : 'ring-1 ring-live/60'">
             <span class="min-w-0 flex-1 truncate"><b class="text-body">{{ $t(b.lineup.ready ? 'التشكيلة جاهزة' : 'في تشكيلتك مصاب أو موقوف') }}</b>
               <span class="text-caption text-text-muted"> · <bdi dir="ltr">{{ b.lineup.formation.replace(/^custom:.*/, '') }}</bdi><template v-if="b.lineup.auto"> · {{ $t('اختارها المساعد') }}</template></span></span>
-            <span :class="b.lineup.ready ? 'text-success' : 'text-live'" aria-hidden="true"><Icon v-if="b.lineup.ready" name="check" :size="16" /><template v-else>!</template></span>
+            <span :class="b.lineup.ready ? 'text-success' : 'text-danger'" aria-hidden="true"><Icon v-if="b.lineup.ready" name="check" :size="16" /><template v-else>!</template></span>
           </RouterLink>
           <div class="grid grid-cols-[1.3fr_1fr_1fr] gap-2">
             <UiButton to="/lineup" size="sm">{{ $t('التشكيلة') }}<span v-if="b.lineup.ready" aria-hidden="true"><Icon name="check" :size="16" /></span></UiButton>

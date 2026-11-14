@@ -112,7 +112,7 @@ async function rate(helpful: boolean, withNote = false) {
               </div>
               <form v-if="vote === false" class="flex gap-2" @submit.prevent="rate(false, true)">
                 <input v-model="note" maxlength="300" dir="auto" class="h-11 min-w-0 flex-1 rounded-lg bg-surface-sunk px-3 text-sm" :placeholder="$t('ما الذي كان ينقص؟ (اختياري)')" :aria-label="$t('ما الذي كان ينقص؟ (اختياري)')" />
-                <button type="submit" class="h-11 rounded-lg bg-brand px-4 text-sm font-bold text-white">{{ $t('أرسل') }}</button>
+                <button type="submit" class="h-11 rounded-lg bg-brand px-4 text-sm font-bold text-on-gold">{{ $t('أرسل') }}</button>
               </form>
               <p v-if="error" class="text-xs text-danger" role="alert">{{ error }}</p>
             </template>

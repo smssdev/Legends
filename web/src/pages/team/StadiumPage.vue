@@ -132,7 +132,7 @@ onBeforeUnmount(() => clearInterval(tick))
           </div>
           <div v-for="st in [1, 2, 3]" :key="st" class="flex items-center gap-3">
             <span class="w-16 text-xs text-text-muted">{{ $t('المرحلة {v0}', { v0: st }) }}</span>
-            <span class="flex flex-1 gap-1" :aria-label="$t('المرحلة {v0}: {v1} من 5', { v0: st, v1: Math.max(0, Math.min(5, s.done - (st - 1) * 5)) })">
+            <span class="flex flex-1 gap-1" role="img" :aria-label="$t('المرحلة {v0}: {v1} من 5', { v0: st, v1: Math.max(0, Math.min(5, s.done - (st - 1) * 5)) })">
               <span v-for="p in 5" :key="p" class="h-2.5 flex-1 rounded-full" :class="part(s, (st - 1) * 5 + p - 1)" />
             </span>
             <span class="w-20 text-end font-numbers text-sm" :class="s.stage >= st ? 'text-gold' : 'text-text-muted'" dir="ltr">{{ effect(s, st) }}</span>

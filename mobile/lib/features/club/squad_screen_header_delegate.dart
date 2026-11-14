@@ -114,7 +114,12 @@ class _Head extends StatelessWidget {
         if (on) Icon(state._desc ? Icons.arrow_drop_down_rounded : Icons.arrow_drop_up_rounded, size: 20, color: GlmSheet.sortOn),
       ],
     );
-    return col == null ? text : InkWell(onTap: () => state._by(col!), child: text);
+    // [Sprint 65 F3] The sort is a 48 target over the thin title row (the rows under it answer first where they meet).
+    return col == null
+        ? text
+        : GlmTarget(
+            child: InkWell(onTap: () => state._by(col!), child: text),
+          );
   }
 }
 

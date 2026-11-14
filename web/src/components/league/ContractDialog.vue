@@ -21,6 +21,8 @@ const pad = ref<HTMLCanvasElement | null>(null)
 const strokes = ref(0)
 const busy = ref(false)
 const done = ref(false)
+// The pen's blue ink on the paper (the drawn and the typed signature alike).
+const PEN = '#1B3A8A'
 let drawing = false
 let last: [number, number] | null = null
 const goal = computed(() => (props.contract.objective ? leagueGoal(props.contract.objective) : null))
@@ -38,7 +40,7 @@ function move(e: PointerEvent) {
   if (!drawing || !pad.value || !last) return
   const ctx = pad.value.getContext('2d')!
   const p = point(e)
-  ctx.strokeStyle = '#1B3A8A'
+  ctx.strokeStyle = PEN
   ctx.lineWidth = 4
   ctx.lineCap = 'round'
   ctx.beginPath()
@@ -49,6 +51,18 @@ function move(e: PointerEvent) {
   strokes.value++
 }
 function up() { drawing = false; last = null }
+// [Sprint 65 W5] With the keys (or a screen reader): Enter on the pad writes the coach's name in a hand, as a signature.
+function typed() {
+  const ctx = pad.value?.getContext('2d')
+  if (!ctx || !pad.value) return
+  ctx.clearRect(0, 0, pad.value.width, pad.value.height)
+  ctx.fillStyle = PEN
+  ctx.font = 'italic 700 64px sans-serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(auth.user?.name ?? '', pad.value.width / 2, pad.value.height / 2, pad.value.width - 40)
+  strokes.value = 8
+}
 function clear() {
   pad.value?.getContext('2d')?.clearRect(0, 0, pad.value.width, pad.value.height)
   strokes.value = 0
@@ -68,7 +82,7 @@ onBeforeUnmount(() => { drawing = false })
 </script>
 
 <template>
-  <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-shade/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" :aria-label="$t('عقد تولي القيادة الفنية')">
+  <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-shade/70 p-4 backdrop-blur-sm" tabindex="-1" role="dialog" aria-modal="true" :aria-label="$t('عقد تولي القيادة الفنية')">
     <div class="theme-night w-full max-w-md py-4">
       <article class="contract relative rounded-2xl p-5 text-on-chrome shadow-2xl">
         <div class="mx-auto mb-2 grid size-20 place-items-center rounded-full bg-surface-sunk ring-4 ring-gold-light">
@@ -92,7 +106,8 @@ onBeforeUnmount(() => { drawing = false })
 
       <template v-if="!done">
         <div class="mt-3 rounded-2xl border-2 border-dashed border-gold bg-panel">
-          <canvas ref="pad" width="600" height="180" class="block h-28 w-full touch-none rounded-2xl" :aria-label="$t('وقّع بإصبعك هنا')"
+          <canvas ref="pad" width="600" height="180" class="block h-28 w-full touch-none rounded-2xl" tabindex="0" role="button" :aria-label="$t('وقّع بإصبعك هنا، أو اضغط Enter ليُكتب اسمك')"
+            @keydown.enter.prevent="typed" @keydown.space.prevent="typed"
             @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="up" @pointerleave="up" />
           <p v-if="!strokes" class="pointer-events-none -mt-16 mb-10 text-center text-sm text-text-muted"><Icon name="idea" :size="16" class="inline-block align-[-3px]" /> {{ $t('وقّع بإصبعك هنا') }}</p>
         </div>

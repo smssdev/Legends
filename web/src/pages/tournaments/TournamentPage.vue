@@ -107,7 +107,7 @@ const through = computed(() => page.value?.advance_per_group ?? (page.value?.for
       </section>
 
       <div class="flex gap-2" role="tablist">
-        <button v-for="x in tabs" :key="x.key" role="tab" :aria-selected="tab === x.key" class="min-h-touch rounded-full px-4 text-sm font-bold"
+        <button type="button" v-for="x in tabs" :key="x.key" role="tab" :aria-selected="tab === x.key" class="min-h-touch rounded-full px-4 text-sm font-bold"
           :class="tab === x.key ? 'bg-brand' : 'bg-surface-sunk text-text-muted'" @click="tab = x.key">{{ $t(x.label) }}</button>
       </div>
 

@@ -23,6 +23,7 @@ import 'squad_screen.dart';
 import 'lineup_controller.dart';
 import 'team_data.dart';
 import '../leagues/shell.dart';
+import '../../ui/widgets/target.dart';
 
 part 'lineup_screen_drag_row.dart';
 
@@ -399,13 +400,16 @@ class _Token extends StatelessWidget {
         ),
         childWhenDragging: shirt(ghost: true),
         onDragStarted: HapticFeedback.selectionClick,
-        child: GestureDetector(
-          onTap: onTap,
-          behavior: HitTestBehavior.opaque,
-          child: AnimatedScale(
-            scale: picked || over.isNotEmpty ? 1.15 : 1,
-            duration: const Duration(milliseconds: 160),
-            child: shirt(lit: over.isNotEmpty),
+        // [Sprint 65 F3] A 48 target around the shirt (it is drawn 45 high).
+        child: GlmTarget(
+          child: GestureDetector(
+            onTap: onTap,
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedScale(
+              scale: picked || over.isNotEmpty ? 1.15 : 1,
+              duration: const Duration(milliseconds: 160),
+              child: shirt(lit: over.isNotEmpty),
+            ),
           ),
         ),
       ),

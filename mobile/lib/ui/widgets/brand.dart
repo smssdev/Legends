@@ -10,6 +10,8 @@ import '../tokens.g.dart';
 import 'cut.dart';
 import 'kit.dart';
 import 'legend_crest.dart';
+import 'target.dart';
+import '../../l10n/app_localizations.dart';
 
 /// [Sprint 15 F2] The game's mark as on the web (BrandMark.vue): the crest, GAME LEGEND MANAGER with MANAGER in gold,
 /// and «المدرب الأسطورة» under it in Arabic.
@@ -81,26 +83,38 @@ class CoinsPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Material(
-      color: p.gold.withValues(alpha: .16),
-      shape: GlmCut.shape(GlmCut.button, side: BorderSide(color: p.gold.withValues(alpha: .45))),
-      child: InkWell(
-        customBorder: GlmCut.shape(GlmCut.button),
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: GlmSize.touchMin),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset('assets/brand/coin.png', width: 22, height: 22),
-                const SizedBox(width: 6),
-                Text(
-                  '$coins',
-                  style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: context.glm.goldText),
+    // [Sprint 65 F1, F3] Said as the wallet with its balance (not the number alone), and a 48 target.
+    return GlmTarget(
+      child: Semantics(
+        button: true,
+        label: '${L.of(context).wallet}: $coins',
+        child: Material(
+          color: p.gold.withValues(alpha: .16),
+          shape: GlmCut.shape(GlmCut.button, side: BorderSide(color: p.gold.withValues(alpha: .45))),
+          child: InkWell(
+            customBorder: GlmCut.shape(GlmCut.button),
+            onTap: onTap,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: GlmSize.touchMin),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset('assets/brand/coin.png', width: 22, height: 22),
+                    const SizedBox(width: 6),
+                    Text(
+                      '$coins',
+                      style: TextStyle(
+                        fontFamily: GlmFonts.numbers,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        color: context.glm.goldText,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

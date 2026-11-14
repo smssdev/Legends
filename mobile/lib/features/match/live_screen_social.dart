@@ -32,8 +32,9 @@ extension _LiveSocial on _LiveState {
               overflow: TextOverflow.ellipsis,
               style: glmText(GlmType.caption, color: p.textMuted),
             ),
+          // [Sprint 65 F1, F3] A 48 row (each reaction a 48 target), every reaction said by its name, not its key.
           SizedBox(
-            height: 44,
+            height: 48,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
@@ -48,18 +49,18 @@ extension _LiveSocial on _LiveState {
                 for (final e in _LiveState.reactions.entries)
                   if (e.key != 'cheer' && e.key != 'boo')
                     IconButton(
-                      tooltip: e.key,
+                      tooltip: _reactionName(l, e.key),
                       onPressed: () => _send(() => _repo.react(_id, e.key), quiet: true),
                       icon: Text(e.value, style: glmText(GlmType.headline)),
                     ),
                 for (final side in _sim ? const <String>[] : ['home', 'away']) ...[
                   IconButton(
-                    tooltip: 'cheer $side',
+                    tooltip: l.cheerSide(widget.view.club(side).name),
                     onPressed: () => _send(() => _repo.react(_id, 'cheer', target: side), quiet: true),
                     icon: Text('📣${widget.view.club(side).code}', style: glmText(GlmType.body)),
                   ),
                   IconButton(
-                    tooltip: 'boo $side',
+                    tooltip: l.booSide(widget.view.club(side).name),
                     onPressed: () => _send(() => _repo.react(_id, 'boo', target: side), quiet: true),
                     icon: Text('👎${widget.view.club(side).code}', style: glmText(GlmType.body)),
                   ),
@@ -180,3 +181,18 @@ extension _LiveSocial on _LiveState {
     );
   }
 }
+
+/// [Sprint 65 F1] A reaction's name in the coach's language (the web's REACTIONS labels).
+String _reactionName(L l, String key) => switch (key) {
+  'fire' => l.reactFire,
+  'clap' => l.reactClap,
+  'wow' => l.reactWow,
+  'laugh' => l.reactLaugh,
+  'angry' => l.reactAngry,
+  'pray' => l.reactPray,
+  'unlucky' => l.reactUnlucky,
+  'coming' => l.reactComing,
+  'easy' => l.reactEasy,
+  'focus' => l.reactFocus,
+  _ => key,
+};

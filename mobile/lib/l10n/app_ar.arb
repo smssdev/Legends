@@ -2164,5 +2164,17 @@
   "pushPrimerTitle": "لا تفوّت مباراتك",
   "pushPrimerBody": "نذكّرك بتشكيلتك قبل المباراة بساعة، وبالمباراة قبلها بنصف ساعة، وبالعروض حين تصل.",
   "pushPrimerAllow": "اسمح بالإشعارات",
-  "pushPrimerLater": "لاحقاً"
+  "pushPrimerLater": "لاحقاً",
+  "reactClap": "تصفيق",
+  "reactWow": "يا للهول",
+  "reactAngry": "غضب",
+  "reactPray": "يا رب",
+  "reactUnlucky": "هاردلك",
+  "reactComing": "جاي الهدف",
+  "reactEasy": "سهلة",
+  "reactFocus": "ركّز",
+  "cheerSide": "تشجيع {club}",
+  "@cheerSide": {"placeholders": {"club": {"type": "String"}}},
+  "booSide": "استهجان {club}",
+  "@booSide": {"placeholders": {"club": {"type": "String"}}}
 }

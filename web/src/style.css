@@ -556,10 +556,10 @@ input[type="radio"] {
   white-space: nowrap;
   transition: color var(--duration-fast) var(--ease-soft), background-color var(--duration-fast) var(--ease-soft);
 }
-.ui-nav-icon { color: var(--color-gold); filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35)); transition: transform var(--duration-fast) var(--ease-soft); }
+.ui-nav-icon { color: var(--ink-gold); filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35)); transition: transform var(--duration-fast) var(--ease-soft); }
 .ui-nav-item:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
 .ui-nav-item:hover .ui-nav-icon { transform: translateY(-2px) scale(1.08); }
-.ui-nav-item.is-active { color: var(--color-gold-light); }
+.ui-nav-item.is-active { color: var(--ink-gold-light); }
 .ui-nav-item.is-active::after {
   content: "";
   position: absolute;

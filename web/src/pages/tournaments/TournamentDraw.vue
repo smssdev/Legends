@@ -149,7 +149,7 @@ async function schedule() {
       <div class="flex items-center gap-2">
         <span v-if="liveNow" class="flex items-center gap-1.5 rounded-full bg-live px-3 py-1 text-xs font-extrabold"><span class="size-2 animate-pulse rounded-full bg-text" />{{ $t('مباشر') }}</span>
         <span v-else-if="replayFrom !== null && !done" class="rounded-full bg-surface-raised px-3 py-1 text-xs font-bold">{{ $t('إعادة') }}</span>
-        <button class="inline-flex min-h-touch items-center gap-1.5 rounded-full bg-surface/70 px-3 text-sm font-bold" :aria-pressed="sound" @click="toggleSound"><Icon :name="sound ? 'sound' : 'muted'" :size="16" />{{ sound ? $t('الصوت') : $t('شغّل الصوت') }}</button>
+        <button type="button" class="inline-flex min-h-touch items-center gap-1.5 rounded-full bg-surface/70 px-3 text-sm font-bold" :aria-pressed="sound" @click="toggleSound"><Icon :name="sound ? 'sound' : 'muted'" :size="16" />{{ sound ? $t('الصوت') : $t('شغّل الصوت') }}</button>
       </div>
     </header>
     <p v-if="error" class="m-4 rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
@@ -193,7 +193,7 @@ async function schedule() {
             <span class="text-6xl"><Icon name="trophy" :size="18" /></span>
             <b class="font-display text-3xl font-extrabold">{{ $t('انتهت القرعة') }}</b>
             <div class="flex flex-wrap justify-center gap-2">
-              <button class="min-h-touch rounded-xl bg-gold px-5 font-extrabold text-on-gold" @click="replay">{{ $t('أعد مشاهدة القرعة') }}</button>
+              <button type="button" class="min-h-touch rounded-xl bg-gold px-5 font-extrabold text-on-gold" @click="replay">{{ $t('أعد مشاهدة القرعة') }}</button>
               <RouterLink :to="{ name: 'tournament', params: { id } }" class="flex min-h-touch items-center rounded-xl bg-surface px-5 font-bold">{{ $t('صفحة البطولة') }}</RouterLink>
             </div>
           </div>
@@ -231,7 +231,7 @@ async function schedule() {
             </div>
           </div>
           <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
-            <button v-if="!done" class="min-h-touch rounded-lg px-3 text-sm font-bold text-text-muted" @click="skipped = true">{{ $t('تخطَّ إلى النتيجة') }}</button>
+            <button type="button" v-if="!done" class="min-h-touch rounded-lg px-3 text-sm font-bold text-text-muted" @click="skipped = true">{{ $t('تخطَّ إلى النتيجة') }}</button>
             <p v-if="done" class="w-full rounded-lg bg-surface-sunk px-3 py-2 text-xs text-text-muted">
               {{ $t('البذرة') }} <b class="font-numbers text-text" dir="ltr">{{ draw.seed }}</b>{{ $t('. تحقق بنفسك: SHA-256 للنص') }}
               <code dir="ltr" class="font-numbers text-text">legends-draw:{{ id }}:{{ draw.seed }}</code> {{ $t('يساوي البصمة المعلنة أعلاه.') }}</p>

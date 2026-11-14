@@ -21,6 +21,7 @@ import '../leagues/widgets.dart' show goalText;
 import 'club_data.dart';
 import 'team_data.dart';
 import '../leagues/shell.dart';
+import '../../ui/widgets/target.dart';
 
 part 'squad_screen_header_delegate.dart';
 part 'squad_screen_player_row.dart';

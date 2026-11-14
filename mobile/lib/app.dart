@@ -19,8 +19,12 @@ import 'features/health/offline_bar.dart';
 import 'router.dart';
 import 'ui/theme.dart';
 
+/// [Sprint 65 F2] The largest system text size the screens follow (M-A02): tested at it, held there beyond it.
+const maxTextScale = 1.3;
+
 /// [Sprint 15 F1] The app: the night and day looks, Arabic (right to left) and English, and — before anything — a
 /// version too old for the server asks to be updated.
+
 class GlmApp extends ConsumerStatefulWidget {
   const GlmApp({super.key});
 
@@ -96,11 +100,15 @@ class _GlmAppState extends ConsumerState<GlmApp> {
       routerConfig: ref.watch(routerProvider),
       // [Sprint 18 H] The assistant coach over every screen.
       // [Sprint 61 F9] The one «لا اتصال» bar above the frame.
-      builder: (context, child) => update
-          ? const UpdateRequiredScreen()
-          : OfflineBar(
-              child: AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
-            ),
+      // [Sprint 65 F2] The system's text size up to 1.3× (the screens are tested there, test/shots); beyond it held at 1.3.
+      builder: (context, child) => MediaQuery.withClampedTextScaling(
+        maxScaleFactor: maxTextScale,
+        child: update
+            ? const UpdateRequiredScreen()
+            : OfflineBar(
+                child: AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
+              ),
+      ),
     );
   }
 }

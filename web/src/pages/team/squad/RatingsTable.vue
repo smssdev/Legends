@@ -22,8 +22,8 @@ const r1 = (v: number) => (v / 100).toFixed(1)
           <th v-for="r in rounds" :key="r" scope="col" class="w-12 px-1 py-2 text-center font-numbers text-xs font-bold">{{ r }}</th>
           <th scope="col" class="w-16 px-2 py-2 text-center text-xs font-bold">{{ $t('المعدل') }}</th>
         </tr>
-        <tr v-for="p in grp.players" :key="p.id" class="cursor-pointer border-b border-text/5 last:border-0 hover:bg-surface-raised" tabindex="0" @click="emit('open', p)" @keydown.enter="emit('open', p)">
-          <td class="sticky start-0 z-10 truncate bg-surface px-3 py-2 font-display font-extrabold">{{ $nm(p.name) }}</td>
+        <tr v-for="p in grp.players" :key="p.id" class="cursor-pointer border-b border-text/5 last:border-0 hover:bg-surface-raised" @click="emit('open', p)">
+          <td class="sticky start-0 z-10 truncate bg-surface px-3 py-2 font-display font-extrabold"><button type="button" class="name-open w-full truncate text-start focus-visible:underline" @click.stop="emit('open', p)">{{ $nm(p.name) }}</button></td>
           <td v-for="r in rounds" :key="r" class="px-1 text-center">
             <span v-if="season.players[p.id]?.ratings[r]" class="inline-grid size-8 place-items-center rounded-full font-numbers text-xs font-bold" :class="ratingTone(season.players[p.id].ratings[r])">{{ r1(season.players[p.id].ratings[r]) }}</span>
           </td>
@@ -38,6 +38,9 @@ const r1 = (v: number) => (v / 100).toFixed(1)
 </template>
 
 <style scoped>
+/* [Sprint 65 W5] The name opens the card with the keys; its 44px touch spreads around it, so the row keeps its height. */
+.name-open { position: relative }
+.name-open::after { content: ''; position: absolute; inset: -10px 0 }
 .line-head { background: linear-gradient(90deg, color-mix(in srgb, var(--line) 82%, var(--color-shade)), var(--line)); color: var(--line-fg); }
 :dir(rtl) .line-head { background: linear-gradient(-90deg, color-mix(in srgb, var(--line) 82%, var(--color-shade)), var(--line)); }
 .line-head th.sticky { background: color-mix(in srgb, var(--line) 82%, var(--color-shade)); }

@@ -18,9 +18,9 @@ import { emblemSrc } from '../lib/i18n'
       <h2 class="relative font-display text-5xl font-extrabold leading-tight">{{ $t('دوريك. فريقك.') }}<br /><span class="text-gold">{{ $t('أسطورتك.') }}</span></h2>
       <p class="relative text-lg text-text-soft">{{ $t('درّب ناديك المفضل ضد أصحابك، وعِش كل مباراة لحظة بلحظة.') }}</p>
       <ul class="relative flex flex-col gap-3 text-text-soft">
-        <li class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-full bg-brand text-white shadow-md"><Icon name="target" :size="18" class="inline-block align-[-3px]" /></span>{{ $t('مباراة حية: تبدّل وتغيّر تكتيكك لحظياً') }}</li>
-        <li class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-full bg-brand text-white shadow-md"><Icon name="flag" :size="18" class="inline-block align-[-3px]" /></span>{{ $t('دوريات خاصة بكود مع أصحابك') }}</li>
-        <li class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-full bg-brand text-white shadow-md"><Icon name="star" :size="16" /></span>{{ $t('أندية ولاعبون حقيقيون، ودوري وكأس كل موسم') }}</li>
+        <li class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-full bg-brand text-on-gold shadow-md"><Icon name="target" :size="18" class="inline-block align-[-3px]" /></span>{{ $t('مباراة حية: تبدّل وتغيّر تكتيكك لحظياً') }}</li>
+        <li class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-full bg-brand text-on-gold shadow-md"><Icon name="flag" :size="18" class="inline-block align-[-3px]" /></span>{{ $t('دوريات خاصة بكود مع أصحابك') }}</li>
+        <li class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-full bg-brand text-on-gold shadow-md"><Icon name="star" :size="16" /></span>{{ $t('أندية ولاعبون حقيقيون، ودوري وكأس كل موسم') }}</li>
       </ul>
     </aside>
     <main class="relative flex flex-col justify-center overflow-hidden px-4 py-8 md:px-14">

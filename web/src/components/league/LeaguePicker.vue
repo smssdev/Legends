@@ -79,7 +79,7 @@ const country = (r: { place: { ar: string; en: string } }) => (locale.value === 
   border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
 }
 .picker-tab:hover { border-color: color-mix(in srgb, var(--color-gold) 50%, transparent); }
-.picker-tab.is-active { color: var(--color-gold-light); border-color: var(--color-gold); box-shadow: inset 0 -3px 0 var(--color-gold); }
+.picker-tab.is-active { color: var(--ink-gold-light); border-color: var(--color-gold); box-shadow: inset 0 -3px 0 var(--color-gold); }
 .picker-search {
   display: flex;
   min-height: 2.75rem;
