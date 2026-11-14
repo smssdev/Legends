@@ -13,6 +13,7 @@ use App\Auth\Username;
 use App\Chat\ChatGroups;
 use App\Chat\Moderation;
 use App\Console\Commands\MatchesLive;
+use App\Experience\Funnel;
 use App\Http\Controllers\Controller;
 use App\League\Alliance;
 use App\Messages\Inbox;
@@ -56,6 +57,14 @@ class AdminController extends Controller
 
         return response()->json(['scope' => $request->user()->admin_scope,
             'sections' => $request->user()->admin_scope ? config('game.admin.scopes')[$request->user()->admin_scope] : null]);
+    }
+
+    /** [Sprint 64 B2] The new coaches' funnel over the last `days` days (30 by default). */
+    public function funnel(Request $request): JsonResponse
+    {
+        $days = (int) ($request->validate(['days' => 'sometimes|integer|min:1|max:365'])['days'] ?? 30);
+
+        return response()->json(Funnel::of($days));
     }
 
     public function overview(): JsonResponse

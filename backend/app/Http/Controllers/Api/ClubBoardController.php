@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Data\Crests;
+use App\Experience\Explain;
+use App\Experience\PlayerMilestones;
 use App\Http\Controllers\Controller;
 use App\League\ClubAgenda;
 use App\League\Integrity;
@@ -62,7 +64,11 @@ class ClubBoardController extends Controller
             'board' => $season ? ClubAgenda::board($club, $season, $position, $played) : null,
             'timers' => ClubAgenda::timers($club, $league, $user->id),
             'pending' => $pending,
-            'missed' => count(MissedMatches::of($club, $user->id)),
+            'missed' => count($missed = MissedMatches::of($club, $user->id)),
+            // [Sprint 64 W3] Since the last visit, while its matches are unseen (so once per absence).
+            'since' => $missed ? $this->since($club, $season, $missed, $position, $pending) : null,
+            // [Sprint 64 B8] The players' milestones not yet seen.
+            'milestones' => PlayerMilestones::unseen($club->id),
         ]);
     }
 
@@ -83,6 +89,37 @@ class ClubBoardController extends Controller
     }
 
     /** The league table in the order the standings use: each club's id, name, code and points; and rounds played. */
+    /** [Sprint 64 W3] The newest unseen result, the position before the unseen matches and now, and the offers waiting. */
+    private function since(Club $club, int $season, array $missed, ?int $position, array $pending): array
+    {
+        $before = null;
+        if ($season) {
+            $order = array_column(Standings::table($season, null, DB::table('matches')->whereIn('id', array_column($missed, 'match_id'))->pluck('fixture_id')->all()), 'id');
+            $i = array_search($club->id, $order, true);
+            $before = $i === false ? null : $i + 1;
+        }
+        $last = $missed[0];
+
+        return ['matches' => count($missed),
+            'last' => ['match_id' => $last['match_id'], 'home' => $last['home'], 'away' => $last['away'], 'home_goals' => $last['home_goals'], 'away_goals' => $last['away_goals'], 'result' => $last['result']],
+            'position' => ['before' => $before, 'now' => $position],
+            'offers' => (int) (collect($pending)->firstWhere('kind', 'offers')['count'] ?? 0)];
+    }
+
+    /** [Sprint 64 W5 F5] Where one of the club's numbers comes from. */
+    public function explain(Request $request, League $league, string $what): JsonResponse
+    {
+        abort_unless(in_array($what, Explain::WHAT, true), 404);
+
+        return response()->json(Explain::of($what, $this->club($request, $league), $request->user()->id));
+    }
+
+    /** [Sprint 64 B8] The milestones' card was seen. */
+    public function milestonesSeen(Request $request, League $league): JsonResponse
+    {
+        return response()->json(['seen' => PlayerMilestones::seen($this->club($request, $league)->id)]);
+    }
+
     private function table(int $seasonId): array
     {
         $order = Standings::order($seasonId);

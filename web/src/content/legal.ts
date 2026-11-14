@@ -6,7 +6,7 @@ import type { Locale } from '../lib/i18n'
 export type LegalSection = { h: string; p: string[] }
 export type LegalDoc = { title: string; intro: string; sections: LegalSection[] }
 
-export const UPDATED = '2026-11-05'
+export const UPDATED = '2026-11-14'
 
 const PRIVACY: Record<Locale, LegalDoc> = {
   ar: {
@@ -45,6 +45,9 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'لا نرسل إليهما اسمك ولا اسم المستخدم ولا بريدك ولا رسائلك، ولا نقيس شيئاً في لوحة الإدارة.',
         'في المنطقة الاقتصادية الأوروبية والمملكة المتحدة وسويسرا لا يُخزَّن شيء للقياس قبل موافقتك في رسالة Google، ويعمل Meta Pixel هناك فقط بموافقتك.',
         'يمكنك منع القياس بإضافة Google Analytics Opt-out (tools.google.com/dlpage/gaoptout)، وإعداداتك في فيسبوك (facebook.com/adpreferences).',
+      ] },
+      { h: 'خطواتك الأولى في اللعبة', p: [
+        'نحفظ في حسابك وقت بدء مباراتك التعريفية الأولى ووقت انتهائها. ومنهما ومن اللعبة نفسها (أخذ نادٍ، وحفظ تشكيلة، ولعب مباراة) نعدّ في لوحة الإدارة كم من الحسابات الجديدة بلغ كل خطوة، أعداداً فقط لا أسماء، لنعرف أين يتوقف اللاعبون الجدد ونحسّن البداية. ولا يُرسل شيء منها إلى أي جهة.',
       ] },
       { h: 'الكوكيز والتخزين في المتصفح', p: [
         'نستخدم كوكيز ضرورية لتسجيل دخولك وحماية النماذج (الجلسة وXSRF)، ولا تعمل اللعبة بدونها.',
@@ -108,6 +111,9 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'We never send them your name, username, email or messages, and we measure nothing in the admin panel.',
         'In the European Economic Area, the UK and Switzerland nothing is stored for measurement until you agree in Google\'s consent message, and the Meta Pixel runs there only with your consent.',
         'You can block the measurement with the Google Analytics Opt-out add-on (tools.google.com/dlpage/gaoptout), and in your Facebook settings (facebook.com/adpreferences).',
+      ] },
+      { h: 'Your first steps in the game', p: [
+        'We keep in your account when your first intro match started and when it ended. From them and from the game itself (taking a club, saving a lineup, playing a match) the admin panel counts how many new accounts reached each step, as numbers only, never names, so we know where new players stop and can improve the start. None of it is sent anywhere.',
       ] },
       { h: 'Cookies and browser storage', p: [
         'We use essential cookies to keep you signed in and to protect forms (session and XSRF); the game cannot work without them.',

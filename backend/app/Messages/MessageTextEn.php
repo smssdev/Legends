@@ -259,6 +259,15 @@ class MessageTextEn
             ],
             // [X54] The developers gave the account coins.
             // [Sprint 40 A1] A badge reached, and its coins.
+            'player_milestone' => [
+                'title' => match ($p['kind'] ?? '') {
+                    'goals' => sprintf('%s scores goal number %d!', $p['player'] ?? '', $p['value'] ?? 0),
+                    'matches' => sprintf('%s plays match number %d!', $p['player'] ?? '', $p['value'] ?? 0),
+                    default => ($p['value'] ?? 1) === 1 ? sprintf('%s is man of the match for the first time!', $p['player'] ?? '') : sprintf('%s is man of the match for the %dth time!', $p['player'] ?? '', $p['value'] ?? 0),
+                },
+                'body' => 'A moment in his career with your club. Reward him with his place in the lineup.',
+                'link' => '/squad',
+            ],
             'achievement' => [
                 'title' => sprintf('New badge: %s', self::BADGE[$p['key'] ?? ''] ?? ''),
                 'body' => sprintf('You reached «%s», a %s badge, and got %s coins.', self::BADGE[$p['key'] ?? ''] ?? '', self::TIER[$p['tier'] ?? ''] ?? '', $p['coins'] ?? 0),

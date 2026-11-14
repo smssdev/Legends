@@ -673,6 +673,33 @@ class AdminEventsAnswer {
   final int maxDays;
 }
 
+class AdminFunnelAnswer {
+  const AdminFunnelAnswer({required this.days, required this.steps});
+
+  factory AdminFunnelAnswer.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminFunnelAnswer');
+    return AdminFunnelAnswer(days: r.int_('days'), steps: r.list('steps', AdminFunnelAnswerStepsItem.fromJson));
+  }
+
+  final int days;
+  final List<AdminFunnelAnswerStepsItem> steps;
+}
+
+class AdminFunnelAnswerStepsItem {
+  const AdminFunnelAnswerStepsItem({required this.count, required this.pct, required this.step});
+
+  factory AdminFunnelAnswerStepsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'AdminFunnelAnswerStepsItem');
+    return AdminFunnelAnswerStepsItem(count: r.int_('count'), pct: r.int_('pct'), step: r.string('step'));
+  }
+
+  final int count;
+
+  /// Of the accounts signed up
+  final int pct;
+  final String step;
+}
+
 class AdminHouseAdsAnswer {
   const AdminHouseAdsAnswer({required this.ads, required this.defaults, required this.enabled});
 
@@ -2209,9 +2236,11 @@ class ClubBoard {
     required this.club,
     required this.lineup,
     this.match,
+    this.milestones,
     required this.missed,
     required this.money,
     required this.pending,
+    this.since,
     required this.standings,
     required this.timers,
   });
@@ -2223,9 +2252,11 @@ class ClubBoard {
       club: r.object('club', ClubBoardClub.fromJson),
       lineup: r.object('lineup', ClubBoardLineup.fromJson),
       match: r.objectOrNull('match', ClubBoardMatch.fromJson),
+      milestones: r.listOrNull('milestones', PlayerMilestone.fromJson),
       missed: r.int_('missed'),
       money: r.object('money', ClubBoardMoney.fromJson),
       pending: r.list('pending', ClubBoardPendingItem.fromJson),
+      since: r.objectOrNull('since', ClubBoardSince.fromJson),
       standings: r.object('standings', ClubBoardStandings.fromJson),
       timers: r.list('timers', ClubBoardTimersItem.fromJson),
     );
@@ -2236,12 +2267,18 @@ class ClubBoard {
   final ClubBoardLineup lineup;
   final ClubBoardMatch? match;
 
+  /// [Sprint 64 B8] The players' milestones not yet seen, newest first
+  final List<PlayerMilestone>? milestones;
+
   /// Matches missed (B3)
   final int missed;
   final ClubBoardMoney money;
 
   /// [Sprint 64 B3] Ranked by the server, the most pressing first (priority), each with where its one action goes (go)
   final List<ClubBoardPendingItem> pending;
+
+  /// [Sprint 64 W3] Since the last visit, while its matches are unseen (once per absence)
+  final ClubBoardSince? since;
   final ClubBoardStandings standings;
 
   /// Soonest first; at is null when ready now (the daily coins)
@@ -2487,6 +2524,98 @@ class ClubBoardPendingItemPlayersItem {
   final int id;
   final String name;
   final String why;
+}
+
+/// [Sprint 64 W3] Since the last visit, while its matches are unseen (once per absence)
+class ClubBoardSince {
+  const ClubBoardSince({required this.last, required this.matches, required this.offers, required this.position});
+
+  factory ClubBoardSince.fromJson(Object? json) {
+    final r = JsonReader(json, 'ClubBoardSince');
+    return ClubBoardSince(
+      last: r.object('last', ClubBoardSinceLast.fromJson),
+      matches: r.int_('matches'),
+      offers: r.int_('offers'),
+      position: r.object('position', ClubBoardSincePosition.fromJson),
+    );
+  }
+
+  final ClubBoardSinceLast last;
+  final int matches;
+  final int offers;
+  final ClubBoardSincePosition position;
+}
+
+class ClubBoardSinceLast {
+  const ClubBoardSinceLast({
+    required this.away,
+    required this.awayGoals,
+    required this.home,
+    required this.homeGoals,
+    required this.matchId,
+    required this.result,
+  });
+
+  factory ClubBoardSinceLast.fromJson(Object? json) {
+    final r = JsonReader(json, 'ClubBoardSinceLast');
+    return ClubBoardSinceLast(
+      away: r.object('away', ClubBoardSinceLastAway.fromJson),
+      awayGoals: r.int_('away_goals'),
+      home: r.object('home', ClubBoardSinceLastHome.fromJson),
+      homeGoals: r.int_('home_goals'),
+      matchId: r.int_('match_id'),
+      result: r.int_('result'),
+    );
+  }
+
+  final ClubBoardSinceLastAway away;
+  final int awayGoals;
+  final ClubBoardSinceLastHome home;
+  final int homeGoals;
+  final int matchId;
+
+  /// 1 won, 0 drew, -1 lost
+  final int result;
+}
+
+class ClubBoardSinceLastAway {
+  const ClubBoardSinceLastAway({required this.code, required this.crestUrl, required this.id, required this.name});
+
+  factory ClubBoardSinceLastAway.fromJson(Object? json) {
+    final r = JsonReader(json, 'ClubBoardSinceLastAway');
+    return ClubBoardSinceLastAway(code: r.string('code'), crestUrl: r.string('crest_url'), id: r.int_('id'), name: r.string('name'));
+  }
+
+  final String code;
+  final String crestUrl;
+  final int id;
+  final String name;
+}
+
+class ClubBoardSinceLastHome {
+  const ClubBoardSinceLastHome({required this.code, required this.crestUrl, required this.id, required this.name});
+
+  factory ClubBoardSinceLastHome.fromJson(Object? json) {
+    final r = JsonReader(json, 'ClubBoardSinceLastHome');
+    return ClubBoardSinceLastHome(code: r.string('code'), crestUrl: r.string('crest_url'), id: r.int_('id'), name: r.string('name'));
+  }
+
+  final String code;
+  final String crestUrl;
+  final int id;
+  final String name;
+}
+
+class ClubBoardSincePosition {
+  const ClubBoardSincePosition({this.before, this.now});
+
+  factory ClubBoardSincePosition.fromJson(Object? json) {
+    final r = JsonReader(json, 'ClubBoardSincePosition');
+    return ClubBoardSincePosition(before: r.intOrNull('before'), now: r.intOrNull('now'));
+  }
+
+  final int? before;
+  final int? now;
 }
 
 class ClubBoardStandings {
@@ -3727,6 +3856,40 @@ class Error {
   final String message;
 }
 
+/// [Sprint 64 W5] A number of my club and its parts, as the server counts them
+class Explain {
+  const Explain({required this.parts, required this.topic, required this.value, required this.what});
+
+  factory Explain.fromJson(Object? json) {
+    final r = JsonReader(json, 'Explain');
+    return Explain(
+      parts: r.list('parts', ExplainPartsItem.fromJson),
+      topic: r.string('topic'),
+      value: r.int_('value'),
+      what: r.string('what'),
+    );
+  }
+
+  final List<ExplainPartsItem> parts;
+
+  /// The guide's topic for more
+  final String topic;
+  final int value;
+  final String what;
+}
+
+class ExplainPartsItem {
+  const ExplainPartsItem({required this.label, required this.value});
+
+  factory ExplainPartsItem.fromJson(Object? json) {
+    final r = JsonReader(json, 'ExplainPartsItem');
+    return ExplainPartsItem(label: r.string('label'), value: r.string('value'));
+  }
+
+  final String label;
+  final String value;
+}
+
 class Fixture {
   const Fixture({
     this.away,
@@ -4482,10 +4645,12 @@ class HomeScreenCoachRecord {
 class HomeScreenOnboarding {
   const HomeScreenOnboarding({
     required this.account,
+    required this.club,
     required this.coach,
     required this.friendly,
     required this.invite,
     required this.lineup,
+    required this.match,
     required this.name,
     required this.tactics,
   });
@@ -4494,20 +4659,28 @@ class HomeScreenOnboarding {
     final r = JsonReader(json, 'HomeScreenOnboarding');
     return HomeScreenOnboarding(
       account: r.bool_('account'),
+      club: r.bool_('club'),
       coach: r.bool_('coach'),
       friendly: r.bool_('friendly'),
       invite: r.bool_('invite'),
       lineup: r.bool_('lineup'),
+      match: r.bool_('match'),
       name: r.bool_('name'),
       tactics: r.bool_('tactics'),
     );
   }
 
   final bool account;
+
+  /// [Sprint 64 W2] A club taken
+  final bool club;
   final bool coach;
   final bool friendly;
   final bool invite;
   final bool lineup;
+
+  /// [Sprint 64 W2] A match played with it
+  final bool match;
   final bool name;
   final bool tactics;
 }
@@ -9323,6 +9496,28 @@ class PanelSuggestionUser {
   final int id;
   final String name;
   final String? username;
+}
+
+/// [Sprint 64 B8] A player's milestone with the club
+class PlayerMilestone {
+  const PlayerMilestone({required this.id, required this.kind, required this.name, required this.playerId, required this.value});
+
+  factory PlayerMilestone.fromJson(Object? json) {
+    final r = JsonReader(json, 'PlayerMilestone');
+    return PlayerMilestone(
+      id: r.int_('id'),
+      kind: r.string('kind'),
+      name: r.string('name'),
+      playerId: r.int_('player_id'),
+      value: r.int_('value'),
+    );
+  }
+
+  final int id;
+  final String kind;
+  final String name;
+  final int playerId;
+  final int value;
 }
 
 class Poll {

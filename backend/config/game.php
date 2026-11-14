@@ -596,6 +596,13 @@ return [
     // friendly counts for chemistry. [Sprint 24 B2] coins each (the owner's request 2026-10-29), taken when the coach
     // confirms, in every league (fair ones too), with no limit: no daily one, and not in the season's coin cap.
     // [Sprint 30 P6] first_free: an account's first friendly costs nothing.
+    // [Sprint 64] The game experience, no engine or economy number: the intro match (B1) between two clubs of about the
+    // same strength among the `pool` strongest, its three teaching moments (the style change, the substitution, and the
+    // style's effect `effect_after` minutes later); and the players' milestones with their club (B8).
+    'experience' => [
+        'intro' => ['pool' => 40, 'style_minute' => [18, 28], 'sub_minute' => [55, 65], 'effect_after' => 8],
+        'milestones' => ['goals' => [10, 25, 50, 100], 'matches' => [50, 100, 200], 'motm' => [1, 10]],
+    ],
     'friendlies' => ['first_free' => true, 'coins' => 5, 'fitness' => 5, 'block_minutes' => 60, 'training_progress' => 300],
     // [Sprint 20 B5] The weekly quests (Monday to Monday, Cairo): a target each and coins; the big one (unbeaten: at
     // least target matches without a defeat) pays money_bp of the league's money scale to the club.

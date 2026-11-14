@@ -35,14 +35,16 @@ class Standings
      * clubs in a tournament [Sprint 29].
      *
      * @param  list<int>|null  $clubIds
+     * @param  list<int>  $except  fixtures left out (the table as it was before them, Sprint 64 W3)
      * @return list<array{id: int, pts: int, gd: int, gf: int, st: int, p: int, w: int, d: int, l: int, ga: int}>
      */
-    public static function table(int $seasonId, ?array $clubIds = null): array
+    public static function table(int $seasonId, ?array $clubIds = null, array $except = []): array
     {
         $leagueId = (int) DB::table('seasons')->where('id', $seasonId)->value('league_id');
         $rows = DB::table('clubs')->where('league_id', $leagueId)->when($clubIds !== null, fn ($q) => $q->whereIn('id', $clubIds))->get(['id', 'strength_snapshot'])
             ->mapWithKeys(fn ($c) => [$c->id => ['id' => (int) $c->id, 'pts' => 0, 'gd' => 0, 'gf' => 0, 'st' => (int) $c->strength_snapshot, 'p' => 0, 'w' => 0, 'd' => 0, 'l' => 0, 'ga' => 0]])->all();
-        $done = DB::table('fixtures')->where('season_id', $seasonId)->where('competition', 'league')->where('is_bye', false)->where('status', 'finished')->get();
+        $done = DB::table('fixtures')->where('season_id', $seasonId)->where('competition', 'league')->where('is_bye', false)->where('status', 'finished')
+            ->when($except, fn ($q) => $q->whereNotIn('id', $except))->get();
         foreach ($done as $f) {
             foreach ([[$f->home_id, $f->home_goals, $f->away_goals], [$f->away_id, $f->away_goals, $f->home_goals]] as [$id, $for, $against]) {
                 if (! isset($rows[$id])) {

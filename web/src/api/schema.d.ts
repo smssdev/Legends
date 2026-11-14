@@ -5619,6 +5619,97 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/milestones/seen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 64 B8] The milestones' card was seen */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description How many */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            seen: number;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/explain/{what}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                what: "chemistry" | "strength" | "morale" | "rating";
+            };
+            cookie?: never;
+        };
+        /** [Sprint 64 W5] Where one of my club's numbers comes from */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    what: "chemistry" | "strength" | "morale" | "rating";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The number and its parts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Explain"];
+                    };
+                };
+                /** @description Not one of the four */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/friendlies": {
         parameters: {
             query?: never;
@@ -7325,6 +7416,53 @@ export interface paths {
                     };
                 };
                 403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/funnel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 64 B2] The new coaches' first five minutes: of the accounts made in the last days, how many reached each step */
+        get: {
+            parameters: {
+                query?: {
+                    days?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The steps in order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            days: number;
+                            steps: {
+                                /** @enum {string} */
+                                step: "signed_up" | "intro_started" | "intro_finished" | "club_taken" | "first_lineup" | "first_match";
+                                count: number;
+                                /** @description Of the accounts signed up */
+                                pct: number;
+                            }[];
+                        };
+                    };
+                };
             };
         };
         put?: never;
@@ -11602,6 +11740,99 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sim/intro": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 64 B1] A new coach's first match: two clubs of about the same strength, against the computer, with three teaching moments */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The match, and its moments */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MatchView"] & {
+                            intro: {
+                                moments: {
+                                    /** @enum {string} */
+                                    kind: "style" | "sub" | "effect";
+                                    minute: number;
+                                    /** @description From the guide */
+                                    title: string;
+                                    /** @description From the guide */
+                                    text: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Signed in only */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sim/intro/finished": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 64 B2] The intro match was played to its end (or skipped) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Noted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sim/matches/{match}": {
         parameters: {
             query?: never;
@@ -14371,6 +14602,27 @@ export interface components {
                 fitness: number | null;
             } | null;
         };
+        /** @description [Sprint 64 B8] A player's milestone with the club */
+        PlayerMilestone: {
+            id: number;
+            player_id: number;
+            name: string;
+            /** @enum {string} */
+            kind: "goals" | "matches" | "motm";
+            value: number;
+        };
+        /** @description [Sprint 64 W5] A number of my club and its parts, as the server counts them */
+        Explain: {
+            /** @enum {string} */
+            what: "chemistry" | "strength" | "morale" | "rating";
+            value: number;
+            parts: {
+                label: string;
+                value: string;
+            }[];
+            /** @description The guide's topic for more */
+            topic: string;
+        };
         ClubBoard: {
             club: {
                 id: number;
@@ -14494,6 +14746,36 @@ export interface components {
             }[];
             /** @description Matches missed (B3) */
             missed: number;
+            /** @description [Sprint 64 W3] Since the last visit, while its matches are unseen (once per absence) */
+            since?: {
+                matches: number;
+                last: {
+                    match_id: number;
+                    home: {
+                        id: number;
+                        name: string;
+                        code: string;
+                        crest_url: string;
+                    };
+                    away: {
+                        id: number;
+                        name: string;
+                        code: string;
+                        crest_url: string;
+                    };
+                    home_goals: number;
+                    away_goals: number;
+                    /** @description 1 won, 0 drew, -1 lost */
+                    result: number;
+                };
+                position: {
+                    before: number | null;
+                    now: number | null;
+                };
+                offers: number;
+            } | null;
+            /** @description [Sprint 64 B8] The players' milestones not yet seen, newest first */
+            milestones?: components["schemas"]["PlayerMilestone"][];
         };
         MissedMatch: {
             match_id: number;
@@ -15636,6 +15918,10 @@ export interface components {
                 tactics: boolean;
                 name: boolean;
                 friendly: boolean;
+                /** @description [Sprint 64 W2] A club taken */
+                club: boolean;
+                /** @description [Sprint 64 W2] A match played with it */
+                match: boolean;
             };
             /** @description [Sprint 28] The open polls this coach has not voted in yet */
             polls_waiting: number;

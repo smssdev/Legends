@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Engine\Formations;
+use App\Experience\Intro;
 use App\Http\Controllers\Controller;
 use App\Models\MasterClub;
 use App\Models\SimMatch;
@@ -64,6 +65,20 @@ class SimulatorController extends Controller
 
         // A live match made here: the maker holds home and sends the away seat to the friend.
         return response()->json($view + ($match->seats ? ['seats' => $match->seats] : []), 201);
+    }
+
+    /** [Sprint 64 B1] The new coach's first match, with its three teaching moments. */
+    public function intro(Request $request)
+    {
+        return response()->json(Intro::start($this->sim, $request->user()->id, app()->getLocale()), 201);
+    }
+
+    /** [Sprint 64 B2] The intro match was played to its end (or skipped after it started). */
+    public function introFinished(Request $request)
+    {
+        Intro::finished($request->user()->id);
+
+        return response()->json(['ok' => true]);
     }
 
     public function show(Request $request, SimMatch $match)
