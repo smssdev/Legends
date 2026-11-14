@@ -64,10 +64,10 @@ class AppServiceProvider extends ServiceProvider
         // The queue worker's sign of life for the health check [Sprint 21 B2].
         Event::listen(Looping::class, fn () => ServerHealth::beat('queue'));
 
-        // Sign-in, sign-up and password attempts: 5 a minute per email, 20 per address [Sprint 10 B3].
+        // Sign-in, sign-up and password attempts: 5 a minute per email, 20 per address [Sprint 10 B3] (game.auth_limits).
         RateLimiter::for('auth', fn (Request $request) => [
-            Limit::perMinute(5)->by('email:'.Str::lower((string) $request->input('email', $request->user()?->email)).'|'.$request->ip()),
-            Limit::perMinute(20)->by('ip:'.$request->ip()),
+            Limit::perMinute((int) config('game.auth_limits.per_email'))->by('email:'.Str::lower((string) $request->input('email', $request->user()?->email)).'|'.$request->ip()),
+            Limit::perMinute((int) config('game.auth_limits.per_ip'))->by('ip:'.$request->ip()),
         ]);
 
         // Tries at a league code, per account [PLAN 2.1]: guessing codes stays slow.

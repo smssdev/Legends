@@ -142,13 +142,26 @@ jobs:
       # [Sprint 60 F1] The frame's sections current with docs/design/nav.json (the app's mobile/tool/nav.dart too).
       - name: Frame from nav.json
         run: npm run nav && git diff --exit-code -- src/layouts/dock.g.ts
+      # [Sprint 66 T2] ESLint (Vue's and TypeScript's recommended rules) and Prettier's look.
+      - run: npm run lint
+      - run: npm run format:check
+      # Every check of the design system, the words, the icons, the unit tests (Vitest) and the budgets (Sprint 58).
       - run: npm run build
 
-  # [Sprint 30 G8] The critical path in a real browser (sign-up → league → lineup → match → report) and an
-  # accessibility check (axe) of the first screens: the API on SQLite with the game's data, the web from Vite.
+  # [Sprint 30 G8, Sprint 66 T5] The journeys in a real browser (web/e2e: the critical path, the market, training and
+  # the stadium, a live match between two coaches, an invitation, a group, a tournament, the account), the screenshots
+  # (visual.spec.ts), the frame and touch budgets (layout.spec.ts) and axe on every screen (a11y.spec.ts): the API on
+  # SQLite with the game's data, the web from Vite.
   e2e:
-    name: End to end
+    name: End to end (${{ matrix.suite }})
+    # [Sprint 66] On a PR only (the free minutes are few), in two jobs side by side: the eight journeys (under 10 minutes)
+    # and the screens (axe on every screen G4, the frame and touch budgets G3, the screenshots, the request budget G1).
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [journeys, screens]
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
@@ -162,16 +175,16 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: composer install --no-interaction --prefer-dist --no-progress
         working-directory: backend
-      - run: cp .env.example .env && sed -i 's/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=log/' .env && php artisan key:generate && touch database/legends.sqlite database/database.sqlite && php artisan migrate --force && php artisan data:import
+      - run: cp .env.example .env && sed -i 's/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=log/' .env && php artisan key:generate && touch database/legends.sqlite database/database.sqlite && php artisan migrate --force && php artisan data:import && php artisan data:nations && php artisan data:crests
         working-directory: backend
       - run: npm ci && npx playwright install --with-deps chromium
         working-directory: web
-      - run: npm run e2e
+      - run: npm run e2e:${{ matrix.suite }}
         working-directory: web
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: e2e-traces
+          name: e2e-traces-${{ matrix.suite }}
           path: web/test-results
 
   docker:

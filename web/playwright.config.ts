@@ -7,6 +7,8 @@ export default defineConfig({
   testDir: './e2e',
   timeout: 120_000,
   retries: process.env.CI ? 1 : 0,
+  // [Sprint 66 T5] One at a time: some journeys move the game's clock (clock:travel), which every test shares.
+  workers: 1,
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: 'http://localhost:5173',
@@ -24,6 +26,8 @@ export default defineConfig({
       url: 'http://localhost:8000/api/v1/health',
       reuseExistingServer: true,
       timeout: 120_000,
+      // [Sprint 66 T5] Each journey signs up a coach: the sign-up limits raised for this server only.
+      env: { AUTH_PER_MINUTE: '500', AUTH_IP_PER_MINUTE: '500' },
     },
     { command: 'npx vite --port 5173', url: 'http://localhost:5173', reuseExistingServer: true, timeout: 120_000 },
   ],
