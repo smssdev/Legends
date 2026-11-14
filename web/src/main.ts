@@ -11,10 +11,14 @@ import { useSeo } from './lib/seo'
 import './lib/pwa'   // the install offer comes early: keep it for our button [Sprint 36]
 import './match/perf'   // the smooth mode on weak phones, for the whole app [X30]
 import './lib/theme'   // the night or the day look [X56]
+import { vueHandler, watchErrors } from './lib/errors'
 
 // The names switch [X40]: $nm, $pn, $cn and $ln in every template, and the dictionary fetched once.
 loadNames()
 const app = createApp(App)
+// [Sprint 66 W1] The errors on the players' devices, to our own server (nothing personal: lib/errors.ts).
+app.config.errorHandler = vueHandler
+watchErrors()
 Object.assign(app.config.globalProperties, { $pn: pn, $cn: cn, $ln: ln, $nm: nm, $t: t })
 app.component('BrandMark', BrandMark).component('AppImage', AppImage).use(createPinia()).use(router)
 useSeo(router)   // each page's title, description and keywords for Google [SEO]

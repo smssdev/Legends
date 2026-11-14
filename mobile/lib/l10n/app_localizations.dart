@@ -5755,6 +5755,12 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'استهجان {club}'**
   String booSide(String club);
+
+  /// No description provided for @brokenPart.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر عرض هذا الجزء. ارجع وافتح الشاشة من جديد.'**
+  String get brokenPart;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

@@ -85,6 +85,8 @@ const lines: Line[] = ['gk', 'def', 'mid', 'att']
 const counts = computed(() => Object.fromEntries(lines.map((l) => [l, club.value?.players.filter((p) => p.line === l).length ?? 0])))
 const shown = computed(() => (club.value?.players ?? []).filter((p) => tab.value === 'all' || p.line === tab.value))
 const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
+// [Sprint 66] Thrown outside Vue's handler, as a real fault would be: window.onerror sends it (lib/errors.ts).
+const crash = () => window.setTimeout(() => { throw new Error('GLM test error from /dev/ui') })
 </script>
 
 <template>
@@ -136,6 +138,8 @@ const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
           <AsyncState error="تعذّر الاتصال بالخادم." />
         </div>
         <div class="grid gap-4 md:grid-cols-3"><Skeleton /><Skeleton kind="card" :count="1" /><Skeleton kind="hero" :count="1" /></div>
+        <!-- [Sprint 66 W1] An error on purpose: it shows in the admin panel («أعطال الأجهزة») within a minute. -->
+        <UiButton variant="quiet" size="sm" @click="crash">{{ $t('ارمِ خطأً تجريبياً') }}</UiButton>
       </UiCard>
       <UiCard title="الشريط العلوي">
         <div class="flex flex-wrap items-center gap-3">

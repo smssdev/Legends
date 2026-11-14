@@ -963,5 +963,6 @@
   "reactEasy": "Easy",
   "reactFocus": "Focus",
   "cheerSide": "Cheer {club}",
-  "booSide": "Boo {club}"
+  "booSide": "Boo {club}",
+  "brokenPart": "This part couldn't be shown. Go back and open the screen again."
 }

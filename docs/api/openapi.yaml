@@ -706,6 +706,30 @@ paths:
       responses:
         '204': { description: Received }
         '429': { $ref: '#/components/responses/Error' }
+  /client-errors:
+    post:
+      tags: [system]
+      summary: '[Sprint 66 B1] An error the web or the app met on a player''s device'
+      description: Counted on one row per distinct error (platform, version, message, first trace line). Nothing personal is read or kept (no account, no address; emails, long numbers and ids are scrubbed). 4 KB at most, 20 a minute per address. Kept 30 days after it was last seen.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [platform, version, message]
+              properties:
+                platform: { type: string, enum: [web, android, ios] }
+                version: { type: string, maxLength: 20 }
+                path: { type: string, maxLength: 500, nullable: true }
+                message: { type: string, maxLength: 1000 }
+                stack: { type: string, maxLength: 3000, nullable: true }
+      responses:
+        '204': { description: Counted }
+        '413': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
   /leagues:
     get:
       tags: [leagues]
@@ -2745,6 +2769,38 @@ paths:
       summary: '[Sprint 39 A1] What this admin may open (signed in with the password alone: no two-step code)'
       responses:
         '200': { description: The access, content: { application/json: { schema: { $ref: '#/components/schemas/AdminAccess' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /admin/client-errors:
+    get:
+      tags: [admin]
+      summary: '[Sprint 66 W2] The errors the devices reported, gathered: the latest first'
+      parameters:
+        - { name: days, in: query, schema: { type: integer, minimum: 1, maximum: 30, default: 7 } }
+        - { name: platform, in: query, schema: { type: string, enum: [web, android, ios] } }
+      responses:
+        '200':
+          description: At most 200 errors
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [errors]
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, platform, version, path, message, stack, count, first_seen_at, last_seen_at]
+                      properties:
+                        id: { type: integer }
+                        platform: { type: string, enum: [web, android, ios] }
+                        version: { type: string }
+                        path: { type: string }
+                        message: { type: string }
+                        stack: { type: string }
+                        count: { type: integer }
+                        first_seen_at: { type: string, format: date-time }
+                        last_seen_at: { type: string, format: date-time }
         '403': { $ref: '#/components/responses/Error' }
   /admin/funnel:
     get:

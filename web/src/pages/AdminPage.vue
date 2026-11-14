@@ -5,6 +5,7 @@
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
 // the alliances, the backups and the commentary templates.
 import FunnelPanel from '../components/admin/FunnelPanel.vue'
+import ClientErrorsPanel from '../components/admin/ClientErrorsPanel.vue'
 import { scrollToTop } from '../lib/scroll'
 import { useAuth } from '../stores/auth'
 import { uuid } from '../lib/uuid'
@@ -73,6 +74,8 @@ const SECTIONS = {
   activity: { label: 'النشاط', icon: 'league' },
   // [Sprint 64 B2] The new coaches' first five minutes.
   funnel: { label: 'خطوات اللاعب الجديد', icon: 'league' },
+  // [Sprint 66 W2] The errors the players' devices met.
+  clientErrors: { label: 'أعطال الأجهزة', icon: 'bell' },
   users: { label: 'المستخدمون', icon: 'team' },
   leagues: { label: 'الدوريات', icon: 'leagues' },
   announcements: { label: 'الإعلانات', icon: 'bell' },
@@ -95,7 +98,7 @@ const SECTIONS = {
   reports: { label: 'البلاغات', icon: 'chat' },
 } as const
 // [Sprint 30 G6] Each section's path on the server, for an admin with a scope (the server says which it opens).
-const PATHS: Record<string, string> = { houseAds: 'house-ads', appReleases: 'app-releases' }
+const PATHS: Record<string, string> = { houseAds: 'house-ads', appReleases: 'app-releases', clientErrors: 'client-errors' }
 const sectionsShown = computed(() => (Object.keys(SECTIONS) as Section[]).filter((k) => !state.value?.sections || state.value.sections.includes(PATHS[k] ?? k)))
 type Section = keyof typeof SECTIONS
 const tab = ref<Section>('overview')
@@ -439,6 +442,7 @@ onMounted(load)
       <div class="flex min-w-0 flex-col gap-4">
         <!-- The overview: deploy safety, the counts, and the email test. -->
         <FunnelPanel v-if="tab === 'funnel'" />
+        <ClientErrorsPanel v-if="tab === 'clientErrors'" />
         <template v-if="tab === 'overview' && overview">
           <div class="flex items-center gap-3 rounded-xl p-4" :class="overview.deploy.busy ? 'bg-live/15' : 'bg-success/15'" role="status">
             <span class="text-2xl" aria-hidden="true"><Icon :name="overview.deploy.busy ? 'ban' : 'check'" :size="26" /></span>

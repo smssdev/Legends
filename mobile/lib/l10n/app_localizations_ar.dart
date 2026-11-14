@@ -3222,4 +3222,7 @@ class LAr extends L {
   String booSide(String club) {
     return 'استهجان $club';
   }
+
+  @override
+  String get brokenPart => 'تعذّر عرض هذا الجزء. ارجع وافتح الشاشة من جديد.';
 }

@@ -1536,6 +1536,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/client-errors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 66 B1] An error the web or the app met on a player's device
+         * @description Counted on one row per distinct error (platform, version, message, first trace line). Nothing personal is read or kept (no account, no address; emails, long numbers and ids are scrubbed). 4 KB at most, 20 a minute per address. Kept 30 days after it was last seen.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        platform: "web" | "android" | "ios";
+                        version: string;
+                        path?: string | null;
+                        message: string;
+                        stack?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Counted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                413: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues": {
         parameters: {
             query?: never;
@@ -7413,6 +7464,61 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["AdminAccess"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/client-errors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 66 W2] The errors the devices reported, gathered: the latest first */
+        get: {
+            parameters: {
+                query?: {
+                    days?: number;
+                    platform?: "web" | "android" | "ios";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description At most 200 errors */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            errors: {
+                                id: number;
+                                /** @enum {string} */
+                                platform: "web" | "android" | "ios";
+                                version: string;
+                                path: string;
+                                message: string;
+                                stack: string;
+                                count: number;
+                                /** Format: date-time */
+                                first_seen_at: string;
+                                /** Format: date-time */
+                                last_seen_at: string;
+                            }[];
+                        };
                     };
                 };
                 403: components["responses"]["Error"];

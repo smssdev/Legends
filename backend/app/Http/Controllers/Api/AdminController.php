@@ -22,6 +22,7 @@ use App\Rules\NotJunk;
 use App\Simulator\Commentary;
 use App\Support\Activity;
 use App\Support\Avatar;
+use App\Support\ClientErrors;
 use App\Support\GameClock;
 use App\Support\GameSettings;
 use App\Support\Mailer;
@@ -65,6 +66,14 @@ class AdminController extends Controller
         $days = (int) ($request->validate(['days' => 'sometimes|integer|min:1|max:365'])['days'] ?? 30);
 
         return response()->json(Funnel::of($days));
+    }
+
+    /** [Sprint 66 W2] The errors the devices reported in the last `days` days (7 by default), the latest first. */
+    public function clientErrors(Request $request): JsonResponse
+    {
+        $q = $request->validate(['days' => 'sometimes|integer|min:1|max:30', 'platform' => ['sometimes', Rule::in(ClientErrors::PLATFORMS)]]);
+
+        return response()->json(['errors' => ClientErrors::recent((int) ($q['days'] ?? 7), $q['platform'] ?? null)]);
     }
 
     public function overview(): JsonResponse
