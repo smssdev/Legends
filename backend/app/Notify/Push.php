@@ -3,6 +3,7 @@
 namespace App\Notify;
 
 use App\Jobs\SendPush;
+use App\Messenger\Messenger;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -43,7 +44,12 @@ class Push
     public static function send(int $userId, string $type, string $title, string $body, ?string $link, ?int $leagueId = null): bool
     {
         $kind = self::kindOf($type);
-        if (! $kind || ! self::wants($userId, $kind) || ! DB::table('push_subscriptions')->where('user_id', $userId)->exists()) {
+        if (! $kind || ! self::wants($userId, $kind)) {
+            return false;
+        }
+        // [Sprint 67] The same notification to the game's bots the account linked (Telegram, WhatsApp in its free window).
+        Messenger::notify($userId, $title, $body, $link);
+        if (! DB::table('push_subscriptions')->where('user_id', $userId)->exists()) {
             return false;
         }
         SendPush::dispatch($userId, ['title' => $title, 'body' => $body, 'link' => $link ?? '/', 'tag' => $type] + ($leagueId ? ['league' => $leagueId] : []))->afterCommit();

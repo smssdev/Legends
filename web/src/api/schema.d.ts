@@ -1291,7 +1291,7 @@ export interface paths {
                                 }[];
                             } | null;
                             unread: number;
-                            /** @description GET /health's version, time, clock_offset, broadcast, support, adsense and analytics */
+                            /** @description GET /health's version, time, clock_offset, broadcast, support, bots, adsense and analytics */
                             config: {
                                 [key: string]: unknown;
                             };
@@ -1363,6 +1363,15 @@ export interface paths {
                                 whatsapp: string | null;
                                 /** @example https://t.me/legends_support */
                                 telegram: string | null;
+                            };
+                            /** @description [Sprint 67] The game's bots and channels, straight from the site: a link each, null when that bot or channel is off */
+                            bots?: {
+                                /** @example https://t.me/GlmBot */
+                                telegram: string | null;
+                                /** @example https://wa.me/201000000000?text=... */
+                                whatsapp: string | null;
+                                telegram_channel: string | null;
+                                whatsapp_channel: string | null;
                             };
                             /** @description [X57] Google AdSense for the web: null until the owner's account (ADSENSE_CLIENT) is set on the server */
                             adsense?: {
@@ -10815,6 +10824,284 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/messenger": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 67] The game's bots: each one on or off, and whether this account is linked to it */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The bots */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MessengerStatus"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/messenger/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 67] A one-time code to link this account, and the link that opens the bot's chat with it
+         * @description The code lasts game.messenger.code_minutes and is spent by the first chat that sends it. A new code replaces the older one.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        platform: "telegram" | "whatsapp";
+                    };
+                };
+            };
+            responses: {
+                /** @description The code */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            code: string;
+                            /** Format: date-time */
+                            expires_at: string;
+                            /** @enum {string} */
+                            platform: "telegram" | "whatsapp";
+                            /** @description https://t.me/<bot>?start=<code>, or https://wa.me/<number>?text=ربط <code> */
+                            url: string | null;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/messenger/{platform}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                platform: "telegram" | "whatsapp";
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** [Sprint 67] Silence the notifications on that bot, or turn them on again */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    platform: "telegram" | "whatsapp";
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        muted: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The bots after */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MessengerStatus"];
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        /** [Sprint 67] Unlink this account from that bot */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    platform: "telegram" | "whatsapp";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The bots after */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MessengerStatus"];
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/messenger/telegram": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 67] Telegram's webhook (an Update), checked by X-Telegram-Bot-Api-Secret-Token
+         * @description Private chats are answered; in a group only the bot's commands (/league CODE, /unleague, /table, /help) are read. Each update once; the answer is made on the queue.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            responses: {
+                /** @description Heard */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/messenger/whatsapp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 67] Meta's webhook check: hub.challenge back when hub.verify_token is ours */
+        get: {
+            parameters: {
+                query: {
+                    "hub.mode": string;
+                    "hub.verify_token": string;
+                    "hub.challenge": string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The challenge */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /**
+         * [Sprint 67] WhatsApp's webhook (Cloud API messages), checked by X-Hub-Signature-256
+         * @description Each message once. The coach's own message opens WhatsApp's free 24 hours again; the game never sends a template or a paid message.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            responses: {
+                /** @description Heard */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/notifications": {
         parameters: {
             query?: never;
@@ -15777,6 +16064,29 @@ export interface components {
                 name: string;
                 bytes: number;
             }[];
+        };
+        /** @description [Sprint 67] The game's bots for this account */
+        MessengerStatus: {
+            telegram: components["schemas"]["MessengerBot"];
+            whatsapp: components["schemas"]["MessengerBot"] & {
+                /** @description He wrote to the bot in the last 23 hours: WhatsApp notifications reach him (free) */
+                window_open?: boolean;
+            };
+            channels: {
+                /** @description The game's public Telegram channel */
+                telegram: string | null;
+                /** @description The game's WhatsApp channel */
+                whatsapp: string | null;
+            };
+        };
+        MessengerBot: {
+            /** @description Its keys are set on the server */
+            available: boolean;
+            linked: boolean;
+            /** @description He silenced the notifications on it */
+            muted: boolean;
+            /** @description The link that opens the bot's chat */
+            open_url: string | null;
         };
         NotificationSettings: {
             /** @description [X79] The match summary by email, the account's choice (off by default) */

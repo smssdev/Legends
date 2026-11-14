@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\MessengerController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PressController;
 use App\Http\Controllers\Api\QuestController;
@@ -60,6 +61,13 @@ Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate'])->
 Route::post('csp-report', [CspReportController::class, 'store'])->middleware('throttle:30,1,csp-report');
 // [Sprint 66 B1] The errors the web and the app meet on the devices (App\Support\ClientErrors): nothing personal kept.
 Route::post('client-errors', [ClientErrorController::class, 'store'])->middleware('throttle:20,1,client-errors');
+// [Sprint 67] The bots' webhooks: Telegram (by its secret) and WhatsApp (by Meta's signature). PHP's query parser makes
+// Meta's hub.mode hub_mode.
+Route::prefix('messenger')->controller(MessengerController::class)->middleware('throttle:600,1,messenger-hooks')->group(function () {
+    Route::post('telegram', 'telegram');
+    Route::get('whatsapp', 'whatsappVerify');
+    Route::post('whatsapp', 'whatsapp');
+});
 
 // Accounts [PLAN 2.17]: the web by session cookie, the app by token. Login attempts are limited
 // per email and per address (AppServiceProvider, "auth").
@@ -500,6 +508,14 @@ Route::get('guide', [AssistantController::class, 'guide'])->middleware('throttle
 
 // [Sprint 22] The Assistant Coach (Manager Bot): the conversation's opening on a page, and one answer (each smart
 // answer counts against the coach's day; the guide's answers are free).
+// [Sprint 67] Linking the account to the game's bots on Telegram and WhatsApp.
+Route::prefix('messenger')->middleware(['auth:sanctum', 'throttle:20,1,messenger'])->controller(MessengerController::class)->group(function () {
+    Route::get('/', 'show');
+    Route::post('link', 'link');
+    Route::put('{platform}', 'update');
+    Route::delete('{platform}', 'unlink');
+});
+
 Route::prefix('assistant')->middleware(['auth:sanctum'])->controller(AssistantController::class)->group(function () {
     Route::get('start', 'start')->middleware('throttle:60,1,assistant-start');
     Route::post('ask', 'ask')->middleware('throttle:20,1,assistant-ask');

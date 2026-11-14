@@ -833,6 +833,11 @@ return [
     // [UP13] The assistant takes a team whose coach has not been in its league since its last match (or is on
     // holiday): the tired under min_fitness rest, and one of these balanced formations with balanced tactics.
     'assistant' => ['min_fitness' => 75, 'formations' => ['4-3-3A', '4-4-2A', '4-3-3B', '4-4-2B']],
+    // [Sprint 67] The bots on Telegram and WhatsApp (App\Messenger): a link code lasts code_minutes; WhatsApp is free
+    // only inside Meta's 24-hour window after the coach's own message, so the game writes to him there only within
+    // whatsapp_window_hours of it (a little less than 24, never a paid message); the most messages a chat may send in a
+    // minute; and the public channel's weekly table of coaches (its length).
+    'messenger' => ['code_minutes' => 15, 'whatsapp_window_hours' => 23, 'per_minute' => 12, 'weekly_top' => 10, 'text_max' => 3900],
     // [Sprint 22] The Assistant Coach (Manager Bot): smart answers per coach per Cairo day (then the guide answers), the
     // messages of the conversation sent back with each question, the longest question, and the reads of the coach's
     // own club one answer may make.

@@ -9,6 +9,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import NotificationsCard from '../components/NotificationsCard.vue'
+import MessengerCard from '../components/MessengerCard.vue'
 import UiInput from '../components/ui/UiInput.vue'
 import UsernameField from '../components/UsernameField.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
@@ -648,6 +649,7 @@ async function remove() {
       </section>
 
       <NotificationsCard />
+      <MessengerCard />
 
       <section class="flex flex-col gap-3 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-support">
         <h2 id="h-support" class="font-display text-xl font-extrabold">{{ $t('الدعم الفني') }}</h2>

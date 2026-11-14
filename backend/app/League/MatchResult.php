@@ -7,6 +7,7 @@ use App\Economy\Economy;
 use App\Experience\PlayerMilestones;
 use App\Market\Loans;
 use App\Market\Market;
+use App\Messenger\LeagueGroups;
 use App\Season\Achievements;
 use App\Season\CoachRating;
 use App\Staff\Specialists;
@@ -157,6 +158,8 @@ class MatchResult
             ->where('status', '!=', 'finished')->min('round');
         $rounds = (int) DB::table('seasons')->where('id', $seasonId)->value('rounds');
         DB::table('seasons')->where('id', $seasonId)->update(['rounds_played' => $open ? $open - 1 : $rounds]);
+        // [Sprint 67] A round just ended: its results to the league's Telegram group, if it has one.
+        LeagueGroups::roundDone($seasonId);
         // [X61 E2] Loans whose last round is played send their players home.
         Loans::returnDue($seasonId);
         // The last league match is in: the prizes by final place (each paid once, by its key).

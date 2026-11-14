@@ -18,6 +18,7 @@ use App\Experience\Funnel;
 use App\Http\Controllers\Controller;
 use App\League\Alliance;
 use App\Messages\Inbox;
+use App\Messenger\Messenger;
 use App\Models\User;
 use App\Rules\NotJunk;
 use App\Simulator\Commentary;
@@ -301,6 +302,8 @@ class AdminController extends Controller
             $sent++;
         }
         DB::table('announcements')->where('id', $id)->update(['sent' => $sent]);
+        // [Sprint 67] And to the game's public channel.
+        Messenger::post('announcement', $data['title']."\n\n".$data['body'].(isset($data['cta_url']) && str_starts_with($data['cta_url'], 'https://') ? "\n".$data['cta_url'] : ''));
 
         return response()->json(['sent' => $sent, 'announcement' => Announcements::card(DB::table('announcements')->leftJoin('users', 'users.id', '=', 'announcements.user_id')
             ->where('announcements.id', $id)->first(['announcements.*', 'users.name', 'users.username']))], 201);
