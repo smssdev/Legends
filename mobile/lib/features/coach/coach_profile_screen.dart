@@ -79,6 +79,41 @@ class CoachProfileScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              // [Sprint 64 F10] Between you and him, from the matches (none on your own profile).
+              if (j.headToHead case final h?) ...[
+                const SizedBox(height: 12),
+                SectionTitle(l.headToHead),
+                GlmCard(
+                  child: h.played == 0
+                      ? Text(l.headToHeadNone, style: TextStyle(color: p.textMuted))
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(l.headToHeadLine(h.played, h.won, h.drawn, h.lost)),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 6,
+                              children: [
+                                for (final x in h.last)
+                                  CircleAvatar(
+                                    radius: 14,
+                                    backgroundColor: switch (x) {
+                                      'W' => p.success,
+                                      'L' => p.live,
+                                      _ => p.textMuted,
+                                    },
+                                    child: Text(switch (x) {
+                                      'W' => l.h2hW,
+                                      'L' => l.h2hL,
+                                      _ => l.h2hD,
+                                    }, style: glmText(GlmType.caption, color: p.onGold, fontWeight: FontWeight.w800)),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                ),
+              ],
               const SizedBox(height: 12),
               SectionTitle(l.titles),
               if (titles.isEmpty)

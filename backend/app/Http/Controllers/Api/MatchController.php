@@ -248,7 +248,8 @@ class MatchController extends Controller
         abort_unless($m->status === 'finished' && $row, 409, 'المباراة لم تنتهِ بعد.');
 
         // [X62 E10] And its shot map.
-        return response()->json(['side' => $you] + json_decode($row->report, true) + ['shots' => ShotMap::of($m->id, (int) $f->home_id)]);
+        // [Sprint 64 F9] And its league, so the suggestion's button opens that league's screen.
+        return response()->json(['side' => $you, 'league_id' => (int) $f->league_id] + json_decode($row->report, true) + ['shots' => ShotMap::of($m->id, (int) $f->home_id)]);
     }
 
     /**

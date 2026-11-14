@@ -2974,4 +2974,48 @@ class LEn extends L {
 
   @override
   String get soundStadium => 'Stadium';
+
+  @override
+  String get goLineup => 'To the lineup';
+
+  @override
+  String get goTactics => 'To the tactics';
+
+  @override
+  String get goTraining => 'To training';
+
+  @override
+  String get headToHead => 'Between us';
+
+  @override
+  String get headToHeadNone => 'You have not met yet.';
+
+  @override
+  String headToHeadLine(int played, int won, int drawn, int lost) {
+    return 'Played $played: you won $won, drew $drawn and lost $lost';
+  }
+
+  @override
+  String spendLeft(String amount) {
+    return 'Left after: $amount';
+  }
+
+  @override
+  String spendShort(String amount) {
+    return 'You are short $amount';
+  }
+
+  @override
+  String spendEnds(String when) {
+    return 'Ends $when';
+  }
+
+  @override
+  String get h2hW => 'W';
+
+  @override
+  String get h2hD => 'D';
+
+  @override
+  String get h2hL => 'L';
 }

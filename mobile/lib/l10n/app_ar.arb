@@ -2069,5 +2069,54 @@
   "liveOrders": "الأوامر",
   "offlineBar": "لا اتصال: تعرض الشاشات آخر ما وصلها، وتتحدث وحدها حين يعود الاتصال",
   "soundInterface": "الواجهة",
-  "soundStadium": "الملعب"
+  "soundStadium": "الملعب",
+  "goLineup": "إلى التشكيلة",
+  "goTactics": "إلى التكتيك",
+  "goTraining": "إلى التدريب",
+  "headToHead": "بيني وبينه",
+  "headToHeadNone": "لم تتقابلا بعد.",
+  "headToHeadLine": "لعبتما {played}: فزت {won}، وتعادلتما {drawn}، وخسرت {lost}",
+  "spendLeft": "يبقى بعده {amount}",
+  "spendShort": "ينقصك {amount}",
+  "spendEnds": "ينتهي {when}",
+  "h2hW": "ف",
+  "h2hD": "ت",
+  "h2hL": "خ",
+  "@headToHeadLine": {
+    "placeholders": {
+      "played": {
+        "type": "int"
+      },
+      "won": {
+        "type": "int"
+      },
+      "drawn": {
+        "type": "int"
+      },
+      "lost": {
+        "type": "int"
+      }
+    }
+  },
+  "@spendLeft": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@spendShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@spendEnds": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -16172,6 +16172,8 @@ export interface components {
         MatchCoachReport: {
             /** @enum {string} */
             side: "home" | "away";
+            /** @description [Sprint 64 F9] The match's league (where the suggestion's button goes) */
+            league_id?: number;
             /** @description [X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal */
             shots?: {
                 /** @enum {string} */
@@ -16232,10 +16234,10 @@ export interface components {
             big: string;
             unit?: string | null;
             /**
-             * @description [Sprint 64 B6] Where a coach acts on it (the suggestion's button); none for luck
+             * @description [Sprint 64 B6] Where a coach acts on it (plan: the tactics screen; the word stays out of reports, MatchCommentaryTest) (the suggestion's button); none for luck
              * @enum {string|null}
              */
-            go?: "lineup" | "tactics" | "training" | null;
+            go?: "lineup" | "plan" | "training" | null;
         };
         ReportPlayer: {
             /** @enum {string} */

@@ -2,6 +2,7 @@ import '../../ui/tokens.g.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../ui/widgets/console.dart';
 
@@ -11,6 +12,7 @@ import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/game.dart';
+import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/stadium.dart';
@@ -43,6 +45,13 @@ class MatchReportScreen extends ConsumerWidget {
     );
   }
 }
+
+/// [Sprint 64 F9] The suggestion's screen and its button (`plan` is the tactics: the word stays out of reports).
+final Map<String?, (String, String Function(L))> _goes = {
+  'lineup': ('lineup', (l) => l.goLineup),
+  'plan': ('tactics', (l) => l.goTactics),
+  'training': ('training', (l) => l.goTraining),
+};
 
 class _Report extends StatelessWidget {
   const _Report(this.r);
@@ -292,7 +301,25 @@ class _Report extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [for (final n in r.reasons) note(n)]),
         ),
       ],
-      if (r.improve != null) ...[title(l.toImprove, Icons.trending_up_rounded), GlmCard(accent: p.success, child: note(r.improve!))],
+      if (r.improve != null) ...[
+        title(l.toImprove, Icons.trending_up_rounded),
+        GlmCard(
+          accent: p.success,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              note(r.improve!),
+              // [Sprint 64 F9] The suggestion's place to act, from the server.
+              if (r.leagueId != null && _goes[r.go] != null)
+                GlmButton(
+                  label: _goes[r.go]!.$2(l),
+                  variant: GlmButtonVariant.outline,
+                  onPressed: () => context.push('/leagues/${r.leagueId}/${_goes[r.go]!.$1}'),
+                ),
+            ],
+          ),
+        ),
+      ],
       if (r.moments.isNotEmpty) ...[
         title(l.keyMoments, Icons.bolt_rounded),
         for (final (i, m) in r.moments.indexed) FadeSlideIn(index: i, child: EventLine(m)),

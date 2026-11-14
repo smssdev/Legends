@@ -3013,4 +3013,48 @@ class LAr extends L {
 
   @override
   String get soundStadium => 'الملعب';
+
+  @override
+  String get goLineup => 'إلى التشكيلة';
+
+  @override
+  String get goTactics => 'إلى التكتيك';
+
+  @override
+  String get goTraining => 'إلى التدريب';
+
+  @override
+  String get headToHead => 'بيني وبينه';
+
+  @override
+  String get headToHeadNone => 'لم تتقابلا بعد.';
+
+  @override
+  String headToHeadLine(int played, int won, int drawn, int lost) {
+    return 'لعبتما $played: فزت $won، وتعادلتما $drawn، وخسرت $lost';
+  }
+
+  @override
+  String spendLeft(String amount) {
+    return 'يبقى بعده $amount';
+  }
+
+  @override
+  String spendShort(String amount) {
+    return 'ينقصك $amount';
+  }
+
+  @override
+  String spendEnds(String when) {
+    return 'ينتهي $when';
+  }
+
+  @override
+  String get h2hW => 'ف';
+
+  @override
+  String get h2hD => 'ت';
+
+  @override
+  String get h2hL => 'خ';
 }

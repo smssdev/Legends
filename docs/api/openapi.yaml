@@ -7225,6 +7225,7 @@ components:
       required: [side, result, score, reasons, verdict, ratings, stats, timeline]
       properties:
         side: { type: string, enum: [home, away] }
+        league_id: { type: integer, description: '[Sprint 64 F9] The match''s league (where the suggestion''s button goes)' }
         shots:
           type: array
           description: '[X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal'
@@ -7252,7 +7253,7 @@ components:
         text: { type: string }
         big: { type: string, description: The number in large type }
         unit: { type: string, nullable: true }
-        go: { type: [string, 'null'], enum: [lineup, tactics, training, null], description: '[Sprint 64 B6] Where a coach acts on it (the suggestion''s button); none for luck' }
+        go: { type: [string, 'null'], enum: [lineup, plan, training, null], description: '[Sprint 64 B6] Where a coach acts on it (plan: the tactics screen; the word stays out of reports, MatchCommentaryTest) (the suggestion''s button); none for luck' }
     ReportPlayer:
       type: object
       required: [team, id, name, rating]

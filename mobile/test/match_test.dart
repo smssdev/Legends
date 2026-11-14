@@ -312,6 +312,8 @@ void main() {
     await pump(t, const MatchReportScreen(matchId: 77, coach: true), FakeMatchRepository(finished: true));
     expect(find.text('تعادل'), findsOneWidget);
     expect(find.text('لماذا هذه النتيجة'), findsOneWidget);
+    // [Sprint 64 F9] The suggestion's button, to the lineup of the match's league.
+    expect(find.text('إلى التشكيلة'), findsOneWidget);
     expect(find.textContaining('Bukayo Saka (Martin Ødegaard)'), findsOneWidget);
     expect(find.textContaining('Mohamed Salah'), findsWidgets);
   });

@@ -115,13 +115,13 @@ class StadiumSection {
     parts: s.parts,
     done: s.done,
     effects: s.effects,
-    next: s.next == null ? null : (stage: s.next!.stage, part: s.next!.part_, cost: s.next!.cost),
+    next: s.next == null ? null : (stage: s.next!.stage, part: s.next!.part_, cost: s.next!.cost, quote: s.next!.quote),
   );
 
   final String section;
   final int stage, parts, done;
   final List<int> effects;
-  final ({int stage, int part, int cost})? next;
+  final ({int stage, int part, int cost, api.SpendQuote? quote})? next;
 }
 
 class StadiumView {
