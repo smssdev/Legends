@@ -62,6 +62,20 @@ class Telegram
         return $r['ok'] ?? false ? ($r['result']['username'] ?? null) : null;
     }
 
+    /** [Sprint 67 X] Whether the bot can post in this chat: null when it can, or Telegram's reason. */
+    public static function canPost(string $chatId): ?string
+    {
+        $chat = self::call('getChat', ['chat_id' => $chatId]);
+        if (! ($chat['ok'] ?? false)) {
+            return $chat['description'] ?? 'no answer';
+        }
+        $id = explode(':', (string) config('services.telegram.token'))[0];
+        $member = self::call('getChatMember', ['chat_id' => $chatId, 'user_id' => $id]);
+        $status = $member['result']['status'] ?? '';
+
+        return in_array($status, ['administrator', 'creator'], true) ? null : 'the bot is not an admin of the channel';
+    }
+
     private static function isGone(string $why): bool
     {
         $why = strtolower($why);

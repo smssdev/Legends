@@ -265,6 +265,22 @@ class MessengerTest extends TestCase
         $this->getJson('/api/v1/health')->assertJsonPath('bots.telegram', null);
     }
 
+    public function test_the_channel_is_read_in_any_usual_form(): void
+    {
+        foreach (['glm_news', '@glm_news', 't.me/glm_news', 'https://t.me/glm_news', 'https://t.me/glm_news/12', ' https://telegram.me/s/glm_news '] as $form) {
+            config(['services.telegram.channel' => $form]);
+            $this->assertSame(['chat' => '@glm_news', 'url' => 'https://t.me/glm_news'], Messenger::telegramChannel(), $form);
+        }
+        // A private channel: posted to by its number, opened by its invite link.
+        config(['services.telegram.channel' => '-1001234567890', 'services.telegram.channel_url' => 'https://t.me/+AbCdEf']);
+        $this->assertSame(['chat' => '-1001234567890', 'url' => 'https://t.me/+AbCdEf'], Messenger::telegramChannel());
+        // An invite link alone: people open it, the bot does not post.
+        config(['services.telegram.channel' => 'https://t.me/+AbCdEf', 'services.telegram.channel_url' => null]);
+        $this->assertSame(['chat' => null, 'url' => 'https://t.me/+AbCdEf'], Messenger::telegramChannel());
+        Messenger::post('weekly', 'x');
+        $this->assertSame([], $this->sent('api.telegram.org'));
+    }
+
     public function test_unlinking_from_the_profile(): void
     {
         $this->linkTelegram($this->owner);

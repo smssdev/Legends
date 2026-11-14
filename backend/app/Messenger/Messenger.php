@@ -77,11 +77,34 @@ class Messenger
         return 'https://wa.me/'.WhatsApp::number().'?text='.rawurlencode($code ? 'ربط '.$code : 'مرحبا');
     }
 
+    /**
+     * [Sprint 67 X] TELEGRAM_CHANNEL as written on the server, in any of its usual forms: «name», «@name», «t.me/name»,
+     * «https://t.me/name», a private channel's number «-100…», or its invite link «https://t.me/+…». Returns where the
+     * bot posts (an @name or the number; null for an invite link, which the bot cannot post to) and the link people
+     * open (TELEGRAM_CHANNEL_URL wins, for a private channel; null when there is none).
+     *
+     * @return array{chat: ?string, url: ?string}
+     */
+    public static function telegramChannel(): array
+    {
+        $raw = trim((string) config('services.telegram.channel'));
+        $url = trim((string) config('services.telegram.channel_url')) ?: null;
+        if (preg_match('/^-?\d+$/', $raw)) {
+            return ['chat' => $raw, 'url' => $url];
+        }
+        $path = preg_replace('#^(https?://)?(www\.)?(t\.me|telegram\.me)/(s/)?#i', '', $raw) ?? '';
+        $name = ltrim(strtok($path, '/?#') ?: '', '@');
+        if (preg_match('/^[A-Za-z][A-Za-z0-9_]{3,31}$/', $name)) {
+            return ['chat' => '@'.$name, 'url' => $url ?? 'https://t.me/'.$name];
+        }
+
+        // An invite link (t.me/+… or joinchat): people can open it, the bot cannot post by it.
+        return ['chat' => null, 'url' => $url ?? (str_starts_with($raw, 'http') ? $raw : null)];
+    }
+
     private static function telegramChannelUrl(): ?string
     {
-        $c = ltrim((string) config('services.telegram.channel'), '@');
-
-        return $c !== '' && ! str_starts_with($c, '-') ? 'https://t.me/'.$c : null;
+        return self::telegramChannel()['url'];
     }
 
     /** A new one-time code for this account (the older ones go). */
@@ -186,9 +209,9 @@ class Messenger
         if ($keep) {
             DB::table('messenger_posts')->where('id', '<=', $keep)->delete();
         }
-        $channel = (string) config('services.telegram.channel');
-        if ($channel !== '' && Telegram::configured()) {
-            SendMessenger::dispatch('telegram', str_starts_with($channel, '-') ? $channel : '@'.ltrim($channel, '@'), $text, true)->afterCommit();
+        $channel = self::telegramChannel()['chat'];
+        if ($channel !== null && Telegram::configured()) {
+            SendMessenger::dispatch('telegram', $channel, $text, true)->afterCommit();
         }
     }
 

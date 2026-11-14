@@ -55,4 +55,4 @@
 
 | الرمز | التعديل | من | الحالة |
 |---|---|---|---|
-| | | | |
+| X101 | رابط قناة تيليجرام كان خطأ حين يُكتب `TELEGRAM_CHANNEL` رابطاً كاملاً (طلب صاحب المشروع 2026-11-14): يُقرأ الآن بأي شكل (`name` و`@name` و`t.me/name` و`https://t.me/name`)، والقناة الخاصة برقمها (`-100…`) ورابط دعوتها في `TELEGRAM_CHANNEL_URL` (`Messenger::telegramChannel`). و`messenger:setup` يطبع رابط القناة ويفحص أن البوت مشرف فيها (`Telegram::canPost`). اختبار `test_the_channel_is_read_in_any_usual_form` | Claude | ✅ |

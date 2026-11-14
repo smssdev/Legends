@@ -64,6 +64,8 @@ return [
         'secret' => env('TELEGRAM_WEBHOOK_SECRET'),
         'username' => env('TELEGRAM_BOT_USERNAME', 'GameLegendManagerBot'),
         'channel' => env('TELEGRAM_CHANNEL'),
+        // A private channel: TELEGRAM_CHANNEL is its number (-100…), and this its invite link.
+        'channel_url' => env('TELEGRAM_CHANNEL_URL'),
         'url' => 'https://api.telegram.org',
         'timeout' => 10,
     ],
