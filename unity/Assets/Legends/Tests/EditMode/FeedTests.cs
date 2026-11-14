@@ -170,7 +170,7 @@ namespace Legends.Tests
 
         /// <summary>
         /// [Sprint 20 S5] The scene places the frames exactly as the cartoon player: every case of the shared golden
-        /// vectors (docs/api/frame-golden.json, checked by `npm run frames` on the web).
+        /// vectors (docs/api/frame-golden.json, checked by web/src/match/frames.test.ts (npm test)).
         /// </summary>
         [Test]
         public void SegmentFollowsTheGoldenVectors()
