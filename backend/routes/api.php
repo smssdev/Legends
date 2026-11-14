@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\AssistantController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BootstrapController;
 use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\ClientErrorController;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\CspReportController;
 use App\Http\Controllers\Api\DataController;
@@ -56,6 +57,8 @@ Route::post('health/ping', [HealthController::class, 'ping'])->middleware('throt
 Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate'])->middleware(['auth:sanctum', 'throttle:240,1,broadcast-auth']);
 // [Sprint 51 B2] The report-only Content-Security-Policy's violations, from the browser (App\Http\Security\SecurityPolicy).
 Route::post('csp-report', [CspReportController::class, 'store'])->middleware('throttle:30,1,csp-report');
+// [Sprint 66 B1] The errors the web and the app meet on the devices (App\Support\ClientErrors): nothing personal kept.
+Route::post('client-errors', [ClientErrorController::class, 'store'])->middleware('throttle:20,1,client-errors');
 
 // Accounts [PLAN 2.17]: the web by session cookie, the app by token. Login attempts are limited
 // per email and per address (AppServiceProvider, "auth").
@@ -368,6 +371,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('overview', 'overview');
         // [Sprint 64 B2] The new coaches' first five minutes.
         Route::get('funnel', 'funnel');
+        // [Sprint 66 W2] The devices' errors, gathered.
+        Route::get('client-errors', 'clientErrors');
         Route::get('alliances', 'alliances');
         Route::post('alliances/{id}/review', 'reviewAlliance')->whereNumber('id');
         Route::get('users', 'users');

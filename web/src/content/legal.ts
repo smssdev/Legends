@@ -6,7 +6,7 @@ import type { Locale } from '../lib/i18n'
 export type LegalSection = { h: string; p: string[] }
 export type LegalDoc = { title: string; intro: string; sections: LegalSection[] }
 
-export const UPDATED = '2026-11-14'
+export const UPDATED = '2026-11-15'
 
 const PRIVACY: Record<Locale, LegalDoc> = {
   ar: {
@@ -48,6 +48,10 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       ] },
       { h: 'خطواتك الأولى في اللعبة', p: [
         'نحفظ في حسابك وقت بدء مباراتك التعريفية الأولى ووقت انتهائها. ومنهما ومن اللعبة نفسها (أخذ نادٍ، وحفظ تشكيلة، ولعب مباراة) نعدّ في لوحة الإدارة كم من الحسابات الجديدة بلغ كل خطوة، أعداداً فقط لا أسماء، لنعرف أين يتوقف اللاعبون الجدد ونحسّن البداية. ولا يُرسل شيء منها إلى أي جهة.',
+      ] },
+      // [Sprint 66 B2] Before the crash reports were switched on.
+      { h: 'بيانات الأعطال', p: [
+        'حين يتعطل شيء في الموقع أو التطبيق على جهازك يرسل إلى خادمنا وحده تقريراً قصيراً: المنصة (ويب أو أندرويد أو آيفون)، ونسخة اللعبة، والشاشة التي كنت فيها بلا أرقامها، ونص الخطأ وأول سطور مكانه في الكود. لا يحمل التقرير حسابك ولا اسمك ولا عنوان جهازك، ونمسح منه أي بريد أو رقم طويل قد يظهر في نص الخطأ. وتُجمع التقارير المتشابهة في سطر واحد بعددها، يقرؤه فريق التطوير في لوحة الإدارة ليصلح العطل، ويُحذف بعد 30 يوماً من آخر مرة ظهر فيها. ولا يُرسل شيء منه إلى أي جهة أخرى.',
       ] },
       { h: 'الكوكيز والتخزين في المتصفح', p: [
         'نستخدم كوكيز ضرورية لتسجيل دخولك وحماية النماذج (الجلسة وXSRF)، ولا تعمل اللعبة بدونها.',
@@ -114,6 +118,9 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       ] },
       { h: 'Your first steps in the game', p: [
         'We keep in your account when your first intro match started and when it ended. From them and from the game itself (taking a club, saving a lineup, playing a match) the admin panel counts how many new accounts reached each step, as numbers only, never names, so we know where new players stop and can improve the start. None of it is sent anywhere.',
+      ] },
+      { h: 'Crash data', p: [
+        'When something breaks in the site or the app on your device, it sends a short report to our own server only: the platform (web, Android or iPhone), the game\'s version, the screen you were on without its numbers, and the error\'s text with the first lines of where it happened in the code. The report carries no account, no name and no device address, and we wipe any email or long number that may appear in the error\'s text. Similar reports are gathered on one line with their count, read by the development team in the admin panel to fix the fault, and deleted 30 days after it was last seen. None of it is sent anywhere else.',
       ] },
       { h: 'Cookies and browser storage', p: [
         'We use essential cookies to keep you signed in and to protect forms (session and XSRF); the game cannot work without them.',

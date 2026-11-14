@@ -3056,4 +3056,12 @@ export const EN: Record<string, string> = {
   '{v0} على الدكة': '{v0} on the bench',
   '{v0} خارج القائمة': '{v0} out of the squad',
   'وقّع بإصبعك هنا، أو اضغط Enter ليُكتب اسمك': 'Sign here with your finger, or press Enter to write your name',
+  // [Sprint 66] The devices' errors in the admin panel.
+  'أعطال الأجهزة': 'Device errors',
+  'الموقع': 'Website',
+  'المنصة': 'Platform',
+  'لا أعطال في هذه المدة.': 'No errors in this period.',
+  '{v0} عطلاً مختلفاً، ظهرت {v1} مرة': '{v0} distinct errors, seen {v1} times',
+  'أول مرة {v0}، وآخر مرة {v1}': 'First {v0}, last {v1}',
+  'ارمِ خطأً تجريبياً': 'Throw a test error',
 }

@@ -18,4 +18,9 @@ declare module 'vue' {
     $t: (ar: string | null | undefined, vars?: Record<string, string | number | null | undefined>) => string
   }
 }
+declare global {
+  /** [Sprint 66 W1] The build's version (vite.config.ts), sent with each crash report. */
+  const __GLM_VERSION__: string
+}
+
 export {}

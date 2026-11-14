@@ -3184,4 +3184,7 @@ class LEn extends L {
   String booSide(String club) {
     return 'Boo $club';
   }
+
+  @override
+  String get brokenPart => 'This part couldn\'t be shown. Go back and open the screen again.';
 }

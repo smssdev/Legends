@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/crash_reports.dart';
 import 'core/api/api_error.dart';
 import 'core/settings.dart';
 import 'core/sounds.dart';
@@ -52,6 +53,10 @@ class _GlmAppState extends ConsumerState<GlmApp> {
 
     links.getInitialLink().then((u) => u == null ? null : open(u)).catchError((_) => null);
     _links = links.uriLinkStream.listen(open, onError: (_) {});
+
+    // [Sprint 66 F1] The screen on show, for a crash report (its path only).
+    final shown = ref.read(routerProvider).routerDelegate;
+    shown.addListener(() => CrashReports.path = shown.currentConfiguration.uri.path);
 
     // [Sprint 19 F1] Pushes: started for a signed-in coach; a tap opens its screen, an arrival refreshes the inbox count.
     final push = ref.read(pushProvider);

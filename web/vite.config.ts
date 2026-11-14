@@ -1,9 +1,21 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
+import { execSync } from 'node:child_process'
+
+// [Sprint 66 W1] The build's version, carried by each crash report: the commit when there is git, else the day built.
+function version() {
+  if (process.env.GLM_VERSION) return process.env.GLM_VERSION
+  try {
+    return 'web-' + execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()
+  } catch {
+    return 'web-' + new Date().toISOString().slice(0, 10)
+  }
+}
 
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
+  define: { __GLM_VERSION__: JSON.stringify(version()) },
   server: {
     port: 5173,
     // The commentator's line table is shared with the server (backend/resources/commentary/voice.json).
