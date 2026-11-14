@@ -1,7 +1,7 @@
 // [Sprint 57 F1] The app's English for the words of the minute's story (App\Simulator\MomentStory sends them as the
 // game's Arabic keys): the same English as the web's (src/i18n/en.ts), written to the app as a Dart table. Run by
 // `npm run i18n` after its check, so the two never part.
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 const unq = (s) => s.replace(/\\'/g, "'").replace(/\\\\/g, '\\')
 const ARABIC = /[؀-ۿ]/
@@ -24,5 +24,8 @@ const storyWords = <String, String>{
 ${keys.map((k) => `  ${dart(k)}: ${dart(en.get(k) ?? k)},`).join('\n')}
 };
 `
-writeFileSync('../mobile/lib/features/match/feed/story_words.dart', out)
+// The server's image builds the web alone (Dockerfile): no app beside it to write for.
+const target = '../mobile/lib/features/match/feed/story_words.dart'
+if (existsSync('../mobile/lib/features/match/feed')) writeFileSync(target, out)
+else console.log('story-words: no app beside the web (the server image): nothing written')
 console.log(`story-words: ${keys.length} words for the app`)

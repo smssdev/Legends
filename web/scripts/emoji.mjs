@@ -3,7 +3,7 @@
 // templates (the <template> of each .vue) and in the app's code (mobile/lib, past its words in l10n), except the
 // match's reactions, which are emoji by design. The files not moved yet are in emoji-baseline.json, each with its
 // count: a file may only go down, and a new one fails. After moving some: node scripts/emoji.mjs --write.
-import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '..', '..')
@@ -41,7 +41,8 @@ for (const f of walk(join(ROOT, 'web/src'), '.vue')) {
   const n = s.includes('<template') ? count(t.replace(/<!--[\s\S]*?-->/g, '')) : 0
   if (n) now[relative(ROOT, f)] = n
 }
-for (const f of walk(join(ROOT, 'mobile/lib'), '.dart')) {
+// The app's code where it is beside the web (not in the server's image, which builds the web alone: Dockerfile).
+for (const f of existsSync(join(ROOT, 'mobile/lib')) ? walk(join(ROOT, 'mobile/lib'), '.dart') : []) {
   const rel = relative(ROOT, f)
   const n = REACTIONS.includes(rel) || rel.endsWith('.g.dart') ? 0 : count(readFileSync(f, 'utf8'))
   if (n) now[rel] = n
