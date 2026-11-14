@@ -3887,12 +3887,17 @@ paths:
       - { name: platform, in: path, required: true, schema: { type: string, enum: [telegram, whatsapp] } }
     put:
       tags: [messenger]
-      summary: '[Sprint 67] Silence the notifications on that bot, or turn them on again'
+      summary: '[Sprint 67] Silence the notifications on that bot, or turn them on again; [Sprint 68] its live matches and the daily summary''s hour'
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, required: [muted], properties: { muted: { type: boolean } } }
+            schema:
+              type: object
+              properties:
+                muted: { type: boolean }
+                live: { type: boolean, description: 'His own live matches on this bot: goals, red cards, half-time, the result' }
+                daily_hour: { type: integer, nullable: true, minimum: 0, maximum: 23, description: 'The daily summary''s Cairo hour; null turns it off' }
       responses:
         '200':
           description: The bots after
@@ -6883,11 +6888,13 @@ components:
             whatsapp: { type: string, nullable: true, description: The game's WhatsApp channel }
     MessengerBot:
       type: object
-      required: [available, linked, muted, open_url]
+      required: [available, linked, muted, live, daily_hour, open_url]
       properties:
         available: { type: boolean, description: 'Its keys are set on the server' }
         linked: { type: boolean }
         muted: { type: boolean, description: 'He silenced the notifications on it' }
+        live: { type: boolean, description: '[Sprint 68] His live matches reach him on it' }
+        daily_hour: { type: integer, nullable: true, description: '[Sprint 68] The daily summary''s Cairo hour, null when off' }
         open_url: { type: string, nullable: true, description: The link that opens the bot's chat }
     NotificationSettings:
       type: object

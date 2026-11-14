@@ -36,6 +36,13 @@ class WhatsApp
     /** A text message, with up to three reply buttons ([label, command]) under it. Returns 'sent' or 'failed'. */
     public static function send(string $to, string $text, array $buttons = []): string
     {
+        // A link button has no place among WhatsApp's reply buttons: its link goes in the text.
+        foreach ($buttons as $b) {
+            if (str_starts_with($b[1], 'url:')) {
+                $text .= "\n".substr($b[1], 4);
+            }
+        }
+        $buttons = array_values(array_filter($buttons, fn ($b) => ! str_starts_with($b[1], 'url:')));
         $text = Messenger::clip($text);
         $body = $buttons
             ? ['messaging_product' => 'whatsapp', 'to' => $to, 'type' => 'interactive', 'interactive' => ['type' => 'button',

@@ -119,10 +119,12 @@ class MessengerTest extends TestCase
         $this->assertStringContainsString($club->name, last($this->sent('api.telegram.org')));
         $this->telegram('1');
         $this->assertStringContainsString($club->name, last($this->sent('api.telegram.org')));
-        // The menu comes with its buttons.
+        // The menu comes with the buttons that stay under the chat [Sprint 68], and an answer with its own.
         $this->telegram('مساعدة');
         $menu = Http::recorded()->last()[0];
-        $this->assertSame('next', $menu['reply_markup']['inline_keyboard'][0][0]['callback_data']);
+        $this->assertSame('مباراتي القادمة', $menu['reply_markup']['keyboard'][0][0]['text']);
+        $this->telegram('1');
+        $this->assertSame('next', Http::recorded()->last()[0]['reply_markup']['inline_keyboard'][0][0]['callback_data']);
     }
 
     public function test_a_question_without_a_link_is_answered_from_the_guide_with_how_to_link(): void
@@ -286,6 +288,12 @@ class MessengerTest extends TestCase
         $this->linkTelegram($this->owner);
         $this->actingAs($this->owner)->deleteJson('/api/v1/messenger/telegram')->assertOk()->assertJsonPath('telegram.linked', false);
         $this->actingAs($this->owner)->putJson('/api/v1/messenger/whatsapp', ['muted' => true])->assertOk();
+        // [Sprint 68] The live matches and the daily summary's hour, from the profile.
+        $this->linkTelegram($this->owner);
+        $this->actingAs($this->owner)->putJson('/api/v1/messenger/telegram', ['live' => false, 'daily_hour' => 8])->assertOk()
+            ->assertJsonPath('telegram.live', false)->assertJsonPath('telegram.daily_hour', 8);
+        $this->actingAs($this->owner)->putJson('/api/v1/messenger/telegram', ['daily_hour' => 24])->assertUnprocessable();
+        $this->actingAs($this->owner)->putJson('/api/v1/messenger/telegram', ['daily_hour' => null])->assertOk()->assertJsonPath('telegram.daily_hour', null);
         $this->actingAs($this->owner)->deleteJson('/api/v1/messenger/signal')->assertNotFound();
     }
 }

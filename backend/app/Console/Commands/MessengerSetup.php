@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Messenger\Messenger;
+use App\Messenger\Replies;
 use App\Messenger\Telegram;
 use App\Messenger\WhatsApp;
 use Illuminate\Console\Command;
@@ -24,6 +25,10 @@ class MessengerSetup extends Command
             $r = Telegram::setWebhook("{$base}/telegram");
             $this->line($r['ok'] ? "Telegram: the webhook is {$base}/telegram." : 'Telegram: failed: '.$r['description']);
             $this->channel();
+            // [Sprint 68] The menu by «/», in Arabic (the default) and in English.
+            $ar = Telegram::setCommands(array_map(fn ($d) => $d[0], Replies::TELEGRAM_COMMANDS));
+            $en = Telegram::setCommands(array_map(fn ($d) => $d[1], Replies::TELEGRAM_COMMANDS), 'en');
+            $this->line($ar && $en ? 'Telegram: the commands menu is set.' : 'Telegram: the commands menu failed.');
             $name = Telegram::me();
             if ($name && $name !== Telegram::username()) {
                 $this->warn("Telegram: the bot is @{$name}: set TELEGRAM_BOT_USERNAME={$name} with legends-set.");

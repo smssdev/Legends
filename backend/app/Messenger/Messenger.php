@@ -44,6 +44,8 @@ class Messenger
         foreach (self::PLATFORMS as $p) {
             $link = $links[$p] ?? null;
             $out[$p] = ['available' => self::available($p), 'linked' => $link !== null, 'muted' => (bool) ($link->muted ?? false),
+                // [Sprint 68] His live matches on this bot, and his daily summary's Cairo hour (null: off).
+                'live' => (bool) ($link->live ?? true), 'daily_hour' => isset($link->daily_hour) ? (int) $link->daily_hour : null,
                 'open_url' => self::openUrl($p, null)];
         }
         if (isset($out['whatsapp'])) {
@@ -167,7 +169,16 @@ class Messenger
 
     public static function mute(int $userId, string $platform, bool $muted): void
     {
-        DB::table('messenger_links')->where('user_id', $userId)->where('platform', $platform)->update(['muted' => $muted]);
+        self::settings($userId, $platform, ['muted' => $muted]);
+    }
+
+    /** [Sprint 68] A linked bot's settings: muted, live, daily_hour (only these). */
+    public static function settings(int $userId, string $platform, array $values): void
+    {
+        $values = array_intersect_key($values, array_flip(['muted', 'live', 'daily_hour']));
+        if ($values) {
+            DB::table('messenger_links')->where('user_id', $userId)->where('platform', $platform)->update($values);
+        }
     }
 
     /** The coach wrote: WhatsApp's free window opens again for 24 hours. */
@@ -198,6 +209,30 @@ class Messenger
         }
 
         return $sent;
+    }
+
+    /**
+     * [Sprint 68] A message of the game to an account on its linked bots (not silenced): $live for his live match
+     * (only where he keeps those on), after $delay seconds (the minute's scene, so the bot never tells a goal before
+     * the screen shows it). WhatsApp only inside its free window. Returns how many were queued.
+     */
+    public static function toUser(int $userId, callable $text, array|callable $buttons = [], int $delay = 0, bool $live = false): int
+    {
+        $n = 0;
+        $links = DB::table('messenger_links')->join('users', 'users.id', '=', 'messenger_links.user_id')->where('messenger_links.user_id', $userId)
+            ->where('messenger_links.muted', false)->when($live, fn ($q) => $q->where('messenger_links.live', true))
+            ->get(['messenger_links.*', 'users.locale']);
+        foreach ($links as $l) {
+            if (! self::available($l->platform) || ($l->platform === 'whatsapp' && ! self::windowOpen($l->last_inbound_at))) {
+                continue;
+            }
+            $en = $l->locale === 'en';
+            SendMessenger::dispatch($l->platform, $l->chat_id, $text($en), false, is_callable($buttons) ? $buttons($en) : $buttons)
+                ->delay(max(0, $delay))->afterCommit();
+            $n++;
+        }
+
+        return $n;
     }
 
     /** A post to the game's public channel: sent to Telegram's, and kept for the admins to copy into WhatsApp's. */

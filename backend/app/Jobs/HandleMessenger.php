@@ -39,12 +39,14 @@ class HandleMessenger implements ShouldQueue
             return;
         }
         $reply = $replies->answer($this->platform, $this->chatId, $this->text);
-        if ($reply['text'] === '') {
-            return;
+        foreach ([$reply, ...($reply['more'] ?? [])] as $r) {
+            if ($r['text'] === '') {
+                continue;
+            }
+            $this->platform === 'telegram'
+                ? Telegram::send($this->chatId, $r['text'], $r['buttons'], $r['keyboard'] ?? null)
+                : WhatsApp::send($this->chatId, $r['text'], $r['buttons']);
         }
-        $this->platform === 'telegram'
-            ? Telegram::send($this->chatId, $reply['text'], $reply['buttons'])
-            : WhatsApp::send($this->chatId, $reply['text'], $reply['buttons']);
     }
 
     /** A command in a league's Telegram group: link it, unlink it, the table, or what the bot does there. */
@@ -69,9 +71,13 @@ class HandleMessenger implements ShouldQueue
             'table' => $league && ($season = DB::table('seasons')->where('league_id', $league)->orderByDesc('id')->value('id'))
                 ? LeagueGroups::tableText((int) $season, $en)
                 : ($en ? 'No league is linked to this group.' : 'لا دوري مربوطاً بهذا الجروب.'),
+            // [Sprint 68] The owner turns the live goals in the group on or off.
+            'goals' => $userId && isset($parts[1]) && in_array($parts[1], ['on', 'off'], true) && LeagueGroups::live($userId, $this->chatId, $parts[1] === 'on')
+                ? ($parts[1] === 'on' ? ($en ? 'The goals are posted here live.' : 'تُنشر الأهداف هنا مباشرة.') : ($en ? 'No more live goals here.' : 'أوقفت نشر الأهداف المباشرة هنا.'))
+                : ($en ? 'Only the league\'s owner can: /goals on or /goals off.' : 'لا يغيّرها إلا منشئ الدوري: /goals on أو /goals off.'),
             'help', 'start' => $en
-                ? "In a league's group I post each round's results.\n/league CODE: the owner links his league\n/table: the table\n/unleague: unlink"
-                : "في جروب الدوري أنشر نتائج كل جولة.\n/league الكود: يربط المنشئ دوريه\n/table: الترتيب\n/unleague: فك الربط",
+                ? "In a league's group I post each round's results, the goals live, and a poll before each round.\n/league CODE: the owner links his league\n/table: the table\n/goals on|off: the live goals\n/unleague: unlink"
+                : "في جروب الدوري أنشر نتائج كل جولة، والأهداف مباشرة، واستطلاعاً قبل كل جولة.\n/league الكود: يربط المنشئ دوريه\n/table: الترتيب\n/goals on|off: الأهداف المباشرة\n/unleague: فك الربط",
             default => null,
         };
     }
