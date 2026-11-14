@@ -24,20 +24,51 @@ defineExpose({ close })
 </script>
 
 <template>
-  <div v-if="!reduced" class="curtain" :class="state" aria-hidden="true" :style="{ '--home': props.home, '--away': props.away, '--ms': MS + 'ms' }">
+  <div
+    v-if="!reduced"
+    class="curtain"
+    :class="state"
+    aria-hidden="true"
+    :style="{ '--home': props.home, '--away': props.away, '--ms': MS + 'ms' }"
+  >
     <span class="half start" />
     <span class="half end" />
   </div>
 </template>
 
 <style scoped>
-.curtain { position: fixed; inset: 0; z-index: 60; pointer-events: none; display: flex; }
-.half { flex: 1; transition: transform var(--ms) cubic-bezier(.65, 0, .35, 1); box-shadow: 0 0 40px rgb(0 0 0 / .45); }
-.start { background: var(--home); }
-.end { background: var(--away); }
-.curtain.open .start { transform: translateX(-101%); }
-.curtain.open .end { transform: translateX(101%); }
-[dir='rtl'] .curtain.open .start { transform: translateX(101%); }
-[dir='rtl'] .curtain.open .end { transform: translateX(-101%); }
-.curtain.shut .half, .curtain.closing .half { transform: none; }
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  display: flex;
+}
+.half {
+  flex: 1;
+  transition: transform var(--ms) cubic-bezier(0.65, 0, 0.35, 1);
+  box-shadow: 0 0 40px rgb(0 0 0 / 0.45);
+}
+.start {
+  background: var(--home);
+}
+.end {
+  background: var(--away);
+}
+.curtain.open .start {
+  transform: translateX(-101%);
+}
+.curtain.open .end {
+  transform: translateX(101%);
+}
+[dir='rtl'] .curtain.open .start {
+  transform: translateX(101%);
+}
+[dir='rtl'] .curtain.open .end {
+  transform: translateX(-101%);
+}
+.curtain.shut .half,
+.curtain.closing .half {
+  transform: none;
+}
 </style>

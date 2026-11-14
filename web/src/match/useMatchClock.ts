@@ -11,19 +11,26 @@ export function useMatchClock() {
 
   /** A reply's server time: sentAt is when the request left (Date.now()). */
   function sample(sentAt: number, serverMs: number) {
-    const back = Date.now(), rtt = back - sentAt
+    const back = Date.now(),
+      rtt = back - sentAt
     bestRtt += 2 // older samples count a little less, so a drifting clock is followed
-    if (rtt <= bestRtt) { bestRtt = rtt; offset = serverMs - (sentAt + back) / 2 }
+    if (rtt <= bestRtt) {
+      bestRtt = rtt
+      offset = serverMs - (sentAt + back) / 2
+    }
   }
 
   /** Calls tick now, then on every turn of the server's second. */
   function start(tick: () => void) {
     stop()
     tick()
-    timer = window.setTimeout(() => {
-      tick()
-      interval = window.setInterval(tick, 1000)
-    }, 1000 - (((serverNow() % 1000) + 1000) % 1000))
+    timer = window.setTimeout(
+      () => {
+        tick()
+        interval = window.setInterval(tick, 1000)
+      },
+      1000 - (((serverNow() % 1000) + 1000) % 1000),
+    )
   }
 
   function stop() {

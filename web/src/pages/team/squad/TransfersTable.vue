@@ -8,12 +8,16 @@ const props = defineProps<{ transfers: SeasonTransfer[]; club: string }>()
 const mine = (t: SeasonTransfer) => t.from === props.club || t.to === props.club
 const when = (iso: string) => {
   const d = new Date(iso)
-  return d.toDateString() === new Date().toDateString() ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString([], { day: 'numeric', month: 'short' })
+  return d.toDateString() === new Date().toDateString()
+    ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : d.toLocaleDateString([], { day: 'numeric', month: 'short' })
 }
 </script>
 
 <template>
-  <p v-if="!transfers.length" class="rounded-2xl ui-card px-4 py-10 text-center text-text-muted">{{ $t('لا انتقالات في الدوري هذا الموسم بعد.') }}</p>
+  <p v-if="!transfers.length" class="rounded-2xl ui-card px-4 py-10 text-center text-text-muted">
+    {{ $t('لا انتقالات في الدوري هذا الموسم بعد.') }}
+  </p>
   <div v-else class="overflow-x-auto rounded-2xl ui-card">
     <table class="w-full min-w-[46rem] border-collapse text-sm">
       <thead>
@@ -43,6 +47,12 @@ const when = (iso: string) => {
 </template>
 
 <style scoped>
-.head { background: linear-gradient(90deg, var(--color-brand-dark), var(--color-brand)); color: var(--color-broadcast-white); font-size: 0.75rem; }
-.mine { background: color-mix(in srgb, var(--color-gold) 12%, transparent); }
+.head {
+  background: linear-gradient(90deg, var(--color-brand-dark), var(--color-brand));
+  color: var(--color-broadcast-white);
+  font-size: 0.75rem;
+}
+.mine {
+  background: color-mix(in srgb, var(--color-gold) 12%, transparent);
+}
 </style>

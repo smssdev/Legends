@@ -8,10 +8,19 @@ import { locale } from './i18n'
 
 export type NamesLang = 'ar' | 'en'
 const KEY = 'names'
-type Dict = { leagues: Record<string, string>; clubs: Record<string, string>; players: Record<string, string>; nations?: Record<string, string> }
+type Dict = {
+  leagues: Record<string, string>
+  clubs: Record<string, string>
+  players: Record<string, string>
+  nations?: Record<string, string>
+}
 
 function readPref(): NamesLang {
-  try { return storage.get(KEY) === 'en' ? 'en' : 'ar' } catch { return 'ar' }
+  try {
+    return storage.get(KEY) === 'en' ? 'en' : 'ar'
+  } catch {
+    return 'ar'
+  }
 }
 
 export const namesLang = ref<NamesLang>(readPref())
@@ -23,15 +32,23 @@ export function loadNames(): Promise<void> {
   if (!loading) {
     loading = fetch(import.meta.env.BASE_URL + 'names/ar.json')
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { dict.value = d })
-      .catch(() => { /* no dictionary: the Latin names */ })
+      .then((d) => {
+        dict.value = d
+      })
+      .catch(() => {
+        /* no dictionary: the Latin names */
+      })
   }
   return loading
 }
 
 export function setNamesLang(l: NamesLang) {
   namesLang.value = l
-  try { storage.set(KEY, l) } catch { /* private mode: this visit only */ }
+  try {
+    storage.set(KEY, l)
+  } catch {
+    /* private mode: this visit only */
+  }
 }
 
 /** The names actually shown: Latin in the English game, else the coach's choice. */

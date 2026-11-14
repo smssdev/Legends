@@ -11,7 +11,12 @@ import type { useMatchAudio } from './useMatchAudio'
 import type { CoachOrders } from './useCoachOrders'
 
 /** What MatchFeed exposes to the page. */
-export type Pitch = { play: (t: Tick, startAt?: number | null) => void; skip: () => void; prepare: (t: Tick) => void; react: (side: Side, emoji: string, text: string, who: string) => void }
+export type Pitch = {
+  play: (t: Tick, startAt?: number | null) => void
+  skip: () => void
+  prepare: (t: Tick) => void
+  react: (side: Side, emoji: string, text: string, who: string) => void
+}
 
 export type PlayerDeps = {
   id: string
@@ -99,7 +104,10 @@ export function useMatchPlayer(d: PlayerDeps) {
     if (!playing.value || halftime.value || finished.value) return
     // Let the commentator finish his sentence (a little); at the broadcast's fixed pace he never holds the clock [X35].
     const talk = fixedPace ? 0 : voice.remainingMs()
-    if (talk > 250 && waited < 2500) { waited += Math.min(talk, 500); return schedule(Math.min(talk, 500)) }
+    if (talk > 250 && waited < 2500) {
+      waited += Math.min(talk, 500)
+      return schedule(Math.min(talk, 500))
+    }
     waited = 0
     if (!buffer.length) {
       await fetchNext()
@@ -136,12 +144,24 @@ export function useMatchPlayer(d: PlayerDeps) {
     if (animate && goal) pendingScore = t.score
     else score.value = t.score
     // Live: the next minute has started, so the half-time break is over.
-    if (live.value && halftime.value) { halftime.value = false; clearInterval(htTimer) }
+    if (live.value && halftime.value) {
+      halftime.value = false
+      clearInterval(htTimer)
+    }
     windowOn.value = false
     if (isKey(t)) d.replay.keyTicks.push(t)
     // Live: the goal again in a small frame while the next minute plays (not on a slow phone), not after a goal whose
     // long minute already played its replay [X41].
-    if (live.value && animate && lastGoal && (lastGoal.moment?.ms ?? 0) < 15000 && !t.events.some((e) => e.type === 'period') && !LOW_END && !d.replay.replayMissed.value) d.replay.replayTick.value = lastGoal
+    if (
+      live.value &&
+      animate &&
+      lastGoal &&
+      (lastGoal.moment?.ms ?? 0) < 15000 &&
+      !t.events.some((e) => e.type === 'period') &&
+      !LOW_END &&
+      !d.replay.replayMissed.value
+    )
+      d.replay.replayTick.value = lastGoal
     lastGoal = live.value && t.events.some((e) => e.type === 'goal' && (e.kind ?? 'open') === 'open') ? t : null
     sound.danger(t.danger)
     // The stands sing: after a goal, and now and then in a quiet spell [Sprint 35].
@@ -165,20 +185,32 @@ export function useMatchPlayer(d: PlayerDeps) {
       if (e.type === 'period') {
         sound.whistle(e.name === 'fulltime' ? 3 : 2)
         // [X41] A goal in the half's last minute has its replay first: the break waits for the minute to end.
-        if (e.name === 'halftime' && animate) { const l = left(); if (l > 0) window.setTimeout(startHalftime, l); else startHalftime() }
+        if (e.name === 'halftime' && animate) {
+          const l = left()
+          if (l > 0) window.setTimeout(startHalftime, l)
+          else startHalftime()
+        }
       } else if (e.type === 'shootout') {
         shootout.value = e.score
       }
     }
     // [X42] The coach's window opens when the minute's scene has played (its goal's replay too).
     if (live.value && t.window && animate) {
-      const open = () => { if (last.value === t) { windowOn.value = true; hooks.clockTick() } }
+      const open = () => {
+        if (last.value === t) {
+          windowOn.value = true
+          hooks.clockTick()
+        }
+      }
       const l = left()
       if (l > 0) window.setTimeout(open, l)
       else open()
     }
     d.orders().settle(t, minuteText.value)
-    if (t.finished) { if (animate) window.setTimeout(() => (finished.value = true), 1600); else finished.value = true }
+    if (t.finished) {
+      if (animate) window.setTimeout(() => (finished.value = true), 1600)
+      else finished.value = true
+    }
   }
 
   function startHalftime() {
@@ -233,7 +265,10 @@ export function useMatchPlayer(d: PlayerDeps) {
     d.pitch.value?.skip()
     reveal()
     voice.stop()
-    if (!live.value) { clearTimeout(timer); schedule(120) }
+    if (!live.value) {
+      clearTimeout(timer)
+      schedule(120)
+    }
   }
 
   function startRerun() {
@@ -287,7 +322,10 @@ export function useMatchPlayer(d: PlayerDeps) {
     if (name === 'reveal') return reveal()
     if (name !== 'goal') return
     if (highlighting.value && hlScore) score.value = hlScore
-    else if (pendingScore) { score.value = pendingScore; pendingScore = null }
+    else if (pendingScore) {
+      score.value = pendingScore
+      pendingScore = null
+    }
   }
 
   /**
@@ -311,8 +349,10 @@ export function useMatchPlayer(d: PlayerDeps) {
     }
     if (live.value) return
     await fetchNext()
-    if (!rerun.value && (v.tick > 0 || finished.value)) { intro.value = false; schedule(300) }
-    else introTimer = window.setTimeout(endIntro, 11000)
+    if (!rerun.value && (v.tick > 0 || finished.value)) {
+      intro.value = false
+      schedule(300)
+    } else introTimer = window.setTimeout(endIntro, 11000)
   }
 
   /** A live break's details from the poll (half-time ended by the next minute is show's). */
@@ -326,9 +366,47 @@ export function useMatchPlayer(d: PlayerDeps) {
   }
 
   return {
-    view, teams, score, shootout, minute, last, momentum, feed, error, playing, speed, halftime, halftimeLeft, windowOn, started, finished,
-    rerun, oldEngine, replayExpired, intro, highlighting, skipping, moods, live, minuteText, pause, hooks,
-    say, clubName, show, reveal, togglePlay, skip, skipMoment, endHalftime, watchAgain, endIntro, highlights, onCue, begin, dispose,
+    view,
+    teams,
+    score,
+    shootout,
+    minute,
+    last,
+    momentum,
+    feed,
+    error,
+    playing,
+    speed,
+    halftime,
+    halftimeLeft,
+    windowOn,
+    started,
+    finished,
+    rerun,
+    oldEngine,
+    replayExpired,
+    intro,
+    highlighting,
+    skipping,
+    moods,
+    live,
+    minuteText,
+    pause,
+    hooks,
+    say,
+    clubName,
+    show,
+    reveal,
+    togglePlay,
+    skip,
+    skipMoment,
+    endHalftime,
+    watchAgain,
+    endIntro,
+    highlights,
+    onCue,
+    begin,
+    dispose,
   }
 }
 export type MatchPlayer = ReturnType<typeof useMatchPlayer>

@@ -39,5 +39,12 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.intro-start { display: grid; min-block-size: 100dvh; place-content: center; gap: var(--space-md); padding: var(--space-lg); text-align: center; }
+.intro-start {
+  display: grid;
+  min-block-size: 100dvh;
+  place-content: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  text-align: center;
+}
 </style>

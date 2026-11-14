@@ -4,8 +4,19 @@
 // here, a site in a new tab). The same card on the coaches' page and in the panel's preview.
 import { computed } from 'vue'
 
-const props = defineProps<{ title: string; body: string; at?: string | null; imageUrl?: string | null; cta?: { label: string; url: string } | null }>()
-const paragraphs = computed(() => props.body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean))
+const props = defineProps<{
+  title: string
+  body: string
+  at?: string | null
+  imageUrl?: string | null
+  cta?: { label: string; url: string } | null
+}>()
+const paragraphs = computed(() =>
+  props.body
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean),
+)
 // Day-month-year as the owner's picture (23-10-26), in the device's time; written by hand, so no direction can scramble it.
 const when = computed(() => {
   if (!props.at) return ''
@@ -55,5 +66,7 @@ const internal = computed(() => !!props.cta && props.cta.url.startsWith('/'))
   background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand));
   box-shadow: 0 6px 14px -8px var(--color-brand);
 }
-.ann-cta:hover { filter: brightness(1.06); }
+.ann-cta:hover {
+  filter: brightness(1.06);
+}
 </style>

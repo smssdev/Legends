@@ -27,11 +27,15 @@ defineEmits<{ retry: [] }>()
 const SLOW_MS = 4000
 const slow = ref(false)
 let timer = 0
-watch(() => props.loading, (on) => {
-  clearTimeout(timer)
-  slow.value = false
-  if (on) timer = window.setTimeout(() => (slow.value = true), SLOW_MS)
-}, { immediate: true })
+watch(
+  () => props.loading,
+  (on) => {
+    clearTimeout(timer)
+    slow.value = false
+    if (on) timer = window.setTimeout(() => (slow.value = true), SLOW_MS)
+  },
+  { immediate: true },
+)
 onBeforeUnmount(() => clearTimeout(timer))
 </script>
 
@@ -42,10 +46,16 @@ onBeforeUnmount(() => clearTimeout(timer))
     </div>
     <Skeleton :kind="skeleton ?? 'row'" :count="rows ?? 4" />
   </div>
-  <div v-else-if="error" role="alert" class="flex flex-col items-center gap-3 rounded-xl border border-live/30 bg-live/10 px-4 py-6 text-center">
+  <div
+    v-else-if="error"
+    role="alert"
+    class="flex flex-col items-center gap-3 rounded-xl border border-live/30 bg-live/10 px-4 py-6 text-center"
+  >
     <Character model="A2" mood="worried" class="w-20" />
     <p class="text-body font-bold">{{ $t(error) }}</p>
-    <button type="button" class="min-h-touch rounded-lg bg-surface-raised px-5 font-bold" @click="$emit('retry')">{{ $t('حاول مجدداً') }}</button>
+    <button type="button" class="min-h-touch rounded-lg bg-surface-raised px-5 font-bold" @click="$emit('retry')">
+      {{ $t('حاول مجدداً') }}
+    </button>
   </div>
   <EmptyState v-else-if="empty" :icon="emptyIcon ?? 'more'" :title="emptyTitle ?? 'لا شيء هنا بعد'" :text="emptyText" :cta="emptyCta" />
   <slot v-else />

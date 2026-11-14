@@ -37,7 +37,7 @@ const session: Middleware = {
   onRequest({ request }) {
     const xsrf = cookie('XSRF-TOKEN')
     if (xsrf) request.headers.set('X-XSRF-TOKEN', xsrf)
-    request.headers.set('Accept-Language', locale.value)   // [UP2] the server's words in the coach's language
+    request.headers.set('Accept-Language', locale.value) // [UP2] the server's words in the coach's language
     unsent.set(request, request.clone())
     return request
   },
@@ -61,7 +61,10 @@ const session: Middleware = {
       if (retried.ok) return retried
       response = retried
     }
-    const body = await response.clone().json().catch(() => ({}))
+    const body = await response
+      .clone()
+      .json()
+      .catch(() => ({}))
     const error = new ApiError(response.status, body)
     failed(request, error)
     throw error
@@ -88,7 +91,9 @@ function failed(request: Request, error: ApiError) {
   lastToast = { text: error.message, at: now }
   try {
     useToast().show(t(error.message), 'error', 4500)
-  } catch { /* before the app has its store: the page's own message is enough */ }
+  } catch {
+    /* before the app has its store: the page's own message is enough */
+  }
 }
 
 export const api = createClient<paths>({ baseUrl: '/api/v1', headers: { Accept: 'application/json' }, credentials: 'same-origin' })

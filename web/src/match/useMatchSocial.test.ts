@@ -4,7 +4,10 @@ import { ref } from 'vue'
 let next = 100
 vi.mock('../api/sim', () => ({
   sim: { react: async (_id: string, key: string) => ({ id: ++next, key, side: 'home' }) },
-  leagueMatch: { react: async (_id: string, key: string, target?: string) => ({ id: ++next, key, target, who: 'me' }), chat: async (_id: string, body: string) => ({ id: ++next, body, who: 'me' }) },
+  leagueMatch: {
+    react: async (_id: string, key: string, target?: string) => ({ id: ++next, key, target, who: 'me' }),
+    chat: async (_id: string, body: string) => ({ id: ++next, body, who: 'me' }),
+  },
 }))
 
 import { useMatchSocial } from './useMatchSocial'
@@ -14,7 +17,8 @@ describe('useMatchSocial', () => {
   afterEach(() => vi.useRealTimers())
 
   function make(league: boolean) {
-    const show = vi.fn(), pop = vi.fn()
+    const show = vi.fn(),
+      pop = vi.fn()
     const s = useMatchSocial({ league, id: '9', mine: ref('home' as const), show, pop, sideName: (side) => side.toUpperCase() })
     return { s, show, pop }
   }

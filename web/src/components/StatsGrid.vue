@@ -21,7 +21,11 @@ const props = defineProps<{ home: Record<string, number>; away: Record<string, n
 const rows = computed(() => {
   const att = (props.home.attacks || 0) + (props.away.attacks || 0)
   return [
-    { label: 'الاستحواذ %', h: att ? Math.round((100 * props.home.attacks) / att) : 50, a: att ? Math.round((100 * props.away.attacks) / att) : 50 },
+    {
+      label: 'الاستحواذ %',
+      h: att ? Math.round((100 * props.home.attacks) / att) : 50,
+      a: att ? Math.round((100 * props.away.attacks) / att) : 50,
+    },
     { label: 'تسديدات', h: props.home.shots, a: props.away.shots },
     { label: 'على المرمى', h: props.home.on_target, a: props.away.on_target },
     { label: 'فرص محققة', h: props.home.big_chances, a: props.away.big_chances },

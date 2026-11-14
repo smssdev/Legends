@@ -6,15 +6,17 @@ withDefaults(defineProps<{ tone?: 'neutral' | 'live' | 'win' | 'draw' | 'loss' |
 <template>
   <span
     class="inline-flex h-8 items-center gap-1.5 rounded-pill px-3 text-sm font-bold"
-    :class="{
-      neutral: 'bg-surface-raised text-text-soft',
-      live: 'bg-live/15 text-danger',
-      win: 'bg-success/15 text-success',
-      draw: 'bg-surface-raised text-text-soft',
-      loss: 'bg-live/15 text-danger',
-      gold: 'bg-gold/15 text-gold',
-      warning: 'bg-warning/15 text-warning',
-    }[tone]"
+    :class="
+      {
+        neutral: 'bg-surface-raised text-text-soft',
+        live: 'bg-live/15 text-danger',
+        win: 'bg-success/15 text-success',
+        draw: 'bg-surface-raised text-text-soft',
+        loss: 'bg-live/15 text-danger',
+        gold: 'bg-gold/15 text-gold',
+        warning: 'bg-warning/15 text-warning',
+      }[tone]
+    "
   >
     <span v-if="tone === 'live'" class="size-2 rounded-full bg-live" aria-hidden="true" />
     <slot />

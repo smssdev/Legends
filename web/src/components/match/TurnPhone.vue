@@ -17,14 +17,28 @@ const query = '(orientation: portrait) and (pointer: coarse) and (max-width: 820
 // [Sprint 65 W8] The match too (WCAG 1.3.4: whoever holds the phone upright on a stand still plays): its own choice,
 // remembered apart, since the broadcast is drawn for the side and is smaller upright.
 const UPRIGHT = props.game ? 'upright' : 'upright.match'
-const chose = ref((() => { try { return storage.get(UPRIGHT) === '1' } catch { return false } })())
+const chose = ref(
+  (() => {
+    try {
+      return storage.get(UPRIGHT) === '1'
+    } catch {
+      return false
+    }
+  })(),
+)
 function stayUpright() {
   chose.value = true
-  try { storage.set(UPRIGHT, '1') } catch {}
+  try {
+    storage.set(UPRIGHT, '1')
+  } catch {}
 }
 const upright = ref(false)
-const lockable = ref(typeof screen !== 'undefined' && 'orientation' in screen && typeof (screen.orientation as any)?.lock === 'function'
-  && typeof document.documentElement.requestFullscreen === 'function')
+const lockable = ref(
+  typeof screen !== 'undefined' &&
+    'orientation' in screen &&
+    typeof (screen.orientation as any)?.lock === 'function' &&
+    typeof document.documentElement.requestFullscreen === 'function',
+)
 let media: MediaQueryList | null = null
 let locked = false
 const update = () => (upright.value = !!media?.matches)
@@ -42,7 +56,9 @@ async function turn() {
 function release() {
   if (!locked) return
   locked = false
-  try { (screen.orientation as any).unlock?.() } catch {}
+  try {
+    ;(screen.orientation as any).unlock?.()
+  } catch {}
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
 }
 
@@ -52,15 +68,26 @@ onMounted(() => {
   media?.addEventListener('change', update)
 })
 onDeactivated(release)
-onBeforeUnmount(() => { media?.removeEventListener('change', update); release() })
+onBeforeUnmount(() => {
+  media?.removeEventListener('change', update)
+  release()
+})
 </script>
 
 <template>
-  <div v-if="upright && !chose" class="turn fixed inset-0 z-[60] grid place-items-center p-6 text-center" role="dialog" aria-modal="true" :aria-label="$t('لفّ جوالك')">
+  <div
+    v-if="upright && !chose"
+    class="turn fixed inset-0 z-[60] grid place-items-center p-6 text-center"
+    role="dialog"
+    aria-modal="true"
+    :aria-label="$t('لفّ جوالك')"
+  >
     <div class="flex max-w-xs flex-col items-center gap-4">
       <div class="device" aria-hidden="true" />
       <b class="font-display text-2xl">{{ $t('لفّ جوالك') }} <Icon name="swap" :size="22" class="inline-block align-[-3px]" /></b>
-      <span class="text-sm leading-relaxed text-text-muted">{{ props.game ? $t('اللعبة تُلعب بالعرض. أدر الجوال وتكمل فوراً.') : $t('المباراة تُلعب بالعرض. أدر الجوال وتبدأ فوراً.') }}</span>
+      <span class="text-sm leading-relaxed text-text-muted">{{
+        props.game ? $t('اللعبة تُلعب بالعرض. أدر الجوال وتكمل فوراً.') : $t('المباراة تُلعب بالعرض. أدر الجوال وتبدأ فوراً.')
+      }}</span>
       <UiButton v-if="lockable" @click="turn">{{ props.game ? $t('العب بالعرض وملء الشاشة') : $t('شاهد بالعرض وملء الشاشة') }}</UiButton>
       <UiButton variant="quiet" size="sm" @click="stayUpright">{{ props.game ? $t('تابع عمودياً') : $t('شاهد عمودياً') }}</UiButton>
     </div>
@@ -68,11 +95,45 @@ onBeforeUnmount(() => { media?.removeEventListener('change', update); release() 
 </template>
 
 <style scoped>
-.turn { background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--color-brand-dark) 45%, var(--color-bg-deep)) 0%, var(--color-bg-deep) 70%); color: var(--color-text) }
-.device { width: 70px; height: 120px; border: 5px solid var(--color-gold); border-radius: 14px; position: relative }
-.device::after { content: ''; position: absolute; bottom: 6px; left: 50%; width: 16px; height: 3px; margin-left: -8px; border-radius: 3px; background: var(--color-gold) }
+.turn {
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in srgb, var(--color-brand-dark) 45%, var(--color-bg-deep)) 0%,
+    var(--color-bg-deep) 70%
+  );
+  color: var(--color-text);
+}
+.device {
+  width: 70px;
+  height: 120px;
+  border: 5px solid var(--color-gold);
+  border-radius: 14px;
+  position: relative;
+}
+.device::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: 16px;
+  height: 3px;
+  margin-left: -8px;
+  border-radius: 3px;
+  background: var(--color-gold);
+}
 @media (prefers-reduced-motion: no-preference) {
-  .device { animation: turn 2.4s ease-in-out infinite }
-  @keyframes turn { 0%, 25% { transform: rotate(0) } 55%, 100% { transform: rotate(-90deg) } }
+  .device {
+    animation: turn 2.4s ease-in-out infinite;
+  }
+  @keyframes turn {
+    0%,
+    25% {
+      transform: rotate(0);
+    }
+    55%,
+    100% {
+      transform: rotate(-90deg);
+    }
+  }
 }
 </style>

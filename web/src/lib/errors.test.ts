@@ -2,7 +2,10 @@ import { afterEach, describe as group, expect, it, vi } from 'vitest'
 import { describe, ignored, report, resetErrors, shouldSend } from './errors'
 
 group('errors', () => {
-  afterEach(() => { resetErrors(); vi.restoreAllMocks() })
+  afterEach(() => {
+    resetErrors()
+    vi.restoreAllMocks()
+  })
 
   it('lets the same error through once a minute', () => {
     const seen = new Map<string, number>()

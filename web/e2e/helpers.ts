@@ -2,13 +2,19 @@ import { expect, type Page } from '@playwright/test'
 
 /** Past the splash (it waits for the server's first answer). */
 export async function ready(page: Page) {
-  await page.locator('.splash').waitFor({ state: 'detached', timeout: 30_000 }).catch(() => {})
+  await page
+    .locator('.splash')
+    .waitFor({ state: 'detached', timeout: 30_000 })
+    .catch(() => {})
   // The Assistant Coach's greeting closed, as a coach would (it also leaves by itself after a few seconds).
   const hello = page.locator('.bot-hello-x')
   if (await hello.isVisible().catch(() => false)) await hello.click()
   // [Sprint 39 N1] The sound card, asked once a device: «لاحقاً», as a coach in a hurry would.
   const later = page.locator('section[aria-labelledby="sound-prompt-title"]').getByRole('button', { name: 'لاحقاً' })
-  await later.waitFor({ state: 'visible', timeout: 1500 }).then(() => later.click()).catch(() => {})
+  await later
+    .waitFor({ state: 'visible', timeout: 1500 })
+    .then(() => later.click())
+    .catch(() => {})
 }
 
 /** A new coach, signed up through the form: a unique username, an 8-character password (Sprint 30 Q11). */

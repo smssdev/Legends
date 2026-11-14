@@ -11,9 +11,14 @@ import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, Di
 // [Sprint 56 W2] `side`: a panel along the screen's end edge, full height, beside what it is about (the player's card
 // beside the squad's table): no veil, the screen behind still answers (a tap on another row there closes this one and
 // opens the next), Esc closes it.
-const props = withDefaults(defineProps<{ open: boolean; title?: string; wide?: boolean; bare?: boolean; closable?: boolean; side?: boolean }>(), { wide: false, bare: false, closable: false, side: false })
+const props = withDefaults(
+  defineProps<{ open: boolean; title?: string; wide?: boolean; bare?: boolean; closable?: boolean; side?: boolean }>(),
+  { wide: false, bare: false, closable: false, side: false },
+)
 const emit = defineEmits<{ close: [] }>()
-const onOpen = (o: boolean) => { if (!o && props.open) emit('close') }
+const onOpen = (o: boolean) => {
+  if (!o && props.open) emit('close')
+}
 </script>
 
 <template>
@@ -22,7 +27,12 @@ const onOpen = (o: boolean) => { if (!o && props.open) emit('close') }
       <DialogContent class="ui-side" :aria-describedby="undefined">
         <div v-if="title || closable" class="mb-3 flex items-center gap-2">
           <DialogTitle v-if="title" class="flex-1 font-display text-title">{{ $t(title) }}</DialogTitle>
-          <DialogClose v-if="closable" class="ms-auto grid size-touch shrink-0 place-items-center rounded-md bg-surface-raised" :aria-label="$t('إغلاق')"><Icon name="close" :size="18" /></DialogClose>
+          <DialogClose
+            v-if="closable"
+            class="ms-auto grid size-touch shrink-0 place-items-center rounded-md bg-surface-raised"
+            :aria-label="$t('إغلاق')"
+            ><Icon name="close" :size="18"
+          /></DialogClose>
         </div>
         <slot />
       </DialogContent>
@@ -31,13 +41,25 @@ const onOpen = (o: boolean) => { if (!o && props.open) emit('close') }
       <DialogOverlay class="ui-veil fixed inset-0 z-[65] overflow-y-auto overscroll-contain bg-black/60">
         <div class="flex min-h-full items-start justify-center p-3 pt-[max(1rem,env(safe-area-inset-top))] md:items-center md:p-6">
           <DialogContent v-if="bare" class="ui-window flex w-full origin-top justify-center" :aria-describedby="undefined">
-            <VisuallyHidden v-if="title"><DialogTitle>{{ $t(title) }}</DialogTitle></VisuallyHidden>
+            <VisuallyHidden v-if="title"
+              ><DialogTitle>{{ $t(title) }}</DialogTitle></VisuallyHidden
+            >
             <slot />
           </DialogContent>
-          <DialogContent v-else class="ui-window flex max-h-[88dvh] w-full origin-top flex-col overflow-y-auto overscroll-contain rounded-2xl border border-text/10 bg-bg p-4 shadow-overlay" :class="wide ? 'max-w-2xl' : 'max-w-md'" :aria-describedby="undefined">
+          <DialogContent
+            v-else
+            class="ui-window flex max-h-[88dvh] w-full origin-top flex-col overflow-y-auto overscroll-contain rounded-2xl border border-text/10 bg-bg p-4 shadow-overlay"
+            :class="wide ? 'max-w-2xl' : 'max-w-md'"
+            :aria-describedby="undefined"
+          >
             <div v-if="title || closable" class="mb-3 flex items-center gap-2">
               <DialogTitle v-if="title" class="flex-1 font-display text-headline">{{ $t(title) }}</DialogTitle>
-              <DialogClose v-if="closable" class="ms-auto grid size-touch shrink-0 place-items-center rounded-md bg-surface-raised" :aria-label="$t('إغلاق')"><Icon name="close" :size="18" /></DialogClose>
+              <DialogClose
+                v-if="closable"
+                class="ms-auto grid size-touch shrink-0 place-items-center rounded-md bg-surface-raised"
+                :aria-label="$t('إغلاق')"
+                ><Icon name="close" :size="18"
+              /></DialogClose>
             </div>
             <slot />
           </DialogContent>
@@ -64,11 +86,30 @@ const onOpen = (o: boolean) => { if (!o && props.open) emit('close') }
   border-inline-start: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
   box-shadow: var(--shadow-overlay);
 }
-@media (max-width: 560px) { .ui-side { width: 100vw; } }
-.ui-side[data-state='open'] { animation: side-in var(--duration-base) var(--ease-soft); }
-.ui-side[data-state='closed'] { animation: side-out var(--duration-fast) var(--ease-soft); }
-@keyframes side-in { from { opacity: 0; transform: translateX(var(--side-from, -1.5rem)); } }
-@keyframes side-out { to { opacity: 0; transform: translateX(var(--side-from, -1.5rem)); } }
-[dir='ltr'] .ui-side { --side-from: 1.5rem; }
+@media (max-width: 560px) {
+  .ui-side {
+    width: 100vw;
+  }
+}
+.ui-side[data-state='open'] {
+  animation: side-in var(--duration-base) var(--ease-soft);
+}
+.ui-side[data-state='closed'] {
+  animation: side-out var(--duration-fast) var(--ease-soft);
+}
+@keyframes side-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--side-from, -1.5rem));
+  }
+}
+@keyframes side-out {
+  to {
+    opacity: 0;
+    transform: translateX(var(--side-from, -1.5rem));
+  }
+}
+[dir='ltr'] .ui-side {
+  --side-from: 1.5rem;
+}
 </style>
-

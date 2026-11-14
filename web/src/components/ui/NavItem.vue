@@ -12,4 +12,3 @@ defineProps<{ to: string; icon: keyof typeof PATHS; label: string; active?: bool
     <Icon :name="icon" :size="20" class="ui-nav-icon" />{{ $t(label) }}
   </RouterLink>
 </template>
-

@@ -25,21 +25,32 @@ const stage = ref<HTMLElement>()
 const s = told(props.tick.story, { players: props.players, clubs: props.clubs })
 const who = s?.who || ''
 // Four seconds: two seconds of play before the ball goes in, and the moment after, at half speed.
-const LENGTH = 2.2, RATE = 0.5
+const LENGTH = 2.2,
+  RATE = 0.5
 let raf = 0
 
 onMounted(() => {
   if (!s?.scene || !scenes[s.scene] || !stage.value) return emit('done')
   let scene: Scene
   // A scene that breaks ends the replay instead of stopping the match.
-  try { scene = scenes[s.scene]({ ...s.data, side: s.side }) } catch (e) { console.error(e); return emit('done') }
+  try {
+    scene = scenes[s.scene]({ ...s.data, side: s.side })
+  } catch (e) {
+    console.error(e)
+    return emit('done')
+  }
   stage.value.replaceChildren(scene.svg)
   const key = s.keyAt * SCENE_TIME[s.scene][0]
   const from = Math.max(0, key - 1.8)
   const start = performance.now()
   const frame = (now: number) => {
     const t = from + ((now - start) / 1000) * RATE
-    try { scene.update(t) } catch (e) { console.error(e); return emit('done') }
+    try {
+      scene.update(t)
+    } catch (e) {
+      console.error(e)
+      return emit('done')
+    }
     if (t < from + LENGTH) raf = requestAnimationFrame(frame)
     else emit('done')
   }
@@ -49,7 +60,33 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 </script>
 
 <style scoped>
-.replay { position: absolute; inset-inline-start: 10px; bottom: 10px; z-index: 15; width: min(42%, 340px); border-radius: 12px; overflow: hidden; border: 2px solid #F5B82E; background: #050D1F; box-shadow: 0 12px 30px rgba(0,0,0,.5) }
-.tag { position: absolute; top: 6px; inset-inline-start: 6px; z-index: 1; padding: 2px 8px; border-radius: 999px; background: #F5B82E; color: #071733; font-size: 12px; font-weight: 800 }
-.stage :deep(svg) { display: block; width: 100%; height: auto }
+.replay {
+  position: absolute;
+  inset-inline-start: 10px;
+  bottom: 10px;
+  z-index: 15;
+  width: min(42%, 340px);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #f5b82e;
+  background: #050d1f;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+.tag {
+  position: absolute;
+  top: 6px;
+  inset-inline-start: 6px;
+  z-index: 1;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f5b82e;
+  color: #071733;
+  font-size: 12px;
+  font-weight: 800;
+}
+.stage :deep(svg) {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 </style>

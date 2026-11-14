@@ -28,10 +28,12 @@ export function weakDevice(): boolean {
   if (typeof navigator === 'undefined') return false
   const nav = navigator as Nav
   const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
-  return (nav.deviceMemory !== undefined && nav.deviceMemory <= 4)
-    || (nav.hardwareConcurrency !== undefined && nav.hardwareConcurrency <= 4)
-    || !!nav.connection?.saveData
-    || reduced
+  return (
+    (nav.deviceMemory !== undefined && nav.deviceMemory <= 4) ||
+    (nav.hardwareConcurrency !== undefined && nav.hardwareConcurrency <= 4) ||
+    !!nav.connection?.saveData ||
+    reduced
+  )
 }
 
 /** [Sprint 33 Q1] A mid-range device: not weak, but a phone with up to 6 GB or 6 cores. */
@@ -39,7 +41,10 @@ export function midDevice(): boolean {
   if (typeof navigator === 'undefined' || weakDevice()) return false
   const nav = navigator as Nav
   const phone = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
-  return phone && ((nav.deviceMemory !== undefined && nav.deviceMemory <= 6) || (nav.hardwareConcurrency !== undefined && nav.hardwareConcurrency <= 6))
+  return (
+    phone &&
+    ((nav.deviceMemory !== undefined && nav.deviceMemory <= 6) || (nav.hardwareConcurrency !== undefined && nav.hardwareConcurrency <= 6))
+  )
 }
 
 const deviceTier = (): Tier => (weakDevice() ? 'low' : midDevice() ? 'mid' : 'high')
@@ -52,14 +57,26 @@ const autoTier = ref<Tier>(deviceTier())
 export const tier = computed<Tier>(() => (perfPref.value === 'auto' ? autoTier.value : PREF_TIER[perfPref.value]))
 /** The lowest tier (the smooth mode of X30), on or off: what most of the page asks. */
 export const smooth = ref(tier.value === 'low')
-watch(tier, (t) => { smooth.value = t === 'low' })
+watch(tier, (t) => {
+  smooth.value = t === 'low'
+})
 
 // The whole app follows it (the cards' blurred glass, style.css): a class on the page's root.
-watch(smooth, (v) => { if (typeof document !== 'undefined') document.documentElement.classList.toggle('smooth', v) }, { immediate: true })
+watch(
+  smooth,
+  (v) => {
+    if (typeof document !== 'undefined') document.documentElement.classList.toggle('smooth', v)
+  },
+  { immediate: true },
+)
 
 export function setPerfPref(p: PerfPref) {
   perfPref.value = p
-  try { storage.set(KEY, p) } catch { /* private mode: for this visit only */ }
+  try {
+    storage.set(KEY, p)
+  } catch {
+    /* private mode: for this visit only */
+  }
 }
 
 // Watching the frames while the match plays: two seconds of frames averaging over 28 ms (under 36 a second) lower

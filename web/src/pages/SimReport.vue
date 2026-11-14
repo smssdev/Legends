@@ -5,11 +5,35 @@
         <BrandMark />
       </RouterLink>
       <span class="rounded-pill bg-brand px-3 py-1 text-sm font-bold text-on-gold">{{ $t('تقرير المباراة') }}</span>
-      <button v-if="league" type="button" class="h-10 rounded-lg bg-gold px-3 text-sm font-bold text-on-gold" @click="recap = true"><Icon name="bolt" :size="16" class="inline-block align-[-3px]" /> {{ $t('الملخص السريع') }}</button>
+      <button v-if="league" type="button" class="h-10 rounded-lg bg-gold px-3 text-sm font-bold text-on-gold" @click="recap = true">
+        <Icon name="bolt" :size="16" class="inline-block align-[-3px]" /> {{ $t('الملخص السريع') }}
+      </button>
       <!-- [Sprint 30 G2] The result as a picture, for WhatsApp and the rest. -->
-      <button v-if="report && view" type="button" class="h-10 rounded-lg bg-surface px-3 text-sm font-bold" :disabled="sharing" @click="share"><Icon name="share" :size="16" class="inline-block align-[-3px]" /> {{ $t('شارك كصورة') }}</button>
-      <div v-if="view && !league" role="radiogroup" :aria-label="$t('التقرير من وجهة نظر')" class="ms-auto flex gap-1 rounded-md bg-surface p-1">
-        <button v-for="s in sides" :key="s" type="button" role="radio" :aria-checked="side === s" class="h-10 rounded-sm px-3 text-sm font-bold" :class="side === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="load(s)">
+      <button
+        v-if="report && view"
+        type="button"
+        class="h-10 rounded-lg bg-surface px-3 text-sm font-bold"
+        :disabled="sharing"
+        @click="share"
+      >
+        <Icon name="share" :size="16" class="inline-block align-[-3px]" /> {{ $t('شارك كصورة') }}
+      </button>
+      <div
+        v-if="view && !league"
+        role="radiogroup"
+        :aria-label="$t('التقرير من وجهة نظر')"
+        class="ms-auto flex gap-1 rounded-md bg-surface p-1"
+      >
+        <button
+          v-for="s in sides"
+          :key="s"
+          type="button"
+          role="radio"
+          :aria-checked="side === s"
+          class="h-10 rounded-sm px-3 text-sm font-bold"
+          :class="side === s ? 'bg-gold text-on-gold' : 'text-text-soft'"
+          @click="load(s)"
+        >
           {{ $nm(view.clubs[s].name) }}
         </button>
       </div>
@@ -25,28 +49,65 @@
       <section class="score-board relative overflow-hidden rounded-2xl" :aria-label="$t('النتيجة')">
         <div class="score-band px-4 py-1.5 text-center text-xs font-extrabold tracking-wide text-white">{{ $t('نهاية المباراة') }}</div>
         <!-- [Sprint 30 Q8] The result in one plain sentence too, for reading and for screen readers. -->
-        <p class="px-4 pt-3 text-center text-sm font-bold">{{ $t('النتيجة: {v0} {v1} - {v2} {v3}', { v0: $nm(view.clubs.home.name), v1: report.score.home, v2: report.score.away, v3: $nm(view.clubs.away.name) }) }}</p>
+        <p class="px-4 pt-3 text-center text-sm font-bold">
+          {{
+            $t('النتيجة: {v0} {v1} - {v2} {v3}', {
+              v0: $nm(view.clubs.home.name),
+              v1: report.score.home,
+              v2: report.score.away,
+              v3: $nm(view.clubs.away.name),
+            })
+          }}
+        </p>
         <div class="relative flex items-center justify-center gap-3 p-5 md:gap-8 md:p-8">
-          <span class="pointer-events-none absolute -start-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('home') }" aria-hidden="true" />
-          <span class="pointer-events-none absolute -end-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('away') }" aria-hidden="true" />
+          <span
+            class="pointer-events-none absolute -start-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl"
+            :style="{ background: color('home') }"
+            aria-hidden="true"
+          />
+          <span
+            class="pointer-events-none absolute -end-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl"
+            :style="{ background: color('away') }"
+            aria-hidden="true"
+          />
           <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
-            <span class="score-disc"><Crest :logo="view.clubs.home.logo" :code="view.clubs.home.code" :primary="color('home')" :secondary="clubColors(view.clubs.home).secondary" :size="52" /></span>
+            <span class="score-disc"
+              ><Crest
+                :logo="view.clubs.home.logo"
+                :code="view.clubs.home.code"
+                :primary="color('home')"
+                :secondary="clubColors(view.clubs.home).secondary"
+                :size="52"
+            /></span>
             <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ $nm(view.clubs.home.name) }}</span>
           </div>
           <div class="flex shrink-0 flex-col items-center gap-1.5">
-            <span class="whitespace-nowrap rounded-xl bg-black/45 px-4 py-1 font-numbers text-4xl shadow-inner md:text-6xl" dir="ltr">{{ scoreText(report.score.home, report.score.away) }}</span>
-            <span v-if="report.shootout" class="text-sm text-text-soft">{{ $t('ركلات الترجيح') }} <b class="font-numbers" dir="ltr">{{ report.shootout.away }} – {{ report.shootout.home }}</b></span>
+            <span class="whitespace-nowrap rounded-xl bg-black/45 px-4 py-1 font-numbers text-4xl shadow-inner md:text-6xl" dir="ltr">{{
+              scoreText(report.score.home, report.score.away)
+            }}</span>
+            <span v-if="report.shootout" class="text-sm text-text-soft"
+              >{{ $t('ركلات الترجيح') }} <b class="font-numbers" dir="ltr">{{ report.shootout.away }} – {{ report.shootout.home }}</b></span
+            >
             <span class="rounded-pill px-3 py-1 text-sm font-bold" :class="resultClass">{{ $t(resultLabel) }}</span>
           </div>
           <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
-            <span class="score-disc"><Crest :logo="view.clubs.away.logo" :code="view.clubs.away.code" :primary="color('away')" :secondary="clubColors(view.clubs.away).secondary" :size="52" /></span>
+            <span class="score-disc"
+              ><Crest
+                :logo="view.clubs.away.logo"
+                :code="view.clubs.away.code"
+                :primary="color('away')"
+                :secondary="clubColors(view.clubs.away).secondary"
+                :size="52"
+            /></span>
             <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ $nm(view.clubs.away.name) }}</span>
           </div>
         </div>
       </section>
 
       <section aria-labelledby="why" class="flex flex-col gap-3">
-        <h2 id="why" class="font-display text-2xl font-extrabold">{{ report.result === 'loss' ? $t('لماذا خسرنا') : report.result === 'win' ? $t('لماذا فزنا') : $t('لماذا تعادلنا') }}</h2>
+        <h2 id="why" class="font-display text-2xl font-extrabold">
+          {{ report.result === 'loss' ? $t('لماذا خسرنا') : report.result === 'win' ? $t('لماذا فزنا') : $t('لماذا تعادلنا') }}
+        </h2>
         <div class="grid gap-3 md:grid-cols-3">
           <article v-for="r in report.reasons" :key="r.title" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
             <div class="flex items-baseline gap-2">
@@ -62,7 +123,9 @@
           <h3 class="font-bold">{{ $t(report.improve.title) }}</h3>
           <p class="text-sm text-text-soft">{{ $t(report.improve.text) }}</p>
           <!-- [Sprint 64 W9] The one suggestion has its place to act, from the server. -->
-          <UiButton v-if="league && report.improve.go" class="self-start" size="sm" :to="GO[report.improve.go]![0]">{{ $t(GO[report.improve.go]![1]) }}</UiButton>
+          <UiButton v-if="league && report.improve.go" class="self-start" size="sm" :to="GO[report.improve.go]![0]">{{
+            $t(GO[report.improve.go]![1])
+          }}</UiButton>
         </article>
       </section>
 
@@ -70,11 +133,19 @@
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="verdict">
           <h2 id="verdict" class="font-display text-xl font-extrabold">{{ $t('رأي المدرب المساعد') }}</h2>
           <p v-for="v in report.verdict" :key="v.text" class="flex items-start gap-2 text-sm">
-            <span class="shrink-0 rounded-sm px-2 py-0.5 text-xs font-bold" :class="v.tag === 'ممتاز' ? 'bg-pitch/25 text-success' : 'bg-live/20 text-danger'">{{ $t(v.tag) }}</span>
+            <span
+              class="shrink-0 rounded-sm px-2 py-0.5 text-xs font-bold"
+              :class="v.tag === 'ممتاز' ? 'bg-pitch/25 text-success' : 'bg-live/20 text-danger'"
+              >{{ $t(v.tag) }}</span
+            >
             <span>{{ $t(v.text) }}</span>
           </p>
         </section>
-        <section v-if="report.man_of_the_match" class="relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border border-gold/50 bg-gradient-to-b from-gold/25 to-surface p-4 text-center shadow-lg shadow-black/40" aria-labelledby="motm">
+        <section
+          v-if="report.man_of_the_match"
+          class="relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border border-gold/50 bg-gradient-to-b from-gold/25 to-surface p-4 text-center shadow-lg shadow-black/40"
+          aria-labelledby="motm"
+        >
           <span class="absolute inset-x-0 top-0 h-1 bg-gold" aria-hidden="true" />
           <span class="text-2xl" aria-hidden="true"><Icon name="star" :size="16" /></span>
           <h2 id="motm" class="text-sm font-bold text-gold">{{ $t('رجل المباراة') }}</h2>
@@ -101,16 +172,26 @@
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="thirds">
           <h2 id="thirds" class="font-display text-xl font-extrabold">{{ $t('أين لُعبت الكرة') }}</h2>
           <div class="flex h-24 overflow-hidden rounded-md" dir="ltr">
-            <div v-for="(v, i) in thirdsLtr" :key="i" class="flex flex-col items-center justify-center bg-pitch" :style="{ flex: Math.max(v, 8), opacity: 0.45 + v / 160 }">
+            <div
+              v-for="(v, i) in thirdsLtr"
+              :key="i"
+              class="flex flex-col items-center justify-center bg-pitch"
+              :style="{ flex: Math.max(v, 8), opacity: 0.45 + v / 160 }"
+            >
               <span class="font-numbers text-2xl">{{ v }}%</span>
             </div>
           </div>
-          <div class="flex justify-between text-xs text-text-muted" dir="ltr"><span>{{ $t('ثلث {v0}', { v0: $nm(view.clubs.home.name) }) }}</span><span>{{ $t('الوسط') }}</span><span>{{ $t('ثلث {v0}', { v0: $nm(view.clubs.away.name) }) }}</span></div>
+          <div class="flex justify-between text-xs text-text-muted" dir="ltr">
+            <span>{{ $t('ثلث {v0}', { v0: $nm(view.clubs.home.name) }) }}</span><span>{{ $t('الوسط') }}</span
+            ><span>{{ $t('ثلث {v0}', { v0: $nm(view.clubs.away.name) }) }}</span>
+          </div>
         </section>
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="momentum">
           <h2 id="momentum" class="font-display text-xl font-extrabold">{{ $t('الزخم') }}</h2>
           <div class="h-24"><Momentum :values="report.momentum" :home-color="color('home')" /></div>
-          <div class="flex justify-between text-xs text-text-muted"><span>{{ $t('البداية') }}</span><span>{{ $t('النهاية') }}</span></div>
+          <div class="flex justify-between text-xs text-text-muted">
+            <span>{{ $t('البداية') }}</span><span>{{ $t('النهاية') }}</span>
+          </div>
         </section>
       </div>
 
@@ -118,12 +199,22 @@
       <section v-if="report.formations" class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="plans">
         <h2 id="plans" class="font-display text-xl font-extrabold">{{ $t('خطتك ضد خطته') }}</h2>
         <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-center">
-          <div><b class="block font-numbers text-2xl text-gold" dir="ltr">{{ report.formations[side] ?? '-' }}</b><span class="text-sm text-text-muted">{{ $nm(view.clubs[side].name) }}</span></div>
+          <div>
+            <b class="block font-numbers text-2xl text-gold" dir="ltr">{{ report.formations[side] ?? '-' }}</b><span
+              class="text-sm text-text-muted"
+              >{{ $nm(view.clubs[side].name) }}</span
+            >
+          </div>
           <span class="text-text-muted">{{ $t('ضد') }}</span>
-          <div><b class="block font-numbers text-2xl" dir="ltr">{{ report.formations[side === 'home' ? 'away' : 'home'] ?? '-' }}</b><span class="text-sm text-text-muted">{{ $nm(view.clubs[side === 'home' ? 'away' : 'home'].name) }}</span></div>
+          <div>
+            <b class="block font-numbers text-2xl" dir="ltr">{{ report.formations[side === 'home' ? 'away' : 'home'] ?? '-' }}</b><span
+              class="text-sm text-text-muted"
+              >{{ $nm(view.clubs[side === 'home' ? 'away' : 'home'].name) }}</span
+            >
+          </div>
         </div>
         <dl class="grid grid-cols-[1fr_auto_1fr] gap-x-2 gap-y-1 text-center text-sm">
-          <template v-for="k in (['shots', 'on_target', 'corners'] as const)" :key="k">
+          <template v-for="k in ['shots', 'on_target', 'corners'] as const" :key="k">
             <dd class="font-numbers font-bold">{{ report.stats?.[side]?.[k] ?? 0 }}</dd>
             <dt class="text-text-muted">{{ $t({ shots: 'التسديدات', on_target: 'على المرمى', corners: 'الركنيات' }[k]) }}</dt>
             <dd class="font-numbers">{{ report.stats?.[side === 'home' ? 'away' : 'home']?.[k] ?? 0 }}</dd>
@@ -136,8 +227,16 @@
         <h2 id="best3" class="font-display text-xl font-extrabold">{{ $t('أفضل 3 لاعبين') }}</h2>
         <ol class="grid gap-2 sm:grid-cols-3">
           <li v-for="(p, i) in best" :key="p.id" class="flex items-center gap-3 rounded-lg bg-surface-sunk p-3">
-            <span class="grid size-9 shrink-0 place-items-center rounded-full font-numbers font-bold" :class="i === 0 ? 'bg-gold text-on-gold' : 'bg-surface-raised'">{{ i + 1 }}</span>
-            <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ p.name }}</bdi></b><span class="text-xs text-text-muted">{{ $nm(view.clubs[p.side].name) }}</span></span>
+            <span
+              class="grid size-9 shrink-0 place-items-center rounded-full font-numbers font-bold"
+              :class="i === 0 ? 'bg-gold text-on-gold' : 'bg-surface-raised'"
+              >{{ i + 1 }}</span
+            >
+            <span class="min-w-0 flex-1"
+              ><b class="block truncate"
+                ><bdi>{{ p.name }}</bdi></b
+              ><span class="text-xs text-text-muted">{{ $nm(view.clubs[p.side].name) }}</span></span
+            >
             <span class="font-numbers text-lg font-bold text-gold">{{ (p.rating / 100).toFixed(1) }}</span>
           </li>
         </ol>
@@ -148,7 +247,12 @@
         <p v-if="!events.length" class="text-sm text-text-muted">{{ $t('لا أحداث بارزة.') }}</p>
         <!-- [Sprint 30 Q8] A vertical timeline: one line down the middle, each event in time order on its team's side. -->
         <ol class="timeline relative flex flex-col gap-1">
-          <li v-for="(e, i) in events" :key="i" class="relative flex min-h-10 items-center gap-3 rounded-md px-2" :class="e.team === 'home' ? '' : 'flex-row-reverse text-end'">
+          <li
+            v-for="(e, i) in events"
+            :key="i"
+            class="relative flex min-h-10 items-center gap-3 rounded-md px-2"
+            :class="e.team === 'home' ? '' : 'flex-row-reverse text-end'"
+          >
             <span class="w-12 shrink-0 text-center font-numbers text-lg text-gold" dir="ltr">{{ $t(e.label) }}</span>
             <Icon :name="e.icon" :size="20" :class="e.tone" />
             <span class="text-sm">{{ $t(e.text) }}</span>
@@ -162,20 +266,37 @@
           <div v-for="p in report.ratings[s]" :key="p.id" class="flex min-h-9 items-center gap-2 text-sm">
             <span class="w-7 text-center font-numbers text-text-muted">{{ p.no }}</span>
             <span class="flex-1 truncate">{{ $nm(p.name) }}</span>
-            <span v-if="p.goals" class="text-xs" :aria-label="$t('{v0} هدف', { v0: p.goals })"><Icon name="ball" :size="16" class="inline-block align-[-3px]" /> {{ p.goals > 1 ? p.goals : '' }}</span>
+            <span v-if="p.goals" class="text-xs" :aria-label="$t('{v0} هدف', { v0: p.goals })"
+              ><Icon name="ball" :size="16" class="inline-block align-[-3px]" /> {{ p.goals > 1 ? p.goals : '' }}</span
+            >
             <span v-if="p.assists" class="text-xs text-text-muted">{{ $t('صناعة {v0}', { v0: p.assists }) }}</span>
-            <span class="w-10 rounded-sm text-center font-numbers text-lg" :class="p.rating >= 750 ? 'bg-pitch/30 text-success' : p.rating < 600 ? 'bg-live/20 text-danger' : 'bg-surface-raised'">{{ rating(p.rating) }}</span>
+            <span
+              class="w-10 rounded-sm text-center font-numbers text-lg"
+              :class="p.rating >= 750 ? 'bg-pitch/30 text-success' : p.rating < 600 ? 'bg-live/20 text-danger' : 'bg-surface-raised'"
+              >{{ rating(p.rating) }}</span
+            >
           </div>
         </div>
       </section>
 
       <div class="flex flex-wrap gap-3">
         <template v-if="league">
-          <RouterLink to="/match" class="flex h-14 items-center rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold">{{ $t('المباراة القادمة') }}</RouterLink>
-          <RouterLink :to="{ name: 'league-match', params: { id } }" class="flex h-14 items-center rounded-lg bg-surface px-6">{{ $t('العودة إلى المباراة') }}</RouterLink>
+          <RouterLink to="/match" class="flex h-14 items-center rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold">{{
+            $t('المباراة القادمة')
+          }}</RouterLink>
+          <RouterLink :to="{ name: 'league-match', params: { id } }" class="flex h-14 items-center rounded-lg bg-surface px-6">{{
+            $t('العودة إلى المباراة')
+          }}</RouterLink>
         </template>
-        <RouterLink v-else to="/sim" class="flex h-14 items-center rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold">{{ $t('مباراة جديدة') }}</RouterLink>
-        <span v-if="!league" class="self-center text-sm text-text-muted">{{ $t('البذرة') }} <b class="font-numbers" dir="ltr">{{ view.seed }}</b></span>
+        <RouterLink
+          v-else
+          to="/sim"
+          class="flex h-14 items-center rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold"
+          >{{ $t('مباراة جديدة') }}</RouterLink
+        >
+        <span v-if="!league" class="self-center text-sm text-text-muted"
+          >{{ $t('البذرة') }} <b class="font-numbers" dir="ltr">{{ view.seed }}</b></span
+        >
       </div>
     </template>
     <!-- [Sprint 22] The Assistant Coach, back after the live match: he reads this report too. -->
@@ -209,7 +330,11 @@ const sides: Side[] = ['home', 'away']
 const view = ref<MatchView | null>(null)
 const report = ref<any>(null)
 // The suggestion's place to act (`plan` is the tactics screen: the word stays out of reports).
-const GO: Record<string, [string, string]> = { lineup: ['/lineup', 'إلى التشكيلة'], plan: ['/tactics', 'إلى التكتيك'], training: ['/training', 'إلى التدريب'] }
+const GO: Record<string, [string, string]> = {
+  lineup: ['/lineup', 'إلى التشكيلة'],
+  plan: ['/tactics', 'إلى التكتيك'],
+  training: ['/training', 'إلى التدريب'],
+}
 const error = ref('')
 const side = ref<Side>((route.query.side as Side) || 'home')
 // [Sprint 24 W1] A league match's quick recap, over the report.
@@ -222,7 +347,8 @@ async function share() {
   sharing.value = true
   const goals = (report.value.timeline ?? []).filter((e: any) => e.type === 'goal')
   const scorers = { home: [] as string[], away: [] as string[] }
-  for (const g of goals) scorers[g.team as Side]?.push(`${names.value[g.scorer] ?? ''} ${Array.isArray(g.minute) ? g.minute[0] : g.minute}'`)
+  for (const g of goals)
+    scorers[g.team as Side]?.push(`${names.value[g.scorer] ?? ''} ${Array.isArray(g.minute) ? g.minute[0] : g.minute}'`)
   const side = (s: Side) => ({ name: nm(view.value!.clubs[s].name), color: color(s), logo: view.value!.clubs[s].logo })
   const how = await shareResult({ home: side('home'), away: side('away'), score: report.value.score, scorers })
   if (how === 'downloaded') useToast().show(t('حُفظت صورة النتيجة: شاركها من معرض الصور.'))
@@ -233,7 +359,11 @@ const rating = (r: number) => (r / 100).toFixed(1)
 
 const resultLabel = computed(() => ({ win: 'فوز', loss: 'خسارة', draw: 'تعادل' })[report.value?.result as 'win'] ?? '')
 const resultClass = computed(() =>
-  report.value?.result === 'win' ? 'bg-pitch/30 text-success' : report.value?.result === 'loss' ? 'bg-live/20 text-danger' : 'bg-surface-raised text-text-soft',
+  report.value?.result === 'win'
+    ? 'bg-pitch/30 text-success'
+    : report.value?.result === 'loss'
+      ? 'bg-live/20 text-danger'
+      : 'bg-surface-raised text-text-soft',
 )
 // Thirds come home-defence first; the pitch is drawn with home attacking left to right.
 const thirdsLtr = computed<number[]>(() => report.value?.thirds ?? [33, 34, 33])
@@ -247,26 +377,43 @@ const names = computed(() => {
 const best = computed(() => {
   const r = report.value?.ratings
   if (!r) return []
-  return (['home', 'away'] as const).flatMap((side) => (r[side] ?? []).map((p: any) => ({ ...p, side: side as 'home' | 'away' }))).sort((a: any, b: any) => b.rating - a.rating).slice(0, 3) as { id: number; name: string; rating: number; side: 'home' | 'away' }[]
+  return (['home', 'away'] as const)
+    .flatMap((side) => (r[side] ?? []).map((p: any) => ({ ...p, side: side as 'home' | 'away' })))
+    .sort((a: any, b: any) => b.rating - a.rating)
+    .slice(0, 3) as { id: number; name: string; rating: number; side: 'home' | 'away' }[]
 })
 const events = computed(() =>
-  (report.value?.timeline ?? []).filter((e: any) => !(e.type === 'penalty' && e.scored)).map((e: any) => {
-    const n = (pid: number) => names.value[pid] ?? ''
-    const [m, extra] = Array.isArray(e.minute) ? e.minute : [e.minute, 0]
-    const label = extra ? `${m}+${extra}` : `${m}'`
-    switch (e.type) {
-      case 'goal':
-        return { ...e, label, icon: 'ball' as const, tone: '', text: `${n(e.scorer)}${e.kind === 'penalty' ? ' (جزاء)' : e.kind === 'free_kick' ? ' (ركلة حرة)' : ''}${e.assist ? ` · صناعة ${n(e.assist)}` : ''}` }
-      case 'card':
-        return { ...e, label, icon: 'card' as const, tone: e.color === 'red' ? 'text-danger' : 'text-card-yellow', text: `${n(e.player)}${e.second_yellow ? ' (إنذار ثانٍ)' : ''}` }
-      case 'sub':
-        return { ...e, label, icon: 'swap' as const, tone: 'text-brand-light', text: `دخل ${n(e.in)} وخرج ${n(e.out)}` }
-      case 'injury':
-        return { ...e, label, icon: 'injury' as const, tone: 'text-danger', text: `إصابة ${n(e.player)}` }
-      default:
-        return { ...e, label, icon: 'target' as const, tone: '', text: `ركلة جزاء ${e.scored ? 'سجلها' : 'أضاعها'} ${n(e.taker)}` }
-    }
-  }),
+  (report.value?.timeline ?? [])
+    .filter((e: any) => !(e.type === 'penalty' && e.scored))
+    .map((e: any) => {
+      const n = (pid: number) => names.value[pid] ?? ''
+      const [m, extra] = Array.isArray(e.minute) ? e.minute : [e.minute, 0]
+      const label = extra ? `${m}+${extra}` : `${m}'`
+      switch (e.type) {
+        case 'goal':
+          return {
+            ...e,
+            label,
+            icon: 'ball' as const,
+            tone: '',
+            text: `${n(e.scorer)}${e.kind === 'penalty' ? ' (جزاء)' : e.kind === 'free_kick' ? ' (ركلة حرة)' : ''}${e.assist ? ` · صناعة ${n(e.assist)}` : ''}`,
+          }
+        case 'card':
+          return {
+            ...e,
+            label,
+            icon: 'card' as const,
+            tone: e.color === 'red' ? 'text-danger' : 'text-card-yellow',
+            text: `${n(e.player)}${e.second_yellow ? ' (إنذار ثانٍ)' : ''}`,
+          }
+        case 'sub':
+          return { ...e, label, icon: 'swap' as const, tone: 'text-brand-light', text: `دخل ${n(e.in)} وخرج ${n(e.out)}` }
+        case 'injury':
+          return { ...e, label, icon: 'injury' as const, tone: 'text-danger', text: `إصابة ${n(e.player)}` }
+        default:
+          return { ...e, label, icon: 'target' as const, tone: '', text: `ركلة جزاء ${e.scored ? 'سجلها' : 'أضاعها'} ${n(e.taker)}` }
+      }
+    }),
 )
 
 async function load(s: Side) {
@@ -291,12 +438,16 @@ onMounted(async () => {
 
 <style scoped>
 .score-board {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 40%, transparent), var(--color-panel)), url("/art/stadium-blur-1920.webp") center / cover;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 40%, transparent), var(--color-panel)),
+    url('/art/stadium-blur-1920.webp') center / cover;
   border: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
   box-shadow: 0 24px 50px -24px color-mix(in srgb, var(--color-shade) 90%, transparent);
 }
 .score-band {
-  background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
+  background:
+    url('/art/pattern-star.svg') center / 40px 40px repeat,
+    linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
   background-blend-mode: soft-light, normal;
 }
 .score-disc {
@@ -306,9 +457,20 @@ onMounted(async () => {
   height: 4.75rem;
   border-radius: 999px;
   background: radial-gradient(circle at 50% 30%, #ffffff, var(--color-chrome) 55%, var(--color-chrome-dark));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-light) 55%, transparent), 0 12px 24px -10px color-mix(in srgb, var(--color-shade) 80%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--color-brand-light) 55%, transparent),
+    0 12px 24px -10px color-mix(in srgb, var(--color-shade) 80%, transparent);
 }
 /* [Sprint 30 Q8] The timeline's spine. */
-.timeline::before { content: ''; position: absolute; inset-block: 0.25rem; inset-inline-start: 50%; width: 2px; background: color-mix(in srgb, var(--color-gold) 35%, transparent); }
-.timeline li { background: var(--color-surface); }
+.timeline::before {
+  content: '';
+  position: absolute;
+  inset-block: 0.25rem;
+  inset-inline-start: 50%;
+  width: 2px;
+  background: color-mix(in srgb, var(--color-gold) 35%, transparent);
+}
+.timeline li {
+  background: var(--color-surface);
+}
 </style>

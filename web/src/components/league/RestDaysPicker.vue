@@ -3,10 +3,22 @@
 // at most, free. ISO weekdays as the server keeps them (1 Monday to 7 Sunday), shown from Saturday.
 const model = defineModel<number[]>({ required: true })
 defineProps<{ error?: string }>()
-const DAYS: [number, string][] = [[6, 'السبت'], [7, 'الأحد'], [1, 'الاثنين'], [2, 'الثلاثاء'], [3, 'الأربعاء'], [4, 'الخميس'], [5, 'الجمعة']]
+const DAYS: [number, string][] = [
+  [6, 'السبت'],
+  [7, 'الأحد'],
+  [1, 'الاثنين'],
+  [2, 'الثلاثاء'],
+  [3, 'الأربعاء'],
+  [4, 'الخميس'],
+  [5, 'الجمعة'],
+]
 const MAX = 3
 function toggle(d: number) {
-  model.value = model.value.includes(d) ? model.value.filter((x) => x !== d) : model.value.length < MAX ? [...model.value, d].sort() : model.value
+  model.value = model.value.includes(d)
+    ? model.value.filter((x) => x !== d)
+    : model.value.length < MAX
+      ? [...model.value, d].sort()
+      : model.value
 }
 </script>
 
@@ -23,7 +35,9 @@ function toggle(d: number) {
         :aria-pressed="model.includes(d)"
         :disabled="!model.includes(d) && model.length >= MAX"
         @click="toggle(d)"
-      >{{ $t(label) }}</button>
+      >
+        {{ $t(label) }}
+      </button>
     </div>
     <span v-if="error" class="text-sm text-danger">{{ error }}</span>
   </fieldset>

@@ -35,8 +35,19 @@ async function submit() {
   <!-- [X89] Where the link went, and how to find it out of spam. -->
   <MailSentNote v-if="sent" :to="email.trim()" resend :busy="busy" @resend="submit" />
   <form v-else class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-    <UiInput v-model="email" :label="$t('البريد الإلكتروني')" type="email" autocomplete="email" placeholder="you@example.com" :error="error" />
-    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الإرسال…') : $t('أرسل الرابط') }}</button>
+    <UiInput
+      v-model="email"
+      :label="$t('البريد الإلكتروني')"
+      type="email"
+      autocomplete="email"
+      placeholder="you@example.com"
+      :error="error"
+    />
+    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">
+      {{ busy ? $t('جارٍ الإرسال…') : $t('أرسل الرابط') }}
+    </button>
   </form>
-  <p class="text-center text-sm text-text-muted"><RouterLink to="/login" class="font-bold text-gold">{{ $t('العودة للدخول') }}</RouterLink></p>
+  <p class="text-center text-sm text-text-muted">
+    <RouterLink to="/login" class="font-bold text-gold">{{ $t('العودة للدخول') }}</RouterLink>
+  </p>
 </template>

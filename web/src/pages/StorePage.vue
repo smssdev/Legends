@@ -12,7 +12,12 @@ const offers = computed(() => (items.value ?? []).filter((i) => i.kind === 'offe
 const packages = computed(() => (items.value ?? []).filter((i) => i.kind === 'package'))
 
 onMounted(async () => {
-  try { items.value = (await api.GET('/store')).data!.items } catch (e) { error.value = asApiError(e).message; items.value = [] }
+  try {
+    items.value = (await api.GET('/store')).data!.items
+  } catch (e) {
+    error.value = asApiError(e).message
+    items.value = []
+  }
 })
 </script>
 

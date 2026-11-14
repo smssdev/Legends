@@ -25,19 +25,45 @@ const toast = useToast()
 const PLAYER = ['name', 'position', 'line', 'age', 'nationality', 'overall', 'potential', 'value', 'master_club_id'] as const
 const CLUB = ['name', 'code', 'league_name', 'color_primary', 'color_secondary', 'kit_pattern', 'away_color', 'away_pattern'] as const
 // [X76] The kit's pattern, in the club's two colours (none set is plain).
-const PATTERNS = [['plain', 'سادة'], ['stripes', 'خطوط طولية'], ['hoops', 'خطوط عرضية'], ['halves', 'نصفان'], ['sash', 'حزام مائل']]
+const PATTERNS = [
+  ['plain', 'سادة'],
+  ['stripes', 'خطوط طولية'],
+  ['hoops', 'خطوط عرضية'],
+  ['halves', 'نصفان'],
+  ['sash', 'حزام مائل'],
+]
 const NUM = ['age', 'overall', 'potential', 'value', 'master_club_id']
-const LABEL: Record<string, string> = { name: 'الاسم', position: 'المركز', line: 'الخط', age: 'العمر', nationality: 'الجنسية', overall: 'القوة', potential: 'الإمكانية',
-  value: 'القيمة', master_club_id: 'رقم النادي', code: 'الرمز', league_name: 'الدوري', color_primary: 'اللون الأول', color_secondary: 'اللون الثاني', kit_pattern: 'نقش القميص', away_color: 'لون الطقم الاحتياطي', away_pattern: 'نقش الطقم الاحتياطي' }
+const LABEL: Record<string, string> = {
+  name: 'الاسم',
+  position: 'المركز',
+  line: 'الخط',
+  age: 'العمر',
+  nationality: 'الجنسية',
+  overall: 'القوة',
+  potential: 'الإمكانية',
+  value: 'القيمة',
+  master_club_id: 'رقم النادي',
+  code: 'الرمز',
+  league_name: 'الدوري',
+  color_primary: 'اللون الأول',
+  color_secondary: 'اللون الثاني',
+  kit_pattern: 'نقش القميص',
+  away_color: 'لون الطقم الاحتياطي',
+  away_pattern: 'نقش الطقم الاحتياطي',
+}
 const fields = () => (kind.value === 'players' ? PLAYER : CLUB)
 
 async function search() {
-  try { rows.value = (await api.GET('/admin/data', { params: { query: { kind: kind.value, q: q.value || undefined } } })).data!.rows } catch (e) { toast.show(asApiError(e).message, 'error') }
+  try {
+    rows.value = (await api.GET('/admin/data', { params: { query: { kind: kind.value, q: q.value || undefined } } })).data!.rows
+  } catch (e) {
+    toast.show(asApiError(e).message, 'error')
+  }
 }
 function open(row: Row | null) {
   for (const k of Object.keys(form)) delete form[k]
   const plain = (f: string) => f === 'kit_pattern' || f === 'away_pattern'
-  for (const f of fields()) form[f] = row ? row[f] ?? (plain(f) ? 'plain' : '') : f === 'line' ? 'mid' : plain(f) ? 'plain' : ''
+  for (const f of fields()) form[f] = row ? (row[f] ?? (plain(f) ? 'plain' : '')) : f === 'line' ? 'mid' : plain(f) ? 'plain' : ''
   editing.value = row
   creating.value = !row
 }
@@ -46,13 +72,18 @@ async function save() {
   const body: Row = {}
   for (const f of fields()) {
     if (form[f] === '' || form[f] === null) continue
-    if (editing.value && String(editing.value[f] ?? (f === 'kit_pattern' || f === 'away_pattern' ? 'plain' : '')) === String(form[f])) continue
+    if (editing.value && String(editing.value[f] ?? (f === 'kit_pattern' || f === 'away_pattern' ? 'plain' : '')) === String(form[f]))
+      continue
     body[f] = NUM.includes(f) ? Number(form[f]) : form[f]
   }
   try {
     await ensureCsrf()
     const one = kind.value === 'players' ? 'players' : 'clubs'
-    if (editing.value) await api.PATCH(`/admin/data/${one}/{id}` as '/admin/data/players/{id}', { params: { path: { id: editing.value.id } }, body: body as never })
+    if (editing.value)
+      await api.PATCH(`/admin/data/${one}/{id}` as '/admin/data/players/{id}', {
+        params: { path: { id: editing.value.id } },
+        body: body as never,
+      })
     else await api.POST(`/admin/data/${one}` as '/admin/data/players', { body: body as never })
     toast.show(t('حُفظ التعديل وسُجّل.'))
     editing.value = null
@@ -81,7 +112,9 @@ async function remove() {
   busy.value = false
 }
 async function loadLeagues() {
-  try { leagues.value = (await api.GET('/admin/data/leagues')).data!.leagues } catch {}
+  try {
+    leagues.value = (await api.GET('/admin/data/leagues')).data!.leagues
+  } catch {}
 }
 onMounted(() => Promise.all([search(), loadLeagues()]))
 </script>
@@ -89,9 +122,29 @@ onMounted(() => Promise.all([search(), loadLeagues()]))
 <template>
   <section class="flex flex-col gap-3" :aria-label="$t('محرر البيانات')">
     <div class="flex flex-wrap items-center gap-2">
-      <UiTabs :model-value="kind" :items="[{ key: 'players', label: 'اللاعبون' }, { key: 'clubs', label: 'الأندية' }]" label="محرر البيانات" size="sm" @update:model-value="(v) => { kind = v as 'players' | 'clubs'; search() }" />
+      <UiTabs
+        :model-value="kind"
+        :items="[
+          { key: 'players', label: 'اللاعبون' },
+          { key: 'clubs', label: 'الأندية' },
+        ]"
+        label="محرر البيانات"
+        size="sm"
+        @update:model-value="
+          (v) => {
+            kind = v as 'players' | 'clubs'
+            search()
+          }
+        "
+      />
       <form class="flex min-w-0 flex-1 gap-2" @submit.prevent="search">
-        <input v-model="q" dir="auto" class="h-11 min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" :placeholder="$t('ابحث بالاسم')" :aria-label="$t('ابحث بالاسم')" />
+        <input
+          v-model="q"
+          dir="auto"
+          class="h-11 min-w-0 flex-1 rounded-lg bg-surface-sunk px-3"
+          :placeholder="$t('ابحث بالاسم')"
+          :aria-label="$t('ابحث بالاسم')"
+        />
         <button type="submit" class="h-11 rounded-lg bg-surface-raised px-4 font-bold">{{ $t('ابحث') }}</button>
       </form>
       <UiButton variant="outline" @click="open(null)">{{ kind === 'players' ? $t('لاعب جديد') : $t('نادٍ جديد') }}</UiButton>
@@ -99,31 +152,86 @@ onMounted(() => Promise.all([search(), loadLeagues()]))
     <ul class="flex flex-col rounded-xl bg-surface p-2">
       <li v-for="r in rows" :key="r.id" class="flex min-h-touch items-center gap-2 border-t border-text/5 px-2 text-sm first:border-0">
         <span class="w-12 font-numbers text-xs text-text-muted" dir="ltr">#{{ r.id }}</span>
-        <span class="min-w-0 flex-1 truncate"><b><bdi>{{ r.name }}</bdi></b> <span class="text-xs text-text-muted">{{ kind === 'players' ? `${r.position} · ${r.age} · ${r.club}` : r.league_name }}</span></span>
+        <span class="min-w-0 flex-1 truncate"
+          ><b
+            ><bdi>{{ r.name }}</bdi></b
+          >
+          <span class="text-xs text-text-muted">{{
+            kind === 'players' ? `${r.position} · ${r.age} · ${r.club}` : r.league_name
+          }}</span></span
+        >
         <span v-if="kind === 'players'" class="font-numbers" dir="ltr">{{ r.overall }}/{{ r.potential }} · {{ money(r.value) }}</span>
-        <button type="button" class="h-9 rounded-md px-2 text-xs font-bold text-gold hover:bg-gold/10" @click="open(r)">{{ $t('تعديل') }}</button>
-        <button v-if="kind === 'players'" type="button" class="h-9 rounded-md px-2 text-xs font-bold text-danger hover:bg-live/10" @click="removing = r">{{ $t('حذف') }}</button>
+        <button type="button" class="h-9 rounded-md px-2 text-xs font-bold text-gold hover:bg-gold/10" @click="open(r)">
+          {{ $t('تعديل') }}
+        </button>
+        <button
+          v-if="kind === 'players'"
+          type="button"
+          class="h-9 rounded-md px-2 text-xs font-bold text-danger hover:bg-live/10"
+          @click="removing = r"
+        >
+          {{ $t('حذف') }}
+        </button>
       </li>
       <li v-if="!rows.length" class="p-3 text-sm text-text-muted">{{ $t('لا نتائج') }}</li>
     </ul>
     <section class="rounded-xl bg-surface p-3" :aria-label="$t('دوريات البيانات')">
       <h3 class="mb-2 font-bold">{{ $t('دوريات البيانات') }}</h3>
       <div class="flex flex-wrap gap-1.5">
-        <span v-for="l in leagues" :key="l.name" class="rounded-pill px-2.5 py-1 text-xs" :class="l.too_small ? 'bg-live/15 text-danger' : 'bg-surface-sunk'">{{ l.name }} · <b class="font-numbers">{{ l.clubs }}</b></span>
+        <span
+          v-for="l in leagues"
+          :key="l.name"
+          class="rounded-pill px-2.5 py-1 text-xs"
+          :class="l.too_small ? 'bg-live/15 text-danger' : 'bg-surface-sunk'"
+          >{{ l.name }} · <b class="font-numbers">{{ l.clubs }}</b></span
+        >
       </div>
       <p class="mt-2 text-xs text-text-muted">{{ $t('الأحمر أقل من 6 أندية: لا يظهر في «أنشئ دورياً» حتى يكتمل.') }}</p>
     </section>
-    <UiDialog :open="!!editing || creating" :title="editing ? 'تعديل' : kind === 'players' ? 'لاعب جديد' : 'نادٍ جديد'" @close="editing = null; creating = false">
+    <UiDialog
+      :open="!!editing || creating"
+      :title="editing ? 'تعديل' : kind === 'players' ? 'لاعب جديد' : 'نادٍ جديد'"
+      @close="((editing = null), (creating = false))"
+    >
       <form class="grid grid-cols-2 gap-2" @submit.prevent="save">
-        <label v-for="f in fields()" :key="f" class="flex flex-col gap-1 text-xs text-text-muted" :class="f === 'name' ? 'col-span-2' : ''">{{ $t(LABEL[f]) }}
-          <select v-if="f === 'line'" v-model="form[f]" class="h-11 rounded-md bg-surface-sunk px-2 text-text"><option v-for="l in ['gk', 'def', 'mid', 'att']" :key="l" :value="l">{{ l }}</option></select>
-          <select v-else-if="f === 'kit_pattern' || f === 'away_pattern'" v-model="form[f]" class="h-11 rounded-md bg-surface-sunk px-2 text-text"><option v-for="[v, l] in PATTERNS" :key="v" :value="v">{{ $t(l) }}</option></select>
-          <input v-else v-model="form[f]" :type="NUM.includes(f) ? 'number' : 'text'" class="h-11 rounded-md bg-surface-sunk px-2 text-sm text-text" :dir="f === 'name' ? 'auto' : 'ltr'" />
+        <label v-for="f in fields()" :key="f" class="flex flex-col gap-1 text-xs text-text-muted" :class="f === 'name' ? 'col-span-2' : ''"
+          >{{ $t(LABEL[f]) }}
+          <select v-if="f === 'line'" v-model="form[f]" class="h-11 rounded-md bg-surface-sunk px-2 text-text">
+            <option v-for="l in ['gk', 'def', 'mid', 'att']" :key="l" :value="l">{{ l }}</option>
+          </select>
+          <select
+            v-else-if="f === 'kit_pattern' || f === 'away_pattern'"
+            v-model="form[f]"
+            class="h-11 rounded-md bg-surface-sunk px-2 text-text"
+          >
+            <option v-for="[v, l] in PATTERNS" :key="v" :value="v">{{ $t(l) }}</option>
+          </select>
+          <input
+            v-else
+            v-model="form[f]"
+            :type="NUM.includes(f) ? 'number' : 'text'"
+            class="h-11 rounded-md bg-surface-sunk px-2 text-sm text-text"
+            :dir="f === 'name' ? 'auto' : 'ltr'"
+          />
         </label>
-        <div class="col-span-2 mt-2 flex gap-2"><UiButton type="submit" block :loading="busy">{{ $t('احفظ') }}</UiButton><UiButton variant="quiet" @click="editing = null; creating = false">{{ $t('إلغاء') }}</UiButton></div>
+        <div class="col-span-2 mt-2 flex gap-2">
+          <UiButton type="submit" block :loading="busy">{{ $t('احفظ') }}</UiButton><UiButton
+            variant="quiet"
+            @click="((editing = null), (creating = false))"
+            >{{ $t('إلغاء') }}</UiButton
+          >
+        </div>
       </form>
     </UiDialog>
-    <ConfirmDangerDialog :open="!!removing" title="حذف لاعب" :expected="removing?.name ?? ''" action="احذف اللاعب نهائياً" :busy="busy"
-      text="يُحذف من بيانات اللعبة ولا يعود، ويُسجّل الحذف. ولا يُحذف لاعب أخذه دوري قائم." @close="removing = null" @confirm="remove" />
+    <ConfirmDangerDialog
+      :open="!!removing"
+      title="حذف لاعب"
+      :expected="removing?.name ?? ''"
+      action="احذف اللاعب نهائياً"
+      :busy="busy"
+      text="يُحذف من بيانات اللعبة ولا يعود، ويُسجّل الحذف. ولا يُحذف لاعب أخذه دوري قائم."
+      @close="removing = null"
+      @confirm="remove"
+    />
   </section>
 </template>

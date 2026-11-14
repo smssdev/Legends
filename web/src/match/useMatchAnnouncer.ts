@@ -24,16 +24,26 @@ export function useMatchAnnouncer(d: {
 }) {
   const said = ref('')
   let seen = d.feed.value.length
-  watch(() => d.feed.value.length, (n) => {
-    if (n < seen) { seen = n; return }          // a fresh feed (the match again): nothing to say
-    const added = d.feed.value.slice(0, n - seen)
-    seen = n
-    if (d.skipping.value) return
-    const line = announcement(added, d.score.value, d.scoreWord)
-    if (line) said.value = line
-  })
+  watch(
+    () => d.feed.value.length,
+    (n) => {
+      if (n < seen) {
+        seen = n
+        return
+      } // a fresh feed (the match again): nothing to say
+      const added = d.feed.value.slice(0, n - seen)
+      seen = n
+      if (d.skipping.value) return
+      const line = announcement(added, d.score.value, d.scoreWord)
+      if (line) said.value = line
+    },
+  )
   // At the end of a skip ahead: the score where it landed.
-  watch(d.skipping, (on, was) => { if (was && !on) said.value = d.scoreWord(d.score.value.home, d.score.value.away) })
-  watch(d.windowOn, (on) => { if (on) said.value = d.windowWord() })
+  watch(d.skipping, (on, was) => {
+    if (was && !on) said.value = d.scoreWord(d.score.value.home, d.score.value.away)
+  })
+  watch(d.windowOn, (on) => {
+    if (on) said.value = d.windowWord()
+  })
   return { said }
 }

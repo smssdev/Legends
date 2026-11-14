@@ -12,14 +12,24 @@ export const router = createRouter({
       path: '/',
       component: () => import('./layouts/AppShell.vue'),
       children: [
-        { path: '', name: 'home', component: () => import('./pages/Home.vue'), meta: { wide: true } },  // [Sprint 21 E3.4] wider on a computer
-        ...SECTIONS.filter((s) => s.sprint).map((s) => ({ path: s.path.slice(1), name: s.name, component: () => import('./pages/ComingSoon.vue') })),
+        { path: '', name: 'home', component: () => import('./pages/Home.vue'), meta: { wide: true } }, // [Sprint 21 E3.4] wider on a computer
+        ...SECTIONS.filter((s) => s.sprint).map((s) => ({
+          path: s.path.slice(1),
+          name: s.name,
+          component: () => import('./pages/ComingSoon.vue'),
+        })),
         { path: 'sim', name: 'sim-setup', component: () => import('./pages/SimSetup.vue') },
         { path: 'profile', name: 'profile', component: () => import('./pages/Profile.vue'), meta: { auth: true } },
         // Sprint 13: private leagues and the way in
         { path: 'leagues', name: 'leagues', component: () => import('./pages/leagues/MyLeagues.vue'), meta: { auth: true } },
         { path: 'leagues/new', name: 'create-league', component: () => import('./pages/leagues/CreateLeague.vue'), meta: { auth: true } },
-        { path: 'leagues/:id(\\d+)', name: 'league-home', component: () => import('./pages/leagues/LeagueHome.vue'), props: true, meta: { auth: true } },
+        {
+          path: 'leagues/:id(\\d+)',
+          name: 'league-home',
+          component: () => import('./pages/leagues/LeagueHome.vue'),
+          props: true,
+          meta: { auth: true },
+        },
         // Sprint 37: the admin panel (the admin only, after the two-step code)
         { path: 'admin', name: 'admin', component: () => import('./pages/AdminPage.vue'), meta: { auth: true, admin: true } },
         // Sprint 34: the coins wallet and the shop
@@ -27,15 +37,51 @@ export const router = createRouter({
         // [Sprint 43 W2] The store: packages and timed offers, ordered by WhatsApp.
         { path: 'store', name: 'store', component: () => import('./pages/StorePage.vue'), meta: { auth: true } },
         // Sprint 33: a coach's profile
-        { path: 'coaches/:id(\\d+)', name: 'coach', component: () => import('./pages/leagues/CoachProfile.vue'), props: true, meta: { auth: true } },
+        {
+          path: 'coaches/:id(\\d+)',
+          name: 'coach',
+          component: () => import('./pages/leagues/CoachProfile.vue'),
+          props: true,
+          meta: { auth: true },
+        },
         // [X27] The alliance tournament
-        { path: 'leagues/:id(\\d+)/alliance', name: 'league-alliance', component: () => import('./pages/leagues/AlliancePage.vue'), props: true, meta: { auth: true } },
+        {
+          path: 'leagues/:id(\\d+)/alliance',
+          name: 'league-alliance',
+          component: () => import('./pages/leagues/AlliancePage.vue'),
+          props: true,
+          meta: { auth: true },
+        },
         // [X26] The live draw
-        { path: 'leagues/:id(\\d+)/draw', name: 'league-draw', component: () => import('./pages/leagues/DrawPage.vue'), props: true, meta: { auth: true } },
+        {
+          path: 'leagues/:id(\\d+)/draw',
+          name: 'league-draw',
+          component: () => import('./pages/leagues/DrawPage.vue'),
+          props: true,
+          meta: { auth: true },
+        },
         // [UP12] The league's media
-        { path: 'leagues/:id(\\d+)/predictions', name: 'league-predictions', component: () => import('./pages/leagues/PredictionsPage.vue'), props: true, meta: { auth: true } },
-        { path: 'leagues/:id(\\d+)/newspaper', name: 'league-newspaper', component: () => import('./pages/leagues/NewspaperPage.vue'), props: true, meta: { auth: true } },
-        { path: 'leagues/:id(\\d+)/pick', name: 'pick-team', component: () => import('./pages/leagues/PickTeam.vue'), props: true, meta: { auth: true } },
+        {
+          path: 'leagues/:id(\\d+)/predictions',
+          name: 'league-predictions',
+          component: () => import('./pages/leagues/PredictionsPage.vue'),
+          props: true,
+          meta: { auth: true },
+        },
+        {
+          path: 'leagues/:id(\\d+)/newspaper',
+          name: 'league-newspaper',
+          component: () => import('./pages/leagues/NewspaperPage.vue'),
+          props: true,
+          meta: { auth: true },
+        },
+        {
+          path: 'leagues/:id(\\d+)/pick',
+          name: 'pick-team',
+          component: () => import('./pages/leagues/PickTeam.vue'),
+          props: true,
+          meta: { auth: true },
+        },
         // Sprint 16: my club in the current league
         // [Sprint 20] The club board, the friendlies and the weekly quests.
         { path: 'club', name: 'club', component: () => import('./pages/team/ClubBoard.vue'), meta: { auth: true, fit: true } },
@@ -66,16 +112,49 @@ export const router = createRouter({
         { path: 'support', name: 'support', component: () => import('./pages/SupportPage.vue'), meta: { auth: true } },
         // [Sprint 28] The development ideas: suggestions, polls and the honour roll.
         { path: 'ideas', name: 'ideas', component: () => import('./pages/IdeasPage.vue'), meta: { auth: true } },
-        { path: 'fixtures', name: 'fixtures', component: () => import('./pages/leagues/FixturesPage.vue'), meta: { auth: true, fit: true } },
+        {
+          path: 'fixtures',
+          name: 'fixtures',
+          component: () => import('./pages/leagues/FixturesPage.vue'),
+          meta: { auth: true, fit: true },
+        },
         { path: 'league', name: 'league', redirect: '/leagues' },
         // Sprint 22: the inbox
         // [Sprint 29] The chat groups and the tournaments (the draw fills the screen, below).
         { path: 'groups', name: 'groups', component: () => import('./pages/groups/GroupsPage.vue'), meta: { auth: true } },
-        { path: 'groups/join/:code', name: 'group-join', component: () => import('./pages/groups/JoinGroup.vue'), props: true, meta: { auth: true } },
-        { path: 'groups/:id(\\d+)', name: 'group', component: () => import('./pages/groups/GroupChat.vue'), props: true, meta: { auth: true } },
-        { path: 'tournaments', name: 'tournaments', component: () => import('./pages/tournaments/TournamentsPage.vue'), meta: { auth: true } },
-        { path: 'tournaments/new', name: 'create-tournament', component: () => import('./pages/tournaments/CreateTournament.vue'), meta: { auth: true } },
-        { path: 'tournaments/:id(\\d+)', name: 'tournament', component: () => import('./pages/tournaments/TournamentPage.vue'), props: true, meta: { auth: true } },
+        {
+          path: 'groups/join/:code',
+          name: 'group-join',
+          component: () => import('./pages/groups/JoinGroup.vue'),
+          props: true,
+          meta: { auth: true },
+        },
+        {
+          path: 'groups/:id(\\d+)',
+          name: 'group',
+          component: () => import('./pages/groups/GroupChat.vue'),
+          props: true,
+          meta: { auth: true },
+        },
+        {
+          path: 'tournaments',
+          name: 'tournaments',
+          component: () => import('./pages/tournaments/TournamentsPage.vue'),
+          meta: { auth: true },
+        },
+        {
+          path: 'tournaments/new',
+          name: 'create-tournament',
+          component: () => import('./pages/tournaments/CreateTournament.vue'),
+          meta: { auth: true },
+        },
+        {
+          path: 'tournaments/:id(\\d+)',
+          name: 'tournament',
+          component: () => import('./pages/tournaments/TournamentPage.vue'),
+          props: true,
+          meta: { auth: true },
+        },
         { path: 'inbox', name: 'inbox', component: () => import('./pages/Inbox.vue'), meta: { auth: true } },
         // [X54] The developers' announcements as cards.
         { path: 'announcements', name: 'announcements', component: () => import('./pages/AnnouncementsPage.vue'), meta: { auth: true } },
@@ -118,12 +197,35 @@ export const router = createRouter({
     { path: '/guide', name: 'guide', component: () => import('./pages/GuidePage.vue') },
     // The match and its report fill the screen
     // A league match, live from the server (Sprint 18): the simulator's viewer on the league's match
-    { path: '/tournaments/:id(\\d+)/draw', name: 'tournament-draw', component: () => import('./pages/tournaments/TournamentDraw.vue'), props: true, meta: { auth: true } },
-    { path: '/live/:id(\\d+)', name: 'league-match', component: () => import('./pages/SimMatch.vue'), props: (r) => ({ id: String(r.params.id), league: true }), meta: { auth: true } },
+    {
+      path: '/tournaments/:id(\\d+)/draw',
+      name: 'tournament-draw',
+      component: () => import('./pages/tournaments/TournamentDraw.vue'),
+      props: true,
+      meta: { auth: true },
+    },
+    {
+      path: '/live/:id(\\d+)',
+      name: 'league-match',
+      component: () => import('./pages/SimMatch.vue'),
+      props: (r) => ({ id: String(r.params.id), league: true }),
+      meta: { auth: true },
+    },
     // Its report, "why you won or lost", for the coach (Sprint 20)
-    { path: '/live/:id(\\d+)/report', name: 'league-report', component: () => import('./pages/SimReport.vue'), props: { league: true }, meta: { auth: true } },
+    {
+      path: '/live/:id(\\d+)/report',
+      name: 'league-report',
+      component: () => import('./pages/SimReport.vue'),
+      props: { league: true },
+      meta: { auth: true },
+    },
     { path: '/sim/room', name: 'sim-room-new', component: () => import('./pages/SimRoom.vue') },
-    { path: '/sim/room/:room', name: 'sim-room', component: () => import('./pages/SimRoom.vue'), props: (r) => ({ code: String(r.params.room) }) },
+    {
+      path: '/sim/room/:room',
+      name: 'sim-room',
+      component: () => import('./pages/SimRoom.vue'),
+      props: (r) => ({ code: String(r.params.room) }),
+    },
     // [Sprint 64 W1] The new coach's first match, right after the sign-up.
     { path: '/intro', name: 'intro', component: () => import('./pages/IntroStart.vue'), meta: { auth: true } },
     { path: '/sim/:id', name: 'sim-match', component: () => import('./pages/SimMatch.vue'), props: true },

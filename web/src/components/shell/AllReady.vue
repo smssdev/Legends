@@ -18,26 +18,47 @@ onMounted(async () => {
   try {
     const s = (await api.GET('/notifications')).data
     reminded.value = !!s?.kinds.find((k) => k.kind === 'match_soon')?.on
-  } catch { reminded.value = null }
+  } catch {
+    reminded.value = null
+  }
 })
-const remind = () => act('remind', async () => {
-  await ensureCsrf()
-  await api.PUT('/notifications', { body: { kinds: { match_soon: true } } })
-  reminded.value = true
-}, { success: t('سنذكّرك بتشكيلتك قبل المباراة بساعة، وبالمباراة قبلها بنصف ساعة.') })
+const remind = () =>
+  act(
+    'remind',
+    async () => {
+      await ensureCsrf()
+      await api.PUT('/notifications', { body: { kinds: { match_soon: true } } })
+      reminded.value = true
+    },
+    { success: t('سنذكّرك بتشكيلتك قبل المباراة بساعة، وبالمباراة قبلها بنصف ساعة.') },
+  )
 </script>
 
 <template>
   <div class="ready" role="status">
     <Character model="A1" mood="joy" class="ready-face" />
     <b>{{ $t('كل شيء جاهز') }}</b>
-    <span v-if="at && countdown(at, now)" class="ready-when">{{ $t('مباراتك بعد') }} <bdi class="font-numbers" dir="ltr">{{ countdown(at, now) }}</bdi></span>
+    <span v-if="at && countdown(at, now)" class="ready-when"
+      >{{ $t('مباراتك بعد') }} <bdi class="font-numbers" dir="ltr">{{ countdown(at, now) }}</bdi></span
+    >
     <UiButton v-if="reminded === false" size="sm" variant="outline" @click="remind">{{ $t('ذكّرني قبل المباراة') }}</UiButton>
   </div>
 </template>
 
 <style scoped>
-.ready { display: flex; flex-direction: column; align-items: center; gap: var(--space-xs); padding-block: var(--space-md); text-align: center; }
-.ready-face { inline-size: 56px; }
-.ready-when { font-size: var(--text-caption); color: var(--color-text-muted); }
+.ready {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding-block: var(--space-md);
+  text-align: center;
+}
+.ready-face {
+  inline-size: 56px;
+}
+.ready-when {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
 </style>

@@ -14,8 +14,12 @@ const route = useRoute()
     <p class="max-w-sm text-text-muted">{{ $t('ربما تغيّر الرابط أو كُتب خطأ.') }}</p>
     <code class="max-w-full truncate rounded bg-surface-sunk px-2 py-1 text-xs text-text-muted" dir="ltr">{{ route.fullPath }}</code>
     <div class="mt-2 flex flex-wrap justify-center gap-2">
-      <RouterLink to="/" class="flex min-h-touch items-center rounded-lg bg-gold px-5 font-bold text-on-gold">{{ $t('العودة للرئيسية') }}</RouterLink>
-      <RouterLink to="/leagues" class="flex min-h-touch items-center rounded-lg border border-text/25 px-5 font-bold">{{ $t('دورياتي') }}</RouterLink>
+      <RouterLink to="/" class="flex min-h-touch items-center rounded-lg bg-gold px-5 font-bold text-on-gold">{{
+        $t('العودة للرئيسية')
+      }}</RouterLink>
+      <RouterLink to="/leagues" class="flex min-h-touch items-center rounded-lg border border-text/25 px-5 font-bold">{{
+        $t('دورياتي')
+      }}</RouterLink>
     </div>
   </div>
 </template>

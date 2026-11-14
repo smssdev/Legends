@@ -7,7 +7,15 @@
 
 <template>
   <div class="pointer-events-none fixed inset-0 z-[-1] overflow-hidden text-text" aria-hidden="true">
-    <svg class="absolute inset-0 size-full" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <svg
+      class="absolute inset-0 size-full"
+      viewBox="0 0 1600 1000"
+      preserveAspectRatio="xMidYMid slice"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
       <defs>
         <filter id="chalk" x="-5%" y="-5%" width="110%" height="110%">
           <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="grain" />
@@ -44,9 +52,16 @@
           <path d="M210 0 V320 M0 160 H420" opacity="0.5" />
           <circle cx="210" cy="160" r="40" opacity="0.5" />
           <circle cx="210" cy="292" r="9" />
-          <circle cx="70" cy="240" r="9" /><circle cx="160" cy="250" r="9" /><circle cx="260" cy="250" r="9" /><circle cx="350" cy="240" r="9" />
-          <circle cx="120" cy="180" r="9" /><circle cx="210" cy="190" r="9" /><circle cx="300" cy="180" r="9" />
-          <circle cx="90" cy="90" r="9" /><circle cx="210" cy="70" r="9" /><circle cx="330" cy="90" r="9" />
+          <circle cx="70" cy="240" r="9" />
+          <circle cx="160" cy="250" r="9" />
+          <circle cx="260" cy="250" r="9" />
+          <circle cx="350" cy="240" r="9" />
+          <circle cx="120" cy="180" r="9" />
+          <circle cx="210" cy="190" r="9" />
+          <circle cx="300" cy="180" r="9" />
+          <circle cx="90" cy="90" r="9" />
+          <circle cx="210" cy="70" r="9" />
+          <circle cx="330" cy="90" r="9" />
           <path d="M90 80 C90 50 120 35 150 30" marker-end="url(#chalk-arrow)" />
           <path d="M330 80 C330 50 300 35 270 30" marker-end="url(#chalk-arrow)" />
           <path d="M210 180 V110" stroke-dasharray="8 10" marker-end="url(#chalk-arrow)" />
@@ -70,7 +85,9 @@
           <path d="M-10 0 C-40 -30 -70 -20 -90 10" stroke-dasharray="4 8" />
         </g>
         <g opacity="0.55" transform="translate(640 480)">
-          <circle r="46" /><path d="M0 -46 v-14 M-12 -64 h24 M0 0 L22 -18" /><path d="M36 -36 l10 -10" />
+          <circle r="46" />
+          <path d="M0 -46 v-14 M-12 -64 h24 M0 0 L22 -18" />
+          <path d="M36 -36 l10 -10" />
         </g>
         <!-- The coach's notes: «press», «pass», «go!» as squiggles and ticks. -->
         <g opacity="0.45">
@@ -84,6 +101,12 @@
 </template>
 
 <style scoped>
-.chalk { opacity: 0.08; }
-@media (min-width: 1024px) { .chalk { opacity: 0.1; } }
+.chalk {
+  opacity: 0.08;
+}
+@media (min-width: 1024px) {
+  .chalk {
+    opacity: 0.1;
+  }
+}
 </style>

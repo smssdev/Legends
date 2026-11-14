@@ -10,7 +10,12 @@ import UiButton from './UiButton.vue'
 
 type What = components['schemas']['Explain']['what']
 const props = defineProps<{ what: What; leagueId?: number | null }>()
-const TITLE: Record<What, string> = { chemistry: 'من أين جاءت الكيمياء؟', strength: 'من أين جاءت قوة فريقك؟', morale: 'من أين جاءت المعنويات؟', rating: 'من أين جاءت نقاطك؟' }
+const TITLE: Record<What, string> = {
+  chemistry: 'من أين جاءت الكيمياء؟',
+  strength: 'من أين جاءت قوة فريقك؟',
+  morale: 'من أين جاءت المعنويات؟',
+  rating: 'من أين جاءت نقاطك؟',
+}
 const open = ref(false)
 const data = ref<components['schemas']['Explain'] | null>(null)
 const failed = ref(false)
@@ -19,8 +24,12 @@ async function show() {
   open.value = true
   if (data.value || !props.leagueId) return
   try {
-    data.value = (await api.GET('/leagues/{league}/team/explain/{what}', { params: { path: { league: props.leagueId, what: props.what } } })).data ?? null
-  } catch { failed.value = true }
+    data.value =
+      (await api.GET('/leagues/{league}/team/explain/{what}', { params: { path: { league: props.leagueId, what: props.what } } })).data ??
+      null
+  } catch {
+    failed.value = true
+  }
 }
 </script>
 
@@ -33,7 +42,10 @@ async function show() {
     <template v-else>
       <b class="explain-value font-numbers" dir="ltr">{{ data.value }}</b>
       <dl class="explain-parts">
-        <div v-for="(p, i) in data.parts" :key="i" class="explain-part"><dt>{{ p.label }}</dt><dd class="font-numbers" dir="ltr">{{ p.value }}</dd></div>
+        <div v-for="(p, i) in data.parts" :key="i" class="explain-part">
+          <dt>{{ p.label }}</dt>
+          <dd class="font-numbers" dir="ltr">{{ p.value }}</dd>
+        </div>
       </dl>
       <UiButton size="sm" variant="quiet" :to="`/guide#${data.topic}`">{{ $t('اقرأ أكثر في الدليل') }}</UiButton>
     </template>
@@ -41,10 +53,42 @@ async function show() {
 </template>
 
 <style scoped>
-.explain { display: inline-flex; align-items: center; min-block-size: 44px; min-inline-size: 44px; margin-block: -12px; justify-content: center; border-radius: var(--radius-md, 8px); text-decoration: underline dotted; text-underline-offset: 4px; }
-.explain:focus-visible { outline: 2px solid var(--color-gold); }
-.explain-muted { color: var(--color-text-muted); }
-.explain-value { display: block; font-size: 32px; color: var(--ink-gold); text-align: center; }
-.explain-parts { display: flex; flex-direction: column; gap: var(--space-xs); margin-block: var(--space-md); }
-.explain-part { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-sm); border-radius: var(--radius-lg); background: var(--color-surface-sunk); font-size: var(--text-body); }
+.explain {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  margin-block: -12px;
+  justify-content: center;
+  border-radius: var(--radius-md, 8px);
+  text-decoration: underline dotted;
+  text-underline-offset: 4px;
+}
+.explain:focus-visible {
+  outline: 2px solid var(--color-gold);
+}
+.explain-muted {
+  color: var(--color-text-muted);
+}
+.explain-value {
+  display: block;
+  font-size: 32px;
+  color: var(--ink-gold);
+  text-align: center;
+}
+.explain-parts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-block: var(--space-md);
+}
+.explain-part {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunk);
+  font-size: var(--text-body);
+}
 </style>

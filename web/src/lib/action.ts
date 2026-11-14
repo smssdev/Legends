@@ -35,9 +35,19 @@ export async function act<T>(key: string, run: () => Promise<T>, o: ActOptions<T
   if (running.has(key)) return undefined
   const confirm = useConfirm()
   if (o.confirm && !(await confirm.ask(o.confirm))) return undefined
-  if (!o.confirm && o.coins && o.coins >= COINS_ASK && !(await confirm.ask({
-    title: t('تدفع {v0} كوينز؟', { v0: o.coins }), text: t('تُخصم من كوينزك الآن.'), action: t('ادفع {v0} كوينز', { v0: o.coins }), tone: 'gold', remember: 'ask.coins',
-  }))) return undefined
+  if (
+    !o.confirm &&
+    o.coins &&
+    o.coins >= COINS_ASK &&
+    !(await confirm.ask({
+      title: t('تدفع {v0} كوينز؟', { v0: o.coins }),
+      text: t('تُخصم من كوينزك الآن.'),
+      action: t('ادفع {v0} كوينز', { v0: o.coins }),
+      tone: 'gold',
+      remember: 'ask.coins',
+    }))
+  )
+    return undefined
   running.add(key)
   try {
     await ensureCsrf()
@@ -45,7 +55,15 @@ export async function act<T>(key: string, run: () => Promise<T>, o: ActOptions<T
     const text = typeof o.success === 'function' ? o.success(r) : o.success
     if (text) {
       // One toast per thing: a new one about the same key (the same player, the same slot) replaces the one before.
-      useToast().show(text, 'success', 3200, o.undo ? { label: t('تراجع'), run: () => act(`${key}:undo`, o.undo!, { success: t('تراجعت عنه.'), onError: o.onError }) } : undefined, key)
+      useToast().show(
+        text,
+        'success',
+        3200,
+        o.undo
+          ? { label: t('تراجع'), run: () => act(`${key}:undo`, o.undo!, { success: t('تراجعت عنه.'), onError: o.onError }) }
+          : undefined,
+        key,
+      )
     }
     return r
   } catch (e) {

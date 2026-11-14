@@ -18,8 +18,23 @@ const PATHS: Record<string, { ball: string; runs?: string }> = {
     <ellipse cx="120" cy="60" rx="20" ry="9" fill="none" stroke="rgba(255,255,255,.35)" />
     <path d="M20 45 h14 l3 30 h-17 Z M220 45 h-14 l-3 30 h17 Z" fill="none" stroke="rgba(255,255,255,.35)" />
     <path d="M30 98 l-6 10 h192 l-6 -10" fill="var(--color-brand-dark)" />
-    <path v-if="PATHS[plan]?.runs" :d="PATHS[plan].runs" fill="none" stroke="var(--color-brand-light)" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round" />
-    <path :d="(PATHS[plan] ?? PATHS.passing).ball" fill="none" stroke="var(--color-gold)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path
+      v-if="PATHS[plan]?.runs"
+      :d="PATHS[plan].runs"
+      fill="none"
+      stroke="var(--color-brand-light)"
+      stroke-width="3"
+      stroke-dasharray="6 5"
+      stroke-linecap="round"
+    />
+    <path
+      :d="(PATHS[plan] ?? PATHS.passing).ball"
+      fill="none"
+      stroke="var(--color-gold)"
+      stroke-width="3.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
     <circle cx="40" cy="70" r="4" fill="var(--color-text)" />
   </svg>
 </template>

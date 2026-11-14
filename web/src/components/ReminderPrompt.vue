@@ -25,7 +25,9 @@ onMounted(async () => {
     const s = (await api.GET('/notifications')).data
     key = s?.public_key ?? null
     show.value = !!key
-  } catch { /* no push here: nothing to offer */ }
+  } catch {
+    /* no push here: nothing to offer */
+  }
 })
 
 async function allow() {
@@ -47,13 +49,21 @@ async function allow() {
   busy.value = false
 }
 function later() {
-  try { storage.set(KEY, String(Date.now())) } catch { /* private mode */ }
+  try {
+    storage.set(KEY, String(Date.now()))
+  } catch {
+    /* private mode */
+  }
   show.value = false
 }
 </script>
 
 <template>
-  <section v-if="show" class="flex animate-fade-up flex-wrap items-center gap-3 rounded-2xl border border-brand-light/40 bg-brand/15 p-4" :aria-label="$t('تذكير المباراة')">
+  <section
+    v-if="show"
+    class="flex animate-fade-up flex-wrap items-center gap-3 rounded-2xl border border-brand-light/40 bg-brand/15 p-4"
+    :aria-label="$t('تذكير المباراة')"
+  >
     <span class="text-3xl" aria-hidden="true"><Icon name="clock" :size="18" class="inline-block align-[-3px]" /></span>
     <span class="min-w-0 flex-1">
       <b class="block">{{ $t('ذكّرني قبل مباراتي') }}</b>

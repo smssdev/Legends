@@ -27,7 +27,12 @@ const walk = (dir, ext) =>
     const p = join(dir, f)
     return statSync(p).isDirectory() ? (f === 'l10n' || f === 'gen' ? [] : walk(p, ext)) : p.endsWith(ext) ? [p] : []
   })
-const count = (text) => text.split('\n').filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l)).join('\n').match(EMOJI)?.length ?? 0
+const count = (text) =>
+  text
+    .split('\n')
+    .filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l))
+    .join('\n')
+    .match(EMOJI)?.length ?? 0
 
 const now = {}
 for (const f of walk(join(ROOT, 'web/src'), '.vue')) {

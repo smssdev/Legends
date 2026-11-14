@@ -17,7 +17,13 @@ onMounted(async () => {
 <template>
   <aside v-if="cfg?.slot" class="ad-slot flex flex-col gap-1" :aria-label="$t('إعلان')">
     <span class="text-[10px] uppercase tracking-wide text-text-muted">{{ $t('إعلان') }}</span>
-    <ins class="adsbygoogle block min-h-[90px] w-full" :data-ad-client="cfg.client" :data-ad-slot="cfg.slot" data-ad-format="auto" data-full-width-responsive="true"
-      :data-adtest="cfg.test ? 'on' : undefined" />
+    <ins
+      class="adsbygoogle block min-h-[90px] w-full"
+      :data-ad-client="cfg.client"
+      :data-ad-slot="cfg.slot"
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+      :data-adtest="cfg.test ? 'on' : undefined"
+    />
   </aside>
 </template>

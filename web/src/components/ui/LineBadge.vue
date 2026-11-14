@@ -10,5 +10,6 @@ withDefaults(defineProps<{ line: Line; full?: boolean }>(), { full: false })
     :class="full ? 'min-w-16' : 'w-10'"
     :style="{ background: `var(--color-line-${line})`, color: `var(--color-line-${line}-fg)` }"
     :aria-label="LINES[line].name"
-  >{{ full ? LINES[line].name : LINES[line].letter }}</span>
+    >{{ full ? LINES[line].name : LINES[line].letter }}</span
+  >
 </template>

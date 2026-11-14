@@ -8,7 +8,11 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { drawCharacter, drawFace, ensureDefs, MOODS, type Model, type Mood } from './art'
 import './characters.css'
 
-const props = withDefaults(defineProps<{ model: Model; mood?: string | null; three?: boolean; label?: string }>(), { mood: 'idle', three: false, label: undefined })
+const props = withDefaults(defineProps<{ model: Model; mood?: string | null; three?: boolean; label?: string }>(), {
+  mood: 'idle',
+  three: false,
+  label: undefined,
+})
 
 const mood = computed<Mood>(() => ((MOODS as readonly string[]).includes(props.mood ?? '') ? (props.mood as Mood) : 'idle'))
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -35,12 +39,31 @@ watch(mood, (m) => {
 </script>
 
 <template>
-  <img v-if="use3d" :src="`/characters/${model.toLowerCase()}-${mood}.webp`" :alt="label ?? ''" class="lgc-3d" draggable="false" loading="lazy" decoding="async" />
+  <img
+    v-if="use3d"
+    :src="`/characters/${model.toLowerCase()}-${mood}.webp`"
+    :alt="label ?? ''"
+    class="lgc-3d"
+    draggable="false"
+    loading="lazy"
+    decoding="async"
+  />
   <span v-else ref="host" class="lgc" :role="label ? 'img' : undefined" :aria-label="label" :aria-hidden="label ? undefined : 'true'" />
 </template>
 
 <style>
-.lgc { display: inline-block; line-height: 0; }
-.lgc > svg { display: block; width: 100%; height: auto; }
-.lgc-3d { display: inline-block; height: auto; object-fit: contain; }
+.lgc {
+  display: inline-block;
+  line-height: 0;
+}
+.lgc > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.lgc-3d {
+  display: inline-block;
+  height: auto;
+  object-fit: contain;
+}
 </style>

@@ -43,7 +43,9 @@ async function play(opponent: number) {
     return
   }
   confirming.value = null
-  const r = await act('friendly', () => api.POST('/leagues/{league}/friendlies', { ...path.value, body: { opponent_id: opponent, idempotency_key: uuid() } }))
+  const r = await act('friendly', () =>
+    api.POST('/leagues/{league}/friendlies', { ...path.value, body: { opponent_id: opponent, idempotency_key: uuid() } }),
+  )
   const data = r?.data
   if (!data) return
   last.value = data.friendly
@@ -52,7 +54,8 @@ async function play(opponent: number) {
   useWallet().load()
 }
 const busy = computed(() => isBusy('friendly'))
-const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_against ? 'فوز' : f.goals_for < f.goals_against ? 'خسارة' : 'تعادل')
+const result = (f: components['schemas']['Friendly']) =>
+  f.goals_for > f.goals_against ? 'فوز' : f.goals_for < f.goals_against ? 'خسارة' : 'تعادل'
 </script>
 
 <template>
@@ -62,14 +65,24 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
         <h1 class="font-display text-3xl font-extrabold">{{ $t('الوديات') }}</h1>
       </div>
       <span v-if="v" class="flex flex-col items-end gap-1">
-        <span class="rounded-pill bg-gold px-3 py-1 text-sm font-bold text-on-gold">{{ v.first_free ? $t('أول ودية لك مجانية') : $t('الودية بـ {v0} كوينز', { v0: v.coins }) }}</span>
-        <span class="text-xs text-text-muted">{{ $t('رصيدك') }}: <b class="font-numbers" dir="ltr">{{ v.balance }}</b></span>
+        <span class="rounded-pill bg-gold px-3 py-1 text-sm font-bold text-on-gold">{{
+          v.first_free ? $t('أول ودية لك مجانية') : $t('الودية بـ {v0} كوينز', { v0: v.coins })
+        }}</span>
+        <span class="text-xs text-text-muted"
+          >{{ $t('رصيدك') }}: <b class="font-numbers" dir="ltr">{{ v.balance }}</b></span
+        >
       </span>
     </header>
     <p v-if="loaded && !leagueId" class="rounded-xl ui-card p-6 text-center text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
-    <p v-if="v && v.balance < v.coins" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="status">{{ $t('رصيدك لا يكفي لودية. الكوينز تُكسب من المهام والفوز.') }}</p>
+    <p v-if="v && v.balance < v.coins" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="status">
+      {{ $t('رصيدك لا يكفي لودية. الكوينز تُكسب من المهام والفوز.') }}
+    </p>
     <p v-if="v?.blocked" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="status">
-      {{ v.blocked.reason === 'live' ? $t('مباراتك تُلعب الآن: الوديات بعدها.') : $t('مباراتك بعد قليل: الوديات تعود بعدها ({v0}).', { v0: countdown(v.blocked.until, now) }) }}
+      {{
+        v.blocked.reason === 'live'
+          ? $t('مباراتك تُلعب الآن: الوديات بعدها.')
+          : $t('مباراتك بعد قليل: الوديات تعود بعدها ({v0}).', { v0: countdown(v.blocked.until, now) })
+      }}
     </p>
 
     <!-- [Sprint 27 B3] The quick simulation first. -->
@@ -81,30 +94,81 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
       @done="watching = false"
     />
     <!-- The friendly just played. -->
-    <section v-else-if="last" class="flex flex-col gap-3 rounded-xl border border-gold/40 ui-card p-4" :aria-label="$t('نتيجة الودية')" aria-live="polite">
+    <section
+      v-else-if="last"
+      class="flex flex-col gap-3 rounded-xl border border-gold/40 ui-card p-4"
+      :aria-label="$t('نتيجة الودية')"
+      aria-live="polite"
+    >
       <div class="flex items-center gap-3">
         <AppImage :src="last.opponent.crest_url" alt="" class="size-10" :size="40" crest />
-        <span class="min-w-0 flex-1"><b class="block">{{ $t('ضد {v0}', { v0: $nm(last.opponent.name) }) }}</b><span class="text-xs text-text-muted">{{ $t(result(last)) }}</span></span>
+        <span class="min-w-0 flex-1"
+          ><b class="block">{{ $t('ضد {v0}', { v0: $nm(last.opponent.name) }) }}</b
+          ><span class="text-xs text-text-muted">{{ $t(result(last)) }}</span></span
+        >
         <b class="font-numbers text-4xl" dir="ltr">{{ scoreText(last.goals_for, last.goals_against) }}</b>
       </div>
       <ul v-if="last.report.goals.length" class="flex flex-wrap gap-x-3 text-sm">
-        <li v-for="(g, i) in last.report.goals" :key="i" :class="g.side === 'home' ? '' : 'text-text-muted'"><span class="font-numbers text-text-muted" dir="ltr">{{ g.minute }}'</span> <bdi>{{ $nm(g.name ?? '') }}</bdi></li>
+        <li v-for="(g, i) in last.report.goals" :key="i" :class="g.side === 'home' ? '' : 'text-text-muted'">
+          <span class="font-numbers text-text-muted" dir="ltr">{{ g.minute }}'</span> <bdi>{{ $nm(g.name ?? '') }}</bdi>
+        </li>
       </ul>
       <p v-if="last.report.coins" class="text-xs text-text-muted">{{ $t('خُصم {v0} كوينز من رصيدك.', { v0: last.report.coins }) }}</p>
-      <p class="text-xs text-text-muted">{{ $t('الأفضل') }}: <template v-for="(p, i) in last.report.best" :key="p.id"><bdi>{{ $nm(p.name ?? '') }}</bdi> <span class="font-numbers text-gold">{{ (p.rating / 100).toFixed(1) }}</span><template v-if="i < last.report.best.length - 1">، </template></template> · {{ $t('{v0} لاعباً زاد تدريبهم ولياقتهم (+{v1})', { v0: last.report.played, v1: v?.fitness ?? 0 }) }}</p>
+      <p class="text-xs text-text-muted">
+        {{ $t('الأفضل') }}:
+        <template v-for="(p, i) in last.report.best" :key="p.id"
+          ><bdi>{{ $nm(p.name ?? '') }}</bdi> <span class="font-numbers text-gold">{{ (p.rating / 100).toFixed(1) }}</span><template
+            v-if="i < last.report.best.length - 1"
+            >،
+          </template></template
+        >
+        · {{ $t('{v0} لاعباً زاد تدريبهم ولياقتهم (+{v1})', { v0: last.report.played, v1: v?.fitness ?? 0 }) }}
+      </p>
     </section>
 
-    <div v-if="!v && leagueId" class="flex flex-col gap-2" aria-hidden="true"><div v-for="n in 4" :key="n" class="h-16 animate-pulse rounded-xl ui-card" /></div>
+    <div v-if="!v && leagueId" class="flex flex-col gap-2" aria-hidden="true">
+      <div v-for="n in 4" :key="n" class="h-16 animate-pulse rounded-xl ui-card" />
+    </div>
     <ul v-else-if="v" class="flex flex-col gap-2">
-      <li v-for="o in v.opponents" :key="o.id" class="flex min-h-touch items-center gap-3 rounded-xl ui-card p-3" :class="o.recommended ? 'border border-brand-light/40' : ''">
+      <li
+        v-for="o in v.opponents"
+        :key="o.id"
+        class="flex min-h-touch items-center gap-3 rounded-xl ui-card p-3"
+        :class="o.recommended ? 'border border-brand-light/40' : ''"
+      >
         <AppImage :src="o.crest_url" alt="" class="size-10 shrink-0" :size="40" crest />
         <span class="min-w-0 flex-1">
-          <b class="block truncate">{{ $nm(o.name) }} · <span class="font-numbers text-brand-light">{{ Math.round(o.strength_cp / 100) }}</span></b>
-          <span class="block truncate text-xs text-text-muted">{{ o.recommended ? $t('موصى به: الأقرب إلى قوتك') : o.coach ? $t('مدرب: {v0}', { v0: o.coach }) : $t('الكمبيوتر') }}</span>
+          <b class="block truncate"
+            >{{ $nm(o.name) }} · <span class="font-numbers text-brand-light">{{ Math.round(o.strength_cp / 100) }}</span></b
+          >
+          <span class="block truncate text-xs text-text-muted">{{
+            o.recommended ? $t('موصى به: الأقرب إلى قوتك') : o.coach ? $t('مدرب: {v0}', { v0: o.coach }) : $t('الكمبيوتر')
+          }}</span>
         </span>
-        <button v-if="confirming === o.id" type="button" class="h-touch shrink-0 rounded-lg px-3 text-sm text-text-muted" @click="confirming = null">{{ $t('إلغاء') }}</button>
-        <UiButton size="sm" class="shrink-0" :variant="confirming === o.id ? 'brand' : o.recommended ? 'primary' : 'quiet'" :disabled="busy || watching || !canPay || !!v.blocked || o.played_today" @click="play(o.id)">
-          {{ o.played_today ? $t('لُعبت اليوم') : confirming === o.id ? (v.first_free ? $t('العب مجاناً') : $t('أكّد: {v0} كوينز', { v0: v.coins })) : $t('العب') }}
+        <button
+          v-if="confirming === o.id"
+          type="button"
+          class="h-touch shrink-0 rounded-lg px-3 text-sm text-text-muted"
+          @click="confirming = null"
+        >
+          {{ $t('إلغاء') }}
+        </button>
+        <UiButton
+          size="sm"
+          class="shrink-0"
+          :variant="confirming === o.id ? 'brand' : o.recommended ? 'primary' : 'quiet'"
+          :disabled="busy || watching || !canPay || !!v.blocked || o.played_today"
+          @click="play(o.id)"
+        >
+          {{
+            o.played_today
+              ? $t('لُعبت اليوم')
+              : confirming === o.id
+                ? v.first_free
+                  ? $t('العب مجاناً')
+                  : $t('أكّد: {v0} كوينز', { v0: v.coins })
+                : $t('العب')
+          }}
         </UiButton>
       </li>
     </ul>
@@ -112,7 +176,9 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
     <section v-if="v?.recent.length" class="flex flex-col gap-2">
       <h2 class="font-display text-lg font-bold">{{ $t('آخر الوديات') }}</h2>
       <div v-for="f in v.recent" :key="f.id" class="flex items-center gap-2 rounded-lg bg-surface px-3 py-2 text-sm">
-        <AppImage :src="f.opponent.crest_url" alt="" class="size-7" :size="28" crest /><span class="min-w-0 flex-1 truncate">{{ $nm(f.opponent.name) }}</span>
+        <AppImage :src="f.opponent.crest_url" alt="" class="size-7" :size="28" crest /><span class="min-w-0 flex-1 truncate">{{
+          $nm(f.opponent.name)
+        }}</span>
         <b class="font-numbers text-base" dir="ltr">{{ scoreText(f.goals_for, f.goals_against) }}</b>
       </div>
     </section>

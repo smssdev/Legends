@@ -20,7 +20,9 @@ onMounted(async () => {
   try {
     const p = (await api.GET('/leagues/{league}/predictions', { params: { path: { league: props.view.league_id } } })).data
     split.value = p?.matches.find((m) => m.fixture_id === props.view.fixture_id)?.split ?? null
-  } catch { /* no predictions to show */ }
+  } catch {
+    /* no predictions to show */
+  }
 })
 const sides: Side[] = ['home', 'away']
 </script>
@@ -29,12 +31,18 @@ const sides: Side[] = ['home', 'away']
   <div class="waiting" role="region" :aria-label="$t('غرفة الانتظار')">
     <section class="waiting-card">
       <small class="waiting-kicker">{{ $t('غرفة الانتظار') }}</small>
-      <b v-if="view.kickoff_at && countdown(view.kickoff_at, now)" class="waiting-clock font-numbers" dir="ltr" role="timer">{{ countdown(view.kickoff_at, now) }}</b>
+      <b v-if="view.kickoff_at && countdown(view.kickoff_at, now)" class="waiting-clock font-numbers" dir="ltr" role="timer">{{
+        countdown(view.kickoff_at, now)
+      }}</b>
       <div class="waiting-sides">
         <div v-for="s in sides" :key="s" class="waiting-side">
           <Character v-if="view.coach_looks?.[s]" :model="view.coach_looks[s]!" mood="think" class="waiting-coach" />
-          <b><bdi>{{ $nm(view.clubs[s].name) }}</bdi></b>
-          <small v-if="view.coaches?.[s]"><bdi>{{ view.coaches[s] }}</bdi></small>
+          <b
+            ><bdi>{{ $nm(view.clubs[s].name) }}</bdi></b
+          >
+          <small v-if="view.coaches?.[s]"
+            ><bdi>{{ view.coaches[s] }}</bdi></small
+          >
         </div>
       </div>
       <div v-if="split && total" class="waiting-split" :aria-label="$t('توقعات الأعضاء')">
@@ -52,19 +60,74 @@ const sides: Side[] = ['home', 'away']
 </template>
 
 <style scoped>
-.waiting { position: absolute; inset: 0; z-index: 35; display: grid; place-items: center; padding: var(--space-md); background: color-mix(in srgb, var(--color-bg-deep) 80%, transparent); }
-.waiting-card {
-  display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); inline-size: min(100%, 30rem); padding: var(--space-md);
-  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent); border-radius: var(--radius-lg); background: var(--color-panel); text-align: center;
+.waiting {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  display: grid;
+  place-items: center;
+  padding: var(--space-md);
+  background: color-mix(in srgb, var(--color-bg-deep) 80%, transparent);
 }
-.waiting-kicker { font-size: var(--text-caption); color: var(--color-text-muted); }
-.waiting-clock { font-size: 28px; color: var(--ink-gold); }
-.waiting-sides { display: flex; justify-content: space-between; gap: var(--space-md); inline-size: 100%; }
-.waiting-side { display: flex; flex: 1; min-inline-size: 0; flex-direction: column; align-items: center; gap: var(--space-xs); font-size: var(--text-body); }
-.waiting-coach { inline-size: 64px; }
-.waiting-split { display: flex; flex-direction: column; gap: var(--space-xs); inline-size: 100%; font-size: var(--text-caption); }
-.waiting-bar { display: flex; block-size: 8px; overflow: hidden; border-radius: var(--radius-pill); background: var(--color-surface-sunk); }
-.waiting-bar .is-home { background: var(--color-success); }
-.waiting-bar .is-draw { background: var(--color-text-muted); }
-.waiting-bar .is-away { background: var(--color-danger); }
+.waiting-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  inline-size: min(100%, 30rem);
+  padding: var(--space-md);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+  border-radius: var(--radius-lg);
+  background: var(--color-panel);
+  text-align: center;
+}
+.waiting-kicker {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+.waiting-clock {
+  font-size: 28px;
+  color: var(--ink-gold);
+}
+.waiting-sides {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  inline-size: 100%;
+}
+.waiting-side {
+  display: flex;
+  flex: 1;
+  min-inline-size: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-body);
+}
+.waiting-coach {
+  inline-size: 64px;
+}
+.waiting-split {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  inline-size: 100%;
+  font-size: var(--text-caption);
+}
+.waiting-bar {
+  display: flex;
+  block-size: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-sunk);
+}
+.waiting-bar .is-home {
+  background: var(--color-success);
+}
+.waiting-bar .is-draw {
+  background: var(--color-text-muted);
+}
+.waiting-bar .is-away {
+  background: var(--color-danger);
+}
 </style>

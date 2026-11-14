@@ -9,7 +9,11 @@ const PREF = 'commentary'
 
 /** English unless the coach turned it off on this device. */
 function readPref(): Lang | 'off' {
-  try { return storage.get(PREF) === 'off' ? 'off' : 'en' } catch { return 'en' }
+  try {
+    return storage.get(PREF) === 'off' ? 'off' : 'en'
+  } catch {
+    return 'en'
+  }
 }
 
 export function useMatchAudio() {
@@ -31,7 +35,9 @@ export function useMatchAudio() {
   function toggleCommentary() {
     commentary.value = commentary.value === 'off' ? 'en' : 'off'
     voice.setOn(soundOn.value && commentary.value !== 'off')
-    try { storage.set(PREF, commentary.value) } catch {}
+    try {
+      storage.set(PREF, commentary.value)
+    } catch {}
   }
 
   /** A sound the scene asks for (MatchFeed's cues). */

@@ -2,7 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useMatchClock } from './useMatchClock'
 
 describe('useMatchClock', () => {
-  beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(1_000_000) })
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(1_000_000)
+  })
   afterEach(() => vi.useRealTimers())
 
   it('takes the server time from the fastest reply', () => {

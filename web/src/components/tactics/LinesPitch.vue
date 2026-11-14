@@ -28,6 +28,8 @@ const ARROWS: Record<string, string> = {
       <path :d="ARROWS[`mid_${mid}`]" stroke="var(--color-text)" />
       <path :d="ARROWS[`def_${def}`]" stroke="var(--color-line-def)" />
     </g>
-    <circle cx="60" cy="34" r="4" fill="var(--color-line-att)" /><circle cx="60" cy="70" r="4" fill="var(--color-text)" /><circle cx="60" cy="104" r="4" fill="var(--color-line-def)" />
+    <circle cx="60" cy="34" r="4" fill="var(--color-line-att)" />
+    <circle cx="60" cy="70" r="4" fill="var(--color-text)" />
+    <circle cx="60" cy="104" r="4" fill="var(--color-line-def)" />
   </svg>
 </template>

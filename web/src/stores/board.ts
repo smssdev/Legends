@@ -42,7 +42,9 @@ export const useBoard = defineStore('board', () => {
       }
     })()
     inflight = { league: leagueId, done }
-    await done.finally(() => { if (inflight?.done === done) inflight = null })
+    await done.finally(() => {
+      if (inflight?.done === done) inflight = null
+    })
     timer ??= setInterval(() => document.visibilityState === 'visible' && league.value && load(league.value, true), 60000)
   }
 

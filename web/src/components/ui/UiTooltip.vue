@@ -11,7 +11,10 @@ defineProps<{ text: string }>()
   <TooltipRoot :delay-duration="250">
     <TooltipTrigger as-child><slot /></TooltipTrigger>
     <TooltipPortal>
-      <TooltipContent :side-offset="6" class="z-[70] max-w-60 rounded-lg bg-surface-raised px-3 py-1.5 text-xs text-text shadow-xl data-[state=delayed-open]:animate-fade-up">
+      <TooltipContent
+        :side-offset="6"
+        class="z-[70] max-w-60 rounded-lg bg-surface-raised px-3 py-1.5 text-xs text-text shadow-xl data-[state=delayed-open]:animate-fade-up"
+      >
         {{ $t(text) }}
         <TooltipArrow class="fill-surface-raised" />
       </TooltipContent>

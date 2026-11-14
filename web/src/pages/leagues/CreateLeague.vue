@@ -182,7 +182,15 @@ async function create() {
         ...changes.value,
         rest_days: restDays.value,
         is_dev: import.meta.env.DEV,
-        ...(allianceOn.value ? { alliance: { size: allianceSize.value, assign: allianceAssign.value, ...(allianceAssign.value === 'pick' ? allianceSides.value : {}) } } : {}),
+        ...(allianceOn.value
+          ? {
+              alliance: {
+                size: allianceSize.value,
+                assign: allianceAssign.value,
+                ...(allianceAssign.value === 'pick' ? allianceSides.value : {}),
+              },
+            }
+          : {}),
         ...(drawMode.value
           ? { entry_mode: 'draw' as const, club_id: null, club_ids: picked.value, draw_users: drawUsers.value, team_count: count.value }
           : { club_id: club.value!.id }),
@@ -211,15 +219,39 @@ const field = (name: string) => error.value?.field(name) ?? ''
         class="flex size-touch items-center justify-center rounded-lg bg-surface text-xl"
         :aria-label="step === 'club' ? $t('رجوع للإعدادات') : $t('رجوع لاختيار الدوري')"
         @click="step = step === 'club' ? 'settings' : 'league'"
-      >›</button>
+      >
+        ›
+      </button>
       <div>
-        <h1 class="font-display text-3xl font-extrabold">{{ step === 'league' ? $t('اختيار دوري') : step === 'settings' ? $t('أنشئ دوريك') : drawMode ? $t('اختر فرق الدوري') : $t('اختر فريقك') }}</h1>
-        <p class="text-sm text-text-muted">{{ step === 'league' ? $t('دوريك نسخة من دوري حقيقي بأنديته ولاعبيه: اختر بلده') : step === 'settings' ? $t('كل الإعدادات تُقفل عند بداية الموسم') : drawMode ? $t('اختر {v0} فرق، والقرعة تعطي كل لاعب فريقه', { v0: count }) : $t('باقي الفرق يديرها الحاسوب حتى ينضم أصحابك') }}</p>
+        <h1 class="font-display text-3xl font-extrabold">
+          {{
+            step === 'league'
+              ? $t('اختيار دوري')
+              : step === 'settings'
+                ? $t('أنشئ دوريك')
+                : drawMode
+                  ? $t('اختر فرق الدوري')
+                  : $t('اختر فريقك')
+          }}
+        </h1>
+        <p class="text-sm text-text-muted">
+          {{
+            step === 'league'
+              ? $t('دوريك نسخة من دوري حقيقي بأنديته ولاعبيه: اختر بلده')
+              : step === 'settings'
+                ? $t('كل الإعدادات تُقفل عند بداية الموسم')
+                : drawMode
+                  ? $t('اختر {v0} فرق، والقرعة تعطي كل لاعب فريقه', { v0: count })
+                  : $t('باقي الفرق يديرها الحاسوب حتى ينضم أصحابك')
+          }}
+        </p>
       </div>
     </header>
 
     <p v-if="loadError" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(loadError) }}</p>
-    <p v-if="error && !Object.keys(error.errors).length" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error.message) }}</p>
+    <p v-if="error && !Object.keys(error.errors).length" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">
+      {{ $t(error.message) }}
+    </p>
 
     <LeaguePicker v-if="step === 'league' && templates.length" :templates="templates" :model-value="template" @pick="chooseLeague" />
     <div v-else-if="step === 'league' && !loadError" class="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-hidden="true">
@@ -235,16 +267,30 @@ const field = (name: string) => error.value?.field(name) ?? ''
             <div class="flex flex-col gap-1.5">
               <span class="text-sm font-bold">{{ $t('الدوري') }}</span>
               <!-- [Sprint 48 D1] The league chosen on the picker, and the way back to it. -->
-              <button type="button" class="flex min-h-12 items-center gap-3 rounded-lg border border-gold/40 bg-surface-sunk px-2 py-1 text-start hover:border-gold" @click="step = 'league'">
+              <button
+                type="button"
+                class="flex min-h-12 items-center gap-3 rounded-lg border border-gold/40 bg-surface-sunk px-2 py-1 text-start hover:border-gold"
+                @click="step = 'league'"
+              >
                 <LeagueFlag :country="place.country" :label="place.ar" :size="40" />
-                <span class="min-w-0 flex-1 leading-tight"><b class="block truncate">{{ locale === 'ar' ? place.ar : place.en }}</b><span class="block truncate text-xs text-text-muted" dir="ltr">{{ template }} · {{ fullTeams }}</span></span>
+                <span class="min-w-0 flex-1 leading-tight"
+                  ><b class="block truncate">{{ locale === 'ar' ? place.ar : place.en }}</b
+                  ><span class="block truncate text-xs text-text-muted" dir="ltr">{{ template }} · {{ fullTeams }}</span></span
+                >
                 <span class="text-sm font-bold text-gold">{{ $t('غيّر') }}</span>
               </button>
               <span v-if="field('template')" class="text-sm text-danger">{{ field('template') }}</span>
             </div>
             <label class="flex flex-col gap-1.5">
               <span class="text-sm font-bold">{{ $t('بداية الموسم (بتوقيتك)') }}</span>
-              <input v-model="startsAt" type="datetime-local" :min="minStart" :max="maxStart" required class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" />
+              <input
+                v-model="startsAt"
+                type="datetime-local"
+                :min="minStart"
+                :max="maxStart"
+                required
+                class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4"
+              />
               <span v-if="field('starts_at')" class="text-sm text-danger">{{ field('starts_at') }}</span>
             </label>
           </div>
@@ -254,35 +300,103 @@ const field = (name: string) => error.value?.field(name) ?? ''
         <!-- [Sprint 40 D1] The alliance tournament, chosen as the league is made. -->
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-alliance">
           <h2 id="h-alliance" class="font-display text-xl font-extrabold">{{ $t('بطولة التحالفات') }}</h2>
-          <UiToggle v-model="allianceOn" class="rounded-lg bg-surface-sunk p-3" :hint="$t('تحالفان متساويان من فرق الدوري، لا يتقابل زملاء التحالف إلا إن لم يكن بد')"><b>{{ $t('أضف بطولة تحالفات') }}</b></UiToggle>
+          <UiToggle
+            v-model="allianceOn"
+            class="rounded-lg bg-surface-sunk p-3"
+            :hint="$t('تحالفان متساويان من فرق الدوري، لا يتقابل زملاء التحالف إلا إن لم يكن بد')"
+            ><b>{{ $t('أضف بطولة تحالفات') }}</b></UiToggle
+          >
           <template v-if="allianceOn">
             <div class="flex items-center justify-between gap-2" role="group" :aria-label="$t('فرق كل تحالف')">
               <span class="text-sm font-bold">{{ $t('فرق كل تحالف') }}</span>
               <span class="flex items-center gap-2">
-                <button type="button" class="size-touch rounded-lg bg-surface-raised text-xl" :aria-label="$t('أقل')" :disabled="allianceSize <= 1" @click="allianceSize--">−</button>
-                <output class="w-24 text-center font-numbers font-bold text-gold" aria-live="polite">{{ $t('{v0} ضد {v1}', { v0: allianceSize, v1: allianceSize }) }}</output>
-                <button type="button" class="size-touch rounded-lg bg-surface-raised text-xl" :aria-label="$t('أكثر')" :disabled="allianceSize >= allianceMax" @click="allianceSize++">+</button>
+                <button
+                  type="button"
+                  class="size-touch rounded-lg bg-surface-raised text-xl"
+                  :aria-label="$t('أقل')"
+                  :disabled="allianceSize <= 1"
+                  @click="allianceSize--"
+                >
+                  −
+                </button>
+                <output class="w-24 text-center font-numbers font-bold text-gold" aria-live="polite">{{
+                  $t('{v0} ضد {v1}', { v0: allianceSize, v1: allianceSize })
+                }}</output>
+                <button
+                  type="button"
+                  class="size-touch rounded-lg bg-surface-raised text-xl"
+                  :aria-label="$t('أكثر')"
+                  :disabled="allianceSize >= allianceMax"
+                  @click="allianceSize++"
+                >
+                  +
+                </button>
               </span>
             </div>
             <div class="grid grid-cols-2 gap-1 rounded-lg bg-surface-sunk p-1" role="radiogroup" :aria-label="$t('توزيع الفرق')">
-              <button v-for="o in ([['draw', 'بالقرعة'], ['pick', 'أختارهم بنفسي']] as const)" :key="o[0]" type="button" role="radio" :aria-checked="allianceAssign === o[0]"
-                class="h-11 rounded-md text-sm font-bold" :class="allianceAssign === o[0] ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="allianceAssign = o[0]">{{ $t(o[1]) }}</button>
+              <button
+                v-for="o in [
+                  ['draw', 'بالقرعة'],
+                  ['pick', 'أختارهم بنفسي'],
+                ] as const"
+                :key="o[0]"
+                type="button"
+                role="radio"
+                :aria-checked="allianceAssign === o[0]"
+                class="h-11 rounded-md text-sm font-bold"
+                :class="allianceAssign === o[0] ? 'bg-gold text-on-gold' : 'text-text-soft'"
+                @click="allianceAssign = o[0]"
+              >
+                {{ $t(o[1]) }}
+              </button>
             </div>
             <div v-if="allianceAssign === 'pick'" class="grid gap-3 md:grid-cols-2">
-              <div v-for="side in (['a', 'b'] as const)" :key="side" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
+              <div v-for="side in ['a', 'b'] as const" :key="side" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
                 <b class="text-sm">{{ side === 'a' ? $t('التحالف الأول') : $t('التحالف الثاني') }}</b>
                 <div class="flex gap-2">
-                  <input v-model="allianceInput[side]" dir="ltr" :placeholder="$t('اسم المستخدم')" :aria-label="$t('اسم المستخدم')" autocapitalize="off" class="h-touch min-w-0 flex-1 rounded-lg bg-surface px-3" @keydown.enter.prevent="addAlly(side)" />
-                  <UiButton variant="outline" :disabled="!allianceInput[side].trim() || allianceSides[side].length >= allianceSize" @click="addAlly(side)">{{ $t('أضف') }}</UiButton>
+                  <input
+                    v-model="allianceInput[side]"
+                    dir="ltr"
+                    :placeholder="$t('اسم المستخدم')"
+                    :aria-label="$t('اسم المستخدم')"
+                    autocapitalize="off"
+                    class="h-touch min-w-0 flex-1 rounded-lg bg-surface px-3"
+                    @keydown.enter.prevent="addAlly(side)"
+                  />
+                  <UiButton
+                    variant="outline"
+                    :disabled="!allianceInput[side].trim() || allianceSides[side].length >= allianceSize"
+                    @click="addAlly(side)"
+                    >{{ $t('أضف') }}</UiButton
+                  >
                 </div>
                 <ul class="flex flex-wrap gap-1">
-                  <li v-for="u in allianceSides[side]" :key="u" class="flex items-center gap-1 rounded-pill bg-surface ps-3 text-sm" dir="ltr">
-                    @{{ u }}<button type="button" class="grid size-9 place-items-center rounded-full" :aria-label="$t('احذف {v0}', { v0: u })" @click="allianceSides[side].splice(allianceSides[side].indexOf(u), 1)"><Icon name="close" :size="14" /></button>
+                  <li
+                    v-for="u in allianceSides[side]"
+                    :key="u"
+                    class="flex items-center gap-1 rounded-pill bg-surface ps-3 text-sm"
+                    dir="ltr"
+                  >
+                    @{{ u
+                    }}<button
+                      type="button"
+                      class="grid size-9 place-items-center rounded-full"
+                      :aria-label="$t('احذف {v0}', { v0: u })"
+                      @click="allianceSides[side].splice(allianceSides[side].indexOf(u), 1)"
+                    >
+                      <Icon name="close" :size="14" />
+                    </button>
                   </li>
                 </ul>
               </div>
             </div>
-            <p class="text-xs text-text-muted">{{ $t('تتكوّن الفرق قبل الدور الأول بنصف ساعة من المدربين الذين انضموا، والأماكن الباقية بالقرعة أو للحاسوب. وتبدأ بعد اعتماد المطورين.') }}</p>
+            <p class="text-xs text-text-muted">
+              {{
+                $t(
+                  'تتكوّن الفرق قبل الدور الأول بنصف ساعة من المدربين الذين انضموا، والأماكن الباقية بالقرعة أو للحاسوب. وتبدأ بعد اعتماد المطورين.',
+                )
+              }}
+            </p>
             <span v-if="field('alliance.size')" class="text-sm text-danger">{{ field('alliance.size') }}</span>
           </template>
         </section>
@@ -290,35 +404,70 @@ const field = (name: string) => error.value?.field(name) ?? ''
         <!-- [Sprint 40 C1] The draw, chosen as the league is made: the players by username, then the teams. -->
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-draw">
           <h2 id="h-draw" class="font-display text-xl font-extrabold">{{ $t('القرعة') }}</h2>
-          <UiToggle v-model="drawMode" class="rounded-lg bg-surface-sunk p-3" :hint="$t('تختار الفرق وأسماء المستخدمين، والقرعة المباشرة تعطي كل واحد فريقه')"><b>{{ $t('وزّع الفرق بالقرعة') }}</b></UiToggle>
+          <UiToggle
+            v-model="drawMode"
+            class="rounded-lg bg-surface-sunk p-3"
+            :hint="$t('تختار الفرق وأسماء المستخدمين، والقرعة المباشرة تعطي كل واحد فريقه')"
+            ><b>{{ $t('وزّع الفرق بالقرعة') }}</b></UiToggle
+          >
           <template v-if="drawMode">
             <div class="flex gap-2">
-              <input v-model="userInput" @keydown.enter.prevent="addUser" dir="ltr" :placeholder="$t('اسم المستخدم')" :aria-label="$t('اسم المستخدم')" class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" autocapitalize="off" />
-              <UiButton variant="outline" :disabled="!userInput.trim() || drawUsers.length >= count - 1" @click="addUser">{{ $t('أضف') }}</UiButton>
+              <input
+                v-model="userInput"
+                @keydown.enter.prevent="addUser"
+                dir="ltr"
+                :placeholder="$t('اسم المستخدم')"
+                :aria-label="$t('اسم المستخدم')"
+                class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3"
+                autocapitalize="off"
+              />
+              <UiButton variant="outline" :disabled="!userInput.trim() || drawUsers.length >= count - 1" @click="addUser">{{
+                $t('أضف')
+              }}</UiButton>
             </div>
             <ul class="flex flex-wrap gap-2">
               <li class="rounded-pill bg-gold/15 px-3 py-1 text-sm font-bold text-gold">{{ $t('أنت') }}</li>
               <li v-for="u in drawUsers" :key="u" class="flex items-center gap-1 rounded-pill bg-surface-sunk ps-3 text-sm" dir="ltr">
-                @{{ u }}<button type="button" class="grid size-9 place-items-center rounded-full" :aria-label="$t('احذف {v0}', { v0: u })" @click="drawUsers.splice(drawUsers.indexOf(u), 1)"><Icon name="close" :size="14" /></button>
+                @{{ u
+                }}<button
+                  type="button"
+                  class="grid size-9 place-items-center rounded-full"
+                  :aria-label="$t('احذف {v0}', { v0: u })"
+                  @click="drawUsers.splice(drawUsers.indexOf(u), 1)"
+                >
+                  <Icon name="close" :size="14" />
+                </button>
               </li>
             </ul>
-            <p class="text-xs text-text-muted">{{ $t('{v0} لاعبين لـ{v1} فرق. الفرق الباقية يديرها الحاسوب.', { v0: drawUsers.length + 1, v1: count }) }}</p>
+            <p class="text-xs text-text-muted">
+              {{ $t('{v0} لاعبين لـ{v1} فرق. الفرق الباقية يديرها الحاسوب.', { v0: drawUsers.length + 1, v1: count }) }}
+            </p>
             <span v-if="field('draw_users')" class="text-sm text-danger">{{ field('draw_users') }}</span>
           </template>
         </section>
 
         <!-- The free league, as it comes. -->
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-free">
-          <h2 id="h-free" class="font-display text-xl font-extrabold">{{ $t('الدوري القياسي') }} <span class="rounded-pill bg-success/15 px-2.5 py-0.5 align-middle text-xs text-success">{{ $t('مجاني') }}</span></h2>
+          <h2 id="h-free" class="font-display text-xl font-extrabold">
+            {{ $t('الدوري القياسي') }}
+            <span class="rounded-pill bg-success/15 px-2.5 py-0.5 align-middle text-xs text-success">{{ $t('مجاني') }}</span>
+          </h2>
           <ul class="grid gap-2 text-sm text-text-soft md:grid-cols-2">
-            <li><Icon name="ball" :size="16" class="inline-block align-[-3px]" /> {{ $t('كل أندية الدوري الأصلي ({v0})', { v0: fullTeams }) }}</li>
+            <li>
+              <Icon name="ball" :size="16" class="inline-block align-[-3px]" /> {{ $t('كل أندية الدوري الأصلي ({v0})', { v0: fullTeams }) }}
+            </li>
             <li><Icon name="clock" :size="16" class="inline-block align-[-3px]" /> {{ $t('جولة واحدة يومياً في التاسعة مساءً بتوقيتك') }}</li>
             <li><Icon name="calendar" :size="16" class="inline-block align-[-3px]" /> {{ $t('يومان للإعداد قبل أول جولة') }}</li>
             <li><Icon name="mic" :size="16" class="inline-block align-[-3px]" /> {{ $t('المؤتمرات الصحفية ومنظومة النزاهة مفعّلتان') }}</li>
             <li><Icon name="flag" :size="16" class="inline-block align-[-3px]" /> {{ $t('موسم واحد ثم ينتهي الدوري') }}</li>
             <li><Icon name="tactics" :size="16" class="inline-block align-[-3px]" /> {{ $t('لا دوري نزيه ولا جولة على فترتين') }}</li>
           </ul>
-          <UiToggle v-model="custom" class="rounded-lg bg-surface-sunk p-3" :hint="$t('عدد الأندية، والإعداد، والساعة، والميزانية، والمزايا، والتجديد')"><b>{{ $t('أريد تخصيص الدوري') }}</b></UiToggle>
+          <UiToggle
+            v-model="custom"
+            class="rounded-lg bg-surface-sunk p-3"
+            :hint="$t('عدد الأندية، والإعداد، والساعة، والميزانية، والمزايا، والتجديد')"
+            ><b>{{ $t('أريد تخصيص الدوري') }}</b></UiToggle
+          >
         </section>
 
         <template v-if="custom">
@@ -328,9 +477,25 @@ const field = (name: string) => error.value?.field(name) ?? ''
               <div class="flex flex-col gap-1.5">
                 <span id="l-teams" class="text-sm font-bold">{{ $t('عدد الأندية') }}</span>
                 <div class="flex items-center justify-between gap-2" role="group" aria-labelledby="l-teams">
-                  <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" :aria-label="$t('أقل')" :disabled="teams <= minTeams" @click="teams--">−</button>
+                  <button
+                    type="button"
+                    class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl"
+                    :aria-label="$t('أقل')"
+                    :disabled="teams <= minTeams"
+                    @click="teams--"
+                  >
+                    −
+                  </button>
                   <output class="font-numbers text-4xl font-bold text-gold" aria-live="polite">{{ teams }}</output>
-                  <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" :aria-label="$t('أكثر')" :disabled="teams >= fullTeams" @click="teams++">+</button>
+                  <button
+                    type="button"
+                    class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl"
+                    :aria-label="$t('أكثر')"
+                    :disabled="teams >= fullTeams"
+                    @click="teams++"
+                  >
+                    +
+                  </button>
                 </div>
                 <span class="text-xs text-text-muted">{{ $t('من {v0} إلى {v1}', { v0: minTeams, v1: fullTeams }) }}</span>
                 <span v-if="field('team_count')" class="text-sm text-danger">{{ field('team_count') }}</span>
@@ -339,30 +504,71 @@ const field = (name: string) => error.value?.field(name) ?? ''
                 <legend class="mb-1.5 text-sm font-bold">{{ $t('فترة الإعداد') }}</legend>
                 <!-- [Sprint 40 B1] Or none: the first round on the first day after the start. -->
                 <div class="grid grid-cols-4 gap-1 rounded-lg bg-surface-sunk p-1">
-                  <button v-for="d in [0, 2, 4, 6]" :key="d" type="button" class="h-11 rounded-md font-bold" :class="prepDays === d ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="prepDays === d" @click="prepDays = d">
+                  <button
+                    v-for="d in [0, 2, 4, 6]"
+                    :key="d"
+                    type="button"
+                    class="h-11 rounded-md font-bold"
+                    :class="prepDays === d ? 'bg-gold text-on-gold' : 'text-text-soft'"
+                    :aria-pressed="prepDays === d"
+                    @click="prepDays = d"
+                  >
                     {{ d === 0 ? $t('بلا إعداد') : d === 2 ? $t('يومان') : $t('{v0} أيام', { v0: d }) }}
                   </button>
                 </div>
               </fieldset>
               <div class="flex flex-col gap-1.5">
-                <UiToggle v-model="customTime" class="rounded-lg bg-surface-sunk p-3"><b>{{ $t('ساعة مباريات محددة') }}</b></UiToggle>
-                <input v-if="customTime" v-model="time" type="time" required dir="ltr" :aria-label="$t('ساعة المباريات بتوقيت القاهرة')" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4 font-numbers text-lg" />
+                <UiToggle v-model="customTime" class="rounded-lg bg-surface-sunk p-3"
+                  ><b>{{ $t('ساعة مباريات محددة') }}</b></UiToggle
+                >
+                <input
+                  v-if="customTime"
+                  v-model="time"
+                  type="time"
+                  required
+                  dir="ltr"
+                  :aria-label="$t('ساعة المباريات بتوقيت القاهرة')"
+                  class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4 font-numbers text-lg"
+                />
                 <span v-if="customTime" class="text-xs text-text-muted">{{ $t('بتوقيت القاهرة، كل مباريات الجولة معاً') }}</span>
                 <span v-if="field('round_times')" class="text-sm text-danger">{{ field('round_times') }}</span>
               </div>
               <label class="flex flex-col gap-2">
-                <span class="flex items-center justify-between text-sm font-bold">{{ $t('ميزانية البداية لكل نادٍ') }} <span class="font-numbers text-lg text-gold">{{ budget(startingBudget) }}</span></span>
+                <span class="flex items-center justify-between text-sm font-bold"
+                  >{{ $t('ميزانية البداية لكل نادٍ') }}
+                  <span class="font-numbers text-lg text-gold">{{ budget(startingBudget) }}</span></span
+                >
                 <UiSlider v-model="startingBudget" :min="1000000" :max="10000000" :step="500000" label="ميزانية البداية" />
-                <span class="flex justify-between text-xs text-text-muted"><span>{{ $t('مليون') }}</span><span>{{ $t('10 ملايين') }}</span></span>
+                <span class="flex justify-between text-xs text-text-muted"
+                  ><span>{{ $t('مليون') }}</span
+                  ><span>{{ $t('10 ملايين') }}</span></span
+                >
               </label>
             </div>
-            <UiToggle v-model="fair" tone="success" class="rounded-lg bg-surface-sunk p-3" :hint="$t('يقفل صرف الكوينز داخل هذا الدوري')"><b>{{ $t('دوري نزيه') }}</b></UiToggle>
-            <UiToggle v-model="integrity" class="rounded-lg bg-surface-sunk p-3" :hint="$t('رشوة الحكم والفار والجواسيس المزدوجون ولجنة الانضباط والفضائح')"><b>{{ $t('منظومة النزاهة') }}</b></UiToggle>
-            <UiToggle v-model="press" class="rounded-lg bg-surface-sunk p-3" :hint="$t('تصريح قبل كل مباراة يرفع المعنويات')"><b>{{ $t('المؤتمرات الصحفية') }}</b></UiToggle>
-            <UiToggle v-model="staggered" class="rounded-lg bg-surface-sunk p-3" :hint="$t('نصف مباريات الجولة في موعدها والنصف الآخر بعدها، بقفل موحد وتدوير عادل')"><b>{{ $t('الجولة على فترتين') }}</b></UiToggle>
-            <label v-if="staggered" class="flex items-center justify-between gap-3 rounded-lg bg-surface-sunk p-3 text-sm">{{ $t('الفترة الثانية بعد موعد الجولة بـ') }}
+            <UiToggle v-model="fair" tone="success" class="rounded-lg bg-surface-sunk p-3" :hint="$t('يقفل صرف الكوينز داخل هذا الدوري')"
+              ><b>{{ $t('دوري نزيه') }}</b></UiToggle
+            >
+            <UiToggle
+              v-model="integrity"
+              class="rounded-lg bg-surface-sunk p-3"
+              :hint="$t('رشوة الحكم والفار والجواسيس المزدوجون ولجنة الانضباط والفضائح')"
+              ><b>{{ $t('منظومة النزاهة') }}</b></UiToggle
+            >
+            <UiToggle v-model="press" class="rounded-lg bg-surface-sunk p-3" :hint="$t('تصريح قبل كل مباراة يرفع المعنويات')"
+              ><b>{{ $t('المؤتمرات الصحفية') }}</b></UiToggle
+            >
+            <UiToggle
+              v-model="staggered"
+              class="rounded-lg bg-surface-sunk p-3"
+              :hint="$t('نصف مباريات الجولة في موعدها والنصف الآخر بعدها، بقفل موحد وتدوير عادل')"
+              ><b>{{ $t('الجولة على فترتين') }}</b></UiToggle
+            >
+            <label v-if="staggered" class="flex items-center justify-between gap-3 rounded-lg bg-surface-sunk p-3 text-sm"
+              >{{ $t('الفترة الثانية بعد موعد الجولة بـ') }}
               <select v-model.number="slotGap" class="h-touch rounded-md bg-surface px-2 font-bold">
-                <option v-for="m in [60, 120, 180, 240, 300, 360]" :key="m" :value="m">{{ m / 60 }} {{ m === 60 ? $t('ساعة') : m === 120 ? $t('ساعتين') : $t('ساعات') }}</option>
+                <option v-for="m in [60, 120, 180, 240, 300, 360]" :key="m" :value="m">
+                  {{ m / 60 }} {{ m === 60 ? $t('ساعة') : m === 120 ? $t('ساعتين') : $t('ساعات') }}
+                </option>
               </select>
             </label>
             <fieldset class="flex flex-col gap-2">
@@ -382,30 +588,63 @@ const field = (name: string) => error.value?.field(name) ?? ''
         </template>
       </div>
 
-      <aside class="flex h-fit flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4 lg:sticky lg:top-4" aria-labelledby="h-summary">
+      <aside
+        class="flex h-fit flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4 lg:sticky lg:top-4"
+        aria-labelledby="h-summary"
+      >
         <h2 id="h-summary" class="font-display text-xl font-extrabold">{{ $t('ملخص الموسم') }}</h2>
         <dl class="flex flex-col divide-y divide-text/5 text-sm">
-          <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('جولات الدوري') }}</dt><dd class="font-bold"><span class="font-numbers">{{ rounds }}</span> {{ $t('جولة') }}</dd></div>
-          <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('منطقة القفل') }}</dt><dd class="font-bold">{{ $t('من الجولة') }} <span class="font-numbers">{{ lockFrom }}</span></dd></div>
-          <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('مقاعد المدربين') }}</dt><dd class="font-bold"><span class="font-numbers">{{ count }}</span> {{ $t('· مقعدك و') }}<span class="font-numbers">{{ count - 1 }}</span> {{ $t('لأصحابك') }}</dd></div>
-          <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-bold">{{ budget(custom ? startingBudget : FREE.budget) }}</dd></div>
+          <div class="flex justify-between py-2">
+            <dt class="text-text-muted">{{ $t('جولات الدوري') }}</dt>
+            <dd class="font-bold">
+              <span class="font-numbers">{{ rounds }}</span> {{ $t('جولة') }}
+            </dd>
+          </div>
+          <div class="flex justify-between py-2">
+            <dt class="text-text-muted">{{ $t('منطقة القفل') }}</dt>
+            <dd class="font-bold">
+              {{ $t('من الجولة') }} <span class="font-numbers">{{ lockFrom }}</span>
+            </dd>
+          </div>
+          <div class="flex justify-between py-2">
+            <dt class="text-text-muted">{{ $t('مقاعد المدربين') }}</dt>
+            <dd class="font-bold">
+              <span class="font-numbers">{{ count }}</span> {{ $t('· مقعدك و') }}<span class="font-numbers">{{ count - 1 }}</span>
+              {{ $t('لأصحابك') }}
+            </dd>
+          </div>
+          <div class="flex justify-between py-2">
+            <dt class="text-text-muted">{{ $t('الميزانية') }}</dt>
+            <dd class="font-bold">{{ budget(custom ? startingBudget : FREE.budget) }}</dd>
+          </div>
         </dl>
-        <p v-if="short" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="alert">{{ $t('رصيدك {v0} كوينز، والدوري المخصص يحتاج {v1}.', { v0: wallet.view?.balance ?? 0, v1: coins }) }}</p>
+        <p v-if="short" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="alert">
+          {{ $t('رصيدك {v0} كوينز، والدوري المخصص يحتاج {v1}.', { v0: wallet.view?.balance ?? 0, v1: coins }) }}
+        </p>
         <UiButton type="submit" block :disabled="!template || short">
-          <template v-if="customized">{{ $t('إنشاء الدوري المخصص ·') }} <AppImage src="/brand/coin.svg" alt="" class="inline size-5 align-[-4px]" :size="20" /> <span class="font-numbers">{{ coins }}</span> {{ $t('كوينز') }}</template>
+          <template v-if="customized"
+            >{{ $t('إنشاء الدوري المخصص ·') }} <AppImage src="/brand/coin.svg" alt="" class="inline size-5 align-[-4px]" :size="20" />
+            <span class="font-numbers">{{ coins }}</span> {{ $t('كوينز') }}</template
+          >
           <template v-else>{{ drawMode ? $t('أنشئ الدوري واختر فرقه') : $t('أنشئ الدوري واختر فريقك') }}</template>
         </UiButton>
       </aside>
     </form>
 
     <section v-else class="flex flex-col gap-3 pb-36 md:pb-0" :aria-label="$t('أندية الدوري')">
-      <p v-if="drawMode" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t('اخترت {v0} من {v1}', { v0: picked.length, v1: count }) }}</p>
+      <p v-if="drawMode" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">
+        {{ $t('اخترت {v0} من {v1}', { v0: picked.length, v1: count }) }}
+      </p>
       <ul class="grid gap-2 md:grid-cols-2">
         <li v-for="c in clubs" :key="c.id">
           <button
             type="button"
             class="flex min-h-20 w-full items-center gap-3 rounded-xl border p-3 text-start"
-            :class="(drawMode ? picked.includes(c.id) : club?.id === c.id) ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface hover:bg-surface-raised'"
+            :class="
+              (drawMode ? picked.includes(c.id) : club?.id === c.id)
+                ? 'border-gold bg-surface-raised'
+                : 'border-transparent bg-surface hover:bg-surface-raised'
+            "
             :aria-pressed="drawMode ? picked.includes(c.id) : club?.id === c.id"
             @click="drawMode ? togglePick(c.id) : (club = c)"
           >
@@ -416,8 +655,14 @@ const field = (name: string) => error.value?.field(name) ?? ''
         </li>
       </ul>
       <div class="fixed inset-x-0 bottom-20 z-10 border-t border-text/10 bg-bg-deep p-4 md:static md:border-0 md:bg-transparent md:p-0">
-        <UiButton v-if="drawMode" block :disabled="picked.length !== count || sending" @click="create">{{ picked.length === count ? $t('أنشئ الدوري بالقرعة') + (coins ? $t(' · {v0} كوينز', { v0: coins }) : '') : $t('اختر {v0} فرق', { v0: count }) }}</UiButton>
-        <UiButton v-else block :disabled="!club || sending" @click="create">{{ club ? $t('أنشئ الدوري بـ{v0}', { v0: club.name }) + (coins ? $t(' · {v0} كوينز', { v0: coins }) : '') : $t('اختر فريقك') }}</UiButton>
+        <UiButton v-if="drawMode" block :disabled="picked.length !== count || sending" @click="create">{{
+          picked.length === count
+            ? $t('أنشئ الدوري بالقرعة') + (coins ? $t(' · {v0} كوينز', { v0: coins }) : '')
+            : $t('اختر {v0} فرق', { v0: count })
+        }}</UiButton>
+        <UiButton v-else block :disabled="!club || sending" @click="create">{{
+          club ? $t('أنشئ الدوري بـ{v0}', { v0: club.name }) + (coins ? $t(' · {v0} كوينز', { v0: coins }) : '') : $t('اختر فريقك')
+        }}</UiButton>
       </div>
     </section>
   </div>

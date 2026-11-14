@@ -34,8 +34,17 @@ export function useTeam() {
 
 /** Arabic names of the six attributes and the keeper's five. */
 export const ATTRIBUTES: Record<string, string> = {
-  pac: 'السرعة', sho: 'التسديد', pas: 'التمرير', dri: 'المراوغة', def: 'الدفاع', phy: 'البدنية',
-  diving: 'الارتماء', handling: 'الإمساك', kicking: 'الركل', positioning: 'التمركز', reflexes: 'رد الفعل',
+  pac: 'السرعة',
+  sho: 'التسديد',
+  pas: 'التمرير',
+  dri: 'المراوغة',
+  def: 'الدفاع',
+  phy: 'البدنية',
+  diving: 'الارتماء',
+  handling: 'الإمساك',
+  kicking: 'الركل',
+  positioning: 'التمركز',
+  reflexes: 'رد الفعل',
 }
 
 /** Green when good, gold in between, orange when low (the design's bars). */

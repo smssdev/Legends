@@ -13,3 +13,5 @@ src/api/schema.d.ts
 src/styles/tokens.css
 src/**/*.g.ts
 scripts/*-baseline.json
+# The dictionary: one sentence a line, as scripts/i18n.mjs and nav.mjs read it.
+src/i18n/en.ts

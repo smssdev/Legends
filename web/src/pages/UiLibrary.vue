@@ -86,7 +86,10 @@ const counts = computed(() => Object.fromEntries(lines.map((l) => [l, club.value
 const shown = computed(() => (club.value?.players ?? []).filter((p) => tab.value === 'all' || p.line === tab.value))
 const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
 // [Sprint 66] Thrown outside Vue's handler, as a real fault would be: window.onerror sends it (lib/errors.ts).
-const crash = () => window.setTimeout(() => { throw new Error('GLM test error from /dev/ui') })
+const crash = () =>
+  window.setTimeout(() => {
+    throw new Error('GLM test error from /dev/ui')
+  })
 </script>
 
 <template>
@@ -113,7 +116,8 @@ const crash = () => window.setTimeout(() => { throw new Error('GLM test error fr
         </div>
         <div class="flex flex-wrap gap-2">
           <UiButton disabled>{{ $t('معطّل') }}</UiButton><UiButton loading>{{ $t('جارٍ التحميل') }}</UiButton>
-          <UiButton success>{{ $t('حُفظ.') }}</UiButton><UiButton size="sm">sm</UiButton><UiButton to="/dev/ui" variant="brand" size="sm">{{ $t('رابط') }}</UiButton>
+          <UiButton success>{{ $t('حُفظ.') }}</UiButton><UiButton size="sm">sm</UiButton
+          ><UiButton to="/dev/ui" variant="brand" size="sm">{{ $t('رابط') }}</UiButton>
         </div>
       </UiCard>
       <UiCard title="الحقول والاختيار">
@@ -123,12 +127,38 @@ const crash = () => window.setTimeout(() => { throw new Error('GLM test error fr
           <UiSelect v-model="shortPick" label="الخط" none="أي خط" :options="lines.map((l) => ({ value: l, label: $t(LINES[l].name) }))" />
           <UiToggle v-model="on" label="الإشعارات" hint="تصلك قبل المباراة بساعة" tone="success" />
         </div>
-        <UiTabs v-model="segment" :items="[{ key: 'a', label: 'الأول', n: 3 }, { key: 'b', label: 'الثاني' }, { key: 'c', label: 'الثالث' }]" label="تبويبات" />
-        <UiTabs v-model="segment" :items="[{ key: 'a', label: 'الأول' }, { key: 'b', label: 'الثاني' }, { key: 'c', label: 'الثالث' }]" label="تبويبات" tone="brand" fill size="sm" />
+        <UiTabs
+          v-model="segment"
+          :items="[
+            { key: 'a', label: 'الأول', n: 3 },
+            { key: 'b', label: 'الثاني' },
+            { key: 'c', label: 'الثالث' },
+          ]"
+          label="تبويبات"
+        />
+        <UiTabs
+          v-model="segment"
+          :items="[
+            { key: 'a', label: 'الأول' },
+            { key: 'b', label: 'الثاني' },
+            { key: 'c', label: 'الثالث' },
+          ]"
+          label="تبويبات"
+          tone="brand"
+          fill
+          size="sm"
+        />
         <div><UiButton variant="outline" @click="dialogOpen = true">UiDialog</UiButton></div>
         <UiDialog :open="dialogOpen" title="نافذة" closable @close="dialogOpen = false">
           <p class="text-body">{{ $t('مكونات نظام التصميم على نادٍ حقيقي من البيانات.') }}</p>
-          <div class="mt-4 flex gap-2"><UiButton class="flex-1" @click="dialogOpen = false">{{ $t('حُفظ.') }}</UiButton><UiButton class="flex-1" variant="quiet" @click="dialogOpen = false">{{ $t('إلغاء') }}</UiButton></div>
+          <div class="mt-4 flex gap-2">
+            <UiButton class="flex-1" @click="dialogOpen = false">{{ $t('حُفظ.') }}</UiButton><UiButton
+              class="flex-1"
+              variant="quiet"
+              @click="dialogOpen = false"
+              >{{ $t('إلغاء') }}</UiButton
+            >
+          </div>
         </UiDialog>
       </UiCard>
       <UiCard title="الانتظار والفراغ والخطأ">
@@ -147,7 +177,9 @@ const crash = () => window.setTimeout(() => { throw new Error('GLM test error fr
           <MoneyPill kind="cash" to="/finance" :value="3_400_000" caption="أموال النادي" label="أموال النادي" />
           <CountdownChip :to="soon" /><CountdownChip :to="soon" size="lg" /><CountdownChip :to="null" />
         </div>
-        <nav class="flex flex-wrap" :aria-label="$t('أقسام')"><NavItem to="/dev/ui" icon="home" label="الرئيسية" active /><NavItem to="/club" icon="team" label="الفريق" /></nav>
+        <nav class="flex flex-wrap" :aria-label="$t('أقسام')">
+          <NavItem to="/dev/ui" icon="home" label="الرئيسية" active /><NavItem to="/club" icon="team" label="الفريق" />
+        </nav>
       </UiCard>
     </div>
 
@@ -175,18 +207,33 @@ const crash = () => window.setTimeout(() => { throw new Error('GLM test error fr
     <!-- [Sprint 30 Q1] The headless primitives, all on reka-ui since Sprint 54 W4. -->
     <UiCard :title="$t('المكونات الموحّدة')">
       <div class="grid gap-4 md:grid-cols-2">
-        <div class="flex flex-col gap-1"><span class="text-sm font-bold">UiSlider</span>
-          <UiSlider v-model="sliderValue" :min="1" :max="5" label="الضغط" :marks="['منخفض', 'متوسط', 'عالٍ']" /></div>
-        <div class="flex flex-col gap-1"><span class="text-sm font-bold">UiSelect (Combobox)</span>
-          <UiSelect v-model="pickedLeague" :options="templates.map((t) => ({ value: t.name, label: t.name }))" label="الدوري" searchable /></div>
-        <div class="flex flex-wrap items-center gap-2"><span class="text-sm font-bold">UiTooltip</span>
-          <UiTooltip text="القوة: متوسط أفضل 11 لاعباً"><button type="button" class="h-touch rounded-md bg-surface-raised px-3 font-numbers">85</button></UiTooltip></div>
+        <div class="flex flex-col gap-1">
+          <span class="text-sm font-bold">UiSlider</span>
+          <UiSlider v-model="sliderValue" :min="1" :max="5" label="الضغط" :marks="['منخفض', 'متوسط', 'عالٍ']" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-sm font-bold">UiSelect (Combobox)</span>
+          <UiSelect v-model="pickedLeague" :options="templates.map((t) => ({ value: t.name, label: t.name }))" label="الدوري" searchable />
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-bold">UiTooltip</span>
+          <UiTooltip text="القوة: متوسط أفضل 11 لاعباً"
+            ><button type="button" class="h-touch rounded-md bg-surface-raised px-3 font-numbers">85</button></UiTooltip
+          >
+        </div>
         <div class="flex flex-wrap items-center gap-2">
           <UiButton variant="danger" @click="dangerOpen = true">ConfirmDangerDialog</UiButton>
           <UiButton variant="outline" @click="toast.show($t('حُفظ.'))">Toast</UiButton>
         </div>
       </div>
-      <ConfirmDangerDialog :open="dangerOpen" title="حذف" expected="Liverpool" action="احذف" @close="dangerOpen = false" @confirm="dangerOpen = false" />
+      <ConfirmDangerDialog
+        :open="dangerOpen"
+        title="حذف"
+        expected="Liverpool"
+        action="احذف"
+        @close="dangerOpen = false"
+        @confirm="dangerOpen = false"
+      />
     </UiCard>
 
     <UiCard :title="$t('النادي')">
@@ -203,7 +250,14 @@ const crash = () => window.setTimeout(() => { throw new Error('GLM test error fr
         </div>
       </template>
       <div class="flex gap-3 overflow-x-auto pb-1">
-        <button v-for="c in clubs.slice(0, 10)" :key="c.id" type="button" class="shrink-0 rounded-xl p-2" :class="c.id === clubId ? 'bg-surface-raised ring-1 ring-gold/60' : ''" @click="clubId = c.id">
+        <button
+          v-for="c in clubs.slice(0, 10)"
+          :key="c.id"
+          type="button"
+          class="shrink-0 rounded-xl p-2"
+          :class="c.id === clubId ? 'bg-surface-raised ring-1 ring-gold/60' : ''"
+          @click="clubId = c.id"
+        >
           <ClubCrest :url="c.crest_url" :code="c.code" :name="c.name" :size="52" />
         </button>
       </div>
@@ -222,15 +276,41 @@ const crash = () => window.setTimeout(() => { throw new Error('GLM test error fr
         </div>
       </div>
       <div role="tablist" :aria-label="$t('الخطوط')" class="flex gap-2 overflow-x-auto pb-1">
-        <button type="button" role="tab" :aria-selected="tab === 'all'" class="h-touch shrink-0 rounded-lg px-4 font-bold" :class="tab === 'all' ? 'bg-gold text-on-gold' : 'bg-surface'" @click="tab = 'all'">
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="tab === 'all'"
+          class="h-touch shrink-0 rounded-lg px-4 font-bold"
+          :class="tab === 'all' ? 'bg-gold text-on-gold' : 'bg-surface'"
+          @click="tab = 'all'"
+        >
           {{ $t('الكل') }} <span class="font-numbers">{{ club.players.length }}</span>
         </button>
-        <button v-for="l in lines" :key="l" type="button" role="tab" :aria-selected="tab === l" class="h-touch shrink-0 rounded-lg px-4 font-bold" :class="tab === l ? 'bg-gold text-on-gold' : 'bg-surface'" @click="tab = l">
+        <button
+          v-for="l in lines"
+          :key="l"
+          type="button"
+          role="tab"
+          :aria-selected="tab === l"
+          class="h-touch shrink-0 rounded-lg px-4 font-bold"
+          :class="tab === l ? 'bg-gold text-on-gold' : 'bg-surface'"
+          @click="tab = l"
+        >
           {{ $t(LINES[l].plural) }} <span class="font-numbers">{{ counts[l] }}</span>
         </button>
       </div>
       <div class="grid gap-2 lg:grid-cols-2">
-        <PlayerRow v-for="p in shown" :key="p.id" :name="p.name" :line="p.line" :position="p.position" :age="p.age" :overall="p.overall" :potential="p.potential" :value="p.value" />
+        <PlayerRow
+          v-for="p in shown"
+          :key="p.id"
+          :name="p.name"
+          :line="p.line"
+          :position="p.position"
+          :age="p.age"
+          :overall="p.overall"
+          :potential="p.potential"
+          :value="p.value"
+        />
       </div>
     </section>
 
@@ -238,13 +318,20 @@ const crash = () => window.setTimeout(() => { throw new Error('GLM test error fr
       <UiTable
         :rows="table"
         :caption="$t('أندية {v0} حسب القوة', { v0: league })"
-        :columns="[{ key: 'rank', label: '#', numeric: true }, { key: 'name', label: $t('النادي') }, { key: 'code', label: $t('الرمز'), hideSm: true }, { key: 'strength_cp', label: $t('القوة'), numeric: true }]"
+        :columns="[
+          { key: 'rank', label: '#', numeric: true },
+          { key: 'name', label: $t('النادي') },
+          { key: 'code', label: $t('الرمز'), hideSm: true },
+          { key: 'strength_cp', label: $t('القوة'), numeric: true },
+        ]"
         :highlight="(r) => r.id === clubId"
       >
         <template #name="{ row }">
           <span class="flex items-center gap-2"><AppImage :src="row.crest_url" alt="" :width="24" :height="27" crest />{{ row.name }}</span>
         </template>
-        <template #strength_cp="{ row }"><span class="text-gold">{{ strength(row.strength_cp) }}</span></template>
+        <template #strength_cp="{ row }"
+          ><span class="text-gold">{{ strength(row.strength_cp) }}</span></template
+        >
       </UiTable>
     </UiCard>
   </div>

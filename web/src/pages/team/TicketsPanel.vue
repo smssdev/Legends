@@ -24,9 +24,13 @@ onMounted(async () => {
 })
 // [X92] Through lib/action: the side tapped waits, the result in a toast.
 async function buy(fixture: number, side: 'home' | 'away') {
-  const r = await act(`ticket:${fixture}`, () => api.POST('/leagues/{league}/tickets', { params: { path: { league: props.leagueId } }, body: { fixture_id: fixture, side } }), {
-    success: t('حجزت تذكرتك، وجمهورك يشجع.'),
-  })
+  const r = await act(
+    `ticket:${fixture}`,
+    () => api.POST('/leagues/{league}/tickets', { params: { path: { league: props.leagueId } }, body: { fixture_id: fixture, side } }),
+    {
+      success: t('حجزت تذكرتك، وجمهورك يشجع.'),
+    },
+  )
   if (r?.data) data.value = r.data
 }
 const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'short', hour: 'numeric', minute: '2-digit' })
@@ -36,15 +40,22 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
   <section v-if="data && data.fixtures.length" class="flex flex-col gap-3 rounded-xl ui-card p-4" aria-labelledby="h-tickets">
     <div>
       <h2 id="h-tickets" class="font-display text-xl font-extrabold">{{ $t('التذاكر') }}</h2>
-      <p class="text-sm text-text-muted">{{ $t('المعنويات') }} <b class="font-numbers text-gold">+{{ data.boost }}</b> · <span dir="ltr">{{ money(data.price) }}</span></p>
+      <p class="text-sm text-text-muted">
+        {{ $t('المعنويات') }} <b class="font-numbers text-gold">+{{ data.boost }}</b> · <span dir="ltr">{{ money(data.price) }}</span>
+      </p>
     </div>
     <p v-if="message" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
     <ul class="flex flex-col gap-2">
       <li v-for="f in data.fixtures" :key="f.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
-        <span class="text-xs text-text-muted">{{ f.competition === 'cup' ? $t('الكأس') : f.competition === 'alliance' ? $t('التحالفات') : $t('الجولة {v0}', { v0: f.round }) }} · {{ when(f.scheduled_at) }}</span>
+        <span class="text-xs text-text-muted"
+          >{{
+            f.competition === 'cup' ? $t('الكأس') : f.competition === 'alliance' ? $t('التحالفات') : $t('الجولة {v0}', { v0: f.round })
+          }}
+          · {{ when(f.scheduled_at) }}</span
+        >
         <div class="grid grid-cols-2 gap-2">
           <button
-            v-for="s in (['home', 'away'] as const)"
+            v-for="s in ['home', 'away'] as const"
             :key="s"
             type="button"
             class="flex min-h-touch items-center gap-2 rounded-lg border px-2 py-1.5 text-start disabled:opacity-50"
@@ -55,7 +66,11 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
           >
             <ClubCrest :url="f[s].crest_url" :code="f[s].code" :size="28" />
             <span class="min-w-0 flex-1 truncate text-sm font-bold">{{ $nm(f[s].name) }}</span>
-            <span class="text-xs text-text-muted" :aria-label="$t('{v0} تذكرة', { v0: f.cheering[s] })"><Icon name="megaphone" :size="16" class="inline-block align-[-3px]" /><span class="font-numbers">{{ f.cheering[s] }}</span></span>
+            <span class="text-xs text-text-muted" :aria-label="$t('{v0} تذكرة', { v0: f.cheering[s] })"
+              ><Icon name="megaphone" :size="16" class="inline-block align-[-3px]" /><span class="font-numbers">{{
+                f.cheering[s]
+              }}</span></span
+            >
           </button>
         </div>
       </li>

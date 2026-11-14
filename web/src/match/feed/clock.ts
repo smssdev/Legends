@@ -14,7 +14,8 @@ export function clockAt(minute: [number, number], tickNo: number, u: number, p: 
   const hold = p?.scene && p.total ? Math.min(0.95, (p.sceneT + p.cutT) / p.total) : 0
   const frozen = !!p && hold > 0 && u < hold && u * p.total >= 0.4
   if (p && hold > 0) {
-    const at = 12 + ((tickNo || 1) * 37) % 40, run = Math.min(hold, 0.4 / p.total)
+    const at = 12 + (((tickNo || 1) * 37) % 40),
+      run = Math.min(hold, 0.4 / p.total)
     sec = Math.min(59, Math.floor(u < run ? (at * u) / run : u < hold ? at : at + ((59 - at) * (u - hold)) / (1 - hold)))
   }
   const mm = minute[0] + (minute[1] || 0)

@@ -43,7 +43,9 @@ apply(locale.value)
 const EN = shallowRef<Record<string, string>>({})
 let loading: Promise<void> | null = null
 function loadEnglish(): Promise<void> {
-  return (loading ??= import('../i18n/en').then((m) => { EN.value = m.EN }))
+  return (loading ??= import('../i18n/en').then((m) => {
+    EN.value = m.EN
+  }))
 }
 /** Resolves when the device's language can be shown: at once in Arabic, after the dictionary in English. */
 export const i18nReady: Promise<void> = locale.value === 'en' ? loadEnglish().catch(() => {}) : Promise.resolve()

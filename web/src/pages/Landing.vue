@@ -8,13 +8,25 @@ import Character from '../components/characters/Character.vue'
 import { emblemSrc, locale } from '../lib/i18n'
 
 const FEATURES = [
-  { icon: '◎', title: 'مباراة حية تديرها لحظة بلحظة', body: 'تابع مباراتك دقيقة بدقيقة، وبدّل لاعبيك وغيّر تكتيكك أثناء اللعب، وخصمك يرى ما يحدث في الملعب لا خطتك.' },
+  {
+    icon: '◎',
+    title: 'مباراة حية تديرها لحظة بلحظة',
+    body: 'تابع مباراتك دقيقة بدقيقة، وبدّل لاعبيك وغيّر تكتيكك أثناء اللعب، وخصمك يرى ما يحدث في الملعب لا خطتك.',
+  },
   { icon: '⚑', title: 'دوريات خاصة مع أصحابك', body: 'أنشئ دورياً بكود، وادعُ أصحابك برابط على واتساب، وتنافسوا على الدوري والكأس كل موسم.' },
-  { icon: '♟', title: 'تكتيك له معنى', body: 'خطة اللعب، والضغط، والأسلوب، والإيقاع، والرقابة، ومصيدة التسلل. التكتيك يغيّر طريقة لعب فريقك، فيكون للأضعف رد على الأقوى.' },
+  {
+    icon: '♟',
+    title: 'تكتيك له معنى',
+    body: 'خطة اللعب، والضغط، والأسلوب، والإيقاع، والرقابة، ومصيدة التسلل. التكتيك يغيّر طريقة لعب فريقك، فيكون للأضعف رد على الأقوى.',
+  },
   { icon: '⇄', title: 'سوق انتقالات حي', body: 'اشترِ من السوق ومن المدربين الآخرين، واعرض لاعبيك للبيع، وأرسل الكشاف يبحث لك عن المواهب.' },
   { icon: '▲', title: 'التدريب والجهاز الفني', body: 'تعاقد مع مدرب لكل خط، ودرّب لاعبيك ليتطوروا حسب أعمارهم وإمكانياتهم.' },
   { icon: '▣', title: 'ملعبك وأموال ناديك', body: 'ابنِ المدرجات وأرضية الملعب ومنشأة التدريب، واختر الراعي المناسب، وأدر ميزانية ناديك.' },
-  { icon: '▶', title: 'مشهد المباراة والمعلق', body: 'شاهد كل هجمة على ملعب متحرك، مع تعليق مكتوب ومعلق صوتي بالإنجليزية، ومشهد ثلاثي الأبعاد قادم.' },
+  {
+    icon: '▶',
+    title: 'مشهد المباراة والمعلق',
+    body: 'شاهد كل هجمة على ملعب متحرك، مع تعليق مكتوب ومعلق صوتي بالإنجليزية، ومشهد ثلاثي الأبعاد قادم.',
+  },
   { icon: '✦', title: 'المدرب المساعد', body: 'مساعدك في كل شاشة: يشرح لك أي جزء من اللعبة، ويقرأ أرقام فريقك وينصحك، والقرار لك.' },
 ]
 const STEPS = [
@@ -38,28 +50,48 @@ const FAQ = [
     <!-- The hero: the stadium at night, the promise and the two ways in. -->
     <section class="hero theme-night relative overflow-hidden px-4 py-14 text-center md:py-24">
       <div class="relative mx-auto flex max-w-3xl flex-col items-center gap-5">
-        <AppImage :src="emblemSrc" alt="Game Legend Manager" class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36" :size="144" eager />
+        <AppImage
+          :src="emblemSrc"
+          alt="Game Legend Manager"
+          class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36"
+          :size="144"
+          eager
+        />
         <!-- [Sprint 39 B1] The official name over the promise, the Arabic one under it in Arabic. [X97] The name is the
              page's heading (what Google weighs most), the promise under it a paragraph: the same look. -->
         <h1 class="flex flex-col items-center leading-tight">
-          <span class="font-display text-2xl font-extrabold uppercase tracking-[0.12em] md:text-3xl" dir="ltr">Game Legend <span class="text-gold">Manager</span></span>
+          <span class="font-display text-2xl font-extrabold uppercase tracking-[0.12em] md:text-3xl" dir="ltr"
+            >Game Legend <span class="text-gold">Manager</span></span
+          >
           <span v-if="locale === 'ar'" class="text-sm font-bold text-text-soft">المدرب الأسطورة</span>
         </h1>
         <span class="rounded-pill bg-gold/15 px-4 py-1 text-sm font-bold text-gold">{{ $t('لعبة إدارة كرة قدم عربية مجانية') }}</span>
-        <p class="font-display text-4xl font-extrabold leading-tight md:text-6xl">{{ $t('دوريك. فريقك.') }} <span class="text-gold">{{ $t('أسطورتك.') }}</span></p>
-        <p class="max-w-xl text-lg text-text-soft">{{ $t('درّب ناديك المفضل ضد أصحابك في دوريات خاصة، وأدر كل مباراة مباشرة لحظة بلحظة، من الجوال أو الكمبيوتر.') }}</p>
+        <p class="font-display text-4xl font-extrabold leading-tight md:text-6xl">
+          {{ $t('دوريك. فريقك.') }} <span class="text-gold">{{ $t('أسطورتك.') }}</span>
+        </p>
+        <p class="max-w-xl text-lg text-text-soft">
+          {{ $t('درّب ناديك المفضل ضد أصحابك في دوريات خاصة، وأدر كل مباراة مباشرة لحظة بلحظة، من الجوال أو الكمبيوتر.') }}
+        </p>
         <div class="flex flex-wrap justify-center gap-3">
-          <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-7 text-lg font-bold text-on-gold">{{ $t('ابدأ مجاناً') }}</RouterLink>
-          <RouterLink to="/guide" class="flex h-12 items-center rounded-lg border border-text/25 px-7 font-bold">{{ $t('طريقة اللعب') }}</RouterLink>
+          <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-7 text-lg font-bold text-on-gold">{{
+            $t('ابدأ مجاناً')
+          }}</RouterLink>
+          <RouterLink to="/guide" class="flex h-12 items-center rounded-lg border border-text/25 px-7 font-bold">{{
+            $t('طريقة اللعب')
+          }}</RouterLink>
         </div>
         <!-- [Sprint 15 D1] The app: Android to download, the iPhone from Safari. -->
-        <RouterLink to="/download" class="flex min-h-touch items-center gap-2 rounded-full bg-surface/70 px-5 text-sm font-bold"><Icon name="sim" :size="16" class="inline-block align-[-3px]" /> {{ $t('حمّل التطبيق: أندرويد وآيفون') }}</RouterLink>
+        <RouterLink to="/download" class="flex min-h-touch items-center gap-2 rounded-full bg-surface/70 px-5 text-sm font-bold"
+          ><Icon name="sim" :size="16" class="inline-block align-[-3px]" /> {{ $t('حمّل التطبيق: أندرويد وآيفون') }}</RouterLink
+        >
         <div class="flex items-end justify-center gap-1">
           <Character model="A1" mood="joy" class="w-24 md:w-28" />
           <Character model="A2" mood="cheer" class="w-24 md:w-28" />
           <Character model="A3" mood="idle" class="w-20 md:w-24" />
         </div>
-        <RouterLink to="/login" class="flex min-h-touch items-center text-sm text-text-muted">{{ $t('عندك حساب؟') }} <b class="ms-1 text-gold">{{ $t('سجّل الدخول') }}</b></RouterLink>
+        <RouterLink to="/login" class="flex min-h-touch items-center text-sm text-text-muted"
+          >{{ $t('عندك حساب؟') }} <b class="ms-1 text-gold">{{ $t('سجّل الدخول') }}</b></RouterLink
+        >
       </div>
     </section>
 
@@ -72,7 +104,9 @@ const FAQ = [
         </div>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <article v-for="f in FEATURES" :key="f.title" class="flex flex-col gap-2 rounded-2xl border border-text/10 bg-surface p-5">
-            <span class="grid size-11 place-items-center rounded-full bg-brand text-xl text-on-gold shadow-md" aria-hidden="true">{{ f.icon }}</span>
+            <span class="grid size-11 place-items-center rounded-full bg-brand text-xl text-on-gold shadow-md" aria-hidden="true">{{
+              f.icon
+            }}</span>
             <h3 class="font-bold">{{ $t(f.title) }}</h3>
             <p class="text-sm leading-relaxed text-text-soft">{{ $t(f.body) }}</p>
           </article>
@@ -92,10 +126,22 @@ const FAQ = [
       </section>
 
       <!-- Why GLM. -->
-      <section class="grid gap-3 rounded-2xl border border-gold/30 bg-surface p-6 md:grid-cols-3" :aria-label="$t('لماذا المدرب الأسطورة؟')">
-        <div class="flex flex-col gap-1"><b class="text-gold">{{ $t('عربية من الأساس') }}</b><p class="text-sm text-text-soft">{{ $t('صُممت بالعربية أولاً، بأسماء الأندية واللاعبين بالعربية، ومعها الإنجليزية.') }}</p></div>
-        <div class="flex flex-col gap-1"><b class="text-gold">{{ $t('مجانية بالكامل') }}</b><p class="text-sm text-text-soft">{{ $t('بلا اشتراك، ولا شيء يُشترى بمال حقيقي: الفوز بقرارك لا بمحفظتك.') }}</p></div>
-        <div class="flex flex-col gap-1"><b class="text-gold">{{ $t('على أي جهاز') }}</b><p class="text-sm text-text-soft">{{ $t('من المتصفح على الجوال والكمبيوتر، وحسابك واحد على كل الأجهزة.') }}</p></div>
+      <section
+        class="grid gap-3 rounded-2xl border border-gold/30 bg-surface p-6 md:grid-cols-3"
+        :aria-label="$t('لماذا المدرب الأسطورة؟')"
+      >
+        <div class="flex flex-col gap-1">
+          <b class="text-gold">{{ $t('عربية من الأساس') }}</b>
+          <p class="text-sm text-text-soft">{{ $t('صُممت بالعربية أولاً، بأسماء الأندية واللاعبين بالعربية، ومعها الإنجليزية.') }}</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <b class="text-gold">{{ $t('مجانية بالكامل') }}</b>
+          <p class="text-sm text-text-soft">{{ $t('بلا اشتراك، ولا شيء يُشترى بمال حقيقي: الفوز بقرارك لا بمحفظتك.') }}</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <b class="text-gold">{{ $t('على أي جهاز') }}</b>
+          <p class="text-sm text-text-soft">{{ $t('من المتصفح على الجوال والكمبيوتر، وحسابك واحد على كل الأجهزة.') }}</p>
+        </div>
       </section>
 
       <!-- The common questions. -->
@@ -107,13 +153,17 @@ const FAQ = [
             <p class="pb-4 leading-relaxed text-text-soft">{{ $t(f.a) }}</p>
           </details>
         </div>
-        <RouterLink to="/guide" class="flex min-h-touch items-center self-center font-bold text-gold">{{ $t('الدليل الكامل: طريقة اللعب') }}</RouterLink>
+        <RouterLink to="/guide" class="flex min-h-touch items-center self-center font-bold text-gold">{{
+          $t('الدليل الكامل: طريقة اللعب')
+        }}</RouterLink>
       </section>
 
       <!-- The last call. -->
       <section class="flex flex-col items-center gap-4 text-center">
         <h2 class="font-display text-3xl font-extrabold">{{ $t('ناديك ينتظر مدربه') }}</h2>
-        <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-7 text-lg font-bold text-on-gold">{{ $t('أنشئ حسابك مجاناً') }}</RouterLink>
+        <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-7 text-lg font-bold text-on-gold">{{
+          $t('أنشئ حسابك مجاناً')
+        }}</RouterLink>
       </section>
     </div>
     <!-- [X90] The footer comes from the frame (AppShell.vue), as on every screen. -->
@@ -123,10 +173,10 @@ const FAQ = [
 <style scoped>
 .hero {
   background:
-    url("/art/pattern-star.svg") center / 40px 40px repeat,
+    url('/art/pattern-star.svg') center / 40px 40px repeat,
     radial-gradient(ellipse 80% 60% at 50% 30%, color-mix(in srgb, var(--color-brand) 45%, transparent), transparent 70%),
     linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 35%, transparent), var(--color-bg-deep)),
-    url("/art/stadium-blur-1920.webp") center / cover no-repeat;
+    url('/art/stadium-blur-1920.webp') center / cover no-repeat;
   background-blend-mode: soft-light, normal, normal, normal;
 }
 </style>

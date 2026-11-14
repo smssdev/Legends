@@ -9,7 +9,7 @@ describe('clockAt', () => {
     expect(clockAt([45, 2], 47, 0, null).text).toBe('46:00')
   })
 
-  it('a minute with a scene runs to the moment\'s second, stands still through it, then runs on', () => {
+  it("a minute with a scene runs to the moment's second, stands still through it, then runs on", () => {
     const p = { total: 10, sceneT: 6, cutT: 2, scene: true } // held until 0.8 of the minute
     const at = 12 + ((30 * 37) % 40) // the moment's second, from the minute
     expect(clockAt([30, 0], 30, 0.02, p)).toMatchObject({ frozen: false })

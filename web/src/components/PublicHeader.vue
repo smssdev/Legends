@@ -15,7 +15,9 @@ const auth = useAuth()
       <span class="flex-1" />
       <RouterLink to="/guide" class="hidden min-h-touch items-center px-2 text-sm font-bold sm:flex">{{ $t('طريقة اللعب') }}</RouterLink>
       <LanguageSwitch />
-      <RouterLink v-if="!auth.user" to="/login" class="flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">{{ $t('دخول') }}</RouterLink>
+      <RouterLink v-if="!auth.user" to="/login" class="flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">{{
+        $t('دخول')
+      }}</RouterLink>
     </div>
   </header>
 </template>

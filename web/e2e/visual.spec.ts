@@ -7,14 +7,30 @@ import { expect, test, type Page } from '@playwright/test'
 import { ready, signUp } from './helpers'
 
 const SCREENS: [string, string][] = [
-  ['/club', 'office'], ['/team', 'squad'], ['/lineup', 'lineup'], ['/tactics', 'tactics'],
-  ['/market', 'market'], ['/match', 'next-match'], ['/fixtures', 'fixtures'], ['/', 'home'],
+  ['/club', 'office'],
+  ['/team', 'squad'],
+  ['/lineup', 'lineup'],
+  ['/tactics', 'tactics'],
+  ['/market', 'market'],
+  ['/match', 'next-match'],
+  ['/fixtures', 'fixtures'],
+  ['/', 'home'],
 ]
-const SIZES: [number, number, 'dark' | 'light'][] = [[667, 375, 'dark'], [915, 412, 'dark'], [1440, 900, 'dark'], [915, 412, 'light']]
+const SIZES: [number, number, 'dark' | 'light'][] = [
+  [667, 375, 'dark'],
+  [915, 412, 'dark'],
+  [1440, 900, 'dark'],
+  [915, 412, 'light'],
+]
 
 const masks = (page: Page) => [
-  page.locator('.font-numbers'), page.locator('img'), page.locator('[dir="ltr"]'), page.locator('bdi'),
-  page.locator('.dock-crest'), page.locator('.shell-bar'), page.locator('.skeleton'),
+  page.locator('.font-numbers'),
+  page.locator('img'),
+  page.locator('[dir="ltr"]'),
+  page.locator('bdi'),
+  page.locator('.dock-crest'),
+  page.locator('.shell-bar'),
+  page.locator('.skeleton'),
 ]
 
 test('the rebuilt screens keep their shape', async ({ page }) => {
@@ -39,7 +55,11 @@ test('the rebuilt screens keep their shape', async ({ page }) => {
       await ready(page)
       await page.waitForTimeout(1200)
       await page.keyboard.press('Escape')
-      await expect(page).toHaveScreenshot(`${name}-${width}-${scheme}.png`, { mask: masks(page), animations: 'disabled', maxDiffPixelRatio: 0.03 })
+      await expect(page).toHaveScreenshot(`${name}-${width}-${scheme}.png`, {
+        mask: masks(page),
+        animations: 'disabled',
+        maxDiffPixelRatio: 0.03,
+      })
     }
   }
 })

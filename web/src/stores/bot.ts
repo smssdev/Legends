@@ -10,7 +10,13 @@ import { api } from '../api/client'
 import type { components } from '../api/schema'
 
 type Question = components['schemas']['AssistantQuestion']
-export interface BotMessage { from: 'me' | 'bot'; text: string; go?: string | null; related?: Question[]; notice?: string | null }
+export interface BotMessage {
+  from: 'me' | 'bot'
+  text: string
+  go?: string | null
+  related?: Question[]
+  notice?: string | null
+}
 
 export const useBot = defineStore('bot', () => {
   const open = ref(false)
@@ -29,7 +35,11 @@ export const useBot = defineStore('bot', () => {
   type Saved = { at: string; messages: BotMessage[] }
   const saved = ref<Saved | null>(read())
   function read(): Saved | null {
-    try { return JSON.parse(storage.get(SAVED) ?? 'null') } catch { return null }
+    try {
+      return JSON.parse(storage.get(SAVED) ?? 'null')
+    } catch {
+      return null
+    }
   }
 
   /** «إنهاء»: a short goodbye from him, then the card. */
@@ -38,8 +48,13 @@ export const useBot = defineStore('bot', () => {
     closing.value = 'ended'
   }
   function save() {
-    const kept: Saved = { at: new Date().toISOString(), messages: messages.value.slice(-12).map(({ from, text, go }) => ({ from, text, go })) }
-    try { storage.set(SAVED, JSON.stringify(kept)) } catch {}
+    const kept: Saved = {
+      at: new Date().toISOString(),
+      messages: messages.value.slice(-12).map(({ from, text, go }) => ({ from, text, go })),
+    }
+    try {
+      storage.set(SAVED, JSON.stringify(kept))
+    } catch {}
     saved.value = kept
   }
   /** Back to the saved conversation; it stays saved until a new one is. */
@@ -48,7 +63,9 @@ export const useBot = defineStore('bot', () => {
   }
   /** Forgets the saved conversation; at sign-out (all: true, Sprint 51 W5) the one on screen too. */
   function forget(all = false) {
-    try { storage.remove(SAVED) } catch {}
+    try {
+      storage.remove(SAVED)
+    } catch {}
     saved.value = null
     if (all) {
       messages.value = []
@@ -73,11 +90,16 @@ export const useBot = defineStore('bot', () => {
   async function ask(question: string, topic: string | null, leagueId: number | null) {
     const text = question.trim()
     if (!text || thinking.value) return
-    const history = messages.value.slice(1).slice(-8).map((m) => ({ from: m.from, text: m.text.slice(0, 2000) }))
+    const history = messages.value
+      .slice(1)
+      .slice(-8)
+      .map((m) => ({ from: m.from, text: m.text.slice(0, 2000) }))
     messages.value.push({ from: 'me', text })
     thinking.value = true
     try {
-      const { data } = await api.POST('/assistant/ask', { body: { question: text.slice(0, 500), topic, page, league_id: leagueId, history } })
+      const { data } = await api.POST('/assistant/ask', {
+        body: { question: text.slice(0, 500), topic, page, league_id: leagueId, history },
+      })
       if (data) {
         messages.value.push({ from: 'bot', text: data.answer, go: data.go, related: data.related, notice: data.notice })
         remaining.value = data.remaining
@@ -90,5 +112,23 @@ export const useBot = defineStore('bot', () => {
     }
   }
 
-  return { open, name, messages, questions, ai, remaining, limited, thinking, start, ask, closing, followed, saved, end, save, resume, forget }
+  return {
+    open,
+    name,
+    messages,
+    questions,
+    ai,
+    remaining,
+    limited,
+    thinking,
+    start,
+    ask,
+    closing,
+    followed,
+    saved,
+    end,
+    save,
+    resume,
+    forget,
+  }
 })

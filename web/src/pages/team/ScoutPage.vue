@@ -24,7 +24,16 @@ const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
 const error = ref('')
-const form = reactive({ line: 'att', position: '', min_overall: 70, max_overall: 85, max_age: 30, max_value: null as number | null, nationality: '', league: '' })
+const form = reactive({
+  line: 'att',
+  position: '',
+  min_overall: 70,
+  max_overall: 85,
+  max_age: 30,
+  max_value: null as number | null,
+  nationality: '',
+  league: '',
+})
 const now = ref(Date.now())
 let tick = 0
 const searching = computed(() => v.value?.requests.find((r) => r.status === 'searching'))
@@ -34,8 +43,18 @@ const left = computed(() => {
   return [Math.floor(s / 3600), Math.floor((s % 3600) / 60), s % 60].map((n) => String(n).padStart(2, '0')).join(':')
 })
 const LINE_NAMES: Record<string, string> = { gk: 'حارس', def: 'دفاع', mid: 'وسط', att: 'هجوم' }
-const describe = (c: Record<string, any>) => [c.line && t(LINE_NAMES[c.line] ?? ''), c.position, t('قوة {v0}', { v0: `${c.min_overall}${c.max_overall ? '–' + c.max_overall : '+'}` }),
-  c.max_age && t('حتى {v0} سنة', { v0: c.max_age }), c.max_value && t('حتى {v0}', { v0: money(c.max_value) }), c.nationality, c.league].filter(Boolean).join(' · ')
+const describe = (c: Record<string, any>) =>
+  [
+    c.line && t(LINE_NAMES[c.line] ?? ''),
+    c.position,
+    t('قوة {v0}', { v0: `${c.min_overall}${c.max_overall ? '–' + c.max_overall : '+'}` }),
+    c.max_age && t('حتى {v0} سنة', { v0: c.max_age }),
+    c.max_value && t('حتى {v0}', { v0: money(c.max_value) }),
+    c.nationality,
+    c.league,
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
 async function load() {
   try {
@@ -54,12 +73,21 @@ async function load() {
 // for coins asks once from COINS_ASK up; buying asks first (the money leaves now).
 async function ask() {
   if (!leagueId.value) return
-  const body: Record<string, unknown> = { min_overall: form.min_overall, max_overall: form.max_overall, max_age: form.max_age, idempotency_key: uuid() }
+  const body: Record<string, unknown> = {
+    min_overall: form.min_overall,
+    max_overall: form.max_overall,
+    max_age: form.max_age,
+    idempotency_key: uuid(),
+  }
   for (const k of ['line', 'position', 'nationality', 'league'] as const) if (form[k]) body[k] = form[k]
   if (form.max_value) body.max_value = form.max_value
-  const r = await act('scout:ask', () => api.POST('/leagues/{league}/scout', { params: { path: { league: leagueId.value! } }, body: body as any }), {
-    success: t('انطلق الكشاف. يصلك تقريره كرسالة في موعده.'),
-  })
+  const r = await act(
+    'scout:ask',
+    () => api.POST('/leagues/{league}/scout', { params: { path: { league: leagueId.value! } }, body: body as any }),
+    {
+      success: t('انطلق الكشاف. يصلك تقريره كرسالة في موعده.'),
+    },
+  )
   if (r?.data) v.value = r.data
 }
 
@@ -67,17 +95,34 @@ async function ask() {
 const wallet = useWallet()
 async function finish() {
   const r = await act('scout:finish', () => api.POST('/leagues/{league}/scout/finish', { params: { path: { league: leagueId.value! } } }), {
-    coins: wallet.price('finish_scout'), success: t('وصل تقرير الكشاف.'),
+    coins: wallet.price('finish_scout'),
+    success: t('وصل تقرير الكشاف.'),
   })
-  if (r !== undefined) { await load(); wallet.load() }
+  if (r !== undefined) {
+    await load()
+    wallet.load()
+  }
 }
 
 async function buy(p: { id: number; name: string; price?: number | null; value: number }) {
   if (!leagueId.value) return
-  const r = await act(`scout:buy:${p.id}`, () => api.POST('/leagues/{league}/market/buy', { params: { path: { league: leagueId.value! } }, body: { player_id: p.id, idempotency_key: uuid() } }), {
-    confirm: { title: t('تشتري {v0}؟', { v0: nm(p.name) }), text: t('يُخصم {v0} من أموال النادي الآن.', { v0: money(p.price ?? p.value) }), action: t('شراء'), tone: 'gold' },
-    success: t('انضم {v0} إلى فريقك.', { v0: nm(p.name) }),
-  })
+  const r = await act(
+    `scout:buy:${p.id}`,
+    () =>
+      api.POST('/leagues/{league}/market/buy', {
+        params: { path: { league: leagueId.value! } },
+        body: { player_id: p.id, idempotency_key: uuid() },
+      }),
+    {
+      confirm: {
+        title: t('تشتري {v0}؟', { v0: nm(p.name) }),
+        text: t('يُخصم {v0} من أموال النادي الآن.', { v0: money(p.price ?? p.value) }),
+        action: t('شراء'),
+        tone: 'gold',
+      },
+      success: t('انضم {v0} إلى فريقك.', { v0: nm(p.name) }),
+    },
+  )
   if (r !== undefined) await load()
 }
 
@@ -94,59 +139,165 @@ onBeforeUnmount(() => clearInterval(tick))
 <template>
   <div class="flex flex-col gap-4">
     <header>
-      <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الكشاف') }}</h1></span>
+      <span class="flex flex-wrap items-center gap-1"
+        ><h1 class="font-display text-3xl font-extrabold">{{ $t('الكشاف') }}</h1></span
+      >
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-    <p v-else-if="!leagueId" class="rounded-xl ui-card p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
+    <p v-else-if="!leagueId" class="rounded-xl ui-card p-6 text-text-muted">
+      {{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
+    </p>
 
     <template v-else-if="v">
-      <section v-if="searching" :aria-label="$t('الكشاف يبحث')" class="flex flex-wrap items-center gap-4 rounded-xl border border-gold/40 ui-card p-4">
-        <div class="flex-1"><b class="block">{{ $t('الكشاف يبحث') }}</b><span class="text-sm text-text-muted">{{ describe(searching.criteria) }}</span></div>
+      <section
+        v-if="searching"
+        :aria-label="$t('الكشاف يبحث')"
+        class="flex flex-wrap items-center gap-4 rounded-xl border border-gold/40 ui-card p-4"
+      >
+        <div class="flex-1">
+          <b class="block">{{ $t('الكشاف يبحث') }}</b><span class="text-sm text-text-muted">{{ describe(searching.criteria) }}</span>
+        </div>
         <span class="font-numbers text-3xl text-gold" dir="ltr" aria-live="off">{{ left }}</span>
-        <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy('scout:finish')" @click="finish">
-          {{ $t('أنهِ الآن ·') }} <PriceTag :amount="wallet.price('finish_scout')" currency="coins" /></button>
+        <button
+          v-if="wallet.open(leagueId)"
+          type="button"
+          class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold"
+          :disabled="busy('scout:finish')"
+          @click="finish"
+        >
+          {{ $t('أنهِ الآن ·') }} <PriceTag :amount="wallet.price('finish_scout')" currency="coins" />
+        </button>
       </section>
 
       <section v-else :aria-label="$t('طلب جديد')" class="flex flex-col gap-3 rounded-xl ui-card p-4">
         <h2 class="font-display text-lg font-bold">{{ $t('طلب جديد') }}</h2>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <!-- [X61] Headless UI's Listbox and Combobox in place of the browser's selects. -->
-          <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('الخط') }}
-            <UiSelect v-model="form.line" label="الخط" none="أي خط" :options="Object.entries(LINE_NAMES).map(([k, n]) => ({ value: k, label: $t(n) }))" />
+          <div class="flex flex-col gap-1 text-sm text-text-muted">
+            {{ $t('الخط') }}
+            <UiSelect
+              v-model="form.line"
+              label="الخط"
+              none="أي خط"
+              :options="Object.entries(LINE_NAMES).map(([k, n]) => ({ value: k, label: $t(n) }))"
+            />
           </div>
-          <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('المركز') }}
-            <UiSelect v-model="form.position" label="المركز" none="أي مركز" ltr :options="v.options.positions.map((p) => ({ value: p, label: p }))" />
+          <div class="flex flex-col gap-1 text-sm text-text-muted">
+            {{ $t('المركز') }}
+            <UiSelect
+              v-model="form.position"
+              label="المركز"
+              none="أي مركز"
+              ltr
+              :options="v.options.positions.map((p) => ({ value: p, label: p }))"
+            />
           </div>
           <div class="flex gap-2">
-            <label class="flex flex-1 flex-col gap-1 text-sm text-text-muted">{{ $t('القوة من') }}<input v-model.number="form.min_overall" type="number" min="40" max="99" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
-            <label class="flex flex-1 flex-col gap-1 text-sm text-text-muted">{{ $t('إلى') }}<input v-model.number="form.max_overall" type="number" min="40" max="99" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
+            <label class="flex flex-1 flex-col gap-1 text-sm text-text-muted"
+              >{{ $t('القوة من')
+              }}<input
+                v-model.number="form.min_overall"
+                type="number"
+                min="40"
+                max="99"
+                class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text"
+                dir="ltr"
+            /></label>
+            <label class="flex flex-1 flex-col gap-1 text-sm text-text-muted"
+              >{{ $t('إلى')
+              }}<input
+                v-model.number="form.max_overall"
+                type="number"
+                min="40"
+                max="99"
+                class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text"
+                dir="ltr"
+            /></label>
           </div>
-          <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('أكبر عمر') }}<input v-model.number="form.max_age" type="number" min="16" max="45" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
-          <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('أعلى سعر (اختياري)') }}<input v-model.number="form.max_value" type="number" min="1" step="100000" :placeholder="$t('بلا حد')" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
-          <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('الجنسية') }}
-            <UiSelect v-model="form.nationality" label="الجنسية" none="أي جنسية" searchable :options="v.options.nationalities.map((n) => ({ value: n, label: $nm(n) }))" />
+          <label class="flex flex-col gap-1 text-sm text-text-muted"
+            >{{ $t('أكبر عمر')
+            }}<input
+              v-model.number="form.max_age"
+              type="number"
+              min="16"
+              max="45"
+              class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text"
+              dir="ltr"
+          /></label>
+          <label class="flex flex-col gap-1 text-sm text-text-muted"
+            >{{ $t('أعلى سعر (اختياري)')
+            }}<input
+              v-model.number="form.max_value"
+              type="number"
+              min="1"
+              step="100000"
+              :placeholder="$t('بلا حد')"
+              class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text"
+              dir="ltr"
+          /></label>
+          <div class="flex flex-col gap-1 text-sm text-text-muted">
+            {{ $t('الجنسية') }}
+            <UiSelect
+              v-model="form.nationality"
+              label="الجنسية"
+              none="أي جنسية"
+              searchable
+              :options="v.options.nationalities.map((n) => ({ value: n, label: $nm(n) }))"
+            />
           </div>
-          <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('من دوري') }}
-            <UiSelect v-model="form.league" label="من دوري" none="أي دوري" searchable :options="v.options.leagues.map((l) => ({ value: l, label: l }))" />
+          <div class="flex flex-col gap-1 text-sm text-text-muted">
+            {{ $t('من دوري') }}
+            <UiSelect
+              v-model="form.league"
+              label="من دوري"
+              none="أي دوري"
+              searchable
+              :options="v.options.leagues.map((l) => ({ value: l, label: l }))"
+            />
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-          <UiButton :disabled="busy('scout:ask') || v.balance < v.cost" @click="ask">{{ busy('scout:ask') ? '...' : $t('اطلب التقرير ·') }} <span class="font-numbers" dir="ltr">{{ money(v.cost) }}</span></UiButton>
+          <UiButton :disabled="busy('scout:ask') || v.balance < v.cost" @click="ask"
+            >{{ busy('scout:ask') ? '...' : $t('اطلب التقرير ·') }}
+            <span class="font-numbers" dir="ltr">{{ money(v.cost) }}</span></UiButton
+          >
           <SpendNote v-if="v.quote" :quote="v.quote" />
-          <span class="text-sm text-text-muted">{{ $t('رحلة {v0} ساعة، ثم 5 خيارات مطابقة لطلبك كرسالة، ولو لم يجد أحداً يُرد لك المبلغ.', { v0: v.hours }) }}</span>
+          <span class="text-sm text-text-muted">{{
+            $t('رحلة {v0} ساعة، ثم 5 خيارات مطابقة لطلبك كرسالة، ولو لم يجد أحداً يُرد لك المبلغ.', { v0: v.hours })
+          }}</span>
         </div>
       </section>
 
-      <section v-for="r in v.requests.filter((r) => r.status !== 'searching')" :key="r.id" :aria-label="$t('تقرير الكشاف')" class="flex flex-col gap-2 rounded-xl ui-card p-3">
-        <div class="flex flex-wrap items-center gap-2 px-1"><b>{{ $t('تقرير') }}</b><span class="text-sm text-text-muted">{{ describe(r.criteria) }}</span><span class="ms-auto font-numbers text-sm text-text-muted" dir="ltr">−{{ count(r.cost) }}</span></div>
+      <section
+        v-for="r in v.requests.filter((r) => r.status !== 'searching')"
+        :key="r.id"
+        :aria-label="$t('تقرير الكشاف')"
+        class="flex flex-col gap-2 rounded-xl ui-card p-3"
+      >
+        <div class="flex flex-wrap items-center gap-2 px-1">
+          <b>{{ $t('تقرير') }}</b><span class="text-sm text-text-muted">{{ describe(r.criteria) }}</span
+          ><span class="ms-auto font-numbers text-sm text-text-muted" dir="ltr">−{{ count(r.cost) }}</span>
+        </div>
         <p v-if="r.status === 'empty'" class="px-1 text-sm text-text-muted">{{ $t('لم يجد أحداً بهذه المعايير، فرُد المبلغ.') }}</p>
         <div v-for="p in r.players" :key="p.id" class="flex items-center gap-3 rounded-lg bg-surface-sunk px-2 py-2">
           <LineBadge :line="p.line as Line" />
-          <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(p.name) }}</b><span class="text-xs text-text-muted">{{ $t('{v0} · {v1} سنة · {v2} · إمكانية {v3}', { v0: p.position, v1: p.age, v2: $nm(p.nationality), v3: p.potential }) }}</span></span>
+          <span class="min-w-0 flex-1"
+            ><b class="block truncate" dir="auto">{{ $nm(p.name) }}</b
+            ><span class="text-xs text-text-muted">{{
+              $t('{v0} · {v1} سنة · {v2} · إمكانية {v3}', { v0: p.position, v1: p.age, v2: $nm(p.nationality), v3: p.potential })
+            }}</span></span
+          >
           <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
           <span class="w-20 text-end font-numbers text-lg" dir="ltr">{{ money(p.value) }}</span>
-          <UiButton size="sm" v-if="p.state === 'available'" class="min-w-20" :disabled="busy(`scout:buy:${p.id}`) || (p.price ?? 0) > v.balance" @click="buy(p)">{{ busy(`scout:buy:${p.id}`) ? '...' : $t('شراء') }}</UiButton>
+          <UiButton
+            size="sm"
+            v-if="p.state === 'available'"
+            class="min-w-20"
+            :disabled="busy(`scout:buy:${p.id}`) || (p.price ?? 0) > v.balance"
+            @click="buy(p)"
+            >{{ busy(`scout:buy:${p.id}`) ? '...' : $t('شراء') }}</UiButton
+          >
           <span v-else class="min-w-20 text-center text-sm text-text-muted">{{ p.state === 'mine' ? $t('في فريقك') : $t('ذهب') }}</span>
         </div>
       </section>

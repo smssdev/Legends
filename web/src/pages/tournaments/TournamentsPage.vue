@@ -29,17 +29,29 @@ const drawLive = (x: Tournament) => !!x.draw_at && !x.drawn_at && new Date(x.dra
   <div class="flex flex-col gap-4 pb-6">
     <header class="flex items-center justify-between gap-3">
       <h1 class="font-display text-3xl font-extrabold">{{ $t('البطولات') }}</h1>
-      <RouterLink :to="{ name: 'create-tournament' }" class="flex min-h-touch items-center rounded-xl bg-gold px-4 font-extrabold text-on-gold">{{ $t('بطولة جديدة') }}</RouterLink>
+      <RouterLink
+        :to="{ name: 'create-tournament' }"
+        class="flex min-h-touch items-center rounded-xl bg-gold px-4 font-extrabold text-on-gold"
+        >{{ $t('بطولة جديدة') }}</RouterLink
+      >
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <EmptyState v-if="loaded && !list.length" icon="trophy" :title="$t('لا بطولات بعد')" :text="$t('أنشئ كأس عالم مع أصدقائك، أو بطولة من فريقين فأكثر.')"
-      :cta="{ label: $t('بطولة جديدة'), to: '/tournaments/new' }" />
+    <EmptyState
+      v-if="loaded && !list.length"
+      icon="trophy"
+      :title="$t('لا بطولات بعد')"
+      :text="$t('أنشئ كأس عالم مع أصدقائك، أو بطولة من فريقين فأكثر.')"
+      :cta="{ label: $t('بطولة جديدة'), to: '/tournaments/new' }"
+    />
     <ul class="grid gap-3 sm:grid-cols-2">
       <li v-for="x in list" :key="x.id" class="flex flex-col gap-2 rounded-2xl bg-surface p-4">
         <div class="flex items-start justify-between gap-2">
           <RouterLink :to="{ name: 'tournament', params: { id: x.id } }" class="min-w-0">
             <b class="block truncate text-lg">{{ x.name }}</b>
-            <span class="text-sm text-text-muted">{{ $t(TEMPLATES[x.template ?? 'custom'] ?? 'بطولة مخصصة') }} · {{ $t('{n} فريقاً', { n: x.team_count }) }} · {{ $t(FORMATS[x.format ?? 'groups']) }}</span>
+            <span class="text-sm text-text-muted"
+              >{{ $t(TEMPLATES[x.template ?? 'custom'] ?? 'بطولة مخصصة') }} · {{ $t('{n} فريقاً', { n: x.team_count }) }} ·
+              {{ $t(FORMATS[x.format ?? 'groups']) }}</span
+            >
           </RouterLink>
           <span v-if="drawLive(x)" class="shrink-0 rounded-full bg-live px-2 py-0.5 text-xs font-extrabold">{{ $t('قرعة قريباً') }}</span>
         </div>
@@ -49,11 +61,19 @@ const drawLive = (x: Tournament) => !!x.draw_at && !x.drawn_at && new Date(x.dra
           <template v-else>{{ $t('تُسحب القرعة عند البداية {v0}', { v0: when(x.starts_at) }) }}</template>
         </p>
         <!-- [X68] The places left when the draw shares the teams among the players who enter. -->
-        <RouterLink v-if="x.entry_mode === 'draw' && !x.drawn_at" :to="{ name: 'tournament', params: { id: x.id } }"
-          class="flex min-h-touch items-center justify-center gap-2 rounded-xl bg-gold font-extrabold text-on-gold">
-          {{ $t('شارك') }} <span class="font-numbers" dir="ltr">{{ x.entrants }} / {{ x.team_count }}</span></RouterLink>
-        <RouterLink :to="{ name: 'tournament-draw', params: { id: x.id } }" class="flex min-h-touch items-center justify-center rounded-xl bg-surface-sunk font-bold text-gold">
-          {{ x.drawn_at ? $t('شاهد القرعة كما كانت') : $t('شاهد القرعة') }}</RouterLink>
+        <RouterLink
+          v-if="x.entry_mode === 'draw' && !x.drawn_at"
+          :to="{ name: 'tournament', params: { id: x.id } }"
+          class="flex min-h-touch items-center justify-center gap-2 rounded-xl bg-gold font-extrabold text-on-gold"
+        >
+          {{ $t('شارك') }} <span class="font-numbers" dir="ltr">{{ x.entrants }} / {{ x.team_count }}</span></RouterLink
+        >
+        <RouterLink
+          :to="{ name: 'tournament-draw', params: { id: x.id } }"
+          class="flex min-h-touch items-center justify-center rounded-xl bg-surface-sunk font-bold text-gold"
+        >
+          {{ x.drawn_at ? $t('شاهد القرعة كما كانت') : $t('شاهد القرعة') }}</RouterLink
+        >
       </li>
     </ul>
   </div>

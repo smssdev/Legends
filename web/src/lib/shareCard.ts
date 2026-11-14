@@ -4,7 +4,13 @@
 import { locale, t } from './i18n'
 
 export type ShareSide = { name: string; color: string; logo?: string | null }
-export type ShareResult = { home: ShareSide; away: ShareSide; score: { home: number; away: number }; caption?: string; scorers?: { home: string[]; away: string[] } }
+export type ShareResult = {
+  home: ShareSide
+  away: ShareSide
+  score: { home: number; away: number }
+  caption?: string
+  scorers?: { home: string[]; away: string[] }
+}
 
 const W = 1080
 const H = 1080
@@ -21,7 +27,9 @@ function loadImage(src: string): Promise<HTMLImageElement | null> {
 
 function fit(ctx: CanvasRenderingContext2D, text: string, max: number, size: number, weight = 800): void {
   let s = size
-  do { ctx.font = `${weight} ${s}px Tajawal, sans-serif` } while (ctx.measureText(text).width > max && (s -= 2) > 18)
+  do {
+    ctx.font = `${weight} ${s}px Tajawal, sans-serif`
+  } while (ctx.measureText(text).width > max && (s -= 2) > 18)
 }
 
 export async function drawResultCard(r: ShareResult): Promise<Blob> {
@@ -36,7 +44,10 @@ export async function drawResultCard(r: ShareResult): Promise<Blob> {
   bg.addColorStop(1, '#071321')
   ctx.fillStyle = bg
   ctx.fillRect(0, 0, W, H)
-  for (const [side, x] of [['home', W * 0.78], ['away', W * 0.22]] as const) {
+  for (const [side, x] of [
+    ['home', W * 0.78],
+    ['away', W * 0.22],
+  ] as const) {
     const g = ctx.createRadialGradient(x, 470, 20, x, 470, 380)
     g.addColorStop(0, r[side].color + 'AA')
     g.addColorStop(1, 'transparent')
@@ -55,7 +66,10 @@ export async function drawResultCard(r: ShareResult): Promise<Blob> {
   // The crests (or a disc in the club's colour), the names under them; home on the right in Arabic.
   const homeX = locale.value === 'ar' ? W * 0.78 : W * 0.22
   const awayX = W - homeX
-  for (const [side, x] of [['home', homeX], ['away', awayX]] as const) {
+  for (const [side, x] of [
+    ['home', homeX],
+    ['away', awayX],
+  ] as const) {
     ctx.fillStyle = '#F4EFE4'
     ctx.beginPath()
     ctx.arc(x, 400, 120, 0, Math.PI * 2)
@@ -83,7 +97,10 @@ export async function drawResultCard(r: ShareResult): Promise<Blob> {
   // The scorers under each side: Latin names and minutes, drawn left to right (the minute's mark stays after it).
   ctx.direction = 'ltr'
   ctx.fillStyle = '#C9D2E1'
-  for (const [side, x] of [['home', homeX], ['away', awayX]] as const) {
+  for (const [side, x] of [
+    ['home', homeX],
+    ['away', awayX],
+  ] as const) {
     ;(r.scorers?.[side] ?? []).slice(0, 4).forEach((n, i) => {
       fit(ctx, `⚽ ${n}`, 400, 34, 600)
       ctx.fillText(`⚽ ${n}`, x, 670 + i * 50)

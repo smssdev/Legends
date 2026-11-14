@@ -25,4 +25,8 @@ export const PENDING: Record<Pending['kind'], { label: string; to: (p: Pending, 
   training_done: { label: 'تدريب انتهى', to: () => '/training' },
 }
 
-export const SEVERITY: Record<Pending['severity'], string> = { high: 'var(--color-live)', mid: 'var(--color-warning)', low: 'var(--color-brand-light)' }
+export const SEVERITY: Record<Pending['severity'], string> = {
+  high: 'var(--color-live)',
+  mid: 'var(--color-warning)',
+  low: 'var(--color-brand-light)',
+}

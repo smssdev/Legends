@@ -6,7 +6,11 @@ const PREFIX = 'glm.'
 const OLD = 'legends.'
 
 function raw(): Storage | null {
-  try { return typeof localStorage === 'undefined' ? null : localStorage } catch { return null }
+  try {
+    return typeof localStorage === 'undefined' ? null : localStorage
+  } catch {
+    return null
+  }
 }
 
 /** Moves the keys of before under the prefix, once (a key already under it wins). */
@@ -29,18 +33,35 @@ migrateStorage()
 
 export const storage = {
   get(key: string): string | null {
-    try { return raw()?.getItem(PREFIX + key) ?? null } catch { return null }
+    try {
+      return raw()?.getItem(PREFIX + key) ?? null
+    } catch {
+      return null
+    }
   },
   set(key: string, value: string | number) {
-    try { raw()?.setItem(PREFIX + key, String(value)) } catch { /* private mode: for this visit only */ }
+    try {
+      raw()?.setItem(PREFIX + key, String(value))
+    } catch {
+      /* private mode: for this visit only */
+    }
   },
   remove(key: string) {
-    try { raw()?.removeItem(PREFIX + key) } catch {}
+    try {
+      raw()?.removeItem(PREFIX + key)
+    } catch {}
   },
   json<T>(key: string, fallback: T): T {
-    try { const v = raw()?.getItem(PREFIX + key); return v == null ? fallback : (JSON.parse(v) as T) } catch { return fallback }
+    try {
+      const v = raw()?.getItem(PREFIX + key)
+      return v == null ? fallback : (JSON.parse(v) as T)
+    } catch {
+      return fallback
+    }
   },
   setJson(key: string, value: unknown) {
-    try { raw()?.setItem(PREFIX + key, JSON.stringify(value)) } catch {}
+    try {
+      raw()?.setItem(PREFIX + key, JSON.stringify(value))
+    } catch {}
   },
 }

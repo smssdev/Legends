@@ -13,13 +13,20 @@ export const useConfirm = defineStore('confirm', () => {
   const current = ref<ConfirmAsk | null>(null)
   let answer: ((ok: boolean) => void) | null = null
   function ask(q: ConfirmAsk): Promise<boolean> {
-    try { if (q.remember && storage.get(q.remember) === '1') return Promise.resolve(true) } catch {}
+    try {
+      if (q.remember && storage.get(q.remember) === '1') return Promise.resolve(true)
+    } catch {}
     answer?.(false)
     current.value = q
-    return new Promise((resolve) => { answer = resolve })
+    return new Promise((resolve) => {
+      answer = resolve
+    })
   }
   function settle(ok: boolean, remember = false) {
-    if (ok && remember && current.value?.remember) try { storage.set(current.value.remember, '1') } catch {}
+    if (ok && remember && current.value?.remember)
+      try {
+        storage.set(current.value.remember, '1')
+      } catch {}
     answer?.(ok)
     answer = null
     current.value = null

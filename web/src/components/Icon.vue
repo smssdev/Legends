@@ -11,7 +11,17 @@ export { PATHS } from './icons.g'
 </script>
 
 <template>
-  <svg :width="size ?? 22" :height="size ?? 22" viewBox="0 0 24 24" fill="none" stroke="currentColor" :stroke-width="STROKE" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <svg
+    :width="size ?? 22"
+    :height="size ?? 22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    :stroke-width="STROKE"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
     <path :d="PATHS[name]" />
   </svg>
 </template>

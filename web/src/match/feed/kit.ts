@@ -16,54 +16,117 @@ export type SvgNode = SVGElement & { [field: string]: any }
 export type Svg = SvgNode
 /** What a scene draws, from the minute's story (App\Simulator\MomentStory's data) or the director's cutaway. */
 export type SceneData = {
-  side: Side; v?: number; no?: number | string; passNo?: number | string; defNo?: number | string; victimNo?: number | string
-  inNo?: number | string; outNo?: number | string; drama?: string | null; lane?: string | null; quality?: string | null; how?: string | null
-  scored?: boolean; saved?: boolean; claim?: boolean; corner?: boolean; reason?: string; type?: string; second?: boolean; tactic?: string
-  big?: string; score?: string; stats?: [string, number, number][]; name?: string; plus?: number; look?: string; mood?: string
-  count?: number; flares?: boolean
+  side: Side
+  v?: number
+  no?: number | string
+  passNo?: number | string
+  defNo?: number | string
+  victimNo?: number | string
+  inNo?: number | string
+  outNo?: number | string
+  drama?: string | null
+  lane?: string | null
+  quality?: string | null
+  how?: string | null
+  scored?: boolean
+  saved?: boolean
+  claim?: boolean
+  corner?: boolean
+  reason?: string
+  type?: string
+  second?: boolean
+  tactic?: string
+  big?: string
+  score?: string
+  stats?: [string, number, number][]
+  name?: string
+  plus?: number
+  look?: string
+  mood?: string
+  count?: number
+  flares?: boolean
 }
 /** A scene made: its picture, how it moves at time t (seconds), and its own length when it has one. */
 export type Scene = { svg: Svg; update: (t: number) => void; dur?: number }
 // The two kits of the match: { kit, ink, trim, name } per side, set by the feed.
-export let KITS: Record<Side, Kit> = { home: { kit: '#E8ECF4', ink: '#0A1F42', trim: '#F5B82E', name: '' }, away: { kit: '#D3122F', ink: '#FFFFFF', trim: '#F6C343', name: '' } }
-export function setKits(k: Record<Side, Kit>) { KITS = k }
+export let KITS: Record<Side, Kit> = {
+  home: { kit: '#E8ECF4', ink: '#0A1F42', trim: '#F5B82E', name: '' },
+  away: { kit: '#D3122F', ink: '#FFFFFF', trim: '#F6C343', name: '' },
+}
+export function setKits(k: Record<Side, Kit>) {
+  KITS = k
+}
 // The smooth mode [X30]: no glow filter (redrawn every frame on the phone's processor for every line and trail) and a third of the crowd.
 export let SMOOTH = false
-export function setSmooth(v: boolean) { SMOOTH = !!v }
+export function setSmooth(v: boolean) {
+  SMOOTH = !!v
+}
 // [Sprint 42 I1] Only the full tier draws the blurred glows: an SVG blur makes every repaint of the picture costly.
 export let RICH = true
-export function setRich(v: boolean) { RICH = !!v }
+export function setRich(v: boolean) {
+  RICH = !!v
+}
 // [Sprint 42 J1] The owner's (2026-11-03): no two matches alike. Each scene gets its looks from its own seed (a camera,
 // a headline, an accent at its key moment, VARIANT), and each match its light (LIGHT: night, dusk or day).
 export const VARIANT = { cam: 0, title: 0, accent: 0 }
 export type Light = 'night' | 'dusk' | 'day'
 export let LIGHT: Light = 'night'
-export function setLight(v: string) { LIGHT = (['night', 'dusk', 'day'] as const).find((l) => l === v) ?? 'night' }
+export function setLight(v: string) {
+  LIGHT = (['night', 'dusk', 'day'] as const).find((l) => l === v) ?? 'night'
+}
 // [Sprint 36 F3] The match's rain (the live pitch's, from its seed) falls in the scenes too.
 export let RAIN = false
-export function setRain(v: boolean) { RAIN = !!v }
+export function setRain(v: boolean) {
+  RAIN = !!v
+}
 export const K = (s: Side): Kit => KITS[s] ?? KITS.home
 export const other = (s: Side): Side => (s === 'home' ? 'away' : 'home')
-export const lum = (hex: string) => { const n = parseInt(String(hex).slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) }
-export const shade = (hex: string, p: number) => { const n = parseInt(hex.slice(1), 16), f = (v: number) => Math.max(0, Math.min(255, v + p)); return '#' + [f(n >> 16), f((n >> 8) & 255), f(n & 255)].map((v) => v.toString(16).padStart(2, '0')).join('') }
+export const lum = (hex: string) => {
+  const n = parseInt(String(hex).slice(1), 16)
+  return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255)
+}
+export const shade = (hex: string, p: number) => {
+  const n = parseInt(hex.slice(1), 16),
+    f = (v: number) => Math.max(0, Math.min(255, v + p))
+  return '#' + [f(n >> 16), f((n >> 8) & 255), f(n & 255)].map((v) => v.toString(16).padStart(2, '0')).join('')
+}
 // [Sprint 37 N5] Between two colours (f 0..1): the stands take a little of the home club's colour.
-export const mix = (a: string, b: string, f: number) => { const x = parseInt(String(a).slice(1), 16), y = parseInt(String(b).slice(1), 16), c = (sh: number) => Math.round(((x >> sh) & 255) * (1 - f) + ((y >> sh) & 255) * f); return '#' + [c(16), c(8), c(0)].map((v) => v.toString(16).padStart(2, '0')).join('') }
+export const mix = (a: string, b: string, f: number) => {
+  const x = parseInt(String(a).slice(1), 16),
+    y = parseInt(String(b).slice(1), 16),
+    c = (sh: number) => Math.round(((x >> sh) & 255) * (1 - f) + ((y >> sh) & 255) * f)
+  return '#' + [c(16), c(8), c(0)].map((v) => v.toString(16).padStart(2, '0')).join('')
+}
 // A keeper's kit that stands apart from both teams.
 // [Sprint 31 D3] Chosen from a few, the first that stands apart from both teams' shirts (and from the other keeper's).
-export const rgbOf = (hex: string) => { const n = parseInt(String(hex).slice(1, 7), 16); return [n >> 16, (n >> 8) & 255, n & 255] }
-export const apart = (a: string, b: string) => { const x = rgbOf(a), y = rgbOf(b); return Math.abs(x[0] - y[0]) + Math.abs(x[1] - y[1]) + Math.abs(x[2] - y[2]) > 150 }
-export const pickKit = (choices: string[], avoid: (string | undefined)[]) => choices.find((c) => avoid.every((a) => !a || apart(c, a))) ?? choices[0]
+export const rgbOf = (hex: string) => {
+  const n = parseInt(String(hex).slice(1, 7), 16)
+  return [n >> 16, (n >> 8) & 255, n & 255]
+}
+export const apart = (a: string, b: string) => {
+  const x = rgbOf(a),
+    y = rgbOf(b)
+  return Math.abs(x[0] - y[0]) + Math.abs(x[1] - y[1]) + Math.abs(x[2] - y[2]) > 150
+}
+export const pickKit = (choices: string[], avoid: (string | undefined)[]) =>
+  choices.find((c) => avoid.every((a) => !a || apart(c, a))) ?? choices[0]
 export const keeperKit = (side: Side) => {
   const shirts = [KITS.home?.kit, KITS.away?.kit]
   const home = pickKit(['#2BB673', '#7B3FE4', '#F2994A', '#14B8C4'], shirts)
   return side === 'home' ? home : pickKit(['#F2994A', '#14B8C4', '#7B3FE4', '#2BB673'], [...shirts, home])
 }
 /** [Sprint 31 D1, D3] The officials' shirt: black, or another colour when a team plays in a dark kit. */
-export const officialKit = () => pickKit(['#15171C', '#F2E205', '#E85D9A', '#7B3FE4'], [KITS.home?.kit, KITS.away?.kit, keeperKit('home'), keeperKit('away')])
+export const officialKit = () =>
+  pickKit(['#15171C', '#F2E205', '#E85D9A', '#7B3FE4'], [KITS.home?.kit, KITS.away?.kit, keeperKit('home'), keeperKit('away')])
 
 // Writes an attribute only when it changes [X30]: every write, even of the same value, makes the browser lay the
 // scene out again, and a scene sets hundreds of them a frame (most of them unchanged, like the flashes at rest).
-export const sa = (e: SvgNode, k: string, v: string | number) => { const key = '_' + k; if (e[key] === v) return; e[key] = v; e.setAttribute(k, String(v)) }
+export const sa = (e: SvgNode, k: string, v: string | number) => {
+  const key = '_' + k
+  if (e[key] === v) return
+  e[key] = v
+  e.setAttribute(k, String(v))
+}
 
 export let uid = 0
 /** A fresh id for a gradient or a pattern in a scene. */
@@ -87,29 +150,47 @@ export const ICON: Record<string, string> = {
   save: '<svg viewBox="0 0 24 24" fill="none" stroke="#2BB673" stroke-width="1.8" stroke-linejoin="round"><path d="M7 21c-1.6-4-1.6-9 0-13 .4-1 1.8-1 2 0l.5 5 .5-8c.2-1.2 2-1.2 2 0v8l.6-7c.2-1.2 2-1.1 2 .1l-.3 7.4 1-4.3c.3-1.1 2-.9 1.9.3L16.6 16c-.6 3.2-2.6 5-5 5z"/></svg>',
   yellow: '<svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="16" rx="2" fill="#FFD400" transform="rotate(10 12 11)"/></svg>',
   red: '<svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="16" rx="2" fill="#EF4444" transform="rotate(10 12 11)"/></svg>',
-  whistle: '<svg viewBox="0 0 24 24" fill="none" stroke="#F5B82E" stroke-width="1.8"><rect x="3" y="10" width="12" height="9" rx="4.5"/><path d="M13 11h8v4h-6"/><circle cx="8" cy="14.5" r="1.6" fill="#F5B82E"/></svg>',
-  coach: '<svg viewBox="0 0 24 24" fill="none" stroke="#F5B82E" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 9l3 3M11 9l-3 3M14 17c1-3 2-5 3-7M15 9.5l2 .5.4 2"/></svg>',
+  whistle:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#F5B82E" stroke-width="1.8"><rect x="3" y="10" width="12" height="9" rx="4.5"/><path d="M13 11h8v4h-6"/><circle cx="8" cy="14.5" r="1.6" fill="#F5B82E"/></svg>',
+  coach:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#F5B82E" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 9l3 3M11 9l-3 3M14 17c1-3 2-5 3-7M15 9.5l2 .5.4 2"/></svg>',
   sub: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20V6M4 10l4-4 4 4" stroke="#2BB673"/><path d="M16 4v14M12 14l4 4 4-4" stroke="#EF4444"/></svg>',
   flag: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M6 22V3" stroke="#C9D2E1"/><path d="M7 4h11l-2.5 3.5L18 11H7z" fill="#EF4444" stroke="#EF4444"/></svg>',
-  corner: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 21V4" stroke="#C9D2E1"/><path d="M6 4l9 3-9 3z" fill="#F5B82E"/><path d="M5 21a8 8 0 0 1 8-8" stroke="#fff"/></svg>',
-  injury: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="#fff"/><path d="M10 7h4v3h3v4h-3v3h-4v-3H7v-4h3z" fill="#EF4444"/></svg>',
+  corner:
+    '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 21V4" stroke="#C9D2E1"/><path d="M6 4l9 3-9 3z" fill="#F5B82E"/><path d="M5 21a8 8 0 0 1 8-8" stroke="#fff"/></svg>',
+  injury:
+    '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="#fff"/><path d="M10 7h4v3h3v4h-3v3h-4v-3H7v-4h3z" fill="#EF4444"/></svg>',
   foul: '<svg viewBox="0 0 24 24" fill="none" stroke="#F2994A" stroke-width="1.8" stroke-linecap="round"><path d="M4 17c4 0 6-3 8-6l4 2"/><circle cx="18" cy="7" r="2.5"/><path d="M14 18l4-4M18 18l-4-4" stroke="#EF4444"/></svg>',
-  penalty: '<svg viewBox="0 0 24 24" fill="none" stroke="#F5B82E" stroke-width="1.8"><path d="M3 11V4h18v7"/><circle cx="12" cy="17" r="3" fill="#fff" stroke="#fff"/></svg>',
+  penalty:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#F5B82E" stroke-width="1.8"><path d="M3 11V4h18v7"/><circle cx="12" cy="17" r="3" fill="#fff" stroke="#fff"/></svg>',
 }
 
-
 // ---------------------------------------------------------------- the motion kit
-export const el = (tag: string, a: Record<string, string | number>, p?: SvgNode | null): SvgNode => { const e = document.createElementNS(NS, tag) as SvgNode; for (const k in a) sa(e, k, a[k]); p && p.appendChild(e); return e }
+export const el = (tag: string, a: Record<string, string | number>, p?: SvgNode | null): SvgNode => {
+  const e = document.createElementNS(NS, tag) as SvgNode
+  for (const k in a) sa(e, k, a[k])
+  p && p.appendChild(e)
+  return e
+}
 export const clamp = (v: number) => Math.max(0, Math.min(1, v))
 export const seg = (t: number, a: number, b: number) => clamp((t - a) / (b - a))
 export const ease = (f: number) => 1 - Math.pow(1 - f, 3)
 export const inout = (f: number) => (f < 0.5 ? 4 * f * f * f : 1 - Math.pow(-2 * f + 2, 3) / 2)
 export const lerp = (a: number, b: number, f: number) => a + (b - a) * f
-export const bez = (p: number[][], f: number): [number, number] => { const u = 1 - f; return [u * u * p[0][0] + 2 * u * f * p[1][0] + f * f * p[2][0], u * u * p[0][1] + 2 * u * f * p[1][1] + f * f * p[2][1]] }
+export const bez = (p: number[][], f: number): [number, number] => {
+  const u = 1 - f
+  return [u * u * p[0][0] + 2 * u * f * p[1][0] + f * f * p[2][0], u * u * p[0][1] + 2 * u * f * p[1][1] + f * f * p[2][1]]
+}
 // The same scene for the same minute: every choice (the corner aimed at, the keeper's dive) comes from the minute's seed.
 export function rnd(seed: number) {
-  let a = (seed >>> 0) || 7
-  return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296 }
+  let a = seed >>> 0 || 7
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0
+    let t = a
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
 }
 
 // The camera looks at the goal from behind the attack. The goal line is at y 150 (posts at

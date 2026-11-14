@@ -22,7 +22,11 @@ export function soundOn(): boolean {
 }
 
 export function soundOff(): void {
-  try { speechSynthesis.cancel() } catch { /* no voice */ }
+  try {
+    speechSynthesis.cancel()
+  } catch {
+    /* no voice */
+  }
   void ctx?.suspend()
 }
 
@@ -110,5 +114,7 @@ export function announce(text: string): void {
     u.pitch = 1.05
     u.volume = 1
     speechSynthesis.speak(u)
-  } catch { /* no voice on this browser */ }
+  } catch {
+    /* no voice on this browser */
+  }
 }

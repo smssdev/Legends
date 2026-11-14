@@ -57,9 +57,13 @@ export function useLiveMatch(d: LiveDeps) {
 
   // [UP17] «أنا مستعد» and the emergency substitution (league, live).
   const iAmReady = computed(() => !!d.mine.value && !!P.pause.value?.ready.includes(d.mine.value))
-  const injuredId = computed(() => (d.mine.value && P.pause.value && !P.pause.value.window ? P.pause.value.injured[d.mine.value] ?? null : null))
+  const injuredId = computed(() =>
+    d.mine.value && P.pause.value && !P.pause.value.window ? (P.pause.value.injured[d.mine.value] ?? null) : null,
+  )
   const injuredName = computed(() => P.teams.value[d.mine.value as Side]?.players.find((p) => p.id === injuredId.value)?.name ?? '')
-  const benchForInjury = computed(() => (P.teams.value[d.mine.value as Side]?.players ?? []).filter((p) => !p.on && p.out === '' && p.slot === null))
+  const benchForInjury = computed(() =>
+    (P.teams.value[d.mine.value as Side]?.players ?? []).filter((p) => !p.on && p.out === '' && p.slot === null),
+  )
 
   /** Countdown to the kick-off and to the second half (or the window's end), on the shared clock. */
   function clockTick() {
@@ -128,8 +132,10 @@ export function useLiveMatch(d: LiveDeps) {
       if (d.league && sync.connected.value) wait = Math.max(wait, quickPoll() ? (P.started.value ? 2000 : wait) : PUSHED_POLL_MS)
     } catch (e) {
       // A lost connection: keep asking. The server keeps every minute, so coming back loses nothing (Sprint 20 W2).
-      if (navigator.onLine === false || e instanceof TypeError) { offline.value = true; wait = 2000 }
-      else P.error.value = (e as Error).message
+      if (navigator.onLine === false || e instanceof TypeError) {
+        offline.value = true
+        wait = 2000
+      } else P.error.value = (e as Error).message
     }
     if (!P.finished.value) pollTimer = window.setTimeout(poll, wait)
   }
@@ -157,7 +163,10 @@ export function useLiveMatch(d: LiveDeps) {
     late.forEach(([id, { t, startAt }], i) => {
       clearTimeout(id)
       playTimers.delete(id)
-      if (i < late.length - 1) { P.show(t, false); missed(t) } else P.show(t, true, startAt)
+      if (i < late.length - 1) {
+        P.show(t, false)
+        missed(t)
+      } else P.show(t, true, startAt)
     })
   }
 
@@ -180,7 +189,8 @@ export function useLiveMatch(d: LiveDeps) {
       missed(m as Parameters<typeof missed>[0])
       for (const e of m.events) {
         const text = P.say(e)
-        if (text) P.feed.value.unshift({ minute: `${m.minute}'`, text, important: ['goal', 'card', 'penalty', 'period', 'sub'].includes(e.type) })
+        if (text)
+          P.feed.value.unshift({ minute: `${m.minute}'`, text, important: ['goal', 'card', 'penalty', 'period', 'sub'].includes(e.type) })
         if (e.type === 'shootout') P.shootout.value = e.score
       }
     }
@@ -200,17 +210,26 @@ export function useLiveMatch(d: LiveDeps) {
     fresh.forEach((t, i) => {
       seen = t.tick
       // The second half starts with the first minute after the break.
-      if (breakAhead) { resumeAt = t.at ?? resumeAt; breakAhead = false }
+      if (breakAhead) {
+        resumeAt = t.at ?? resumeAt
+        breakAhead = false
+      }
       if (t.window || t.events.some((e) => e.type === 'period' && e.name === 'halftime')) breakAhead = true
       const delay = (t.at ?? serverNow()) - serverNow()
       const next = fresh[i + 1]
       // Already over (a locked screen, a slow phone): its result at once, no scene. Only the minute playing now animates.
-      if (next?.at !== undefined && next.at <= serverNow()) { P.show(t, false); return missed(t) }
+      if (next?.at !== undefined && next.at <= serverNow()) {
+        P.show(t, false)
+        return missed(t)
+      }
       const startAt = performance.now() + delay
       if (delay <= 0) return P.show(t, true, startAt)
       // [Sprint 42 I1] A live minute arrives before it plays: its scene is drawn ahead in the meantime.
       d.pitch.value?.prepare(t)
-      const id = window.setTimeout(() => { playTimers.delete(id); P.show(t, true, startAt) }, delay)
+      const id = window.setTimeout(() => {
+        playTimers.delete(id)
+        P.show(t, true, startAt)
+      }, delay)
       playTimers.set(id, { t, startAt })
     })
     if (fresh.length && fresh[0].tick === 1) kickoffAt = fresh[0].at ?? 0
@@ -238,10 +257,17 @@ export function useLiveMatch(d: LiveDeps) {
     },
     chat: (c) => d.social().hear(c),
     reaction: (x) => d.social().receive(x),
-    rejoined: () => { if (P.live.value && !P.finished.value) poll() },
+    rejoined: () => {
+      if (P.live.value && !P.finished.value) poll()
+    },
   })
   // [Sprint 53 W1] The channel lost: back to the poll's own pace at once.
-  watch(() => sync.connected.value, (on) => { if (!on && P.live.value && !P.finished.value) poll() })
+  watch(
+    () => sync.connected.value,
+    (on) => {
+      if (!on && P.live.value && !P.finished.value) poll()
+    },
+  )
 
   /** The live match from its first minute ([X93]: back on the page, the screen comes back where the match is). */
   function begin() {
@@ -262,8 +288,26 @@ export function useLiveMatch(d: LiveDeps) {
   }
 
   return {
-    sync, starting, countdown, copied, offline, caught, readings, readyBusy, friendLink, iAmReady, injuredId, injuredName, benchForInjury,
-    sayReady, emergencySub, share, startLive, onVisible, begin, dispose,
+    sync,
+    starting,
+    countdown,
+    copied,
+    offline,
+    caught,
+    readings,
+    readyBusy,
+    friendLink,
+    iAmReady,
+    injuredId,
+    injuredName,
+    benchForInjury,
+    sayReady,
+    emergencySub,
+    share,
+    startLive,
+    onVisible,
+    begin,
+    dispose,
   }
 }
 export type LiveMatch = ReturnType<typeof useLiveMatch>

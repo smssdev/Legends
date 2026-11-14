@@ -25,7 +25,14 @@ function sample(key: (typeof rows)[number]['key']) {
         <span class="font-bold">{{ $t(r.label) }}</span>
         <span class="font-numbers text-caption text-text-muted" dir="ltr">{{ levels[r.key] }}%</span>
       </div>
-      <UiSlider v-model="levels[r.key]" :label="r.label" :value-text="`${levels[r.key]}%`" :step="5" @pointerup="sample(r.key)" @keyup="sample(r.key)" />
+      <UiSlider
+        v-model="levels[r.key]"
+        :label="r.label"
+        :value-text="`${levels[r.key]}%`"
+        :step="5"
+        @pointerup="sample(r.key)"
+        @keyup="sample(r.key)"
+      />
       <span class="text-caption text-text-muted">{{ $t(r.hint) }}</span>
     </div>
     <!-- [Sprint 64 W12] The buttons' buzz and tap, one switch. -->

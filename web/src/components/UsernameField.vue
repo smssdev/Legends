@@ -18,10 +18,15 @@ const warn = ref('')
 function clean(v: string) {
   const letters = v.replace(/[^A-Za-z0-9]/g, '')
   const cleaned = letters.replace(/^\d+/, '').slice(0, 20)
-  warn.value = /[\u0600-\u06FF]/.test(v) ? 'الحروف العربية غير مدعومة في اسم المستخدم: اكتبه بحروف إنجليزية'
-    : letters !== v ? 'الرموز والمسافات غير مدعومة: حروف إنجليزية وأرقام فقط'
-      : /^\d/.test(letters) ? 'يبدأ اسم المستخدم بحرف لا برقم'
-        : letters.length > 20 ? 'اسم المستخدم 20 حرفاً على الأكثر' : ''
+  warn.value = /[\u0600-\u06FF]/.test(v)
+    ? 'الحروف العربية غير مدعومة في اسم المستخدم: اكتبه بحروف إنجليزية'
+    : letters !== v
+      ? 'الرموز والمسافات غير مدعومة: حروف إنجليزية وأرقام فقط'
+      : /^\d/.test(letters)
+        ? 'يبدأ اسم المستخدم بحرف لا برقم'
+        : letters.length > 20
+          ? 'اسم المستخدم 20 حرفاً على الأكثر'
+          : ''
   // The prop may not change (all of it dropped): the box shows what is kept all the same.
   const el = document.activeElement
   if (cleaned !== v && el instanceof HTMLInputElement) el.value = cleaned
@@ -59,10 +64,28 @@ defineExpose({ settle })
 
 <template>
   <div class="flex flex-col gap-2">
-    <UiInput :model-value="model" :label="$t('اسم المستخدم')" type="username" autocomplete="username" placeholder="hamza10" :error="error || warn || reason" :hint="ok ? $t('متاح') : $t('حروف إنجليزية وأرقام، من 3 إلى 20، ويبدأ بحرف')" @update:model-value="clean" />
+    <UiInput
+      :model-value="model"
+      :label="$t('اسم المستخدم')"
+      type="username"
+      autocomplete="username"
+      placeholder="hamza10"
+      :error="error || warn || reason"
+      :hint="ok ? $t('متاح') : $t('حروف إنجليزية وأرقام، من 3 إلى 20، ويبدأ بحرف')"
+      @update:model-value="clean"
+    />
     <div v-if="suggestions.length" class="flex flex-wrap items-center gap-2 text-sm">
       <span class="text-text-muted">{{ $t('جرّب:') }}</span>
-      <button v-for="s in suggestions" :key="s" type="button" class="h-touch rounded-pill bg-surface-raised px-4 font-bold" dir="ltr" @click="model = s">{{ s }}</button>
+      <button
+        v-for="s in suggestions"
+        :key="s"
+        type="button"
+        class="h-touch rounded-pill bg-surface-raised px-4 font-bold"
+        dir="ltr"
+        @click="model = s"
+      >
+        {{ s }}
+      </button>
     </div>
   </div>
 </template>

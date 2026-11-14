@@ -9,21 +9,24 @@ const shown = ref(props.value)
 let frame = 0
 const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
-watch(() => props.value, (to, from) => {
-  cancelAnimationFrame(frame)
-  if (reduced() || from === undefined || to === from) {
-    shown.value = to
-    return
-  }
-  const start = performance.now()
-  const step = (now: number) => {
-    const k = Math.min(1, (now - start) / props.ms)
-    const eased = k === 1 ? 1 : 1 - 2 ** (-10 * k)   // ease-out expo
-    shown.value = Math.round(from + (to - from) * eased)
-    if (k < 1) frame = requestAnimationFrame(step)
-  }
-  frame = requestAnimationFrame(step)
-})
+watch(
+  () => props.value,
+  (to, from) => {
+    cancelAnimationFrame(frame)
+    if (reduced() || from === undefined || to === from) {
+      shown.value = to
+      return
+    }
+    const start = performance.now()
+    const step = (now: number) => {
+      const k = Math.min(1, (now - start) / props.ms)
+      const eased = k === 1 ? 1 : 1 - 2 ** (-10 * k) // ease-out expo
+      shown.value = Math.round(from + (to - from) * eased)
+      if (k < 1) frame = requestAnimationFrame(step)
+    }
+    frame = requestAnimationFrame(step)
+  },
+)
 onBeforeUnmount(() => cancelAnimationFrame(frame))
 </script>
 
