@@ -3057,4 +3057,135 @@ class LAr extends L {
 
   @override
   String get h2hL => 'خ';
+
+  @override
+  String get touchFeedback => 'اهتزاز الأزرار وصوتها';
+
+  @override
+  String get introFailed => 'تعذّر تجهيز المباراة التعريفية الآن.';
+
+  @override
+  String get introPreparing => 'نجهّز مباراتك الأولى...';
+
+  @override
+  String get introContinue => 'تابع';
+
+  @override
+  String get introSkip => 'تخطَّ المباراة التعريفية';
+
+  @override
+  String get introDoneTitle => 'أحسنت، هذه كانت مباراتك الأولى!';
+
+  @override
+  String get introDoneBody => 'الآن خذ نادياً في دوري، ومعه هدية البداية.';
+
+  @override
+  String get introOpenOrders => 'افتح الأوامر';
+
+  @override
+  String get introOk => 'حسناً';
+
+  @override
+  String get sinceTitle => 'منذ آخر زيارة';
+
+  @override
+  String sinceUp(int n) {
+    return 'تقدمت $n مراكز';
+  }
+
+  @override
+  String sinceDown(int n) {
+    return 'تراجعت $n مراكز';
+  }
+
+  @override
+  String get sinceSame => 'ترتيبك كما هو';
+
+  @override
+  String get sinceOffers => 'عروض تنتظر ردك';
+
+  @override
+  String get sinceFlip => 'المس لتقلب';
+
+  @override
+  String milestoneGoals(int n) {
+    return 'هدفه رقم $n';
+  }
+
+  @override
+  String milestoneMatches(int n) {
+    return 'مباراته رقم $n';
+  }
+
+  @override
+  String get milestoneMotmFirst => 'رجل المباراة لأول مرة';
+
+  @override
+  String milestoneMotm(int n) {
+    return 'رجل المباراة للمرة $n';
+  }
+
+  @override
+  String get milestoneGreat => 'رائع';
+
+  @override
+  String nextMatchAt(String when) {
+    return 'مباراتك القادمة $when';
+  }
+
+  @override
+  String get remindMe => 'ذكّرني قبل المباراة';
+
+  @override
+  String get explainChemistry => 'من أين جاءت الكيمياء؟';
+
+  @override
+  String get explainStrength => 'من أين جاءت قوة فريقك؟';
+
+  @override
+  String get explainMorale => 'من أين جاءت المعنويات؟';
+
+  @override
+  String get explainRating => 'من أين جاءت نقاطك؟';
+
+  @override
+  String get readInGuide => 'اقرأ أكثر في الدليل';
+
+  @override
+  String get waitingRoom => 'غرفة الانتظار';
+
+  @override
+  String get membersPredictions => 'توقعات الأعضاء';
+
+  @override
+  String get shareResult => 'شارك النتيجة';
+
+  @override
+  String shareResultLine(String result, String score) {
+    return '$result $score في Game Legend Manager';
+  }
+
+  @override
+  String get firstStepsTitle => 'خطواتك الأولى';
+
+  @override
+  String get firstStepClub => 'خذ نادياً في دوري';
+
+  @override
+  String get firstStepLineup => 'اضبط التشكيلة';
+
+  @override
+  String get firstStepMatch => 'العب مباراتك الأولى';
+
+  @override
+  String get pushPrimerTitle => 'لا تفوّت مباراتك';
+
+  @override
+  String get pushPrimerBody => 'نذكّرك بتشكيلتك قبل المباراة بساعة، وبالمباراة قبلها بنصف ساعة، وبالعروض حين تصل.';
+
+  @override
+  String get pushPrimerAllow => 'اسمح بالإشعارات';
+
+  @override
+  String get pushPrimerLater => 'لاحقاً';
 }

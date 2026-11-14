@@ -1,5 +1,7 @@
 import '../../../ui/tokens.g.dart';
 
+import '../../sim/first_match_controller.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -55,11 +57,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
     setState(() => _busy = true);
+    // [Sprint 64 F1] Once signed in, the first match before the home screen.
+    ref.read(firstMatchWantedProvider.notifier).set(true);
     try {
       await ref
           .read(authProvider.notifier)
           .register(name: _name.text, username: _username.text, email: _email.text, password: _password.text);
     } on ApiError catch (e) {
+      ref.read(firstMatchWantedProvider.notifier).set(false);
       if (!mounted) return;
       setState(() => _errors = e.fields);
       if (e.fields.isEmpty) showGlmToast(context, e.message, error: true);

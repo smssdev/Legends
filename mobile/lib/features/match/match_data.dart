@@ -123,6 +123,7 @@ class MatchView {
     required this.tick,
     required this.tickMs,
     this.kickoffAt,
+    this.fixtureId,
     this.formations = const [],
     this.coaches = const {},
     this.competition = 'league',
@@ -152,6 +153,7 @@ class MatchView {
       tick: m.tick,
       tickMs: m.timing.tickMs,
       kickoffAt: DateTime.tryParse(m.kickoffAt ?? ''),
+      fixtureId: m.fixtureId,
       formations: m.formations ?? const [],
       // An empty list when neither side has a coach; a map of names by side otherwise.
       coaches: coaches is Map<dynamic, dynamic> ? {for (final e in coaches.entries) '${e.key}': '${e.value}'} : const {},
@@ -175,6 +177,9 @@ class MatchView {
 
   final int id, leagueId, tick, tickMs;
   final int? round;
+
+  /// [Sprint 64 F6] A league match's fixture (the waiting room's predictions).
+  final int? fixtureId;
   final String competition;
   final MatchClub home, away;
   final Map<String, MatchTeam> teams;

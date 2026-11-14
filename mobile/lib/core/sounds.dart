@@ -19,6 +19,9 @@ abstract final class GameSounds {
   /// ball, the crowd).
   static int ui = 80, stadium = 80;
 
+  /// [Sprint 64 F13] The buttons' buzz and tap (settings), kept in step by the app.
+  static bool touch = true;
+
   static bool _isStadium(Sfx s) => s == Sfx.whistle || s == Sfx.kick || s == Sfx.roar || s == Sfx.ooh;
   static final Map<Sfx, AudioPlayer> _players = {};
 

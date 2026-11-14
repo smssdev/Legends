@@ -18,6 +18,7 @@ import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/stadium.dart';
 import 'live_screen.dart' show EventLine;
 import 'match_data.dart';
+import 'share_card.dart';
 import '../leagues/shell.dart';
 
 /// [Sprint 17 F2] After the whistle: the coach's report (why he won or lost, what to improve, his assistant's verdict,
@@ -205,7 +206,8 @@ class _Report extends StatelessWidget {
     }
 
     final start = <Widget>[
-      hero,
+      // [Sprint 64 F8] The score card, shared as a picture.
+      ShareableResult(text: l.shareResultLine(result, '${r.score.$1}-${r.score.$2}'), child: hero),
       if (stats.isNotEmpty) ...[
         title(l.matchStats, Icons.bar_chart_rounded),
         GlmCard(child: Column(children: [for (final (key, label) in stats) statRow(key, label)])),

@@ -244,8 +244,8 @@ void main() {
     expect(find.text('مباشر'), findsNothing);
     expect(find.textContaining('Alexander Isak'), findsNothing, reason: 'the break bar takes the foot in a break');
     expect(find.text('أنا مستعد'), findsOneWidget);
-    // The orders' drawer: the substitution with what is left, and the assistant's notes.
-    await t.tap(find.text('الأوامر'));
+    // [Sprint 64 F7] The coach's window opened the orders' drawer by itself: the substitution with what is left, and
+    // the assistant's notes.
     await wait(t);
     expect(find.text('0 من 3 تبديلات'), findsOneWidget);
     expect(find.textContaining('لاعبك في الوسط تعب'), findsOneWidget);

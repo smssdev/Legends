@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'first_steps.dart';
+import '../notifications/push_primer.dart';
+import '../leagues/explain.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -166,7 +170,10 @@ class _Home extends ConsumerWidget {
                 return Column(
                   children: [
                     _ArenaBar(h),
-                    Padding(padding: const EdgeInsets.fromLTRB(16, 4, 16, 0), child: _CoachLine(h.coach)),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                      child: _CoachLine(h.coach, leagueId: h.slots.map((s) => s.leagueId).nonNulls.firstOrNull),
+                    ),
                     Expanded(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,6 +185,9 @@ class _Home extends ConsumerWidget {
                                 return ListView(
                                   padding: const EdgeInsets.fromLTRB(16, 6, 8, 20),
                                   children: [
+                                    // [Sprint 64 F2, F12] The first steps, then the notifications' primer after a match.
+                                    FirstSteps(steps: h.firstSteps, leagueId: h.slots.map((s) => s.leagueId).nonNulls.firstOrNull),
+                                    PushPrimer(played: h.coach.won + h.coach.drawn + h.coach.lost > 0),
                                     _Label('${l.coachSlots} · ${h.slotsOpen}/${h.slots.length}'),
                                     Wrap(
                                       spacing: 12,
@@ -289,9 +299,12 @@ class _TopBar extends ConsumerWidget {
 /// [Sprint 60 F3] The coach in one line (the approved draft's home): his initial, his name, his tier and points, and
 /// his record; a tap opens his account. The card with it all stays for the phone held upright.
 class _CoachLine extends StatelessWidget {
-  const _CoachLine(this.c);
+  const _CoachLine(this.c, {this.leagueId});
 
   final Coach c;
+
+  /// [Sprint 64 F5] A league of his, to explain the points from (none: only the number).
+  final int? leagueId;
 
   @override
   Widget build(BuildContext context) {
@@ -337,7 +350,11 @@ class _CoachLine extends StatelessWidget {
               // Each part its own text: the Latin division (III) between Arabic words would turn the line around.
               Text(' $tier$division', style: context.type.caption.copyWith(color: context.glm.goldText)),
               Text(' · ', style: context.type.caption),
-              Text('${c.points} ${l.pointsWord}', style: context.type.caption.copyWith(color: context.glm.goldText)),
+              ExplainTap(
+                what: 'rating',
+                leagueId: leagueId,
+                child: Text('${c.points} ${l.pointsWord}', style: context.type.caption.copyWith(color: context.glm.goldText)),
+              ),
               const Spacer(),
               Text('${c.won}', style: numbers.copyWith(color: context.glm.successText)),
               Text(' ${l.won}  ', style: context.type.caption),

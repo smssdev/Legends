@@ -5,7 +5,14 @@ import '../../core/api/api_client.dart';
 
 /// [Sprint 15] The coach's home (`/home`, X18): his card, his coins and rating, and his eight club slots.
 class HomeData {
-  const HomeData({required this.coach, required this.slots, required this.slotsOpen, this.starterCoins = 0, this.starterClaimed = true});
+  const HomeData({
+    required this.coach,
+    required this.slots,
+    required this.slotsOpen,
+    this.starterCoins = 0,
+    this.starterClaimed = true,
+    this.firstSteps = const {},
+  });
 
   /// [Sprint 59 F1] The coach's home (`HomeScreen`), read through its generated model.
   factory HomeData.fromJson(Object? json) {
@@ -16,6 +23,7 @@ class HomeData {
       slotsOpen: h.slotsOpen,
       starterCoins: h.starterGift.coins,
       starterClaimed: h.starterGift.claimed,
+      firstSteps: {'club': h.onboarding.club, 'lineup': h.onboarding.lineup, 'match': h.onboarding.match},
     );
   }
 
@@ -26,6 +34,9 @@ class HomeData {
   /// [Sprint 30 P6] A new coach's first coins, claimed once.
   final int starterCoins;
   final bool starterClaimed;
+
+  /// [Sprint 64 F2] The three first steps (a club, its lineup, a match), each done in the game.
+  final Map<String, bool> firstSteps;
 }
 
 class Coach {

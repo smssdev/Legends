@@ -5168,6 +5168,24 @@ class IntegrityAnswerSpiesOnMeItem {
   final bool turned;
 }
 
+class IntroMoment {
+  const IntroMoment({required this.kind, required this.minute, required this.text, required this.title});
+
+  factory IntroMoment.fromJson(Object? json) {
+    final r = JsonReader(json, 'IntroMoment');
+    return IntroMoment(kind: r.string('kind'), minute: r.int_('minute'), text: r.string('text'), title: r.string('title'));
+  }
+
+  final String kind;
+  final int minute;
+
+  /// From the guide
+  final String text;
+
+  /// From the guide
+  final String title;
+}
+
 class JoinRequest {
   const JoinRequest({this.createdAt, this.decidedAt, required this.id, required this.leagueId, required this.status, this.user});
 
@@ -5594,6 +5612,7 @@ class LeagueMatch {
     this.coaches,
     this.competition,
     required this.finished,
+    this.fixtureId,
     this.formations,
     required this.id,
     this.kickoffAt,
@@ -5617,6 +5636,7 @@ class LeagueMatch {
       coaches: r.any('coaches'),
       competition: r.stringOrNull('competition'),
       finished: r.bool_('finished'),
+      fixtureId: r.intOrNull('fixture_id'),
       formations: r.listOrNull('formations', JsonReader.stringOf),
       id: r.int_('id'),
       kickoffAt: r.stringOrNull('kickoff_at'),
@@ -5640,6 +5660,9 @@ class LeagueMatch {
   final Object? coaches;
   final String? competition;
   final bool finished;
+
+  /// [Sprint 64 F6] Its fixture (the waiting room's predictions)
+  final int? fixtureId;
 
   /// What the viewer's side can switch to
   final List<String>? formations;
@@ -10534,6 +10557,30 @@ class SimClubsByClubAnswer {
   final String? formation;
   final List<Object?>? players;
   final List<int>? starters;
+}
+
+/// [Sprint 64 B1] The intro match's id and its three teaching moments
+class SimIntro {
+  const SimIntro({required this.id, required this.intro});
+
+  factory SimIntro.fromJson(Object? json) {
+    final r = JsonReader(json, 'SimIntro');
+    return SimIntro(id: r.string('id'), intro: r.object('intro', SimIntroIntro.fromJson));
+  }
+
+  final String id;
+  final SimIntroIntro intro;
+}
+
+class SimIntroIntro {
+  const SimIntroIntro({required this.moments});
+
+  factory SimIntroIntro.fromJson(Object? json) {
+    final r = JsonReader(json, 'SimIntroIntro');
+    return SimIntroIntro(moments: r.list('moments', IntroMoment.fromJson));
+  }
+
+  final List<IntroMoment> moments;
 }
 
 class Slot {

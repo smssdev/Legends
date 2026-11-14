@@ -3018,4 +3018,136 @@ class LEn extends L {
 
   @override
   String get h2hL => 'L';
+
+  @override
+  String get touchFeedback => 'Button buzz and sound';
+
+  @override
+  String get introFailed => 'The intro match could not be prepared now.';
+
+  @override
+  String get introPreparing => 'Getting your first match ready...';
+
+  @override
+  String get introContinue => 'Continue';
+
+  @override
+  String get introSkip => 'Skip the intro match';
+
+  @override
+  String get introDoneTitle => 'Well done, that was your first match!';
+
+  @override
+  String get introDoneBody => 'Now take a club in a league, with your starter gift.';
+
+  @override
+  String get introOpenOrders => 'Open the orders';
+
+  @override
+  String get introOk => 'OK';
+
+  @override
+  String get sinceTitle => 'Since your last visit';
+
+  @override
+  String sinceUp(int n) {
+    return 'Up $n places';
+  }
+
+  @override
+  String sinceDown(int n) {
+    return 'Down $n places';
+  }
+
+  @override
+  String get sinceSame => 'Your position is unchanged';
+
+  @override
+  String get sinceOffers => 'Offers waiting for your answer';
+
+  @override
+  String get sinceFlip => 'Tap to flip';
+
+  @override
+  String milestoneGoals(int n) {
+    return 'his goal number $n';
+  }
+
+  @override
+  String milestoneMatches(int n) {
+    return 'his match number $n';
+  }
+
+  @override
+  String get milestoneMotmFirst => 'man of the match for the first time';
+
+  @override
+  String milestoneMotm(int n) {
+    return 'man of the match for the ${n}th time';
+  }
+
+  @override
+  String get milestoneGreat => 'Great';
+
+  @override
+  String nextMatchAt(String when) {
+    return 'Your next match $when';
+  }
+
+  @override
+  String get remindMe => 'Remind me before the match';
+
+  @override
+  String get explainChemistry => 'Where does the chemistry come from?';
+
+  @override
+  String get explainStrength => 'Where does your team\'s strength come from?';
+
+  @override
+  String get explainMorale => 'Where does the morale come from?';
+
+  @override
+  String get explainRating => 'Where do your points come from?';
+
+  @override
+  String get readInGuide => 'Read more in the guide';
+
+  @override
+  String get waitingRoom => 'Waiting room';
+
+  @override
+  String get membersPredictions => 'Members\' predictions';
+
+  @override
+  String get shareResult => 'Share the result';
+
+  @override
+  String shareResultLine(String result, String score) {
+    return '$result $score in Game Legend Manager';
+  }
+
+  @override
+  String get firstStepsTitle => 'Your first steps';
+
+  @override
+  String get firstStepClub => 'Take a club in a league';
+
+  @override
+  String get firstStepLineup => 'Set your lineup';
+
+  @override
+  String get firstStepMatch => 'Play your first match';
+
+  @override
+  String get pushPrimerTitle => 'Never miss your match';
+
+  @override
+  String get pushPrimerBody =>
+      'We remind you of your lineup an hour before the match, of the match half an hour before, and of offers as they come.';
+
+  @override
+  String get pushPrimerAllow => 'Allow notifications';
+
+  @override
+  String get pushPrimerLater => 'Later';
 }

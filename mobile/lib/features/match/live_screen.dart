@@ -1,4 +1,6 @@
 import '../../ui/art_palette.dart';
+import 'intro_coach_overlay.dart';
+import 'waiting_room.dart';
 import '../../ui/tokens.g.dart';
 
 import 'dart:async';

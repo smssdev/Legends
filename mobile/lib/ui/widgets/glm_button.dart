@@ -94,8 +94,11 @@ class GlmButton extends StatelessWidget {
                   customBorder: GlmCut.shape(GlmCut.button),
                   onTap: enabled
                       ? () {
-                          HapticFeedback.selectionClick();
-                          GameSounds.play(Sfx.tap);
+                          // [Sprint 64 F13] The buzz and the tap, one switch in the settings.
+                          if (GameSounds.touch) {
+                            HapticFeedback.selectionClick();
+                            GameSounds.play(Sfx.tap);
+                          }
                           onPressed!();
                         }
                       : null,
