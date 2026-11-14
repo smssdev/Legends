@@ -124,6 +124,8 @@ export const router = createRouter({
     { path: '/live/:id(\\d+)/report', name: 'league-report', component: () => import('./pages/SimReport.vue'), props: { league: true }, meta: { auth: true } },
     { path: '/sim/room', name: 'sim-room-new', component: () => import('./pages/SimRoom.vue') },
     { path: '/sim/room/:room', name: 'sim-room', component: () => import('./pages/SimRoom.vue'), props: true },
+    // [Sprint 64 W1] The new coach's first match, right after the sign-up.
+    { path: '/intro', name: 'intro', component: () => import('./pages/IntroStart.vue'), meta: { auth: true } },
     { path: '/sim/:id', name: 'sim-match', component: () => import('./pages/SimMatch.vue'), props: true },
     { path: '/sim/:id/report', name: 'sim-report', component: () => import('./pages/SimReport.vue'), props: true },
   ],

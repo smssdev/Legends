@@ -2,6 +2,8 @@
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
 // cash and coins) and the eight club slots right under it, all in one screen without scrolling; the announcements, the
 // record, the trophies and the rankings below. A guest sees the way in ([X59] the landing page).
+import Explain from '../components/ui/Explain.vue'
+import { useBoard as useExplainBoard } from '../stores/board'
 import { storage } from '../lib/storage'
 import AsyncState from '../components/ui/AsyncState.vue'
 import InstallPrompt from '../components/InstallPrompt.vue'
@@ -28,6 +30,8 @@ import { chime } from '../lib/chime'
 import UiButton from '../components/ui/UiButton.vue'
 import RatingBadge from '../components/RatingBadge.vue'
 import { divisionName, signed, tierName } from '../lib/rating'
+// [Sprint 64 W5] The league whose club the numbers explain.
+const explainBoard = useExplainBoard()
 
 type Home = components['schemas']['HomeScreen']
 type Ranked = components['schemas']['RankedCoach']
@@ -203,7 +207,7 @@ async function openRanking(by: By) {
           <button type="button" class="rating-chip" :aria-label="$t('نقاط المدرب ودرجته')" @click="ratingOpen = true">
             <RatingBadge :tier="home.coach.rating.tier.key" :division="home.coach.rating.tier.division" :size="22" />
             <span class="truncate text-xs font-extrabold">{{ tierName(home.coach.rating.tier.key) }} <span class="font-numbers" dir="ltr">{{ divisionName(home.coach.rating.tier.division) }}</span></span>
-            <b class="font-numbers text-xs text-gold" dir="ltr">{{ home.coach.rating.points }}</b>
+            <Explain what="rating" :league-id="explainBoard.league"><b class="font-numbers text-xs text-gold" dir="ltr">{{ home.coach.rating.points }}</b></Explain>
             <span v-if="home.coach.rating.recent[0]" class="font-numbers text-caption font-bold" :class="home.coach.rating.recent[0].delta >= 0 ? 'text-success' : 'text-danger'" dir="ltr">{{ signed(home.coach.rating.recent[0].delta) }}</span>
           </button>
         </div>

@@ -6,6 +6,7 @@
 // All of it stops with reduced motion.
 // [Sprint 54 W5] `to` makes it a link (RouterLink) drawn the same, and `size: 'sm'` the 44px row button, so a screen
 // never paints its own gold or emerald button (scripts/design.mjs refuses that).
+import { tapFeedback } from '../../lib/soundLevels'
 import { ref, watch } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 import { RouterLink } from 'vue-router'
@@ -49,6 +50,7 @@ watch(() => props.success, (ok) => ok && navigator.vibrate?.(10))
       }[variant],
     ]"
     @pointerdown="ripple"
+    @click="tapFeedback"
   >
     <span v-for="r in ripples" :key="r.id" aria-hidden="true" class="ui-ripple" :style="{ left: `${r.x}px`, top: `${r.y}px`, width: `${r.size}px`, height: `${r.size}px` }" />
     <span v-if="variant === 'primary'" aria-hidden="true" class="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 ease-soft group-hover:translate-x-full motion-reduce:hidden" />

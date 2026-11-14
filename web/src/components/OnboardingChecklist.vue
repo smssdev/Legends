@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Icon from './Icon.vue'
-// [X61] The first steps of a new coach, on the home screen: seven steps, each a button to the right screen. [X75] A step
+// [X61] The first steps of a new coach, on the home screen: [Sprint 64 W2] three, then the first week's tasks, each a button to the right screen. [X75] A step
 // is done only when the server says it is done in the game (home.onboarding), never by tapping it. Folds away (reka-ui's Collapsible, Sprint 54 W4), and goes once every step is done. [Sprint 26 W4] The falcon (A1)
 // cheers each step.
 import { storage } from '../lib/storage'
@@ -16,20 +16,28 @@ const router = useRouter()
 const KEY = computed(() => `onboarding.${auth.user?.id ?? 0}`)
 
 type Step = { key: string; label: string; to: string; club?: boolean }
-const STEPS: Step[] = [
-  { key: 'account', label: 'وثّق حسابك أو اربطه بجوجل', to: '/profile' },
-  { key: 'invite', label: 'ادعُ صديقاً إلى دوريك', to: '/profile' },
-  { key: 'coach', label: 'تعاقد مع مدرب خط', to: '/specialists', club: true },
+// [Sprint 64 W2] Three first steps (a club, its lineup, a match); the rest are the first week's tasks, shown once the
+// three are done.
+const FIRST: Step[] = [
+  { key: 'club', label: 'خذ نادياً في دوري', to: '/leagues' },
   { key: 'lineup', label: 'اضبط التشكيلة', to: '/lineup', club: true },
+  { key: 'match', label: 'العب مباراتك الأولى', to: '/match', club: true },
+]
+const WEEK: Step[] = [
   { key: 'tactics', label: 'اختر التكتيك', to: '/tactics', club: true },
-  { key: 'name', label: 'اختر اسمك وصورتك في اللعبة', to: '/profile' },
   { key: 'friendly', label: 'العب أول ودية', to: '/friendlies', club: true },
+  { key: 'coach', label: 'تعاقد مع مدرب خط', to: '/specialists', club: true },
+  { key: 'account', label: 'وثّق حسابك أو اربطه بجوجل', to: '/profile' },
+  { key: 'name', label: 'اختر اسمك وصورتك في اللعبة', to: '/profile' },
+  { key: 'invite', label: 'ادعُ صديقاً إلى دوريك', to: '/profile' },
 ]
 
 const done = (s: Step) => !!props.steps[s.key]
-const count = computed(() => STEPS.filter(done).length)
-// [X86] Closed by default: the next step under its title, the seven when opened.
-const next = computed(() => STEPS.find((s) => !done(s)) ?? null)
+const week = computed(() => FIRST.every(done))
+const STEPS = computed(() => (week.value ? WEEK : FIRST))
+const count = computed(() => STEPS.value.filter(done).length)
+// [X86] Closed by default: the next step under its title, the list when opened.
+const next = computed(() => STEPS.value.find((s) => !done(s)) ?? null)
 const hidden = ref((() => { try { return storage.get(`${KEY.value}.hidden`) === '1' } catch { return false } })())
 
 function go(s: Step) {
@@ -54,8 +62,8 @@ function hide() {
           </svg>
           <b class="font-numbers text-sm" dir="ltr">{{ count }}/{{ STEPS.length }}</b>
         </span>
-        <span class="min-w-0 flex-1"><b class="block font-display text-base">{{ $t('خطواتك الأولى') }}</b>
-          <span class="text-xs text-text-muted">{{ open || !next ? $t('سبع خطوات تجهّز ناديك لأول مباراة') : $t('التالية: {v0}', { v0: $t(next.label) }) }}</span></span>
+        <span class="min-w-0 flex-1"><b class="block font-display text-base">{{ week ? $t('مهام الأسبوع الأول') : $t('خطواتك الأولى') }}</b>
+          <span class="text-xs text-text-muted">{{ open || !next ? (week ? $t('تعرّف على التدريب والسوق والوديات') : $t('ثلاث خطوات إلى مباراتك الأولى')) : $t('التالية: {v0}', { v0: $t(next.label) }) }}</span></span>
         <span class="text-gold transition-transform duration-200" :class="open ? 'rotate-180' : ''" aria-hidden="true"><Icon name="chevron_down" :size="16" /></span>
       </CollapsibleTrigger>
       <button type="button" class="grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إخفاء')" @click="hide"><Icon name="close" :size="18" /></button>

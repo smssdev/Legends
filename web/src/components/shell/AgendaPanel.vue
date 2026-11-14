@@ -7,6 +7,7 @@ import { useEscape } from '../../lib/escape'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Icon from '../Icon.vue'
+import AllReady from './AllReady.vue'
 import { countdown, useNow } from '../../lib/clock'
 import { useBoard } from '../../stores/board'
 import { useInbox } from '../../stores/inbox'
@@ -79,7 +80,8 @@ const fillTraining = () => act('fill-training', async () => {
       </li>
     </ul>
     <template v-else>
-      <p v-if="!b.pending.length && !inbox.unread" class="py-4 text-center text-sm text-text-muted">{{ $t('لا شيء ينتظرك. أحسنت!') }}</p>
+      <!-- [Sprint 64 W4] Nothing waits: all ready, the next match, and its reminder. -->
+      <AllReady v-if="!b.pending.length && !inbox.unread" />
       <ul v-else class="flex flex-col gap-1.5">
         <!-- Unread messages wait too (and on a narrow phone this is their way in). -->
         <li v-if="inbox.unread">

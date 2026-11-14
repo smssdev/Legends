@@ -13,6 +13,7 @@ import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { useBoard } from '../../stores/board'
 import MatchRecap from './MatchRecap.vue'
+import SinceVisit from './SinceVisit.vue'
 import Character from '../characters/Character.vue'
 
 const props = defineProps<{ leagueId: number }>()
@@ -55,6 +56,8 @@ const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 
   <div v-else-if="m" class="fixed inset-0 z-50 grid place-items-center bg-bg-deep/80 p-4" role="dialog" aria-modal="true" :aria-label="$t('فاتتك مباراة')">
     <div class="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-gold/40 bg-surface p-5 shadow-2xl">
       <Character model="A2" :mood="m.mood" class="-mb-2 -mt-2 w-24 self-center" />
+      <!-- [Sprint 64 W3] Since the last visit: the cards to flip, once for this absence. -->
+      <SinceVisit v-if="board.board?.since && at === 0" :since="board.board.since" />
       <div class="flex items-center text-xs text-text-muted">
         <span class="flex-1">{{ $t(m.competition === 'league' ? 'فاتتك مباراة · الجولة {v0}' : 'فاتتك مباراة · الكأس', { v0: m.round }) }}</span>
         <span v-if="matches.length > 1" class="font-numbers" dir="ltr">{{ at + 1 }} / {{ matches.length }}</span>

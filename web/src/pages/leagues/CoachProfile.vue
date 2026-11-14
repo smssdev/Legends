@@ -83,8 +83,8 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.h2h { display: flex; flex-direction: column; gap: var(--space-2); }
-.h2h-last { display: flex; gap: var(--space-1); }
+.h2h { display: flex; flex-direction: column; gap: var(--space-sm); }
+.h2h-last { display: flex; gap: var(--space-xs); }
 .h2h-last li { display: grid; place-items: center; inline-size: 28px; block-size: 28px; border-radius: var(--radius-pill); font-weight: 700; color: var(--color-on-gold); }
 .h2h-W { background: var(--color-success); }
 .h2h-D { background: var(--color-text-muted); }

@@ -58,7 +58,7 @@ const count = computed(() => sections.value?.reduce((n, s) => n + s.topics.lengt
         <template v-for="(s, i) in shown" :key="s.id">
           <section :id="s.id" class="flex scroll-mt-20 flex-col gap-3" :aria-labelledby="`h-${s.id}`">
             <h2 :id="`h-${s.id}`" class="font-display text-2xl font-extrabold text-gold">{{ s.title }}</h2>
-            <article v-for="x in s.topics" :key="x.id" class="rounded-xl border border-text/10 bg-surface p-4">
+            <article v-for="x in s.topics" :id="x.id" :key="x.id" class="scroll-mt-20 rounded-xl border border-text/10 bg-surface p-4">
               <h3 class="mb-1.5 font-bold">{{ x.q }}</h3>
               <p class="whitespace-pre-line leading-relaxed text-text-soft">{{ x.a }}</p>
             </article>

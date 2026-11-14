@@ -2,11 +2,15 @@
 // [Sprint 48 T2] The team at a glance, beside the squad's tables (the owner's screenshots, 2026-11-08, our own look):
 // the club and its coach, the eleven's average in a big dial with the four lines on a pitch, the place, the shape and
 // the squad's value, then the best, the star, the top scorer and the next opponent. Only what the API sends.
+import Explain from '../../../components/ui/Explain.vue'
+import { useBoard as useExplainBoard } from '../../../stores/board'
 import { computed } from 'vue'
 import RatingRing from '../../../components/ui/RatingRing.vue'
 import { money } from '../../../lib/format'
 import type { SquadPlayer, Team } from '../team'
 import type { Board } from '../../../stores/board'
+// [Sprint 64 W5] The league whose club the numbers explain.
+const explainBoard = useExplainBoard()
 
 const props = defineProps<{ team: Team; board: Board | null; season: { players: Record<string, { goals: number }> } | null }>()
 const emit = defineEmits<{ open: [player: SquadPlayer] }>()
@@ -55,7 +59,7 @@ const moraleColor = (v: number) => (v >= 75 ? 'var(--color-success)' : v < 50 ? 
       <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="team.morale.value" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('المعنويات')">
         <span class="block h-full rounded-full" :style="{ width: `${team.morale.value}%`, background: moraleColor(team.morale.value) }" />
       </span>
-      <b class="font-numbers" :style="{ color: moraleColor(team.morale.value) }">{{ team.morale.value }}</b>
+      <Explain what="morale" :league-id="explainBoard.league"><b class="font-numbers" :style="{ color: moraleColor(team.morale.value) }">{{ team.morale.value }}</b></Explain>
     </div>
 
     <ul class="m-4 flex flex-col divide-y divide-text/5 overflow-hidden rounded-xl bg-surface-sunk/70 text-sm">

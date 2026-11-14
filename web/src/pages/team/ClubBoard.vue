@@ -10,9 +10,11 @@
 import { computed, onMounted } from 'vue'
 import Icon from '../../components/Icon.vue'
 import AgendaPanel from '../../components/shell/AgendaPanel.vue'
+import MilestoneCard from '../../components/shell/MilestoneCard.vue'
 import AsyncState from '../../components/ui/AsyncState.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import UiCard from '../../components/ui/UiCard.vue'
+import Explain from '../../components/ui/Explain.vue'
 import { countdown, useNow } from '../../lib/clock'
 import { REFEREE } from '../../lib/format'
 import { useBoard } from '../../stores/board'
@@ -51,7 +53,7 @@ const waiting = computed(() => b.value?.pending.length ?? 0)
             <div v-for="(side, i) in [b.match.club, b.match.opponent]" :key="side.id" class="flex min-w-0 flex-col items-center gap-0.5" :style="{ order: i * 2 }">
               <img :src="side.crest_url" alt="" class="office-crest drop-shadow" loading="lazy" decoding="async" />
               <b class="max-w-full truncate text-body-lg">{{ $nm(side.name) }}</b>
-              <span class="flex items-center gap-1.5"><span class="font-numbers text-title text-brand-light">{{ strength(side.strength_cp) }}</span>
+              <span class="flex items-center gap-1.5"><Explain v-if="i === 0" what="strength" :league-id="leagueId"><span class="font-numbers text-title text-brand-light">{{ strength(side.strength_cp) }}</span></Explain><span v-else class="font-numbers text-title text-brand-light">{{ strength(side.strength_cp) }}</span>
                 <span class="flex gap-0.5 max-md:hidden" :aria-label="$t('آخر النتائج')">
                   <span v-for="(r, j) in side.form" :key="j" class="grid size-5 place-items-center rounded-full text-caption font-bold leading-none" :class="FORM[r][1]">{{ $t(FORM[r][0]) }}</span>
                 </span></span>
@@ -81,6 +83,8 @@ const waiting = computed(() => b.value?.pending.length ?? 0)
 
       <UiCard class="office-todo" title="ما ينتظرك">
         <template #action><span class="font-numbers text-caption text-text-muted">{{ waiting }}</span></template>
+        <!-- [Sprint 64 W11] A player's milestone, until seen. -->
+        <MilestoneCard v-if="b.milestones?.length && leagueId" :items="b.milestones" :league-id="leagueId" />
         <AgendaPanel kind="pending" inline />
       </UiCard>
 

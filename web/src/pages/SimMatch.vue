@@ -44,6 +44,10 @@
           <span v-else />
         </template>
       </div>
+      <!-- [Sprint 64 W1] The new coach's first match: the assistant at its three moments, a skip, then a club. -->
+      <IntroCoach v-if="introMatch.on.value" :current="introMatch.current.value" :over="introMatch.over.value" @answer="introMatch.answer" @coach="drawer = 'coach'" @skip="introMatch.skip" />
+      <!-- [Sprint 64 W6] A league match before its whistle: the waiting room, gone by itself at kick-off. -->
+      <WaitingRoom v-if="live && league && !started && !finished" :view="view" @chat="drawer = 'more'" />
       <LiveStart v-if="live && !started && mine" :live="L" :other-name="view.clubs[mine === 'away' ? 'home' : 'away'].name" />
     </div>
 
@@ -84,6 +88,8 @@ import { useBroadcast } from '../stores/broadcast'
 import { leagueMatch, seats, sim, type Side } from '../api/sim'
 import TurnPhone from '../components/match/TurnPhone.vue'
 import FirstMatchTips from '../components/match/FirstMatchTips.vue'
+import IntroCoach from '../components/match/IntroCoach.vue'
+import { useIntroMatch } from '../match/useIntroMatch'
 import MatchTopBar from '../components/match/MatchTopBar.vue'
 import MatchDrawer from '../components/match/MatchDrawer.vue'
 import CoachDrawer from '../components/match/CoachDrawer.vue'
@@ -92,6 +98,7 @@ import FeedList from '../components/match/FeedList.vue'
 import HalftimeCard from '../components/match/HalftimeCard.vue'
 import EmergencySub from '../components/match/EmergencySub.vue'
 import LiveStart from '../components/match/LiveStart.vue'
+import WaitingRoom from '../components/match/WaitingRoom.vue'
 import MatchSettings from '../components/match/MatchSettings.vue'
 import Character from '../components/characters/Character.vue'
 import MatchRecap from '../components/shell/MatchRecap.vue'
@@ -144,6 +151,8 @@ const social = useMatchSocial({
 const wake = useWakeLock(() => live.value && !finished.value && !broadcast.away)
 const L = useLiveMatch({ id: props.id, league, player: P, pitch, clock, social: () => social, orders: () => orders, replay, mine, awake: { keep: wake.keep }, hush: () => { if (!audio.soundOn.value) audio.voice.stop() } })
 const { caught } = L
+// [Sprint 64 W1] Only for the match /intro made (its moments kept on this device).
+const introMatch = useIntroMatch({ id: props.id, minute: computed(() => minute.value[0]), finished, done: () => sim.introFinished() })
 
 const drawer = ref<'coach' | 'more' | null>(null)
 const settingsOpen = ref(false)
@@ -168,6 +177,15 @@ const feedKits = computed(() => {
 const windows = computed(() => (live.value ? view.value?.timing.windows ?? [] : []))
 const canChange = computed(() => !windows.value.length || !started.value || minute.value[0] === 0 || halftime.value || (windowOn.value && P.halftimeLeft.value > 2))
 const nextWindow = computed(() => [...windows.value, 45].sort((a, b) => a - b).find((w) => w > minute.value[0]) ?? null)
+
+// [Sprint 64 W7] A coach's window opens his drawer by itself (its countdown inside), and its end closes it; a drawer
+// he opened himself between windows is left as it is.
+let openedByWindow = false
+watch(windowOn, (on) => {
+  if (!live.value || !league || !mine.value || rerun.value) return
+  if (on && drawer.value !== 'coach') { drawer.value = 'coach'; openedByWindow = true }
+  else if (!on && openedByWindow) { if (drawer.value === 'coach') drawer.value = null; openedByWindow = false }
+})
 
 // [Sprint 63 G2] Back to the management's world: the curtain closes first (420ms), then the page goes.
 const curtain = ref<InstanceType<typeof MatchCurtain> | null>(null)
