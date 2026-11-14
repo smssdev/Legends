@@ -19,6 +19,8 @@ defineProps<{
   initial: string
   unverified: boolean
   inSlot?: boolean
+  /** [Sprint 65 W2] The page has no h1 of its own (yet): the title is it. */
+  heading?: boolean
 }>()
 </script>
 
@@ -26,7 +28,7 @@ defineProps<{
   <header class="shell-bar">
     <!-- On a short phone the club leaves the dock for here (AppShell's .bar-club). -->
     <div v-if="inSlot" class="bar-club"><ClubSwitcher in-bar /></div>
-    <p class="shell-title">{{ title ? $t(title) : '' }}</p>
+    <component :is="heading ? 'h1' : 'p'" class="shell-title">{{ title ? $t(title) : '' }}</component>
     <span class="flex-1" />
     <RouterLink v-if="next" to="/match" class="bar-next" :aria-label="next.live ? $t('مباراتك مباشرة الآن') : $t('المباراة القادمة ضد {o}', { o: next.opponent })">
       <span v-if="next.live" class="bar-live">{{ $t('مباشر') }}</span>
@@ -35,7 +37,7 @@ defineProps<{
     <MoneyPill kind="coins" to="/wallet" :value="coins" :label="$t('المحفظة')" />
     <MoneyPill v-if="cash" kind="cash" to="/finance" :value="cash.value" caption="أموال النادي" :title="cash.title" :label="cash.label" />
     <RouterLink to="/inbox" class="bar-icon" :aria-label="unread ? $t('الرسائل: {n} غير مقروءة', { n: unread }) : $t('الرسائل')">
-      <Icon name="inbox" /><span v-if="unread" class="bar-badge bg-live text-white">{{ unread }}</span>
+      <Icon name="inbox" /><span v-if="unread" class="bar-badge bg-live text-on-gold">{{ unread }}</span>
     </RouterLink>
     <RouterLink to="/profile" class="bar-avatar" :aria-label="unverified ? $t('حسابي: وثّق حسابك') : $t('حسابي')">
       <img v-if="avatar" :src="avatar" alt="" class="size-full rounded-full object-cover" decoding="async" /><template v-else>{{ initial }}</template>

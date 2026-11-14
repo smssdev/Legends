@@ -4,7 +4,7 @@
       <RouterLink :to="league ? '/match' : '/sim'" class="flex items-center gap-3">
         <BrandMark />
       </RouterLink>
-      <span class="rounded-pill bg-brand px-3 py-1 text-sm font-bold text-white">{{ $t('تقرير المباراة') }}</span>
+      <span class="rounded-pill bg-brand px-3 py-1 text-sm font-bold text-on-gold">{{ $t('تقرير المباراة') }}</span>
       <button v-if="league" type="button" class="h-10 rounded-lg bg-gold px-3 text-sm font-bold text-on-gold" @click="recap = true"><Icon name="bolt" :size="16" class="inline-block align-[-3px]" /> {{ $t('الملخص السريع') }}</button>
       <!-- [Sprint 30 G2] The result as a picture, for WhatsApp and the rest. -->
       <button v-if="report && view" type="button" class="h-10 rounded-lg bg-surface px-3 text-sm font-bold" :disabled="sharing" @click="share"><Icon name="share" :size="16" class="inline-block align-[-3px]" /> {{ $t('شارك كصورة') }}</button>
@@ -258,7 +258,7 @@ const events = computed(() =>
       case 'goal':
         return { ...e, label, icon: 'ball' as const, tone: '', text: `${n(e.scorer)}${e.kind === 'penalty' ? ' (جزاء)' : e.kind === 'free_kick' ? ' (ركلة حرة)' : ''}${e.assist ? ` · صناعة ${n(e.assist)}` : ''}` }
       case 'card':
-        return { ...e, label, icon: 'card' as const, tone: e.color === 'red' ? 'text-live' : 'text-card-yellow', text: `${n(e.player)}${e.second_yellow ? ' (إنذار ثانٍ)' : ''}` }
+        return { ...e, label, icon: 'card' as const, tone: e.color === 'red' ? 'text-danger' : 'text-card-yellow', text: `${n(e.player)}${e.second_yellow ? ' (إنذار ثانٍ)' : ''}` }
       case 'sub':
         return { ...e, label, icon: 'swap' as const, tone: 'text-brand-light', text: `دخل ${n(e.in)} وخرج ${n(e.out)}` }
       case 'injury':

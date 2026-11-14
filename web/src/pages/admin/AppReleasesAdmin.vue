@@ -90,7 +90,7 @@ const field = 'min-h-touch rounded-lg border border-surface-raised bg-surface-su
         <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('النسخة') }}<input v-model="version" dir="ltr" placeholder="1.0.0" required :class="field" /></label>
         <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('ما الجديد (اختياري)') }}<input v-model="notes" maxlength="1000" :class="field" /></label>
       </div>
-      <div v-if="progress !== null" class="h-3 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100">
+      <div v-if="progress !== null" class="h-3 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('رفع النسخة')">
         <div class="h-full bg-gold transition-all" :style="{ width: progress + '%' }" />
       </div>
       <UiButton type="submit" :loading="progress !== null" :disabled="!file">{{ progress !== null ? `${progress}%` : $t('ارفع وانشر') }}</UiButton>

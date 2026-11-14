@@ -9,4 +9,4 @@ export type SeasonData = { rounds: number; players: Record<string, SeasonPlayer>
 export const LINE_HEAD: Record<Line, string> = { gk: 'حراس المرمى', def: 'المدافعون', mid: 'لاعبو الوسط', att: 'المهاجمون' }
 
 /** A match rating (hundredths) in the design's rating colours: 8 and up deep green, 7 green, 6 gold, under 6 orange. */
-export const ratingTone = (r: number) => (r >= 800 ? 'bg-success text-white' : r >= 700 ? 'bg-fitness-high text-bg-deep' : r >= 600 ? 'bg-gold text-on-gold' : 'bg-warning text-bg-deep')
+export const ratingTone = (r: number) => (r >= 800 ? 'bg-success text-on-gold' : r >= 700 ? 'bg-fitness-high text-bg-deep' : r >= 600 ? 'bg-gold text-on-gold' : 'bg-warning text-bg-deep')

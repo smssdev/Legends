@@ -37,7 +37,8 @@ class GlmButton extends StatelessWidget {
       GlmButtonVariant.brand => (Colors.white, p.brandDark, BorderSide.none),
       GlmButtonVariant.outline => (p.text, Colors.transparent, BorderSide(color: p.surfaceRaised, width: 1.5)),
       GlmButtonVariant.quiet => (p.text, p.surfaceRaised, BorderSide.none),
-      GlmButtonVariant.danger => (Colors.white, p.live, BorderSide.none),
+      // [Sprint 65 F4] Navy on the red, as on the web (white on it is 3.8:1).
+      GlmButtonVariant.danger => (p.onGold, p.live, BorderSide.none),
     };
     final child = Row(
       mainAxisSize: block ? MainAxisSize.max : MainAxisSize.min,

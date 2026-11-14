@@ -93,7 +93,7 @@ const field = 'min-h-touch rounded-lg border border-surface-raised bg-surface-su
       <h2 class="font-display text-xl font-bold">{{ editing ? $t('تعديل') : $t('عنصر جديد') }}</h2>
       <div class="flex gap-2" role="radiogroup" :aria-label="$t('النوع')">
         <button v-for="k in (['package', 'offer'] as const)" :key="k" type="button" role="radio" :aria-checked="form.kind === k"
-          class="min-h-touch flex-1 rounded-lg font-bold" :class="form.kind === k ? 'bg-brand text-white' : 'bg-surface-sunk text-text-muted'" @click="form.kind = k">
+          class="min-h-touch flex-1 rounded-lg font-bold" :class="form.kind === k ? 'bg-brand text-on-gold' : 'bg-surface-sunk text-text-muted'" @click="form.kind = k">
           {{ k === 'package' ? $t('باقة ثابتة') : $t('عرض لمدة محددة') }}</button>
       </div>
       <label class="flex aspect-video cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border-2 border-dashed border-gold text-center text-sm text-text-soft">

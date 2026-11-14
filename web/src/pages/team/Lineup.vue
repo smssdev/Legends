@@ -111,7 +111,7 @@ const short = (latin: string) => {
 }
 // Chemistry [X22]: measured by the server on the saved eleven, so the links show until the lineup changes.
 const chemistry = computed(() => team.value?.lineup.chemistry)
-const chemColor = (score: number) => (score >= 85 ? 'var(--color-success)' : score < 50 ? 'var(--color-live)' : 'var(--color-gold)')
+const chemColor = (score: number) => (score >= 85 ? 'var(--ink-success)' : score < 50 ? 'var(--ink-live)' : 'var(--ink-gold)')
 const LINK_COLOR = { green: 'var(--color-success)', yellow: 'var(--color-gold)', red: 'var(--color-live)' } as const
 const links = computed(() => {
   if (dirty.value || !chemistry.value || !current.value) return []
@@ -141,6 +141,14 @@ function playerAt(s: Spot): number | null {
   return reserves.value[s.index]?.id ?? null
 }
 
+// [Sprint 65 W6] Every move said to a screen reader (the live region by the pitch): who went where.
+const said = ref('')
+function tellMove(id: number, to: Spot) {
+  const name = nm(players.value.get(id)?.name ?? '')
+  said.value = to.zone === 'slot' ? t('{v0} أساسي في الخانة {v1}', { v0: name, v1: to.index + 1 })
+    : to.zone === 'bench' ? t('{v0} على الدكة', { v0: name }) : t('{v0} خارج القائمة', { v0: name })
+}
+
 /** Move a player to another spot; whoever stood there takes his place. Dropping on the rest of the squad takes him out. */
 function move(from: Spot, to: Spot) {
   const a = playerAt(from)
@@ -150,6 +158,7 @@ function move(from: Spot, to: Spot) {
     remember()
     if (from.zone === 'slot') starters.value[from.index] = null
     if (from.zone === 'bench') bench.value.splice(from.index, 1)
+    tellMove(a, to)
     return
   }
   const b = playerAt(to)
@@ -158,6 +167,7 @@ function move(from: Spot, to: Spot) {
     const list = bench.value.filter((_, i) => i !== from.index)
     list.splice(Math.min(to.index, list.length), 0, a)
     bench.value = list
+    tellMove(a, to)
     return
   }
   if (to.zone === 'bench' && b === null && bench.value.length >= 7) {
@@ -180,6 +190,7 @@ function move(from: Spot, to: Spot) {
     if (b === null) bench.value.splice(from.index, 1)
     else bench.value[from.index] = b
   }
+  tellMove(a, to)
 }
 
 /** [Sprint 27 W3] Before a change: the state to go back to with «تراجع». */
@@ -508,8 +519,8 @@ async function saveCustom() {
                   <span v-if="offLine(i)" class="mini-flag end-0.5 bg-warning text-on-gold" :title="$t('خارج مركزه: {v0}% من مستواه', { v0: shareAt(players.get(starters[i]!)!, slot.line) })">{{ shareAt(players.get(starters[i]!)!, slot.line) }}%</span>
                   <span class="mini-role font-numbers leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
                   <!-- [Sprint 30 Q7] Why he cannot play, on the card itself: injured or suspended, and for how many matches. -->
-                  <span v-if="players.get(starters[i]!)!.injured_matches" class="mini-flag start-0.5 bg-live text-white" :title="$t('مصاب: {v0} مباراة', { v0: players.get(starters[i]!)!.injured_matches })"><Icon name="injury" :size="16" class="inline-block align-[-3px]" /> {{ players.get(starters[i]!)!.injured_matches }}</span>
-                  <span v-else-if="players.get(starters[i]!)!.suspended_matches" class="mini-flag start-0.5 bg-live text-white" :title="$t('موقوف: {v0} مباراة', { v0: players.get(starters[i]!)!.suspended_matches })"><Icon name="card" :size="16" class="inline-block align-[-3px]" /> {{ players.get(starters[i]!)!.suspended_matches }}</span>
+                  <span v-if="players.get(starters[i]!)!.injured_matches" class="mini-flag start-0.5 bg-live text-on-gold" :title="$t('مصاب: {v0} مباراة', { v0: players.get(starters[i]!)!.injured_matches })"><Icon name="injury" :size="16" class="inline-block align-[-3px]" /> {{ players.get(starters[i]!)!.injured_matches }}</span>
+                  <span v-else-if="players.get(starters[i]!)!.suspended_matches" class="mini-flag start-0.5 bg-live text-on-gold" :title="$t('موقوف: {v0} مباراة', { v0: players.get(starters[i]!)!.suspended_matches })"><Icon name="card" :size="16" class="inline-block align-[-3px]" /> {{ players.get(starters[i]!)!.suspended_matches }}</span>
                 </span>
                 <span class="mini-name max-w-full truncate rounded bg-chrome px-1 font-extrabold text-on-chrome shadow" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
               </template>
@@ -562,7 +573,8 @@ async function saveCustom() {
         </section>
         <UiButton class="lineup-improve" size="sm" :title="$t('أفضل اللاعبين المناسبين للطريقة المختارة')" @click="improve">{{ $t('تحسين') }}</UiButton>
       </div>
-      <p v-if="message" class="lineup-message" role="status">{{ $t(message) }}</p>
+      <p v-if="message" class="lineup-message">{{ $t(message) }}</p>
+      <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ message ? $t(message) : said }}</p>
 
       <!-- [Sprint 48 T3] The formations, behind the rail's first button. -->
       <UiDialog :open="formationsOpen" :title="$t('الطريقة')" @close="formationsOpen = false">

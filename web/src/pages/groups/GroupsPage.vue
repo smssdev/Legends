@@ -74,7 +74,7 @@ async function create() {
     <header class="flex items-center justify-between gap-3">
       <h1 class="font-display text-3xl font-extrabold">{{ $t('الجروبات') }}</h1>
       <div class="flex gap-2" role="tablist">
-        <button v-for="k in (['all', 'leagues'] as const)" :key="k" role="tab" :aria-selected="tab === k" class="min-h-touch rounded-full px-4 text-sm font-bold"
+        <button type="button" v-for="k in (['all', 'leagues'] as const)" :key="k" role="tab" :aria-selected="tab === k" class="min-h-touch rounded-full px-4 text-sm font-bold"
           :class="tab === k ? 'bg-brand text-text' : 'bg-surface-sunk text-text-muted'" @click="tab = k">{{ k === 'all' ? $t('الكل') : $t('الدوريات والبطولات') }}</button>
       </div>
     </header>
@@ -100,7 +100,7 @@ async function create() {
       </li>
     </ul>
 
-    <button class="fixed bottom-24 end-5 z-30 grid size-14 place-items-center rounded-full bg-gold text-3xl font-extrabold text-on-gold shadow-lg md:bottom-8"
+    <button type="button" class="fixed bottom-24 end-5 z-30 grid size-14 place-items-center rounded-full bg-gold text-3xl font-extrabold text-on-gold shadow-lg md:bottom-8"
       :aria-label="$t('جروب جديد')" @click="creating = true">+</button>
 
     <UiDialog :open="creating" :title="$t('جروب جديد')" @close="creating = false">

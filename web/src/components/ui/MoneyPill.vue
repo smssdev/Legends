@@ -37,7 +37,7 @@ defineProps<{ kind: 'coins' | 'cash'; value: number | null; to: string; label: s
 }
 .ui-money-pill.cash {
   padding: 0 0.7rem;
-  color: var(--color-success);
+  color: var(--ink-success);
   background: color-mix(in srgb, var(--color-success) 18%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-success) 35%, transparent);
 }

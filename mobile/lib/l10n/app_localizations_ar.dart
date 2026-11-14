@@ -3188,4 +3188,38 @@ class LAr extends L {
 
   @override
   String get pushPrimerLater => 'لاحقاً';
+
+  @override
+  String get reactClap => 'تصفيق';
+
+  @override
+  String get reactWow => 'يا للهول';
+
+  @override
+  String get reactAngry => 'غضب';
+
+  @override
+  String get reactPray => 'يا رب';
+
+  @override
+  String get reactUnlucky => 'هاردلك';
+
+  @override
+  String get reactComing => 'جاي الهدف';
+
+  @override
+  String get reactEasy => 'سهلة';
+
+  @override
+  String get reactFocus => 'ركّز';
+
+  @override
+  String cheerSide(String club) {
+    return 'تشجيع $club';
+  }
+
+  @override
+  String booSide(String club) {
+    return 'استهجان $club';
+  }
 }

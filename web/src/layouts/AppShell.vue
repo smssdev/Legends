@@ -96,6 +96,19 @@ const title = computed(() => {
 // The screen scrolls inside the frame: back to its top on a new page.
 const main = ref<HTMLElement | null>(null)
 watch(() => route.path, () => main.value?.scrollTo({ top: 0 }))
+// [Sprint 65 W2] Every page has its title for a screen reader: a screen's own h1 comes with its content, so while it
+// loads, or in an empty state, the bar's title is the h1 instead (watched, since the content comes and goes).
+const lone = ref(false)
+let headings: MutationObserver | null = null
+watch(main, (el) => {
+  headings?.disconnect()
+  if (!el || typeof MutationObserver === 'undefined') return
+  const check = () => { const v = !el.querySelector('h1'); if (v !== lone.value) lone.value = v }
+  headings = new MutationObserver(check)
+  headings.observe(el, { childList: true, subtree: true })
+  check()
+})
+onBeforeUnmount(() => headings?.disconnect())
 
 // [X85] The screens where the club's money matters (spent or earned there): the money shows on the bar only on them.
 const MONEY_PAGES = new Set(['club', 'team', 'market', 'training', 'specialists', 'stadium', 'finance', 'scout', 'friendlies'])
@@ -136,13 +149,13 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
     <!-- [Sprint 39 N1] Asked once a device: the game's sound and notifications. -->
     <SoundPrompt />
     <ShellDock :entries="entries" :more="more" :in-slot="inSlot" :bot-open="bot.open" :bot-dot="hello && !bot.open" @bot="bot.open = !bot.open" />
-    <ShellBar :title="title" :in-slot="inSlot" :next="next" :coins="wallet.view?.balance ?? (wallet.error ? null : 0)" :cash="cash" :unread="unread" :avatar="auth.user.avatar_url" :initial="initial" :unverified="!auth.user.verification?.verified" />
+    <ShellBar :title="title" :in-slot="inSlot" :next="next" :coins="wallet.view?.balance ?? (wallet.error ? null : 0)" :cash="cash" :unread="unread" :avatar="auth.user.avatar_url" :initial="initial" :unverified="!auth.user.verification?.verified" :heading="lone" />
 
     <main ref="main" class="shell-main">
       <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->
       <div v-if="broadcast.away && broadcast.path" class="on-air flex items-center gap-2 px-3 py-1.5" role="status">
         <RouterLink :to="broadcast.path" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 font-bold" :aria-label="$t('العودة إلى المباراة')">
-          <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-white"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ broadcast.live ? $t('على الهواء') : $t('انتهت') }}</span>
+          <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-on-gold"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ broadcast.live ? $t('على الهواء') : $t('انتهت') }}</span>
           <span class="min-w-0 truncate text-sm">{{ $t(broadcast.title) }}</span>
           <b class="shrink-0 font-numbers text-lg" dir="ltr">{{ broadcast.score }}</b>
           <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
@@ -249,13 +262,13 @@ onBeforeUnmount(() => window.clearTimeout(kickoff))
 .dock-tile.ink-light { color: var(--color-broadcast-white); }
 .dock-item:hover { color: var(--color-text); background: color-mix(in srgb, var(--color-text) 6%, transparent); }
 .dock-item:focus-visible { outline: 2px solid var(--color-ring); outline-offset: -2px; }
-.dock-item.is-active { color: var(--color-gold-light); background: color-mix(in srgb, var(--color-gold) 14%, transparent); }
+.dock-item.is-active { color: var(--ink-gold-light); background: color-mix(in srgb, var(--color-gold) 14%, transparent); }
 html.light .dock-item.is-active { color: var(--color-text); background: color-mix(in srgb, var(--color-gold) 30%, transparent); }
 .dock-item.is-active::before { content: ""; position: absolute; inset-block: 10px; inset-inline-start: calc(-1 * var(--space-xs)); width: 3px; border-radius: 3px; background: var(--color-gold); }
 .dock-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-inline: 2px; }
 .dock-badge { position: absolute; top: 4px; inset-inline-end: 10px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 99px; font-family: var(--font-numbers); font-size: 11px; line-height: 16px; text-align: center; color: var(--color-broadcast-white); background: var(--color-live); }
 .dock-dot { min-width: 10px; width: 10px; height: 10px; padding: 0; background: var(--color-ring); }
-.dock-bot { color: var(--color-brand-light); }
+.dock-bot { color: var(--ink-brand-light); }
 /* A phone held sideways is short: six sections, «المزيد» and the assistant (8 × 44px) fit 375px only without the
    crest's margin. */
 @media (max-height: 440px) { .shell-dock { gap: 0; padding-block: 2px; } .dock-crest { margin-bottom: 0; } }

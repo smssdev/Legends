@@ -321,7 +321,7 @@ async function remove() {
         <button type="button" class="h-12 rounded-lg bg-gold px-4 font-bold text-on-gold" @click="shareInvite">{{ $t('شارك') }}</button>
       </div>
       <div class="flex items-center gap-3">
-        <div class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="user.referral.paid" aria-valuemin="0" :aria-valuemax="user.referral.max">
+        <div class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="user.referral.paid" aria-valuemin="0" :aria-valuemax="user.referral.max" :aria-label="$t('الدعوات المكافأة')">
           <div class="h-full rounded-full bg-gold" :style="{ width: `${(100 * user.referral.paid) / Math.max(1, user.referral.max)}%` }" />
         </div>
         <span class="font-numbers text-sm" dir="ltr">{{ user.referral.paid }} / {{ user.referral.max }}</span>
@@ -481,7 +481,7 @@ async function remove() {
           :error="delErr"
         />
         <div class="flex gap-2">
-          <button type="submit" class="h-12 flex-1 rounded-lg bg-live px-4 font-bold text-white disabled:opacity-50" :disabled="phrase.trim() !== $t('احذف') || !confirmText">{{ $t('احذف حسابي نهائياً') }}</button>
+          <button type="submit" class="h-12 flex-1 rounded-lg bg-live px-4 font-bold text-on-gold disabled:opacity-50" :disabled="phrase.trim() !== $t('احذف') || !confirmText">{{ $t('احذف حسابي نهائياً') }}</button>
           <button type="button" class="h-12 rounded-lg bg-surface-raised px-4 font-bold" @click="cancelDelete">{{ $t('تراجع') }}</button>
         </div>
       </form>

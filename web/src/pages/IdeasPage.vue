@@ -76,7 +76,7 @@ const vote = (p: S['Poll'], option: number) => run(async () => {
     <div class="flex gap-1 self-start rounded-xl bg-surface p-1" role="tablist">
       <button v-for="[k, l] in TABS" :key="k" type="button" role="tab" :aria-selected="tab === k" class="flex h-touch items-center gap-1.5 rounded-lg px-4 text-sm font-bold"
         :class="tab === k ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="tab = k">
-        {{ $t(l) }}<span v-if="k === 'polls' && openPolls" class="rounded-pill bg-live px-1.5 font-numbers text-xs text-white">{{ openPolls }}</span>
+        {{ $t(l) }}<span v-if="k === 'polls' && openPolls" class="rounded-pill bg-live px-1.5 font-numbers text-xs text-on-gold">{{ openPolls }}</span>
       </button>
     </div>
 

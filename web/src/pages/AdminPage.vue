@@ -559,7 +559,7 @@ onMounted(load)
                 {{ acting.kind === 'suspend' ? $t('سبب التعليق (يراه المدرب)') : $t('للتأكيد اكتب رقم الحساب {v0}', { v0: u.account_no }) }}
                 <input v-model="acting.text" :inputmode="acting.kind === 'delete' ? 'numeric' : 'text'" class="h-touch rounded-md bg-surface px-3 text-sm" :dir="acting.kind === 'delete' ? 'ltr' : undefined" />
               </label>
-              <button type="submit" class="h-touch rounded-md px-4 text-sm font-bold disabled:opacity-40" :class="acting.kind === 'delete' ? 'bg-live text-white' : 'bg-warning text-on-gold'"
+              <button type="submit" class="h-touch rounded-md px-4 text-sm font-bold disabled:opacity-40" :class="acting.kind === 'delete' ? 'bg-live text-on-gold' : 'bg-warning text-on-gold'"
                 :disabled="busy || (acting.kind === 'suspend' ? acting.text.trim().length < 3 : acting.text !== String(u.account_no))">{{ acting.kind === 'delete' ? $t('احذف نهائياً') : $t('علّق') }}</button>
               <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted" @click="acting = null">{{ $t('تراجع') }}</button>
             </form>
@@ -588,7 +588,7 @@ onMounted(load)
             <h2 class="font-display text-lg font-bold">{{ $t('نصوص تجريبية يراها المدربون: {v0}', { v0: junk.length }) }}</h2>
             <p class="text-sm"><bdi v-for="(j, i) in junk" :key="i" class="me-2 inline-block rounded-pill bg-surface px-2 py-0.5" dir="auto">{{ j.title }}</bdi></p>
             <p v-if="junkLeagues.length" class="text-xs text-text-muted">{{ $t('ودوريات بأسماء تجريبية (تُنهى يدوياً): {v0}', { v0: junkLeagues.map((l) => l.title).join('، ') }) }}</p>
-            <button type="button" class="h-touch self-start rounded-md bg-live px-4 font-bold text-white" :disabled="busy" @click="purging = true">{{ $t('امسحها من الإعلانات وإعلانات المكافأة') }}</button>
+            <button type="button" class="h-touch self-start rounded-md bg-live px-4 font-bold text-on-gold" :disabled="busy" @click="purging = true">{{ $t('امسحها من الإعلانات وإعلانات المكافأة') }}</button>
           </section>
           <section :aria-label="$t('إعلان جديد')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
             <h2 class="font-display text-lg font-bold">{{ $t('إعلان جديد لكل اللاعبين') }}</h2>
@@ -629,7 +629,7 @@ onMounted(load)
             <h2 class="font-display text-lg font-bold">{{ $t('نصوص تجريبية يراها المدربون: {v0}', { v0: junk.length }) }}</h2>
             <p class="text-sm"><bdi v-for="(j, i) in junk" :key="i" class="me-2 inline-block rounded-pill bg-surface px-2 py-0.5" dir="auto">{{ j.title }}</bdi></p>
             <p v-if="junkLeagues.length" class="text-xs text-text-muted">{{ $t('ودوريات بأسماء تجريبية (تُنهى يدوياً): {v0}', { v0: junkLeagues.map((l) => l.title).join('، ') }) }}</p>
-            <button type="button" class="h-touch self-start rounded-md bg-live px-4 font-bold text-white" :disabled="busy" @click="purging = true">{{ $t('امسحها من الإعلانات وإعلانات المكافأة') }}</button>
+            <button type="button" class="h-touch self-start rounded-md bg-live px-4 font-bold text-on-gold" :disabled="busy" @click="purging = true">{{ $t('امسحها من الإعلانات وإعلانات المكافأة') }}</button>
           </section>
           <section :aria-label="$t('إعلان مكافأة جديد')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
             <h2 class="font-display text-lg font-bold">{{ $t('إعلان مكافأة جديد') }}</h2>
@@ -807,7 +807,7 @@ onMounted(load)
             <p v-if="!conversations.length" class="p-3 text-sm text-text-muted">{{ $t('لا محادثات بعد. راسل مدرباً من قسم المستخدمين.') }}</p>
             <button v-for="c in conversations" :key="c.user.id" type="button" class="flex flex-col gap-0.5 rounded-lg p-3 text-start hover:bg-surface-raised" :class="thread?.user.id === c.user.id ? 'bg-surface-raised' : ''" @click="openThread(c.user.id)">
               <span class="flex items-center gap-2"><b class="truncate">{{ c.user.name }}</b><span class="font-numbers text-xs text-text-muted" dir="ltr">#{{ c.user.account_no }}</span>
-                <span v-if="c.unread" class="ms-auto min-w-5 rounded-pill bg-live px-1.5 text-center font-numbers text-xs text-white">{{ c.unread }}</span></span>
+                <span v-if="c.unread" class="ms-auto min-w-5 rounded-pill bg-live px-1.5 text-center font-numbers text-xs text-on-gold">{{ c.unread }}</span></span>
               <span class="truncate text-xs text-text-muted">{{ c.from_team ? $t('أنتم: ') : '' }}{{ c.last }}</span>
             </button>
           </section>

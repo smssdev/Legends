@@ -52,7 +52,7 @@ const face = computed(() => faces.value[at.value % faces.value.length])
   border-radius: var(--radius-lg); background: var(--color-surface-sunk);
 }
 .since-kicker { font-size: var(--text-caption); color: var(--color-text-muted); }
-.since-big { font-size: 32px; line-height: 1.1; color: var(--color-gold); }
+.since-big { font-size: 32px; line-height: 1.1; color: var(--ink-gold); }
 .since-note { font-size: var(--text-caption); color: var(--color-text-muted); }
 .flip-enter-active, .flip-leave-active { transition: transform 0.18s ease, opacity 0.18s ease; }
 .flip-enter-from { transform: rotateY(-90deg); opacity: 0; }

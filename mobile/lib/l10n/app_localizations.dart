@@ -5695,6 +5695,66 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'لاحقاً'**
   String get pushPrimerLater;
+
+  /// No description provided for @reactClap.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصفيق'**
+  String get reactClap;
+
+  /// No description provided for @reactWow.
+  ///
+  /// In ar, this message translates to:
+  /// **'يا للهول'**
+  String get reactWow;
+
+  /// No description provided for @reactAngry.
+  ///
+  /// In ar, this message translates to:
+  /// **'غضب'**
+  String get reactAngry;
+
+  /// No description provided for @reactPray.
+  ///
+  /// In ar, this message translates to:
+  /// **'يا رب'**
+  String get reactPray;
+
+  /// No description provided for @reactUnlucky.
+  ///
+  /// In ar, this message translates to:
+  /// **'هاردلك'**
+  String get reactUnlucky;
+
+  /// No description provided for @reactComing.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاي الهدف'**
+  String get reactComing;
+
+  /// No description provided for @reactEasy.
+  ///
+  /// In ar, this message translates to:
+  /// **'سهلة'**
+  String get reactEasy;
+
+  /// No description provided for @reactFocus.
+  ///
+  /// In ar, this message translates to:
+  /// **'ركّز'**
+  String get reactFocus;
+
+  /// No description provided for @cheerSide.
+  ///
+  /// In ar, this message translates to:
+  /// **'تشجيع {club}'**
+  String cheerSide(String club);
+
+  /// No description provided for @booSide.
+  ///
+  /// In ar, this message translates to:
+  /// **'استهجان {club}'**
+  String booSide(String club);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

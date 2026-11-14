@@ -953,5 +953,15 @@
   "pushPrimerTitle": "Never miss your match",
   "pushPrimerBody": "We remind you of your lineup an hour before the match, of the match half an hour before, and of offers as they come.",
   "pushPrimerAllow": "Allow notifications",
-  "pushPrimerLater": "Later"
+  "pushPrimerLater": "Later",
+  "reactClap": "Applause",
+  "reactWow": "Oh no",
+  "reactAngry": "Anger",
+  "reactPray": "Please",
+  "reactUnlucky": "Hard luck",
+  "reactComing": "A goal is coming",
+  "reactEasy": "Easy",
+  "reactFocus": "Focus",
+  "cheerSide": "Cheer {club}",
+  "booSide": "Boo {club}"
 }

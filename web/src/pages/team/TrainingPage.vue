@@ -163,7 +163,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
             </div>
             <div>
               <div class="flex justify-between text-xs text-text-muted"><span>{{ $t('التقدم') }}</span><span class="font-numbers" dir="ltr">{{ s.player.progress }}%</span></div>
-              <div class="mt-1 h-2 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="s.player.progress" aria-valuemin="0" aria-valuemax="100">
+              <div class="mt-1 h-2 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="s.player.progress" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('التقدم')">
                 <div class="h-full rounded-full bg-gold transition-all" :style="{ width: s.player.progress + '%' }" />
               </div>
               <p class="mt-1 text-xs text-text-muted">{{ $t('حوالي {v0} جلسة للـ +1 · {v1} جلسة حتى الآن', { v0: s.player.sessions, v1: s.sessions_done }) }}</p>

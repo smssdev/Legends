@@ -3150,4 +3150,38 @@ class LEn extends L {
 
   @override
   String get pushPrimerLater => 'Later';
+
+  @override
+  String get reactClap => 'Applause';
+
+  @override
+  String get reactWow => 'Oh no';
+
+  @override
+  String get reactAngry => 'Anger';
+
+  @override
+  String get reactPray => 'Please';
+
+  @override
+  String get reactUnlucky => 'Hard luck';
+
+  @override
+  String get reactComing => 'A goal is coming';
+
+  @override
+  String get reactEasy => 'Easy';
+
+  @override
+  String get reactFocus => 'Focus';
+
+  @override
+  String cheerSide(String club) {
+    return 'Cheer $club';
+  }
+
+  @override
+  String booSide(String club) {
+    return 'Boo $club';
+  }
 }

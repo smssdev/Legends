@@ -13,9 +13,10 @@ const props = withDefaults(defineProps<{ game?: boolean }>(), { game: false })
 
 const query = '(orientation: portrait) and (pointer: coarse) and (max-width: 820px)'
 // [Sprint 55 W4, the plan's decision 3] Sideways is the game's way, but on the site whoever wants carries on upright:
-// the frame then lays its dock along the bottom (AppShell). Remembered on this device; the match asks again (it is
-// watched sideways).
-const UPRIGHT = 'upright'
+// the frame then lays its dock along the bottom (AppShell). Remembered on this device.
+// [Sprint 65 W8] The match too (WCAG 1.3.4: whoever holds the phone upright on a stand still plays): its own choice,
+// remembered apart, since the broadcast is drawn for the side and is smaller upright.
+const UPRIGHT = props.game ? 'upright' : 'upright.match'
 const chose = ref((() => { try { return storage.get(UPRIGHT) === '1' } catch { return false } })())
 function stayUpright() {
   chose.value = true
@@ -55,13 +56,13 @@ onBeforeUnmount(() => { media?.removeEventListener('change', update); release() 
 </script>
 
 <template>
-  <div v-if="upright && !(props.game && chose)" class="turn fixed inset-0 z-[60] grid place-items-center p-6 text-center" role="dialog" aria-modal="true" :aria-label="$t('لفّ جوالك')">
+  <div v-if="upright && !chose" class="turn fixed inset-0 z-[60] grid place-items-center p-6 text-center" role="dialog" aria-modal="true" :aria-label="$t('لفّ جوالك')">
     <div class="flex max-w-xs flex-col items-center gap-4">
       <div class="device" aria-hidden="true" />
       <b class="font-display text-2xl">{{ $t('لفّ جوالك') }} <Icon name="swap" :size="22" class="inline-block align-[-3px]" /></b>
       <span class="text-sm leading-relaxed text-text-muted">{{ props.game ? $t('اللعبة تُلعب بالعرض. أدر الجوال وتكمل فوراً.') : $t('المباراة تُلعب بالعرض. أدر الجوال وتبدأ فوراً.') }}</span>
       <UiButton v-if="lockable" @click="turn">{{ props.game ? $t('العب بالعرض وملء الشاشة') : $t('شاهد بالعرض وملء الشاشة') }}</UiButton>
-      <UiButton v-if="props.game" variant="quiet" size="sm" @click="stayUpright">{{ $t('تابع عمودياً') }}</UiButton>
+      <UiButton variant="quiet" size="sm" @click="stayUpright">{{ props.game ? $t('تابع عمودياً') : $t('شاهد عمودياً') }}</UiButton>
     </div>
   </div>
 </template>

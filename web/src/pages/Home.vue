@@ -182,6 +182,8 @@ async function openRanking(by: By) {
   <Landing v-if="!auth.user" />
 
   <div v-else class="flex flex-col gap-4">
+    <!-- [Sprint 65 W-A05] The page's title for a screen reader (the coach's card says it to the eye). -->
+    <h1 class="sr-only">{{ $t('المكتب') }}</h1>
     <!-- [Sprint 21 E3.4] The coach's chalkboard behind the home screen. -->
     <ChalkBackdrop />
     <AsyncState v-if="error && !home" :error="error" @retry="load" />
@@ -253,7 +255,7 @@ async function openRanking(by: By) {
               <b class="font-numbers text-sm">{{ s.slot }}</b>
               <span class="min-w-0 flex-1 truncate text-start text-caption font-bold">{{ s.league!.name }}</span>
               <span v-if="s.position" class="rounded bg-shade/30 px-1 font-numbers text-caption" dir="ltr">{{ s.position }}/{{ s.teams }}</span>
-              <span v-if="s.pending" class="min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-caption text-white" :title="$t('ما ينتظرك')">{{ s.pending }}</span>
+              <span v-if="s.pending" class="min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-caption text-on-gold" :title="$t('ما ينتظرك')">{{ s.pending }}</span>
             </span>
             <span class="flex flex-1 items-center justify-center gap-2 px-2 py-1.5">
               <template v-if="s.state === 'club'">
@@ -267,7 +269,7 @@ async function openRanking(by: By) {
             </span>
             <span v-if="s.state === 'club'" class="slot-foot" :class="s.next_match?.live ? 'is-live' : ''">
               <!-- [Sprint 20 W1] Within a day, the countdown itself. -->
-              <template v-if="s.next_match"><Icon v-if="s.next_match.live" name="dot" :size="12" class="inline-block align-[-1px] text-live" /> {{ s.next_match.live ? $t('مباشر الآن') : soon(s.next_match.scheduled_at) ? countdown(s.next_match.scheduled_at, now) : when(s.next_match.scheduled_at) }} · {{ $t(s.next_match.venue === 'home' ? $t('ضد') : $t('عند')) }} {{ $nm(s.next_match.opponent) }}</template>
+              <template v-if="s.next_match"><Icon v-if="s.next_match.live" name="dot" :size="12" class="inline-block align-[-1px] text-danger" /> {{ s.next_match.live ? $t('مباشر الآن') : soon(s.next_match.scheduled_at) ? countdown(s.next_match.scheduled_at, now) : when(s.next_match.scheduled_at) }} · {{ $t(s.next_match.venue === 'home' ? $t('ضد') : $t('عند')) }} {{ $nm(s.next_match.opponent) }}</template>
               <template v-else>{{ $t('لا مباريات قادمة') }}</template>
             </span>
           </button>
@@ -281,7 +283,7 @@ async function openRanking(by: By) {
       <!-- [Sprint 30 Q9, Sprint 56 W8] The next match, under the slots: who, when (counting down), and the way to get ready. -->
       <section v-if="nextUp?.next_match" class="next-hero flex flex-col gap-3 rounded-2xl border border-gold/30 p-4" :aria-label="$t('مباراتك القادمة')">
         <div class="flex items-center justify-between gap-2 text-sm">
-          <b class="text-gold"><Icon v-if="nextUp.next_match.live" name="dot" :size="12" class="inline-block align-[-1px] text-live" /> {{ nextUp.next_match.live ? $t('مباشر الآن') : $t('مباراتك القادمة') }}</b>
+          <b class="text-gold"><Icon v-if="nextUp.next_match.live" name="dot" :size="12" class="inline-block align-[-1px] text-danger" /> {{ nextUp.next_match.live ? $t('مباشر الآن') : $t('مباراتك القادمة') }}</b>
           <span class="text-text-muted">{{ when(nextUp.next_match.scheduled_at) }}</span>
         </div>
         <div class="flex items-center gap-3">
@@ -375,7 +377,7 @@ async function openRanking(by: By) {
           <Icon name="idea" :size="22" class="shrink-0 text-gold" />
           <span class="min-w-0 flex-1 text-sm"><b class="block">{{ home.polls_waiting ? $t('تصويت مفتوح على الميزة القادمة') : $t('اقتراحات التطوير') }}</b>
             <span class="text-xs text-text-muted">{{ home.polls_waiting ? $t('صوتك يحدد ما نبنيه أولاً') : $t('اقترح فكرة، وقد تأخذ مكافأة كوينز') }}</span></span>
-          <span v-if="home.polls_waiting" class="rounded-pill bg-live px-2 font-numbers text-xs font-bold text-white">{{ home.polls_waiting }}</span>
+          <span v-if="home.polls_waiting" class="rounded-pill bg-live px-2 font-numbers text-xs font-bold text-on-gold">{{ home.polls_waiting }}</span>
         </RouterLink>
 
         <div class="grid grid-cols-4 gap-2 xl:grid-cols-2">

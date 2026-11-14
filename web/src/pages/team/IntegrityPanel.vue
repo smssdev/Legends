@@ -69,7 +69,7 @@ const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
             {{ $t('ادفع للحكم · {v0} +', { v0: money(view.bribe.money) }) }} <PriceTag :amount="view.bribe.extra.amount" :currency="view.bribe.extra.currency" />
           </button>
           <div v-else class="flex gap-2">
-            <button type="button" class="h-touch flex-1 rounded-md bg-live px-3 text-sm font-bold text-white disabled:opacity-50" :disabled="busy" @click="bribe">{{ $t('متأكد، ادفع') }}</button>
+            <button type="button" class="h-touch flex-1 rounded-md bg-live px-3 text-sm font-bold text-on-gold disabled:opacity-50" :disabled="busy" @click="bribe">{{ $t('متأكد، ادفع') }}</button>
             <button type="button" class="h-touch flex-1 rounded-md bg-surface px-3 text-sm" @click="confirmBribe = false">{{ $t('تراجع') }}</button>
           </div>
         </template>
@@ -100,7 +100,7 @@ const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
       <div v-for="p in view.proofs" :key="p.spy_report_id" class="flex items-center justify-between gap-2 text-sm">
         <span>{{ $t('رشوة من') }} <b>{{ p.club }}</b></span>
         <span v-if="p.filed" class="text-text-muted">{{ $t('فُصل فيها') }}</span>
-        <button v-else type="button" class="h-touch rounded-md bg-live px-3 font-bold text-white disabled:opacity-50" :disabled="busy" @click="accuse(p.spy_report_id)">{{ $t('بلّغ لجنة الانضباط') }}</button>
+        <button v-else type="button" class="h-touch rounded-md bg-live px-3 font-bold text-on-gold disabled:opacity-50" :disabled="busy" @click="accuse(p.spy_report_id)">{{ $t('بلّغ لجنة الانضباط') }}</button>
       </div>
     </div>
   </section>

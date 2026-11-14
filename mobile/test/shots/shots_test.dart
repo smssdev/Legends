@@ -128,6 +128,9 @@ List<String> cutTexts(WidgetTester t) {
 double _scale = 1;
 String _lang = 'ar';
 
+/// [Sprint 65 F1, F3] Run as a screen reader would read it: every control named and at least 48×48 to the finger.
+bool _guides = false;
+
 Future<void> shot(
   WidgetTester t,
   String name,
@@ -207,7 +210,15 @@ Future<void> shot(
   }
   // [Sprint 60 F8] No text cut on any screen (it was «تُفتح مجاناً بعد 1144 يو…» and «وقت مستـ…»).
   expect(cutTexts(t), isEmpty, reason: '$name ($_lang): a text is cut${_scale == 1 ? '' : ' at the text size $_scale'}');
-  if (_scale == 1 && _lang == 'ar') await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/$name.png'));
+  if (_guides) {
+    final reader = t.ensureSemantics();
+    await t.pump();
+    await expectLater(t, meetsGuideline(labeledTapTargetGuideline));
+    await expectLater(t, meetsGuideline(androidTapTargetGuideline));
+    reader.dispose();
+  } else if (_scale == 1 && _lang == 'ar') {
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/$name.png'));
+  }
   await t.pumpWidget(const SizedBox());
   // [Sprint 59 F8] The requests still answering when the screen goes (a refused one schedules its error) end here.
   await t.pump(const Duration(seconds: 1));
@@ -400,6 +411,12 @@ void main() {
     testWidgets('$name in English', (t) async {
       _lang = 'en';
       addTearDown(() => _lang = 'ar');
+      await eight[name]!(t);
+    });
+    // [Sprint 65 F1, F3] Every control with a name a screen reader says, and a 48×48 target (Flutter's own guidelines).
+    testWidgets('$name: named controls, 48 targets', (t) async {
+      _guides = true;
+      addTearDown(() => _guides = false);
       await eight[name]!(t);
     });
   }

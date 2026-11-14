@@ -48,7 +48,7 @@ const cancel = () => run(() => api.DELETE('/leagues/{league}/team/moves/{move}',
       <h2 class="font-display text-lg font-bold">{{ $t('طلب تغيير الموعد') }}</h2>
       <p class="text-sm">{{ $t('المدرب الآخر يطلب نقل المباراة إلى {v0} في اليوم نفسه.', { v0: time(move.pending.to_at) }) }}</p>
       <div class="grid grid-cols-2 gap-2">
-        <button type="button" class="h-touch rounded-lg bg-success font-bold text-white disabled:opacity-40" :disabled="busy" @click="answer(true)">{{ $t('وافق') }}</button>
+        <button type="button" class="h-touch rounded-lg bg-success font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="answer(true)">{{ $t('وافق') }}</button>
         <button type="button" class="h-touch rounded-lg bg-surface-raised font-bold disabled:opacity-40" :disabled="busy" @click="answer(false)">{{ $t('ارفض') }}</button>
       </div>
     </template>

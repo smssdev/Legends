@@ -72,7 +72,7 @@ const FAQ = [
         </div>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <article v-for="f in FEATURES" :key="f.title" class="flex flex-col gap-2 rounded-2xl border border-text/10 bg-surface p-5">
-            <span class="grid size-11 place-items-center rounded-full bg-brand text-xl text-white shadow-md" aria-hidden="true">{{ f.icon }}</span>
+            <span class="grid size-11 place-items-center rounded-full bg-brand text-xl text-on-gold shadow-md" aria-hidden="true">{{ f.icon }}</span>
             <h3 class="font-bold">{{ $t(f.title) }}</h3>
             <p class="text-sm leading-relaxed text-text-soft">{{ $t(f.body) }}</p>
           </article>

@@ -254,7 +254,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
       </header>
 
       <!-- The FA's verdicts of the last day: a breaking headline for everyone in the league [X28]. -->
-      <p v-for="(h, i) in league.headlines ?? []" :key="i" class="flex items-start gap-2 rounded-xl bg-live px-4 py-3 text-sm font-bold text-white" role="alert">
+      <p v-for="(h, i) in league.headlines ?? []" :key="i" class="flex items-start gap-2 rounded-xl bg-live px-4 py-3 text-sm font-bold text-on-gold" role="alert">
         <span class="shrink-0 rounded bg-white/20 px-1.5 text-xs"><Icon name="news" :size="16" class="inline-block align-[-3px]" /> {{ $t('عاجل') }}</span><span>{{ $t(h.text) }} <span class="font-normal">{{ $t('(خصم {v0} نقاط)', { v0: h.points }) }}</span></span>
       </p>
 

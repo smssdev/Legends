@@ -44,7 +44,7 @@ async function show() {
 .explain { display: inline-flex; align-items: center; min-block-size: 44px; min-inline-size: 44px; margin-block: -12px; justify-content: center; border-radius: var(--radius-md, 8px); text-decoration: underline dotted; text-underline-offset: 4px; }
 .explain:focus-visible { outline: 2px solid var(--color-gold); }
 .explain-muted { color: var(--color-text-muted); }
-.explain-value { display: block; font-size: 32px; color: var(--color-gold); text-align: center; }
+.explain-value { display: block; font-size: 32px; color: var(--ink-gold); text-align: center; }
 .explain-parts { display: flex; flex-direction: column; gap: var(--space-xs); margin-block: var(--space-md); }
 .explain-part { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-sm); border-radius: var(--radius-lg); background: var(--color-surface-sunk); font-size: var(--text-body); }
 </style>

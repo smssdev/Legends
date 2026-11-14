@@ -8,6 +8,7 @@
     <MatchCurtain v-if="view" ref="curtain" :home="feedKits.home.kit" :away="feedKits.away.kit" />
     <!-- [Sprint 43 W3] Sideways on a phone: upright, it asks to turn (and locks it on Android). -->
     <TurnPhone v-if="view" />
+    <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ said }}</p>
     <MatchTopBar :player="P" :live="L" :league="!!league" :seed="view?.seed" :mine-name="mine && view ? view.clubs[mine].name : ''" :settings-open="settingsOpen" @settings="settingsOpen = true" />
     <div class="match-notices">
       <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
@@ -29,7 +30,7 @@
           <span>{{ $t('عدت إلى الوقت الحالي: فاتتك {v0} دقيقة', { v0: caught.minutes }) }}</span>
           <span v-if="caught.goals.length || caught.reds.length" class="text-xs text-text-muted">
             <span v-for="(g, i) in caught.goals" :key="'g' + i" class="me-2"><Icon name="ball" :size="16" class="inline-block align-[-3px]" /> {{ g.minute }}' {{ $nm(P.clubName(g.team)) }}</span>
-            <span v-for="(r, i) in caught.reds" :key="'r' + i" class="me-2"><Icon name="card" :size="16" class="inline-block align-[-3px] text-live" /> {{ r.minute }}' {{ $nm(P.clubName(r.team)) }}</span>
+            <span v-for="(r, i) in caught.reds" :key="'r' + i" class="me-2"><Icon name="card" :size="16" class="inline-block align-[-3px] text-danger" /> {{ r.minute }}' {{ $nm(P.clubName(r.team)) }}</span>
           </span>
         </button>
         <p v-if="L.offline.value" class="absolute inset-x-3 top-24 z-30 rounded-lg bg-warning/90 px-3 py-2 text-center text-sm font-bold text-bg-deep" role="status">{{ $t('انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء') }}</p>
@@ -108,6 +109,7 @@ import { useViewing } from '../match/viewing'
 import { useMatchAudio } from '../match/useMatchAudio'
 import { useMatchClock } from '../match/useMatchClock'
 import { useWakeLock } from '../match/useWakeLock'
+import { useMatchAnnouncer } from '../match/useMatchAnnouncer'
 import { useReplay } from '../match/useReplay'
 import { useCoachOrders } from '../match/useCoachOrders'
 import { useMatchSocial } from '../match/useMatchSocial'
@@ -147,6 +149,12 @@ const social = useMatchSocial({
   show: (side, emoji, text, who) => pitch.value?.react(side, emoji, text, who),
   sideName: (side) => view.value?.coaches?.[side] ?? view.value?.clubs[side].name ?? '',
   pop: () => audio.sound.pop(),
+})
+// [Sprint 65 W7] What matters in the picture, said to a screen reader as it lands (the region under the stage).
+const { said } = useMatchAnnouncer({
+  feed: P.feed, score, windowOn, skipping: P.skipping,
+  scoreWord: (h, a) => (view.value ? `${nm(view.value.clubs.home.name)} ${h} - ${a} ${nm(view.value.clubs.away.name)}` : `${h}-${a}`),
+  windowWord: () => t('فترة التوقف: يمكنك تغيير التشكيلة والتكتيك الآن'),
 })
 const wake = useWakeLock(() => live.value && !finished.value && !broadcast.away)
 const L = useLiveMatch({ id: props.id, league, player: P, pitch, clock, social: () => social, orders: () => orders, replay, mine, awake: { keep: wake.keep }, hush: () => { if (!audio.soundOn.value) audio.voice.stop() } })

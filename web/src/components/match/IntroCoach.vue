@@ -64,7 +64,7 @@ async function takeClub() {
 }
 .intro-face { inline-size: 56px; block-size: 56px; flex-shrink: 0; }
 .intro-words { display: flex; min-inline-size: 0; flex: 1; flex-direction: column; gap: var(--space-sm); }
-.intro-title { color: var(--color-gold); }
+.intro-title { color: var(--ink-gold); }
 .intro-text { font-size: var(--text-body); line-height: 1.6; }
 .intro-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
 .tip-enter-active, .tip-leave-active { transition: opacity 0.2s, transform 0.2s; }

@@ -9,7 +9,7 @@
       <span v-if="halftime && isLive" class="text-sm text-text-soft">{{ $t('الشوط الثاني بعد') }} <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> {{ $t('ثانية · غيّر خطتك الآن') }}</span>
       <span v-if="windowOn && !finished" class="text-sm text-text-soft">{{ $t('تُستأنف المباراة بعد') }} <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> {{ $t('ثانية · غيّر خطتك أو أجرِ تبديلاتك الآن') }}</span>
       <button v-if="(halftime || windowOn) && isLive && league && mine" type="button" class="h-12 rounded-md px-6 font-display font-bold disabled:opacity-60"
-        :class="iAmReady ? 'bg-success/20 text-success' : 'bg-brand text-white'" :disabled="iAmReady || readyBusy" @click="live.sayReady">
+        :class="iAmReady ? 'bg-success/20 text-success' : 'bg-brand text-on-gold'" :disabled="iAmReady || readyBusy" @click="live.sayReady">
         {{ iAmReady ? $t('مستعد، بانتظار الخصم') : $t('أنا مستعد') }}</button>
       <a v-if="(halftime || windowOn) && isLive && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold" @click.prevent="emit('coach')">{{ $t('لوحة المدرب') }}</a>
       <button v-if="halftime && !isLive" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="player.endHalftime">{{ $t('ابدأ الشوط الثاني') }} <span class="font-numbers">({{ halftimeLeft }})</span></button>

@@ -70,7 +70,7 @@ onMounted(async () => {
         <h2 class="font-display text-xl font-extrabold">{{ $t('الأهداف') }}</h2>
         <p v-if="!coach.objectives.list.length" class="text-sm text-text-muted">{{ $t('لم يُقيَّم على هدف بعد.') }}</p>
         <div v-for="(o, i) in coach.objectives.list" :key="i" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
-          <span class="grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold" :class="o.achieved ? 'bg-success text-on-gold' : 'bg-live text-white'"><Icon :name="o.achieved ? 'check' : 'close'" :size="14" /></span>
+          <span class="grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold" :class="o.achieved ? 'bg-success text-on-gold' : 'bg-live text-on-gold'"><Icon :name="o.achieved ? 'check' : 'close'" :size="14" /></span>
           <span class="min-w-0 flex-1">
             <b class="block truncate">{{ o.competition === 'league' ? leagueGoal({ target: Number(o.target), kind: o.kind }) : cupGoal(o.target) }}</b>
             <span class="text-xs text-text-muted">{{ $t('{v0} · {v1} · الموسم {v2}', { v0: $cn(o.club), v1: o.league, v2: o.season }) }}</span>

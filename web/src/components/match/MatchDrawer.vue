@@ -1,15 +1,30 @@
 <template>
   <!-- [Sprint 56 W7, Sprint 57 W2] A drawer over the match's picture, from one edge (never moving the picture). -->
-  <aside class="match-drawer" :class="[side === 'end' ? 'is-end' : 'is-start', open ? 'is-open' : '']" :aria-label="$t(label)" :inert="!open">
-    <button type="button" class="match-close" :aria-label="$t('إغلاق')" @click="emit('close')"><Icon name="close" :size="18" /></button>
+  <aside class="match-drawer" :class="[side === 'end' ? 'is-end' : 'is-start', open ? 'is-open' : '']" :aria-label="$t(label)" :inert="!open" @keydown.esc="emit('close')">
+    <button ref="closer" type="button" class="match-close" :aria-label="$t('إغلاق')" @click="emit('close')"><Icon name="close" :size="18" /></button>
     <slot />
   </aside>
 </template>
 
 <script setup lang="ts">
 import Icon from '../Icon.vue'
-defineProps<{ open: boolean; side: 'start' | 'end'; label: string }>()
+import { nextTick, ref, watch } from 'vue'
+const props = defineProps<{ open: boolean; side: 'start' | 'end'; label: string }>()
 const emit = defineEmits<{ close: [] }>()
+// [Sprint 65 W5] With the keys: opening moves the focus into the drawer, Escape closes it, and the focus goes back to
+// the button that opened it.
+const closer = ref<HTMLButtonElement | null>(null)
+let back: HTMLElement | null = null
+watch(() => props.open, async (open) => {
+  if (open) {
+    back = document.activeElement as HTMLElement | null
+    await nextTick()
+    closer.value?.focus()
+  } else if (back && closer.value?.closest('.match-drawer')?.contains(document.activeElement)) {
+    back.focus()
+    back = null
+  }
+})
 </script>
 
 <style scoped>

@@ -10,29 +10,37 @@ class MoneyPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Semantics(
-      button: true,
-      label: '${L.of(context).finance}: $value',
-      child: Material(
-        color: p.success.withValues(alpha: .18),
-        shape: StadiumBorder(side: BorderSide(color: p.success.withValues(alpha: .35))),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            height: 32,
-            padding: const EdgeInsetsDirectional.fromSTEB(10, 0, 4, 0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  value,
-                  textDirection: TextDirection.ltr,
-                  style: glmText(GlmType.bodyLg, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: p.success),
-                ),
-                const SizedBox(width: 5),
-                _Plus(bg: p.success, fg: p.bgDeep),
-              ],
+    // [Sprint 65 F3] Drawn 32 high in the 42 bar, answering the finger over 48.
+    return GlmTarget(
+      child: Semantics(
+        button: true,
+        label: '${L.of(context).finance}: $value',
+        child: Material(
+          color: p.success.withValues(alpha: .18),
+          shape: StadiumBorder(side: BorderSide(color: p.success.withValues(alpha: .35))),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Container(
+              height: 32,
+              padding: const EdgeInsetsDirectional.fromSTEB(10, 0, 4, 0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    value,
+                    textDirection: TextDirection.ltr,
+                    style: glmText(
+                      GlmType.bodyLg,
+                      fontFamily: GlmFonts.numbers,
+                      fontWeight: FontWeight.w700,
+                      color: context.glm.successText,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  _Plus(bg: p.success, fg: p.bgDeep),
+                ],
+              ),
             ),
           ),
         ),
@@ -68,41 +76,44 @@ class BarIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Semantics(
-      button: true,
-      label: label,
-      child: InkResponse(
-        onTap: onTap,
-        radius: 22,
-        child: SizedBox.square(
-          dimension: 44,
-          child: Center(
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(color: p.text.withValues(alpha: .1), shape: BoxShape.circle),
-                  child: Icon(icon, size: 19, color: p.text),
-                ),
-                if (badge != null)
-                  PositionedDirectional(
-                    top: -3,
-                    end: -3,
-                    child: Container(
-                      constraints: const BoxConstraints(minWidth: 16),
-                      height: 16,
-                      padding: const EdgeInsets.symmetric(horizontal: 3),
-                      decoration: BoxDecoration(color: p.live, borderRadius: BorderRadius.circular(8)),
-                      alignment: Alignment.center,
-                      child: Text(
-                        badge!,
-                        style: glmText(GlmType.caption, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: Colors.white),
+    // [Sprint 65 F3] Drawn 44 in the 42 bar, answering the finger over 48.
+    return GlmTarget(
+      child: Semantics(
+        button: true,
+        label: label,
+        child: InkResponse(
+          onTap: onTap,
+          radius: 22,
+          child: SizedBox.square(
+            dimension: 44,
+            child: Center(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(color: p.text.withValues(alpha: .1), shape: BoxShape.circle),
+                    child: Icon(icon, size: 19, color: p.text),
+                  ),
+                  if (badge != null)
+                    PositionedDirectional(
+                      top: -3,
+                      end: -3,
+                      child: Container(
+                        constraints: const BoxConstraints(minWidth: 16),
+                        height: 16,
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(color: p.live, borderRadius: BorderRadius.circular(8)),
+                        alignment: Alignment.center,
+                        child: Text(
+                          badge!,
+                          style: glmText(GlmType.caption, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: Colors.white),
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -400,6 +411,16 @@ class _LiveDotState extends State<_LiveDot> with SingleTickerProviderStateMixin 
   @override
   Widget build(BuildContext context) {
     final live = context.palette.live;
+    // [Sprint 65 F5] Less motion asked (or a widget test): the dot without its ripple.
+    if (MediaQuery.disableAnimationsOf(context) || !Ambient.on) {
+      _c.stop();
+      return Container(
+        width: 9,
+        height: 9,
+        decoration: BoxDecoration(color: live, shape: BoxShape.circle),
+      );
+    }
+    if (!_c.isAnimating) unawaited(_c.repeat());
     return RepaintBoundary(
       child: AnimatedBuilder(
         animation: _c,

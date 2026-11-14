@@ -260,11 +260,11 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
   animation: fade-up var(--duration-base) var(--ease-soft);
 }
 .bot-root.raised .bot-panel { height: min(36rem, calc(100dvh - 12rem)); }
-.bot-x { display: grid; width: 3.5rem; height: 3.5rem; place-items: center; border-radius: 999px; font-size: 1.1rem; font-weight: 800; color: var(--color-gold); background: var(--color-panel); border: 2px solid color-mix(in srgb, var(--color-gold) 55%, transparent); box-shadow: 0 8px 22px color-mix(in srgb, var(--color-shade) 50%, transparent); }
-.bot-support { display: flex; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--color-ring); background: var(--color-panel); border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); }
+.bot-x { display: grid; width: 3.5rem; height: 3.5rem; place-items: center; border-radius: 999px; font-size: 1.1rem; font-weight: 800; color: var(--ink-gold); background: var(--color-panel); border: 2px solid color-mix(in srgb, var(--color-gold) 55%, transparent); box-shadow: 0 8px 22px color-mix(in srgb, var(--color-shade) 50%, transparent); }
+.bot-support { display: flex; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--ink-ring); background: var(--color-panel); border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); }
 .bot-support svg { width: 1.1rem; height: 1.1rem; }
 .bot-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 18%, var(--color-panel)), var(--color-panel)); border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); }
-.bot-end { min-height: 2.75rem; padding: 0 0.85rem; border-radius: 0.75rem; font-weight: 800; font-size: 0.8rem; color: var(--color-gold); border: 1px solid color-mix(in srgb, var(--color-gold) 45%, transparent); }
+.bot-end { min-height: 2.75rem; padding: 0 0.85rem; border-radius: 0.75rem; font-weight: 800; font-size: 0.8rem; color: var(--ink-gold); border: 1px solid color-mix(in srgb, var(--color-gold) 45%, transparent); }
 .bot-resume { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.75rem; border-radius: 0.9rem; background: color-mix(in srgb, var(--color-gold) 10%, var(--color-surface)); border: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent); animation: fade-up var(--duration-base) var(--ease-soft); }
 .bot-close { display: grid; width: 2.75rem; height: 2.75rem; flex: none; place-items: center; border-radius: 0.75rem; background: var(--color-surface-raised); }
 .bot-body { display: flex; flex-direction: column; gap: 0.6rem; overflow-y: auto; padding: 0.75rem; overscroll-behavior: contain; }
@@ -273,7 +273,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 .bot-msg.me { align-self: flex-end; color: #fff; background: var(--color-brand); border-start-end-radius: 0.25rem; }
 .bot-go { display: flex; align-items: center; margin-top: 0.4rem; min-height: 2.75rem; padding: 0 0.75rem; border-radius: 0.6rem; font-weight: 800; font-size: 0.8rem; color: var(--color-on-gold); background: var(--color-gold); }
 .bot-qs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.bot-q { min-height: 2.75rem; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; text-align: start; color: var(--color-ring); background: color-mix(in srgb, var(--color-brand) 18%, transparent); border: 1px solid color-mix(in srgb, var(--color-ring) 30%, transparent); }
+.bot-q { min-height: 2.75rem; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; text-align: start; color: var(--ink-ring); background: color-mix(in srgb, var(--color-brand) 18%, transparent); border: 1px solid color-mix(in srgb, var(--color-ring) 30%, transparent); }
 .bot-ask { position: relative; display: flex; padding: 0.6rem 0.75rem; border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); background: var(--color-panel); }
 .bot-input { flex: 1; min-height: 2.75rem; max-height: 8rem; resize: none; padding: 0.6rem 0.75rem; padding-inline-end: 3.25rem; border-radius: 0.75rem; font: inherit; color: var(--color-text); background: var(--color-surface-sunk); }
 /* [X61] The send button inside the field, at its end, so it never covers what is typed. */

@@ -102,7 +102,7 @@ onBeforeUnmount(() => clearInterval(timer))
         <h2 class="font-display text-2xl font-extrabold text-gold">{{ watch.ad.title }}</h2>
         <p class="text-base leading-relaxed">{{ watch.ad.body }}</p>
         <a v-if="watch.ad.cta_url" :href="watch.ad.cta_url" target="_blank" rel="noopener noreferrer nofollow" class="self-center font-bold text-ring underline">{{ watch.ad.cta_label || watch.ad.cta_url }}</a>
-        <div class="h-2 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="watch.ad.seconds - left" aria-valuemin="0" :aria-valuemax="watch.ad.seconds">
+        <div class="h-2 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="watch.ad.seconds - left" aria-valuemin="0" :aria-valuemax="watch.ad.seconds" :aria-label="$t('وقت الإعلان')">
           <div class="h-full bg-gold transition-all" :style="{ width: `${((watch.ad.seconds - left) / watch.ad.seconds) * 100}%` }" />
         </div>
         <p v-if="message" class="text-sm text-warning" role="status">{{ $t(message) }}</p>

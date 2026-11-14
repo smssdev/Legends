@@ -72,7 +72,7 @@ onMounted(load)
     <template v-if="c">
       <div class="flex justify-between"><span class="text-text-muted">{{ $t('الرواتب كل جولة') }}</span><b class="font-numbers" dir="ltr">{{ money(c.wages_per_round) }}</b></div>
       <div class="flex justify-between"><span class="text-text-muted">{{ $t('سقف الرواتب') }}</span><b class="font-numbers" dir="ltr">{{ money(c.cap_per_round) }}</b></div>
-      <div class="h-2 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="Math.round((c.wages_per_round * 100) / Math.max(1, c.cap_per_round))" aria-valuemin="0" aria-valuemax="100">
+      <div class="h-2 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="Math.round((c.wages_per_round * 100) / Math.max(1, c.cap_per_round))" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('الرواتب من سقفها')">
         <div class="h-full rounded-full bg-gold transition-transform" :style="{ width: Math.min(100, (c.wages_per_round * 100) / Math.max(1, c.cap_per_round)) + '%' }" />
       </div>
       <p class="text-xs text-text-muted">{{ $t('تتسع لاعبين بقيمة {v0} قبل السقف، والعقود تنتهي بنهاية الموسم.', { v0: money(c.room) }) }}</p>

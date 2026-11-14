@@ -71,7 +71,7 @@ function hide() {
     <CollapsibleContent as="ol" class="drop-panel mt-2 flex flex-col gap-1.5">
         <li v-for="(s, i) in STEPS" :key="s.key">
           <button type="button" class="flex min-h-touch w-full items-center gap-3 rounded-lg px-3 py-2 text-start transition-colors" :class="done(s) ? 'bg-success/10' : 'bg-surface-sunk hover:bg-surface-raised'" @click="go(s)">
-            <span class="grid size-7 shrink-0 place-items-center rounded-full font-numbers text-sm font-bold" :class="done(s) ? 'bg-success text-white' : 'bg-gold/15 text-gold'">
+            <span class="grid size-7 shrink-0 place-items-center rounded-full font-numbers text-sm font-bold" :class="done(s) ? 'bg-success text-on-gold' : 'bg-gold/15 text-gold'">
               <svg v-if="done(s)" viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
               <template v-else>{{ i + 1 }}</template>
             </span>

@@ -16,6 +16,7 @@ import '../../core/api/api_error.dart';
 import '../../core/config.dart';
 import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
+import '../../ui/widgets/target.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/brand.dart';
 import '../../ui/tokens.g.dart';

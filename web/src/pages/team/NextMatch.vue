@@ -44,7 +44,7 @@ function left(iso: string) {
 const locked = computed(() => match.value?.status !== 'scheduled')
 const spy = ref<components['schemas']['SpyView'] | null>(null)
 const spying = ref(false)
-const FORM: Record<string, [string, string]> = { W: ['ف', 'bg-success text-on-gold'], D: ['ت', 'bg-text/20'], L: ['خ', 'bg-live text-white'] }
+const FORM: Record<string, [string, string]> = { W: ['ف', 'bg-success text-on-gold'], D: ['ت', 'bg-text/20'], L: ['خ', 'bg-live text-on-gold'] }
 const spiedAt = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
 async function sendSpy() {
   spying.value = true
