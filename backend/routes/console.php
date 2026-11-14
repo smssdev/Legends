@@ -32,6 +32,8 @@ Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('h
 Schedule::command('logs:trim')->hourly()->withoutOverlapping();
 // [X65] The chat groups' messages older than the admin's retention (none while it is 0).
 Schedule::command('chat:prune')->hourly()->withoutOverlapping();
+// [Sprint 67] The coaches' table of the week to the game's public Telegram channel (Friday evening, Cairo).
+Schedule::command('messenger:weekly')->weeklyOn(5, '20:13')->timezone('Africa/Cairo')->withoutOverlapping();
 // [Sprint 66 B1] The devices' errors not seen for 30 days.
 Schedule::command('client-errors:prune')->dailyAt('04:23')->timezone('Africa/Cairo')->withoutOverlapping();
 // [Sprint 43 C6] A replay lasts its round: the scenes of the rounds before go, their results stay.

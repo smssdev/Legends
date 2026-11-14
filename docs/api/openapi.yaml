@@ -8,6 +8,8 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: messenger
+    description: 'The game''s bots on Telegram and WhatsApp, official and free (Sprint 67)'
   - name: tournaments
     description: 'Tournaments of clubs and national teams, and their live draw (Sprint 29)'
   - name: groups
@@ -3836,6 +3838,111 @@ paths:
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /messenger:
+    get:
+      tags: [messenger]
+      summary: '[Sprint 67] The game''s bots: each one on or off, and whether this account is linked to it'
+      responses:
+        '200':
+          description: The bots
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessengerStatus' }
+  /messenger/link:
+    post:
+      tags: [messenger]
+      summary: '[Sprint 67] A one-time code to link this account, and the link that opens the bot''s chat with it'
+      description: The code lasts game.messenger.code_minutes and is spent by the first chat that sends it. A new code replaces the older one.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [platform], properties: { platform: { type: string, enum: [telegram, whatsapp] } } }
+      responses:
+        '201':
+          description: The code
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [code, expires_at, platform, url]
+                properties:
+                  code: { type: string, minLength: 8, maxLength: 8 }
+                  expires_at: { type: string, format: date-time }
+                  platform: { type: string, enum: [telegram, whatsapp] }
+                  url: { type: string, nullable: true, description: 'https://t.me/<bot>?start=<code>, or https://wa.me/<number>?text=ربط <code>' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /messenger/{platform}:
+    parameters:
+      - { name: platform, in: path, required: true, schema: { type: string, enum: [telegram, whatsapp] } }
+    put:
+      tags: [messenger]
+      summary: '[Sprint 67] Silence the notifications on that bot, or turn them on again'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [muted], properties: { muted: { type: boolean } } }
+      responses:
+        '200':
+          description: The bots after
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessengerStatus' }
+        '404': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [messenger]
+      summary: '[Sprint 67] Unlink this account from that bot'
+      responses:
+        '200':
+          description: The bots after
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessengerStatus' }
+        '404': { $ref: '#/components/responses/Error' }
+  /messenger/telegram:
+    post:
+      tags: [messenger]
+      summary: '[Sprint 67] Telegram''s webhook (an Update), checked by X-Telegram-Bot-Api-Secret-Token'
+      description: Private chats are answered; in a group only the bot's commands (/league CODE, /unleague, /table, /help) are read. Each update once; the answer is made on the queue.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses:
+        '200': { description: Heard }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /messenger/whatsapp:
+    get:
+      tags: [messenger]
+      summary: '[Sprint 67] Meta''s webhook check: hub.challenge back when hub.verify_token is ours'
+      security: []
+      parameters:
+        - { name: hub.mode, in: query, required: true, schema: { type: string } }
+        - { name: hub.verify_token, in: query, required: true, schema: { type: string } }
+        - { name: hub.challenge, in: query, required: true, schema: { type: string } }
+      responses:
+        '200': { description: The challenge, as text, content: { text/plain: { schema: { type: string } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [messenger]
+      summary: '[Sprint 67] WhatsApp''s webhook (Cloud API messages), checked by X-Hub-Signature-256'
+      description: Each message once. The coach's own message opens WhatsApp's free 24 hours again; the game never sends a template or a paid message.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses:
+        '200': { description: Heard }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
   /notifications:
     get:
       tags: [notifications]
@@ -6747,6 +6854,32 @@ components:
         backups:
           type: array
           items: { type: object, required: [name, bytes], properties: { name: { type: string }, bytes: { type: integer } } }
+    MessengerStatus:
+      type: object
+      description: '[Sprint 67] The game''s bots for this account'
+      required: [telegram, whatsapp, channels]
+      properties:
+        telegram: { $ref: '#/components/schemas/MessengerBot' }
+        whatsapp:
+          allOf:
+            - { $ref: '#/components/schemas/MessengerBot' }
+            - type: object
+              properties:
+                window_open: { type: boolean, description: 'He wrote to the bot in the last 23 hours: WhatsApp notifications reach him (free)' }
+        channels:
+          type: object
+          required: [telegram, whatsapp]
+          properties:
+            telegram: { type: string, nullable: true, description: The game's public Telegram channel }
+            whatsapp: { type: string, nullable: true, description: The game's WhatsApp channel }
+    MessengerBot:
+      type: object
+      required: [available, linked, muted, open_url]
+      properties:
+        available: { type: boolean, description: 'Its keys are set on the server' }
+        linked: { type: boolean }
+        muted: { type: boolean, description: 'He silenced the notifications on it' }
+        open_url: { type: string, nullable: true, description: The link that opens the bot's chat }
     NotificationSettings:
       type: object
       required: [public_key, enabled, devices, kinds, email_match, email_offers, email_ready]
