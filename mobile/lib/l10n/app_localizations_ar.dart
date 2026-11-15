@@ -3070,6 +3070,9 @@ class LAr extends L {
   String get h2hL => 'خ';
 
   @override
+  String get lessMotion => 'حركة أقل (أخف على الجوال)';
+
+  @override
   String get touchFeedback => 'اهتزاز الأزرار وصوتها';
 
   @override

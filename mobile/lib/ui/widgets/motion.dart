@@ -11,6 +11,13 @@ bool _still(BuildContext context) => MediaQuery.maybeOf(context)?.disableAnimati
 /// (test/flutter_test_config.dart), which wait for the screen to settle.
 abstract final class Ambient {
   static bool on = true;
+
+  /// [Sprint 74 P3] The endless motion off on a phone that cannot afford it, or when the coach asks (core/device_tier.dart).
+  /// The scenes, the entrances and the sounds stay: only what never ends stops.
+  static bool lite = false;
+
+  /// Whether what never ends (a sheen, a pulse, a ripple) runs.
+  static bool get endless => on && !lite;
 }
 
 /// Fades and rises into place, [index] steps after the first (40 ms each, at most 8 steps).
@@ -80,7 +87,7 @@ class _PulseState extends State<Pulse> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (_still(context) || !Ambient.on) {
+    if (_still(context) || !Ambient.endless) {
       _c.stop();
       return widget.child;
     }
@@ -175,7 +182,7 @@ class _RollingBallState extends State<RollingBall> with SingleTickerProviderStat
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_still(context) && Ambient.on) {
+    if (!_still(context) && Ambient.endless) {
       if (!_c.isAnimating) _c.repeat(reverse: true);
     } else {
       _c.stop();
@@ -262,7 +269,7 @@ class MatchCurtainState extends State<MatchCurtain> with SingleTickerProviderSta
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_still(context) || !Ambient.on) {
+    if (_still(context) || !Ambient.endless) {
       _c.value = 1;
     } else if (_c.value == 0 && !_c.isAnimating) {
       unawaited(_c.forward());
@@ -271,7 +278,7 @@ class MatchCurtainState extends State<MatchCurtain> with SingleTickerProviderSta
 
   /// Draws the curtain shut (at once with the motion reduced), then completes.
   Future<void> close() async {
-    if (_still(context) || !Ambient.on) return;
+    if (_still(context) || !Ambient.endless) return;
     await _c.reverse();
   }
 

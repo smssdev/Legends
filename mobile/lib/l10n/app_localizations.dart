@@ -5480,6 +5480,12 @@ abstract class L {
   /// **'خ'**
   String get h2hL;
 
+  /// No description provided for @lessMotion.
+  ///
+  /// In ar, this message translates to:
+  /// **'حركة أقل (أخف على الجوال)'**
+  String get lessMotion;
+
   /// No description provided for @touchFeedback.
   ///
   /// In ar, this message translates to:

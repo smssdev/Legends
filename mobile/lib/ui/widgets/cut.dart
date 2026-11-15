@@ -76,7 +76,7 @@ class _ShineState extends State<Shine> with SingleTickerProviderStateMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final still = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    if (widget.enabled && !still && Ambient.on) {
+    if (widget.enabled && !still && Ambient.endless) {
       if (!_c.isAnimating) _c.repeat();
     } else {
       _c.stop();

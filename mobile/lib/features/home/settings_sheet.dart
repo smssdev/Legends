@@ -11,6 +11,7 @@ import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../auth/auth_controller.dart';
+import '../../core/device_tier.dart';
 
 /// [Sprint 15] This phone's settings: the look (automatic by default, as the web since Sprint 43 A1), the language,
 /// the account number, the app's version, and signing out.
@@ -116,6 +117,8 @@ class _SettingsSheet extends ConsumerWidget {
                 GameSounds.touch = v;
               },
             ),
+            // [Sprint 74 P3] Less motion by the coach's choice (a weak phone gets it by itself: core/device_tier.dart).
+            const _LessMotion(),
             const SizedBox(height: 4),
             // [Sprint 18 F] The account: name, look, password, invites and badges; and the community's pages from it.
             ListTile(
@@ -199,6 +202,32 @@ class _SettingsSheet extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// [Sprint 74 P3] The switch for the game without its endless motion (the sheen, the pulses), kept on the phone.
+class _LessMotion extends ConsumerStatefulWidget {
+  const _LessMotion();
+
+  @override
+  ConsumerState<_LessMotion> createState() => _LessMotionState();
+}
+
+class _LessMotionState extends ConsumerState<_LessMotion> {
+  @override
+  Widget build(BuildContext context) {
+    final prefs = ref.watch(preferencesProvider);
+    return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
+      secondary: Icon(Icons.motion_photos_off_rounded, color: context.palette.gold),
+      title: Text(L.of(context).lessMotion),
+      value: DeviceTiers.asked(prefs),
+      activeThumbColor: context.palette.gold,
+      onChanged: (v) async {
+        await DeviceTiers.ask(prefs, v);
+        if (mounted) setState(() {});
+      },
     );
   }
 }

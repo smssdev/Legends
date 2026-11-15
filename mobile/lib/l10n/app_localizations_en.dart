@@ -3031,6 +3031,9 @@ class LEn extends L {
   String get h2hL => 'L';
 
   @override
+  String get lessMotion => 'Less motion (lighter on the phone)';
+
+  @override
   String get touchFeedback => 'Button buzz and sound';
 
   @override

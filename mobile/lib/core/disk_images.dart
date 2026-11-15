@@ -101,9 +101,13 @@ class DiskImages {
 /// A picture from [url] through [DiskImages]: as Image.network, kept on the phone.
 @immutable
 class DiskImage extends ImageProvider<DiskImage> {
-  const DiskImage(this.url);
+  const DiskImage(this.url, {this.cacheWidth});
 
   final String url;
+
+  /// [Sprint 74 P5] The widest the picture is ever shown, in real pixels: it is decoded no larger (a 1280 store picture
+  /// in a 300 card held 1280×720×4 bytes in memory, four megabytes each). A smaller picture is left as it is.
+  final int? cacheWidth;
 
   @override
   Future<DiskImage> obtainKey(ImageConfiguration configuration) => SynchronousFuture(this);
@@ -112,12 +116,25 @@ class DiskImage extends ImageProvider<DiskImage> {
   ImageStreamCompleter loadImage(DiskImage key, ImageDecoderCallback decode) =>
       MultiFrameImageStreamCompleter(codec: _codec(decode), scale: 1, debugLabel: url);
 
-  Future<ui.Codec> _codec(ImageDecoderCallback decode) async =>
-      decode(await ui.ImmutableBuffer.fromUint8List(await DiskImages.instance.load(url)));
+  /// The size to decode a [w]×[h] picture at for a slot [max] wide. Pure.
+  static (int, int) fit(int w, int h, int max) => w <= max ? (w, h) : (max, (h * max / w).round().clamp(1, h));
+
+  Future<ui.Codec> _codec(ImageDecoderCallback decode) async {
+    final buffer = await ui.ImmutableBuffer.fromUint8List(await DiskImages.instance.load(url));
+    final max = cacheWidth;
+    if (max == null) return decode(buffer);
+    return decode(
+      buffer,
+      getTargetSize: (w, h) {
+        final (tw, th) = fit(w, h, max);
+        return ui.TargetImageSize(width: tw, height: th);
+      },
+    );
+  }
 
   @override
-  bool operator ==(Object other) => other is DiskImage && other.url == url;
+  bool operator ==(Object other) => other is DiskImage && other.url == url && other.cacheWidth == cacheWidth;
 
   @override
-  int get hashCode => url.hashCode;
+  int get hashCode => Object.hash(url, cacheWidth);
 }

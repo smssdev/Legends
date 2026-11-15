@@ -116,7 +116,7 @@ class ProfileScreen extends ConsumerWidget {
                         CircleAvatar(
                           radius: 32,
                           backgroundColor: p.brand,
-                          foregroundImage: me.avatarUrl == null ? null : DiskImage(me.avatarUrl!),
+                          foregroundImage: me.avatarUrl == null ? null : DiskImage(me.avatarUrl!, cacheWidth: 256),
                           child: Text(
                             me.name.characters.take(1).toString(),
                             style: glmText(GlmType.headline, color: Colors.white, fontWeight: FontWeight.w800),
