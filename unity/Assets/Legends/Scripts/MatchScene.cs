@@ -134,6 +134,8 @@ namespace Legends
             }
             seat.Look.transform.localPosition = seat.Bench.Value;
             seat.Look.transform.localRotation = Quaternion.identity;   // facing the pitch
+            var stride = seat.Look.GetComponent<PlayerStride>();
+            if (stride != null) stride.Restart();
         }
 
         /// <summary>The assistant's flag in his right hand, in the trim's gold.</summary>
@@ -228,6 +230,9 @@ namespace Legends
             var pf = i > 0 ? m.Frames[i - 1] : null;
             var nf = i + 2 < m.Frames.Count ? m.Frames[i + 2] : null;
             bool flip = Flipped(m.Period);
+            // [Sprint 07 U4] how long this stretch between two frames lasts on screen, for each player's speed
+            float span = Mathf.Max(0.05f, m.Ms / 1000f / Mathf.Max(1, m.Frames.Count - 1));
+            float dt = snap ? 0f : Time.deltaTime;
 
             foreach (var kv in players)
             {
@@ -260,6 +265,7 @@ namespace Legends
                 kv.Value.localPosition = pos + Vector3.up * BodyLift;
                 if (dir.sqrMagnitude > 0.0004f)
                     kv.Value.localRotation = Quaternion.Slerp(kv.Value.localRotation, Quaternion.LookRotation(dir), turn);
+                if (seat != null) Pace(seat.Look, pf, a, b, nf, kv.Key, k, flip, span, dt, snap);
             }
 
             // [Sprint 31 D1] The officials follow the ball, as the frames place them; older recordings have none.
@@ -271,6 +277,8 @@ namespace Legends
                 var at = World(Vector2.Lerp(a.Officials[o], b.Officials[o], k), flip);
                 var to = World(b.Officials[o], flip) - World(a.Officials[o], flip);
                 officials[o].localPosition = at;
+                var walk = officials[o].GetComponent<PlayerStride>();
+                if (walk != null) walk.Go(new Vector2(to.x, to.z).magnitude / span, dt, snap);
                 // the referee faces where he runs; the assistants face the pitch from their touchline
                 var face = o == 0 && to.sqrMagnitude > 0.0004f ? to : (at.z > 0 ? Vector3.back : Vector3.forward);
                 officials[o].localRotation = Quaternion.Slerp(officials[o].localRotation, Quaternion.LookRotation(face), turn);
@@ -278,6 +286,27 @@ namespace Legends
 
             var ball = SampleBall(pf, a, b, nf, k);
             Roll(World(new Vector2(ball.x, ball.y), flip) + Vector3.up * (BallRadius + ball.z / 10f));
+        }
+
+        /// <summary>
+        /// [Sprint 07 U4] A player's speed on the grass at k between frames a and b (m/s on screen: the curve's step over
+        /// the time it takes), to his stride. Fast-forward minutes go faster than any stride: Gait caps the pace.
+        /// </summary>
+        static void Pace(PlayerLook look, Frame p, Frame a, Frame b, Frame n, string id, float k, bool flip, float span, float dt, bool snap)
+        {
+            var stride = look.GetComponent<PlayerStride>();
+            if (stride == null) return;
+            stride.Go(Speed(p, a, b, n, id, k, flip, span), dt, snap);
+        }
+
+        /// <summary>[Sprint 07 U4] How fast a player goes at k between frames a and b, in m/s when the stretch lasts span seconds.</summary>
+        public static float Speed(Frame p, Frame a, Frame b, Frame n, string id, float k, bool flip, float span)
+        {
+            const float h = 0.025f;
+            float k0 = Mathf.Max(0f, k - h), k1 = Mathf.Min(1f, k + h);
+            if (k1 - k0 < 1e-4f) return 0f;
+            var d = World(SamplePlayer(p, a, b, n, id, k1), flip) - World(SamplePlayer(p, a, b, n, id, k0), flip);
+            return d.magnitude / ((k1 - k0) * span);
         }
 
         /// <summary>

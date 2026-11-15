@@ -31,6 +31,7 @@ namespace Legends.EditorTools
         public static void Capture()
         {
             AssetDatabase.Refresh();
+            PlayerAnimator.Build();     // [U4] the stride and every move, before their pictures
             var art = AssetDatabase.LoadAssetAtPath<PlayerArt>(ArtPath);
             var clips = AssetDatabase.LoadAllAssetsAtPath(Clips).OfType<AnimationClip>().Where(c => !c.name.StartsWith("__preview__")).ToList();
             if (clips.Count == 0) throw new System.Exception("no moves in " + Clips + " (run tools/unity/players/keyframes.py)");
@@ -63,6 +64,52 @@ namespace Legends.EditorTools
                 AnimationMode.StopAnimationMode();
                 Debug.Log($"Legends: move {clip.name} ({clip.length:0.00} s, {(clip.isLooping ? "loops" : "once")})");
             }
+            Gaits();
+        }
+
+        /// <summary>
+        /// [Sprint 07 U4] The strides through the Animator (Animation/Player.controller), seen from the side: five players
+        /// running on the spot at 0, 1.2, 3, 4.5 and 8 m/s (standing, a slow walk, a jog, a sprint, and a fast-forward
+        /// sprint at its MaxPace), each after a second and a half on his stride. Saved as unity/Captures/moves/gaits.png.
+        /// </summary>
+        [MenuItem("Legends/Players/Capture the strides")]
+        public static void Gaits()
+        {
+            var art = AssetDatabase.LoadAssetAtPath<PlayerArt>(ArtPath);
+            string folder = Path.Combine(Path.GetDirectoryName(Application.dataPath), "Captures", "moves");
+            Directory.CreateDirectory(folder);
+            Stage(out var cam);
+            cam.transform.position = new Vector3(13f, 1.4f, 0f);
+            cam.transform.LookAt(new Vector3(0, 0.85f, 0));
+            cam.fieldOfView = 34;
+            var field = KitColours.Of(new Color32(0xC8, 0x10, 0x2E, 0xFF), Color.white, "plain");
+            float[] speeds = { 0f, 1.2f, 3f, 4.5f, 8f };
+            const float dt = 1f / 60f;
+            var people = new List<GameObject>();
+            for (int i = 0; i < speeds.Length; i++)
+            {
+                var look = PlayerLook.From((7100 + i * 17).ToString());
+                look.Build = i % PlayerLook.Builds.Length;
+                var p = art.Spawn(look, null, field, 9);
+                // in a row across the picture, all running towards its left
+                p.transform.position = new Vector3(0, 0, (i - 2) * 2.4f);
+                var animator = p.GetComponent<Animator>();
+                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                animator.Rebind();
+                var stride = p.GetComponent<PlayerStride>();
+                for (float t = 0; t < 1.5f + i * 0.13f; t += dt)
+                {
+                    stride.Go(speeds[i], dt, true);
+                    animator.Update(dt);
+                }
+                people.Add(p.gameObject);
+            }
+            float bias = QualitySettings.lodBias;
+            QualitySettings.lodBias = 100f;
+            Save(cam, Path.Combine(folder, "gaits.png"));
+            QualitySettings.lodBias = bias;
+            foreach (var p in people) Object.DestroyImmediate(p);
+            Debug.Log("Legends: strides at " + string.Join(", ", speeds) + " m/s");
         }
 
         /// <summary>
