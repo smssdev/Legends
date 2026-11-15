@@ -27,6 +27,8 @@ namespace Legends
         public Transform Ball;
         /// <summary>The moves that meet the ball and when (PlayerArt.touches, from takes.json).</summary>
         public Touch[] Touches;
+        /// <summary>[U6] Beaten this minute (a goal past him): his dive goes the ball's way, his hands miss it.</summary>
+        public bool Beaten;
 
         /// <summary>How long before and after the contact the foot or the hands are drawn to the ball (s).</summary>
         public const float Window = 0.16f;
@@ -63,7 +65,9 @@ namespace Legends
                     Note(touch, w);
                 }
                 else if (touch.with == "hands")
-                    Hands(ball, w, touch);
+                {
+                    if (!Beaten) Hands(ball, w, touch);
+                }
                 else
                     Foot(touch.with == "left" ? AvatarIKGoal.LeftFoot : AvatarIKGoal.RightFoot, ball, w, touch);
             }
