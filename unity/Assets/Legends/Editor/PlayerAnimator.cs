@@ -23,6 +23,7 @@ namespace Legends.EditorTools
         public const string Path = "Assets/Legends/Animation/Player.controller";
         const string Clips = "Assets/Legends/Animation/Moves/moves.fbx";
         const string Speeds = "Assets/Legends/Animation/Moves/locomotion.json";
+        const string TakesPath = "Assets/Legends/Animation/Moves/takes.json";
         const string ArtPath = "Assets/Legends/Resources/PlayerArt.asset";
 
         /// <summary>The moves that end on the grass (or on his knees) and stay there until the scene says otherwise.</summary>
@@ -47,6 +48,10 @@ namespace Legends.EditorTools
             var controller = AnimatorController.CreateAnimatorControllerAtPath(Path);
             controller.AddParameter("Speed", AnimatorControllerParameterType.Float);
             controller.AddParameter(new AnimatorControllerParameter { name = "Pace", type = AnimatorControllerParameterType.Float, defaultFloat = 1f });
+            // [U5] the IK pass: BallContact puts the foot, the hands and the head on the ball after the move has posed him
+            var layers = controller.layers;
+            layers[0].iKPass = true;
+            controller.layers = layers;
             var machine = controller.layers[0].stateMachine;
 
             // the strides, standing first, each at its own speed
@@ -95,12 +100,27 @@ namespace Legends.EditorTools
                 art.motion = controller;
                 art.strideSpeeds = null;
                 art.strideSpeeds = Measure(art);
+                art.touches = Touches();
                 EditorUtility.SetDirty(art);
                 Debug.Log("Legends: the blend covers " + string.Join(", ", art.strideSpeeds.Select(v => $"{v.x:0.00}: {v.y:0.00}")) + " m/s");
             }
             AssetDatabase.SaveAssets();
             Debug.Log($"Legends: {Path}: the five strides by speed and {n} moves");
             return controller;
+        }
+
+        /// <summary>[U5] Every move in takes.json that meets the ball: when, and with what.</summary>
+        public static BallContact.Touch[] Touches()
+        {
+            var table = (Dictionary<string, object>)MiniJson.Parse(File.ReadAllText(TakesPath));
+            var list = new List<BallContact.Touch>();
+            foreach (var kv in table.OrderBy(k => k.Key))
+            {
+                var row = (Dictionary<string, object>)kv.Value;
+                if (!row.ContainsKey("contact")) continue;
+                list.Add(new BallContact.Touch { move = kv.Key, contact = System.Convert.ToSingle(row["contact"]), with = (string)row["foot"] });
+            }
+            return list.ToArray();
         }
 
         /// <summary>

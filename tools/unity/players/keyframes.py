@@ -257,6 +257,13 @@ CONTACTS = {
     'slide_tackle': {'contact': 0.45, 'foot': 'right'},
     'slide_tackle_l': {'contact': 0.45, 'foot': 'left'},
     'fall': {},
+    # the keeper's hands meet the ball at full stretch, at the reach, at the punch
+    'keeper_dive_l_high': {'contact': 0.62, 'foot': 'hands'},
+    'keeper_dive_r_high': {'contact': 0.62, 'foot': 'hands'},
+    'keeper_dive_l_low': {'contact': 0.5, 'foot': 'hands'},
+    'keeper_dive_r_low': {'contact': 0.5, 'foot': 'hands'},
+    'keeper_catch': {'contact': 0.25, 'foot': 'hands'},
+    'keeper_punch': {'contact': 0.38, 'foot': 'hands'},
 }
 
 

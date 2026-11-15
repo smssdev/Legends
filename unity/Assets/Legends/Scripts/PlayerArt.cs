@@ -33,6 +33,8 @@ namespace Legends
         public RuntimeAnimatorController motion;
         [Tooltip("[Sprint 07 U4] (blend, m/s) the Speed blend really covers on our player at pace 1, measured by Editor/PlayerAnimator")]
         public Vector2[] strideSpeeds;
+        [Tooltip("[Sprint 07 U5] the moves that meet the ball and when (takes.json), by Editor/PlayerAnimator")]
+        public BallContact.Touch[] touches;
         [Tooltip("dark, brown and blond, in PlayerLook.HairColours' order")]
         public Color[] hairColours = new Color[3];
 
@@ -76,6 +78,7 @@ namespace Legends
                 animator.applyRootMotion = false;
                 animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
                 go.AddComponent<PlayerStride>().Measured = strideSpeeds;
+                go.AddComponent<BallContact>().Touches = touches;     // [U5] his touch on the ball
             }
             return player;
         }

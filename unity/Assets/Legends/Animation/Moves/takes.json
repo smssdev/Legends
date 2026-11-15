@@ -95,5 +95,41 @@
   "fall": {
     "clip": "keyframes",
     "seconds": 2.0
+  },
+  "keeper_dive_l_high": {
+    "clip": "keyframes",
+    "contact": 0.62,
+    "foot": "hands",
+    "seconds": 1.6
+  },
+  "keeper_dive_r_high": {
+    "clip": "keyframes",
+    "contact": 0.62,
+    "foot": "hands",
+    "seconds": 1.6
+  },
+  "keeper_dive_l_low": {
+    "clip": "keyframes",
+    "contact": 0.5,
+    "foot": "hands",
+    "seconds": 1.4
+  },
+  "keeper_dive_r_low": {
+    "clip": "keyframes",
+    "contact": 0.5,
+    "foot": "hands",
+    "seconds": 1.4
+  },
+  "keeper_catch": {
+    "clip": "keyframes",
+    "contact": 0.25,
+    "foot": "hands",
+    "seconds": 1.1
+  },
+  "keeper_punch": {
+    "clip": "keyframes",
+    "contact": 0.38,
+    "foot": "hands",
+    "seconds": 0.85
   }
 }
