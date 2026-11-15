@@ -19,10 +19,12 @@ REPO=/opt/legends/repo
 LOCK=/opt/legends/app-build.lock
 
 if [ "$1" = log ]; then exec tail -n 40 -f "$LOG"; fi
+# Anything else is a typing slip: not a build, and the last build's log stays (it was wiped once by "legends-app debug").
+[ -z "$1" ] || { echo "Usage: legends-app (build and publish) | legends-app log"; exit 1; }
 # The build goes on without the console: the same script again, detached, its output in the log.
 if [ "${LEGENDS_APP_CHILD:-0}" != 1 ]; then
   [ ! -d "$LOCK" ] || { echo "A build is running already: legends-app log"; exit 1; }
-  : > "$LOG"
+  [ ! -s "$LOG" ] || mv "$LOG" "$LOG.1"
   LEGENDS_APP_CHILD=1 setsid nohup sh "$0" "$@" >> "$LOG" 2>&1 < /dev/null &
   echo "The build started. Follow it: legends-app log"
   sleep 3; tail -n 20 "$LOG"; exit 0
