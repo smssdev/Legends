@@ -65,15 +65,27 @@ if [ ! -f "$KEYDIR/glm-release.jks" ]; then
   /usr/local/bin/legends-backup > /dev/null 2>&1 || true
 fi
 
-# Memory: what is free now, less a margin for the game; the build is the one stopped if it runs out, never the game.
+# Memory: the server is small (about 4 GB beside the game). A swap file once (4 GB on the disk, used only when the
+# memory runs out: swappiness 10 keeps the game in memory), then the build gets what is free now, less a margin for
+# the game, and some of the swap. The build is the one stopped if it runs out, never the game.
+if [ "$(awk '/SwapTotal/ {print $2}' /proc/meminfo)" = 0 ] && [ ! -f /swapfile ] && [ "$free" -ge 12288 ]; then
+  echo "Making a 4 GB swap file (once)..."
+  fallocate -l 4G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=4096 status=none
+  chmod 600 /swapfile && mkswap /swapfile > /dev/null && swapon /swapfile
+  grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+  echo 'vm.swappiness=10' > /etc/sysctl.d/99-legends-swap.conf && sysctl -q -w vm.swappiness=10 || true
+fi
 avail=$(awk '/MemAvailable/ {print int($2 / 1024)}' /proc/meminfo)
+swap=$(awk '/SwapFree/ {print int($2 / 1024)}' /proc/meminfo)
 limit=$((avail - 400)); [ "$limit" -le 3584 ] || limit=3584
-[ "$limit" -ge 1800 ] || fail "Only ${avail} MB of memory free: not enough to build beside the game."
-xmx=$((limit * 45 / 100))
-echo "Memory for the build: ${limit} MB (Gradle ${xmx} MB)"
+extra=$swap; [ "$extra" -le 3072 ] || extra=3072
+total=$((limit + extra))
+[ "$limit" -ge 1000 ] && [ "$total" -ge 3000 ] || fail "Only ${avail} MB of memory and ${swap} MB of swap free: not enough to build beside the game."
+xmx=$((total * 40 / 100)); [ "$xmx" -le 2048 ] || xmx=2048
+echo "Memory for the build: ${limit} MB, and ${extra} MB of swap (Gradle ${xmx} MB)"
 
 rm -rf mobile/build/ship
-docker run --rm --name legends-appbuild --memory "${limit}m" --memory-swap "${limit}m" --cpu-shares 128 \
+docker run --rm --name legends-appbuild --memory "${limit}m" --memory-swap "${total}m" --cpu-shares 128 \
   -e FLUTTER_VERSION="$FLUTTER_VERSION" -e GRADLE_XMX="${xmx}m" --env-file "$KEYDIR/key.env" \
   -v "$REPO:/src" -v "$KEYDIR:/key:ro" -v legends-appbuild-cache:/cache legends-appbuild \
   || fail "The build failed: legends-app log shows why."
