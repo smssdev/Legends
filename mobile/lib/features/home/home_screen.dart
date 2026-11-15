@@ -38,6 +38,7 @@ import '../auth/auth_controller.dart';
 import '../auth/ui/keep_account.dart';
 import '../../ui/size_class.dart';
 
+part 'home_screen_cards.dart';
 part 'home_screen_sim_banner.dart';
 part 'home_screen_slot_tile.dart';
 
@@ -73,62 +74,11 @@ class _Home extends ConsumerWidget {
     final l = L.of(context);
     final p = context.palette;
     final extras = <Widget>[
-      // [Sprint 71 N4] A newer app on the site: one tap to the download page (not required; the server's min_version is).
-      if (ref.watch(updateReadyProvider).value case final v?)
-        Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: GlmCard(
-            gold: true,
-            child: Row(
-              children: [
-                const IconTile(Icons.system_update_rounded, size: 42),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    l.updateReady(v),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                ),
-                GlmButton(
-                  label: l.updateReadyAction,
-                  onPressed: () => launchUrl(Uri.parse('${AppConfig.siteUrl}/download'), mode: LaunchMode.externalApplication),
-                ),
-              ],
-            ),
-          ),
-        ),
+      // [Sprint 71 N4] A newer app on the site: one tap to the download page.
+      if (ref.watch(updateReadyProvider).value case final v?) _UpdateReadyCard(v),
       // [Sprint 50 M5] A guest is asked to keep the account (it goes after 30 days otherwise).
       if (ref.watch(authProvider).value?.guest == true) const Padding(padding: EdgeInsets.only(top: 12), child: KeepAccountCard()),
-      if (!h.starterClaimed && h.starterCoins > 0)
-        Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: GlmCard(
-            gold: true,
-            child: Row(
-              children: [
-                const Pulse(child: IconTile(Icons.redeem_rounded, size: 42)),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(l.starterGift(h.starterCoins), style: const TextStyle(fontWeight: FontWeight.w800)),
-                ),
-                GlmButton(
-                  label: l.claimGift,
-                  onPressed: () async {
-                    try {
-                      await ref.read(apiProvider).post('/home/starter-gift');
-                      unawaited(GameSounds.play(Sfx.coin));
-                    } on ApiError catch (e) {
-                      if (context.mounted) showGlmToast(context, e.message, error: true);
-                    }
-                    ref.invalidate(homeProvider);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
+      if (!h.starterClaimed && h.starterCoins > 0) _StarterGiftCard(h.starterCoins),
       // [Sprint 17 F2] My matches under way, in every league: one tap to the live screen.
       ...?ref
           .watch(myLiveMatchesProvider)

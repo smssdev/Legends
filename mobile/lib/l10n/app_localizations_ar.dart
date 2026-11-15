@@ -2352,6 +2352,9 @@ class LAr extends L {
   String get boardGoal => 'هدف الإدارة';
 
   @override
+  String get squadOverview => 'نظرة على الفريق';
+
+  @override
   String get teamRating => 'الفريق';
 
   @override

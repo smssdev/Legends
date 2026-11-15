@@ -143,6 +143,8 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
           data: (t) => LayoutBuilder(
             builder: (context, box) {
               final wide = !GlmFit.isNarrow(box.maxWidth);
+              // [Sprint 73 D3] A phone held sideways: the bench in rows 48 high, so more of it shows in its column.
+              final dense = wide && GlmFit.shortOf(context);
               final slots = _slots(t, formations);
               final others = t.players.where((p) => !_starters!.contains(p.id) && !_bench!.contains(p.id)).toList();
               final formation = GlmCard(
@@ -209,12 +211,12 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                   if (t.byId(id) case final p?)
                     FadeSlideIn(
                       index: i,
-                      child: _DragRow(player: p, selected: _picked == id, onTap: () => _tap(id), onDrop: (d) => _drop(d, id)),
+                      child: _DragRow(player: p, selected: _picked == id, onTap: () => _tap(id), onDrop: (d) => _drop(d, id), dense: dense),
                     ),
                 if (others.isNotEmpty) ...[
                   GameHeader(l.reserve, icon: Icons.groups_rounded),
                   for (final p in others)
-                    _DragRow(player: p, selected: _picked == p.id, onTap: () => _tap(p.id), onDrop: (d) => _drop(d, p.id)),
+                    _DragRow(player: p, selected: _picked == p.id, onTap: () => _tap(p.id), onDrop: (d) => _drop(d, p.id), dense: dense),
                 ],
               ];
               if (!wide) {
@@ -342,31 +344,33 @@ class _Pitch extends StatelessWidget {
     final body = FlatPitch(
       horizontal: horizontal,
       child: LayoutBuilder(
-        builder: (context, box) => Stack(
-          children: [
-            for (var i = 0; i < slots.length && i < starters.length; i++)
-              if (team.byId(starters[i]) case final pl?)
-                Builder(
-                  builder: (context) {
-                    final at = placeOnPitch(slots[i], box.biggest, PitchDisc.size, rtl: rtl, horizontal: horizontal);
-                    return AnimatedPositioned(
-                      duration: const Duration(milliseconds: 280),
-                      curve: Curves.easeOutCubic,
-                      left: at.dx,
-                      top: at.dy,
-                      width: PitchDisc.size.width,
-                      child: _Token(
-                        player: pl,
-                        line: slots[i].line,
-                        picked: picked == pl.id,
-                        onTap: () => onTap(pl.id),
-                        onDrop: (d) => onDrop(d, pl.id),
-                      ),
-                    );
-                  },
-                ),
-          ],
-        ),
+        builder: (context, box) {
+          // [Sprint 73 D3] The eleven placed together, none over another's name (flat_pitch.dart placeEleven).
+          final token = PitchDisc.sizeOn(box.biggest);
+          final n = slots.length < starters.length ? slots.length : starters.length;
+          final at = placeEleven(slots.sublist(0, n), box.biggest, token, rtl: rtl, horizontal: horizontal);
+          return Stack(
+            children: [
+              for (var i = 0; i < n; i++)
+                if (team.byId(starters[i]) case final pl?)
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 280),
+                    curve: Curves.easeOutCubic,
+                    left: at[i].dx,
+                    top: at[i].dy,
+                    width: token.width,
+                    child: _Token(
+                      player: pl,
+                      line: slots[i].line,
+                      width: token.width,
+                      picked: picked == pl.id,
+                      onTap: () => onTap(pl.id),
+                      onDrop: (d) => onDrop(d, pl.id),
+                    ),
+                  ),
+            ],
+          );
+        },
       ),
     );
     return horizontal ? body : AspectRatio(aspectRatio: 68 / 105, child: body);
@@ -375,9 +379,17 @@ class _Pitch extends StatelessWidget {
 
 /// A player on the pitch: his shirt in his line's colour with his rating on it, and his surname under it.
 class _Token extends StatelessWidget {
-  const _Token({required this.player, required this.line, required this.picked, required this.onTap, required this.onDrop});
+  const _Token({
+    required this.player,
+    required this.line,
+    required this.width,
+    required this.picked,
+    required this.onTap,
+    required this.onDrop,
+  });
 
   final Player player;
+  final double width;
   final String line;
   final bool picked;
   final VoidCallback onTap;
@@ -387,7 +399,7 @@ class _Token extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget shirt({bool lit = false, bool ghost = false}) => Opacity(
       opacity: ghost ? .35 : 1,
-      child: PitchDisc(player: player, line: line, lit: picked || lit),
+      child: PitchDisc(player: player, line: line, lit: picked || lit, width: width),
     );
     // [Sprint 45 M4] Dragged straight away on the pitch; a player dropped on him swaps with him, his shirt lit gold.
     return DragTarget<int>(

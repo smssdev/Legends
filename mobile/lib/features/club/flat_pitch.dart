@@ -49,15 +49,53 @@ Offset placeOnPitch(Slot s, Size size, Size token, {bool rtl = false, bool horiz
       : Offset(across * (size.width - token.width), (1 - fwd) * (size.height - token.height));
 }
 
+/// [Sprint 73 D3] Every place of the eleven on a pitch [size], none over another: each at its place of the book, then
+/// the ones that touch moved apart (down and up first, the way a line staggers) until no token covers another's name.
+/// On a phone 360 high the pitch is about 185 wide, and four defenders 56 wide each lay over one another.
+List<Offset> placeEleven(List<Slot> slots, Size size, Size token, {bool rtl = false, bool horizontal = false}) {
+  final at = [for (final s in slots) placeOnPitch(s, size, token, rtl: rtl, horizontal: horizontal)];
+  final maxX = (size.width - token.width).clamp(0.0, double.infinity), maxY = (size.height - token.height).clamp(0.0, double.infinity);
+  for (var round = 0; round < 24; round++) {
+    var moved = false;
+    for (var i = 0; i < at.length; i++) {
+      for (var j = i + 1; j < at.length; j++) {
+        final dx = at[j].dx - at[i].dx, dy = at[j].dy - at[i].dy;
+        final ox = token.width - dx.abs(), oy = token.height - dy.abs();
+        if (ox <= .5 || oy <= .5) continue;
+        moved = true;
+        // Apart along the side they overlap least; two on one line (no difference in height) go sideways.
+        if (oy < ox && dy.abs() > 1) {
+          final push = oy / 2 * (dy > 0 ? 1 : -1);
+          at[i] = Offset(at[i].dx, (at[i].dy - push).clamp(0.0, maxY));
+          at[j] = Offset(at[j].dx, (at[j].dy + push).clamp(0.0, maxY));
+        } else {
+          final push = ox / 2 * (dx >= 0 ? 1 : -1);
+          at[i] = Offset((at[i].dx - push).clamp(0.0, maxX), at[i].dy);
+          at[j] = Offset((at[j].dx + push).clamp(0.0, maxX), at[j].dy);
+        }
+      }
+    }
+    if (!moved) break;
+  }
+  return at;
+}
+
 /// A player's place: a disc with his rating (gold when picked or lit), his name under it.
 class PitchDisc extends StatelessWidget {
-  const PitchDisc({super.key, required this.player, required this.line, this.lit = false});
+  const PitchDisc({super.key, required this.player, required this.line, this.lit = false, this.width});
 
   final Player player;
   final String line;
   final bool lit;
 
+  /// The token's width on this pitch ([sizeOn]); the full 56 when not given.
+  final double? width;
+
   static const size = Size(56, 48);
+
+  /// [Sprint 73 D3] The token on a pitch this wide: 56 where four fit across side by side, narrower on a small pitch
+  /// (never under 40), so a line of four never overlaps.
+  static Size sizeOn(Size pitch) => Size((pitch.width / 4.1).clamp(40.0, size.width), size.height);
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +123,7 @@ class PitchDisc extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 1),
-          PitchName(player.name.split(' ').last, width: size.width),
+          PitchName(player.name.split(' ').last, width: width ?? size.width),
         ],
       ),
     );
@@ -104,16 +142,21 @@ class ElevenOnPitch extends StatelessWidget {
     final slots = team.lineup.slots, starters = team.lineup.starters;
     return FlatPitch(
       child: LayoutBuilder(
-        builder: (context, box) => Stack(
-          children: [
-            for (var i = 0; i < slots.length && i < starters.length; i++)
-              if (team.byId(starters[i]) case final pl?)
-                Positioned.fromRect(
-                  rect: placeOnPitch(slots[i], box.biggest, PitchDisc.size, rtl: rtl) & PitchDisc.size,
-                  child: PitchDisc(player: pl, line: slots[i].line),
-                ),
-          ],
-        ),
+        builder: (context, box) {
+          final token = PitchDisc.sizeOn(box.biggest);
+          final n = slots.length < starters.length ? slots.length : starters.length;
+          final at = placeEleven(slots.sublist(0, n), box.biggest, token, rtl: rtl);
+          return Stack(
+            children: [
+              for (var i = 0; i < n; i++)
+                if (team.byId(starters[i]) case final pl?)
+                  Positioned.fromRect(
+                    rect: at[i] & token,
+                    child: PitchDisc(player: pl, line: slots[i].line, width: token.width),
+                  ),
+            ],
+          );
+        },
       ),
     );
   }

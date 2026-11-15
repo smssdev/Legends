@@ -19,6 +19,7 @@ class GlmButton extends StatelessWidget {
     this.loading = false,
     this.icon,
     this.block = false,
+    this.oneLine = false,
   });
 
   final String label;
@@ -27,6 +28,10 @@ class GlmButton extends StatelessWidget {
   final bool loading;
   final Widget? icon;
   final bool block;
+
+  /// [Sprint 73 D6] The label on one line whatever its length (it steps its size down): buttons side by side stay
+  /// the same height.
+  final bool oneLine;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +63,11 @@ class GlmButton extends StatelessWidget {
             // [Sprint 60 F8] The label wraps to a second line before anything is cut («وقت مستقطع», not «وقت مستـ…»).
             // [Sprint 72 R6] And never breaks inside a word («التكتيـ/ك» on a 640 phone): it steps down to the caption's
             // size first, and only then is cut.
-            child: FitLabel(label, style: context.text.labelLarge?.copyWith(color: fg, fontSize: 16, height: 1.2)),
+            child: FitLabel(
+              label,
+              maxLines: oneLine ? 1 : 2,
+              style: context.text.labelLarge?.copyWith(color: fg, fontSize: 16, height: 1.2),
+            ),
           ),
         ],
       ],
