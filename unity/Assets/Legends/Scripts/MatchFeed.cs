@@ -14,6 +14,8 @@ namespace Legends
         /// <summary>[Sprint 26 U1] Each human coach's look on the bench (C1 to C3); empty for a club with no coach.</summary>
         public string HomeLook = "", AwayLook = "";
         public int TickMs = 3000;
+        /// <summary>[Sprint 09 U1] The match's seed: the director's crowd and fights vary by it, as the cartoon's (MinutePlan).</summary>
+        public int Seed = 1;
 
         /// <summary>
         /// {clubs: {home, away}, players: {home: [...], away: [...]}, tick_ms}. The same shape the sample recording
@@ -29,6 +31,7 @@ namespace Legends
             setup.Home = ClubKit.From(MiniJson.Obj(clubs, "home"));
             setup.Away = ClubKit.From(MiniJson.Obj(clubs, "away"));
             setup.TickMs = (int)MiniJson.Int(json, "tick_ms", 3000);
+            setup.Seed = (int)MiniJson.Int(json, "seed", 1);
             var looks = MiniJson.Obj(json, "coach_looks");
             setup.HomeLook = MiniJson.Str(looks, "home");
             setup.AwayLook = MiniJson.Str(looks, "away");
@@ -94,6 +97,8 @@ namespace Legends
         public string HomeMood = "idle", AwayMood = "idle";
         public bool Finished;
         public readonly List<Frame> Frames = new List<Frame>();
+        /// <summary>[Sprint 09 U1] The minute's story from the server (MomentStory): the scene the director tells it with.</summary>
+        public Shots.MinutePlan.Story Story = new Shots.MinutePlan.Story();
         /// <summary>[Sprint 07 U6] The minute's events as the server sent them (README appendix A): who does what (PlayerMotion).</summary>
         public readonly List<Dictionary<string, object>> Events = new List<Dictionary<string, object>>();
 
@@ -121,6 +126,15 @@ namespace Legends
             m.AwayMood = MiniJson.Str(moods, "away", "idle");
             m.Ms = (int)MiniJson.Int(moment, "ms", tickMs);
             if (m.Ms <= 0) m.Ms = tickMs;
+            var story = MiniJson.Obj(json, "story");
+            if (story != null)
+                m.Story = new Shots.MinutePlan.Story
+                {
+                    Scene = MiniJson.Str(story, "scene", null),
+                    Side = MiniJson.Str(story, "side", "home"),
+                    Goal = story.TryGetValue("goal", out var g) && g is bool goal && goal,
+                    Data = MiniJson.Obj(story, "data") ?? new Dictionary<string, object>(),
+                };
             foreach (var ev in MiniJson.Arr(json, "events") ?? new List<object>())
                 if (ev is Dictionary<string, object> e) m.Events.Add(e);
             foreach (var fr in MiniJson.Arr(json, "frames") ?? new List<object>())

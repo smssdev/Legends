@@ -27,6 +27,15 @@ namespace Legends
 
         public MatchSetup Setup { get; private set; }
         public MatchMinute Current { get; private set; }
+        /// <summary>[Sprint 09 U1] The minute on screen (playing or held), its plan (the cartoon's timeline, MinutePlan) and how far into it (s).</summary>
+        public MatchMinute OnAir { get; private set; }
+        public Shots.MinutePlan.Plan Plan { get; private set; }
+        public double Elapsed { get; private set; }
+        /// <summary>
+        /// [Sprint 09 U1] When the minute's key moment happens in its frames (s): the shot, else the keeper, else the card
+        /// (PlayerMotion's cues); the director's close shot is on it. None: a minute with none.
+        /// </summary>
+        public double? KeyMoment { get; private set; }
         /// <summary>[Sprint 26 U1] The coaches on the bench, if the scene has them.</summary>
         public BenchCoaches bench;
         public Transform Ball { get; private set; }
@@ -38,6 +47,7 @@ namespace Legends
         float elapsedMs;
         // [Sprint 07 U6] who does what this minute (PlayerMotion), and the moves' contacts (takes.json via PlayerArt)
         MatchMinute cuesOf;
+        float cuesNow;
         List<PlayerMotion.Cue> cues = new List<PlayerMotion.Cue>();
         readonly HashSet<PlayerMotion.Cue> fired = new HashSet<PlayerMotion.Cue>();
         readonly Dictionary<string, float> contactOf = new Dictionary<string, float>();
@@ -74,6 +84,8 @@ namespace Legends
             queue.Clear();
             Current = null;
             Setup = setup;
+            // [Sprint 09 U1] the broadcast's director, on every match scene
+            if (GetComponent<Shots.Director>() == null) gameObject.AddComponent<Shots.Director>();
             if (bench != null) bench.Setup(setup.HomeLook, setup.AwayLook);
             if (contacts == null && shadowMaterial != null) contacts = ContactShadows.On(gameObject, shadowMaterial);
             if (contacts != null) contacts.Clear();
@@ -220,10 +232,13 @@ namespace Legends
                 if (queue.Count == 0) return;
                 Current = queue.Dequeue();
                 elapsedMs = 0;
+                OnAir = Current;
+                Plan = PlanFor(Current);
                 if (bench != null) bench.Feel(Current.HomeMood, Current.AwayMood);
             }
             elapsedMs += Time.deltaTime * 1000f;
-            Draw(Current, Mathf.Clamp01(elapsedMs / Current.Ms));
+            Elapsed = elapsedMs / 1000.0;
+            Draw(Current, FramesAt(Plan, Elapsed));
             if (elapsedMs >= Current.Ms) Current = null;
         }
 
@@ -235,8 +250,55 @@ namespace Legends
         {
             queue.Clear();
             Current = null;
+            OnAir = m;
+            Plan = PlanFor(m);
+            Elapsed = Mathf.Clamp01(t) * FramesSeconds(Plan);
             Draw(m, t, true);
         }
+
+        /// <summary>[Sprint 09 U1] A still at `seconds` into minute m on the broadcast's timeline (the director's shot then).</summary>
+        public void HoldAt(MatchMinute m, double seconds)
+        {
+            queue.Clear();
+            Current = null;
+            OnAir = m;
+            Plan = PlanFor(m);
+            Elapsed = seconds;
+            Draw(m, FramesAt(Plan, seconds), true);
+        }
+
+        /// <summary>
+        /// [Sprint 09 U1] The minute's timeline as the cartoon's (the owner, 2026-11-15): the device's tier from the quality
+        /// level, the match's seed, the coaches' looks.
+        /// </summary>
+        public Shots.MinutePlan.Plan PlanFor(MatchMinute m)
+        {
+            var ctx = new Shots.MinutePlan.Ctx { Tier = TierNow(), Seed = Setup != null && Setup.Seed != 0 ? Setup.Seed : 1 };
+            if (Setup != null)
+                ctx.Looks = new Dictionary<string, string>
+                {
+                    ["home"] = string.IsNullOrEmpty(Setup.HomeLook) ? null : Setup.HomeLook,
+                    ["away"] = string.IsNullOrEmpty(Setup.AwayLook) ? null : Setup.AwayLook,
+                };
+            var moods = new Dictionary<string, string> { ["home"] = m.HomeMood, ["away"] = m.AwayMood };
+            return Shots.MinutePlan.Of(m.Story, m.Tick, moods, m.Ms, ctx);
+        }
+
+        /// <summary>The cartoon's three tiers from Unity's quality levels (Assets/Legends/Quality): Low, Medium, High.</summary>
+        public static Shots.MinutePlan.Tier TierNow()
+        {
+            string name = QualitySettings.names.Length > 0 ? QualitySettings.names[QualitySettings.GetQualityLevel()] : "High";
+            return name.StartsWith("Low") ? Shots.MinutePlan.Tier.Low : name.StartsWith("Medium") ? Shots.MinutePlan.Tier.Mid : Shots.MinutePlan.Tier.High;
+        }
+
+        /// <summary>
+        /// [Sprint 09 U1] How long the minute's frames take: the scene's time when it has one (then they hold through the
+        /// cutaways and the replay), else the whole minute.
+        /// </summary>
+        public static double FramesSeconds(Shots.MinutePlan.Plan p) => p == null ? 3.0 : p.SceneT > 0 ? p.SceneT : p.Total;
+
+        /// <summary>[Sprint 09 U1] Where the frames are (0..1) at `seconds` into the minute.</summary>
+        public static float FramesAt(Shots.MinutePlan.Plan p, double seconds) => Mathf.Clamp01((float)(seconds / FramesSeconds(p)));
 
         void Draw(MatchMinute m, float t, bool snap = false)
         {
@@ -249,7 +311,7 @@ namespace Legends
             var nf = i + 2 < m.Frames.Count ? m.Frames[i + 2] : null;
             bool flip = Flipped(m.Period);
             // [Sprint 07 U4] how long this stretch between two frames lasts on screen, for each player's speed
-            float span = Mathf.Max(0.05f, m.Ms / 1000f / Mathf.Max(1, m.Frames.Count - 1));
+            float span = Mathf.Max(0.05f, (float)FramesSeconds(Plan ?? PlanFor(m)) / Mathf.Max(1, m.Frames.Count - 1));
             float dt = snap ? 0f : Time.deltaTime;
 
             foreach (var kv in players)
@@ -319,7 +381,9 @@ namespace Legends
             if (!ReferenceEquals(cuesOf, m))
             {
                 cuesOf = m;
+                cuesNow = 0f;
                 cues = PlayerMotion.Cues(m);
+                KeyMoment = KeyOf(cues, m, Plan ?? PlanFor(m));
                 fired.Clear();
                 facing.Clear();
                 foreach (var p in players.Values)
@@ -336,6 +400,22 @@ namespace Legends
                 }
             }
             float now = Mathf.Clamp01(t) * Mathf.Max(1, m.Frames.Count - 1);
+            // [Sprint 09 U1] back in the minute (a still before the last, a replay): its moves start again from there
+            if (now < cuesNow - 1e-3f)
+            {
+                fired.Clear();
+                foreach (var p in players.Values)
+                {
+                    var s = p.GetComponent<PlayerStride>();
+                    if (s != null) s.Stride(0f);
+                }
+                foreach (var o in officials)
+                {
+                    var s = o.GetComponent<PlayerStride>();
+                    if (s != null) s.Stride(0f);
+                }
+            }
+            cuesNow = now;
             foreach (var cue in cues)
             {
                 if (fired.Contains(cue)) continue;
@@ -367,6 +447,16 @@ namespace Legends
                 fired.Add(cue);
                 stride.Play(move, snap ? 0f : 0.12f, (now - start) * span);
             }
+        }
+
+        /// <summary>[Sprint 09 U1] The minute's key moment in its frames (s): its strike at goal, else its keeper's answer, else its card.</summary>
+        public static double? KeyOf(List<PlayerMotion.Cue> cues, MatchMinute m, Shots.MinutePlan.Plan p)
+        {
+            if (m.Frames.Count < 2) return null;
+            PlayerMotion.Cue Find(System.Predicate<PlayerMotion.Cue> f) => cues.Find(f);
+            var key = Find(c => c.OnContact && (c.Move.StartsWith("shot") || c.Move == "header") && cues.Exists(d => d.Move == PlayerMotion.Dive || d.Move.StartsWith("celebrate") || d.Move == "despair_hands_head"))
+                      ?? Find(c => c.Move == PlayerMotion.Dive) ?? Find(c => c.Move == "ref_card");
+            return key == null ? (double?)null : key.At / (m.Frames.Count - 1) * FramesSeconds(p);
         }
 
         /// <summary>
@@ -487,7 +577,7 @@ namespace Legends
         }
 
         /// <summary>How far through the current minute's shot, 0 to 1 (the tests compare the scene with the frames at it).</summary>
-        public float Progress => Current == null ? 0f : Mathf.Clamp01(elapsedMs / Current.Ms);
+        public float Progress => Current == null ? 0f : FramesAt(Plan, Elapsed);
 
         /// <summary>
         /// Where a minute's progress t (0..1) falls among its key frames: between frame i and i + 1, by k (0..1).

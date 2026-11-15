@@ -92,6 +92,7 @@ namespace Legends.EditorTools
             }
             Directory.CreateDirectory(Folder);
             foreach (var old in Directory.GetFiles(Folder, plays ? "play-*.png" : kits ? "kits-*.png" : "minute-*.png")) File.Delete(old);
+            if (plays) foreach (var old in Directory.GetFiles(Folder, "shot-*.png")) File.Delete(old);
             SessionState.SetBool(PlaysKey, plays);
             SessionState.SetBool("Legends.Capture.Quit", quit);
             SessionState.SetBool(KitsKey, kits);
@@ -195,7 +196,8 @@ namespace Legends.EditorTools
         // [Sprint 07 U6] the plays run, in one play session as the kits
         static int playStep = -1, playFrame;
         static MatchMinute playMinute;
-        static readonly System.Collections.Generic.List<(string file, string who, float t)> playShots = new System.Collections.Generic.List<(string, string, float)>();
+        // a play held at its frame (who: the player the camera goes to), or [Sprint 09 U1] a director's shot at its second
+        static readonly System.Collections.Generic.List<(string file, string who, float t, double at)> playShots = new System.Collections.Generic.List<(string, string, float, double)>();
 
         /// <summary>
         /// [Sprint 07 U6] Who does what, seen: the first goal from open play, held at its moves (PlayerMotion) one after the
@@ -218,10 +220,14 @@ namespace Legends.EditorTools
                 var pass = cues.Find(c => c.OnContact && c.Id != shooter && (shot == null || c.At < shot.At));
                 var party = cues.Find(c => c.Move.StartsWith("celebrate"));
                 playShots.Clear();
-                if (pass != null) playShots.Add(("play-1-pass.png", pass.Id, pass.At / last));
-                if (shot != null) playShots.Add(("play-2-shot.png", shot.Id, shot.At / last));
-                if (save != null) playShots.Add(("play-3-keeper.png", save.Id, save.At / last));
-                if (party != null) playShots.Add(("play-4-celebration.png", party.Id, Mathf.Min(1f, party.At / last + 1000f / m.Ms)));
+                if (pass != null) playShots.Add(("play-1-pass.png", pass.Id, pass.At / last, -1));
+                if (shot != null) playShots.Add(("play-2-shot.png", shot.Id, shot.At / last, -1));
+                if (save != null) playShots.Add(("play-3-keeper.png", save.Id, save.At / last, -1));
+                if (party != null) playShots.Add(("play-4-celebration.png", party.Id, Mathf.Min(1f, party.At / last + 1000f / m.Ms), -1));
+                // [Sprint 09 U1] then the same minute through the director: every shot, in the middle of it
+                var shots = Legends.Shots.ShotList.All(scene.PlanFor(m), m.Story, MatchScene.KeyOf(cues, m, scene.PlanFor(m)));
+                for (int i = 0; i < shots.Count; i++)
+                    playShots.Add(($"shot-{i + 1}-{shots[i].Name}.png", null, 0f, (shots[i].From + shots[i].To) / 2));
                 playMinute = m;
                 playStep = 0;
                 playFrame = 0;
@@ -235,9 +241,10 @@ namespace Legends.EditorTools
                 Finish("saved " + playShots.Count + " plays", playShots.Count > 0);
                 return;
             }
-            var (file, who, t) = playShots[playStep / 2];
+            var (file, who, t, second) = playShots[playStep / 2];
             // hold every frame (the playback would move on); shoot once the moves have had a few frames to pose
-            scene.Hold(playMinute, t);
+            if (second >= 0) scene.HoldAt(playMinute, second);
+            else scene.Hold(playMinute, t);
             if (playStep % 2 == 0)
             {
                 playFrame = Time.frameCount + 3;
@@ -245,6 +252,15 @@ namespace Legends.EditorTools
                 return;
             }
             if (Time.frameCount < playFrame) return;
+            if (second >= 0)
+            {
+                // the director's own camera, as on air
+                var director = scene.GetComponent<Legends.Shots.Director>();
+                Save(Camera.main, file);
+                Debug.Log($"Legends: captured {file}: {(director != null ? director.Now.ToString() : "no director")} at {second:0.00} s");
+                playStep++;
+                return;
+            }
             Transform person = null;
             foreach (Transform c in scene.transform) if (c.name.EndsWith("#" + who)) person = c;
             var at = person != null ? person.position : scene.Ball.position;
