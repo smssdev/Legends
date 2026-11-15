@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **الحالة** | ⏳ قادم، ينتظر طلب صاحب المشروع |
+| **الحالة** | ✅ مبني (2026-11-15) بطلب صاحب المشروع، وينتظر البناء والرفع من جهاز سليمان (N1) ومراجعة حمزة وT41 |
 | **المدة** | 3 أيام عمل |
 | **المنصة** | تطبيق، وخادم، وجهاز سليمان (البناء) |
 | **يعتمد على** | Sprint 62 (المفتاح الثابت) |
@@ -28,13 +28,13 @@
 
 | الرمز | المهمة | من | الملفات |
 |---|---|---|---|
-| N1 | **بناء 2.5.0 بالمفتاح الثابت** على جهاز سليمان (`GLM_KEYSTORE` وأخواتها، Sprint 62 F1)، و`apksigner verify --print-certs` يطابق بصمة `assetlinks.json` | سليمان مع Claude | `mobile/pubspec.yaml` |
-| N2 | **`ship_apk.sh` يرفع إلى السيرفر:** بعد البناء يرفع النسختين و`android.json` إلى volume `downloads` (بـ `scp` ثم `docker cp`، بمفتاح `~/.ssh/legends_vps`)، ونظيره `Ship-App.cmd` بنقرة مزدوجة كـ `Deploy-GLM.cmd`. يرفض إن كانت الشجرة غير نظيفة أو ليست على `main` | Claude | `mobile/tool/ship_apk.sh`، `deploy/vps/` |
-| N3 | **`android.json` أغنى:** `version` و`build` و`built_at` و`commit` و`size`، وصفحة التنزيل تعرض الإصدار وتاريخه وحجمه، و«حسابي» في التطبيق يعرض إصداره ورقم بنائه | Claude | `App\Apps\AppReleases`، `DownloadPage.vue`، `openapi.yaml`، `features/account/` |
-| N4 | **«تحديث متاح» في التطبيق:** بطاقة في الرئيسية حين يكون `latest` أحدث من المثبّت (غير إلزامية)، وزرها يفتح صفحة التنزيل. والإلزامية تبقى لـ `game.app.min_version` | Claude | `App\Apps\AppReleases`، `features/health/` |
-| N5 | **الانتقال من مفتاح التطوير:** رفع `game.app.min_version` إلى 2.5.0 بعد النشر فتدلّ القديمة على التنزيل، وصفحة التنزيل تقول مرة واحدة «احذف النسخة القديمة أولاً، حسابك محفوظ» ما دام هناك من يفتحها بنسخة أقدم من 2.5.0 (من ترويسة الإصدار في الطلبات) | Claude | `config/game.php`، `DownloadPage.vue`، `en.ts` |
-| N6 | **الإدارة تنبّه:** `Dockerfile` ينسخ رقم إصدار `mobile/pubspec.yaml` إلى الصورة، و«إصدارات التطبيق» في الإدارة تقول «المنشور أقدم من الكود» حين يختلفان | Claude | `Dockerfile`، `deploy.sh` (الأرشيف)، `AppReleasesAdmin.vue`، `AppReleaseController` |
-| N7 | **حد الحجم محلياً:** `ship_apk.sh` يفشل فوق 25 MB لأي معمارية (كان في `mobile.yml` المعطّل وحده)، ويطبع أكبر عشرة ملفات | Claude | `mobile/tool/ship_apk.sh` |
+| N1 ⏸ | **بناء 2.5.0 بالمفتاح الثابت** على جهاز سليمان (`GLM_KEYSTORE` وأخواتها، Sprint 62 F1)، و`apksigner verify --print-certs` يطابق بصمة `assetlinks.json` | سليمان مع Claude | `mobile/pubspec.yaml` |
+| N2 ✅ | **`ship_apk.sh` يرفع إلى السيرفر:** بعد البناء يرفع النسختين و`android.json` إلى volume `downloads` (بـ `scp` ثم `docker cp`، بمفتاح `~/.ssh/legends_vps`)، ونظيره `Ship-App.cmd` بنقرة مزدوجة كـ `Deploy-GLM.cmd`. يرفض إن كانت الشجرة غير نظيفة أو ليست على `main` | Claude | `mobile/tool/ship_apk.sh`، `deploy/vps/` |
+| N3 ✅ | **`android.json` أغنى:** `version` و`build` و`built_at` و`commit` و`size`، وصفحة التنزيل تعرض الإصدار وتاريخه وحجمه، و«حسابي» في التطبيق يعرض إصداره ورقم بنائه | Claude | `App\Apps\AppReleases`، `DownloadPage.vue`، `openapi.yaml`، `features/account/` |
+| N4 ✅ | **«تحديث متاح» في التطبيق:** بطاقة في الرئيسية حين يكون `latest` أحدث من المثبّت (غير إلزامية)، وزرها يفتح صفحة التنزيل. والإلزامية تبقى لـ `game.app.min_version` | Claude | `App\Apps\AppReleases`، `features/health/` |
+| N5 ⏸ | **الانتقال من مفتاح التطوير:** رفع `game.app.min_version` إلى 2.5.0 بعد النشر فتدلّ القديمة على التنزيل، وصفحة التنزيل تقول مرة واحدة «احذف النسخة القديمة أولاً، حسابك محفوظ» ما دام هناك من يفتحها بنسخة أقدم من 2.5.0 (من ترويسة الإصدار في الطلبات) | Claude | `config/game.php`، `DownloadPage.vue`، `en.ts` |
+| N6 ✅ | **الإدارة تنبّه:** `Dockerfile` ينسخ رقم إصدار `mobile/pubspec.yaml` إلى الصورة، و«إصدارات التطبيق» في الإدارة تقول «المنشور أقدم من الكود» حين يختلفان | Claude | `Dockerfile`، `deploy.sh` (الأرشيف)، `AppReleasesAdmin.vue`، `AppReleaseController` |
+| N7 ✅ | **حد الحجم محلياً:** `ship_apk.sh` يفشل فوق 25 MB لأي معمارية (كان في `mobile.yml` المعطّل وحده)، ويطبع أكبر عشرة ملفات | Claude | `mobile/tool/ship_apk.sh` |
 | T1 | **فحص دخان بعد كل نشر** (T41 في `README.md` القسم 10): تنزيل من الصفحة، وتثبيت، ودخول، وفتح دوري، ومباراة محاكي، وإشعار | حمزة | |
 
 **تعريف الانتهاء:**
@@ -46,7 +46,17 @@
 
 ## ما أُنجز وكيف يُختبر
 
-لم يبدأ.
+- **الإصدار 2.5.0+16** في `mobile/pubspec.yaml`.
+- **N2 وN7، الرفع بنقرة:** `mobile/tool/ship_apk.sh` (ونقرة مزدوجة على `mobile\tool\Ship-App.cmd`) يرفض غير `main` النظيف، ويرفض الرفع بلا `GLM_KEYSTORE` (لئلا يُنشر توقيع التطوير مرة أخرى)، ويبني النسختين، ويفشل فوق 25 MB ويطبع أكبر الملفات، ويكتب `android.json`، ثم يرفع الثلاثة إلى volume `downloads` (`storage/app/downloads/bundled`) بـ `scp` و`docker cp`، و`android.json` آخراً. `SHIP_LOCAL=1` يبني ويفحص بلا رفع، و`SHIP_ANY=1` لتجربة من فرع آخر.
+- **N3:** `android.json` يحمل `build` و`built_at` و`commit` و`size`، و`AppReleases::bundled()` يعيدها (`published_at` = تاريخ البناء)، وصفحة التنزيل تعرض الإصدار برقم بنائه وتاريخه. و`AppReleases::offered()` يعرض **الأحدث** من رفع الإدارة والنسخة المرفوعة بالسكربت (كان رفع قديم في الإدارة يحجب نسخة أحدث). وإصدار التطبيق ظاهر في إعداداته من قبل (`settings_sheet.dart`).
+- **N4:** `GET /health` يعيد `latest_app_version` (محفوظ 60 ثانية)، والتطبيق (`features/health/health.dart`: `appAge` و`updateReadyProvider`) يعرض في الرئيسية بطاقة «نسخة 2.5.0 جاهزة» بزر يفتح صفحة التنزيل. الإلزامية كما هي (`min_app_version`).
+- **N6:** `Dockerfile` ينسخ `mobile/pubspec.yaml` (وأرشيف `deploy.sh` يحمله)، و«إصدارات التطبيق» في الإدارة تعرض ما ينزّله اللاعبون وما في الكود، وتنبّه بالأحمر «التطبيق المنشور أقدم من الكود» (`AppReleases::codeVersion` و`behind`).
+- **الاختبارات:** `AppReleaseTest::test_the_newer_app_is_offered_with_its_build_and_the_panel_says_when_it_is_behind_the_code`، و`health_test.dart` (`appAge`)، و`ContractTest`.
+
+**ما بقي (على جهاز سليمان، لا يُبنى في الجلسة السحابية: لا Android SDK ولا المفتاح):**
+1. **N1:** `git pull` على `main`، ثم نقرة مزدوجة على `mobile\tool\Ship-App.cmd` والمتغيرات الأربعة `GLM_KEYSTORE…` مضبوطة. بعدها صفحة التنزيل تقول 2.5.0+16 وتاريخ اليوم.
+2. **N5:** بعد التأكد من التنزيل والتثبيت: `legends-set MIN_APP_VERSION 2.5.0` على السيرفر، فتطلب 2.3.0 التحديث وتفتح صفحة التنزيل. ملاحظة «احذف القديمة مرة واحدة» موجودة في صفحة التنزيل (Sprint 62 F2) وفي شاشة التحديث.
+3. **النشر أولاً:** الخادم يُنشر قبل الرفع (السكربت يكتب في مجلد تقرؤه النسخة الجديدة من الخادم كما القديمة، لكن التنبيه و`latest_app_version` من هذا السبرنت).
 
 ## ملاحظات وتعديلات بالتوازي
 

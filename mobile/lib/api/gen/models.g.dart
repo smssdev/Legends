@@ -468,15 +468,37 @@ class AdminAnnouncementsAnswer {
 }
 
 class AdminAppReleasesAnswer {
-  const AdminAppReleasesAnswer({required this.chunkKb, required this.maxMb, required this.releases});
+  const AdminAppReleasesAnswer({
+    this.behind,
+    required this.chunkKb,
+    this.codeVersion,
+    required this.maxMb,
+    this.offered,
+    required this.releases,
+  });
 
   factory AdminAppReleasesAnswer.fromJson(Object? json) {
     final r = JsonReader(json, 'AdminAppReleasesAnswer');
-    return AdminAppReleasesAnswer(chunkKb: r.int_('chunk_kb'), maxMb: r.int_('max_mb'), releases: r.list('releases', AppRelease.fromJson));
+    return AdminAppReleasesAnswer(
+      behind: r.boolOrNull('behind'),
+      chunkKb: r.int_('chunk_kb'),
+      codeVersion: r.stringOrNull('code_version'),
+      maxMb: r.int_('max_mb'),
+      offered: r.objectOrNull('offered', AppRelease.fromJson),
+      releases: r.list('releases', AppRelease.fromJson),
+    );
   }
 
+  /// [Sprint 71 N6] The app offered is older than the code
+  final bool? behind;
   final int chunkKb;
+
+  /// [Sprint 71 N6] The app's version in the code this server was built from
+  final String? codeVersion;
   final int maxMb;
+
+  /// [Sprint 71 N6] The app players download now
+  final AppRelease? offered;
   final List<AppRelease> releases;
 }
 
@@ -1544,7 +1566,10 @@ class AppAnswerFirebase {
 /// [Sprint 15 D1] A version of the app to download
 class AppRelease {
   const AppRelease({
+    this.build,
+    this.builtAt,
     required this.bytes,
+    this.commit,
     required this.downloads,
     required this.id,
     this.notes,
@@ -1561,7 +1586,10 @@ class AppRelease {
   factory AppRelease.fromJson(Object? json) {
     final r = JsonReader(json, 'AppRelease');
     return AppRelease(
+      build: r.intOrNull('build'),
+      builtAt: r.stringOrNull('built_at'),
       bytes: r.int_('bytes'),
+      commit: r.stringOrNull('commit'),
       downloads: r.int_('downloads'),
       id: r.int_('id'),
       notes: r.stringOrNull('notes'),
@@ -1576,7 +1604,15 @@ class AppRelease {
     );
   }
 
+  /// [Sprint 71 N3] The build number (the app that ships with the site; null for an upload)
+  final int? build;
+
+  /// [Sprint 71 N3] When it was built
+  final String? builtAt;
   final int bytes;
+
+  /// [Sprint 71 N3] The commit it was built from (short)
+  final String? commit;
   final int downloads;
   final int id;
   final String? notes;
@@ -1861,7 +1897,7 @@ class BootstrapAnswer {
     );
   }
 
-  /// GET /health's version, time, clock_offset, broadcast, support, adsense and analytics
+  /// GET /health's version, time, clock_offset, broadcast, support, bots, adsense and analytics
   final Map<String, Object?> config;
   final BootstrapAnswerHome? home;
   final int unread;
@@ -4427,9 +4463,11 @@ class HealthAnswer {
   const HealthAnswer({
     this.adsense,
     this.analytics,
+    this.bots,
     required this.broadcast,
     required this.clockOffset,
     required this.engineVersion,
+    this.latestAppVersion,
     required this.minAppVersion,
     required this.status,
     this.support,
@@ -4442,9 +4480,11 @@ class HealthAnswer {
     return HealthAnswer(
       adsense: r.objectOrNull('adsense', HealthAnswerAdsense.fromJson),
       analytics: r.objectOrNull('analytics', HealthAnswerAnalytics.fromJson),
+      bots: r.objectOrNull('bots', HealthAnswerBots.fromJson),
       broadcast: r.object('broadcast', HealthAnswerBroadcast.fromJson),
       clockOffset: r.int_('clock_offset'),
       engineVersion: r.int_('engine_version'),
+      latestAppVersion: r.stringOrNull('latest_app_version'),
       minAppVersion: r.string('min_app_version'),
       status: r.string('status'),
       support: r.objectOrNull('support', HealthAnswerSupport.fromJson),
@@ -4459,12 +4499,18 @@ class HealthAnswer {
   /// [X81] The site's measurement for the web, null when both are off
   final HealthAnswerAnalytics? analytics;
 
+  /// [Sprint 67] The game's bots and channels, straight from the site: a link each, null when that bot or channel is off
+  final HealthAnswerBots? bots;
+
   /// Where the test event of POST /health/ping arrives
   final HealthAnswerBroadcast broadcast;
 
   /// Seconds the game clock is ahead of real time (clock:travel, development only; 0 in production)
   final int clockOffset;
   final int engineVersion;
+
+  /// [Sprint 71 N4] The app the site offers now; an older app says an update is ready (not required). Null before the first
+  final String? latestAppVersion;
   final String minAppVersion;
   final String status;
 
@@ -4516,6 +4562,26 @@ class HealthAnswerAnalytics {
 
   /// Meta Pixel id
   final String? pixel;
+}
+
+/// [Sprint 67] The game's bots and channels, straight from the site: a link each, null when that bot or channel is off
+class HealthAnswerBots {
+  const HealthAnswerBots({this.telegram, this.telegramChannel, this.whatsapp, this.whatsappChannel});
+
+  factory HealthAnswerBots.fromJson(Object? json) {
+    final r = JsonReader(json, 'HealthAnswerBots');
+    return HealthAnswerBots(
+      telegram: r.stringOrNull('telegram'),
+      telegramChannel: r.stringOrNull('telegram_channel'),
+      whatsapp: r.stringOrNull('whatsapp'),
+      whatsappChannel: r.stringOrNull('whatsapp_channel'),
+    );
+  }
+
+  final String? telegram;
+  final String? telegramChannel;
+  final String? whatsapp;
+  final String? whatsappChannel;
 }
 
 /// Where the test event of POST /health/ping arrives
@@ -8701,6 +8767,122 @@ class MessagesUnreadAnswer {
   }
 
   final int unread;
+}
+
+class MessengerBot {
+  const MessengerBot({
+    required this.available,
+    this.dailyHour,
+    required this.linked,
+    required this.live,
+    required this.muted,
+    this.openUrl,
+  });
+
+  factory MessengerBot.fromJson(Object? json) {
+    final r = JsonReader(json, 'MessengerBot');
+    return MessengerBot(
+      available: r.bool_('available'),
+      dailyHour: r.intOrNull('daily_hour'),
+      linked: r.bool_('linked'),
+      live: r.bool_('live'),
+      muted: r.bool_('muted'),
+      openUrl: r.stringOrNull('open_url'),
+    );
+  }
+
+  /// Its keys are set on the server
+  final bool available;
+
+  /// [Sprint 68] The daily summary's Cairo hour, null when off
+  final int? dailyHour;
+  final bool linked;
+
+  /// [Sprint 68] His live matches reach him on it
+  final bool live;
+
+  /// He silenced the notifications on it
+  final bool muted;
+
+  /// The link that opens the bot's chat
+  final String? openUrl;
+}
+
+/// [Sprint 67] The game's bots for this account
+class MessengerStatus {
+  const MessengerStatus({required this.channels, required this.telegram, required this.whatsapp});
+
+  factory MessengerStatus.fromJson(Object? json) {
+    final r = JsonReader(json, 'MessengerStatus');
+    return MessengerStatus(
+      channels: r.object('channels', MessengerStatusChannels.fromJson),
+      telegram: r.object('telegram', MessengerBot.fromJson),
+      whatsapp: r.object('whatsapp', MessengerStatusWhatsapp.fromJson),
+    );
+  }
+
+  final MessengerStatusChannels channels;
+  final MessengerBot telegram;
+  final MessengerStatusWhatsapp whatsapp;
+}
+
+class MessengerStatusChannels {
+  const MessengerStatusChannels({this.telegram, this.whatsapp});
+
+  factory MessengerStatusChannels.fromJson(Object? json) {
+    final r = JsonReader(json, 'MessengerStatusChannels');
+    return MessengerStatusChannels(telegram: r.stringOrNull('telegram'), whatsapp: r.stringOrNull('whatsapp'));
+  }
+
+  /// The game's public Telegram channel
+  final String? telegram;
+
+  /// The game's WhatsApp channel
+  final String? whatsapp;
+}
+
+class MessengerStatusWhatsapp {
+  const MessengerStatusWhatsapp({
+    required this.available,
+    this.dailyHour,
+    required this.linked,
+    required this.live,
+    required this.muted,
+    this.openUrl,
+    this.windowOpen,
+  });
+
+  factory MessengerStatusWhatsapp.fromJson(Object? json) {
+    final r = JsonReader(json, 'MessengerStatusWhatsapp');
+    return MessengerStatusWhatsapp(
+      available: r.bool_('available'),
+      dailyHour: r.intOrNull('daily_hour'),
+      linked: r.bool_('linked'),
+      live: r.bool_('live'),
+      muted: r.bool_('muted'),
+      openUrl: r.stringOrNull('open_url'),
+      windowOpen: r.boolOrNull('window_open'),
+    );
+  }
+
+  /// Its keys are set on the server
+  final bool available;
+
+  /// [Sprint 68] The daily summary's Cairo hour, null when off
+  final int? dailyHour;
+  final bool linked;
+
+  /// [Sprint 68] His live matches reach him on it
+  final bool live;
+
+  /// He silenced the notifications on it
+  final bool muted;
+
+  /// The link that opens the bot's chat
+  final String? openUrl;
+
+  /// He wrote to the bot in the last 23 hours: WhatsApp notifications reach him (free)
+  final bool? windowOpen;
 }
 
 class MissedMatch {

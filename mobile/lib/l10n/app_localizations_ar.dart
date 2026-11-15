@@ -116,6 +116,14 @@ class LAr extends L {
   String get update => 'حدّث الآن';
 
   @override
+  String updateReady(String version) {
+    return 'نسخة $version جاهزة';
+  }
+
+  @override
+  String get updateReadyAction => 'حدّث';
+
+  @override
   String get offlineTitle => 'لا اتصال';
 
   @override

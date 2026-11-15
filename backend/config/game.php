@@ -492,6 +492,8 @@ return [
     // uploaded in pieces of chunk_kb (under any upload limit of PHP or nginx).
     'app' => ['min_version' => env('MIN_APP_VERSION', env('APP_VERSION', '0.1.0')), 'token_ttl_days' => 30,
         'downloads_dir' => env('APP_DOWNLOADS_DIR', storage_path('app/downloads')), 'max_mb' => 200, 'chunk_kb' => 1536,
+        // [Sprint 71 N6] The app's pubspec beside the backend (the repository, and the image: Dockerfile copies it).
+        'pubspec' => env('APP_PUBSPEC', base_path('../mobile/pubspec.yaml')),
         // [Sprint 62 B1] The Android app's id and its release key's SHA-256 fingerprint (keytool -list -v, «AA:BB:…»; not a
         // secret: anyone can read it from the APK), several separated by commas while two keys live. Set on the server
         // (legends-set ANDROID_CERT_SHA256); until then /.well-known/assetlinks.json answers 404 and the links open the site.

@@ -1342,6 +1342,11 @@ export interface paths {
                             version: string;
                             /** @example 1.0.0 */
                             min_app_version: string;
+                            /**
+                             * @description [Sprint 71 N4] The app the site offers now; an older app says an update is ready (not required). Null before the first
+                             * @example 2.5.0
+                             */
+                            latest_app_version?: string | null;
                             engine_version: number;
                             /**
                              * Format: date-time
@@ -8955,6 +8960,12 @@ export interface paths {
                             releases: components["schemas"]["AppRelease"][];
                             chunk_kb: number;
                             max_mb: number;
+                            /** @description [Sprint 71 N6] The app players download now */
+                            offered?: components["schemas"]["AppRelease"] | null;
+                            /** @description [Sprint 71 N6] The app's version in the code this server was built from */
+                            code_version?: string | null;
+                            /** @description [Sprint 71 N6] The app offered is older than the code */
+                            behind?: boolean;
                         };
                     };
                 };
@@ -15513,6 +15524,15 @@ export interface components {
             url: string | null;
             /** @description [2026-11-06] The app that ships with the site: its file for old 32-bit phones */
             old_phones_url?: string | null;
+            /** @description [Sprint 71 N3] The build number (the app that ships with the site; null for an upload) */
+            build?: number | null;
+            /**
+             * Format: date-time
+             * @description [Sprint 71 N3] When it was built
+             */
+            built_at?: string | null;
+            /** @description [Sprint 71 N3] The commit it was built from (short) */
+            commit?: string | null;
         };
         /** @description [Sprint 43 W2] A store package (it stays) or timed offer */
         StoreItem: {

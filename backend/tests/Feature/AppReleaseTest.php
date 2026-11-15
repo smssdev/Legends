@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
@@ -104,6 +105,43 @@ class AppReleaseTest extends TestCase
                 ->assertJsonPath('android.version', '9.9.9')->assertJsonPath('android.bytes', 2048)
                 ->assertJsonPath('android.url', url('/downloads/glm-test.apk'))->assertJsonPath('android.old_phones_url', null);
             $this->get('/api/v1/app/android.apk')->assertRedirect(url('/downloads/glm-test.apk'));
+        } finally {
+            @unlink("$dir/glm-test.apk");
+            $kept !== null ? file_put_contents($about, $kept) : @unlink($about);
+            if ($made) {
+                @rmdir($dir);
+            }
+        }
+    }
+
+    /** [Sprint 71 N3, N4, N6] The shipped app's build details, the newer of the two offered, and the panel's warning. */
+    public function test_the_newer_app_is_offered_with_its_build_and_the_panel_says_when_it_is_behind_the_code(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->upload($admin, "PK\x03\x04".random_bytes(5000), '2.3.0')->assertOk();
+        $pubspec = $this->dir.'/pubspec.yaml';
+        file_put_contents($pubspec, "name: glm\nversion: 2.5.0+16\n");
+        config(['game.app.pubspec' => $pubspec]);
+        $this->actingAs($admin)->getJson('/api/v1/admin/app-releases')->assertOk()
+            ->assertJsonPath('code_version', '2.5.0')->assertJsonPath('behind', true)->assertJsonPath('offered.version', '2.3.0');
+        $this->getJson('/api/v1/health')->assertOk()->assertJsonPath('latest_app_version', '2.3.0');
+
+        $dir = public_path('downloads');
+        $made = ! is_dir($dir);
+        @mkdir($dir, 0775, true);
+        $about = "$dir/android.json";
+        $kept = is_file($about) ? file_get_contents($about) : null;
+        file_put_contents("$dir/glm-test.apk", 'PK'.str_repeat('x', 2046));
+        file_put_contents($about, json_encode(['version' => '2.5.0', 'build' => 16, 'built_at' => '2026-11-15T10:00:00Z', 'commit' => 'abc1234def', 'file' => 'glm-test.apk']));
+        try {
+            Cache::flush();
+            // The shipped app is newer than the upload: it is the one offered, with what its build wrote.
+            $this->getJson('/api/v1/app')->assertOk()->assertJsonPath('android.version', '2.5.0')->assertJsonPath('android.build', 16)
+                ->assertJsonPath('android.built_at', '2026-11-15T10:00:00Z')->assertJsonPath('android.published_at', '2026-11-15T10:00:00Z')
+                ->assertJsonPath('android.commit', 'abc1234def');
+            $this->get('/api/v1/app/android.apk')->assertRedirect(url('/downloads/glm-test.apk'));
+            $this->getJson('/api/v1/health')->assertJsonPath('latest_app_version', '2.5.0');
+            $this->actingAs($admin)->getJson('/api/v1/admin/app-releases')->assertJsonPath('behind', false);
         } finally {
             @unlink("$dir/glm-test.apk");
             $kept !== null ? file_put_contents($about, $kept) : @unlink($about);

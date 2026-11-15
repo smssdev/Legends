@@ -302,6 +302,18 @@ abstract class L {
   /// **'حدّث الآن'**
   String get update;
 
+  /// No description provided for @updateReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'نسخة {version} جاهزة'**
+  String updateReady(String version);
+
+  /// No description provided for @updateReadyAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدّث'**
+  String get updateReadyAction;
+
   /// No description provided for @offlineTitle.
   ///
   /// In ar, this message translates to:
