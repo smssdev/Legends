@@ -9,6 +9,7 @@ import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../leagues/page.dart';
 import 'team_data.dart';
+import '../../ui/size_class.dart';
 
 /// [Sprint 60 F4] The captain and the set-piece takers, as the site's TakersPage (Sprint 48 T4), which the app did not
 /// have: a card each with the player, his rating and his skill at it, and «تبديل اللاعب» to choose from the whole squad
@@ -30,7 +31,7 @@ class TakersScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(teamProvider(leagueId)),
         data: (team) => LayoutBuilder(
           builder: (context, box) {
-            final cols = box.maxWidth >= 700 ? 2 : 1;
+            final cols = GlmFit.isRoomy(box.maxWidth) ? 2 : 1;
             final w = (box.maxWidth - 24 - (cols - 1) * GlmSpace.sm) / cols;
             return SingleChildScrollView(
               padding: const EdgeInsets.all(12),

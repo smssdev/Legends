@@ -159,28 +159,33 @@ class _GlmSkeletonState extends State<GlmSkeleton> with SingleTickerProviderStat
       child: RepaintBoundary(
         child: AnimatedBuilder(
           animation: _c,
-          builder: (context, _) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var i = 1; i <= widget.count; i++)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: GlmSpace.sm),
-                  child: FractionallySizedBox(
-                    widthFactor: widget.kind == GlmSkeletonKind.line ? (100 - (i * 17) % 40) / 100 : 1,
-                    child: Container(
-                      height: h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(r),
-                        gradient: LinearGradient(
-                          begin: Alignment(-3 + _c.value * 4, 0),
-                          end: Alignment(-1 + _c.value * 4, 0),
-                          colors: [p.surfaceSunk, p.surfaceRaised, p.surfaceSunk],
+          // [Sprint 72 R5] Held in a still scroll: with the keyboard up (a third of the height left) the place holders
+          // are clipped, not an overflow.
+          builder: (context, _) => SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 1; i <= widget.count; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: GlmSpace.sm),
+                    child: FractionallySizedBox(
+                      widthFactor: widget.kind == GlmSkeletonKind.line ? (100 - (i * 17) % 40) / 100 : 1,
+                      child: Container(
+                        height: h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(r),
+                          gradient: LinearGradient(
+                            begin: Alignment(-3 + _c.value * 4, 0),
+                            end: Alignment(-1 + _c.value * 4, 0),
+                            colors: [p.surfaceSunk, p.surfaceRaised, p.surfaceSunk],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

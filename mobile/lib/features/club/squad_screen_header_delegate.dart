@@ -70,7 +70,7 @@ class _Cells extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
-      final roomy = box.maxWidth >= 640;
+      final roomy = !GlmFit.isNarrow(box.maxWidth);
       return Row(
         children: [
           Expanded(child: name),
@@ -199,10 +199,8 @@ class _Row extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Flexible(
-                  child: Text(
+                  child: PlayerName(
                     p.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.start,
                     style: glmText(GlmType.headline, fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, color: ink),
                   ),

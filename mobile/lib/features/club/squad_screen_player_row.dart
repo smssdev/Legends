@@ -43,47 +43,46 @@ class PlayerRow extends StatelessWidget {
                             PositionChip(p.position, p.line),
                             const SizedBox(width: 8),
                             // Player names stay in English in every language (decision 2026-11-01).
-                            Flexible(
-                              child: Text(
-                                p.name,
-                                // [Sprint 60 F8] A long name takes a second line in a narrow column, never «…».
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                textDirection: TextDirection.ltr,
-                                style: glmText(GlmType.body, fontWeight: FontWeight.w800),
-                              ),
+                            // [Sprint 72 R6] One line: whole, then «G. Last», then the last name; never broken in a word.
+                            Expanded(
+                              child: PlayerName(p.name, style: glmText(GlmType.body, fontWeight: FontWeight.w800)),
                             ),
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            // [Sprint 63 G5] Why he cannot play, by the set's mark (it was an emoji).
-                            if (!p.available) ...[GlmEventMark(p.injured > 0 ? 'injury' : 'red', size: 14), const SizedBox(width: 4)],
-                            Expanded(
-                              child: Text(
-                                !p.available
-                                    ? (p.injured > 0 ? l.injuredFor(p.injured) : l.suspendedFor(p.suspended))
-                                    : '${l.age(p.age)} · ${starter
-                                          ? l.starter
-                                          : p.role == 'bench'
-                                          ? l.bench
-                                          : l.reserve}',
-                                maxLines: 2,
-                                style: glmText(
-                                  GlmType.caption,
-                                  color: p.available ? (starter ? context.glm.successText : c.textMuted) : context.glm.liveText,
-                                  fontWeight: starter ? FontWeight.w700 : FontWeight.w500,
+                        LayoutBuilder(
+                          builder: (context, box) {
+                            final roomy = GlmFit.hasRowExtras(box.maxWidth);
+                            return Row(
+                              children: [
+                                // [Sprint 63 G5] Why he cannot play, by the set's mark (it was an emoji).
+                                if (!p.available) ...[GlmEventMark(p.injured > 0 ? 'injury' : 'red', size: 14), const SizedBox(width: 4)],
+                                Expanded(
+                                  child: Text(
+                                    !p.available
+                                        ? (p.injured > 0 ? l.injuredFor(p.injured) : l.suspendedFor(p.suspended))
+                                        : '${l.age(p.age)} · ${starter
+                                              ? l.starter
+                                              : p.role == 'bench'
+                                              ? l.bench
+                                              : l.reserve}',
+                                    maxLines: 2,
+                                    style: glmText(
+                                      GlmType.caption,
+                                      color: p.available ? (starter ? context.glm.successText : c.textMuted) : context.glm.liveText,
+                                      fontWeight: starter ? FontWeight.w700 : FontWeight.w500,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Text(
-                              '${p.fitness}%',
-                              style: glmText(GlmType.caption, fontFamily: GlmFonts.numbers, color: c.textMuted),
-                            ),
-                            const SizedBox(width: 6),
-                            LevelBar(p.fitness / 100, color: fitnessColor(p.fitness)),
-                          ],
+                                Text(
+                                  '${p.fitness}%',
+                                  style: glmText(GlmType.caption, fontFamily: GlmFonts.numbers, color: fitnessColor(p.fitness)),
+                                ),
+                                // [Sprint 72 R6] The bar beside the figure only where the row has room for it.
+                                if (roomy) ...[const SizedBox(width: 6), LevelBar(p.fitness / 100, color: fitnessColor(p.fitness))],
+                              ],
+                            );
+                          },
                         ),
                       ],
                     ),

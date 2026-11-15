@@ -19,6 +19,7 @@ import 'l10n/app_localizations.dart';
 import 'features/health/offline_bar.dart';
 import 'router.dart';
 import 'ui/theme.dart';
+import 'ui/size_class.dart';
 
 /// [Sprint 65 F2] The largest system text size the screens follow (M-A02): tested at it, held there beyond it.
 const maxTextScale = 1.3;
@@ -108,11 +109,14 @@ class _GlmAppState extends ConsumerState<GlmApp> {
       // [Sprint 65 F2] The system's text size up to 1.3× (the screens are tested there, test/shots); beyond it held at 1.3.
       builder: (context, child) => MediaQuery.withClampedTextScaling(
         maxScaleFactor: maxTextScale,
-        child: update
-            ? const UpdateRequiredScreen()
-            : OfflineBar(
-                child: AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
-              ),
+        // [Sprint 72 R7] A tablet: everything drawn larger (ui/size_class.dart).
+        child: GlmScale(
+          child: update
+              ? const UpdateRequiredScreen()
+              : OfflineBar(
+                  child: AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
+                ),
+        ),
       ),
     );
   }

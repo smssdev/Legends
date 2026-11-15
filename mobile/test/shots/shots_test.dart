@@ -39,6 +39,7 @@ import 'package:glm/features/money/finance_screen.dart';
 import 'package:glm/features/money/money_data.dart';
 import 'package:glm/features/wallet/wallet_screen.dart';
 import 'package:glm/l10n/app_localizations.dart';
+import 'package:glm/ui/size_class.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -128,6 +129,22 @@ List<String> cutTexts(WidgetTester t) {
 double _scale = 1;
 String _lang = 'ar';
 
+/// [Sprint 72 R1] A phone the screens are drawn on besides the reference one: its screen, the notch's inset on either
+/// side and the keyboard's height when it is up. Android's commonest landscape height is 360, not the reference's 390.
+typedef Device = ({String name, Size size, double left, double right, double keyboard, bool golden});
+
+const devices = <Device>[
+  (name: 'small', size: Size(640, 360), left: 0, right: 0, keyboard: 0, golden: false),
+  (name: 'a360', size: Size(800, 360), left: 0, right: 0, keyboard: 0, golden: true),
+  (name: 'big', size: Size(915, 412), left: 0, right: 0, keyboard: 0, golden: false),
+  (name: 'tablet', size: Size(1280, 800), left: 0, right: 0, keyboard: 0, golden: false),
+  (name: 'notch-left', size: Size(800, 360), left: 40, right: 0, keyboard: 0, golden: false),
+  (name: 'notch-right', size: Size(800, 360), left: 0, right: 40, keyboard: 0, golden: false),
+];
+const waitsForSprint73 = {'lineup on small', 'tactics on small', 'tactics on notch-left', 'tactics on notch-right'};
+const keyboardUp = (name: 'keyboard', size: Size(800, 360), left: 0.0, right: 0.0, keyboard: 200.0, golden: false);
+Device? _device;
+
 /// [Sprint 65 F1, F3] Run as a screen reader would read it: every control named and at least 48×48 to the finger.
 bool _guides = false;
 
@@ -142,12 +159,21 @@ Future<void> shot(
   Duration? at,
   IconData? tapIcon,
   double scroll = 0,
+  int? tapField,
+  String? thenTap,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   DiskImages.instance = DiskImages.none();
+  final d = _device;
+  if (d != null) size = d.size;
   t.view.physicalSize = size * 2;
   t.view.devicePixelRatio = 2;
+  if (d != null) {
+    t.view.padding = FakeViewPadding(left: d.left * 2, right: d.right * 2);
+    t.view.viewPadding = FakeViewPadding(left: d.left * 2, right: d.right * 2);
+    t.view.viewInsets = FakeViewPadding(bottom: d.keyboard * 2);
+  }
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;
   await t.runAsync(fonts);
@@ -167,7 +193,8 @@ Future<void> shot(
         ],
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(_scale)),
-          child: child!,
+          // [Sprint 72 R7] As the app's root: a tablet draws everything larger.
+          child: GlmScale(child: child!),
         ),
         home: screen,
       ),
@@ -202,6 +229,24 @@ Future<void> shot(
       await t.pump(const Duration(milliseconds: 100));
     }
   }
+  if (thenTap != null) {
+    await t.tap(find.textContaining(thenTap).last);
+    for (var i = 0; i < 8; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+  }
+  if (tapField != null) {
+    // [Sprint 72 R5] A field focused with the keyboard up: it must be whole above the keyboard.
+    final field = find.byType(EditableText).at(tapField);
+    await t.ensureVisible(field);
+    await t.tap(field, warnIfMissed: false);
+    for (var i = 0; i < 8; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+    final at = t.getRect(field);
+    final top = size.height - (_device?.keyboard ?? 0);
+    expect(at.bottom <= top + .5 && at.top >= 0, isTrue, reason: '$name: the field is under the keyboard ($at, keyboard from $top)');
+  }
   if (scroll > 0) {
     await t.drag(find.byType(Scrollable).first, Offset(0, -scroll));
     for (var i = 0; i < 6; i++) {
@@ -210,7 +255,28 @@ Future<void> shot(
   }
   // [Sprint 60 F8] No text cut on any screen (it was «تُفتح مجاناً بعد 1144 يو…» and «وقت مستـ…»).
   expect(cutTexts(t), isEmpty, reason: '$name ($_lang): a text is cut${_scale == 1 ? '' : ' at the text size $_scale'}');
-  if (_guides) {
+  if (d != null) {
+    // [Sprint 72 R3] The dock never scrolls: every section is on the screen, whatever its height.
+    for (final e in find.descendant(of: find.byType(ConsoleDock), matching: find.byType(Scrollable)).evaluate()) {
+      final at = ((e as StatefulElement).state as ScrollableState).position;
+      expect(at.maxScrollExtent, 0, reason: '$name on ${d.name}: the dock scrolls');
+    }
+    // [Sprint 72 R4] Nothing of the screen under the notch: every text clear of the inset on its side.
+    for (final e in find.byType(RichText).evaluate()) {
+      final box = e.renderObject! as RenderBox;
+      if (!box.hasSize || box.size.isEmpty) continue;
+      // Its bounds on the screen, whichever way it is turned (a label standing on its side).
+      final at = MatrixUtils.transformRect(box.getTransformTo(null), Offset.zero & box.size);
+      expect(
+        at.left >= d.left - .5 && at.right <= d.size.width - d.right + .5,
+        isTrue,
+        reason: '$name on ${d.name}: «${(e.widget as RichText).text.toPlainText()}» under the notch ($at)',
+      );
+    }
+    if (d.golden && _scale == 1 && _lang == 'ar') {
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/${d.name}/$name.png'));
+    }
+  } else if (_guides) {
     final reader = t.ensureSemantics();
     await t.pump();
     await expectLater(t, meetsGuideline(labeledTapTargetGuideline));
@@ -413,6 +479,16 @@ void main() {
       addTearDown(() => _lang = 'ar');
       await eight[name]!(t);
     });
+    // [Sprint 72 R1] On every phone of the matrix: no overflow, no text cut, the dock whole, nothing under a notch.
+    for (final d in devices) {
+      // The two screens Sprint 73 lays out anew (D3, D4) wait for it on the phones they do not fit yet.
+      if (waitsForSprint73.contains('$name on ${d.name}')) continue;
+      testWidgets('$name on ${d.name}', (t) async {
+        _device = d;
+        addTearDown(() => _device = null);
+        await eight[name]!(t);
+      });
+    }
     // [Sprint 65 F1, F3] Every control with a name a screen reader says, and a 48×48 target (Flutter's own guidelines).
     testWidgets('$name: named controls, 48 targets', (t) async {
       _guides = true;
@@ -420,4 +496,24 @@ void main() {
       await eight[name]!(t);
     });
   }
+  // [Sprint 72 R5] The keyboard up (in landscape it takes more than half the screen): nothing overflows, and the
+  // field being typed in stays above it.
+  testWidgets('login with the keyboard up', (t) async {
+    _device = keyboardUp;
+    addTearDown(() => _device = null);
+    await shot(t, 'login', const LoginScreen(), [], tapField: 1);
+  });
+  testWidgets('the match chat with the keyboard up', (t) async {
+    _device = keyboardUp;
+    addTearDown(() => _device = null);
+    await shot(
+      t,
+      'live-chat',
+      const LiveMatchScreen(matchId: 77),
+      [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())],
+      tap: 'الدردشة',
+      thenTap: 'الدردشة ',
+      tapField: 0,
+    );
+  });
 }

@@ -20,6 +20,7 @@ import 'daily_tasks_card.dart';
 import 'hub_tiles.dart';
 import 'office.dart';
 import 'office_extras.dart';
+import '../../../ui/size_class.dart';
 
 class ClubTab extends ConsumerWidget {
   const ClubTab(this.lg, {super.key});
@@ -93,7 +94,7 @@ class ClubTab extends ConsumerWidget {
                       ],
                     ),
                   );
-            if (box.maxWidth < 560 || box.maxHeight < 300) {
+            if (GlmFit.isNarrow(box.maxWidth) || GlmFit.isCramped(box.maxHeight)) {
               // [Sprint 47] The approved design's office on a phone: the next match, what waits for the coach, then the
               // sections as big tiles.
               return ListView(
@@ -121,7 +122,7 @@ class ClubTab extends ConsumerWidget {
             }
             // [Sprint 60 F3] The office as the approved draft draws it (Office.html): the next match and its countdown first,
             // the clocks under it, the table around my place on a wide screen, and what waits for the coach beside.
-            final wide = box.maxWidth >= 900;
+            final wide = GlmFit.isWide(box.maxWidth);
             return Padding(
               padding: const EdgeInsets.all(8),
               child: Row(

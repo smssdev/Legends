@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show Ticker;
 
 import '../theme.dart';
+import '../size_class.dart';
 
 /// [Sprint 50 M3, M16, M23] The landscape console's own pieces, each on its counterpart on the site (the owner, 2026-11-10:
 /// the app never leaves the site's design): the card title's gold tick (main section > h2), the split screen, the two
@@ -66,7 +67,7 @@ class GlmSplitLayout extends StatelessWidget {
     padding: padding,
     child: LayoutBuilder(
       builder: (context, c) {
-        if (c.maxWidth < 560) {
+        if (GlmFit.isNarrow(c.maxWidth)) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

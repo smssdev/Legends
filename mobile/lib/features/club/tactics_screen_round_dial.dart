@@ -134,7 +134,8 @@ class _Carousel<T extends Object> extends StatelessWidget {
       child: InkWell(
         customBorder: const CircleBorder(),
         onTap: () => step(d),
-        child: SizedBox.square(dimension: 44, child: Icon(icon, color: Colors.white, size: 28)),
+        // [Sprint 72 R6] 40 across: the two arrows and the choice between them fit a 640 phone's column (they overflowed it).
+        child: SizedBox(width: 40, height: 44, child: Icon(icon, color: Colors.white, size: 26)),
       ),
     );
     return GestureDetector(
@@ -256,9 +257,8 @@ class _Lines extends StatelessWidget {
                         () => onSet(key, values[(values.indexOf('${t.values[key]}') - 1) % values.length]),
                       ),
                       Expanded(
-                        child: Text(
+                        child: FitLabel(
                           labels['${t.values[key]}'] ?? '',
-                          textAlign: TextAlign.center,
                           style: glmText(GlmType.title, color: Colors.white, fontWeight: FontWeight.w800),
                         ),
                       ),
@@ -309,7 +309,8 @@ class _Arrow extends StatelessWidget {
         GameSounds.play(Sfx.tap);
         onTap();
       },
-      child: SizedBox.square(dimension: 44, child: Icon(icon, color: Colors.white, size: 28)),
+      // [Sprint 72 R6] 40 across: the two arrows and the choice between them fit a 640 phone's column (they overflowed it).
+      child: SizedBox(width: 40, height: 44, child: Icon(icon, color: Colors.white, size: 26)),
     ),
   );
 }

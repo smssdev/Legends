@@ -84,7 +84,11 @@ extension _LiveSocial on _LiveState {
         builder: (ctx, set) => Padding(
           padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
           child: SizedBox(
-            height: MediaQuery.of(ctx).size.height * .6,
+            // [Sprint 72 R5] In landscape the keyboard leaves under half the screen: the sheet takes what is left
+            // above it (it was 60% of the screen whatever the keyboard, and overflowed), never less than the field.
+            height: (MediaQuery.of(ctx).size.height * .6)
+                .clamp(72.0, (MediaQuery.of(ctx).size.height - MediaQuery.of(ctx).viewInsets.bottom - 40).clamp(72.0, double.infinity))
+                .toDouble(),
             child: Column(
               children: [
                 Expanded(

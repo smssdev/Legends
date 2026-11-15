@@ -56,13 +56,9 @@ class GlmButton extends StatelessWidget {
           ],
           Flexible(
             // [Sprint 60 F8] The label wraps to a second line before anything is cut («وقت مستقطع», not «وقت مستـ…»).
-            child: Text(
-              label,
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: context.text.labelLarge?.copyWith(color: fg, fontSize: 16, height: 1.2),
-            ),
+            // [Sprint 72 R6] And never breaks inside a word («التكتيـ/ك» on a 640 phone): it steps down to the caption's
+            // size first, and only then is cut.
+            child: FitLabel(label, style: context.text.labelLarge?.copyWith(color: fg, fontSize: 16, height: 1.2)),
           ),
         ],
       ],
@@ -113,6 +109,62 @@ class GlmButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// [Sprint 72 R6] A short label (a button's, a tab's) in the room it is given: on up to [maxLines] lines broken between
+/// words only, stepping its size down to [min] (the smallest text of the design, 12) before a word would break or the
+/// text be cut. The shape lives here, not in the screens.
+class FitLabel extends StatelessWidget {
+  const FitLabel(this.text, {super.key, this.style, this.maxLines = 2, this.min = 12, this.textAlign = TextAlign.center});
+
+  final String text;
+  final TextStyle? style;
+  final int maxLines;
+  final double min;
+  final TextAlign textAlign;
+
+  @override
+  Widget build(BuildContext context) {
+    final base = DefaultTextStyle.of(context).style.merge(style);
+    final from = base.fontSize ?? 14;
+    final scaler = MediaQuery.textScalerOf(context);
+    final direction = Directionality.of(context);
+    return LayoutBuilder(
+      builder: (context, box) {
+        final room = box.maxWidth;
+        var size = from;
+        if (room.isFinite) {
+          double wide(String t, double s, {int? lines, double max = double.infinity}) {
+            final tp = TextPainter(
+              text: TextSpan(
+                text: t,
+                style: base.copyWith(fontSize: s),
+              ),
+              textDirection: direction,
+              textScaler: scaler,
+              maxLines: lines,
+            )..layout(maxWidth: max);
+            final w = lines != null && tp.didExceedMaxLines ? double.infinity : tp.width;
+            tp.dispose();
+            return w;
+          }
+
+          final words = text.split(RegExp(r'\s+'));
+          bool fits(double s) => words.every((w) => wide(w, s) <= room) && wide(text, s, lines: maxLines, max: room).isFinite;
+          while (size > min && !fits(size)) {
+            size -= 1;
+          }
+        }
+        return Text(
+          text,
+          maxLines: maxLines,
+          textAlign: textAlign,
+          overflow: TextOverflow.ellipsis,
+          style: base.copyWith(fontSize: size < min ? min : size),
+        );
+      },
     );
   }
 }
