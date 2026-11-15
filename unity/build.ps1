@@ -5,6 +5,7 @@
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 setup     opens the project once and adds the packages
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 demo      builds the Arena and the match scene
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 players   the players' materials from the Blender export, and unity\Captures\players.png
+#   powershell -ExecutionPolicy Bypass -File unity\build.ps1 moves     every move of Animation\Moves on players of the three builds, to unity\Captures\moves
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 capture   plays the match and saves minutes 5, 20, 45, 70, 90 to unity\Captures
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 splash    the app's opening squad, our players under the lights, to mobile\assets\splash\squad.png
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 kits      minute 20 in the kits of five matches, far and close, and the bench (unity\Captures\kits-*.png)
@@ -16,7 +17,7 @@
 #
 # The log of every step goes to the window and to unity\Logs\<step>.log.
 param(
-    [Parameter(Position = 0)][ValidateSet('install', 'where', 'setup', 'demo', 'players', 'splash', 'capture', 'kits', 'test', 'serve', 'open', 'webgl', 'android')][string]$Step = 'demo',
+    [Parameter(Position = 0)][ValidateSet('install', 'where', 'setup', 'demo', 'players', 'moves', 'splash', 'capture', 'kits', 'test', 'serve', 'open', 'webgl', 'android')][string]$Step = 'demo',
     [string]$Unity = ''   # Unity.exe; found under Unity Hub's editors when empty
 )
 $ErrorActionPreference = 'Stop'

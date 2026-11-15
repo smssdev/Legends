@@ -248,8 +248,9 @@ namespace Legends.Tests
             }
             var final = MatchMinute.From(ticks[ticks.Count - 1], 3000);
             Assert.IsTrue(final.Finished);
-            Assert.AreEqual(1, final.HomeGoals);
-            Assert.AreEqual(1, final.AwayGoals);
+            // the score of the sample as engine 16 played it (Sprint 49 recorded it again)
+            Assert.AreEqual(3, final.HomeGoals);
+            Assert.AreEqual(2, final.AwayGoals);
         }
     }
 }

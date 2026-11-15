@@ -261,6 +261,7 @@ def materials(pieces, primary, secondary, pattern, srgb):
         'shorts': node_mat('Shorts', shorts_colour(primary), secondary, False),
         'socks': node_mat('Socks', primary, secondary, False),
         'boots': node_mat('Boots', '#15171c', '#15171c', False),
+        'gloves': node_mat('Gloves', '#e9edf2', '#15171c', False),     # the keeper's (Unity colours them from the server)
     }
     for kind, ob in pieces.items():
         ob.data.materials.clear()
