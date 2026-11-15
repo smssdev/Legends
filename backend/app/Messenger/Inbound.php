@@ -4,6 +4,7 @@ namespace App\Messenger;
 
 use App\Jobs\HandleInline;
 use App\Jobs\HandleMessenger;
+use App\Jobs\SendMessenger;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
@@ -25,6 +26,16 @@ class Inbound
         // [Sprint 69] «@bot» typed in any chat: answered on the queue, quickly.
         if (isset($update['inline_query']['id'], $update['inline_query']['from']['id'])) {
             HandleInline::dispatch((string) $update['inline_query']['id'], (string) $update['inline_query']['from']['id'], (string) ($update['inline_query']['query'] ?? ''));
+
+            return;
+        }
+        // [Sprint 70] The bot added to a group: it says what it does there and how the league's owner links it.
+        if (isset($update['my_chat_member']['chat']['id'])) {
+            $c = $update['my_chat_member'];
+            if (in_array($c['chat']['type'] ?? '', ['group', 'supergroup'], true) && in_array($c['old_chat_member']['status'] ?? '', ['left', 'kicked'], true)
+                && in_array($c['new_chat_member']['status'] ?? '', ['member', 'administrator'], true)) {
+                SendMessenger::dispatch('telegram', (string) $c['chat']['id'], LeagueGroups::welcome());
+            }
 
             return;
         }
@@ -76,19 +87,19 @@ class Inbound
                         'button' => (string) ($m['button']['payload'] ?? $m['button']['text'] ?? ''),
                         default => '',
                     };
-                    self::queue('whatsapp', $from, $text);
+                    self::queue('whatsapp', $from, $text, null, $id);
                 }
             }
         }
     }
 
-    private static function queue(string $platform, string $chatId, string $text, ?string $from = null): void
+    private static function queue(string $platform, string $chatId, string $text, ?string $from = null, ?string $messageId = null): void
     {
         $key = "messenger:{$platform}:{$chatId}".($from !== null ? ":{$from}" : '');
         if (RateLimiter::tooManyAttempts($key, (int) config('game.messenger.per_minute'))) {
             return;
         }
         RateLimiter::hit($key, 60);
-        HandleMessenger::dispatch($platform, $chatId, mb_substr($text, 0, 1000), $from);
+        HandleMessenger::dispatch($platform, $chatId, mb_substr($text, 0, 1000), $from, $messageId);
     }
 }

@@ -44,6 +44,13 @@ namespace Legends.EditorTools
         /// <summary>For the command line: -executeMethod Legends.EditorTools.Capture.RunKits (without -quit).</summary>
         public static void RunKits() => Begin(true, true);
 
+        [MenuItem("Legends/Capture the plays of a goal")]
+        public static void PlaysMenu() => Begin(false, false, true);
+
+        /// <summary>[Sprint 07 U6] For the command line: -executeMethod Legends.EditorTools.Capture.RunPlays (without -quit).</summary>
+        public static void RunPlays() => Begin(true, false, true);
+
+        const string PlaysKey = "Legends.Capture.Plays";
         const string KitsKey = "Legends.Capture.Kits";
         const int KitsMinute = 20;
 
@@ -75,7 +82,7 @@ namespace Legends.EditorTools
 
         static bool QuitWhenDone => SessionState.GetBool("Legends.Capture.Quit", false);
 
-        static void Begin(bool quit, bool kits = false)
+        static void Begin(bool quit, bool kits = false, bool plays = false)
         {
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(OpenMatch.Scene) == null)
             {
@@ -84,7 +91,8 @@ namespace Legends.EditorTools
                 return;
             }
             Directory.CreateDirectory(Folder);
-            foreach (var old in Directory.GetFiles(Folder, kits ? "kits-*.png" : "minute-*.png")) File.Delete(old);
+            foreach (var old in Directory.GetFiles(Folder, plays ? "play-*.png" : kits ? "kits-*.png" : "minute-*.png")) File.Delete(old);
+            SessionState.SetBool(PlaysKey, plays);
             SessionState.SetBool("Legends.Capture.Quit", quit);
             SessionState.SetBool(KitsKey, kits);
             SessionState.SetBool(RunKey, true);
@@ -118,6 +126,11 @@ namespace Legends.EditorTools
             if (SessionState.GetBool(KitsKey, false))
             {
                 Kits(scene);
+                return;
+            }
+            if (SessionState.GetBool(PlaysKey, false))
+            {
+                Plays(scene);
                 return;
             }
             int next = SessionState.GetInt(NextKey, 0);
@@ -177,6 +190,67 @@ namespace Legends.EditorTools
             Save(Still(bench + new Vector3(2f, 2.4f, 9f), bench + Vector3.up * 0.9f, 40f), "kits-bench.png");
             kitStep = -1;
             Finish("saved the kits of " + KitMatches.Length + " matches and the bench", true);
+        }
+
+        // [Sprint 07 U6] the plays run, in one play session as the kits
+        static int playStep = -1, playFrame;
+        static MatchMinute playMinute;
+        static readonly System.Collections.Generic.List<(string file, string who, float t)> playShots = new System.Collections.Generic.List<(string, string, float)>();
+
+        /// <summary>
+        /// [Sprint 07 U6] Who does what, seen: the first goal from open play, held at its moves (PlayerMotion) one after the
+        /// other, each from close by: a pass at its contact, the shot at its contact, the keeper as the ball reaches him,
+        /// and the scorer a second into his celebration. Saved as unity/Captures/play-*.png.
+        /// </summary>
+        static void Plays(Legends.MatchScene scene)
+        {
+            if (playStep < 0)
+            {
+                var m = scene.Current;
+                if (m == null) return;
+                var attack = m.Events.Find(e => MiniJson.Str(e, "type") == "attack" && MiniJson.Str(e, "result") == "goal");
+                if (attack == null) return;
+                var cues = PlayerMotion.Cues(m);
+                float last = Mathf.Max(1, m.Frames.Count - 1);
+                string shooter = MiniJson.Str(attack, "shooter"), keeper = MiniJson.Str(attack, "keeper");
+                var shot = cues.Find(c => c.Id == shooter && c.OnContact);
+                var save = cues.Find(c => c.Id == keeper && c.Move == PlayerMotion.Dive);
+                var pass = cues.Find(c => c.OnContact && c.Id != shooter && (shot == null || c.At < shot.At));
+                var party = cues.Find(c => c.Move.StartsWith("celebrate"));
+                playShots.Clear();
+                if (pass != null) playShots.Add(("play-1-pass.png", pass.Id, pass.At / last));
+                if (shot != null) playShots.Add(("play-2-shot.png", shot.Id, shot.At / last));
+                if (save != null) playShots.Add(("play-3-keeper.png", save.Id, save.At / last));
+                if (party != null) playShots.Add(("play-4-celebration.png", party.Id, Mathf.Min(1f, party.At / last + 1000f / m.Ms)));
+                playMinute = m;
+                playStep = 0;
+                playFrame = 0;
+                var playback = Object.FindFirstObjectByType<Legends.SamplePlayback>();
+                if (playback != null) playback.speed = 1f;
+                Debug.Log($"Legends: the plays of tick {m.Tick}: " + string.Join(", ", cues));
+            }
+            if (playStep >= playShots.Count * 2)
+            {
+                playStep = -1;
+                Finish("saved " + playShots.Count + " plays", playShots.Count > 0);
+                return;
+            }
+            var (file, who, t) = playShots[playStep / 2];
+            // hold every frame (the playback would move on); shoot once the moves have had a few frames to pose
+            scene.Hold(playMinute, t);
+            if (playStep % 2 == 0)
+            {
+                playFrame = Time.frameCount + 3;
+                playStep++;
+                return;
+            }
+            if (Time.frameCount < playFrame) return;
+            Transform person = null;
+            foreach (Transform c in scene.transform) if (c.name.EndsWith("#" + who)) person = c;
+            var at = person != null ? person.position : scene.Ball.position;
+            Save(Still(Clear(scene, at), at + Vector3.up * 0.9f, 28f), file);
+            Debug.Log($"Legends: captured {file}: {who} at {t:0.00}");
+            playStep++;
         }
 
         /// <summary>

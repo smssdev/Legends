@@ -37,6 +37,8 @@ Schedule::command('messenger:weekly')->weeklyOn(5, '20:13')->timezone('Africa/Ca
 // [Sprint 68] The bots' daily summaries (each coach's chosen hour), and the polls before each round in the groups.
 Schedule::command('messenger:daily')->hourlyAt(2)->withoutOverlapping();
 Schedule::command('messenger:polls')->everyTenMinutes()->withoutOverlapping();
+// [Sprint 70] WhatsApp's free window about to shut for a coach with a match tomorrow: one «استمر» keeps it open.
+Schedule::command('messenger:whatsapp-window')->everyFifteenMinutes()->withoutOverlapping();
 // [Sprint 66 B1] The devices' errors not seen for 30 days.
 Schedule::command('client-errors:prune')->dailyAt('04:23')->timezone('Africa/Cairo')->withoutOverlapping();
 // [Sprint 43 C6] A replay lasts its round: the scenes of the rounds before go, their results stay.

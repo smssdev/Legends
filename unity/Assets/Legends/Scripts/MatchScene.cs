@@ -36,6 +36,13 @@ namespace Legends
         readonly Dictionary<string, Seat> seats = new Dictionary<string, Seat>();
         readonly List<Transform> officials = new List<Transform>();
         float elapsedMs;
+        // [Sprint 07 U6] who does what this minute (PlayerMotion), and the moves' contacts (takes.json via PlayerArt)
+        MatchMinute cuesOf;
+        List<PlayerMotion.Cue> cues = new List<PlayerMotion.Cue>();
+        readonly HashSet<PlayerMotion.Cue> fired = new HashSet<PlayerMotion.Cue>();
+        readonly Dictionary<string, float> contactOf = new Dictionary<string, float>();
+        // [Sprint 07 U6] a keeper diving faces the shot for the rest of the minute, not his run
+        readonly Dictionary<Transform, Vector3> facing = new Dictionary<Transform, Vector3>();
 
         /// <summary>How high a body's origin stands: a capsule's centre 0.9 m up, a real player's feet on the grass.</summary>
         public float BodyLift { get; private set; } = 0.9f;
@@ -89,12 +96,17 @@ namespace Legends
                 Ball = ball.transform;
             }
             if (contacts != null) contacts.TrackBall(Ball, BallRadius);
+            // [Sprint 07 U5] everyone's touch on the ball and his eyes on it
+            foreach (var t in players.Values) Give(t);
+            foreach (var t in officials) Give(t);
         }
 
         /// <summary>[Sprint 06 U8] Legends' players, the keepers and the officials, each dressed by the server's colours.</summary>
         void Dress(MatchSetup setup, PlayerArt art)
         {
             BodyLift = 0f;
+            contactOf.Clear();
+            if (art.touches != null) foreach (var x in art.touches) contactOf[x.move] = x.contact;
             var (home, away) = KitColours.ForMatch(setup.Home, setup.Away);
             var (homeKeeper, awayKeeper) = KitColours.Keepers(home.Shirt, away.Shirt);
             var refs = KitColours.Officials(home.Shirt, away.Shirt, homeKeeper.Shirt, awayKeeper.Shirt);
@@ -122,6 +134,12 @@ namespace Legends
             }
         }
 
+        void Give(Transform person)
+        {
+            var touch = person.GetComponent<BallContact>();
+            if (touch != null) touch.Ball = Ball;
+        }
+
         /// <summary>At his bench in his bib (a substitute, or a player who has left the pitch).</summary>
         void Sit(Seat seat)
         {
@@ -134,6 +152,8 @@ namespace Legends
             }
             seat.Look.transform.localPosition = seat.Bench.Value;
             seat.Look.transform.localRotation = Quaternion.identity;   // facing the pitch
+            var stride = seat.Look.GetComponent<PlayerStride>();
+            if (stride != null) stride.Restart();
         }
 
         /// <summary>The assistant's flag in his right hand, in the trim's gold.</summary>
@@ -228,6 +248,9 @@ namespace Legends
             var pf = i > 0 ? m.Frames[i - 1] : null;
             var nf = i + 2 < m.Frames.Count ? m.Frames[i + 2] : null;
             bool flip = Flipped(m.Period);
+            // [Sprint 07 U4] how long this stretch between two frames lasts on screen, for each player's speed
+            float span = Mathf.Max(0.05f, m.Ms / 1000f / Mathf.Max(1, m.Frames.Count - 1));
+            float dt = snap ? 0f : Time.deltaTime;
 
             foreach (var kv in players)
             {
@@ -258,8 +281,10 @@ namespace Legends
                 var pos = World(spot, flip);
                 var dir = World(ahead, flip) - pos;
                 kv.Value.localPosition = pos + Vector3.up * BodyLift;
+                if (facing.TryGetValue(kv.Value, out var shotWay)) dir = shotWay;
                 if (dir.sqrMagnitude > 0.0004f)
                     kv.Value.localRotation = Quaternion.Slerp(kv.Value.localRotation, Quaternion.LookRotation(dir), turn);
+                if (seat != null) Pace(seat.Look, pf, a, b, nf, kv.Key, k, flip, span, dt, snap);
             }
 
             // [Sprint 31 D1] The officials follow the ball, as the frames place them; older recordings have none.
@@ -271,13 +296,109 @@ namespace Legends
                 var at = World(Vector2.Lerp(a.Officials[o], b.Officials[o], k), flip);
                 var to = World(b.Officials[o], flip) - World(a.Officials[o], flip);
                 officials[o].localPosition = at;
+                var walk = officials[o].GetComponent<PlayerStride>();
+                if (walk != null) walk.Go(new Vector2(to.x, to.z).magnitude / span, dt, snap);
                 // the referee faces where he runs; the assistants face the pitch from their touchline
                 var face = o == 0 && to.sqrMagnitude > 0.0004f ? to : (at.z > 0 ? Vector3.back : Vector3.forward);
                 officials[o].localRotation = Quaternion.Slerp(officials[o].localRotation, Quaternion.LookRotation(face), turn);
             }
 
+            Moves(m, t, span, flip, snap);
+
             var ball = SampleBall(pf, a, b, nf, k);
             Roll(World(new Vector2(ball.x, ball.y), flip) + Vector3.up * (BallRadius + ball.z / 10f));
+        }
+
+        /// <summary>
+        /// [Sprint 07 U6] The minute's moves (PlayerMotion): each starts so its contact falls on its frame, the ball's frame
+        /// for a kick; one started late (a still, a slow device) starts that far into itself. A new minute first gets up
+        /// whoever is still down from the last.
+        /// </summary>
+        void Moves(MatchMinute m, float t, float span, bool flip, bool snap)
+        {
+            if (!ReferenceEquals(cuesOf, m))
+            {
+                cuesOf = m;
+                cues = PlayerMotion.Cues(m);
+                fired.Clear();
+                facing.Clear();
+                foreach (var p in players.Values)
+                {
+                    var s = p.GetComponent<PlayerStride>();
+                    if (s != null) s.Settle();
+                    var touch = p.GetComponent<BallContact>();
+                    if (touch != null) touch.Beaten = false;
+                }
+                foreach (var o in officials)
+                {
+                    var s = o.GetComponent<PlayerStride>();
+                    if (s != null) s.Settle();
+                }
+            }
+            float now = Mathf.Clamp01(t) * Mathf.Max(1, m.Frames.Count - 1);
+            foreach (var cue in cues)
+            {
+                if (fired.Contains(cue)) continue;
+                var who = cue.Id == PlayerMotion.Referee ? (officials.Count > 0 ? officials[0] : null)
+                    : players.TryGetValue(cue.Id, out var tr) ? tr : null;
+                var stride = who != null && who.gameObject.activeInHierarchy ? who.GetComponent<PlayerStride>() : null;
+                if (stride == null) { fired.Add(cue); continue; }
+                if (cue.Move == PlayerMotion.Dive)
+                {
+                    // he squares up to where the shot came from, at once, and his dive's side is his side from there
+                    var from = m.Frames[Mathf.Clamp(cue.ShotFrame, 0, m.Frames.Count - 1)].Ball;
+                    var way = World(new Vector2(from.x, from.y), flip) - who.localPosition;
+                    way.y = 0f;
+                    if (way.sqrMagnitude > 0.01f)
+                    {
+                        facing[who] = way;
+                        who.localRotation = Quaternion.LookRotation(way);
+                    }
+                }
+                string move = cue.Move == PlayerMotion.Dive ? DiveFor(who, m.Frames[Mathf.Clamp(cue.BallFrame, 0, m.Frames.Count - 1)], flip, cue.Beaten) : cue.Move;
+                if (cue.Beaten)
+                {
+                    var beaten = who.GetComponent<BallContact>();
+                    if (beaten != null) beaten.Beaten = true;
+                }
+                float contact = cue.OnContact && contactOf.TryGetValue(move, out var c) ? c : 0f;
+                float start = cue.At - contact / span;
+                if (now < start) continue;
+                fired.Add(cue);
+                stride.Play(move, snap ? 0f : 0.12f, (now - start) * span);
+            }
+        }
+
+        /// <summary>
+        /// [Sprint 07 U6] The keeper's answer to a shot from where its ball reaches him: a catch at his body, else a dive to
+        /// the side it is on (his own right or left), high or low by its height.
+        /// </summary>
+        public string DiveFor(Transform keeper, Frame at, bool flip, bool beaten = false)
+        {
+            var ball = transform.TransformPoint(World(new Vector2(at.Ball.x, at.Ball.y), flip) + Vector3.up * (at.Ball.z / 10f));
+            var local = keeper.InverseTransformPoint(ball);
+            return PlayerMotion.DiveFor(local, beaten);
+        }
+
+        /// <summary>
+        /// [Sprint 07 U4] A player's speed on the grass at k between frames a and b (m/s on screen: the curve's step over
+        /// the time it takes), to his stride. Fast-forward minutes go faster than any stride: Gait caps the pace.
+        /// </summary>
+        static void Pace(PlayerLook look, Frame p, Frame a, Frame b, Frame n, string id, float k, bool flip, float span, float dt, bool snap)
+        {
+            var stride = look.GetComponent<PlayerStride>();
+            if (stride == null) return;
+            stride.Go(Speed(p, a, b, n, id, k, flip, span), dt, snap);
+        }
+
+        /// <summary>[Sprint 07 U4] How fast a player goes at k between frames a and b, in m/s when the stretch lasts span seconds.</summary>
+        public static float Speed(Frame p, Frame a, Frame b, Frame n, string id, float k, bool flip, float span)
+        {
+            const float h = 0.025f;
+            float k0 = Mathf.Max(0f, k - h), k1 = Mathf.Min(1f, k + h);
+            if (k1 - k0 < 1e-4f) return 0f;
+            var d = World(SamplePlayer(p, a, b, n, id, k1), flip) - World(SamplePlayer(p, a, b, n, id, k0), flip);
+            return d.magnitude / ((k1 - k0) * span);
         }
 
         /// <summary>

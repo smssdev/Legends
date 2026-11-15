@@ -30,6 +30,9 @@ FPS = 30
 OUT = os.path.join(c.ROOT, 'unity', 'Assets', 'Legends', 'Animation', 'Moves', 'moves.fbx')
 # each stride's natural speed (m/s) and length, for Unity to play it at the pace the player really goes
 SPEEDS = os.path.join(c.ROOT, 'unity', 'Assets', 'Legends', 'Animation', 'Moves', 'locomotion.json')
+# [U2] each move that plays once from motion capture: its length, the contact and kicking foot of a kick, its speed in
+# and out, how far it turns him
+TAKES = os.path.join(c.ROOT, 'unity', 'Assets', 'Legends', 'Animation', 'Moves', 'takes.json')
 SHEETS = os.path.join(c.ROOT, 'unity', 'Reference', 'moves')
 # from the hips out: a bone is aimed once its parent has its pose
 ORDER = ['spine_01', 'spine_02', 'spine_03', 'neck_01', 'head',
@@ -166,8 +169,68 @@ POINT_SPOT = pose(IDLE, lean=4, bones={'upperarm_r': (-0.25, 0.85, -0.45), 'lowe
 WHISTLE = pose(IDLE, bones={'upperarm_r': (-0.4, 0.45, -0.8), 'lowerarm_r': (0.5, 0.45, 0.75), 'hand_r': (0.55, 0.35, 0.75)})
 ARM_OUT = pose(IDLE, bones={'upperarm_r': (-0.55, 0.75, 0.35), 'lowerarm_r': (-0.5, 0.78, 0.38), 'hand_r': (-0.5, 0.8, 0.35)})
 
+# [U2] The three ball moves no clip we have holds, made here: the jumping header, the slide tackle, the fall.
+# A header: down on bent knees, up off both feet arched back with the arms out, the head snapped through the ball at the
+# top, and down again on bent knees.
+CROUCH = pose(IDLE, lean=14, bones={
+    'thigh_l': (0.12, 0.55, -0.83), 'calf_l': (0.03, -0.45, -0.89), 'foot_l': (0.08, 0.92, -0.38),
+    'thigh_r': (-0.12, 0.55, -0.83), 'calf_r': (-0.03, -0.45, -0.89), 'foot_r': (-0.08, 0.92, -0.38),
+    **arms(((0.25, -0.45, -0.86), (0.2, -0.3, -0.93), (0.15, -0.25, -0.95)))})
+RISE = pose(IDLE, lean=-14, height=1.3, bones={
+    'neck_01': (0, -0.25, 1), 'head': (0, -0.4, 0.9),
+    'thigh_l': (0.08, -0.05, -1), 'calf_l': (0.04, -0.3, -0.95), 'foot_l': (0.05, 0.3, -0.95),
+    'thigh_r': (-0.08, 0.1, -1), 'calf_r': (-0.04, -0.35, -0.94), 'foot_r': (-0.05, 0.3, -0.95),
+    **arms(((0.8, 0.55, -0.1), (0.5, 0.85, 0.05), (0.45, 0.88, 0.05)))})
+HEAD_IT = pose(RISE, lean=16, height=1.38, bones={
+    'neck_01': (0, 0.3, 1), 'head': (0, 0.55, 0.85),
+    'thigh_l': (0.08, -0.25, -0.97), 'calf_l': (0.04, -0.55, -0.83), 'foot_l': (0.05, 0.1, -1),
+    'thigh_r': (-0.08, -0.2, -0.98), 'calf_r': (-0.04, -0.5, -0.86), 'foot_r': (-0.05, 0.1, -1),
+    **arms(((0.9, -0.1, 0.1), (0.75, 0.55, 0.05), (0.7, 0.6, 0.05)))})
+FALLING = pose(HEAD_IT, lean=4, height=1.12, bones={'head': (0, 0.2, 1),
+    **arms(((0.75, 0.3, -0.55), (0.5, 0.75, -0.3), (0.45, 0.8, -0.3)))})
+LANDED = pose(CROUCH, lean=10, bones=arms(((0.4, 0.3, -0.86), (0.3, 0.55, -0.78), (0.25, 0.55, -0.8))))
+
+# A slide tackle on his left side: down onto the left hip, the right leg out straight along the grass at the ball (its
+# studs up), the left folded under him, the left hand on the grass behind, the right arm out for balance; then up.
+# The legs as the ground sees them (the body leans back over them).
+SLIDE_DROP = pose(IDLE, lean=-8, side=12, height=0.74, shift=(0, 0.45), bones={
+    'thigh_r': (-0.05, 0.75, -0.66), 'calf_r': (0, 0.55, -0.83), 'foot_r': (0, 0.85, -0.5),
+    'thigh_l': (0.3, 0.4, -0.86), 'calf_l': (0.1, -0.7, -0.7), 'foot_l': (0.05, 0.3, -0.95),
+    **arms(((0.6, -0.3, -0.75), (0.5, -0.4, -0.75), (0.4, -0.4, -0.8)), ((-0.8, 0.4, 0.2), (-0.7, 0.6, 0.2), (-0.6, 0.7, 0.2)))})
+SLIDE = pose(IDLE, lean=-38, side=22, height=0.34, shift=(0, 1.15), bones={
+    'neck_01': (0, 0.35, 1), 'head': (0, 0.6, 0.8),
+    'thigh_r': (-0.05, 0.92, -0.38), 'calf_r': (0, 0.99, -0.12), 'foot_r': (0, 0.45, 0.89),
+    'thigh_l': (0.45, 0.83, -0.33), 'calf_l': (0.12, -0.99, -0.05), 'foot_l': (0, -0.95, -0.3),
+    **arms(((0.55, -0.55, -0.62), (0.4, -0.55, -0.73), (0.3, -0.5, -0.81)), ((-0.85, 0.35, 0.35), (-0.7, 0.6, 0.35), (-0.6, 0.7, 0.3)))})
+SLIDE_STILL = pose(SLIDE, lean=-30, height=0.33, shift=(0, 1.6))
+SLIDE_RISE = pose(CROUCH, lean=28, shift=(0, 1.65), bones={
+    **arms(((0.5, 0.2, -0.85), (0.3, 0.45, -0.84), (0.25, 0.45, -0.86)))})
+
+# A fall when he is fouled: a stumble with the leg clipped behind him, the arms thrown out to catch himself, flat on
+# his front on the grass, then the head up to look for the referee (the free kick is his).
+STUMBLE = pose(IDLE, lean=28, shift=(0, 0.3), bones={
+    'thigh_r': (-0.05, -0.55, -0.83), 'calf_r': (-0.03, -0.85, -0.5), 'foot_r': (0, -0.2, -0.98),
+    'thigh_l': (0.08, 0.35, -0.94), 'calf_l': (0.03, -0.25, -0.97), 'foot_l': (0.05, 0.92, -0.38),
+    **arms(((0.6, 0.6, -0.5), (0.4, 0.85, -0.3), (0.35, 0.85, -0.4)))})
+GOING_DOWN = pose(IDLE, lean=62, height=0.62, shift=(0, 0.95), legs='body', bones={
+    'thigh_r': (-0.05, -0.35, -0.94), 'calf_r': (-0.03, -0.6, -0.8), 'foot_r': (0, -0.95, -0.3),
+    'thigh_l': (0.08, 0.05, -1), 'calf_l': (0.03, -0.3, -0.95), 'foot_l': (0.05, -0.6, -0.8),
+    **arms(((0.35, 0.94, 0.0), (0.25, 0.96, 0.1), (0.2, 0.97, 0.1)))})
+DOWN = pose(IDLE, lean=86, height=0.17, shift=(0, 1.45), legs='body', bones={
+    'neck_01': (0, -0.2, 1), 'head': (0, -0.35, 0.95),
+    'thigh_r': (-0.08, -0.1, -1), 'calf_r': (-0.05, -0.15, -1), 'foot_r': (0, -0.9, -0.4),
+    'thigh_l': (0.12, -0.05, -1), 'calf_l': (0.05, -0.1, -1), 'foot_l': (0, -0.9, -0.4),
+    **arms(((0.9, 0.15, 0.4), (0.3, -0.2, 0.93), (0.2, -0.3, 0.93)))})
+HURT = pose(DOWN, lean=78, bones={
+    'neck_01': (0, -0.45, 0.9), 'head': (0, -0.65, 0.75),
+    'thigh_r': (-0.08, 0.35, -0.94), 'calf_r': (-0.05, -0.7, -0.7),
+    **arms(((0.9, 0.15, 0.4), (0.3, -0.2, 0.93), (0.2, -0.3, 0.93)), ((-0.3, 0.1, -0.95), (-0.1, 0.6, -0.8), (-0.05, 0.7, -0.7)))})
+
 MOVES = {
     'idle': [(0.0, IDLE), (2.0, IDLE)],
+    'header': [(0.0, IDLE), (0.2, CROUCH), (0.34, RISE), (0.46, HEAD_IT), (0.68, FALLING), (0.86, LANDED), (1.3, IDLE)],
+    'slide_tackle': [(0.0, pose(IDLE, lean=14)), (0.22, SLIDE_DROP), (0.45, SLIDE), (0.95, SLIDE_STILL), (1.3, SLIDE_RISE), (1.7, pose(IDLE, shift=(0, 1.65)))],
+    'fall': [(0.0, pose(IDLE, lean=14)), (0.2, STUMBLE), (0.45, GOING_DOWN), (0.72, DOWN), (1.2, HURT), (2.0, HURT)],
     'keeper_catch': [(0.0, READY), (0.25, REACH), (0.55, GATHER), (1.1, pose(GATHER, lean=4))],
     'keeper_punch': [(0.0, READY), (0.18, FISTS), (0.38, PUNCH), (0.85, READY)],
     'celebrate_wings': [(0.0, IDLE), (0.3, pose(WINGS, side=14)), (0.85, pose(WINGS, side=-14)), (1.4, pose(WINGS, side=14)), (1.95, pose(WINGS, side=-14))],
@@ -186,6 +249,22 @@ MOVES = {
 }
 MOVES['keeper_dive_r_high'] = [(t, mirror(p)) for t, p in MOVES['keeper_dive_l_high']]
 MOVES['keeper_dive_r_low'] = [(t, mirror(p)) for t, p in MOVES['keeper_dive_l_low']]
+MOVES['slide_tackle_l'] = [(t, mirror(p)) for t, p in MOVES['slide_tackle']]
+# [U2] What Unity needs to time the ball moves we make (as takes.json gives for those from motion capture): the
+# instant the ball is met, and with what.
+CONTACTS = {
+    'header': {'contact': 0.46, 'foot': 'head'},
+    'slide_tackle': {'contact': 0.45, 'foot': 'right'},
+    'slide_tackle_l': {'contact': 0.45, 'foot': 'left'},
+    'fall': {},
+    # the keeper's hands meet the ball at full stretch, at the reach, at the punch
+    'keeper_dive_l_high': {'contact': 0.62, 'foot': 'hands'},
+    'keeper_dive_r_high': {'contact': 0.62, 'foot': 'hands'},
+    'keeper_dive_l_low': {'contact': 0.5, 'foot': 'hands'},
+    'keeper_dive_r_low': {'contact': 0.5, 'foot': 'hands'},
+    'keeper_catch': {'contact': 0.25, 'foot': 'hands'},
+    'keeper_punch': {'contact': 0.38, 'foot': 'hands'},
+}
 
 
 # ------------------------------------------------------------------ poses onto the rig
@@ -269,7 +348,7 @@ def sheet(rig, name, steps, path):
     """The move at each of its poses, side by side, from the front."""
     import numpy as np
     rig.animation_data.action = bpy.data.actions[name]
-    if len(steps) > 6:      # a stride from motion capture has a pose every frame: six of them tell it
+    if len(steps) > 8:      # a move from motion capture has a pose every frame: six of them tell it
         steps = [steps[round(i * (len(steps) - 1) / 5)] for i in range(6)]
     # the camera in front, a little to the side the move goes, so the whole move is in the picture
     reach = max((p.get('shift', (0, 0))[0] for _, p in steps), key=abs, default=0)
@@ -300,7 +379,7 @@ def sheet(rig, name, steps, path):
 
 def main():
     opts = c.args()
-    names = opts['moves'].split(',') if opts.get('moves') else list(MOVES) + list(mocap.CYCLES)
+    names = opts['moves'].split(',') if opts.get('moves') else list(MOVES) + list(mocap.CYCLES) + list(mocap.TAKES) + list(mocap.MIRRORED)
     bp.clear()
     bpy.context.scene.render.fps = FPS     # the keys are at FPS: the scene must play at it too
     rig, body = bp.person(build='medium', tone='olive', hair='short02', name='Player')
@@ -323,6 +402,23 @@ def main():
         os.makedirs(os.path.dirname(SPEEDS), exist_ok=True)
         with open(SPEEDS, 'w', encoding='utf-8', newline=chr(10)) as f:
             json.dump({n: {'speed': round(sp, 3), 'seconds': round(p[-1][0], 3), 'clip': mocap.CYCLES[n]} for n, (p, sp) in strides.items()}, f, indent=2)
+            f.write(chr(10))
+    # [U2] kicking the ball, stopping and turning from real people too, once each
+    once = mocap.takes(legs, [n for n in names if n in mocap.TAKES or n in mocap.MIRRORED])
+    for n, (poses, info) in once.items():
+        steps[n] = poses
+        build(rig, n, poses)
+    made = {n: {'clip': 'keyframes', **CONTACTS[n], 'seconds': MOVES[n][-1][0]} for n in CONTACTS if n in steps}
+    if (once or made) and 'no-export' not in opts:
+        import json
+        table = {}
+        if os.path.exists(TAKES):           # a run for a few moves keeps the others' rows
+            with open(TAKES, encoding='utf-8') as f:
+                table = json.load(f)
+        table.update({n: info for n, (_, info) in once.items()})
+        table.update(made)
+        with open(TAKES, 'w', encoding='utf-8', newline=chr(10)) as f:
+            json.dump(table, f, indent=2)
             f.write(chr(10))
     if 'sheet' in opts:
         os.makedirs(SHEETS, exist_ok=True)

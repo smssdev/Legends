@@ -26,8 +26,12 @@ class HandleMessenger implements ShouldQueue
 
     public int $timeout = 60;
 
-    /** @param  string|null  $from  the Telegram account that wrote in a group (null in a private chat) */
-    public function __construct(public string $platform, public string $chatId, public string $text, public ?string $from = null) {}
+    /**
+     * @param  string|null  $from  the Telegram account that wrote in a group (null in a private chat)
+     * @param  string|null  $messageId  [Sprint 70] the WhatsApp message, marked read with «typing…» while answered
+     */
+    public function __construct(public string $platform, public string $chatId, public string $text, public ?string $from = null,
+        public ?string $messageId = null) {}
 
     public function handle(Replies $replies): void
     {
@@ -38,6 +42,12 @@ class HandleMessenger implements ShouldQueue
             }
 
             return;
+        }
+        // [Sprint 70] He sees his message read and the bot typing while the answer is made (the AI may take seconds).
+        if ($this->platform === 'telegram') {
+            Telegram::typing($this->chatId);
+        } elseif ($this->messageId !== null) {
+            WhatsApp::seen($this->messageId);
         }
         $reply = $replies->answer($this->platform, $this->chatId, $this->text);
         foreach ([$reply, ...($reply['more'] ?? [])] as $r) {
@@ -88,9 +98,7 @@ class HandleMessenger implements ShouldQueue
             'goals' => $userId && isset($parts[1]) && in_array($parts[1], ['on', 'off'], true) && LeagueGroups::live($userId, $this->chatId, $parts[1] === 'on')
                 ? ($parts[1] === 'on' ? ($en ? 'The goals are posted here live.' : 'تُنشر الأهداف هنا مباشرة.') : ($en ? 'No more live goals here.' : 'أوقفت نشر الأهداف المباشرة هنا.'))
                 : ($en ? 'Only the league\'s owner can: /goals on or /goals off.' : 'لا يغيّرها إلا منشئ الدوري: /goals on أو /goals off.'),
-            'help', 'start' => $en
-                ? "In a league's group I post each round's results and stars, the goals live, and a poll before each round.\n/league CODE: the owner links his league\n/table: the table\n/goals on|off: the live goals\n/chat on|off: join this group to the game's chat\n/unleague: unlink"
-                : "في جروب الدوري أنشر نتائج كل جولة ونجومها، والأهداف مباشرة، واستطلاعاً قبل كل جولة.\n/league الكود: يربط المنشئ دوريه\n/table: الترتيب\n/goals on|off: الأهداف المباشرة\n/chat on|off: ربط الجروب بجروب الدوري في اللعبة\n/unleague: فك الربط",
+            'help', 'start' => LeagueGroups::help($en),
             default => null,
         };
     }
