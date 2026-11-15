@@ -220,74 +220,78 @@ class _Lines extends StatelessWidget {
     return Container(
       decoration: ShapeDecoration(shape: GlmCut.shape(14), gradient: _cardFill),
       padding: const EdgeInsets.all(14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Column(
-              children: [
+      // [Sprint 73 D4] In a tight column (a 640 phone's third) the drawing stands over the three orders: side by side
+      // each order had 11px between its arrows, and its name was cut.
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final art = Column(
+            children: [
+              Text(
+                l.positioning,
+                style: glmText(GlmType.bodyLg, color: _titleBlue, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 6),
+              AspectRatio(
+                aspectRatio: .82,
+                child: CustomPaint(painter: _LinesArt('${t.values['att']}', '${t.values['mid']}', '${t.values['def']}')),
+              ),
+            ],
+          );
+          final orders = Column(
+            children: [
+              for (final (key, title, values, labels, colour) in rows) ...[
+                const SizedBox(height: 8),
                 Text(
-                  l.positioning,
-                  style: glmText(GlmType.bodyLg, color: _titleBlue, fontWeight: FontWeight.w700),
+                  title,
+                  style: glmText(GlmType.bodyLg, color: colour, fontWeight: FontWeight.w700),
                 ),
-                const SizedBox(height: 6),
-                AspectRatio(
-                  aspectRatio: .82,
-                  child: CustomPaint(painter: _LinesArt('${t.values['att']}', '${t.values['mid']}', '${t.values['def']}')),
+                Row(
+                  children: [
+                    _Arrow(Icons.chevron_right_rounded, () => onSet(key, values[(values.indexOf('${t.values[key]}') - 1) % values.length])),
+                    Expanded(
+                      child: FitLabel(
+                        labels['${t.values[key]}'] ?? '',
+                        style: glmText(GlmType.title, color: Colors.white, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    _Arrow(Icons.chevron_left_rounded, () => onSet(key, values[(values.indexOf('${t.values[key]}') + 1) % values.length])),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (final v in values)
+                      Container(
+                        width: 10,
+                        height: 10,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: v == '${t.values[key]}' ? Colors.white : Colors.white.withValues(alpha: .3),
+                        ),
+                      ),
+                  ],
                 ),
               ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            flex: 4,
-            child: Column(
+            ],
+          );
+          if (GlmFit.isTightCard(box.maxWidth)) {
+            return Column(
               children: [
-                for (final (key, title, values, labels, colour) in rows) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    title,
-                    style: glmText(GlmType.bodyLg, color: colour, fontWeight: FontWeight.w700),
-                  ),
-                  Row(
-                    children: [
-                      _Arrow(
-                        Icons.chevron_right_rounded,
-                        () => onSet(key, values[(values.indexOf('${t.values[key]}') - 1) % values.length]),
-                      ),
-                      Expanded(
-                        child: FitLabel(
-                          labels['${t.values[key]}'] ?? '',
-                          style: glmText(GlmType.title, color: Colors.white, fontWeight: FontWeight.w800),
-                        ),
-                      ),
-                      _Arrow(
-                        Icons.chevron_left_rounded,
-                        () => onSet(key, values[(values.indexOf('${t.values[key]}') + 1) % values.length]),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (final v in values)
-                        Container(
-                          width: 10,
-                          height: 10,
-                          margin: const EdgeInsets.symmetric(horizontal: 3),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: v == '${t.values[key]}' ? Colors.white : Colors.white.withValues(alpha: .3),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
+                FractionallySizedBox(widthFactor: .6, child: art),
+                orders,
               ],
-            ),
-          ),
-        ],
+            );
+          }
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 3, child: art),
+              const SizedBox(width: 16),
+              Expanded(flex: 4, child: orders),
+            ],
+          );
+        },
       ),
     );
   }

@@ -141,7 +141,10 @@ const devices = <Device>[
   (name: 'notch-left', size: Size(800, 360), left: 40, right: 0, keyboard: 0, golden: false),
   (name: 'notch-right', size: Size(800, 360), left: 0, right: 40, keyboard: 0, golden: false),
 ];
-const waitsForSprint73 = {'lineup on small', 'tactics on small', 'tactics on notch-left', 'tactics on notch-right'};
+const waitsForSprint73 = <String>{};
+
+/// [Sprint 73 D10] The screens built to fill a landscape phone (README section 0): no page scroll on any phone.
+const fitScreens = {'home', 'league', 'lineup', 'tactics', 'next-match', 'live'};
 const keyboardUp = (name: 'keyboard', size: Size(800, 360), left: 0.0, right: 0.0, keyboard: 200.0, golden: false);
 Device? _device;
 
@@ -260,6 +263,22 @@ Future<void> shot(
     for (final e in find.descendant(of: find.byType(ConsoleDock), matching: find.byType(Scrollable)).evaluate()) {
       final at = ((e as StatefulElement).state as ScrollableState).position;
       expect(at.maxScrollExtent, 0, reason: '$name on ${d.name}: the dock scrolls');
+    }
+    // [Sprint 73 D10] A screen built to fill the screen has no page to scroll: what scrolls is a column of it (under
+    // 70% of the width), each inside itself. The squad and the market are lists by nature and scroll whole.
+    // On the smallest phone (640 wide) the home falls back to one column, a page by nature.
+    if (fitScreens.contains(name) && !(name == 'home' && d.name == 'small')) {
+      for (final e in find.byType(Scrollable).evaluate()) {
+        final state = (e as StatefulElement).state as ScrollableState;
+        final at = state.position;
+        if (!at.hasContentDimensions || at.maxScrollExtent <= 1 || axisDirectionToAxis(state.axisDirection) != Axis.vertical) continue;
+        final wide = (e.renderObject! as RenderBox).size.width;
+        expect(
+          wide < d.size.width * .7,
+          isTrue,
+          reason: '$name on ${d.name}: the page scrolls (${at.maxScrollExtent.round()}px, ${wide.round()} wide)',
+        );
+      }
     }
     // [Sprint 72 R4] Nothing of the screen under the notch: every text clear of the inset on its side.
     for (final e in find.byType(RichText).evaluate()) {

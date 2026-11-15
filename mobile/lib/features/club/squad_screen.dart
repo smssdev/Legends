@@ -26,6 +26,7 @@ import '../../ui/widgets/player_name.dart';
 import '../../ui/size_class.dart';
 
 part 'squad_screen_header_delegate.dart';
+part 'squad_screen_hero_strip.dart';
 part 'squad_screen_player_row.dart';
 
 /// [Sprint 17 F1, Sprint 45 M3] The squad as the manager games show it, a table: the position in its line's colour,
@@ -50,6 +51,9 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
   /// [Sprint 60 F4] The player whose card is open beside the table, and whether the screen is too narrow for it (the
   /// room the screen has, not the window's: a sheet then).
   Player? _card;
+
+  /// [Sprint 73 D2] The team's hero open or closed by hand; null is the screen's own choice (closed on a short one).
+  bool? _hero;
   bool _narrow = false;
 
   static const _lineOrder = {'gk': 0, 'def': 1, 'mid': 2, 'att': 3};
@@ -95,6 +99,8 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
             data: (team) {
               final summary = ref.watch(clubSummaryProvider(widget.leagueId)).value;
               final rows = _rows(team);
+              final short = GlmFit.shortOf(context);
+              final heroOpen = _hero ?? !short;
               final groups = [('att', l.groupAtt), ('mid', l.groupMid), ('def', l.groupDef), ('gk', l.groupGk)];
               // [Sprint 46, the owner's screenshots] The squad as the manager games show it: a band of the club's facts, the
               // team's rating with each line's over a little pitch and its key players, then the white table by line.
@@ -105,11 +111,19 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
                       child: _InfoBand(team: team, summary: summary),
                     ),
                   ),
-                  SliverToBoxAdapter(
-                    child: _Fit(
-                      child: _TeamHero(team: team, summary: summary),
+                  // [Sprint 73 D2] The players first on a phone held sideways (the band, the hero and the table's head took
+                  // 310 of its 360, and not one player showed): the hero opens from its strip, and is open where there
+                  // is room for it and the table both.
+                  if (heroOpen)
+                    SliverToBoxAdapter(
+                      child: _Fit(
+                        child: _TeamHero(team: team, summary: summary),
+                      ),
                     ),
-                  ),
+                  if (short)
+                    SliverToBoxAdapter(
+                      child: _HeroStrip(open: heroOpen, onTap: () => setState(() => _hero = !heroOpen)),
+                    ),
                   SliverPersistentHeader(pinned: true, delegate: _HeaderDelegate(this)),
                   for (final (line, title) in groups)
                     if (rows.any((p) => p.line == line)) ...[

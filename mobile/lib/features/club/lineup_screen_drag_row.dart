@@ -3,7 +3,9 @@ part of 'lineup_screen.dart';
 /// [Sprint 45 M4] A bench or reserve player in the list: held a moment, he lifts and can be dropped on the pitch or on
 /// another; a player dropped on him swaps with him.
 class _DragRow extends StatelessWidget {
-  const _DragRow({required this.player, required this.selected, required this.onTap, required this.onDrop});
+  const _DragRow({required this.player, required this.selected, required this.onTap, required this.onDrop, this.dense = false});
+
+  final bool dense;
 
   final Player player;
   final bool selected;
@@ -24,8 +26,8 @@ class _DragRow extends StatelessWidget {
           child: KitShirt(color: context.palette.gold, trim: Colors.white, label: '${player.overall}', size: 52, picked: true),
         ),
       ),
-      childWhenDragging: Opacity(opacity: .4, child: PlayerRow(player)),
-      child: PlayerRow(player, selected: selected || over.isNotEmpty, onTap: onTap),
+      childWhenDragging: Opacity(opacity: .4, child: PlayerRow(player, dense: dense)),
+      child: PlayerRow(player, selected: selected || over.isNotEmpty, onTap: onTap, dense: dense),
     ),
   );
 }

@@ -1,7 +1,10 @@
 part of 'squad_screen.dart';
 
 class PlayerRow extends StatelessWidget {
-  const PlayerRow(this.p, {super.key, this.onTap, this.selected = false, this.trailing});
+  const PlayerRow(this.p, {super.key, this.onTap, this.selected = false, this.trailing, this.dense = false});
+
+  /// [Sprint 73 D3] A row 48 high (a whole touch, no more) for a list in a short column: the lineup's bench.
+  final bool dense;
 
   final Player p;
   final VoidCallback? onTap;
@@ -15,7 +18,7 @@ class PlayerRow extends StatelessWidget {
     // [2026-11-06] A player as a game row: rating badge, position chip, the name, age and role, fitness as a bar.
     final starter = p.role == 'starter';
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: EdgeInsets.only(bottom: dense ? 4 : 6),
       child: Material(
         color: selected ? c.gold.withValues(alpha: .16) : (starter ? Color.lerp(c.surface, c.pitchDark, .18) : c.surface),
         shape: GlmCut.shape(
@@ -27,68 +30,77 @@ class PlayerRow extends StatelessWidget {
           customBorder: GlmCut.shape(GlmCut.badge + 4),
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 60),
+            constraints: BoxConstraints(minHeight: dense ? 48 : 60),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              child: Row(
-                children: [
-                  RatingBadge(p.overall, size: 42),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+              padding: EdgeInsets.symmetric(horizontal: dense ? 8 : 10, vertical: dense ? 3 : 8),
+              child: LayoutBuilder(
+                builder: (context, row) {
+                  final tight = GlmFit.isTightRow(row.maxWidth);
+                  return Row(
+                    children: [
+                      RatingBadge(p.overall, size: dense ? 34 : 42),
+                      SizedBox(width: dense ? 8 : 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            PositionChip(p.position, p.line),
-                            const SizedBox(width: 8),
-                            // Player names stay in English in every language (decision 2026-11-01).
-                            // [Sprint 72 R6] One line: whole, then «G. Last», then the last name; never broken in a word.
-                            Expanded(
-                              child: PlayerName(p.name, style: glmText(GlmType.body, fontWeight: FontWeight.w800)),
+                            Row(
+                              children: [
+                                // [Sprint 73 D3] In a very tight column (a 640 phone's bench) the name alone: the chip beside it
+                                // left no room for even a last name.
+                                if (!tight) ...[PositionChip(p.position, p.line), const SizedBox(width: 8)],
+                                // Player names stay in English in every language (decision 2026-11-01).
+                                // [Sprint 72 R6] One line: whole, then «G. Last», then the last name; never broken in a word.
+                                Expanded(
+                                  child: PlayerName(p.name, style: glmText(GlmType.body, fontWeight: FontWeight.w800)),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: dense ? 1 : 4),
+                            LayoutBuilder(
+                              builder: (context, box) {
+                                final roomy = GlmFit.hasRowExtras(box.maxWidth);
+                                return Row(
+                                  children: [
+                                    // [Sprint 63 G5] Why he cannot play, by the set's mark (it was an emoji).
+                                    if (!p.available) ...[
+                                      GlmEventMark(p.injured > 0 ? 'injury' : 'red', size: 14),
+                                      const SizedBox(width: 4),
+                                    ],
+                                    Expanded(
+                                      child: Text(
+                                        !p.available
+                                            ? (p.injured > 0 ? l.injuredFor(p.injured) : l.suspendedFor(p.suspended))
+                                            : '${l.age(p.age)} · ${starter
+                                                  ? l.starter
+                                                  : p.role == 'bench'
+                                                  ? l.bench
+                                                  : l.reserve}',
+                                        maxLines: 2,
+                                        style: glmText(
+                                          GlmType.caption,
+                                          color: p.available ? (starter ? context.glm.successText : c.textMuted) : context.glm.liveText,
+                                          fontWeight: starter ? FontWeight.w700 : FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      '${p.fitness}%',
+                                      style: glmText(GlmType.caption, fontFamily: GlmFonts.numbers, color: fitnessColor(p.fitness)),
+                                    ),
+                                    // [Sprint 72 R6] The bar beside the figure only where the row has room for it.
+                                    if (roomy) ...[const SizedBox(width: 6), LevelBar(p.fitness / 100, color: fitnessColor(p.fitness))],
+                                  ],
+                                );
+                              },
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
-                        LayoutBuilder(
-                          builder: (context, box) {
-                            final roomy = GlmFit.hasRowExtras(box.maxWidth);
-                            return Row(
-                              children: [
-                                // [Sprint 63 G5] Why he cannot play, by the set's mark (it was an emoji).
-                                if (!p.available) ...[GlmEventMark(p.injured > 0 ? 'injury' : 'red', size: 14), const SizedBox(width: 4)],
-                                Expanded(
-                                  child: Text(
-                                    !p.available
-                                        ? (p.injured > 0 ? l.injuredFor(p.injured) : l.suspendedFor(p.suspended))
-                                        : '${l.age(p.age)} · ${starter
-                                              ? l.starter
-                                              : p.role == 'bench'
-                                              ? l.bench
-                                              : l.reserve}',
-                                    maxLines: 2,
-                                    style: glmText(
-                                      GlmType.caption,
-                                      color: p.available ? (starter ? context.glm.successText : c.textMuted) : context.glm.liveText,
-                                      fontWeight: starter ? FontWeight.w700 : FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  '${p.fitness}%',
-                                  style: glmText(GlmType.caption, fontFamily: GlmFonts.numbers, color: fitnessColor(p.fitness)),
-                                ),
-                                // [Sprint 72 R6] The bar beside the figure only where the row has room for it.
-                                if (roomy) ...[const SizedBox(width: 6), LevelBar(p.fitness / 100, color: fitnessColor(p.fitness))],
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  ?trailing,
-                ],
+                      ),
+                      ?trailing,
+                    ],
+                  );
+                },
               ),
             ),
           ),

@@ -2353,6 +2353,9 @@ class LEn extends L {
   String get boardGoal => 'Board objective';
 
   @override
+  String get squadOverview => 'Team overview';
+
+  @override
   String get teamRating => 'Team';
 
   @override

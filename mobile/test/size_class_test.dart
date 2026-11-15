@@ -31,7 +31,9 @@ void main() {
   Future<void> pump(WidgetTester t, double width, Widget child) => t.pumpWidget(
     Directionality(
       textDirection: TextDirection.rtl,
-      child: Center(child: SizedBox(width: width, child: child)),
+      child: Center(
+        child: SizedBox(width: width, child: child),
+      ),
     ),
   );
 

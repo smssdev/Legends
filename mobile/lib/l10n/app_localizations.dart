@@ -4250,6 +4250,12 @@ abstract class L {
   /// **'هدف الإدارة'**
   String get boardGoal;
 
+  /// No description provided for @squadOverview.
+  ///
+  /// In ar, this message translates to:
+  /// **'نظرة على الفريق'**
+  String get squadOverview;
+
   /// No description provided for @teamRating.
   ///
   /// In ar, this message translates to:

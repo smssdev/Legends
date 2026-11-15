@@ -37,6 +37,12 @@ abstract final class GlmFit {
 
   /// A row with room for its extras (a bar beside its figure): 200 and over.
   static const rowExtrasFrom = 200.0;
+
+  /// A card too tight for a drawing and its controls side by side (they stack): under 300.
+  static const tightCardUnder = 300.0;
+
+  /// A row too tight for a chip beside its name: under 190.
+  static const tightRowUnder = 190.0;
   static const tinyUnder = 340.0;
   static const shortUnder = 400.0;
 
@@ -49,6 +55,8 @@ abstract final class GlmFit {
   static bool isNarrow(double w) => width(w) == GlmWidth.narrow;
   static bool isRoomy(double w) => w >= roomyFrom;
   static bool isCramped(double h) => h < crampedUnder;
+  static bool isTightRow(double w) => w < tightRowUnder;
+  static bool isTightCard(double w) => w < tightCardUnder;
   static bool hasRowExtras(double w) => w >= rowExtrasFrom;
   static bool isWide(double w) => width(w) == GlmWidth.wide;
 
