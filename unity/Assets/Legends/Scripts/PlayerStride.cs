@@ -112,11 +112,18 @@ namespace Legends
             if (animator != null && animator.runtimeAnimatorController != null) animator.SetFloat(SpeedId, 0f);
         }
 
-        /// <summary>A move by its name in Animation/Moves (a kick, a header, a dive), blended in; the once-only ones blend back to the stride.</summary>
-        public void Play(string move, float fade = 0.12f)
+        /// <summary>A move by its name in Animation/Moves (a kick, a header, a dive), blended in (from `into` seconds into it, when it started earlier); the once-only ones blend back to the stride.</summary>
+        public void Play(string move, float fade = 0.12f, float into = 0f)
         {
             if (animator == null || animator.runtimeAnimatorController == null) return;
-            animator.CrossFadeInFixedTime(move, fade, 0);
+            animator.CrossFadeInFixedTime(move, fade, 0, Mathf.Max(0f, into));
+        }
+
+        /// <summary>[U6] A new minute: whoever is still down from the last (a fall, a dive) gets up onto his stride.</summary>
+        public void Settle()
+        {
+            if (animator == null || animator.runtimeAnimatorController == null || animator.IsInTransition(0)) return;
+            if (!animator.GetCurrentAnimatorStateInfo(0).IsName(Locomotion)) Stride();
         }
 
         /// <summary>Back to the stride from a move that holds (a fall, a dive on the grass).</summary>

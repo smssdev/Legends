@@ -94,6 +94,8 @@ namespace Legends
         public string HomeMood = "idle", AwayMood = "idle";
         public bool Finished;
         public readonly List<Frame> Frames = new List<Frame>();
+        /// <summary>[Sprint 07 U6] The minute's events as the server sent them (README appendix A): who does what (PlayerMotion).</summary>
+        public readonly List<Dictionary<string, object>> Events = new List<Dictionary<string, object>>();
 
         public static MatchMinute From(object json, int tickMs)
         {
@@ -119,6 +121,8 @@ namespace Legends
             m.AwayMood = MiniJson.Str(moods, "away", "idle");
             m.Ms = (int)MiniJson.Int(moment, "ms", tickMs);
             if (m.Ms <= 0) m.Ms = tickMs;
+            foreach (var ev in MiniJson.Arr(json, "events") ?? new List<object>())
+                if (ev is Dictionary<string, object> e) m.Events.Add(e);
             foreach (var fr in MiniJson.Arr(json, "frames") ?? new List<object>())
             {
                 var frame = new Frame { Holder = MiniJson.Str(fr, "h", null) };
