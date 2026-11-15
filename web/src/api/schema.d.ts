@@ -16718,8 +16718,11 @@ export interface components {
                 /** @description Friends signed up and not verified yet */
                 waiting: number;
             };
-            /** @enum {string} */
-            role: "user" | "admin";
+            /**
+             * @description Null from a server before X105 for an account made in the same request (register, guest): the app reads it as user
+             * @enum {string|null}
+             */
+            role: "user" | "admin" | null;
             /** @description False for an account made with Google only */
             has_password: boolean;
             /** @description [Sprint 50 M5] A guest's account, until kept with a username and password or Google */

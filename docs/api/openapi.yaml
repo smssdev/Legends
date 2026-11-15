@@ -7412,7 +7412,7 @@ components:
             paid: { type: integer, description: Gifts so far }
             max: { type: integer }
             waiting: { type: integer, description: Friends signed up and not verified yet }
-        role: { type: string, enum: [user, admin] }
+        role: { type: string, nullable: true, enum: [user, admin], description: 'Null from a server before X105 for an account made in the same request (register, guest): the app reads it as user' }
         has_password: { type: boolean, description: False for an account made with Google only }
         guest: { type: boolean, description: '[Sprint 50 M5] A guest''s account, until kept with a username and password or Google' }
         google: { type: boolean, description: Linked to a Google account }

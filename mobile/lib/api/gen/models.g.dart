@@ -82,7 +82,7 @@ class Account {
     required this.name,
     required this.official,
     required this.referral,
-    required this.role,
+    this.role,
     this.suspended,
     required this.username,
     required this.vacation,
@@ -107,7 +107,7 @@ class Account {
       name: r.string('name'),
       official: r.bool_('official'),
       referral: r.object('referral', AccountReferral.fromJson),
-      role: r.string('role'),
+      role: r.stringOrNull('role'),
       suspended: r.objectOrNull('suspended', AccountSuspended.fromJson),
       username: r.string('username'),
       vacation: r.object('vacation', AccountVacation.fromJson),
@@ -149,7 +149,9 @@ class Account {
 
   /// [Sprint 21 E2.3] The invite link: coins for each friend who signs up from it and verifies, up to max
   final AccountReferral referral;
-  final String role;
+
+  /// Null from a server before X105 for an account made in the same request (register, guest): the app reads it as user
+  final String? role;
 
   /// [Sprint 21 E7.3] Suspended by the developers
   final AccountSuspended? suspended;
