@@ -65,14 +65,15 @@ if [ ! -f "$KEYDIR/glm-release.jks" ]; then
   /usr/local/bin/legends-backup > /dev/null 2>&1 || true
 fi
 
-# Memory: the server is small (about 4 GB beside the game). A swap file once (4 GB on the disk, used only when the
+# Memory: the server is small (about 4 GB beside the game). A swap file once (4 GB on the disk, /swapfile-legends, used only when the
 # memory runs out: swappiness 10 keeps the game in memory), then the build gets what is free now, less a margin for
 # the game, and some of the swap. The build is the one stopped if it runs out, never the game.
-if [ "$(awk '/SwapTotal/ {print $2}' /proc/meminfo)" = 0 ] && [ ! -f /swapfile ] && [ "$free" -ge 12288 ]; then
-  echo "Making a 4 GB swap file (once)..."
-  fallocate -l 4G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=4096 status=none
-  chmod 600 /swapfile && mkswap /swapfile > /dev/null && swapon /swapfile
-  grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+# A server may have a small swap already (Hostinger's is 1 GB): a second file brings it to about 5 GB.
+if [ "$(awk '/SwapTotal/ {print int($2 / 1024)}' /proc/meminfo)" -lt 3500 ] && [ ! -f /swapfile-legends ] && [ "$free" -ge 12288 ]; then
+  echo "Adding a 4 GB swap file (once)..."
+  fallocate -l 4G /swapfile-legends 2>/dev/null || dd if=/dev/zero of=/swapfile-legends bs=1M count=4096 status=none
+  chmod 600 /swapfile-legends && mkswap /swapfile-legends > /dev/null && swapon /swapfile-legends
+  grep -q '^/swapfile-legends ' /etc/fstab || echo '/swapfile-legends none swap sw 0 0' >> /etc/fstab
   echo 'vm.swappiness=10' > /etc/sysctl.d/99-legends-swap.conf && sysctl -q -w vm.swappiness=10 || true
 fi
 avail=$(awk '/MemAvailable/ {print int($2 / 1024)}' /proc/meminfo)
