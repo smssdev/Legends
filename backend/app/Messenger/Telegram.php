@@ -80,6 +80,40 @@ class Telegram
         self::call('answerInlineQuery', ['inline_query_id' => $queryId, 'results' => $results, 'cache_time' => 30, 'is_personal' => true]);
     }
 
+    /** [Sprint 70] «typing…» in the chat while the answer is made (Telegram clears it with the answer, or in 5 seconds). */
+    public static function typing(string $chatId): void
+    {
+        self::call('sendChatAction', ['chat_id' => $chatId, 'action' => 'typing']);
+    }
+
+    /** [Sprint 70] What the bot says of itself: before «Start» in a new chat (description), and on its profile (short). */
+    public static function describe(string $description, string $short, ?string $language = null): bool
+    {
+        $lang = $language ? ['language_code' => $language] : [];
+        $a = self::call('setMyDescription', ['description' => mb_substr($description, 0, 512)] + $lang);
+        $b = self::call('setMyShortDescription', ['short_description' => mb_substr($short, 0, 120)] + $lang);
+
+        return ($a['ok'] ?? false) && ($b['ok'] ?? false);
+    }
+
+    /** [Sprint 70] The «/» menu in groups: the group commands, not the private ones. */
+    public static function setGroupCommands(array $commands, ?string $language = null): bool
+    {
+        $r = self::call('setMyCommands', ['commands' => array_map(fn ($c, $d) => ['command' => $c, 'description' => $d], array_keys($commands), $commands),
+            'scope' => ['type' => 'all_group_chats']] + ($language ? ['language_code' => $language] : []));
+
+        return (bool) ($r['ok'] ?? false);
+    }
+
+    /** [Sprint 70] What Telegram says the bot may do: inline (@bot in any chat) and reading a group's talk. */
+    public static function abilities(): ?array
+    {
+        $r = self::call('getMe', []);
+
+        return ($r['ok'] ?? false) ? ['username' => $r['result']['username'] ?? null, 'inline' => (bool) ($r['result']['supports_inline_queries'] ?? false),
+            'groups' => (bool) ($r['result']['can_read_all_group_messages'] ?? false)] : null;
+    }
+
     public static function answerButton(string $callbackId): void
     {
         self::call('answerCallbackQuery', ['callback_query_id' => $callbackId]);
@@ -89,7 +123,7 @@ class Telegram
     public static function setWebhook(string $url): array
     {
         return self::call('setWebhook', ['url' => $url, 'secret_token' => config('services.telegram.secret'),
-            'allowed_updates' => ['message', 'callback_query', 'inline_query'], 'drop_pending_updates' => true]) ?? ['ok' => false, 'status' => 0, 'description' => 'no answer'];
+            'allowed_updates' => ['message', 'callback_query', 'inline_query', 'my_chat_member'], 'drop_pending_updates' => true]) ?? ['ok' => false, 'status' => 0, 'description' => 'no answer'];
     }
 
     /** The bot's own name, from its token (to fill TELEGRAM_BOT_USERNAME). */

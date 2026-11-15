@@ -60,7 +60,9 @@ class MessengerTest extends TestCase
     /** The texts the bot sent, on one platform, in order. */
     private function sent(string $host): array
     {
-        return Http::recorded()->filter(fn ($r) => str_contains($r[0]->url(), $host) && ! str_contains($r[0]->url(), 'answerCallbackQuery'))
+        // [Sprint 70] Not «read» on WhatsApp nor «typing» on Telegram: only messages.
+        return Http::recorded()->filter(fn ($r) => str_contains($r[0]->url(), $host) && ! str_contains($r[0]->url(), 'answerCallbackQuery')
+            && ! str_contains($r[0]->url(), 'sendChatAction') && ! isset($r[0]['status']))
             ->map(fn ($r) => $r[0]['text']['body'] ?? $r[0]['interactive']['body']['text'] ?? $r[0]['text'] ?? '')->values()->all();
     }
 

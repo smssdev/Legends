@@ -76,7 +76,9 @@ return [
         'verify' => env('WHATSAPP_VERIFY_TOKEN'),
         'number' => env('WHATSAPP_NUMBER'),
         'channel' => env('WHATSAPP_CHANNEL_URL'),
-        'url' => 'https://graph.facebook.com/v21.0',
+        // [Sprint 70] The WhatsApp Business Account's id: messenger:setup subscribes the app to its webhooks.
+        'business_id' => env('WHATSAPP_BUSINESS_ID'),
+        'url' => env('WHATSAPP_API_URL', 'https://graph.facebook.com/v24.0'),
         'timeout' => 10,
     ],
 
