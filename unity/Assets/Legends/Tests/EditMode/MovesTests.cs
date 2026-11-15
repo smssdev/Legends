@@ -20,6 +20,7 @@ namespace Legends.Tests
             ("celebrate_wings", 1.95f), ("celebrate_fist", 2.0f), ("celebrate_knee_slide", 2.0f),
             ("despair_hands_head", 2.0f), ("protest", 1.4f), ("walk_off_sad", 2.0f),
             ("ref_card", 1.8f), ("ref_point_spot", 1.5f), ("ref_whistle_free_kick", 1.6f), ("assistant_flag_up", 1.6f),
+            ("header", 1.3f), ("slide_tackle", 1.7f), ("slide_tackle_l", 1.7f), ("fall", 2.0f),
         };
 
         static readonly string[] Loops = { "idle", "keeper_ready", "celebrate_wings", "walk", "walk_brisk", "jog", "run", "sprint" };
@@ -114,6 +115,63 @@ namespace Legends.Tests
                 }
                 Assert.That(BoneAt(1, name, end * 0.5f, HumanBodyBones.Hips).y, Is.InRange(0.8f, 1.15f), name + ": upright");
             }
+        }
+
+        /// <summary>
+        /// [U2] The moves that play once from motion capture (mocap.TAKES): each a clip of the length takes.json says,
+        /// none loops, and a kick meets the ball at its contact: the kicking foot swinging fast, low and level with the
+        /// foot he stands on (the ball beside it). The left-footed twins kick with the left.
+        /// </summary>
+        [Test]
+        public void TheKicksMeetTheBallAtTheirContactWithTheRightFoot()
+        {
+            var table = MiniJson.Parse(System.IO.File.ReadAllText("Assets/Legends/Animation/Moves/takes.json")) as System.Collections.Generic.Dictionary<string, object>;
+            Assert.NotNull(table, "takes.json");
+            foreach (var name in new[] { "pass", "shot", "shot_power", "stop", "turn_l", "turn_r", "pass_l", "shot_l", "shot_power_l" })
+            {
+                var row = table[name] as System.Collections.Generic.Dictionary<string, object>;
+                var clip = Clip(name);
+                Assert.NotNull(clip, name);
+                Assert.IsFalse(clip.isLooping, name + " plays once");
+                Assert.AreEqual(System.Convert.ToSingle(row["seconds"]), clip.length, 0.04f, name + "'s length");
+                if (!row.ContainsKey("contact")) continue;
+                float t = System.Convert.ToSingle(row["contact"]);
+                bool left = (string)row["foot"] == "left";
+                Assert.AreEqual(name.EndsWith("_l"), left, name + "'s kicking foot");
+                var kick = left ? HumanBodyBones.LeftToes : HumanBodyBones.RightToes;
+                var stand = left ? HumanBodyBones.RightFoot : HumanBodyBones.LeftFoot;
+                // the ball beside the foot he stands on: the kicking toes low and level with it there
+                var foot = BoneAt(1, name, t, kick);
+                Assert.Less(foot.y, 0.3f, name + ": the kicking foot down at the ball at the contact");
+                Assert.That(foot.z - BoneAt(1, name, t, stand).z, Is.InRange(-0.15f, 0.35f), name + ": level with the foot he stands on");
+                float swing = Vector3.Distance(BoneAt(1, name, t - 0.05f, kick), BoneAt(1, name, t + 0.05f, kick)) / 0.1f;
+                Assert.Greater(swing, 6f, name + ": the foot swinging fast (m/s) through the ball");
+            }
+            Assert.That(System.Convert.ToSingle(((System.Collections.Generic.Dictionary<string, object>)table["turn_l"])["turn"]), Is.InRange(45f, 135f), "turn_l turns him to his left");
+            Assert.That(System.Convert.ToSingle(((System.Collections.Generic.Dictionary<string, object>)table["turn_r"])["turn"]), Is.InRange(-135f, -45f), "turn_r to his right");
+        }
+
+        /// <summary>
+        /// [U2] The ball moves we make (keyframes.py): the header meets the ball at its contact well above a standing
+        /// man's head, the slide tackle is on the grass with the leg out ahead of him, the fall ends flat on the grass.
+        /// </summary>
+        [Test]
+        public void TheHeaderIsInTheAirTheSlideOnTheGrassAndTheFallFlat()
+        {
+            var table = MiniJson.Parse(System.IO.File.ReadAllText("Assets/Legends/Animation/Moves/takes.json")) as System.Collections.Generic.Dictionary<string, object>;
+            float At(string move) => System.Convert.ToSingle(((System.Collections.Generic.Dictionary<string, object>)table[move])["contact"]);
+            float standing = BoneAt(1, "idle", 0f, HumanBodyBones.Head).y;
+            Assert.Greater(BoneAt(1, "header", At("header"), HumanBodyBones.Head).y, standing + 0.25f, "the header: up off the ground");
+            foreach (var (move, foot) in new[] { ("slide_tackle", HumanBodyBones.RightFoot), ("slide_tackle_l", HumanBodyBones.LeftFoot) })
+            {
+                var hips = BoneAt(1, move, At(move), HumanBodyBones.Hips);
+                Assert.Less(hips.y, 0.45f, move + ": down on the grass");
+                Assert.Greater(BoneAt(1, move, At(move), foot).z - hips.z, 0.6f, move + ": the leg out ahead at the ball");
+            }
+            var fall = Clip("fall");
+            Assert.IsFalse(fall.isLooping, "the fall plays once and holds");
+            Assert.Less(BoneAt(1, "fall", fall.length, HumanBodyBones.Hips).y, 0.35f, "the fall: flat on the grass");
+            Assert.Less(BoneAt(1, "fall", fall.length, HumanBodyBones.Head).y, 0.75f, "his head down too");
         }
 
         [Test]
