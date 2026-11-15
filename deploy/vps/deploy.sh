@@ -47,11 +47,13 @@ grep -q "^REVERB_APP_SECRET=" /opt/legends/.env || echo "REVERB_APP_SECRET=$(ope
 grep -q "^REDIS_PASSWORD=" /opt/legends/.env || echo "REDIS_PASSWORD=$(openssl rand -hex 24)" >> /opt/legends/.env'
 
 # The server's tools: legends-set (a secret, typed on the server), legends-deploy (a deploy from the server itself, X64)
-# and legends-backup (daily at 03:00 Cairo, 01:00 UTC); legends-reset (the game from zero, by hand only, X95).
+# and legends-backup (daily at 03:00 Cairo, 01:00 UTC); legends-reset (the game from zero, by hand only, X95);
+# legends-app (the Android app built, signed and published from the server, X104).
 ssh_ 'install -m 755 /opt/legends/src/deploy/vps/set.sh /usr/local/bin/legends-set \
   && install -m 755 /opt/legends/src/deploy/vps/server-deploy.sh /usr/local/bin/legends-deploy \
   && install -m 755 /opt/legends/src/deploy/vps/backup.sh /usr/local/bin/legends-backup \
   && install -m 755 /opt/legends/src/deploy/vps/reset.sh /usr/local/bin/legends-reset \
+  && install -m 755 /opt/legends/src/deploy/vps/app.sh /usr/local/bin/legends-app \
   && { command -v rclone > /dev/null || DEBIAN_FRONTEND=noninteractive apt-get install -y -qq rclone > /dev/null; } \
   && echo "0 1 * * * root /usr/local/bin/legends-backup >> /var/log/legends-backup.log 2>&1" > /etc/cron.d/legends-backup \
   && echo "*/5 * * * * root docker exec legends-app-1 php artisan server:health --notify > /dev/null 2>&1" > /etc/cron.d/legends-health'
