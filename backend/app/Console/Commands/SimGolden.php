@@ -6,6 +6,7 @@ use App\Models\MasterClub;
 use App\Models\SimMatch;
 use App\Simulator\Golden;
 use App\Simulator\MatchFactory;
+use App\Simulator\MomentStory;
 use App\Simulator\Simulator;
 use Illuminate\Console\Command;
 
@@ -57,7 +58,9 @@ class SimGolden extends Command
         $match = $sim->create(['home_id' => MasterClub::where('name', $home)->value('id'), 'away_id' => MasterClub::where('name', $away)->value('id'),
             'seed' => $seed, 'control' => ['home' => 'cpu', 'away' => 'cpu']]);
         $view = $sim->view($match);
-        $ticks = $sim->advance($match, 200);
+        // [Sprint 09 G2] Each minute with its story as the screens get it (MomentStory), for Unity's director and its
+        // golden vectors (docs/api/director-golden.json).
+        $ticks = array_map(fn (array $tick) => MomentStory::attach($tick, $seed), $sim->advance($match, 200));
         $sample = ['match' => $view, 'ticks' => $ticks, 'report' => $sim->report($match->fresh())];
         file_put_contents(base_path('../docs/api/samples/'.strtolower("$home-$away-$seed").'.json'), json_encode($sample, JSON_UNESCAPED_UNICODE)."\n");
         SimMatch::whereKey($match->id)->delete();
