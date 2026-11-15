@@ -38,7 +38,11 @@ class AnnouncementsScreen extends ConsumerWidget {
                             if (a.imageUrl != null)
                               ClipRRect(
                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                                child: Image(image: DiskImage(a.imageUrl!), fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox()),
+                                child: Image(
+                                  image: DiskImage(a.imageUrl!, cacheWidth: 960),
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) => const SizedBox(),
+                                ),
                               ),
                             Padding(
                               padding: const EdgeInsets.all(14),

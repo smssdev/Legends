@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app.dart';
 import 'core/api/intents.dart';
 import 'core/crash_reports.dart';
+import 'core/device_tier.dart';
 import 'core/settings.dart';
 import 'ui/widgets/broken_part.dart';
 
@@ -31,9 +32,13 @@ Future<void> main() async {
   unawaited(PackageInfo.fromPlatform().then((i) => CrashReports.version = i.version, onError: (_) {}));
   await initializeDateFormatting();
   // [2026-11-06] The game plays in landscape, as the owner asked: wide screens, a side rail, two columns.
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  // [Sprint 74 P6] Not waited for: the first frame does not need their answer (the manifest already holds the screen
+  // sideways), and each was a round trip to the platform before anything was drawn.
+  unawaited(SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]));
+  unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
   final preferences = await SharedPreferences.getInstance();
   Intents.load(preferences);
+  // [Sprint 74 P3] The phone's tier (its endless motion off on a weak one), watched from the first frame.
+  DeviceTiers.start(preferences);
   runApp(ProviderScope(overrides: [preferencesProvider.overrideWithValue(preferences)], child: const GlmApp()));
 }

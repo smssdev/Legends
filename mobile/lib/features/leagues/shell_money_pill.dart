@@ -425,7 +425,7 @@ class _LiveDotState extends State<_LiveDot> with SingleTickerProviderStateMixin 
   Widget build(BuildContext context) {
     final live = context.palette.live;
     // [Sprint 65 F5] Less motion asked (or a widget test): the dot without its ripple.
-    if (MediaQuery.disableAnimationsOf(context) || !Ambient.on) {
+    if (MediaQuery.disableAnimationsOf(context) || !Ambient.endless) {
       _c.stop();
       return Container(
         width: 9,

@@ -228,7 +228,7 @@ class WalletScreen extends ConsumerWidget {
                                     aspectRatio: isWide(context) ? 2.4 : 16 / 9,
                                     // Until the picture arrives, or when it cannot: the night stadium with the coin.
                                     child: Image(
-                                      image: DiskImage(i.imageUrl!),
+                                      image: DiskImage(i.imageUrl!, cacheWidth: 720),
                                       fit: BoxFit.cover,
                                       errorBuilder: (_, _, _) => StadiumBackdrop(
                                         pitch: false,
