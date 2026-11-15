@@ -16,20 +16,20 @@ class AppReleaseController extends Controller
 {
     public function show(): JsonResponse
     {
-        $android = AppReleases::latest();
 
         // The iPhone has no file to download: it installs the web app from Safari (README section 0: no App Store, 2026-11-14).
         // [Sprint 19 B1] The app's Firebase settings (not secret), so pushes start without a new build; null until set.
-        // An uploaded release first; else the one that ships with the site (web/public/downloads).
-        return response()->json(['android' => $android ? AppReleases::card($android) : AppReleases::bundled(), 'ios' => null, 'firebase' => Fcm::client()]);
+        // [Sprint 71 N3] The newer of the admin's upload and the app that ships with the site (the downloads volume).
+        return response()->json(['android' => AppReleases::offered(), 'ios' => null, 'firebase' => Fcm::client()]);
     }
 
     public function download(): BinaryFileResponse|RedirectResponse
     {
         $r = AppReleases::latest();
-        // Nothing uploaded: the app that ships with the site, so this link always works.
-        if (! $r && ($bundled = AppReleases::bundled())) {
-            return redirect()->away($bundled['url']);
+        // Nothing uploaded, or the app that ships with the site is newer [Sprint 71 N3]: that file, so this link always works.
+        $offered = AppReleases::offered();
+        if ($offered && (int) $offered['id'] === 0) {
+            return redirect()->away($offered['url']);
         }
         abort_unless($r && is_file(AppReleases::path((int) $r->id)), 404, 'لا نسخة للتنزيل الآن.');
         DB::table('app_releases')->where('id', $r->id)->increment('downloads');
@@ -44,7 +44,9 @@ class AppReleaseController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(['releases' => DB::table('app_releases')->where('status', '!=', 'removed')->orderByDesc('id')->limit(20)->get()
-            ->map(fn ($r) => AppReleases::card($r))->all(), 'chunk_kb' => (int) config('game.app.chunk_kb'), 'max_mb' => (int) config('game.app.max_mb')]);
+            ->map(fn ($r) => AppReleases::card($r))->all(), 'chunk_kb' => (int) config('game.app.chunk_kb'), 'max_mb' => (int) config('game.app.max_mb'),
+            // [Sprint 71 N6] The app offered now, the version in the code, and whether the players' app is behind it.
+            'offered' => AppReleases::offered(), 'code_version' => AppReleases::codeVersion(), 'behind' => AppReleases::behind()]);
     }
 
     public function start(Request $request): JsonResponse

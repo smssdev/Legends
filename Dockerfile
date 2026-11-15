@@ -49,6 +49,8 @@ RUN { echo 'opcache.enable=1'; echo 'opcache.enable_cli=1'; echo 'opcache.memory
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY backend ./
 COPY data /app/data
+# [Sprint 71 N6] The app's version in this code (the admin panel says when the app players download is older).
+COPY mobile/pubspec.yaml /app/mobile/pubspec.yaml
 COPY --from=vendor /app/backend/vendor ./vendor
 COPY --from=web /app/web/dist ./public-web
 RUN composer dump-autoload --optimize --no-dev \

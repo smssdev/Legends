@@ -12,17 +12,25 @@ import { useToast } from '../../stores/toast'
 
 const releases = ref<any[]>([])
 const chunkKb = ref(1536)
+// [Sprint 71 N6] The app players download now, and the version in the code this server was built from.
+const offered = ref<any>(null)
+const codeVersion = ref<string | null>(null)
+const behind = ref(false)
 const file = ref<File | null>(null)
 const version = ref('')
 const notes = ref('')
 const progress = ref<number | null>(null)
 const toast = useToast()
+const day = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso))
 const mb = (b: number) => new Intl.NumberFormat(intlLocale(), { maximumFractionDigits: 1 }).format(b / 1048576)
 
 async function load() {
   const data = (await api.GET('/admin/app-releases')).data as any
   releases.value = data.releases
   chunkKb.value = data.chunk_kb
+  offered.value = data.offered ?? null
+  codeVersion.value = data.code_version ?? null
+  behind.value = !!data.behind
 }
 onMounted(load)
 
@@ -98,6 +106,28 @@ const field = 'min-h-touch rounded-lg border border-surface-raised bg-surface-su
 
 <template>
   <section class="flex flex-col gap-5">
+    <!-- [Sprint 71 N6] What players download now against the code: a warning when the app is behind. -->
+    <div
+      class="flex flex-col gap-1 rounded-xl border p-4"
+      :class="behind ? 'border-danger/60 bg-danger/10' : 'border-surface-raised bg-surface'"
+      :role="behind ? 'alert' : undefined"
+    >
+      <h2 class="font-display text-xl font-bold">{{ behind ? $t('التطبيق المنشور أقدم من الكود') : $t('التطبيق المنشور') }}</h2>
+      <p class="text-sm text-text-soft">
+        {{ $t('ينزّله اللاعبون الآن:') }} <b dir="ltr">{{ offered ? offered.version : '—' }}</b><template v-if="offered?.build">
+          <span dir="ltr">(+{{ offered.build }})</span></template
+        ><template v-if="offered?.built_at"> · {{ day(offered.built_at) }}</template
+        ><template v-if="offered?.commit">
+          · <span dir="ltr">{{ offered.commit }}</span></template
+        >
+        <template v-if="codeVersion">
+          · {{ $t('في الكود:') }} <b dir="ltr">{{ codeVersion }}</b></template
+        >
+      </p>
+      <p v-if="behind" class="text-sm text-text-soft">
+        {{ $t('ابنِ النسخة الجديدة وارفعها: نقرة مزدوجة على mobile\\tool\\Ship-App.cmd على جهاز البناء، أو ارفع الملف من هنا.') }}
+      </p>
+    </div>
     <form class="flex flex-col gap-3 rounded-xl bg-surface p-4" @submit.prevent="upload">
       <h2 class="font-display text-xl font-bold">{{ $t('نسخة أندرويد جديدة') }}</h2>
       <label

@@ -122,10 +122,72 @@ class AppReleases
         }
         $old = basename((string) ($about['old_phones'] ?? ''));
 
+        // [Sprint 71 N3] What the build wrote beside it (mobile/tool/ship_apk.sh): its build number, when and from which commit.
+        $built = self::moment($about['built_at'] ?? null);
+
         return ['id' => 0, 'platform' => 'android', 'version' => (string) ($about['version'] ?? ''), 'notes' => $about['notes'] ?? null,
             'bytes' => (int) filesize("$dir/$file"), 'received' => (int) filesize("$dir/$file"), 'status' => 'ready', 'sha256' => null, 'downloads' => 0,
-            'published_at' => null, 'url' => url("/downloads/$file"),
-            'old_phones_url' => $old !== '' && is_file("$dir/$old") ? url("/downloads/$old") : null];
+            'published_at' => $built, 'url' => url("/downloads/$file"),
+            'old_phones_url' => $old !== '' && is_file("$dir/$old") ? url("/downloads/$old") : null,
+            'build' => isset($about['build']) ? (int) $about['build'] : null, 'built_at' => $built,
+            'commit' => isset($about['commit']) ? substr(preg_replace('/[^0-9a-f]/', '', (string) $about['commit']), 0, 12) : null];
+    }
+
+    private static function moment(mixed $at): ?string
+    {
+        try {
+            return is_string($at) && $at !== '' ? Carbon::parse($at, 'UTC')->toIso8601ZuluString() : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * [Sprint 71 N3] What the site offers now: the newer of the admin's upload and the app that ships with the site
+     * (an old upload no longer hides a newer shipped app). Null before the first.
+     */
+    public static function offered(): ?array
+    {
+        $up = self::latest();
+        $card = $up ? self::card($up) : null;
+        $bundled = self::bundled();
+        if ($card && $bundled) {
+            return version_compare(self::plain($bundled['version']), self::plain($card['version']), '>') ? $bundled : $card;
+        }
+
+        return $card ?? $bundled;
+    }
+
+    /** 2.5.0+16 as 2.5.0: the part two versions are compared by. */
+    public static function plain(string $version): string
+    {
+        return preg_replace('/[+\-].*$/', '', trim($version)) ?? '';
+    }
+
+    /**
+     * [Sprint 71 N6] The app's version in the code this server was built from (mobile/pubspec.yaml, copied into the
+     * image), so the panel can say when the app offered is older than the code. Null when the file is not there.
+     */
+    public static function codeVersion(): ?string
+    {
+        $file = (string) config('game.app.pubspec');
+        if (! is_file($file) || ! preg_match('/^version:\s*([0-9][0-9A-Za-z.+\-]*)/m', (string) file_get_contents($file), $m)) {
+            return null;
+        }
+
+        return self::plain($m[1]);
+    }
+
+    /** True when the code holds a newer app than the one players download (or none is offered at all). */
+    public static function behind(): bool
+    {
+        $code = self::codeVersion();
+        if ($code === null) {
+            return false;
+        }
+        $offered = self::offered();
+
+        return ! $offered || version_compare(self::plain($offered['version']), $code, '<');
     }
 
     public static function card(object $r): array
@@ -133,6 +195,7 @@ class AppReleases
         return ['id' => (int) $r->id, 'platform' => $r->platform, 'version' => $r->version, 'notes' => $r->notes, 'bytes' => (int) $r->bytes,
             'received' => (int) $r->received, 'status' => $r->status, 'sha256' => $r->sha256, 'downloads' => (int) $r->downloads,
             'published_at' => $r->published_at ? Carbon::parse($r->published_at, 'UTC')->toIso8601ZuluString() : null,
-            'url' => $r->status === 'ready' ? url('/api/v1/app/android.apk') : null];
+            'url' => $r->status === 'ready' ? url('/api/v1/app/android.apk') : null,
+            'build' => null, 'built_at' => null, 'commit' => null];
     }
 }

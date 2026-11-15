@@ -27,6 +27,7 @@ import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../../ui/widgets/motion.dart';
+import '../health/health.dart';
 import '../health/status_screens.dart';
 import 'home_data.dart';
 import '../inbox/inbox_data.dart';
@@ -71,6 +72,32 @@ class _Home extends ConsumerWidget {
     final l = L.of(context);
     final p = context.palette;
     final extras = <Widget>[
+      // [Sprint 71 N4] A newer app on the site: one tap to the download page (not required; the server's min_version is).
+      if (ref.watch(updateReadyProvider).value case final v?)
+        Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: GlmCard(
+            gold: true,
+            child: Row(
+              children: [
+                const IconTile(Icons.system_update_rounded, size: 42),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l.updateReady(v),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                ),
+                GlmButton(
+                  label: l.updateReadyAction,
+                  onPressed: () => launchUrl(Uri.parse('${AppConfig.siteUrl}/download'), mode: LaunchMode.externalApplication),
+                ),
+              ],
+            ),
+          ),
+        ),
       // [Sprint 50 M5] A guest is asked to keep the account (it goes after 30 days otherwise).
       if (ref.watch(authProvider).value?.guest == true) const Padding(padding: EdgeInsets.only(top: 12), child: KeepAccountCard()),
       if (!h.starterClaimed && h.starterCoins > 0)

@@ -35,6 +35,8 @@
   "updateTitle": "Update the app",
   "updateBody": "A new version of the game is out, and this one no longer works with it. Update the app to carry on. If the phone refuses to install it over this one, remove this one once and install it: your account is on the server.",
   "update": "Update now",
+  "updateReady": "Version {version} is ready",
+  "updateReadyAction": "Update",
   "offlineTitle": "No connection",
   "retry": "Try again",
   "greetingMorning": "Good morning, coach",

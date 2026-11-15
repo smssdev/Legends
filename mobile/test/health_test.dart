@@ -14,4 +14,13 @@ void main() {
   test("dates keep the game's Western digits", () {
     expect(latinDigits('الثلاثاء ٧:٠٥ م'), 'الثلاثاء 7:05 م');
   });
+
+  // [Sprint 71 N4] An update required (older than the server's minimum), ready (a newer app on the site), or neither.
+  test('an older app is told an update is ready, and required only under the minimum', () {
+    expect(appAge('2.3.0', '2.5.0', '2.5.0'), (required: true, ready: '2.5.0'));
+    expect(appAge('2.4.0', '2.0.0', '2.5.0'), (required: false, ready: '2.5.0'));
+    expect(appAge('2.5.0', '2.0.0', '2.5.0'), (required: false, ready: null));
+    expect(appAge('2.5.0', '2.0.0', null), (required: false, ready: null));
+    expect(appAge('2.6.0', '2.0.0', '2.5.0'), (required: false, ready: null));
+  });
 }

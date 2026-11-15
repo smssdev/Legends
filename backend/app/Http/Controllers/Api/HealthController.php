@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Ads\AdSense;
 use App\Analytics\Tracking;
+use App\Apps\AppReleases;
 use App\Events\ServerPing;
 use App\Http\Controllers\Controller;
 use App\Messenger\Messenger;
 use App\Support\GameClock;
 use Illuminate\Broadcasting\BroadcastException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * GET /health: what the web and the app check first. The app compares its own
@@ -23,6 +25,8 @@ class HealthController extends Controller
             'status' => 'ok',
             'version' => config('app.version'),
             'min_app_version' => config('game.app.min_version'),
+            // [Sprint 71 N4] The app the site offers now: an older app says «an update is ready» (not required). Null before the first.
+            'latest_app_version' => Cache::remember('app.latest_version', 60, fn () => ($o = AppReleases::offered()) ? AppReleases::plain($o['version']) : '') ?: null,
             'engine_version' => config('game.engine.version'),
             'time' => GameClock::now()->toIso8601ZuluString(),
             'clock_offset' => GameClock::offset(),

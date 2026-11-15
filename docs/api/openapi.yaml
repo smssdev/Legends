@@ -617,6 +617,7 @@ paths:
                   status: { type: string, enum: [ok] }
                   version: { type: string, example: 0.1.0 }
                   min_app_version: { type: string, example: 1.0.0 }
+                  latest_app_version: { type: string, nullable: true, example: 2.5.0, description: '[Sprint 71 N4] The app the site offers now; an older app says an update is ready (not required). Null before the first' }
                   engine_version: { type: integer }
                   time: { type: string, format: date-time, description: The game time (GameClock) in UTC }
                   clock_offset: { type: integer, description: 'Seconds the game clock is ahead of real time (clock:travel, development only; 0 in production)' }
@@ -3293,7 +3294,7 @@ paths:
       tags: [admin]
       summary: '[Sprint 15 D1] The app''s versions, and the upload''s piece size'
       responses:
-        '200': { description: The versions, content: { application/json: { schema: { type: object, required: [releases, chunk_kb, max_mb], properties: { releases: { type: array, items: { $ref: '#/components/schemas/AppRelease' } }, chunk_kb: { type: integer }, max_mb: { type: integer } } } } } }
+        '200': { description: The versions, content: { application/json: { schema: { type: object, required: [releases, chunk_kb, max_mb], properties: { releases: { type: array, items: { $ref: '#/components/schemas/AppRelease' } }, chunk_kb: { type: integer }, max_mb: { type: integer }, offered: { allOf: [{ $ref: '#/components/schemas/AppRelease' }], nullable: true, description: '[Sprint 71 N6] The app players download now' }, code_version: { type: string, nullable: true, description: '[Sprint 71 N6] The app''s version in the code this server was built from' }, behind: { type: boolean, description: '[Sprint 71 N6] The app offered is older than the code' } } } } } }
     post:
       tags: [admin]
       summary: '[Sprint 15 D1] Start an upload: the version, its size in bytes and what is new; then its pieces in order'
@@ -6442,6 +6443,9 @@ components:
         published_at: { type: string, format: date-time, nullable: true }
         url: { type: string, nullable: true, description: The download (ready only) }
         old_phones_url: { type: string, nullable: true, description: '[2026-11-06] The app that ships with the site: its file for old 32-bit phones' }
+        build: { type: integer, nullable: true, description: '[Sprint 71 N3] The build number (the app that ships with the site; null for an upload)' }
+        built_at: { type: string, format: date-time, nullable: true, description: '[Sprint 71 N3] When it was built' }
+        commit: { type: string, nullable: true, description: '[Sprint 71 N3] The commit it was built from (short)' }
     StoreItem:
       type: object
       description: '[Sprint 43 W2] A store package (it stays) or timed offer'

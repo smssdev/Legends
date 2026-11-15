@@ -116,6 +116,14 @@ class LEn extends L {
   String get update => 'Update now';
 
   @override
+  String updateReady(String version) {
+    return 'Version $version is ready';
+  }
+
+  @override
+  String get updateReadyAction => 'Update';
+
+  @override
   String get offlineTitle => 'No connection';
 
   @override

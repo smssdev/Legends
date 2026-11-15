@@ -18,6 +18,7 @@ type Release = {
   url: string | null
   notes: string | null
   old_phones_url?: string | null
+  build?: number | null
 }
 const android = ref<Release | null>(null)
 const loaded = ref(false)
@@ -67,7 +68,10 @@ onMounted(async () => {
               <div>
                 <h2 class="font-display text-2xl font-bold">{{ $t('أندرويد') }}</h2>
                 <p v-if="android" class="text-sm text-text-muted">
-                  <span dir="ltr">{{ android.version }}</span> · {{ $t('{n} ميجا', { n: mb(android.bytes) })
+                  <span dir="ltr"
+                    >{{ android.version }}<template v-if="android.build">+{{ android.build }}</template></span
+                  >
+                  · {{ $t('{n} ميجا', { n: mb(android.bytes) })
                   }}<template v-if="android.published_at"> · {{ day(android.published_at) }}</template>
                 </p>
               </div>
