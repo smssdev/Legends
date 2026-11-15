@@ -28,6 +28,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public const ROLES = ['user', 'admin'];
 
     /** @var list<string> */
+    /** [X105] The column's default on the model too: an account just made (register, guest) answers with its role, not null (it stopped the app's sign-in). */
+    protected $attributes = ['role' => 'user'];
+
     protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'google_picture', 'commentator', 'match_view', 'locale', 'coach_look'];
 
     /** @var list<string> */

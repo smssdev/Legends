@@ -41,7 +41,7 @@ class GuestAccountsTest extends TestCase
 
     public function test_a_guest_plays_then_keeps_the_account_with_a_username(): void
     {
-        $res = $this->postJson('/api/v1/auth/guest', ['device_name' => 'Pixel'])->assertCreated()->assertJsonPath('user.guest', true)->json();
+        $res = $this->postJson('/api/v1/auth/guest', ['device_name' => 'Pixel'])->assertCreated()->assertJsonPath('user.guest', true)->assertJsonPath('user.role', 'user')->json();
         $this->assertNotEmpty($res['token']);
         $this->assertFalse($res['user']['has_password']);
         $auth = ['Authorization' => 'Bearer '.$res['token']];

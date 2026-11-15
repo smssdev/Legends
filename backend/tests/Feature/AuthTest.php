@@ -36,7 +36,7 @@ class AuthTest extends TestCase
     {
         Notification::fake();
         $this->web()->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => 'Hamza', 'email' => ' Hamza@Example.com ', 'password' => 'secret123', 'password_confirmation' => 'secret123', 'terms' => true])
-            ->assertCreated()->assertJsonPath('user.email', 'hamza@example.com')->assertJsonPath('user.username', 'hamza')->assertJsonPath('user.email_verified', false)
+            ->assertCreated()->assertJsonPath('user.email', 'hamza@example.com')->assertJsonPath('user.username', 'hamza')->assertJsonPath('user.email_verified', false)->assertJsonPath('user.role', 'user')
             ->assertJsonMissingPath('token');
         $user = User::where('email', 'hamza@example.com')->firstOrFail();
         $this->assertAuthenticatedAs($user, 'web');
