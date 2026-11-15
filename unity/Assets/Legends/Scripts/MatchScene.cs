@@ -89,6 +89,9 @@ namespace Legends
                 Ball = ball.transform;
             }
             if (contacts != null) contacts.TrackBall(Ball, BallRadius);
+            // [Sprint 07 U5] everyone's touch on the ball and his eyes on it
+            foreach (var t in players.Values) Give(t);
+            foreach (var t in officials) Give(t);
         }
 
         /// <summary>[Sprint 06 U8] Legends' players, the keepers and the officials, each dressed by the server's colours.</summary>
@@ -120,6 +123,12 @@ namespace Legends
                 officials.Add(official.transform);
                 if (contacts != null) contacts.Track(official.transform);
             }
+        }
+
+        void Give(Transform person)
+        {
+            var touch = person.GetComponent<BallContact>();
+            if (touch != null) touch.Ball = Ball;
         }
 
         /// <summary>At his bench in his bib (a substitute, or a player who has left the pitch).</summary>

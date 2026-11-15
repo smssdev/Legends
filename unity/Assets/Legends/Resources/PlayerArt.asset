@@ -88,6 +88,52 @@ MonoBehaviour:
   - {x: 4.05, y: 3.9063747}
   - {x: 4.3, y: 4.2041926}
   - {x: 4.477, y: 4.5408683}
+  touches:
+  - move: header
+    contact: 0.46
+    with: head
+  - move: keeper_catch
+    contact: 0.25
+    with: hands
+  - move: keeper_dive_l_high
+    contact: 0.62
+    with: hands
+  - move: keeper_dive_l_low
+    contact: 0.5
+    with: hands
+  - move: keeper_dive_r_high
+    contact: 0.62
+    with: hands
+  - move: keeper_dive_r_low
+    contact: 0.5
+    with: hands
+  - move: keeper_punch
+    contact: 0.38
+    with: hands
+  - move: pass
+    contact: 0.592
+    with: right
+  - move: pass_l
+    contact: 0.592
+    with: left
+  - move: shot
+    contact: 0.608
+    with: right
+  - move: shot_l
+    contact: 0.608
+    with: left
+  - move: shot_power
+    contact: 0.658
+    with: right
+  - move: shot_power_l
+    contact: 0.658
+    with: left
+  - move: slide_tackle
+    contact: 0.45
+    with: right
+  - move: slide_tackle_l
+    contact: 0.45
+    with: left
   hairColours:
   - {r: 0.16862746, g: 0.14901961, b: 0.13333334, a: 1}
   - {r: 0.3529412, g: 0.25490198, b: 0.17254902, a: 1}
