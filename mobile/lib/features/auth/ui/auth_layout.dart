@@ -10,7 +10,6 @@ import '../../../ui/theme.dart';
 import '../../../ui/tokens.g.dart';
 import '../../../ui/widgets/glm_background.dart';
 import '../../../ui/widgets/legend_crest.dart';
-import '../../../ui/widgets/motion.dart';
 
 /// Which of the two sign-in pages is open, for the ivory tabs at the top of the form (none on the other pages).
 enum AuthTab { signIn, register }
@@ -18,7 +17,7 @@ enum AuthTab { signIn, register }
 /// [Sprint 15 F3, Sprint 47] The sign-in screens' frame in the approved design: a pitch at night across the top with
 /// the crest, the game's name and the page's greeting at its foot; then the two ivory tabs (sign in, a new account)
 /// and the form. Landscape: the pitch on one side, the form on the other. Scrolls above the keyboard.
-class AuthLayout extends StatelessWidget {
+class AuthLayout extends StatefulWidget {
   const AuthLayout({super.key, required this.title, required this.lead, required this.children, this.footer, this.tab});
 
   final String title;
@@ -28,15 +27,29 @@ class AuthLayout extends StatelessWidget {
   final AuthTab? tab;
 
   @override
+  State<AuthLayout> createState() => _AuthLayoutState();
+}
+
+class _AuthLayoutState extends State<AuthLayout> {
+  /// [X98] The form keeps its place in the tree whatever is around it: with the keyboard up the pitch beside it goes,
+  /// and without this key the form was built anew at that moment, so the field just tapped lost its focus, the
+  /// keyboard closed again and the form faded in from nothing each time (Sprint 72 R5's mistake: sign-in and sign-up
+  /// could not be typed in).
+  final _form = GlobalKey();
+
+  @override
   Widget build(BuildContext context) {
-    final form = AutofillGroup(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (tab != null) ...[_Tabs(tab: tab!), const SizedBox(height: 18)],
-          ...children,
-          if (footer != null) ...[const SizedBox(height: 18), Center(child: footer!)],
-        ],
+    final form = KeyedSubtree(
+      key: _form,
+      child: AutofillGroup(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (widget.tab != null) ...[_Tabs(tab: widget.tab!), const SizedBox(height: 18)],
+            ...widget.children,
+            if (widget.footer != null) ...[const SizedBox(height: 18), Center(child: widget.footer!)],
+          ],
+        ),
       ),
     );
     // Asked above the Scaffold: under it the keyboard's height is already taken out of the body.
@@ -44,37 +57,30 @@ class AuthLayout extends StatelessWidget {
     return Scaffold(
       body: GlmBackground(
         wide: true,
+        // Each side keeps clear of a notch itself: the pitch is painted to the screen's edge.
+        safe: false,
         child: LayoutBuilder(
           builder: (context, box) {
-            // [Sprint 72 R5] The keyboard up (in landscape it leaves under half the height): the form alone, across the
-            // whole width and scrolling, so the field being typed in and the button under it stay in sight. The pitch
-            // and its greeting come back when it goes.
-            if (keyboard && box.maxWidth > box.maxHeight) {
-              return SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(28, 8, 28, 8),
-                  child: Center(
-                    child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 520), child: form),
-                  ),
-                ),
-              );
-            }
             if (box.maxWidth > box.maxHeight) {
+              // [Sprint 72 R5] The keyboard up (in landscape it leaves under half the height): the pitch and its
+              // greeting go, and the form takes the whole width, scrolling, so the field being typed in and the button
+              // under it stay in sight.
               return Row(
                 children: [
-                  Expanded(
-                    flex: 5,
-                    child: _PitchHead(title: title, lead: lead, tall: true),
-                  ),
+                  if (!keyboard)
+                    Expanded(
+                      flex: 5,
+                      child: _PitchHead(title: widget.title, lead: widget.lead, tall: true),
+                    ),
                   Expanded(
                     flex: 5,
                     child: SafeArea(
                       child: Center(
                         child: SingleChildScrollView(
-                          padding: const EdgeInsets.fromLTRB(28, 16, 28, 16),
+                          padding: EdgeInsets.fromLTRB(28, keyboard ? 8 : 16, 28, keyboard ? 8 : 16),
                           child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 420),
-                            child: FadeSlideIn(index: 2, child: form),
+                            constraints: BoxConstraints(maxWidth: keyboard ? 520 : 420),
+                            child: form,
                           ),
                         ),
                       ),
@@ -89,15 +95,12 @@ class AuthLayout extends StatelessWidget {
                 children: [
                   SizedBox(
                     height: 280 + MediaQuery.paddingOf(context).top,
-                    child: _PitchHead(title: title, lead: lead),
+                    child: _PitchHead(title: widget.title, lead: widget.lead),
                   ),
                   Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 440),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 14, 24, 24),
-                        child: FadeSlideIn(index: 1, child: form),
-                      ),
+                      child: Padding(padding: const EdgeInsets.fromLTRB(24, 14, 24, 24), child: form),
                     ),
                   ),
                 ],
@@ -123,7 +126,9 @@ class _PitchHead extends StatelessWidget {
     final p = glmNight;
     return CustomPaint(
       // [Sprint 73 D9] Wide: no penalty box drawn through the crest and the game's name.
-      painter: _Pitch(fade: context.palette.bg, box: !tall),
+      // [X98] A pitch at night in both themes: it fades into the night's ground, where its light words read (by day it
+      // faded into the paper and the greeting's second line could not be read).
+      painter: _Pitch(fade: p.bg, box: !tall),
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -157,13 +162,19 @@ class _PitchHead extends StatelessWidget {
               ),
               // [Sprint 50 M4] The cinematic stage: our trophy in 3D turning under the floodlights (wide only).
               if (tall)
-                SizedBox(
-                  height: 150,
-                  width: 150,
-                  child: GlmModelSpin(
-                    model: 'trophy',
-                    label: 'GLM',
-                    fallback: Icon(Icons.emoji_events_rounded, size: 110, color: p.gold),
+                // [X98] As large as the room left allows, 150 at most: on a phone 360 high with a greeting of two lines
+                // the fixed 150 pushed the greeting off the foot of the screen.
+                Flexible(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 150, maxWidth: 150),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: GlmModelSpin(
+                        model: 'trophy',
+                        label: 'GLM',
+                        fallback: Icon(Icons.emoji_events_rounded, size: 110, color: p.gold),
+                      ),
+                    ),
                   ),
                 )
               else
