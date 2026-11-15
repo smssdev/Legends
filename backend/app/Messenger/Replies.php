@@ -48,6 +48,8 @@ class Replies
         'tasks' => ['tasks', '12', 'مهامي', 'المهام', 'my tasks'],
         'predict' => ['predict', '13', 'توقعاتي', 'توقع', 'التوقعات', 'predictions'],
         'cancel' => ['cancel', 'إلغاء', 'الغاء'],
+        // [Sprint 70] WhatsApp: «استمر» under the reminder keeps the free window open (his message itself does it).
+        'keep' => ['keep', 'continue', 'استمر', 'استمرار'],
     ];
 
     private const LABELS = [
@@ -130,6 +132,9 @@ class Replies
         return $user ? ($user->locale === 'en' ? 'en' : 'ar') : (preg_match('/\p{Arabic}/u', $text) ? 'ar' : 'en');
     }
 
+    /** [Sprint 70] WhatsApp's menu: one list of its ten rows (Telegram keeps its buttons under the chat). */
+    private const WHATSAPP_MENU = ['next', 'table', 'now', 'squad', 'training', 'offers', 'fixtures', 'tasks', 'predict', 'fix'];
+
     /** The menu's buttons: all five on Telegram, the three WhatsApp can show. */
     public static function buttons(string $platform, string $l): array
     {
@@ -166,6 +171,10 @@ class Replies
             return ['text' => $setting, 'buttons' => []];
         }
         $cmd = self::command($text);
+        if ($cmd === 'keep') {
+            return ['text' => $user ? ($en ? 'Done: your notifications keep reaching you here for the next 23 hours.' : 'تم: تصلك إشعاراتك هنا 23 ساعة أخرى.')
+                : self::howToLink($l), 'buttons' => $user ? self::buttons($platform, $l) : self::linkButton($l)];
+        }
         if ($cmd === 'cancel') {
             return ['text' => $en ? 'Nothing was done.' : 'لم يتغير شيء.', 'buttons' => []];
         }
@@ -192,7 +201,7 @@ class Replies
             return $this->menu($platform, $user, $l);
         }
         if ($cmd !== null && ! $user) {
-            return ['text' => self::howToLink($l), 'buttons' => []];
+            return ['text' => self::howToLink($l), 'buttons' => self::linkButton($l)];
         }
         if ($user) {
             $reply = match ($cmd) {
@@ -244,7 +253,7 @@ class Replies
         $en = $l === 'en';
         if (! $user) {
             return ['text' => ($en ? "Hello! I am the bot of Game Legend Manager.\n" : "أهلاً! أنا بوت لعبة المدرب الأسطورة.\n").self::howToLink($l)
-                .($en ? "\nUntil then, ask me anything about how the game is played." : "\nوحتى ذلك اسألني عن أي شيء في طريقة اللعب."), 'buttons' => []];
+                .($en ? "\nUntil then, ask me anything about how the game is played." : "\nوحتى ذلك اسألني عن أي شيء في طريقة اللعب."), 'buttons' => self::linkButton($l)];
         }
         $lines = $en
             ? ['1 Next match', '2 My table', '3 Balance', '4 Last result', '5 What now?', '6 My squad', '7 Training', '8 Offers (accept or reject)',
@@ -255,8 +264,15 @@ class Replies
                 '«ملخص 8»: ملخص كل صباح الساعة 8 بتوقيت القاهرة، و«ملخص إيقاف»', '«المباشر تشغيل» و«المباشر إيقاف»: أحداث مبارياتك الحية هنا', '«إيقاف» و«تشغيل»: كل الإشعارات هنا.'];
         $text = ($en ? "Hello {$user->name}! Send a number or a word:\n" : "أهلاً {$user->name}! أرسل رقماً أو كلمة:\n").implode("\n", $lines);
 
-        // On Telegram the buttons stay under the chat; WhatsApp shows its three.
-        return $platform === 'telegram' ? ['text' => $text, 'buttons' => [], 'keyboard' => self::keyboard($l)] : ['text' => $text, 'buttons' => self::buttons($platform, $l)];
+        // On Telegram the buttons stay under the chat; WhatsApp shows them as one list [Sprint 70].
+        return $platform === 'telegram' ? ['text' => $text, 'buttons' => [], 'keyboard' => self::keyboard($l)]
+            : ['text' => $text, 'buttons' => array_map(fn ($k) => [self::LABELS[$k][$en ? 1 : 0], $k], self::WHATSAPP_MENU)];
+    }
+
+    /** [Sprint 70] One button that opens his profile in the game, where the code is made. */
+    public static function linkButton(string $l): array
+    {
+        return [[$l === 'en' ? 'Open my profile' : 'افتح ملفي', 'url:'.rtrim((string) config('app.frontend_url'), '/').'/profile']];
     }
 
     public static function howToLink(string $l): string

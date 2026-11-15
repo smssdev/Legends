@@ -17,6 +17,28 @@ use Illuminate\Support\Facades\DB;
  */
 class LeagueGroups
 {
+    /** What the bot does in a league's group, and its commands (/help there). */
+    public static function help(bool $en): string
+    {
+        return $en
+            ? "In a league's group I post each round's results and stars, the goals live, and a poll before each round.\n/league CODE: the owner links his league\n/table: the table\n/goals on|off: the live goals\n/chat on|off: join this group to the game's chat\n/unleague: unlink"
+            : "في جروب الدوري أنشر نتائج كل جولة ونجومها، والأهداف مباشرة، واستطلاعاً قبل كل جولة.\n/league الكود: يربط المنشئ دوريه\n/table: الترتيب\n/goals on|off: الأهداف المباشرة\n/chat on|off: ربط الجروب بجروب الدوري في اللعبة\n/unleague: فك الربط";
+    }
+
+    /**
+     * [Sprint 70] The bot just added to a group: what it does, in both languages (the group has no one language), and
+     * the first step: the league's owner links his account in a private chat, then sends /league with the code.
+     */
+    public static function welcome(): string
+    {
+        $bot = Telegram::username() ? '@'.Telegram::username() : 'البوت';
+
+        return "أهلاً! أنا بوت لعبة المدرب الأسطورة.\n".self::help(false)
+            ."\n\nالخطوة الأولى: منشئ الدوري يربط حسابه مع {$bot} في محادثة خاصة، ثم يرسل هنا /league وكود الدوري."
+            ."\n\n———\n\nHello! I am the bot of Game Legend Manager.\n".self::help(true)
+            ."\n\nFirst step: the league's owner links his account with {$bot} in a private chat, then sends /league and the league's code here.";
+    }
+
     /** The owner links his league to this group (one group a league, one league a group). */
     public static function link(int $userId, string $code, string $chatId): ?object
     {

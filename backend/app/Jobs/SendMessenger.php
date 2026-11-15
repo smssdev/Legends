@@ -30,7 +30,10 @@ class SendMessenger implements ShouldQueue
     public function handle(): void
     {
         if ($this->platform === 'whatsapp') {
-            WhatsApp::send($this->chatId, $this->text, $this->buttons);
+            // [Sprint 70] Meta says his window is shut: the profile shows it, and nothing more is queued for him.
+            if (WhatsApp::send($this->chatId, $this->text, $this->buttons) === 'closed') {
+                DB::table('messenger_links')->where('platform', 'whatsapp')->where('chat_id', $this->chatId)->update(['last_inbound_at' => null]);
+            }
 
             return;
         }

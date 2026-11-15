@@ -838,7 +838,7 @@ return [
     // whatsapp_window_hours of it (a little less than 24, never a paid message); the most messages a chat may send in a
     // minute; and the public channel's weekly table of coaches (its length).
     // [Sprint 68] And a league group's poll on the round's big match, this many hours before its first kick-off.
-    'messenger' => ['code_minutes' => 15, 'whatsapp_window_hours' => 23, 'per_minute' => 12, 'weekly_top' => 10, 'text_max' => 3900, 'poll_hours' => 3],
+    'messenger' => ['code_minutes' => 15, 'whatsapp_window_hours' => 23, 'whatsapp_warn_hours' => 2, 'per_minute' => 12, 'weekly_top' => 10, 'text_max' => 3900, 'poll_hours' => 3],
     // [Sprint 22] The Assistant Coach (Manager Bot): smart answers per coach per Cairo day (then the guide answers), the
     // messages of the conversation sent back with each question, the longest question, and the reads of the coach's
     // own club one answer may make.
