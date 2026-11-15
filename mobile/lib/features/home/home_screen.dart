@@ -36,6 +36,7 @@ import '../money/finance_screen.dart' show confirm;
 import 'settings_sheet.dart';
 import '../auth/auth_controller.dart';
 import '../auth/ui/keep_account.dart';
+import '../../ui/size_class.dart';
 
 part 'home_screen_sim_banner.dart';
 part 'home_screen_slot_tile.dart';
@@ -193,7 +194,7 @@ class _Home extends ConsumerWidget {
               // side, his slots as big numbered tiles on the stadium on the other, under the arena's top bar.
               // [Sprint 60 F3] The approved draft's home (Home.html): the coach in one line (M-D06), then the slots first, as
               // big numbered tiles on the stadium, and the gift, the simulator and the shop at the side.
-              if (box.maxWidth >= 700) {
+              if (GlmFit.isRoomy(box.maxWidth)) {
                 final side = (box.maxWidth * .32).clamp(260.0, 380.0);
                 return Column(
                   children: [

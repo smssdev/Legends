@@ -5,7 +5,14 @@
 
 import 'dart:io';
 
-final rules = {'color': RegExp(r'Color\(0x'), 'font-size': RegExp(r'fontSize:')};
+// [Sprint 72 R2] Nor a breakpoint of its own: how much room there is is asked of lib/ui/size_class.dart (GlmFit), so a
+// screen never compares a width or a height with a number (they were 560, 600, 640, 700, 760, 840 and 900 in 12 files,
+// none of them looking at the height, the tight side in landscape).
+final rules = {
+  'color': RegExp(r'Color\(0x'),
+  'font-size': RegExp(r'fontSize:'),
+  'breakpoint': RegExp(r'(maxWidth|maxHeight|sizeOf\(context\)\.(width|height)|size\.(width|height))\s*(<=?|>=?)\s*\d'),
+};
 
 void main(List<String> args) {
   final now = <String, Map<String, int>>{};
@@ -27,7 +34,7 @@ void main(List<String> args) {
   now.removeWhere((_, hit) => hit.isEmpty);
   if (now.isNotEmpty) {
     stderr.writeln(
-      "design: a screen set its own colour or size (use context.palette / glmText; see tool/design.dart):\n  ${now.entries.map((e) => '${e.key}: ${e.value}').join('\n  ')}",
+      "design: a screen set its own colour, size or breakpoint (use context.palette / glmText / GlmFit; see tool/design.dart):\n  ${now.entries.map((e) => '${e.key}: ${e.value}').join('\n  ')}",
     );
     exitCode = 1;
     return;

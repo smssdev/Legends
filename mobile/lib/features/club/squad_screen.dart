@@ -22,6 +22,8 @@ import 'club_data.dart';
 import 'team_data.dart';
 import '../leagues/shell.dart';
 import '../../ui/widgets/target.dart';
+import '../../ui/widgets/player_name.dart';
+import '../../ui/size_class.dart';
 
 part 'squad_screen_header_delegate.dart';
 part 'squad_screen_player_row.dart';
@@ -135,7 +137,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
               final card = _card == null ? null : team.players.where((x) => x.id == _card!.id).firstOrNull ?? _card;
               return LayoutBuilder(
                 builder: (context, box) {
-                  _narrow = box.maxWidth < 600;
+                  _narrow = GlmFit.isNarrow(box.maxWidth);
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -166,7 +168,7 @@ class _Fit extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
-      if (box.maxWidth >= 840) return child;
+      if (GlmFit.isWide(box.maxWidth)) return child;
       return FittedBox(
         fit: BoxFit.fitWidth,
         child: SizedBox(width: 840, child: child),

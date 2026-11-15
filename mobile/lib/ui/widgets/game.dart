@@ -8,6 +8,7 @@ import 'cut.dart';
 import 'glm_card.dart';
 import 'motion.dart';
 import '../../features/leagues/shell.dart';
+import '../size_class.dart';
 
 /// [2026-11-06] The game's shared pieces for every screen: a rating badge coloured by its level, a stat tile, a
 /// section header, and grouped menus of screens (an icon in its colour, a title and a line), in place of walls of tiles.
@@ -278,7 +279,7 @@ class GamePanes extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
       List<Widget> rise(List<Widget> xs, int from) => [for (final (i, w) in xs.indexed) FadeSlideIn(index: from + i, child: w)];
-      if (box.maxWidth < 560) return ListView(padding: padding, children: rise([...start, ...end], 0));
+      if (GlmFit.isNarrow(box.maxWidth)) return ListView(padding: padding, children: rise([...start, ...end], 0));
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -415,7 +416,7 @@ class IconTile extends StatelessWidget {
 }
 
 /// True on a wide (landscape) screen: the layouts that sit side by side.
-bool isWide(BuildContext context) => MediaQuery.sizeOf(context).width >= 640;
+bool isWide(BuildContext context) => !GlmFit.isNarrow(MediaQuery.sizeOf(context).width);
 
 /// [2026-11-06, stage 3] A screen's bar with its tabs: under the title on a narrow screen, and beside it on a wide one,
 /// where every row of height counts (a phone in landscape is about 390 points tall).

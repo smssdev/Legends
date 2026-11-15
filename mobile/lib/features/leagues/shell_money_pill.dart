@@ -219,37 +219,41 @@ class ConsoleDock extends ConsumerWidget {
         ),
         border: BorderDirectional(end: BorderSide(color: p.gold.withValues(alpha: .55))),
       ),
-      child: Column(
-        children: [
-          // The club's crest: back to the office.
-          Semantics(
-            button: true,
-            label: s?.club.name ?? l.navOffice,
-            child: InkWell(
-              onTap: () => _go(context, base),
-              child: SizedBox(
-                height: 50,
-                child: Center(
-                  child: ClubCrest(url: s?.club.crestUrl, name: s?.club.code ?? '', size: 34),
+      // [Sprint 72 R3] The dock always whole: its height shared between the crest and the sections, so none is cut or
+      // hidden under a scroll on a phone 360 high (it was 50 + 7×54 = 428, with «More» out of sight). Under 340 the
+      // sections lose their names.
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final crest = box.maxHeight < GlmFit.shortUnder ? 42.0 : 50.0;
+          final each = ((box.maxHeight - crest) / sections.length).clamp(30.0, 54.0);
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // The club's crest: back to the office.
+              Semantics(
+                button: true,
+                label: s?.club.name ?? l.navOffice,
+                child: InkWell(
+                  onTap: () => _go(context, base),
+                  child: SizedBox(
+                    height: crest,
+                    child: Center(
+                      child: ClubCrest(url: s?.club.crestUrl, name: s?.club.code ?? '', size: crest - 14),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                for (final x in sections)
-                  _DockItem(
-                    section: x,
-                    on: x.entries.any((y) => _isOn(y.path)),
-                    isOn: _isOn,
-                    go: (path, push) => _go(context, path, push: push),
-                  ),
-              ],
-            ),
-          ),
-        ],
+              for (final x in sections)
+                _DockItem(
+                  section: x,
+                  height: each,
+                  on: x.entries.any((y) => _isOn(y.path)),
+                  isOn: _isOn,
+                  go: (path, push) => _go(context, path, push: push),
+                ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -291,9 +295,12 @@ String _camel(String name) {
 
 /// A section in the dock: its gold icon over its name; several pages open their list beside it.
 class _DockItem extends StatelessWidget {
-  const _DockItem({required this.section, required this.on, required this.isOn, required this.go});
+  const _DockItem({required this.section, required this.height, required this.on, required this.isOn, required this.go});
 
   final _Section section;
+
+  /// The room the dock gives each section (54 at most; less on a short phone).
+  final double height;
   final bool on;
   final bool Function(String path) isOn;
   final void Function(String path, bool push) go;
@@ -301,6 +308,9 @@ class _DockItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    // The name under the icon while there is room for both; the tile shrinks first (26 to 20).
+    final named = height >= 40;
+    final tile = named ? (height - 22).clamp(20.0, 26.0) : (height - 8).clamp(20.0, 26.0);
     Widget item(VoidCallback onTap) => Semantics(
       button: true,
       selected: on,
@@ -314,7 +324,7 @@ class _DockItem extends StatelessWidget {
             onTap();
           },
           child: Container(
-            height: 54,
+            height: height,
             decoration: BoxDecoration(
               border: BorderDirectional(end: BorderSide(color: on ? p.gold : Colors.transparent, width: 3)),
             ),
@@ -327,8 +337,8 @@ class _DockItem extends StatelessWidget {
                     // [Sprint 63 G4] On its section's tile, as the site's dock (AppShell.vue .dock-tile).
                     if (section.tile case final t?)
                       Container(
-                        width: 26,
-                        height: 26,
+                        width: tile,
+                        height: tile,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: t.colour,
@@ -338,17 +348,20 @@ class _DockItem extends StatelessWidget {
                         child: GlmIcon(section.icon, size: 16, color: t.dark ? GlmBroadcast.ink : GlmBroadcast.white),
                       )
                     else
-                      GlmIcon(section.icon, size: 22, color: p.gold),
-                    const SizedBox(height: 2),
-                    Text(
-                      section.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: glmText(GlmType.caption, fontWeight: FontWeight.w800, color: on ? p.goldLight : p.text),
-                    ),
+                      GlmIcon(section.icon, size: tile - 4, color: p.gold),
+                    if (named)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1),
+                        child: Text(
+                          section.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: glmText(GlmType.caption, fontWeight: FontWeight.w800, height: 1.2, color: on ? p.goldLight : p.text),
+                        ),
+                      ),
                   ],
                 ),
-                if (section.badge == 'live') const PositionedDirectional(top: 6, end: 14, child: _LiveDot()),
+                if (section.badge == 'live') const PositionedDirectional(top: 4, end: 14, child: _LiveDot()),
               ],
             ),
           ),
@@ -360,7 +373,7 @@ class _DockItem extends StatelessWidget {
       return item(() => go(x.path, x.push));
     }
     return MenuAnchor(
-      alignmentOffset: const Offset(4, -54),
+      alignmentOffset: Offset(4, -height),
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(p.surface),
         padding: const WidgetStatePropertyAll(EdgeInsets.all(6)),

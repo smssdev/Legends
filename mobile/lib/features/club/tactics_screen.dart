@@ -27,6 +27,8 @@ import 'tactics_controller.dart';
 import 'flat_pitch.dart';
 import 'team_data.dart';
 import '../leagues/shell.dart';
+import '../../ui/widgets/glm_button.dart';
+import '../../ui/size_class.dart';
 
 part 'tactics_screen_round_dial.dart';
 part 'tactics_screen_dial.dart';
@@ -72,7 +74,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
             final summary = ref.watch(clubSummaryProvider(widget.leagueId)).value;
             Widget gap(Widget w) => Padding(padding: const EdgeInsets.only(bottom: 12), child: w);
             Widget pair(Widget a, Widget b) => LayoutBuilder(
-              builder: (context, box) => box.maxWidth < 560
+              builder: (context, box) => GlmFit.isNarrow(box.maxWidth)
                   ? Column(children: [gap(a), gap(b)])
                   : gap(
                       IntrinsicHeight(
@@ -102,7 +104,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                 // [Sprint 60 F4] The approved draft's tactics (Tactics.html): the lineup's own pitch in the same place, so going
                 // from one to the other does not move the eye; the choices as buttons at its start, the dials one column at its
                 // end. Saved by itself, as before.
-                if (box.maxWidth >= 560) {
+                if (!GlmFit.isNarrow(box.maxWidth)) {
                   final team = ref.watch(teamProvider(widget.leagueId)).value;
                   String presetName(String x) => switch (x) {
                     'tiki_taka' => l.presetTikiTaka,

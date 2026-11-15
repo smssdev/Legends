@@ -24,6 +24,7 @@ import 'lineup_controller.dart';
 import 'team_data.dart';
 import '../leagues/shell.dart';
 import '../../ui/widgets/target.dart';
+import '../../ui/size_class.dart';
 
 part 'lineup_screen_drag_row.dart';
 
@@ -141,7 +142,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
           onRetry: () => ref.invalidate(teamProvider(widget.leagueId)),
           data: (t) => LayoutBuilder(
             builder: (context, box) {
-              final wide = box.maxWidth >= 560;
+              final wide = !GlmFit.isNarrow(box.maxWidth);
               final slots = _slots(t, formations);
               final others = t.players.where((p) => !_starters!.contains(p.id) && !_bench!.contains(p.id)).toList();
               final formation = GlmCard(

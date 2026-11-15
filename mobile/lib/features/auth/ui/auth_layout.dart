@@ -39,11 +39,26 @@ class AuthLayout extends StatelessWidget {
         ],
       ),
     );
+    // Asked above the Scaffold: under it the keyboard's height is already taken out of the body.
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom > 0;
     return Scaffold(
       body: GlmBackground(
         wide: true,
         child: LayoutBuilder(
           builder: (context, box) {
+            // [Sprint 72 R5] The keyboard up (in landscape it leaves under half the height): the form alone, across the
+            // whole width and scrolling, so the field being typed in and the button under it stay in sight. The pitch
+            // and its greeting come back when it goes.
+            if (keyboard && box.maxWidth > box.maxHeight) {
+              return SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(28, 8, 28, 8),
+                  child: Center(
+                    child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 520), child: form),
+                  ),
+                ),
+              );
+            }
             if (box.maxWidth > box.maxHeight) {
               return Row(
                 children: [
@@ -107,7 +122,8 @@ class _PitchHead extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = glmNight;
     return CustomPaint(
-      painter: _Pitch(fade: context.palette.bg),
+      // [Sprint 73 D9] Wide: no penalty box drawn through the crest and the game's name.
+      painter: _Pitch(fade: context.palette.bg, box: !tall),
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -172,9 +188,10 @@ class _PitchHead extends StatelessWidget {
 }
 
 class _Pitch extends CustomPainter {
-  _Pitch({required this.fade});
+  _Pitch({required this.fade, this.box = true});
 
   final Color fade;
+  final bool box;
 
   @override
   void paint(Canvas canvas, Size s) {
@@ -191,10 +208,10 @@ class _Pitch extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5;
     final c = Offset(s.width / 2, s.height * .86);
-    canvas.drawRect(Rect.fromLTRB(-10, s.height * .11, s.width + 10, s.height + 40), line);
+    if (box) canvas.drawRect(Rect.fromLTRB(-10, s.height * .11, s.width + 10, s.height + 40), line);
     canvas.drawLine(Offset(-10, c.dy), Offset(s.width + 10, c.dy), line);
     canvas.drawCircle(c, 58, line);
-    canvas.drawRect(Rect.fromCenter(center: Offset(s.width / 2, s.height * .11 + 31), width: 160, height: 62), line);
+    if (box) canvas.drawRect(Rect.fromCenter(center: Offset(s.width / 2, s.height * .11 + 31), width: 160, height: 62), line);
     canvas.drawRect(
       Offset.zero & s,
       Paint()
@@ -208,7 +225,7 @@ class _Pitch extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_Pitch old) => old.fade != fade;
+  bool shouldRepaint(_Pitch old) => old.fade != fade || old.box != box;
 }
 
 /// The two ivory tabs: sign in, a new account.

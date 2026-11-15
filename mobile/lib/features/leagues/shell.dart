@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/nav.g.dart';
+import '../../ui/size_class.dart';
 import '../../ui/theme.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/brand.dart';
@@ -50,17 +51,26 @@ class LeagueShellState extends ConsumerState<LeagueShell> {
   Widget build(BuildContext context) {
     final lg = ref.watch(leagueProvider(widget.leagueId)).value;
     if (lg == null || lg.myClubId == null) return widget.child;
+    // [Sprint 72 R4] The dock stands on the screen's start side: the right in Arabic, the left in English. It takes the
+    // notch's inset of its own side, and the screen beside it the other side's (it was `left` always: in Arabic an
+    // empty strip beside the dock, and the dock itself under a notch on the right).
+    final rtl = Directionality.of(context) == TextDirection.rtl;
     return Material(
       color: GlmStage.deep,
       child: Row(
         children: [
           SafeArea(
-            right: false,
-            left: true,
+            left: !rtl,
+            right: rtl,
             child: ConsoleDock(leagueId: widget.leagueId, location: widget.location),
           ),
           Expanded(
-            child: _InShell(shell: this, child: widget.child),
+            child: MediaQuery.removePadding(
+              context: context,
+              removeLeft: !rtl,
+              removeRight: rtl,
+              child: _InShell(shell: this, child: widget.child),
+            ),
           ),
         ],
       ),

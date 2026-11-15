@@ -6,11 +6,14 @@
         android:label="المدرب الأسطورة"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- [Sprint 72 R8] Landscape only and never in a split window: every screen is laid out for the whole screen held
+             sideways (a half window is a portrait strip the game has no layout for). -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
+            android:resizeableActivity="false"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

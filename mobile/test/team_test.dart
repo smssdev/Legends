@@ -119,9 +119,11 @@ void main() {
     await t.pumpAndSettle();
     expect(find.byType(PlayerCardPanel), findsOneWidget);
     expect(find.text('حراس المرمى'), findsOneWidget);
-    await t.ensureVisible(find.text(other.name).first);
+    // [Sprint 72 R6] Beside the open card the table is narrower: his row may show «F. Last» or the last name alone.
+    final row = find.textContaining(other.name.split(' ').last).first;
+    await t.ensureVisible(row);
     await t.pumpAndSettle();
-    await t.tap(find.text(other.name).first);
+    await t.tap(row);
     await t.pumpAndSettle();
     expect(find.descendant(of: find.byType(PlayerCardPanel), matching: find.text(other.name)), findsOneWidget);
     await t.tap(find.byTooltip('إغلاق'));

@@ -5,7 +5,7 @@ import '../theme.dart';
 
 /// [Sprint 15 F2] The screens' ground as on the web: a night pitch glow (or warm paper by day) behind everything.
 class GlmBackground extends StatelessWidget {
-  const GlmBackground({super.key, required this.child, this.wide = false});
+  const GlmBackground({super.key, required this.child, this.wide = false, this.safe = true});
 
   final Widget child;
 
@@ -13,14 +13,19 @@ class GlmBackground extends StatelessWidget {
   /// so a list never stretches across a landscape phone.
   final bool wide;
 
+  /// [Sprint 72 R4] The screen clear of a notch on either side (the ground itself runs under it). A screen drawn edge
+  /// to edge (the live match) turns it off and insets its own parts.
+  final bool safe;
+
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final body = wide
+    final inner = wide
         ? child
         : Center(
             child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 760), child: child),
           );
+    final body = safe ? SafeArea(top: false, bottom: false, child: inner) : inner;
     // [Sprint 47] The approved design: by night the web's ink, flat, with an emerald glow from the top as from the
     // floodlights; by day the warm paper as before.
     if (!context.glm.day) {

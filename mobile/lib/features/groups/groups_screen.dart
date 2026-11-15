@@ -18,6 +18,7 @@ import '../leagues/page.dart';
 import '../leagues/shell.dart';
 import '../social/social_data.dart';
 import 'chat_screen.dart';
+import '../../ui/size_class.dart';
 
 /// [Sprint 18 G] Open a group by its invite code (a link gamelegendmanager.online/groups/join/CODE, or typed).
 Future<void> joinGroup(BuildContext context, WidgetRef ref, String code) async {
@@ -203,7 +204,7 @@ class _GroupsConsoleState extends ConsumerState<_GroupsConsole> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
-      if (box.maxWidth < 760) return widget.list(null, null);
+      if (!GlmFit.isRoomy(box.maxWidth)) return widget.list(null, null);
       final l = L.of(context);
       return GlmSplitLayout(
         ratio: (30, 70),

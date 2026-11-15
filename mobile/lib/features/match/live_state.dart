@@ -141,6 +141,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
       child: Stack(
         children: [
           Scaffold(
+            // [Sprint 72 R5] The picture keeps its size under the keyboard (the chat's sheet sits above it by itself).
+            resizeToAvoidBottomInset: false,
             // [Sprint 60 F6] On a landscape screen the picture has no frame (the draft's «bare» screen).
             appBar: landscape ? null : GameBar(title: Text(_finished ? l.fullTime : l.liveNow)),
             body: GlmBackground(
