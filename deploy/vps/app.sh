@@ -9,7 +9,8 @@
 # The key: /opt/legends/app-key (glm-release.jks and key.env), made here on the first build when it is not there, its
 # fingerprint written to ANDROID_CERT_SHA256 (assetlinks.json). legends-backup keeps a copy of it (in B2 too when set):
 # losing it means no update installs over the app on the phones. A key made elsewhere goes in the same two files.
-# Not while a match is live or due within 45 minutes (the build takes the server's processor); LEGENDS_FORCE=1 anyway.
+# Not while a match is live or due within 45 minutes (the build takes the server's processor); LEGENDS_FORCE=1 anyway:
+# the game is never restarted from here, and the build runs at the lowest processor priority.
 set -e
 LOG=/var/log/legends-app.log
 ENV=/opt/legends/.env
@@ -96,14 +97,14 @@ docker run --rm --name legends-appbuild --memory "${limit}m" --memory-swap "${to
   -v "$REPO:/src" -v "$KEYDIR:/key:ro" -v legends-appbuild-cache:/cache legends-appbuild \
   || { rm -rf mobile/build mobile/android/.gradle; fail "The build failed: legends-app log shows why."; }
 
-# Its fingerprint in the server's settings (assetlinks.json): the game restarts once, the first time only.
+# Its fingerprint in the server's settings (assetlinks.json, the invitation links opening the app): read by the game
+# from its next start (legends-deploy), never restarted from here, so a build may run beside live matches.
 print=$(cat mobile/build/ship/cert-sha256.txt)
 old=$(env_ ANDROID_CERT_SHA256)
 case ",$old," in *",$print,"*) ;; *)
   grep -v '^ANDROID_CERT_SHA256=' "$ENV" > "$ENV.tmp" || true
   echo "ANDROID_CERT_SHA256=$print${old:+,$old}" >> "$ENV.tmp"; chmod 600 "$ENV.tmp"; mv "$ENV.tmp" "$ENV"
-  (cd /opt/legends/src/deploy/vps && docker compose --env-file "$ENV" up -d --wait --wait-timeout 300 > /dev/null 2>&1) || true
-  echo "ANDROID_CERT_SHA256 set: the game restarted." ;;
+  echo "ANDROID_CERT_SHA256 set: the game reads it on the next legends-deploy." ;;
 esac
 
 # To the downloads volume (as mobile/tool/ship_apk.sh): the two files first, android.json last.
