@@ -38,8 +38,6 @@ if [ "${busy:-0}" -gt 0 ] 2>/dev/null && [ "${LEGENDS_FORCE:-0}" != 1 ]; then
   fail "Not now: ${busy} match(es) live or due within 45 minutes. Try after them (or LEGENDS_FORCE=1 legends-app)."
 fi
 free=$(df -Pm / | awk 'NR==2 {print $4}')
-echo "Disk: ${free} MB free"
-[ "$free" -ge 8192 ] || fail "Under 8 GB free: the first build needs about 6 GB (docker image prune -a, docker builder prune)."
 
 # The latest main, with the server's read-only deploy key (legends-deploy makes it, X64).
 GH_KEY="$HOME/.ssh/legends_github"
@@ -76,6 +74,13 @@ if [ "$(awk '/SwapTotal/ {print int($2 / 1024)}' /proc/meminfo)" -lt 3500 ] && [
   grep -q '^/swapfile-legends ' /etc/fstab || echo '/swapfile-legends none swap sw 0 0' >> /etc/fstab
   echo 'vm.swappiness=10' > /etc/sysctl.d/99-legends-swap.conf && sysctl -q -w vm.swappiness=10 || true
 fi
+# The disk after the swap: the first build takes about 9 GB (Flutter, the Android SDK and its NDK, Gradle's caches,
+# the build itself), later ones about 3 GB. It filled the disk once: the game's database needs room too.
+free=$(df -Pm / | awk 'NR==2 {print $4}')
+need=4096; docker volume inspect legends-appbuild-cache > /dev/null 2>&1 \
+  && [ -d "$(docker volume inspect -f '{{.Mountpoint}}' legends-appbuild-cache)/android-sdk/ndk" ] || need=12288
+echo "Disk: ${free} MB free (the build needs ${need} MB)"
+[ "$free" -ge "$need" ] || fail "Not enough disk: ${free} MB free, ${need} MB needed (docker builder prune -af frees Docker's old build cache)."
 avail=$(awk '/MemAvailable/ {print int($2 / 1024)}' /proc/meminfo)
 swap=$(awk '/SwapFree/ {print int($2 / 1024)}' /proc/meminfo)
 limit=$((avail - 400)); [ "$limit" -le 3584 ] || limit=3584
@@ -89,7 +94,7 @@ rm -rf mobile/build/ship
 docker run --rm --name legends-appbuild --memory "${limit}m" --memory-swap "${total}m" --cpu-shares 128 \
   -e FLUTTER_VERSION="$FLUTTER_VERSION" -e GRADLE_XMX="${xmx}m" --env-file "$KEYDIR/key.env" \
   -v "$REPO:/src" -v "$KEYDIR:/key:ro" -v legends-appbuild-cache:/cache legends-appbuild \
-  || fail "The build failed: legends-app log shows why."
+  || { rm -rf mobile/build mobile/android/.gradle; fail "The build failed: legends-app log shows why."; }
 
 # Its fingerprint in the server's settings (assetlinks.json): the game restarts once, the first time only.
 print=$(cat mobile/build/ship/cert-sha256.txt)
@@ -112,3 +117,5 @@ docker exec legends-app-1 php artisan cache:forget app.latest_version > /dev/nul
 version=$(sed -n 's/.*"version": "\(.*\)".*/\1/p' mobile/build/ship/android.json)
 echo "Published: GameLegendManager $version. https://gamelegendmanager.online/download"
 notify "GLM app $version is on the download page."
+# The build's own files (about 2 GB) are not kept: the caches in the volume make the next build quick.
+rm -rf mobile/build mobile/android/.gradle

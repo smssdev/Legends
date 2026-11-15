@@ -61,7 +61,9 @@ ssh_ 'install -m 755 /opt/legends/src/deploy/vps/set.sh /usr/local/bin/legends-s
 
 # [Sprint 52] The services (site, queue, scheduler, matches, Reverb, Redis) from one image, built once; --wait returns
 # when the site answers its health check (it migrates first), and fails the deploy if it does not within 5 minutes.
-ssh_ 'cd /opt/legends/src/deploy/vps && docker compose --env-file /opt/legends/.env up -d --build --remove-orphans --wait --wait-timeout 300 && docker image prune -f > /dev/null && docker network prune -f > /dev/null'
+# [X104] Docker's build cache unused for a day goes after each deploy: it had grown to 21 GB and filled the disk.
+ssh_ 'cd /opt/legends/src/deploy/vps && docker compose --env-file /opt/legends/.env up -d --build --remove-orphans --wait --wait-timeout 300 && docker image prune -f > /dev/null && docker network prune -f > /dev/null \
+  && docker builder prune -af --filter until=24h > /dev/null'
 # The backups volume is made by Docker as root: the game (www-data) writes its copies there before each migrate.
 # [Sprint 52] The volumes are made by root: the game (www-data) writes its backups and the admin's app uploads there.
 ssh_ 'docker exec -u root legends-app-1 chown www-data:www-data /app/backend/database/backups /app/backend/storage/app/downloads'
