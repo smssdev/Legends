@@ -6,7 +6,7 @@ import type { Locale } from '../lib/i18n'
 export type LegalSection = { h: string; p: string[] }
 export type LegalDoc = { title: string; intro: string; sections: LegalSection[] }
 
-export const UPDATED = '2026-11-15'
+export const UPDATED = '2026-11-16'
 
 const PRIVACY: Record<Locale, LegalDoc> = {
   ar: {
@@ -49,7 +49,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       {
         h: 'الإعلانات وGoogle AdSense',
         p: [
-          'تعرض اللعبة إعلانات من Google AdSense في أماكن محددة (لا داخل المباراة)، وفيديوهات بمكافأة تختار مشاهدتها لتقليص وقت التدريب أو البناء.',
+          'تعرض اللعبة إعلانات من Google AdSense: في أماكن نحددها، وفي أماكن تختارها Google تلقائياً من صفحات الموقع (الإعلانات التلقائية)، ونطلب منها ألا تضعها داخل المباراة. وفيديوهات بمكافأة تختار مشاهدتها لتقليص وقت التدريب أو البناء.',
           'Google وشركاؤها مزودون من طرف ثالث، ويستخدمون ملفات تعريف الارتباط (الكوكيز) لعرض الإعلانات بناءً على زياراتك السابقة لهذا الموقع ولمواقع أخرى. وتمكّن كوكيز الإعلانات Google وشركاءها من عرض الإعلانات لك بناءً على تلك الزيارات.',
           'يمكنك إيقاف الإعلانات المخصصة من إعدادات إعلانات Google (adssettings.google.com)، أو إيقاف كوكيز مزودي الإعلانات الآخرين من www.aboutads.info. وتشرح Google استخدامها للبيانات في policies.google.com/technologies/partner-sites.',
           'في المنطقة الاقتصادية الأوروبية والمملكة المتحدة وسويسرا تطلب Google موافقتك قبل أي إعلان مخصص، ويمكنك تغيير اختيارك متى شئت.',
@@ -169,7 +169,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       {
         h: 'Ads and Google AdSense',
         p: [
-          'The game shows Google AdSense ads in a few set places (never inside a match), and rewarded videos you may choose to watch to cut training or building time.',
+          "The game shows Google AdSense ads: in places we set, and in places Google picks automatically on the site's pages (Auto ads), which we ask it to keep out of matches. And rewarded videos you may choose to watch to cut training or building time.",
           "Third party vendors, including Google, use cookies to serve ads based on your prior visits to this website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to you based on those visits.",
           "You may opt out of personalised advertising in Google's Ads Settings (adssettings.google.com), and out of other vendors' cookies at www.aboutads.info. Google explains how it uses data at policies.google.com/technologies/partner-sites.",
           'In the European Economic Area, the UK and Switzerland, Google asks for your consent before any personalised ad, and you can change your choice at any time.',
