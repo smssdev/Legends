@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BootstrapController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ClientErrorController;
+use App\Http\Controllers\Api\ClientFramesController;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\CspReportController;
 use App\Http\Controllers\Api\DataController;
@@ -61,6 +62,8 @@ Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate'])->
 Route::post('csp-report', [CspReportController::class, 'store'])->middleware('throttle:30,1,csp-report');
 // [Sprint 66 B1] The errors the web and the app meet on the devices (App\Support\ClientErrors): nothing personal kept.
 Route::post('client-errors', [ClientErrorController::class, 'store'])->middleware('throttle:20,1,client-errors');
+// [Sprint 74 P2] How smoothly the app draws on the phones (App\Support\ClientFrames): counts only.
+Route::post('client-frames', [ClientFramesController::class, 'store'])->middleware('throttle:6,1,client-frames');
 // [Sprint 67] The bots' webhooks: Telegram (by its secret) and WhatsApp (by Meta's signature). PHP's query parser makes
 // Meta's hub.mode hub_mode.
 Route::prefix('messenger')->controller(MessengerController::class)->middleware('throttle:600,1,messenger-hooks')->group(function () {
@@ -383,6 +386,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('funnel', 'funnel');
         // [Sprint 66 W2] The devices' errors, gathered.
         Route::get('client-errors', 'clientErrors');
+        Route::get('client-frames', 'clientFrames');
         // [Sprint 66 B3] The server's pulse: the live match's speed, the queue, Reverb's sockets.
         Route::get('server', 'server');
         Route::get('alliances', 'alliances');

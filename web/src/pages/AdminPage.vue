@@ -6,6 +6,7 @@
 // the alliances, the backups and the commentary templates.
 import FunnelPanel from '../components/admin/FunnelPanel.vue'
 import ClientErrorsPanel from '../components/admin/ClientErrorsPanel.vue'
+import ClientFramesPanel from '../components/admin/ClientFramesPanel.vue'
 import ServerPulsePanel from '../components/admin/ServerPulsePanel.vue'
 import { scrollToTop } from '../lib/scroll'
 import { useAuth } from '../stores/auth'
@@ -628,6 +629,8 @@ onMounted(load)
         <!-- The overview: deploy safety, the counts, and the email test. -->
         <FunnelPanel v-if="tab === 'funnel'" />
         <ClientErrorsPanel v-if="tab === 'clientErrors'" />
+        <!-- [Sprint 74 P2] Under the errors: how smoothly the app drew on the phones. -->
+        <ClientFramesPanel v-if="tab === 'clientErrors'" />
         <template v-if="tab === 'overview' && overview">
           <div class="flex items-center gap-3 rounded-xl p-4" :class="overview.deploy.busy ? 'bg-live/15' : 'bg-success/15'" role="status">
             <span class="text-2xl" aria-hidden="true"><Icon :name="overview.deploy.busy ? 'ban' : 'check'" :size="26" /></span>

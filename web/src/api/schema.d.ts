@@ -1601,6 +1601,64 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/client-frames": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 74 P2] How smoothly the app drew on a phone this session, per screen
+         * @description Added up per day, version, tier and screen (its path without ids). Counts only, nothing personal is read or kept (no account, no address, no device name). 4 KB at most, 6 a minute per address. Kept 30 days.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        platform: "android" | "ios";
+                        version: string;
+                        /** @enum {string} */
+                        tier: "low" | "mid" | "high";
+                        screens: {
+                            path: string;
+                            frames: number;
+                            /** @description Frames that took over 16 ms */
+                            late16: number;
+                            /** @description Frames that took over 33 ms */
+                            late33: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Counted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                413: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues": {
         parameters: {
             query?: never;
@@ -7528,6 +7586,62 @@ export interface paths {
                         };
                     };
                 };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/client-frames": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 74 P2] How smoothly the app drew on the phones, per version, tier and screen: the worst first */
+        get: {
+            parameters: {
+                query?: {
+                    days?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description At most 200 screens (those with 300 frames or more) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            screens: {
+                                /** @enum {string} */
+                                platform: "android" | "ios";
+                                version: string;
+                                /** @enum {string} */
+                                tier: "low" | "mid" | "high";
+                                /** @description The screen, without its ids */
+                                path: string;
+                                frames: number;
+                                sessions: number;
+                                /** @description Frames over 16 ms, in hundredths of a percent */
+                                late16_bp: number;
+                                /** @description Frames over 33 ms, in hundredths of a percent */
+                                late33_bp: number;
+                            }[];
+                        };
+                    };
+                };
+                401: components["responses"]["Error"];
                 403: components["responses"]["Error"];
             };
         };

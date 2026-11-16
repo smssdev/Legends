@@ -25,6 +25,7 @@ use App\Simulator\Commentary;
 use App\Support\Activity;
 use App\Support\Avatar;
 use App\Support\ClientErrors;
+use App\Support\ClientFrames;
 use App\Support\GameClock;
 use App\Support\GameSettings;
 use App\Support\Mailer;
@@ -82,6 +83,14 @@ class AdminController extends Controller
         $q = $request->validate(['days' => 'sometimes|integer|min:1|max:30', 'platform' => ['sometimes', Rule::in(ClientErrors::PLATFORMS)]]);
 
         return response()->json(['errors' => ClientErrors::recent((int) ($q['days'] ?? 7), $q['platform'] ?? null)]);
+    }
+
+    /** [Sprint 74 P2] How smoothly the app drew on the phones in the last `days` days, the worst screens first. */
+    public function clientFrames(Request $request): JsonResponse
+    {
+        $q = $request->validate(['days' => 'sometimes|integer|min:1|max:30']);
+
+        return response()->json(['screens' => ClientFrames::summary((int) ($q['days'] ?? 7))]);
     }
 
     public function overview(): JsonResponse

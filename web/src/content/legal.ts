@@ -76,6 +76,8 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         h: 'بيانات الأعطال',
         p: [
           'حين يتعطل شيء في الموقع أو التطبيق على جهازك يرسل إلى خادمنا وحده تقريراً قصيراً: المنصة (ويب أو أندرويد أو آيفون)، ونسخة اللعبة، والشاشة التي كنت فيها بلا أرقامها، ونص الخطأ وأول سطور مكانه في الكود. لا يحمل التقرير حسابك ولا اسمك ولا عنوان جهازك، ونمسح منه أي بريد أو رقم طويل قد يظهر في نص الخطأ. وتُجمع التقارير المتشابهة في سطر واحد بعددها، يقرؤه فريق التطوير في لوحة الإدارة ليصلح العطل، ويُحذف بعد 30 يوماً من آخر مرة ظهر فيها. ولا يُرسل شيء منه إلى أي جهة أخرى.',
+          // [Sprint 74 P2] Before the app's frame counts were switched on.
+          'ويرسل التطبيق مرة في الجلسة أعداداً عن سلاسته على جوالك: كم إطاراً رسم في كل شاشة وكم منها تأخر، ونسخة التطبيق، ودرجة الجوال (ضعيف أو متوسط أو قوي). أعداد فقط: لا حساب معها ولا عنوان ولا اسم الجهاز، وتُجمع مع أعداد باقي اللاعبين وتُحذف بعد 30 يوماً. نستخدمها لنعرف أي شاشة تتقطع على الجوالات الضعيفة فنصلحها.',
         ],
       },
       {
@@ -193,6 +195,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         h: 'Crash data',
         p: [
           "When something breaks in the site or the app on your device, it sends a short report to our own server only: the platform (web, Android or iPhone), the game's version, the screen you were on without its numbers, and the error's text with the first lines of where it happened in the code. The report carries no account, no name and no device address, and we wipe any email or long number that may appear in the error's text. Similar reports are gathered on one line with their count, read by the development team in the admin panel to fix the fault, and deleted 30 days after it was last seen. None of it is sent anywhere else.",
+          "Once a session the app also sends counts of how smoothly it ran on your phone: how many frames each screen drew and how many came late, the app version, and the phone's tier (low, mid or high). Counts only: no account, no address and no device name go with them; they are added to the other players' counts and deleted after 30 days. We use them to find the screens that stutter on weak phones and fix them.",
         ],
       },
       {
