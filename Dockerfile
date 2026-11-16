@@ -37,8 +37,10 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-progress --no-
 FROM dunglas/frankenphp:1-php8.4-alpine
 WORKDIR /app/backend
 # GD makes the accounts' pictures small squares (App\Support\Avatar). pdo_pgsql: the game's database (PostgreSQL)
-# [X43, X48]. pcntl: Reverb [X48]. redis: the cache, the sessions and the queue [Sprint 52 B4].
-RUN install-php-extensions gd pdo_pgsql pcntl opcache redis
+# [X43, X48]. pcntl: Reverb [X48]. redis: the cache, the sessions and the queue [Sprint 52 B4]. gmp and bcmath [X106]: the
+# web push library (minishlink/web-push) warns without them, and Laravel turns the warning into an error: every SendPush
+# job failed (71 on the server by 2026-11-16) before it sent a thing.
+RUN install-php-extensions gd pdo_pgsql pcntl opcache redis gmp bcmath
 # [X45] OPcache: Laravel compiled once per start. The code never changes inside the container, so files are not
 # checked again. [Sprint 51 B5] And PHP never says its version.
 RUN { echo 'opcache.enable=1'; echo 'opcache.enable_cli=1'; echo 'opcache.memory_consumption=128'; \
@@ -66,8 +68,12 @@ RUN composer dump-autoload --optimize --no-dev \
  && php artisan key:generate --force \
  && php artisan migrate --force \
  && php artisan data:import \
- && chown -R www-data:www-data storage database bootstrap/cache \
+ && mkdir -p public/crests \
+ && chown -R www-data:www-data storage database bootstrap/cache public/crests \
  && mkdir -p /data/caddy /config/caddy && chown -R www-data:www-data /data /config
+# [X106] public/crests is where data:crests writes the clubs' crests at each start (Sprint 58 B2), as www-data: public/
+# itself stays root's, so the folder was never made and every start said "Crests: failed" (the crests then went through
+# Laravel's old route, with no year-long cache).
 
 # [Sprint 52 B7] public/downloads is a link into the downloads volume (deploy/vps/compose.yml): the Android app that
 # ships with the site lives on the server (deploy.sh moved it there once), not in the repository and the image (44 MB).
