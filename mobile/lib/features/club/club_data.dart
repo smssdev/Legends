@@ -105,6 +105,8 @@ class ClubSummary {
   final List<api.PlayerMilestone> milestones;
 }
 
-final clubSummaryProvider = FutureProvider.autoDispose.family<ClubSummary, int>(
-  (ref, league) async => ClubSummary.fromJson(await ref.saved('/leagues/$league/team/summary')),
-);
+final clubSummaryProvider = FutureProvider.autoDispose.family<ClubSummary, int>((ref, league) async {
+  final summary = ClubSummary.fromJson(await ref.saved('/leagues/$league/team/summary'));
+  ref.staysFor(); // [Sprint 74 P8]
+  return summary;
+});

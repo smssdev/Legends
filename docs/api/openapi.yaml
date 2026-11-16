@@ -742,6 +742,40 @@ paths:
         '413': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
         '429': { $ref: '#/components/responses/Error' }
+  /client-frames:
+    post:
+      tags: [system]
+      summary: '[Sprint 74 P2] How smoothly the app drew on a phone this session, per screen'
+      description: Added up per day, version, tier and screen (its path without ids). Counts only, nothing personal is read or kept (no account, no address, no device name). 4 KB at most, 6 a minute per address. Kept 30 days.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [platform, version, tier, screens]
+              properties:
+                platform: { type: string, enum: [android, ios] }
+                version: { type: string, maxLength: 20 }
+                tier: { type: string, enum: [low, mid, high] }
+                screens:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: object
+                    required: [path, frames, late16, late33]
+                    properties:
+                      path: { type: string, maxLength: 500 }
+                      frames: { type: integer, minimum: 0 }
+                      late16: { type: integer, minimum: 0, description: Frames that took over 16 ms }
+                      late33: { type: integer, minimum: 0, description: Frames that took over 33 ms }
+      responses:
+        '204': { description: Counted }
+        '413': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
   /leagues:
     get:
       tags: [leagues]
@@ -2805,6 +2839,37 @@ paths:
                       p95_ms: { type: integer, nullable: true }
                   queue: { type: integer, nullable: true }
                   reverb_connections: { type: integer, nullable: true }
+        '403': { $ref: '#/components/responses/Error' }
+  /admin/client-frames:
+    get:
+      tags: [admin]
+      summary: '[Sprint 74 P2] How smoothly the app drew on the phones, per version, tier and screen: the worst first'
+      parameters:
+        - { name: days, in: query, schema: { type: integer, minimum: 1, maximum: 30, default: 7 } }
+      responses:
+        '200':
+          description: At most 200 screens (those with 300 frames or more)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [screens]
+                properties:
+                  screens:
+                    type: array
+                    items:
+                      type: object
+                      required: [platform, version, tier, path, frames, sessions, late16_bp, late33_bp]
+                      properties:
+                        platform: { type: string, enum: [android, ios] }
+                        version: { type: string }
+                        tier: { type: string, enum: [low, mid, high] }
+                        path: { type: string, description: 'The screen, without its ids' }
+                        frames: { type: integer }
+                        sessions: { type: integer }
+                        late16_bp: { type: integer, description: 'Frames over 16 ms, in hundredths of a percent' }
+                        late33_bp: { type: integer, description: 'Frames over 33 ms, in hundredths of a percent' }
+        '401': { $ref: '#/components/responses/Error' }
         '403': { $ref: '#/components/responses/Error' }
   /admin/client-errors:
     get:

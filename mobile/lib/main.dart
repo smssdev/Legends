@@ -12,6 +12,7 @@ import 'app.dart';
 import 'core/api/intents.dart';
 import 'core/crash_reports.dart';
 import 'core/device_tier.dart';
+import 'core/frame_stats.dart';
 import 'core/settings.dart';
 import 'ui/widgets/broken_part.dart';
 
@@ -40,5 +41,7 @@ Future<void> main() async {
   Intents.load(preferences);
   // [Sprint 74 P3] The phone's tier (its endless motion off on a weak one), watched from the first frame.
   DeviceTiers.start(preferences);
+  // [Sprint 74 P2] And its frames counted per screen, sent as counts when the app is left.
+  FrameStats.start();
   runApp(ProviderScope(overrides: [preferencesProvider.overrideWithValue(preferences)], child: const GlmApp()));
 }

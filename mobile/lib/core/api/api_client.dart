@@ -208,4 +208,16 @@ extension ScreenRequests on Ref {
       if (mounted) invalidateSelf();
     };
   }
+
+  /// [Sprint 74 P8] An answer kept a while after its last screen goes (two minutes), so coming back to a section shows
+  /// it at once with no request: a league's team, tactics, table and fixtures were asked for again on every return.
+  /// Called once the answer is in (a failure is never kept). An action still refreshes it (`invalidate`), and so does a
+  /// newer answer from the server.
+  void staysFor([Duration time = const Duration(minutes: 2)]) {
+    final link = keepAlive();
+    Timer? end;
+    onCancel(() => end = Timer(time, link.close));
+    onResume(() => end?.cancel());
+    onDispose(() => end?.cancel());
+  }
 }

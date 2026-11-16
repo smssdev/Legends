@@ -75,13 +75,22 @@ class LeaguesRepository {
 
 final leaguesRepositoryProvider = Provider<LeaguesRepository>((ref) => LeaguesRepository(ref.watch(apiProvider)));
 final myLeaguesProvider = FutureProvider.autoDispose<List<League>>((ref) => ref.read(leaguesRepositoryProvider).mine());
-final leagueProvider = FutureProvider.autoDispose.family<League, int>((ref, id) => ref.read(leaguesRepositoryProvider).show(id));
-final standingsProvider = FutureProvider.autoDispose.family<List<StandingRow>, int>(
-  (ref, id) => ref.read(leaguesRepositoryProvider).standings(id, onNewer: ref.newerRebuilds()),
-);
-final fixturesProvider = FutureProvider.autoDispose.family<List<Fixture>, int>(
-  (ref, id) => ref.read(leaguesRepositoryProvider).fixtures(id),
-);
+// [Sprint 74 P8] Kept two minutes after their last screen (ref.staysFor): moving between a league's sections asks nothing.
+final leagueProvider = FutureProvider.autoDispose.family<League, int>((ref, id) async {
+  final league = await ref.read(leaguesRepositoryProvider).show(id);
+  ref.staysFor();
+  return league;
+});
+final standingsProvider = FutureProvider.autoDispose.family<List<StandingRow>, int>((ref, id) async {
+  final table = await ref.read(leaguesRepositoryProvider).standings(id, onNewer: ref.newerRebuilds());
+  ref.staysFor();
+  return table;
+});
+final fixturesProvider = FutureProvider.autoDispose.family<List<Fixture>, int>((ref, id) async {
+  final fixtures = await ref.read(leaguesRepositoryProvider).fixtures(id);
+  ref.staysFor();
+  return fixtures;
+});
 final requestsProvider = FutureProvider.autoDispose.family<List<JoinRequest>, int>(
   (ref, id) => ref.read(leaguesRepositoryProvider).requests(id),
 );

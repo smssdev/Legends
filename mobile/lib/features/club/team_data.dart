@@ -240,8 +240,14 @@ class TeamRepository {
 }
 
 final teamRepositoryProvider = Provider<TeamRepository>((ref) => TeamRepository(ref.watch(apiProvider)));
-final teamProvider = FutureProvider.autoDispose.family<TeamData, int>(
-  (ref, league) => ref.read(teamRepositoryProvider).team(league, onNewer: ref.newerRebuilds()),
-);
+final teamProvider = FutureProvider.autoDispose.family<TeamData, int>((ref, league) async {
+  final team = await ref.read(teamRepositoryProvider).team(league, onNewer: ref.newerRebuilds());
+  ref.staysFor(); // [Sprint 74 P8]
+  return team;
+});
 final formationsProvider = FutureProvider<List<Formation>>((ref) => ref.read(teamRepositoryProvider).formations());
-final tacticsProvider = FutureProvider.autoDispose.family<Tactics, int>((ref, league) => ref.read(teamRepositoryProvider).tactics(league));
+final tacticsProvider = FutureProvider.autoDispose.family<Tactics, int>((ref, league) async {
+  final tactics = await ref.read(teamRepositoryProvider).tactics(league);
+  ref.staysFor(); // [Sprint 74 P8]
+  return tactics;
+});
