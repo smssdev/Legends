@@ -39,6 +39,13 @@ class AuthRepository {
     return _keep(data);
   }
 
+  /// [X107] Signs in with the id_token Google gave the app: the server checks it, finds or makes the account, and the
+  /// phone keeps its token as for any sign-in.
+  Future<Account> google(String idToken) async {
+    final data = await _api.post('/auth/google/token', {'id_token': idToken, 'device_name': AppConfig.deviceName});
+    return _keep(data);
+  }
+
   /// [Sprint 50 M5] Playing as a guest: an account the server makes, kept on this phone by its token.
   Future<Account> guest() async => _keep(await _api.post('/auth/guest', {'device_name': AppConfig.deviceName}));
 

@@ -30,6 +30,11 @@ class AuthController extends AsyncNotifier<Account?> {
     state = AsyncData(await ref.read(authRepositoryProvider).register(name: name, username: username, email: email, password: password));
   }
 
+  /// [X107] Sign in with the Google account's id_token (the API makes the account the first time).
+  Future<void> google(String idToken) async {
+    state = AsyncData(await ref.read(authRepositoryProvider).google(idToken));
+  }
+
   /// [Sprint 50 M5] Play as a guest at once.
   Future<void> guest() async {
     state = AsyncData(await ref.read(authRepositoryProvider).guest());
