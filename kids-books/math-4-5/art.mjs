@@ -134,3 +134,164 @@ export function sun(c = {}) {
 
 // Single-stroke path for tracing the digit 3 (box ~ 60 x 100).
 export const THREE = 'M8,20 C14,2 50,0 52,22 C54,40 36,48 26,48 C42,48 58,56 56,76 C54,98 16,102 6,84';
+
+// Digits as single strokes for tracing (each in a 60 x 100 box; 10 is 100 wide).
+export const DIGITS = {
+  0: ['M30,4 C8,4 4,30 4,52 C4,76 12,98 30,98 C48,98 56,76 56,52 C56,30 52,4 30,4'],
+  1: ['M14,22 L32,4 L32,98'],
+  2: ['M6,26 C8,6 28,2 40,6 C56,12 58,32 46,46 L4,98 L58,98'],
+  3: [THREE],
+  4: ['M30,4 L4,68 L58,68', 'M42,4 L42,98'],
+  5: ['M12,4 L8,44 C20,36 50,34 56,60 C60,86 40,100 22,98 C12,97 6,92 4,88', 'M12,4 L52,4'],
+  6: ['M48,8 C36,2 14,6 8,38 C2,70 10,98 32,98 C52,98 58,80 56,66 C54,46 36,40 24,44 C14,48 8,56 6,62'],
+  7: ['M4,4 L56,4 L22,98'],
+  8: ['M30,50 C12,46 8,30 10,20 C14,6 46,6 50,20 C52,30 48,46 30,50 C10,54 4,70 6,80 C10,98 50,100 54,80 C56,68 50,54 30,50'],
+  9: ['M54,32 C52,10 36,4 28,4 C12,4 4,18 6,32 C8,48 30,56 46,46 C52,42 54,36 54,32 L50,98'],
+};
+DIGITS[10] = [DIGITS[1][0], DIGITS[0][0].replace(/(-?\d+),/g, (m, x) => `${+x + 40},`)];
+
+// Numbers written inside a drawing for colour-by-number (local coords).
+export const nums = (list, scale = 1, size = 30) =>
+  list.map(([x, y, t, s = size]) => `<text x="${x}" y="${y}" class="region" font-size="${(s / scale).toFixed(1)}" text-anchor="middle" dominant-baseline="central">${t}</text>`).join('');
+
+export function ladybug(c = {}) {
+  const body = c.body ?? W, spot = c.spot ?? W;
+  return `
+  <path d="M-8,-56 Q-14,-74 -24,-80 M8,-56 Q14,-74 24,-80" fill="none" stroke-width="4"/>
+  <circle cx="-24" cy="-80" r="5" fill="${INK}" stroke="none"/><circle cx="24" cy="-80" r="5" fill="${INK}" stroke="none"/>
+  <circle cx="0" cy="-46" r="24" fill="${c.head ?? W}"/>
+  <circle cx="0" cy="8" r="50" fill="${body}"/>
+  <path d="M0,-42 L0,58" fill="none" stroke-width="5"/>
+  <circle cx="-24" cy="-10" r="10" fill="${spot}" stroke-width="4"/><circle cx="24" cy="-10" r="10" fill="${spot}" stroke-width="4"/>
+  <circle cx="-28" cy="24" r="9" fill="${spot}" stroke-width="4"/><circle cx="28" cy="24" r="9" fill="${spot}" stroke-width="4"/>
+  ${eye(-9, -54, 5)}${eye(9, -54, 5)}`;
+}
+
+export function flower(c = {}) {
+  const petal = c.petal ?? W, mid = c.mid ?? W, leaf = c.leaf ?? W;
+  let petals = '';
+  for (let i = 0; i < 6; i++) {
+    const a = (i * Math.PI) / 3;
+    petals += `<circle cx="${(30 * Math.cos(a)).toFixed(1)}" cy="${(-24 + 30 * Math.sin(a)).toFixed(1)}" r="22" fill="${petal}"/>`;
+  }
+  return `
+  <path d="M0,0 L0,72" fill="none"/>
+  <path d="M0,50 Q-30,28 -42,46 Q-22,62 0,50 Z" fill="${leaf}" stroke-width="5"/>
+  <path d="M0,38 Q30,16 42,34 Q22,50 0,38 Z" fill="${leaf}" stroke-width="5"/>
+  ${petals}
+  <circle cx="0" cy="-24" r="20" fill="${mid}"/>
+  ${c.plain ? '' : `${eye(-7, -27, 4)}${eye(7, -27, 4)}${smile('M-5,-17 Q0,-12 5,-17', 3)}`}`;
+}
+
+export function balloon(c = {}) {
+  const body = c.body ?? W;
+  return `
+  <path d="M0,34 Q-12,50 0,62 Q12,74 0,86" fill="none" stroke-width="4"/>
+  <path d="M-8,36 L8,36 L0,26 Z" fill="${body}" stroke-width="4"/>
+  <ellipse cx="0" cy="-18" rx="42" ry="50" fill="${body}"/>
+  <path d="M-26,-38 Q-26,-54 -12,-60" fill="none" stroke-width="4"/>
+  ${eye(-13, -18, 5)}${eye(13, -18, 5)}
+  ${smile('M-6,-6 Q0,0 6,-6', 3.5)}`;
+}
+
+export function bee(c = {}) {
+  const body = c.body ?? W, wing = c.wing ?? W;
+  return `
+  <ellipse cx="-12" cy="-40" rx="16" ry="24" transform="rotate(-20 -12 -40)" fill="${wing}" stroke-width="5"/>
+  <ellipse cx="12" cy="-40" rx="16" ry="24" transform="rotate(20 12 -40)" fill="${wing}" stroke-width="5"/>
+  <path d="M-50,0 L-66,-8 L-64,8 Z" fill="${INK}" stroke-width="4"/>
+  <ellipse cx="0" cy="0" rx="52" ry="36" fill="${body}"/>
+  <path d="M-18,-33 Q-28,0 -18,33 M6,-36 Q-4,0 6,36" fill="none" stroke-width="8"/>
+  <path d="M32,-28 Q36,-46 46,-50" fill="none" stroke-width="4"/>
+  <circle cx="46" cy="-50" r="5" fill="${INK}" stroke="none"/>
+  ${eye(30, -6, 6)}
+  ${smile('M26,10 Q33,16 40,9', 3.5)}`;
+}
+
+export function frog(c = {}) {
+  const body = c.body ?? W;
+  return `
+  <ellipse cx="-36" cy="56" rx="18" ry="9" fill="${body}" stroke-width="5"/>
+  <ellipse cx="36" cy="56" rx="18" ry="9" fill="${body}" stroke-width="5"/>
+  <ellipse cx="0" cy="18" rx="56" ry="40" fill="${body}"/>
+  <circle cx="-26" cy="-24" r="19" fill="${body}"/>
+  <circle cx="26" cy="-24" r="19" fill="${body}"/>
+  ${eye(-26, -24, 9)}${eye(26, -24, 9)}
+  ${smile('M-26,14 Q0,36 26,14', 5)}`;
+}
+
+export function butterfly(c = {}) {
+  const top = c.top ?? W, low = c.low ?? W, body = c.body ?? W;
+  const wings = `
+    <path d="M-4,-8 C-30,-72 -84,-56 -70,-14 C-62,8 -24,6 -4,-2 Z" fill="${top}"/>
+    <path d="M-4,2 C-24,8 -64,22 -52,50 C-40,70 -10,44 -4,12 Z" fill="${low}"/>
+    <circle cx="-44" cy="-26" r="10" fill="#fff" stroke-width="4"/>
+    <circle cx="-38" cy="30" r="7" fill="#fff" stroke-width="4"/>`;
+  return `
+  <path d="M-4,-44 Q-14,-64 -24,-70 M4,-44 Q14,-64 24,-70" fill="none" stroke-width="4"/>
+  ${wings}<g transform="scale(-1 1)">${wings}</g>
+  <ellipse cx="0" cy="4" rx="10" ry="40" fill="${body}"/>
+  <circle cx="0" cy="-42" r="12" fill="${body}"/>
+  ${eye(-4, -44, 3)}${eye(4, -44, 3)}`;
+}
+
+export function heart(c = {}) {
+  return `
+  <path d="M0,50 C-62,10 -62,-42 -26,-46 C-10,-48 0,-36 0,-26 C0,-36 10,-48 26,-46 C62,-42 62,10 0,50 Z" fill="${c.body ?? W}"/>
+  ${eye(-14, -12, 6)}${eye(14, -12, 6)}
+  ${smile('M-6,2 Q0,8 6,2', 3.5)}`;
+}
+
+export function ball(c = {}) {
+  return `
+  <circle r="48" fill="${c.body ?? W}"/>
+  <path d="M0,-48 Q-34,0 0,48 M0,-48 Q34,0 0,48 M-46,-12 Q0,6 46,-12" fill="none" stroke-width="4"/>`;
+}
+
+export function snail(c = {}) {
+  const body = c.body ?? W, shell = c.shell ?? W;
+  return `
+  <path d="M62,-22 L58,-46 M72,-20 L76,-44" fill="none" stroke-width="4"/>
+  <circle cx="58" cy="-46" r="5" fill="${INK}" stroke="none"/><circle cx="76" cy="-44" r="5" fill="${INK}" stroke="none"/>
+  <path d="M-62,42 Q-62,30 -44,30 L40,30 Q46,-16 60,-22 Q80,-26 80,-4 L74,42 Z" fill="${body}"/>
+  <circle cx="-6" cy="-4" r="40" fill="${shell}"/>
+  <path d="M-6,-4 Q-6,-14 4,-12 Q14,-8 10,4 Q4,18 -10,14 Q-26,8 -24,-8 Q-20,-28 0,-30 Q24,-30 28,-4" fill="none" stroke-width="5"/>
+  ${eye(66, -6, 4)}
+  ${smile('M62,8 Q68,14 74,7', 3.5)}`;
+}
+
+export function bunny(c = {}) {
+  const body = c.body ?? W, ear = c.ear ?? W;
+  return `
+  <ellipse cx="0" cy="52" rx="36" ry="26" fill="${body}"/>
+  <ellipse cx="-17" cy="-62" rx="14" ry="36" fill="${body}"/>
+  <ellipse cx="17" cy="-62" rx="14" ry="36" fill="${body}"/>
+  <ellipse cx="-17" cy="-62" rx="6" ry="22" fill="${ear}" stroke-width="4"/>
+  <ellipse cx="17" cy="-62" rx="6" ry="22" fill="${ear}" stroke-width="4"/>
+  <circle cx="0" cy="-4" r="40" fill="${body}"/>
+  ${eye(-15, -8, 6)}${eye(15, -8, 6)}
+  <path d="M-5,6 L5,6 L0,11 Z" fill="${INK}" stroke-width="3"/>
+  ${smile('M-8,16 Q-4,21 0,15 Q4,21 8,16', 3.5)}`;
+}
+
+export function cupcake(c = {}) {
+  const cake = c.cake ?? W, top = c.top ?? W;
+  return `
+  <path d="M0,-56 Q4,-68 12,-72" fill="none" stroke-width="4"/>
+  <circle cx="0" cy="-54" r="11" fill="${c.cherry ?? W}"/>
+  <path d="M-40,0 L40,0 L30,56 L-30,56 Z" fill="${cake}"/>
+  <path d="M-20,0 L-15,56 M0,0 L0,56 M20,0 L15,56" fill="none" stroke-width="4"/>
+  <path d="M-48,6 Q-58,-20 -32,-24 Q-30,-50 0,-46 Q30,-50 32,-24 Q58,-20 48,6 Z" fill="${top}"/>
+  ${eye(-12, -16, 5)}${eye(12, -16, 5)}
+  ${smile('M-6,-6 Q0,0 6,-6', 3.5)}`;
+}
+
+export function car(c = {}) {
+  const body = c.body ?? W;
+  return `
+  <path d="M-72,22 L-72,-4 Q-70,-16 -52,-18 L-34,-18 L-18,-44 L30,-44 L48,-18 L62,-16 Q74,-14 74,4 L74,22 Z" fill="${body}"/>
+  <path d="M-22,-18 L-10,-36 L4,-36 L4,-18 Z M14,-18 L14,-36 L26,-36 L38,-18 Z" fill="#fff" stroke-width="4"/>
+  <circle cx="-42" cy="24" r="17" fill="#fff"/><circle cx="44" cy="24" r="17" fill="#fff"/>
+  <circle cx="-42" cy="24" r="5" fill="${INK}" stroke="none"/><circle cx="44" cy="24" r="5" fill="${INK}" stroke="none"/>
+  <circle cx="64" cy="0" r="5" fill="#fff" stroke-width="3.5"/>`;
+}
