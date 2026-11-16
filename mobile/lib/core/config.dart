@@ -10,6 +10,14 @@ abstract final class AppConfig {
   /// build passes `--dart-define=REVERB_KEY=…`.
   static const reverbKey = String.fromEnvironment('REVERB_KEY', defaultValue: 'legends-dev-key');
 
+  /// [X107] The game's *web* OAuth client in Google Cloud (the server's GOOGLE_CLIENT_ID): the id_token Google gives the
+  /// app is made for it, and the API already accepts it. Public by design (the web's sign-in link carries it). The
+  /// app's own Android client (the package and the key's SHA-1) is registered in the same project and is not named here.
+  static const googleServerClientId = String.fromEnvironment(
+    'GOOGLE_SERVER_CLIENT_ID',
+    defaultValue: '872322385305-p388ljbq71ijfm96c8rv9ltfrvtcs31u.apps.googleusercontent.com',
+  );
+
   /// The name a token is made for (the account's devices list shows it): the phone's system, so an iPhone is not
   /// listed as Android.
   static String get deviceName => switch (defaultTargetPlatform) {

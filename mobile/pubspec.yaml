@@ -2,7 +2,7 @@ name: glm
 description: "Game Legend Manager — المدرب الأسطورة"
 publish_to: 'none'
 
-version: 2.5.3+19
+version: 2.5.4+20
 
 environment:
   sdk: '>=3.13.0 <4.0.0'
@@ -27,6 +27,8 @@ dependencies:
   wakelock_plus: ^1.8.2
   firebase_core: ^5.1.0
   firebase_messaging: ^17.0.1
+  # [X107] Sign in with Google: the account's id_token, which the API checks (POST /auth/google/token). Free.
+  google_sign_in: ^7.2.0
   image_picker: ^1.2.4
   record: ^7.2.0
   audioplayers: ^6.8.1

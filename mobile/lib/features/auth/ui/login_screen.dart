@@ -11,10 +11,11 @@ import '../../../ui/widgets/glm_background.dart';
 import '../../../ui/widgets/glm_button.dart';
 import '../../../ui/widgets/glm_text_field.dart';
 import '../auth_controller.dart';
+import '../google_identity.dart';
 import 'auth_layout.dart';
 
-/// [Sprint 15 F3] Sign in with the email or the username and the password (the API's `/auth/token`). Google comes
-/// when the app's Google client is set (README section 11).
+/// [Sprint 15 F3] Sign in with the email or the username and the password (the API's `/auth/token`), or with Google
+/// ([X107]: the account's id_token, checked by `/auth/google/token`), or as a guest.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -61,6 +62,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) showGlmToast(context, e.message, error: true);
     } finally {
       if (mounted) setState(() => _guestBusy = false);
+    }
+  }
+
+  bool _googleBusy = false;
+
+  /// [X107] Google's sheet, then the API: a closed sheet says nothing, a phone Google cannot sign in on says so, and the
+  /// API's own refusal (an email Google has not verified, …) shows as its message.
+  Future<void> _google() async {
+    final l = L.of(context);
+    setState(() => _googleBusy = true);
+    try {
+      final token = await ref.read(googleIdentityProvider).idToken();
+      if (token == null) return;
+      await ref.read(authProvider.notifier).google(token);
+    } on GoogleIdentityError {
+      if (mounted) showGlmToast(context, l.errorUnknown, error: true);
+    } on ApiError catch (e) {
+      if (mounted) showGlmToast(context, e.message, error: true);
+    } finally {
+      if (mounted) setState(() => _googleBusy = false);
     }
   }
 
@@ -136,8 +157,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 label: l.google,
                 variant: GlmButtonVariant.outline,
                 block: true,
+                loading: _googleBusy,
                 icon: Text('G', style: glmText(GlmType.title, fontWeight: FontWeight.w900)),
-                onPressed: () => showGlmToast(context, l.googleSoon),
+                onPressed: _google,
               ),
             ),
           ],
