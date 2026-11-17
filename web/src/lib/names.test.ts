@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { locale } from './i18n'
-import { cn, ln, loadNames, natn, nm, pn, setNamesLang, shownNames } from './names'
+import { clubsNamed, cn, ln, loadNames, natn, nm, pn, setNamesLang, shownNames } from './names'
 
 describe('names', () => {
   afterEach(() => {
@@ -47,5 +47,13 @@ describe('names', () => {
     setNamesLang('ar')
     locale.value = 'en'
     expect(nm('Liverpool')).toBe('Liverpool')
+  })
+
+  // [X109] The server stores the Latin names only: an Arabic search is sent with the Latin names it matches.
+  it('finds the Latin names of the clubs an Arabic search names', async () => {
+    expect(await clubsNamed('ليفر')).toEqual(['Liverpool'])
+    expect(await clubsNamed('ليفربول', 0)).toEqual([])
+    expect(await clubsNamed('Liver')).toEqual([])
+    expect(await clubsNamed('برشلونة')).toEqual([])
   })
 })

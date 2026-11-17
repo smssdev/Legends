@@ -27,8 +27,12 @@ export default defineConfig({
     fs: { allow: ['..'] },
     // The Laravel API from `php artisan serve` (see backend composer dev).
     // and the links that open in the browser: Sanctum's cookie, Google, the email confirmation.
+    // [X109] GLM_API_PORT when 8000 is taken on this computer (another project's server).
     proxy: Object.fromEntries(
-      ['/api', '/sanctum', '/broadcasting', '/auth/google', '/email/verify', '/crests'].map((p) => [p, 'http://127.0.0.1:8000']),
+      ['/api', '/sanctum', '/broadcasting', '/auth/google', '/email/verify', '/crests'].map((p) => [
+        p,
+        `http://127.0.0.1:${process.env.GLM_API_PORT || 8000}`,
+      ]),
     ),
   },
 })

@@ -2,6 +2,7 @@ import { storage } from '../lib/storage'
 import type { components } from './schema'
 // Simulator API client (docs/api/openapi.yaml, docs/api/match-events.md).
 import { api, asApiError, ensureCsrf } from './client'
+import { clubsNamed } from '../lib/names'
 import { uuid } from '../lib/uuid'
 import type { ServerStory } from '../match/feed/told'
 
@@ -253,8 +254,12 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
 
 export const sim = {
   leagues: () => call<{ name: string; clubs: number; top: number }[]>('GET', '/leagues'),
-  clubs: (params: { q?: string; league?: string }) =>
-    call<Club[]>('GET', '/clubs?' + new URLSearchParams(Object.entries(params).filter(([, v]) => v) as [string, string][])),
+  // [X109] An Arabic search also sends the Latin names it matches in the names dictionary.
+  clubs: async (params: { q?: string; league?: string }) => {
+    const query = new URLSearchParams(Object.entries(params).filter(([, v]) => v) as [string, string][])
+    for (const name of await clubsNamed(params.q ?? '')) query.append('names[]', name)
+    return call<Club[]>('GET', '/clubs?' + query)
+  },
   squad: (id: number) =>
     call<{ club: Club; formation: string; starters: number[]; bench: number[]; players: any[] }>('GET', `/clubs/${id}`),
   create: (body: Record<string, unknown>) => call<MatchView>('POST', '/matches', body),

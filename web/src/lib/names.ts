@@ -68,3 +68,26 @@ export const natn = (s: string | null | undefined) => pick('nations', s)
 /** Any name the game shows: a club's, else a league's, else a country's (a player's stays English, as what none knows). */
 export const nm = (s: string | null | undefined) =>
   !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.clubs[s] ?? dict.value?.leagues[s] ?? dict.value?.nations?.[s] ?? s)
+
+/** [X109] One spelling for a search: no diacritics or tatweel, the alefs, taa marbuta and alef maqsura as one. */
+const fold = (s: string) =>
+  s
+    .replace(/[\u064B-\u0652\u0640]/g, '')
+    .replace(/[\u0623\u0625\u0622]/g, '\u0627')
+    .replace(/\u0629/g, '\u0647')
+    .replace(/\u0649/g, '\u064A')
+    .toLowerCase()
+    .trim()
+
+/** [X109] The Latin names of the clubs whose Arabic name holds an Arabic search (the server stores the Latin only). */
+export async function clubsNamed(q: string, max = 60): Promise<string[]> {
+  if (!/[\u0600-\u06FF]/.test(q)) return []
+  await loadNames()
+  const want = fold(q)
+  const out: string[] = []
+  for (const [latin, ar] of Object.entries(dict.value?.clubs ?? {})) {
+    if (out.length >= max) break
+    if (fold(ar).includes(want)) out.push(latin)
+  }
+  return out
+}

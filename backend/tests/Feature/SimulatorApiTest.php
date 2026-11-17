@@ -43,6 +43,9 @@ class SimulatorApiTest extends TestCase
         $this->getJson('/api/v1/sim/clubs?q=Alp')->assertOk()->assertJsonPath('0.name', 'Alpha')
             // [Sprint 59 F1] The fields the app reads through its generated model (ClubSummary in openapi.yaml).
             ->assertJsonStructure(['*' => ['id', 'name', 'code', 'league_name', 'strength_cp', 'color_primary', 'logo']]);
+        // [X109] An Arabic search: the site sends the Latin names its dictionary matched.
+        $this->getJson('/api/v1/sim/clubs?q='.urlencode('ألفا').'&names[]=Alpha')->assertOk()->assertJsonCount(1)->assertJsonPath('0.name', 'Alpha');
+        $this->getJson('/api/v1/sim/clubs?q='.urlencode('ألفا'))->assertOk()->assertJsonCount(0);
         $this->getJson("/api/v1/sim/clubs/$home")->assertOk()->assertJsonCount(11, 'starters');
 
         $match = $this->postJson('/api/v1/sim/matches', [

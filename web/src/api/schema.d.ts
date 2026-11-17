@@ -12173,6 +12173,8 @@ export interface paths {
                 query?: {
                     q?: string;
                     league?: string;
+                    /** @description [X109] The Latin names the site matched to an Arabic q in its names dictionary; a club with one of them is found too */
+                    "names[]"?: string[];
                 };
                 header?: never;
                 path?: never;

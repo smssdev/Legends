@@ -4,7 +4,7 @@
 // match's reactions, which are emoji by design. The files not moved yet are in emoji-baseline.json, each with its
 // count: a file may only go down, and a new one fails. After moving some: node scripts/emoji.mjs --write.
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
-import { join, relative } from 'node:path'
+import { join, relative, sep } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '..', '..')
 const BASE = join(import.meta.dirname, 'emoji-baseline.json')
@@ -22,6 +22,8 @@ const REACTIONS = [
   'mobile/lib/features/match/feed/clips_corner.dart',
 ]
 
+// [X109] The paths as the baseline and REACTIONS write them (with /), on Windows too.
+const rel = (f) => relative(ROOT, f).split(sep).join('/')
 const walk = (dir, ext) =>
   readdirSync(dir).flatMap((f) => {
     const p = join(dir, f)
@@ -39,13 +41,13 @@ for (const f of walk(join(ROOT, 'web/src'), '.vue')) {
   const s = readFileSync(f, 'utf8')
   const t = s.slice(s.indexOf('<template'))
   const n = s.includes('<template') ? count(t.replace(/<!--[\s\S]*?-->/g, '')) : 0
-  if (n) now[relative(ROOT, f)] = n
+  if (n) now[rel(f)] = n
 }
 // The app's code where it is beside the web (not in the server's image, which builds the web alone: Dockerfile).
 for (const f of existsSync(join(ROOT, 'mobile/lib')) ? walk(join(ROOT, 'mobile/lib'), '.dart') : []) {
-  const rel = relative(ROOT, f)
-  const n = REACTIONS.includes(rel) || rel.endsWith('.g.dart') ? 0 : count(readFileSync(f, 'utf8'))
-  if (n) now[rel] = n
+  const r = rel(f)
+  const n = REACTIONS.includes(r) || r.endsWith('.g.dart') ? 0 : count(readFileSync(f, 'utf8'))
+  if (n) now[r] = n
 }
 
 if (process.argv.includes('--write')) {
