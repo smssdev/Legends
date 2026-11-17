@@ -356,17 +356,18 @@ function shapePage(kind, title) {
     `${count}`);
 }
 
-const SHAPE_KEY = `
+const shapeKey = ([circle, square, triangle, rectangle]) => `
   <g transform="translate(0 -10)">
     <rect x="148" y="265" width="250" height="56" rx="14" stroke-width="5"/>
-    <circle cx="176" cy="293" r="16" stroke-width="4"/>${text(280, 303, 26, 'red')}
+    <circle cx="176" cy="293" r="16" stroke-width="4"/>${text(280, 303, 26, circle)}
     <rect x="418" y="265" width="250" height="56" rx="14" stroke-width="5"/>
-    <rect x="430" y="277" width="32" height="32" stroke-width="4"/>${text(560, 303, 26, 'blue')}
+    <rect x="430" y="277" width="32" height="32" stroke-width="4"/>${text(560, 303, 26, square)}
     <rect x="148" y="335" width="250" height="56" rx="14" stroke-width="5"/>
-    ${shape('triangle', 176, 363, 36, 'stroke-width="4"')}${text(280, 373, 26, 'yellow')}
+    ${shape('triangle', 176, 363, 36, 'stroke-width="4"')}${text(280, 373, 26, triangle)}
     <rect x="418" y="335" width="250" height="56" rx="14" stroke-width="5"/>
-    <rect x="430" y="349" width="44" height="28" stroke-width="4"/>${text(565, 373, 26, 'green')}
+    <rect x="430" y="349" width="44" height="28" stroke-width="4"/>${text(565, 373, 26, rectangle)}
   </g>`;
+const SHAPE_KEY = shapeKey(['red', 'blue', 'yellow', 'green']);
 
 const train = page('Shape Train', 'Color the shapes. Use the key.', `
   ${SHAPE_KEY}
@@ -391,20 +392,21 @@ const train = page('Shape Train', 'Color the shapes. Use the key.', `
   ${text(80, 942, 30, 'How many triangles?', 'say', 'start')}${box(400, 894, 78)}
   ${g(640, 880, 0.9, owl())}`, 'circles 6, triangles 3');
 
+// Windows and sun are circles, roof and tree are triangles, walls a square,
+// chimney, door and trunk rectangles: the key colours all make sense.
 const house = page('Shape House', 'Color the shapes. Use the key.', `
-  ${SHAPE_KEY}
-  <circle cx="660" cy="490" r="48"/>
-  <rect x="270" y="440" width="44" height="90" rx="4"/>
-  ${shape('triangle', 330, 520, 290)}
-  <rect x="203" y="645" width="254" height="254" rx="4" transform="translate(0 -1)"/>
-  <rect x="230" y="680" width="70" height="70" rx="4"/>
-  <rect x="360" y="680" width="70" height="70" rx="4"/>
-  <rect x="290" y="780" width="80" height="118" rx="4"/>
-  <circle cx="610" cy="690" r="70"/>
-  <rect x="592" y="755" width="36" height="142" rx="4"/>
-  <path d="M60,898 L756,898" fill="none" stroke-width="6"/>
-  ${text(60, 965, 22, 'How many squares?', 'say', 'start')}${box(300, 920, 70)}
-  ${text(420, 965, 22, 'How many circles?', 'say', 'start')}${box(650, 920, 70)}`, 'squares 3, circles 2');
+  ${shapeKey(['yellow', 'blue', 'green', 'brown'])}
+  <circle cx="664" cy="481" r="49"/>
+  <rect x="272" y="452" width="36" height="100" rx="3"/>
+  <path d="M187,639 L332.5,418 L478,639 Z"/>
+  <rect x="204" y="639" width="257" height="254" rx="3"/>
+  <circle cx="267" cy="717" r="41"/><circle cx="397" cy="717" r="41"/>
+  <rect x="293" y="773" width="81" height="120" rx="3"/>
+  <rect x="597" y="751" width="35" height="142" rx="3"/>
+  ${shape('triangle', 612, 668, 208)}
+  <path d="M60,893 L762,893" fill="none" stroke-width="6"/>
+  ${text(60, 965, 22, 'How many circles?', 'say', 'start')}${box(268, 918, 72)}
+  ${text(400, 965, 22, 'How many rectangles?', 'say', 'start')}${box(672, 918, 72)}`, 'circles 3, rectangles 3');
 
 const robot = page('Shape Robot', 'Count each shape. Write how many.', `
   <rect x="396" y="232" width="24" height="44" rx="4"/>
