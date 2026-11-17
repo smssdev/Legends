@@ -4352,6 +4352,10 @@ paths:
       parameters:
         - { name: q, in: query, schema: { type: string, maxLength: 60 } }
         - { name: league, in: query, schema: { type: string, maxLength: 80 } }
+        - name: 'names[]'
+          in: query
+          description: '[X109] The Latin names the site matched to an Arabic q in its names dictionary; a club with one of them is found too'
+          schema: { type: array, maxItems: 60, items: { type: string, maxLength: 80 } }
       responses:
         '200':
           description: Up to 60 clubs, strongest first
