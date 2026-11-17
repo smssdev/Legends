@@ -245,7 +245,7 @@ function matchPage(rows, order) {
 
 function howManyPage(rows) {
   const ys = [320, 485, 650, 815];
-  return page('How Many?', 'Count. Circle the right number.', `
+  return page('How Many?', 'Count. Color the right number.', `
     ${rows.map(([k, n, choices], i) => `${group(k, n, 50, ys[i] - 70, 420, 140, 0.8)}
       <rect x="40" y="${ys[i] - 78}" width="736" height="156" rx="24" fill="none" stroke-width="3"/>
       ${choices.map((c, j) => `<circle cx="${560 + j * 85}" cy="${ys[i]}" r="34" stroke-width="4"/>${text(560 + j * 85, ys[i] + 17, 46, c, 'region')}`).join('')}`).join('')}`,
@@ -598,7 +598,7 @@ const graph = (() => {
 const challenge = page("Ollie's Challenge", 'You can do it! Four little puzzles.', `
   ${panel(50, 240, 345, 330)}${panel(421, 240, 345, 330)}${panel(50, 600, 345, 330)}${panel(421, 600, 345, 330)}
   ${text(222, 285, 24, 'How many hearts?')}${group('heart', 7, 70, 300, 305, 170, 0.5)}${box(185, 480, 74)}
-  ${text(593, 285, 24, 'Circle the bigger number.')}
+  ${text(593, 285, 24, 'Color the bigger number.')}
   <circle cx="520" cy="420" r="62"/>${text(520, 450, 84, 4, 'region')}<circle cx="666" cy="420" r="62"/>${text(666, 450, 84, 9, 'region')}
   ${text(222, 645, 24, 'Add the dots.')}
   ${[0, 1].map((i) => `<rect x="${78 + i * 150}" y="670" width="110" height="110" rx="14" stroke-width="5"/>`).join('')}
