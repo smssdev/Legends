@@ -115,9 +115,14 @@ def highlight(src, name):
     return html.escape(src)
 
 
-def run_node(path):
+def run_node(path, stack=False):
     r = subprocess.run(["node", path.name], cwd=path.parent, capture_output=True, text=True, timeout=20)
     lines = (r.stdout + r.stderr).splitlines()
+    if stack:
+        # Keep the stack trace, but only the reader's own code and without the build machine's paths.
+        lines = [l.replace(str(path.parent) + "/", "") for l in lines if l.strip() and "node:internal" not in l
+                 and not l.startswith("Node.js")]
+        return "\n".join(lines)
     keep = [l for l in lines if l.strip() and not l.lstrip().startswith("at ")
             and not l.startswith("Node.js") and str(path.parent) not in l]
     return "\n".join(keep)
@@ -146,7 +151,7 @@ def fill_code(chapter, lang):
         attrs = m.group(1)
         f = re.search(r'data-out="([^"]+)"', attrs).group(1)
         cls = "output error" if "error" in attrs else "output"
-        printed = html.escape(run_node(code_dir / f))
+        printed = html.escape(run_node(code_dir / f, stack='data-stack' in attrs))
         return (f'<div class="{cls}" dir="ltr"><div class="output-bar"><i></i><i></i><i></i>'
                 f'<span class="output-title">{label}</span></div><pre>{printed}</pre></div>')
 

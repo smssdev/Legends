@@ -1,0 +1,193 @@
+<section class="chapter" data-chapter="14" data-code="b1/ch14/ar">
+<p class="chapter-kicker">الفصل 14</p>
+<h1>قراءة الأخطاء وتتبّعها</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تقرأ رسالة الخطأ وتجد موضع المشكلة بالضبط</li>
+<li>تميّز أشهر ثلاثة أنواع من الأخطاء</li>
+<li>تتبع مسار الاستدعاءات حتى السبب الحقيقي</li>
+<li>تجد العلل التي لا تُظهر أي خطأ، بـ <code>console.log</code> والمصحّح</li>
+<li>تتبع طريقة هادئة خطوة بخطوة تصلح لأي علّة</li>
+</ul>
+</div>
+
+<p class="lead">كل مبرمج، من يومه الأول إلى عامه الأربعين، يقضي جزءاً كبيراً من وقته في إصلاح ما لا يعمل. والفرق بين المبتدئ والمحترف ليس أن المحترف يخطئ أقل، بل أنه لا يخاف الأخطاء، ويقرأ ما يقوله الحاسوب، ويتبع طريقة. وفي آخر هذا الفصل سيبدو لك النص الأحمر في الطرفية ملاحظة مفيدة لا كارثة.</p>
+
+<aside class="bit" data-mood="think"><p>هذه أهم جملة في الفصل: <strong>رسالة الخطأ تحاول مساعدتك</strong>. فهي تقول غالباً ما الذي ساء وأين بالضبط. ومعظم المبتدئين يرتبكون ويتوقفون عن القراءة بعد أول كلمة. فلنقرأها كلها معاً!</p></aside>
+
+<h2>14.1 تشريح رسالة الخطأ</h2>
+
+<p>هذا برنامج صغير فيه خطأ إملائي، وهذا ما يقوله Node.js حين تشغّله:</p>
+
+<pre data-code="reference.js" data-title="reference.js"></pre>
+<pre data-out="reference.js" class="error"></pre>
+
+<figure>
+<svg viewBox="0 0 520 170" role="img" aria-label="رسالة خطأ بأجزائها: الملف والسطر، والكود، والمؤشر، ونوع الخطأ، والرسالة">
+<rect x="180" y="10" width="330" height="120" rx="10" fill="#16142a"/>
+<g font-family="JetBrains Mono" font-size="13" direction="ltr">
+<text x="194" y="38" fill="#e7e5ff">reference.js:2</text>
+<text x="194" y="62" fill="#e7e5ff">console.log(scor);</text>
+<text x="194" y="84" fill="#fca5a5">            ^</text>
+<text x="194" y="112" fill="#fca5a5">ReferenceError: scor is not defined</text>
+</g>
+<g font-family="Cairo" font-size="12.5" font-weight="700" text-anchor="end" direction="ltr">
+<line x1="194" y1="34" x2="168" y2="30" stroke="#0f766e" stroke-width="2"/><text x="162" y="34" fill="#0f766e">1. أي ملف وأي سطر</text>
+<line x1="194" y1="58" x2="168" y2="58" stroke="#4338ca" stroke-width="2"/><text x="162" y="62" fill="#4338ca">2. سطر الكود</text>
+<line x1="290" y1="80" x2="168" y2="86" stroke="#ea580c" stroke-width="2"/><text x="162" y="90" fill="#ea580c">3. أين في السطر</text>
+<line x1="194" y1="112" x2="168" y2="116" stroke="#db2777" stroke-width="2"/><text x="162" y="114" fill="#db2777">4. نوع الخطأ</text>
+<text x="162" y="131" fill="#db2777">5. ما الذي ساء</text>
+<text x="510" y="157" fill="#5b5873" font-weight="400">اقرأها من الأسفل إلى الأعلى: ماذا حدث، ثم أين.</text>
+</g>
+</svg>
+<figcaption><b>الشكل 14.1:</b> خمس معلومات في رسالة خطأ واحدة قصيرة.</figcaption>
+</figure>
+
+<p>أخبرنا Node.js: في الملف <code>reference.js</code>، في السطر 2، في المكان الذي تشير إليه <code>^</code>، يوجد <code>ReferenceError</code>: <code>scor</code> غير معرّف. وهذا كل ما تحتاجه: تنظر إلى السطر 2، فترى <code>scor</code>، وتدرك أنك قصدت <code>score</code>. وConsole المتصفح يعرض المعلومات نفسها، واسم الملف ورقم السطر رابطاً تنقر عليه.</p>
+
+<h2>14.2 الأخطاء الثلاثة التي ستقابلها أكثر</h2>
+
+<h3>ReferenceError: شيء غير موجود</h3>
+
+<p>استخدمت اسماً لا تعرفه JavaScript، كما في المثال السابق. والسبب في الأغلب خطأ إملائي، أو متغير مستخدم خارج نطاقه (الفصل 10)، أو شيء مستخدم قبل أن يُنشأ.</p>
+
+<h3>TypeError: الاسم صحيح ونوع القيمة خطأ</h3>
+
+<pre data-code="type.js" data-title="type.js"></pre>
+<pre data-out="type.js" class="error"></pre>
+
+<p>هذا أشهر خطأ في JavaScript كلها. حاولت قراءة <code>name</code> من <code>undefined</code>، وليس لها خصائص. وفي البرامج الحقيقية يكون <code>user</code> مساوياً لـ <code>undefined</code> لأن <code>find</code> لم تجد شيئاً، أو لأن الخادم لم يُرجع بيانات، أو لأن اسم خاصية كُتب خطأ. والسؤال الذي تطرحه: «لماذا هذه القيمة <code>undefined</code> وأنا توقعت كائناً؟»</p>
+
+<h3>SyntaxError: الكود ليس JavaScript صحيحة</h3>
+
+<pre data-code="syntax.js" data-title="syntax.js"></pre>
+<pre data-out="syntax.js" class="error"></pre>
+
+<p><code>SyntaxError</code> يقع قبل أن يُنفَّذ أي شيء: JavaScript لا تستطيع حتى فهم الكود. وهنا فُتحت المصفوفة بـ <code>[</code> ولم تُغلق بـ <code>]</code>. ومع أخطاء الصياغة يكون الخطأ الحقيقي كثيراً <em>قبل</em> المكان المشار إليه بقليل: قوس أو علامة تنصيص أو فاصلة ناقصة. وVS Code يضع خطاً أحمر تحت معظمها وأنت تكتب، قبل أن تشغّل الكود أصلاً.</p>
+
+<table>
+<thead><tr><th>الخطأ</th><th>معناه</th><th>أول ما تفحصه</th></tr></thead>
+<tbody>
+<tr><td><code>ReferenceError</code></td><td>الاسم غير موجود هنا</td><td>الإملاء والنطاق</td></tr>
+<tr><td><code>TypeError</code></td><td>القيمة من نوع خاطئ، وكثيراً <code>undefined</code></td><td>من أين جاءت القيمة</td></tr>
+<tr><td><code>SyntaxError</code></td><td>الكود ليس JavaScript صحيحة</td><td>الأقواس وعلامات التنصيص والفواصل قبل الموضع المشار إليه</td></tr>
+</tbody>
+</table>
+
+<h2>14.3 مسار الاستدعاءات: كيف وصلنا إلى هنا؟</h2>
+
+<p>في البرامج الأكبر تستدعي الدوال دوالاً تستدعي غيرها. وحين يقع خطأ في العمق يطبع Node.js <dfn>مسار الاستدعاءات</dfn> (stack trace): طريق الاستدعاءات الذي أدى إلى الخطأ.</p>
+
+<pre data-code="stack.js" data-title="stack.js"></pre>
+<pre data-out="stack.js" class="error" data-stack></pre>
+
+<p>اقرأ الأسطر التي تبدأ بـ <code>at</code> من الأعلى إلى الأسفل: وقع الخطأ في <code>getCity</code> (السطر 2)، التي استدعتها <code>welcome</code> (السطر 6)، التي استُدعيت من الكود الرئيسي (السطر 9). الخطأ في <code>getCity</code>، لكن <em>السبب</em> حيث جاءت البيانات: كائن المستخدم في السطر 9 ليس فيه <code>address</code>. ومسار الاستدعاءات يتيح لك أن تمشي إلى الخلف من العَرَض إلى السبب.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>في المشاريع الحقيقية يحوي مسار الاستدعاءات أيضاً أسطراً كثيرة من المكتبات ومن Node.js نفسه. ابحث عن أول الأسطر التي تشير إلى ملفاتك <em>أنت</em>، فمن هناك تبدأ في الأغلب.</p></aside>
+
+<h2>14.4 علل بلا أخطاء</h2>
+
+<p>أصعب العلل لا تُظهر أي خطأ: يعمل البرنامج ويعطي جواباً خاطئاً:</p>
+
+<pre data-code="average-bug.js" data-title="average-bug.js"></pre>
+<pre data-out="average-bug.js"></pre>
+
+<p>لا نص أحمر، لكن 16.67 ليست 20. وحين لا يخبرك شيء بمكان المشكلة، تجعل البرنامج يخبرك. وأبسط أداة لذلك <code>console.log</code>: اطبع القيم التي تشك فيها، في اللحظات التي تشك فيها.</p>
+
+<pre data-code="average-trace.js" data-title="average-trace.js"></pre>
+<pre data-out="average-trace.js"></pre>
+
+<p>صارت العلّة واضحة: الحلقة تبدأ من <code>i = 1</code>، فلا تضيف الرقم الأول، 10، أبداً، ويكون المجموع 50 بدل 60. وهذا جدول التتبع من الفصل 2، يكتبه الحاسوب. أصلح السبب، وهنا باستخدام <code>for…of</code> التي لا يمكن أن تتخطى العنصر الأول، واختبر مرة أخرى ومعها حالة غير معتادة:</p>
+
+<pre data-code="average-fixed.js" data-title="average-fixed.js"></pre>
+<pre data-out="average-fixed.js"></pre>
+
+<h3>أدوات Console أفضل</h3>
+
+<pre data-code="console.js" data-title="console.js"></pre>
+<pre data-out="console.js"></pre>
+
+<p>أعطِ كل سطر طباعة عنواناً لتعرف أي سطر طبع ماذا. واستخدم <code>console.table</code> لمصفوفات الكائنات، و<code>console.error</code> للمشكلات، فهي تظهر في المتصفح بالأحمر مع مسار الاستدعاءات. وتذكّر أن تحذف أسطر التتبع حين تُصلح العلّة.</p>
+
+<h2>14.5 المصحّح: إيقاف الزمن</h2>
+
+<p><code>console.log</code> تعرض قيماً قليلة في لحظات قليلة. أما <dfn>المصحّح</dfn> (debugger) فيتيح لك أن <em>توقف</em> البرنامج عند أي سطر وتنظر إلى كل شيء. في المتصفح افتح أدوات المطورين، واذهب إلى لوحة <strong>Sources</strong>، وافتح ملفك، وانقر رقم سطر، فتظهر علامة زرقاء: <dfn>نقطة توقف</dfn> (breakpoint). وفي المرة التالية التي يُنفَّذ فيها ذلك السطر تتجمد الصفحة عنده.</p>
+
+<figure>
+<svg viewBox="0 0 520 210" role="img" aria-label="لوحة Sources في أدوات المطورين متوقفة عند نقطة توقف، مع أزرار للمتابعة والتقدم، وقيم المتغيرات جانباً">
+<rect x="10" y="10" width="500" height="190" rx="10" fill="#1f1d36"/>
+<rect x="10" y="10" width="500" height="28" rx="10" fill="#2a2745"/>
+<g font-family="Inter" font-size="11" fill="#a5a3c9" font-weight="700"><text x="24" y="29">Elements</text><text x="90" y="29">Console</text><text x="152" y="29" fill="#fff">Sources</text><text x="214" y="29">Network</text></g>
+<rect x="150" y="34" width="56" height="3" fill="#818cf8"/>
+<g font-family="JetBrains Mono" font-size="12">
+<text x="24" y="66" fill="#6b7280">2</text><text x="48" y="66" fill="#e7e5ff">let total = 0;</text>
+<rect x="18" y="74" width="322" height="20" fill="#3b3a1f"/>
+<path d="M18,76 L34,76 L40,84 L34,92 L18,92 Z" fill="#4f8ef7"/>
+<text x="22" y="88" fill="#fff" font-size="10">3</text><text x="48" y="88" fill="#fde68a">for (let i = 1; i &lt; …</text>
+<text x="24" y="110" fill="#6b7280">4</text><text x="48" y="110" fill="#e7e5ff">  total = total + …</text>
+<text x="24" y="132" fill="#6b7280">5</text><text x="48" y="132" fill="#e7e5ff">}</text>
+</g>
+<rect x="352" y="46" width="150" height="146" rx="6" fill="#24223d"/>
+<g font-family="Inter" font-size="11" font-weight="700" fill="#a5a3c9"><text x="362" y="66">Scope</text></g>
+<g font-family="JetBrains Mono" font-size="11.5"><text x="362" y="90" fill="#c4b5fd">numbers:</text><text x="430" y="90" fill="#86efac">[10, 20, 30]</text>
+<text x="362" y="110" fill="#c4b5fd">total:</text><text x="430" y="110" fill="#fdba74">0</text>
+<text x="362" y="130" fill="#c4b5fd">i:</text><text x="430" y="130" fill="#fdba74">1</text></g>
+<g font-family="Inter" font-size="11" font-weight="700" fill="#fff">
+<rect x="362" y="150" width="62" height="24" rx="6" fill="#4338ca"/><text x="372" y="166">Resume</text>
+<rect x="432" y="150" width="62" height="24" rx="6" fill="#4338ca"/><text x="446" y="166">Step</text>
+</g>
+<text x="24" y="182" font-family="Inter" font-size="11" fill="#a5a3c9">Paused on a breakpoint on line 3</text>
+</svg>
+<figcaption><b>الشكل 14.2:</b> التوقف عند نقطة توقف. قسم Scope يعرض قيمة كل متغير الآن، والأزرار تقدّم البرنامج خطوة خطوة.</figcaption>
+</figure>
+
+<p>وأثناء التوقف تستطيع أن تمرر الفأرة على أي متغير لترى قيمته، وأن تراها كلها في قسم <strong>Scope</strong>، وأن تضغط <strong>Step</strong> لتنفّذ سطراً واحداً كل مرة وتشاهد القيم تتغير. ويمكنك أيضاً أن تكتب الكلمة <code>debugger;</code> في كودك، فحين تكون أدوات المطورين مفتوحة يتوقف البرنامج عندها. وفي VS Code الأدوات نفسها لبرامج Node.js، في عرض <strong>Run and Debug</strong>.</p>
+
+<h2>14.6 طريقة تصلح لكل علّة</h2>
+
+<p>حين يسوء شيء، قاوم الرغبة في تغيير الأشياء عشوائياً، واتبع هذه الخطوات بدلاً من ذلك:</p>
+
+<ol>
+<li><strong>أعد إنتاجها.</strong> اعرف الخطوات الدقيقة التي تجعل العلّة تحدث كل مرة.</li>
+<li><strong>اقرأ الخطأ</strong> كله، من الأسفل: ماذا حدث، وأين.</li>
+<li><strong>ضع تخميناً.</strong> «أظن <code>user</code> يساوي <code>undefined</code> لأن <code>find</code> لم تجد شيئاً».</li>
+<li><strong>اختبر التخمين</strong> بـ <code>console.log</code> أو نقطة توقف، لا بتغيير الكود على غير هدى.</li>
+<li><strong>أصلح السبب</strong> لا العَرَض، ثم شغّل البرنامج مرة أخرى، ومعه حالات غير معتادة.</li>
+</ol>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: تصحيح البطة المطاطية</p><p>كثير من المبرمجين يضعون لعبة صغيرة على مكاتبهم، غالباً بطة مطاطية. وحين يتعثرون يشرحون لها الكود سطراً سطراً بصوت عالٍ. وكثيراً ما يسمعون أنفسهم يقولون الخطأ في منتصف الشرح. تبدو فكرة سخيفة، لكنها تنجح نجاحاً مذهلاً. (وبِت يسعده الاستماع أيضاً.)</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>ماذا تقول لك <code>TypeError: Cannot read properties of undefined (reading 'price')</code>؟</li><li>في مسار الاستدعاءات، أي سطر تنظر إليه أولاً عادة؟</li><li>برنامج يعمل بلا أخطاء لكنه يطبع مجموعاً خاطئاً. ما أول أداة تستخدمها؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>رسائل الخطأ تقول <strong>ماذا</strong> ساء و<strong>أين</strong>: الملف والسطر والموضع. فاقرأها كلها.</li>
+<li><strong>ReferenceError</strong>: الاسم غير موجود. <strong>TypeError</strong>: القيمة من نوع خاطئ، وكثيراً <code>undefined</code>. <strong>SyntaxError</strong>: الكود غير صحيح.</li>
+<li><strong>مسار الاستدعاءات</strong> يذكر الاستدعاءات التي أدت إلى الخطأ، فامشِ إلى الخلف من العَرَض إلى السبب.</li>
+<li>مع العلل التي بلا أخطاء، اجعل البرنامج يُظهر قيمه بـ <code>console.log</code> معنونة، و<code>console.table</code> و<code>console.error</code>.</li>
+<li><strong>المصحّح</strong> يتوقف عند <strong>نقاط التوقف</strong> لتفحص الكود وتتقدم فيه خطوة خطوة.</li>
+<li>الطريقة: أعد الإنتاج، واقرأ، وخمّن، واختبر التخمين، وأصلح السبب.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. كود ما حاول قراءة <code>.price</code> من قيمة تساوي <code>undefined</code>، فابحث لماذا تلك القيمة مفقودة. 2. أول سطر يشير إلى أحد ملفاتك أنت. 3. <code>console.log</code> بعناوين (أو نقطة توقف) لترى القيم خطوة خطوة.</p>
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> في كل سطر مما يلي علّة واحدة. توقّع نوع الخطأ ثم تحقق بـ Node: <code>console.log("hi)</code> و<code>const a = 1; a = 2;</code> و<code>let list; list.push(1);</code> و<code>consol.log(5);</code></li>
+<li><span class="level">سهل</span> أصلح <code>stack.js</code> بطريقتين: بإعطاء المستخدم عنواناً، وبجعل <code>getCity</code> تُرجع <code>"مكان ما"</code> حين لا يوجد عنوان.</li>
+<li><span class="level">متوسط</span> ضع نقطة توقف داخل <code>addToCart</code> في متجر الفصل 12. انقر «أضف إلى السلة» وتقدّم في الدالة خطوة خطوة، وراقب <code>cart</code> وهي تتغير.</li>
+<li><span class="level">متوسط</span> هذه الدالة يجب أن تعدّ الكلمات الأطول من ثلاثة أحرف، لكنها تُرجع رقماً خاطئاً. اعثر على العلّة بـ <code>console.log</code>: <code>function count(words) { let n = 0; for (const w of words) { if (w.length &gt; 3) n = 1; } return n; }</code></li>
+<li><span class="level">تحدٍّ</span> خذ برنامجاً يعمل من فصل سابق، واطلب من صديق أن يضيف إليه علّة صغيرة دون أن يخبرك أين. اعثر عليها بطريقة القسم 14.6 وحدها، واكتب كل خطوة فعلتها.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 15</p>
+<p>الجزء الرابع عن العمل كالمحترفين، ويبدأ بـ Git: الأداة التي تتذكر كل نسخة من كودك، وتتيح لك التراجع عن أي خطأ، وتتيح لفرق كاملة العمل على المشروع نفسه دون أن يدوس أحد على أقدام غيره.</p>
+</div>
+</section>
