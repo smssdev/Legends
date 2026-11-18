@@ -174,6 +174,68 @@
 
 <p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. كود ما حاول قراءة <code>.price</code> من قيمة تساوي <code>undefined</code>، فابحث لماذا تلك القيمة مفقودة. 2. أول سطر يشير إلى أحد ملفاتك أنت. 3. <code>console.log</code> بعناوين (أو نقطة توقف) لترى القيم خطوة خطوة.</p>
 
+<!-- projects -->
+<h2>مشاريع تطبيقية: صيد الأخطاء</h2>
+
+<p class="projects-intro">المشاريع في هذا الفصل معكوسة: الكود مكتوب سلفاً، وهو مكسور. اكتب كل برنامج كما هو، وشغّله، وشاهد الخطأ بنفسك. ثم اتبع طريقة القسم 14.6 (اقرأ، وكرّر الخطأ، وضيّق مكانه، وأصلحه، واختبر) حتى تطابق نتيجتك النتيجة المصلَحة. والمحترفون يقضون في هذا وقتاً أطول مما يقضونه في كتابة كود جديد.</p>
+
+<div class="project">
+<p class="project-label">مشروع 14.1 · سهل</p>
+<h3>الترحيب الذي لا يبدأ</h3>
+<p class="project-goal">البرنامج يتوقف قبل أن يطبع أي شيء. اقرأ رسالة الخطأ وأصلحه بحرف واحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة رسالة الخطأ من أعلاها إلى أسفلها: السطر، والسهم، والنوع، والوصف.</p>
+<pre data-code="projects/greet-bug.js" data-title="greet-bug.js"></pre>
+<pre data-out="projects/greet-bug.js" class="error"></pre>
+<ol class="steps">
+<li>جِد <strong>نوع</strong> الخطأ. <code>ReferenceError</code> يعني «لا أعرف هذا الاسم».</li>
+<li>جِد <strong>السطر</strong> والسهم <code>^</code>: يشيران إلى الاسم الذي لم تجده جافاسكربت بالضبط.</li>
+<li>قارن هذا الاسم، حرفاً حرفاً، بالمتغير الذي أنشأته في الأعلى. فجافاسكربت تفرّق بين الحروف الكبيرة والصغيرة.</li>
+<li>أصلحه، وشغّل البرنامج من جديد، وتأكد أن النتيجة التالية تظهر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> معظم الأخطاء التي ستقابلها أخطاء كتابة. ومحررك يساعدك: حين تضغط على متغير يبرز كل مكان بالاسم نفسه، والاسم الذي لا يبرز خطأ كتابة.</p>
+<p><strong>بعد الإصلاح:</strong></p>
+<pre data-out="projects/greet-fixed.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 14.2 · متوسط</p>
+<h3>سلة الشراء التي لا تعرف الجمع</h3>
+<p class="project-goal">لا رسالة خطأ أبداً، لكن المجموع بلا معنى. جِد الخطأين <em>الاثنين</em> المختبئين في خمسة أسطر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأخطاء الصامتة، وتتبّع القيم بـ <code>console.log</code>، والفرق بين النص والرقم، والحلقة التي تزيد دورة.</p>
+<pre data-code="projects/cart-bug.js" data-title="cart-bug.js"></pre>
+<pre data-out="projects/cart-bug.js"></pre>
+<ol class="steps">
+<li>اقرأ المجموع الخاطئ جيداً. الأرقام الملتصقة مثل <code>01204535</code> دليل: شيء ما يصل نصوصاً بدل أن يجمع أرقاماً.</li>
+<li>أضف <code>console.log(i, list[i], typeof list[i])</code> داخل الحلقة وشغّل من جديد.</li>
+<li>الخطأ الأول: الأسعار نصوص، فـ <code>+</code> تلصقها. حوّل كل واحد بـ <code>Number(…)</code>.</li>
+<li>الخطأ الثاني: آخر سطر في تتبّعك يُظهر <code>i</code> يساوي 3 والقيمة <code>undefined</code>. وليس في المصفوفة عنصر رقمه 3، فغيّر <code>&lt;=</code> إلى <code>&lt;</code>.</li>
+<li>احذف أسطر <code>console.log</code>، وشغّل مرة أخرى، وتحقق من النتيجة بيدك: 120 + 45 + 35 = 200.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>NaN</code> («ليس رقماً») تنتشر كالبقعة: أي جمع يلمسها يصير <code>NaN</code>. فحين تراها ابحث عن أول <code>undefined</code> أو نص دخل في حساب.</p>
+<p><strong>بعد الإصلاحين:</strong></p>
+<pre data-out="projects/cart-fixed.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 14.3 · تحدٍّ</p>
+<h3>الطلب الذي يكسر القائمة</h3>
+<p class="project-goal">يُطبع الطلب الأول ثم يموت البرنامج. تتبّع مسار الاستدعاءات (stack trace) إلى السبب، وأصلحه لتُطبع كل الطلبات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة مسار الاستدعاءات، والعثور على بيانات خاطئة لا كود خاطئ، والاحتياط من القيم الناقصة.</p>
+<pre data-code="projects/orders-bug.js" data-title="orders-bug.js"></pre>
+<pre data-out="projects/orders-bug.js" class="error" data-stack></pre>
+<ol class="steps">
+<li>اقرأ المسار من الأعلى: التوقف في <code>label</code>، التي استدعتها <code>printAll</code>، التي استُدعيت من السطر 17.</li>
+<li>الرسالة تقول إنها لم تستطع قراءة <code>name</code> من <code>undefined</code>. ففي <code>order.customer.name</code> القيمة <code>undefined</code> هي <code>order.customer</code>.</li>
+<li>طُبع طلب واحد قبل التوقف، فالمشكلة في الطلب الثاني. انظر إلى البيانات: الطلب 2 بلا <code>customer</code>.</li>
+<li>قرّر ما يجب أن يحدث. هنا العميل الناقص زائر، فأضف <code>if (!order.customer)</code> في أول <code>label</code> وأرجع سطر «زائر».</li>
+<li>شغّل من جديد. يجب أن تُطبع الطلبات الثلاثة، وأن ينتهي البرنامج طبيعياً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> السطر الذي يتوقف عنده البرنامج كثيراً ما لا يكون السطر الخاطئ. فالكود في <code>label</code> سليم، والبيانات لم تكن كما توقّع. والبيانات الحقيقية من المستخدمين والخوادم ينقصها شيء دائماً، فيتحقق المحترفون قبل أن يقرؤوا في عمق الكائن.</p>
+<p><strong>بعد الإصلاح:</strong></p>
+<pre data-out="projects/orders-fixed.js"></pre>
+</div>
+<!-- /projects -->
+
 <h2>تمارين</h2>
 
 <ol class="exercises">

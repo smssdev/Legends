@@ -174,6 +174,68 @@
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. Some code tried to read <code>.price</code> from a value that is <code>undefined</code>; find out why that value is missing. 2. The first line that points to one of your own files. 3. <code>console.log</code> with labels (or a breakpoint) to see the values step by step.</p>
 
+<!-- projects -->
+<h2>Practice projects: bug hunts</h2>
+
+<p class="projects-intro">In this chapter the projects are reversed: the code is already written, and it is broken. Type each program as it is, run it, and see the bug for yourself. Then use the method from section 14.6 (read, reproduce, narrow down, fix, test) until your output matches the fixed one. Professionals spend more time doing this than writing new code.</p>
+
+<div class="project">
+<p class="project-label">Project 14.1 · Easy</p>
+<h3>The greeting that will not start</h3>
+<p class="project-goal">The program crashes before it prints anything. Read the error message and fix it with a single character.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading an error message from top to bottom: the line, the caret, the type and the description.</p>
+<pre data-code="projects/greet-bug.js" data-title="greet-bug.js"></pre>
+<pre data-out="projects/greet-bug.js" class="error"></pre>
+<ol class="steps">
+<li>Find the <strong>type</strong> of error. A <code>ReferenceError</code> means “I do not know this name”.</li>
+<li>Find the <strong>line</strong> and the caret <code>^</code>: they point at the exact name JavaScript could not find.</li>
+<li>Compare that name, letter by letter, with the variable you created at the top. JavaScript is case-sensitive.</li>
+<li>Fix it, run the program again, and make sure the output below appears.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> most errors you will ever meet are typos. Your editor can help: when you click on a variable, it highlights every place with the same name. A name that does not light up is a typo.</p>
+<p><strong>After the fix:</strong></p>
+<pre data-out="projects/greet-fixed.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 14.2 · Medium</p>
+<h3>The checkout that cannot add</h3>
+<p class="project-goal">No error at all, but the total is nonsense. Find the <em>two</em> bugs hiding in five lines.</p>
+<p class="project-skills"><strong>You will practise:</strong> bugs without errors, tracing values with <code>console.log</code>, the difference between text and numbers, and off-by-one loops.</p>
+<pre data-code="projects/cart-bug.js" data-title="cart-bug.js"></pre>
+<pre data-out="projects/cart-bug.js"></pre>
+<ol class="steps">
+<li>Read the wrong total carefully. Numbers stuck together like <code>01204535</code> are a clue: something is joining text, not adding numbers.</li>
+<li>Add <code>console.log(i, list[i], typeof list[i])</code> inside the loop and run again.</li>
+<li>Bug 1: the prices are strings, so <code>+</code> glues them. Convert each one with <code>Number(…)</code>.</li>
+<li>Bug 2: the last line of your trace shows <code>i</code> equal to 3 and the value <code>undefined</code>. The array has no item 3. Change <code>&lt;=</code> to <code>&lt;</code>.</li>
+<li>Remove your <code>console.log</code> lines, run once more, and check the result by hand: 120 + 45 + 35 = 200.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>NaN</code> (“not a number”) spreads like a stain: any sum that touches it becomes <code>NaN</code>. When you see it, look for the first <code>undefined</code> or text that went into a calculation.</p>
+<p><strong>After both fixes:</strong></p>
+<pre data-out="projects/cart-fixed.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 14.3 · Challenge</p>
+<h3>The order that breaks the list</h3>
+<p class="project-goal">The first order prints, then the program dies. Follow the stack trace back to the cause, and fix it so every order prints.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading a stack trace, finding bad data rather than bad code, and guarding against missing values.</p>
+<pre data-code="projects/orders-bug.js" data-title="orders-bug.js"></pre>
+<pre data-out="projects/orders-bug.js" class="error" data-stack></pre>
+<ol class="steps">
+<li>Read the stack from the top: the crash is in <code>label</code>, which was called by <code>printAll</code>, which was called from line 17.</li>
+<li>The message says it could not read <code>name</code> of <code>undefined</code>. So in <code>order.customer.name</code>, the <code>undefined</code> is <code>order.customer</code>.</li>
+<li>One order printed before the crash, so the problem is the second order. Look at the data: order 2 has no <code>customer</code>.</li>
+<li>Decide what should happen. Here a missing customer is a guest, so add an <code>if (!order.customer)</code> at the start of <code>label</code> and return a “guest” line.</li>
+<li>Run again. All three orders should print, and the program should finish normally.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the line that crashes is often not the line that is wrong. The code in <code>label</code> was fine; the data was not what it expected. Real data from users and servers is always missing something, so professionals check before they read deep inside an object.</p>
+<p><strong>After the fix:</strong></p>
+<pre data-out="projects/orders-fixed.js"></pre>
+</div>
+<!-- /projects -->
+
 <h2>Exercises</h2>
 
 <ol class="exercises">

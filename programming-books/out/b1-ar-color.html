@@ -5666,6 +5666,119 @@ console.error(<span class="s">&quot;هناك خطأ هنا!&quot;</span>);</pre>
 
 <p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. كود ما حاول قراءة <code>.price</code> من قيمة تساوي <code>undefined</code>، فابحث لماذا تلك القيمة مفقودة. 2. أول سطر يشير إلى أحد ملفاتك أنت. 3. <code>console.log</code> بعناوين (أو نقطة توقف) لترى القيم خطوة خطوة.</p>
 
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية: صيد الأخطاء</h2>
+
+<p class="projects-intro">المشاريع في هذا الفصل معكوسة: الكود مكتوب سلفاً، وهو مكسور. اكتب كل برنامج كما هو، وشغّله، وشاهد الخطأ بنفسك. ثم اتبع طريقة القسم 14.6 (اقرأ، وكرّر الخطأ، وضيّق مكانه، وأصلحه، واختبر) حتى تطابق نتيجتك النتيجة المصلَحة. والمحترفون يقضون في هذا وقتاً أطول مما يقضونه في كتابة كود جديد.</p>
+
+<div class="project">
+<p class="project-label">مشروع 14.1 · سهل</p>
+<h3>الترحيب الذي لا يبدأ</h3>
+<p class="project-goal">البرنامج يتوقف قبل أن يطبع أي شيء. اقرأ رسالة الخطأ وأصلحه بحرف واحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة رسالة الخطأ من أعلاها إلى أسفلها: السطر، والسهم، والنوع، والوصف.</p>
+<div class="listing" dir="ltr"><div class="listing-title">greet-bug.js</div><pre class="code"><span class="k">const</span> firstName = <span class="s">&quot;سارة&quot;</span>;
+<span class="k">const</span> visits = <span class="n">3</span>;
+
+<span class="k">function</span> welcome(person, count) {
+  <span class="k">const</span> message = <span class="s">`مرحباً بعودتك يا ${person}! زيارتك #${count}`</span>;
+  <span class="k">return</span> message;
+}
+
+console.log(welcome(firstname, visits));</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>console.log(welcome(firstname, visits));
+                    ^
+ReferenceError: firstname is not defined</pre></div>
+<ol class="steps">
+<li>جِد <strong>نوع</strong> الخطأ. <code>ReferenceError</code> يعني «لا أعرف هذا الاسم».</li>
+<li>جِد <strong>السطر</strong> والسهم <code>^</code>: يشيران إلى الاسم الذي لم تجده جافاسكربت بالضبط.</li>
+<li>قارن هذا الاسم، حرفاً حرفاً، بالمتغير الذي أنشأته في الأعلى. فجافاسكربت تفرّق بين الحروف الكبيرة والصغيرة.</li>
+<li>أصلحه، وشغّل البرنامج من جديد، وتأكد أن النتيجة التالية تظهر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> معظم الأخطاء التي ستقابلها أخطاء كتابة. ومحررك يساعدك: حين تضغط على متغير يبرز كل مكان بالاسم نفسه، والاسم الذي لا يبرز خطأ كتابة.</p>
+<p><strong>بعد الإصلاح:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>مرحباً بعودتك يا سارة! زيارتك #3</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 14.2 · متوسط</p>
+<h3>سلة الشراء التي لا تعرف الجمع</h3>
+<p class="project-goal">لا رسالة خطأ أبداً، لكن المجموع بلا معنى. جِد الخطأين <em>الاثنين</em> المختبئين في خمسة أسطر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأخطاء الصامتة، وتتبّع القيم بـ <code>console.log</code>، والفرق بين النص والرقم، والحلقة التي تزيد دورة.</p>
+<div class="listing" dir="ltr"><div class="listing-title">cart-bug.js</div><pre class="code"><span class="c">// الأسعار تصل نصوصاً، كما تصل من نموذج أو ملف</span>
+<span class="k">const</span> prices = [<span class="s">&quot;120&quot;</span>, <span class="s">&quot;45&quot;</span>, <span class="s">&quot;35&quot;</span>];
+<span class="k">const</span> discount = <span class="n">20</span>;
+
+<span class="k">function</span> total(list) {
+  <span class="k">let</span> sum = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt;= list.length; i++) {
+    sum = sum + list[i];
+  }
+  <span class="k">return</span> sum;
+}
+
+<span class="k">const</span> before = total(prices);
+console.log(<span class="s">&quot;المجموع:&quot;</span>, before);
+console.log(<span class="s">&quot;بعد الخصم:&quot;</span>, before - discount);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>المجموع: 01204535undefined
+بعد الخصم: NaN</pre></div>
+<ol class="steps">
+<li>اقرأ المجموع الخاطئ جيداً. الأرقام الملتصقة مثل <code>01204535</code> دليل: شيء ما يصل نصوصاً بدل أن يجمع أرقاماً.</li>
+<li>أضف <code>console.log(i, list[i], typeof list[i])</code> داخل الحلقة وشغّل من جديد.</li>
+<li>الخطأ الأول: الأسعار نصوص، فـ <code>+</code> تلصقها. حوّل كل واحد بـ <code>Number(…)</code>.</li>
+<li>الخطأ الثاني: آخر سطر في تتبّعك يُظهر <code>i</code> يساوي 3 والقيمة <code>undefined</code>. وليس في المصفوفة عنصر رقمه 3، فغيّر <code>&lt;=</code> إلى <code>&lt;</code>.</li>
+<li>احذف أسطر <code>console.log</code>، وشغّل مرة أخرى، وتحقق من النتيجة بيدك: 120 + 45 + 35 = 200.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>NaN</code> («ليس رقماً») تنتشر كالبقعة: أي جمع يلمسها يصير <code>NaN</code>. فحين تراها ابحث عن أول <code>undefined</code> أو نص دخل في حساب.</p>
+<p><strong>بعد الإصلاحين:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>المجموع: 200
+بعد الخصم: 180</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 14.3 · تحدٍّ</p>
+<h3>الطلب الذي يكسر القائمة</h3>
+<p class="project-goal">يُطبع الطلب الأول ثم يموت البرنامج. تتبّع مسار الاستدعاءات (stack trace) إلى السبب، وأصلحه لتُطبع كل الطلبات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة مسار الاستدعاءات، والعثور على بيانات خاطئة لا كود خاطئ، والاحتياط من القيم الناقصة.</p>
+<div class="listing" dir="ltr"><div class="listing-title">orders-bug.js</div><pre class="code"><span class="k">const</span> orders = [
+  { id: <span class="n">1</span>, customer: { name: <span class="s">&quot;عمر&quot;</span> }, total: <span class="n">40</span> },
+  { id: <span class="n">2</span>, total: <span class="n">15</span> },
+  { id: <span class="n">3</span>, customer: { name: <span class="s">&quot;هدى&quot;</span> }, total: <span class="n">22</span> },
+];
+
+<span class="k">function</span> label(order) {
+  <span class="k">return</span> <span class="s">`#${order.id} ${order.customer.name}: ${order.total}`</span>;
+}
+
+<span class="k">function</span> printAll(list) {
+  <span class="k">for</span> (<span class="k">const</span> order <span class="k">of</span> list) {
+    console.log(label(order));
+  }
+}
+
+printAll(orders);</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>#1 عمر: 40
+orders-bug.js:8
+  return `#${order.id} ${order.customer.name}: ${order.total}`;
+                                        ^
+TypeError: Cannot read properties of undefined (reading &#x27;name&#x27;)
+    at label (orders-bug.js:8:41)
+    at printAll (orders-bug.js:13:17)
+    at Object.&lt;anonymous&gt; (orders-bug.js:17:1)</pre></div>
+<ol class="steps">
+<li>اقرأ المسار من الأعلى: التوقف في <code>label</code>، التي استدعتها <code>printAll</code>، التي استُدعيت من السطر 17.</li>
+<li>الرسالة تقول إنها لم تستطع قراءة <code>name</code> من <code>undefined</code>. ففي <code>order.customer.name</code> القيمة <code>undefined</code> هي <code>order.customer</code>.</li>
+<li>طُبع طلب واحد قبل التوقف، فالمشكلة في الطلب الثاني. انظر إلى البيانات: الطلب 2 بلا <code>customer</code>.</li>
+<li>قرّر ما يجب أن يحدث. هنا العميل الناقص زائر، فأضف <code>if (!order.customer)</code> في أول <code>label</code> وأرجع سطر «زائر».</li>
+<li>شغّل من جديد. يجب أن تُطبع الطلبات الثلاثة، وأن ينتهي البرنامج طبيعياً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> السطر الذي يتوقف عنده البرنامج كثيراً ما لا يكون السطر الخاطئ. فالكود في <code>label</code> سليم، والبيانات لم تكن كما توقّع. والبيانات الحقيقية من المستخدمين والخوادم ينقصها شيء دائماً، فيتحقق المحترفون قبل أن يقرؤوا في عمق الكائن.</p>
+<p><strong>بعد الإصلاح:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>#1 عمر: 40
+#2 (زائر): 15
+#3 هدى: 22</pre></div>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">تمارين</h2>
 
 <ol class="exercises">
