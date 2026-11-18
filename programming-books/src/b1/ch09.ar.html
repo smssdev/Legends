@@ -141,6 +141,62 @@
 
 <p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>"الأحد"</code> (الفهارس تبدأ من 0)، و3. 2. ثلاث مرات، و<code>i</code> تساوي 0 ثم 1 ثم 2. 3. <code>for…of</code>.</p>
 
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">المصفوفات والحلقات تحوّل البرامج الصغيرة إلى أدوات مفيدة. والمشروع الثالث فيه سؤال مقابلات مشهور؛ حين تحله لن تنساه أبداً.</p>
+
+<div class="project">
+<p class="project-label">مشروع 9.1 · سهل</p>
+<h3>إحصاءات الفصل الدراسي</h3>
+<p class="project-goal">معلّم عنده درجات فصل كامل. في مرور واحد على القائمة، أوجد المتوسط وأعلى درجة وأدناها وعدد الناجحين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>for…of</code>، وعدة مجمِّعات معاً، و<code>+=</code> و<code>++</code>.</p>
+<ol class="steps">
+<li>أنشئ مصفوفة من ثماني درجات.</li>
+<li>قبل الحلقة أنشئ أربعة مجمِّعات: <code>total</code> يبدأ من 0، و<code>highest</code> و<code>lowest</code> يبدآن من أول درجة، و<code>passed</code> يبدأ من 0.</li>
+<li>في حلقة <code>for…of</code> واحدة حدّث الأربعة. و<code>total += score</code> اختصار لـ <code>total = total + score</code>.</li>
+<li>بعد الحلقة اطبع عدد الطلاب، والمتوسط (<code>total / scores.length</code>)، والأعلى، والأدنى، و«الناجحون من المجموع».</li>
+<li>أضف درجة 100 ودرجة 0 إلى المصفوفة، وتأكد أن النتائج تتغير كما تتوقع.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ابدأ <code>highest</code> و<code>lowest</code> بأول درجة لا بالصفر. فلو بدأت <code>lowest</code> بالصفر لما تغير أبداً، لأن لا درجة تحت الصفر.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/class-stats.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 9.2 · متوسط</p>
+<h3>قائمة تسوق بلا تكرار</h3>
+<p class="project-goal">أضف عناصر جديدة إلى قائمة التسوق، وتجاوز أي عنصر موجود أصلاً، واطبع القائمة مرقمة من 1.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>includes</code> و<code>push</code> وحلقة <code>for</code> التقليدية بالفهرس.</p>
+<ol class="steps">
+<li>ابدأ بقائمة من عنصرين، ومصفوفة <code>toAdd</code> من ثلاثة عناصر أحدها موجود في القائمة.</li>
+<li>مرّ على <code>toAdd</code>. إن كانت القائمة <code>includes</code> العنصر فاطبع رسالة، وإلا فأضفه بـ <code>push</code>.</li>
+<li>اطبع القائمة النهائية بحلقة <code>for</code> تقليدية، ليكون معك الفهرس <code>i</code> فترقّم كل سطر.</li>
+<li>الناس يعدّون من 1 والمصفوفات من 0: اطبع <code>i + 1</code> لا <code>i</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> «خبز» و«الخبز» نصان مختلفان عند JavaScript. فإن احتمل أن يكتب المستخدمون هذا أو ذاك، فاحرص على صيغة موحدة للعناصر.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/shopping-list.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 9.3 · تحدٍّ</p>
+<h3>لعبة العد ومثلث النجوم</h3>
+<p class="project-goal">لغزان مشهوران عن الحلقات. الأول: عُدّ من 1 إلى 15، لكن قل «Bit» لمضاعفات 3، و«Bot» لمضاعفات 5، و«Bit Bot» لمضاعفات الاثنين. والثاني: ارسم مثلثاً من النجوم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>%</code> داخل حلقة، وترتيب الشروط، والحلقات المتداخلة.</p>
+<ol class="steps">
+<li>اكتب حلقة <code>for</code> من 1 إلى 15.</li>
+<li>بداخلها افحص «الاثنين» أولاً: <code>n % 3 === 0 &amp;&amp; n % 5 === 0</code>، ثم 3 وحدها، ثم 5 وحدها، وإلا فالرقم نفسه.</li>
+<li>وللمثلث اكتب حلقة خارجية للصفوف من 1 إلى 4، وبداخلها ابدأ نصاً فارغاً <code>line</code>.</li>
+<li>حلقة داخلية تضيف <code>"* "</code> إلى السطر مرة لكل رقم صف: الصف 1 نجمة واحدة، والصف 4 أربع نجوم.</li>
+<li>اطبع السطر بعد الحلقة الداخلية. ثم غيّر البرنامج ليرسم 10 صفوف، أو مثلثاً مقلوباً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لعبة العد هذه (واسمها المشهور FizzBuzz) سؤال شائع جداً في مقابلات البرمجة. والفخ في الترتيب: إن فُحصت «3» قبل «الاثنين» طبع 15 كلمة «Bit» وحدها.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/patterns.js"></pre>
+</div>
+<!-- /projects -->
+
 <h2>تمارين</h2>
 
 <ol class="exercises">

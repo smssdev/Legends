@@ -3711,6 +3711,89 @@ Total: 42</pre></div>
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. <code>"Sun"</code> (indexes start at 0), and 3. 2. Three times, with <code>i</code> being 0, 1 and 2. 3. <code>for…of</code>.</p>
 
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Arrays and loops turn small programs into useful tools. The third project contains a famous interview question; once you can solve it, you will never forget it.</p>
+
+<div class="project">
+<p class="project-label">Project 9.1 · Easy</p>
+<h3>Class statistics</h3>
+<p class="project-goal">A teacher has the scores of a whole class. In one pass through the list, find the average, the highest and lowest score, and how many students passed.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>for…of</code>, several accumulators at once, and <code>+=</code> and <code>++</code>.</p>
+<ol class="steps">
+<li>Create an array of eight scores.</li>
+<li>Before the loop, create four accumulators: <code>total</code> starting at 0, <code>highest</code> and <code>lowest</code> starting at the first score, and <code>passed</code> starting at 0.</li>
+<li>In one <code>for…of</code> loop, update all four. <code>total += score</code> is short for <code>total = total + score</code>.</li>
+<li>After the loop, print the number of students, the average (<code>total / scores.length</code>), the highest, the lowest, and “passed out of total”.</li>
+<li>Add a score of 100 and one of 0 to the array, and check that the results change as you expect.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> start <code>highest</code> and <code>lowest</code> at the first score, not at 0. If you start <code>lowest</code> at 0, it never changes, because no score is below 0.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Students: 8
+Average: 72.625
+Highest: 95
+Lowest: 48
+Passed: 7 / 8</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 9.2 · Medium</p>
+<h3>A shopping list without duplicates</h3>
+<p class="project-goal">Add new items to a shopping list, skipping any item that is already there, and print the list numbered from 1.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>includes</code>, <code>push</code>, and the classic <code>for</code> loop with an index.</p>
+<ol class="steps">
+<li>Start with a list of two items, and an array <code>toAdd</code> of three items, one of which is already on the list.</li>
+<li>Loop over <code>toAdd</code>. If the list already <code>includes</code> the item, print a message; otherwise <code>push</code> it.</li>
+<li>Print the final list with a classic <code>for</code> loop, so that you have the index <code>i</code> to number each line.</li>
+<li>People count from 1, arrays from 0: print <code>i + 1</code>, not <code>i</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> “Bread” and “bread” are different strings for JavaScript. If users may type either, compare <code>item.toLowerCase()</code> instead.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>bread is already on the list
+Shopping list:
+1. bread
+2. milk
+3. eggs
+4. tomatoes</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 9.3 · Challenge</p>
+<h3>The counting game and a triangle of stars</h3>
+<p class="project-goal">Two classic loop puzzles. First, count from 1 to 15, but say “Bit” for multiples of 3, “Bot” for multiples of 5, and “Bit Bot” for multiples of both. Second, draw a triangle of stars.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>%</code> inside a loop, the order of conditions, and nested loops.</p>
+<ol class="steps">
+<li>Write a <code>for</code> loop from 1 to 15.</li>
+<li>Inside, check for “both” first: <code>n % 3 === 0 &amp;&amp; n % 5 === 0</code>. Then 3 alone, then 5 alone, else the number itself.</li>
+<li>For the triangle, write an outer loop for the rows, 1 to 4. Inside it, start an empty string <code>line</code>.</li>
+<li>An inner loop adds <code>"* "</code> to the line once for each row number: row 1 gets one star, row 4 gets four.</li>
+<li>Print the line after the inner loop. Then change the program to draw 10 rows, or an upside-down triangle.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this counting game (usually called FizzBuzz) is a very common question in programming interviews. The trap is the order: if “3” is checked before “both”, 15 prints only “Bit”.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>1
+2
+Bit
+4
+Bot
+Bit
+7
+8
+Bit
+Bot
+11
+Bit
+13
+14
+Bit Bot
+* 
+* * 
+* * * 
+* * * * </pre></div>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">Exercises</h2>
 
 <ol class="exercises">
