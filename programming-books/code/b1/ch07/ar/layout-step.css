@@ -1,0 +1,55 @@
+/* 6. الفصل 7: التخطيط بـ Flexbox وGrid */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 24px;
+}
+
+header nav {
+  flex-basis: 100%;
+}
+
+main {
+  max-width: 900px;
+  display: grid;
+  gap: 16px;
+}
+
+section {
+  margin-bottom: 0;
+}
+
+ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+li {
+  margin: 0;
+}
+
+/* الشاشات العريضة: الصورة بجانب الاسم، والبطاقات في عمودين */
+@media (min-width: 700px) {
+  header {
+    justify-content: flex-start;
+    text-align: start;
+    padding-inline: 48px;
+  }
+
+  main {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #about {
+    grid-column: 1 / -1;
+  }
+}

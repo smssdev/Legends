@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>تخطيط الصفحة</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 12px; }
+      .page {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        grid-template-areas:
+          "head head"
+          "side main"
+          "foot foot";
+        gap: 10px;
+      }
+      .page > * { padding: 20px; border-radius: 10px; color: white; font-weight: 700; }
+      header { grid-area: head; background-color: #4338ca; }
+      aside  { grid-area: side; background-color: #0f766e; }
+      main   { grid-area: main; background-color: #db2777; min-height: 120px; }
+      footer { grid-area: foot; background-color: #ea580c; }
+
+      /* On narrow screens: one column */
+      @media (max-width: 600px) {
+        .page {
+          grid-template-columns: 1fr;
+          grid-template-areas: "head" "main" "side" "foot";
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>الترويسة</header>
+      <aside>الشريط الجانبي</aside>
+      <main>المحتوى الرئيسي</main>
+      <footer>التذييل</footer>
+    </div>
+  </body>
+</html>

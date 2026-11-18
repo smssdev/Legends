@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "Chapter 6: CSS: Styling a Page"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "Chapter 7: Layout with Flexbox and Grid"; } }
+@page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Values, Variables and Decisions"; } }
 @page ch08:first { @top-center { content: none; } }
 </style></head>
@@ -1249,7 +1251,7 @@ text/html; charset=utf-8
 
 <p>Double-click the file to open it in your browser (or drag it into a browser window):</p>
 
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>first.html</span></div><img src="img/b1-ch05-en-first.html.png" alt=""><figcaption><b>Figure 5.2:</b> Your first web page.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>first.html</span><b>560px</b></div><img src="img/b1-ch05-en-first.html-560.png" alt=""><figcaption><b>Figure 5.2:</b> Your first web page.</figcaption></figure>
 
 <p>Each line of the skeleton has a job:</p>
 
@@ -1287,7 +1289,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span><span class="k">&gt;</span>We ate koshari, a dish of rice, lentils, pasta and a spicy tomato sauce.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>text.html</span></div><img src="img/b1-ch05-en-text.html.png" alt=""><figcaption><b>Figure 5.3:</b> Headings, paragraphs and emphasis, with the browser’s default styles.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>text.html</span><b>560px</b></div><img src="img/b1-ch05-en-text.html-560.png" alt=""><figcaption><b>Figure 5.3:</b> Headings, paragraphs and emphasis, with the browser’s default styles.</figcaption></figure>
 
 <ul>
 <li><code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code> are <strong>headings</strong>, from the most important to the least. Use one <code>&lt;h1&gt;</code> per page for its main title, then <code>&lt;h2&gt;</code> for sections, <code>&lt;h3&gt;</code> for sub-sections, and so on, like the chapters and sections of this book.</li>
@@ -1309,7 +1311,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span><span class="k">&gt;</span>Open <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;https://developer.mozilla.org/en-US/docs/Web/HTML&quot;</span> <span class="n">target</span>=<span class="s">&quot;_blank&quot;</span> <span class="n">rel</span>=<span class="s">&quot;noopener&quot;</span><span class="k">&gt;</span>the HTML guide<span class="k">&lt;/a</span><span class="k">&gt;</span> in a new tab.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>links.html</span></div><img src="img/b1-ch05-en-links.html.png" alt=""><figcaption><b>Figure 5.4:</b> Links are blue and underlined by default.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>links.html</span><b>560px</b></div><img src="img/b1-ch05-en-links.html-560.png" alt=""><figcaption><b>Figure 5.4:</b> Links are blue and underlined by default.</figcaption></figure>
 
 <p>The first link is <strong>absolute</strong>: it contains the full address of another website. The second is <strong>relative</strong>: <code>first.html</code> means “the file called <code>first.html</code> in the same folder as this page”. Use relative links between the pages of your own site, so they keep working when you move the whole site to a server.</p>
 
@@ -1326,7 +1328,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span><span class="k">&gt;</span>Bit is the friendly robot who guides you through this book.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>image.html</span></div><img src="img/b1-ch05-en-image.html.png" alt=""><figcaption><b>Figure 5.5:</b> An image on the page.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>image.html</span><b>560px</b></div><img src="img/b1-ch05-en-image.html-560.png" alt=""><figcaption><b>Figure 5.5:</b> An image on the page.</figcaption></figure>
 
 <ul>
 <li><code>src</code> is the image file: a relative path, or a full address on the web.</li>
@@ -1361,7 +1363,7 @@ text/html; charset=utf-8
     <span class="k">&lt;/ol</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>lists.html</span></div><img src="img/b1-ch05-en-lists.html.png" alt=""><figcaption><b>Figure 5.6:</b> The browser adds bullets and numbers for you.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>lists.html</span><b>560px</b></div><img src="img/b1-ch05-en-lists.html-560.png" alt=""><figcaption><b>Figure 5.6:</b> The browser adds bullets and numbers for you.</figcaption></figure>
 
 <p>Lists are everywhere on the web, often in places you would not guess: the menu at the top of most websites is a list of links, styled with CSS so it no longer looks like a list.</p>
 
@@ -1442,7 +1444,7 @@ text/html; charset=utf-8
     <span class="k">&lt;/form</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>form.html</span></div><img src="img/b1-ch05-en-form.html.png" alt=""><figcaption><b>Figure 5.8:</b> A form with two fields and a button.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>form.html</span><b>560px</b></div><img src="img/b1-ch05-en-form.html-560.png" alt=""><figcaption><b>Figure 5.8:</b> A form with two fields and a button.</figcaption></figure>
 
 <p>Each <code>&lt;input&gt;</code> has a <code>&lt;label&gt;</code>, connected by matching <code>for</code> and <code>id</code> values. Clicking the label puts the cursor in the field, and screen readers announce the label. <code>type="email"</code> brings the right keyboard on phones, and <code>required</code> makes the browser refuse to send an empty field. Try pressing the button with the fields empty!</p>
 
@@ -1491,7 +1493,7 @@ text/html; charset=utf-8
     <span class="k">&lt;/footer</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span></div><img src="img/b1-ch05-en-profile.html.png" alt=""><figcaption><b>Figure 5.9:</b> The profile page, with HTML only and no styling yet.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>560px</b></div><img src="img/b1-ch05-en-profile.html-560.png" alt=""><figcaption><b>Figure 5.9:</b> The profile page, with HTML only and no styling yet.</figcaption></figure>
 
 <p>Two new tricks appear here. The links in the menu point to <code>#about</code>, <code>#skills</code> and <code>#contact</code>: a <code>#</code> followed by an <code>id</code> jumps to the element with that <code>id</code> on the same page. And the contact link starts with <code>mailto:</code>, which opens the visitor’s email app.</p>
 
@@ -1600,7 +1602,7 @@ text/html; charset=utf-8
 <circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
 </svg><div class="bubble"><p class="bubble-name">Bit</p><p>Here’s the before-and-after we are aiming for. Same HTML, plus one CSS file. When I first saw what CSS can do, my antenna lit up!</p></div></div>
 
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span></div><img src="img/b1-ch06-en-profile.html.png" alt=""><figcaption><b>Figure 6.1:</b> The profile page from Chapter 5 at the end of this chapter. Compare it with Figure 5.9: the HTML has not changed at all.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>560px</b></div><img src="img/b1-ch06-en-profile.html-560.png" alt=""><figcaption><b>Figure 6.1:</b> The profile page from Chapter 5 at the end of this chapter. Compare it with Figure 5.9: the HTML has not changed at all.</figcaption></figure>
 
 <h2><span class="sec">6.1</span><span>What CSS is</span></h2>
 
@@ -1680,7 +1682,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span><span class="k">&gt;</span>This list is updated every month.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
 <span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>selectors.html</span></div><img src="img/b1-ch06-en-selectors.html.png" alt=""><figcaption><b>Figure 6.3:</b> Each rule styles a different set of elements.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>selectors.html</span><b>560px</b></div><img src="img/b1-ch06-en-selectors.html-560.png" alt=""><figcaption><b>Figure 6.3:</b> Each rule styles a different set of elements.</figcaption></figure>
 
 <table>
 <thead><tr><th>Selector</th><th>Example</th><th>Chooses</th></tr></thead>
@@ -1715,7 +1717,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;alpha&quot;</span><span class="k">&gt;</span>With transparency<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>colors.html</span></div><img src="img/b1-ch06-en-colors.html.png" alt=""><figcaption><b>Figure 6.4:</b> Four ways to write a colour.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>colors.html</span><b>560px</b></div><img src="img/b1-ch06-en-colors.html-560.png" alt=""><figcaption><b>Figure 6.4:</b> Four ways to write a colour.</figcaption></figure>
 
 <ul>
 <li><strong>Names</strong> such as <code>tomato</code> or <code>white</code>. Easy, but there are only about 140 of them.</li>
@@ -1779,7 +1781,7 @@ text/html; charset=utf-8
     <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;box&quot;</span><span class="k">&gt;</span>I am a box with padding, a border and a margin.<span class="k">&lt;/div</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>box.html</span></div><img src="img/b1-ch06-en-box.html.png" alt=""><figcaption><b>Figure 6.6:</b> A box with 20px padding, a 6px border and a 30px margin.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>box.html</span><b>560px</b></div><img src="img/b1-ch06-en-box.html-560.png" alt=""><figcaption><b>Figure 6.6:</b> A box with 20px padding, a 6px border and a 30px margin.</figcaption></figure>
 
 <p>Look at <code>box.html</code> in your own browser, open DevTools, and select the box. At the bottom of the Styles pane, DevTools draws exactly this diagram with your real numbers. It is the best way to understand why something is in the wrong place.</p>
 
@@ -1969,6 +1971,383 @@ nav <span class="k">a</span> {
 <div class="next">
 <p class="next-title">Coming up in Chapter 7</p>
 <p>Your page is beautiful, but everything is still stacked from top to bottom. Next you will learn Flexbox and Grid, the two modern layout tools, and build layouts with columns that adapt from phone to desktop.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b1/ch07/en">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">Chapter 7</p><h1>Layout with Flexbox and Grid</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>place elements in a row or a column with Flexbox</li>
+<li>space, align and centre elements in both directions</li>
+<li>build two-dimensional layouts with CSS Grid</li>
+<li>make pages adapt to every screen with media queries</li>
+<li>give your profile page a real, responsive layout</li>
+</ul>
+</div>
+
+<p class="lead">For years, putting two boxes side by side on a web page was surprisingly hard, and developers used clever tricks that broke easily. Today CSS has two tools designed exactly for layout: <strong>Flexbox</strong> for arranging things along one line, and <strong>Grid</strong> for rows and columns together. With them, layouts that once took a day take a few lines.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Here’s a fun fact: centring something vertically used to be the most famous joke among web developers. By section 7.2 of this chapter, you’ll do it in three lines!</p></div></div>
+
+<h2><span class="sec">7.1</span><span>Flexbox: a row of boxes</span></h2>
+
+<p>Normally block elements stack from top to bottom. Add <code>display: flex</code> to a parent element, and its children line up in a row instead. The parent is called the <dfn>flex container</dfn>, and its direct children are <dfn>flex items</dfn>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">flex.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;en&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>Flexbox<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, sans-serif; margin: 16px; }
+      .bar {
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        margin-bottom: 4px;
+        background-color: #eef2ff;
+        border-radius: 10px;
+      }
+      .bar a {
+        padding: 6px 12px;
+        border-radius: 8px;
+        color: white;
+        background-color: #2b2b2b;
+        text-decoration: none;
+      }
+      .start { justify-content: flex-start; }
+      .between { justify-content: space-between; }
+      .centre { justify-content: center; }
+      code { display: block; margin: 12px 0 4px; color: #5b5873; }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;code</span><span class="k">&gt;</span>justify-content: flex-start<span class="k">&lt;/code</span><span class="k">&gt;</span>
+    <span class="k">&lt;nav</span> <span class="n">class</span>=<span class="s">&quot;bar start&quot;</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Home<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Articles<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Videos<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>About<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;code</span><span class="k">&gt;</span>justify-content: space-between<span class="k">&lt;/code</span><span class="k">&gt;</span>
+    <span class="k">&lt;nav</span> <span class="n">class</span>=<span class="s">&quot;bar between&quot;</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Home<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Articles<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Videos<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>About<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;code</span><span class="k">&gt;</span>justify-content: center<span class="k">&lt;/code</span><span class="k">&gt;</span>
+    <span class="k">&lt;nav</span> <span class="n">class</span>=<span class="s">&quot;bar centre&quot;</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Home<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Articles<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Videos<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>About<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/nav</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>flex.html</span><b>560px</b></div><img src="img/b1-ch07-en-flex.html-560.png" alt=""><figcaption><b>Figure 7.1:</b> The same menu with three values of <code>justify-content</code>.</figcaption></figure>
+
+<p>Three properties do most of the work:</p>
+
+<table>
+<thead><tr><th>Property</th><th>Common values</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>gap</code></td><td><code>8px</code>, <code>1rem</code></td><td>Space between items, and nowhere else</td></tr>
+<tr><td><code>justify-content</code></td><td><code>flex-start</code>, <code>center</code>, <code>space-between</code>, <code>flex-end</code></td><td>Where items sit along the row</td></tr>
+<tr><td><code>align-items</code></td><td><code>stretch</code>, <code>center</code>, <code>flex-start</code>, <code>flex-end</code></td><td>How items line up across the row (vertically, for a row)</td></tr>
+</tbody>
+</table>
+
+<p>Notice that “start” means where the reading direction starts. In the Arabic version of this page the same CSS puts the menu on the right, with no extra code. Flexbox and Grid are built on the logical directions you met in Chapter 6.</p>
+
+<h3>Rows, columns and wrapping</h3>
+
+<p><code>flex-direction: column</code> turns the row into a column. <code>flex-wrap: wrap</code> lets items move onto a new line when there is not enough room, instead of squeezing. And on an item, <code>flex: 1</code> means “grow to fill the free space”, which is how you make a search box stretch next to a fixed-size button.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="Main axis runs along the row, cross axis runs across it">
+<defs><marker id="m7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/></marker>
+<marker id="m7b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/></marker></defs>
+<rect x="60" y="30" width="400" height="90" rx="10" fill="#eef2ff" stroke="#2b2b2b" stroke-width="2"/>
+<g fill="#2b2b2b"><rect x="76" y="48" width="70" height="54" rx="8"/><rect x="158" y="48" width="70" height="54" rx="8"/><rect x="240" y="48" width="70" height="54" rx="8"/></g>
+<g font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle"><text x="111" y="80">1</text><text x="193" y="80">2</text><text x="275" y="80">3</text></g>
+<line x1="70" y1="138" x2="450" y2="138" stroke="#2b2b2b" stroke-width="2.5" marker-end="url(#m7)"/>
+<text x="260" y="22" font-family="Inter" font-size="12.5" font-weight="700" fill="#2b2b2b" text-anchor="middle">main axis: justify-content</text>
+<line x1="480" y1="34" x2="480" y2="116" stroke="#2b2b2b" stroke-width="2.5" marker-end="url(#m7b)"/>
+<text x="500" y="75" font-family="Inter" font-size="12" font-weight="700" fill="#2b2b2b" text-anchor="middle" transform="rotate(90 500 75)">cross axis: align-items</text>
+</svg>
+<figcaption><b>Figure 7.2:</b> Flexbox has two axes. <code>justify-content</code> works along the main axis, <code>align-items</code> across it.</figcaption>
+</figure>
+
+<h2><span class="sec">7.2</span><span>Centring anything</span></h2>
+
+<p>Put <code>justify-content: center</code> and <code>align-items: center</code> together, and an item sits exactly in the middle of its container, horizontally and vertically:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">center.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;card&quot;</span><span class="k">&gt;</span>Perfectly centred!<span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<pre class="plain">body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 260px;
+}</pre>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>center.html</span><b>560px</b></div><img src="img/b1-ch07-en-center.html-560.png" alt=""><figcaption><b>Figure 7.3:</b> Centred in both directions.</figcaption></figure>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Three lines! Developers who learned CSS before Flexbox still smile when they see this. The container needs a height, though: here <code>min-height</code> gives it one. Without it, the box is only as tall as its content, so there is nothing to centre in.</p></div></div>
+
+<h2><span class="sec">7.3</span><span>Grid: rows and columns together</span></h2>
+
+<p>Flexbox arranges items along one line. <dfn>CSS Grid</dfn> arranges them in two dimensions at once, like a table or a spreadsheet. Set <code>display: grid</code> on the container and describe its columns:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">grid.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;en&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>Grid gallery<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, sans-serif; margin: 16px; }
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+      }
+      .gallery div {
+        padding: 28px 8px;
+        text-align: center;
+        border-radius: 12px;
+        color: white;
+        background-color: #2b2b2b;
+        font-weight: 700;
+      }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;gallery&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>HTML<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>CSS<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>JavaScript<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>Git<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>Node.js<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>DevTools<span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>grid.html</span><b>560px</b></div><img src="img/b1-ch07-en-grid.html-560.png" alt=""><figcaption><b>Figure 7.4:</b> A gallery: as many 140-pixel-or-wider columns as fit.</figcaption></figure>
+
+<p>The magic line is:</p>
+<pre class="plain">grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));</pre>
+
+<p>Read it from the inside out. <code>1fr</code> means “one fraction of the free space”. <code>minmax(140px, 1fr)</code> means “at least 140 pixels, otherwise share the space equally”. <code>repeat(auto-fit, …)</code> means “as many columns like that as fit”. So on a wide screen you get four columns, on a phone two, and you never wrote a single rule for either. That is the heart of responsive design.</p>
+
+<table>
+<thead><tr><th>You write</th><th>You get</th></tr></thead>
+<tbody>
+<tr><td><code>grid-template-columns: 1fr 1fr</code></td><td>Two equal columns</td></tr>
+<tr><td><code>grid-template-columns: 200px 1fr</code></td><td>A fixed sidebar and a flexible main column</td></tr>
+<tr><td><code>grid-template-columns: repeat(3, 1fr)</code></td><td>Three equal columns</td></tr>
+<tr><td><code>grid-column: 1 / -1</code> (on an item)</td><td>The item spans every column, from the first line to the last</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">7.4</span><span>Page layouts with named areas</span></h2>
+
+<p>Grid can also lay out a whole page. You give each part a name and then “draw” the layout with those names, almost like ASCII art:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">layout.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;page&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;header</span><span class="k">&gt;</span>Header<span class="k">&lt;/header</span><span class="k">&gt;</span>
+      <span class="k">&lt;aside</span><span class="k">&gt;</span>Sidebar<span class="k">&lt;/aside</span><span class="k">&gt;</span>
+      <span class="k">&lt;main</span><span class="k">&gt;</span>Main content<span class="k">&lt;/main</span><span class="k">&gt;</span>
+      <span class="k">&lt;footer</span><span class="k">&gt;</span>Footer<span class="k">&lt;/footer</span><span class="k">&gt;</span>
+    <span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<pre class="plain">.page {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  grid-template-areas:
+    "head head"
+    "side main"
+    "foot foot";
+  gap: 10px;
+}
+header { grid-area: head; }
+aside  { grid-area: side; }
+main   { grid-area: main; }
+footer { grid-area: foot; }</pre>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>layout.html</span><b>760px</b></div><img src="img/b1-ch07-en-layout.html-760.png" alt=""><figcaption><b>Figure 7.5:</b> The page layout on a wide screen.</figcaption></figure>
+
+<p>Each quoted line is a row; each word is a cell. <code>"head head"</code> means the header spans both columns. Changing the whole layout is now a matter of redrawing the picture, which is exactly what we do for small screens.</p>
+
+<h2><span class="sec">7.5</span><span>Responsive design with media queries</span></h2>
+
+<p>More than half of all web visits come from phones. A <dfn>media query</dfn> applies CSS only when a condition is true, usually a screen width:</p>
+
+<pre class="plain">@media (max-width: 600px) {
+  .page {
+    grid-template-columns: 1fr;
+    grid-template-areas: "head" "main" "side" "foot";
+  }
+}</pre>
+
+<p>On screens 600 pixels wide or less, the page becomes a single column, and the main content moves above the sidebar, because on a phone the content is what people came for:</p>
+
+<figure class="browser" style="width: 64%; margin-inline: auto"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>layout.html</span><b>360px</b></div><img src="img/b1-ch07-en-layout.html-360.png" alt=""><figcaption><b>Figure 7.6:</b> The same page and the same HTML at phone width.</figcaption></figure>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: mobile first</p><p>Most professionals write the phone layout first, as the default, and then add <code>@media (min-width: …)</code> rules for bigger screens. Phone layouts are usually simpler, so the CSS stays simpler. Always test with the DevTools device toolbar, and on a real phone when you can.</p></aside>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Flexbox or Grid?</p><p>A simple rule: use <strong>Flexbox</strong> for a line of things (a menu, a row of buttons, tags, a card’s header) and <strong>Grid</strong> for a layout of things (a page, a gallery, a dashboard). They work perfectly together: a Grid page can contain Flexbox menus, and the other way round.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which property makes the children of an element line up in a row?</li><li>What does <code>1fr</code> mean in a grid?</li><li>What does <code>@media (min-width: 700px) { … }</code> do?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">7.6</span><span>Project: a responsive profile</span></h2>
+
+<p>Your profile page is beautiful but still a single tall column. Let us add a sixth part to <code>style.css</code> with a real layout. Nothing in the HTML changes.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">style.css (part 6, add at the end)</div><pre class="code"><span class="c">/* 6. Chapter 7: layout with Flexbox and Grid */</span>
+*,
+*<span class="s">::before,</span>
+*<span class="s">::after </span>{
+  <span class="n">box-sizing</span><span class="s">: border-box</span>;
+}
+
+<span class="k">header</span> {
+  <span class="n">display</span><span class="s">: flex</span>;
+  <span class="n">flex-wrap</span><span class="s">: wrap</span>;
+  <span class="n">align-items</span><span class="s">: center</span>;
+  <span class="n">justify-content</span><span class="s">: center</span>;
+  <span class="n">gap</span><span class="s">: 8px 24px</span>;
+}
+
+header <span class="k">nav</span> {
+  <span class="n">flex-basis</span><span class="s">: 100%</span>;
+}
+
+<span class="k">main</span> {
+  <span class="n">max-width</span><span class="s">: 900px</span>;
+  <span class="n">display</span><span class="s">: grid</span>;
+  <span class="n">gap</span><span class="s">: 16px</span>;
+}
+
+<span class="k">section</span> {
+  <span class="n">margin-bottom</span><span class="s">: 0</span>;
+}
+
+<span class="k">ul</span> {
+  <span class="n">display</span><span class="s">: flex</span>;
+  <span class="n">flex-wrap</span><span class="s">: wrap</span>;
+  <span class="n">gap</span><span class="s">: 8px</span>;
+}
+
+<span class="k">li</span> {
+  <span class="n">margin</span><span class="s">: 0</span>;
+}
+
+<span class="c">/* Wide screens: avatar beside the name, cards in two columns */</span>
+<span class="k">@media</span> (<span class="n">min-width</span><span class="s">: 700px) </span>{
+  <span class="k">header</span> {
+    <span class="n">justify-content</span><span class="s">: flex-start</span>;
+    <span class="n">text-align</span><span class="s">: start</span>;
+    <span class="n">padding-inline</span><span class="s">: 48px</span>;
+  }
+
+  <span class="k">main</span> {
+    <span class="n">grid-template-columns</span><span class="s">: 1fr 1fr</span>;
+  }
+
+  <span class="k">#about</span> {
+    <span class="n">grid-column</span><span class="s">: 1 / -1</span>;
+  }
+}</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>760px</b></div><img src="img/b1-ch07-en-profile.html-760.png" alt=""><figcaption><b>Figure 7.7:</b> On a wide screen: avatar beside the name, cards in two columns.</figcaption></figure>
+
+<figure class="browser" style="width: 68%; margin-inline: auto"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>380px</b></div><img src="img/b1-ch07-en-profile.html-380.png" alt=""><figcaption><b>Figure 7.8:</b> On a phone: one column, everything centred. Same HTML, same CSS file.</figcaption></figure>
+
+<p>Look at what each piece does:</p>
+<ul>
+<li>The <code>header</code> is now a flex container that wraps. On a wide screen the avatar and name sit side by side; <code>flex-basis: 100%</code> forces the menu onto its own line.</li>
+<li><code>main</code> is a grid with a <code>gap</code>, so the cards are spaced by the grid instead of by their own margins.</li>
+<li>The skills list is a wrapping flex container: tags flow onto a new line on narrow screens.</li>
+<li>Inside the media query, <code>main</code> gets two columns, and the About card spans both with <code>grid-column: 1 / -1</code>.</li>
+<li><code>padding-inline</code> is a logical property: in the Arabic page, the extra padding moves to the correct sides automatically.</li>
+</ul>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Putting <code>display: flex</code> on the items instead of the parent</td><td>Nothing lines up</td><td>Flex and grid go on the <strong>container</strong></td></tr>
+<tr><td>Using margins to space flex or grid items</td><td>Uneven spacing at the edges</td><td>Use <code>gap</code></td></tr>
+<tr><td>Centring vertically in a container with no height</td><td>The item does not move</td><td>Give the container a height or <code>min-height</code></td></tr>
+<tr><td>Forgetting the viewport meta tag</td><td>Phones show a tiny desktop page and media queries seem broken</td><td>Keep <code>&lt;meta name="viewport"&gt;</code> in the head</td></tr>
+<tr><td>Fixed widths like <code>width: 900px</code></td><td>Sideways scrolling on phones</td><td>Use <code>max-width</code>, <code>%</code> and <code>fr</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><code>display: flex</code> lines children up in a row (or a column). Use <code>gap</code>, <code>justify-content</code> and <code>align-items</code>.</li>
+<li>Flexbox has a <strong>main axis</strong> and a <strong>cross axis</strong>. <code>flex-wrap: wrap</code> lets items flow onto new lines.</li>
+<li><code>justify-content: center</code> plus <code>align-items: center</code> centres anything.</li>
+<li><code>display: grid</code> makes rows and columns. <code>fr</code> shares free space; <code>repeat(auto-fit, minmax(…, 1fr))</code> makes responsive galleries.</li>
+<li><code>grid-template-areas</code> draws page layouts with names.</li>
+<li><strong>Media queries</strong> apply CSS at certain screen widths. Design mobile first.</li>
+<li>Flexbox for a line of things, Grid for a layout of things.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>display: flex</code> on the parent. 2. One fraction of the free space: two <code>1fr</code> columns share it equally. 3. It applies the CSS inside it only when the screen is at least 700 pixels wide.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Make a row of three buttons with Flexbox, with 12 pixels between them, centred on the page.</li>
+<li><span class="level">Easy</span> Change the gallery so that each column is at least 200 pixels wide. How many columns do you get at different window widths?</li>
+<li><span class="level medium">Medium</span> Build a card for a product with an image on one side and text on the other, using Flexbox. On screens narrower than 500 pixels, put the image above the text.</li>
+<li><span class="level medium">Medium</span> Add a fourth area, <code>ads</code>, to <code>layout.html</code>, shown to the end of the main content on wide screens and at the very bottom on phones.</li>
+<li><span class="level hard">Challenge</span> Recreate the layout of the home page of a news website you like, with Grid areas and coloured boxes instead of real content. Make it work at 360, 768 and 1280 pixels wide.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 8</p>
+<p>Your pages now have structure, style and layout. What they cannot do yet is <em>think</em>. Part 3 brings JavaScript: values, variables and decisions, the first step to pages that react to their visitors.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/en">

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flexbox</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 16px; }
+      .bar {
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        margin-bottom: 4px;
+        background-color: #eef2ff;
+        border-radius: 10px;
+      }
+      .bar a {
+        padding: 6px 12px;
+        border-radius: 8px;
+        color: white;
+        background-color: #4338ca;
+        text-decoration: none;
+      }
+      .start { justify-content: flex-start; }
+      .between { justify-content: space-between; }
+      .centre { justify-content: center; }
+      code { display: block; margin: 12px 0 4px; color: #5b5873; }
+    </style>
+  </head>
+  <body>
+    <code>justify-content: flex-start</code>
+    <nav class="bar start"><a href="#">الرئيسية</a><a href="#">المقالات</a><a href="#">الفيديو</a><a href="#">من نحن</a></nav>
+    <code>justify-content: space-between</code>
+    <nav class="bar between"><a href="#">الرئيسية</a><a href="#">المقالات</a><a href="#">الفيديو</a><a href="#">من نحن</a></nav>
+    <code>justify-content: center</code>
+    <nav class="bar centre"><a href="#">الرئيسية</a><a href="#">المقالات</a><a href="#">الفيديو</a><a href="#">من نحن</a></nav>
+  </body>
+</html>

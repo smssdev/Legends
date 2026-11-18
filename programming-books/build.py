@@ -154,14 +154,17 @@ def fill_code(chapter, lang):
         f = re.search(r'data-render="([^"]+)"', attrs).group(1)
         width = int((re.search(r'data-width="(\d+)"', attrs) or re.match("(.*)", "640")).group(1))
         src = code_dir / f
-        name = f"{code_dir.parent.parent.name}-{code_dir.parent.name}-{lang}-{f.replace('/', '-')}.png"
+        name = f"{code_dir.parent.parent.name}-{code_dir.parent.name}-{lang}-{f.replace('/', '-')}-{width}.png"
         img = OUT / "img" / name
         img.parent.mkdir(parents=True, exist_ok=True)
         if not img.exists() or img.stat().st_mtime < max(src.stat().st_mtime, (ROOT / "shot.cjs").stat().st_mtime):
             subprocess.run(["node", str(ROOT / "shot.cjs"), str(src), str(img), str(width)], check=True)
         bar = (f'<div class="browser-bar" dir="ltr"><i></i><i></i><i></i>'
-               f'<span>{html.escape(f.rsplit("/", 1)[-1])}</span></div>')
-        return f'<figure class="browser">{bar}<img src="img/{name}" alt="">'
+               f'<span>{html.escape(f.rsplit("/", 1)[-1])}</span><b>{width}px</b></div>')
+        # Narrow (phone) screenshots are shown narrower, so they keep a phone's proportions.
+        pct = min(100, round(width / 560 * 100))
+        style = f' style="width: {pct}%; margin-inline: auto"' if pct < 100 else ""
+        return f'<figure class="browser"{style}>{bar}<img src="img/{name}" alt="">'
 
     chapter = re.sub(r'<figure (data-render="[^"]+"[^>]*)>', page, chapter)
     chapter = re.sub(r'<pre (data-code="[^"]+"[^>]*)></pre>', code, chapter)

@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "الفصل 6: CSS: تنسيق الصفحة"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "الفصل 7: التخطيط بـ Flexbox وGrid"; } }
+@page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: القيم والمتغيرات والقرارات"; } }
 @page ch08:first { @top-center { content: none; } }
 </style></head>
@@ -1253,7 +1255,7 @@ text/html; charset=utf-8
 
 <p>انقر على الملف نقرتين ليفتح في المتصفح (أو اسحبه إلى نافذة المتصفح):</p>
 
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>first.html</span></div><img src="img/b1-ch05-ar-first.html.png" alt=""><figcaption><b>الشكل 5.2:</b> أول صفحة ويب لك.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>first.html</span><b>560px</b></div><img src="img/b1-ch05-ar-first.html-560.png" alt=""><figcaption><b>الشكل 5.2:</b> أول صفحة ويب لك.</figcaption></figure>
 
 <p>ولكل سطر في الهيكل وظيفة:</p>
 
@@ -1306,7 +1308,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span><span class="k">&gt;</span>أكلنا الكشري: أرز وعدس ومكرونة وصلصة طماطم حارة.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>text.html</span></div><img src="img/b1-ch05-ar-text.html.png" alt=""><figcaption><b>الشكل 5.3:</b> العناوين والفقرات والتأكيد، بتنسيق المتصفح الافتراضي.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>text.html</span><b>560px</b></div><img src="img/b1-ch05-ar-text.html-560.png" alt=""><figcaption><b>الشكل 5.3:</b> العناوين والفقرات والتأكيد، بتنسيق المتصفح الافتراضي.</figcaption></figure>
 
 <ul>
 <li><code>&lt;h1&gt;</code> إلى <code>&lt;h6&gt;</code> <strong>عناوين</strong> من الأهم إلى الأقل أهمية. استخدم <code>&lt;h1&gt;</code> واحداً لعنوان الصفحة الرئيسي، ثم <code>&lt;h2&gt;</code> للأقسام، و<code>&lt;h3&gt;</code> للأقسام الفرعية، وهكذا، مثل فصول هذا الكتاب وأقسامه.</li>
@@ -1328,7 +1330,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span><span class="k">&gt;</span>افتح <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;https://developer.mozilla.org/ar/docs/Web/HTML&quot;</span> <span class="n">target</span>=<span class="s">&quot;_blank&quot;</span> <span class="n">rel</span>=<span class="s">&quot;noopener&quot;</span><span class="k">&gt;</span>دليل HTML<span class="k">&lt;/a</span><span class="k">&gt;</span> في تبويب جديد.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>links.html</span></div><img src="img/b1-ch05-ar-links.html.png" alt=""><figcaption><b>الشكل 5.4:</b> الروابط زرقاء وتحتها خط افتراضياً.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>links.html</span><b>560px</b></div><img src="img/b1-ch05-ar-links.html-560.png" alt=""><figcaption><b>الشكل 5.4:</b> الروابط زرقاء وتحتها خط افتراضياً.</figcaption></figure>
 
 <p>الرابط الأول <strong>مطلق</strong>: فيه العنوان الكامل لموقع آخر. والثاني <strong>نسبي</strong>: <code>first.html</code> تعني «الملف المسمى <code>first.html</code> في مجلد هذه الصفحة نفسه». استخدم الروابط النسبية بين صفحات موقعك، فتبقى تعمل حين تنقل الموقع كله إلى خادم.</p>
 
@@ -1345,7 +1347,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span><span class="k">&gt;</span>بِت هو الروبوت اللطيف الذي يرافقك في هذا الكتاب.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>image.html</span></div><img src="img/b1-ch05-ar-image.html.png" alt=""><figcaption><b>الشكل 5.5:</b> صورة في الصفحة.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>image.html</span><b>560px</b></div><img src="img/b1-ch05-ar-image.html-560.png" alt=""><figcaption><b>الشكل 5.5:</b> صورة في الصفحة.</figcaption></figure>
 
 <ul>
 <li><code>src</code> ملف الصورة: مسار نسبي، أو عنوان كامل على الويب.</li>
@@ -1380,7 +1382,7 @@ text/html; charset=utf-8
     <span class="k">&lt;/ol</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>lists.html</span></div><img src="img/b1-ch05-ar-lists.html.png" alt=""><figcaption><b>الشكل 5.6:</b> يضيف المتصفح النقاط والأرقام عنك، وفي الصفحة العربية تكون على اليمين.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>lists.html</span><b>560px</b></div><img src="img/b1-ch05-ar-lists.html-560.png" alt=""><figcaption><b>الشكل 5.6:</b> يضيف المتصفح النقاط والأرقام عنك، وفي الصفحة العربية تكون على اليمين.</figcaption></figure>
 
 <p>القوائم في كل مكان على الويب، وكثيراً في أماكن لا تخطر ببالك: القائمة أعلى معظم المواقع قائمة روابط، نسّقتها CSS فلم تعد تبدو قائمة.</p>
 
@@ -1461,7 +1463,7 @@ text/html; charset=utf-8
     <span class="k">&lt;/form</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>form.html</span></div><img src="img/b1-ch05-ar-form.html.png" alt=""><figcaption><b>الشكل 5.8:</b> نموذج فيه حقلان وزر.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>form.html</span><b>560px</b></div><img src="img/b1-ch05-ar-form.html-560.png" alt=""><figcaption><b>الشكل 5.8:</b> نموذج فيه حقلان وزر.</figcaption></figure>
 
 <p>لكل <code>&lt;input&gt;</code> عنصر <code>&lt;label&gt;</code> يرتبط به بتطابق قيمتي <code>for</code> و<code>id</code>. فالنقر على التسمية يضع المؤشر في الحقل، وقارئات الشاشة تنطق التسمية. و<code>type="email"</code> تُظهر لوحة المفاتيح المناسبة على الهواتف، و<code>required</code> تجعل المتصفح يرفض إرسال حقل فارغ. جرّب الضغط على الزر والحقلان فارغان!</p>
 
@@ -1510,7 +1512,7 @@ text/html; charset=utf-8
     <span class="k">&lt;/footer</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span></div><img src="img/b1-ch05-ar-profile.html.png" alt=""><figcaption><b>الشكل 5.9:</b> الصفحة التعريفية، بـ HTML وحدها وبلا تنسيق بعد.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>560px</b></div><img src="img/b1-ch05-ar-profile.html-560.png" alt=""><figcaption><b>الشكل 5.9:</b> الصفحة التعريفية، بـ HTML وحدها وبلا تنسيق بعد.</figcaption></figure>
 
 <p>تظهر هنا حيلتان جديدتان. روابط القائمة تشير إلى <code>#about</code> و<code>#skills</code> و<code>#contact</code>، و<code>#</code> يتبعها <code>id</code> تقفز إلى العنصر صاحب هذا الـ <code>id</code> في الصفحة نفسها. ورابط التواصل يبدأ بـ <code>mailto:</code> فيفتح تطبيق البريد عند الزائر.</p>
 
@@ -1619,7 +1621,7 @@ text/html; charset=utf-8
 <circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>هذه الصورة هي هدفنا: HTML نفسها، ومعها ملف CSS واحد. حين رأيت لأول مرة ما تستطيع CSS فعله، أضاء هوائي رأسي!</p></div></div>
 
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span></div><img src="img/b1-ch06-ar-profile.html.png" alt=""><figcaption><b>الشكل 6.1:</b> صفحة الفصل 5 التعريفية في آخر هذا الفصل. قارنها بالشكل 5.9: لم يتغير في HTML شيء.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>560px</b></div><img src="img/b1-ch06-ar-profile.html-560.png" alt=""><figcaption><b>الشكل 6.1:</b> صفحة الفصل 5 التعريفية في آخر هذا الفصل. قارنها بالشكل 5.9: لم يتغير في HTML شيء.</figcaption></figure>
 
 <h2><span class="sec">6.1</span><span>ما CSS؟</span></h2>
 
@@ -1699,7 +1701,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span><span class="k">&gt;</span>تُحدَّث هذه القائمة كل شهر.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
 <span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>selectors.html</span></div><img src="img/b1-ch06-ar-selectors.html.png" alt=""><figcaption><b>الشكل 6.3:</b> كل قاعدة تنسّق مجموعة مختلفة من العناصر.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>selectors.html</span><b>560px</b></div><img src="img/b1-ch06-ar-selectors.html-560.png" alt=""><figcaption><b>الشكل 6.3:</b> كل قاعدة تنسّق مجموعة مختلفة من العناصر.</figcaption></figure>
 
 <table>
 <thead><tr><th>المحدد</th><th>مثال</th><th>يختار</th></tr></thead>
@@ -1734,7 +1736,7 @@ text/html; charset=utf-8
     <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;alpha&quot;</span><span class="k">&gt;</span>مع شفافية<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>colors.html</span></div><img src="img/b1-ch06-ar-colors.html.png" alt=""><figcaption><b>الشكل 6.4:</b> أربع طرق لكتابة اللون.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>colors.html</span><b>560px</b></div><img src="img/b1-ch06-ar-colors.html-560.png" alt=""><figcaption><b>الشكل 6.4:</b> أربع طرق لكتابة اللون.</figcaption></figure>
 
 <ul>
 <li><strong>الأسماء</strong> مثل <code>tomato</code> و<code>white</code>. سهلة، لكنها نحو 140 اسماً فقط.</li>
@@ -1798,7 +1800,7 @@ text/html; charset=utf-8
     <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;box&quot;</span><span class="k">&gt;</span>أنا صندوق له حشوة وحدود وهامش.<span class="k">&lt;/div</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>box.html</span></div><img src="img/b1-ch06-ar-box.html.png" alt=""><figcaption><b>الشكل 6.6:</b> صندوق بحشوة 20px وحدود 6px وهامش 30px.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>box.html</span><b>560px</b></div><img src="img/b1-ch06-ar-box.html-560.png" alt=""><figcaption><b>الشكل 6.6:</b> صندوق بحشوة 20px وحدود 6px وهامش 30px.</figcaption></figure>
 
 <p>افتح <code>box.html</code> في متصفحك، وافتح أدوات المطورين، واختر الصندوق. في أسفل قسم Styles ترسم أدوات المطورين هذا المخطط بأرقامك الحقيقية بالضبط، وهو أفضل طريقة لتفهم لماذا يقف شيء في المكان الخطأ.</p>
 
@@ -1988,6 +1990,383 @@ nav <span class="k">a</span> {
 <div class="next">
 <p class="next-title">في الفصل 7</p>
 <p>صفحتك جميلة، لكن كل شيء فيها ما زال مكدساً من الأعلى إلى الأسفل. وفي الفصل القادم ستتعلم Flexbox وGrid، أداتي التخطيط الحديثتين، وتبني تخطيطات بأعمدة تتكيف من الهاتف إلى الحاسوب.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b1/ch07/ar">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">الفصل 7</p><h1>التخطيط بـ Flexbox وGrid</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تضع العناصر في صف أو عمود بـ Flexbox</li>
+<li>تباعد العناصر وتحاذيها وتوسّطها في الاتجاهين</li>
+<li>تبني تخطيطات ثنائية الأبعاد بـ CSS Grid</li>
+<li>تجعل الصفحات تتكيف مع كل شاشة باستعلامات الوسائط</li>
+<li>تعطي صفحتك التعريفية تخطيطاً حقيقياً متجاوباً</li>
+</ul>
+</div>
+
+<p class="lead">لسنوات طويلة كان وضع صندوقين جنباً إلى جنب في صفحة ويب صعباً على نحو مدهش، وكان المطورون يستخدمون حيلاً ذكية تنكسر بسهولة. أما اليوم ففي CSS أداتان صُممتا للتخطيط بالذات: <strong>Flexbox</strong> لترتيب الأشياء على خط واحد، و<strong>Grid</strong> للصفوف والأعمدة معاً. وبهما صارت التخطيطات التي كانت تستغرق يوماً تُكتب في أسطر قليلة.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>معلومة طريفة: توسيط عنصر عمودياً كان أشهر نكتة بين مطوري الويب. وفي القسم 7.2 من هذا الفصل ستفعله في ثلاثة أسطر!</p></div></div>
+
+<h2><span class="sec">7.1</span><span>Flexbox: صف من الصناديق</span></h2>
+
+<p>عناصر الكتلة تتكدس عادة من الأعلى إلى الأسفل. أضف <code>display: flex</code> إلى العنصر الأب، فيصطف أبناؤه في صف. ويُسمى الأب <dfn>حاوية مرنة</dfn> (flex container)، وأبناؤه المباشرون <dfn>عناصر مرنة</dfn> (flex items).</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">flex.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;ar&quot;</span> <span class="n">dir</span>=<span class="s">&quot;rtl&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>Flexbox<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, sans-serif; margin: 16px; }
+      .bar {
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        margin-bottom: 4px;
+        background-color: #eef2ff;
+        border-radius: 10px;
+      }
+      .bar a {
+        padding: 6px 12px;
+        border-radius: 8px;
+        color: white;
+        background-color: #2b2b2b;
+        text-decoration: none;
+      }
+      .start { justify-content: flex-start; }
+      .between { justify-content: space-between; }
+      .centre { justify-content: center; }
+      code { display: block; margin: 12px 0 4px; color: #5b5873; }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;code</span><span class="k">&gt;</span>justify-content: flex-start<span class="k">&lt;/code</span><span class="k">&gt;</span>
+    <span class="k">&lt;nav</span> <span class="n">class</span>=<span class="s">&quot;bar start&quot;</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>الرئيسية<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>المقالات<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>الفيديو<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>من نحن<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;code</span><span class="k">&gt;</span>justify-content: space-between<span class="k">&lt;/code</span><span class="k">&gt;</span>
+    <span class="k">&lt;nav</span> <span class="n">class</span>=<span class="s">&quot;bar between&quot;</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>الرئيسية<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>المقالات<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>الفيديو<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>من نحن<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;code</span><span class="k">&gt;</span>justify-content: center<span class="k">&lt;/code</span><span class="k">&gt;</span>
+    <span class="k">&lt;nav</span> <span class="n">class</span>=<span class="s">&quot;bar centre&quot;</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>الرئيسية<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>المقالات<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>الفيديو<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>من نحن<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/nav</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>flex.html</span><b>560px</b></div><img src="img/b1-ch07-ar-flex.html-560.png" alt=""><figcaption><b>الشكل 7.1:</b> القائمة نفسها بثلاث قيم لـ <code>justify-content</code>. لاحظ أنها تبدأ من اليمين في الصفحة العربية.</figcaption></figure>
+
+<p>ثلاث خصائص تقوم بمعظم العمل:</p>
+
+<table>
+<thead><tr><th>الخاصية</th><th>قيم شائعة</th><th>ماذا تفعل</th></tr></thead>
+<tbody>
+<tr><td><code>gap</code></td><td><code>8px</code> و<code>1rem</code></td><td>المسافة بين العناصر، ولا مكان غيره</td></tr>
+<tr><td><code>justify-content</code></td><td><code>flex-start</code> و<code>center</code> و<code>space-between</code> و<code>flex-end</code></td><td>أين تقف العناصر على امتداد الصف</td></tr>
+<tr><td><code>align-items</code></td><td><code>stretch</code> و<code>center</code> و<code>flex-start</code> و<code>flex-end</code></td><td>كيف تصطف العناصر عرضياً (رأسياً في الصف)</td></tr>
+</tbody>
+</table>
+
+<p>ولاحظ أن «البداية» تعني حيث يبدأ اتجاه القراءة. ففي النسخة العربية من الصفحة تضع CSS نفسها القائمة على اليمين، بلا أي كود إضافي. فـ Flexbox وGrid مبنيتان على الاتجاهات المنطقية التي تعرفت عليها في الفصل 6.</p>
+
+<h3>الصفوف والأعمدة والالتفاف</h3>
+
+<p><code>flex-direction: column</code> تحوّل الصف إلى عمود. و<code>flex-wrap: wrap</code> تسمح للعناصر بالانتقال إلى سطر جديد حين لا تكفي المساحة بدل أن تنضغط. وعلى العنصر نفسه، <code>flex: 1</code> تعني «تمدد لتملأ المساحة الفارغة»، وهكذا تجعل خانة البحث تتمدد بجانب زر ثابت الحجم.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="المحور الرئيسي يمتد على طول الصف والمحور العرضي يقطعه">
+<defs><marker id="m7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/></marker>
+<marker id="m7b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/></marker></defs>
+<rect x="60" y="30" width="400" height="90" rx="10" fill="#eef2ff" stroke="#2b2b2b" stroke-width="2"/>
+<g fill="#2b2b2b"><rect x="374" y="48" width="70" height="54" rx="8"/><rect x="292" y="48" width="70" height="54" rx="8"/><rect x="210" y="48" width="70" height="54" rx="8"/></g>
+<g font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle"><text x="409" y="80">1</text><text x="327" y="80">2</text><text x="245" y="80">3</text></g>
+<line x1="450" y1="138" x2="70" y2="138" stroke="#2b2b2b" stroke-width="2.5" marker-end="url(#m7)"/>
+<text x="260" y="22" font-family="Cairo" font-size="13" font-weight="700" fill="#2b2b2b" text-anchor="middle">المحور الرئيسي: justify-content</text>
+<line x1="34" y1="34" x2="34" y2="116" stroke="#2b2b2b" stroke-width="2.5" marker-end="url(#m7b)"/>
+<text x="16" y="75" font-family="Cairo" font-size="12.5" font-weight="700" fill="#2b2b2b" text-anchor="middle" transform="rotate(-90 16 75)">المحور العرضي: align-items</text>
+</svg>
+<figcaption><b>الشكل 7.2:</b> لـ Flexbox محوران. <code>justify-content</code> تعمل على المحور الرئيسي، و<code>align-items</code> عرضياً. وفي الصفحة العربية يبدأ المحور الرئيسي من اليمين.</figcaption>
+</figure>
+
+<h2><span class="sec">7.2</span><span>توسيط أي شيء</span></h2>
+
+<p>اجمع <code>justify-content: center</code> و<code>align-items: center</code>، فيقف العنصر في منتصف حاويته تماماً، أفقياً ورأسياً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">center.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;card&quot;</span><span class="k">&gt;</span>في المنتصف تماماً!<span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<pre class="plain">body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 260px;
+}</pre>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>center.html</span><b>560px</b></div><img src="img/b1-ch07-ar-center.html-560.png" alt=""><figcaption><b>الشكل 7.3:</b> في المنتصف في الاتجاهين.</figcaption></figure>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>ثلاثة أسطر! المطورون الذين تعلموا CSS قبل Flexbox ما زالوا يبتسمون حين يرون هذا. لكن الحاوية تحتاج ارتفاعاً: هنا أعطتها <code>min-height</code> واحداً. وبدونه يكون الصندوق بطول محتواه فقط، فلا يبقى مكان للتوسيط.</p></div></div>
+
+<h2><span class="sec">7.3</span><span>Grid: الصفوف والأعمدة معاً</span></h2>
+
+<p>Flexbox ترتب العناصر على خط واحد، أما <dfn>CSS Grid</dfn> فترتبها في بعدين معاً، مثل جدول أو جدول بيانات. ضع <code>display: grid</code> على الحاوية وصِف أعمدتها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">grid.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;ar&quot;</span> <span class="n">dir</span>=<span class="s">&quot;rtl&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>معرض بالشبكة<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, sans-serif; margin: 16px; }
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+      }
+      .gallery div {
+        padding: 28px 8px;
+        text-align: center;
+        border-radius: 12px;
+        color: white;
+        background-color: #2b2b2b;
+        font-weight: 700;
+      }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;gallery&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>HTML<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>CSS<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>JavaScript<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>Git<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>Node.js<span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span><span class="k">&gt;</span>DevTools<span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>grid.html</span><b>560px</b></div><img src="img/b1-ch07-ar-grid.html-560.png" alt=""><figcaption><b>الشكل 7.4:</b> معرض: أعمدة بقدر ما يتسع، لا يقل عرض الواحد عن 140 بكسل.</figcaption></figure>
+
+<p>السطر السحري هو:</p>
+<pre class="plain">grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));</pre>
+
+<p>اقرأه من الداخل إلى الخارج. <code>1fr</code> تعني «جزءاً واحداً من المساحة الفارغة». و<code>minmax(140px, 1fr)</code> تعني «140 بكسل على الأقل، وإلا فتقاسموا المساحة بالتساوي». و<code>repeat(auto-fit, …)</code> تعني «أعمدة كهذه بقدر ما يتسع». فتحصل على أربعة أعمدة في الشاشة العريضة، وعمودين في الهاتف، دون أن تكتب قاعدة واحدة لأي منهما. وهذا قلب التصميم المتجاوب.</p>
+
+<table>
+<thead><tr><th>تكتب</th><th>تحصل على</th></tr></thead>
+<tbody>
+<tr><td><code>grid-template-columns: 1fr 1fr</code></td><td>عمودين متساويين</td></tr>
+<tr><td><code>grid-template-columns: 200px 1fr</code></td><td>شريط جانبي ثابت وعمود رئيسي مرن</td></tr>
+<tr><td><code>grid-template-columns: repeat(3, 1fr)</code></td><td>ثلاثة أعمدة متساوية</td></tr>
+<tr><td><code>grid-column: 1 / -1</code> (على عنصر)</td><td>يمتد العنصر على الأعمدة كلها، من أول خط إلى آخر خط</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">7.4</span><span>تخطيط الصفحة بالمناطق المسماة</span></h2>
+
+<p>وتستطيع Grid أن تخطط صفحة كاملة. تعطي كل جزء اسماً، ثم «ترسم» التخطيط بهذه الأسماء، كأنه رسم بالحروف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">layout.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;page&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;header</span><span class="k">&gt;</span>الترويسة<span class="k">&lt;/header</span><span class="k">&gt;</span>
+      <span class="k">&lt;aside</span><span class="k">&gt;</span>الشريط الجانبي<span class="k">&lt;/aside</span><span class="k">&gt;</span>
+      <span class="k">&lt;main</span><span class="k">&gt;</span>المحتوى الرئيسي<span class="k">&lt;/main</span><span class="k">&gt;</span>
+      <span class="k">&lt;footer</span><span class="k">&gt;</span>التذييل<span class="k">&lt;/footer</span><span class="k">&gt;</span>
+    <span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<pre class="plain">.page {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  grid-template-areas:
+    "head head"
+    "side main"
+    "foot foot";
+  gap: 10px;
+}
+header { grid-area: head; }
+aside  { grid-area: side; }
+main   { grid-area: main; }
+footer { grid-area: foot; }</pre>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>layout.html</span><b>760px</b></div><img src="img/b1-ch07-ar-layout.html-760.png" alt=""><figcaption><b>الشكل 7.5:</b> تخطيط الصفحة على شاشة عريضة. والعمود الأول، الشريط الجانبي، على اليمين لأن الصفحة عربية.</figcaption></figure>
+
+<p>كل سطر بين علامتي تنصيص صف، وكل كلمة خلية. و<code>"head head"</code> تعني أن الترويسة تمتد على العمودين. وصار تغيير التخطيط كله مسألة إعادة رسم الصورة، وهذا بالضبط ما نفعله للشاشات الصغيرة.</p>
+
+<h2><span class="sec">7.5</span><span>التصميم المتجاوب باستعلامات الوسائط</span></h2>
+
+<p>أكثر من نصف زيارات الويب تأتي من الهواتف. و<dfn>استعلام الوسائط</dfn> (media query) يطبق CSS فقط حين يصح شرط ما، وغالباً عرض الشاشة:</p>
+
+<pre class="plain">@media (max-width: 600px) {
+  .page {
+    grid-template-columns: 1fr;
+    grid-template-areas: "head" "main" "side" "foot";
+  }
+}</pre>
+
+<p>في الشاشات التي عرضها 600 بكسل أو أقل تصير الصفحة عموداً واحداً، وينتقل المحتوى الرئيسي فوق الشريط الجانبي، لأن المحتوى على الهاتف هو ما جاء الناس من أجله:</p>
+
+<figure class="browser" style="width: 64%; margin-inline: auto"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>layout.html</span><b>360px</b></div><img src="img/b1-ch07-ar-layout.html-360.png" alt=""><figcaption><b>الشكل 7.6:</b> الصفحة نفسها وHTML نفسها بعرض الهاتف.</figcaption></figure>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: الهاتف أولاً</p><p>معظم المحترفين يكتبون تخطيط الهاتف أولاً قاعدةً افتراضية، ثم يضيفون قواعد <code>@media (min-width: …)</code> للشاشات الأكبر. فتخطيطات الهاتف أبسط غالباً، فتبقى CSS أبسط. واختبر دائماً بشريط الأجهزة في أدوات المطورين، وعلى هاتف حقيقي حين تستطيع.</p></aside>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Flexbox أم Grid؟</p><p>قاعدة بسيطة: استخدم <strong>Flexbox</strong> لصف من الأشياء (قائمة، أو صف أزرار، أو وسوم، أو رأس بطاقة)، و<strong>Grid</strong> لتخطيط من الأشياء (صفحة، أو معرض، أو لوحة تحكم). وهما تعملان معاً بانسجام: صفحة بـ Grid يمكن أن تحوي قوائم بـ Flexbox، والعكس.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي خاصية تجعل أبناء العنصر يصطفون في صف؟</li><li>ما معنى <code>1fr</code> في الشبكة؟</li><li>ماذا يفعل <code>@media (min-width: 700px) { … }</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">7.6</span><span>مشروع: صفحة تعريفية متجاوبة</span></h2>
+
+<p>صفحتك التعريفية جميلة، لكنها ما زالت عموداً واحداً طويلاً. فلنضف جزءاً سادساً إلى <code>style.css</code> فيه تخطيط حقيقي، دون أن يتغير شيء في HTML.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">style.css (الجزء 6، أضفه في الآخر)</div><pre class="code"><span class="c">/* 6. الفصل 7: التخطيط بـ Flexbox وGrid */</span>
+*,
+*<span class="s">::before,</span>
+*<span class="s">::after </span>{
+  <span class="n">box-sizing</span><span class="s">: border-box</span>;
+}
+
+<span class="k">header</span> {
+  <span class="n">display</span><span class="s">: flex</span>;
+  <span class="n">flex-wrap</span><span class="s">: wrap</span>;
+  <span class="n">align-items</span><span class="s">: center</span>;
+  <span class="n">justify-content</span><span class="s">: center</span>;
+  <span class="n">gap</span><span class="s">: 8px 24px</span>;
+}
+
+header <span class="k">nav</span> {
+  <span class="n">flex-basis</span><span class="s">: 100%</span>;
+}
+
+<span class="k">main</span> {
+  <span class="n">max-width</span><span class="s">: 900px</span>;
+  <span class="n">display</span><span class="s">: grid</span>;
+  <span class="n">gap</span><span class="s">: 16px</span>;
+}
+
+<span class="k">section</span> {
+  <span class="n">margin-bottom</span><span class="s">: 0</span>;
+}
+
+<span class="k">ul</span> {
+  <span class="n">display</span><span class="s">: flex</span>;
+  <span class="n">flex-wrap</span><span class="s">: wrap</span>;
+  <span class="n">gap</span><span class="s">: 8px</span>;
+}
+
+<span class="k">li</span> {
+  <span class="n">margin</span><span class="s">: 0</span>;
+}
+
+<span class="c">/* الشاشات العريضة: الصورة بجانب الاسم، والبطاقات في عمودين */</span>
+<span class="k">@media</span> (<span class="n">min-width</span><span class="s">: 700px) </span>{
+  <span class="k">header</span> {
+    <span class="n">justify-content</span><span class="s">: flex-start</span>;
+    <span class="n">text-align</span><span class="s">: start</span>;
+    <span class="n">padding-inline</span><span class="s">: 48px</span>;
+  }
+
+  <span class="k">main</span> {
+    <span class="n">grid-template-columns</span><span class="s">: 1fr 1fr</span>;
+  }
+
+  <span class="k">#about</span> {
+    <span class="n">grid-column</span><span class="s">: 1 / -1</span>;
+  }
+}</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>760px</b></div><img src="img/b1-ch07-ar-profile.html-760.png" alt=""><figcaption><b>الشكل 7.7:</b> على شاشة عريضة: الصورة بجانب الاسم، والبطاقات في عمودين.</figcaption></figure>
+
+<figure class="browser" style="width: 68%; margin-inline: auto"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>380px</b></div><img src="img/b1-ch07-ar-profile.html-380.png" alt=""><figcaption><b>الشكل 7.8:</b> على الهاتف: عمود واحد وكل شيء في المنتصف. HTML نفسها وملف CSS نفسه.</figcaption></figure>
+
+<p>انظر ماذا يفعل كل جزء:</p>
+<ul>
+<li>صار <code>header</code> حاوية مرنة تلتف. ففي الشاشة العريضة تقف الصورة والاسم جنباً إلى جنب، و<code>flex-basis: 100%</code> تُجبر القائمة على سطر خاص بها.</li>
+<li>و<code>main</code> شبكة لها <code>gap</code>، فتتباعد البطاقات بالشبكة لا بهوامشها.</li>
+<li>وقائمة المهارات حاوية مرنة تلتف: تنتقل الوسوم إلى سطر جديد في الشاشات الضيقة.</li>
+<li>وداخل استعلام الوسائط يأخذ <code>main</code> عمودين، وتمتد بطاقة «عني» عليهما بـ <code>grid-column: 1 / -1</code>.</li>
+<li>و<code>padding-inline</code> خاصية منطقية: في الصفحة العربية تنتقل الحشوة الإضافية إلى الجهات الصحيحة وحدها.</li>
+</ul>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>وضع <code>display: flex</code> على العناصر بدل الأب</td><td>لا يصطف شيء</td><td>flex وgrid توضعان على <strong>الحاوية</strong></td></tr>
+<tr><td>استخدام الهوامش للمباعدة بين عناصر flex أو grid</td><td>مسافات غير متساوية عند الأطراف</td><td>استخدم <code>gap</code></td></tr>
+<tr><td>التوسيط الرأسي في حاوية بلا ارتفاع</td><td>لا يتحرك العنصر</td><td>أعط الحاوية <code>height</code> أو <code>min-height</code></td></tr>
+<tr><td>نسيان وسم viewport</td><td>تعرض الهواتف صفحة حاسوب صغيرة، وتبدو استعلامات الوسائط معطلة</td><td>أبقِ <code>&lt;meta name="viewport"&gt;</code> في head</td></tr>
+<tr><td>عروض ثابتة مثل <code>width: 900px</code></td><td>تمرير أفقي على الهواتف</td><td>استخدم <code>max-width</code> و<code>%</code> و<code>fr</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><code>display: flex</code> تصف الأبناء في صف (أو عمود). واستخدم <code>gap</code> و<code>justify-content</code> و<code>align-items</code>.</li>
+<li>لـ Flexbox <strong>محور رئيسي</strong> و<strong>محور عرضي</strong>، و<code>flex-wrap: wrap</code> تنقل العناصر إلى أسطر جديدة.</li>
+<li><code>justify-content: center</code> مع <code>align-items: center</code> توسّط أي شيء.</li>
+<li><code>display: grid</code> تصنع صفوفاً وأعمدة. و<code>fr</code> تقسم المساحة الفارغة، و<code>repeat(auto-fit, minmax(…, 1fr))</code> تصنع معارض متجاوبة.</li>
+<li><code>grid-template-areas</code> ترسم تخطيط الصفحة بالأسماء.</li>
+<li><strong>استعلامات الوسائط</strong> تطبق CSS عند عروض معينة للشاشة. وصمّم للهاتف أولاً.</li>
+<li>Flexbox لصف من الأشياء، وGrid لتخطيط من الأشياء.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>display: flex</code> على الأب. 2. جزء واحد من المساحة الفارغة: عمودان بـ <code>1fr</code> يتقاسمانها بالتساوي. 3. يطبق CSS التي بداخله فقط حين يكون عرض الشاشة 700 بكسل على الأقل.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اصنع صفاً من ثلاثة أزرار بـ Flexbox، بينها 12 بكسل، في منتصف الصفحة.</li>
+<li><span class="level">سهل</span> غيّر المعرض ليكون عرض كل عمود 200 بكسل على الأقل. كم عموداً تحصل عليه مع عروض مختلفة للنافذة؟</li>
+<li><span class="level medium">متوسط</span> ابنِ بطاقة منتج فيها صورة في جهة ونص في الجهة الأخرى بـ Flexbox. وفي الشاشات الأضيق من 500 بكسل ضع الصورة فوق النص.</li>
+<li><span class="level medium">متوسط</span> أضف منطقة رابعة، <code>ads</code>، إلى <code>layout.html</code>، تظهر في نهاية المحتوى الرئيسي على الشاشات العريضة، وفي أسفل الصفحة تماماً على الهواتف.</li>
+<li><span class="level hard">تحدٍّ</span> أعد بناء تخطيط الصفحة الرئيسية لموقع أخبار تحبه بمناطق Grid وصناديق ملونة بدل المحتوى الحقيقي، واجعله يعمل على عروض 360 و768 و1280 بكسل.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 8</p>
+<p>صار لصفحاتك بنية وتنسيق وتخطيط، لكنها لا تستطيع أن <em>تفكر</em> بعد. والجزء الثالث يأتي بـ JavaScript: القيم والمتغيرات والقرارات، أول خطوة نحو صفحات تتفاعل مع زوارها.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/ar">

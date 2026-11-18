@@ -1,0 +1,202 @@
+<section class="chapter" data-chapter="7" data-code="b1/ch07/ar">
+<p class="chapter-kicker">الفصل 7</p>
+<h1>التخطيط بـ Flexbox وGrid</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تضع العناصر في صف أو عمود بـ Flexbox</li>
+<li>تباعد العناصر وتحاذيها وتوسّطها في الاتجاهين</li>
+<li>تبني تخطيطات ثنائية الأبعاد بـ CSS Grid</li>
+<li>تجعل الصفحات تتكيف مع كل شاشة باستعلامات الوسائط</li>
+<li>تعطي صفحتك التعريفية تخطيطاً حقيقياً متجاوباً</li>
+</ul>
+</div>
+
+<p class="lead">لسنوات طويلة كان وضع صندوقين جنباً إلى جنب في صفحة ويب صعباً على نحو مدهش، وكان المطورون يستخدمون حيلاً ذكية تنكسر بسهولة. أما اليوم ففي CSS أداتان صُممتا للتخطيط بالذات: <strong>Flexbox</strong> لترتيب الأشياء على خط واحد، و<strong>Grid</strong> للصفوف والأعمدة معاً. وبهما صارت التخطيطات التي كانت تستغرق يوماً تُكتب في أسطر قليلة.</p>
+
+<aside class="bit" data-mood="happy"><p>معلومة طريفة: توسيط عنصر عمودياً كان أشهر نكتة بين مطوري الويب. وفي القسم 7.2 من هذا الفصل ستفعله في ثلاثة أسطر!</p></aside>
+
+<h2>7.1 Flexbox: صف من الصناديق</h2>
+
+<p>عناصر الكتلة تتكدس عادة من الأعلى إلى الأسفل. أضف <code>display: flex</code> إلى العنصر الأب، فيصطف أبناؤه في صف. ويُسمى الأب <dfn>حاوية مرنة</dfn> (flex container)، وأبناؤه المباشرون <dfn>عناصر مرنة</dfn> (flex items).</p>
+
+<pre data-code="flex.html" data-title="flex.html"></pre>
+<figure data-render="flex.html" data-width="560"><figcaption><b>الشكل 7.1:</b> القائمة نفسها بثلاث قيم لـ <code>justify-content</code>. لاحظ أنها تبدأ من اليمين في الصفحة العربية.</figcaption></figure>
+
+<p>ثلاث خصائص تقوم بمعظم العمل:</p>
+
+<table>
+<thead><tr><th>الخاصية</th><th>قيم شائعة</th><th>ماذا تفعل</th></tr></thead>
+<tbody>
+<tr><td><code>gap</code></td><td><code>8px</code> و<code>1rem</code></td><td>المسافة بين العناصر، ولا مكان غيره</td></tr>
+<tr><td><code>justify-content</code></td><td><code>flex-start</code> و<code>center</code> و<code>space-between</code> و<code>flex-end</code></td><td>أين تقف العناصر على امتداد الصف</td></tr>
+<tr><td><code>align-items</code></td><td><code>stretch</code> و<code>center</code> و<code>flex-start</code> و<code>flex-end</code></td><td>كيف تصطف العناصر عرضياً (رأسياً في الصف)</td></tr>
+</tbody>
+</table>
+
+<p>ولاحظ أن «البداية» تعني حيث يبدأ اتجاه القراءة. ففي النسخة العربية من الصفحة تضع CSS نفسها القائمة على اليمين، بلا أي كود إضافي. فـ Flexbox وGrid مبنيتان على الاتجاهات المنطقية التي تعرفت عليها في الفصل 6.</p>
+
+<h3>الصفوف والأعمدة والالتفاف</h3>
+
+<p><code>flex-direction: column</code> تحوّل الصف إلى عمود. و<code>flex-wrap: wrap</code> تسمح للعناصر بالانتقال إلى سطر جديد حين لا تكفي المساحة بدل أن تنضغط. وعلى العنصر نفسه، <code>flex: 1</code> تعني «تمدد لتملأ المساحة الفارغة»، وهكذا تجعل خانة البحث تتمدد بجانب زر ثابت الحجم.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="المحور الرئيسي يمتد على طول الصف والمحور العرضي يقطعه">
+<defs><marker id="m7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker>
+<marker id="m7b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#db2777"/></marker></defs>
+<rect x="60" y="30" width="400" height="90" rx="10" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<g fill="#4338ca"><rect x="374" y="48" width="70" height="54" rx="8"/><rect x="292" y="48" width="70" height="54" rx="8"/><rect x="210" y="48" width="70" height="54" rx="8"/></g>
+<g font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle"><text x="409" y="80">1</text><text x="327" y="80">2</text><text x="245" y="80">3</text></g>
+<line x1="450" y1="138" x2="70" y2="138" stroke="#4338ca" stroke-width="2.5" marker-end="url(#m7)"/>
+<text x="260" y="22" font-family="Cairo" font-size="13" font-weight="700" fill="#4338ca" text-anchor="middle">المحور الرئيسي: justify-content</text>
+<line x1="34" y1="34" x2="34" y2="116" stroke="#db2777" stroke-width="2.5" marker-end="url(#m7b)"/>
+<text x="16" y="75" font-family="Cairo" font-size="12.5" font-weight="700" fill="#db2777" text-anchor="middle" transform="rotate(-90 16 75)">المحور العرضي: align-items</text>
+</svg>
+<figcaption><b>الشكل 7.2:</b> لـ Flexbox محوران. <code>justify-content</code> تعمل على المحور الرئيسي، و<code>align-items</code> عرضياً. وفي الصفحة العربية يبدأ المحور الرئيسي من اليمين.</figcaption>
+</figure>
+
+<h2>7.2 توسيط أي شيء</h2>
+
+<p>اجمع <code>justify-content: center</code> و<code>align-items: center</code>، فيقف العنصر في منتصف حاويته تماماً، أفقياً ورأسياً:</p>
+
+<pre data-code="center.html" data-title="center.html" data-show="body"></pre>
+<pre class="plain">body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 260px;
+}</pre>
+<figure data-render="center.html" data-width="560"><figcaption><b>الشكل 7.3:</b> في المنتصف في الاتجاهين.</figcaption></figure>
+
+<aside class="bit" data-mood="wow"><p>ثلاثة أسطر! المطورون الذين تعلموا CSS قبل Flexbox ما زالوا يبتسمون حين يرون هذا. لكن الحاوية تحتاج ارتفاعاً: هنا أعطتها <code>min-height</code> واحداً. وبدونه يكون الصندوق بطول محتواه فقط، فلا يبقى مكان للتوسيط.</p></aside>
+
+<h2>7.3 Grid: الصفوف والأعمدة معاً</h2>
+
+<p>Flexbox ترتب العناصر على خط واحد، أما <dfn>CSS Grid</dfn> فترتبها في بعدين معاً، مثل جدول أو جدول بيانات. ضع <code>display: grid</code> على الحاوية وصِف أعمدتها:</p>
+
+<pre data-code="grid.html" data-title="grid.html"></pre>
+<figure data-render="grid.html" data-width="560"><figcaption><b>الشكل 7.4:</b> معرض: أعمدة بقدر ما يتسع، لا يقل عرض الواحد عن 140 بكسل.</figcaption></figure>
+
+<p>السطر السحري هو:</p>
+<pre class="plain">grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));</pre>
+
+<p>اقرأه من الداخل إلى الخارج. <code>1fr</code> تعني «جزءاً واحداً من المساحة الفارغة». و<code>minmax(140px, 1fr)</code> تعني «140 بكسل على الأقل، وإلا فتقاسموا المساحة بالتساوي». و<code>repeat(auto-fit, …)</code> تعني «أعمدة كهذه بقدر ما يتسع». فتحصل على أربعة أعمدة في الشاشة العريضة، وعمودين في الهاتف، دون أن تكتب قاعدة واحدة لأي منهما. وهذا قلب التصميم المتجاوب.</p>
+
+<table>
+<thead><tr><th>تكتب</th><th>تحصل على</th></tr></thead>
+<tbody>
+<tr><td><code>grid-template-columns: 1fr 1fr</code></td><td>عمودين متساويين</td></tr>
+<tr><td><code>grid-template-columns: 200px 1fr</code></td><td>شريط جانبي ثابت وعمود رئيسي مرن</td></tr>
+<tr><td><code>grid-template-columns: repeat(3, 1fr)</code></td><td>ثلاثة أعمدة متساوية</td></tr>
+<tr><td><code>grid-column: 1 / -1</code> (على عنصر)</td><td>يمتد العنصر على الأعمدة كلها، من أول خط إلى آخر خط</td></tr>
+</tbody>
+</table>
+
+<h2>7.4 تخطيط الصفحة بالمناطق المسماة</h2>
+
+<p>وتستطيع Grid أن تخطط صفحة كاملة. تعطي كل جزء اسماً، ثم «ترسم» التخطيط بهذه الأسماء، كأنه رسم بالحروف:</p>
+
+<pre data-code="layout.html" data-title="layout.html" data-show="body"></pre>
+<pre class="plain">.page {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  grid-template-areas:
+    "head head"
+    "side main"
+    "foot foot";
+  gap: 10px;
+}
+header { grid-area: head; }
+aside  { grid-area: side; }
+main   { grid-area: main; }
+footer { grid-area: foot; }</pre>
+
+<figure data-render="layout.html" data-width="760"><figcaption><b>الشكل 7.5:</b> تخطيط الصفحة على شاشة عريضة. والعمود الأول، الشريط الجانبي، على اليمين لأن الصفحة عربية.</figcaption></figure>
+
+<p>كل سطر بين علامتي تنصيص صف، وكل كلمة خلية. و<code>"head head"</code> تعني أن الترويسة تمتد على العمودين. وصار تغيير التخطيط كله مسألة إعادة رسم الصورة، وهذا بالضبط ما نفعله للشاشات الصغيرة.</p>
+
+<h2>7.5 التصميم المتجاوب باستعلامات الوسائط</h2>
+
+<p>أكثر من نصف زيارات الويب تأتي من الهواتف. و<dfn>استعلام الوسائط</dfn> (media query) يطبق CSS فقط حين يصح شرط ما، وغالباً عرض الشاشة:</p>
+
+<pre class="plain">@media (max-width: 600px) {
+  .page {
+    grid-template-columns: 1fr;
+    grid-template-areas: "head" "main" "side" "foot";
+  }
+}</pre>
+
+<p>في الشاشات التي عرضها 600 بكسل أو أقل تصير الصفحة عموداً واحداً، وينتقل المحتوى الرئيسي فوق الشريط الجانبي، لأن المحتوى على الهاتف هو ما جاء الناس من أجله:</p>
+
+<figure data-render="layout.html" data-width="360"><figcaption><b>الشكل 7.6:</b> الصفحة نفسها وHTML نفسها بعرض الهاتف.</figcaption></figure>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: الهاتف أولاً</p><p>معظم المحترفين يكتبون تخطيط الهاتف أولاً قاعدةً افتراضية، ثم يضيفون قواعد <code>@media (min-width: …)</code> للشاشات الأكبر. فتخطيطات الهاتف أبسط غالباً، فتبقى CSS أبسط. واختبر دائماً بشريط الأجهزة في أدوات المطورين، وعلى هاتف حقيقي حين تستطيع.</p></aside>
+
+<aside class="box tip"><p class="box-title">Flexbox أم Grid؟</p><p>قاعدة بسيطة: استخدم <strong>Flexbox</strong> لصف من الأشياء (قائمة، أو صف أزرار، أو وسوم، أو رأس بطاقة)، و<strong>Grid</strong> لتخطيط من الأشياء (صفحة، أو معرض، أو لوحة تحكم). وهما تعملان معاً بانسجام: صفحة بـ Grid يمكن أن تحوي قوائم بـ Flexbox، والعكس.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>أي خاصية تجعل أبناء العنصر يصطفون في صف؟</li><li>ما معنى <code>1fr</code> في الشبكة؟</li><li>ماذا يفعل <code>@media (min-width: 700px) { … }</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>7.6 مشروع: صفحة تعريفية متجاوبة</h2>
+
+<p>صفحتك التعريفية جميلة، لكنها ما زالت عموداً واحداً طويلاً. فلنضف جزءاً سادساً إلى <code>style.css</code> فيه تخطيط حقيقي، دون أن يتغير شيء في HTML.</p>
+
+<pre data-code="layout-step.css" data-title="style.css (الجزء 6، أضفه في الآخر)"></pre>
+
+<figure data-render="profile.html" data-width="760"><figcaption><b>الشكل 7.7:</b> على شاشة عريضة: الصورة بجانب الاسم، والبطاقات في عمودين.</figcaption></figure>
+
+<figure data-render="profile.html" data-width="380"><figcaption><b>الشكل 7.8:</b> على الهاتف: عمود واحد وكل شيء في المنتصف. HTML نفسها وملف CSS نفسه.</figcaption></figure>
+
+<p>انظر ماذا يفعل كل جزء:</p>
+<ul>
+<li>صار <code>header</code> حاوية مرنة تلتف. ففي الشاشة العريضة تقف الصورة والاسم جنباً إلى جنب، و<code>flex-basis: 100%</code> تُجبر القائمة على سطر خاص بها.</li>
+<li>و<code>main</code> شبكة لها <code>gap</code>، فتتباعد البطاقات بالشبكة لا بهوامشها.</li>
+<li>وقائمة المهارات حاوية مرنة تلتف: تنتقل الوسوم إلى سطر جديد في الشاشات الضيقة.</li>
+<li>وداخل استعلام الوسائط يأخذ <code>main</code> عمودين، وتمتد بطاقة «عني» عليهما بـ <code>grid-column: 1 / -1</code>.</li>
+<li>و<code>padding-inline</code> خاصية منطقية: في الصفحة العربية تنتقل الحشوة الإضافية إلى الجهات الصحيحة وحدها.</li>
+</ul>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>وضع <code>display: flex</code> على العناصر بدل الأب</td><td>لا يصطف شيء</td><td>flex وgrid توضعان على <strong>الحاوية</strong></td></tr>
+<tr><td>استخدام الهوامش للمباعدة بين عناصر flex أو grid</td><td>مسافات غير متساوية عند الأطراف</td><td>استخدم <code>gap</code></td></tr>
+<tr><td>التوسيط الرأسي في حاوية بلا ارتفاع</td><td>لا يتحرك العنصر</td><td>أعط الحاوية <code>height</code> أو <code>min-height</code></td></tr>
+<tr><td>نسيان وسم viewport</td><td>تعرض الهواتف صفحة حاسوب صغيرة، وتبدو استعلامات الوسائط معطلة</td><td>أبقِ <code>&lt;meta name="viewport"&gt;</code> في head</td></tr>
+<tr><td>عروض ثابتة مثل <code>width: 900px</code></td><td>تمرير أفقي على الهواتف</td><td>استخدم <code>max-width</code> و<code>%</code> و<code>fr</code></td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li><code>display: flex</code> تصف الأبناء في صف (أو عمود). واستخدم <code>gap</code> و<code>justify-content</code> و<code>align-items</code>.</li>
+<li>لـ Flexbox <strong>محور رئيسي</strong> و<strong>محور عرضي</strong>، و<code>flex-wrap: wrap</code> تنقل العناصر إلى أسطر جديدة.</li>
+<li><code>justify-content: center</code> مع <code>align-items: center</code> توسّط أي شيء.</li>
+<li><code>display: grid</code> تصنع صفوفاً وأعمدة. و<code>fr</code> تقسم المساحة الفارغة، و<code>repeat(auto-fit, minmax(…, 1fr))</code> تصنع معارض متجاوبة.</li>
+<li><code>grid-template-areas</code> ترسم تخطيط الصفحة بالأسماء.</li>
+<li><strong>استعلامات الوسائط</strong> تطبق CSS عند عروض معينة للشاشة. وصمّم للهاتف أولاً.</li>
+<li>Flexbox لصف من الأشياء، وGrid لتخطيط من الأشياء.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>display: flex</code> على الأب. 2. جزء واحد من المساحة الفارغة: عمودان بـ <code>1fr</code> يتقاسمانها بالتساوي. 3. يطبق CSS التي بداخله فقط حين يكون عرض الشاشة 700 بكسل على الأقل.</p>
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اصنع صفاً من ثلاثة أزرار بـ Flexbox، بينها 12 بكسل، في منتصف الصفحة.</li>
+<li><span class="level">سهل</span> غيّر المعرض ليكون عرض كل عمود 200 بكسل على الأقل. كم عموداً تحصل عليه مع عروض مختلفة للنافذة؟</li>
+<li><span class="level">متوسط</span> ابنِ بطاقة منتج فيها صورة في جهة ونص في الجهة الأخرى بـ Flexbox. وفي الشاشات الأضيق من 500 بكسل ضع الصورة فوق النص.</li>
+<li><span class="level">متوسط</span> أضف منطقة رابعة، <code>ads</code>، إلى <code>layout.html</code>، تظهر في نهاية المحتوى الرئيسي على الشاشات العريضة، وفي أسفل الصفحة تماماً على الهواتف.</li>
+<li><span class="level">تحدٍّ</span> أعد بناء تخطيط الصفحة الرئيسية لموقع أخبار تحبه بمناطق Grid وصناديق ملونة بدل المحتوى الحقيقي، واجعله يعمل على عروض 360 و768 و1280 بكسل.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 8</p>
+<p>صار لصفحاتك بنية وتنسيق وتخطيط، لكنها لا تستطيع أن <em>تفكر</em> بعد. والجزء الثالث يأتي بـ JavaScript: القيم والمتغيرات والقرارات، أول خطوة نحو صفحات تتفاعل مع زوارها.</p>
+</div>
+</section>
