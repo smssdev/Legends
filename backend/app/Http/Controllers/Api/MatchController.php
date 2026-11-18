@@ -105,6 +105,8 @@ class MatchController extends Controller
             'light' => $light,
             'kickoff_at' => $kickoff->toIso8601ZuluString(),
             'tick_ms' => (int) $state['cfg']['match']['tick_ms'],
+            // [Sprint 11] The director's crowd and fights vary by the seed, as the cartoon's (the match view gives it too).
+            'seed' => (int) $m->seed,
         ]);
     }
 

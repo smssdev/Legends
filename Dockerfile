@@ -58,6 +58,7 @@ COPY --from=web /app/web/dist ./public-web
 RUN composer dump-autoload --optimize --no-dev \
  && cp -r public-web/. public/ && rm -rf public-web \
  && rm -rf public/downloads && ln -s ../storage/app/downloads/bundled public/downloads && mkdir -p storage/app/downloads \
+ && rm -rf public/unity && ln -s ../storage/app/downloads/unity public/unity \\
  && find public -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.html' -o -name '*.wasm' -o -name '*.data' \) -size +1k -exec gzip -k -9 {} \; \
  && apk add --no-cache --virtual .brotli brotli \
  && find public -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.html' -o -name '*.wasm' -o -name '*.data' \) -size +1k -exec brotli -k -q 11 {} \; \
@@ -78,6 +79,7 @@ RUN composer dump-autoload --optimize --no-dev \
 # [Sprint 52 B7] public/downloads is a link into the downloads volume (deploy/vps/compose.yml): the Android app that
 # ships with the site lives on the server (deploy.sh moved it there once), not in the repository and the image (44 MB).
 # Caddy follows the link and sends the file itself. A newer app comes through the admin panel's upload (AppReleases).
+# [Sprint 11 X1] public/unity too: the Unity web builds (deploy/vps/unity.sh puts each in downloads/unity/<build>/).
 
 # The start script: the public address, sign-in, email and Google from the run-time variables, the configuration
 # cached then (not here, before they are known), and the queue, scheduler, live matches and Reverb.

@@ -1291,7 +1291,7 @@ export interface paths {
                                 }[];
                             } | null;
                             unread: number;
-                            /** @description GET /health's version, time, clock_offset, broadcast, support, bots, adsense and analytics */
+                            /** @description GET /health's version, time, clock_offset, broadcast, support, bots, adsense, analytics and unity_build */
                             config: {
                                 [key: string]: unknown;
                             };
@@ -1399,6 +1399,11 @@ export interface paths {
                                 /** @description Meta Pixel id */
                                 pixel: string | null;
                             } | null;
+                            /**
+                             * @description [Sprint 11 X1] The Unity web build the match screen loads from /unity/<build>/Build/, null when none is deployed (the cartoon plays)
+                             * @example 2026.11.18
+                             */
+                            unity_build?: string | null;
                         };
                     };
                 };
@@ -6811,6 +6816,8 @@ export interface paths {
                             /** Format: date-time */
                             kickoff_at: string;
                             tick_ms: number;
+                            /** @description [Sprint 11] The match's seed, as GET /matches/{match} gives it: the director's crowd and fights vary by it, as the cartoon's */
+                            seed?: number;
                         };
                     };
                 };

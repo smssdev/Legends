@@ -17,8 +17,21 @@ class BootstrapTest extends TestCase
         $this->assertNull($r->json('user'));
         $this->assertNull($r->json('home'));
         $health = $this->getJson('/api/v1/health')->json();
-        foreach (['support', 'adsense', 'analytics', 'broadcast', 'version'] as $k) {
+        foreach (['support', 'adsense', 'analytics', 'broadcast', 'version', 'unity_build'] as $k) {
             $this->assertSame($health[$k], $r->json("config.$k"), $k);
+        }
+    }
+
+    /** [Sprint 11 X1] The Unity web build the match screen loads, only as a safe path part; none: the cartoon plays. */
+    public function test_the_unity_build_is_given_when_deployed_and_safe(): void
+    {
+        $this->assertNull($this->getJson('/api/v1/health')->json('unity_build'));
+        config(['game.viewing.unity_build' => '2026.11.18']);
+        $this->assertSame('2026.11.18', $this->getJson('/api/v1/health')->json('unity_build'));
+        $this->assertSame('2026.11.18', $this->getJson('/api/v1/bootstrap')->json('config.unity_build'));
+        foreach (['../etc', 'a/b', '<x>', str_repeat('a', 41)] as $bad) {
+            config(['game.viewing.unity_build' => $bad]);
+            $this->assertNull($this->getJson('/api/v1/health')->json('unity_build'), $bad);
         }
     }
 
