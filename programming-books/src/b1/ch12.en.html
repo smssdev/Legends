@@ -1,0 +1,172 @@
+<section class="chapter" data-chapter="12" data-code="b1/ch12/en">
+<p class="chapter-kicker">Chapter 12</p>
+<h1>The DOM and Events</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>connect JavaScript to a web page with a <code>&lt;script&gt;</code> element</li>
+<li>find elements on a page and change their text, classes and styles</li>
+<li>create new elements and add them to the page</li>
+<li>react to clicks, typing and form submissions with events</li>
+<li>build a real, interactive shop page</li>
+</ul>
+</div>
+
+<p class="lead">Until now your JavaScript has printed its results in the terminal. That is great for learning, but nobody will visit your terminal. In this chapter JavaScript moves into the browser, where it can change the page while people look at it and respond the moment they click. This is the chapter where your pages come alive.</p>
+
+<aside class="bit" data-mood="wow"><p>Every like button, every “add to cart”, every chat message that appears without reloading the page: that’s JavaScript and the DOM. After this chapter, you’ll know how all of them work!</p></aside>
+
+<h2>12.1 The DOM: the page as objects</h2>
+
+<p>When the browser reads your HTML, it builds a tree of objects in memory, one object for each element. This tree is called the <dfn>DOM</dfn>, the Document Object Model. You saw it in the Elements panel of DevTools in Chapter 5. JavaScript can read and change this tree, and every change appears on the screen immediately.</p>
+
+<figure>
+<svg viewBox="0 0 520 190" role="img" aria-label="The DOM tree: document, html, head and body, with h1, p and ul inside body">
+<g stroke="#4338ca" stroke-width="2"><line x1="260" y1="42" x2="260" y2="62"/><line x1="260" y1="92" x2="150" y2="112"/><line x1="260" y1="92" x2="370" y2="112"/>
+<line x1="370" y1="142" x2="270" y2="160"/><line x1="370" y1="142" x2="370" y2="160"/><line x1="370" y1="142" x2="470" y2="160"/></g>
+<g font-family="JetBrains Mono" font-size="13" font-weight="700" text-anchor="middle">
+<rect x="200" y="12" width="120" height="30" rx="8" fill="#16142a"/><text x="260" y="32" fill="#fff">document</text>
+<rect x="215" y="62" width="90" height="30" rx="8" fill="#4338ca"/><text x="260" y="82" fill="#fff">html</text>
+<rect x="105" y="112" width="90" height="30" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/><text x="150" y="132" fill="#4338ca">head</text>
+<rect x="325" y="112" width="90" height="30" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/><text x="370" y="132" fill="#4338ca">body</text>
+<rect x="235" y="160" width="70" height="28" rx="8" fill="#fdf0f6" stroke="#db2777" stroke-width="2"/><text x="270" y="179" fill="#db2777">h1</text>
+<rect x="335" y="160" width="70" height="28" rx="8" fill="#fdf0f6" stroke="#db2777" stroke-width="2"/><text x="370" y="179" fill="#db2777">p</text>
+<rect x="435" y="160" width="70" height="28" rx="8" fill="#fdf0f6" stroke="#db2777" stroke-width="2"/><text x="470" y="179" fill="#db2777">ul</text>
+</g>
+</svg>
+<figcaption><b>Figure 12.1:</b> The DOM is a tree. Every element is an object that JavaScript can reach.</figcaption>
+</figure>
+
+<p>To run JavaScript in a page, put a <code>&lt;script&gt;</code> element at the end of the <code>&lt;body&gt;</code>, pointing to your file:</p>
+
+<pre class="plain">&lt;script src="change.js"&gt;&lt;/script&gt;</pre>
+
+<p>Why at the end? The browser runs the script as soon as it reaches it. At the end of the body, every element above already exists, so your code can find it.</p>
+
+<h2>12.2 Finding and changing elements</h2>
+
+<p><code>document.querySelector</code> finds the first element that matches a CSS selector, the same selectors you learned in Chapter 6. Once you have an element, you can change it:</p>
+
+<pre data-code="change.html" data-title="change.html" data-show="body"></pre>
+<pre data-code="change.js" data-title="change.js"></pre>
+<figure data-render="change.html" data-width="560"><figcaption><b>Figure 12.2:</b> The page after the script has run. The HTML still says “Old title”; JavaScript changed it.</figcaption></figure>
+
+<table>
+<thead><tr><th>Code</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>document.querySelector(".note")</code></td><td>The first element with class <code>note</code></td></tr>
+<tr><td><code>document.querySelectorAll("li")</code></td><td>All matching elements, as a list you can loop over</td></tr>
+<tr><td><code>element.textContent = "…"</code></td><td>Replaces the element’s text</td></tr>
+<tr><td><code>element.classList.add("x")</code></td><td>Adds a class (also <code>remove</code> and <code>toggle</code>)</td></tr>
+<tr><td><code>document.createElement("li")</code></td><td>Makes a new element, not yet on the page</td></tr>
+<tr><td><code>parent.append(child)</code></td><td>Puts an element inside another, at the end</td></tr>
+</tbody>
+</table>
+
+<aside class="box rule"><p class="box-title">Professional habit: classes, not styles</p><p>You <em>could</em> write <code>element.style.background = "yellow"</code>. But it is better to add a class and let CSS decide what the class looks like, as <code>change.js</code> does. Then the look stays in the CSS file, where designers and your future self will look for it.</p></aside>
+
+<aside class="box warn"><p class="box-title">Watch out: textContent, not innerHTML</p><p>You will see code that uses <code>innerHTML</code> to put text into a page. It works, but if the text comes from a user, they can sneak in HTML and even scripts, a serious security hole called <strong>XSS</strong>. Use <code>textContent</code> for text and <code>createElement</code> for new elements, as in this chapter. Book 2 covers web security in depth.</p></aside>
+
+<h2>12.3 Events: reacting to people</h2>
+
+<p>An <dfn>event</dfn> is something that happens on the page: a click, a key press, a form being sent, the mouse moving. You tell an element what to do when an event happens with <code>addEventListener</code>:</p>
+
+<pre data-code="counter.html" data-title="counter.html" data-show="body"></pre>
+<pre data-code="counter.js" data-title="counter.js"></pre>
+<figure data-render="counter.html" data-width="560" data-actions="click:#add;click:#add;click:#add"><figcaption><b>Figure 12.3:</b> The counter after three clicks.</figcaption></figure>
+
+<p>Read <code>addButton.addEventListener("click", () =&gt; { … })</code> as: “when <code>addButton</code> is clicked, run this function”. The function is a callback, like the ones you gave to <code>map</code> in Chapter 10. You do not call it yourself; the browser calls it every time the event happens.</p>
+
+<p>Notice the structure of <code>counter.js</code>. The <strong>data</strong> lives in a variable, <code>count</code>. Event handlers change the data, then call <code>show()</code>, which updates the page from the data. Keeping these three apart (data, changes, display) is the idea behind every modern frontend framework, including React and Vue in Book 2.</p>
+
+<table>
+<thead><tr><th>Event</th><th>Happens when</th></tr></thead>
+<tbody>
+<tr><td><code>click</code></td><td>An element is clicked or tapped</td></tr>
+<tr><td><code>input</code></td><td>The value of a text field changes, on every key press</td></tr>
+<tr><td><code>submit</code></td><td>A form is sent, by a button or by pressing Enter</td></tr>
+<tr><td><code>keydown</code></td><td>A key is pressed</td></tr>
+<tr><td><code>DOMContentLoaded</code></td><td>The whole HTML has been read</td></tr>
+</tbody>
+</table>
+
+<h2>12.4 Forms</h2>
+
+<p>Forms need one extra step. By default, sending a form reloads the page, which would wipe out everything your JavaScript did. <code>event.preventDefault()</code> stops that, so your code can handle the form itself:</p>
+
+<pre data-code="greet.html" data-title="greet.html" data-show="body"></pre>
+<pre data-code="greet.js" data-title="greet.js"></pre>
+<figure data-render="greet.html" data-width="560" data-actions="fill:#name=Sara;click:button"><figcaption><b>Figure 12.4:</b> After typing a name and pressing the button.</figcaption></figure>
+
+<ul>
+<li>The handler receives an <dfn>event object</dfn> with details about what happened.</li>
+<li><code>input.value</code> is the text in the field, and <code>trim()</code> removes spaces from both ends, so “   ” counts as empty.</li>
+<li>Listening to the form’s <code>submit</code> event, rather than the button’s <code>click</code>, means pressing Enter works too, which keyboard users expect.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which method finds the first element matching <code>#total</code>?</li><li>Why put the <code>&lt;script&gt;</code> element at the end of the body?</li><li>What does <code>event.preventDefault()</code> do in a submit handler?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>12.5 Project: Bit’s shop</h2>
+
+<p>Now let us put the shopping cart from Chapter 11 on a real page. The HTML is almost empty: a place for products and a place for the cart. JavaScript draws everything from the data:</p>
+
+<pre data-code="shop.html" data-title="shop.html" data-show="body"></pre>
+<pre data-code="shop.js" data-title="shop.js"></pre>
+
+<figure data-render="shop.html" data-width="640" data-actions="click:.card:nth-child(1) button;click:.card:nth-child(3) button;click:.card:nth-child(3) button"><figcaption><b>Figure 12.5:</b> The shop after adding the book once and the sticker twice. The stylesheet, <code>shop.css</code>, is in the book’s code repository.</figcaption></figure>
+
+<p>The program follows the same pattern as the counter, just bigger:</p>
+<ol>
+<li><strong>Data:</strong> <code>catalog</code> and <code>cart</code> are plain arrays of objects, exactly as in Chapter 11.</li>
+<li><strong>Display:</strong> <code>renderProducts</code> draws a card for each product, and <code>renderCart</code> clears the cart list with <code>replaceChildren()</code> and draws it again from the data.</li>
+<li><strong>Changes:</strong> each button’s click handler calls <code>addToCart</code>, which changes the data and then calls <code>renderCart</code>.</li>
+</ol>
+
+<p>Redrawing the whole cart after every change may sound wasteful, but it is simple and reliable: the page can never disagree with the data. For a cart of this size it takes far less than a millisecond.</p>
+
+<aside class="bit" data-mood="wow"><p>Open <code>shop.html</code> in your browser and click away! Then open DevTools, type <code>cart</code> in the Console and press Enter. You can see the data behind the page. Change a price in <code>catalog</code>, reload, and watch the whole shop update.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Script in the <code>&lt;head&gt;</code></td><td><code>querySelector</code> returns <code>null</code>; then <code>TypeError</code></td><td>Put scripts at the end of the body</td></tr>
+<tr><td>Selector without <code>#</code> or <code>.</code></td><td>Looks for an element type that does not exist</td><td><code>"#add"</code> for ids, <code>".card"</code> for classes</td></tr>
+<tr><td>Calling the handler: <code>addEventListener("click", show())</code></td><td>Runs once immediately, then never again</td><td>Pass the function, without brackets</td></tr>
+<tr><td>Forgetting <code>preventDefault()</code></td><td>The page reloads and your result vanishes</td><td>Call it first in submit handlers</td></tr>
+<tr><td>Putting user text into <code>innerHTML</code></td><td>Security hole (XSS)</td><td>Use <code>textContent</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>The <strong>DOM</strong> is the page as a tree of objects. Add scripts with <code>&lt;script src&gt;</code> at the end of the body.</li>
+<li><code>querySelector</code> and <code>querySelectorAll</code> find elements with CSS selectors.</li>
+<li>Change pages with <code>textContent</code>, <code>classList</code>, <code>createElement</code> and <code>append</code>.</li>
+<li><code>addEventListener(event, callback)</code> reacts to <code>click</code>, <code>input</code>, <code>submit</code> and more.</li>
+<li>In submit handlers, call <code>event.preventDefault()</code> and read fields with <code>.value</code>.</li>
+<li>Keep <strong>data</strong>, <strong>changes</strong> and <strong>display</strong> apart: change the data, then redraw from it.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>document.querySelector("#total")</code>. 2. So that every element is already on the page when the script looks for it. 3. It stops the browser from sending the form and reloading the page.</p>
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a “minus” button to the counter. Make sure the count never goes below zero.</li>
+<li><span class="level">Easy</span> Add a button to your profile page from Chapter 7 that toggles a <code>dark</code> class on <code>body</code>, and write CSS for the dark theme.</li>
+<li><span class="level">Medium</span> Make a live character counter: below a <code>&lt;textarea&gt;</code>, show “42 / 280” and update it on every <code>input</code> event. Turn it red over 280.</li>
+<li><span class="level">Medium</span> Add a “remove” button to each line of the shop’s cart.</li>
+<li><span class="level">Challenge</span> Add a search box above the products that shows only the products whose names contain the typed text, updating as the user types.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 13</p>
+<p>The shop’s products are written inside the JavaScript file. Real shops load them from a server. In the next chapter you will learn asynchronous JavaScript and <code>fetch</code>, and load real data from the internet without freezing the page.</p>
+</div>
+</section>

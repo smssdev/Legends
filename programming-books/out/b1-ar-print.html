@@ -29,6 +29,8 @@
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "الفصل 11: الكائنات وJSON"; } }
 @page ch11:first { @top-center { content: none; } }
+@page ch12 { @top-center { content: "الفصل 12: DOM والأحداث"; } }
+@page ch12:first { @top-center { content: none; } }
 </style></head>
 <body><section class="front half-title"><p class="ht">البرمجة من الصفر</p></section><section class="front title-page">
           <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الأول</p>
@@ -3713,6 +3715,364 @@ console.log(JSON.stringify(cart));</pre></div>
 <div class="next">
 <p class="next-title">في الفصل 12</p>
 <p>حتى الآن عاشت JavaScript التي تكتبها في الطرفية. وفي الفصل القادم تنتقل إلى المتصفح: ستغيّر صفحات الويب بـ DOM، وتتفاعل مع النقر والكتابة بالأحداث، وتحوّل سلة التسوق إلى صفحة تفاعلية حقيقية.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch12" data-chapter="12" data-code="b1/ch12/ar">
+<div class="opener"><span class="opener-num">12</span><p class="chapter-kicker">الفصل 12</p><h1>DOM والأحداث</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تربط JavaScript بصفحة الويب بعنصر <code>&lt;script&gt;</code></li>
+<li>تجد العناصر في الصفحة وتغيّر نصوصها وأصنافها وتنسيقها</li>
+<li>تنشئ عناصر جديدة وتضيفها إلى الصفحة</li>
+<li>تتفاعل مع النقر والكتابة وإرسال النماذج بالأحداث</li>
+<li>تبني صفحة متجر تفاعلية حقيقية</li>
+</ul>
+</div>
+
+<p class="lead">حتى الآن كانت JavaScript تطبع نتائجها في الطرفية. وهذا رائع للتعلم، لكن أحداً لن يزور طرفيتك. وفي هذا الفصل تنتقل JavaScript إلى المتصفح، فتغيّر الصفحة والناس ينظرون إليها، وتستجيب لحظة ينقرون. إنه الفصل الذي تدب فيه الحياة في صفحاتك.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل زر إعجاب، وكل «أضف إلى السلة»، وكل رسالة محادثة تظهر دون إعادة تحميل الصفحة: هذه JavaScript وDOM. وبعد هذا الفصل ستعرف كيف تعمل كلها!</p></div></div>
+
+<h2><span class="sec">12.1</span><span>DOM: الصفحة كائنات</span></h2>
+
+<p>حين يقرأ المتصفح HTML يبني في الذاكرة شجرة من الكائنات، كائناً لكل عنصر. وتُسمى هذه الشجرة <dfn>DOM</dfn> (نموذج كائنات المستند)، وقد رأيتها في لوحة Elements في أدوات المطورين في الفصل 5. وJavaScript تستطيع أن تقرأ هذه الشجرة وتغيّرها، وكل تغيير يظهر على الشاشة فوراً.</p>
+
+<figure>
+<svg viewBox="0 0 520 190" role="img" aria-label="شجرة DOM: document ثم html ثم head وbody، وداخل body عناصر h1 وp وul">
+<g stroke="#2b2b2b" stroke-width="2"><line x1="260" y1="42" x2="260" y2="62"/><line x1="260" y1="92" x2="370" y2="112"/><line x1="260" y1="92" x2="150" y2="112"/>
+<line x1="150" y1="142" x2="250" y2="160"/><line x1="150" y1="142" x2="150" y2="160"/><line x1="150" y1="142" x2="50" y2="160"/></g>
+<g font-family="JetBrains Mono" font-size="13" font-weight="700" text-anchor="middle">
+<rect x="200" y="12" width="120" height="30" rx="8" fill="#262626"/><text x="260" y="32" fill="#fff">document</text>
+<rect x="215" y="62" width="90" height="30" rx="8" fill="#2b2b2b"/><text x="260" y="82" fill="#fff">html</text>
+<rect x="325" y="112" width="90" height="30" rx="8" fill="#eef2ff" stroke="#2b2b2b" stroke-width="2"/><text x="370" y="132" fill="#2b2b2b">head</text>
+<rect x="105" y="112" width="90" height="30" rx="8" fill="#eef2ff" stroke="#2b2b2b" stroke-width="2"/><text x="150" y="132" fill="#2b2b2b">body</text>
+<rect x="215" y="160" width="70" height="28" rx="8" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="250" y="179" fill="#2b2b2b">h1</text>
+<rect x="115" y="160" width="70" height="28" rx="8" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="150" y="179" fill="#2b2b2b">p</text>
+<rect x="15" y="160" width="70" height="28" rx="8" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="50" y="179" fill="#2b2b2b">ul</text>
+</g>
+</svg>
+<figcaption><b>الشكل 12.1:</b> DOM شجرة، وكل عنصر كائن تصل إليه JavaScript.</figcaption>
+</figure>
+
+<p>ولتشغيل JavaScript في صفحة، ضع عنصر <code>&lt;script&gt;</code> في آخر <code>&lt;body&gt;</code> يشير إلى ملفك:</p>
+
+<pre class="plain">&lt;script src="change.js"&gt;&lt;/script&gt;</pre>
+
+<p>ولماذا في الآخر؟ لأن المتصفح يشغّل السكربت بمجرد أن يصل إليه. وفي آخر body تكون كل العناصر التي فوقه موجودة، فيجدها كودك.</p>
+
+<h2><span class="sec">12.2</span><span>إيجاد العناصر وتغييرها</span></h2>
+
+<p><code>document.querySelector</code> تجد أول عنصر يطابق محدد CSS، وهي المحددات نفسها التي تعلمتها في الفصل 6. وحين يصير العنصر في يدك تستطيع تغييره:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">change.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>العنوان القديم<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;note&quot;</span><span class="k">&gt;</span>ستُميَّز هذه الفقرة.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;ul</span> <span class="n">id</span>=<span class="s">&quot;skills&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>HTML<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>CSS<span class="k">&lt;/li</span><span class="k">&gt;</span>
+    <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;change.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">change.js</div><pre class="code"><span class="c">// 1. تغيير النص</span>
+<span class="k">const</span> title = document.querySelector(<span class="s">&quot;h1&quot;</span>);
+title.textContent = <span class="s">&quot;عنوان جديد كتبته JavaScript!&quot;</span>;
+
+<span class="c">// 2. إضافة صنف (وCSS تتولى التنسيق)</span>
+document.querySelector(<span class="s">&quot;.note&quot;</span>).classList.add(<span class="s">&quot;highlight&quot;</span>);
+
+<span class="c">// 3. إنشاء عنصر جديد وإضافته إلى الصفحة</span>
+<span class="k">const</span> item = document.createElement(<span class="s">&quot;li&quot;</span>);
+item.textContent = <span class="s">&quot;JavaScript&quot;</span>;
+document.querySelector(<span class="s">&quot;#skills&quot;</span>).append(item);</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>change.html</span><b>560px</b></div><img src="img/b1-ch12-ar-change.html-560.png" alt=""><figcaption><b>الشكل 12.2:</b> الصفحة بعد تشغيل السكربت. ما زال HTML يقول «العنوان القديم»، وJavaScript هي التي غيّرته.</figcaption></figure>
+
+<table>
+<thead><tr><th>الكود</th><th>ماذا يفعل</th></tr></thead>
+<tbody>
+<tr><td><code>document.querySelector(".note")</code></td><td>أول عنصر صنفه <code>note</code></td></tr>
+<tr><td><code>document.querySelectorAll("li")</code></td><td>كل العناصر المطابقة، قائمةً تمرّ عليها بحلقة</td></tr>
+<tr><td><code>element.textContent = "…"</code></td><td>يستبدل نص العنصر</td></tr>
+<tr><td><code>element.classList.add("x")</code></td><td>يضيف صنفاً (ومعه <code>remove</code> و<code>toggle</code>)</td></tr>
+<tr><td><code>document.createElement("li")</code></td><td>ينشئ عنصراً جديداً، ليس في الصفحة بعد</td></tr>
+<tr><td><code>parent.append(child)</code></td><td>يضع عنصراً داخل آخر، في آخره</td></tr>
+</tbody>
+</table>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: الأصناف لا التنسيق المباشر</p><p><em>يمكنك</em> أن تكتب <code>element.style.background = "yellow"</code>، لكن الأفضل أن تضيف صنفاً وتترك CSS تقرر شكله، كما يفعل <code>change.js</code>. فيبقى الشكل في ملف CSS، حيث سيبحث عنه المصممون وأنت في المستقبل.</p></aside>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: textContent لا innerHTML</p><p>سترى كوداً يستخدم <code>innerHTML</code> لوضع النص في الصفحة. وهو يعمل، لكن إن جاء النص من المستخدم فقد يدسّ فيه HTML بل وسكربتات، وهذه ثغرة أمنية خطيرة اسمها <strong>XSS</strong>. استخدم <code>textContent</code> للنص و<code>createElement</code> للعناصر الجديدة كما في هذا الفصل. والكتاب الثاني يغطي أمان الويب بعمق.</p></aside>
+
+<h2><span class="sec">12.3</span><span>الأحداث: التفاعل مع الناس</span></h2>
+
+<p><dfn>الحدث</dfn> (event) شيء يحدث في الصفحة: نقرة، أو ضغطة مفتاح، أو إرسال نموذج، أو حركة فأرة. وتخبر العنصر بما يفعله حين يقع حدث بـ <code>addEventListener</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">counter.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>عدّاد بِت<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">id</span>=<span class="s">&quot;output&quot;</span><span class="k">&gt;</span>ضغطت 0 مرات<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;button</span> <span class="n">id</span>=<span class="s">&quot;add&quot;</span><span class="k">&gt;</span>اضغطني<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;button</span> <span class="n">id</span>=<span class="s">&quot;reset&quot;</span> <span class="n">class</span>=<span class="s">&quot;secondary&quot;</span><span class="k">&gt;</span>تصفير<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;counter.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">counter.js</div><pre class="code"><span class="k">const</span> output = document.querySelector(<span class="s">&quot;#output&quot;</span>);
+<span class="k">const</span> addButton = document.querySelector(<span class="s">&quot;#add&quot;</span>);
+<span class="k">const</span> resetButton = document.querySelector(<span class="s">&quot;#reset&quot;</span>);
+
+<span class="k">let</span> count = <span class="n">0</span>;
+
+<span class="k">function</span> show() {
+  output.textContent = <span class="s">`ضغطت ${count} مرات`</span>;
+}
+
+addButton.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; {
+  count++;
+  show();
+});
+
+resetButton.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; {
+  count = <span class="n">0</span>;
+  show();
+});</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>counter.html</span><b>560px</b></div><img src="img/b1-ch12-ar-counter.html-560-c6b050.png" alt=""><figcaption><b>الشكل 12.3:</b> العدّاد بعد ثلاث نقرات.</figcaption></figure>
+
+<p>اقرأ <code>addButton.addEventListener("click", () =&gt; { … })</code> هكذا: «حين يُنقر <code>addButton</code> نفّذ هذه الدالة». والدالة دالة رد نداء مثل التي أعطيتها لـ <code>map</code> في الفصل 10. لا تستدعيها أنت، بل يستدعيها المتصفح كلما وقع الحدث.</p>
+
+<p>ولاحظ بنية <code>counter.js</code>. <strong>البيانات</strong> تعيش في متغير، <code>count</code>. ومعالجات الأحداث تغيّر البيانات، ثم تستدعي <code>show()</code> التي تحدّث الصفحة من البيانات. والفصل بين هذه الثلاثة (البيانات، والتغييرات، والعرض) هو الفكرة التي يقوم عليها كل إطار حديث للواجهات، ومنها React وVue في الكتاب الثاني.</p>
+
+<table>
+<thead><tr><th>الحدث</th><th>يقع حين</th></tr></thead>
+<tbody>
+<tr><td><code>click</code></td><td>يُنقر العنصر أو يُلمس</td></tr>
+<tr><td><code>input</code></td><td>تتغير قيمة حقل نصي، مع كل ضغطة مفتاح</td></tr>
+<tr><td><code>submit</code></td><td>يُرسل نموذج، بزر أو بضغط Enter</td></tr>
+<tr><td><code>keydown</code></td><td>يُضغط مفتاح</td></tr>
+<tr><td><code>DOMContentLoaded</code></td><td>يُقرأ HTML كله</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">12.4</span><span>النماذج</span></h2>
+
+<p>النماذج تحتاج خطوة إضافية. فإرسال النموذج يعيد تحميل الصفحة افتراضياً، فيمحو كل ما فعلته JavaScript. و<code>event.preventDefault()</code> توقف ذلك، فيتولى كودك النموذج بنفسه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">greet.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;form</span> <span class="n">id</span>=<span class="s">&quot;greet&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;name&quot;</span><span class="k">&gt;</span>اسمك<span class="k">&lt;/label</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;name&quot;</span> <span class="n">type</span>=<span class="s">&quot;text&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;submit&quot;</span><span class="k">&gt;</span>رحّب بي<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/form</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">id</span>=<span class="s">&quot;output&quot;</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;greet.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">greet.js</div><pre class="code"><span class="k">const</span> form = document.querySelector(<span class="s">&quot;#greet&quot;</span>);
+<span class="k">const</span> input = document.querySelector(<span class="s">&quot;#name&quot;</span>);
+<span class="k">const</span> output = document.querySelector(<span class="s">&quot;#output&quot;</span>);
+
+form.addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
+  event.preventDefault();
+
+  <span class="k">const</span> name = input.value.trim();
+  <span class="k">if</span> (name === <span class="s">&quot;&quot;</span>) {
+    output.textContent = <span class="s">&quot;من فضلك اكتب اسمك.&quot;</span>;
+    <span class="k">return</span>;
+  }
+  output.textContent = <span class="s">`أهلاً يا ${name}! مرحباً بك في الويب.`</span>;
+  input.value = <span class="s">&quot;&quot;</span>;
+});</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>greet.html</span><b>560px</b></div><img src="img/b1-ch12-ar-greet.html-560-0c6009.png" alt=""><figcaption><b>الشكل 12.4:</b> بعد كتابة الاسم والضغط على الزر.</figcaption></figure>
+
+<ul>
+<li>يستلم المعالج <dfn>كائن الحدث</dfn> وفيه تفاصيل ما حدث.</li>
+<li><code>input.value</code> النص الذي في الحقل، و<code>trim()</code> تزيل المسافات من طرفيه، فتُعد «   » فارغة.</li>
+<li>والاستماع إلى حدث <code>submit</code> للنموذج، لا <code>click</code> للزر، يجعل ضغط Enter يعمل أيضاً، وهو ما يتوقعه من يستخدمون لوحة المفاتيح.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي دالة تجد أول عنصر يطابق <code>#total</code>؟</li><li>لماذا نضع عنصر <code>&lt;script&gt;</code> في آخر body؟</li><li>ماذا تفعل <code>event.preventDefault()</code> في معالج submit؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">12.5</span><span>مشروع: متجر بِت</span></h2>
+
+<p>لنضع سلة التسوق من الفصل 11 في صفحة حقيقية. HTML تكاد تكون فارغة: مكان للمنتجات ومكان للسلة، وJavaScript ترسم كل شيء من البيانات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">shop.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span><span class="k">&lt;h1</span><span class="k">&gt;</span>متجر بِت<span class="k">&lt;/h1</span><span class="k">&gt;</span><span class="k">&lt;/header</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;section</span> <span class="n">id</span>=<span class="s">&quot;products&quot;</span><span class="k">&gt;</span><span class="k">&lt;/section</span><span class="k">&gt;</span>
+      <span class="k">&lt;aside</span> <span class="n">id</span>=<span class="s">&quot;cart&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>سلتك<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;ul</span> <span class="n">id</span>=<span class="s">&quot;cart-lines&quot;</span><span class="k">&gt;</span><span class="k">&lt;/ul</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span> <span class="n">id</span>=<span class="s">&quot;cart-total&quot;</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/aside</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;shop.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">shop.js</div><pre class="code"><span class="k">const</span> catalog = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;ملصق بِت&quot;</span>, price: <span class="n">3</span> },
+  { id: <span class="n">4</span>, name: <span class="s">&quot;قميص بِت&quot;</span>, price: <span class="n">15</span> },
+];
+
+<span class="k">const</span> cart = [];
+
+<span class="c">// ارسم بطاقة لكل منتج</span>
+<span class="k">function</span> renderProducts() {
+  <span class="k">const</span> container = document.querySelector(<span class="s">&quot;#products&quot;</span>);
+  <span class="k">for</span> (<span class="k">const</span> product <span class="k">of</span> catalog) {
+    <span class="k">const</span> card = document.createElement(<span class="s">&quot;article&quot;</span>);
+    card.className = <span class="s">&quot;card&quot;</span>;
+
+    <span class="k">const</span> name = document.createElement(<span class="s">&quot;h3&quot;</span>);
+    name.textContent = product.name;
+
+    <span class="k">const</span> price = document.createElement(<span class="s">&quot;p&quot;</span>);
+    price.textContent = <span class="s">`$${product.price}`</span>;
+
+    <span class="k">const</span> button = document.createElement(<span class="s">&quot;button&quot;</span>);
+    button.textContent = <span class="s">&quot;أضف إلى السلة&quot;</span>;
+    button.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; addToCart(product.id));
+
+    card.append(name, price, button);
+    container.append(card);
+  }
+}
+
+<span class="k">function</span> addToCart(productId) {
+  <span class="k">const</span> line = cart.find((item) =&gt; item.productId === productId);
+  <span class="k">if</span> (line) {
+    line.quantity++;
+  } <span class="k">else</span> {
+    cart.push({ productId, quantity: <span class="n">1</span> });
+  }
+  renderCart();
+}
+
+<span class="c">// أعد رسم السلة من البيانات كلما تغيرت</span>
+<span class="k">function</span> renderCart() {
+  <span class="k">const</span> list = document.querySelector(<span class="s">&quot;#cart-lines&quot;</span>);
+  list.replaceChildren();
+
+  <span class="k">let</span> total = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> item <span class="k">of</span> cart) {
+    <span class="k">const</span> product = catalog.find((p) =&gt; p.id === item.productId);
+    <span class="k">const</span> lineTotal = product.price * item.quantity;
+    total += lineTotal;
+
+    <span class="k">const</span> li = document.createElement(<span class="s">&quot;li&quot;</span>);
+    li.textContent = <span class="s">`${product.name} × ${item.quantity}`</span>;
+    <span class="k">const</span> amount = document.createElement(<span class="s">&quot;span&quot;</span>);
+    amount.textContent = <span class="s">`$${lineTotal}`</span>;
+    li.append(amount);
+    list.append(li);
+  }
+
+  document.querySelector(<span class="s">&quot;#cart-total&quot;</span>).textContent =
+    cart.length === <span class="n">0</span> ? <span class="s">&quot;سلتك فارغة.&quot;</span> : <span class="s">`المجموع: $${total}`</span>;
+}
+
+renderProducts();
+renderCart();</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shop.html</span><b>640px</b></div><img src="img/b1-ch12-ar-shop.html-640-8fa582.png" alt=""><figcaption><b>الشكل 12.5:</b> المتجر بعد إضافة الكتاب مرة والملصق مرتين. وملف التنسيق <code>shop.css</code> في مستودع كود الكتاب.</figcaption></figure>
+
+<p>البرنامج يتبع نمط العدّاد نفسه، لكنه أكبر:</p>
+<ol>
+<li><strong>البيانات:</strong> <code>catalog</code> و<code>cart</code> مصفوفتا كائنات عاديتان، تماماً كما في الفصل 11.</li>
+<li><strong>العرض:</strong> <code>renderProducts</code> ترسم بطاقة لكل منتج، و<code>renderCart</code> تُفرغ قائمة السلة بـ <code>replaceChildren()</code> وترسمها من البيانات من جديد.</li>
+<li><strong>التغييرات:</strong> معالج نقرة كل زر يستدعي <code>addToCart</code>، فتغيّر البيانات ثم تستدعي <code>renderCart</code>.</li>
+</ol>
+
+<p>قد تبدو إعادة رسم السلة كلها بعد كل تغيير إسرافاً، لكنها بسيطة وموثوقة: الصفحة لا يمكن أن تختلف مع البيانات أبداً. ولسلة بهذا الحجم تستغرق أقل بكثير من جزء من الألف من الثانية.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>افتح <code>shop.html</code> في متصفحك وانقر كما تشاء! ثم افتح أدوات المطورين، واكتب <code>cart</code> في الـ Console واضغط Enter، فترى البيانات التي خلف الصفحة. غيّر سعراً في <code>catalog</code> وأعد التحميل، وشاهد المتجر كله يتحدث.</p></div></div>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>السكربت في <code>&lt;head&gt;</code></td><td><code>querySelector</code> تُرجع <code>null</code>، ثم <code>TypeError</code></td><td>ضع السكربتات في آخر body</td></tr>
+<tr><td>محدد بلا <code>#</code> أو <code>.</code></td><td>يبحث عن نوع عنصر غير موجود</td><td><code>"#add"</code> للمعرّفات، و<code>".card"</code> للأصناف</td></tr>
+<tr><td>استدعاء المعالج: <code>addEventListener("click", show())</code></td><td>يُنفَّذ مرة فوراً ثم لا يُنفَّذ أبداً</td><td>مرّر الدالة بلا قوسين</td></tr>
+<tr><td>نسيان <code>preventDefault()</code></td><td>تُعاد الصفحة وتختفي النتيجة</td><td>استدعها أولاً في معالجات submit</td></tr>
+<tr><td>وضع نص المستخدم في <code>innerHTML</code></td><td>ثغرة أمنية (XSS)</td><td>استخدم <code>textContent</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>DOM</strong> الصفحة شجرةً من الكائنات. وأضف السكربتات بـ <code>&lt;script src&gt;</code> في آخر body.</li>
+<li><code>querySelector</code> و<code>querySelectorAll</code> تجدان العناصر بمحددات CSS.</li>
+<li>غيّر الصفحات بـ <code>textContent</code> و<code>classList</code> و<code>createElement</code> و<code>append</code>.</li>
+<li><code>addEventListener(event, callback)</code> تتفاعل مع <code>click</code> و<code>input</code> و<code>submit</code> وغيرها.</li>
+<li>في معالجات submit استدعِ <code>event.preventDefault()</code>، واقرأ الحقول بـ <code>.value</code>.</li>
+<li>افصل <strong>البيانات</strong> و<strong>التغييرات</strong> و<strong>العرض</strong>: غيّر البيانات، ثم ارسم منها.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>document.querySelector("#total")</code>. 2. لتكون كل العناصر في الصفحة حين يبحث عنها السكربت. 3. تمنع المتصفح من إرسال النموذج وإعادة تحميل الصفحة.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف إلى العدّاد زر «ناقص»، وتأكد أن العدد لا ينزل تحت الصفر أبداً.</li>
+<li><span class="level">سهل</span> أضف إلى صفحتك التعريفية من الفصل 7 زراً يبدّل الصنف <code>dark</code> على <code>body</code>، واكتب CSS للوضع الداكن.</li>
+<li><span class="level medium">متوسط</span> اصنع عدّاد حروف حياً: تحت <code>&lt;textarea&gt;</code> اعرض «42 / 280» وحدّثه مع كل حدث <code>input</code>، واجعله أحمر إن تجاوز 280.</li>
+<li><span class="level medium">متوسط</span> أضف زر «حذف» لكل سطر في سلة المتجر.</li>
+<li><span class="level hard">تحدٍّ</span> أضف خانة بحث فوق المنتجات لا تعرض إلا المنتجات التي تحتوي أسماؤها على النص المكتوب، وتتحدث أثناء الكتابة.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 13</p>
+<p>منتجات المتجر مكتوبة داخل ملف JavaScript، أما المتاجر الحقيقية فتحمّلها من خادم. وفي الفصل القادم ستتعلم JavaScript غير المتزامنة وfetch، وتحمّل بيانات حقيقية من الإنترنت دون أن تتجمد الصفحة.</p>
 </div>
 </section>
 </body></html>

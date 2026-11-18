@@ -29,6 +29,8 @@
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "Chapter 11: Objects and JSON"; } }
 @page ch11:first { @top-center { content: none; } }
+@page ch12 { @top-center { content: "Chapter 12: The DOM and Events"; } }
+@page ch12:first { @top-center { content: none; } }
 
 .cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
   background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
@@ -3796,6 +3798,364 @@ Total: 62
 <div class="next">
 <p class="next-title">Coming up in Chapter 12</p>
 <p>So far your JavaScript has lived in the terminal. In the next chapter it moves into the browser: you will change web pages with the DOM, react to clicks and typing with events, and turn the shopping cart into a real, interactive page.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch12" data-chapter="12" data-code="b1/ch12/en">
+<div class="opener"><span class="opener-num">12</span><p class="chapter-kicker">Chapter 12</p><h1>The DOM and Events</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>connect JavaScript to a web page with a <code>&lt;script&gt;</code> element</li>
+<li>find elements on a page and change their text, classes and styles</li>
+<li>create new elements and add them to the page</li>
+<li>react to clicks, typing and form submissions with events</li>
+<li>build a real, interactive shop page</li>
+</ul>
+</div>
+
+<p class="lead">Until now your JavaScript has printed its results in the terminal. That is great for learning, but nobody will visit your terminal. In this chapter JavaScript moves into the browser, where it can change the page while people look at it and respond the moment they click. This is the chapter where your pages come alive.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every like button, every “add to cart”, every chat message that appears without reloading the page: that’s JavaScript and the DOM. After this chapter, you’ll know how all of them work!</p></div></div>
+
+<h2><span class="sec">12.1</span><span>The DOM: the page as objects</span></h2>
+
+<p>When the browser reads your HTML, it builds a tree of objects in memory, one object for each element. This tree is called the <dfn>DOM</dfn>, the Document Object Model. You saw it in the Elements panel of DevTools in Chapter 5. JavaScript can read and change this tree, and every change appears on the screen immediately.</p>
+
+<figure>
+<svg viewBox="0 0 520 190" role="img" aria-label="The DOM tree: document, html, head and body, with h1, p and ul inside body">
+<g stroke="#4338ca" stroke-width="2"><line x1="260" y1="42" x2="260" y2="62"/><line x1="260" y1="92" x2="150" y2="112"/><line x1="260" y1="92" x2="370" y2="112"/>
+<line x1="370" y1="142" x2="270" y2="160"/><line x1="370" y1="142" x2="370" y2="160"/><line x1="370" y1="142" x2="470" y2="160"/></g>
+<g font-family="JetBrains Mono" font-size="13" font-weight="700" text-anchor="middle">
+<rect x="200" y="12" width="120" height="30" rx="8" fill="#16142a"/><text x="260" y="32" fill="#fff">document</text>
+<rect x="215" y="62" width="90" height="30" rx="8" fill="#4338ca"/><text x="260" y="82" fill="#fff">html</text>
+<rect x="105" y="112" width="90" height="30" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/><text x="150" y="132" fill="#4338ca">head</text>
+<rect x="325" y="112" width="90" height="30" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/><text x="370" y="132" fill="#4338ca">body</text>
+<rect x="235" y="160" width="70" height="28" rx="8" fill="#fdf0f6" stroke="#db2777" stroke-width="2"/><text x="270" y="179" fill="#db2777">h1</text>
+<rect x="335" y="160" width="70" height="28" rx="8" fill="#fdf0f6" stroke="#db2777" stroke-width="2"/><text x="370" y="179" fill="#db2777">p</text>
+<rect x="435" y="160" width="70" height="28" rx="8" fill="#fdf0f6" stroke="#db2777" stroke-width="2"/><text x="470" y="179" fill="#db2777">ul</text>
+</g>
+</svg>
+<figcaption><b>Figure 12.1:</b> The DOM is a tree. Every element is an object that JavaScript can reach.</figcaption>
+</figure>
+
+<p>To run JavaScript in a page, put a <code>&lt;script&gt;</code> element at the end of the <code>&lt;body&gt;</code>, pointing to your file:</p>
+
+<pre class="plain">&lt;script src="change.js"&gt;&lt;/script&gt;</pre>
+
+<p>Why at the end? The browser runs the script as soon as it reaches it. At the end of the body, every element above already exists, so your code can find it.</p>
+
+<h2><span class="sec">12.2</span><span>Finding and changing elements</span></h2>
+
+<p><code>document.querySelector</code> finds the first element that matches a CSS selector, the same selectors you learned in Chapter 6. Once you have an element, you can change it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">change.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Old title<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;note&quot;</span><span class="k">&gt;</span>This paragraph will be highlighted.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;ul</span> <span class="n">id</span>=<span class="s">&quot;skills&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>HTML<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>CSS<span class="k">&lt;/li</span><span class="k">&gt;</span>
+    <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;change.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">change.js</div><pre class="code"><span class="c">// 1. Change text</span>
+<span class="k">const</span> title = document.querySelector(<span class="s">&quot;h1&quot;</span>);
+title.textContent = <span class="s">&quot;New title, set by JavaScript!&quot;</span>;
+
+<span class="c">// 2. Add a class (the CSS does the styling)</span>
+document.querySelector(<span class="s">&quot;.note&quot;</span>).classList.add(<span class="s">&quot;highlight&quot;</span>);
+
+<span class="c">// 3. Create a new element and add it to the page</span>
+<span class="k">const</span> item = document.createElement(<span class="s">&quot;li&quot;</span>);
+item.textContent = <span class="s">&quot;JavaScript&quot;</span>;
+document.querySelector(<span class="s">&quot;#skills&quot;</span>).append(item);</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>change.html</span><b>560px</b></div><img src="img/b1-ch12-en-change.html-560.png" alt=""><figcaption><b>Figure 12.2:</b> The page after the script has run. The HTML still says “Old title”; JavaScript changed it.</figcaption></figure>
+
+<table>
+<thead><tr><th>Code</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>document.querySelector(".note")</code></td><td>The first element with class <code>note</code></td></tr>
+<tr><td><code>document.querySelectorAll("li")</code></td><td>All matching elements, as a list you can loop over</td></tr>
+<tr><td><code>element.textContent = "…"</code></td><td>Replaces the element’s text</td></tr>
+<tr><td><code>element.classList.add("x")</code></td><td>Adds a class (also <code>remove</code> and <code>toggle</code>)</td></tr>
+<tr><td><code>document.createElement("li")</code></td><td>Makes a new element, not yet on the page</td></tr>
+<tr><td><code>parent.append(child)</code></td><td>Puts an element inside another, at the end</td></tr>
+</tbody>
+</table>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: classes, not styles</p><p>You <em>could</em> write <code>element.style.background = "yellow"</code>. But it is better to add a class and let CSS decide what the class looks like, as <code>change.js</code> does. Then the look stays in the CSS file, where designers and your future self will look for it.</p></aside>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: textContent, not innerHTML</p><p>You will see code that uses <code>innerHTML</code> to put text into a page. It works, but if the text comes from a user, they can sneak in HTML and even scripts, a serious security hole called <strong>XSS</strong>. Use <code>textContent</code> for text and <code>createElement</code> for new elements, as in this chapter. Book 2 covers web security in depth.</p></aside>
+
+<h2><span class="sec">12.3</span><span>Events: reacting to people</span></h2>
+
+<p>An <dfn>event</dfn> is something that happens on the page: a click, a key press, a form being sent, the mouse moving. You tell an element what to do when an event happens with <code>addEventListener</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">counter.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Bit’s clicker<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">id</span>=<span class="s">&quot;output&quot;</span><span class="k">&gt;</span>You clicked 0 times<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;button</span> <span class="n">id</span>=<span class="s">&quot;add&quot;</span><span class="k">&gt;</span>Click me<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;button</span> <span class="n">id</span>=<span class="s">&quot;reset&quot;</span> <span class="n">class</span>=<span class="s">&quot;secondary&quot;</span><span class="k">&gt;</span>Reset<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;counter.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">counter.js</div><pre class="code"><span class="k">const</span> output = document.querySelector(<span class="s">&quot;#output&quot;</span>);
+<span class="k">const</span> addButton = document.querySelector(<span class="s">&quot;#add&quot;</span>);
+<span class="k">const</span> resetButton = document.querySelector(<span class="s">&quot;#reset&quot;</span>);
+
+<span class="k">let</span> count = <span class="n">0</span>;
+
+<span class="k">function</span> show() {
+  output.textContent = <span class="s">`You clicked ${count} times`</span>;
+}
+
+addButton.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; {
+  count++;
+  show();
+});
+
+resetButton.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; {
+  count = <span class="n">0</span>;
+  show();
+});</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>counter.html</span><b>560px</b></div><img src="img/b1-ch12-en-counter.html-560-c6b050.png" alt=""><figcaption><b>Figure 12.3:</b> The counter after three clicks.</figcaption></figure>
+
+<p>Read <code>addButton.addEventListener("click", () =&gt; { … })</code> as: “when <code>addButton</code> is clicked, run this function”. The function is a callback, like the ones you gave to <code>map</code> in Chapter 10. You do not call it yourself; the browser calls it every time the event happens.</p>
+
+<p>Notice the structure of <code>counter.js</code>. The <strong>data</strong> lives in a variable, <code>count</code>. Event handlers change the data, then call <code>show()</code>, which updates the page from the data. Keeping these three apart (data, changes, display) is the idea behind every modern frontend framework, including React and Vue in Book 2.</p>
+
+<table>
+<thead><tr><th>Event</th><th>Happens when</th></tr></thead>
+<tbody>
+<tr><td><code>click</code></td><td>An element is clicked or tapped</td></tr>
+<tr><td><code>input</code></td><td>The value of a text field changes, on every key press</td></tr>
+<tr><td><code>submit</code></td><td>A form is sent, by a button or by pressing Enter</td></tr>
+<tr><td><code>keydown</code></td><td>A key is pressed</td></tr>
+<tr><td><code>DOMContentLoaded</code></td><td>The whole HTML has been read</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">12.4</span><span>Forms</span></h2>
+
+<p>Forms need one extra step. By default, sending a form reloads the page, which would wipe out everything your JavaScript did. <code>event.preventDefault()</code> stops that, so your code can handle the form itself:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">greet.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;form</span> <span class="n">id</span>=<span class="s">&quot;greet&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;name&quot;</span><span class="k">&gt;</span>Your name<span class="k">&lt;/label</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;name&quot;</span> <span class="n">type</span>=<span class="s">&quot;text&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;submit&quot;</span><span class="k">&gt;</span>Say hello<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/form</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">id</span>=<span class="s">&quot;output&quot;</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;greet.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">greet.js</div><pre class="code"><span class="k">const</span> form = document.querySelector(<span class="s">&quot;#greet&quot;</span>);
+<span class="k">const</span> input = document.querySelector(<span class="s">&quot;#name&quot;</span>);
+<span class="k">const</span> output = document.querySelector(<span class="s">&quot;#output&quot;</span>);
+
+form.addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
+  event.preventDefault();
+
+  <span class="k">const</span> name = input.value.trim();
+  <span class="k">if</span> (name === <span class="s">&quot;&quot;</span>) {
+    output.textContent = <span class="s">&quot;Please type your name.&quot;</span>;
+    <span class="k">return</span>;
+  }
+  output.textContent = <span class="s">`Hello, ${name}! Welcome to the web.`</span>;
+  input.value = <span class="s">&quot;&quot;</span>;
+});</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>greet.html</span><b>560px</b></div><img src="img/b1-ch12-en-greet.html-560-2d4833.png" alt=""><figcaption><b>Figure 12.4:</b> After typing a name and pressing the button.</figcaption></figure>
+
+<ul>
+<li>The handler receives an <dfn>event object</dfn> with details about what happened.</li>
+<li><code>input.value</code> is the text in the field, and <code>trim()</code> removes spaces from both ends, so “   ” counts as empty.</li>
+<li>Listening to the form’s <code>submit</code> event, rather than the button’s <code>click</code>, means pressing Enter works too, which keyboard users expect.</li>
+</ul>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which method finds the first element matching <code>#total</code>?</li><li>Why put the <code>&lt;script&gt;</code> element at the end of the body?</li><li>What does <code>event.preventDefault()</code> do in a submit handler?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">12.5</span><span>Project: Bit’s shop</span></h2>
+
+<p>Now let us put the shopping cart from Chapter 11 on a real page. The HTML is almost empty: a place for products and a place for the cart. JavaScript draws everything from the data:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">shop.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span><span class="k">&lt;h1</span><span class="k">&gt;</span>Bit’s Shop<span class="k">&lt;/h1</span><span class="k">&gt;</span><span class="k">&lt;/header</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;section</span> <span class="n">id</span>=<span class="s">&quot;products&quot;</span><span class="k">&gt;</span><span class="k">&lt;/section</span><span class="k">&gt;</span>
+      <span class="k">&lt;aside</span> <span class="n">id</span>=<span class="s">&quot;cart&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>Your cart<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;ul</span> <span class="n">id</span>=<span class="s">&quot;cart-lines&quot;</span><span class="k">&gt;</span><span class="k">&lt;/ul</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span> <span class="n">id</span>=<span class="s">&quot;cart-total&quot;</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/aside</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;shop.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">shop.js</div><pre class="code"><span class="k">const</span> catalog = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;Code from Zero&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;Bit sticker&quot;</span>, price: <span class="n">3</span> },
+  { id: <span class="n">4</span>, name: <span class="s">&quot;Bit T-shirt&quot;</span>, price: <span class="n">15</span> },
+];
+
+<span class="k">const</span> cart = [];
+
+<span class="c">// Draw one card per product</span>
+<span class="k">function</span> renderProducts() {
+  <span class="k">const</span> container = document.querySelector(<span class="s">&quot;#products&quot;</span>);
+  <span class="k">for</span> (<span class="k">const</span> product <span class="k">of</span> catalog) {
+    <span class="k">const</span> card = document.createElement(<span class="s">&quot;article&quot;</span>);
+    card.className = <span class="s">&quot;card&quot;</span>;
+
+    <span class="k">const</span> name = document.createElement(<span class="s">&quot;h3&quot;</span>);
+    name.textContent = product.name;
+
+    <span class="k">const</span> price = document.createElement(<span class="s">&quot;p&quot;</span>);
+    price.textContent = <span class="s">`$${product.price}`</span>;
+
+    <span class="k">const</span> button = document.createElement(<span class="s">&quot;button&quot;</span>);
+    button.textContent = <span class="s">&quot;Add to cart&quot;</span>;
+    button.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; addToCart(product.id));
+
+    card.append(name, price, button);
+    container.append(card);
+  }
+}
+
+<span class="k">function</span> addToCart(productId) {
+  <span class="k">const</span> line = cart.find((item) =&gt; item.productId === productId);
+  <span class="k">if</span> (line) {
+    line.quantity++;
+  } <span class="k">else</span> {
+    cart.push({ productId, quantity: <span class="n">1</span> });
+  }
+  renderCart();
+}
+
+<span class="c">// Redraw the cart from the data every time it changes</span>
+<span class="k">function</span> renderCart() {
+  <span class="k">const</span> list = document.querySelector(<span class="s">&quot;#cart-lines&quot;</span>);
+  list.replaceChildren();
+
+  <span class="k">let</span> total = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> item <span class="k">of</span> cart) {
+    <span class="k">const</span> product = catalog.find((p) =&gt; p.id === item.productId);
+    <span class="k">const</span> lineTotal = product.price * item.quantity;
+    total += lineTotal;
+
+    <span class="k">const</span> li = document.createElement(<span class="s">&quot;li&quot;</span>);
+    li.textContent = <span class="s">`${product.name} × ${item.quantity}`</span>;
+    <span class="k">const</span> amount = document.createElement(<span class="s">&quot;span&quot;</span>);
+    amount.textContent = <span class="s">`$${lineTotal}`</span>;
+    li.append(amount);
+    list.append(li);
+  }
+
+  document.querySelector(<span class="s">&quot;#cart-total&quot;</span>).textContent =
+    cart.length === <span class="n">0</span> ? <span class="s">&quot;Your cart is empty.&quot;</span> : <span class="s">`Total: $${total}`</span>;
+}
+
+renderProducts();
+renderCart();</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shop.html</span><b>640px</b></div><img src="img/b1-ch12-en-shop.html-640-8fa582.png" alt=""><figcaption><b>Figure 12.5:</b> The shop after adding the book once and the sticker twice. The stylesheet, <code>shop.css</code>, is in the book’s code repository.</figcaption></figure>
+
+<p>The program follows the same pattern as the counter, just bigger:</p>
+<ol>
+<li><strong>Data:</strong> <code>catalog</code> and <code>cart</code> are plain arrays of objects, exactly as in Chapter 11.</li>
+<li><strong>Display:</strong> <code>renderProducts</code> draws a card for each product, and <code>renderCart</code> clears the cart list with <code>replaceChildren()</code> and draws it again from the data.</li>
+<li><strong>Changes:</strong> each button’s click handler calls <code>addToCart</code>, which changes the data and then calls <code>renderCart</code>.</li>
+</ol>
+
+<p>Redrawing the whole cart after every change may sound wasteful, but it is simple and reliable: the page can never disagree with the data. For a cart of this size it takes far less than a millisecond.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Open <code>shop.html</code> in your browser and click away! Then open DevTools, type <code>cart</code> in the Console and press Enter. You can see the data behind the page. Change a price in <code>catalog</code>, reload, and watch the whole shop update.</p></div></div>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Script in the <code>&lt;head&gt;</code></td><td><code>querySelector</code> returns <code>null</code>; then <code>TypeError</code></td><td>Put scripts at the end of the body</td></tr>
+<tr><td>Selector without <code>#</code> or <code>.</code></td><td>Looks for an element type that does not exist</td><td><code>"#add"</code> for ids, <code>".card"</code> for classes</td></tr>
+<tr><td>Calling the handler: <code>addEventListener("click", show())</code></td><td>Runs once immediately, then never again</td><td>Pass the function, without brackets</td></tr>
+<tr><td>Forgetting <code>preventDefault()</code></td><td>The page reloads and your result vanishes</td><td>Call it first in submit handlers</td></tr>
+<tr><td>Putting user text into <code>innerHTML</code></td><td>Security hole (XSS)</td><td>Use <code>textContent</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>The <strong>DOM</strong> is the page as a tree of objects. Add scripts with <code>&lt;script src&gt;</code> at the end of the body.</li>
+<li><code>querySelector</code> and <code>querySelectorAll</code> find elements with CSS selectors.</li>
+<li>Change pages with <code>textContent</code>, <code>classList</code>, <code>createElement</code> and <code>append</code>.</li>
+<li><code>addEventListener(event, callback)</code> reacts to <code>click</code>, <code>input</code>, <code>submit</code> and more.</li>
+<li>In submit handlers, call <code>event.preventDefault()</code> and read fields with <code>.value</code>.</li>
+<li>Keep <strong>data</strong>, <strong>changes</strong> and <strong>display</strong> apart: change the data, then redraw from it.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>document.querySelector("#total")</code>. 2. So that every element is already on the page when the script looks for it. 3. It stops the browser from sending the form and reloading the page.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a “minus” button to the counter. Make sure the count never goes below zero.</li>
+<li><span class="level">Easy</span> Add a button to your profile page from Chapter 7 that toggles a <code>dark</code> class on <code>body</code>, and write CSS for the dark theme.</li>
+<li><span class="level medium">Medium</span> Make a live character counter: below a <code>&lt;textarea&gt;</code>, show “42 / 280” and update it on every <code>input</code> event. Turn it red over 280.</li>
+<li><span class="level medium">Medium</span> Add a “remove” button to each line of the shop’s cart.</li>
+<li><span class="level hard">Challenge</span> Add a search box above the products that shows only the products whose names contain the typed text, updating as the user types.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 13</p>
+<p>The shop’s products are written inside the JavaScript file. Real shops load them from a server. In the next chapter you will learn asynchronous JavaScript and <code>fetch</code>, and load real data from the internet without freezing the page.</p>
 </div>
 </section>
 </body></html>

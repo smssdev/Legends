@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Greeting</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; }
+      button { font: inherit; padding: 8px 18px; border: 0; border-radius: 999px; color: white; background: #4338ca; cursor: pointer; }
+      button.secondary { background: #e0e7ff; color: #4338ca; }
+      .highlight { background: #fef3c7; padding: 6px 10px; border-radius: 8px; }
+      #output { font-size: 1.3rem; font-weight: 700; color: #db2777; }
+    </style>
+  </head>
+  <body>
+    <form id="greet">
+      <label for="name">Your name</label>
+      <input id="name" type="text">
+      <button type="submit">Say hello</button>
+    </form>
+    <p id="output"></p>
+    <script src="greet.js"></script>
+  </body>
+</html>

@@ -8,6 +8,7 @@ Chapter sources are HTML fragments in src/<book>/chNN.<lang>.html.
   <pre data-out="file.js"></pre>   runs that file with Node and inserts what it really prints
 so every listing and every output in the book is the real, tested code.
 """
+import hashlib
 import html
 import json
 import re
@@ -154,11 +155,13 @@ def fill_code(chapter, lang):
         f = re.search(r'data-render="([^"]+)"', attrs).group(1)
         width = int((re.search(r'data-width="(\d+)"', attrs) or re.match("(.*)", "640")).group(1))
         src = code_dir / f
-        name = f"{code_dir.parent.parent.name}-{code_dir.parent.name}-{lang}-{f.replace('/', '-')}-{width}.png"
+        actions = html.unescape((re.search(r'data-actions="([^"]*)"', attrs) or re.match("()", "")).group(1))
+        tag = "-" + hashlib.md5(actions.encode()).hexdigest()[:6] if actions else ""
+        name = f"{code_dir.parent.parent.name}-{code_dir.parent.name}-{lang}-{f.replace('/', '-')}-{width}{tag}.png"
         img = OUT / "img" / name
         img.parent.mkdir(parents=True, exist_ok=True)
         if not img.exists() or img.stat().st_mtime < max(src.stat().st_mtime, (ROOT / "shot.cjs").stat().st_mtime):
-            subprocess.run(["node", str(ROOT / "shot.cjs"), str(src), str(img), str(width)], check=True)
+            subprocess.run(["node", str(ROOT / "shot.cjs"), str(src), str(img), str(width), actions], check=True)
         bar = (f'<div class="browser-bar" dir="ltr"><i></i><i></i><i></i>'
                f'<span>{html.escape(f.rsplit("/", 1)[-1])}</span><b>{width}px</b></div>')
         # Narrow (phone) screenshots are shown narrower, so they keep a phone's proportions.
