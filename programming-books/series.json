@@ -1840,7 +1840,7 @@
       "id": "b13",
       "number": 13,
       "track": "craft",
-      "status": "proposed",
+      "status": "approved",
       "level": {
         "en": "Junior → Senior",
         "ar": "مبتدئ محترف ← خبير"
@@ -1935,7 +1935,7 @@
       "id": "b14",
       "number": 14,
       "track": "craft",
-      "status": "proposed",
+      "status": "approved",
       "level": {
         "en": "Beginner → Senior",
         "ar": "مبتدئ ← خبير"
@@ -2034,7 +2034,7 @@
       "id": "b15",
       "number": 15,
       "track": "craft",
-      "status": "proposed",
+      "status": "approved",
       "level": {
         "en": "Junior → Senior",
         "ar": "مبتدئ محترف ← خبير"
@@ -2133,7 +2133,7 @@
       "id": "b16",
       "number": 16,
       "track": "career",
-      "status": "proposed",
+      "status": "approved",
       "level": {
         "en": "All levels",
         "ar": "كل المستويات"
