@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>التسجيل في الدورة</title>
+  </head>
+  <body>
+    <h1>انضم إلى دورة الويب</h1>
+    <form>
+      <p>
+        <label for="name">الاسم الكامل</label><br>
+        <input id="name" type="text" required>
+      </p>
+      <p>
+        <label for="email">البريد الإلكتروني</label><br>
+        <input id="email" type="email" required>
+      </p>
+      <p>
+        <label for="phone">الهاتف</label><br>
+        <input id="phone" type="tel">
+      </p>
+      <p>
+        <label for="level">مستواك</label><br>
+        <select id="level">
+        <option>مبتدئ تماماً</option>
+        <option>أعرف بعض HTML</option>
+        <option>أعرف HTML وCSS</option>
+        </select>
+      </p>
+      <p>
+        <label for="why">لماذا تريد أن تتعلم؟</label><br>
+        <textarea id="why" rows="3" cols="40"></textarea>
+      </p>
+      <p>
+        <input id="agree" type="checkbox">
+        <label for="agree">أوافق على استلام رسائل عن الدورة</label>
+      </p>
+      <button type="submit">سجّلني</button>
+    </form>
+  </body>
+</html>

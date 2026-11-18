@@ -1,0 +1,54 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ثلاث صفحات حقيقية، كل واحدة أكبر قليلاً من التي قبلها، بـ HTML وحدها بلا CSS بعد. واحتفظ بهذه الملفات، فستنسّقها في الفصلين 6 و7.</p>
+
+<div class="project">
+<p class="project-label">مشروع 5.1 · سهل</p>
+<h3>صفحة وصفة</h3>
+<p class="project-goal">اكتب صفحة لوصفة تحبها، فيها صورة وقائمة مكونات وخطوات مرقمة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> هيكل الصفحة، والعناوين، والفقرات، و<code>strong</code>، والصور مع <code>alt</code>، ونوعي القوائم.</p>
+<ol class="steps">
+<li>أنشئ مجلداً اسمه <code>projects-05</code>، وفيه <code>recipe.html</code> بالهيكل الكامل من القسم 5.2، ولا تنسَ <code>lang="ar" dir="rtl"</code>.</li>
+<li>أضف <code>&lt;h1&gt;</code> باسم الوصفة، وفقرة قصيرة تقول كم تستغرق ولكم شخصاً تكفي، وميّز الوقت بـ <code>&lt;strong&gt;</code>.</li>
+<li>أضف صورة الطبق بـ <code>&lt;img&gt;</code>، واكتب <code>alt</code> يصفه في جملة، وأعطها <code>width</code> و<code>height</code>.</li>
+<li>أضف <code>&lt;h2&gt;</code> «المكونات» وتحته قائمة غير مرتبة، و<code>&lt;h2&gt;</code> «الخطوات» وتحته قائمة مرتبة.</li>
+<li>افتح الصفحة في المتصفح، ثم في لوحة Elements. هل الشجرة كما توقعت؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ترتيب المكونات لا يهم فاستخدم <code>&lt;ul&gt;</code>، وترتيب الخطوات يهم فاستخدم <code>&lt;ol&gt;</code>. وإن لم تكن عندك صورة فاستخدم أي صورة، أو <code>soup.svg</code> من مستودع الكود.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/recipe.html" data-width="520"><figcaption><b>مشروع 5.1:</b> صفحة وصفة بـ HTML وحدها.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 5.2 · متوسط</p>
+<h3>موقع لمقهى صغير</h3>
+<p class="project-goal">ابنِ موقع الصفحة الواحدة لمقهى في الحي، ببنية دلالية صحيحة وقائمة تقفز إلى كل قسم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>header</code> و<code>nav</code> و<code>main</code> و<code>section</code> و<code>footer</code>، والروابط إلى <code>#id</code>، وروابط <code>tel:</code>.</p>
+<ol class="steps">
+<li>خطط للصفحة على الورق أولاً: ارسم صناديق للترويسة، والأقسام الثلاثة (القائمة، ومواعيد العمل، والعنوان)، والتذييل.</li>
+<li>اكتب <code>&lt;header&gt;</code> فيه اسم المقهى ووصف في سطر و<code>&lt;nav&gt;</code> بثلاثة روابط: <code>#menu</code> و<code>#hours</code> و<code>#find</code>.</li>
+<li>داخل <code>&lt;main&gt;</code> اكتب ثلاثة <code>&lt;section&gt;</code>، لكل منها <code>id</code> المطابق، و<code>&lt;h2&gt;</code>، وقائمة أو فقرة.</li>
+<li>في قسم العنوان أضف رابط هاتف: <code>&lt;a href="tel:+201000000000"&gt;</code>، فالضغط عليه في الهاتف يبدأ مكالمة.</li>
+<li>اختم بـ <code>&lt;footer&gt;</code>، ثم صغّر النافذة وانقر روابط القائمة: تقفز الصفحة إلى كل قسم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المعرّفات (<code>id</code>) تُكتب بالإنجليزية دائماً، حتى في الصفحة العربية، لأنها تظهر في العنوان وتُستخدم في الكود.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/cafe.html" data-width="520"><figcaption><b>مشروع 5.2:</b> موقع مقهى ببنية دلالية.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 5.3 · تحدٍّ</p>
+<h3>نموذج التسجيل في دورة</h3>
+<p class="project-goal">ابنِ نموذج تسجيل كاملاً فيه ستة أنواع من الحقول، لكل منها تسمية صحيحة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> النماذج، و<code>label</code> مع <code>for</code>، وأنواع الحقول، و<code>select</code>، و<code>textarea</code>، ومربعات الاختيار، و<code>required</code>.</p>
+<ol class="steps">
+<li>أنشئ <code>signup.html</code> فيه عنوان و<code>&lt;form&gt;</code>.</li>
+<li>أضف حقول النص والبريد والهاتف (<code>type="text"</code> و<code>"email"</code> و<code>"tel"</code>)، لكل منها <code>&lt;label&gt;</code> تطابق <code>for</code> فيه <code>id</code> الحقل.</li>
+<li>أضف <code>&lt;select&gt;</code> لمستوى الطالب، فيه ثلاثة <code>&lt;option&gt;</code>.</li>
+<li>أضف <code>&lt;textarea&gt;</code> لسؤال «لماذا تريد أن تتعلم؟»، ومربع اختيار للموافقة على الرسائل وتسميته بعده.</li>
+<li>اجعل الاسم والبريد <code>required</code>، واختبر: اضغط الزر والحقول فارغة، ثم ببريد ليس فيه <code>@</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> على الهاتف تُظهر <code>type="email"</code> لوحة مفاتيح فيها <code>@</code>، و<code>type="tel"</code> لوحة أرقام. جرّب ذلك بشريط الأجهزة في أدوات المطورين، أو على هاتفك.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/signup.html" data-width="520"><figcaption><b>مشروع 5.3:</b> نموذج تسجيل بستة أنواع من الحقول.</figcaption></figure>
+</div>

@@ -2024,6 +2024,63 @@ if (page) {
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. The attributes are <code>src</code> and <code>alt</code>. <code>&lt;img&gt;</code> is a void element: it has no content between tags, so it needs no closing tag. 2. When the order of the items matters, such as steps or a ranking. 3. One.</p>
 
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Three real pages, each a little bigger than the last. Use HTML only: no CSS yet. Keep these files, because you will style them in Chapters 6 and 7.</p>
+
+<div class="project">
+<p class="project-label">Project 5.1 · Easy</p>
+<h3>A recipe page</h3>
+<p class="project-goal">Write the page for a recipe you love, with a picture, a list of ingredients and numbered steps.</p>
+<p class="project-skills"><strong>You will practise:</strong> the page skeleton, headings, paragraphs, <code>strong</code>, images with <code>alt</code>, and both kinds of list.</p>
+<ol class="steps">
+<li>Create a folder <code>projects-05</code>, and in it <code>recipe.html</code> with the full skeleton from Section 5.2.</li>
+<li>Add an <code>&lt;h1&gt;</code> with the recipe’s name, and a short paragraph that says how long it takes and how many people it serves. Mark the time with <code>&lt;strong&gt;</code>.</li>
+<li>Add a picture of the dish with <code>&lt;img&gt;</code>. Write an <code>alt</code> that describes it in one sentence, and give it a <code>width</code> and <code>height</code>.</li>
+<li>Add an <code>&lt;h2&gt;</code> “Ingredients” with an unordered list, and an <code>&lt;h2&gt;</code> “Steps” with an ordered list.</li>
+<li>Open the page in the browser, and then in the DevTools Elements panel. Is the tree what you expected?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the order of ingredients does not matter, so use <code>&lt;ul&gt;</code>; the order of steps does, so use <code>&lt;ol&gt;</code>. If you have no photo, use any picture, or <code>soup.svg</code> from the code repository.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="browser" style="width: 93%; margin-inline: auto"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>recipe.html</span><b>520px</b></div><img src="img/b1-ch05-en-projects-recipe.html-520.png" alt=""><figcaption><b>Project 5.1:</b> a recipe page with HTML only.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 5.2 · Medium</p>
+<h3>A website for a small café</h3>
+<p class="project-goal">Build the one-page website of a neighbourhood café, with a proper semantic structure and a menu that jumps to each section.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>header</code>, <code>nav</code>, <code>main</code>, <code>section</code>, <code>footer</code>, links to <code>#id</code>, and <code>tel:</code> links.</p>
+<ol class="steps">
+<li>Plan the page on paper first: draw boxes for the header, the three sections (menu, opening hours, address) and the footer.</li>
+<li>Write the <code>&lt;header&gt;</code> with the café’s name, a one-line description, and a <code>&lt;nav&gt;</code> with three links: <code>#menu</code>, <code>#hours</code> and <code>#find</code>.</li>
+<li>Inside <code>&lt;main&gt;</code>, write three <code>&lt;section&gt;</code>s, each with the matching <code>id</code>, an <code>&lt;h2&gt;</code>, and a list or a paragraph.</li>
+<li>In the address section, add a phone link: <code>&lt;a href="tel:+201000000000"&gt;</code>. On a phone, tapping it starts a call.</li>
+<li>Finish with a <code>&lt;footer&gt;</code>. Then make the window small and click the menu links: the page jumps to each section.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the <code>&amp;</code> sign has a special meaning in HTML, so write it as <code>&amp;amp;</code>, for example <code>Bean &amp;amp; Book</code>.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="browser" style="width: 93%; margin-inline: auto"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cafe.html</span><b>520px</b></div><img src="img/b1-ch05-en-projects-cafe.html-520.png" alt=""><figcaption><b>Project 5.2:</b> a café website with a semantic structure.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 5.3 · Challenge</p>
+<h3>A course sign-up form</h3>
+<p class="project-goal">Build a complete sign-up form with six kinds of field, each with a proper label.</p>
+<p class="project-skills"><strong>You will practise:</strong> forms, <code>label</code> with <code>for</code>, input types, <code>select</code>, <code>textarea</code>, checkboxes and <code>required</code>.</p>
+<ol class="steps">
+<li>Create <code>signup.html</code> with a heading and a <code>&lt;form&gt;</code>.</li>
+<li>Add text, email and phone fields (<code>type="text"</code>, <code>"email"</code> and <code>"tel"</code>), each with a <code>&lt;label&gt;</code> whose <code>for</code> matches the field’s <code>id</code>.</li>
+<li>Add a <code>&lt;select&gt;</code> for the student’s level, with three <code>&lt;option&gt;</code>s.</li>
+<li>Add a <code>&lt;textarea&gt;</code> for “Why do you want to learn?”, and a checkbox for agreeing to emails, with its label after it.</li>
+<li>Make the name and email <code>required</code>, and test: press the button with empty fields, then with an email that has no <code>@</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> on a phone, <code>type="email"</code> shows a keyboard with <code>@</code>, and <code>type="tel"</code> shows a number pad. Try it with the DevTools device toolbar, or on your own phone.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="browser" style="width: 93%; margin-inline: auto"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>signup.html</span><b>520px</b></div><img src="img/b1-ch05-en-projects-signup.html-520.png" alt=""><figcaption><b>Project 5.3:</b> a sign-up form with six kinds of field.</figcaption></figure>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">Exercises</h2>
 
 <ol class="exercises">
