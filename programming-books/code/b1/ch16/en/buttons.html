@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Accessible buttons</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; }
+      .fake, button { display: inline-block; padding: 10px 20px; border: 0; border-radius: 999px;
+        color: white; background: #4338ca; font: inherit; cursor: pointer; margin: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>Two buttons</h1>
+    <!-- Bad: looks like a button, but is only a box -->
+    <div class="fake" onclick="alert('Hi')">I am a div</div>
+    <!-- Good: a real button -->
+    <button type="button" onclick="alert('Hi')">I am a button</button>
+    <p>Both look the same. Only one works with a keyboard and a screen reader.</p>
+  </body>
+</html>

@@ -35,6 +35,8 @@
 @page ch13:first { @top-center { content: none; } }
 @page ch14 { @top-center { content: "Chapter 14: Reading Errors and Debugging"; } }
 @page ch14:first { @top-center { content: none; } }
+@page ch15 { @top-center { content: "Chapter 15: Git and GitHub"; } }
+@page ch15:first { @top-center { content: none; } }
 
 .cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
   background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
@@ -4717,6 +4719,285 @@ Something is wrong here!</pre></div>
 <div class="next">
 <p class="next-title">Coming up in Chapter 15</p>
 <p>Part 4 is about working like a professional. It begins with Git, the tool that remembers every version of your code, lets you undo any mistake, and lets whole teams work on the same project without stepping on each other’s toes.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch15" data-chapter="15" data-code="b1/ch15/en">
+<div class="opener"><span class="opener-num">15</span><p class="chapter-kicker">Chapter 15</p><h1>Git and GitHub</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what version control is and why every developer uses it</li>
+<li>save snapshots of your project with <code>git add</code> and <code>git commit</code></li>
+<li>look at the history, see what changed and undo mistakes</li>
+<li>work on new features safely in branches</li>
+<li>put your project on GitHub and understand how teams work together</li>
+</ul>
+</div>
+
+<p class="lead">Have you ever saved files called <code>profile-final.html</code>, <code>profile-final-2.html</code> and <code>profile-REALLY-final.html</code>? Professional developers had the same problem, and they solved it with a tool called <strong>Git</strong>. Git remembers every version of every file in your project, lets you go back to any of them, and lets many people work on the same code at the same time. It is used by almost every software team in the world.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Git is like the save points in a video game. Before trying something risky, you save. If it goes wrong, you load the last save and try again. Except with Git, you keep <em>every</em> save, forever, with a note about what you did!</p></div></div>
+
+<h2><span class="sec">15.1</span><span>What is version control?</span></h2>
+
+<p>A <dfn>version control system</dfn> records changes to files over time. With it you can:</p>
+<ul>
+<li>see exactly what changed, when, and why;</li>
+<li>go back to any earlier version when something breaks;</li>
+<li>try new ideas without risking the working version;</li>
+<li>combine the work of several people without overwriting each other.</li>
+</ul>
+
+<p><dfn>Git</dfn> is the version control system that almost everyone uses today. It is free, it runs on your own computer, and it works even without the internet. <dfn>GitHub</dfn> is a website that stores Git projects online, so you can back them up, share them and work on them with others. Git is the tool; GitHub is one of the places to keep what Git records.</p>
+
+<h2><span class="sec">15.2</span><span>Setting up Git</span></h2>
+
+<p>Download Git from <code>git-scm.com</code> and install it with the default options (on a Mac, it may already be installed: try <code>git --version</code>). Then tell Git your name and email, which it writes on every snapshot you make:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Tell Git who you are (once per computer)</span>
+<span class="c">$ </span><span class="k">git config --global user.name &quot;Sara Khan&quot;</span>
+<span class="c">$ </span><span class="k">git config --global user.email &quot;sara@example.com&quot;</span>
+<span class="c">$ </span><span class="k">git config --global init.defaultBranch main</span></pre></div>
+
+<p>The last line makes new projects use the name <code>main</code> for the main branch, which is today’s standard. You will learn about branches in Section 15.5.</p>
+
+<h2><span class="sec">15.3</span><span>Your first commit</span></h2>
+
+<p>A Git project is called a <dfn>repository</dfn>, or repo. A snapshot of the project is called a <dfn>commit</dfn>. Making a commit takes two steps: first you choose which changes go into it, then you save them with a message.</p>
+
+<figure>
+<svg viewBox="0 0 520 170" role="img" aria-label="Working folder, staging area and repository, with git add and git commit moving changes between them">
+<defs><marker id="g15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<g font-family="Inter" font-size="13" font-weight="700" text-anchor="middle">
+<rect x="10" y="40" width="140" height="80" rx="12" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="80" y="72" fill="#0f766e">Working folder</text><text x="80" y="92" fill="#0f766e" font-size="11" font-weight="400">files you edit</text>
+<rect x="190" y="40" width="140" height="80" rx="12" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="260" y="72" fill="#ea580c">Staging area</text><text x="260" y="92" fill="#ea580c" font-size="11" font-weight="400">the next snapshot</text>
+<rect x="370" y="40" width="140" height="80" rx="12" fill="#4338ca"/><text x="440" y="72" fill="#fff">Repository</text><text x="440" y="92" fill="#e0e7ff" font-size="11" font-weight="400">all saved snapshots</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.5" marker-end="url(#g15)"><line x1="152" y1="80" x2="186" y2="80"/><line x1="332" y1="80" x2="366" y2="80"/></g>
+<g font-family="JetBrains Mono" font-size="12" font-weight="700" text-anchor="middle" fill="#1e1b2e"><text x="170" y="145">git add</text><text x="350" y="145">git commit</text></g>
+</svg>
+<figcaption><b>Figure 15.1:</b> Changes move from your folder to the staging area with <code>git add</code>, and into the history with <code>git commit</code>.</figcaption>
+</figure>
+
+<p>Here is the whole process for the profile site from Chapter 7, run in its folder:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Start tracking this folder</span>
+<span class="c">$ </span><span class="k">git init</span>
+Initialized empty Git repository in /Users/sara/code-from-zero/profile/.git/
+<span class="c">$ </span><span class="k">git status --short</span>
+?? index.html
+?? style.css
+<span class="c"># Choose what goes into the next snapshot</span>
+<span class="c">$ </span><span class="k">git add index.html style.css</span>
+<span class="c">$ </span><span class="k">git status --short</span>
+A  index.html
+A  style.css
+<span class="c"># Save the snapshot with a message</span>
+<span class="c">$ </span><span class="k">git commit -m &quot;Add profile page&quot;</span>
+[main (root-commit) 96c0a17] Add profile page
+ 2 files changed, 2 insertions(+)
+ create mode 100644 index.html
+ create mode 100644 style.css</pre></div>
+
+<ul>
+<li><code>git init</code> turns the folder into a repository. It creates a hidden <code>.git</code> folder where the history lives; never edit it by hand.</li>
+<li><code>git status</code> is the command you will type most. <code>--short</code> gives a compact view: <code>??</code> means a new file Git does not track yet, <code>A</code> means added to the staging area.</li>
+<li><code>git add</code> puts changes into the staging area. <code>git add .</code> adds everything in the folder.</li>
+<li><code>git commit -m "…"</code> saves the snapshot. Git gives it an id, here <code>96c0a17</code>, which you can use to find it later.</li>
+</ul>
+
+<h2><span class="sec">15.4</span><span>History and differences</span></h2>
+
+<p>Now edit <code>index.html</code>, add a line, and ask Git what changed:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Edit index.html in VS Code, then:</span>
+<span class="c"># What changed since the last commit?</span>
+<span class="c">$ </span><span class="k">git diff</span>
+diff --git a/index.html b/index.html
+index 5ab23b1..96fec82 100644
+--- a/index.html
++++ b/index.html
+@@ -1 +1,2 @@
+ &lt;h1&gt;Sara Khan&lt;/h1&gt;
++&lt;p&gt;Beginner web developer&lt;/p&gt;
+<span class="c">$ </span><span class="k">git commit -am &quot;Add tagline&quot;</span>
+[main 8be4da4] Add tagline
+ 1 file changed, 1 insertion(+)
+<span class="c"># The history, newest first</span>
+<span class="c">$ </span><span class="k">git log --oneline</span>
+8be4da4 Add tagline
+96c0a17 Add profile page</pre></div>
+
+<p><code>git diff</code> shows the changes you have not committed yet: lines starting with <code>+</code> were added, lines with <code>-</code> were removed. <code>git commit -am</code> adds all changed tracked files and commits in one step. <code>git log --oneline</code> shows the history, one commit per line.</p>
+
+<h3>Undoing things</h3>
+
+<table>
+<thead><tr><th>Situation</th><th>Command</th></tr></thead>
+<tbody>
+<tr><td>Throw away my unsaved changes to a file</td><td><code>git restore index.html</code></td></tr>
+<tr><td>Take a file out of the staging area</td><td><code>git restore --staged index.html</code></td></tr>
+<tr><td>Look at the project as it was in an old commit</td><td><code>git switch --detach 96c0a17</code> (and <code>git switch main</code> to come back)</td></tr>
+<tr><td>Undo a commit by adding a new one that reverses it</td><td><code>git revert 8be4da4</code></td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p><code>git restore</code> on a file throws away your uncommitted changes to it, and Git cannot bring them back, because they were never saved. Commit often, and these accidents become impossible to lose.</p></aside>
+
+<h2><span class="sec">15.5</span><span>Branches</span></h2>
+
+<p>A <dfn>branch</dfn> is a separate line of work. The main branch, <code>main</code>, holds the version that works. When you start a new feature, you create a branch for it, work and commit there freely, and when it is ready you <dfn>merge</dfn> it back into <code>main</code>:</p>
+
+<figure>
+<svg viewBox="0 0 520 140" role="img" aria-label="The main branch with three commits, and a contact branch with one commit merged back">
+<line x1="40" y1="90" x2="480" y2="90" stroke="#4338ca" stroke-width="4"/>
+<path d="M200,90 C230,90 230,40 260,40 L330,40 C360,40 360,90 390,90" fill="none" stroke="#db2777" stroke-width="4"/>
+<g stroke="#fff" stroke-width="3"><circle cx="80" cy="90" r="12" fill="#4338ca"/><circle cx="200" cy="90" r="12" fill="#4338ca"/><circle cx="295" cy="40" r="12" fill="#db2777"/><circle cx="390" cy="90" r="12" fill="#4338ca"/></g>
+<g font-family="Inter" font-size="11.5" text-anchor="middle" fill="#1e1b2e"><text x="80" y="120">Add profile page</text><text x="200" y="120">Add tagline</text><text x="295" y="18">Add contact section</text><text x="390" y="120">merged</text></g>
+<g font-family="JetBrains Mono" font-size="12" font-weight="700"><text x="440" y="80" fill="#4338ca">main</text><text x="350" y="30" fill="#db2777">contact</text></g>
+</svg>
+<figcaption><b>Figure 15.2:</b> A feature branch leaves <code>main</code>, gets its own commits, and is merged back.</figcaption>
+</figure>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># A new branch for a new feature</span>
+<span class="c">$ </span><span class="k">git switch -c contact</span>
+Switched to a new branch &#x27;contact&#x27;
+<span class="c"># Create contact.html, then:</span>
+<span class="c">$ </span><span class="k">git add contact.html</span>
+<span class="c">$ </span><span class="k">git commit -m &quot;Add contact section&quot;</span>
+[contact 857eb74] Add contact section
+ 1 file changed, 1 insertion(+)
+ create mode 100644 contact.html
+<span class="c"># Back to the main branch: contact.html disappears from the folder</span>
+<span class="c">$ </span><span class="k">git switch main</span>
+Switched to branch &#x27;main&#x27;
+<span class="c"># Bring the feature in</span>
+<span class="c">$ </span><span class="k">git merge contact</span>
+Updating 8be4da4..857eb74
+Fast-forward
+ contact.html | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 contact.html
+<span class="c">$ </span><span class="k">git log --oneline --graph</span>
+* 857eb74 Add contact section
+* 8be4da4 Add tagline
+* 96c0a17 Add profile page</pre></div>
+
+<p><code>git switch -c contact</code> creates a branch called <code>contact</code> and moves to it. Commits made there do not touch <code>main</code>: when you switch back, <code>contact.html</code> disappears from your folder, and reappears when you switch to <code>contact</code> again. <code>git merge contact</code> brings the branch’s commits into <code>main</code>. Because <code>main</code> had not changed in the meantime, Git simply moved it forward, which it calls a <dfn>fast-forward</dfn>.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: merge conflicts</p><p>If two branches change the same line differently, Git cannot guess which version you want and reports a <strong>conflict</strong>. It marks the place in the file with <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>. Don’t panic: edit the file to keep the right version, delete the markers, then <code>git add</code> and <code>git commit</code>. VS Code shows conflicts with buttons that make this easy.</p></aside>
+
+<h2><span class="sec">15.6</span><span>GitHub: your code online</span></h2>
+
+<p>Create a free account on <code>github.com</code>, click <strong>New repository</strong>, give it a name, and leave it empty. GitHub then shows you its address. Connect your local repository to it and send your commits:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Connect the folder to an empty repository you created on github.com</span>
+<span class="c">$ </span><span class="k">git remote add origin https://github.com/sara-khan/profile.git</span>
+<span class="c">$ </span><span class="k">git push -u origin main</span>
+Enumerating objects: 11, done.
+Writing objects: 100% (11/11), 1.02 KiB | 1.02 MiB/s, done.
+To https://github.com/sara-khan/profile.git
+ * [new branch]      main -&gt; main
+branch &#x27;main&#x27; set up to track &#x27;origin/main&#x27;.
+<span class="c"># Later, on any computer:</span>
+<span class="c">$ </span><span class="k">git clone https://github.com/sara-khan/profile.git</span>
+<span class="c">$ </span><span class="k">git pull</span></pre></div>
+
+<ul>
+<li>A <dfn>remote</dfn> is a copy of the repository somewhere else. By tradition the main one is called <code>origin</code>.</li>
+<li><code>git push</code> sends your commits to the remote. The first time, <code>-u origin main</code> remembers where to push, so afterwards plain <code>git push</code> is enough.</li>
+<li><code>git clone</code> downloads a whole repository, with its history, onto another computer.</li>
+<li><code>git pull</code> brings down commits that others (or you, on another computer) have pushed.</li>
+</ul>
+
+<p>The first time you push, Git asks you to sign in to GitHub. Follow the instructions in the browser window it opens; GitHub no longer accepts your account password directly in the terminal.</p>
+
+<h3>Files that should not be in Git</h3>
+
+<p>Some files do not belong in a repository: downloaded packages that can be reinstalled, system files, logs, and above all <strong>secrets</strong> such as passwords and API keys. List them in a file called <code>.gitignore</code> and Git will never track them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.gitignore</div><pre class="code"><span class="c"># Files Git should never track</span>
+node_modules/
+.env
+.DS_Store
+*.log</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: never commit secrets</p><p>Anything you push to a public repository can be read by anyone, and automated bots scan GitHub for keys within minutes. Deleting the file in a later commit is not enough: it stays in the history. If you ever push a secret by mistake, change that password or key immediately.</p></aside>
+
+<h2><span class="sec">15.7</span><span>How teams work together</span></h2>
+
+<p>On a team, nobody commits straight to <code>main</code>. Instead, each change follows the same path:</p>
+
+<ol>
+<li>Create a branch for the change, and commit there.</li>
+<li>Push the branch to GitHub.</li>
+<li>Open a <dfn>pull request</dfn> (PR): a page on GitHub that shows the changes and asks for them to be merged.</li>
+<li>Teammates <dfn>review</dfn> the code, comment, and ask for improvements. Automatic checks run the tests.</li>
+<li>When everyone is happy, the PR is merged into <code>main</code>.</li>
+</ol>
+
+<p>This way, every line in <code>main</code> has been seen by at least two people. Code review is one of the best ways to learn: you will learn as much from reading others’ pull requests as from writing your own.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: good commit messages</p><p>Write commit messages for the person who will read the history in a year. Start with a short summary in the imperative, as if giving an order: “Add contact section”, “Fix price for children”, not “stuff” or “changes”. Make each commit one logical change. Small, well-described commits make bugs easy to find and easy to undo.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What are the two steps to save a snapshot?</li><li>What is the difference between Git and GitHub?</li><li>Why should passwords never be committed, even if you delete them later?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Git</strong> records every version of a project. <strong>GitHub</strong> stores Git repositories online.</li>
+<li><code>git init</code> starts a repository; <code>git status</code> shows where things stand.</li>
+<li><code>git add</code> stages changes; <code>git commit -m</code> saves a snapshot with a message.</li>
+<li><code>git diff</code> and <code>git log --oneline</code> show changes and history; <code>git restore</code> and <code>git revert</code> undo.</li>
+<li><strong>Branches</strong> (<code>git switch -c</code>) keep new work separate until it is <strong>merged</strong>.</li>
+<li><code>git push</code>, <code>git pull</code> and <code>git clone</code> work with a <strong>remote</strong> such as GitHub.</li>
+<li><code>.gitignore</code> keeps secrets and generated files out. Teams work with branches and <strong>pull requests</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>git add</code> to choose the changes, then <code>git commit</code> to save them. 2. Git is the tool that records versions on your computer; GitHub is a website that stores Git repositories online and helps people work on them together. 3. Because they stay in the history, where anyone with access to the repository can find them.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Put your <code>code-from-zero</code> folder under Git, and make your first commit with everything you have written so far.</li>
+<li><span class="level">Easy</span> Change one file, look at the change with <code>git diff</code>, then throw it away with <code>git restore</code>.</li>
+<li><span class="level medium">Medium</span> Create a branch called <code>dark-mode</code>, add a dark theme to your profile page there in two commits, and merge it into <code>main</code>.</li>
+<li><span class="level medium">Medium</span> Create a repository on GitHub and push your profile site to it. Open the repository page and click on a commit to see its changes.</li>
+<li><span class="level hard">Challenge</span> Make a merge conflict on purpose: change the same line of <code>index.html</code> differently on two branches, merge them, and resolve the conflict.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 16</p>
+<p>Your code is safe and shareable. Next, we make sure your pages are usable by <em>everyone</em>, including people who use screen readers, keyboards instead of a mouse, or large text. It is the mark of a professional, and it is easier than you think.</p>
 </div>
 </section>
 </body></html>

@@ -35,6 +35,8 @@
 @page ch13:first { @top-center { content: none; } }
 @page ch14 { @top-center { content: "الفصل 14: قراءة الأخطاء وتتبّعها"; } }
 @page ch14:first { @top-center { content: none; } }
+@page ch15 { @top-center { content: "الفصل 15: Git وGitHub"; } }
+@page ch15:first { @top-center { content: none; } }
 </style></head>
 <body><section class="front half-title"><p class="ht">البرمجة من الصفر</p></section><section class="front title-page">
           <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الأول</p>
@@ -4634,6 +4636,287 @@ console.error(<span class="s">&quot;هناك خطأ هنا!&quot;</span>);</pre>
 <div class="next">
 <p class="next-title">في الفصل 15</p>
 <p>الجزء الرابع عن العمل كالمحترفين، ويبدأ بـ Git: الأداة التي تتذكر كل نسخة من كودك، وتتيح لك التراجع عن أي خطأ، وتتيح لفرق كاملة العمل على المشروع نفسه دون أن يدوس أحد على أقدام غيره.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch15" data-chapter="15" data-code="b1/ch15/ar">
+<div class="opener"><span class="opener-num">15</span><p class="chapter-kicker">الفصل 15</p><h1>Git وGitHub</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح ما التحكم في الإصدارات ولماذا يستخدمه كل مطور</li>
+<li>تحفظ لقطات من مشروعك بـ <code>git add</code> و<code>git commit</code></li>
+<li>تنظر في التاريخ، وترى ما تغيّر، وتتراجع عن الأخطاء</li>
+<li>تعمل على الميزات الجديدة بأمان في الفروع</li>
+<li>تضع مشروعك على GitHub وتفهم كيف تعمل الفرق معاً</li>
+</ul>
+</div>
+
+<p class="lead">هل حفظت يوماً ملفات اسمها <code>profile-final.html</code> و<code>profile-final-2.html</code> و<code>profile-REALLY-final.html</code>؟ واجه المطورون المحترفون المشكلة نفسها، وحلّوها بأداة اسمها <strong>Git</strong>. يتذكر Git كل نسخة من كل ملف في مشروعك، ويتيح لك العودة إلى أي منها، ويتيح لأشخاص كثيرين العمل على الكود نفسه في الوقت نفسه. ويستخدمه تقريباً كل فريق برمجيات في العالم.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>Git مثل نقاط الحفظ في ألعاب الفيديو. قبل أن تجرب شيئاً خطيراً تحفظ، وإن ساء الأمر تحمّل آخر حفظ وتحاول من جديد. لكن مع Git تحتفظ بـ<em>كل</em> حفظ إلى الأبد، ومعه ملاحظة عما فعلته!</p></div></div>
+
+<h2><span class="sec">15.1</span><span>ما التحكم في الإصدارات؟</span></h2>
+
+<p><dfn>نظام التحكم في الإصدارات</dfn> (version control) يسجّل تغييرات الملفات عبر الزمن. وبه تستطيع أن:</p>
+<ul>
+<li>ترى بالضبط ما تغيّر ومتى ولماذا؛</li>
+<li>تعود إلى أي نسخة سابقة حين يتعطل شيء؛</li>
+<li>تجرب أفكاراً جديدة دون أن تخاطر بالنسخة التي تعمل؛</li>
+<li>تجمع عمل عدة أشخاص دون أن يكتب أحدهم فوق عمل الآخر.</li>
+</ul>
+
+<p><dfn>Git</dfn> هو نظام التحكم في الإصدارات الذي يستخدمه الجميع تقريباً اليوم. وهو مجاني، ويعمل على حاسوبك، حتى بلا إنترنت. و<dfn>GitHub</dfn> موقع يحفظ مشاريع Git على الإنترنت، لتنسخها احتياطياً وتشاركها وتعمل عليها مع غيرك. فـ Git هو الأداة، وGitHub أحد الأماكن التي تحفظ فيها ما يسجّله Git.</p>
+
+<h2><span class="sec">15.2</span><span>تجهيز Git</span></h2>
+
+<p>نزّل Git من <code>git-scm.com</code> وثبّته بالخيارات الافتراضية (وعلى الماك قد يكون مثبتاً أصلاً: جرّب <code>git --version</code>). ثم أخبر Git باسمك وبريدك، فهو يكتبهما على كل لقطة تحفظها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># عرّف Git بنفسك (مرة واحدة لكل حاسوب)</span>
+<span class="c">$ </span><span class="k">git config --global user.name &quot;Sara Khan&quot;</span>
+<span class="c">$ </span><span class="k">git config --global user.email &quot;sara@example.com&quot;</span>
+<span class="c">$ </span><span class="k">git config --global init.defaultBranch main</span></pre></div>
+
+<p>السطر الأخير يجعل المشاريع الجديدة تسمي الفرع الرئيسي <code>main</code>، وهو المعيار اليوم. وستتعرف على الفروع في القسم 15.5.</p>
+
+<h2><span class="sec">15.3</span><span>أول commit لك</span></h2>
+
+<p>مشروع Git يُسمى <dfn>مستودعاً</dfn> (repository أو repo)، واللقطة من المشروع تُسمى <dfn>commit</dfn>. وحفظ commit خطوتان: أولاً تختار التغييرات التي تدخل فيه، ثم تحفظها مع رسالة.</p>
+
+<figure>
+<svg viewBox="0 0 520 170" role="img" aria-label="مجلد العمل ومنطقة التجهيز والمستودع، وgit add وgit commit تنقلان التغييرات بينها">
+<defs><marker id="g15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/></marker></defs>
+<g font-family="Cairo" font-size="13.5" font-weight="700" text-anchor="middle">
+<rect x="370" y="40" width="140" height="80" rx="12" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="440" y="72" fill="#2b2b2b">مجلد العمل</text><text x="440" y="94" fill="#2b2b2b" font-size="11.5" font-weight="400">الملفات التي تعدّلها</text>
+<rect x="190" y="40" width="140" height="80" rx="12" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="260" y="72" fill="#2b2b2b">منطقة التجهيز</text><text x="260" y="94" fill="#2b2b2b" font-size="11.5" font-weight="400">اللقطة القادمة</text>
+<rect x="10" y="40" width="140" height="80" rx="12" fill="#2b2b2b"/><text x="80" y="72" fill="#fff">المستودع</text><text x="80" y="94" fill="#f2f2f2" font-size="11.5" font-weight="400">كل اللقطات المحفوظة</text>
+</g>
+<g stroke="#2b2b2b" stroke-width="2.5" marker-end="url(#g15)"><line x1="368" y1="80" x2="334" y2="80"/><line x1="188" y1="80" x2="154" y2="80"/></g>
+<g font-family="JetBrains Mono" font-size="12" font-weight="700" text-anchor="middle" fill="#1e1b2e"><text x="350" y="145">git add</text><text x="170" y="145">git commit</text></g>
+</svg>
+<figcaption><b>الشكل 15.1:</b> تنتقل التغييرات من مجلدك إلى منطقة التجهيز بـ <code>git add</code>، وإلى التاريخ بـ <code>git commit</code>.</figcaption>
+</figure>
+
+<p>وهذه العملية كاملة لموقع الفصل 7 التعريفي، منفّذة في مجلده:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># ابدأ تتبّع هذا المجلد</span>
+<span class="c">$ </span><span class="k">git init</span>
+Initialized empty Git repository in /Users/sara/code-from-zero/profile/.git/
+<span class="c">$ </span><span class="k">git status --short</span>
+?? index.html
+?? style.css
+<span class="c"># اختر ما يدخل اللقطة التالية</span>
+<span class="c">$ </span><span class="k">git add index.html style.css</span>
+<span class="c">$ </span><span class="k">git status --short</span>
+A  index.html
+A  style.css
+<span class="c"># احفظ اللقطة مع رسالة</span>
+<span class="c">$ </span><span class="k">git commit -m &quot;إضافة الصفحة التعريفية&quot;</span>
+[main (root-commit) 166f9d5] إضافة الصفحة التعريفية
+ 2 files changed, 2 insertions(+)
+ create mode 100644 index.html
+ create mode 100644 style.css</pre></div>
+
+<ul>
+<li><code>git init</code> تحوّل المجلد إلى مستودع، وتنشئ مجلداً مخفياً اسمه <code>.git</code> يعيش فيه التاريخ؛ لا تعدّله بيدك أبداً.</li>
+<li><code>git status</code> هو الأمر الذي ستكتبه أكثر من غيره. و<code>--short</code> تعطي عرضاً مختصراً: <code>??</code> تعني ملفاً جديداً لا يتتبعه Git بعد، و<code>A</code> تعني أنه أُضيف إلى منطقة التجهيز.</li>
+<li><code>git add</code> تضع التغييرات في منطقة التجهيز، و<code>git add .</code> تضيف كل ما في المجلد.</li>
+<li><code>git commit -m "…"</code> تحفظ اللقطة، ويعطيها Git معرّفاً، هنا <code>166f9d5</code>، تجدها به لاحقاً.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>رسائل commit بالعربية تعمل تماماً كما ترى. لكن في الفرق الدولية والمشاريع المفتوحة تُكتب الرسائل بالإنجليزية عادة، فتعوّد عليها مبكراً إن كنت تنوي العمل مع فرق من بلدان مختلفة.</p></aside>
+
+<h2><span class="sec">15.4</span><span>التاريخ والفروق</span></h2>
+
+<p>عدّل الآن <code>index.html</code> وأضف سطراً، واسأل Git عما تغيّر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># عدّل index.html في VS Code، ثم:</span>
+<span class="c"># ما الذي تغيّر منذ آخر commit؟</span>
+<span class="c">$ </span><span class="k">git diff</span>
+diff --git a/index.html b/index.html
+index 6732327..0525cbc 100644
+--- a/index.html
++++ b/index.html
+@@ -1 +1,2 @@
+ &lt;h1&gt;سارة خان&lt;/h1&gt;
++&lt;p&gt;مطورة ويب مبتدئة&lt;/p&gt;
+<span class="c">$ </span><span class="k">git commit -am &quot;إضافة الوصف&quot;</span>
+[main f42d185] إضافة الوصف
+ 1 file changed, 1 insertion(+)
+<span class="c"># التاريخ، الأحدث أولاً</span>
+<span class="c">$ </span><span class="k">git log --oneline</span>
+f42d185 إضافة الوصف
+166f9d5 إضافة الصفحة التعريفية</pre></div>
+
+<p><code>git diff</code> تعرض التغييرات التي لم تحفظها بعد: الأسطر التي تبدأ بـ <code>+</code> أُضيفت، والتي تبدأ بـ <code>-</code> حُذفت. و<code>git commit -am</code> تضيف كل الملفات المتتبَّعة المتغيرة وتحفظها في خطوة واحدة. و<code>git log --oneline</code> تعرض التاريخ، commit واحداً في كل سطر.</p>
+
+<h3>التراجع</h3>
+
+<table>
+<thead><tr><th>الموقف</th><th>الأمر</th></tr></thead>
+<tbody>
+<tr><td>تخلّص من تغييراتي غير المحفوظة في ملف</td><td><code>git restore index.html</code></td></tr>
+<tr><td>أخرج ملفاً من منطقة التجهيز</td><td><code>git restore --staged index.html</code></td></tr>
+<tr><td>انظر إلى المشروع كما كان في commit قديم</td><td><code>git switch --detach 166f9d5</code> (و<code>git switch main</code> للعودة)</td></tr>
+<tr><td>ألغِ commit بإضافة commit جديد يعكسه</td><td><code>git revert f42d185</code></td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p><code>git restore</code> على ملف ترمي تغييراتك غير المحفوظة فيه، ولا يستطيع Git إعادتها لأنها لم تُحفظ أصلاً. احفظ commit كثيراً، فتصير هذه الحوادث مستحيلة.</p></aside>
+
+<h2><span class="sec">15.5</span><span>الفروع</span></h2>
+
+<p><dfn>الفرع</dfn> (branch) خط عمل منفصل. والفرع الرئيسي، <code>main</code>، يحمل النسخة التي تعمل. وحين تبدأ ميزة جديدة تنشئ لها فرعاً، تعمل فيه وتحفظ بحرية، وحين تجهز <dfn>تدمجها</dfn> (merge) في <code>main</code>:</p>
+
+<figure>
+<svg viewBox="0 0 520 140" role="img" aria-label="الفرع الرئيسي فيه ثلاث لقطات، وفرع contact فيه لقطة واحدة دُمجت فيه">
+<line x1="40" y1="90" x2="480" y2="90" stroke="#2b2b2b" stroke-width="4"/>
+<path d="M200,90 C230,90 230,40 260,40 L330,40 C360,40 360,90 390,90" fill="none" stroke="#2b2b2b" stroke-width="4"/>
+<g stroke="#fff" stroke-width="3"><circle cx="80" cy="90" r="12" fill="#2b2b2b"/><circle cx="200" cy="90" r="12" fill="#2b2b2b"/><circle cx="295" cy="40" r="12" fill="#2b2b2b"/><circle cx="390" cy="90" r="12" fill="#2b2b2b"/></g>
+<g font-family="Cairo" font-size="12" text-anchor="middle" fill="#1e1b2e"><text x="80" y="120">الصفحة التعريفية</text><text x="200" y="120">الوصف</text><text x="295" y="18">قسم التواصل</text><text x="390" y="120">بعد الدمج</text></g>
+<g font-family="JetBrains Mono" font-size="12" font-weight="700"><text x="440" y="80" fill="#2b2b2b">main</text><text x="350" y="30" fill="#2b2b2b">contact</text></g>
+</svg>
+<figcaption><b>الشكل 15.2:</b> فرع الميزة يخرج من <code>main</code>، وتكون له لقطاته، ثم يُدمج فيه.</figcaption>
+</figure>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># فرع جديد لميزة جديدة</span>
+<span class="c">$ </span><span class="k">git switch -c contact</span>
+Switched to a new branch &#x27;contact&#x27;
+<span class="c"># أنشئ contact.html، ثم:</span>
+<span class="c">$ </span><span class="k">git add contact.html</span>
+<span class="c">$ </span><span class="k">git commit -m &quot;إضافة قسم التواصل&quot;</span>
+[contact 6090844] إضافة قسم التواصل
+ 1 file changed, 1 insertion(+)
+ create mode 100644 contact.html
+<span class="c"># العودة إلى الفرع الرئيسي: يختفي contact.html من المجلد</span>
+<span class="c">$ </span><span class="k">git switch main</span>
+Switched to branch &#x27;main&#x27;
+<span class="c"># ادمج الميزة</span>
+<span class="c">$ </span><span class="k">git merge contact</span>
+Updating f42d185..6090844
+Fast-forward
+ contact.html | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 contact.html
+<span class="c">$ </span><span class="k">git log --oneline --graph</span>
+* 6090844 إضافة قسم التواصل
+* f42d185 إضافة الوصف
+* 166f9d5 إضافة الصفحة التعريفية</pre></div>
+
+<p><code>git switch -c contact</code> تنشئ فرعاً اسمه <code>contact</code> وتنتقل إليه. والحفظ فيه لا يمس <code>main</code>: فحين تعود إليه يختفي <code>contact.html</code> من مجلدك، ويعود حين تنتقل إلى <code>contact</code> مرة أخرى. و<code>git merge contact</code> تُدخل لقطات الفرع في <code>main</code>. ولأن <code>main</code> لم يتغير في هذه الأثناء، حرّكه Git إلى الأمام ببساطة، ويسمي ذلك <dfn>fast-forward</dfn>.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: تعارضات الدمج</p><p>إن غيّر فرعان السطر نفسه بطريقتين مختلفتين، فلن يستطيع Git أن يخمّن أي نسخة تريد، فيبلّغ عن <strong>تعارض</strong> (conflict)، ويعلّم المكان في الملف بـ <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> و<code>=======</code> و<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>. لا تقلق: عدّل الملف لتُبقي النسخة الصحيحة، واحذف العلامات، ثم <code>git add</code> و<code>git commit</code>. وVS Code يعرض التعارضات بأزرار تسهّل ذلك.</p></aside>
+
+<h2><span class="sec">15.6</span><span>GitHub: كودك على الإنترنت</span></h2>
+
+<p>أنشئ حساباً مجانياً على <code>github.com</code>، واضغط <strong>New repository</strong>، وأعطه اسماً، واتركه فارغاً. فيعرض لك GitHub عنوانه. اربط مستودعك المحلي به وأرسل إليه لقطاتك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># اربط المجلد بمستودع فارغ أنشأته على github.com</span>
+<span class="c">$ </span><span class="k">git remote add origin https://github.com/sara-khan/profile.git</span>
+<span class="c">$ </span><span class="k">git push -u origin main</span>
+Enumerating objects: 11, done.
+Writing objects: 100% (11/11), 1.02 KiB | 1.02 MiB/s, done.
+To https://github.com/sara-khan/profile.git
+ * [new branch]      main -&gt; main
+branch &#x27;main&#x27; set up to track &#x27;origin/main&#x27;.
+<span class="c"># لاحقاً، على أي حاسوب:</span>
+<span class="c">$ </span><span class="k">git clone https://github.com/sara-khan/profile.git</span>
+<span class="c">$ </span><span class="k">git pull</span></pre></div>
+
+<ul>
+<li><dfn>المستودع البعيد</dfn> (remote) نسخة من المستودع في مكان آخر، والرئيسي منها يُسمى <code>origin</code> بحكم العادة.</li>
+<li><code>git push</code> ترسل لقطاتك إلى المستودع البعيد. وفي المرة الأولى تتذكر <code>-u origin main</code> أين ترسل، فيكفي بعدها <code>git push</code> وحدها.</li>
+<li><code>git clone</code> تنزّل مستودعاً كاملاً، بتاريخه، على حاسوب آخر.</li>
+<li><code>git pull</code> تجلب اللقطات التي أرسلها غيرك (أو أنت من حاسوب آخر).</li>
+</ul>
+
+<p>وفي أول مرة ترسل فيها يطلب منك Git تسجيل الدخول إلى GitHub. اتبع التعليمات في نافذة المتصفح التي يفتحها؛ فـ GitHub لم يعد يقبل كلمة مرور حسابك مباشرة في الطرفية.</p>
+
+<h3>ملفات لا مكان لها في Git</h3>
+
+<p>بعض الملفات لا تنتمي إلى المستودع: الحزم المنزّلة التي يمكن إعادة تثبيتها، وملفات النظام، والسجلات، وقبل كل شيء <strong>الأسرار</strong> مثل كلمات المرور ومفاتيح الواجهات البرمجية. اكتبها في ملف اسمه <code>.gitignore</code> فلن يتتبعها Git أبداً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.gitignore</div><pre class="code"><span class="c"># ملفات لا يتتبعها Git أبداً</span>
+node_modules/
+.env
+.DS_Store
+*.log</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا تحفظ الأسرار أبداً</p><p>كل ما ترسله إلى مستودع عام يستطيع أي أحد قراءته، والبرامج الآلية تفتش GitHub بحثاً عن المفاتيح خلال دقائق. وحذف الملف في commit لاحق لا يكفي، فهو يبقى في التاريخ. وإن أرسلت سراً بالخطأ يوماً، فغيّر كلمة المرور أو المفتاح فوراً.</p></aside>
+
+<h2><span class="sec">15.7</span><span>كيف تعمل الفرق معاً</span></h2>
+
+<p>في الفريق لا يحفظ أحد مباشرة في <code>main</code>، بل يتبع كل تغيير المسار نفسه:</p>
+
+<ol>
+<li>أنشئ فرعاً للتغيير واحفظ فيه.</li>
+<li>أرسل الفرع إلى GitHub.</li>
+<li>افتح <dfn>طلب دمج</dfn> (pull request أو PR): صفحة على GitHub تعرض التغييرات وتطلب دمجها.</li>
+<li>يُراجع زملاؤك الكود، ويعلّقون، ويطلبون تحسينات، وتُشغَّل الاختبارات تلقائياً.</li>
+<li>وحين يرضى الجميع يُدمج الطلب في <code>main</code>.</li>
+</ol>
+
+<p>وهكذا يكون كل سطر في <code>main</code> قد رآه شخصان على الأقل. ومراجعة الكود من أفضل طرق التعلم: ستتعلم من قراءة طلبات دمج غيرك بقدر ما تتعلم من كتابة طلباتك.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: رسائل commit جيدة</p><p>اكتب رسائل commit للشخص الذي سيقرأ التاريخ بعد عام. ابدأ بملخص قصير بصيغة الأمر: «أضف قسم التواصل»، و«أصلح سعر الأطفال»، لا «أشياء» أو «تعديلات». واجعل كل commit تغييراً منطقياً واحداً. فاللقطات الصغيرة الموصوفة جيداً تجعل العلل سهلة الإيجاد وسهلة التراجع عنها.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>ما الخطوتان لحفظ لقطة؟</li><li>ما الفرق بين Git وGitHub؟</li><li>لماذا لا تُحفظ كلمات المرور في Git أبداً، حتى لو حذفتها لاحقاً؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>Git</strong> يسجّل كل نسخة من المشروع، و<strong>GitHub</strong> يحفظ مستودعات Git على الإنترنت.</li>
+<li><code>git init</code> تبدأ مستودعاً، و<code>git status</code> تعرض الحال.</li>
+<li><code>git add</code> تجهّز التغييرات، و<code>git commit -m</code> تحفظ لقطة مع رسالة.</li>
+<li><code>git diff</code> و<code>git log --oneline</code> تعرضان التغييرات والتاريخ، و<code>git restore</code> و<code>git revert</code> تتراجعان.</li>
+<li><strong>الفروع</strong> (<code>git switch -c</code>) تفصل العمل الجديد حتى <strong>يُدمج</strong>.</li>
+<li><code>git push</code> و<code>git pull</code> و<code>git clone</code> تعمل مع <strong>مستودع بعيد</strong> مثل GitHub.</li>
+<li><code>.gitignore</code> تُبعد الأسرار والملفات المولّدة، والفرق تعمل بالفروع و<strong>طلبات الدمج</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>git add</code> لاختيار التغييرات، ثم <code>git commit</code> لحفظها. 2. Git الأداة التي تسجّل النسخ على حاسوبك، وGitHub موقع يحفظ مستودعات Git على الإنترنت ويساعد الناس على العمل عليها معاً. 3. لأنها تبقى في التاريخ، حيث يجدها كل من يصل إلى المستودع.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> ضع مجلد <code>code-from-zero</code> تحت Git، واحفظ أول commit فيه كل ما كتبته حتى الآن.</li>
+<li><span class="level">سهل</span> غيّر ملفاً، وانظر إلى التغيير بـ <code>git diff</code>، ثم تخلص منه بـ <code>git restore</code>.</li>
+<li><span class="level medium">متوسط</span> أنشئ فرعاً اسمه <code>dark-mode</code>، وأضف فيه وضعاً داكناً لصفحتك التعريفية في commit اثنين، ثم ادمجه في <code>main</code>.</li>
+<li><span class="level medium">متوسط</span> أنشئ مستودعاً على GitHub وأرسل إليه موقعك التعريفي. افتح صفحة المستودع وانقر على commit لترى تغييراته.</li>
+<li><span class="level hard">تحدٍّ</span> اصنع تعارض دمج عمداً: غيّر السطر نفسه في <code>index.html</code> بطريقتين في فرعين، وادمجهما، وحُلّ التعارض.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 16</p>
+<p>صار كودك آمناً وقابلاً للمشاركة. والخطوة التالية أن نتأكد أن صفحاتك صالحة <em>للجميع</em>، ومنهم من يستخدمون قارئات الشاشة، أو لوحة المفاتيح بدل الفأرة، أو النص الكبير. إنها علامة المحترف، وهي أسهل مما تظن.</p>
 </div>
 </section>
 </body></html>
