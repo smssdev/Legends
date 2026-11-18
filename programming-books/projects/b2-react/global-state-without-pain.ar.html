@@ -1,0 +1,51 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قبل كل مشروع املأ جدول القسم {{n}}.1 للحالة التي تنوي حفظها. وكل ما لا يصل إلى السطر الأخير يبقى خارج الكود العام.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>مظهر يتبع المستخدم</h3>
+<p class="project-goal">مظهر فاتح وآخر داكن، يبدأ من إعداد النظام، ويُبدَّل من أي مكان، ويُتذكر في الزيارة التالية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سياق بمزوّد وخطّاف، والحالة الأولية الكسولة، و<code>matchMedia</code>، وتأثير يحدّث الصفحة.</p>
+<ol class="steps">
+<li>اكتب الألوان متغيراتِ CSS مخصصة على <code>:root</code>، والداكنة على <code>body.dark</code>. فلا تذكر المكونات الألوان بأسمائها أبداً.</li>
+<li>في <code>ThemeProvider</code> ابدأ من الاختيار المحفوظ، وإلا فمن <code>matchMedia("(prefers-color-scheme: dark)")</code>.</li>
+<li>في تأثير بدّل الصنف <code>dark</code> على <code>body</code> واحفظ الاختيار.</li>
+<li>قدّم <code>{ theme, toggle }</code> عبر <code>useTheme()</code>، التي ترمي خطأً واضحاً خارج المزوّد.</li>
+<li>اجعل المبدّل زراً بـ <code>aria-pressed</code>، وتسمية تقول ما المفعّل الآن.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المظهر نادر التغير ويُقرأ في أماكن قليلة، وهذا بالضبط ما يجيده Context. وكل العمل الحقيقي تؤديه متغيرات CSS: React تبدّل صنفاً واحداً فقط.</p>
+<pre data-code="projects/theme.tsx" data-title="theme.tsx"></pre>
+<figure data-render="projects/theme-page.html" data-width="560" data-actions="click:header button"><figcaption><b>مشروع {{n}}.1:</b> بعد التبديل إلى المظهر الداكن.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>سلة تصمد بعد إعادة التحميل</h3>
+<p class="project-goal">ابنِ مخزن السلة من هذا الفصل بنفسك، بالإضافة والإنقاص والحذف والإفراغ، وشارة في الترويسة، والحفظ بين الزيارات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>create</code>، والتحديثات غير القابلة للتغيير بـ <code>set</code>، والمحدِّدات، و<code>persist</code>، واختبار المنطق في Node.</p>
+<ol class="steps">
+<li>اكتب المخزن بالأفعال الأربعة. واحفظ الأسطر في كائن مفاتيحه معرّفات المنتجات، فلا يحتاج إيجاد السطر إلى بحث.</li>
+<li>اكتب <code>selectCount</code> و<code>selectTotal</code> بجانب المخزن.</li>
+<li>ابنِ ثلاثة مكونات: <code>CartBadge</code> (العدد فقط)، و<code>ProductList</code> (<code>add</code> فقط)، و<code>CartSummary</code> (الأسطر والمجموع).</li>
+<li>أضف <code>persist</code> باسم، وأضف بعض المنتجات، وأعد تحميل الصفحة وتحقق أنها ما زالت هناك.</li>
+<li>اكتب المخزن نفسه بـ <code>createStore</code> من <code>zustand/vanilla</code> في سكربت Node، وشغّل الأفعال الأربعة، واطبع الحالة بعد كل منها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن غيّرت شكل البيانات المحفوظة لاحقاً فسيحمّل الزوار القدامى الشكل القديم. و<code>persist</code> تقبل <code>version</code> ودالة <code>migrate</code> لتلك اللحظة بالضبط.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>إشعارات مع تراجع</h3>
+<p class="project-goal">نظام إشعارات يستخدمه أي مكوّن باستدعاء واحد، يعرض ثلاث رسائل على الأكثر، ويختفي وحده، ويقدم زر «تراجع» عند الحاجة، ويعلنه قارئ الشاشة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سياق يقدم دالة، و<code>useCallback</code>، والبوابات (portals)، والمؤقتات، والمناطق الحية.</p>
+<ol class="steps">
+<li>قدّم دالة واحدة، <code>notify(text, action?)</code>، عبر Context. وغلّفها بـ <code>useCallback</code> كي لا تتغير أبداً، فلا يعاد رسم القرّاء بسببها.</li>
+<li>احفظ قائمة الرسائل في المزوّد، وأضف الجديدة بـ <code>[...all.slice(-2), next]</code>، فلا يبقى على الشاشة أكثر من ثلاث.</li>
+<li>احذف كل رسالة بعد خمس ثوانٍ بـ <code>setTimeout</code>، وبزر إغلاق مسمّى لقارئ الشاشة أيضاً.</li>
+<li>ارسم القائمة بـ <code>createPortal</code> داخل <code>document.body</code>، فلا يخفيها أو يقصّها المكوّن الذي استدعاها أبداً.</li>
+<li>أعطِ القائمة <code>role="status"</code> و<code>aria-live="polite"</code>، فيعلن قارئ الشاشة الرسائل الجديدة دون مقاطعة المستخدم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> «تراجع» ألطف من «هل أنت متأكد؟». نفّذ الفعل فوراً، واعرض عكسه لبضع ثوانٍ. فيخطئ المستخدمون أقل، ولا يُبطئهم شيء في باقي الوقت.</p>
+<figure data-render="projects/toasts-page.html" data-width="560" data-actions="click:.card .row:nth-child(2) button;click:.card .row:nth-child(3) .secondary;wait:200"><figcaption><b>مشروع {{n}}.3:</b> إشعاران، والثاني يعرض التراجع عن الحذف.</figcaption></figure>
+</div>

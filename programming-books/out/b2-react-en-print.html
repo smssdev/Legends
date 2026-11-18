@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "Chapter 7: Forms and Validation"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "Chapter 8: Global State without Pain"; } }
+@page ch08:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -3294,6 +3296,422 @@ export function Field({ id, label, error, children }: FieldProps) {
 <p>So far each piece of state lives in a component, and server data lives in TanStack Query. In the next chapter you will meet the last kind: state that many distant parts of the app share, such as the signed-in user, the theme or the cart. You will learn when Context is enough, and when a small store is better.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b2/react/global/en">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">Chapter 8</p><h1>Global State without Pain</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>sort every piece of state into the right home: component, address, server cache or global store</li>
+<li>share values with distant components through Context, without passing props through every level</li>
+<li>keep Context fast, and know when it is not enough</li>
+<li>build a small global store with Zustand, and read it with selectors</li>
+<li>save a store between visits, and test it without React</li>
+</ul>
+</div>
+
+<p class="lead">Some data is needed everywhere: who is signed in, the chosen language and theme, the number of items in the cart. Passing it as props from the top of the app through every component in between is called <dfn>prop drilling</dfn>, and it makes every component in the path depend on data it never uses. React’s answer is <strong>Context</strong>. For state that changes often and is read in many places, a small <strong>store</strong> is usually better. But first, the most important skill of this chapter: knowing that most state is <em>not</em> global.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Many apps have a giant global store full of data that one screen uses, or that really belongs to the server. Every time I am tempted to make something global, I first ask: who actually reads this?</p></div></div>
+
+<h2><span class="sec">8.1</span> <span>Four homes for state</span></h2>
+
+<table>
+<thead><tr><th>Kind of state</th><th>Examples</th><th>Its home</th></tr></thead>
+<tbody>
+<tr><td>Belongs to one part of the screen</td><td>An open menu, a form’s values, the current tab</td><td><code>useState</code> or <code>useReducer</code> in the lowest common component (Chapter 5)</td></tr>
+<tr><td>Should survive a reload or be shareable</td><td>Filters, search text, page number</td><td>The address (Chapter 6)</td></tr>
+<tr><td>A copy of server data</td><td>Products, orders, the user’s profile</td><td>The query cache (Chapter 6)</td></tr>
+<tr><td>Owned by the app, read in many places</td><td>Signed-in user, theme, language, cart, notifications</td><td>Context or a global store (this chapter)</td></tr>
+</tbody>
+</table>
+
+<p>Go down the table in order and stop at the first home that fits. In a typical app, only a handful of values reach the last row.</p>
+
+<h2><span class="sec">8.2</span> <span>Context</span></h2>
+
+<p><dfn>Context</dfn> lets a component provide a value to everything below it in the tree, at any depth, without passing props. It has three parts: <code>createContext</code> makes the context, a <dfn>provider</dfn> component puts a value into it, and <code>useContext</code> reads the nearest value from any component below:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">auth.tsx</div><pre class="code">import { createContext, useContext, useMemo, useState, type ReactNode } from &quot;react&quot;;
+
+type User = { name: string };
+type Auth = { user: User | null; signIn: (name: string) =&gt; void; signOut: () =&gt; void };
+
+const AuthContext = createContext&lt;Auth | null&gt;(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState&lt;User | null&gt;(null);
+  const value = useMemo(
+    () =&gt; ({ user, signIn: (name: string) =&gt; setUser({ name }), signOut: () =&gt; setUser(null) }),
+    [user],
+  );
+  return &lt;AuthContext.Provider value={value}&gt;{children}&lt;/AuthContext.Provider&gt;;
+}
+
+export function useAuth(): Auth {
+  const auth = useContext(AuthContext);
+  if (!auth) throw new Error(&quot;useAuth must be used inside &lt;AuthProvider&gt;&quot;);
+  return auth;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">context.tsx</div><pre class="code">import { createRoot } from &quot;react-dom/client&quot;;
+import { AuthProvider, useAuth } from &quot;./auth&quot;;
+
+function Header() {
+  return (
+    &lt;header&gt;
+      &lt;span className=&quot;brand&quot;&gt;Bit&#x27;s shop&lt;/span&gt;
+      &lt;UserMenu /&gt;
+    &lt;/header&gt;
+  );
+}
+
+// Any component under the provider can read the user, however deep
+function UserMenu() {
+  const { user, signIn, signOut } = useAuth();
+  if (!user) return &lt;button onClick={() =&gt; signIn(&quot;Sara&quot;)}&gt;Sign in&lt;/button&gt;;
+  return (
+    &lt;span className=&quot;row&quot;&gt;
+      Hello, {user.name}
+      &lt;button className=&quot;secondary&quot; onClick={signOut}&gt;
+        Sign out
+      &lt;/button&gt;
+    &lt;/span&gt;
+  );
+}
+
+function Profile() {
+  const { user } = useAuth();
+  return (
+    &lt;section className=&quot;card&quot;&gt;
+      &lt;h2&gt;Your profile&lt;/h2&gt;
+      &lt;p className=&quot;muted&quot;&gt;{user ? `${user.name} · Member since 2025` : &quot;Guest&quot;}&lt;/p&gt;
+    &lt;/section&gt;
+  );
+}
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(
+  &lt;AuthProvider&gt;
+    &lt;Header /&gt;
+    &lt;main&gt;
+      &lt;Profile /&gt;
+    &lt;/main&gt;
+  &lt;/AuthProvider&gt;,
+);</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>context.html</span><b>560px</b></div><img src="img/react-global-en-context.html-560-ceed71.png" alt=""><figcaption><b>Figure 8.1:</b> After signing in: the header and the profile both read the same user from the context, though neither received it as a prop.</figcaption></figure>
+
+<p>Three habits make Context pleasant to use:</p>
+<ul>
+<li><strong>Hide the context behind a hook.</strong> Components call <code>useAuth()</code>, never <code>useContext(AuthContext)</code>. The hook also throws a clear error if someone forgets the provider, instead of a mysterious <code>null</code> later.</li>
+<li><strong>Provide data and the functions that change it together</strong>, so readers do not need to know how it is stored.</li>
+<li><strong>Keep the value stable.</strong> Every component that reads a context re-renders when its value changes. <code>useMemo</code> creates a new value object only when <code>user</code> changes, not on every render of the provider.</li>
+</ul>
+
+<h3>When Context is not enough</h3>
+
+<p>Context is perfect for values that change rarely: the user, the theme, the language. It becomes slow for values that change often and are read in many places, because <em>every</em> reader re-renders on <em>every</em> change, even readers that only care about one small part. A cart is the classic example: the badge needs the count, the summary needs the lines, the product list only needs the <code>add</code> function. That is the job of a store.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Where should the text of a search box live if users want to share the results?</li><li>What happens to a component that calls <code>useAuth()</code> outside any <code>AuthProvider</code>?</li><li>Why can a frequently changing value in Context make an app slow?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">8.3</span> <span>A store with Zustand</span></h2>
+
+<p>A <dfn>store</dfn> is an object that lives outside the component tree, holds state and the functions that change it, and tells interested components when something changes. <strong>Zustand</strong> (German for “state”) is a tiny store library: one function, no provider, and almost no rules to learn. Under the hood it is the event emitter you built in Chapter 1, with state:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">store-node.ts</div><pre class="code"><span class="k">import</span> { createStore } <span class="k">from</span> <span class="s">&quot;zustand/vanilla&quot;</span>;
+
+<span class="c">// The store works without React: the same code runs in Node</span>
+<span class="k">type</span> Counter = { count: number; increase: () =&gt; void };
+
+<span class="k">const</span> store = createStore&lt;Counter&gt;()((set) =&gt; ({
+  count: <span class="n">0</span>,
+  increase: () =&gt; set((s) =&gt; ({ count: s.count + <span class="n">1</span> })),
+}));
+
+<span class="k">const</span> stop = store.subscribe((state, previous) =&gt; {
+  console.log(<span class="s">`count: ${previous.count} → ${state.count}`</span>);
+});
+
+store.getState().increase();
+store.getState().increase();
+stop();
+store.getState().increase();
+console.log(<span class="s">&quot;after stop():&quot;</span>, store.getState().count);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>count: 0 → 1
+count: 1 → 2
+after stop(): 3</pre></div>
+
+<p>That ran in Node, with no React at all: <code>set</code> merges a change into the state and notifies the subscribers, and <code>subscribe</code> returns its own “stop” function. In React, <code>create</code> turns the same idea into a hook:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cart-store.ts</div><pre class="code"><span class="k">import</span> { create } <span class="k">from</span> <span class="s">&quot;zustand&quot;</span>;
+<span class="k">import</span> { persist } <span class="k">from</span> <span class="s">&quot;zustand/middleware&quot;</span>;
+
+<span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; price: number };
+
+<span class="k">type</span> CartState = {
+  lines: Record&lt;number, { product: Product; quantity: number }&gt;;
+  add: (product: Product) =&gt; void;
+  clear: () =&gt; void;
+};
+
+<span class="k">export</span> <span class="k">const</span> useCart = create&lt;CartState&gt;()(
+  <span class="c">// persist saves the store in localStorage and loads it on the next visit</span>
+  persist(
+    (set) =&gt; ({
+      lines: {},
+      add: (product) =&gt;
+        set((state) =&gt; {
+          <span class="k">const</span> line = state.lines[product.id];
+          <span class="k">return</span> { lines: { ...state.lines, [product.id]: { product, quantity: (line?.quantity ?? <span class="n">0</span>) + <span class="n">1</span> } } };
+        }),
+      clear: () =&gt; set({ lines: {} }),
+    }),
+    { name: <span class="s">&quot;cart&quot;</span> },
+  ),
+);
+
+<span class="c">// Derived values, calculated from the state</span>
+<span class="k">export</span> <span class="k">const</span> selectCount = (s: CartState) =&gt; Object.values(s.lines).reduce((n, l) =&gt; n + l.quantity, <span class="n">0</span>);
+<span class="k">export</span> <span class="k">const</span> selectTotal = (s: CartState) =&gt;
+  Object.values(s.lines).reduce((n, l) =&gt; n + l.quantity * l.product.price, <span class="n">0</span>);</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">store.tsx</div><pre class="code">import { createRoot } from &quot;react-dom/client&quot;;
+import { selectCount, selectTotal, useCart, type Product } from &quot;./cart-store&quot;;
+
+const products: Product[] = [
+  { id: 1, name: &quot;Code from Zero&quot;, price: 25 },
+  { id: 2, name: &quot;Bit mug&quot;, price: 8 },
+  { id: 3, name: &quot;Bit cap&quot;, price: 12 },
+];
+
+function CartBadge() {
+  const count = useCart(selectCount); // A selector: this component re-renders only when the count changes
+  return (
+    &lt;span className=&quot;row&quot;&gt;
+      Cart &lt;span className=&quot;badge&quot;&gt;{count}&lt;/span&gt;
+    &lt;/span&gt;
+  );
+}
+
+function ProductList() {
+  const add = useCart((s) =&gt; s.add);
+  return (
+    &lt;section className=&quot;card&quot;&gt;
+      {products.map((p) =&gt; (
+        &lt;div key={p.id} className=&quot;row&quot; style={{ justifyContent: &quot;space-between&quot;, padding: &quot;4px 0&quot; }}&gt;
+          &lt;span&gt;{p.name}&lt;/span&gt;
+          &lt;button onClick={() =&gt; add(p)}&gt;Add&lt;/button&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/section&gt;
+  );
+}
+
+function CartSummary() {
+  const lines = useCart((s) =&gt; s.lines);
+  const total = useCart(selectTotal);
+  const clear = useCart((s) =&gt; s.clear);
+  const list = Object.values(lines);
+  if (list.length === 0) return &lt;p className=&quot;card muted&quot;&gt;The cart is empty.&lt;/p&gt;;
+  return (
+    &lt;section className=&quot;card&quot;&gt;
+      &lt;ul&gt;
+        {list.map((l) =&gt; (
+          &lt;li key={l.product.id}&gt;
+            &lt;span&gt;
+              {l.quantity} × {l.product.name}
+            &lt;/span&gt;
+            &lt;span&gt;
+              {l.quantity * l.product.price} EGP
+            &lt;/span&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+      &lt;p&gt;
+        &lt;b&gt;
+          Total: {total} EGP
+        &lt;/b&gt;
+      &lt;/p&gt;
+      &lt;button className=&quot;secondary&quot; onClick={clear}&gt;
+        Empty the cart
+      &lt;/button&gt;
+    &lt;/section&gt;
+  );
+}
+
+localStorage.clear();
+createRoot(document.getElementById(&quot;root&quot;)!).render(
+  &lt;&gt;
+    &lt;header&gt;
+      &lt;span className=&quot;brand&quot;&gt;Bit&#x27;s shop&lt;/span&gt;
+      &lt;CartBadge /&gt;
+    &lt;/header&gt;
+    &lt;ProductList /&gt;
+    &lt;CartSummary /&gt;
+  &lt;/&gt;,
+);</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>store.html</span><b>560px</b></div><img src="img/react-global-en-store.html-560-0403c1.png" alt=""><figcaption><b>Figure 8.2:</b> Three components share one cart, with no props and no provider between them.</figcaption></figure>
+
+<ul>
+<li><code>useCart(selector)</code> reads part of the store. The <dfn>selector</dfn> is a function from the whole state to what this component needs. The component re-renders only when <em>that</em> result changes, so <code>ProductList</code>, which selects only <code>add</code>, never re-renders when the cart changes.</li>
+<li>Selectors such as <code>selectCount</code> and <code>selectTotal</code> are plain functions next to the store. They derive values, as in Chapter 5, so the store keeps only the lines.</li>
+<li>The updates are immutable, exactly as with <code>useState</code>: <code>set</code> receives the old state and returns the parts that change.</li>
+<li>The <code>persist</code> middleware saves the store in <code>localStorage</code> under the name <code>"cart"</code> and loads it on the next visit, with one line.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: a selector must not build a new object</p><p><code>useCart((s) =&gt; ({ count: …, total: … }))</code> returns a new object on every call, so the component re-renders on every change in the store, or even loops. Select single values, or several separate selectors, or use Zustand’s <code>useShallow</code> helper.</p></aside>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: keep server data out of global stores</p><p>Copying products or orders into a global store means writing your own cache, by hand, without refetching, deduplication or invalidation. Let TanStack Query own server data, and keep the store for what the app itself owns. Most “global state” problems disappear with this one rule.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Making everything global</td><td>Every change re-renders half the app; code is hard to follow</td><td>Use the table in section 8.1, top to bottom</td></tr>
+<tr><td>Using <code>useContext</code> directly in components</td><td>Forgotten providers give <code>null</code> errors far away</td><td>A <code>useX()</code> hook that throws a clear error</td></tr>
+<tr><td>A new context value object on every render</td><td>Every reader re-renders every time</td><td><code>useMemo</code> for the value</td></tr>
+<tr><td>Fast-changing values in Context</td><td>Slow typing, slow scrolling</td><td>A store with selectors</td></tr>
+<tr><td>Reading the whole store: <code>useCart()</code></td><td>The component re-renders on every change</td><td>Select only what you need</td></tr>
+<tr><td>Server data copied into a store</td><td>Stale data and hand-made caching bugs</td><td>TanStack Query</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>State has four homes: the <strong>component</strong>, the <strong>address</strong>, the <strong>query cache</strong> and, for the few values the app owns and many places read, <strong>Context or a store</strong>.</li>
+<li><strong>Context</strong> passes a value down to any depth: <code>createContext</code>, a provider, and a <code>useX()</code> hook. Keep the value stable with <code>useMemo</code>.</li>
+<li>Context suits values that change rarely. For frequent changes read in many places, use a <strong>store</strong>.</li>
+<li><strong>Zustand</strong> creates a store as a hook; components read it with <strong>selectors</strong> and re-render only when their selection changes.</li>
+<li>Stores update immutably, can be saved with <code>persist</code>, and, being plain code, can run and be tested without React.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. In the address, as a search parameter. 2. It throws the error “useAuth must be used inside &lt;AuthProvider&gt;”, which points straight at the problem. 3. Because every component that reads the context re-renders on every change, even if it uses only a small part of the value.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Before each project, fill in the table from section 8.1 for the state you plan to keep. Everything that does not land in the last row stays out of the global code.</p>
+
+<div class="project">
+<p class="project-label">Project 8.1 · Easy</p>
+<h3>A theme that follows the user</h3>
+<p class="project-goal">A light and a dark theme, starting from the system setting, switchable from anywhere, and remembered on the next visit.</p>
+<p class="project-skills"><strong>You will practise:</strong> a context with a provider and a hook, lazy initial state, <code>matchMedia</code>, and an effect that updates the page.</p>
+<ol class="steps">
+<li>Write the colours as CSS custom properties on <code>:root</code>, and the dark ones on <code>body.dark</code>. Components never mention colours by name.</li>
+<li>In <code>ThemeProvider</code>, start from the saved choice, or else from <code>matchMedia("(prefers-color-scheme: dark)")</code>.</li>
+<li>In an effect, toggle the <code>dark</code> class on <code>body</code> and save the choice.</li>
+<li>Expose <code>{ theme, toggle }</code> through <code>useTheme()</code>, which throws a clear error outside the provider.</li>
+<li>Make the switch a button with <code>aria-pressed</code>, and a label that says what is on now.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the theme changes rarely and is read in few places, which is exactly what Context is good at. All the real work is done by CSS variables: React only switches one class.</p>
+<div class="listing" dir="ltr"><div class="listing-title">theme.tsx</div><pre class="code">import { createContext, useContext, useEffect, useState, type ReactNode } from &quot;react&quot;;
+
+export type Theme = &quot;light&quot; | &quot;dark&quot;;
+const ThemeContext = createContext&lt;{ theme: Theme; toggle: () =&gt; void } | null&gt;(null);
+
+function initialTheme(): Theme {
+  const saved = localStorage.getItem(&quot;theme&quot;);
+  if (saved === &quot;light&quot; || saved === &quot;dark&quot;) return saved;
+  return matchMedia(&quot;(prefers-color-scheme: dark)&quot;).matches ? &quot;dark&quot; : &quot;light&quot;;
+}
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState&lt;Theme&gt;(initialTheme);
+
+  useEffect(() =&gt; {
+    document.body.classList.toggle(&quot;dark&quot;, theme === &quot;dark&quot;);
+    localStorage.setItem(&quot;theme&quot;, theme);
+  }, [theme]);
+
+  const toggle = () =&gt; setTheme((t) =&gt; (t === &quot;dark&quot; ? &quot;light&quot; : &quot;dark&quot;));
+  return &lt;ThemeContext.Provider value={{ theme, toggle }}&gt;{children}&lt;/ThemeContext.Provider&gt;;
+}
+
+export function useTheme() {
+  const value = useContext(ThemeContext);
+  if (!value) throw new Error(&quot;useTheme must be used inside &lt;ThemeProvider&gt;&quot;);
+  return value;
+}</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>theme-page.html</span><b>560px</b></div><img src="img/react-global-en-projects-theme-page.html-560-ceed71.png" alt=""><figcaption><b>Project 8.1:</b> after switching to the dark theme.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 8.2 · Medium</p>
+<h3>A cart that survives a reload</h3>
+<p class="project-goal">Build the cart store of this chapter yourself, with add, decrease, remove and clear, a badge in the header, and saving between visits.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>create</code>, immutable updates with <code>set</code>, selectors, <code>persist</code>, and testing the logic in Node.</p>
+<ol class="steps">
+<li>Write the store with the four actions. Keep lines in an object keyed by product id, so finding a line needs no search.</li>
+<li>Write <code>selectCount</code> and <code>selectTotal</code> next to the store.</li>
+<li>Build three components: <code>CartBadge</code> (count only), <code>ProductList</code> (<code>add</code> only) and <code>CartSummary</code> (lines and total).</li>
+<li>Add <code>persist</code> with a name, add a few products, reload the page and check that they are still there.</li>
+<li>Write the same store with <code>createStore</code> from <code>zustand/vanilla</code> in a Node script, run the four actions, and print the state after each.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if you change the shape of saved data later, old visitors will load the old shape. <code>persist</code> accepts a <code>version</code> and a <code>migrate</code> function for exactly that moment.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 8.3 · Challenge</p>
+<h3>Notifications with undo</h3>
+<p class="project-goal">A notification system that any component can use with one call, that shows at most three messages, disappears by itself, can offer an “Undo” button, and is announced by screen readers.</p>
+<p class="project-skills"><strong>You will practise:</strong> a context that provides a function, <code>useCallback</code>, portals, timers, and live regions.</p>
+<ol class="steps">
+<li>Provide a single function, <code>notify(text, action?)</code>, through Context. Wrap it in <code>useCallback</code> so that it never changes, and readers never re-render because of it.</li>
+<li>Keep the list of messages in the provider. Add new ones with <code>[...all.slice(-2), next]</code>, so at most three stay on screen.</li>
+<li>Remove each message after five seconds with <code>setTimeout</code>, and also with a close button labelled for screen readers.</li>
+<li>Render the list with <code>createPortal</code> into <code>document.body</code>, so it is never hidden or clipped by the component that called it.</li>
+<li>Give the list <code>role="status"</code> and <code>aria-live="polite"</code>, so screen readers announce new messages without interrupting the user.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> “Undo” is friendlier than “Are you sure?”. Do the action at once, and offer to reverse it for a few seconds. Users make fewer mistakes, and the rest of the time they are not slowed down.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>toasts-page.html</span><b>560px</b></div><img src="img/react-global-en-projects-toasts-page.html-560-1c8096.png" alt=""><figcaption><b>Project 8.3:</b> two notifications; the second offers to undo the removal.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a <code>remove(id)</code> function to the cart store and a “×” button next to each line in <code>CartSummary</code>.</li>
+<li><span class="level">Easy</span> Write a <code>LanguageProvider</code> and <code>useLanguage()</code> that hold <code>"en"</code> or <code>"ar"</code> and set <code>lang</code> and <code>dir</code> on <code>document.documentElement</code> in an effect.</li>
+<li><span class="level medium">Medium</span> In <code>store-node.ts</code>, write a test for the cart store’s <code>add</code> and <code>clear</code> using <code>createStore</code> (without <code>persist</code>), and print the count after each step using <code>selectCount</code>.</li>
+<li><span class="level medium">Medium</span> Count how often <code>ProductList</code> and <code>CartBadge</code> render: add <code>console.count("ProductList")</code> to each, add three products, and explain the numbers.</li>
+<li><span class="level hard">Challenge</span> Make the sign-in in <code>auth.tsx</code> real: <code>signIn</code> calls a pretend API that takes 500 ms, the context exposes a <code>status</code> (<code>"signed-out" | "signing-in" | "signed-in"</code>) as a discriminated union, and the header shows the right thing for each status.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 9</p>
+<p>You can now build any screen. The next part of the book is about building them <em>well</em>, as a team. It starts with design systems: shared components, tokens and documentation that make a hundred screens look and behave like one product.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3379,6 +3797,16 @@ export function Field({ id, label, error, children }: FieldProps) {
 <li><code>const message = watch("message") ?? "";</code> and <code>&lt;p className="muted"&gt;{message.length} / 500&lt;/p&gt;</code>, with <code>.max(500, "…")</code> added to the schema. <code>watch</code> re-renders the form when that field changes, so use it only for fields the screen really shows.</li>
 <li>Keep <code>sent</code> in state; the thank-you screen gets a button with <code>onClick={() =&gt; { reset(); setSent(false); }}</code>. <code>reset()</code> also clears the errors and the “touched” flags.</li>
 <li><code>function handleContact(body: unknown) { const r = contactSchema.safeParse(body); if (r.success) return { status: 201 }; const errors: Record&lt;string, string&gt; = {}; for (const issue of r.error.issues) errors[issue.path.join(".")] ??= issue.message; return { status: 422, errors }; }</code>. The <code>??=</code> keeps only the first message for each field.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 8</h2>
+<ol class="exercises">
+<li>In the store type add <code>remove: (id: number) =&gt; void</code>, and in the store <code>remove: (id) =&gt; set((s) =&gt; { const { [id]: _, ...rest } = s.lines; return { lines: rest }; })</code>. Destructuring with a rest object builds a new object without that key. In <code>CartSummary</code>, select <code>remove</code> and call it from a button on each line.</li>
+<li><code>const [language, setLanguage] = useState&lt;"en" | "ar"&gt;("en"); useEffect(() =&gt; { document.documentElement.lang = language; document.documentElement.dir = language === "ar" ? "rtl" : "ltr"; }, [language]);</code>, providing <code>{ language, setLanguage }</code> through a context and a <code>useLanguage()</code> hook that throws outside the provider.</li>
+<li>Create the store with <code>createStore&lt;CartState&gt;()((set) =&gt; ({ … }))</code> with the same functions; then call <code>store.getState().add(book)</code>, <code>add(mug)</code>, <code>add(mug)</code> and <code>clear()</code>, printing <code>selectCount(store.getState())</code> after each: 1, 2, 3, 0. The selectors work unchanged, because they are plain functions of the state.</li>
+<li>Both render once at the start. Then <code>CartBadge</code> renders once more for each product added (its count changed), while <code>ProductList</code> does not render again: it selects only <code>add</code>, which never changes. (In development, Strict Mode doubles every number.)</li>
+<li><code>type Auth = { status: "signed-out" } | { status: "signing-in" } | { status: "signed-in"; user: User }</code>, plus <code>signIn</code> and <code>signOut</code>. <code>signIn</code> sets <code>signing-in</code>, awaits the pretend API, then sets <code>signed-in</code> with the user. The header uses a <code>switch</code> on <code>status</code>: a sign-in button, a disabled “Signing in…” button, or the name and a sign-out button.</li>
 </ol>
 
 </section>

@@ -1,0 +1,177 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/react/global/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>الحالة العامة بلا ألم</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تضع كل قطعة حالة في بيتها الصحيح: المكوّن، أو العنوان، أو ذاكرة الخادم، أو المخزن العام</li>
+<li>تشارك القيم مع المكونات البعيدة عبر Context، دون تمرير الخصائص في كل مستوى</li>
+<li>تبقي Context سريعاً، وتعرف متى لا يكفي</li>
+<li>تبني مخزناً عاماً صغيراً بـ Zustand، وتقرؤه بالمحدِّدات</li>
+<li>تحفظ المخزن بين الزيارات، وتختبره دون React</li>
+</ul>
+</div>
+
+<p class="lead">بعض البيانات يحتاجها كل مكان: من سجّل الدخول، واللغة والمظهر المختاران، وعدد عناصر السلة. وتمريرها خصائصَ من أعلى التطبيق عبر كل مكوّن بينهما يسمى <dfn>حفر الخصائص</dfn> (prop drilling)، ويجعل كل مكوّن في الطريق معتمداً على بيانات لا يستخدمها أبداً. وجواب React هو <strong>Context</strong>. أما الحالة التي تتغير كثيراً وتُقرأ في أماكن كثيرة، فـ<strong>مخزن</strong> صغير أفضل عادة. لكن أولاً أهم مهارة في هذا الفصل: أن تعرف أن معظم الحالة <em>ليست</em> عامة.</p>
+
+<aside class="bit" data-mood="think"><p>في تطبيقات كثيرة مخزن عام عملاق مليء ببيانات تستخدمها شاشة واحدة، أو تخص الخادم حقاً. فكلما أغراني أن أجعل شيئاً عاماً أسأل أولاً: من يقرأ هذا فعلاً؟</p></aside>
+
+<h2>{{n}}.1 أربعة بيوت للحالة</h2>
+
+<table>
+<thead><tr><th>نوع الحالة</th><th>أمثلة</th><th>بيتها</th></tr></thead>
+<tbody>
+<tr><td>تخص جزءاً واحداً من الشاشة</td><td>قائمة مفتوحة، وقيم نموذج، والتبويب الحالي</td><td><code>useState</code> أو <code>useReducer</code> في أدنى مكوّن مشترك (الفصل {{n-3}})</td></tr>
+<tr><td>يجب أن تبقى بعد إعادة التحميل أو تُشارك</td><td>عوامل التصفية، ونص البحث، ورقم الصفحة</td><td>العنوان (الفصل {{n-2}})</td></tr>
+<tr><td>نسخة من بيانات الخادم</td><td>المنتجات، والطلبات، وملف المستخدم</td><td>ذاكرة الاستعلامات (الفصل {{n-2}})</td></tr>
+<tr><td>يملكها التطبيق، وتُقرأ في أماكن كثيرة</td><td>المستخدم المسجّل، والمظهر، واللغة، والسلة، والإشعارات</td><td>Context أو مخزن عام (هذا الفصل)</td></tr>
+</tbody>
+</table>
+
+<p>انزل في الجدول بالترتيب وتوقف عند أول بيت يناسب. وفي التطبيق المعتاد لا يصل إلى السطر الأخير إلا قيم قليلة.</p>
+
+<h2>{{n}}.2 Context</h2>
+
+<p>يتيح <dfn>Context</dfn> للمكوّن أن يقدم قيمة لكل ما تحته في الشجرة، بأي عمق، دون تمرير خصائص. وله ثلاثة أجزاء: <code>createContext</code> تصنع السياق، ومكوّن <dfn>المزوّد</dfn> (provider) يضع فيه قيمة، و<code>useContext</code> تقرأ أقرب قيمة من أي مكوّن تحته:</p>
+
+<pre data-code="auth.tsx" data-title="auth.tsx"></pre>
+<pre data-code="context.tsx" data-title="context.tsx"></pre>
+
+<figure data-render="context.html" data-width="560" data-actions="click:header button"><figcaption><b>شكل {{n}}.1:</b> بعد تسجيل الدخول: الترويسة والملف الشخصي يقرآن المستخدم نفسه من السياق، ولم يأخذه أي منهما خاصيةً.</figcaption></figure>
+
+<p>ثلاث عادات تجعل Context مريحاً:</p>
+<ul>
+<li><strong>أخفِ السياق خلف خطّاف.</strong> تستدعي المكونات <code>useAuth()</code>، لا <code>useContext(AuthContext)</code> أبداً. ويرمي الخطّاف أيضاً خطأً واضحاً إن نسي أحد المزوّد، بدل <code>null</code> غامضة لاحقاً.</li>
+<li><strong>قدّم البيانات والدوال التي تغيّرها معاً</strong>، فلا يحتاج القرّاء معرفة كيف تُحفظ.</li>
+<li><strong>أبقِ القيمة ثابتة.</strong> كل مكوّن يقرأ سياقاً يعاد رسمه حين تتغير قيمته. و<code>useMemo</code> تنشئ كائن قيمة جديداً فقط حين يتغير <code>user</code>، لا في كل رسم للمزوّد.</li>
+</ul>
+
+<h3>متى لا يكفي Context</h3>
+
+<p>Context مثالي للقيم التي نادراً ما تتغير: المستخدم، والمظهر، واللغة. ويصير بطيئاً مع القيم التي تتغير كثيراً وتُقرأ في أماكن كثيرة، لأن <em>كل</em> قارئ يعاد رسمه مع <em>كل</em> تغيير، حتى القرّاء الذين يهمهم جزء صغير فقط. والسلة المثال الكلاسيكي: الشارة تحتاج العدد، والملخص يحتاج الأسطر، وقائمة المنتجات تحتاج دالة <code>add</code> فقط. وهذه وظيفة المخزن.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>أين يعيش نص مربع البحث إن أراد المستخدمون مشاركة النتائج؟</li><li>ماذا يحدث لمكوّن يستدعي <code>useAuth()</code> خارج أي <code>AuthProvider</code>؟</li><li>لماذا قد تجعل قيمة كثيرة التغير في Context التطبيق بطيئاً؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.3 مخزن بـ Zustand</h2>
+
+<p><dfn>المخزن</dfn> (store) كائن يعيش خارج شجرة المكونات، يحمل الحالة والدوال التي تغيّرها، ويخبر المكونات المهتمة حين يتغير شيء. و<strong>Zustand</strong> (تعني «الحالة» بالألمانية) مكتبة مخازن صغيرة: دالة واحدة، بلا مزوّد، وبلا قواعد تقريباً. وفي داخلها باعث الأحداث الذي بنيته في الفصل {{n-7}}، مع حالة:</p>
+
+<pre data-code="store-node.ts" data-title="store-node.ts"></pre>
+<pre data-out="store-node.mjs"></pre>
+
+<p>عمل هذا في Node دون React أصلاً: <code>set</code> تدمج التغيير في الحالة وتخبر المشتركين، و<code>subscribe</code> تُرجع دالة «الإيقاف» الخاصة بها. وفي React تحوّل <code>create</code> الفكرة نفسها إلى خطّاف:</p>
+
+<pre data-code="cart-store.ts" data-title="cart-store.ts"></pre>
+<pre data-code="store.tsx" data-title="store.tsx"></pre>
+
+<figure data-render="store.html" data-width="560" data-actions="click:.card .row:nth-child(1) button;click:.card .row:nth-child(2) button;click:.card .row:nth-child(2) button"><figcaption><b>شكل {{n}}.2:</b> ثلاثة مكونات تتشارك سلة واحدة، بلا خصائص ولا مزوّد بينها.</figcaption></figure>
+
+<ul>
+<li><code>useCart(selector)</code> تقرأ جزءاً من المخزن. و<dfn>المحدِّد</dfn> (selector) دالة من الحالة كلها إلى ما يحتاجه المكوّن. فلا يعاد رسم المكوّن إلا حين تتغير <em>تلك</em> النتيجة، فـ <code>ProductList</code>، التي تحدد <code>add</code> فقط، لا يعاد رسمها أبداً حين تتغير السلة.</li>
+<li>المحدِّدات مثل <code>selectCount</code> و<code>selectTotal</code> دوال عادية بجانب المخزن. وهي تشتق القيم، كما في الفصل {{n-3}}، فيحفظ المخزن الأسطر فقط.</li>
+<li>التحديثات غير قابلة للتغيير، تماماً كما مع <code>useState</code>: تستقبل <code>set</code> الحالة القديمة وتُرجع الأجزاء التي تتغير.</li>
+<li>والوسيط <code>persist</code> يحفظ المخزن في <code>localStorage</code> باسم <code>"cart"</code> ويحمّله في الزيارة التالية، بسطر واحد.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">انتبه: لا يبنِ المحدِّد كائناً جديداً</p><p><code>useCart((s) =&gt; ({ count: …, total: … }))</code> تُرجع كائناً جديداً مع كل استدعاء، فيعاد رسم المكوّن مع كل تغيير في المخزن، أو يدخل في حلقة. حدّد قيماً مفردة، أو عدة محدِّدات منفصلة، أو استخدم الأداة <code>useShallow</code> من Zustand.</p></aside>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: أبعد بيانات الخادم عن المخازن العامة</p><p>نسخ المنتجات أو الطلبات إلى مخزن عام يعني كتابة ذاكرتك المؤقتة بنفسك، باليد، بلا إعادة جلب ولا منع للتكرار ولا إبطال. دع TanStack Query تملك بيانات الخادم، وأبقِ المخزن لما يملكه التطبيق نفسه. ومعظم مشكلات «الحالة العامة» تختفي بهذه القاعدة الواحدة.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>جعل كل شيء عاماً</td><td>كل تغيير يعيد رسم نصف التطبيق، والكود صعب التتبع</td><td>استخدم جدول القسم {{n}}.1 من الأعلى إلى الأسفل</td></tr>
+<tr><td>استخدام <code>useContext</code> مباشرة في المكونات</td><td>المزوّدات المنسية تعطي أخطاء <code>null</code> بعيدة</td><td>خطّاف <code>useX()</code> يرمي خطأً واضحاً</td></tr>
+<tr><td>كائن قيمة سياق جديد مع كل رسم</td><td>كل قارئ يعاد رسمه كل مرة</td><td><code>useMemo</code> للقيمة</td></tr>
+<tr><td>قيم سريعة التغير في Context</td><td>كتابة بطيئة وتمرير بطيء</td><td>مخزن بمحدِّدات</td></tr>
+<tr><td>قراءة المخزن كله: <code>useCart()</code></td><td>يعاد رسم المكوّن مع كل تغيير</td><td>حدّد ما تحتاجه فقط</td></tr>
+<tr><td>نسخ بيانات الخادم إلى مخزن</td><td>بيانات قديمة وأخطاء ذاكرة مصنوعة باليد</td><td>TanStack Query</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>للحالة أربعة بيوت: <strong>المكوّن</strong>، و<strong>العنوان</strong>، و<strong>ذاكرة الاستعلامات</strong>، ثم <strong>Context أو مخزن</strong> للقيم القليلة التي يملكها التطبيق وتقرؤها أماكن كثيرة.</li>
+<li><strong>Context</strong> يمرر قيمة إلى أي عمق: <code>createContext</code>، ومزوّد، وخطّاف <code>useX()</code>. وأبقِ القيمة ثابتة بـ <code>useMemo</code>.</li>
+<li>يناسب Context القيم نادرة التغير. وللتغيرات الكثيرة التي تُقرأ في أماكن كثيرة استخدم <strong>مخزناً</strong>.</li>
+<li><strong>Zustand</strong> تنشئ المخزن خطّافاً، وتقرؤه المكونات بـ<strong>المحدِّدات</strong>، ولا يعاد رسمها إلا حين يتغير ما حددته.</li>
+<li>تُحدَّث المخازن دون تغيير الأصل، ويمكن حفظها بـ <code>persist</code>، ولأنها كود عادي تعمل وتُختبر دون React.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. في العنوان، معاملَ بحث. 2. يرمي الخطأ «useAuth must be used inside &lt;AuthProvider&gt;» الذي يشير إلى المشكلة مباشرة. 3. لأن كل مكوّن يقرأ السياق يعاد رسمه مع كل تغيير، حتى إن كان يستخدم جزءاً صغيراً من القيمة.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قبل كل مشروع املأ جدول القسم {{n}}.1 للحالة التي تنوي حفظها. وكل ما لا يصل إلى السطر الأخير يبقى خارج الكود العام.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>مظهر يتبع المستخدم</h3>
+<p class="project-goal">مظهر فاتح وآخر داكن، يبدأ من إعداد النظام، ويُبدَّل من أي مكان، ويُتذكر في الزيارة التالية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سياق بمزوّد وخطّاف، والحالة الأولية الكسولة، و<code>matchMedia</code>، وتأثير يحدّث الصفحة.</p>
+<ol class="steps">
+<li>اكتب الألوان متغيراتِ CSS مخصصة على <code>:root</code>، والداكنة على <code>body.dark</code>. فلا تذكر المكونات الألوان بأسمائها أبداً.</li>
+<li>في <code>ThemeProvider</code> ابدأ من الاختيار المحفوظ، وإلا فمن <code>matchMedia("(prefers-color-scheme: dark)")</code>.</li>
+<li>في تأثير بدّل الصنف <code>dark</code> على <code>body</code> واحفظ الاختيار.</li>
+<li>قدّم <code>{ theme, toggle }</code> عبر <code>useTheme()</code>، التي ترمي خطأً واضحاً خارج المزوّد.</li>
+<li>اجعل المبدّل زراً بـ <code>aria-pressed</code>، وتسمية تقول ما المفعّل الآن.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المظهر نادر التغير ويُقرأ في أماكن قليلة، وهذا بالضبط ما يجيده Context. وكل العمل الحقيقي تؤديه متغيرات CSS: React تبدّل صنفاً واحداً فقط.</p>
+<pre data-code="projects/theme.tsx" data-title="theme.tsx"></pre>
+<figure data-render="projects/theme-page.html" data-width="560" data-actions="click:header button"><figcaption><b>مشروع {{n}}.1:</b> بعد التبديل إلى المظهر الداكن.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>سلة تصمد بعد إعادة التحميل</h3>
+<p class="project-goal">ابنِ مخزن السلة من هذا الفصل بنفسك، بالإضافة والإنقاص والحذف والإفراغ، وشارة في الترويسة، والحفظ بين الزيارات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>create</code>، والتحديثات غير القابلة للتغيير بـ <code>set</code>، والمحدِّدات، و<code>persist</code>، واختبار المنطق في Node.</p>
+<ol class="steps">
+<li>اكتب المخزن بالأفعال الأربعة. واحفظ الأسطر في كائن مفاتيحه معرّفات المنتجات، فلا يحتاج إيجاد السطر إلى بحث.</li>
+<li>اكتب <code>selectCount</code> و<code>selectTotal</code> بجانب المخزن.</li>
+<li>ابنِ ثلاثة مكونات: <code>CartBadge</code> (العدد فقط)، و<code>ProductList</code> (<code>add</code> فقط)، و<code>CartSummary</code> (الأسطر والمجموع).</li>
+<li>أضف <code>persist</code> باسم، وأضف بعض المنتجات، وأعد تحميل الصفحة وتحقق أنها ما زالت هناك.</li>
+<li>اكتب المخزن نفسه بـ <code>createStore</code> من <code>zustand/vanilla</code> في سكربت Node، وشغّل الأفعال الأربعة، واطبع الحالة بعد كل منها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن غيّرت شكل البيانات المحفوظة لاحقاً فسيحمّل الزوار القدامى الشكل القديم. و<code>persist</code> تقبل <code>version</code> ودالة <code>migrate</code> لتلك اللحظة بالضبط.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>إشعارات مع تراجع</h3>
+<p class="project-goal">نظام إشعارات يستخدمه أي مكوّن باستدعاء واحد، يعرض ثلاث رسائل على الأكثر، ويختفي وحده، ويقدم زر «تراجع» عند الحاجة، ويعلنه قارئ الشاشة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سياق يقدم دالة، و<code>useCallback</code>، والبوابات (portals)، والمؤقتات، والمناطق الحية.</p>
+<ol class="steps">
+<li>قدّم دالة واحدة، <code>notify(text, action?)</code>، عبر Context. وغلّفها بـ <code>useCallback</code> كي لا تتغير أبداً، فلا يعاد رسم القرّاء بسببها.</li>
+<li>احفظ قائمة الرسائل في المزوّد، وأضف الجديدة بـ <code>[...all.slice(-2), next]</code>، فلا يبقى على الشاشة أكثر من ثلاث.</li>
+<li>احذف كل رسالة بعد خمس ثوانٍ بـ <code>setTimeout</code>، وبزر إغلاق مسمّى لقارئ الشاشة أيضاً.</li>
+<li>ارسم القائمة بـ <code>createPortal</code> داخل <code>document.body</code>، فلا يخفيها أو يقصّها المكوّن الذي استدعاها أبداً.</li>
+<li>أعطِ القائمة <code>role="status"</code> و<code>aria-live="polite"</code>، فيعلن قارئ الشاشة الرسائل الجديدة دون مقاطعة المستخدم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> «تراجع» ألطف من «هل أنت متأكد؟». نفّذ الفعل فوراً، واعرض عكسه لبضع ثوانٍ. فيخطئ المستخدمون أقل، ولا يُبطئهم شيء في باقي الوقت.</p>
+<figure data-render="projects/toasts-page.html" data-width="560" data-actions="click:.card .row:nth-child(2) button;click:.card .row:nth-child(3) .secondary;wait:200"><figcaption><b>مشروع {{n}}.3:</b> إشعاران، والثاني يعرض التراجع عن الحذف.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف دالة <code>remove(id)</code> إلى مخزن السلة، وزر «×» بجانب كل سطر في <code>CartSummary</code>.</li>
+<li><span class="level">سهل</span> اكتب <code>LanguageProvider</code> و<code>useLanguage()</code> تحفظان <code>"en"</code> أو <code>"ar"</code>، وتضبطان <code>lang</code> و<code>dir</code> على <code>document.documentElement</code> في تأثير.</li>
+<li><span class="level">متوسط</span> في <code>store-node.ts</code> اكتب اختباراً لـ <code>add</code> و<code>clear</code> في مخزن السلة باستخدام <code>createStore</code> (دون <code>persist</code>)، واطبع العدد بعد كل خطوة بـ <code>selectCount</code>.</li>
+<li><span class="level">متوسط</span> عُدّ كم مرة يُرسم <code>ProductList</code> و<code>CartBadge</code>: أضف <code>console.count("ProductList")</code> إلى كل منهما، وأضف ثلاثة منتجات، واشرح الأرقام.</li>
+<li><span class="level">تحدٍّ</span> اجعل تسجيل الدخول في <code>auth.tsx</code> حقيقياً: تستدعي <code>signIn</code> واجهة وهمية تأخذ 500 ملي ثانية، ويقدم السياق <code>status</code> (<code>"signed-out" | "signing-in" | "signed-in"</code>) اتحاداً مميَّزاً، وتعرض الترويسة الشيء الصحيح لكل حالة.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>تستطيع الآن بناء أي شاشة. والجزء التالي من الكتاب عن بنائها <em>جيداً</em>، فريقاً. ويبدأ بأنظمة التصميم: مكونات مشتركة ورموز تصميم وتوثيق تجعل مئة شاشة تبدو وتتصرف كمنتج واحد.</p>
+</div>
+</section>

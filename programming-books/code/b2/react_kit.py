@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 ESBUILD = ROOT / "node_modules" / ".bin" / "esbuild"
-REACT = ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react-router", "@tanstack/react-query", "react-hook-form", "zod", "@hookform/resolvers/zod"]
+REACT = ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react-router", "@tanstack/react-query", "react-hook-form", "zod", "@hookform/resolvers/zod", "zustand", "zustand/middleware"]
 
 IMPORT_MAP = """    <script type="importmap">
       {
@@ -27,7 +27,9 @@ IMPORT_MAP = """    <script type="importmap">
           "@tanstack/react-query": "/vendor/react-query.js",
           "react-hook-form": "/vendor/react-hook-form.js",
           "zod": "/vendor/zod.js",
-          "@hookform/resolvers/zod": "/vendor/hookform-zod.js"
+          "@hookform/resolvers/zod": "/vendor/hookform-zod.js",
+          "zustand": "/vendor/zustand.js",
+          "zustand/middleware": "/vendor/zustand-middleware.js"
         }
       }
     </script>"""

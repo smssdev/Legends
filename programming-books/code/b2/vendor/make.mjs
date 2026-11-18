@@ -21,6 +21,8 @@ const entries = {
   "react-hook-form": "react-hook-form",
   "zod": "zod",
   "hookform-zod": "@hookform/resolvers/zod",
+  "zustand": "zustand",
+  "zustand-middleware": "zustand/middleware",
 };
 for (const [file, pkg] of Object.entries(entries)) {
   const names = Object.keys(require(pkg)).filter((n) => /^[A-Za-z_$][\w$]*$/.test(n) && n !== "default");

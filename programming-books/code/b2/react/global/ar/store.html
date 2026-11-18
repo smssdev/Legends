@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>الحالة العامة</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "/vendor/react.js",
+          "react-dom": "/vendor/react-dom.js",
+          "react-dom/client": "/vendor/react-dom-client.js",
+          "react/jsx-runtime": "/vendor/jsx-runtime.js",
+          "react-router": "/vendor/react-router.js",
+          "@tanstack/react-query": "/vendor/react-query.js",
+          "react-hook-form": "/vendor/react-hook-form.js",
+          "zod": "/vendor/zod.js",
+          "@hookform/resolvers/zod": "/vendor/hookform-zod.js",
+          "zustand": "/vendor/zustand.js",
+          "zustand/middleware": "/vendor/zustand-middleware.js"
+        }
+      }
+    </script>
+    <style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: 20px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; color: #1e1b2e; background: #f5f5fb; line-height: 1.5; }
+h1, h2, h3 { color: #4338ca; margin: 0 0 8px; }
+button { font: inherit; cursor: pointer; border: 0; border-radius: 999px; padding: 6px 16px; background: #4338ca; color: white; }
+button.secondary { background: #e0e7ff; color: #312e81; }
+:focus-visible { outline: 3px solid #db2777; outline-offset: 2px; }
+:root { --bg: #f5f5fb; --card: white; --ink: #1e1b2e; --muted: #5b5873; }
+body.dark { --bg: #16142a; --card: #24213d; --ink: #eef2ff; --muted: #b8b5d6; }
+body { background: var(--bg); color: var(--ink); }
+header { display: flex; align-items: center; gap: 10px; background: var(--card); padding: 8px 12px; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 2px 10px rgb(67 56 202 / 0.12); }
+header .brand { font-weight: 800; color: #818cf8; margin-inline-end: auto; }
+.card { background: var(--card); border-radius: 14px; padding: 12px 14px; box-shadow: 0 2px 10px rgb(67 56 202 / 0.12); margin-bottom: 10px; }
+.muted { color: var(--muted); }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.badge { background: #db2777; color: white; border-radius: 999px; padding: 0 8px; font-size: 0.85rem; font-weight: 700; }
+ul { list-style: none; padding: 0; margin: 6px 0; }
+li { display: flex; justify-content: space-between; padding: 4px 0; }
+.toasts { position: fixed; inset-inline-end: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px; width: 280px; }
+.toast { background: #1e1b2e; color: #eef2ff; border-radius: 12px; padding: 10px 12px; display: flex; gap: 8px; align-items: center; box-shadow: 0 6px 18px rgb(0 0 0 / 0.25); }
+.toast span { flex: 1; }
+.toast button { padding: 2px 10px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./store.js"></script>
+  </body>
+</html>
