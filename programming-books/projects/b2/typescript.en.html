@@ -1,0 +1,56 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">In each project, write the types <em>first</em>, before any function. Then let the compiler guide you: when it complains, read the message before changing anything. Run <code>npx tsc --noEmit</code> often, and run the file with <code>node file.ts</code> to see the output.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A typed shopping cart</h3>
+<p class="project-goal">Rewrite a shopping cart in TypeScript, with immutable updates and a coupon, so that the compiler protects every function.</p>
+<p class="project-skills"><strong>You will practise:</strong> object types, <code>readonly</code>, optional properties, default parameters, <code>Record</code>, and <code>??</code> with an indexed lookup.</p>
+<ol class="steps">
+<li>Write three types: <code>Product</code> (with a read-only <code>id</code>), <code>CartLine</code> (a product and a quantity), and <code>Cart</code> (a read-only array of lines and an optional <code>coupon</code>).</li>
+<li>Write <code>add(cart, product, quantity = 1): Cart</code>. If the product is already in the cart, return a new cart with that line’s quantity increased; otherwise append a new line.</li>
+<li>Keep the coupons in <code>const DISCOUNTS: Record&lt;string, number&gt;</code>.</li>
+<li>Write <code>total(cart): number</code>. Because of <code>noUncheckedIndexedAccess</code>, <code>DISCOUNTS[code]</code> may be <code>undefined</code>, so write <code>?? 0</code>.</li>
+<li>Try to break it on purpose: change a product’s <code>id</code>, push into <code>cart.lines</code>, pass a price as a string. Read each error.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> round money to two decimal places only at the end, in <code>total</code>. Rounding at every step adds small errors together.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/cart.ts"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>The life of an order</h3>
+<p class="project-goal">Model every status an online order goes through as a discriminated union, and write functions that cannot forget a status.</p>
+<p class="project-skills"><strong>You will practise:</strong> discriminated unions, narrowing in a <code>switch</code>, <code>assertNever</code>, and functions that answer questions about a state.</p>
+<ol class="steps">
+<li>Write <code>type OrderStatus</code> with five variants on a <code>kind</code> field: <code>placed</code>, <code>paid</code> (with an <code>amount</code>), <code>shipped</code> (with a <code>tracking</code> number), <code>delivered</code> and <code>cancelled</code> (with a <code>reason</code>). Every variant has an <code>at</code> time.</li>
+<li>Write <code>describe(status): string</code> with a <code>switch</code>. Use the extra fields only in their own case, and finish with <code>default: return assertNever(status)</code>.</li>
+<li>Write <code>canCancel(status): boolean</code>: only orders that are placed or paid may be cancelled.</li>
+<li>Print a short history of three statuses, marking the ones that can still be cancelled.</li>
+<li>Add a sixth variant, <code>returned</code>, and let the compiler show you every place that must change.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> step 5 is the point of the whole project. In a real codebase the <code>switch</code> statements may be spread across twenty files; the compiler finds all of them in a second.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/orders.ts"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A type-safe event emitter</h3>
+<p class="project-goal">Take the event emitter from the last chapter and give it types, so that the names of events and the arguments of each one are checked everywhere.</p>
+<p class="project-skills"><strong>You will practise:</strong> generic classes, <code>keyof</code>, indexed access types (<code>Events[E]</code>), mapped types, and labelled tuples.</p>
+<ol class="steps">
+<li>Describe your events as one type, where each key is an event name and each value is a tuple of its arguments: <code>{ order: [id: number, total: number]; logout: [] }</code>.</li>
+<li>Write <code>class Emitter&lt;Events extends Record&lt;string, unknown[]&gt;&gt;</code>.</li>
+<li>Store listeners in a <dfn>mapped type</dfn>: <code>{ [E in keyof Events]?: Set&lt;(...args: Events[E]) =&gt; void&gt; }</code>. Each event gets a set of functions with exactly its own arguments.</li>
+<li>Type <code>on</code> and <code>emit</code> with a type parameter <code>E extends keyof Events</code>, so the event name decides the argument types.</li>
+<li>Check the result with a file of deliberate mistakes: the wrong arguments, a misspelled event, and a listener that expects a string.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> notice that the listener <code>(id, total) =&gt; …</code> needs no annotations at all: TypeScript infers both types from the event name. Well-typed libraries feel like this: you write less, and the editor knows more.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/typed-emitter.ts"></pre>
+<p><strong>And the compiler catches all three mistakes:</strong></p>
+<pre data-check="projects/typed-emitter-bad.ts"></pre>
+</div>

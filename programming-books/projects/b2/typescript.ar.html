@@ -1,0 +1,56 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">في كل مشروع اكتب الأنواع <em>أولاً</em>، قبل أي دالة. ثم دع المترجم يرشدك: حين يعترض، اقرأ الرسالة قبل أن تغيّر أي شيء. شغّل <code>npx tsc --noEmit</code> كثيراً، وشغّل الملف بـ <code>node file.ts</code> لترى النتيجة.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>سلة تسوق بالأنواع</h3>
+<p class="project-goal">أعد كتابة سلة تسوق بـ TypeScript، بتحديثات لا تغيّر الأصل وبكوبون خصم، ليحمي المترجم كل دالة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> أنواع الكائنات، و<code>readonly</code>، والخصائص الاختيارية، والمعاملات الافتراضية، و<code>Record</code>، و<code>??</code> مع البحث بالمفتاح.</p>
+<ol class="steps">
+<li>اكتب ثلاثة أنواع: <code>Product</code> (بـ <code>id</code> للقراءة فقط)، و<code>CartLine</code> (منتج وكمية)، و<code>Cart</code> (مصفوفة أسطر للقراءة فقط و<code>coupon</code> اختياري).</li>
+<li>اكتب <code>add(cart, product, quantity = 1): Cart</code>. فإن كان المنتج في السلة أصلاً أرجع سلة جديدة زادت كمية سطره، وإلا فأضف سطراً جديداً.</li>
+<li>احفظ الكوبونات في <code>const DISCOUNTS: Record&lt;string, number&gt;</code>.</li>
+<li>اكتب <code>total(cart): number</code>. وبسبب <code>noUncheckedIndexedAccess</code> قد تكون <code>DISCOUNTS[code]</code> هي <code>undefined</code>، فاكتب <code>?? 0</code>.</li>
+<li>حاول كسرها عمداً: غيّر <code>id</code> منتج، وأضف بـ push إلى <code>cart.lines</code>، ومرّر سعراً نصاً. واقرأ كل خطأ.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قرّب المال إلى منزلتين عشريتين في النهاية فقط، في <code>total</code>. فالتقريب في كل خطوة يجمع أخطاء صغيرة فوق بعضها.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/cart.ts"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>رحلة الطلب</h3>
+<p class="project-goal">صِف كل حالة يمر بها طلب الشراء على الإنترنت اتحاداً مميَّزاً، واكتب دوالّ لا يمكن أن تنسى حالة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الاتحادات المميَّزة، والتضييق داخل <code>switch</code>، و<code>assertNever</code>، ودوالّ تجيب عن أسئلة عن الحالة.</p>
+<ol class="steps">
+<li>اكتب <code>type OrderStatus</code> بخمسة أشكال على حقل <code>kind</code>: <code>placed</code>، و<code>paid</code> (مع <code>amount</code>)، و<code>shipped</code> (مع رقم تتبع <code>tracking</code>)، و<code>delivered</code>، و<code>cancelled</code> (مع <code>reason</code>). ولكل شكل وقت <code>at</code>.</li>
+<li>اكتب <code>describe(status): string</code> بـ <code>switch</code>. استخدم الحقول الإضافية في حالتها فقط، واختم بـ <code>default: return assertNever(status)</code>.</li>
+<li>اكتب <code>canCancel(status): boolean</code>: لا يُلغى إلا الطلب الموضوع أو المدفوع.</li>
+<li>اطبع تاريخاً قصيراً من ثلاث حالات، وعلّم ما يمكن إلغاؤه بعد.</li>
+<li>أضف شكلاً سادساً <code>returned</code>، ودع المترجم يُريك كل مكان يجب أن يتغير.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الخطوة 5 هي غاية المشروع كله. ففي قاعدة كود حقيقية قد تتوزع جمل <code>switch</code> على عشرين ملفاً، والمترجم يجدها كلها في ثانية.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/orders.ts"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>باعث أحداث آمن الأنواع</h3>
+<p class="project-goal">خذ باعث الأحداث من الفصل السابق وأعطه أنواعاً، لتُفحص أسماء الأحداث ومعاملات كل حدث في كل مكان.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأصناف العامة، و<code>keyof</code>، وأنواع الوصول بالمفتاح (<code>Events[E]</code>)، والأنواع المحوَّلة (mapped types)، والصفوف المسماة (labelled tuples).</p>
+<ol class="steps">
+<li>صِف أحداثك نوعاً واحداً، كل مفتاح فيه اسم حدث، وكل قيمة صف (tuple) بمعاملاته: <code>{ order: [id: number, total: number]; logout: [] }</code>.</li>
+<li>اكتب <code>class Emitter&lt;Events extends Record&lt;string, unknown[]&gt;&gt;</code>.</li>
+<li>احفظ المستمعين في <dfn>نوع محوَّل</dfn>: <code>{ [E in keyof Events]?: Set&lt;(...args: Events[E]) =&gt; void&gt; }</code>. فلكل حدث مجموعة دوال بمعاملاته هو بالضبط.</li>
+<li>اكتب أنواع <code>on</code> و<code>emit</code> بمعامل نوع <code>E extends keyof Events</code>، فيقرر اسم الحدث أنواع المعاملات.</li>
+<li>افحص النتيجة بملف أخطاء متعمدة: معاملات خاطئة، واسم حدث مكتوب خطأ، ومستمع يتوقع نصاً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لاحظ أن المستمع <code>(id, total) =&gt; …</code> لا يحتاج أي أنواع مكتوبة: تستنتج TypeScript النوعين من اسم الحدث. وهكذا تبدو المكتبات جيدة الأنواع: تكتب أقل، ويعرف المحرر أكثر.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/typed-emitter.ts"></pre>
+<p><strong>ويلتقط المترجم الأخطاء الثلاثة كلها:</strong></p>
+<pre data-check="projects/typed-emitter-bad.ts"></pre>
+</div>

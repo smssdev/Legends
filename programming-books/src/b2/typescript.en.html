@@ -1,0 +1,267 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/typescript/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>TypeScript for Real Projects</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what TypeScript adds to JavaScript, and what it does not</li>
+<li>let TypeScript infer types, and annotate where it matters</li>
+<li>describe objects with optional and read-only properties</li>
+<li>narrow union types, and model screens with discriminated unions</li>
+<li>write generic functions and types</li>
+<li>build new types from old ones with utility types, <code>as const</code> and <code>satisfies</code></li>
+<li>check data that arrives from outside your program</li>
+</ul>
+</div>
+
+<p class="lead">In the last chapter, many examples ended with an error that appeared only when the code ran: a missing property, a wrong type, a value that was <code>undefined</code>. In a big app those errors appear in front of users. <strong>TypeScript</strong> is JavaScript with types written on top, and a tool, the <dfn>compiler</dfn>, that reads those types and finds such mistakes while you type. Almost every professional frontend team uses it today.</p>
+
+<aside class="bit" data-mood="happy"><p>Think of types as labels on boxes. If a box says “numbers only”, nobody can put a word in it by mistake, and everybody who opens it knows what is inside. TypeScript checks the labels for you, all day, for free.</p></aside>
+
+<h2>{{n}}.1 Mistakes found before running</h2>
+
+<p>Here is a short file with three bugs. JavaScript would run it and fail somewhere later, or worse, quietly compute <code>NaN</code>. The TypeScript compiler, <code>tsc</code>, refuses it straight away and says exactly where and why:</p>
+
+<pre data-code="why.ts" data-title="why.ts"></pre>
+<pre data-check="why.ts"></pre>
+
+<p>Each message gives the file, the line and column, an error code, and a sentence. The first even suggests the fix. Your editor shows the same messages as red underlines while you type, so most of the time you never run the build to see them.</p>
+
+<p>Two facts are worth knowing from the start:</p>
+<ul>
+<li><strong>Types disappear when the code runs.</strong> Browsers and Node run plain JavaScript; the types are removed first. Node can even run a <code>.ts</code> file directly by deleting the types, which is how every example in this chapter is run. So types cost nothing at run time, but they also <em>check</em> nothing at run time. Data from a server must still be checked (section {{n}}.6).</li>
+<li><strong>TypeScript is JavaScript.</strong> Every JavaScript file is almost a valid TypeScript file. You can add types slowly, file by file.</li>
+</ul>
+
+<h2>{{n}}.2 Annotations and inference</h2>
+
+<p>You write a type after a colon: <code>name: string</code>. But you need to write far fewer types than you might expect, because TypeScript <dfn>infers</dfn> them from the values:</p>
+
+<pre data-code="basics.ts" data-title="basics.ts"></pre>
+<pre data-out="basics.ts"></pre>
+
+<ul>
+<li><code>city</code> is inferred as <code>string</code>, <code>year</code> as the exact number <code>2026</code> (it is a <code>const</code>), and <code>scores</code> as <code>number[]</code>.</li>
+<li>Function <strong>parameters</strong> cannot be inferred, so you annotate them. That is where types do most of their work: they are the contract between the function and every caller.</li>
+<li><code>title?: string</code> makes the parameter optional. Inside the function its type is <code>string | undefined</code>, and TypeScript makes you handle both.</li>
+<li>Writing the <strong>return type</strong> (<code>: number</code>) is optional, but it is a good habit for exported functions: a mistake inside the function is then reported there, not at every caller.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">Tip: hover to see the types</p><p>In VS Code, rest the mouse on any variable to see the type TypeScript inferred. When you are unsure what something is, ask the editor before you ask the internet.</p></aside>
+
+<h3>Describing objects</h3>
+
+<p>An object type lists its properties. Mark a property <code>?</code> if it may be missing, and <code>readonly</code> if it must never change after the object is created:</p>
+
+<pre data-code="objects.ts" data-title="objects.ts"></pre>
+<pre data-check="objects.ts"></pre>
+
+<p>Changing <code>name</code> is allowed. Changing <code>id</code> is not. The roles array is <code>readonly string[]</code>, so it has no <code>push</code> at all. And the compiler noticed that <code>phone</code> might be missing: the code must first check it, for example with <code>user.phone?.length</code>.</p>
+
+<p>You will also see <code>interface User { … }</code> instead of <code>type User = { … }</code>. For object shapes they are nearly the same. This book uses <code>type</code> everywhere, because it also works for unions, which come next. Pick one style per project and stay with it.</p>
+
+<h2>{{n}}.3 Unions and narrowing</h2>
+
+<p>A <dfn>union type</dfn>, written with <code>|</code>, means “one of these”. Inside the function, every check you write <dfn>narrows</dfn> the type: after <code>typeof value === "string"</code>, TypeScript knows it is a string; in the rest of the function, it knows it is not:</p>
+
+<pre data-code="narrowing.ts" data-title="narrowing.ts"></pre>
+<pre data-out="narrowing.ts"></pre>
+
+<p>TypeScript understands all the usual checks: <code>=== null</code>, <code>typeof</code>, <code>Array.isArray</code>, <code>instanceof</code>, and <code>"key" in object</code>. You do not need special syntax; you write normal JavaScript, and the types follow your logic.</p>
+
+<h3>Discriminated unions: one type for every state of a screen</h3>
+
+<p>Every screen that loads data can be in four states: it has not started, it is loading, it has the data, or it failed. Beginners often use three separate variables, <code>loading</code>, <code>data</code> and <code>error</code>, and then meet impossible combinations, such as an error and data at the same time. A <dfn>discriminated union</dfn> makes those combinations impossible: each state is an object with a common <code>status</code> field, and only the right state has <code>data</code> or <code>message</code>:</p>
+
+<pre data-code="remote.ts" data-title="remote.ts"></pre>
+<pre data-out="remote.ts"></pre>
+
+<p>Inside <code>case "success"</code>, TypeScript knows that <code>state.data</code> exists; anywhere else, reading it is an error. The <code>default</code> branch is the clever part. If every case is handled, <code>state</code> has the type <code>never</code> there, meaning “this cannot happen”. Now watch what happens when a colleague deletes the <code>"error"</code> case:</p>
+
+<pre data-check="remote-missing.ts"></pre>
+
+<p>The build fails and names the forgotten state. This pattern is called an <dfn>exhaustive check</dfn>, and it turns “we forgot to show the error message” from a bug report into a compile error. You will use it in every framework chapter of this book.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Does TypeScript check the types again while the program runs in the browser?</li><li>Inside <code>if (typeof x === "number")</code>, what is the type of <code>x</code> when <code>x</code> is <code>number | string</code>?</li><li>Why is a <code>status</code> field better than separate <code>loading</code>, <code>data</code> and <code>error</code> variables?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Generics</h2>
+
+<p>Some functions work the same way for any type: “give me the first item of a list” does not care whether the list holds products or users. A <dfn>generic</dfn> function has a <dfn>type parameter</dfn>, written in angle brackets, which stands for “whatever type the caller uses”:</p>
+
+<pre data-code="generics.ts" data-title="generics.ts"></pre>
+<pre data-out="generics.ts"></pre>
+
+<ul>
+<li><code>first&lt;T&gt;</code> returns <code>T | undefined</code>. Called with products, it returns a product, so <code>.name</code> is allowed; called with an empty list, the <code>undefined</code> forces you to handle the missing case.</li>
+<li><code>T extends { id: number }</code> is a <dfn>constraint</dfn>: <code>byId</code> accepts any objects, as long as they have a numeric <code>id</code>.</li>
+<li><code>Result&lt;T&gt;</code> is a generic <em>type</em>: a success with a value, or a failure with a message. It is a discriminated union on <code>ok</code>, so callers must check before using the value. Many teams return results like this for expected failures, such as bad user input, and keep exceptions for real surprises.</li>
+</ul>
+
+<p>You will mostly <em>use</em> generics written by others: <code>Array&lt;T&gt;</code>, <code>Map&lt;K, V&gt;</code>, <code>Promise&lt;T&gt;</code>, and every framework’s hooks and stores. Writing your own is worth it when a function would otherwise need <code>any</code>.</p>
+
+<h2>{{n}}.5 Types from types</h2>
+
+<p>A real app has one <code>Product</code> type and many variations of it: the fields a form may change, the fields a card shows, the fields a new product needs. Writing each by hand means updating five types when the product gains a field. <dfn>Utility types</dfn> build them from the original instead:</p>
+
+<pre data-code="utility.ts" data-title="utility.ts"></pre>
+<pre data-out="utility.ts"></pre>
+
+<table>
+<thead><tr><th>Type</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>Partial&lt;T&gt;</code></td><td>Every property optional: an update with only the changed fields</td></tr>
+<tr><td><code>Required&lt;T&gt;</code></td><td>Every property required</td></tr>
+<tr><td><code>Pick&lt;T, "a" | "b"&gt;</code></td><td>Only those properties</td></tr>
+<tr><td><code>Omit&lt;T, "id"&gt;</code></td><td>All properties except those</td></tr>
+<tr><td><code>Record&lt;K, V&gt;</code></td><td>An object with keys of type <code>K</code> and values of type <code>V</code></td></tr>
+<tr><td><code>Readonly&lt;T&gt;</code></td><td>Every property read-only</td></tr>
+<tr><td><code>ReturnType&lt;typeof fn&gt;</code></td><td>Whatever the function returns</td></tr>
+</tbody>
+</table>
+
+<p>The second half of the example shows a pattern you will use often. <code>as const</code> tells TypeScript to keep the exact values of the array, and <code>(typeof ROLES)[number]</code> turns them into the union <code>"viewer" | "editor" | "admin"</code>. The list of roles is written once, and the type can never drift from it. Finally, <code>satisfies</code> checks that <code>labels</code> has a label for every role, without changing the type of <code>labels</code> itself. Forget a role, or misspell one, and the build fails.</p>
+
+<h2>{{n}}.6 The boundary: <code>unknown</code> and type guards</h2>
+
+<p>Types describe your own code. Data that arrives from outside, from a server, from <code>localStorage</code> or from a file, has no types until you check it. TypeScript offers two ways to say “I don’t know what this is”:</p>
+<ul>
+<li><code>any</code> switches checking off. Anything goes, and the bugs come back. Avoid it.</li>
+<li><code>unknown</code> means “could be anything, so you must check before you use it”. This is the honest type for outside data.</li>
+</ul>
+
+<p>A <dfn>type guard</dfn> is a function that checks a value at run time and tells TypeScript the result. Its return type, <code>value is User</code>, is the promise: “if I return <code>true</code>, it is a <code>User</code>”:</p>
+
+<pre data-code="boundary.ts" data-title="boundary.ts"></pre>
+<pre data-out="boundary.ts"></pre>
+
+<p>The second server reply looked almost right, with an <code>id</code> that was a string and a <code>fullName</code> instead of <code>name</code>. Without the guard, the bug would have shown up somewhere far away, as an empty name on a screen. With it, the program stops at the door with a clear message. Writing guards by hand gets long; in the chapter on forms you will use a library that writes them from a schema.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: <code>as</code> is a promise, not a check</p><p><code>data as User</code> tells the compiler “trust me”. It changes nothing at run time. Use it only when you really know better than the compiler, as in <code>error as Error</code> inside a <code>catch</code>. Never use it to silence an error you do not understand.</p></aside>
+
+<h2>{{n}}.7 A strict setup for real projects</h2>
+
+<p>The compiler has many options. New projects should switch on <code>strict</code>, which turns on all the important checks, and one more that <code>strict</code> leaves out, <code>noUncheckedIndexedAccess</code>. It reminds you that looking something up in an object or array may find nothing:</p>
+
+<pre data-code="index.ts" data-title="index.ts"></pre>
+<pre data-check="index.ts"></pre>
+
+<p>Without the option, both lines would compile and then crash. In a project, these settings live in <code>tsconfig.json</code>, which you will create with the build tools in the next chapter. The settings used for every example in this book are:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tsconfig.json</div><pre class="code">{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "target": "es2024",
+    "module": "nodenext",
+    "noEmit": true
+  }
+}</pre></div>
+
+<aside class="box rule"><p class="box-title">Professional habit: write only the TypeScript that disappears</p><p>Some older TypeScript features, such as <code>enum</code> and <code>namespace</code>, generate JavaScript code of their own, so they cannot simply be deleted. Node refuses to run them without a build step, and many tools discourage them. Use unions of strings instead of enums: <code>type Role = "viewer" | "editor"</code>. Then every <code>.ts</code> file is just JavaScript with labels.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Using <code>any</code> to make an error go away</td><td>The error is hidden and comes back at run time</td><td>Use <code>unknown</code> and check, or fix the type</td></tr>
+<tr><td><code>JSON.parse(text) as User</code></td><td>Wrong data passes as if it were right</td><td>A type guard, or a schema library</td></tr>
+<tr><td>Three variables for loading, data and error</td><td>Impossible states, such as data and an error together</td><td>One discriminated union with a <code>status</code></td></tr>
+<tr><td>A <code>switch</code> without a <code>never</code> default</td><td>A new state is silently ignored</td><td><code>default: return assertNever(state)</code></td></tr>
+<tr><td>Copying a type to make a variation</td><td>The copies drift apart</td><td><code>Pick</code>, <code>Omit</code>, <code>Partial</code></td></tr>
+<tr><td>Turning off <code>strict</code> to silence errors</td><td>Most of TypeScript’s value is lost</td><td>Keep <code>strict</code>; fix errors one by one</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>TypeScript adds <strong>types</strong> to JavaScript, and the <strong>compiler</strong> checks them before the code runs. The types are then removed.</li>
+<li>Let TypeScript <strong>infer</strong> most types; <strong>annotate</strong> function parameters, and return types of exported functions.</li>
+<li>Object types can have <strong>optional</strong> (<code>?</code>) and <strong>readonly</strong> properties.</li>
+<li><strong>Unions</strong> (<code>|</code>) are narrowed by ordinary checks. A <strong>discriminated union</strong> with an <strong>exhaustive</strong> <code>never</code> check models every state of a screen safely.</li>
+<li><strong>Generics</strong> write one function or type for many types; constraints limit what is allowed.</li>
+<li><strong>Utility types</strong>, <code>as const</code> and <code>satisfies</code> build types from one source of truth.</li>
+<li>Outside data is <code>unknown</code> until a <strong>type guard</strong> checks it. <code>as</code> checks nothing.</li>
+<li>Use <code>strict</code> and <code>noUncheckedIndexedAccess</code>, and prefer syntax that simply disappears.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. No: the types are removed before the code runs, so outside data must be checked by your own code. 2. <code>number</code>. 3. Because the union makes impossible combinations impossible to write, and TypeScript shows which fields exist in each state.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">In each project, write the types <em>first</em>, before any function. Then let the compiler guide you: when it complains, read the message before changing anything. Run <code>npx tsc --noEmit</code> often, and run the file with <code>node file.ts</code> to see the output.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A typed shopping cart</h3>
+<p class="project-goal">Rewrite a shopping cart in TypeScript, with immutable updates and a coupon, so that the compiler protects every function.</p>
+<p class="project-skills"><strong>You will practise:</strong> object types, <code>readonly</code>, optional properties, default parameters, <code>Record</code>, and <code>??</code> with an indexed lookup.</p>
+<ol class="steps">
+<li>Write three types: <code>Product</code> (with a read-only <code>id</code>), <code>CartLine</code> (a product and a quantity), and <code>Cart</code> (a read-only array of lines and an optional <code>coupon</code>).</li>
+<li>Write <code>add(cart, product, quantity = 1): Cart</code>. If the product is already in the cart, return a new cart with that line’s quantity increased; otherwise append a new line.</li>
+<li>Keep the coupons in <code>const DISCOUNTS: Record&lt;string, number&gt;</code>.</li>
+<li>Write <code>total(cart): number</code>. Because of <code>noUncheckedIndexedAccess</code>, <code>DISCOUNTS[code]</code> may be <code>undefined</code>, so write <code>?? 0</code>.</li>
+<li>Try to break it on purpose: change a product’s <code>id</code>, push into <code>cart.lines</code>, pass a price as a string. Read each error.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> round money to two decimal places only at the end, in <code>total</code>. Rounding at every step adds small errors together.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/cart.ts"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>The life of an order</h3>
+<p class="project-goal">Model every status an online order goes through as a discriminated union, and write functions that cannot forget a status.</p>
+<p class="project-skills"><strong>You will practise:</strong> discriminated unions, narrowing in a <code>switch</code>, <code>assertNever</code>, and functions that answer questions about a state.</p>
+<ol class="steps">
+<li>Write <code>type OrderStatus</code> with five variants on a <code>kind</code> field: <code>placed</code>, <code>paid</code> (with an <code>amount</code>), <code>shipped</code> (with a <code>tracking</code> number), <code>delivered</code> and <code>cancelled</code> (with a <code>reason</code>). Every variant has an <code>at</code> time.</li>
+<li>Write <code>describe(status): string</code> with a <code>switch</code>. Use the extra fields only in their own case, and finish with <code>default: return assertNever(status)</code>.</li>
+<li>Write <code>canCancel(status): boolean</code>: only orders that are placed or paid may be cancelled.</li>
+<li>Print a short history of three statuses, marking the ones that can still be cancelled.</li>
+<li>Add a sixth variant, <code>returned</code>, and let the compiler show you every place that must change.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> step 5 is the point of the whole project. In a real codebase the <code>switch</code> statements may be spread across twenty files; the compiler finds all of them in a second.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/orders.ts"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A type-safe event emitter</h3>
+<p class="project-goal">Take the event emitter from the last chapter and give it types, so that the names of events and the arguments of each one are checked everywhere.</p>
+<p class="project-skills"><strong>You will practise:</strong> generic classes, <code>keyof</code>, indexed access types (<code>Events[E]</code>), mapped types, and labelled tuples.</p>
+<ol class="steps">
+<li>Describe your events as one type, where each key is an event name and each value is a tuple of its arguments: <code>{ order: [id: number, total: number]; logout: [] }</code>.</li>
+<li>Write <code>class Emitter&lt;Events extends Record&lt;string, unknown[]&gt;&gt;</code>.</li>
+<li>Store listeners in a <dfn>mapped type</dfn>: <code>{ [E in keyof Events]?: Set&lt;(...args: Events[E]) =&gt; void&gt; }</code>. Each event gets a set of functions with exactly its own arguments.</li>
+<li>Type <code>on</code> and <code>emit</code> with a type parameter <code>E extends keyof Events</code>, so the event name decides the argument types.</li>
+<li>Check the result with a file of deliberate mistakes: the wrong arguments, a misspelled event, and a listener that expects a string.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> notice that the listener <code>(id, total) =&gt; …</code> needs no annotations at all: TypeScript infers both types from the event name. Well-typed libraries feel like this: you write less, and the editor knows more.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/typed-emitter.ts"></pre>
+<p><strong>And the compiler catches all three mistakes:</strong></p>
+<pre data-check="projects/typed-emitter-bad.ts"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a type <code>Book</code> with a read-only <code>isbn</code>, a <code>title</code>, an optional <code>subtitle</code> and an array of <code>authors</code>, and a function <code>label(book: Book): string</code> that adds the subtitle only when it exists.</li>
+<li><span class="level">Easy</span> Rewrite <code>type Size = "S" | "M" | "L"</code> as a constant array with <code>as const</code>, derive the type from it, and print how many sizes there are.</li>
+<li><span class="level">Medium</span> Add a fifth state, <code>{ status: "empty" }</code>, to <code>RemoteData</code> in <code>remote.ts</code>. Run the check, read the error, and handle the new state.</li>
+<li><span class="level">Medium</span> Write a generic <code>last&lt;T&gt;(list: readonly T[]): T | undefined</code> and a generic <code>groupBy&lt;T, K extends string&gt;(list: readonly T[], key: (item: T) =&gt; K): Record&lt;K, T[]&gt;</code>.</li>
+<li><span class="level">Challenge</span> Write a type guard <code>isProductList(value: unknown): value is Product[]</code> for <code>{ id: number; name: string; price: number }</code> and use it to read a JSON string safely. Test it with good data, with a price that is a string, and with an object that is not an array.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Real apps are not one file. In the next chapter you will split code into modules, install packages with npm, and set up a modern project with Vite, TypeScript, a linter and a formatter: the same foundation every chapter after it builds on.</p>
+</div>
+</section>

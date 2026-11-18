@@ -9,6 +9,8 @@
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page ch01 { @top-center { content: "الفصل 1: JavaScript الحديثة بعمق"; } }
 @page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "الفصل 2: TypeScript في المشاريع الحقيقية"; } }
+@page ch02:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -663,6 +665,489 @@ OK (في المحاولة 3)
 <p>رأيت كم من الأمور قد يسوء حين لا تكون القيمة كما توقعت. وTypeScript تلتقط معظم هذه الأخطاء قبل أن تشغّل الكود أصلاً. في الفصل التالي ستضيف الأنواع إلى كود حقيقي، وتصف بيانات قد تكون في عدة حالات، وتدع المحرر يجد الأخطاء نيابة عنك.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b2/typescript/ar">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">الفصل 2</p><h1>TypeScript في المشاريع الحقيقية</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح ما تضيفه TypeScript إلى JavaScript، وما لا تضيفه</li>
+<li>تدع TypeScript تستنتج الأنواع، وتكتبها حيث يهم ذلك</li>
+<li>تصف الكائنات بخصائص اختيارية وأخرى للقراءة فقط</li>
+<li>تضيّق الأنواع الاتحادية، وتصف حالات الشاشة بالاتحادات المميَّزة</li>
+<li>تكتب دوالّ وأنواعاً عامة (generics)</li>
+<li>تبني أنواعاً جديدة من القديمة بالأنواع المساعدة و<code>as const</code> و<code>satisfies</code></li>
+<li>تفحص البيانات التي تصل من خارج برنامجك</li>
+</ul>
+</div>
+
+<p class="lead">في الفصل السابق انتهت أمثلة كثيرة بخطأ لم يظهر إلا حين عمل الكود: خاصية ناقصة، أو نوع خاطئ، أو قيمة <code>undefined</code>. وفي تطبيق كبير تظهر هذه الأخطاء أمام المستخدمين. و<strong>TypeScript</strong> هي JavaScript مكتوبة فوقها الأنواع، ومعها أداة اسمها <dfn>المترجم</dfn> (compiler) تقرأ هذه الأنواع وتجد تلك الأخطاء وأنت تكتب. ويستخدمها اليوم كل فريق واجهات محترف تقريباً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>تخيّل الأنواع ملصقات على الصناديق. إن كُتب على الصندوق «أرقام فقط» فلن يضع فيه أحد كلمة بالخطأ، وسيعرف كل من يفتحه ما فيه. وTypeScript تفحص الملصقات نيابة عنك، طوال اليوم، ومجاناً.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>أخطاء تُكتشف قبل التشغيل</span></h2>
+
+<p>هذا ملف قصير فيه ثلاثة أخطاء. ستشغّله JavaScript ثم تفشل في مكان ما لاحقاً، أو الأسوأ أن تحسب <code>NaN</code> بصمت. أما مترجم TypeScript، <code>tsc</code>، فيرفضه فوراً ويقول أين ولماذا بالضبط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">why.ts</div><pre class="code"><span class="k">type</span> Product = { name: string; price: number; quantity: number };
+
+<span class="k">function</span> lineTotal(product: Product) {
+  <span class="k">return</span> product.price * product.quantitiy;
+}
+
+<span class="k">const</span> book: Product = { name: <span class="s">&quot;كتاب&quot;</span>, price: <span class="s">&quot;25&quot;</span>, quantity: <span class="n">2</span> };
+lineTotal(book);
+lineTotal({ name: <span class="s">&quot;كوب&quot;</span>, price: <span class="n">8</span> });</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx tsc --noEmit why.ts
+why.ts(4,34): error TS2551: Property &#x27;quantitiy&#x27; does not exist on type &#x27;Product&#x27;. Did you mean &#x27;quantity&#x27;?
+why.ts(7,39): error TS2322: Type &#x27;string&#x27; is not assignable to type &#x27;number&#x27;.
+why.ts(9,11): error TS2741: Property &#x27;quantity&#x27; is missing in type &#x27;{ name: string; price: number; }&#x27; but required in type &#x27;Product&#x27;.</pre></div>
+
+<p>كل رسالة تذكر الملف، والسطر والعمود، ورمز الخطأ، وجملة شارحة. والأولى تقترح الإصلاح أيضاً. ويعرض محررك الرسائل نفسها خطوطاً حمراء تحت الكود وأنت تكتب، فلا تحتاج غالباً إلى تشغيل البناء لتراها.</p>
+
+<p>حقيقتان تستحقان المعرفة من البداية:</p>
+<ul>
+<li><strong>الأنواع تختفي حين يعمل الكود.</strong> المتصفحات وNode تشغّل JavaScript العادية، وتُحذف الأنواع أولاً. بل يستطيع Node تشغيل ملف <code>.ts</code> مباشرة بحذف أنواعه، وبهذا شُغّل كل مثال في هذا الفصل. فالأنواع لا تكلّف شيئاً وقت التشغيل، لكنها أيضاً لا <em>تفحص</em> شيئاً وقت التشغيل. والبيانات القادمة من خادم يجب أن تُفحص (القسم 2.6).</li>
+<li><strong>TypeScript هي JavaScript.</strong> كل ملف JavaScript تقريباً ملف TypeScript صالح. فتستطيع إضافة الأنواع تدريجياً، ملفاً بعد ملف.</li>
+</ul>
+
+<h2><span class="sec">2.2</span> <span>كتابة الأنواع واستنتاجها</span></h2>
+
+<p>تكتب النوع بعد نقطتين: <code>name: string</code>. لكنك تكتب أنواعاً أقل بكثير مما تتوقع، لأن TypeScript <dfn>تستنتجها</dfn> من القيم:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">basics.ts</div><pre class="code"><span class="c">// مستنتجة: تعرف TypeScript هذه الأنواع دون أن تُخبَر</span>
+<span class="k">let</span> city = <span class="s">&quot;القاهرة&quot;</span>;
+<span class="k">const</span> year = <span class="n">2026</span>;
+<span class="k">const</span> scores = [<span class="n">72</span>, <span class="n">95</span>, <span class="n">88</span>];
+
+<span class="c">// اكتب أنواع معاملات الدالة ونوع ما تُرجعه</span>
+<span class="k">function</span> average(values: number[]): number {
+  <span class="k">return</span> values.reduce((sum, v) =&gt; sum + v, <span class="n">0</span>) / values.length;
+}
+
+<span class="k">function</span> greet(name: string, title?: string): string {
+  <span class="k">return</span> title ? <span class="s">`${title} ${name}`</span> : name;
+}
+
+console.log(city, year, average(scores));
+console.log(greet(<span class="s">&quot;سارة&quot;</span>), <span class="s">&quot;|&quot;</span>, greet(<span class="s">&quot;سارة&quot;</span>, <span class="s">&quot;د.&quot;</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>القاهرة 2026 85
+سارة | د. سارة</pre></div>
+
+<ul>
+<li>استُنتج <code>city</code> نصاً <code>string</code>، و<code>year</code> الرقم <code>2026</code> بعينه (لأنه <code>const</code>)، و<code>scores</code> مصفوفة أرقام <code>number[]</code>.</li>
+<li><strong>معاملات</strong> الدالة لا تُستنتج، فتكتب أنواعها. وهناك تؤدي الأنواع معظم عملها: فهي العقد بين الدالة وكل من يستدعيها.</li>
+<li><code>title?: string</code> تجعل المعامل اختيارياً. ونوعه داخل الدالة <code>string | undefined</code>، وتلزمك TypeScript بمعالجة الحالتين.</li>
+<li>كتابة <strong>نوع ما تُرجعه</strong> الدالة (<code>: number</code>) اختيارية، لكنها عادة جيدة للدوال المصدَّرة: فيُبلَّغ عن الخطأ داخل الدالة هناك، لا عند كل مستدعٍ.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: مرّر الفأرة لترى الأنواع</p><p>في VS Code ضع الفأرة على أي متغير لترى النوع الذي استنتجته TypeScript. وحين لا تكون متأكداً مما هو الشيء، اسأل المحرر قبل أن تسأل الإنترنت.</p></aside>
+
+<h3>وصف الكائنات</h3>
+
+<p>نوع الكائن يسرد خصائصه. ضع <code>?</code> على الخاصية التي قد تغيب، و<code>readonly</code> على التي يجب ألا تتغير أبداً بعد إنشاء الكائن:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">objects.ts</div><pre class="code"><span class="k">type</span> User = {
+  <span class="k">readonly</span> id: number;
+  name: string;
+  email: string;
+  phone?: string; <span class="c">// اختياري: نص أو undefined</span>
+  roles: <span class="k">readonly</span> string[];
+};
+
+<span class="k">const</span> user: User = { id: <span class="n">7</span>, name: <span class="s">&quot;سارة&quot;</span>, email: <span class="s">&quot;sara@example.com&quot;</span>, roles: [<span class="s">&quot;admin&quot;</span>] };
+
+user.name = <span class="s">&quot;هدى&quot;</span>;
+user.id = <span class="n">8</span>;
+user.roles.push(<span class="s">&quot;editor&quot;</span>);
+console.log(user.phone.length);</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx tsc --noEmit objects.ts
+objects.ts(12,6): error TS2540: Cannot assign to &#x27;id&#x27; because it is a read-only property.
+objects.ts(13,12): error TS2339: Property &#x27;push&#x27; does not exist on type &#x27;readonly string[]&#x27;.
+objects.ts(14,13): error TS18048: &#x27;user.phone&#x27; is possibly &#x27;undefined&#x27;.</pre></div>
+
+<p>تغيير <code>name</code> مسموح، وتغيير <code>id</code> ممنوع. ومصفوفة الأدوار من نوع <code>readonly string[]</code>، فليس فيها <code>push</code> أصلاً. ولاحظ المترجم أن <code>phone</code> قد تكون ناقصة: فيجب أن يفحصها الكود أولاً، مثلاً بـ <code>user.phone?.length</code>.</p>
+
+<p>سترى أيضاً <code>interface User { … }</code> بدل <code>type User = { … }</code>. وهما متقاربان جداً لوصف أشكال الكائنات. ويستخدم هذا الكتاب <code>type</code> في كل مكان، لأنها تعمل أيضاً مع الاتحادات التي تأتي الآن. اختر أسلوباً واحداً لكل مشروع والتزم به.</p>
+
+<h2><span class="sec">2.3</span> <span>الاتحادات والتضييق</span></h2>
+
+<p><dfn>النوع الاتحادي</dfn> (union)، ويُكتب بـ <code>|</code>، يعني «واحد من هذه». وداخل الدالة كل فحص تكتبه <dfn>يضيّق</dfn> النوع: فبعد <code>typeof value === "string"</code> تعرف TypeScript أنه نص، وفي باقي الدالة تعرف أنه ليس نصاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">narrowing.ts</div><pre class="code"><span class="k">function</span> formatPrice(value: number | string | <span class="k">null</span>): string {
+  <span class="k">if</span> (value === <span class="k">null</span>) <span class="k">return</span> <span class="s">&quot;مجاناً&quot;</span>;
+  <span class="k">if</span> (<span class="k">typeof</span> value === <span class="s">&quot;string&quot;</span>) <span class="k">return</span> value; <span class="c">// هنا value نص</span>
+  <span class="k">return</span> <span class="s">`${value.toFixed(2)} جنيهاً`</span>; <span class="c">// وهنا لا يمكن أن تكون إلا رقماً</span>
+}
+
+<span class="k">type</span> Cat = { kind: <span class="s">&quot;cat&quot;</span>; meows: boolean };
+<span class="k">type</span> Dog = { kind: <span class="s">&quot;dog&quot;</span>; barks: boolean };
+
+<span class="k">function</span> describe(pet: Cat | Dog): string {
+  <span class="k">if</span> (<span class="s">&quot;meows&quot;</span> <span class="k">in</span> pet) <span class="k">return</span> pet.meows ? <span class="s">&quot;قطة ثرثارة&quot;</span> : <span class="s">&quot;قطة هادئة&quot;</span>;
+  <span class="k">return</span> pet.barks ? <span class="s">&quot;كلب صاخب&quot;</span> : <span class="s">&quot;كلب هادئ&quot;</span>;
+}
+
+console.log(formatPrice(<span class="n">19.5</span>), <span class="s">&quot;|&quot;</span>, formatPrice(<span class="s">&quot;اسألنا&quot;</span>), <span class="s">&quot;|&quot;</span>, formatPrice(<span class="k">null</span>));
+console.log(describe({ kind: <span class="s">&quot;cat&quot;</span>, meows: <span class="k">true</span> }), <span class="s">&quot;|&quot;</span>, describe({ kind: <span class="s">&quot;dog&quot;</span>, barks: <span class="k">false</span> }));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>19.50 جنيهاً | اسألنا | مجاناً
+قطة ثرثارة | كلب هادئ</pre></div>
+
+<p>تفهم TypeScript كل الفحوص المعتادة: <code>=== null</code>، و<code>typeof</code>، و<code>Array.isArray</code>، و<code>instanceof</code>، و<code>"key" in object</code>. فلا تحتاج صيغة خاصة: تكتب JavaScript عادية، والأنواع تتبع منطقك.</p>
+
+<h3>الاتحادات المميَّزة: نوع واحد لكل حالات الشاشة</h3>
+
+<p>كل شاشة تحمّل بيانات قد تكون في أربع حالات: لم تبدأ بعد، أو تحمّل، أو معها البيانات، أو فشلت. وكثيراً ما يستخدم المبتدئون ثلاثة متغيرات منفصلة، <code>loading</code> و<code>data</code> و<code>error</code>، ثم يقابلون تركيبات مستحيلة، كخطأ وبيانات في الوقت نفسه. و<dfn>الاتحاد المميَّز</dfn> (discriminated union) يجعل هذه التركيبات مستحيلة: كل حالة كائن فيه حقل مشترك <code>status</code>، والحالة الصحيحة وحدها فيها <code>data</code> أو <code>message</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">remote.ts</div><pre class="code"><span class="k">type</span> RemoteData&lt;T&gt; =
+  | { status: <span class="s">&quot;idle&quot;</span> }
+  | { status: <span class="s">&quot;loading&quot;</span> }
+  | { status: <span class="s">&quot;success&quot;</span>; data: T }
+  | { status: <span class="s">&quot;error&quot;</span>; message: string };
+
+<span class="k">function</span> assertNever(value: never): never {
+  <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;حالة غير متوقعة: &quot;</span> + JSON.stringify(value));
+}
+
+<span class="k">function</span> render(state: RemoteData&lt;string[]&gt;): string {
+  <span class="k">switch</span> (state.status) {
+    <span class="k">case</span> <span class="s">&quot;idle&quot;</span>:
+      <span class="k">return</span> <span class="s">&quot;اضغط الزر للتحميل&quot;</span>;
+    <span class="k">case</span> <span class="s">&quot;loading&quot;</span>:
+      <span class="k">return</span> <span class="s">&quot;جارٍ التحميل…&quot;</span>;
+    <span class="k">case</span> <span class="s">&quot;success&quot;</span>:
+      <span class="k">return</span> <span class="s">`${state.data.length} منتجات: ${state.data.join(&quot;, &quot;)}`</span>; <span class="c">// data موجودة في هذه الحالة فقط</span>
+    <span class="k">case</span> <span class="s">&quot;error&quot;</span>:
+      <span class="k">return</span> <span class="s">`تعذّر التحميل: ${state.message}`</span>;
+    <span class="k">default</span>:
+      <span class="k">return</span> assertNever(state); <span class="c">// إن نقصت حالة فلن تكون state من نوع never هنا، ويفشل البناء</span>
+  }
+}
+
+<span class="k">const</span> states: RemoteData&lt;string[]&gt;[] = [
+  { status: <span class="s">&quot;idle&quot;</span> },
+  { status: <span class="s">&quot;loading&quot;</span> },
+  { status: <span class="s">&quot;success&quot;</span>, data: [<span class="s">&quot;كتاب&quot;</span>, <span class="s">&quot;كوب&quot;</span>] },
+  { status: <span class="s">&quot;error&quot;</span>, message: <span class="s">&quot;أنت غير متصل&quot;</span> },
+];
+<span class="k">for</span> (<span class="k">const</span> state <span class="k">of</span> states) console.log(render(state));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>اضغط الزر للتحميل
+جارٍ التحميل…
+2 منتجات: كتاب, كوب
+تعذّر التحميل: أنت غير متصل</pre></div>
+
+<p>داخل <code>case "success"</code> تعرف TypeScript أن <code>state.data</code> موجودة، وقراءتها في أي مكان آخر خطأ. والفرع <code>default</code> هو الجزء الذكي: فإن عولجت كل الحالات صار نوع <code>state</code> هناك <code>never</code>، أي «هذا لا يمكن أن يحدث». وانظر الآن ماذا يحدث حين يحذف زميل حالة <code>"error"</code>:</p>
+
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx tsc --noEmit remote-missing.ts
+remote-missing.ts(20,26): error TS2345: Argument of type &#x27;{ status: &quot;error&quot;; message: string; }&#x27; is not assignable to parameter of type &#x27;never&#x27;.</pre></div>
+
+<p>يفشل البناء ويسمّي الحالة المنسية. ويسمى هذا النمط <dfn>الفحص الشامل</dfn> (exhaustive check)، وهو يحوّل «نسينا عرض رسالة الخطأ» من بلاغ عن علّة إلى خطأ في البناء. وستستخدمه في كل فصول إطار العمل في هذا الكتاب.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>هل تفحص TypeScript الأنواع مرة أخرى أثناء عمل البرنامج في المتصفح؟</li><li>داخل <code>if (typeof x === "number")</code>، ما نوع <code>x</code> إن كانت <code>number | string</code>؟</li><li>لماذا حقل <code>status</code> أفضل من متغيرات منفصلة لـ <code>loading</code> و<code>data</code> و<code>error</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>الأنواع العامة (Generics)</span></h2>
+
+<p>بعض الدوال تعمل بالطريقة نفسها مع أي نوع: «أعطني أول عنصر في القائمة» لا يهمها أكانت القائمة منتجات أم مستخدمين. و<dfn>الدالة العامة</dfn> (generic) لها <dfn>معامل نوع</dfn> يُكتب بين قوسين زاويين، ويعني «أي نوع يستخدمه المستدعي»:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">generics.ts</div><pre class="code"><span class="k">function</span> first&lt;T&gt;(list: <span class="k">readonly</span> T[]): T | <span class="k">undefined</span> {
+  <span class="k">return</span> list[<span class="n">0</span>];
+}
+
+<span class="k">function</span> byId&lt;T <span class="k">extends</span> { id: number }&gt;(list: <span class="k">readonly</span> T[]): Map&lt;number, T&gt; {
+  <span class="k">return</span> <span class="k">new</span> Map(list.map((item) =&gt; [item.id, item]));
+}
+
+<span class="k">type</span> Result&lt;T&gt; = { ok: <span class="k">true</span>; value: T } | { ok: <span class="k">false</span>; error: string };
+
+<span class="k">function</span> parseAge(text: string): Result&lt;number&gt; {
+  <span class="k">const</span> age = Number(text);
+  <span class="k">if</span> (!Number.isInteger(age) || age &lt; <span class="n">0</span>) <span class="k">return</span> { ok: <span class="k">false</span>, error: <span class="s">`&quot;${text}&quot; ليس عمراً`</span> };
+  <span class="k">return</span> { ok: <span class="k">true</span>, value: age };
+}
+
+<span class="k">const</span> products = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;كتاب&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;كوب&quot;</span>, price: <span class="n">8</span> },
+];
+console.log(first(products)?.name, first&lt;number&gt;([]));
+console.log(byId(products).get(<span class="n">2</span>)?.price);
+<span class="k">for</span> (<span class="k">const</span> text <span class="k">of</span> [<span class="s">&quot;34&quot;</span>, <span class="s">&quot;-2&quot;</span>, <span class="s">&quot;abc&quot;</span>]) {
+  <span class="k">const</span> result = parseAge(text);
+  console.log(result.ok ? <span class="s">`العمر: ${result.value}`</span> : result.error);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>كتاب undefined
+8
+العمر: 34
+&quot;-2&quot; ليس عمراً
+&quot;abc&quot; ليس عمراً</pre></div>
+
+<ul>
+<li><code>first&lt;T&gt;</code> تُرجع <code>T | undefined</code>. فحين تُستدعى بمنتجات تُرجع منتجاً، فيُسمح بـ <code>.name</code>. وحين تُستدعى بقائمة فارغة تجبرك <code>undefined</code> على معالجة الحالة الناقصة.</li>
+<li><code>T extends { id: number }</code> <dfn>قيد</dfn>: تقبل <code>byId</code> أي كائنات ما دام فيها <code>id</code> رقمي.</li>
+<li><code>Result&lt;T&gt;</code> <em>نوع</em> عام: نجاح بقيمة، أو فشل برسالة. وهو اتحاد مميَّز على <code>ok</code>، فيجب على المستدعي الفحص قبل استخدام القيمة. وتُرجع فرق كثيرة نتائج كهذه للفشل المتوقع، كإدخال مستخدم خاطئ، وتُبقي الاستثناءات للمفاجآت الحقيقية.</li>
+</ul>
+
+<p>ستستخدم في الغالب أنواعاً عامة كتبها غيرك: <code>Array&lt;T&gt;</code> و<code>Map&lt;K, V&gt;</code> و<code>Promise&lt;T&gt;</code>، وكل خطافات أُطر العمل ومخازنها. وتستحق كتابة نوعك العام حين تحتاج الدالة دونه إلى <code>any</code>.</p>
+
+<h2><span class="sec">2.5</span> <span>أنواع من أنواع</span></h2>
+
+<p>في التطبيق الحقيقي نوع <code>Product</code> واحد وأشكال كثيرة منه: الحقول التي يغيّرها النموذج، والتي تعرضها البطاقة، والتي يحتاجها المنتج الجديد. وكتابة كل منها باليد تعني تحديث خمسة أنواع حين يكسب المنتج حقلاً. و<dfn>الأنواع المساعدة</dfn> (utility types) تبنيها من الأصل بدلاً من ذلك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">utility.ts</div><pre class="code"><span class="k">type</span> Product = { id: number; name: string; price: number; stock: number };
+
+<span class="c">// أنواع جديدة مصنوعة من نوع موجود</span>
+<span class="k">type</span> ProductUpdate = Partial&lt;Omit&lt;Product, <span class="s">&quot;id&quot;</span>&gt;&gt;;
+<span class="k">type</span> ProductCard = Pick&lt;Product, <span class="s">&quot;name&quot;</span> | <span class="s">&quot;price&quot;</span>&gt;;
+
+<span class="k">function</span> update(product: Product, changes: ProductUpdate): Product {
+  <span class="k">return</span> { ...product, ...changes };
+}
+
+<span class="k">const</span> mug: Product = { id: <span class="n">2</span>, name: <span class="s">&quot;كوب&quot;</span>, price: <span class="n">8</span>, stock: <span class="n">40</span> };
+<span class="k">const</span> card: ProductCard = { name: mug.name, price: mug.price };
+console.log(update(mug, { price: <span class="n">7</span> }), card);
+
+<span class="c">// قائمة قيم واحدة، والنوع يأتي منها</span>
+<span class="k">const</span> ROLES = [<span class="s">&quot;viewer&quot;</span>, <span class="s">&quot;editor&quot;</span>, <span class="s">&quot;admin&quot;</span>] as <span class="k">const</span>;
+<span class="k">type</span> Role = (<span class="k">typeof</span> ROLES)[number];
+<span class="k">const</span> labels = {
+  viewer: <span class="s">&quot;يشاهد&quot;</span>,
+  editor: <span class="s">&quot;يعدّل&quot;</span>,
+  admin: <span class="s">&quot;تحكم كامل&quot;</span>,
+} <span class="k">satisfies</span> Record&lt;Role, string&gt;;
+
+<span class="k">const</span> role: Role = <span class="s">&quot;editor&quot;</span>;
+console.log(ROLES.length, labels[role]);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>{ id: 2, name: &#x27;كوب&#x27;, price: 7, stock: 40 } { name: &#x27;كوب&#x27;, price: 8 }
+3 يعدّل</pre></div>
+
+<table>
+<thead><tr><th>النوع</th><th>معناه</th></tr></thead>
+<tbody>
+<tr><td><code>Partial&lt;T&gt;</code></td><td>كل الخصائص اختيارية: تحديث بالحقول المتغيرة فقط</td></tr>
+<tr><td><code>Required&lt;T&gt;</code></td><td>كل الخصائص إلزامية</td></tr>
+<tr><td><code>Pick&lt;T, "a" | "b"&gt;</code></td><td>هذه الخصائص فقط</td></tr>
+<tr><td><code>Omit&lt;T, "id"&gt;</code></td><td>كل الخصائص إلا هذه</td></tr>
+<tr><td><code>Record&lt;K, V&gt;</code></td><td>كائن مفاتيحه من النوع <code>K</code> وقيمه من النوع <code>V</code></td></tr>
+<tr><td><code>Readonly&lt;T&gt;</code></td><td>كل الخصائص للقراءة فقط</td></tr>
+<tr><td><code>ReturnType&lt;typeof fn&gt;</code></td><td>ما تُرجعه الدالة أياً كان</td></tr>
+</tbody>
+</table>
+
+<p>والنصف الثاني من المثال نمط ستستخدمه كثيراً. <code>as const</code> تطلب من TypeScript الاحتفاظ بقيم المصفوفة بعينها، و<code>(typeof ROLES)[number]</code> تحوّلها إلى الاتحاد <code>"viewer" | "editor" | "admin"</code>. فتُكتب قائمة الأدوار مرة واحدة، ولا يمكن أن يبتعد النوع عنها. وأخيراً تفحص <code>satisfies</code> أن في <code>labels</code> تسمية لكل دور، دون أن تغيّر نوع <code>labels</code> نفسها. فإن نسيت دوراً أو أخطأت في كتابته فشل البناء.</p>
+
+<h2><span class="sec">2.6</span> <span>الحدود: <code>unknown</code> وحراس الأنواع</span></h2>
+
+<p>الأنواع تصف كودك أنت. أما البيانات القادمة من الخارج، من خادم أو من <code>localStorage</code> أو من ملف، فلا أنواع لها حتى تفحصها. وتقدم TypeScript طريقتين لقول «لا أعرف ما هذا»:</p>
+<ul>
+<li><code>any</code> توقف الفحص. كل شيء مقبول، وتعود الأخطاء. تجنّبها.</li>
+<li><code>unknown</code> تعني «قد يكون أي شيء، فيجب أن تفحص قبل أن تستخدم». وهذا النوع الصادق للبيانات الخارجية.</li>
+</ul>
+
+<p><dfn>حارس النوع</dfn> (type guard) دالة تفحص القيمة وقت التشغيل وتخبر TypeScript بالنتيجة. ونوع ما تُرجعه، <code>value is User</code>، هو الوعد: «إن أرجعت <code>true</code> فهي <code>User</code>»:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">boundary.ts</div><pre class="code"><span class="k">type</span> User = { id: number; name: string };
+
+<span class="c">// حارس نوع: إن أرجع true عاملت TypeScript القيمة كـ User</span>
+<span class="k">function</span> isUser(value: unknown): value is User {
+  <span class="k">return</span> (
+    <span class="k">typeof</span> value === <span class="s">&quot;object&quot;</span> &amp;&amp;
+    value !== <span class="k">null</span> &amp;&amp;
+    <span class="s">&quot;id&quot;</span> <span class="k">in</span> value &amp;&amp;
+    <span class="k">typeof</span> value.id === <span class="s">&quot;number&quot;</span> &amp;&amp;
+    <span class="s">&quot;name&quot;</span> <span class="k">in</span> value &amp;&amp;
+    <span class="k">typeof</span> value.name === <span class="s">&quot;string&quot;</span>
+  );
+}
+
+<span class="k">function</span> parseUser(json: string): User {
+  <span class="k">const</span> data: unknown = JSON.parse(json);
+  <span class="k">if</span> (!isUser(data)) <span class="k">throw</span> <span class="k">new</span> TypeError(<span class="s">&quot;أرسل الخادم مستخدماً بشكل خاطئ&quot;</span>);
+  <span class="k">return</span> data;
+}
+
+console.log(parseUser(<span class="s">&#x27;{&quot;id&quot;: 1, &quot;name&quot;: &quot;سارة&quot;}&#x27;</span>).name);
+<span class="k">try</span> {
+  parseUser(<span class="s">&#x27;{&quot;id&quot;: &quot;1&quot;, &quot;fullName&quot;: &quot;سارة&quot;}&#x27;</span>);
+} <span class="k">catch</span> (error) {
+  console.log((error as Error).message);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>سارة
+أرسل الخادم مستخدماً بشكل خاطئ</pre></div>
+
+<p>الرد الثاني من الخادم بدا صحيحاً تقريباً، لكن <code>id</code> فيه نص، و<code>fullName</code> بدل <code>name</code>. ودون الحارس كان الخطأ سيظهر في مكان بعيد، اسماً فارغاً على شاشة ما. ومعه يتوقف البرنامج عند الباب برسالة واضحة. وكتابة الحراس باليد تطول، وفي فصل النماذج ستستخدم مكتبة تكتبها من مخطط (schema).</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: <code>as</code> وعد لا فحص</p><p><code>data as User</code> تقول للمترجم «ثق بي»، ولا تغيّر شيئاً وقت التشغيل. استخدمها فقط حين تعرف حقاً أكثر من المترجم، كما في <code>error as Error</code> داخل <code>catch</code>. ولا تستخدمها أبداً لإسكات خطأ لا تفهمه.</p></aside>
+
+<h2><span class="sec">2.7</span> <span>إعداد صارم للمشاريع الحقيقية</span></h2>
+
+<p>للمترجم خيارات كثيرة. والمشاريع الجديدة تشغّل <code>strict</code>، التي تفعّل كل الفحوص المهمة، وخياراً آخر تتركه <code>strict</code>، هو <code>noUncheckedIndexedAccess</code>. فهو يذكّرك بأن البحث في كائن أو مصفوفة قد لا يجد شيئاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">index.ts</div><pre class="code"><span class="k">const</span> prices: Record&lt;string, number&gt; = { book: <span class="n">25</span>, mug: <span class="n">8</span> };
+<span class="k">const</span> colours = [<span class="s">&quot;red&quot;</span>, <span class="s">&quot;green&quot;</span>];
+
+<span class="k">const</span> cap = prices[<span class="s">&quot;cap&quot;</span>];
+console.log(cap.toFixed(<span class="n">2</span>));
+console.log(colours[<span class="n">5</span>].toUpperCase());</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx tsc --noEmit index.ts
+index.ts(5,13): error TS18048: &#x27;cap&#x27; is possibly &#x27;undefined&#x27;.
+index.ts(6,13): error TS2532: Object is possibly &#x27;undefined&#x27;.</pre></div>
+
+<p>دون هذا الخيار كان السطران سيُبنيان ثم ينهاران. وفي المشروع تُكتب هذه الإعدادات في <code>tsconfig.json</code>، الذي ستنشئه مع أدوات البناء في الفصل التالي. وهذه الإعدادات المستخدمة لكل مثال في هذا الكتاب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tsconfig.json</div><pre class="code">{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "target": "es2024",
+    "module": "nodenext",
+    "noEmit": true
+  }
+}</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: اكتب فقط TypeScript التي تختفي</p><p>بعض مزايا TypeScript القديمة، مثل <code>enum</code> و<code>namespace</code>، تولّد كود JavaScript خاصاً بها، فلا يمكن حذفها ببساطة. ويرفض Node تشغيلها دون خطوة بناء، وأدوات كثيرة لا تشجعها. استخدم اتحادات النصوص بدل enum: <code>type Role = "viewer" | "editor"</code>. فيصير كل ملف <code>.ts</code> مجرد JavaScript عليها ملصقات.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>استخدام <code>any</code> لإخفاء خطأ</td><td>يختبئ الخطأ ويعود وقت التشغيل</td><td>استخدم <code>unknown</code> وافحص، أو أصلح النوع</td></tr>
+<tr><td><code>JSON.parse(text) as User</code></td><td>تمر البيانات الخاطئة كأنها صحيحة</td><td>حارس نوع، أو مكتبة مخططات</td></tr>
+<tr><td>ثلاثة متغيرات للتحميل والبيانات والخطأ</td><td>حالات مستحيلة، كبيانات وخطأ معاً</td><td>اتحاد مميَّز واحد بحقل <code>status</code></td></tr>
+<tr><td><code>switch</code> بلا فرع <code>never</code></td><td>تُتجاهل الحالة الجديدة بصمت</td><td><code>default: return assertNever(state)</code></td></tr>
+<tr><td>نسخ نوع لصنع شكل آخر منه</td><td>تتباعد النسخ مع الوقت</td><td><code>Pick</code> و<code>Omit</code> و<code>Partial</code></td></tr>
+<tr><td>إطفاء <code>strict</code> لإسكات الأخطاء</td><td>تضيع معظم قيمة TypeScript</td><td>أبقِ <code>strict</code>، وأصلح الأخطاء واحداً واحداً</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>تضيف TypeScript <strong>الأنواع</strong> إلى JavaScript، ويفحصها <strong>المترجم</strong> قبل أن يعمل الكود، ثم تُحذف.</li>
+<li>دع TypeScript <strong>تستنتج</strong> معظم الأنواع، و<strong>اكتب</strong> أنواع معاملات الدوال، وأنواع ما تُرجعه الدوال المصدَّرة.</li>
+<li>لأنواع الكائنات خصائص <strong>اختيارية</strong> (<code>?</code>) وأخرى <strong>للقراءة فقط</strong>.</li>
+<li><strong>الاتحادات</strong> (<code>|</code>) تُضيَّق بالفحوص العادية. و<strong>الاتحاد المميَّز</strong> مع <strong>فحص شامل</strong> بـ <code>never</code> يصف كل حالات الشاشة بأمان.</li>
+<li><strong>الأنواع العامة</strong> تكتب دالة أو نوعاً واحداً لأنواع كثيرة، والقيود تحدد المسموح.</li>
+<li><strong>الأنواع المساعدة</strong> و<code>as const</code> و<code>satisfies</code> تبني الأنواع من مصدر حقيقة واحد.</li>
+<li>البيانات الخارجية <code>unknown</code> حتى يفحصها <strong>حارس نوع</strong>. و<code>as</code> لا تفحص شيئاً.</li>
+<li>استخدم <code>strict</code> و<code>noUncheckedIndexedAccess</code>، وفضّل الصيغ التي تختفي ببساطة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لا: تُحذف الأنواع قبل أن يعمل الكود، فيجب أن يفحص كودك البيانات الخارجية بنفسه. 2. <code>number</code>. 3. لأن الاتحاد يجعل كتابة التركيبات المستحيلة مستحيلة، وتُظهر TypeScript الحقول الموجودة في كل حالة.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">في كل مشروع اكتب الأنواع <em>أولاً</em>، قبل أي دالة. ثم دع المترجم يرشدك: حين يعترض، اقرأ الرسالة قبل أن تغيّر أي شيء. شغّل <code>npx tsc --noEmit</code> كثيراً، وشغّل الملف بـ <code>node file.ts</code> لترى النتيجة.</p>
+
+<div class="project">
+<p class="project-label">مشروع 2.1 · سهل</p>
+<h3>سلة تسوق بالأنواع</h3>
+<p class="project-goal">أعد كتابة سلة تسوق بـ TypeScript، بتحديثات لا تغيّر الأصل وبكوبون خصم، ليحمي المترجم كل دالة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> أنواع الكائنات، و<code>readonly</code>، والخصائص الاختيارية، والمعاملات الافتراضية، و<code>Record</code>، و<code>??</code> مع البحث بالمفتاح.</p>
+<ol class="steps">
+<li>اكتب ثلاثة أنواع: <code>Product</code> (بـ <code>id</code> للقراءة فقط)، و<code>CartLine</code> (منتج وكمية)، و<code>Cart</code> (مصفوفة أسطر للقراءة فقط و<code>coupon</code> اختياري).</li>
+<li>اكتب <code>add(cart, product, quantity = 1): Cart</code>. فإن كان المنتج في السلة أصلاً أرجع سلة جديدة زادت كمية سطره، وإلا فأضف سطراً جديداً.</li>
+<li>احفظ الكوبونات في <code>const DISCOUNTS: Record&lt;string, number&gt;</code>.</li>
+<li>اكتب <code>total(cart): number</code>. وبسبب <code>noUncheckedIndexedAccess</code> قد تكون <code>DISCOUNTS[code]</code> هي <code>undefined</code>، فاكتب <code>?? 0</code>.</li>
+<li>حاول كسرها عمداً: غيّر <code>id</code> منتج، وأضف بـ push إلى <code>cart.lines</code>، ومرّر سعراً نصاً. واقرأ كل خطأ.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قرّب المال إلى منزلتين عشريتين في النهاية فقط، في <code>total</code>. فالتقريب في كل خطوة يجمع أخطاء صغيرة فوق بعضها.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>2 × كتاب, 2 × كوب
+المجموع: 66
+مع WELCOME10: 59.4</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 2.2 · متوسط</p>
+<h3>رحلة الطلب</h3>
+<p class="project-goal">صِف كل حالة يمر بها طلب الشراء على الإنترنت اتحاداً مميَّزاً، واكتب دوالّ لا يمكن أن تنسى حالة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الاتحادات المميَّزة، والتضييق داخل <code>switch</code>، و<code>assertNever</code>، ودوالّ تجيب عن أسئلة عن الحالة.</p>
+<ol class="steps">
+<li>اكتب <code>type OrderStatus</code> بخمسة أشكال على حقل <code>kind</code>: <code>placed</code>، و<code>paid</code> (مع <code>amount</code>)، و<code>shipped</code> (مع رقم تتبع <code>tracking</code>)، و<code>delivered</code>، و<code>cancelled</code> (مع <code>reason</code>). ولكل شكل وقت <code>at</code>.</li>
+<li>اكتب <code>describe(status): string</code> بـ <code>switch</code>. استخدم الحقول الإضافية في حالتها فقط، واختم بـ <code>default: return assertNever(status)</code>.</li>
+<li>اكتب <code>canCancel(status): boolean</code>: لا يُلغى إلا الطلب الموضوع أو المدفوع.</li>
+<li>اطبع تاريخاً قصيراً من ثلاث حالات، وعلّم ما يمكن إلغاؤه بعد.</li>
+<li>أضف شكلاً سادساً <code>returned</code>، ودع المترجم يُريك كل مكان يجب أن يتغير.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الخطوة 5 هي غاية المشروع كله. ففي قاعدة كود حقيقية قد تتوزع جمل <code>switch</code> على عشرين ملفاً، والمترجم يجدها كلها في ثانية.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>طُلب الساعة 09:12 [يمكن إلغاؤه]
+دُفع 41 جنيهاً (09:14) [يمكن إلغاؤه]
+في الطريق، رقم التتبع EG-55120 </pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 2.3 · تحدٍّ</p>
+<h3>باعث أحداث آمن الأنواع</h3>
+<p class="project-goal">خذ باعث الأحداث من الفصل السابق وأعطه أنواعاً، لتُفحص أسماء الأحداث ومعاملات كل حدث في كل مكان.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأصناف العامة، و<code>keyof</code>، وأنواع الوصول بالمفتاح (<code>Events[E]</code>)، والأنواع المحوَّلة (mapped types)، والصفوف المسماة (labelled tuples).</p>
+<ol class="steps">
+<li>صِف أحداثك نوعاً واحداً، كل مفتاح فيه اسم حدث، وكل قيمة صف (tuple) بمعاملاته: <code>{ order: [id: number, total: number]; logout: [] }</code>.</li>
+<li>اكتب <code>class Emitter&lt;Events extends Record&lt;string, unknown[]&gt;&gt;</code>.</li>
+<li>احفظ المستمعين في <dfn>نوع محوَّل</dfn>: <code>{ [E in keyof Events]?: Set&lt;(...args: Events[E]) =&gt; void&gt; }</code>. فلكل حدث مجموعة دوال بمعاملاته هو بالضبط.</li>
+<li>اكتب أنواع <code>on</code> و<code>emit</code> بمعامل نوع <code>E extends keyof Events</code>، فيقرر اسم الحدث أنواع المعاملات.</li>
+<li>افحص النتيجة بملف أخطاء متعمدة: معاملات خاطئة، واسم حدث مكتوب خطأ، ومستمع يتوقع نصاً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لاحظ أن المستمع <code>(id, total) =&gt; …</code> لا يحتاج أي أنواع مكتوبة: تستنتج TypeScript النوعين من اسم الحدث. وهكذا تبدو المكتبات جيدة الأنواع: تكتب أقل، ويعرف المحرر أكثر.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>الطلب #101: 41.00
+إلى اللقاء!</pre></div>
+<p><strong>ويلتقط المترجم الأخطاء الثلاثة كلها:</strong></p>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx tsc --noEmit typed-emitter-bad.ts
+typed-emitter-bad.ts(27,6): error TS2554: Expected 3 arguments, but got 2.
+typed-emitter-bad.ts(28,11): error TS2345: Argument of type &#x27;&quot;ordr&quot;&#x27; is not assignable to parameter of type &#x27;keyof ShopEvents&#x27;.
+typed-emitter-bad.ts(29,18): error TS2345: Argument of type &#x27;(id: string) =&gt; string&#x27; is not assignable to parameter of type &#x27;(id: number, total: number) =&gt; void&#x27;.
+  Types of parameters &#x27;id&#x27; and &#x27;id&#x27; are incompatible.
+    Type &#x27;number&#x27; is not assignable to type &#x27;string&#x27;.</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب نوع <code>Book</code> فيه <code>isbn</code> للقراءة فقط، و<code>title</code>، و<code>subtitle</code> اختياري، ومصفوفة <code>authors</code>، ودالة <code>label(book: Book): string</code> تضيف العنوان الفرعي فقط حين يوجد.</li>
+<li><span class="level">سهل</span> أعد كتابة <code>type Size = "S" | "M" | "L"</code> مصفوفة ثابتة بـ <code>as const</code>، واستخرج النوع منها، واطبع عدد المقاسات.</li>
+<li><span class="level medium">متوسط</span> أضف حالة خامسة <code>{ status: "empty" }</code> إلى <code>RemoteData</code> في <code>remote.ts</code>. شغّل الفحص، واقرأ الخطأ، وعالج الحالة الجديدة.</li>
+<li><span class="level medium">متوسط</span> اكتب دالة عامة <code>last&lt;T&gt;(list: readonly T[]): T | undefined</code>، ودالة عامة <code>groupBy&lt;T, K extends string&gt;(list: readonly T[], key: (item: T) =&gt; K): Record&lt;K, T[]&gt;</code>.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب حارس نوع <code>isProductList(value: unknown): value is Product[]</code> للنوع <code>{ id: number; name: string; price: number }</code>، واستخدمه لقراءة نص JSON بأمان. واختبره ببيانات سليمة، وبسعر مكتوب نصاً، وبكائن ليس مصفوفة.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 3</p>
+<p>التطبيقات الحقيقية ليست ملفاً واحداً. في الفصل التالي ستقسم الكود إلى وحدات، وتثبّت الحزم بـ npm، وتجهز مشروعاً حديثاً بـ Vite وTypeScript ومدقق للكود ومنسّق له: الأساس نفسه الذي تبني عليه كل الفصول بعده.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -688,6 +1173,16 @@ OK (في المحاولة 3)
 <li>عرّف <code>class InsufficientFundsError extends Error</code> واضبط <code>this.name</code> في دالة البناء. وفي <code>withdraw</code> ارمِه حين <code>amount &gt; this.#balance</code>، وإلا فاطرح وأرجع <code>this</code>. واختبر سحباً ينجح (100 − 30 يبقي 70) وآخر يرمي الخطأ، مع فحص <code>error instanceof InsufficientFundsError</code>.</li>
 <li><code>C</code> ثم <code>B</code> ثم <code>A</code>: الكود المتزامن أولاً، ثم المهمة الدقيقة من الوعد، ثم مهمة المؤقت.</li>
 <li><code>function* take(iterable, n) { if (n &lt;= 0) return; let count = 0; for (const value of iterable) { yield value; if (++count &gt;= n) return; } }</code>. ومع <code>function* evens() { for (let n = 0; ; n += 2) yield n; }</code> تعطي <code>[...take(evens(), 5)]</code> القيمة <code>[0, 2, 4, 6, 8]</code>. والخروج من المولّد يوقف الحلقة، فلا يُطلب من المولّد اللانهائي قيمة سادسة أبداً.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 2</h2>
+<ol class="exercises">
+<li><code>type Book = { readonly isbn: string; title: string; subtitle?: string; authors: string[] }</code>، و<code>label</code> تُرجع <code>book.subtitle ? `${book.title}: ${book.subtitle}` : book.title</code>. وتفرض TypeScript هذا الفحص، لأن <code>subtitle</code> قد تكون <code>undefined</code>.</li>
+<li><code>const SIZES = ["S", "M", "L"] as const; type Size = (typeof SIZES)[number];</code> و<code>SIZES.length</code> تساوي 3. وإضافة <code>"XL"</code> إلى المصفوفة تحدّث النوع وحدها.</li>
+<li>يقول الفحص إن <code>{ status: "empty" }</code> لا يمكن إسنادها إلى <code>never</code> في فرع <code>default</code>. أضف <code>case "empty": return "لا شيء هنا بعد";</code> (أو أي رسالة تريدها) فيختفي الخطأ.</li>
+<li><code>last</code> تستطيع ببساطة أن تكتب <code>return list.at(-1)</code>. ولـ <code>groupBy</code> ابدأ بـ <code>const groups = {} as Record&lt;K, T[]&gt;</code>، ثم لكل عنصر اكتب <code>(groups[key(item)] ??= []).push(item)</code>. وهذا من الاستخدامات القليلة الصادقة لـ <code>as</code>: فالكائن يبدأ فارغاً وتملؤه الحلقة.</li>
+<li>اكتب <code>isProduct(value: unknown): value is Product</code> تفحص الكائن وكل حقل بـ <code>typeof</code>، ثم <code>isProductList = (value: unknown): value is Product[] =&gt; Array.isArray(value) &amp;&amp; value.every(isProduct)</code>. فتمر البيانات السليمة، ويُرفض السعر المكتوب نصاً والكائن الذي ليس مصفوفة.</li>
 </ol>
 
 </section>

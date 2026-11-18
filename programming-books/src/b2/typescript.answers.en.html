@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>type Book = { readonly isbn: string; title: string; subtitle?: string; authors: string[] }</code>, and <code>label</code> returns <code>book.subtitle ? `${book.title}: ${book.subtitle}` : book.title</code>. TypeScript forces the check, because <code>subtitle</code> may be <code>undefined</code>.</li>
+<li><code>const SIZES = ["S", "M", "L"] as const; type Size = (typeof SIZES)[number];</code> and <code>SIZES.length</code> is 3. Adding <code>"XL"</code> to the array updates the type by itself.</li>
+<li>The check reports that <code>{ status: "empty" }</code> is not assignable to <code>never</code> in the <code>default</code> branch. Add <code>case "empty": return "Nothing here yet";</code> (or any message you like) and the error disappears.</li>
+<li><code>last</code> can simply <code>return list.at(-1)</code>. For <code>groupBy</code>, start with <code>const groups = {} as Record&lt;K, T[]&gt;</code>, then for each item write <code>(groups[key(item)] ??= []).push(item)</code>. This is one of the few honest uses of <code>as</code>: the object starts empty and is filled by the loop.</li>
+<li>Write <code>isProduct(value: unknown): value is Product</code> that checks the object and each field with <code>typeof</code>, then <code>isProductList = (value: unknown): value is Product[] =&gt; Array.isArray(value) &amp;&amp; value.every(isProduct)</code>. Good data passes; the price written as a string and the object that is not an array are both rejected.</li>
+</ol>

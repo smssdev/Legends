@@ -6,6 +6,7 @@
 #   3. the print covers, sized from the final page counts
 set -e
 cd "$(dirname "$0")"
+[ -d code/b2/node_modules ] || (cd code/b2 && npm ci --silent)
 python3 build.py
 node render.cjs -
 python3 toc.py
