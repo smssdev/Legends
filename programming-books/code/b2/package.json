@@ -1,0 +1,10 @@
+{
+  "name": "from-zero-to-senior-book-2",
+  "private": true,
+  "description": "The code of Book 2. Run `npm ci` once; the book's build runs every example.",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "7.0.2"
+  }
+}

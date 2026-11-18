@@ -30,14 +30,14 @@ KEYWORDS = ("const let var if else switch case break default return function for
 TEXT = {
     "en": {
         "contents": "Contents", "part": "Part", "preface": "How to Use This Book", "appendix": "Appendix", "answers": "Answers to the Exercises", "chapter": "Chapter", "sample": "sample chapter",
-        "author": SERIES["author"]["en"], "edition": "First edition", "output": "Terminal",
+        "author": SERIES["author"]["en"], "edition": "First edition", "output": "Terminal", "no_errors": "(no errors: the types check)",
         "rights": "All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.",
         "code": "The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.",
         "trademarks": "JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.",
     },
     "ar": {
         "contents": "المحتويات", "part": "الجزء", "preface": "كيف تستخدم هذا الكتاب", "appendix": "ملحق", "answers": "حلول التمارين", "chapter": "الفصل", "sample": "فصل نموذجي",
-        "author": SERIES["author"]["ar"], "edition": "الطبعة الأولى", "output": "الطرفية",
+        "author": SERIES["author"]["ar"], "edition": "الطبعة الأولى", "output": "الطرفية", "no_errors": "(لا أخطاء: الأنواع سليمة)",
         "rights": "جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.",
         "code": "اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.",
         "trademarks": "JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.",
@@ -160,6 +160,21 @@ def fill_code(chapter, lang):
         return (f'<div class="{cls}" dir="ltr"><div class="output-bar"><i></i><i></i><i></i>'
                 f'<span class="output-title">{label}</span></div><pre>{printed}</pre></div>')
 
+    def check(m):
+        # <pre data-check="file.ts"></pre>: what the TypeScript compiler says about the file, for real.
+        attrs = m.group(1)
+        f = re.search(r'data-check="([^"]+)"', attrs).group(1)
+        path = code_dir / f
+        tsc = next(d / "node_modules" / ".bin" / "tsc" for d in path.parents if (d / "node_modules" / ".bin" / "tsc").exists())
+        r = subprocess.run([str(tsc), "--noEmit", "--strict", "--noUncheckedIndexedAccess", "--target", "es2024",
+                            "--module", "nodenext", "--types", "node", path.name],
+                           cwd=path.parent, capture_output=True, text=True, timeout=60)
+        printed = (r.stdout + r.stderr).strip().replace(str(path.parent) + "/", "")
+        lines = [f"$ npx tsc --noEmit {path.name}"] + ([printed] if printed else [TEXT[lang]["no_errors"]])
+        cls = "output error" if r.returncode else "output"
+        return (f'<div class="{cls}" dir="ltr"><div class="output-bar"><i></i><i></i><i></i>'
+                f'<span class="output-title">{label}</span></div><pre>{html.escape(chr(10).join(lines))}</pre></div>')
+
     def page(m):
         attrs = m.group(1)
         f = re.search(r'data-render="([^"]+)"', attrs).group(1)
@@ -182,6 +197,7 @@ def fill_code(chapter, lang):
     chapter = re.sub(r'<figure (data-render="[^"]+"[^>]*)>', page, chapter)
     chapter = re.sub(r'<pre (data-code="[^"]+"[^>]*)></pre>', code, chapter)
     chapter = re.sub(r'<pre (data-out="[^"]+"[^>]*)></pre>', out, chapter)
+    chapter = re.sub(r'<pre (data-check="[^"]+"[^>]*)></pre>', check, chapter)
     return chapter
 
 

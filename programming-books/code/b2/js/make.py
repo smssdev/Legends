@@ -3,6 +3,7 @@ Run: python3 make.py   (the files go to en/ and ar/; the book runs each one and 
 
 Each example is a template: {key} is replaced by the text of the language. Code names stay in English.
 """
+import re
 from pathlib import Path
 
 HERE = Path(__file__).parent
@@ -464,7 +465,7 @@ for lang in ("en", "ar"):
     for name, code in FILES.items():
         text = code
         for key, value in L[lang][name].items():
-            text = text.replace("{" + key + "}", value)
+            text = re.sub(r"(?<!\$)\{" + key + r"\}", lambda m: value, text)
         path = HERE / lang / name
         if name == "promises.js" or name == "projects/retry.js":
             path = path.with_suffix(".mjs")  # top-level await needs an ES module
