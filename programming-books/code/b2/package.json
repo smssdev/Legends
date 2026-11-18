@@ -4,6 +4,7 @@
   "description": "The code of Book 2. Run `npm ci` once; the book's build runs every example.",
   "type": "commonjs",
   "devDependencies": {
+    "@hookform/resolvers": "7.0.7",
     "@tanstack/react-query": "5.108.0",
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
@@ -11,7 +12,9 @@
     "esbuild": "0.28.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "react-hook-form": "7.92.0",
     "react-router": "8.5.2",
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "zod": "4.6.7"
   }
 }

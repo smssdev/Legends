@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>phone: z.union([z.literal(""), z.string().regex(/^\d{11}$/, "اكتب 11 رقماً.")])</code>. فالنص الفارغ مسموح صراحة، وأي شيء آخر يجب أن يكون 11 رقماً. ومع <code>.optional()</code> أيضاً يمكن أن يغيب الحقل كلياً.</li>
+<li>مثلاً <code>{ name: "", … }</code>، وبريد بلا نقطة، وعمر <code>"twelve"</code>. فمع <code>"twelve"</code> تُنتج <code>z.coerce.number()</code> القيمة <code>NaN</code>، وتبلّغ Zod بأنها توقعت رقماً: يفشل فحص النوع قبل أن تعمل <code>int()</code> أو <code>min()</code>.</li>
+<li><code>const message = watch("message") ?? "";</code> و<code>&lt;p className="muted"&gt;{message.length} / 500&lt;/p&gt;</code>، مع إضافة <code>.max(500, "…")</code> إلى المخطط. و<code>watch</code> تعيد رسم النموذج حين يتغير ذلك الحقل، فاستخدمها فقط للحقول التي تعرضها الشاشة فعلاً.</li>
+<li>احفظ <code>sent</code> في الحالة، وتأخذ شاشة الشكر زراً بـ <code>onClick={() =&gt; { reset(); setSent(false); }}</code>. و<code>reset()</code> تمسح أيضاً الأخطاء وعلامات «لُمس».</li>
+<li><code>function handleContact(body: unknown) { const r = contactSchema.safeParse(body); if (r.success) return { status: 201 }; const errors: Record&lt;string, string&gt; = {}; for (const issue of r.error.issues) errors[issue.path.join(".")] ??= issue.message; return { status: 422, errors }; }</code>. و<code>??=</code> تُبقي أول رسالة فقط لكل حقل.</li>
+</ol>

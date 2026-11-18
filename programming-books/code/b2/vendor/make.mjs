@@ -18,6 +18,9 @@ const entries = {
   "jsx-runtime": "react/jsx-runtime",
   "react-router": "react-router",
   "react-query": "@tanstack/react-query",
+  "react-hook-form": "react-hook-form",
+  "zod": "zod",
+  "hookform-zod": "@hookform/resolvers/zod",
 };
 for (const [file, pkg] of Object.entries(entries)) {
   const names = Object.keys(require(pkg)).filter((n) => /^[A-Za-z_$][\w$]*$/.test(n) && n !== "default");

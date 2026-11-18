@@ -19,6 +19,8 @@
 @page ch05:first { @top-center { content: none; } }
 @page ch06 { @top-center { content: "Chapter 6: Routing and Server Data"; } }
 @page ch06:first { @top-center { content: none; } }
+@page ch07 { @top-center { content: "Chapter 7: Forms and Validation"; } }
+@page ch07:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -3042,6 +3044,358 @@ export function FavouriteButton({ id }: { id: number }) {
 <p>Users do not only read data; they send it, through forms. In the next chapter you will build forms that validate as the user types, show helpful errors, describe their rules once in a schema shared with TypeScript, and send the result to the server safely.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch07" data-chapter="7" data-code="b2/react/forms/en">
+<div class="opener"><span class="opener-num">7</span><p class="chapter-kicker">Chapter 7</p><h1>Forms and Validation</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>choose between controlled inputs and letting the form keep its values</li>
+<li>describe the rules of your data once, in a Zod schema, and get the TypeScript type from it</li>
+<li>build forms with React Hook Form that validate at the right moment</li>
+<li>show errors that everyone can see and hear</li>
+<li>handle errors that only the server can know, such as an email that is already taken</li>
+<li>split a long form into steps without losing the user’s data</li>
+</ul>
+</div>
+
+<p class="lead">Forms are where users give your app something: their name, their address, their money. They are also where most frustration happens: rules that are not explained, errors that appear too early or too late, data that disappears after a mistake. Good forms are a large part of what makes an app feel professional. This chapter shows the approach most React teams use today: a <strong>schema</strong> that describes the data once, and a <strong>form library</strong> that connects it to the inputs.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Validation in the browser is for the <em>user’s</em> comfort: quick, friendly feedback. It is never security. Anyone can send anything to your server, so the server must check everything again. The nice part: with a schema, both sides can use the same rules.</p></div></div>
+
+<h2><span class="sec">7.1</span> <span>Controlled and uncontrolled inputs</span></h2>
+
+<p>An input can keep its value in two places. A <dfn>controlled input</dfn> takes its value from React state, <code>value={text}</code>, and reports every change with <code>onChange</code>; React is the single source of truth. You used this for the task list and the search box. An <dfn>uncontrolled input</dfn> keeps its own value in the DOM, like a plain HTML form, and your code reads it when needed, for example on submit with <code>new FormData(form)</code>.</p>
+
+<p>Controlled inputs are simple and are right when the screen must react to every keystroke: a live search, a character counter. For big forms, re-rendering the whole form on every key becomes slow and verbose. Form libraries such as <strong>React Hook Form</strong> use uncontrolled inputs under the hood, and give you the convenience of controlled ones.</p>
+
+<h2><span class="sec">7.2</span> <span>One schema for the rules</span></h2>
+
+<p><strong>Zod</strong> lets you describe the shape and rules of data as a <dfn>schema</dfn>, an object you can both read and run. Each rule carries its own error message:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">contact-schema.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c">// One schema: the rules, the error messages, and (with z.infer) the TypeScript type</span>
+<span class="k">export</span> <span class="k">const</span> contactSchema = z.object({
+  name: z.string().trim().min(<span class="n">3</span>, <span class="s">&quot;Please write your full name (at least 3 letters).&quot;</span>),
+  email: z.email(<span class="s">&quot;Please enter an email like name@example.com.&quot;</span>),
+  age: z.coerce.number&lt;string&gt;().int(<span class="s">&quot;Age must be a whole number.&quot;</span>).min(<span class="n">13</span>, <span class="s">&quot;You must be 13 or older.&quot;</span>),
+  message: z.string().trim().min(<span class="n">20</span>, <span class="s">&quot;Please write at least 20 characters.&quot;</span>),
+});
+
+<span class="k">export</span> <span class="k">type</span> Contact = z.infer&lt;<span class="k">typeof</span> contactSchema&gt;;</pre></div>
+
+<ul>
+<li><code>z.string().trim().min(3, …)</code> removes spaces at the ends, then requires at least three characters.</li>
+<li><code>z.email()</code> checks the format of an email address.</li>
+<li><code>z.coerce.number()</code> turns the text from the input into a number first, because every input value is a string.</li>
+<li><code>z.infer&lt;typeof contactSchema&gt;</code> produces the TypeScript type. You never write the type by hand, so it can never disagree with the rules.</li>
+</ul>
+
+<p>The schema is plain TypeScript, so the same file can run on the server. <code>safeParse</code> never throws: it returns either the clean data or a list of issues:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">validate.ts</div><pre class="code"><span class="k">import</span> { contactSchema } <span class="k">from</span> <span class="s">&quot;./contact-schema&quot;</span>;
+
+<span class="c">// The same schema checks data that arrives at the server</span>
+<span class="k">const</span> good = contactSchema.safeParse({
+  name: <span class="s">&quot;  Sara Khan &quot;</span>,
+  email: <span class="s">&quot;sara@example.com&quot;</span>,
+  age: <span class="s">&quot;27&quot;</span>,
+  message: <span class="s">&quot;I would like to order twenty copies for my class.&quot;</span>,
+});
+console.log(<span class="s">&quot;Valid:&quot;</span>, good.success, good.data);
+
+<span class="k">const</span> bad = contactSchema.safeParse({ name: <span class="s">&quot;S&quot;</span>, email: <span class="s">&quot;sara@&quot;</span>, age: <span class="s">&quot;9&quot;</span>, message: <span class="s">&quot;Hi&quot;</span> });
+console.log(<span class="s">&quot;Invalid:&quot;</span>, bad.success);
+<span class="k">for</span> (<span class="k">const</span> issue <span class="k">of</span> bad.error?.issues ?? []) {
+  console.log(<span class="s">`  ${issue.path.join(&quot;.&quot;)}: ${issue.message}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Valid: true {
+  name: &#x27;Sara Khan&#x27;,
+  email: &#x27;sara@example.com&#x27;,
+  age: 27,
+  message: &#x27;I would like to order twenty copies for my class.&#x27;
+}
+Invalid: false
+  name: Please write your full name (at least 3 letters).
+  email: Please enter an email like name@example.com.
+  age: You must be 13 or older.
+  message: Please write at least 20 characters.</pre></div>
+
+<p>Notice what came out of the valid case: the name lost its extra spaces, and the age became the number 27. A schema both <em>checks</em> and <em>cleans</em> the data. This is the type guard of Chapter 2, written for you.</p>
+
+<h2><span class="sec">7.3</span> <span>React Hook Form</span></h2>
+
+<p>React Hook Form connects a schema to the inputs. <code>register("name")</code> returns the props an input needs (its name, a ref, and event handlers), and <code>handleSubmit</code> runs your function only when the whole form is valid, with the clean, typed data:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">contact.tsx</div><pre class="code">import { useState } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+import { useForm } from &quot;react-hook-form&quot;;
+import { zodResolver } from &quot;@hookform/resolvers/zod&quot;;
+import type { z } from &quot;zod&quot;;
+import { contactSchema, type Contact } from &quot;./contact-schema&quot;;
+import { Field } from &quot;./field&quot;;
+
+function ContactForm() {
+  const [sent, setSent] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm&lt;z.input&lt;typeof contactSchema&gt;, unknown, Contact&gt;({
+    resolver: zodResolver(contactSchema),
+    mode: &quot;onTouched&quot;,
+  });
+
+  async function onSubmit(data: Contact) {
+    await new Promise((resolve) =&gt; setTimeout(resolve, 500)); // send to the server here
+    console.log(data);
+    setSent(true);
+  }
+
+  if (sent) return &lt;p className=&quot;card done&quot; role=&quot;status&quot;&gt;Thank you! We will reply within two days.&lt;/p&gt;;
+
+  return (
+    &lt;form onSubmit={handleSubmit(onSubmit)} noValidate&gt;
+      &lt;Field id=&quot;name&quot; label=&quot;Full name&quot; error={errors.name?.message}&gt;
+        &lt;input id=&quot;name&quot; autoComplete=&quot;name&quot; {...register(&quot;name&quot;)} /&gt;
+      &lt;/Field&gt;
+      &lt;Field id=&quot;email&quot; label=&quot;Email&quot; error={errors.email?.message}&gt;
+        &lt;input id=&quot;email&quot; type=&quot;email&quot; autoComplete=&quot;email&quot; dir=&quot;ltr&quot; {...register(&quot;email&quot;)} /&gt;
+      &lt;/Field&gt;
+      &lt;Field id=&quot;age&quot; label=&quot;Age&quot; error={errors.age?.message}&gt;
+        &lt;input id=&quot;age&quot; inputMode=&quot;numeric&quot; {...register(&quot;age&quot;)} /&gt;
+      &lt;/Field&gt;
+      &lt;Field id=&quot;message&quot; label=&quot;Message&quot; error={errors.message?.message}&gt;
+        &lt;textarea id=&quot;message&quot; rows={3} {...register(&quot;message&quot;)} /&gt;
+      &lt;/Field&gt;
+      &lt;button type=&quot;submit&quot; disabled={isSubmitting}&gt;
+        {isSubmitting ? &quot;Sending…&quot; : &quot;Send&quot;}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;ContactForm /&gt;);</pre></div>
+
+<p>The <code>Field</code> component keeps every input accessible in one place: the label is linked with <code>htmlFor</code>; when there is an error, the input gets <code>aria-invalid</code> and <code>aria-describedby</code>, so a screen reader reads the message together with the field:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">field.tsx</div><pre class="code">import { cloneElement, isValidElement, type ReactElement } from &quot;react&quot;;
+
+type FieldProps = {
+  id: string;
+  label: string;
+  error?: string;
+  children: ReactElement&lt;Record&lt;string, unknown&gt;&gt;;
+};
+
+// One place for the label, the error and the accessibility links between them
+export function Field({ id, label, error, children }: FieldProps) {
+  const errorId = `${id}-error`;
+  const input = isValidElement(children)
+    ? cloneElement(children, {
+        &quot;aria-invalid&quot;: error ? true : undefined,
+        &quot;aria-describedby&quot;: error ? errorId : undefined,
+      })
+    : children;
+  return (
+    &lt;div className=&quot;field&quot;&gt;
+      &lt;label htmlFor={id}&gt;{label}&lt;/label&gt;
+      {input}
+      {error &amp;&amp; (
+        &lt;p className=&quot;error&quot; id={errorId}&gt;
+          {error}
+        &lt;/p&gt;
+      )}
+    &lt;/div&gt;
+  );
+}</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>contact.html</span><b>560px</b></div><img src="img/react-forms-en-contact.html-560-7b9163.png" alt=""><figcaption><b>Figure 7.1:</b> After pressing “Send” with a short name and a broken email. Each message is next to its field and says how to fix it; the first wrong field receives the focus.</figcaption></figure>
+
+<h3>When to show errors</h3>
+
+<p>Showing “invalid email” after the first letter is rude: the user has not finished. Waiting until submit is late: the user fills ten fields and then finds five errors. <code>mode: "onTouched"</code> is a good compromise: a field is checked when the user leaves it for the first time, and after that on every change, so the error disappears the moment it is fixed.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: help the browser help the user</p><p>The right <code>type</code>, <code>inputMode</code> and <code>autoComplete</code> cost nothing and save users a lot of typing: <code>type="email"</code> brings the @ key on phones, <code>inputMode="numeric"</code> the number pad, and <code>autoComplete="name"</code>, <code>"email"</code>, <code>"street-address"</code> or <code>"new-password"</code> let the browser fill in or suggest values. Email, password and phone inputs also get <code>dir="ltr"</code> in Arabic pages.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why must the server validate the data again, even if the form already did?</li><li>What does <code>z.infer</code> give you?</li><li>What is the difference between <code>parse</code> and <code>safeParse</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">7.4</span> <span>Errors only the server knows</span></h2>
+
+<p>Some rules cannot be checked in the browser: whether an email is already registered, whether a coupon is still valid, whether the item is still in stock. The server answers with an error, and the form must show it next to the right field, just like its own errors. React Hook Form’s <code>setError("email", { message })</code> does exactly that, and <code>shouldFocus</code> moves the user there. Project 7.2 builds a sign-up form with this pattern.</p>
+
+<p>While the request is on its way, <code>isSubmitting</code> is true. Use it to disable the button and change its text, so impatient users do not send the form twice.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: never lose what the user typed</p><p>After a failed submit, keep every value in the form. The only exceptions are passwords and card numbers, which many sites clear for safety. Nothing makes users leave faster than typing a long message twice.</p></aside>
+
+<h2><span class="sec">7.5</span> <span>Forms in several steps</span></h2>
+
+<p>A long form, such as a checkout, is easier as a few short steps. The data should still be <em>one</em> form, so nothing is lost when the user goes back, and the rules should still be <em>one</em> schema. Each step lists the fields it is responsible for, and the “Next” button validates only those, with <code>trigger(fields)</code>. Project 7.3 builds this, and shows a subtle React bug that multi-step forms are famous for.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: write the error messages with the design</p><p>Every rule needs a message that says what is wrong <em>and</em> how to fix it, in the user’s language: “Please enter an 11-digit Egyptian mobile number”, not “Invalid input”. Write them in the schema, review them like any other text in the product, and test the form by making every mistake on purpose.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Validating only in the browser</td><td>Bad data reaches the database</td><td>Run the same schema on the server</td></tr>
+<tr><td>A type written by hand next to the schema</td><td>The two drift apart</td><td><code>z.infer&lt;typeof schema&gt;</code></td></tr>
+<tr><td>Errors on every keystroke from the first letter</td><td>Users see red before they finish</td><td><code>mode: "onTouched"</code></td></tr>
+<tr><td>Error text that is not linked to its input</td><td>Screen readers never read it</td><td><code>aria-invalid</code> and <code>aria-describedby</code></td></tr>
+<tr><td>Placeholder instead of a label</td><td>The hint vanishes while typing</td><td>A real <code>&lt;label&gt;</code> for every input</td></tr>
+<tr><td>A submit button that stays active</td><td>The form is sent twice</td><td>Disable it while <code>isSubmitting</code></td></tr>
+<tr><td>One button changing from “Next” to “Submit”</td><td>The form submits a step early</td><td>Give the two buttons different <code>key</code>s</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Controlled</strong> inputs keep their value in state; <strong>uncontrolled</strong> inputs keep it in the DOM. Form libraries combine the speed of the second with the convenience of the first.</li>
+<li>A <strong>Zod schema</strong> describes the rules and messages once; <code>z.infer</code> gives the type, and <code>safeParse</code> checks and cleans data anywhere, including the server.</li>
+<li><strong>React Hook Form</strong> connects the schema to inputs with <code>register</code>, and calls your submit function only with valid, typed data.</li>
+<li>Show errors at the right moment (<code>onTouched</code>), next to the field, linked with <code>aria-describedby</code>, with a message that says how to fix it.</li>
+<li>Put server errors on their fields with <code>setError</code>; disable the button while submitting; never lose the user’s input.</li>
+<li>Split long forms into steps of one form and one schema, validating each step with <code>trigger</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because anyone can send any data to the server without using your form; browser validation is for comfort, not security. 2. The TypeScript type of the valid data, derived from the schema. 3. <code>parse</code> throws an error for invalid data; <code>safeParse</code> returns an object with <code>success</code> and either the data or the issues.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">For each form, write the schema first, with every error message, and test it with <code>safeParse</code> in Node before you build any screen. When the rules are right, the form is mostly wiring.</p>
+
+<div class="project">
+<p class="project-label">Project 7.1 · Easy</p>
+<h3>A reusable Field component</h3>
+<p class="project-goal">Finish the contact form from this chapter, and make sure every field is labelled, linked to its error, and focusable on error.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>register</code>, <code>formState.errors</code>, a wrapper component with <code>cloneElement</code>, and accessibility attributes.</p>
+<ol class="steps">
+<li>Write the schema and infer the type. Give every rule a message that explains the fix.</li>
+<li>Write <code>Field</code>: a label, the input passed as <code>children</code>, and the error paragraph with an id.</li>
+<li>Inside <code>Field</code>, add <code>aria-invalid</code> and <code>aria-describedby</code> to the input only when there is an error.</li>
+<li>Use <code>mode: "onTouched"</code>, then try every mistake: leave fields empty, type a short name, a broken email, an age of 9.</li>
+<li>Test with a screen reader (VoiceOver, NVDA or TalkBack): tab to a wrong field and listen. The message should be read with the label.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> React Hook Form moves the focus to the first wrong field on submit by itself, because <code>register</code> gives it a ref to every input. That is one more reason to use <code>register</code> rather than writing inputs by hand.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 7.2 · Medium</p>
+<h3>Sign up, with an answer from the server</h3>
+<p class="project-goal">A sign-up form with a password, its confirmation and a terms box, which also shows the server’s “email already used” message on the email field.</p>
+<p class="project-skills"><strong>You will practise:</strong> rules that compare two fields with <code>refine</code>, <code>z.literal(true)</code> for a required checkbox, <code>setError</code>, and <code>isSubmitting</code>.</p>
+<ol class="steps">
+<li>Write the schema: an email, a password of at least 8 characters with a digit, a confirmation, and <code>terms: z.literal(true, "…")</code>.</li>
+<li>Compare the passwords with <code>.refine(…, { path: ["confirm"] })</code>, so the error appears under the confirmation field.</li>
+<li>Write a pretend <code>createAccount</code> that answers with <code>{ ok: false, field, message }</code> for one particular email.</li>
+<li>In <code>onSubmit</code>, call it, and on failure call <code>setError(result.field, { message }, { shouldFocus: true })</code>.</li>
+<li>Give each password input <code>autoComplete="new-password"</code>, so password managers offer to create a strong one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> design your API so that its errors name the field they belong to, as <code>createAccount</code> does here. Then the frontend can put every server error in the right place with one line of code.</p>
+<div class="listing" dir="ltr"><div class="listing-title">signup-schema.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> signupSchema = z
+  .object({
+    email: z.email(<span class="s">&quot;Please enter an email like name@example.com.&quot;</span>),
+    password: z.string().min(<span class="n">8</span>, <span class="s">&quot;At least 8 characters, with a number.&quot;</span>).regex(/\d/, <span class="s">&quot;At least 8 characters, with a number.&quot;</span>),
+    confirm: z.string(),
+    terms: z.literal(<span class="k">true</span>, <span class="s">&quot;Please accept the terms to continue.&quot;</span>),
+  })
+  .refine((data) =&gt; data.password === data.confirm, {
+    message: <span class="s">&quot;The passwords do not match.&quot;</span>,
+    path: [<span class="s">&quot;confirm&quot;</span>],
+  });
+
+<span class="k">export</span> <span class="k">type</span> Signup = z.infer&lt;<span class="k">typeof</span> signupSchema&gt;;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>signup.html</span><b>560px</b></div><img src="img/react-forms-en-projects-signup.html-560-50f5b0.png" alt=""><figcaption><b>Project 7.2:</b> every rule passed in the browser, but the server knows this email already, and the form shows it on the email field.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 7.3 · Challenge</p>
+<h3>A checkout in three steps</h3>
+<p class="project-goal">Delivery, payment and review as three steps of one form, validated step by step, with a review screen before the order is placed.</p>
+<p class="project-skills"><strong>You will practise:</strong> composing schemas with <code>extend</code>, <code>z.enum</code>, <code>trigger</code> for partial validation, <code>getValues</code>, <code>aria-current="step"</code>, and keys that force a new element.</p>
+<ol class="steps">
+<li>Write one schema per step and join them: <code>delivery.extend(payment.shape)</code>. Keep a <code>STEPS</code> list with each step’s title and fields.</li>
+<li>Show only the current step’s inputs. “Next” calls <code>await trigger(fields)</code> and moves on only if it returns <code>true</code>.</li>
+<li>On the last step, show a summary from <code>getValues()</code> and a “Place order” submit button.</li>
+<li>Show the progress as a list, with <code>aria-current="step"</code> on the current one, and a hidden “Step 2 of 3” for screen readers.</li>
+<li>Give “Next” and “Place order” different <code>key</code>s. Without them, React reuses the same <code>&lt;button&gt;</code> and only changes its <code>type</code>, and the click on “Next” can finish as a <em>submit</em> of the new type, placing the order one step early. This book’s own screenshots caught that bug.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because all steps are one form, “Back” is free: the values are still there. Never create a separate form per step unless the steps are saved separately on the server.</p>
+<div class="listing" dir="ltr"><div class="listing-title">checkout-schema.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> delivery = z.object({
+  city: z.enum([<span class="s">&quot;cairo&quot;</span>, <span class="s">&quot;alexandria&quot;</span>, <span class="s">&quot;giza&quot;</span>], <span class="s">&quot;Please choose a city.&quot;</span>),
+  street: z.string().trim().min(<span class="n">5</span>, <span class="s">&quot;Please write the street and building number.&quot;</span>),
+  phone: z.string().regex(/^<span class="n">01</span>[<span class="n">0125</span>]\d{<span class="n">8</span>}$/, <span class="s">&quot;Please enter an 11-digit Egyptian mobile number.&quot;</span>),
+});
+
+<span class="k">export</span> <span class="k">const</span> payment = z.object({
+  method: z.enum([<span class="s">&quot;card&quot;</span>, <span class="s">&quot;cash&quot;</span>]),
+});
+
+<span class="k">export</span> <span class="k">const</span> checkoutSchema = delivery.extend(payment.shape);
+<span class="k">export</span> <span class="k">type</span> Checkout = z.infer&lt;<span class="k">typeof</span> checkoutSchema&gt;;
+
+<span class="c">// Each step lists the fields it is responsible for</span>
+<span class="k">export</span> <span class="k">const</span> STEPS = [
+  { title: <span class="s">&quot;Delivery&quot;</span>, fields: [<span class="s">&quot;city&quot;</span>, <span class="s">&quot;street&quot;</span>, <span class="s">&quot;phone&quot;</span>] },
+  { title: <span class="s">&quot;Payment&quot;</span>, fields: [<span class="s">&quot;method&quot;</span>] },
+  { title: <span class="s">&quot;Review&quot;</span>, fields: [] },
+] as <span class="k">const</span>;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>checkout.html</span><b>560px</b></div><img src="img/react-forms-en-projects-checkout.html-560-b6e26d.png" alt=""><figcaption><b>Project 7.3:</b> “Next” on an empty first step: only this step’s fields are checked.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>checkout.html</span><b>560px</b></div><img src="img/react-forms-en-projects-checkout.html-560-e4ced7.png" alt=""><figcaption>The review step, after filling the delivery and choosing to pay by card.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add an optional “Phone” field to the contact schema, which may be empty but, when filled, must have 11 digits.</li>
+<li><span class="level">Easy</span> In <code>validate.ts</code>, try three more invalid inputs and print the issues. Which rule produces the error for an age of <code>"twelve"</code>?</li>
+<li><span class="level medium">Medium</span> Add a character counter under the message field, “24 / 500”, using <code>watch("message")</code> from React Hook Form, and a maximum length rule in the schema.</li>
+<li><span class="level medium">Medium</span> After a successful send, show the thank-you message with a “Send another” button that empties the form with <code>reset()</code>.</li>
+<li><span class="level hard">Challenge</span> Write a tiny Node “server” function, <code>handleContact(body: unknown)</code>, that uses <code>contactSchema.safeParse</code> and returns either <code>{ status: 201 }</code> or <code>{ status: 422, errors }</code>, where <code>errors</code> maps each field to its first message. Test it with good and bad bodies.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 8</p>
+<p>So far each piece of state lives in a component, and server data lives in TanStack Query. In the next chapter you will meet the last kind: state that many distant parts of the app share, such as the signed-in user, the theme or the cart. You will learn when Context is enough, and when a small store is better.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3117,6 +3471,16 @@ export function FavouriteButton({ id }: { id: number }) {
 <li>Read <code>q</code> with <code>params.get("q")</code>, add it to the key, and filter with <code>p.name.toLowerCase().includes(q.toLowerCase())</code>. Update it as in Project 6.2, copying the parameters first so the category is kept.</li>
 <li><code>const id = Number(params.id); if (!Number.isInteger(id)) return &lt;p&gt;There is no product with this number.&lt;/p&gt;;</code> before the query, or pass <code>enabled: Number.isInteger(id)</code> to <code>useQuery</code> so it never runs.</li>
 <li><code>useEffect(() =&gt; { client.prefetchQuery({ queryKey: ["product", id + 1], queryFn: () =&gt; getProduct(id + 1) }); }, [id]);</code> and <code>&lt;Link to={`/products/${id + 1}`}&gt;</code>. When the user clicks, the query finds the product in the cache and shows it without a skeleton.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 7</h2>
+<ol class="exercises">
+<li><code>phone: z.union([z.literal(""), z.string().regex(/^\d{11}$/, "Please enter 11 digits.")])</code>. The empty string is allowed explicitly, and anything else must be 11 digits. With <code>.optional()</code> as well, the field may also be missing entirely.</li>
+<li>For example <code>{ name: "", … }</code>, an email without a dot, and an age of <code>"twelve"</code>. For <code>"twelve"</code>, <code>z.coerce.number()</code> produces <code>NaN</code>, and Zod reports that a number was expected: the type check fails before <code>int()</code> or <code>min()</code> run.</li>
+<li><code>const message = watch("message") ?? "";</code> and <code>&lt;p className="muted"&gt;{message.length} / 500&lt;/p&gt;</code>, with <code>.max(500, "…")</code> added to the schema. <code>watch</code> re-renders the form when that field changes, so use it only for fields the screen really shows.</li>
+<li>Keep <code>sent</code> in state; the thank-you screen gets a button with <code>onClick={() =&gt; { reset(); setSent(false); }}</code>. <code>reset()</code> also clears the errors and the “touched” flags.</li>
+<li><code>function handleContact(body: unknown) { const r = contactSchema.safeParse(body); if (r.success) return { status: 201 }; const errors: Record&lt;string, string&gt; = {}; for (const issue of r.error.issues) errors[issue.path.join(".")] ??= issue.message; return { status: 422, errors }; }</code>. The <code>??=</code> keeps only the first message for each field.</li>
 </ol>
 
 </section>
