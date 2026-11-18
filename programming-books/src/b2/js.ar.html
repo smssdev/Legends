@@ -1,0 +1,289 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/js/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>JavaScript الحديثة بعمق</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تتوقع متى تُنسخ البيانات ومتى تُشارَك، وتحدّثها دون آثار جانبية</li>
+<li>تستخدم الإغلاقات (closures) لتبقي الحالة خاصة</li>
+<li>تكتب أصنافاً بحقول خاصة، ولا تفقد <code>this</code> بعد اليوم</li>
+<li>تستخدم الأدوات الحديثة: <code>?.</code> و<code>??</code> و<code>??=</code> و<code>at</code> و<code>toSorted</code> و<code>Object.groupBy</code></li>
+<li>تختار بين المصفوفات و<code>Map</code> و<code>Set</code>، وتكتب المولّدات</li>
+<li>تشرح ترتيب تنفيذ الكود غير المتزامن، وتجمع الوعود بأمان</li>
+<li>تصمم أخطاء تحكي القصة كاملة</li>
+</ul>
+</div>
+
+<p class="lead">تعلمت في الكتاب الأول من JavaScript ما يكفي لبناء تطبيق حقيقي. وأُطر العمل مثل React وVue مكتوبة باللغة نفسها، وأكثر الأخطاء المحيّرة فيها سؤال عن JavaScript في الحقيقة: <em>لماذا تغيّرت هذه القيمة؟ أين ذهب <code>this</code>؟ لماذا نُفّذ هذا السطر أولاً؟</em> يجيب هذا الفصل عن هذه الأسئلة مرة واحدة وإلى الأبد، وهو الأساس لكل ما بعده في الكتاب.</p>
+
+<aside class="bit" data-mood="think"><p>أهلاً بعودتك! أنا أيضاً كنت أتدرب. في هذا الكتاب نتوقف عن سؤال «هل يعمل؟» ونبدأ بسؤال «هل سيظل يعمل العام القادم، حين يكبر التطبيق عشر مرات؟». هذا هو سؤال الخبير.</p></aside>
+
+<h2>{{n}}.1 القيم والمراجع</h2>
+
+<p>في JavaScript نوعان من القيم. <dfn>القيم البسيطة</dfn> (الأرقام والنصوص والقيم المنطقية و<code>null</code> و<code>undefined</code> و<code>bigint</code> و<code>symbol</code>) تُنسخ حين تُسندها. أما <dfn>الكائنات</dfn>، ومنها المصفوفات والدوال، فلا تُنسخ: المتغير يحمل <dfn>مرجعاً</dfn>، أي عنواناً يشير إلى الكائن.</p>
+
+<pre data-code="values.js" data-title="values.js"></pre>
+<pre data-out="values.js"></pre>
+
+<ul>
+<li>تغيير <code>b</code> لم يغيّر <code>a</code>: فالرقم نُسخ.</li>
+<li><code>same</code> و<code>original</code> اسمان لكائن <em>واحد</em>، فالتغيير بأي منهما يظهر بالآخر.</li>
+<li>النشر <code>{ ...original }</code> يصنع <dfn>نسخة سطحية</dfn>: كائناً خارجياً جديداً، لكن المصفوفة الداخلية ما زالت مشتركة. ولهذا ظهرت <code>"ts"</code> في الأصل.</li>
+<li><code>structuredClone</code> تصنع <dfn>نسخة عميقة</dfn>: كل مستوى فيها جديد. وهي مدمجة في المتصفحات وNode.</li>
+</ul>
+
+<h3>التحديث دون آثار جانبية</h3>
+
+<p>يقرر React وVue كلاهما ما يُعاد رسمه بمقارنة المراجع: فإن كان الكائن هو نفسه، قد يفترضان أن شيئاً لم يتغير. لذلك نادراً ما يغيّر المحترفون البيانات في مكانها، بل يبنون كائناً <em>جديداً</em> يشارك القديم في الأجزاء التي لم تتغير. ويسمى هذا الأسلوب <dfn>التحديث غير القابل للتغيير</dfn> (immutable updates):</p>
+
+<pre data-code="immutable.js" data-title="immutable.js"></pre>
+<pre data-out="immutable.js"></pre>
+
+<p>السلة القديمة ما زالت بكمية 1، والجديدة بكمية 2. والسلة ومصفوفة العناصر كلتاهما كائنان جديدان (<code>false false</code>)، بينما يُعاد استخدام العناصر التي لم تتغير. اقرأ <code>addOne</code> ببطء: انشر الكائن القديم، ثم غيّر ما تغيّر فقط، في كل مستوى في طريقك إلى الداخل.</p>
+
+<aside class="box warn"><p class="box-title">انتبه: <code>const</code> لا تجمّد الكائن</p><p><code>const cart = {…}</code> تعني أن <em>الاسم</em> <code>cart</code> لا يشير إلى كائن آخر. أما الكائن نفسه فيمكن أن يتغير: <code>cart.items.push(…)</code> تعمل. وإن احتجت حقاً كائناً لا يتغير فاستخدم <code>Object.freeze</code>، وهي سطحية أيضاً.</p></aside>
+
+<h2>{{n}}.2 النطاق والإغلاقات</h2>
+
+<p><dfn>النطاق</dfn> (scope) هو المنطقة من الكود التي يوجد فيها اسم ما. والمتغيرات المعرّفة بـ <code>let</code> و<code>const</code> تعيش في أقرب كتلة <code>{ … }</code>. وتستطيع الدالة أن ترى متغيرات النطاقات المحيطة بها، حتى <em>بعد</em> أن تنتهي تلك الدوال الخارجية. والدالة مع المتغيرات التي تتذكرها تسمى <dfn>إغلاقاً</dfn> (closure).</p>
+
+<pre data-code="closures.js" data-title="closures.js"></pre>
+<pre data-out="closures.js"></pre>
+
+<p>كل استدعاء لـ <code>makeCounter</code> يصنع <code>count</code> جديداً، فلا يتشارك <code>likes</code> و<code>stock</code> شيئاً. ولا أحد في الخارج يستطيع قراءة <code>count</code> أو إفساده، بل يستخدم الدوال الثلاث فقط. وبهذه الطريقة كانت لـ JavaScript بيانات خاصة قبل أن تأتي الحقول الخاصة في الأصناف بزمن طويل، وبها بالضبط تحفظ خطافات React وcomposables في Vue حالتها.</p>
+
+<p>والإغلاقات تصنع أيضاً أدوات صغيرة قابلة لإعادة الاستخدام. فـ <code>once</code> تغلّف أي دالة لتعمل مرة واحدة فقط، وهذا مفيد للاتصال بخادم أو عرض رسالة ترحيب:</p>
+
+<pre data-code="once.js" data-title="once.js"></pre>
+<pre data-out="once.js"></pre>
+
+<h3>لغز الحلقة الشهير</h3>
+
+<pre data-code="loop.js" data-title="loop.js"></pre>
+<pre data-out="loop.js"></pre>
+
+<p>نطاق <code>var</code> هو الدالة كلها، فتُغلق المؤقتات الثلاثة على <code>i</code> <em>نفسه</em>، وقيمته 4 حين تعمل. أما <code>let</code> فتصنع <code>j</code> جديداً في كل دورة، فيتذكر كل مؤقت قيمته. وهذا من أسباب أن الكود الحديث لا يستخدم <code>var</code> أبداً.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>بعد <code>const b = { ...a }</code>، هل <code>b.list === a.list</code> صحيحة أم خاطئة؟</li><li>لماذا لا يستطيع أحد تغيير <code>count</code> من خارج <code>makeCounter</code>؟</li><li>ماذا سيطبع <code>loop.js</code> لو استخدمت الحلقتان <code>let</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.3 الأصناف والحقول الخاصة و<code>this</code></h2>
+
+<p><dfn>الصنف</dfn> (class) قالب لكائنات تتشارك الدوال نفسها. ويمكن للأصناف الحديثة أن تحمل <dfn>حقولاً خاصة</dfn> تبدأ أسماؤها بـ <code>#</code>، وأعضاء <dfn>ثابتة</dfn> (static) تخص الصنف نفسه، و<dfn>دوال قراءة</dfn> (getters) تبدو كخصائص لكنها تشغّل كوداً:</p>
+
+<pre data-code="classes.js" data-title="classes.js"></pre>
+<pre data-out="classes.js"></pre>
+
+<ul>
+<li><code>#balance</code> لا يُقرأ ولا يتغير خارج الصنف، ولا حتى بالخطأ. والطريق الوحيد إليه <code>deposit</code>، وهي تفحص المبلغ.</li>
+<li><code>get balance()</code> تسمح بقراءة <code>acc.balance</code> دون القدرة على تعيينها.</li>
+<li><code>extends</code> تبني صنفاً جديداً فوق آخر، فلـ <code>SavingsAccount</code> كل ما لـ <code>Account</code> وزيادة <code>addInterest</code>.</li>
+<li>رمي <code>RangeError</code> عند معامل خاطئ أفضل من تجاهله بصمت: فيظهر الخطأ حيث يبدأ.</li>
+</ul>
+
+<h3>أين ذهب <code>this</code>؟</h3>
+
+<p>داخل الدالة العادية، <code>this</code> هو الكائن <em>الذي قبل النقطة</em> لحظة الاستدعاء. ففي <code>timer.tick()</code> قبل النقطة <code>timer</code>. لكن حين تمرر <code>timer.tick</code> إلى مكان آخر، كدالة رد أو معالج حدث، تسافر الدالة وحدها ويبقى الكائن خلفها:</p>
+
+<pre data-code="this.js" data-title="this.js"></pre>
+<pre data-out="this.js"></pre>
+
+<p>الدوال السهمية ليس لها <code>this</code> خاص بها، بل تستخدم <code>this</code> المكان الذي كُتبت فيه. ولهذا تعمل الحلول الثلاثة، ولهذا سترى الدوال السهمية في كل مكان في معالجات الأحداث.</p>
+
+<aside class="bit" data-mood="wow"><p>قاعدة توفر ساعات: إن كانت الدالة ستُمرَّر إلى مكان آخر (حدث، أو مؤقت، أو دالة رد)، فاستدعها داخل دالة سهمية: <code>() =&gt; obj.method()</code>. وعندها لا يضيع <code>this</code> أبداً.</p></aside>
+
+<h2>{{n}}.4 الأدوات الحديثة</h2>
+
+<p>كل عام تكسب JavaScript مزايا صغيرة تزيل أنواعاً كاملة من الأخطاء. وهذه ما ستستخدمه كل يوم:</p>
+
+<pre data-code="modern.js" data-title="modern.js"></pre>
+<pre data-out="modern.js"></pre>
+
+<table>
+<thead><tr><th>الصيغة</th><th>معناها</th><th>استخدامها المعتاد</th></tr></thead>
+<tbody>
+<tr><td><code>a?.b</code></td><td><code>undefined</code> إن كانت <code>a</code> هي <code>null</code> أو <code>undefined</code>، وإلا <code>a.b</code></td><td>بيانات من خادم قد تكون ناقصة</td></tr>
+<tr><td><code>a ?? b</code></td><td><code>b</code> فقط إن كانت <code>a</code> هي <code>null</code> أو <code>undefined</code></td><td>قيم افتراضية تحافظ على <code>0</code> و<code>""</code></td></tr>
+<tr><td><code>a ??= b</code></td><td>اجعل <code>a</code> تساوي <code>b</code> فقط إن كانت ناقصة</td><td>ملء الإعدادات الافتراضية</td></tr>
+<tr><td><code>list.at(-1)</code></td><td>العنصر الأخير</td><td>بدل <code>list[list.length - 1]</code></td></tr>
+<tr><td><code>toSorted</code> و<code>toReversed</code> و<code>with</code></td><td>مثل <code>sort</code> وأخواتها، لكنها تُرجع نسخة</td><td>التحديث غير القابل للتغيير</td></tr>
+</tbody>
+</table>
+
+<p>انظر جيداً إلى السطر الثالث من المخرجات: <code>||</code> رمت النص الفارغ واستخدمت <code>"light"</code>، بينما أبقته <code>??</code>. فإن كان النص الفارغ أو الصفر قيمة حقيقية في بياناتك، فاستخدم <code>??</code>.</p>
+
+<h3>تجميع البيانات وإعادة تشكيلها</h3>
+
+<p><code>Object.groupBy</code> توزّع القائمة على مجموعات في سطر واحد، و<code>Object.entries</code> مع <code>Object.fromEntries</code> تتيحان تحويل الكائن كأنه مصفوفة:</p>
+
+<pre data-code="group.js" data-title="group.js"></pre>
+<pre data-out="group.js"></pre>
+
+<p>وهذا شكل معظم كود لوحات التحكم: اجمع السجلات الخام، ثم اختصر كل مجموعة إلى رقم.</p>
+
+<h2>{{n}}.5 المجموعات والمولّدات</h2>
+
+<p>الكائن مناسب لمجموعة ثابتة من الحقول المسماة. أما <em>المجموعة</em> التي تكبر وتصغر فلها في JavaScript أداتان أفضل. <dfn>Map</dfn> تحفظ أزواج مفتاح وقيمة، بمفاتيح من أي نوع، بترتيب إضافتها. و<dfn>Set</dfn> تحفظ كل قيمة مرة واحدة:</p>
+
+<pre data-code="collections.js" data-title="collections.js"></pre>
+<pre data-out="collections.js"></pre>
+
+<p>استخدم <code>Map</code> حين تبحث بمفتاح يأتي من البيانات (معرّف، أو رابط، أو كائن)، واستخدم <code>Set</code> لإزالة التكرار أو للسؤال السريع «هل رأيت هذا من قبل؟». وكلتاهما أسرع كثيراً من البحث في مصفوفة حين تكبر المجموعة.</p>
+
+<h3>المولّدات: قيم عند الطلب</h3>
+
+<p><dfn>المولّد</dfn> (generator) دالة تُكتب بـ <code>function*</code> وتستطيع أن تتوقف. فكل <code>yield</code> تسلّم قيمة واحدة وتنتظر حتى تُطلب التالية. وكل ما يعمل مع <code>for…of</code> أو النشر يستطيع استخدامه:</p>
+
+<pre data-code="generators.js" data-title="generators.js"></pre>
+<pre data-out="generators.js"></pre>
+
+<p>وتتألق المولّدات حين تكون القيم مكلفة أو بلا نهاية: قراءة ملف كبير سطراً سطراً، أو تحميل صفحة بعد صفحة من واجهة برمجية ما دام المستخدم يمرّر.</p>
+
+<h2>{{n}}.6 حلقة الأحداث</h2>
+
+<p>تشغّل JavaScript كودك على خيط واحد، قطعة بعد قطعة. والعمل الذي يجب أن ينتظر (المؤقتات، وردود الشبكة، والنقرات) يوضع في طابور، و<dfn>حلقة الأحداث</dfn> (event loop) تختار القطعة التالية حين تنتهي الحالية. وهناك طابوران، والفرق بينهما يفسّر كثيراً من الأخطاء المفاجئة:</p>
+
+<pre data-code="event-loop.js" data-title="event-loop.js"></pre>
+<pre data-out="event-loop.js"></pre>
+
+<ol>
+<li>يعمل الكود المتزامن كله أولاً، من الأعلى إلى الأسفل.</li>
+<li>ثم تعمل كل <dfn>المهام الدقيقة</dfn> (microtasks): ردود الوعود و<code>queueMicrotask</code>. والمهمة الدقيقة التي تضيف مهام دقيقة أخرى تُبقي الحلقة مشغولة حتى يفرغ الطابور.</li>
+<li>وبعدها فقط تعمل <dfn>المهمة</dfn> (task) التالية: مؤقت، أو حدث شبكة، أو نقرة.</li>
+</ol>
+
+<p>القاعدة العملية: الكود بعد <code>await</code> يعمل لاحقاً دائماً، حتى لو كان الوعد محققاً سلفاً. والحلقة المتزامنة الطويلة تعطّل كل شيء، بما فيه النقرات ورسم الصفحة، ولهذا يُقسَّم العمل الثقيل إلى قطع صغيرة أو يُنقل إلى Web Worker.</p>
+
+<h3>جمع الوعود</h3>
+
+<p>عرفت في الكتاب الأول <code>Promise.all</code>، التي تفشل حين يفشل أي وعد. والشاشات الحقيقية تحتاج تحكماً أكثر:</p>
+
+<pre data-code="promises.mjs" data-title="promises.mjs"></pre>
+<pre data-out="promises.mjs"></pre>
+
+<table>
+<thead><tr><th>الدالة</th><th>تتحقق حين</th><th>استخدمها لـ</th></tr></thead>
+<tbody>
+<tr><td><code>Promise.all</code></td><td>تنجح كلها (وتفشل مع أول فشل)</td><td>بيانات لا تعمل الشاشة دونها</td></tr>
+<tr><td><code>Promise.allSettled</code></td><td>تنتهي كلها، مع حالة كل منها</td><td>لوحات التحكم: اعرض ما تحمّل، وعلّم ما فشل</td></tr>
+<tr><td><code>Promise.any</code></td><td>ينجح أولها</td><td>عدة خوادم بالبيانات نفسها</td></tr>
+<tr><td><code>Promise.race</code></td><td>ينتهي أولها، نجاحاً أو فشلاً</td><td>المهلة الزمنية</td></tr>
+</tbody>
+</table>
+
+<p>ينتهي اسم الملف بـ <code>.mjs</code>، وهذا يخبر Node بأنه وحدة ES (ES module). والوحدات تسمح بـ <code>await</code> في المستوى الأعلى، خارج أي دالة. ويشرح الفصل {{n+2}} الوحدات كما يجب، ويكفي الامتداد الآن.</p>
+
+<h2>{{n}}.7 أخطاء تحكي القصة كاملة</h2>
+
+<p>رسالة الخطأ ملاحظة للشخص الذي سيصحح كودك في الثانية فجراً، وكثيراً ما يكون هذا الشخص أنت. وميزتان حديثتان تجعلان هذه الملاحظات أفضل بكثير: أصناف أخطائك الخاصة، التي تُميَّز بـ <code>instanceof</code>، وخيار <code>cause</code>، الذي يحفظ الخطأ الأصلي حين تضيف سياقاً:</p>
+
+<pre data-code="errors.js" data-title="errors.js"></pre>
+<pre data-out="errors.js"></pre>
+
+<p>الرسالة العليا تقول ماذا كان المستخدم يحاول، والسبب يقول لماذا فشل. وخدمات تتبع الأخطاء وConsole المتصفح تعرض السلسلة كلها. ولا تكتب أبداً <code>catch (error) {}</code> فارغة: فالخطأ المبتلع علّة مختبئة.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: افشل بصوت عالٍ، ومبكراً، ومع السياق</p><p>افحص المعاملات عند مدخل دالتك وارمِ خطأً محدداً. والتقط الأخطاء فقط حيث تستطيع أن تفعل شيئاً مفيداً: أن تعرض رسالة، أو تعيد المحاولة، أو تضيف سياقاً وترمي من جديد مع <code>cause</code>. وفي كل مكان آخر دعها تصعد.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>تغيير الحالة في مكانها: <code>cart.items.push(x)</code></td><td>لا تتحدث الشاشة، أو تتحدث في المكان الخطأ</td><td>ابنِ كائناً جديداً بالنشر</td></tr>
+<tr><td>النسخ بالنشر ثم تعديل مصفوفة داخلية</td><td>يتغير الأصل أيضاً</td><td>انسخ كل مستوى تغيّره، أو استخدم <code>structuredClone</code></td></tr>
+<tr><td>تمرير <code>obj.method</code> دالة رد</td><td><code>this</code> يصبح <code>undefined</code></td><td><code>() =&gt; obj.method()</code></td></tr>
+<tr><td><code>value || default</code> مع الأرقام</td><td>يُستبدل <code>0</code> بالقيمة الافتراضية</td><td><code>value ?? default</code></td></tr>
+<tr><td><code>Promise.all</code> لبيانات اختيارية</td><td>فشل واحد يخفي كل الباقي</td><td><code>Promise.allSettled</code></td></tr>
+<tr><td><code>catch</code> فارغة</td><td>تختفي الأخطاء بصمت</td><td>عالجه، أو ارمِه من جديد مع <code>cause</code></td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>القيم البسيطة تُنسخ، والكائنات تُشارَك <strong>بالمرجع</strong>. النشر ينسخ مستوى واحداً، و<code>structuredClone</code> كل المستويات.</li>
+<li><strong>التحديث غير القابل للتغيير</strong> يبني كائنات جديدة ويعيد استخدام ما لم يتغير، وأُطر العمل تعتمد عليه.</li>
+<li><strong>الإغلاق</strong> دالة ومعها المتغيرات التي تتذكرها: أبسط طريقة لإبقاء الحالة خاصة.</li>
+<li>للأصناف <strong>حقول خاصة</strong> (<code>#</code>) ودوال قراءة وأعضاء <code>static</code>. و<code>this</code> هو الكائن الذي قبل النقطة <em>لحظة الاستدعاء</em>، والدوال السهمية تحفظ <code>this</code> الخارجي.</li>
+<li><code>?.</code> و<code>??</code> و<code>??=</code> و<code>at</code> و<code>toSorted</code> و<code>Object.groupBy</code> تجعل الكود اليومي أقصر وأأمن.</li>
+<li>استخدم <strong>Map</strong> للبحث بمفتاح، و<strong>Set</strong> للقيم الفريدة، و<strong>المولّدات</strong> للقيم عند الطلب.</li>
+<li><strong>حلقة الأحداث</strong> تشغّل الكود المتزامن، ثم كل المهام الدقيقة، ثم المهمة التالية.</li>
+<li>اختر <code>all</code> أو <code>allSettled</code> أو <code>any</code> أو <code>race</code> حسب حاجة الشاشة. وأعطِ الأخطاء صنفاً و<code>cause</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. صحيحة: النشر ينسخ المستوى الأول فقط، فكلاهما يشير إلى القائمة نفسها. 2. لأن <code>count</code> موجود داخل الإغلاق فقط، والعالم الخارجي يأخذ دوالّ لا المتغير. 3. <code>1 2 3</code> مرتين، مرة مع «var:» ومرة مع «let:».</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يبني أداة صغيرة قابلة لإعادة الاستخدام، من النوع الذي تجده داخل المكتبات الحقيقية. اكتبه أولاً بطريقتك، وشغّله، وقارن نتيجتك بالنتيجة أدناه، وبعدها فقط انظر إلى الحل في مستودع الكود.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>أداة التذكّر memoize</h3>
+<p class="project-goal">اكتب <code>memoize(fn)</code>، التي تُرجع نسخة أسرع من أي دالة بمعامل واحد، بأن تتذكر إجاباتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الإغلاقات، و<code>Map</code>، وقياس الدالة بعدّ استدعاءاتها.</p>
+<ol class="steps">
+<li>داخل <code>memoize</code> أنشئ <code>Map</code> اسمها <code>cache</code>. والإغلاق يبقيها حية بين الاستدعاءات.</li>
+<li>أرجع دالة سهمية تأخذ <code>arg</code>. فإن كانت <code>cache.has(arg)</code>، أرجع القيمة المحفوظة.</li>
+<li>وإلا فاستدعِ <code>fn(arg)</code>، واحفظ النتيجة بـ <code>cache.set</code>، وأرجعها.</li>
+<li>عُدّ الاستدعاءات الحقيقية لدالة بطيئة بمتغير خارجها، وأثبت أن المعاملات المكررة مجانية.</li>
+<li>طبّق التذكّر على دالة فيبوناتشي التعاودية. يجب أن تستدعي النسخة <em>المتذكّرة</em> من نفسها، وإلا فلن تُستخدم الذاكرة أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> طبّق التذكّر على <dfn>الدوال النقية</dfn> فقط: الدوال التي تعتمد إجابتها على معاملاتها وحدها. فالدالة التي تقرأ الساعة أو خادماً ستُرجع إجابات قديمة إلى الأبد.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/memoize.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>باعث الأحداث</h3>
+<p class="project-goal">ابنِ الصنف الصغير الذي يقع في قلب Node والمتصفحات ومكتبات كثيرة: أجزاء من البرنامج تعلن أحداثاً، وأجزاء أخرى تستمع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأصناف، والحقل الخاص، و<code>Map</code> من <code>Set</code>، ومعاملات الباقي (rest)، وإرجاع دالة تنظيف.</p>
+<ol class="steps">
+<li>أنشئ <code>class Emitter</code> بحقل خاص <code>#listeners = new Map()</code>. كل مفتاح اسم حدث، وكل قيمة <code>Set</code> من الدوال.</li>
+<li><code>on(event, fn)</code> تضيف الدالة، وتنشئ الـ <code>Set</code> في المرة الأولى. واجعلها تُرجع <code>() =&gt; this.off(event, fn)</code>.</li>
+<li><code>off(event, fn)</code> تزيلها. واستخدم <code>?.</code> ليكون الحذف من حدث مجهول بلا ضرر.</li>
+<li><code>emit(event, ...args)</code> تستدعي كل مستمع بالمعاملات. مرّ على <em>نسخة</em> (<code>[...set]</code>)، لأن المستمع قد يزيل نفسه أثناء المرور.</li>
+<li><code>once(event, fn)</code> تستمع بغلاف يوقف نفسه قبل أن يستدعي <code>fn</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إرجاع دالة «الإيقاف» من <code>on</code> نمط ستقابله مرة أخرى: فـ <code>useEffect</code> في React و<code>watch</code> في Vue كلاهما يستخدمه. من يبدأ الاستماع يملك طريقة إيقافه.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/emitter.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>إعادة المحاولة بانتظار متضاعف</h3>
+<p class="project-goal">الشبكات تتعطل للحظة طوال الوقت. اكتب <code>retry(fn, options)</code>، التي تعيد محاولة دالة غير متزامنة، وتنتظر أطول في كل مرة، وتستسلم بخطأ واضح.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>async</code>/<code>await</code> داخل حلقة، والخيارات الافتراضية بالتفكيك، و<code>2 ** n</code>، والأخطاء مع <code>cause</code>.</p>
+<ol class="steps">
+<li>اكتب الدالة المساعدة <code>wait(ms)</code> التي تُرجع وعداً.</li>
+<li>أعطِ <code>retry</code> معاملاً ثانياً <code>{ retries = 3, delay = 10 } = {}</code>، لتعمل دون أي خيارات.</li>
+<li>مرّ على المحاولات. وداخل <code>try</code> اكتب <code>return await fn(attempt)</code>: و<code>await</code> هنا ضرورية، وإلا فلن ترى <code>catch</code> الفشل أبداً.</li>
+<li>في <code>catch</code> استسلم حين تنفد المحاولات، برمي خطأ جديد مع <code>{ cause: error }</code>. وإلا فانتظر <code>delay * 2 ** (attempt - 1)</code> وكرر.</li>
+<li>اختبرها بواجهة وهمية <code>flaky(n)</code> تفشل <code>n</code> مرة ثم تنجح. جرّب واحدة تتعافى وأخرى لا تتعافى أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في الإنتاج أضف قليلاً من العشوائية إلى الانتظار، كي لا تعيد ألف جوال فقدت الشبكة معاً المحاولة في الملي ثانية نفسها. ولا تُعِد أبداً عمليات لا يصح تكرارها، كخصم مبلغ من بطاقة، إلا إن كان الخادم يدعم ذلك.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/retry.mjs"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب <code>removeItem(cart, id)</code> بأسلوب <code>immutable.js</code>، وأثبت بـ <code>===</code> أن السلة الأصلية لم تتغير.</li>
+<li><span class="level">سهل</span> باستخدام <code>Object.groupBy</code> جمّع الكلمات <code>["apple", "avocado", "banana", "blueberry", "cherry"]</code> حسب حرفها الأول.</li>
+<li><span class="level">متوسط</span> أضف إلى <code>Account</code> دالة <code>withdraw(amount)</code> ترمي خطأً خاصاً <code>InsufficientFundsError</code> حين يكون الرصيد غير كافٍ، واختبر الحالتين.</li>
+<li><span class="level">متوسط</span> دون أن تشغّله، اكتب ترتيب مخرجات: <code>setTimeout(() =&gt; log("A")); Promise.resolve().then(() =&gt; log("B")); log("C");</code>. ثم شغّله لتتحقق.</li>
+<li><span class="level">تحدٍّ</span> اكتب مولّداً <code>take(iterable, n)</code> يعطي أول <code>n</code> قيمة فقط من أي شيء قابل للتكرار، واستخدمه مع مولّد لا ينتهي للأرقام الزوجية.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>رأيت كم من الأمور قد يسوء حين لا تكون القيمة كما توقعت. وTypeScript تلتقط معظم هذه الأخطاء قبل أن تشغّل الكود أصلاً. في الفصل التالي ستضيف الأنواع إلى كود حقيقي، وتصف بيانات قد تكون في عدة حالات، وتدع المحرر يجد الأخطاء نيابة عنك.</p>
+</div>
+</section>

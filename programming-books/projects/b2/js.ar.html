@@ -1,0 +1,54 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يبني أداة صغيرة قابلة لإعادة الاستخدام، من النوع الذي تجده داخل المكتبات الحقيقية. اكتبه أولاً بطريقتك، وشغّله، وقارن نتيجتك بالنتيجة أدناه، وبعدها فقط انظر إلى الحل في مستودع الكود.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>أداة التذكّر memoize</h3>
+<p class="project-goal">اكتب <code>memoize(fn)</code>، التي تُرجع نسخة أسرع من أي دالة بمعامل واحد، بأن تتذكر إجاباتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الإغلاقات، و<code>Map</code>، وقياس الدالة بعدّ استدعاءاتها.</p>
+<ol class="steps">
+<li>داخل <code>memoize</code> أنشئ <code>Map</code> اسمها <code>cache</code>. والإغلاق يبقيها حية بين الاستدعاءات.</li>
+<li>أرجع دالة سهمية تأخذ <code>arg</code>. فإن كانت <code>cache.has(arg)</code>، أرجع القيمة المحفوظة.</li>
+<li>وإلا فاستدعِ <code>fn(arg)</code>، واحفظ النتيجة بـ <code>cache.set</code>، وأرجعها.</li>
+<li>عُدّ الاستدعاءات الحقيقية لدالة بطيئة بمتغير خارجها، وأثبت أن المعاملات المكررة مجانية.</li>
+<li>طبّق التذكّر على دالة فيبوناتشي التعاودية. يجب أن تستدعي النسخة <em>المتذكّرة</em> من نفسها، وإلا فلن تُستخدم الذاكرة أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> طبّق التذكّر على <dfn>الدوال النقية</dfn> فقط: الدوال التي تعتمد إجابتها على معاملاتها وحدها. فالدالة التي تقرأ الساعة أو خادماً ستُرجع إجابات قديمة إلى الأبد.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/memoize.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>باعث الأحداث</h3>
+<p class="project-goal">ابنِ الصنف الصغير الذي يقع في قلب Node والمتصفحات ومكتبات كثيرة: أجزاء من البرنامج تعلن أحداثاً، وأجزاء أخرى تستمع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأصناف، والحقل الخاص، و<code>Map</code> من <code>Set</code>، ومعاملات الباقي (rest)، وإرجاع دالة تنظيف.</p>
+<ol class="steps">
+<li>أنشئ <code>class Emitter</code> بحقل خاص <code>#listeners = new Map()</code>. كل مفتاح اسم حدث، وكل قيمة <code>Set</code> من الدوال.</li>
+<li><code>on(event, fn)</code> تضيف الدالة، وتنشئ الـ <code>Set</code> في المرة الأولى. واجعلها تُرجع <code>() =&gt; this.off(event, fn)</code>.</li>
+<li><code>off(event, fn)</code> تزيلها. واستخدم <code>?.</code> ليكون الحذف من حدث مجهول بلا ضرر.</li>
+<li><code>emit(event, ...args)</code> تستدعي كل مستمع بالمعاملات. مرّ على <em>نسخة</em> (<code>[...set]</code>)، لأن المستمع قد يزيل نفسه أثناء المرور.</li>
+<li><code>once(event, fn)</code> تستمع بغلاف يوقف نفسه قبل أن يستدعي <code>fn</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إرجاع دالة «الإيقاف» من <code>on</code> نمط ستقابله مرة أخرى: فـ <code>useEffect</code> في React و<code>watch</code> في Vue كلاهما يستخدمه. من يبدأ الاستماع يملك طريقة إيقافه.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/emitter.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>إعادة المحاولة بانتظار متضاعف</h3>
+<p class="project-goal">الشبكات تتعطل للحظة طوال الوقت. اكتب <code>retry(fn, options)</code>، التي تعيد محاولة دالة غير متزامنة، وتنتظر أطول في كل مرة، وتستسلم بخطأ واضح.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>async</code>/<code>await</code> داخل حلقة، والخيارات الافتراضية بالتفكيك، و<code>2 ** n</code>، والأخطاء مع <code>cause</code>.</p>
+<ol class="steps">
+<li>اكتب الدالة المساعدة <code>wait(ms)</code> التي تُرجع وعداً.</li>
+<li>أعطِ <code>retry</code> معاملاً ثانياً <code>{ retries = 3, delay = 10 } = {}</code>، لتعمل دون أي خيارات.</li>
+<li>مرّ على المحاولات. وداخل <code>try</code> اكتب <code>return await fn(attempt)</code>: و<code>await</code> هنا ضرورية، وإلا فلن ترى <code>catch</code> الفشل أبداً.</li>
+<li>في <code>catch</code> استسلم حين تنفد المحاولات، برمي خطأ جديد مع <code>{ cause: error }</code>. وإلا فانتظر <code>delay * 2 ** (attempt - 1)</code> وكرر.</li>
+<li>اختبرها بواجهة وهمية <code>flaky(n)</code> تفشل <code>n</code> مرة ثم تنجح. جرّب واحدة تتعافى وأخرى لا تتعافى أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في الإنتاج أضف قليلاً من العشوائية إلى الانتظار، كي لا تعيد ألف جوال فقدت الشبكة معاً المحاولة في الملي ثانية نفسها. ولا تُعِد أبداً عمليات لا يصح تكرارها، كخصم مبلغ من بطاقة، إلا إن كان الخادم يدعم ذلك.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/retry.mjs"></pre>
+</div>

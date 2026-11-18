@@ -189,15 +189,18 @@
           "chapters": [
             {
               "en": "Modern JavaScript in Depth",
-              "ar": "JavaScript الحديثة بعمق"
+              "ar": "JavaScript الحديثة بعمق",
+              "src": "b2/js"
             },
             {
               "en": "TypeScript for Real Projects",
-              "ar": "TypeScript في المشاريع الحقيقية"
+              "ar": "TypeScript في المشاريع الحقيقية",
+              "src": "b2/typescript"
             },
             {
               "en": "Modules, Tooling and Build Systems",
-              "ar": "الوحدات والأدوات وأنظمة البناء"
+              "ar": "الوحدات والأدوات وأنظمة البناء",
+              "src": "b2/tooling"
             }
           ]
         },
@@ -209,23 +212,28 @@
           "chapters": [
             {
               "en": "Components and Rendering",
-              "ar": "المكونات والرسم"
+              "ar": "المكونات والرسم",
+              "src": "b2-react/components-and-rendering"
             },
             {
               "en": "State, Effects and Data Flow",
-              "ar": "الحالة والتأثيرات وتدفق البيانات"
+              "ar": "الحالة والتأثيرات وتدفق البيانات",
+              "src": "b2-react/state-effects-and-data-flow"
             },
             {
               "en": "Routing and Server Data",
-              "ar": "التوجيه وبيانات الخادم"
+              "ar": "التوجيه وبيانات الخادم",
+              "src": "b2-react/routing-and-server-data"
             },
             {
               "en": "Forms and Validation",
-              "ar": "النماذج والتحقق"
+              "ar": "النماذج والتحقق",
+              "src": "b2-react/forms-and-validation"
             },
             {
               "en": "Global State without Pain",
-              "ar": "الحالة العامة بلا ألم"
+              "ar": "الحالة العامة بلا ألم",
+              "src": "b2-react/global-state-without-pain"
             }
           ]
         },
@@ -237,27 +245,33 @@
           "chapters": [
             {
               "en": "Design Systems and Component Libraries",
-              "ar": "أنظمة التصميم ومكتبات المكونات"
+              "ar": "أنظمة التصميم ومكتبات المكونات",
+              "src": "b2/design-systems"
             },
             {
               "en": "Accessibility (WCAG) in Practice",
-              "ar": "الوصول (WCAG) عملياً"
+              "ar": "الوصول (WCAG) عملياً",
+              "src": "b2/accessibility"
             },
             {
               "en": "Testing: Unit, Component and End-to-End",
-              "ar": "الاختبار: الوحدات والمكونات ومن الطرف للطرف"
+              "ar": "الاختبار: الوحدات والمكونات ومن الطرف للطرف",
+              "src": "b2/testing"
             },
             {
               "en": "Performance and Core Web Vitals",
-              "ar": "الأداء وCore Web Vitals"
+              "ar": "الأداء وCore Web Vitals",
+              "src": "b2/performance"
             },
             {
               "en": "Frontend Security",
-              "ar": "أمان الواجهات"
+              "ar": "أمان الواجهات",
+              "src": "b2/security"
             },
             {
               "en": "Internationalisation and RTL",
-              "ar": "تعدد اللغات والاتجاه من اليمين"
+              "ar": "تعدد اللغات والاتجاه من اليمين",
+              "src": "b2/i18n"
             }
           ]
         },
@@ -269,19 +283,23 @@
           "chapters": [
             {
               "en": "Frontend Architecture at Scale",
-              "ar": "معمارية الواجهات على نطاق واسع"
+              "ar": "معمارية الواجهات على نطاق واسع",
+              "src": "b2/architecture"
             },
             {
               "en": "Server Rendering with Next.js",
-              "ar": "الرسم على الخادم بـ Next.js"
+              "ar": "الرسم على الخادم بـ Next.js",
+              "src": "b2-react/server-rendering-with-next-js"
             },
             {
               "en": "Code Review, Mentoring and Technical Decisions",
-              "ar": "مراجعة الكود والتوجيه والقرارات التقنية"
+              "ar": "مراجعة الكود والتوجيه والقرارات التقنية",
+              "src": "b2/code-review"
             },
             {
               "en": "Capstone: A Production Dashboard",
-              "ar": "المشروع الختامي: لوحة تحكم للإنتاج"
+              "ar": "المشروع الختامي: لوحة تحكم للإنتاج",
+              "src": "b2-react/capstone"
             }
           ]
         }
@@ -298,7 +316,8 @@
       ],
       "number": 2,
       "status": "approved",
-      "track": "frontend"
+      "track": "frontend",
+      "shared": "b2"
     },
     {
       "id": "b2-vue",
@@ -328,15 +347,18 @@
           "chapters": [
             {
               "en": "Modern JavaScript in Depth",
-              "ar": "JavaScript الحديثة بعمق"
+              "ar": "JavaScript الحديثة بعمق",
+              "src": "b2/js"
             },
             {
               "en": "TypeScript for Real Projects",
-              "ar": "TypeScript في المشاريع الحقيقية"
+              "ar": "TypeScript في المشاريع الحقيقية",
+              "src": "b2/typescript"
             },
             {
               "en": "Modules, Tooling and Build Systems",
-              "ar": "الوحدات والأدوات وأنظمة البناء"
+              "ar": "الوحدات والأدوات وأنظمة البناء",
+              "src": "b2/tooling"
             }
           ]
         },
@@ -348,27 +370,33 @@
           "chapters": [
             {
               "en": "Components and Templates",
-              "ar": "المكونات والقوالب"
+              "ar": "المكونات والقوالب",
+              "src": "b2-vue/components-and-templates"
             },
             {
               "en": "Reactivity and the Composition API",
-              "ar": "التفاعلية وComposition API"
+              "ar": "التفاعلية وComposition API",
+              "src": "b2-vue/reactivity-and-the-composition"
             },
             {
               "en": "Composables: Reusing Logic",
-              "ar": "Composables: إعادة استخدام المنطق"
+              "ar": "Composables: إعادة استخدام المنطق",
+              "src": "b2-vue/composables-reusing-logic"
             },
             {
               "en": "Vue Router and Server Data",
-              "ar": "Vue Router وبيانات الخادم"
+              "ar": "Vue Router وبيانات الخادم",
+              "src": "b2-vue/vue-router-and-server-data"
             },
             {
               "en": "Forms and Validation",
-              "ar": "النماذج والتحقق"
+              "ar": "النماذج والتحقق",
+              "src": "b2-vue/forms-and-validation"
             },
             {
               "en": "Global State with Pinia",
-              "ar": "الحالة العامة بـ Pinia"
+              "ar": "الحالة العامة بـ Pinia",
+              "src": "b2-vue/global-state-with-pinia"
             }
           ]
         },
@@ -380,27 +408,33 @@
           "chapters": [
             {
               "en": "Design Systems and Component Libraries",
-              "ar": "أنظمة التصميم ومكتبات المكونات"
+              "ar": "أنظمة التصميم ومكتبات المكونات",
+              "src": "b2/design-systems"
             },
             {
               "en": "Accessibility (WCAG) in Practice",
-              "ar": "الوصول (WCAG) عملياً"
+              "ar": "الوصول (WCAG) عملياً",
+              "src": "b2/accessibility"
             },
             {
               "en": "Testing: Unit, Component and End-to-End",
-              "ar": "الاختبار: الوحدات والمكونات ومن الطرف للطرف"
+              "ar": "الاختبار: الوحدات والمكونات ومن الطرف للطرف",
+              "src": "b2/testing"
             },
             {
               "en": "Performance and Core Web Vitals",
-              "ar": "الأداء وCore Web Vitals"
+              "ar": "الأداء وCore Web Vitals",
+              "src": "b2/performance"
             },
             {
               "en": "Frontend Security",
-              "ar": "أمان الواجهات"
+              "ar": "أمان الواجهات",
+              "src": "b2/security"
             },
             {
               "en": "Internationalisation and RTL",
-              "ar": "تعدد اللغات والاتجاه من اليمين"
+              "ar": "تعدد اللغات والاتجاه من اليمين",
+              "src": "b2/i18n"
             }
           ]
         },
@@ -412,19 +446,23 @@
           "chapters": [
             {
               "en": "Frontend Architecture at Scale",
-              "ar": "معمارية الواجهات على نطاق واسع"
+              "ar": "معمارية الواجهات على نطاق واسع",
+              "src": "b2/architecture"
             },
             {
               "en": "Server Rendering with Nuxt",
-              "ar": "الرسم على الخادم بـ Nuxt"
+              "ar": "الرسم على الخادم بـ Nuxt",
+              "src": "b2-vue/server-rendering-with-nuxt"
             },
             {
               "en": "Code Review, Mentoring and Technical Decisions",
-              "ar": "مراجعة الكود والتوجيه والقرارات التقنية"
+              "ar": "مراجعة الكود والتوجيه والقرارات التقنية",
+              "src": "b2/code-review"
             },
             {
               "en": "Capstone: A Production Dashboard",
-              "ar": "المشروع الختامي: لوحة تحكم للإنتاج"
+              "ar": "المشروع الختامي: لوحة تحكم للإنتاج",
+              "src": "b2-vue/capstone"
             }
           ]
         }
@@ -441,7 +479,8 @@
       ],
       "number": 2,
       "status": "approved",
-      "track": "frontend"
+      "track": "frontend",
+      "shared": "b2"
     },
     {
       "id": "b3-node",

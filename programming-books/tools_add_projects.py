@@ -14,11 +14,13 @@ START, END = "<!-- projects -->", "<!-- /projects -->"
 ANCHOR = {"en": ("<h2>Exercises</h2>", "<h2>Final exercises</h2>"), "ar": ("<h2>تمارين</h2>", "<h2>تمارين أخيرة</h2>")}
 
 
-def place(book, number):
+def place(book, number=None):
+    # Book 1 numbers its chapters (b1 3 -> ch03); shared chapters are named (b2/js).
+    name = f"{book}/ch{number:02d}" if number else book
     for lang in ("en", "ar"):
-        part = (ROOT / "projects" / book / f"ch{number:02d}.{lang}.html").read_text().strip()
+        part = (ROOT / "projects" / f"{name}.{lang}.html").read_text().strip()
         block = f"{START}\n{part}\n{END}\n\n"
-        src = ROOT / "src" / book / f"ch{number:02d}.{lang}.html"
+        src = ROOT / "src" / f"{name}.{lang}.html"
         text = src.read_text()
         if START in text:
             text = re.sub(re.escape(START) + r".*?" + re.escape(END) + r"\n\n", lambda m: block, text, flags=re.S)
@@ -31,4 +33,4 @@ def place(book, number):
 
 
 if __name__ == "__main__":
-    place(sys.argv[1], int(sys.argv[2]))
+    place(sys.argv[1], int(sys.argv[2]) if len(sys.argv) > 2 else None)

@@ -1,0 +1,694 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>هندسة الواجهات باحتراف</title><link rel="stylesheet" href="../style/book.css"><link rel="stylesheet" href="../style/print-bw.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.875in 0.8in 0.625in;
+  @top-center { content: "هندسة الواجهات باحتراف"; font: 700 8pt 'Cairo', 'Inter', sans-serif; color: #555; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Cairo', 'Inter', sans-serif; color: #fff; background: #111;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.875in; margin-right: 0.625in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "الفصل 1: JavaScript الحديثة بعمق"; } }
+@page ch01:first { @top-center { content: none; } }
+@page answers { @top-center { content: "حلول التمارين"; } }
+@page answers:first { @top-center { content: none; } }
+</style></head>
+<body><section class="front half-title"><p class="ht">هندسة الواجهات باحتراف</p></section><section class="front title-page">
+          <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الثاني</p>
+          <h1 class="tp-title">هندسة الواجهات باحتراف</h1>
+          <p class="tp-sub">TypeScript وVue والمعمارية والأداء والجودة</p><p class="tp-edition">إصدار Vue</p>
+          <p class="tp-level">مبتدئ محترف ← خبير</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">سليمان ماجد سعيد صلاح</p>
+        </section><section class="front copyright">
+          <p><strong>هندسة الواجهات باحتراف</strong><br>TypeScript وVue والمعمارية والأداء والجودة</p>
+          <p>© 2026 سليمان ماجد سعيد صلاح. جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.</p>
+          <p>الطبعة الأولى, 2026</p>
+          <p>اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.</p>
+          <p>JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: اللغة</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">JavaScript الحديثة بعمق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">TypeScript في المشاريع الحقيقية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">الوحدات والأدوات وأنظمة البناء</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: Vue</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">المكونات والقوالب</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">التفاعلية وComposition API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Composables: إعادة استخدام المنطق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Vue Router وبيانات الخادم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">النماذج والتحقق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الحالة العامة بـ Pinia</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الجودة</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">أنظمة التصميم ومكتبات المكونات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول (WCAG) عملياً</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الاختبار: الوحدات والمكونات ومن الطرف للطرف</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">الأداء وCore Web Vitals</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">أمان الواجهات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">تعدد اللغات والاتجاه من اليمين</span><span class="toc-p"></span></li><li class="toc-part">الجزء 4: عمل الخبير</li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">معمارية الواجهات على نطاق واسع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">الرسم على الخادم بـ Nuxt</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">مراجعة الكود والتوجيه والقرارات التقنية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">19</span><span class="toc-t">المشروع الختامي: لوحة تحكم للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b2/js/ar">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>JavaScript الحديثة بعمق</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تتوقع متى تُنسخ البيانات ومتى تُشارَك، وتحدّثها دون آثار جانبية</li>
+<li>تستخدم الإغلاقات (closures) لتبقي الحالة خاصة</li>
+<li>تكتب أصنافاً بحقول خاصة، ولا تفقد <code>this</code> بعد اليوم</li>
+<li>تستخدم الأدوات الحديثة: <code>?.</code> و<code>??</code> و<code>??=</code> و<code>at</code> و<code>toSorted</code> و<code>Object.groupBy</code></li>
+<li>تختار بين المصفوفات و<code>Map</code> و<code>Set</code>، وتكتب المولّدات</li>
+<li>تشرح ترتيب تنفيذ الكود غير المتزامن، وتجمع الوعود بأمان</li>
+<li>تصمم أخطاء تحكي القصة كاملة</li>
+</ul>
+</div>
+
+<p class="lead">تعلمت في الكتاب الأول من JavaScript ما يكفي لبناء تطبيق حقيقي. وأُطر العمل مثل React وVue مكتوبة باللغة نفسها، وأكثر الأخطاء المحيّرة فيها سؤال عن JavaScript في الحقيقة: <em>لماذا تغيّرت هذه القيمة؟ أين ذهب <code>this</code>؟ لماذا نُفّذ هذا السطر أولاً؟</em> يجيب هذا الفصل عن هذه الأسئلة مرة واحدة وإلى الأبد، وهو الأساس لكل ما بعده في الكتاب.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أهلاً بعودتك! أنا أيضاً كنت أتدرب. في هذا الكتاب نتوقف عن سؤال «هل يعمل؟» ونبدأ بسؤال «هل سيظل يعمل العام القادم، حين يكبر التطبيق عشر مرات؟». هذا هو سؤال الخبير.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>القيم والمراجع</span></h2>
+
+<p>في JavaScript نوعان من القيم. <dfn>القيم البسيطة</dfn> (الأرقام والنصوص والقيم المنطقية و<code>null</code> و<code>undefined</code> و<code>bigint</code> و<code>symbol</code>) تُنسخ حين تُسندها. أما <dfn>الكائنات</dfn>، ومنها المصفوفات والدوال، فلا تُنسخ: المتغير يحمل <dfn>مرجعاً</dfn>، أي عنواناً يشير إلى الكائن.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">values.js</div><pre class="code"><span class="c">// القيم البسيطة تُنسخ</span>
+<span class="k">let</span> a = <span class="n">10</span>;
+<span class="k">let</span> b = a;
+b = <span class="n">20</span>;
+console.log(a, b);
+
+<span class="c">// الكائنات مشتركة: اسمان لكائن واحد</span>
+<span class="k">const</span> original = { name: <span class="s">&quot;سارة&quot;</span>, tags: [<span class="s">&quot;js&quot;</span>] };
+<span class="k">const</span> same = original;
+same.name = <span class="s">&quot;هدى&quot;</span>;
+console.log(original.name);
+
+<span class="c">// النشر ينسخ المستوى الأول فقط</span>
+<span class="k">const</span> shallow = { ...original };
+shallow.tags.push(<span class="s">&quot;ts&quot;</span>);
+console.log(original.tags);
+
+<span class="c">// structuredClone ينسخ كل المستويات</span>
+<span class="k">const</span> deep = structuredClone(original);
+deep.tags.push(<span class="s">&quot;react&quot;</span>);
+console.log(original.tags, deep.tags);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>10 20
+هدى
+[ &#x27;js&#x27;, &#x27;ts&#x27; ]
+[ &#x27;js&#x27;, &#x27;ts&#x27; ] [ &#x27;js&#x27;, &#x27;ts&#x27;, &#x27;react&#x27; ]</pre></div>
+
+<ul>
+<li>تغيير <code>b</code> لم يغيّر <code>a</code>: فالرقم نُسخ.</li>
+<li><code>same</code> و<code>original</code> اسمان لكائن <em>واحد</em>، فالتغيير بأي منهما يظهر بالآخر.</li>
+<li>النشر <code>{ ...original }</code> يصنع <dfn>نسخة سطحية</dfn>: كائناً خارجياً جديداً، لكن المصفوفة الداخلية ما زالت مشتركة. ولهذا ظهرت <code>"ts"</code> في الأصل.</li>
+<li><code>structuredClone</code> تصنع <dfn>نسخة عميقة</dfn>: كل مستوى فيها جديد. وهي مدمجة في المتصفحات وNode.</li>
+</ul>
+
+<h3>التحديث دون آثار جانبية</h3>
+
+<p>يقرر React وVue كلاهما ما يُعاد رسمه بمقارنة المراجع: فإن كان الكائن هو نفسه، قد يفترضان أن شيئاً لم يتغير. لذلك نادراً ما يغيّر المحترفون البيانات في مكانها، بل يبنون كائناً <em>جديداً</em> يشارك القديم في الأجزاء التي لم تتغير. ويسمى هذا الأسلوب <dfn>التحديث غير القابل للتغيير</dfn> (immutable updates):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">immutable.js</div><pre class="code"><span class="k">const</span> cart = { items: [{ id: <span class="n">1</span>, qty: <span class="n">1</span> }], coupon: <span class="k">null</span> };
+
+<span class="c">// أرجع كائناً جديداً بدل تغيير القديم</span>
+<span class="k">function</span> addOne(cart, id) {
+  <span class="k">return</span> {
+    ...cart,
+    items: cart.items.map((item) =&gt;
+      item.id === id ? { ...item, qty: item.qty + <span class="n">1</span> } : item,
+    ),
+  };
+}
+
+<span class="k">const</span> next = addOne(cart, <span class="n">1</span>);
+console.log(cart.items[<span class="n">0</span>].qty, next.items[<span class="n">0</span>].qty);
+console.log(cart === next, cart.items === next.items);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>1 2
+false false</pre></div>
+
+<p>السلة القديمة ما زالت بكمية 1، والجديدة بكمية 2. والسلة ومصفوفة العناصر كلتاهما كائنان جديدان (<code>false false</code>)، بينما يُعاد استخدام العناصر التي لم تتغير. اقرأ <code>addOne</code> ببطء: انشر الكائن القديم، ثم غيّر ما تغيّر فقط، في كل مستوى في طريقك إلى الداخل.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: <code>const</code> لا تجمّد الكائن</p><p><code>const cart = {…}</code> تعني أن <em>الاسم</em> <code>cart</code> لا يشير إلى كائن آخر. أما الكائن نفسه فيمكن أن يتغير: <code>cart.items.push(…)</code> تعمل. وإن احتجت حقاً كائناً لا يتغير فاستخدم <code>Object.freeze</code>، وهي سطحية أيضاً.</p></aside>
+
+<h2><span class="sec">1.2</span> <span>النطاق والإغلاقات</span></h2>
+
+<p><dfn>النطاق</dfn> (scope) هو المنطقة من الكود التي يوجد فيها اسم ما. والمتغيرات المعرّفة بـ <code>let</code> و<code>const</code> تعيش في أقرب كتلة <code>{ … }</code>. وتستطيع الدالة أن ترى متغيرات النطاقات المحيطة بها، حتى <em>بعد</em> أن تنتهي تلك الدوال الخارجية. والدالة مع المتغيرات التي تتذكرها تسمى <dfn>إغلاقاً</dfn> (closure).</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">closures.js</div><pre class="code"><span class="k">function</span> makeCounter(start = <span class="n">0</span>) {
+  <span class="k">let</span> count = start; <span class="c">// خاص: لا تراه إلا الدوال الثلاث</span>
+  <span class="k">return</span> {
+    up: () =&gt; ++count,
+    down: () =&gt; --count,
+    value: () =&gt; count,
+  };
+}
+
+<span class="k">const</span> likes = makeCounter();
+<span class="k">const</span> stock = makeCounter(<span class="n">10</span>);
+likes.up();
+likes.up();
+stock.down();
+console.log(likes.value(), stock.value());
+console.log(likes.count); <span class="c">// undefined: لا طريق إليه من الخارج</span></pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>2 9
+undefined</pre></div>
+
+<p>كل استدعاء لـ <code>makeCounter</code> يصنع <code>count</code> جديداً، فلا يتشارك <code>likes</code> و<code>stock</code> شيئاً. ولا أحد في الخارج يستطيع قراءة <code>count</code> أو إفساده، بل يستخدم الدوال الثلاث فقط. وبهذه الطريقة كانت لـ JavaScript بيانات خاصة قبل أن تأتي الحقول الخاصة في الأصناف بزمن طويل، وبها بالضبط تحفظ خطافات React وcomposables في Vue حالتها.</p>
+
+<p>والإغلاقات تصنع أيضاً أدوات صغيرة قابلة لإعادة الاستخدام. فـ <code>once</code> تغلّف أي دالة لتعمل مرة واحدة فقط، وهذا مفيد للاتصال بخادم أو عرض رسالة ترحيب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">once.js</div><pre class="code"><span class="k">function</span> once(fn) {
+  <span class="k">let</span> done = <span class="k">false</span>;
+  <span class="k">let</span> result;
+  <span class="k">return</span> (...args) =&gt; {
+    <span class="k">if</span> (!done) {
+      done = <span class="k">true</span>;
+      result = fn(...args);
+    }
+    <span class="k">return</span> result;
+  };
+}
+
+<span class="k">const</span> connect = once(() =&gt; {
+  console.log(<span class="s">&quot;جارٍ الاتصال بالخادم…&quot;</span>);
+  <span class="k">return</span> <span class="s">&quot;connection #1&quot;</span>;
+});
+
+console.log(connect());
+console.log(connect());</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>جارٍ الاتصال بالخادم…
+connection #1
+connection #1</pre></div>
+
+<h3>لغز الحلقة الشهير</h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">loop.js</div><pre class="code"><span class="k">for</span> (<span class="k">var</span> i = <span class="n">1</span>; i &lt;= <span class="n">3</span>; i++) {
+  setTimeout(() =&gt; console.log(<span class="s">&quot;var:&quot;</span>, i));
+}
+<span class="k">for</span> (<span class="k">let</span> j = <span class="n">1</span>; j &lt;= <span class="n">3</span>; j++) {
+  setTimeout(() =&gt; console.log(<span class="s">&quot;let:&quot;</span>, j));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>var: 4
+var: 4
+var: 4
+let: 1
+let: 2
+let: 3</pre></div>
+
+<p>نطاق <code>var</code> هو الدالة كلها، فتُغلق المؤقتات الثلاثة على <code>i</code> <em>نفسه</em>، وقيمته 4 حين تعمل. أما <code>let</code> فتصنع <code>j</code> جديداً في كل دورة، فيتذكر كل مؤقت قيمته. وهذا من أسباب أن الكود الحديث لا يستخدم <code>var</code> أبداً.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>بعد <code>const b = { ...a }</code>، هل <code>b.list === a.list</code> صحيحة أم خاطئة؟</li><li>لماذا لا يستطيع أحد تغيير <code>count</code> من خارج <code>makeCounter</code>؟</li><li>ماذا سيطبع <code>loop.js</code> لو استخدمت الحلقتان <code>let</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>الأصناف والحقول الخاصة و<code>this</code></span></h2>
+
+<p><dfn>الصنف</dfn> (class) قالب لكائنات تتشارك الدوال نفسها. ويمكن للأصناف الحديثة أن تحمل <dfn>حقولاً خاصة</dfn> تبدأ أسماؤها بـ <code>#</code>، وأعضاء <dfn>ثابتة</dfn> (static) تخص الصنف نفسه، و<dfn>دوال قراءة</dfn> (getters) تبدو كخصائص لكنها تشغّل كوداً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">classes.js</div><pre class="code"><span class="k">class</span> Account {
+  #balance = <span class="n">0</span>; <span class="c">// حقل خاص: لا يُرى خارج الصنف</span>
+  <span class="k">static</span> count = <span class="n">0</span>;
+
+  constructor(owner) {
+    <span class="k">this</span>.owner = owner;
+    Account.count++;
+  }
+
+  get balance() {
+    <span class="k">return</span> <span class="k">this</span>.#balance;
+  }
+
+  deposit(amount) {
+    <span class="k">if</span> (amount &lt;= <span class="n">0</span>) <span class="k">throw</span> <span class="k">new</span> RangeError(<span class="s">&quot;يجب أن يكون المبلغ موجباً&quot;</span>);
+    <span class="k">this</span>.#balance += amount;
+    <span class="k">return</span> <span class="k">this</span>; <span class="c">// إرجاع this يسمح بسلسلة الاستدعاءات</span>
+  }
+}
+
+<span class="k">class</span> SavingsAccount <span class="k">extends</span> Account {
+  addInterest(rate) {
+    <span class="k">return</span> <span class="k">this</span>.deposit(Math.round(<span class="k">this</span>.balance * rate));
+  }
+}
+
+<span class="k">const</span> acc = <span class="k">new</span> SavingsAccount(<span class="s">&quot;سارة&quot;</span>);
+acc.deposit(<span class="n">1000</span>).deposit(<span class="n">500</span>).addInterest(<span class="n">0.1</span>);
+console.log(acc.owner, acc.balance, Account.count);
+console.log(acc <span class="k">instanceof</span> Account);
+
+<span class="k">try</span> {
+  acc.deposit(-<span class="n">5</span>);
+} <span class="k">catch</span> (error) {
+  console.log(error.name + <span class="s">&quot;:&quot;</span>, error.message);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>سارة 1650 1
+true
+RangeError: يجب أن يكون المبلغ موجباً</pre></div>
+
+<ul>
+<li><code>#balance</code> لا يُقرأ ولا يتغير خارج الصنف، ولا حتى بالخطأ. والطريق الوحيد إليه <code>deposit</code>، وهي تفحص المبلغ.</li>
+<li><code>get balance()</code> تسمح بقراءة <code>acc.balance</code> دون القدرة على تعيينها.</li>
+<li><code>extends</code> تبني صنفاً جديداً فوق آخر، فلـ <code>SavingsAccount</code> كل ما لـ <code>Account</code> وزيادة <code>addInterest</code>.</li>
+<li>رمي <code>RangeError</code> عند معامل خاطئ أفضل من تجاهله بصمت: فيظهر الخطأ حيث يبدأ.</li>
+</ul>
+
+<h3>أين ذهب <code>this</code>؟</h3>
+
+<p>داخل الدالة العادية، <code>this</code> هو الكائن <em>الذي قبل النقطة</em> لحظة الاستدعاء. ففي <code>timer.tick()</code> قبل النقطة <code>timer</code>. لكن حين تمرر <code>timer.tick</code> إلى مكان آخر، كدالة رد أو معالج حدث، تسافر الدالة وحدها ويبقى الكائن خلفها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">this.js</div><pre class="code"><span class="k">class</span> Timer {
+  seconds = <span class="n">0</span>;
+
+  tick() {
+    <span class="k">this</span>.seconds++;
+  }
+
+  tickArrow = () =&gt; {
+    <span class="k">this</span>.seconds++;
+  };
+}
+
+<span class="k">const</span> timer = <span class="k">new</span> Timer();
+<span class="k">const</span> run = (callback) =&gt; callback();
+
+<span class="k">try</span> {
+  run(timer.tick); <span class="c">// مُررت الدالة دون كائنها</span>
+} <span class="k">catch</span> (error) {
+  console.log(<span class="s">&quot;ضاع this:&quot;</span>, error.message);
+}
+
+run(() =&gt; timer.tick()); <span class="c">// الحل 1: استدعها داخل دالة سهمية</span>
+run(timer.tick.bind(timer)); <span class="c">// الحل 2: اربطها بالكائن بـ bind</span>
+run(timer.tickArrow); <span class="c">// الحل 3: حقل بدالة سهمية يحفظ this</span>
+console.log(timer.seconds);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>ضاع this: Cannot read properties of undefined (reading &#x27;seconds&#x27;)
+3</pre></div>
+
+<p>الدوال السهمية ليس لها <code>this</code> خاص بها، بل تستخدم <code>this</code> المكان الذي كُتبت فيه. ولهذا تعمل الحلول الثلاثة، ولهذا سترى الدوال السهمية في كل مكان في معالجات الأحداث.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>قاعدة توفر ساعات: إن كانت الدالة ستُمرَّر إلى مكان آخر (حدث، أو مؤقت، أو دالة رد)، فاستدعها داخل دالة سهمية: <code>() =&gt; obj.method()</code>. وعندها لا يضيع <code>this</code> أبداً.</p></div></div>
+
+<h2><span class="sec">1.4</span> <span>الأدوات الحديثة</span></h2>
+
+<p>كل عام تكسب JavaScript مزايا صغيرة تزيل أنواعاً كاملة من الأخطاء. وهذه ما ستستخدمه كل يوم:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">modern.js</div><pre class="code"><span class="k">const</span> user = { name: <span class="s">&quot;عمر&quot;</span>, address: <span class="k">null</span>, settings: { theme: <span class="s">&quot;&quot;</span> } };
+
+<span class="c">// ?. تتوقف عند null أو undefined بدل الانهيار</span>
+console.log(user.address?.city);
+console.log(user.address?.city ?? <span class="s">&quot;غير معروف&quot;</span>);
+
+<span class="c">// || تستبدل كل قيمة كاذبة، و?? تستبدل null وundefined فقط</span>
+console.log(user.settings.theme || <span class="s">&quot;light&quot;</span>, user.settings.theme ?? <span class="s">&quot;light&quot;</span>);
+
+<span class="c">// ??= تُسند فقط حين تكون القيمة ناقصة</span>
+user.settings.fontSize ??= <span class="n">16</span>;
+console.log(user.settings);
+
+<span class="k">const</span> scores = [<span class="n">72</span>, <span class="n">95</span>, <span class="n">88</span>, <span class="n">61</span>];
+console.log(scores.at(-<span class="n">1</span>), scores.findLast((s) =&gt; s &gt; <span class="n">80</span>));
+console.log(scores.toSorted((a, b) =&gt; b - a), scores); <span class="c">// toSorted تُرجع نسخة: يبقى الأصل بترتيبه</span></pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>undefined
+غير معروف
+light 
+{ theme: &#x27;&#x27;, fontSize: 16 }
+61 88
+[ 95, 88, 72, 61 ] [ 72, 95, 88, 61 ]</pre></div>
+
+<table>
+<thead><tr><th>الصيغة</th><th>معناها</th><th>استخدامها المعتاد</th></tr></thead>
+<tbody>
+<tr><td><code>a?.b</code></td><td><code>undefined</code> إن كانت <code>a</code> هي <code>null</code> أو <code>undefined</code>، وإلا <code>a.b</code></td><td>بيانات من خادم قد تكون ناقصة</td></tr>
+<tr><td><code>a ?? b</code></td><td><code>b</code> فقط إن كانت <code>a</code> هي <code>null</code> أو <code>undefined</code></td><td>قيم افتراضية تحافظ على <code>0</code> و<code>""</code></td></tr>
+<tr><td><code>a ??= b</code></td><td>اجعل <code>a</code> تساوي <code>b</code> فقط إن كانت ناقصة</td><td>ملء الإعدادات الافتراضية</td></tr>
+<tr><td><code>list.at(-1)</code></td><td>العنصر الأخير</td><td>بدل <code>list[list.length - 1]</code></td></tr>
+<tr><td><code>toSorted</code> و<code>toReversed</code> و<code>with</code></td><td>مثل <code>sort</code> وأخواتها، لكنها تُرجع نسخة</td><td>التحديث غير القابل للتغيير</td></tr>
+</tbody>
+</table>
+
+<p>انظر جيداً إلى السطر الثالث من المخرجات: <code>||</code> رمت النص الفارغ واستخدمت <code>"light"</code>، بينما أبقته <code>??</code>. فإن كان النص الفارغ أو الصفر قيمة حقيقية في بياناتك، فاستخدم <code>??</code>.</p>
+
+<h3>تجميع البيانات وإعادة تشكيلها</h3>
+
+<p><code>Object.groupBy</code> توزّع القائمة على مجموعات في سطر واحد، و<code>Object.entries</code> مع <code>Object.fromEntries</code> تتيحان تحويل الكائن كأنه مصفوفة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">group.js</div><pre class="code"><span class="k">const</span> orders = [
+  { id: <span class="n">1</span>, status: <span class="s">&quot;paid&quot;</span>, total: <span class="n">40</span> },
+  { id: <span class="n">2</span>, status: <span class="s">&quot;pending&quot;</span>, total: <span class="n">15</span> },
+  { id: <span class="n">3</span>, status: <span class="s">&quot;paid&quot;</span>, total: <span class="n">22</span> },
+  { id: <span class="n">4</span>, status: <span class="s">&quot;refunded&quot;</span>, total: <span class="n">9</span> },
+];
+
+<span class="k">const</span> byStatus = Object.groupBy(orders, (order) =&gt; order.status);
+console.log(Object.keys(byStatus));
+
+<span class="k">const</span> totals = Object.fromEntries(
+  Object.entries(byStatus).map(([status, list]) =&gt; [
+    status,
+    list.reduce((sum, order) =&gt; sum + order.total, <span class="n">0</span>),
+  ]),
+);
+console.log(totals);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>[ &#x27;paid&#x27;, &#x27;pending&#x27;, &#x27;refunded&#x27; ]
+{ paid: 62, pending: 15, refunded: 9 }</pre></div>
+
+<p>وهذا شكل معظم كود لوحات التحكم: اجمع السجلات الخام، ثم اختصر كل مجموعة إلى رقم.</p>
+
+<h2><span class="sec">1.5</span> <span>المجموعات والمولّدات</span></h2>
+
+<p>الكائن مناسب لمجموعة ثابتة من الحقول المسماة. أما <em>المجموعة</em> التي تكبر وتصغر فلها في JavaScript أداتان أفضل. <dfn>Map</dfn> تحفظ أزواج مفتاح وقيمة، بمفاتيح من أي نوع، بترتيب إضافتها. و<dfn>Set</dfn> تحفظ كل قيمة مرة واحدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">collections.js</div><pre class="code"><span class="c">// Map: مفاتيح من أي نوع، بترتيب الإضافة</span>
+<span class="k">const</span> visits = <span class="k">new</span> Map();
+<span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> [<span class="s">&quot;/home&quot;</span>, <span class="s">&quot;/shop&quot;</span>, <span class="s">&quot;/home&quot;</span>, <span class="s">&quot;/cart&quot;</span>, <span class="s">&quot;/home&quot;</span>]) {
+  visits.set(page, (visits.get(page) ?? <span class="n">0</span>) + <span class="n">1</span>);
+}
+console.log(visits);
+console.log([...visits].toSorted((a, b) =&gt; b[<span class="n">1</span>] - a[<span class="n">1</span>])[<span class="n">0</span>]);
+
+<span class="c">// Set: كل قيمة مرة واحدة</span>
+<span class="k">const</span> tags = <span class="k">new</span> Set([<span class="s">&quot;js&quot;</span>, <span class="s">&quot;css&quot;</span>, <span class="s">&quot;js&quot;</span>, <span class="s">&quot;html&quot;</span>, <span class="s">&quot;css&quot;</span>]);
+console.log(tags.size, tags.has(<span class="s">&quot;css&quot;</span>), [...tags]);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>Map(3) { &#x27;/home&#x27; =&gt; 3, &#x27;/shop&#x27; =&gt; 1, &#x27;/cart&#x27; =&gt; 1 }
+[ &#x27;/home&#x27;, 3 ]
+3 true [ &#x27;js&#x27;, &#x27;css&#x27;, &#x27;html&#x27; ]</pre></div>
+
+<p>استخدم <code>Map</code> حين تبحث بمفتاح يأتي من البيانات (معرّف، أو رابط، أو كائن)، واستخدم <code>Set</code> لإزالة التكرار أو للسؤال السريع «هل رأيت هذا من قبل؟». وكلتاهما أسرع كثيراً من البحث في مصفوفة حين تكبر المجموعة.</p>
+
+<h3>المولّدات: قيم عند الطلب</h3>
+
+<p><dfn>المولّد</dfn> (generator) دالة تُكتب بـ <code>function*</code> وتستطيع أن تتوقف. فكل <code>yield</code> تسلّم قيمة واحدة وتنتظر حتى تُطلب التالية. وكل ما يعمل مع <code>for…of</code> أو النشر يستطيع استخدامه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">generators.js</div><pre class="code"><span class="k">function</span>* range(<span class="k">from</span>, to, step = <span class="n">1</span>) {
+  <span class="k">for</span> (<span class="k">let</span> n = <span class="k">from</span>; n &lt;= to; n += step) {
+    <span class="k">yield</span> n; <span class="c">// توقف هنا وسلّم n للمستدعي</span>
+  }
+}
+
+console.log([...range(<span class="n">1</span>, <span class="n">10</span>, <span class="n">3</span>)]);
+
+<span class="c">// مولّد يقسم القائمة إلى صفحات</span>
+<span class="k">function</span>* pages(items, size) {
+  <span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; items.length; i += size) {
+    <span class="k">yield</span> items.slice(i, i + size);
+  }
+}
+
+<span class="k">const</span> letters = <span class="s">&quot;ABCDEFG&quot;</span>.split(<span class="s">&quot;&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> pages(letters, <span class="n">3</span>)) {
+  console.log(page.join(<span class="s">&quot; &quot;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>[ 1, 4, 7, 10 ]
+A B C
+D E F
+G</pre></div>
+
+<p>وتتألق المولّدات حين تكون القيم مكلفة أو بلا نهاية: قراءة ملف كبير سطراً سطراً، أو تحميل صفحة بعد صفحة من واجهة برمجية ما دام المستخدم يمرّر.</p>
+
+<h2><span class="sec">1.6</span> <span>حلقة الأحداث</span></h2>
+
+<p>تشغّل JavaScript كودك على خيط واحد، قطعة بعد قطعة. والعمل الذي يجب أن ينتظر (المؤقتات، وردود الشبكة، والنقرات) يوضع في طابور، و<dfn>حلقة الأحداث</dfn> (event loop) تختار القطعة التالية حين تنتهي الحالية. وهناك طابوران، والفرق بينهما يفسّر كثيراً من الأخطاء المفاجئة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">event-loop.js</div><pre class="code">console.log(<span class="s">&quot;1 الكود المتزامن يعمل أولاً&quot;</span>);
+
+setTimeout(() =&gt; console.log(<span class="s">&quot;5 مؤقت: مهمة، بعد كل المهام الدقيقة&quot;</span>), <span class="n">0</span>);
+
+Promise.resolve().then(() =&gt; console.log(<span class="s">&quot;3 رد وعد: مهمة دقيقة&quot;</span>));
+queueMicrotask(() =&gt; console.log(<span class="s">&quot;4 مهمة دقيقة أخرى، بالترتيب&quot;</span>));
+
+console.log(<span class="s">&quot;2 ما زال متزامناً&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>1 الكود المتزامن يعمل أولاً
+2 ما زال متزامناً
+3 رد وعد: مهمة دقيقة
+4 مهمة دقيقة أخرى، بالترتيب
+5 مؤقت: مهمة، بعد كل المهام الدقيقة</pre></div>
+
+<ol>
+<li>يعمل الكود المتزامن كله أولاً، من الأعلى إلى الأسفل.</li>
+<li>ثم تعمل كل <dfn>المهام الدقيقة</dfn> (microtasks): ردود الوعود و<code>queueMicrotask</code>. والمهمة الدقيقة التي تضيف مهام دقيقة أخرى تُبقي الحلقة مشغولة حتى يفرغ الطابور.</li>
+<li>وبعدها فقط تعمل <dfn>المهمة</dfn> (task) التالية: مؤقت، أو حدث شبكة، أو نقرة.</li>
+</ol>
+
+<p>القاعدة العملية: الكود بعد <code>await</code> يعمل لاحقاً دائماً، حتى لو كان الوعد محققاً سلفاً. والحلقة المتزامنة الطويلة تعطّل كل شيء، بما فيه النقرات ورسم الصفحة، ولهذا يُقسَّم العمل الثقيل إلى قطع صغيرة أو يُنقل إلى Web Worker.</p>
+
+<h3>جمع الوعود</h3>
+
+<p>عرفت في الكتاب الأول <code>Promise.all</code>، التي تفشل حين يفشل أي وعد. والشاشات الحقيقية تحتاج تحكماً أكثر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">promises.mjs</div><pre class="code"><span class="k">const</span> wait = (ms, value, fail = <span class="k">false</span>) =&gt;
+  <span class="k">new</span> Promise((resolve, reject) =&gt;
+    setTimeout(() =&gt; (fail ? reject(<span class="k">new</span> Error(value)) : resolve(value)), ms),
+  );
+
+<span class="k">const</span> results = <span class="k">await</span> Promise.allSettled([
+  wait(<span class="n">30</span>, <span class="s">&quot;الملف الشخصي&quot;</span>),
+  wait(<span class="n">10</span>, <span class="s">&quot;فشلت الطلبات&quot;</span>, <span class="k">true</span>),
+  wait(<span class="n">20</span>, <span class="s">&quot;الرسائل&quot;</span>),
+]);
+<span class="k">for</span> (<span class="k">const</span> r <span class="k">of</span> results) {
+  console.log(r.status, r.value ?? r.reason.message);
+}
+
+<span class="c">// any: أول من ينجح</span>
+<span class="k">const</span> fastest = <span class="k">await</span> Promise.any([wait(<span class="n">40</span>, <span class="s">&quot;النسخة أ&quot;</span>), wait(<span class="n">15</span>, <span class="s">&quot;النسخة ب&quot;</span>)]);
+console.log(<span class="s">&quot;الأسرع:&quot;</span>, fastest);
+
+<span class="c">// race: أول من ينتهي، نجاحاً أو فشلاً</span>
+<span class="k">const</span> timeout = (ms) =&gt; wait(ms, <span class="s">&quot;انتهت المهلة بعد 50 ملي ثانية&quot;</span>, <span class="k">true</span>);
+<span class="k">try</span> {
+  <span class="k">await</span> Promise.race([wait(<span class="n">100</span>, <span class="s">&quot;رد بطيء&quot;</span>), timeout(<span class="n">50</span>)]);
+} <span class="k">catch</span> (error) {
+  console.log(error.message);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>fulfilled الملف الشخصي
+rejected فشلت الطلبات
+fulfilled الرسائل
+الأسرع: النسخة ب
+انتهت المهلة بعد 50 ملي ثانية</pre></div>
+
+<table>
+<thead><tr><th>الدالة</th><th>تتحقق حين</th><th>استخدمها لـ</th></tr></thead>
+<tbody>
+<tr><td><code>Promise.all</code></td><td>تنجح كلها (وتفشل مع أول فشل)</td><td>بيانات لا تعمل الشاشة دونها</td></tr>
+<tr><td><code>Promise.allSettled</code></td><td>تنتهي كلها، مع حالة كل منها</td><td>لوحات التحكم: اعرض ما تحمّل، وعلّم ما فشل</td></tr>
+<tr><td><code>Promise.any</code></td><td>ينجح أولها</td><td>عدة خوادم بالبيانات نفسها</td></tr>
+<tr><td><code>Promise.race</code></td><td>ينتهي أولها، نجاحاً أو فشلاً</td><td>المهلة الزمنية</td></tr>
+</tbody>
+</table>
+
+<p>ينتهي اسم الملف بـ <code>.mjs</code>، وهذا يخبر Node بأنه وحدة ES (ES module). والوحدات تسمح بـ <code>await</code> في المستوى الأعلى، خارج أي دالة. ويشرح الفصل 3 الوحدات كما يجب، ويكفي الامتداد الآن.</p>
+
+<h2><span class="sec">1.7</span> <span>أخطاء تحكي القصة كاملة</span></h2>
+
+<p>رسالة الخطأ ملاحظة للشخص الذي سيصحح كودك في الثانية فجراً، وكثيراً ما يكون هذا الشخص أنت. وميزتان حديثتان تجعلان هذه الملاحظات أفضل بكثير: أصناف أخطائك الخاصة، التي تُميَّز بـ <code>instanceof</code>، وخيار <code>cause</code>، الذي يحفظ الخطأ الأصلي حين تضيف سياقاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">errors.js</div><pre class="code"><span class="k">class</span> NotFoundError <span class="k">extends</span> Error {
+  constructor(what, options) {
+    <span class="k">super</span>(<span class="s">`${what} غير موجود`</span>, options);
+    <span class="k">this</span>.name = <span class="s">&quot;NotFoundError&quot;</span>;
+  }
+}
+
+<span class="k">const</span> users = <span class="k">new</span> Map([[<span class="n">1</span>, <span class="s">&quot;سارة&quot;</span>]]);
+
+<span class="k">function</span> findUser(id) {
+  <span class="k">if</span> (!users.has(id)) <span class="k">throw</span> <span class="k">new</span> NotFoundError(<span class="s">`المستخدم #${id}`</span>);
+  <span class="k">return</span> users.get(id);
+}
+
+<span class="k">function</span> loadProfile(id) {
+  <span class="k">try</span> {
+    <span class="k">return</span> findUser(id);
+  } <span class="k">catch</span> (error) {
+    <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;تعذّر تحميل الملف الشخصي&quot;</span>, { cause: error }); <span class="c">// احتفظ بالخطأ الأصلي سبباً</span>
+  }
+}
+
+<span class="k">try</span> {
+  loadProfile(<span class="n">7</span>);
+} <span class="k">catch</span> (error) {
+  console.log(error.message);
+  console.log(<span class="s">&quot;السبب:&quot;</span>, error.cause.name, <span class="s">&quot;-&quot;</span>, error.cause.message);
+  console.log(error.cause <span class="k">instanceof</span> NotFoundError);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>تعذّر تحميل الملف الشخصي
+السبب: NotFoundError - المستخدم #7 غير موجود
+true</pre></div>
+
+<p>الرسالة العليا تقول ماذا كان المستخدم يحاول، والسبب يقول لماذا فشل. وخدمات تتبع الأخطاء وConsole المتصفح تعرض السلسلة كلها. ولا تكتب أبداً <code>catch (error) {}</code> فارغة: فالخطأ المبتلع علّة مختبئة.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: افشل بصوت عالٍ، ومبكراً، ومع السياق</p><p>افحص المعاملات عند مدخل دالتك وارمِ خطأً محدداً. والتقط الأخطاء فقط حيث تستطيع أن تفعل شيئاً مفيداً: أن تعرض رسالة، أو تعيد المحاولة، أو تضيف سياقاً وترمي من جديد مع <code>cause</code>. وفي كل مكان آخر دعها تصعد.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>تغيير الحالة في مكانها: <code>cart.items.push(x)</code></td><td>لا تتحدث الشاشة، أو تتحدث في المكان الخطأ</td><td>ابنِ كائناً جديداً بالنشر</td></tr>
+<tr><td>النسخ بالنشر ثم تعديل مصفوفة داخلية</td><td>يتغير الأصل أيضاً</td><td>انسخ كل مستوى تغيّره، أو استخدم <code>structuredClone</code></td></tr>
+<tr><td>تمرير <code>obj.method</code> دالة رد</td><td><code>this</code> يصبح <code>undefined</code></td><td><code>() =&gt; obj.method()</code></td></tr>
+<tr><td><code>value || default</code> مع الأرقام</td><td>يُستبدل <code>0</code> بالقيمة الافتراضية</td><td><code>value ?? default</code></td></tr>
+<tr><td><code>Promise.all</code> لبيانات اختيارية</td><td>فشل واحد يخفي كل الباقي</td><td><code>Promise.allSettled</code></td></tr>
+<tr><td><code>catch</code> فارغة</td><td>تختفي الأخطاء بصمت</td><td>عالجه، أو ارمِه من جديد مع <code>cause</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>القيم البسيطة تُنسخ، والكائنات تُشارَك <strong>بالمرجع</strong>. النشر ينسخ مستوى واحداً، و<code>structuredClone</code> كل المستويات.</li>
+<li><strong>التحديث غير القابل للتغيير</strong> يبني كائنات جديدة ويعيد استخدام ما لم يتغير، وأُطر العمل تعتمد عليه.</li>
+<li><strong>الإغلاق</strong> دالة ومعها المتغيرات التي تتذكرها: أبسط طريقة لإبقاء الحالة خاصة.</li>
+<li>للأصناف <strong>حقول خاصة</strong> (<code>#</code>) ودوال قراءة وأعضاء <code>static</code>. و<code>this</code> هو الكائن الذي قبل النقطة <em>لحظة الاستدعاء</em>، والدوال السهمية تحفظ <code>this</code> الخارجي.</li>
+<li><code>?.</code> و<code>??</code> و<code>??=</code> و<code>at</code> و<code>toSorted</code> و<code>Object.groupBy</code> تجعل الكود اليومي أقصر وأأمن.</li>
+<li>استخدم <strong>Map</strong> للبحث بمفتاح، و<strong>Set</strong> للقيم الفريدة، و<strong>المولّدات</strong> للقيم عند الطلب.</li>
+<li><strong>حلقة الأحداث</strong> تشغّل الكود المتزامن، ثم كل المهام الدقيقة، ثم المهمة التالية.</li>
+<li>اختر <code>all</code> أو <code>allSettled</code> أو <code>any</code> أو <code>race</code> حسب حاجة الشاشة. وأعطِ الأخطاء صنفاً و<code>cause</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. صحيحة: النشر ينسخ المستوى الأول فقط، فكلاهما يشير إلى القائمة نفسها. 2. لأن <code>count</code> موجود داخل الإغلاق فقط، والعالم الخارجي يأخذ دوالّ لا المتغير. 3. <code>1 2 3</code> مرتين، مرة مع «var:» ومرة مع «let:».</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يبني أداة صغيرة قابلة لإعادة الاستخدام، من النوع الذي تجده داخل المكتبات الحقيقية. اكتبه أولاً بطريقتك، وشغّله، وقارن نتيجتك بالنتيجة أدناه، وبعدها فقط انظر إلى الحل في مستودع الكود.</p>
+
+<div class="project">
+<p class="project-label">مشروع 1.1 · سهل</p>
+<h3>أداة التذكّر memoize</h3>
+<p class="project-goal">اكتب <code>memoize(fn)</code>، التي تُرجع نسخة أسرع من أي دالة بمعامل واحد، بأن تتذكر إجاباتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الإغلاقات، و<code>Map</code>، وقياس الدالة بعدّ استدعاءاتها.</p>
+<ol class="steps">
+<li>داخل <code>memoize</code> أنشئ <code>Map</code> اسمها <code>cache</code>. والإغلاق يبقيها حية بين الاستدعاءات.</li>
+<li>أرجع دالة سهمية تأخذ <code>arg</code>. فإن كانت <code>cache.has(arg)</code>، أرجع القيمة المحفوظة.</li>
+<li>وإلا فاستدعِ <code>fn(arg)</code>، واحفظ النتيجة بـ <code>cache.set</code>، وأرجعها.</li>
+<li>عُدّ الاستدعاءات الحقيقية لدالة بطيئة بمتغير خارجها، وأثبت أن المعاملات المكررة مجانية.</li>
+<li>طبّق التذكّر على دالة فيبوناتشي التعاودية. يجب أن تستدعي النسخة <em>المتذكّرة</em> من نفسها، وإلا فلن تُستخدم الذاكرة أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> طبّق التذكّر على <dfn>الدوال النقية</dfn> فقط: الدوال التي تعتمد إجابتها على معاملاتها وحدها. فالدالة التي تقرأ الساعة أو خادماً ستُرجع إجابات قديمة إلى الأبد.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>81 81 144 81
+الاستدعاءات الحقيقية: 2
+fib(70) = 190392490709135</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 1.2 · متوسط</p>
+<h3>باعث الأحداث</h3>
+<p class="project-goal">ابنِ الصنف الصغير الذي يقع في قلب Node والمتصفحات ومكتبات كثيرة: أجزاء من البرنامج تعلن أحداثاً، وأجزاء أخرى تستمع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأصناف، والحقل الخاص، و<code>Map</code> من <code>Set</code>، ومعاملات الباقي (rest)، وإرجاع دالة تنظيف.</p>
+<ol class="steps">
+<li>أنشئ <code>class Emitter</code> بحقل خاص <code>#listeners = new Map()</code>. كل مفتاح اسم حدث، وكل قيمة <code>Set</code> من الدوال.</li>
+<li><code>on(event, fn)</code> تضيف الدالة، وتنشئ الـ <code>Set</code> في المرة الأولى. واجعلها تُرجع <code>() =&gt; this.off(event, fn)</code>.</li>
+<li><code>off(event, fn)</code> تزيلها. واستخدم <code>?.</code> ليكون الحذف من حدث مجهول بلا ضرر.</li>
+<li><code>emit(event, ...args)</code> تستدعي كل مستمع بالمعاملات. مرّ على <em>نسخة</em> (<code>[...set]</code>)، لأن المستمع قد يزيل نفسه أثناء المرور.</li>
+<li><code>once(event, fn)</code> تستمع بغلاف يوقف نفسه قبل أن يستدعي <code>fn</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إرجاع دالة «الإيقاف» من <code>on</code> نمط ستقابله مرة أخرى: فـ <code>useEffect</code> في React و<code>watch</code> في Vue كلاهما يستخدمه. من يبدأ الاستماع يملك طريقة إيقافه.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>السجل: الطلب 101
+أول طلب اليوم: 101
+السجل: الطلب 102
+لا مستمعين بعد الآن.</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 1.3 · تحدٍّ</p>
+<h3>إعادة المحاولة بانتظار متضاعف</h3>
+<p class="project-goal">الشبكات تتعطل للحظة طوال الوقت. اكتب <code>retry(fn, options)</code>، التي تعيد محاولة دالة غير متزامنة، وتنتظر أطول في كل مرة، وتستسلم بخطأ واضح.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>async</code>/<code>await</code> داخل حلقة، والخيارات الافتراضية بالتفكيك، و<code>2 ** n</code>، والأخطاء مع <code>cause</code>.</p>
+<ol class="steps">
+<li>اكتب الدالة المساعدة <code>wait(ms)</code> التي تُرجع وعداً.</li>
+<li>أعطِ <code>retry</code> معاملاً ثانياً <code>{ retries = 3, delay = 10 } = {}</code>، لتعمل دون أي خيارات.</li>
+<li>مرّ على المحاولات. وداخل <code>try</code> اكتب <code>return await fn(attempt)</code>: و<code>await</code> هنا ضرورية، وإلا فلن ترى <code>catch</code> الفشل أبداً.</li>
+<li>في <code>catch</code> استسلم حين تنفد المحاولات، برمي خطأ جديد مع <code>{ cause: error }</code>. وإلا فانتظر <code>delay * 2 ** (attempt - 1)</code> وكرر.</li>
+<li>اختبرها بواجهة وهمية <code>flaky(n)</code> تفشل <code>n</code> مرة ثم تنجح. جرّب واحدة تتعافى وأخرى لا تتعافى أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في الإنتاج أضف قليلاً من العشوائية إلى الانتظار، كي لا تعيد ألف جوال فقدت الشبكة معاً المحاولة في الملي ثانية نفسها. ولا تُعِد أبداً عمليات لا يصح تكرارها، كخصم مبلغ من بطاقة، إلا إن كان الخادم يدعم ذلك.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>واجهة تفشل مرتين:
+  المحاولة 1 فشلت، انتظار 10 ms
+  المحاولة 2 فشلت، انتظار 20 ms
+OK (في المحاولة 3)
+واجهة تفشل خمس مرات:
+  المحاولة 1 فشلت، انتظار 10 ms
+  المحاولة 2 فشلت، انتظار 20 ms
+استسلمت بعد 3 محاولات - خطأ في الشبكة</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب <code>removeItem(cart, id)</code> بأسلوب <code>immutable.js</code>، وأثبت بـ <code>===</code> أن السلة الأصلية لم تتغير.</li>
+<li><span class="level">سهل</span> باستخدام <code>Object.groupBy</code> جمّع الكلمات <code>["apple", "avocado", "banana", "blueberry", "cherry"]</code> حسب حرفها الأول.</li>
+<li><span class="level medium">متوسط</span> أضف إلى <code>Account</code> دالة <code>withdraw(amount)</code> ترمي خطأً خاصاً <code>InsufficientFundsError</code> حين يكون الرصيد غير كافٍ، واختبر الحالتين.</li>
+<li><span class="level medium">متوسط</span> دون أن تشغّله، اكتب ترتيب مخرجات: <code>setTimeout(() =&gt; log("A")); Promise.resolve().then(() =&gt; log("B")); log("C");</code>. ثم شغّله لتتحقق.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب مولّداً <code>take(iterable, n)</code> يعطي أول <code>n</code> قيمة فقط من أي شيء قابل للتكرار، واستخدمه مع مولّد لا ينتهي للأرقام الزوجية.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 2</p>
+<p>رأيت كم من الأمور قد يسوء حين لا تكون القيمة كما توقعت. وTypeScript تلتقط معظم هذه الأخطاء قبل أن تشغّل الكود أصلاً. في الفصل التالي ستضيف الأنواع إلى كود حقيقي، وتصف بيانات قد تكون في عدة حالات، وتدع المحرر يجد الأخطاء نيابة عنك.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">جرّب كل تمرين بنفسك قبل أن تنظر هنا. وإن اختلف جوابك عن هذا فليس بالضرورة خاطئاً: فلمعظم المسائل أكثر من حل جيد. فإن عالج حلك الحالات العادية وغير المعتادة، واستطعت أن تشرح اختياراتك لزميل، فهو جواب جيد. والكود الكامل المختبر لكل حل في مستودع الكود الخاص بالكتاب.</p>
+
+<h2 class="plain-h">الفصل 1</h2>
+<ol class="exercises">
+<li><code>const removeItem = (cart, id) =&gt; ({ ...cart, items: cart.items.filter((item) =&gt; item.id !== id) });</code> ومع عنصرين يبقى في الأصل 2، وفي النتيجة 1، و<code>cart === next</code> تساوي <code>false</code>.</li>
+<li><code>Object.groupBy(words, (word) =&gt; word[0])</code> تعطي <code>{ a: ["apple", "avocado"], b: ["banana", "blueberry"], c: ["cherry"] }</code>. ويطبعها Node مع <code>[Object: null prototype]</code>: فالنتيجة بلا نموذج أولي (prototype)، فلا يتعارض مفتاح مثل <code>"constructor"</code> مع شيء مدمج أبداً.</li>
+<li>عرّف <code>class InsufficientFundsError extends Error</code> واضبط <code>this.name</code> في دالة البناء. وفي <code>withdraw</code> ارمِه حين <code>amount &gt; this.#balance</code>، وإلا فاطرح وأرجع <code>this</code>. واختبر سحباً ينجح (100 − 30 يبقي 70) وآخر يرمي الخطأ، مع فحص <code>error instanceof InsufficientFundsError</code>.</li>
+<li><code>C</code> ثم <code>B</code> ثم <code>A</code>: الكود المتزامن أولاً، ثم المهمة الدقيقة من الوعد، ثم مهمة المؤقت.</li>
+<li><code>function* take(iterable, n) { if (n &lt;= 0) return; let count = 0; for (const value of iterable) { yield value; if (++count &gt;= n) return; } }</code>. ومع <code>function* evens() { for (let n = 0; ; n += 2) yield n; }</code> تعطي <code>[...take(evens(), 5)]</code> القيمة <code>[0, 2, 4, 6, 8]</code>. والخروج من المولّد يوقف الحلقة، فلا يُطلب من المولّد اللانهائي قيمة سادسة أبداً.</li>
+</ol>
+
+</section>
+</body></html>

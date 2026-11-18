@@ -6628,7 +6628,7 @@ li.done label {
   li.classList.toggle(<span class="s">&quot;done&quot;</span>, task.done);
 
   <span class="k">const</span> box = document.createElement(<span class="s">&quot;input&quot;</span>);
-  box.type = <span class="s">&quot;checkbox&quot;</span>;
+  box.<span class="k">type</span> = <span class="s">&quot;checkbox&quot;</span>;
   box.id = <span class="s">`task-${task.id}`</span>;
   box.checked = task.done;
   box.addEventListener(<span class="s">&quot;change&quot;</span>, () =&gt; toggleTask(task.id));
@@ -6638,7 +6638,7 @@ li.done label {
   label.textContent = task.text;
 
   <span class="k">const</span> remove = document.createElement(<span class="s">&quot;button&quot;</span>);
-  remove.type = <span class="s">&quot;button&quot;</span>;
+  remove.<span class="k">type</span> = <span class="s">&quot;button&quot;</span>;
   remove.className = <span class="s">&quot;delete&quot;</span>;
   remove.textContent = <span class="s">&quot;Delete&quot;</span>;
   remove.setAttribute(<span class="s">&quot;aria-label&quot;</span>, <span class="s">`Delete: ${task.text}`</span>);

@@ -24,7 +24,8 @@ SERIES = json.loads((ROOT / "series.json").read_text())
 OUT = ROOT / "out"
 
 KEYWORDS = ("const let var if else switch case break default return function for while do of in new "
-            "typeof true false null undefined class import export from async await try catch throw").split()
+            "typeof true false null undefined class import export from async await try catch throw "
+            "static extends super this yield instanceof finally type interface readonly satisfies keyof").split()
 
 TEXT = {
     "en": {
@@ -106,7 +107,7 @@ def highlight_shell(src):
 
 def highlight(src, name):
     ext = name.rsplit(".", 1)[-1]
-    if ext in ("js", "json"):
+    if ext in ("js", "mjs", "cjs", "ts", "json"):
         return highlight_js(src)
     if ext in ("html", "css"):
         return highlight_markup(src, ext)
@@ -219,14 +220,16 @@ def front_matter(book, lang, pages_of=None):
     def entry(key, label, title):
         page = nums.get(key, "")
         return f'<li class="toc-ch"><span class="toc-n">{label}</span><span class="toc-t">{title}</span><span class="toc-p">{page}</span></li>'
-    if (ROOT / "src" / book["id"] / f"preface.{lang}.html").exists():
+    def has(key):
+        return any((ROOT / "src" / d / f"{key}.{lang}.html").exists() for d in (book["id"], book.get("shared") or "-"))
+    if has("preface"):
         toc.append(entry("preface", "", t["preface"]))
     for i, part in enumerate(book["parts"], 1):
         toc.append(f'<li class="toc-part">{t["part"]} {i}: {part["title"][lang]}</li>')
         for ch in part["chapters"]:
             k += 1
             toc.append(entry(f"ch{k:02d}", k, ch[lang]))
-    if (ROOT / "src" / book["id"] / f"answers.{lang}.html").exists():
+    if has("answers"):
         toc.append(f'<li class="toc-part">{t["appendix"]}</li>')
         toc.append(entry("answers", "", t["answers"]))
     pages.append(f'<section class="front toc"><h1>{t["contents"]}</h1><ol>{"".join(toc)}</ol></section>')
@@ -243,6 +246,20 @@ GREYS = {"#6366f1": "#a3a3a3", "#e0e7ff": "#f2f2f2", "#312e81": "#1a1a1a", "#818
 EDITIONS = ("color", "print")
 
 
+def answers_by_chapter(book, lang):
+    """Book 2 and later keep each chapter's answers next to the chapter (src/<src>.answers.<lang>.html),
+    so the appendix of each edition is put together here, with that edition's chapter numbers."""
+    out, k = [], 0
+    for part in book["parts"]:
+        for ch in part["chapters"]:
+            k += 1
+            src = ROOT / "src" / f'{ch.get("src") or book["id"] + "/" + f"ch{k:02d}"}.answers.{lang}.html'
+            if src.exists():
+                body = re.sub(r"\{\{n(?:\+(\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
+                out.append(f'<h2>{TEXT[lang]["chapter"]} {k}</h2>\n{body}')
+    return "\n\n".join(out)
+
+
 def build(book, lang, edition):
     """edition "color": full colour, cover first, equal margins, for reading as a PDF on a screen.
     edition "print": black and white, mirrored margins, the interior file for KDP (the cover is separate)."""
@@ -251,11 +268,16 @@ def build(book, lang, edition):
     for part in book["parts"]:
         for ch in part["chapters"]:
             k += 1
-            src = ROOT / "src" / book["id"] / f"ch{k:02d}.{lang}.html"
+            # A chapter is read from src/<book>/chNN, or from the path in its "src" (shared chapters, such as
+            # Book 2's language chapters, are written once for the React and Vue editions). In those,
+            # {{n}} stands for the chapter's number, which differs between the editions.
+            src = ROOT / "src" / (ch.get("src") or f'{book["id"]}/ch{k:02d}')
+            src = src.with_name(f"{src.name}.{lang}.html")
             if not src.exists():
                 continue
             cid = f"ch{k:02d}"
-            text = decorate(fill_code(src.read_text(), lang), lang, k)
+            text = re.sub(r"\{\{n(?:\+(\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
+            text = decorate(fill_code(text, lang), lang, k)
             text = text.replace('<section class="chapter"', f'<section class="chapter" style="page: {cid}"', 1)
             chapters.append(text)
             label = TEXT[lang]["chapter"]
@@ -265,8 +287,14 @@ def build(book, lang, edition):
     extra = {"preface": TEXT[lang]["preface"], "answers": TEXT[lang]["answers"]}
     for key, title in extra.items():
         src = ROOT / "src" / book["id"] / f"{key}.{lang}.html"
+        shared = ROOT / "src" / (book.get("shared") or "-") / f"{key}.{lang}.html"
+        if not src.exists() and shared.exists():
+            src = shared
         if src.exists():
-            text = decorate(fill_code(src.read_text(), lang), lang, "")
+            text = src.read_text()
+            if key == "answers" and "<!-- chapters -->" in text:
+                text = text.replace("<!-- chapters -->", answers_by_chapter(book, lang))
+            text = decorate(fill_code(text, lang), lang, "")
             text = text.replace('<section class="chapter', f'<section style="page: {key}" class="chapter', 1)
             if key == "preface":
                 chapters.insert(0, text)

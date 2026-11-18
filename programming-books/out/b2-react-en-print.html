@@ -1,0 +1,694 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<title>Senior Frontend Engineering</title><link rel="stylesheet" href="../style/book.css"><link rel="stylesheet" href="../style/print-bw.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.625in 0.8in 0.875in;
+  @top-center { content: "Senior Frontend Engineering"; font: 700 8pt 'Inter', sans-serif; color: #555; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Inter', sans-serif; color: #fff; background: #111;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.625in; margin-right: 0.875in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "Chapter 1: Modern JavaScript in Depth"; } }
+@page ch01:first { @top-center { content: none; } }
+@page answers { @top-center { content: "Answers to the Exercises"; } }
+@page answers:first { @top-center { content: none; } }
+</style></head>
+<body><section class="front half-title"><p class="ht">Senior Frontend Engineering</p></section><section class="front title-page">
+          <p class="tp-series">From Zero to Senior · Book 2</p>
+          <h1 class="tp-title">Senior Frontend Engineering</h1>
+          <p class="tp-sub">TypeScript, React, Architecture, Performance and Quality</p><p class="tp-edition">React Edition</p>
+          <p class="tp-level">Junior → Senior</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">Soliman Maged Saeed Salah</p>
+        </section><section class="front copyright">
+          <p><strong>Senior Frontend Engineering</strong><br>TypeScript, React, Architecture, Performance and Quality</p>
+          <p>© 2026 Soliman Maged Saeed Salah. All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.</p>
+          <p>First edition, 2026</p>
+          <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
+          <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: The Language</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Modern JavaScript in Depth</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">TypeScript for Real Projects</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Modules, Tooling and Build Systems</span><span class="toc-p"></span></li><li class="toc-part">Part 2: React</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Components and Rendering</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">State, Effects and Data Flow</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Routing and Server Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Forms and Validation</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Global State without Pain</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Quality</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Design Systems and Component Libraries</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Accessibility (WCAG) in Practice</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Testing: Unit, Component and End-to-End</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Performance and Core Web Vitals</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Frontend Security</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Internationalisation and RTL</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Frontend Architecture at Scale</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Server Rendering with Next.js</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Code Review, Mentoring and Technical Decisions</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">Capstone: A Production Dashboard</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b2/js/en">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>Modern JavaScript in Depth</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>predict when data is copied and when it is shared, and update it without side effects</li>
+<li>use closures to keep state private</li>
+<li>write classes with private fields, and never lose <code>this</code> again</li>
+<li>use the modern toolkit: <code>?.</code>, <code>??</code>, <code>??=</code>, <code>at</code>, <code>toSorted</code>, <code>Object.groupBy</code></li>
+<li>choose between arrays, <code>Map</code> and <code>Set</code>, and write generators</li>
+<li>explain the order in which asynchronous code runs, and combine promises safely</li>
+<li>design errors that tell the whole story</li>
+</ul>
+</div>
+
+<p class="lead">In Book 1 you learned enough JavaScript to build a real app. Frameworks like React and Vue are written in that same language, and almost every confusing bug in them is really a JavaScript question: <em>why did this value change? where did <code>this</code> go? why did that line run first?</em> This chapter answers those questions once and for all. It is the foundation for everything else in this book.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Welcome back! I have been practising too. In this book we stop asking “does it work?” and start asking “will it still work next year, when the app is ten times bigger?” That is the senior question.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>Values and references</span></h2>
+
+<p>JavaScript has two kinds of values. <dfn>Primitives</dfn> (numbers, strings, booleans, <code>null</code>, <code>undefined</code>, <code>bigint</code> and <code>symbol</code>) are copied when you assign them. <dfn>Objects</dfn>, which include arrays and functions, are not copied: the variable holds a <dfn>reference</dfn>, an address that points to the object.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">values.js</div><pre class="code"><span class="c">// Primitives are copied</span>
+<span class="k">let</span> a = <span class="n">10</span>;
+<span class="k">let</span> b = a;
+b = <span class="n">20</span>;
+console.log(a, b);
+
+<span class="c">// Objects are shared: two names, one object</span>
+<span class="k">const</span> original = { name: <span class="s">&quot;Sara&quot;</span>, tags: [<span class="s">&quot;js&quot;</span>] };
+<span class="k">const</span> same = original;
+same.name = <span class="s">&quot;Huda&quot;</span>;
+console.log(original.name);
+
+<span class="c">// Spread copies only the first level</span>
+<span class="k">const</span> shallow = { ...original };
+shallow.tags.push(<span class="s">&quot;ts&quot;</span>);
+console.log(original.tags);
+
+<span class="c">// structuredClone copies every level</span>
+<span class="k">const</span> deep = structuredClone(original);
+deep.tags.push(<span class="s">&quot;react&quot;</span>);
+console.log(original.tags, deep.tags);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>10 20
+Huda
+[ &#x27;js&#x27;, &#x27;ts&#x27; ]
+[ &#x27;js&#x27;, &#x27;ts&#x27; ] [ &#x27;js&#x27;, &#x27;ts&#x27;, &#x27;react&#x27; ]</pre></div>
+
+<ul>
+<li>Changing <code>b</code> did not change <code>a</code>: the number was copied.</li>
+<li><code>same</code> and <code>original</code> are two names for <em>one</em> object, so a change through either name is visible through both.</li>
+<li>Spread, <code>{ ...original }</code>, makes a <dfn>shallow copy</dfn>: a new outer object, but the inner array is still shared. That is why <code>"ts"</code> appeared in the original.</li>
+<li><code>structuredClone</code> makes a <dfn>deep copy</dfn>: every level is new. It is built into browsers and Node.</li>
+</ul>
+
+<h3>Updating without side effects</h3>
+
+<p>React and Vue both decide what to redraw by comparing references: if the object is the same object, they may assume nothing changed. So professionals rarely change data in place. They build a <em>new</em> object that shares the unchanged parts with the old one. This style is called <dfn>immutable updates</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">immutable.js</div><pre class="code"><span class="k">const</span> cart = { items: [{ id: <span class="n">1</span>, qty: <span class="n">1</span> }], coupon: <span class="k">null</span> };
+
+<span class="c">// Return a new object instead of changing the old one</span>
+<span class="k">function</span> addOne(cart, id) {
+  <span class="k">return</span> {
+    ...cart,
+    items: cart.items.map((item) =&gt;
+      item.id === id ? { ...item, qty: item.qty + <span class="n">1</span> } : item,
+    ),
+  };
+}
+
+<span class="k">const</span> next = addOne(cart, <span class="n">1</span>);
+console.log(cart.items[<span class="n">0</span>].qty, next.items[<span class="n">0</span>].qty);
+console.log(cart === next, cart.items === next.items);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>1 2
+false false</pre></div>
+
+<p>The old cart still has quantity 1, and the new one has 2. Both the cart and the items array are new objects (<code>false false</code>), while the items that did not change are reused. Read <code>addOne</code> slowly: spread the old object, then override only what changed, at every level on the way down.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: <code>const</code> is not frozen</p><p><code>const cart = {…}</code> means the <em>name</em> <code>cart</code> cannot point to another object. The object itself can still change: <code>cart.items.push(…)</code> works. If you really need an object that cannot change, use <code>Object.freeze</code>, which is also shallow.</p></aside>
+
+<h2><span class="sec">1.2</span> <span>Scope and closures</span></h2>
+
+<p>A <dfn>scope</dfn> is the region of code where a name exists. Variables declared with <code>let</code> and <code>const</code> live in the nearest block <code>{ … }</code>. A function can see the variables of the scopes around it, even <em>after</em> those outer functions have finished. A function together with the variables it remembers is called a <dfn>closure</dfn>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">closures.js</div><pre class="code"><span class="k">function</span> makeCounter(start = <span class="n">0</span>) {
+  <span class="k">let</span> count = start; <span class="c">// private: only the three functions can see it</span>
+  <span class="k">return</span> {
+    up: () =&gt; ++count,
+    down: () =&gt; --count,
+    value: () =&gt; count,
+  };
+}
+
+<span class="k">const</span> likes = makeCounter();
+<span class="k">const</span> stock = makeCounter(<span class="n">10</span>);
+likes.up();
+likes.up();
+stock.down();
+console.log(likes.value(), stock.value());
+console.log(likes.count); <span class="c">// undefined: there is no way in from outside</span></pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>2 9
+undefined</pre></div>
+
+<p>Each call to <code>makeCounter</code> creates a fresh <code>count</code>, so <code>likes</code> and <code>stock</code> do not share anything. Nobody outside can read or break <code>count</code>; they can only use the three functions. This is how JavaScript had private data long before classes had private fields, and it is exactly how React hooks and Vue composables keep their state.</p>
+
+<p>Closures also make small, reusable tools. <code>once</code> wraps any function so it runs a single time, which is handy for connecting to a server or showing a welcome message:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">once.js</div><pre class="code"><span class="k">function</span> once(fn) {
+  <span class="k">let</span> done = <span class="k">false</span>;
+  <span class="k">let</span> result;
+  <span class="k">return</span> (...args) =&gt; {
+    <span class="k">if</span> (!done) {
+      done = <span class="k">true</span>;
+      result = fn(...args);
+    }
+    <span class="k">return</span> result;
+  };
+}
+
+<span class="k">const</span> connect = once(() =&gt; {
+  console.log(<span class="s">&quot;Connecting to the server…&quot;</span>);
+  <span class="k">return</span> <span class="s">&quot;connection #1&quot;</span>;
+});
+
+console.log(connect());
+console.log(connect());</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Connecting to the server…
+connection #1
+connection #1</pre></div>
+
+<h3>The classic loop puzzle</h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">loop.js</div><pre class="code"><span class="k">for</span> (<span class="k">var</span> i = <span class="n">1</span>; i &lt;= <span class="n">3</span>; i++) {
+  setTimeout(() =&gt; console.log(<span class="s">&quot;var:&quot;</span>, i));
+}
+<span class="k">for</span> (<span class="k">let</span> j = <span class="n">1</span>; j &lt;= <span class="n">3</span>; j++) {
+  setTimeout(() =&gt; console.log(<span class="s">&quot;let:&quot;</span>, j));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>var: 4
+var: 4
+var: 4
+let: 1
+let: 2
+let: 3</pre></div>
+
+<p><code>var</code> is scoped to the whole function, so all three timers close over the <em>same</em> <code>i</code>, which is 4 by the time they run. <code>let</code> creates a new <code>j</code> for every turn of the loop, so each timer remembers its own. This is one of the reasons modern code never uses <code>var</code>.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>After <code>const b = { ...a }</code>, is <code>b.list === a.list</code> true or false?</li><li>Why can nobody change <code>count</code> from outside <code>makeCounter</code>?</li><li>What would <code>loop.js</code> print if both loops used <code>let</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>Classes, private fields and <code>this</code></span></h2>
+
+<p>A <dfn>class</dfn> is a template for objects that share the same methods. Modern classes can have <dfn>private fields</dfn>, whose names start with <code>#</code>, <dfn>static</dfn> members that belong to the class itself, and <dfn>getters</dfn> that look like properties but run code:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">classes.js</div><pre class="code"><span class="k">class</span> Account {
+  #balance = <span class="n">0</span>; <span class="c">// private field: invisible outside the class</span>
+  <span class="k">static</span> count = <span class="n">0</span>;
+
+  constructor(owner) {
+    <span class="k">this</span>.owner = owner;
+    Account.count++;
+  }
+
+  get balance() {
+    <span class="k">return</span> <span class="k">this</span>.#balance;
+  }
+
+  deposit(amount) {
+    <span class="k">if</span> (amount &lt;= <span class="n">0</span>) <span class="k">throw</span> <span class="k">new</span> RangeError(<span class="s">&quot;Amount must be positive&quot;</span>);
+    <span class="k">this</span>.#balance += amount;
+    <span class="k">return</span> <span class="k">this</span>; <span class="c">// returning this lets calls be chained</span>
+  }
+}
+
+<span class="k">class</span> SavingsAccount <span class="k">extends</span> Account {
+  addInterest(rate) {
+    <span class="k">return</span> <span class="k">this</span>.deposit(Math.round(<span class="k">this</span>.balance * rate));
+  }
+}
+
+<span class="k">const</span> acc = <span class="k">new</span> SavingsAccount(<span class="s">&quot;Sara&quot;</span>);
+acc.deposit(<span class="n">1000</span>).deposit(<span class="n">500</span>).addInterest(<span class="n">0.1</span>);
+console.log(acc.owner, acc.balance, Account.count);
+console.log(acc <span class="k">instanceof</span> Account);
+
+<span class="k">try</span> {
+  acc.deposit(-<span class="n">5</span>);
+} <span class="k">catch</span> (error) {
+  console.log(error.name + <span class="s">&quot;:&quot;</span>, error.message);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Sara 1650 1
+true
+RangeError: Amount must be positive</pre></div>
+
+<ul>
+<li><code>#balance</code> cannot be read or changed outside the class, not even by mistake. The only way in is <code>deposit</code>, which checks the amount.</li>
+<li><code>get balance()</code> lets callers read <code>acc.balance</code> without being able to set it.</li>
+<li><code>extends</code> builds a new class on top of another; <code>SavingsAccount</code> has everything <code>Account</code> has, plus <code>addInterest</code>.</li>
+<li>Throwing a <code>RangeError</code> for a bad argument is better than quietly ignoring it: the bug shows up where it starts.</li>
+</ul>
+
+<h3>Where did <code>this</code> go?</h3>
+
+<p>Inside a normal method, <code>this</code> is the object <em>before the dot</em> at the moment of the call. <code>timer.tick()</code> has <code>timer</code> before the dot. But when you pass <code>timer.tick</code> somewhere else, as a callback or an event handler, only the function travels, and the object is left behind:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">this.js</div><pre class="code"><span class="k">class</span> Timer {
+  seconds = <span class="n">0</span>;
+
+  tick() {
+    <span class="k">this</span>.seconds++;
+  }
+
+  tickArrow = () =&gt; {
+    <span class="k">this</span>.seconds++;
+  };
+}
+
+<span class="k">const</span> timer = <span class="k">new</span> Timer();
+<span class="k">const</span> run = (callback) =&gt; callback();
+
+<span class="k">try</span> {
+  run(timer.tick); <span class="c">// the method is passed without its object</span>
+} <span class="k">catch</span> (error) {
+  console.log(<span class="s">&quot;Lost this:&quot;</span>, error.message);
+}
+
+run(() =&gt; timer.tick()); <span class="c">// fix 1: call it inside an arrow function</span>
+run(timer.tick.bind(timer)); <span class="c">// fix 2: bind it to the object</span>
+run(timer.tickArrow); <span class="c">// fix 3: an arrow-function field keeps this</span>
+console.log(timer.seconds);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Lost this: Cannot read properties of undefined (reading &#x27;seconds&#x27;)
+3</pre></div>
+
+<p>Arrow functions do not have their own <code>this</code>; they use the <code>this</code> of the place where they were written. That is why the three fixes work, and why you will see arrow functions everywhere in event handlers.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>A rule that saves hours: if a method will be passed somewhere else (an event, a timer, a callback), call it inside an arrow function, <code>() =&gt; obj.method()</code>. Then <code>this</code> is never lost.</p></div></div>
+
+<h2><span class="sec">1.4</span> <span>The modern toolkit</span></h2>
+
+<p>Every year JavaScript gains small features that remove whole classes of bugs. These are the ones you will use daily:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">modern.js</div><pre class="code"><span class="k">const</span> user = { name: <span class="s">&quot;Omar&quot;</span>, address: <span class="k">null</span>, settings: { theme: <span class="s">&quot;&quot;</span> } };
+
+<span class="c">// ?. stops at null or undefined instead of crashing</span>
+console.log(user.address?.city);
+console.log(user.address?.city ?? <span class="s">&quot;unknown&quot;</span>);
+
+<span class="c">// || replaces every falsy value; ?? only null and undefined</span>
+console.log(user.settings.theme || <span class="s">&quot;light&quot;</span>, user.settings.theme ?? <span class="s">&quot;light&quot;</span>);
+
+<span class="c">// ??= assigns only when the value is missing</span>
+user.settings.fontSize ??= <span class="n">16</span>;
+console.log(user.settings);
+
+<span class="k">const</span> scores = [<span class="n">72</span>, <span class="n">95</span>, <span class="n">88</span>, <span class="n">61</span>];
+console.log(scores.at(-<span class="n">1</span>), scores.findLast((s) =&gt; s &gt; <span class="n">80</span>));
+console.log(scores.toSorted((a, b) =&gt; b - a), scores); <span class="c">// toSorted returns a copy: the original keeps its order</span></pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>undefined
+unknown
+light 
+{ theme: &#x27;&#x27;, fontSize: 16 }
+61 88
+[ 95, 88, 72, 61 ] [ 72, 95, 88, 61 ]</pre></div>
+
+<table>
+<thead><tr><th>Syntax</th><th>Meaning</th><th>Typical use</th></tr></thead>
+<tbody>
+<tr><td><code>a?.b</code></td><td><code>undefined</code> if <code>a</code> is <code>null</code> or <code>undefined</code>, otherwise <code>a.b</code></td><td>Data from a server that may be missing</td></tr>
+<tr><td><code>a ?? b</code></td><td><code>b</code> only if <code>a</code> is <code>null</code> or <code>undefined</code></td><td>Defaults that must keep <code>0</code> and <code>""</code></td></tr>
+<tr><td><code>a ??= b</code></td><td>Set <code>a</code> to <code>b</code> only if it is missing</td><td>Filling in default settings</td></tr>
+<tr><td><code>list.at(-1)</code></td><td>The last item</td><td>Instead of <code>list[list.length - 1]</code></td></tr>
+<tr><td><code>toSorted</code>, <code>toReversed</code>, <code>with</code></td><td>Like <code>sort</code> and friends, but return a copy</td><td>Immutable updates</td></tr>
+</tbody>
+</table>
+
+<p>Look closely at the second line of output: <code>||</code> threw away the empty string and used <code>"light"</code>, while <code>??</code> kept it. If an empty string or a zero is a real value in your data, use <code>??</code>.</p>
+
+<h3>Grouping and reshaping data</h3>
+
+<p><code>Object.groupBy</code> sorts a list into buckets in one line, and <code>Object.entries</code> with <code>Object.fromEntries</code> lets you transform an object as if it were an array:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">group.js</div><pre class="code"><span class="k">const</span> orders = [
+  { id: <span class="n">1</span>, status: <span class="s">&quot;paid&quot;</span>, total: <span class="n">40</span> },
+  { id: <span class="n">2</span>, status: <span class="s">&quot;pending&quot;</span>, total: <span class="n">15</span> },
+  { id: <span class="n">3</span>, status: <span class="s">&quot;paid&quot;</span>, total: <span class="n">22</span> },
+  { id: <span class="n">4</span>, status: <span class="s">&quot;refunded&quot;</span>, total: <span class="n">9</span> },
+];
+
+<span class="k">const</span> byStatus = Object.groupBy(orders, (order) =&gt; order.status);
+console.log(Object.keys(byStatus));
+
+<span class="k">const</span> totals = Object.fromEntries(
+  Object.entries(byStatus).map(([status, list]) =&gt; [
+    status,
+    list.reduce((sum, order) =&gt; sum + order.total, <span class="n">0</span>),
+  ]),
+);
+console.log(totals);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>[ &#x27;paid&#x27;, &#x27;pending&#x27;, &#x27;refunded&#x27; ]
+{ paid: 62, pending: 15, refunded: 9 }</pre></div>
+
+<p>This is the shape of most dashboard code: group the raw records, then reduce each group to a number.</p>
+
+<h2><span class="sec">1.5</span> <span>Collections and generators</span></h2>
+
+<p>An object is fine for a fixed set of named fields. For a <em>collection</em> that grows and shrinks, JavaScript has two better tools. A <dfn>Map</dfn> stores key–value pairs, with keys of any type, in the order they were added. A <dfn>Set</dfn> stores each value once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">collections.js</div><pre class="code"><span class="c">// Map: keys of any type, kept in insertion order</span>
+<span class="k">const</span> visits = <span class="k">new</span> Map();
+<span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> [<span class="s">&quot;/home&quot;</span>, <span class="s">&quot;/shop&quot;</span>, <span class="s">&quot;/home&quot;</span>, <span class="s">&quot;/cart&quot;</span>, <span class="s">&quot;/home&quot;</span>]) {
+  visits.set(page, (visits.get(page) ?? <span class="n">0</span>) + <span class="n">1</span>);
+}
+console.log(visits);
+console.log([...visits].toSorted((a, b) =&gt; b[<span class="n">1</span>] - a[<span class="n">1</span>])[<span class="n">0</span>]);
+
+<span class="c">// Set: each value once</span>
+<span class="k">const</span> tags = <span class="k">new</span> Set([<span class="s">&quot;js&quot;</span>, <span class="s">&quot;css&quot;</span>, <span class="s">&quot;js&quot;</span>, <span class="s">&quot;html&quot;</span>, <span class="s">&quot;css&quot;</span>]);
+console.log(tags.size, tags.has(<span class="s">&quot;css&quot;</span>), [...tags]);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Map(3) { &#x27;/home&#x27; =&gt; 3, &#x27;/shop&#x27; =&gt; 1, &#x27;/cart&#x27; =&gt; 1 }
+[ &#x27;/home&#x27;, 3 ]
+3 true [ &#x27;js&#x27;, &#x27;css&#x27;, &#x27;html&#x27; ]</pre></div>
+
+<p>Use a <code>Map</code> when you look things up by a key that comes from data (an id, a URL, an object); use a <code>Set</code> to remove duplicates or to ask “have I seen this before?” quickly. Both are much faster than searching an array once the collection is large.</p>
+
+<h3>Generators: values on demand</h3>
+
+<p>A <dfn>generator</dfn> is a function, written with <code>function*</code>, that can pause. Each <code>yield</code> hands out one value and waits until the next one is asked for. Anything that works with <code>for…of</code> or spread can use it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">generators.js</div><pre class="code"><span class="k">function</span>* range(<span class="k">from</span>, to, step = <span class="n">1</span>) {
+  <span class="k">for</span> (<span class="k">let</span> n = <span class="k">from</span>; n &lt;= to; n += step) {
+    <span class="k">yield</span> n; <span class="c">// pause here and hand n to the caller</span>
+  }
+}
+
+console.log([...range(<span class="n">1</span>, <span class="n">10</span>, <span class="n">3</span>)]);
+
+<span class="c">// A generator that splits a list into pages</span>
+<span class="k">function</span>* pages(items, size) {
+  <span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; items.length; i += size) {
+    <span class="k">yield</span> items.slice(i, i + size);
+  }
+}
+
+<span class="k">const</span> letters = <span class="s">&quot;ABCDEFG&quot;</span>.split(<span class="s">&quot;&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> pages(letters, <span class="n">3</span>)) {
+  console.log(page.join(<span class="s">&quot; &quot;</span>));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>[ 1, 4, 7, 10 ]
+A B C
+D E F
+G</pre></div>
+
+<p>Generators shine when values are expensive or endless: reading a big file line by line, or loading page after page from an API only while the user keeps scrolling.</p>
+
+<h2><span class="sec">1.6</span> <span>The event loop</span></h2>
+
+<p>JavaScript runs your code on one thread, one piece at a time. Work that has to wait (timers, network replies, clicks) is put in a queue, and the <dfn>event loop</dfn> picks the next piece when the current one is finished. There are two queues, and the difference explains many surprising bugs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">event-loop.js</div><pre class="code">console.log(<span class="s">&quot;1 synchronous code runs first&quot;</span>);
+
+setTimeout(() =&gt; console.log(<span class="s">&quot;5 a timer: a task, after all microtasks&quot;</span>), <span class="n">0</span>);
+
+Promise.resolve().then(() =&gt; console.log(<span class="s">&quot;3 a promise callback: a microtask&quot;</span>));
+queueMicrotask(() =&gt; console.log(<span class="s">&quot;4 another microtask, in order&quot;</span>));
+
+console.log(<span class="s">&quot;2 still synchronous&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>1 synchronous code runs first
+2 still synchronous
+3 a promise callback: a microtask
+4 another microtask, in order
+5 a timer: a task, after all microtasks</pre></div>
+
+<ol>
+<li>All the synchronous code runs first, from top to bottom.</li>
+<li>Then every <dfn>microtask</dfn> runs: promise callbacks and <code>queueMicrotask</code>. A microtask that adds more microtasks keeps the loop busy until the queue is empty.</li>
+<li>Only then does the next <dfn>task</dfn> run: a timer, a network event, a click.</li>
+</ol>
+
+<p>The practical rule: code after an <code>await</code> always runs later, even if the promise was already resolved. And a long synchronous loop blocks everything, including clicks and drawing the page, which is why heavy work belongs in small pieces or in a Web Worker.</p>
+
+<h3>Combining promises</h3>
+
+<p>In Book 1 you met <code>Promise.all</code>, which fails as soon as one promise fails. Real screens often need more control:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">promises.mjs</div><pre class="code"><span class="k">const</span> wait = (ms, value, fail = <span class="k">false</span>) =&gt;
+  <span class="k">new</span> Promise((resolve, reject) =&gt;
+    setTimeout(() =&gt; (fail ? reject(<span class="k">new</span> Error(value)) : resolve(value)), ms),
+  );
+
+<span class="k">const</span> results = <span class="k">await</span> Promise.allSettled([
+  wait(<span class="n">30</span>, <span class="s">&quot;profile&quot;</span>),
+  wait(<span class="n">10</span>, <span class="s">&quot;orders failed&quot;</span>, <span class="k">true</span>),
+  wait(<span class="n">20</span>, <span class="s">&quot;messages&quot;</span>),
+]);
+<span class="k">for</span> (<span class="k">const</span> r <span class="k">of</span> results) {
+  console.log(r.status, r.value ?? r.reason.message);
+}
+
+<span class="c">// any: the first one to succeed</span>
+<span class="k">const</span> fastest = <span class="k">await</span> Promise.any([wait(<span class="n">40</span>, <span class="s">&quot;mirror A&quot;</span>), wait(<span class="n">15</span>, <span class="s">&quot;mirror B&quot;</span>)]);
+console.log(<span class="s">&quot;Fastest:&quot;</span>, fastest);
+
+<span class="c">// race: the first one to finish, success or failure</span>
+<span class="k">const</span> timeout = (ms) =&gt; wait(ms, <span class="s">&quot;Timed out after 50 ms&quot;</span>, <span class="k">true</span>);
+<span class="k">try</span> {
+  <span class="k">await</span> Promise.race([wait(<span class="n">100</span>, <span class="s">&quot;slow answer&quot;</span>), timeout(<span class="n">50</span>)]);
+} <span class="k">catch</span> (error) {
+  console.log(error.message);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>fulfilled profile
+rejected orders failed
+fulfilled messages
+Fastest: mirror B
+Timed out after 50 ms</pre></div>
+
+<table>
+<thead><tr><th>Method</th><th>Resolves when</th><th>Use it for</th></tr></thead>
+<tbody>
+<tr><td><code>Promise.all</code></td><td>All succeed (fails on the first failure)</td><td>Data the screen cannot work without</td></tr>
+<tr><td><code>Promise.allSettled</code></td><td>All finish, with a status for each</td><td>Dashboards: show what loaded, mark what failed</td></tr>
+<tr><td><code>Promise.any</code></td><td>The first one succeeds</td><td>Several servers with the same data</td></tr>
+<tr><td><code>Promise.race</code></td><td>The first one finishes, either way</td><td>Time limits</td></tr>
+</tbody>
+</table>
+
+<p>The file ends in <code>.mjs</code>, which tells Node it is an ES module. Modules allow <code>await</code> at the top level, outside any function. Chapter 3 explains modules properly; for now, the extension is enough.</p>
+
+<h2><span class="sec">1.7</span> <span>Errors that tell the whole story</span></h2>
+
+<p>An error message is a note to the person who will debug your code at two in the morning; often that person is you. Two modern features make those notes much better: your own error classes, which can be told apart with <code>instanceof</code>, and the <code>cause</code> option, which keeps the original error when you add context:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">errors.js</div><pre class="code"><span class="k">class</span> NotFoundError <span class="k">extends</span> Error {
+  constructor(what, options) {
+    <span class="k">super</span>(<span class="s">`${what} was not found`</span>, options);
+    <span class="k">this</span>.name = <span class="s">&quot;NotFoundError&quot;</span>;
+  }
+}
+
+<span class="k">const</span> users = <span class="k">new</span> Map([[<span class="n">1</span>, <span class="s">&quot;Sara&quot;</span>]]);
+
+<span class="k">function</span> findUser(id) {
+  <span class="k">if</span> (!users.has(id)) <span class="k">throw</span> <span class="k">new</span> NotFoundError(<span class="s">`User #${id}`</span>);
+  <span class="k">return</span> users.get(id);
+}
+
+<span class="k">function</span> loadProfile(id) {
+  <span class="k">try</span> {
+    <span class="k">return</span> findUser(id);
+  } <span class="k">catch</span> (error) {
+    <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;Could not load the profile&quot;</span>, { cause: error }); <span class="c">// keep the original error as the cause</span>
+  }
+}
+
+<span class="k">try</span> {
+  loadProfile(<span class="n">7</span>);
+} <span class="k">catch</span> (error) {
+  console.log(error.message);
+  console.log(<span class="s">&quot;Because:&quot;</span>, error.cause.name, <span class="s">&quot;-&quot;</span>, error.cause.message);
+  console.log(error.cause <span class="k">instanceof</span> NotFoundError);
+}</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Could not load the profile
+Because: NotFoundError - User #7 was not found
+true</pre></div>
+
+<p>The top message says what the user was trying to do; the cause says why it failed. Error-tracking services and the browser’s console show the whole chain. Never write <code>catch (error) {}</code> with an empty body: a swallowed error is a bug that hides.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: fail loudly, early, and with context</p><p>Check arguments at the edge of your function and throw a specific error. Catch errors only where you can do something useful: show a message, try again, or add context and throw again with <code>cause</code>. Everywhere else, let them travel up.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Changing state in place: <code>cart.items.push(x)</code></td><td>The screen does not update, or updates in the wrong place</td><td>Build a new object with spread</td></tr>
+<tr><td>Copying with spread and editing a nested array</td><td>The original changes too</td><td>Copy every level you change, or use <code>structuredClone</code></td></tr>
+<tr><td>Passing <code>obj.method</code> as a callback</td><td><code>this</code> is <code>undefined</code></td><td><code>() =&gt; obj.method()</code></td></tr>
+<tr><td><code>value || default</code> for numbers</td><td><code>0</code> is replaced by the default</td><td><code>value ?? default</code></td></tr>
+<tr><td><code>Promise.all</code> for optional data</td><td>One failure hides everything else</td><td><code>Promise.allSettled</code></td></tr>
+<tr><td>Empty <code>catch</code></td><td>Errors disappear silently</td><td>Handle it, or rethrow with <code>cause</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Primitives are copied; objects are shared <strong>by reference</strong>. Spread copies one level, <code>structuredClone</code> every level.</li>
+<li><strong>Immutable updates</strong> build new objects and reuse what did not change. Frameworks depend on this.</li>
+<li>A <strong>closure</strong> is a function plus the variables it remembers: the simplest way to keep state private.</li>
+<li>Classes have <strong>private fields</strong> (<code>#</code>), getters and <code>static</code> members. <code>this</code> is the object before the dot <em>at call time</em>; arrow functions keep the outer <code>this</code>.</li>
+<li><code>?.</code>, <code>??</code>, <code>??=</code>, <code>at</code>, <code>toSorted</code> and <code>Object.groupBy</code> make everyday code shorter and safer.</li>
+<li>Use <strong>Map</strong> for lookups by key, <strong>Set</strong> for unique values, and <strong>generators</strong> for values on demand.</li>
+<li>The <strong>event loop</strong> runs synchronous code, then all microtasks, then the next task.</li>
+<li>Pick <code>all</code>, <code>allSettled</code>, <code>any</code> or <code>race</code> by what the screen needs. Give errors a class and a <code>cause</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. True: spread copies only the first level, so both point to the same list. 2. Because <code>count</code> exists only inside the closure; the outside world gets functions, not the variable. 3. <code>1 2 3</code> twice, once with “var:” and once with “let:”.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project builds a small, reusable tool of the kind you find inside real libraries. Write it first in your own way, run it, compare your output with the one below, and only then look at the solution in the code repository.</p>
+
+<div class="project">
+<p class="project-label">Project 1.1 · Easy</p>
+<h3>A memoize helper</h3>
+<p class="project-goal">Write <code>memoize(fn)</code>, which returns a faster version of any one-argument function by remembering its answers.</p>
+<p class="project-skills"><strong>You will practise:</strong> closures, <code>Map</code>, and measuring a function by counting its calls.</p>
+<ol class="steps">
+<li>Inside <code>memoize</code>, create a <code>Map</code> called <code>cache</code>. The closure keeps it alive between calls.</li>
+<li>Return an arrow function that takes <code>arg</code>. If <code>cache.has(arg)</code>, return the saved value.</li>
+<li>Otherwise call <code>fn(arg)</code>, save the result with <code>cache.set</code>, and return it.</li>
+<li>Count the real calls of a slow function with a variable outside it, and prove that repeated arguments are free.</li>
+<li>Memoize a recursive Fibonacci function. It must call the <em>memoized</em> version of itself, or the cache is never used.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> memoize only <dfn>pure functions</dfn>: functions whose answer depends only on their arguments. A function that reads the clock or a server would return stale answers forever.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>81 81 144 81
+Real calls: 2
+fib(70) = 190392490709135</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 1.2 · Medium</p>
+<h3>An event emitter</h3>
+<p class="project-goal">Build the small class that sits at the heart of Node, browsers and many libraries: parts of a program announce events, and other parts listen.</p>
+<p class="project-skills"><strong>You will practise:</strong> classes, a private field, <code>Map</code> of <code>Set</code>s, rest parameters, and returning a clean-up function.</p>
+<ol class="steps">
+<li>Create <code>class Emitter</code> with a private <code>#listeners = new Map()</code>. Each key is an event name; each value is a <code>Set</code> of functions.</li>
+<li><code>on(event, fn)</code> adds the function, creating the <code>Set</code> the first time. Make it return <code>() =&gt; this.off(event, fn)</code>.</li>
+<li><code>off(event, fn)</code> removes it. Use <code>?.</code> so that removing from an unknown event is harmless.</li>
+<li><code>emit(event, ...args)</code> calls every listener with the arguments. Loop over a <em>copy</em> (<code>[...set]</code>), because a listener may remove itself while you loop.</li>
+<li><code>once(event, fn)</code> listens with a wrapper that stops itself before calling <code>fn</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> returning the “stop” function from <code>on</code> is a pattern you will meet again: React’s <code>useEffect</code> and Vue’s <code>watch</code> both use it. Whoever starts listening holds the way to stop.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Log: order 101
+First order of the day: 101
+Log: order 102
+No more listeners.</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 1.3 · Challenge</p>
+<h3>Retry with exponential backoff</h3>
+<p class="project-goal">Networks fail for a moment all the time. Write <code>retry(fn, options)</code>, which tries an async function again, waiting longer each time, and gives up with a clear error.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>async</code>/<code>await</code> in a loop, default options with destructuring, <code>2 ** n</code>, and errors with <code>cause</code>.</p>
+<ol class="steps">
+<li>Write the <code>wait(ms)</code> helper that returns a promise.</li>
+<li>Give <code>retry</code> a second parameter <code>{ retries = 3, delay = 10 } = {}</code>, so it works with no options at all.</li>
+<li>Loop over attempts. In a <code>try</code>, <code>return await fn(attempt)</code>: the <code>await</code> is essential, or the <code>catch</code> never sees the failure.</li>
+<li>In the <code>catch</code>, give up when the attempts are used up, by throwing a new error with <code>{ cause: error }</code>. Otherwise wait <code>delay * 2 ** (attempt - 1)</code> and loop.</li>
+<li>Test it with a fake API, <code>flaky(n)</code>, that fails <code>n</code> times and then succeeds. Try one that recovers and one that never does.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in production, add a little randomness (“jitter”) to the pause, so that a thousand phones that lost the network together do not all retry at the same millisecond. And never retry actions that are not safe to repeat, such as charging a card, unless the server supports it.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>API that fails twice:
+  attempt 1 failed, waiting 10 ms
+  attempt 2 failed, waiting 20 ms
+OK (on attempt 3)
+API that fails five times:
+  attempt 1 failed, waiting 10 ms
+  attempt 2 failed, waiting 20 ms
+Gave up after 3 attempts - Network error</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write <code>removeItem(cart, id)</code> in the immutable style of <code>immutable.js</code>, and prove with <code>===</code> that the original cart is unchanged.</li>
+<li><span class="level">Easy</span> Using <code>Object.groupBy</code>, group the words <code>["apple", "avocado", "banana", "blueberry", "cherry"]</code> by their first letter.</li>
+<li><span class="level medium">Medium</span> Add a <code>withdraw(amount)</code> method to <code>Account</code> that throws a custom <code>InsufficientFundsError</code> when the balance is too low. Test both cases.</li>
+<li><span class="level medium">Medium</span> Without running it, write down the order of the output of: <code>setTimeout(() =&gt; log("A")); Promise.resolve().then(() =&gt; log("B")); log("C");</code>. Then run it to check.</li>
+<li><span class="level hard">Challenge</span> Write a generator <code>take(iterable, n)</code> that yields only the first <code>n</code> values of any iterable, and use it with an endless generator of even numbers.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 2</p>
+<p>You saw how much can go wrong when a value is not what you expected. TypeScript catches most of those mistakes before you even run the code. In the next chapter you will add types to real code, model data that can be in several states, and let the editor find bugs for you.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">Try every exercise yourself before you look here. When your answer differs from this one, that is not necessarily wrong: most problems have several good solutions. If yours handles normal and unusual cases, and you can explain your choices to a colleague, it is a good answer. The full, tested code for every answer is in the book’s code repository.</p>
+
+<h2 class="plain-h">Chapter 1</h2>
+<ol class="exercises">
+<li><code>const removeItem = (cart, id) =&gt; ({ ...cart, items: cart.items.filter((item) =&gt; item.id !== id) });</code> With two items, the original still has 2, the result has 1, and <code>cart === next</code> is <code>false</code>.</li>
+<li><code>Object.groupBy(words, (word) =&gt; word[0])</code> gives <code>{ a: ["apple", "avocado"], b: ["banana", "blueberry"], c: ["cherry"] }</code>. Node prints it as <code>[Object: null prototype]</code>: the result has no prototype, so a key such as <code>"constructor"</code> can never clash with a built-in.</li>
+<li>Define <code>class InsufficientFundsError extends Error</code> and set <code>this.name</code> in its constructor. In <code>withdraw</code>, throw it when <code>amount &gt; this.#balance</code>; otherwise subtract and return <code>this</code>. Test a withdrawal that works (100 − 30 leaves 70) and one that throws, checking <code>error instanceof InsufficientFundsError</code>.</li>
+<li><code>C</code>, <code>B</code>, <code>A</code>: synchronous code first, then the microtask from the promise, then the timer task.</li>
+<li><code>function* take(iterable, n) { if (n &lt;= 0) return; let count = 0; for (const value of iterable) { yield value; if (++count &gt;= n) return; } }</code>. With <code>function* evens() { for (let n = 0; ; n += 2) yield n; }</code>, <code>[...take(evens(), 5)]</code> is <code>[0, 2, 4, 6, 8]</code>. Returning from the generator stops the loop, so the endless generator is never asked for a sixth value.</li>
+</ol>
+
+</section>
+</body></html>
