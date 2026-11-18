@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "الفصل 4: المكونات والرسم"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "الفصل 5: الحالة والتأثيرات وتدفق البيانات"; } }
+@page ch05:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -2032,6 +2034,432 @@ console.log(&quot;الرسم الثاني:&quot;, renderToStaticMarkup(&lt;Count
 <p>استخدمت الحالة لزر إعجاب. وفي الفصل التالي ستتعلم تصميم الحالة لشاشات حقيقية: أين تعيش، وكيف تحدّث الكائنات والقوائم فيها، وكيف تشتق القيم بدل حفظها، وكيف تتحدث إلى العالم خارج React بالتأثيرات.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b2/react/state/ar">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">الفصل 5</p><h1>الحالة والتأثيرات وتدفق البيانات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تفهم الحالة لقطةً ثابتة، وتحدّثها صحيحاً بدوال التحديث</li>
+<li>تحدّث الكائنات والمصفوفات في الحالة دون أن تغيّرها</li>
+<li>تحفظ أقل حالة ممكنة وتشتق كل ما عداها</li>
+<li>تقرر أين تعيش الحالة، وترفعها حين يجب أن تتشاركها المكونات</li>
+<li>تنقل التحديثات المعقدة إلى دالة اختزال تختبرها دون React</li>
+<li>تتزامن مع العالم خارج React بالتأثيرات، وتنظّف بعدها</li>
+<li>تحفظ القيم وعناصر DOM بالمراجع (refs)</li>
+</ul>
+</div>
+
+<p class="lead">معظم أخطاء تطبيقات React أخطاء حالة: رقم لا يتحدث، أو قائمة تعرض عناصر الأمس، أو طلب يرد بعد أن انتقل المستخدم إلى غيره. ويعطيك هذا الفصل مجموعة قواعد صغيرة تمنع معظمها. وهي بسيطة لكنها ليست بديهية، فاقرأ الأمثلة ببطء وشغّلها بنفسك.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>سؤال أسأله قبل كتابة أي <code>useState</code>: «هل أستطيع حساب هذا مما عندي أصلاً؟» والجواب في أغلب الأحيان نعم، وأفضل حالة هي التي لم أكتبها أبداً.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>الحالة لقطة</span></h2>
+
+<p>حين تستدعي React مكوّنك تعطيه <code>useState</code> حالة <em>ذلك الرسم</em>. والمتغير ثابت طوال الرسم: فاستدعاء دالة التعيين لا يغيّره، بل يجدول الرسم التالي. وهذا يفاجئ الجميع مرة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">snapshot.tsx</div><pre class="code">import { useState } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  function addThreeWrong() {
+    // كل معالج يرى قيمة هذا الرسم: count is 0 three times
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
+  }
+
+  function addThree() {
+    // دالة التحديث تستقبل أحدث قيمة
+    setCount((c) =&gt; c + 1);
+    setCount((c) =&gt; c + 1);
+    setCount((c) =&gt; c + 1);
+  }
+
+  return (
+    &lt;div className=&quot;card&quot;&gt;
+      &lt;p className=&quot;big&quot;&gt;{count}&lt;/p&gt;
+      &lt;div className=&quot;row&quot;&gt;
+        &lt;button onClick={addThreeWrong}&gt;‎+3 (خطأ)&lt;/button&gt;
+        &lt;button onClick={addThree}&gt;‎+3 (صحيح)&lt;/button&gt;
+        &lt;button className=&quot;secondary&quot; onClick={() =&gt; setCount(0)}&gt;صفّر&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Counter /&gt;);</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>snapshot.html</span><b>560px</b></div><img src="img/react-state-ar-snapshot.html-560-154eb6.png" alt=""><figcaption><b>شكل 5.1:</b> بعد ضغطة واحدة على «+3 (خطأ)» يعرض العدّاد 1 لا 3.</figcaption></figure>
+
+<p>في <code>addThreeWrong</code> تساوي <code>count</code> صفراً في الأسطر الثلاثة، فيطلب كل منها <code>0 + 1</code>. وتجمع React أيضاً الاستدعاءات الثلاثة في رسم واحد (batching)، وهذا جيد للسرعة. وحين تعتمد القيمة الجديدة على القديمة مرّر <dfn>دالة تحديث</dfn> بدلاً منها: <code>setCount((c) =&gt; c + 1)</code>. فتضع React الدوال الثلاث في طابور وتشغّلها بالترتيب، وتستقبل كل منها نتيجة التي قبلها، فيضيف «+3 (صحيح)» ثلاثة حقاً.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>قاعدة: حين تعتمد الحالة التالية على السابقة، استخدم دالة تحديث</p><p><code>setX((old) =&gt; …)</code> صحيحة دائماً، و<code>setX(x + 1)</code> صحيحة فقط حين تعمل مرة واحدة لكل حدث. واستخدام دوال التحديث في كل مكان للعدّادات والمبدّلات والقوائم لا يكلّف شيئاً، ويمنع عائلة كاملة من الأخطاء.</p></aside>
+
+<h2><span class="sec">5.2</span> <span>الكائنات والمصفوفات في الحالة</span></h2>
+
+<p>تقرر React هل تعيد الرسم بمقارنة الحالة القديمة والجديدة بـ <code>Object.is</code>. فإن غيّرت مصفوفة في مكانها وعيّنت المصفوفة نفسها، رأت React الكائن نفسه ولم تفعل شيئاً. ولهذا تُحدَّث الحالة بأنماط التحديث غير القابل للتغيير من الفصل 1: ابنِ مصفوفة أو كائناً جديداً ومرّره.</p>
+
+<table>
+<thead><tr><th>لكي…</th><th>لا تفعل</th><th>افعل</th></tr></thead>
+<tbody>
+<tr><td>تضيف</td><td><code>list.push(x)</code></td><td><code>[...list, x]</code></td></tr>
+<tr><td>تحذف</td><td><code>list.splice(i, 1)</code></td><td><code>list.filter((item) =&gt; item.id !== id)</code></td></tr>
+<tr><td>تغيّر عنصراً</td><td><code>list[i].done = true</code></td><td><code>list.map((item) =&gt; item.id === id ? { ...item, done: true } : item)</code></td></tr>
+<tr><td>ترتّب</td><td><code>list.sort()</code></td><td><code>list.toSorted()</code></td></tr>
+<tr><td>تغيّر حقلاً</td><td><code>user.city = "Giza"</code></td><td><code>{ ...user, city: "Giza" }</code></td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">5.3</span> <span>أقل حالة، وقيم مشتقة</span></h2>
+
+<p>هذه سلة تسوق. انظر ما الذي يُحفظ في الحالة، وما الذي لا يُحفظ:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cart-model.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; price: number };
+<span class="k">export</span> <span class="k">type</span> Line = { product: Product; quantity: number };
+
+<span class="k">export</span> <span class="k">const</span> catalogue: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;قبعة بِت&quot;</span>, price: <span class="n">12</span> },
+];
+
+<span class="k">export</span> <span class="k">const</span> FREE_DELIVERY = <span class="n">50</span>;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">cart.tsx</div><pre class="code">import { useState } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+import { catalogue, FREE_DELIVERY, type Line, type Product } from &quot;./cart-model&quot;;
+
+function Cart() {
+  const [lines, setLines] = useState&lt;Line[]&gt;([]);
+
+  // Derived: calculated on every render, never stored
+  const count = lines.reduce((sum, line) =&gt; sum + line.quantity, 0);
+  const total = lines.reduce((sum, line) =&gt; sum + line.quantity * line.product.price, 0);
+  const missing = FREE_DELIVERY - total;
+
+  function add(product: Product) {
+    setLines((current) =&gt; {
+      const found = current.find((line) =&gt; line.product.id === product.id);
+      if (!found) return [...current, { product, quantity: 1 }];
+      return current.map((line) =&gt; (line === found ? { ...line, quantity: line.quantity + 1 } : line));
+    });
+  }
+
+  function remove(id: number) {
+    setLines((current) =&gt; current.filter((line) =&gt; line.product.id !== id));
+  }
+
+  return (
+    &lt;div className=&quot;card&quot;&gt;
+      &lt;div className=&quot;row&quot;&gt;
+        {catalogue.map((product) =&gt; (
+          &lt;button key={product.id} className=&quot;secondary&quot; onClick={() =&gt; add(product)}&gt;
+            + {product.name}
+          &lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+      {lines.length === 0 ? (
+        &lt;p className=&quot;muted&quot;&gt;سلتك فارغة.&lt;/p&gt;
+      ) : (
+        &lt;ul&gt;
+          {lines.map((line) =&gt; (
+            &lt;li key={line.product.id}&gt;
+              &lt;span&gt;
+                {line.quantity} × {line.product.name}
+              &lt;/span&gt;
+              &lt;button className=&quot;secondary&quot; onClick={() =&gt; remove(line.product.id)}&gt;
+                احذف
+              &lt;/button&gt;
+            &lt;/li&gt;
+          ))}
+        &lt;/ul&gt;
+      )}
+      &lt;p&gt;
+        العناصر: {count} · المجموع: &lt;b&gt;{total} جنيهاً&lt;/b&gt;
+      &lt;/p&gt;
+      &lt;p className={missing &lt;= 0 ? &quot;ok&quot; : &quot;muted&quot;}&gt;
+        {missing &lt;= 0 ? &quot;توصيل مجاني!&quot; : `${missing} جنيهاً أخرى للتوصيل المجاني`}
+      &lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Cart /&gt;);</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/react-state-ar-cart.html-560-a9e453.png" alt=""><figcaption><b>شكل 5.2:</b> بعد إضافة الكتاب مرة والكوب مرتين. العدد والمجموع ورسالة التوصيل كلها محسوبة من <code>lines</code>.</figcaption></figure>
+
+<p>الحالة الوحيدة هي <code>lines</code>. أما عدد العناصر والمجموع ورسالة التوصيل المجاني فهي <dfn>مشتقة</dfn>: تُحسب من <code>lines</code> في كل رسم. ولو حُفظت حالات منفصلة لوجب على كل دالة تغيّر السلة أن تتذكر تحديث الأربع، ولنسي أحدهم يوماً ما. والقيم المشتقة لا يمكن أن تختلف فيما بينها.</p>
+
+<p>اسأل هذه الأسئلة عن كل معلومة قبل أن تضعها في الحالة:</p>
+<ol>
+<li>هل تبقى كما هي مع الوقت؟ فهي ثابت لا حالة.</li>
+<li>هل يمررها أب؟ فهي خاصية.</li>
+<li>هل تستطيع حسابها من حالة أو خصائص أخرى؟ فاحسبها.</li>
+</ol>
+<p>وما يبقى هو الحالة الحقيقية. وإن كان حساب ما مكلفاً حقاً، فـ <code>useMemo</code> في React تتذكر نتيجته بين الرسمات، لكن قِس أولاً: فمعظم الحسابات تأخذ أجزاء من الملي ثانية.</p>
+
+<h2><span class="sec">5.4</span> <span>أين تعيش الحالة؟</span></h2>
+
+<p>تتدفق البيانات في React باتجاه واحد: <strong>إلى الأسفل</strong>، عبر الخصائص. والأحداث تتدفق <strong>إلى الأعلى</strong>، عبر خصائص الدوال. فحين يحتاج مكوّنان الحالة نفسها، يجب أن تعيش في أقرب أب مشترك لهما، وتُمرَّر إلى كليهما. ويسمى نقل الحالة إلى الأب هكذا <dfn>رفع الحالة</dfn> (lifting state up).</p>
+
+<p>في السلة، أزرار المنتجات والقائمة والمجاميع كلها تقرأ <code>lines</code>، فتعيش <code>lines</code> في <code>Cart</code> التي تحويها كلها. ولو احتاجت ترويسة الصفحة إلى عرض عدد العناصر أيضاً، لصعدت <code>lines</code> مرة أخرى إلى المكوّن الذي يحوي الترويسة والسلة معاً. أبقِ الحالة في أدنى مكان ممكن، وأعلى مكان لازم.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>داخل معالج ضغطة واحد تستدعي <code>setScore(score + 10)</code> مرتين. بكم تزيد النقاط؟</li><li>لماذا لا تكفي <code>items.push(x); setItems(items)</code> لتحديث الشاشة؟</li><li>صفحة تعرض قائمة وعدد عناصرها. كم قطعة حالة تحتاج؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">5.5</span> <span>دوال الاختزال: كل التحديثات في مكان واحد</span></h2>
+
+<p>حين يكون للمكوّن طرق كثيرة لتغيير حالته يتبعثر منطق التحديث على معالجات أحداث كثيرة. و<dfn>دالة الاختزال</dfn> (reducer) تجمعه في دالة واحدة: تستقبل الحالة الحالية و<dfn>فعلاً</dfn> (action)، أي كائناً يصف ما حدث، وتُرجع الحالة التالية. والأفعال اتحاد مميَّز، فتفحص TypeScript كلاً منها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tasks-reducer.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Task = { id: number; text: string; done: boolean };
+
+<span class="k">export</span> <span class="k">type</span> Action =
+  | { <span class="k">type</span>: <span class="s">&quot;added&quot;</span>; id: number; text: string }
+  | { <span class="k">type</span>: <span class="s">&quot;toggled&quot;</span>; id: number }
+  | { <span class="k">type</span>: <span class="s">&quot;cleared&quot;</span> };
+
+<span class="c">// دالة الاختزال نقية: تعمل في أي مكان، حتى دون React</span>
+<span class="k">export</span> <span class="k">function</span> tasksReducer(tasks: Task[], action: Action): Task[] {
+  <span class="k">switch</span> (action.<span class="k">type</span>) {
+    <span class="k">case</span> <span class="s">&quot;added&quot;</span>:
+      <span class="k">return</span> [...tasks, { id: action.id, text: action.text, done: <span class="k">false</span> }];
+    <span class="k">case</span> <span class="s">&quot;toggled&quot;</span>:
+      <span class="k">return</span> tasks.map((t) =&gt; (t.id === action.id ? { ...t, done: !t.done } : t));
+    <span class="k">case</span> <span class="s">&quot;cleared&quot;</span>:
+      <span class="k">return</span> tasks.filter((t) =&gt; !t.done);
+  }
+}</pre></div>
+
+<p>يجب أن تكون دالة الاختزال نقية، مثل المكوّن. ولهذا نتيجة رائعة: تستطيع تشغيلها دون React أصلاً، في سكربت عادي أو اختبار. وهذه هي تُغذّى بأربعة أفعال متتالية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">reducer-test.ts</div><pre class="code"><span class="k">import</span> { tasksReducer, <span class="k">type</span> Action, <span class="k">type</span> Task } <span class="k">from</span> <span class="s">&quot;./tasks-reducer&quot;</span>;
+
+<span class="k">const</span> actions: Action[] = [
+  { <span class="k">type</span>: <span class="s">&quot;added&quot;</span>, id: <span class="n">1</span>, text: <span class="s">&quot;اقرأ الفصل 5&quot;</span> },
+  { <span class="k">type</span>: <span class="s">&quot;added&quot;</span>, id: <span class="n">2</span>, text: <span class="s">&quot;اكتب دالة اختزال&quot;</span> },
+  { <span class="k">type</span>: <span class="s">&quot;toggled&quot;</span>, id: <span class="n">1</span> },
+  { <span class="k">type</span>: <span class="s">&quot;cleared&quot;</span> },
+];
+
+<span class="k">let</span> state: Task[] = [];
+<span class="k">for</span> (<span class="k">const</span> action <span class="k">of</span> actions) {
+  state = tasksReducer(state, action);
+  console.log(action.<span class="k">type</span>.padEnd(<span class="n">8</span>), JSON.stringify(state.map((t) =&gt; <span class="s">`${t.done ? &quot;✓&quot; : &quot;·&quot;} ${t.text}`</span>)));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>added    [&quot;· اقرأ الفصل 5&quot;]
+added    [&quot;· اقرأ الفصل 5&quot;,&quot;· اكتب دالة اختزال&quot;]
+toggled  [&quot;✓ اقرأ الفصل 5&quot;,&quot;· اكتب دالة اختزال&quot;]
+cleared  [&quot;· اكتب دالة اختزال&quot;]</pre></div>
+
+<p>وفي المكوّن تحل <code>const [tasks, dispatch] = useReducer(tasksReducer, [])</code> محل <code>useState</code>، ويصير كل معالج حدث سطراً واحداً: <code>dispatch({ type: "toggled", id })</code>. وسمِّ الأفعال بـ <em>ما حدث</em> («added» و«toggled»)، لا بما يجب أن تصير إليه الحالة: فدالة الاختزال هي التي تقرر ذلك. وستستخدم دالة المهام هذه في المشروع 5.2.</p>
+
+<h2><span class="sec">5.6</span> <span>التأثيرات: التزامن مع العالم الخارجي</span></h2>
+
+<p>يجب أن يكون الرسم نقياً، لكن التطبيقات يجب أن تفعل أشياء أيضاً: أن تضبط عنوان الصفحة، وتبدأ مؤقتاً، وتتحدث إلى خادم، وتتصل بمحادثة. و<dfn>التأثير</dfn> (effect) كود يعمل <em>بعد</em> أن تحدّث React الصفحة، ليجعل شيئاً خارج React متوافقاً مع الحالة الحالية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">timer.tsx</div><pre class="code">import { useEffect, useState } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+
+function Timer() {
+  const [running, setRunning] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() =&gt; {
+    if (!running) return;
+    const id = setInterval(() =&gt; setSeconds((s) =&gt; s + 1), 1000);
+    return () =&gt; clearInterval(id); // دون التنظيف سيبدأ كل رسم مؤقتاً آخر
+  }, [running]);
+
+  useEffect(() =&gt; {
+    document.title = `${seconds} ثانية · المؤقت`;
+  }, [seconds]);
+
+  return (
+    &lt;div className=&quot;card&quot;&gt;
+      &lt;p className=&quot;big&quot;&gt;
+        {seconds} ثانية
+      &lt;/p&gt;
+      &lt;button onClick={() =&gt; setRunning(!running)}&gt;{running ? &quot;أوقف&quot; : &quot;ابدأ&quot;}&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Timer /&gt;);</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>timer.html</span><b>560px</b></div><img src="img/react-state-ar-timer.html-560-f4f5f8.png" alt=""><figcaption><b>شكل 5.3:</b> المؤقت بعد نحو ثانيتين من ضغط «ابدأ».</figcaption></figure>
+
+<ul>
+<li><dfn>مصفوفة الاعتماديات</dfn>، <code>[running]</code>، تسرد القيم التي يستخدمها التأثير. فتشغّله React بعد الرسم الأول، ومن جديد كلما تغيرت إحداها. والمصفوفة الفارغة تعني «بعد الرسم الأول فقط».</li>
+<li>الدالة التي يُرجعها التأثير هي <dfn>التنظيف</dfn> (cleanup). تشغّلها React قبل تشغيل التأثير مرة أخرى، وحين يغادر المكوّن الشاشة. وكل تأثير يبدأ شيئاً، مؤقتاً أو اشتراكاً أو طلباً، يجب أن يوقفه في تنظيفه.</li>
+<li>في الوضع الصارم تشغّل React كل تأثير، ثم تنظيفه، ثم التأثير مرة أخرى حين يظهر المكوّن أول مرة. فإن عمل تأثيرك صحيحاً بعد ذلك، فسيعمل أيضاً حين يتنقل المستخدم ذهاباً وإياباً.</li>
+</ul>
+
+<h3>قد لا تحتاج تأثيراً</h3>
+
+<p>التأثيرات للعالم <em>الخارجي</em>. ويستخدمها كثير من المبتدئين لأشياء تحدث <em>داخل</em> React، فيصنعون مكونات بطيئة كثيرة الأخطاء. فقبل كتابة <code>useEffect</code> راجع هذه القائمة:</p>
+
+<table>
+<thead><tr><th>إن أردت أن…</th><th>استخدم بدلاً منه</th></tr></thead>
+<tbody>
+<tr><td>تحسب قيمة من الخصائص أو الحالة</td><td>متغيراً عادياً أثناء الرسم (القسم 5.3)</td></tr>
+<tr><td>تفعل شيئاً لأن المستخدم ضغط أو كتب</td><td>معالج الحدث</td></tr>
+<tr><td>تعيد ضبط الحالة حين تتغير خاصية</td><td><code>key</code> على المكوّن، فتنشئ React مكوّناً جديداً</td></tr>
+<tr><td>تحمّل بيانات صفحة</td><td>مكتبة بيانات أو الموجّه (الفصل التالي)</td></tr>
+</tbody>
+</table>
+
+<h3>التأثيرات والطلبات: السباق</h3>
+
+<p>حين يجلب تأثير بيانات، قد يغيّر المستخدم المدخل قبل وصول الرد. فيكون طلبان في الطريق، وقد يصل الأبطأ، وهو كثيراً ما يكون <em>الأقدم</em>، أخيراً فيكتب فوق الجواب الصحيح. والعلاج في التنظيف: ألغِ الطلب القديم أو تجاهله. ويفعل المشروع 5.3 هذا بـ <code>AbortController</code>، الطريقة القياسية في المتصفح لإلغاء <code>fetch</code>.</p>
+
+<h2><span class="sec">5.7</span> <span>المراجع: قيم لا تسبب رسماً</span></h2>
+
+<p>أحياناً يجب أن يتذكر المكوّن شيئاً لا ينبغي أن يسبب رسماً حين يتغير: معرّف مؤقت، أو القيمة السابقة لخاصية، أو عنصر DOM. و<code>useRef</code> تعطيك صندوقاً، <code>ref.current</code>، يحتفظ بمحتواه بين الرسمات. وضع المرجع على عنصر JSX، <code>&lt;input ref={input} /&gt;</code>، فيصير <code>input.current</code> بعد الرسم عنصر الإدخال الحقيقي، فتستدعي <code>input.current.focus()</code>. استخدم المراجع للخروج من React، كما فعلت مع أزرار التبويبات في الفصل السابق، واستخدم الحالة لكل ما تعرضه الشاشة.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا تقرأ المراجع ولا تكتبها أثناء الرسم</p><p>يجب أن يكون الرسم نقياً، والمرجع قد يتغير دون علم React. فاقرأ <code>ref.current</code> واكتبه في معالجات الأحداث والتأثيرات فقط.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td><code>setCount(count + 1)</code> عدة مرات في حدث واحد</td><td>يضيف 1 فقط</td><td><code>setCount((c) =&gt; c + 1)</code></td></tr>
+<tr><td>قراءة الحالة مباشرة بعد تعيينها</td><td>تحصل على القيمة القديمة</td><td>استخدم القيمة التي مررتها، أو انتظر الرسم التالي</td></tr>
+<tr><td>تغيير مصفوفة أو كائن في الحالة</td><td>لا تتحدث الشاشة</td><td>أنشئ جديداً: النشر و<code>map</code> و<code>filter</code></td></tr>
+<tr><td>حفظ قيم يمكن حسابها</td><td>قيم يخالف بعضها بعضاً</td><td>اشتقها أثناء الرسم</td></tr>
+<tr><td>تأثير بلا تنظيف</td><td>تتراكم المؤقتات والمستمعون</td><td>أرجع دالة تنظيف</td></tr>
+<tr><td>اعتمادية ناقصة</td><td>يستخدم التأثير قيمة قديمة</td><td>اسرد كل قيمة يستخدمها التأثير، وقاعدة المدقق <code>react-hooks/exhaustive-deps</code> تفحص هذا</td></tr>
+<tr><td>الجلب في تأثير دون معالجة الطلبات القديمة</td><td>يكتب رد قديم فوق الجديد</td><td>ألغِه أو تجاهله في التنظيف</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>الحالة <strong>لقطة</strong>: تعيينها يجدول رسماً جديداً. واستخدم <strong>دالة تحديث</strong> حين تعتمد القيمة التالية على السابقة.</li>
+<li>لا تغيّر الحالة في مكانها أبداً: أعطِ React كائنات ومصفوفات <strong>جديدة</strong>.</li>
+<li>احفظ <strong>أقل</strong> حالة، و<strong>اشتق</strong> الباقي أثناء الرسم.</li>
+<li>تتدفق البيانات إلى الأسفل عبر الخصائص، والأحداث إلى الأعلى عبر الدوال. والحالة المشتركة تعيش في أقرب أب مشترك (<strong>رفع الحالة</strong>).</li>
+<li><strong>دالة الاختزال</strong> تجمع كل التحديثات في دالة واحدة نقية قابلة للاختبار، تحركها أفعال لها أنواع.</li>
+<li><strong>التأثيرات</strong> تزامن مع العالم خارج React. اسرد اعتمادياتها، ونظّف دائماً ما تبدؤه.</li>
+<li><strong>المراجع</strong> تحفظ القيم وعناصر DOM التي لا ينبغي أن تسبب رسماً.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. بعشر: الاستدعاءان يقرآن اللقطة نفسها. 2. لأنها المصفوفة نفسها، فلا ترى React تغييراً، فابنِ مصفوفة جديدة بدلاً منها. 3. قطعة واحدة: القائمة، والعدد مشتق منها.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قبل كل مشروع اكتب الحالة التي ستحفظها، سطراً لكل متغير. ثم افحص كل سطر بالأسئلة الثلاثة في القسم 5.3. فإن قصرت القائمة فأنت على الطريق الصحيح.</p>
+
+<div class="project">
+<p class="project-label">مشروع 5.1 · سهل</p>
+<h3>عدّاد بخطوات وتراجع</h3>
+<p class="project-goal">عدّاد يتحرك بخطوة تختارها، ويستطيع التراجع عن أي عدد من الحركات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اختيار أقل حالة، ودوال التحديث، واشتقاق القيمة الحالية، وحقل رقم مُتحكَّم فيه.</p>
+<ol class="steps">
+<li>احفظ قطعتي حالة: الخطوة <code>step</code>، والسجل <code>history</code>، مصفوفة بكل القيم حتى الآن، تبدأ بـ <code>[0]</code>.</li>
+<li>القيمة الحالية ليست حالة: هي <code>history.at(-1)</code>.</li>
+<li>«+» و«−» تضيفان قيمة جديدة بدالة تحديث: <code>setHistory((h) =&gt; [...h, last + by])</code>.</li>
+<li>«تراجع» تحذف القيمة الأخيرة، لكن لا تحذف الأولى أبداً. وعطّل الزر حين لا يبقى ما يُتراجع عنه.</li>
+<li>اعرض السجل كله تحت العدّاد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> حفظ السجل بدل القيمة الحالية وحدها هو طريقة المحررات الحقيقية في التراجع. فلأن كل إدخال قيمة جديدة ولا يتغير شيء أبداً، يصير الرجوع مجرد حذف للإدخال الأخير.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>history.html</span><b>560px</b></div><img src="img/react-state-ar-projects-history.html-560-de11b3.png" alt=""><figcaption><b>مشروع 5.1:</b> بعد ‎+1 و‎+1، ثم تغيير الخطوة إلى 5، و‎+5، ثم «تراجع».</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 5.2 · متوسط</p>
+<h3>قائمة مهام تتذكر</h3>
+<p class="project-goal">أعد بناء تطبيق المهام من الكتاب الأول بـ React، بدالة الاختزال من هذا الفصل، واحفظ المهام بعد إغلاق الصفحة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>useReducer</code> بحالة أولية كسولة، وتأثير يحفظ في <code>localStorage</code>، ونموذج، ومرجع يبقي التركيز في الحقل.</p>
+<ol class="steps">
+<li>استورد <code>tasksReducer</code>، وأنشئ الحالة بـ <code>useReducer(tasksReducer, [], load)</code>: فالمعامل الثالث يشغّل <code>load</code> مرة واحدة فقط، في الرسم الأول.</li>
+<li>اكتب <code>load</code> بـ <code>try</code>/<code>catch</code>: فقد تكون البيانات المحفوظة ناقصة أو تالفة.</li>
+<li>احفظ بتأثير اعتماديته <code>[tasks]</code>، فيعمل بعد كل تغيير.</li>
+<li>احفظ نص المهمة الجديدة في حالته الخاصة، وأرسل <code>added</code> عند الإرسال. ثم امسح النص وأعد التركيز إلى الحقل بمرجع.</li>
+<li>اشتق عدد المهام المتبقية، وأضف زر «احذف المنجزة».</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الحفظ في <code>localStorage</code> مثال مثالي للتأثير: يبقي شيئاً خارج React، تخزين المتصفح، متوافقاً مع الحالة. وقارن هذا المكوّن بنسخة الكتاب الأول: المنطق واحد، لكن الكود الذي يحدّث الصفحة باليد اختفى.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>tasks.html</span><b>560px</b></div><img src="img/react-state-ar-projects-tasks.html-560-48b079.png" alt=""><figcaption><b>مشروع 5.2:</b> مهمتان مضافتان، والأولى منجزة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 5.3 · تحدٍّ</p>
+<h3>بحث أثناء الكتابة، بلا سباقات</h3>
+<p class="project-goal">ابحث في المنتجات أثناء كتابة المستخدم، وانتظر توقفاً قصيراً قبل سؤال الخادم، ولا تعرض أبداً رداً قديماً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> كتابة خطّافك الخاص، والتأثيرات مع التنظيف، و<code>AbortController</code>، واتحاداً مميَّزاً للنتيجة.</p>
+<ol class="steps">
+<li>اكتب خطّافاً خاصاً <code>useDebounced(value, ms)</code>: يُرجع القيمة فقط بعد أن تتوقف عن التغير مدة <code>ms</code> ملي ثانية. وفي داخله تأثير يبدأ مؤقتاً، وتنظيفه يلغيه.</li>
+<li>صِف النتيجة بـ <code>idle | loading | done | error</code>، مع نص البحث داخل كل حالة تحتاجه.</li>
+<li>في تأثير يعتمد على نص البحث المؤجَّل أنشئ <code>AbortController</code>، واضبط <code>loading</code>، واستدعِ <code>searchProducts(query, controller.signal)</code>.</li>
+<li>أرجع <code>() =&gt; controller.abort()</code> تنظيفاً. وفي <code>catch</code> تجاهل الخطأ إن كان الطلب قد أُلغي.</li>
+<li>ارسم كل حالة: سطر «جارٍ البحث…»، أو النتائج، أو «لا منتجات تطابق»، أو الخطأ. واستخدم الواجهة الوهمية التي ترد على النصوص القصيرة أبطأ، واكتب بسرعة لترى الطلبات القديمة تُلغى.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الخطّاف الخاص مجرد دالة يبدأ اسمها بـ <code>use</code> وتستدعي خطافات أخرى. وهو طريقة React في إعادة استخدام المنطق الذي يحمل حالة، كما ستُريك الفصول القادمة مراراً.</p>
+<div class="listing" dir="ltr"><div class="listing-title">fake-api.ts</div><pre class="code"><span class="k">import</span> { catalogue, <span class="k">type</span> Product } <span class="k">from</span> <span class="s">&quot;./cart-model&quot;</span>;
+
+<span class="c">// A pretend server: answers after a delay, slower for short queries, like a real search.</span>
+<span class="k">export</span> <span class="k">function</span> searchProducts(query: string, signal: AbortSignal): Promise&lt;Product[]&gt; {
+  <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
+    <span class="k">const</span> timer = setTimeout(() =&gt; {
+      <span class="k">const</span> q = query.trim().toLowerCase();
+      resolve(catalogue.filter((p) =&gt; p.name.toLowerCase().includes(q)));
+    }, <span class="n">600</span> - query.length * <span class="n">100</span>);
+    signal.addEventListener(<span class="s">&quot;abort&quot;</span>, () =&gt; {
+      clearTimeout(timer);
+      reject(signal.reason);
+    });
+  });
+}</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>search.html</span><b>560px</b></div><img src="img/react-state-ar-projects-search.html-560-da42e6.png" alt=""><figcaption><b>مشروع 5.3:</b> نتائج «بِت» بعد التوقف والرد البطيء.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف زر «−» لكل سطر في السلة ينقص كميته واحداً، ويحذف السطر حين تصل إلى صفر.</li>
+<li><span class="level">سهل</span> أضف فعل <code>"removed"</code> إلى <code>tasksReducer</code>، واختبره في <code>reducer-test.ts</code>.</li>
+<li><span class="level medium">متوسط</span> اجعل المؤقت يعرض الدقائق والثواني (<code>1:05</code>)، وأضف زر «صفّر». أي القيم حالة وأيها مشتق؟</li>
+<li><span class="level medium">متوسط</span> اكتب مكوّناً يعرض عرض النافذة ويتحدث حين يتغير حجمها. استخدم تأثيراً مع <code>addEventListener</code>، وأزل المستمع في التنظيف.</li>
+<li><span class="level hard">تحدٍّ</span> انقل منطق السلة إلى <code>cartReducer</code> بالأفعال <code>added</code> و<code>decreased</code> و<code>removed</code>، واختبرها بـ Node مثل <code>reducer-test.ts</code>، واستخدمها مع <code>useReducer</code>.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 6</p>
+<p>التطبيقات الحقيقية فيها صفحات كثيرة وتحمّل بياناتها من الخوادم. وفي الفصل التالي ستضيف موجّهاً بعنوان لكل صفحة، وتحمّل البيانات بطريقة المحترفين، مع الذاكرة المؤقتة وحالات التحميل والخطأ معالَجة لك، وتتوقف عن كتابة تأثيرات الجلب باليد.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2087,6 +2515,16 @@ console.log(&quot;الرسم الثاني:&quot;, renderToStaticMarkup(&lt;Count
 <li>في <code>App</code>: <code>const [count, setCount] = useState(0)</code>، ومرّر <code>onAdd={() =&gt; setCount(count + 1)}</code> إلى كل <code>ProductCard</code>، وارسم <code>&lt;p&gt;{count} عناصر في سلتك&lt;/p&gt;</code> فوق الشبكة. وتعيش الحالة في <code>App</code> لأن الشبكة والملخص كليهما يحتاجانها.</li>
 <li>استبدل جمل <code>if</code> بـ <code>switch (state.status) { case "loading": … case "error": … case "success": … default: return assertNever(state); }</code>. وبعد إضافة <code>| { status: "offline" }</code> إلى النوع يبلّغ المترجم عن سطر <code>default</code> حتى تضيف <code>case "offline": return &lt;p className="muted"&gt;أنت غير متصل.&lt;/p&gt;;</code>.</li>
 <li>انقل الرقم إلى الأب: <code>const [visitors, setVisitors] = useState(0)</code>، وارسم <code>&lt;Counter visitors={visitors} /&gt;</code> وزراً بـ <code>onClick={() =&gt; setVisitors(visitors + 1)}</code>. صار <code>Counter</code> يعرض خاصيته فقط، فرسمه مرتين يعطي النتيجة نفسها.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 5</h2>
+<ol class="exercises">
+<li>أضف <code>function decrease(id: number) { setLines((current) =&gt; current.map((l) =&gt; l.product.id === id ? { ...l, quantity: l.quantity - 1 } : l).filter((l) =&gt; l.quantity &gt; 0)); }</code> وزر «−» يستدعيها. فالتحويل أولاً ثم التصفية يحذفان السطر بالضبط حين تصل كميته إلى صفر.</li>
+<li>أضف <code>| { type: "removed"; id: number }</code> إلى <code>Action</code>، و<code>case "removed": return tasks.filter((t) =&gt; t.id !== action.id);</code> إلى دالة الاختزال. وتبلّغ TypeScript بأن <code>switch</code> ناقصة حتى توجد الحالة. ثم أضف <code>{ type: "removed", id: 2 }</code> إلى قائمة الأفعال في الاختبار.</li>
+<li>الحالة هي <code>seconds</code> و<code>running</code> فقط. والعرض مشتق: <code>`${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`</code>. و«صفّر» تستدعي <code>setSeconds(0)</code> (ويمكنها أيضاً <code>setRunning(false)</code>).</li>
+<li><code>const [width, setWidth] = useState(window.innerWidth); useEffect(() =&gt; { const onResize = () =&gt; setWidth(window.innerWidth); window.addEventListener("resize", onResize); return () =&gt; window.removeEventListener("resize", onResize); }, []);</code>. ومصفوفة الاعتماديات الفارغة صحيحة لأن التأثير لا يستخدم شيئاً من الخصائص أو الحالة.</li>
+<li>تأخذ دالة الاختزال <code>Line[]</code> والأفعال <code>{ type: "added"; product: Product } | { type: "decreased"; id: number } | { type: "removed"; id: number }</code>، وفي حالاتها منطق <code>add</code> وحل التمرين 1 و<code>remove</code> بالضبط. اختبرها بتمرير قائمة أفعال كما في <code>reducer-test.ts</code>، ثم في المكوّن: <code>const [lines, dispatch] = useReducer(cartReducer, [])</code>.</li>
 </ol>
 
 </section>

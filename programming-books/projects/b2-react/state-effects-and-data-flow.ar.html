@@ -1,0 +1,52 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قبل كل مشروع اكتب الحالة التي ستحفظها، سطراً لكل متغير. ثم افحص كل سطر بالأسئلة الثلاثة في القسم {{n}}.3. فإن قصرت القائمة فأنت على الطريق الصحيح.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>عدّاد بخطوات وتراجع</h3>
+<p class="project-goal">عدّاد يتحرك بخطوة تختارها، ويستطيع التراجع عن أي عدد من الحركات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اختيار أقل حالة، ودوال التحديث، واشتقاق القيمة الحالية، وحقل رقم مُتحكَّم فيه.</p>
+<ol class="steps">
+<li>احفظ قطعتي حالة: الخطوة <code>step</code>، والسجل <code>history</code>، مصفوفة بكل القيم حتى الآن، تبدأ بـ <code>[0]</code>.</li>
+<li>القيمة الحالية ليست حالة: هي <code>history.at(-1)</code>.</li>
+<li>«+» و«−» تضيفان قيمة جديدة بدالة تحديث: <code>setHistory((h) =&gt; [...h, last + by])</code>.</li>
+<li>«تراجع» تحذف القيمة الأخيرة، لكن لا تحذف الأولى أبداً. وعطّل الزر حين لا يبقى ما يُتراجع عنه.</li>
+<li>اعرض السجل كله تحت العدّاد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> حفظ السجل بدل القيمة الحالية وحدها هو طريقة المحررات الحقيقية في التراجع. فلأن كل إدخال قيمة جديدة ولا يتغير شيء أبداً، يصير الرجوع مجرد حذف للإدخال الأخير.</p>
+<figure data-render="projects/history.html" data-width="560" data-actions="click:.row button:nth-child(2);click:.row button:nth-child(2);fill:#step|5;click:.row button:nth-child(2);click:.row button:nth-child(3)"><figcaption><b>مشروع {{n}}.1:</b> بعد ‎+1 و‎+1، ثم تغيير الخطوة إلى 5، و‎+5، ثم «تراجع».</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>قائمة مهام تتذكر</h3>
+<p class="project-goal">أعد بناء تطبيق المهام من الكتاب الأول بـ React، بدالة الاختزال من هذا الفصل، واحفظ المهام بعد إغلاق الصفحة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>useReducer</code> بحالة أولية كسولة، وتأثير يحفظ في <code>localStorage</code>، ونموذج، ومرجع يبقي التركيز في الحقل.</p>
+<ol class="steps">
+<li>استورد <code>tasksReducer</code>، وأنشئ الحالة بـ <code>useReducer(tasksReducer, [], load)</code>: فالمعامل الثالث يشغّل <code>load</code> مرة واحدة فقط، في الرسم الأول.</li>
+<li>اكتب <code>load</code> بـ <code>try</code>/<code>catch</code>: فقد تكون البيانات المحفوظة ناقصة أو تالفة.</li>
+<li>احفظ بتأثير اعتماديته <code>[tasks]</code>، فيعمل بعد كل تغيير.</li>
+<li>احفظ نص المهمة الجديدة في حالته الخاصة، وأرسل <code>added</code> عند الإرسال. ثم امسح النص وأعد التركيز إلى الحقل بمرجع.</li>
+<li>اشتق عدد المهام المتبقية، وأضف زر «احذف المنجزة».</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الحفظ في <code>localStorage</code> مثال مثالي للتأثير: يبقي شيئاً خارج React، تخزين المتصفح، متوافقاً مع الحالة. وقارن هذا المكوّن بنسخة الكتاب الأول: المنطق واحد، لكن الكود الذي يحدّث الصفحة باليد اختفى.</p>
+<figure data-render="projects/tasks.html" data-width="560" data-actions="fill:form input|اقرأ الفصل 5;press:form input|Enter;fill:form input|اكتب دالة اختزال;press:form input|Enter;click:li input"><figcaption><b>مشروع {{n}}.2:</b> مهمتان مضافتان، والأولى منجزة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>بحث أثناء الكتابة، بلا سباقات</h3>
+<p class="project-goal">ابحث في المنتجات أثناء كتابة المستخدم، وانتظر توقفاً قصيراً قبل سؤال الخادم، ولا تعرض أبداً رداً قديماً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> كتابة خطّافك الخاص، والتأثيرات مع التنظيف، و<code>AbortController</code>، واتحاداً مميَّزاً للنتيجة.</p>
+<ol class="steps">
+<li>اكتب خطّافاً خاصاً <code>useDebounced(value, ms)</code>: يُرجع القيمة فقط بعد أن تتوقف عن التغير مدة <code>ms</code> ملي ثانية. وفي داخله تأثير يبدأ مؤقتاً، وتنظيفه يلغيه.</li>
+<li>صِف النتيجة بـ <code>idle | loading | done | error</code>، مع نص البحث داخل كل حالة تحتاجه.</li>
+<li>في تأثير يعتمد على نص البحث المؤجَّل أنشئ <code>AbortController</code>، واضبط <code>loading</code>، واستدعِ <code>searchProducts(query, controller.signal)</code>.</li>
+<li>أرجع <code>() =&gt; controller.abort()</code> تنظيفاً. وفي <code>catch</code> تجاهل الخطأ إن كان الطلب قد أُلغي.</li>
+<li>ارسم كل حالة: سطر «جارٍ البحث…»، أو النتائج، أو «لا منتجات تطابق»، أو الخطأ. واستخدم الواجهة الوهمية التي ترد على النصوص القصيرة أبطأ، واكتب بسرعة لترى الطلبات القديمة تُلغى.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الخطّاف الخاص مجرد دالة يبدأ اسمها بـ <code>use</code> وتستدعي خطافات أخرى. وهو طريقة React في إعادة استخدام المنطق الذي يحمل حالة، كما ستُريك الفصول القادمة مراراً.</p>
+<pre data-code="fake-api.ts" data-title="fake-api.ts"></pre>
+<figure data-render="projects/search.html" data-width="560" data-actions="fill:#q|بِت;wait:1200"><figcaption><b>مشروع {{n}}.3:</b> نتائج «بِت» بعد التوقف والرد البطيء.</figcaption></figure>
+</div>

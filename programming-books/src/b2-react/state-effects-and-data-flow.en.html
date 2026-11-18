@@ -1,0 +1,227 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/react/state/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>State, Effects and Data Flow</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>understand state as a snapshot, and update it correctly with updater functions</li>
+<li>update objects and arrays in state without changing them</li>
+<li>keep the minimum state and derive everything else</li>
+<li>decide where state should live, and lift it up when components must share it</li>
+<li>move complex updates into a reducer that you can test without React</li>
+<li>synchronise with the world outside React using effects, and clean up after them</li>
+<li>keep values and DOM elements with refs</li>
+</ul>
+</div>
+
+<p class="lead">Almost every bug in a React app is a state bug: a number that does not update, a list that shows yesterday’s items, a request that answers after the user has moved on. This chapter gives you a small set of rules that prevent most of them. They are simple, but they are not obvious, so read the examples slowly and run them yourself.</p>
+
+<aside class="bit" data-mood="think"><p>A question I ask before writing any <code>useState</code>: “Could I calculate this from something I already have?” Most of the time the answer is yes, and the best state is the state I never wrote.</p></aside>
+
+<h2>{{n}}.1 State is a snapshot</h2>
+
+<p>When React calls your component, <code>useState</code> gives it the state <em>of that render</em>. The variable is a constant for the whole render: calling the setter does not change it, it schedules the next render. This surprises everyone once:</p>
+
+<pre data-code="snapshot.tsx" data-title="snapshot.tsx"></pre>
+
+<figure data-render="snapshot.html" data-width="560" data-actions="click:.row button:nth-child(1)"><figcaption><b>Figure {{n}}.1:</b> After one press of “+3 (wrong)”, the counter shows 1, not 3.</figcaption></figure>
+
+<p>In <code>addThreeWrong</code>, <code>count</code> is 0 in all three lines, so each asks for <code>0 + 1</code>. React also <dfn>batches</dfn> the three calls into a single render, which is good for speed. When the new value depends on the old one, pass an <dfn>updater function</dfn> instead: <code>setCount((c) =&gt; c + 1)</code>. React queues the three functions and runs them in order, each receiving the result of the one before, so “+3 (right)” really adds 3.</p>
+
+<aside class="box rule"><p class="box-title">Rule: when the next state depends on the previous one, use an updater</p><p><code>setX((old) =&gt; …)</code> is always correct; <code>setX(x + 1)</code> is correct only when it runs once per event. Using updaters everywhere for counters, toggles and lists costs nothing and avoids a whole family of bugs.</p></aside>
+
+<h2>{{n}}.2 Objects and arrays in state</h2>
+
+<p>React decides whether to re-render by comparing the old and new state with <code>Object.is</code>. If you change an array in place and set the same array, React sees the same object and does nothing. So state is updated with the immutable patterns from Chapter {{n-4}}: build a new array or object, and pass that.</p>
+
+<table>
+<thead><tr><th>To…</th><th>Do not</th><th>Do</th></tr></thead>
+<tbody>
+<tr><td>Add</td><td><code>list.push(x)</code></td><td><code>[...list, x]</code></td></tr>
+<tr><td>Remove</td><td><code>list.splice(i, 1)</code></td><td><code>list.filter((item) =&gt; item.id !== id)</code></td></tr>
+<tr><td>Change one</td><td><code>list[i].done = true</code></td><td><code>list.map((item) =&gt; item.id === id ? { ...item, done: true } : item)</code></td></tr>
+<tr><td>Sort</td><td><code>list.sort()</code></td><td><code>list.toSorted()</code></td></tr>
+<tr><td>Change a field</td><td><code>user.city = "Giza"</code></td><td><code>{ ...user, city: "Giza" }</code></td></tr>
+</tbody>
+</table>
+
+<h2>{{n}}.3 Minimal state, derived values</h2>
+
+<p>Here is a cart. Look at what is stored in state, and what is not:</p>
+
+<pre data-code="cart-model.ts" data-title="cart-model.ts"></pre>
+<pre data-code="cart.tsx" data-title="cart.tsx"></pre>
+
+<figure data-render="cart.html" data-width="560" data-actions="click:.row button:nth-child(1);click:.row button:nth-child(2);click:.row button:nth-child(2)"><figcaption><b>Figure {{n}}.2:</b> After adding the book once and the mug twice. The count, the total and the delivery message are all calculated from <code>lines</code>.</figcaption></figure>
+
+<p>The only state is <code>lines</code>. The number of items, the total and the free-delivery message are <dfn>derived</dfn>: calculated from <code>lines</code> during every render. If they were stored as separate state, every function that changes the cart would have to remember to update all four, and one day someone would forget. Derived values can never disagree with each other.</p>
+
+<p>Ask these questions about every piece of data before you put it in state:</p>
+<ol>
+<li>Does it stay the same over time? Then it is a constant, not state.</li>
+<li>Is it passed in by a parent? Then it is a prop.</li>
+<li>Can you calculate it from other state or props? Then calculate it.</li>
+</ol>
+<p>Whatever is left is real state. If a calculation is truly expensive, React’s <code>useMemo</code> can remember its result between renders, but measure first: most calculations take microseconds.</p>
+
+<h2>{{n}}.4 Where should state live?</h2>
+
+<p>Data in React flows one way: <strong>down</strong>, through props. Events flow <strong>up</strong>, through callback props. So when two components need the same state, it must live in their closest common parent, and be passed down to both. Moving state to a parent like this is called <dfn>lifting state up</dfn>.</p>
+
+<p>In the cart, the product buttons, the list and the totals all read <code>lines</code>, so <code>lines</code> lives in <code>Cart</code>, which contains all of them. If the header of the page had to show the number of items too, <code>lines</code> would move up again, to the component that contains both the header and the cart. Keep state as low as possible, and as high as necessary.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Inside one click handler, you call <code>setScore(score + 10)</code> twice. By how much does the score grow?</li><li>Why is <code>items.push(x); setItems(items)</code> not enough to update the screen?</li><li>A page shows a list and a count of the list’s items. How many pieces of state does it need?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Reducers: all the updates in one place</h2>
+
+<p>When a component has many ways to change its state, the update logic gets scattered over many event handlers. A <dfn>reducer</dfn> gathers it into one function: it receives the current state and an <dfn>action</dfn>, an object describing what happened, and returns the next state. The actions are a discriminated union, so TypeScript checks every one:</p>
+
+<pre data-code="tasks-reducer.ts" data-title="tasks-reducer.ts"></pre>
+
+<p>A reducer must be pure, like a component. That has a wonderful consequence: you can run it without React at all, in a plain script or a test. Here it is, fed four actions in a row:</p>
+
+<pre data-code="reducer-test.ts" data-title="reducer-test.ts"></pre>
+<pre data-out="reducer-test.mjs"></pre>
+
+<p>In a component, <code>const [tasks, dispatch] = useReducer(tasksReducer, [])</code> replaces <code>useState</code>, and event handlers become one line each: <code>dispatch({ type: "toggled", id })</code>. Name actions by <em>what happened</em> (“added”, “toggled”), not by what the state should become: the reducer decides that. You will use this tasks reducer in Project {{n}}.2.</p>
+
+<h2>{{n}}.6 Effects: synchronising with the outside world</h2>
+
+<p>Rendering must be pure, but apps must also do things: set the page title, start a timer, talk to a server, connect to a chat. An <dfn>effect</dfn> is code that runs <em>after</em> React has updated the page, to bring something outside React in line with the current state:</p>
+
+<pre data-code="timer.tsx" data-title="timer.tsx"></pre>
+
+<figure data-render="timer.html" data-width="560" data-actions="click:button;wait:2300"><figcaption><b>Figure {{n}}.3:</b> The timer, about two seconds after pressing “Start”.</figcaption></figure>
+
+<ul>
+<li>The <dfn>dependency array</dfn>, <code>[running]</code>, lists the values the effect uses. React runs the effect after the first render and again whenever one of them changes. An empty array means “only after the first render”.</li>
+<li>The function the effect returns is its <dfn>cleanup</dfn>. React runs it before running the effect again, and when the component leaves the screen. Every effect that starts something, a timer, a subscription, a request, must stop it in its cleanup.</li>
+<li>In Strict Mode, React runs every effect, its cleanup, and the effect again when the component first appears. If your effect works correctly after that, it will work when the user navigates back and forth too.</li>
+</ul>
+
+<h3>You might not need an effect</h3>
+
+<p>Effects are for the <em>outside</em> world. Many beginners use them for things that happen <em>inside</em> React, and create slow, buggy components. Before writing <code>useEffect</code>, check this list:</p>
+
+<table>
+<thead><tr><th>If you want to…</th><th>Use instead</th></tr></thead>
+<tbody>
+<tr><td>Calculate a value from props or state</td><td>A plain variable during render (section {{n}}.3)</td></tr>
+<tr><td>Do something because the user clicked or typed</td><td>The event handler</td></tr>
+<tr><td>Reset state when a prop changes</td><td>A <code>key</code> on the component, so React creates a fresh one</td></tr>
+<tr><td>Load data for a page</td><td>A data library or the router (the next chapter)</td></tr>
+</tbody>
+</table>
+
+<h3>Effects and requests: the race</h3>
+
+<p>When an effect fetches data, the user may change the input before the answer arrives. Two requests are then in flight, and the slower one, often the <em>older</em> one, can arrive last and overwrite the right answer. The cure is in the cleanup: cancel or ignore the old request. Project {{n}}.3 does this with an <code>AbortController</code>, the browser’s standard way to cancel a <code>fetch</code>.</p>
+
+<h2>{{n}}.7 Refs: values that do not render</h2>
+
+<p>Sometimes a component must remember something that should <em>not</em> cause a render when it changes: a timer id, the previous value of a prop, or a DOM element. <code>useRef</code> gives you a box, <code>ref.current</code>, that keeps its content between renders. Put a ref on a JSX element, <code>&lt;input ref={input} /&gt;</code>, and after rendering <code>input.current</code> is the real input element, so you can call <code>input.current.focus()</code>. Use refs to step outside React, as you did with the tab buttons in the last chapter; use state for anything that the screen shows.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: do not read or write refs during rendering</p><p>Rendering must be pure, and a ref can change without React knowing. Read and write <code>ref.current</code> in event handlers and effects only.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>setCount(count + 1)</code> several times in one event</td><td>It adds 1 only</td><td><code>setCount((c) =&gt; c + 1)</code></td></tr>
+<tr><td>Reading state right after setting it</td><td>You get the old value</td><td>Use the value you passed, or wait for the next render</td></tr>
+<tr><td>Mutating an array or object in state</td><td>The screen does not update</td><td>Create a new one: spread, <code>map</code>, <code>filter</code></td></tr>
+<tr><td>Storing values you can calculate</td><td>Values that disagree with each other</td><td>Derive them during render</td></tr>
+<tr><td>An effect without cleanup</td><td>Timers and listeners pile up</td><td>Return a cleanup function</td></tr>
+<tr><td>A missing dependency</td><td>The effect uses a stale value</td><td>List every value the effect uses; the linter rule <code>react-hooks/exhaustive-deps</code> checks this</td></tr>
+<tr><td>Fetching in an effect without handling old requests</td><td>An old answer overwrites the new one</td><td>Abort or ignore it in the cleanup</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>State is a <strong>snapshot</strong>: setting it schedules a new render. Use an <strong>updater function</strong> when the next value depends on the previous one.</li>
+<li>Never change state in place: give React <strong>new</strong> objects and arrays.</li>
+<li>Keep the <strong>minimum</strong> state and <strong>derive</strong> the rest during rendering.</li>
+<li>Data flows down through props, events up through callbacks. Shared state lives in the closest common parent (<strong>lifting state up</strong>).</li>
+<li>A <strong>reducer</strong> gathers all updates into one pure, testable function, driven by typed actions.</li>
+<li><strong>Effects</strong> synchronise with the world outside React. List their dependencies, and always clean up what they start.</li>
+<li><strong>Refs</strong> hold values and DOM elements that should not cause a render.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. By 10: both calls read the same snapshot. 2. Because it is still the same array, so React sees no change; build a new array instead. 3. One: the list. The count is derived from it.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Before each project, write down the state you will keep, in one line per variable. Then check every line against the three questions in section {{n}}.3. If the list gets shorter, you are doing it right.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A counter with steps and undo</h3>
+<p class="project-goal">A counter that moves by a chosen step and can undo any number of moves.</p>
+<p class="project-skills"><strong>You will practise:</strong> choosing the minimal state, updater functions, deriving the current value, and a controlled number input.</p>
+<ol class="steps">
+<li>Keep two pieces of state: the <code>step</code>, and the <code>history</code>, an array of every value so far, starting at <code>[0]</code>.</li>
+<li>The current value is not state: it is <code>history.at(-1)</code>.</li>
+<li>“+” and “−” append a new value with an updater: <code>setHistory((h) =&gt; [...h, last + by])</code>.</li>
+<li>“Undo” removes the last value, but never the first one. Disable the button when there is nothing to undo.</li>
+<li>Show the whole history under the counter.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> storing history instead of only the current value is how real editors implement undo. Because each entry is a new value and nothing is ever changed, going back is just removing the last entry.</p>
+<figure data-render="projects/history.html" data-width="560" data-actions="click:.row button:nth-child(2);click:.row button:nth-child(2);fill:#step|5;click:.row button:nth-child(2);click:.row button:nth-child(3)"><figcaption><b>Project {{n}}.1:</b> after +1, +1, changing the step to 5, +5, and Undo.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A task list that remembers</h3>
+<p class="project-goal">Rebuild the tasks app from Book 1 in React, with the reducer from this chapter, and keep the tasks after the page is closed.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useReducer</code> with a lazy initial state, an effect that saves to <code>localStorage</code>, a form, and a ref to keep the focus in the input.</p>
+<ol class="steps">
+<li>Import <code>tasksReducer</code>. Create the state with <code>useReducer(tasksReducer, [], load)</code>: the third argument runs <code>load</code> only once, on the first render.</li>
+<li>Write <code>load</code> with <code>try</code>/<code>catch</code>: saved data may be missing or broken.</li>
+<li>Save with an effect whose dependency is <code>[tasks]</code>, so it runs after every change.</li>
+<li>Keep the text of the new task in its own state, and dispatch <code>added</code> on submit. Then clear the text and move the focus back to the input with a ref.</li>
+<li>Derive the number of tasks left, and add a “Clear done” button.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> saving to <code>localStorage</code> is a perfect example of an effect: it keeps something outside React, the browser’s storage, in step with the state. Compare this component with the Book 1 version: the logic is the same, but the code that updates the page by hand has disappeared.</p>
+<figure data-render="projects/tasks.html" data-width="560" data-actions="fill:form input|Read chapter 5;press:form input|Enter;fill:form input|Write a reducer;press:form input|Enter;click:li input"><figcaption><b>Project {{n}}.2:</b> two tasks added, and the first one done.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Search as you type, without races</h3>
+<p class="project-goal">Search products while the user types, wait for a short pause before asking the server, and never show an old answer.</p>
+<p class="project-skills"><strong>You will practise:</strong> writing your own hook, effects with cleanup, <code>AbortController</code>, and a discriminated union for the result.</p>
+<ol class="steps">
+<li>Write a custom hook, <code>useDebounced(value, ms)</code>: it returns the value only after it has stopped changing for <code>ms</code> milliseconds. Inside, an effect starts a timer and its cleanup clears it.</li>
+<li>Model the result as <code>idle | loading | done | error</code>, with the query inside each state that needs it.</li>
+<li>In an effect that depends on the debounced query, create an <code>AbortController</code>, set <code>loading</code>, and call <code>searchProducts(query, controller.signal)</code>.</li>
+<li>Return <code>() =&gt; controller.abort()</code> as the cleanup. In the <code>catch</code>, ignore the error if the request was aborted.</li>
+<li>Render each state: a “Searching…” line, the results, “No products match”, or the error. Use the fake API, which answers short queries more slowly, and type quickly to watch old requests being cancelled.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a custom hook is just a function whose name starts with <code>use</code> and which calls other hooks. It is the React way to reuse stateful logic, as the next chapters will show again and again.</p>
+<pre data-code="fake-api.ts" data-title="fake-api.ts"></pre>
+<figure data-render="projects/search.html" data-width="560" data-actions="fill:#q|bit;wait:1200"><figcaption><b>Project {{n}}.3:</b> the results for “bit”, after the pause and the slow answer.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a “−” button to each line of the cart that lowers its quantity by one, and removes the line when it reaches zero.</li>
+<li><span class="level">Easy</span> Add a <code>"removed"</code> action to <code>tasksReducer</code>, and test it in <code>reducer-test.ts</code>.</li>
+<li><span class="level">Medium</span> Make the timer show minutes and seconds (<code>1:05</code>), and add a “Reset” button. Which values are state, and which are derived?</li>
+<li><span class="level">Medium</span> Write a component that shows the window’s width and updates when the window is resized. Use an effect with <code>addEventListener</code>, and remove the listener in the cleanup.</li>
+<li><span class="level">Challenge</span> Move the cart’s logic into a <code>cartReducer</code> with the actions <code>added</code>, <code>decreased</code> and <code>removed</code>, test it with Node like <code>reducer-test.ts</code>, and use it with <code>useReducer</code>.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Real apps have many pages and load their data from servers. In the next chapter you will add a router with an address for every page, load data the professional way with caching, loading and error states handled for you, and stop writing fetch effects by hand.</p>
+</div>
+</section>

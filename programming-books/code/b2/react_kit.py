@@ -72,3 +72,35 @@ def browser(tsx, js):
 def node(tsx, mjs):
     _esbuild([str(tsx), "--bundle", "--format=esm", "--platform=node", "--jsx=automatic",
               "--packages=external", f"--outfile={mjs}"])
+
+
+def fill(text, words):
+    """{key} becomes the language's text, only for keys in `words`, so JSX such as {product.name}
+    and template literals such as ${id} are left alone. Keys must not collide with variable names."""
+    import re
+    return re.sub(r"(?<![$\w])\{(\w+)\}", lambda m: words[m.group(1)] if m.group(1) in words else m.group(0), text)
+
+
+def generate(here, langs, plain=None, node_files=None, browser_files=None, title_key="title"):
+    """Writes every example of a chapter for each language.
+    plain: name -> source (written as is); node_files: name -> source (also bundled to .mjs for the book
+    to run); browser_files: name -> (source, css) (also bundled with an .html page for screenshots)."""
+    here = Path(here)
+    for lang, words in langs.items():
+        out = here / lang
+        for name, src in (plain or {}).items():
+            path = out / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(fill(src, words))
+        for name, src in (node_files or {}).items():
+            path = out / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(fill(src, words))
+            node(path, path.with_suffix(".mjs"))
+        for name, (src, css) in (browser_files or {}).items():
+            path = out / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(fill(src, words))
+            browser(path, path.with_suffix(".js"))
+            page(path.parent, path.stem, lang, words.get(title_key, path.stem), css)
+        print("ok", lang)
