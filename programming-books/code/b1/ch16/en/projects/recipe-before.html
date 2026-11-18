@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Recipe</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body { margin: 0; padding: 24px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; background: #f5f5fb; color: #1e1b2e; line-height: 1.5; }
+      h1 { color: #4338ca; margin-top: 0; }
+      button { font: inherit; padding: 8px 18px; border: 0; border-radius: 999px; color: white; background: #4338ca; cursor: pointer; }
+      :focus-visible { outline: 3px solid #db2777; outline-offset: 3px; }
+      .card { max-width: 26em; background: white; border-radius: 16px; overflow: hidden; }
+      .card img { width: 100%; display: block; }
+      .body { padding: 16px; }
+      .time { color: #c4c4c4; }
+      .btn { display: inline-block; padding: 8px 18px; border-radius: 999px; color: white; background: #4338ca; }
+    </style>
+  </head>
+  <body>
+    <div class="title">Bit’s lentil soup</div>
+    <input placeholder="Search recipes"> <div class="btn">Search</div>
+    <div class="card">
+      <img src="soup.svg">
+      <div class="body">
+        <div class="time">Ready in 30 minutes · Serves 4</div>
+        <div class="btn" onclick="alert('Saved')">Save recipe</div>
+      </div>
+    </div>
+  </body>
+</html>

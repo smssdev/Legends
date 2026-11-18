@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Recipe</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body { margin: 0; padding: 24px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; background: #f5f5fb; color: #1e1b2e; line-height: 1.5; }
+      h1 { color: #4338ca; margin-top: 0; }
+      button { font: inherit; padding: 8px 18px; border: 0; border-radius: 999px; color: white; background: #4338ca; cursor: pointer; }
+      :focus-visible { outline: 3px solid #db2777; outline-offset: 3px; }
+      .search { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+      .search input { font: inherit; padding: 7px 10px; border: 2px solid #6b7280; border-radius: 8px; }
+      .card { max-width: 26em; background: white; border-radius: 16px; overflow: hidden; }
+      .card img { width: 100%; display: block; }
+      .body { padding: 16px; }
+      .card h2 { margin: 0 0 4px; }
+      .time { color: #4b5563; margin: 0 0 12px; }
+      .secondary { background: #e0e7ff; color: #312e81; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <form class="search" role="search">
+        <label for="q">Search recipes</label>
+        <input id="q" type="search">
+        <button type="submit">Search</button>
+      </form>
+    </header>
+    <main>
+      <h1>Bit’s lentil soup</h1>
+      <article class="card">
+        <img src="soup.svg" alt="A bowl of orange lentil soup with lemon on the side">
+        <div class="body">
+          <p class="time">Ready in 30 minutes · Serves 4</p>
+          <button type="button">Save recipe</button>
+          <button type="button" class="secondary">Print</button>
+        </div>
+      </article>
+    </main>
+  </body>
+</html>
