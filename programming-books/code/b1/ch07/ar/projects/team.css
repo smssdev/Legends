@@ -1,0 +1,31 @@
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: 20px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; background: #f5f5fb; }
+h1 { color: #4338ca; }
+.team {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+.person {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 10px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(30, 27, 46, 0.08);
+}
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: white;
+  background: #7c3aed;
+}
+.person p { margin: 0; color: #5b5873; }

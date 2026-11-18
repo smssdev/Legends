@@ -2828,6 +2828,64 @@ header <span class="k">nav</span> {
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. <code>display: flex</code> on the parent. 2. One fraction of the free space: two <code>1fr</code> columns share it equally. 3. It applies the CSS inside it only when the screen is at least 700 pixels wide.</p>
 
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Layout is learned by building layouts. Each project below is a pattern you will meet on real websites again and again. Test every one at phone width and desktop width with the DevTools device toolbar.</p>
+
+<div class="project">
+<p class="project-label">Project 7.1 · Easy</p>
+<h3>The café, side by side</h3>
+<p class="project-goal">Give the café website from Project 6.2 a real layout: on wide screens, its sections sit next to each other as cards.</p>
+<p class="project-skills"><strong>You will practise:</strong> Grid with <code>auto-fit</code> and <code>minmax</code>, <code>gap</code>, and a wrapping Flexbox menu.</p>
+<ol class="steps">
+<li>Open <code>cafe.css</code> from Chapter 6 and add a new part at the end, with a comment: <code>/* Chapter 7 */</code>.</li>
+<li>Make <code>main</code> a grid with <code>grid-template-columns: repeat(auto-fit, minmax(240px, 1fr))</code> and a <code>gap</code>, and widen its <code>max-width</code> to 900 pixels.</li>
+<li>Remove the bottom margin of the sections: the <code>gap</code> now does the spacing.</li>
+<li>Make the <code>nav</code> a wrapping flex container, centred, with a <code>gap</code> between the pills.</li>
+<li>Resize the window slowly from wide to narrow, and watch the cards go from three columns to two to one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> you did not write a single media query, yet the layout adapts. That is the power of <code>auto-fit</code> with <code>minmax</code>.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cafe.html</span><b>760px</b></div><img src="img/b1-ch07-en-projects-cafe.html-760.png" alt=""><figcaption><b>Project 7.1:</b> the café on a wide screen.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 7.2 · Medium</p>
+<h3>A “Meet the team” page</h3>
+<p class="project-goal">Build a grid of team member cards, each with a round avatar, a name and a role, perfectly centred inside the card.</p>
+<p class="project-skills"><strong>You will practise:</strong> Grid for the page, Flexbox inside each card, and centring in both directions.</p>
+<ol class="steps">
+<li>In <code>team.html</code>, write a <code>&lt;main class="team"&gt;</code> containing six <code>&lt;article class="person"&gt;</code>, each with a <code>&lt;div class="avatar"&gt;</code> (the first letter of the name), an <code>&lt;h2&gt;</code> and a <code>&lt;p&gt;</code>.</li>
+<li>Make <code>.team</code> a responsive grid of cards at least 150 pixels wide.</li>
+<li>Make each <code>.person</code> a flex column with <code>align-items: center</code>, so everything inside is centred.</li>
+<li>Make <code>.avatar</code> a 64-pixel circle (<code>border-radius: 50%</code>) and centre its letter with Flexbox: <code>justify-content</code> and <code>align-items</code> both set to <code>center</code>.</li>
+<li>Check the page at 360 pixels: how many cards per row?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the “Flexbox inside Grid” pattern from the Tip in Section 7.5: Grid places the cards; Flexbox arranges what is inside each card.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>team.html</span><b>560px</b></div><img src="img/b1-ch07-en-projects-team.html-560.png" alt=""><figcaption><b>Project 7.2:</b> a team grid with centred cards.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 7.3 · Challenge</p>
+<h3>A product landing page</h3>
+<p class="project-goal">Build the classic landing page that almost every product has: a top bar, a “hero” with text and a picture, and three feature cards. It must look right on phones too.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>space-between</code>, <code>flex: 1</code>, fixed grid columns, and a media query that changes direction.</p>
+<ol class="steps">
+<li>Sketch the page first: a bar with the brand on one side and links on the other; a hero with text beside a picture; a row of three cards; a footer.</li>
+<li>Make the bar a flex container with <code>justify-content: space-between</code>, so the brand and the links are pushed to opposite sides.</li>
+<li>Make the hero a flex container. Give its text block <code>flex: 1</code>, so it takes all the space the picture does not need.</li>
+<li>Lay out the three features with <code>grid-template-columns: repeat(3, 1fr)</code>.</li>
+<li>Add a media query for screens up to 600 pixels: the hero becomes a centred column (<code>flex-direction: column</code>) and the grid becomes one column.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the picture is decorative, so its <code>alt</code> is empty (<code>alt=""</code>). The heading already says everything that matters.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>landing.html</span><b>760px</b></div><img src="img/b1-ch07-en-projects-landing.html-760.png" alt=""><figcaption><b>Project 7.3:</b> the landing page on a wide screen…</figcaption></figure>
+<figure class="browser" style="width: 68%; margin-inline: auto"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>landing.html</span><b>380px</b></div><img src="img/b1-ch07-en-projects-landing.html-380.png" alt=""><figcaption>…and on a phone.</figcaption></figure>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">Exercises</h2>
 
 <ol class="exercises">

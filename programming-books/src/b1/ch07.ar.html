@@ -183,6 +183,64 @@ footer { grid-area: foot; }</pre>
 
 <p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>display: flex</code> على الأب. 2. جزء واحد من المساحة الفارغة: عمودان بـ <code>1fr</code> يتقاسمانها بالتساوي. 3. يطبق CSS التي بداخله فقط حين يكون عرض الشاشة 700 بكسل على الأقل.</p>
 
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">التخطيط يُتعلم ببناء التخطيطات. وكل مشروع أدناه نمط ستقابله في المواقع الحقيقية مرة بعد مرة. واختبر كلاً منها بعرض الهاتف وعرض الحاسوب بشريط الأجهزة في أدوات المطورين.</p>
+
+<div class="project">
+<p class="project-label">مشروع 7.1 · سهل</p>
+<h3>المقهى جنباً إلى جنب</h3>
+<p class="project-goal">أعط موقع المقهى من المشروع 6.2 تخطيطاً حقيقياً: في الشاشات العريضة تقف أقسامه بطاقاتٍ جنباً إلى جنب.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> Grid مع <code>auto-fit</code> و<code>minmax</code>، و<code>gap</code>، وقائمة Flexbox تلتف.</p>
+<ol class="steps">
+<li>افتح <code>cafe.css</code> من الفصل 6 وأضف جزءاً جديداً في آخره بتعليق: <code>/* Chapter 7 */</code>.</li>
+<li>اجعل <code>main</code> شبكة بـ <code>grid-template-columns: repeat(auto-fit, minmax(240px, 1fr))</code> و<code>gap</code>، ووسّع <code>max-width</code> إلى 900 بكسل.</li>
+<li>أزل الهامش السفلي للأقسام، فالآن <code>gap</code> تتولى المسافات.</li>
+<li>اجعل <code>nav</code> حاوية مرنة تلتف في المنتصف، مع <code>gap</code> بين الكبسولات.</li>
+<li>صغّر النافذة ببطء من العريضة إلى الضيقة، وشاهد البطاقات تنتقل من ثلاثة أعمدة إلى اثنين إلى عمود واحد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لم تكتب استعلام وسائط واحداً، ومع ذلك يتكيف التخطيط. هذه قوة <code>auto-fit</code> مع <code>minmax</code>.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/cafe.html" data-width="760"><figcaption><b>مشروع 7.1:</b> المقهى على شاشة عريضة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 7.2 · متوسط</p>
+<h3>صفحة «تعرّف على الفريق»</h3>
+<p class="project-goal">ابنِ شبكة من بطاقات أعضاء الفريق، لكل منها صورة دائرية واسم ودور، في منتصف البطاقة تماماً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> Grid للصفحة، وFlexbox داخل كل بطاقة، والتوسيط في الاتجاهين.</p>
+<ol class="steps">
+<li>في <code>team.html</code> اكتب <code>&lt;main class="team"&gt;</code> فيه ستة <code>&lt;article class="person"&gt;</code>، في كل منها <code>&lt;div class="avatar"&gt;</code> (أول حرف من الاسم) و<code>&lt;h2&gt;</code> و<code>&lt;p&gt;</code>.</li>
+<li>اجعل <code>.team</code> شبكة متجاوبة من بطاقات لا يقل عرضها عن 150 بكسل.</li>
+<li>اجعل كل <code>.person</code> عموداً مرناً بـ <code>align-items: center</code>، فيتوسط كل ما بداخلها.</li>
+<li>اجعل <code>.avatar</code> دائرة قطرها 64 بكسل (<code>border-radius: 50%</code>)، ووسّط حرفها بـ Flexbox: <code>justify-content</code> و<code>align-items</code> كلتاهما <code>center</code>.</li>
+<li>افحص الصفحة بعرض 360 بكسل: كم بطاقة في كل صف؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذا نمط «Flexbox داخل Grid» من نصيحة القسم 7.5: Grid تضع البطاقات، وFlexbox ترتب ما داخل كل بطاقة.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/team.html" data-width="560"><figcaption><b>مشروع 7.2:</b> شبكة الفريق ببطاقات متوسطة المحتوى.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 7.3 · تحدٍّ</p>
+<h3>صفحة تعريف بمنتج</h3>
+<p class="project-goal">ابنِ صفحة التعريف التقليدية التي يملكها كل منتج تقريباً: شريط علوي، و«واجهة» فيها نص وصورة، وثلاث بطاقات مزايا. ويجب أن تبدو صحيحة على الهواتف أيضاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>space-between</code> و<code>flex: 1</code>، وأعمدة الشبكة الثابتة، واستعلام وسائط يغيّر الاتجاه.</p>
+<ol class="steps">
+<li>ارسم الصفحة أولاً: شريط فيه العلامة في جهة والروابط في الأخرى، وواجهة فيها نص بجانب صورة، وصف من ثلاث بطاقات، وتذييل.</li>
+<li>اجعل الشريط حاوية مرنة بـ <code>justify-content: space-between</code>، فتُدفع العلامة والروابط إلى جهتين متقابلتين.</li>
+<li>اجعل الواجهة حاوية مرنة، وأعط كتلة النص <code>flex: 1</code> لتأخذ كل المساحة التي لا تحتاجها الصورة.</li>
+<li>رتّب المزايا الثلاث بـ <code>grid-template-columns: repeat(3, 1fr)</code>.</li>
+<li>أضف استعلام وسائط للشاشات حتى 600 بكسل: تصير الواجهة عموداً متوسطاً (<code>flex-direction: column</code>)، والشبكة عموداً واحداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الصورة للزينة، فـ <code>alt</code> فارغ (<code>alt=""</code>)، والعنوان يقول كل ما يهم. ولاحظ أن العلامة في الصفحة العربية انتقلت إلى اليمين وحدها، لأن Flexbox تتبع اتجاه القراءة.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/landing.html" data-width="760"><figcaption><b>مشروع 7.3:</b> صفحة التعريف على شاشة عريضة…</figcaption></figure>
+<figure data-render="projects/landing.html" data-width="380"><figcaption>…وعلى الهاتف.</figcaption></figure>
+</div>
+<!-- /projects -->
+
 <h2>تمارين</h2>
 
 <ol class="exercises">
