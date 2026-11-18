@@ -133,6 +133,12 @@ def fill_code(chapter, lang):
         title = re.search(r'data-title="([^"]+)"', attrs)
         head = f'<div class="listing-title">{title.group(1)}</div>' if title else ""
         src = (code_dir / f).read_text().rstrip("\n")
+        if 'data-show="body"' in attrs:
+            # Long pages: show only the body; the head is the same skeleton as before.
+            lines = src.split("\n")
+            a = next(i for i, l in enumerate(lines) if l.strip() == "<body>")
+            b = next(i for i, l in enumerate(lines) if l.strip() == "</body>")
+            src = "\n".join(["  ..."] + lines[a:b + 1] + ["  ..."])
         return f'<div class="listing" dir="ltr">{head}<pre class="code">{highlight(src, f)}</pre></div>'
 
     def out(m):
@@ -143,6 +149,21 @@ def fill_code(chapter, lang):
         return (f'<div class="{cls}" dir="ltr"><div class="output-bar"><i></i><i></i><i></i>'
                 f'<span class="output-title">{label}</span></div><pre>{printed}</pre></div>')
 
+    def page(m):
+        attrs = m.group(1)
+        f = re.search(r'data-render="([^"]+)"', attrs).group(1)
+        width = int((re.search(r'data-width="(\d+)"', attrs) or re.match("(.*)", "640")).group(1))
+        src = code_dir / f
+        name = f"{code_dir.parent.parent.name}-{code_dir.parent.name}-{lang}-{f.replace('/', '-')}.png"
+        img = OUT / "img" / name
+        img.parent.mkdir(parents=True, exist_ok=True)
+        if not img.exists() or img.stat().st_mtime < max(src.stat().st_mtime, (ROOT / "shot.cjs").stat().st_mtime):
+            subprocess.run(["node", str(ROOT / "shot.cjs"), str(src), str(img), str(width)], check=True)
+        bar = (f'<div class="browser-bar" dir="ltr"><i></i><i></i><i></i>'
+               f'<span>{html.escape(f.rsplit("/", 1)[-1])}</span></div>')
+        return f'<figure class="browser">{bar}<img src="img/{name}" alt="">'
+
+    chapter = re.sub(r'<figure (data-render="[^"]+"[^>]*)>', page, chapter)
     chapter = re.sub(r'<pre (data-code="[^"]+"[^>]*)></pre>', code, chapter)
     chapter = re.sub(r'<pre (data-out="[^"]+"[^>]*)></pre>', out, chapter)
     return chapter

@@ -164,3 +164,11 @@ figcaption b { color: var(--brand); }
 
 /* Pseudocode written in the reader’s language (Arabic pseudocode runs right to left). */
 .pseudo { background: var(--code-bg); border: 1pt solid #d9dbea; border-inline-start: 4pt solid var(--try); border-radius: 6pt; padding: 7pt 12pt; margin: 0.6em 0 0.9em; white-space: pre-wrap; font: 700 0.92em/1.75 var(--head); color: var(--ink); break-inside: avoid; }
+
+/* A rendered example page, shown inside a simple browser frame. */
+figure.browser { background: #fff; border: 1.2pt solid #c9cbe0; border-radius: 9pt; padding: 0 0 6pt; overflow: hidden; }
+.browser-bar { display: flex; align-items: center; gap: 4pt; background: #eef0f8; padding: 5pt 8pt; margin-bottom: 6pt; }
+.browser-bar i { width: 6pt; height: 6pt; border-radius: 50%; background: #f87171; display: inline-block; }
+.browser-bar i:nth-child(2) { background: #fbbf24; } .browser-bar i:nth-child(3) { background: #34d399; }
+.browser-bar span { font: 400 7.5pt var(--mono); color: var(--muted); background: #fff; border-radius: 8pt; padding: 1pt 10pt; margin-inline-start: 8pt; flex: 1; text-align: left; }
+figure.browser img { display: block; width: 100%; height: auto; }

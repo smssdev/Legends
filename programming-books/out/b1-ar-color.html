@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "الفصل 4: كيف يعمل الويب"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "الفصل 5: HTML: بنية الصفحة"; } }
+@page ch05:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: القيم والمتغيرات والقرارات"; } }
 @page ch08:first { @top-center { content: none; } }
 
@@ -1255,6 +1257,422 @@ text/html; charset=utf-8
 <div class="next">
 <p class="next-title">في الفصل 5</p>
 <p>أرسل خادمك عنواناً واحداً. وفي الفصل القادم ستتعلم HTML كما يجب، وتبني أول صفحة ويب حقيقية لك، فيها عناوين وفقرات وروابط وصور وقوائم، ببنية مثل التي يكتبها المحترفون.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b1/ch05/ar">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">الفصل 5</p><h1>HTML: بنية الصفحة</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تقرأ عناصر HTML ووسومها وخصائصها وتكتبها</li>
+<li>تبني الهيكل الذي تبدأ به كل صفحة ويب</li>
+<li>تضيف العناوين والفقرات والروابط والصور والقوائم</li>
+<li>تعطي الصفحة بنية ذات معنى بـ header وnav وmain وfooter</li>
+<li>تبني أول صفحة حقيقية لك: ملف تعريفي شخصي</li>
+</ul>
+</div>
+
+<p class="lead">كل صفحة ويب زرتها في حياتك، من مدونة صغيرة إلى متجر إلكتروني عملاق، مبنية على HTML. إنها اللغة الأولى للويب وأكثرها لطفاً أيضاً: ففي هذا الفصل ستكتب صفحات حقيقية في دقائق، وتفتحها في متصفحك، وترى بالضبط ما يفعله كل سطر.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>HTML ليست لغة برمجة بالمعنى الدقيق، فليس فيها حسابات ولا قرارات. إنها لغة <em>توصيف</em>: تصف محتواك لتخبر المتصفح بنوع كل قطعة منه. ولهذا هي المكان المثالي لتبدأ البناء!</p></div></div>
+
+<h2><span class="sec">5.1</span><span>العناصر والوسوم والخصائص</span></h2>
+
+<p><dfn>HTML</dfn> اختصار «لغة توصيف النص الفائق». تكتب محتواك، وتحيط كل قطعة منه بـ <dfn>وسوم</dfn> (tags) تقول ما هي: عنوان، أو فقرة، أو رابط، أو صورة. والوسمان معاً مع المحتوى الذي بينهما يُسميان <dfn>عنصراً</dfn> (element).</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="عنصر HTML: وسم الفتح مع خاصية، ثم المحتوى، ثم وسم الإغلاق">
+<g font-family="JetBrains Mono" font-size="17" direction="ltr">
+<text x="20" y="62"><tspan fill="#4338ca" font-weight="700">&lt;a</tspan><tspan fill="#c2410c"> href</tspan><tspan fill="#1e1b2e">=</tspan><tspan fill="#15803d">"first.html"</tspan><tspan fill="#4338ca" font-weight="700">&gt;</tspan><tspan fill="#1e1b2e">My first page</tspan><tspan fill="#4338ca" font-weight="700">&lt;/a&gt;</tspan></text>
+</g>
+<g stroke-width="3" stroke-linecap="round" fill="none">
+<path d="M20,76 L20,84 L232,84 L232,76" stroke="#4338ca"/><path d="M238,76 L238,84 L364,84 L364,76" stroke="#1e1b2e"/><path d="M370,76 L370,84 L406,84 L406,76" stroke="#4338ca"/>
+<path d="M44,44 L44,36 L222,36 L222,44" stroke="#c2410c"/>
+</g>
+<g font-family="Cairo" font-size="13" font-weight="700" text-anchor="middle">
+<text x="126" y="104" fill="#4338ca">وسم الفتح</text><text x="301" y="104" fill="#1e1b2e">المحتوى</text><text x="410" y="122" fill="#4338ca">وسم الإغلاق</text>
+<text x="133" y="26" fill="#c2410c">خاصية (الاسم = "القيمة")</text>
+</g>
+<text x="226" y="140" font-family="Cairo" font-size="12.5" fill="#5b5873" text-anchor="middle">كل ما بين &lt;a&gt; و&lt;/a&gt; عنصر واحد.</text>
+</svg>
+<figcaption><b>الشكل 5.1:</b> أجزاء عنصر HTML.</figcaption>
+</figure>
+
+<ul>
+<li><strong>وسم الفتح</strong> هو اسم العنصر بين قوسين زاويين: <code>&lt;p&gt;</code> و<code>&lt;h1&gt;</code> و<code>&lt;a&gt;</code>.</li>
+<li><strong>وسم الإغلاق</strong> مثله مع شرطة مائلة: <code>&lt;/p&gt;</code>.</li>
+<li><dfn>الخصائص</dfn> (attributes) تُكتب داخل وسم الفتح وتعطي معلومات إضافية، دائماً بالشكل <code>name="value"</code>. وهنا تقول <code>href</code> إلى أين يذهب الرابط.</li>
+<li>بعض العناصر ليس لها محتوى ولا وسم إغلاق، مثل <code>&lt;img&gt;</code> و<code>&lt;br&gt;</code>، وتُسمى <dfn>العناصر الفارغة</dfn>.</li>
+</ul>
+
+<p>وأسماء الوسوم والخصائص إنجليزية دائماً، حتى في الصفحات العربية. أما المحتوى الذي بينها فيكون بأي لغة تريدها.</p>
+
+<h2><span class="sec">5.2</span><span>هيكل كل صفحة</span></h2>
+
+<p>كل صفحة HTML تبدأ بالأسطر القليلة نفسها. أنشئ في مجلد <code>code-from-zero</code> مجلداً اسمه <code>chapter-05</code>، وفيه ملفاً اسمه <code>first.html</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">first.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;ar&quot;</span> <span class="n">dir</span>=<span class="s">&quot;rtl&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>صفحتي الأولى<span class="k">&lt;/title</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>مرحباً يا ويب!<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>هذه أول صفحة ويب لي، كتبتها بنفسي بلغة HTML.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+
+<p>انقر على الملف نقرتين ليفتح في المتصفح (أو اسحبه إلى نافذة المتصفح):</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>first.html</span></div><img src="img/b1-ch05-ar-first.html.png" alt=""><figcaption><b>الشكل 5.2:</b> أول صفحة ويب لك.</figcaption></figure>
+
+<p>ولكل سطر في الهيكل وظيفة:</p>
+
+<table>
+<thead><tr><th>السطر</th><th>وظيفته</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;!doctype html&gt;</code></td><td>يخبر المتصفح أن هذه صفحة HTML حديثة.</td></tr>
+<tr><td><code>&lt;html lang="ar" dir="rtl"&gt;</code></td><td>العنصر الجذر الذي يحيط بكل شيء. <code>lang</code> تحدد لغة الصفحة، و<code>dir="rtl"</code> تجعل اتجاهها من اليمين إلى اليسار، وهي ضرورية لكل صفحة عربية.</td></tr>
+<tr><td><code>&lt;head&gt;</code></td><td>معلومات <em>عن</em> الصفحة لا تظهر فيها.</td></tr>
+<tr><td><code>&lt;meta charset="utf-8"&gt;</code></td><td>يستخدم ترميز UTF-8 الخاص بيونيكود، فتظهر العربية وكل اللغات صحيحة.</td></tr>
+<tr><td><code>&lt;meta name="viewport" …&gt;</code></td><td>يجعل الصفحة تناسب شاشات الهواتف.</td></tr>
+<tr><td><code>&lt;title&gt;</code></td><td>النص الذي يظهر في تبويب المتصفح ونتائج البحث.</td></tr>
+<tr><td><code>&lt;body&gt;</code></td><td>كل ما يراه الزائر.</td></tr>
+</tbody>
+</table>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>جرّب أن تحذف <code>dir="rtl"</code> من صفحتك وتعيد تحميلها: سيلتصق النص العربي بيسار الصفحة، وستقفز علامات الترقيم إلى أماكن غريبة. سطر صغير يصنع فرقاً كبيراً!</p></div></div>
+
+<p>ولاحظ إزاحة الأسطر: العناصر التي داخل غيرها مُزاحة مسافتين إلى الداخل. المتصفح لا يهتم بالإزاحة، لكن البشر يهتمون، فهي تريك بنظرة أي عنصر داخل أي عنصر، وPrettier يضبطها لك مع كل حفظ.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>في VS Code، اكتب <code>!</code> في ملف <code>.html</code> فارغ واضغط <code>Tab</code>، فيكتب المحرر الهيكل كله عنك. المحترفون يفعلون هذا كل يوم، لكن اكتبه بيدك بضع مرات أولاً لتفهم كل سطر فيه.</p></aside>
+
+<h2><span class="sec">5.3</span><span>النصوص: العناوين والفقرات</span></h2>
+
+<p>معظم محتوى الويب نصوص، وفي HTML عناصر تعطيها بنية. ومن الآن ستعرض الأمثلة الطويلة <code>&lt;body&gt;</code> وحده، لأن <code>&lt;head&gt;</code> هو الهيكل نفسه كل مرة، ولا يتغير إلا <code>&lt;title&gt;</code>. والملفات كاملة في مستودع كود الكتاب.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">text.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>ثلاثة أيام في القاهرة<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>القاهرة <span class="k">&lt;strong</span><span class="k">&gt;</span>ضخمة وصاخبة ورائعة<span class="k">&lt;/strong</span><span class="k">&gt;</span>. قضيت فيها ثلاثة أيام ولم أرَ إلا جزءاً <span class="k">&lt;em</span><span class="k">&gt;</span>صغيراً جداً<span class="k">&lt;/em</span><span class="k">&gt;</span> منها.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;h2</span><span class="k">&gt;</span>اليوم الأول: الأهرامات<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>وصلنا إلى الجيزة مبكراً قبل الزحام. الهرم الأكبر أضخم مما تخيلت.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;h2</span><span class="k">&gt;</span>اليوم الثاني: القاهرة القديمة<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+    <span class="k">&lt;h3</span><span class="k">&gt;</span>الغداء<span class="k">&lt;/h3</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>أكلنا الكشري: أرز وعدس ومكرونة وصلصة طماطم حارة.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>text.html</span></div><img src="img/b1-ch05-ar-text.html.png" alt=""><figcaption><b>الشكل 5.3:</b> العناوين والفقرات والتأكيد، بتنسيق المتصفح الافتراضي.</figcaption></figure>
+
+<ul>
+<li><code>&lt;h1&gt;</code> إلى <code>&lt;h6&gt;</code> <strong>عناوين</strong> من الأهم إلى الأقل أهمية. استخدم <code>&lt;h1&gt;</code> واحداً لعنوان الصفحة الرئيسي، ثم <code>&lt;h2&gt;</code> للأقسام، و<code>&lt;h3&gt;</code> للأقسام الفرعية، وهكذا، مثل فصول هذا الكتاب وأقسامه.</li>
+<li><code>&lt;p&gt;</code> <strong>فقرة</strong>، ويضع المتصفح مسافة حول كل واحدة.</li>
+<li><code>&lt;strong&gt;</code> تجعل النص <strong>مهماً</strong> (ويظهر عريضاً)، و<code>&lt;em&gt;</code> <em>تؤكده</em> (ويظهر مائلاً).</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>اختر مستوى العنوان لمعناه، لا لحجمه. فإن أردت عنواناً أصغر غيّرت حجمه بـ CSS في الفصل 6. وقارئات الشاشة، التي تقرأ الصفحات بصوت عالٍ للمكفوفين، تتيح القفز من عنوان لعنوان، فالترتيب الصحيح مهم حقاً.</p></aside>
+
+<h2><span class="sec">5.4</span><span>الروابط</span></h2>
+
+<p>الروابط هي ما يجعل الويب «شبكة»: صفحات متصلة ببعضها في أنحاء العالم كله. والعنصر <code>&lt;a&gt;</code> ينشئ رابطاً، وخاصيته <code>href</code> تحدد وجهته:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">links.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>أماكن للتعلم<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>أفضل مرجع لـ HTML هو <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;https://developer.mozilla.org&quot;</span><span class="k">&gt;</span>MDN Web Docs<span class="k">&lt;/a</span><span class="k">&gt;</span>.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>ارجع إلى <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;first.html&quot;</span><span class="k">&gt;</span>صفحتي الأولى<span class="k">&lt;/a</span><span class="k">&gt;</span>.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>افتح <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;https://developer.mozilla.org/ar/docs/Web/HTML&quot;</span> <span class="n">target</span>=<span class="s">&quot;_blank&quot;</span> <span class="n">rel</span>=<span class="s">&quot;noopener&quot;</span><span class="k">&gt;</span>دليل HTML<span class="k">&lt;/a</span><span class="k">&gt;</span> في تبويب جديد.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>links.html</span></div><img src="img/b1-ch05-ar-links.html.png" alt=""><figcaption><b>الشكل 5.4:</b> الروابط زرقاء وتحتها خط افتراضياً.</figcaption></figure>
+
+<p>الرابط الأول <strong>مطلق</strong>: فيه العنوان الكامل لموقع آخر. والثاني <strong>نسبي</strong>: <code>first.html</code> تعني «الملف المسمى <code>first.html</code> في مجلد هذه الصفحة نفسه». استخدم الروابط النسبية بين صفحات موقعك، فتبقى تعمل حين تنقل الموقع كله إلى خادم.</p>
+
+<p>والرابط الثالث يفتح في تبويب جديد بسبب <code>target="_blank"</code>، و<code>rel="noopener"</code> معه إجراء أمني صغير أضفه دائماً معها.</p>
+
+<h2><span class="sec">5.5</span><span>الصور</span></h2>
+
+<p>العنصر <code>&lt;img&gt;</code> يعرض صورة. نزّل الملف <code>bit.svg</code> من مستودع كود الكتاب إلى مجلد <code>chapter-05</code>، أو استخدم أي صورة تحبها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">image.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>تعرّف على بِت<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;bit.svg&quot;</span> <span class="n">alt</span>=<span class="s">&quot;بِت، روبوت بنفسجي صغير يلوّح بيده&quot;</span> <span class="n">width</span>=<span class="s">&quot;120&quot;</span> <span class="n">height</span>=<span class="s">&quot;140&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>بِت هو الروبوت اللطيف الذي يرافقك في هذا الكتاب.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>image.html</span></div><img src="img/b1-ch05-ar-image.html.png" alt=""><figcaption><b>الشكل 5.5:</b> صورة في الصفحة.</figcaption></figure>
+
+<ul>
+<li><code>src</code> ملف الصورة: مسار نسبي، أو عنوان كامل على الويب.</li>
+<li><code>alt</code> وصف نصي للصورة. تقرؤه قارئات الشاشة، وتفهرسه محركات البحث، وتعرضه المتصفحات إن لم تُحمّل الصورة.</li>
+<li><code>width</code> و<code>height</code> تخبران المتصفح كم مساحة يحجز، فلا تقفز الصفحة أثناء تحميل الصورة.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>كل صورة تحتاج <code>alt</code>. صِف ما تعرضه الصورة ولماذا هي هنا في جملة قصيرة. وإن كانت الصورة للزينة فقط فاكتب <code>alt=""</code> لتتجاوزها قارئات الشاشة. ونص <code>alt</code> الجيد من أبسط الطرق لجعل الويب صالحاً للجميع.</p></aside>
+
+<h2><span class="sec">5.6</span><span>القوائم</span></h2>
+
+<p>في HTML نوعان شائعان من القوائم: <code>&lt;ul&gt;</code> (قائمة غير مرتبة) حين لا يهم الترتيب، و<code>&lt;ol&gt;</code> (قائمة مرتبة) حين يهم. وداخل الاثنتين يكون كل بند <code>&lt;li&gt;</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lists.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>إعداد الشاي<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;h2</span><span class="k">&gt;</span>تحتاج إلى<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+    <span class="k">&lt;ul</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>ماء<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>شاي<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>كوب<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>سكر (اختياري)<span class="k">&lt;/li</span><span class="k">&gt;</span>
+    <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;h2</span><span class="k">&gt;</span>الخطوات<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+    <span class="k">&lt;ol</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>اغلِ الماء.<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>ضع الشاي في الكوب.<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>صبّ الماء وانتظر ثلاث دقائق.<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>أضف السكر إن أحببت.<span class="k">&lt;/li</span><span class="k">&gt;</span>
+    <span class="k">&lt;/ol</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>lists.html</span></div><img src="img/b1-ch05-ar-lists.html.png" alt=""><figcaption><b>الشكل 5.6:</b> يضيف المتصفح النقاط والأرقام عنك، وفي الصفحة العربية تكون على اليمين.</figcaption></figure>
+
+<p>القوائم في كل مكان على الويب، وكثيراً في أماكن لا تخطر ببالك: القائمة أعلى معظم المواقع قائمة روابط، نسّقتها CSS فلم تعد تبدو قائمة.</p>
+
+<h2><span class="sec">5.7</span><span>إعطاء الصفحة بنية</span></h2>
+
+<p>الصفحات الحقيقية لها أجزاء: منطقة علوية فيها اسم الموقع وقائمته، والمحتوى الرئيسي، وتذييل في الأسفل. وفي HTML <dfn>عناصر دلالية</dfn> لهذه الأجزاء، و«دلالية» تعني أنها تصف <em>معنى</em> محتواها لا شكله:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">structure.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>مدونة بِت<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;nav</span><span class="k">&gt;</span>
+        <span class="k">&lt;ul</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>الرئيسية<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/li</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>المقالات<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/li</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>من أنا<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/li</span><span class="k">&gt;</span>
+        <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+      <span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;/header</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;article</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>لماذا تحب الروبوتات HTML<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>لأن لكل عنصر وظيفة واضحة، والروبوتات تحب الوظائف الواضحة.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/article</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;footer</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>© 2026 بِت. صُنعت بـ HTML.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;/footer</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+
+<figure>
+<svg viewBox="0 0 520 200" role="img" aria-label="تخطيط صفحة فيها header وبداخله nav، وmain وبداخله article، وfooter">
+<g font-family="JetBrains Mono" font-size="13" font-weight="700">
+<rect x="20" y="10" width="480" height="58" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/><text x="488" y="30" fill="#4338ca" text-anchor="end">&lt;header&gt;</text>
+<rect x="35" y="22" width="235" height="34" rx="6" fill="#fff" stroke="#7c3aed" stroke-width="2"/><text x="258" y="44" fill="#7c3aed" text-anchor="end">&lt;nav&gt;</text>
+<rect x="20" y="78" width="480" height="76" rx="8" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="488" y="98" fill="#0f766e" text-anchor="end">&lt;main&gt;</text>
+<rect x="40" y="106" width="440" height="38" rx="6" fill="#fff" stroke="#0f766e" stroke-width="2"/><text x="468" y="130" fill="#0f766e" text-anchor="end">&lt;article&gt;</text>
+<rect x="20" y="164" width="480" height="30" rx="8" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="488" y="184" fill="#ea580c" text-anchor="end">&lt;footer&gt;</text>
+</g>
+</svg>
+<figcaption><b>الشكل 5.7:</b> أجزاء الصفحة السابقة. بلا CSS تبدو نصاً عادياً، لكن المتصفح ومحركات البحث وقارئات الشاشة تعرف ما كل جزء.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>العنصر</th><th>استخدمه لـ</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;header&gt;</code></td><td>مقدمة الصفحة أو القسم: الشعار والعنوان والقائمة</td></tr>
+<tr><td><code>&lt;nav&gt;</code></td><td>روابط التنقل الرئيسية</td></tr>
+<tr><td><code>&lt;main&gt;</code></td><td>المحتوى الرئيسي، وواحد فقط في الصفحة</td></tr>
+<tr><td><code>&lt;section&gt;</code></td><td>جزء من المحتوى له موضوع، وغالباً له عنوان</td></tr>
+<tr><td><code>&lt;article&gt;</code></td><td>محتوى مفهوم وحده: تدوينة، أو خبر، أو منتج</td></tr>
+<tr><td><code>&lt;footer&gt;</code></td><td>آخر الصفحة أو القسم: الحقوق، ووسائل التواصل، والروابط</td></tr>
+</tbody>
+</table>
+
+<p>وستقابل أيضاً عنصرين بلا معنى على الإطلاق: <code>&lt;div&gt;</code> كتلة عامة، و<code>&lt;span&gt;</code> قطعة عامة من النص داخل السطر. لا تستخدمهما إلا حين لا يناسبك عنصر دلالي، وغالباً كخطافات لـ CSS.</p>
+
+<h2><span class="sec">5.8</span><span>نظرة أولى على النماذج</span></h2>
+
+<p>النماذج (forms) تتيح للزوار إرسال المعلومات: بحث، أو تسجيل دخول، أو اشتراك. وستبث فيها الحياة بـ JavaScript في الفصل 12، لكن بنيتها HTML خالصة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">form.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>اشترك في النشرة<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;form</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>
+        <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;name&quot;</span><span class="k">&gt;</span>اسمك<span class="k">&lt;/label</span><span class="k">&gt;</span>
+        <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;name&quot;</span> <span class="n">name</span>=<span class="s">&quot;name&quot;</span> <span class="n">type</span>=<span class="s">&quot;text&quot;</span> required<span class="k">&gt;</span>
+      <span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>
+        <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;email&quot;</span><span class="k">&gt;</span>بريدك الإلكتروني<span class="k">&lt;/label</span><span class="k">&gt;</span>
+        <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;email&quot;</span> <span class="n">name</span>=<span class="s">&quot;email&quot;</span> <span class="n">type</span>=<span class="s">&quot;email&quot;</span> required<span class="k">&gt;</span>
+      <span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;submit&quot;</span><span class="k">&gt;</span>اشترك<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/form</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>form.html</span></div><img src="img/b1-ch05-ar-form.html.png" alt=""><figcaption><b>الشكل 5.8:</b> نموذج فيه حقلان وزر.</figcaption></figure>
+
+<p>لكل <code>&lt;input&gt;</code> عنصر <code>&lt;label&gt;</code> يرتبط به بتطابق قيمتي <code>for</code> و<code>id</code>. فالنقر على التسمية يضع المؤشر في الحقل، وقارئات الشاشة تنطق التسمية. و<code>type="email"</code> تُظهر لوحة المفاتيح المناسبة على الهواتف، و<code>required</code> تجعل المتصفح يرفض إرسال حقل فارغ. جرّب الضغط على الزر والحقلان فارغان!</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>في <code>&lt;img src="cat.jpg" alt="قطة نائمة"&gt;</code> ما الخصائص، ولماذا ليس لهذا العنصر وسم إغلاق؟</li><li>متى تستخدم <code>&lt;ol&gt;</code> بدل <code>&lt;ul&gt;</code>؟</li><li>كم عنصر <code>&lt;h1&gt;</code> يجب أن يكون في الصفحة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">5.9</span><span>مشروع: صفحتك التعريفية</span></h2>
+
+<p>لنجمع كل شيء في صفحة حقيقية: ملف تعريفي لسارة، مطورة الويب الجديدة. واكتب بياناتك أنت بدل بياناتها وأنت تكتب.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">profile.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>
+      <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;bit.svg&quot;</span> <span class="n">alt</span>=<span class="s">&quot;صورة سارة الرمزية: روبوت بنفسجي مبتسم&quot;</span> <span class="n">width</span>=<span class="s">&quot;90&quot;</span> <span class="n">height</span>=<span class="s">&quot;105&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>سارة خان<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>مطورة ويب مبتدئة من الإسكندرية<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;nav</span><span class="k">&gt;</span>
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#about&quot;</span><span class="k">&gt;</span>عني<span class="k">&lt;/a</span><span class="k">&gt;</span> |
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#skills&quot;</span><span class="k">&gt;</span>مهاراتي<span class="k">&lt;/a</span><span class="k">&gt;</span> |
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#contact&quot;</span><span class="k">&gt;</span>تواصل<span class="k">&lt;/a</span><span class="k">&gt;</span>
+      <span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;/header</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;section</span> <span class="n">id</span>=<span class="s">&quot;about&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>عني<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>بدأت تعلم البرمجة هذا العام مع كتاب <span class="k">&lt;em</span><span class="k">&gt;</span>البرمجة من الصفر<span class="k">&lt;/em</span><span class="k">&gt;</span>، وأحب بناء أدوات صغيرة تجعل الحياة أسهل.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/section</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;section</span> <span class="n">id</span>=<span class="s">&quot;skills&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>مهارات أتعلمها<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;ul</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span>HTML<span class="k">&lt;/li</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span>CSS<span class="k">&lt;/li</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span>JavaScript<span class="k">&lt;/li</span><span class="k">&gt;</span>
+        <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+      <span class="k">&lt;/section</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;section</span> <span class="n">id</span>=<span class="s">&quot;contact&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>تواصل معي<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>راسلني على <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;mailto:sara@example.com&quot;</span><span class="k">&gt;</span>sara@example.com<span class="k">&lt;/a</span><span class="k">&gt;</span>.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/section</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;footer</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>بنتها سارة بـ HTML وحدها.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;/footer</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span></div><img src="img/b1-ch05-ar-profile.html.png" alt=""><figcaption><b>الشكل 5.9:</b> الصفحة التعريفية، بـ HTML وحدها وبلا تنسيق بعد.</figcaption></figure>
+
+<p>تظهر هنا حيلتان جديدتان. روابط القائمة تشير إلى <code>#about</code> و<code>#skills</code> و<code>#contact</code>، و<code>#</code> يتبعها <code>id</code> تقفز إلى العنصر صاحب هذا الـ <code>id</code> في الصفحة نفسها. ورابط التواصل يبدأ بـ <code>mailto:</code> فيفتح تطبيق البريد عند الزائر.</p>
+
+<p>الصفحة تعمل، وبنيتها ممتازة، لكنها بسيطة الشكل. وهذا طبيعي: وظيفة HTML البنية لا الجمال. وفي الفصلين القادمين ستحوّل هذه الصفحة بالذات إلى شيء تفخر بمشاركته.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>انقر بالزر الأيمن على صفحتك واختر <strong>Inspect</strong> (فحص). لوحة Elements تعرض شجرة العناصر التي كتبتها. أنت بنيت هذه الشجرة! مرّر الفأرة على كل عنصر وشاهد المتصفح يحدده في الصفحة.</p></div></div>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>نسيان وسم الإغلاق، مثل <code>&lt;/p&gt;</code></td><td>يخمّن المتصفح أين ينتهي العنصر، وأحياناً يخطئ</td><td>أغلق كل عنصر له محتوى</td></tr>
+<tr><td>تداخل خاطئ: <code>&lt;p&gt;&lt;strong&gt;…&lt;/p&gt;&lt;/strong&gt;</code></td><td>تخطيط لا يمكن توقعه</td><td>أغلق العناصر بعكس ترتيب فتحها</td></tr>
+<tr><td>نسيان <code>dir="rtl"</code> في صفحة عربية</td><td>النص ملتصق باليسار والترقيم في أماكن غريبة</td><td>ابدأ كل صفحة عربية بـ <code>lang="ar" dir="rtl"</code></td></tr>
+<tr><td>غياب <code>&lt;meta charset="utf-8"&gt;</code></td><td>تظهر الحروف العربية رموزاً غريبة</td><td>ابدأ دائماً بالهيكل الكامل</td></tr>
+<tr><td>أسماء ملفات عربية أو فيها مسافات</td><td>الروابط تعمل على حاسوبك وتتعطل على الخادم</td><td>استخدم أسماء مثل <code>about-me.html</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>HTML تصف المحتوى بـ <strong>العناصر</strong>: وسم فتح ومحتوى ووسم إغلاق. و<strong>الخصائص</strong> تضيف معلومات بالشكل <code>name="value"</code>.</li>
+<li>كل صفحة تبدأ بالـ <strong>هيكل</strong> نفسه: doctype، ثم <code>html</code> مع <code>lang</code> (و<code>dir="rtl"</code> للعربية)، ثم <code>head</code> فيه الترميز وviewport والعنوان، ثم <code>body</code>.</li>
+<li>استخدم العناوين من <code>h1</code> إلى <code>h6</code> بالترتيب، والفقرات <code>p</code>، و<code>strong</code> و<code>em</code> للأهمية والتأكيد.</li>
+<li><code>a</code> تنشئ الروابط بـ <code>href</code>، و<code>img</code> تعرض الصور بـ <code>src</code> و<code>alt</code> له معنى.</li>
+<li><code>ul</code> و<code>ol</code> تحويان بنود القائمة <code>li</code>.</li>
+<li><strong>العناصر الدلالية</strong> مثل <code>header</code> و<code>nav</code> و<code>main</code> و<code>section</code> و<code>article</code> و<code>footer</code> تصف بنية الصفحة.</li>
+<li>النماذج تستخدم <code>form</code> و<code>label</code> و<code>input</code> و<code>button</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. الخصائص <code>src</code> و<code>alt</code>. و<code>&lt;img&gt;</code> عنصر فارغ: ليس فيه محتوى بين وسمين، فلا يحتاج وسم إغلاق. 2. حين يهم ترتيب البنود، مثل الخطوات أو الترتيب في مسابقة. 3. واحد.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أنشئ <code>favourites.html</code> فيه عنوان وقائمة غير مرتبة بخمسة أفلام أو كتب أو ألعاب تحبها.</li>
+<li><span class="level">سهل</span> أضف رابطاً من <code>favourites.html</code> إلى <code>profile.html</code>، ورابطاً للعودة.</li>
+<li><span class="level medium">متوسط</span> اكتب صفحة وصفة لطبق تحبه، فيها <code>&lt;h1&gt;</code>، وصورة بـ <code>alt</code> جيد، وقائمة المكونات، وخطوات مرقمة.</li>
+<li><span class="level medium">متوسط</span> افتح أي موقع كبير، وافتح أدوات المطورين وانظر إلى لوحة Elements. ابحث عن <code>&lt;header&gt;</code> و<code>&lt;nav&gt;</code> و<code>&lt;footer&gt;</code>. هل يستخدم العناصر الدلالية، أم <code>&lt;div&gt;</code> فقط؟</li>
+<li><span class="level hard">تحدٍّ</span> حوّل صفحتك التعريفية إلى موقع صغير من ثلاث صفحات: <code>index.html</code> (عنك)، و<code>projects.html</code>، و<code>contact.html</code> فيها نموذج. وفي كل صفحة <code>&lt;header&gt;</code> و<code>&lt;nav&gt;</code> نفسهما بروابط للصفحتين الأخريين.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 6</p>
+<p>لصفحتك التعريفية هيكل رائع. والآن تعطيها CSS الألوان والخطوط والمسافات والشخصية. وفي آخر الفصل 6 لن تكاد تعرفها.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/ar">

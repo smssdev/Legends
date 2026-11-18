@@ -50,3 +50,6 @@ pre.code { border-left-color: #111; }
 .exercises .level.medium { background: #d6d6d6; }
 .exercises .level.hard { background: #000; color: #fff; }
 figure { background: #fafafa; }
+figure.browser { border-color: #bbb; }
+.browser-bar { background: #eee; }
+.browser-bar i:nth-child(n) { background: #fff; border: 1pt solid #777; }

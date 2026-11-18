@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "Chapter 4: How the Web Works"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "Chapter 5: HTML: The Structure of a Page"; } }
+@page ch05:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Values, Variables and Decisions"; } }
 @page ch08:first { @top-center { content: none; } }
 </style></head>
@@ -1151,6 +1153,405 @@ text/html; charset=utf-8
 <div class="next">
 <p class="next-title">Coming up in Chapter 5</p>
 <p>Your server sent a single heading. In the next chapter you will learn HTML properly and build your first real web page, with headings, paragraphs, links, images and lists, structured the way professionals do it.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b1/ch05/en">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">Chapter 5</p><h1>HTML: The Structure of a Page</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>read and write HTML elements, tags and attributes</li>
+<li>build the skeleton that every web page starts with</li>
+<li>add headings, paragraphs, links, images and lists</li>
+<li>give a page meaningful structure with header, nav, main and footer</li>
+<li>build your first real page: a personal profile</li>
+</ul>
+</div>
+
+<p class="lead">Every web page you have ever visited, from a small blog to a giant online shop, is built on HTML. It is the first language of the web, and also the friendliest: in this chapter you will write real pages in minutes, open them in your browser, and see exactly what each line does.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>HTML is not really a programming language. There are no calculations and no decisions. It is a <em>markup</em> language: you mark up your content to tell the browser what each piece is. That’s why it’s the perfect place to start building!</p></div></div>
+
+<h2><span class="sec">5.1</span><span>Elements, tags and attributes</span></h2>
+
+<p><dfn>HTML</dfn> stands for HyperText Markup Language. You write your content, and you wrap each piece of it in <dfn>tags</dfn> that say what it is: a heading, a paragraph, a link, an image. A pair of tags together with the content between them is called an <dfn>element</dfn>.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="An HTML element: opening tag with an attribute, content, and closing tag">
+<g font-family="JetBrains Mono" font-size="17">
+<text x="20" y="62"><tspan fill="#2b2b2b" font-weight="700">&lt;a</tspan><tspan fill="#c2410c"> href</tspan><tspan fill="#1e1b2e">=</tspan><tspan fill="#15803d">"first.html"</tspan><tspan fill="#2b2b2b" font-weight="700">&gt;</tspan><tspan fill="#1e1b2e">My first page</tspan><tspan fill="#2b2b2b" font-weight="700">&lt;/a&gt;</tspan></text>
+</g>
+<g stroke-width="3" stroke-linecap="round" fill="none">
+<path d="M20,76 L20,84 L232,84 L232,76" stroke="#2b2b2b"/><path d="M238,76 L238,84 L364,84 L364,76" stroke="#1e1b2e"/><path d="M370,76 L370,84 L406,84 L406,76" stroke="#2b2b2b"/>
+<path d="M44,44 L44,36 L222,36 L222,44" stroke="#c2410c"/>
+</g>
+<g font-family="Inter" font-size="12.5" font-weight="700" text-anchor="middle">
+<text x="126" y="104" fill="#2b2b2b">opening tag</text><text x="301" y="104" fill="#1e1b2e">content</text><text x="410" y="122" fill="#2b2b2b">closing tag</text>
+<text x="133" y="26" fill="#c2410c">attribute (name = "value")</text>
+</g>
+<text x="226" y="136" font-family="Inter" font-size="12.5" fill="#5b5873" text-anchor="middle">The whole thing, from &lt;a&gt; to &lt;/a&gt;, is one element.</text>
+</svg>
+<figcaption><b>Figure 5.1:</b> The parts of an HTML element.</figcaption>
+</figure>
+
+<ul>
+<li>The <strong>opening tag</strong> is the element’s name between angle brackets: <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;a&gt;</code>.</li>
+<li>The <strong>closing tag</strong> is the same, with a slash: <code>&lt;/p&gt;</code>.</li>
+<li><dfn>Attributes</dfn> go inside the opening tag and give extra information, always as <code>name="value"</code>. Here, <code>href</code> says where the link goes.</li>
+<li>A few elements have no content and no closing tag, such as <code>&lt;img&gt;</code> and <code>&lt;br&gt;</code>. They are called <dfn>void elements</dfn>.</li>
+</ul>
+
+<h2><span class="sec">5.2</span><span>The skeleton of every page</span></h2>
+
+<p>Every HTML page starts with the same few lines. In your <code>code-from-zero</code> folder, create a folder called <code>chapter-05</code> and in it a file called <code>first.html</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">first.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;en&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>My First Page<span class="k">&lt;/title</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Hello, web!<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>This is my very first web page. I wrote it myself, in HTML.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+
+<p>Double-click the file to open it in your browser (or drag it into a browser window):</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>first.html</span></div><img src="img/b1-ch05-en-first.html.png" alt=""><figcaption><b>Figure 5.2:</b> Your first web page.</figcaption></figure>
+
+<p>Each line of the skeleton has a job:</p>
+
+<table>
+<thead><tr><th>Line</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;!doctype html&gt;</code></td><td>Tells the browser this is a modern HTML page.</td></tr>
+<tr><td><code>&lt;html lang="en"&gt;</code></td><td>The root element that wraps everything. <code>lang</code> says which language the page is in, which helps screen readers and search engines.</td></tr>
+<tr><td><code>&lt;head&gt;</code></td><td>Information <em>about</em> the page, which is not shown in the page itself.</td></tr>
+<tr><td><code>&lt;meta charset="utf-8"&gt;</code></td><td>Uses UTF-8, the encoding for Unicode, so every language and emoji displays correctly.</td></tr>
+<tr><td><code>&lt;meta name="viewport" …&gt;</code></td><td>Makes the page fit phone screens properly.</td></tr>
+<tr><td><code>&lt;title&gt;</code></td><td>The text in the browser tab and in search results.</td></tr>
+<tr><td><code>&lt;body&gt;</code></td><td>Everything the visitor sees.</td></tr>
+</tbody>
+</table>
+
+<p>Notice how the lines are indented: elements inside other elements are moved two spaces to the right. The browser does not care about indentation, but people do. It shows at a glance which element is inside which, and Prettier does it for you every time you save.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>In VS Code, type <code>!</code> in an empty <code>.html</code> file and press <code>Tab</code>. The editor writes the whole skeleton for you. Professionals do this every day, but type it by hand a few times first so that you understand every line.</p></aside>
+
+<h2><span class="sec">5.3</span><span>Text: headings and paragraphs</span></h2>
+
+<p>Most web content is text, and HTML has elements to give it structure. From now on, listings show only the <code>&lt;body&gt;</code>, because the <code>&lt;head&gt;</code> is the same skeleton every time; only the <code>&lt;title&gt;</code> changes. The full files are in the book’s code repository.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">text.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Three Days in Cairo<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>Cairo is <span class="k">&lt;strong</span><span class="k">&gt;</span>huge, loud and wonderful<span class="k">&lt;/strong</span><span class="k">&gt;</span>. I spent three days there and still saw only a <span class="k">&lt;em</span><span class="k">&gt;</span>tiny<span class="k">&lt;/em</span><span class="k">&gt;</span> part of it.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;h2</span><span class="k">&gt;</span>Day 1: The pyramids<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>We arrived at Giza early, before the crowds. The Great Pyramid is even bigger than I imagined.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;h2</span><span class="k">&gt;</span>Day 2: Old Cairo<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+    <span class="k">&lt;h3</span><span class="k">&gt;</span>Lunch<span class="k">&lt;/h3</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>We ate koshari, a dish of rice, lentils, pasta and a spicy tomato sauce.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>text.html</span></div><img src="img/b1-ch05-en-text.html.png" alt=""><figcaption><b>Figure 5.3:</b> Headings, paragraphs and emphasis, with the browser’s default styles.</figcaption></figure>
+
+<ul>
+<li><code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code> are <strong>headings</strong>, from the most important to the least. Use one <code>&lt;h1&gt;</code> per page for its main title, then <code>&lt;h2&gt;</code> for sections, <code>&lt;h3&gt;</code> for sub-sections, and so on, like the chapters and sections of this book.</li>
+<li><code>&lt;p&gt;</code> is a <strong>paragraph</strong>. The browser adds space around each one.</li>
+<li><code>&lt;strong&gt;</code> marks text as <strong>important</strong> (shown in bold), and <code>&lt;em&gt;</code> gives it <em>emphasis</em> (shown in italics).</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Choose a heading level for its meaning, never for its size. If you want a heading to look smaller, you will change its size with CSS in Chapter 6. Screen readers, which read pages aloud for blind users, let people jump from heading to heading, so a correct order really matters.</p></aside>
+
+<h2><span class="sec">5.4</span><span>Links</span></h2>
+
+<p>Links are what make the web a <em>web</em>: pages connected to each other all over the world. The anchor element <code>&lt;a&gt;</code> creates a link, and its <code>href</code> attribute says where it goes:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">links.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Places to learn<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>The best reference for HTML is <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;https://developer.mozilla.org&quot;</span><span class="k">&gt;</span>MDN Web Docs<span class="k">&lt;/a</span><span class="k">&gt;</span>.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>Go back to <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;first.html&quot;</span><span class="k">&gt;</span>my first page<span class="k">&lt;/a</span><span class="k">&gt;</span>.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>Open <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;https://developer.mozilla.org/en-US/docs/Web/HTML&quot;</span> <span class="n">target</span>=<span class="s">&quot;_blank&quot;</span> <span class="n">rel</span>=<span class="s">&quot;noopener&quot;</span><span class="k">&gt;</span>the HTML guide<span class="k">&lt;/a</span><span class="k">&gt;</span> in a new tab.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>links.html</span></div><img src="img/b1-ch05-en-links.html.png" alt=""><figcaption><b>Figure 5.4:</b> Links are blue and underlined by default.</figcaption></figure>
+
+<p>The first link is <strong>absolute</strong>: it contains the full address of another website. The second is <strong>relative</strong>: <code>first.html</code> means “the file called <code>first.html</code> in the same folder as this page”. Use relative links between the pages of your own site, so they keep working when you move the whole site to a server.</p>
+
+<p>The third link opens in a new tab because of <code>target="_blank"</code>. The extra <code>rel="noopener"</code> is a small security measure that you should always add with it.</p>
+
+<h2><span class="sec">5.5</span><span>Images</span></h2>
+
+<p>The <code>&lt;img&gt;</code> element shows a picture. Download the file <code>bit.svg</code> from the book’s code repository into your <code>chapter-05</code> folder, or use any picture you like:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">image.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Meet Bit<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;bit.svg&quot;</span> <span class="n">alt</span>=<span class="s">&quot;Bit, a small purple robot, waving&quot;</span> <span class="n">width</span>=<span class="s">&quot;120&quot;</span> <span class="n">height</span>=<span class="s">&quot;140&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>Bit is the friendly robot who guides you through this book.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>image.html</span></div><img src="img/b1-ch05-en-image.html.png" alt=""><figcaption><b>Figure 5.5:</b> An image on the page.</figcaption></figure>
+
+<ul>
+<li><code>src</code> is the image file: a relative path, or a full address on the web.</li>
+<li><code>alt</code> is a text description of the image. Screen readers read it aloud, search engines index it, and browsers show it if the image cannot load.</li>
+<li><code>width</code> and <code>height</code> tell the browser how much space to keep, so the page does not jump around while the image loads.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Every image needs an <code>alt</code>. Describe what the image shows and why it is there, in a short sentence. If an image is pure decoration, write <code>alt=""</code>, so screen readers skip it. Good <code>alt</code> text is one of the simplest ways to make the web usable for everyone.</p></aside>
+
+<h2><span class="sec">5.6</span><span>Lists</span></h2>
+
+<p>HTML has two common kinds of list. Use <code>&lt;ul&gt;</code> (unordered list) when the order does not matter, and <code>&lt;ol&gt;</code> (ordered list) when it does. Inside both, each item is an <code>&lt;li&gt;</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lists.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Making tea<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;h2</span><span class="k">&gt;</span>You need<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+    <span class="k">&lt;ul</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>Water<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>Tea leaves<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>A cup<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>Sugar (optional)<span class="k">&lt;/li</span><span class="k">&gt;</span>
+    <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;h2</span><span class="k">&gt;</span>Steps<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+    <span class="k">&lt;ol</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>Boil the water.<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>Put the tea in the cup.<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>Pour the water and wait three minutes.<span class="k">&lt;/li</span><span class="k">&gt;</span>
+      <span class="k">&lt;li</span><span class="k">&gt;</span>Add sugar if you like.<span class="k">&lt;/li</span><span class="k">&gt;</span>
+    <span class="k">&lt;/ol</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>lists.html</span></div><img src="img/b1-ch05-en-lists.html.png" alt=""><figcaption><b>Figure 5.6:</b> The browser adds bullets and numbers for you.</figcaption></figure>
+
+<p>Lists are everywhere on the web, often in places you would not guess: the menu at the top of most websites is a list of links, styled with CSS so it no longer looks like a list.</p>
+
+<h2><span class="sec">5.7</span><span>Giving a page structure</span></h2>
+
+<p>Real pages have parts: a top area with the site’s name and menu, the main content, and a footer at the bottom. HTML has <dfn>semantic elements</dfn> for these parts. “Semantic” means they describe the <em>meaning</em> of their content, not its look:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">structure.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>Bit’s Blog<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;nav</span><span class="k">&gt;</span>
+        <span class="k">&lt;ul</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Home<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/li</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Articles<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/li</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span><span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>About<span class="k">&lt;/a</span><span class="k">&gt;</span><span class="k">&lt;/li</span><span class="k">&gt;</span>
+        <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+      <span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;/header</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;article</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>Why robots love HTML<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>Because every element has a clear job, and robots love clear jobs.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/article</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;footer</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>© 2026 Bit. Made with HTML.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;/footer</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+
+<figure>
+<svg viewBox="0 0 520 200" role="img" aria-label="Layout of a page with header containing nav, main containing article, and footer">
+<g font-family="JetBrains Mono" font-size="13" font-weight="700">
+<rect x="20" y="10" width="480" height="58" rx="8" fill="#eef2ff" stroke="#2b2b2b" stroke-width="2"/><text x="32" y="30" fill="#2b2b2b">&lt;header&gt;</text>
+<rect x="250" y="22" width="235" height="34" rx="6" fill="#fff" stroke="#2b2b2b" stroke-width="2"/><text x="262" y="44" fill="#2b2b2b">&lt;nav&gt;</text>
+<rect x="20" y="78" width="480" height="76" rx="8" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="32" y="98" fill="#2b2b2b">&lt;main&gt;</text>
+<rect x="40" y="106" width="440" height="38" rx="6" fill="#fff" stroke="#2b2b2b" stroke-width="2"/><text x="52" y="130" fill="#2b2b2b">&lt;article&gt;</text>
+<rect x="20" y="164" width="480" height="30" rx="8" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="32" y="184" fill="#2b2b2b">&lt;footer&gt;</text>
+</g>
+</svg>
+<figcaption><b>Figure 5.7:</b> The parts of the page above. Without CSS they look like plain text, but the browser, search engines and screen readers know what each part is.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>Element</th><th>Use it for</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;header&gt;</code></td><td>The introduction of the page or a section: logo, title, menu</td></tr>
+<tr><td><code>&lt;nav&gt;</code></td><td>The main navigation links</td></tr>
+<tr><td><code>&lt;main&gt;</code></td><td>The main content. Only one per page.</td></tr>
+<tr><td><code>&lt;section&gt;</code></td><td>A themed part of the content, usually with a heading</td></tr>
+<tr><td><code>&lt;article&gt;</code></td><td>Content that makes sense on its own: a blog post, a news story, a product</td></tr>
+<tr><td><code>&lt;footer&gt;</code></td><td>The end of the page or section: copyright, contacts, links</td></tr>
+</tbody>
+</table>
+
+<p>You will also meet two elements with no meaning at all: <code>&lt;div&gt;</code>, a general block, and <code>&lt;span&gt;</code>, a general piece of inline text. Use them only when no semantic element fits, usually as hooks for CSS.</p>
+
+<h2><span class="sec">5.8</span><span>A first look at forms</span></h2>
+
+<p>Forms let visitors send information: a search, a login, a sign-up. You will make forms come alive with JavaScript in Chapter 12, but the structure is pure HTML:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">form.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Join the newsletter<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;form</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>
+        <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;name&quot;</span><span class="k">&gt;</span>Your name<span class="k">&lt;/label</span><span class="k">&gt;</span>
+        <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;name&quot;</span> <span class="n">name</span>=<span class="s">&quot;name&quot;</span> <span class="n">type</span>=<span class="s">&quot;text&quot;</span> required<span class="k">&gt;</span>
+      <span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>
+        <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;email&quot;</span><span class="k">&gt;</span>Your email<span class="k">&lt;/label</span><span class="k">&gt;</span>
+        <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;email&quot;</span> <span class="n">name</span>=<span class="s">&quot;email&quot;</span> <span class="n">type</span>=<span class="s">&quot;email&quot;</span> required<span class="k">&gt;</span>
+      <span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;submit&quot;</span><span class="k">&gt;</span>Sign me up<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/form</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>form.html</span></div><img src="img/b1-ch05-en-form.html.png" alt=""><figcaption><b>Figure 5.8:</b> A form with two fields and a button.</figcaption></figure>
+
+<p>Each <code>&lt;input&gt;</code> has a <code>&lt;label&gt;</code>, connected by matching <code>for</code> and <code>id</code> values. Clicking the label puts the cursor in the field, and screen readers announce the label. <code>type="email"</code> brings the right keyboard on phones, and <code>required</code> makes the browser refuse to send an empty field. Try pressing the button with the fields empty!</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>In <code>&lt;img src="cat.jpg" alt="A sleeping cat"&gt;</code>, what are the attributes, and why does this element have no closing tag?</li><li>When should you use <code>&lt;ol&gt;</code> instead of <code>&lt;ul&gt;</code>?</li><li>How many <code>&lt;h1&gt;</code> elements should a page have?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">5.9</span><span>Project: your profile page</span></h2>
+
+<p>Let us combine everything into a real page: a profile of Sara, a new web developer. Replace her details with your own as you type.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">profile.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>
+      <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;bit.svg&quot;</span> <span class="n">alt</span>=<span class="s">&quot;Sara’s avatar: a smiling purple robot&quot;</span> <span class="n">width</span>=<span class="s">&quot;90&quot;</span> <span class="n">height</span>=<span class="s">&quot;105&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>Sara Khan<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>Beginner web developer from Alexandria<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;nav</span><span class="k">&gt;</span>
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#about&quot;</span><span class="k">&gt;</span>About<span class="k">&lt;/a</span><span class="k">&gt;</span> |
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#skills&quot;</span><span class="k">&gt;</span>Skills<span class="k">&lt;/a</span><span class="k">&gt;</span> |
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#contact&quot;</span><span class="k">&gt;</span>Contact<span class="k">&lt;/a</span><span class="k">&gt;</span>
+      <span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;/header</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;section</span> <span class="n">id</span>=<span class="s">&quot;about&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>About me<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>I started learning to code this year with <span class="k">&lt;em</span><span class="k">&gt;</span>Code from Zero<span class="k">&lt;/em</span><span class="k">&gt;</span>. I love building small tools that make life easier.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/section</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;section</span> <span class="n">id</span>=<span class="s">&quot;skills&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>Skills I am learning<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;ul</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span>HTML<span class="k">&lt;/li</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span>CSS<span class="k">&lt;/li</span><span class="k">&gt;</span>
+          <span class="k">&lt;li</span><span class="k">&gt;</span>JavaScript<span class="k">&lt;/li</span><span class="k">&gt;</span>
+        <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+      <span class="k">&lt;/section</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;section</span> <span class="n">id</span>=<span class="s">&quot;contact&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;h2</span><span class="k">&gt;</span>Contact<span class="k">&lt;/h2</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>Write to me at <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;mailto:sara@example.com&quot;</span><span class="k">&gt;</span>sara@example.com<span class="k">&lt;/a</span><span class="k">&gt;</span>.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/section</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;footer</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>Built by Sara, with HTML only.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;/footer</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span></div><img src="img/b1-ch05-en-profile.html.png" alt=""><figcaption><b>Figure 5.9:</b> The profile page, with HTML only and no styling yet.</figcaption></figure>
+
+<p>Two new tricks appear here. The links in the menu point to <code>#about</code>, <code>#skills</code> and <code>#contact</code>: a <code>#</code> followed by an <code>id</code> jumps to the element with that <code>id</code> on the same page. And the contact link starts with <code>mailto:</code>, which opens the visitor’s email app.</p>
+
+<p>The page works, and its structure is excellent, but it is plain. That is normal: HTML’s job is structure, not beauty. In the next two chapters you will turn exactly this page into something you will be proud to share.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Right-click your page and choose <strong>Inspect</strong>. The Elements panel shows the tree of elements you wrote. You built that tree! Hover over each element and watch the browser highlight it on the page.</p></div></div>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting a closing tag, such as <code>&lt;/p&gt;</code></td><td>The browser guesses where the element ends, sometimes wrongly</td><td>Close every element that has content</td></tr>
+<tr><td>Wrong nesting: <code>&lt;p&gt;&lt;strong&gt;…&lt;/p&gt;&lt;/strong&gt;</code></td><td>Unpredictable layout</td><td>Close elements in the reverse order you opened them</td></tr>
+<tr><td>Missing <code>&lt;meta charset="utf-8"&gt;</code></td><td>Arabic or accented letters show as strange symbols</td><td>Always start with the full skeleton</td></tr>
+<tr><td>Spaces or capital letters in file names</td><td>Links work on your computer but break on a server</td><td>Use names like <code>about-me.html</code></td></tr>
+<tr><td>Image without <code>alt</code></td><td>Screen reader users do not know what it shows</td><td>Describe every meaningful image</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>HTML marks up content with <strong>elements</strong>: an opening tag, content, and a closing tag. <strong>Attributes</strong> add information as <code>name="value"</code>.</li>
+<li>Every page starts with the same <strong>skeleton</strong>: doctype, <code>html</code> with <code>lang</code>, <code>head</code> with charset, viewport and title, and <code>body</code>.</li>
+<li>Use headings <code>h1</code> to <code>h6</code> in order, paragraphs <code>p</code>, and <code>strong</code> and <code>em</code> for importance and emphasis.</li>
+<li><code>a</code> makes links with <code>href</code>; <code>img</code> shows images with <code>src</code> and a meaningful <code>alt</code>.</li>
+<li><code>ul</code> and <code>ol</code> hold list items <code>li</code>.</li>
+<li><strong>Semantic elements</strong> such as <code>header</code>, <code>nav</code>, <code>main</code>, <code>section</code>, <code>article</code> and <code>footer</code> describe the structure of the page.</li>
+<li>Forms use <code>form</code>, <code>label</code>, <code>input</code> and <code>button</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The attributes are <code>src</code> and <code>alt</code>. <code>&lt;img&gt;</code> is a void element: it has no content between tags, so it needs no closing tag. 2. When the order of the items matters, such as steps or a ranking. 3. One.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Create <code>favourites.html</code> with a heading and an unordered list of your five favourite films, books or games.</li>
+<li><span class="level">Easy</span> Add a link from <code>favourites.html</code> to <code>profile.html</code>, and a link back again.</li>
+<li><span class="level medium">Medium</span> Write a recipe page for a dish you like, with an <code>&lt;h1&gt;</code>, an image with a good <code>alt</code>, a list of ingredients and numbered steps.</li>
+<li><span class="level medium">Medium</span> Open any large website, open DevTools and look at the Elements panel. Find its <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code> and <code>&lt;footer&gt;</code>. Does it use semantic elements, or only <code>&lt;div&gt;</code>s?</li>
+<li><span class="level hard">Challenge</span> Turn your profile page into a small three-page website: <code>index.html</code> (about you), <code>projects.html</code> and <code>contact.html</code> with a form. Every page should have the same <code>&lt;header&gt;</code> and <code>&lt;nav&gt;</code> linking to the other two.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 6</p>
+<p>Your profile page has a great skeleton. Next, CSS gives it colours, fonts, spacing and personality. By the end of Chapter 6 you will hardly recognise it.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/en">
