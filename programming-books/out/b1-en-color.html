@@ -7113,6 +7113,124 @@ render();</pre></div>
 <li>Start your <strong>portfolio</strong> now: a few finished, accessible, published projects.</li>
 </ul>
 
+<!-- projects -->
+<h2 class="plain-h">Graduation projects</h2>
+
+<p class="projects-intro">These last three projects turn everything you built in this book into something you can show the world. They are not about new code; they are about presenting your work the way professionals do. When you finish them, you will have a portfolio, not just a folder of exercises.</p>
+
+<div class="project">
+<p class="project-label">Project 18.1 · Easy</p>
+<h3>A README that sells your project</h3>
+<p class="project-goal">Write the page a visitor sees first on GitHub, so that in thirty seconds they know what your app does, can try it, and can see what you learned.</p>
+<p class="project-skills"><strong>You will practise:</strong> Markdown headings, lists, links and images, and writing for a busy reader.</p>
+<ol class="steps">
+<li>In your tasks app folder, create <code>README.md</code>. GitHub shows it automatically under your files.</li>
+<li>Start with the name and one sentence that says what it is and who it is for.</li>
+<li>Add the live link from GitHub Pages and a screenshot, saved in the same folder.</li>
+<li>List the features in short lines. Mention accessibility and both languages: they make you stand out.</li>
+<li>End with “What I learned”, in two or three honest sentences. Recruiters read this part.</li>
+<li>Commit, push, and look at your repository page on GitHub.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> write it for someone who will never run your code. Most visitors only read the first screen, so put the link and the screenshot near the top.</p>
+<div class="listing" dir="ltr"><div class="listing-title">README.md</div><pre class="code md"><b># My Tasks</b>
+
+A small, fast to-do list that works in any browser and remembers your tasks.
+
+**Live:** https://sara-khan.github.io/my-tasks/
+
+![My Tasks on a phone and a laptop](screenshot.png)
+
+<b>## Features</b>
+
+- Add, tick off, edit and delete tasks
+- Filter: all, to do, done
+- Progress bar, and a count of what is left
+- English and Arabic, with right-to-left layout
+- Saved in the browser with localStorage
+- Works with the keyboard and screen readers
+
+<b>## Built with</b>
+
+HTML, CSS and JavaScript. No frameworks, no build step.
+
+<b>## Run it locally</b>
+
+1. Download or clone this repository.
+2. Open `index.html` in your browser.
+
+<b>## What I learned</b>
+
+How to plan a project before coding, keep the data separate from the
+display, and test a page with only the keyboard.</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 18.2 · Medium</p>
+<h3>Your portfolio home page</h3>
+<p class="project-goal">Build one page that introduces you and links to your best three projects, and publish it as your personal site.</p>
+<p class="project-skills"><strong>You will practise:</strong> everything from chapters 5 to 7 and 16: semantic HTML, Grid with <code>auto-fit</code>, Flexbox, custom properties, and the keyboard test.</p>
+<ol class="steps">
+<li>Header: your name in an <code>h1</code>, one line about what you do, and two links, one to contact you and one to your CV.</li>
+<li>“Selected work”: a grid of three cards with <code>repeat(auto-fit, minmax(200px, 1fr))</code>, so it becomes one column on a phone without a media query.</li>
+<li>Each card has a picture, a title, one sentence, and two links: the live app and its code on GitHub.</li>
+<li>“Skills”: a list of short tags. List only what you can show in a project.</li>
+<li>Run the checks from chapter 16: headings in order, every link has clear text, contrast passes, the keyboard reaches everything.</li>
+<li>Publish it in a repository named <code>your-username.github.io</code>, and it appears at that address.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> three finished, polished projects beat ten half-done ones. The quiz from chapter 12 and the weather report from chapter 13 are good candidates to polish and add next to your tasks app.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>portfolio.html</span><b>760px</b></div><img src="img/b1-ch18-en-projects-portfolio.html-760.png" alt=""><figcaption><b>Project 18.2:</b> a portfolio page on a wide screen…</figcaption></figure>
+<figure class="browser" style="width: 68%; margin-inline: auto"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>portfolio.html</span><b>380px</b></div><img src="img/b1-ch18-en-projects-portfolio.html-380.png" alt=""><figcaption>…and on a phone.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 18.3 · Challenge</p>
+<h3>Your own app, from idea to launch</h3>
+<p class="project-goal">Choose a small problem from your own life, plan an app that solves it, and publish version 1 in about a week, alone.</p>
+<p class="project-skills"><strong>You will practise:</strong> the whole method from chapter 17, deciding what to leave out, and finishing.</p>
+<ol class="steps">
+<li>Write one sentence for the problem and one for who has it. If you cannot, choose another idea.</li>
+<li>Split the features into “must have” and “nice to have”. Version 1 gets only the first list, three or four items at most.</li>
+<li>Sketch the screens on paper, and write the data as one JavaScript object.</li>
+<li>Break the work into daily milestones, each one ending with something that works and a commit.</li>
+<li>Build it in the order from chapter 17: HTML, then CSS, then JavaScript, then the tests.</li>
+<li>Publish it, write its README, add it to your portfolio, and send the link to one person who will use it. Their first question is your next feature.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the hardest part of a real project is not the code; it is saying “not now” to good ideas so that you finish. Every professional product you use started as a small version 1.</p>
+<div class="listing" dir="ltr"><div class="listing-title">plan.md</div><pre class="code md"><b># Plan: Water Buddy</b>
+
+<b>## The problem</b>
+I forget to drink water when I study.
+
+<b>## Who it is for</b>
+Students who sit at a desk for hours.
+
+<b>## Must have (version 1)</b>
+- Set a daily goal in glasses
+- One big button: &quot;I drank a glass&quot;
+- Progress bar for today, reset every new day
+- Saved in localStorage
+
+<b>## Nice to have (later)</b>
+- A reminder every hour
+- A weekly chart
+- Arabic and English
+
+<b>## Screens</b>
+1. Today: goal, progress, the big button
+2. Settings: change the goal
+
+<b>## Data</b>
+{ goal: 8, today: &quot;2026-05-01&quot;, glasses: 3 }
+
+<b>## Milestones</b>
+- Day 1: HTML and CSS, mobile first
+- Day 2: the button and the progress bar
+- Day 3: save, load, reset on a new day
+- Day 4: keyboard test, contrast, README
+- Day 5: publish on GitHub Pages, share the link</pre></div>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">Final exercises</h2>
 
 <ol class="exercises">

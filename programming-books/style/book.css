@@ -179,13 +179,14 @@ figure.browser img { display: block; width: 100%; height: auto; max-height: 6.4i
 /* Practice projects at the end of every chapter: guided, step by step. */
 .projects-intro { color: var(--muted); }
 .project { border: 1.5pt solid var(--brand); border-radius: 12pt; padding: 10pt 14pt 6pt; margin: 1.1em 0 1.3em; background: linear-gradient(180deg, var(--brand-soft), #fff 70pt); }
-.project-label { display: inline-block; font: 700 8pt var(--head); color: #fff; background: var(--brand); border-radius: 8pt; padding: 1pt 9pt; margin: 0 0 4pt; }
+.project-label { display: block; width: fit-content; break-after: avoid; font: 700 8pt var(--head); color: #fff; background: var(--brand); border-radius: 8pt; padding: 1pt 9pt; margin: 0 0 4pt; }
 .project-label.medium { background: var(--warn); } .project-label.hard { background: var(--fact); }
-.project h3 { margin: 2pt 0 4pt; font-size: 12.5pt; color: var(--ink); }
-.project-goal { font-size: 1.02em; }
+.project h3 { margin: 2pt 0 4pt; font-size: 12.5pt; color: var(--ink); break-after: avoid; }
+.project-goal { font-size: 1.02em; break-after: avoid; }
 .project-skills { font-size: 0.92em; color: var(--muted); }
 .project .steps { counter-reset: step; list-style: none; padding: 0; }
 .project .steps > li { counter-increment: step; position: relative; padding-inline-start: 26pt; margin-bottom: 6pt; }
 .project .steps > li::before { content: counter(step); position: absolute; inset-inline-start: 0; top: 1pt; width: 17pt; height: 17pt; border-radius: 50%; background: var(--brand); color: #fff; font: 700 8.5pt/17pt var(--head); text-align: center; }
 .hint { background: var(--tip-soft); border-radius: 8pt; padding: 5pt 10pt; font-size: 0.93em; }
 .solution { font-size: 0.88em; color: var(--muted); }
+pre.code.md { unicode-bidi: plaintext; }

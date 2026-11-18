@@ -112,6 +112,9 @@ def highlight(src, name):
         return highlight_markup(src, ext)
     if ext in ("sh", "txt"):
         return highlight_shell(src)
+    if ext == "md":
+        # Markdown: headings in bold, everything else as written.
+        return "\n".join(f"<b>{html.escape(l)}</b>" if l.startswith("#") else html.escape(l) for l in src.split("\n"))
     return html.escape(src)
 
 
@@ -145,7 +148,8 @@ def fill_code(chapter, lang):
             a = next(i for i, l in enumerate(lines) if l.strip() == "<body>")
             b = next(i for i, l in enumerate(lines) if l.strip() == "</body>")
             src = "\n".join(["  ..."] + lines[a:b + 1] + ["  ..."])
-        return f'<div class="listing" dir="ltr">{head}<pre class="code">{highlight(src, f)}</pre></div>'
+        cls = "code md" if f.endswith(".md") else "code"
+        return f'<div class="listing" dir="ltr">{head}<pre class="{cls}">{highlight(src, f)}</pre></div>'
 
     def out(m):
         attrs = m.group(1)

@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 START, END = "<!-- projects -->", "<!-- /projects -->"
-ANCHOR = {"en": "<h2>Exercises</h2>", "ar": "<h2>تمارين</h2>"}
+ANCHOR = {"en": ("<h2>Exercises</h2>", "<h2>Final exercises</h2>"), "ar": ("<h2>تمارين</h2>", "<h2>تمارين أخيرة</h2>")}
 
 
 def place(book, number):
@@ -23,8 +23,9 @@ def place(book, number):
         if START in text:
             text = re.sub(re.escape(START) + r".*?" + re.escape(END) + r"\n\n", lambda m: block, text, flags=re.S)
         else:
-            assert text.count(ANCHOR[lang]) == 1, (src, "no single exercises heading")
-            text = text.replace(ANCHOR[lang], block + ANCHOR[lang])
+            anchor = [a for a in ANCHOR[lang] if text.count(a) == 1]
+            assert anchor, (src, "no single exercises heading")
+            text = text.replace(anchor[0], block + anchor[0])
         src.write_text(text)
         print("placed", src.relative_to(ROOT))
 
