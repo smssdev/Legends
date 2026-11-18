@@ -39,6 +39,8 @@
 @page ch15:first { @top-center { content: none; } }
 @page ch16 { @top-center { content: "Chapter 16: Accessible Pages for Everyone"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "Chapter 17: Project: Build and Publish a Web App"; } }
+@page ch17:first { @top-center { content: none; } }
 </style></head>
 <body><section class="front half-title"><p class="ht">Code from Zero</p></section><section class="front title-page">
           <p class="tp-series">From Zero to Senior · Book 1</p>
@@ -3900,7 +3902,7 @@ form.addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
   output.textContent = <span class="s">`Hello, ${name}! Welcome to the web.`</span>;
   input.value = <span class="s">&quot;&quot;</span>;
 });</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>greet.html</span><b>560px</b></div><img src="img/b1-ch12-en-greet.html-560-2d4833.png" alt=""><figcaption><b>Figure 12.4:</b> After typing a name and pressing the button.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>greet.html</span><b>560px</b></div><img src="img/b1-ch12-en-greet.html-560-6f567e.png" alt=""><figcaption><b>Figure 12.4:</b> After typing a name and pressing the button.</figcaption></figure>
 
 <ul>
 <li>The handler receives an <dfn>event object</dfn> with details about what happened.</li>
@@ -5025,8 +5027,8 @@ node_modules/
     <span class="k">&lt;/main</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
 <span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-en-focus.html-560-d38a63.png" alt=""><figcaption><b>Figure 16.2:</b> After pressing Tab once: the hidden skip link appears.</figcaption></figure>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-en-focus.html-560-71e346.png" alt=""><figcaption><b>Figure 16.3:</b> Two more presses: the focused link has a thick, clear outline.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-en-focus.html-560-4cd342.png" alt=""><figcaption><b>Figure 16.2:</b> After pressing Tab once: the hidden skip link appears.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-en-focus.html-560-24f4b4.png" alt=""><figcaption><b>Figure 16.3:</b> Two more presses: the focused link has a thick, clear outline.</figcaption></figure>
 
 <ul>
 <li><code>:focus-visible</code> styles the focus when the user is using the keyboard. Never remove the outline with <code>outline: none</code> unless you replace it with something at least as visible.</li>
@@ -5157,6 +5159,389 @@ node_modules/
 <div class="next">
 <p class="next-title">Coming up in Chapter 17</p>
 <p>You now have every skill this book teaches. In the next chapter you will put them all together in one complete project, from the first idea to a real address on the internet that you can send to your friends.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b1/ch17/en">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">Chapter 17</p><h1>Project: Build and Publish a Web App</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>plan an app before writing code: features, a sketch and the shape of the data</li>
+<li>build a complete daily tasks app with HTML, CSS and JavaScript</li>
+<li>save data in the browser with <code>localStorage</code>, so it survives a reload</li>
+<li>test it like a professional: keyboard, phone width and unusual cases</li>
+<li>publish it on the internet for free with GitHub Pages</li>
+</ul>
+</div>
+
+<p class="lead">This is the chapter where everything comes together. You will build a real app that you can use every day: a list of daily tasks that you can add, tick off, filter and delete, and that remembers everything when you close the browser. Then you will give it an address on the internet that you can open on your phone and send to your friends. Every skill from the previous sixteen chapters has a part to play.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>This is my favourite chapter! At the end of it, you won’t just have learned to code. You’ll have <em>shipped</em> something: a real app, live on the web, built by you from nothing. Let’s go!</p></div></div>
+
+<h2><span class="sec">17.1</span><span>Plan first</span></h2>
+
+<p>Chapter 2 taught you to think before you type. Professionals start every project the same way: they write down what the app must do, sketch how it will look, and decide what data it needs.</p>
+
+<h3>What the app does</h3>
+<ol>
+<li>Add a task by typing it and pressing Enter or the Add button.</li>
+<li>Tick a task to mark it as done, and untick it again.</li>
+<li>Delete a task.</li>
+<li>Show all tasks, only the tasks still to do, or only the finished ones.</li>
+<li>Show how many tasks are left, and clear all finished tasks at once.</li>
+<li>Remember everything after the browser is closed.</li>
+<li>Work with a keyboard, on a phone, and in English or Arabic.</li>
+</ol>
+
+<h3>A sketch</h3>
+
+<figure>
+<svg viewBox="0 0 520 240" role="img" aria-label="A sketch of the app: title, input with Add button, filter buttons, task list and footer">
+<rect x="110" y="10" width="300" height="220" rx="16" fill="#fff" stroke="#2b2b2b" stroke-width="2" stroke-dasharray="6 4"/>
+<g font-family="Inter" font-size="12">
+<rect x="130" y="26" width="110" height="18" rx="4" fill="#c7d2fe"/><text x="250" y="40" fill="#5b5873">title</text>
+<rect x="130" y="56" width="200" height="26" rx="8" fill="none" stroke="#5b5873" stroke-width="1.5"/><text x="140" y="74" fill="#9ca3af">new task…</text>
+<rect x="338" y="56" width="52" height="26" rx="13" fill="#2b2b2b"/><text x="351" y="74" fill="#fff">Add</text>
+<rect x="130" y="94" width="40" height="18" rx="9" fill="#2b2b2b"/><rect x="176" y="94" width="48" height="18" rx="9" fill="#eef2ff"/><rect x="230" y="94" width="44" height="18" rx="9" fill="#eef2ff"/><text x="282" y="107" fill="#5b5873">filters</text>
+<g stroke="#5b5873" stroke-width="1.5" fill="none"><rect x="130" y="124" width="12" height="12" rx="2"/><rect x="130" y="150" width="12" height="12" rx="2"/><rect x="130" y="176" width="12" height="12" rx="2"/></g>
+<rect x="150" y="126" width="140" height="8" rx="4" fill="#e5e7eb"/><rect x="150" y="152" width="110" height="8" rx="4" fill="#e5e7eb"/><rect x="150" y="178" width="160" height="8" rx="4" fill="#e5e7eb"/>
+<g fill="#efefef"><rect x="350" y="122" width="40" height="16" rx="8"/><rect x="350" y="148" width="40" height="16" rx="8"/><rect x="350" y="174" width="40" height="16" rx="8"/></g>
+<text x="130" y="214" fill="#5b5873">2 tasks left</text><text x="320" y="214" fill="#5b5873">Clear done</text>
+</g>
+<g font-family="Inter" font-size="11.5" font-weight="700" fill="#2b2b2b"><text x="10" y="74">form</text><text x="10" y="107">filter buttons</text><text x="10" y="160">task list</text><text x="10" y="214">footer</text><text x="420" y="135">delete</text></g>
+</svg>
+<figcaption><b>Figure 17.1:</b> A sketch on paper (or in a few boxes) saves hours of changing code later.</figcaption>
+</figure>
+
+<h3>The data</h3>
+
+<p>Each task needs a unique <code>id</code>, its <code>text</code>, and whether it is <code>done</code>. The whole app’s data is an array of these objects, plus the current filter:</p>
+
+<pre class="plain">[
+  { id: 1741766400000, text: "Read chapter 17", done: true },
+  { id: 1741766460000, text: "Practise Flexbox", done: false }
+]</pre>
+
+<p>Everything else on the screen, the list, the counter and the highlighted filter, can be calculated from this data. That decision will make the code simple.</p>
+
+<h2><span class="sec">17.2</span><span>The HTML</span></h2>
+
+<p>Create a folder called <code>my-tasks</code> with three files. The HTML holds the structure, and is almost empty where the tasks will go:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">index.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;en&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>My Tasks<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;link</span> <span class="n">rel</span>=<span class="s">&quot;stylesheet&quot;</span> <span class="n">href</span>=<span class="s">&quot;style.css&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span> <span class="n">class</span>=<span class="s">&quot;app&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>My Tasks<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;subtitle&quot;</span><span class="k">&gt;</span>Small steps, every day.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;form</span> <span class="n">id</span>=<span class="s">&quot;new-task&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;task-text&quot;</span> <span class="n">class</span>=<span class="s">&quot;visually-hidden&quot;</span><span class="k">&gt;</span>New task<span class="k">&lt;/label</span><span class="k">&gt;</span>
+        <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;task-text&quot;</span> <span class="n">type</span>=<span class="s">&quot;text&quot;</span> <span class="n">placeholder</span>=<span class="s">&quot;e.g. Read chapter 17&quot;</span> required<span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">class</span>=<span class="s">&quot;primary&quot;</span> <span class="n">type</span>=<span class="s">&quot;submit&quot;</span><span class="k">&gt;</span>Add<span class="k">&lt;/button</span><span class="k">&gt;</span>
+      <span class="k">&lt;/form</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;filters&quot;</span> <span class="n">role</span>=<span class="s">&quot;group&quot;</span> <span class="n">aria-label</span>=<span class="s">&quot;Show&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">data-filter</span>=<span class="s">&quot;all&quot;</span> <span class="n">aria-pressed</span>=<span class="s">&quot;true&quot;</span><span class="k">&gt;</span>All<span class="k">&lt;/button</span><span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">data-filter</span>=<span class="s">&quot;active&quot;</span> <span class="n">aria-pressed</span>=<span class="s">&quot;false&quot;</span><span class="k">&gt;</span>To do<span class="k">&lt;/button</span><span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">data-filter</span>=<span class="s">&quot;done&quot;</span> <span class="n">aria-pressed</span>=<span class="s">&quot;false&quot;</span><span class="k">&gt;</span>Done<span class="k">&lt;/button</span><span class="k">&gt;</span>
+      <span class="k">&lt;/div</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;ul</span> <span class="n">id</span>=<span class="s">&quot;tasks&quot;</span><span class="k">&gt;</span><span class="k">&lt;/ul</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;empty&quot;</span> <span class="n">id</span>=<span class="s">&quot;empty&quot;</span><span class="k">&gt;</span>Nothing here yet. Add your first task above!<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;footer</span><span class="k">&gt;</span>
+        <span class="k">&lt;span</span> <span class="n">id</span>=<span class="s">&quot;count&quot;</span> <span class="n">aria-live</span>=<span class="s">&quot;polite&quot;</span><span class="k">&gt;</span><span class="k">&lt;/span</span><span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">id</span>=<span class="s">&quot;clear&quot;</span><span class="k">&gt;</span>Clear done<span class="k">&lt;/button</span><span class="k">&gt;</span>
+      <span class="k">&lt;/footer</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;app.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+
+<p>Notice the accessibility details from Chapter 16: a real <code>&lt;form&gt;</code> so Enter works, a label for the input (visually hidden, because the placeholder and button make the purpose clear to sighted users), real <code>&lt;button&gt;</code> elements, <code>aria-pressed</code> to tell screen readers which filter is on, and <code>aria-live</code> so the count is announced when it changes.</p>
+
+<h2><span class="sec">17.3</span><span>The CSS</span></h2>
+
+<p>The stylesheet uses custom properties, Flexbox, rounded corners and visible focus, all from Chapters 6 and 7. It uses no physical directions, so the same file styles the Arabic version. It is in the book’s code repository as <code>style.css</code>; here are the most interesting parts:</p>
+
+<pre class="plain">form {
+  display: flex;
+  gap: 8px;
+}
+form input {
+  flex: 1;                /* the input takes all the free space */
+}
+.filters button[aria-pressed="true"] {
+  color: white;           /* the active filter is styled from */
+  background: var(--brand); /* the same attribute screen readers use */
+}
+li.done label {
+  color: var(--muted);
+  text-decoration: line-through;
+}</pre>
+
+<p>Styling the active filter with <code>[aria-pressed="true"]</code> is a neat professional trick: the look and the accessibility information can never disagree, because they are the same attribute.</p>
+
+<h2><span class="sec">17.4</span><span>The JavaScript</span></h2>
+
+<p>The program follows the pattern from Chapter 12: data, changes, display, and events. Read it section by section:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app.js</div><pre class="code"><span class="c">// ---------- Data ----------</span>
+<span class="k">const</span> STORAGE_KEY = <span class="s">&quot;my-tasks&quot;</span>;
+<span class="k">let</span> tasks = load();
+<span class="k">let</span> filter = <span class="s">&quot;all&quot;</span>;
+
+<span class="k">function</span> load() {
+  <span class="k">const</span> saved = localStorage.getItem(STORAGE_KEY);
+  <span class="k">return</span> saved ? JSON.parse(saved) : [];
+}
+
+<span class="k">function</span> save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
+
+<span class="c">// ---------- Changes ----------</span>
+<span class="k">function</span> addTask(text) {
+  tasks.push({ id: Date.now(), text, done: <span class="k">false</span> });
+  update();
+}
+
+<span class="k">function</span> toggleTask(id) {
+  <span class="k">const</span> task = tasks.find((t) =&gt; t.id === id);
+  task.done = !task.done;
+  update();
+}
+
+<span class="k">function</span> deleteTask(id) {
+  tasks = tasks.filter((t) =&gt; t.id !== id);
+  update();
+}
+
+<span class="k">function</span> clearDone() {
+  tasks = tasks.filter((t) =&gt; !t.done);
+  update();
+}
+
+<span class="k">function</span> update() {
+  save();
+  render();
+}
+
+<span class="c">// ---------- Display ----------</span>
+<span class="k">function</span> visibleTasks() {
+  <span class="k">if</span> (filter === <span class="s">&quot;active&quot;</span>) <span class="k">return</span> tasks.filter((t) =&gt; !t.done);
+  <span class="k">if</span> (filter === <span class="s">&quot;done&quot;</span>) <span class="k">return</span> tasks.filter((t) =&gt; t.done);
+  <span class="k">return</span> tasks;
+}
+
+<span class="k">function</span> taskItem(task) {
+  <span class="k">const</span> li = document.createElement(<span class="s">&quot;li&quot;</span>);
+  li.classList.toggle(<span class="s">&quot;done&quot;</span>, task.done);
+
+  <span class="k">const</span> box = document.createElement(<span class="s">&quot;input&quot;</span>);
+  box.type = <span class="s">&quot;checkbox&quot;</span>;
+  box.id = <span class="s">`task-${task.id}`</span>;
+  box.checked = task.done;
+  box.addEventListener(<span class="s">&quot;change&quot;</span>, () =&gt; toggleTask(task.id));
+
+  <span class="k">const</span> label = document.createElement(<span class="s">&quot;label&quot;</span>);
+  label.htmlFor = box.id;
+  label.textContent = task.text;
+
+  <span class="k">const</span> remove = document.createElement(<span class="s">&quot;button&quot;</span>);
+  remove.type = <span class="s">&quot;button&quot;</span>;
+  remove.className = <span class="s">&quot;delete&quot;</span>;
+  remove.textContent = <span class="s">&quot;Delete&quot;</span>;
+  remove.setAttribute(<span class="s">&quot;aria-label&quot;</span>, <span class="s">`Delete: ${task.text}`</span>);
+  remove.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; deleteTask(task.id));
+
+  li.append(box, label, remove);
+  <span class="k">return</span> li;
+}
+
+<span class="k">function</span> leftText(count) {
+  <span class="k">if</span> (count === <span class="n">0</span>) <span class="k">return</span> <span class="s">&quot;All done!&quot;</span>;
+  <span class="k">if</span> (count === <span class="n">1</span>) <span class="k">return</span> <span class="s">&quot;1 task left&quot;</span>;
+  <span class="k">return</span> <span class="s">`${count} tasks left`</span>;
+}
+
+<span class="k">function</span> render() {
+  <span class="k">const</span> list = document.querySelector(<span class="s">&quot;#tasks&quot;</span>);
+  list.replaceChildren(...visibleTasks().map(taskItem));
+
+  document.querySelector(<span class="s">&quot;#empty&quot;</span>).hidden = tasks.length &gt; <span class="n">0</span>;
+
+  <span class="k">const</span> count = tasks.filter((t) =&gt; !t.done).length;
+  document.querySelector(<span class="s">&quot;#count&quot;</span>).textContent = leftText(count);
+
+  <span class="k">for</span> (<span class="k">const</span> button <span class="k">of</span> document.querySelectorAll(<span class="s">&quot;[data-filter]&quot;</span>)) {
+    button.setAttribute(<span class="s">&quot;aria-pressed&quot;</span>, String(button.dataset.filter === filter));
+  }
+}
+
+<span class="c">// ---------- Events ----------</span>
+document.querySelector(<span class="s">&quot;#new-task&quot;</span>).addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
+  event.preventDefault();
+  <span class="k">const</span> input = document.querySelector(<span class="s">&quot;#task-text&quot;</span>);
+  <span class="k">const</span> text = input.value.trim();
+  <span class="k">if</span> (text) {
+    addTask(text);
+    input.value = <span class="s">&quot;&quot;</span>;
+  }
+  input.focus();
+});
+
+<span class="k">for</span> (<span class="k">const</span> button <span class="k">of</span> document.querySelectorAll(<span class="s">&quot;[data-filter]&quot;</span>)) {
+  button.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; {
+    filter = button.dataset.filter;
+    render();
+  });
+}
+
+document.querySelector(<span class="s">&quot;#clear&quot;</span>).addEventListener(<span class="s">&quot;click&quot;</span>, clearDone);
+
+render();</pre></div>
+
+<h3>Remembering data: localStorage</h3>
+
+<p>Variables disappear when the page is closed. <code>localStorage</code> is a small storage space that each website gets in the browser, and it survives reloads and restarts. It stores only strings, so we use JSON from Chapter 11:</p>
+<ul>
+<li><code>save()</code> turns the tasks into JSON and stores them under the key <code>"my-tasks"</code>.</li>
+<li><code>load()</code> reads them back when the page opens, or starts with an empty array the very first time.</li>
+<li>Every change goes through <code>update()</code>, which saves and then redraws. Because there is only one path, the screen and the storage can never get out of step.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p><code>localStorage</code> belongs to one browser on one device. Tasks added on your phone will not appear on your laptop, and clearing the browser’s data deletes them. Syncing between devices needs a server and a database, which is exactly what the backend books in this series teach.</p></aside>
+
+<h3>Other details worth noticing</h3>
+<ul>
+<li><code>Date.now()</code> returns the number of milliseconds since 1970, a simple way to get a unique id.</li>
+<li><code>tasks.filter(…)</code> creates new arrays for deleting and clearing, which is simpler and safer than removing items from the middle of an array.</li>
+<li><code>replaceChildren(...visibleTasks().map(taskItem))</code> redraws the whole list in one line: the spread syntax from Chapter 11 passes every new <code>&lt;li&gt;</code> at once.</li>
+<li>Every task has a real checkbox with a <code>&lt;label&gt;</code>, so clicking the text ticks the box, and the delete button has an <code>aria-label</code> that says <em>which</em> task it deletes.</li>
+</ul>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b1-ch17-en-index.html-560-26e16f.png" alt=""><figcaption><b>Figure 17.2:</b> The finished app with three tasks, one of them done.</figcaption></figure>
+
+<h2><span class="sec">17.5</span><span>Test like a professional</span></h2>
+
+<p>Before you publish, go through a checklist. Professionals do this before every release:</p>
+
+<table>
+<thead><tr><th>Test</th><th>What to check</th></tr></thead>
+<tbody>
+<tr><td>Empty state</td><td>With no tasks, the friendly message shows and the counter says “All done!”</td></tr>
+<tr><td>Unusual input</td><td>Spaces only are ignored; a very long task wraps instead of breaking the layout</td></tr>
+<tr><td>Persistence</td><td>Add tasks, reload the page: everything is still there</td></tr>
+<tr><td>Keyboard</td><td>Add, tick, filter and delete with Tab, Enter and Space only; the focus is always visible</td></tr>
+<tr><td>Phone</td><td>At 360 pixels wide in the DevTools device toolbar, nothing overflows</td></tr>
+<tr><td>Accessibility</td><td>Lighthouse reports no accessibility problems</td></tr>
+<tr><td>Errors</td><td>The Console shows no red messages</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">17.6</span><span>Publish it with GitHub Pages</span></h2>
+
+<p><dfn>GitHub Pages</dfn> is a free service that turns a GitHub repository into a website. Because your app is just HTML, CSS and JavaScript, with no server code, it can be hosted there in a few minutes:</p>
+
+<ol>
+<li>Put the <code>my-tasks</code> folder under Git and commit, as in Chapter 15.</li>
+<li>Create a <strong>public</strong> repository called <code>my-tasks</code> on GitHub and push to it.</li>
+<li>On the repository page, open <strong>Settings</strong>, then <strong>Pages</strong>.</li>
+<li>Under <strong>Build and deployment</strong>, choose <strong>Deploy from a branch</strong>, select the branch <code>main</code> and the folder <code>/ (root)</code>, and click <strong>Save</strong>.</li>
+<li>Wait a minute and reload. GitHub shows your address: <code>https://your-username.github.io/my-tasks/</code>.</li>
+</ol>
+
+<p>Open that address on your phone. That is your app, on the internet, served over HTTPS, built by you. From now on, every time you push a new commit to <code>main</code>, GitHub updates the site automatically.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>The main page of a site must be called <code>index.html</code>; that is the file a web server sends when the address ends with a folder name. That is why we named our file that way from the start.</p></aside>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Send the link to a friend and ask them to add a task. Watching someone else use something you made is one of the best feelings in programming. You did it!</p></div></div>
+
+<h2><span class="sec">17.7</span><span>Ideas to keep going</span></h2>
+
+<p>The best way to keep learning is to keep building. Here are improvements, roughly from easy to hard:</p>
+<ul>
+<li>Edit a task by double-clicking its text.</li>
+<li>Add a due date to each task, and sort by it.</li>
+<li>Add a dark theme that follows the system setting with <code>prefers-color-scheme</code>.</li>
+<li>Drag tasks to reorder them.</li>
+<li>Add a language switch that changes all the app’s texts between English and Arabic, and sets <code>lang</code> and <code>dir</code>.</li>
+</ul>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Plan before coding: list the <strong>features</strong>, draw a <strong>sketch</strong>, and design the <strong>data</strong>.</li>
+<li>Calculate everything on the screen from the data, and send every change through one function that saves and redraws.</li>
+<li><code>localStorage</code> keeps strings in the browser across reloads; store objects as <strong>JSON</strong>.</li>
+<li>Build accessibility in from the start: real forms, buttons, labels and visible focus.</li>
+<li>Test the empty state, unusual input, persistence, keyboard, phone width and the Console before publishing.</li>
+<li><strong>GitHub Pages</strong> publishes a static site from a repository for free.</li>
+</ul>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change the colours and the title of the app to make it your own, and publish the new version with a single <code>git push</code>.</li>
+<li><span class="level">Easy</span> Add a counter of finished tasks next to the counter of tasks left.</li>
+<li><span class="level medium">Medium</span> Let the user edit a task’s text by double-clicking it. Save the change with Enter and cancel with Escape.</li>
+<li><span class="level medium">Medium</span> Add a “priority” to each task (low, normal, high), chosen with a <code>&lt;select&gt;</code> when adding, and show high-priority tasks first.</li>
+<li><span class="level hard">Challenge</span> Add a language switch to the app. Keep all texts in an object like <code>{ en: {…}, ar: {…} }</code>, remember the choice in <code>localStorage</code>, and update <code>lang</code> and <code>dir</code> on the <code>&lt;html&gt;</code> element.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 18</p>
+<p>You have built and published a real app. The last chapter of this book looks ahead: the paths you can take from here, frontend, backend, full stack or mobile, and how to keep growing until you reach the senior level.</p>
 </div>
 </section>
 </body></html>

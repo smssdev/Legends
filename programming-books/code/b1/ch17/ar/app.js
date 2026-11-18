@@ -71,6 +71,15 @@ function taskItem(task) {
   return li;
 }
 
+// العربية تغيّر صيغة الكلمة مع العدد
+function leftText(count) {
+  if (count === 0) return "أنجزت كل مهامك!";
+  if (count === 1) return "بقيت مهمة واحدة";
+  if (count === 2) return "بقيت مهمتان";
+  if (count <= 10) return `بقيت ${count} مهام`;
+  return `بقيت ${count} مهمة`;
+}
+
 function render() {
   const list = document.querySelector("#tasks");
   list.replaceChildren(...visibleTasks().map(taskItem));
@@ -78,7 +87,7 @@ function render() {
   document.querySelector("#empty").hidden = tasks.length > 0;
 
   const count = tasks.filter((t) => !t.done).length;
-  document.querySelector("#count").textContent = count === 1 ? "بقيت مهمة واحدة" : `بقيت ${count} مهام`;
+  document.querySelector("#count").textContent = leftText(count);
 
   for (const button of document.querySelectorAll("[data-filter]")) {
     button.setAttribute("aria-pressed", String(button.dataset.filter === filter));

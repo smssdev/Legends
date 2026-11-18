@@ -71,6 +71,12 @@ function taskItem(task) {
   return li;
 }
 
+function leftText(count) {
+  if (count === 0) return "All done!";
+  if (count === 1) return "1 task left";
+  return `${count} tasks left`;
+}
+
 function render() {
   const list = document.querySelector("#tasks");
   list.replaceChildren(...visibleTasks().map(taskItem));
@@ -78,7 +84,7 @@ function render() {
   document.querySelector("#empty").hidden = tasks.length > 0;
 
   const count = tasks.filter((t) => !t.done).length;
-  document.querySelector("#count").textContent = count === 1 ? "1 task left" : `${count} tasks left`;
+  document.querySelector("#count").textContent = leftText(count);
 
   for (const button of document.querySelectorAll("[data-filter]")) {
     button.setAttribute("aria-pressed", String(button.dataset.filter === filter));

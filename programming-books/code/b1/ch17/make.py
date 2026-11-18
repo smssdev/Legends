@@ -8,13 +8,24 @@ T = {
                label="New task", placeholder="e.g. Read chapter 17", add="Add",
                all="All", active="To do", done="Done", clear="Clear done",
                empty="Nothing here yet. Add your first task above!",
-               left_one="1 task left", left_many="${count} tasks left", delete="Delete",
+               left_fn='''function leftText(count) {
+  if (count === 0) return "All done!";
+  if (count === 1) return "1 task left";
+  return `${count} tasks left`;
+}''', delete="Delete",
                filters="Show"),
     "ar": dict(lang='lang="ar" dir="rtl"', title="مهامي", h1="مهامي", sub="خطوات صغيرة، كل يوم.",
                label="مهمة جديدة", placeholder="مثلاً: اقرأ الفصل 17", add="أضف",
                all="الكل", active="المتبقية", done="المنجزة", clear="احذف المنجزة",
                empty="لا شيء هنا بعد. أضف أول مهمة لك في الأعلى!",
-               left_one="بقيت مهمة واحدة", left_many="بقيت ${count} مهام", delete="احذف",
+               left_fn='''// العربية تغيّر صيغة الكلمة مع العدد
+function leftText(count) {
+  if (count === 0) return "أنجزت كل مهامك!";
+  if (count === 1) return "بقيت مهمة واحدة";
+  if (count === 2) return "بقيت مهمتان";
+  if (count <= 10) return `بقيت ${count} مهام`;
+  return `بقيت ${count} مهمة`;
+}''', delete="احذف",
                filters="اعرض"),
 }
 
@@ -277,6 +288,8 @@ function taskItem(task) {{
   return li;
 }}
 
+{t["left_fn"]}
+
 function render() {{
   const list = document.querySelector("#tasks");
   list.replaceChildren(...visibleTasks().map(taskItem));
@@ -284,7 +297,7 @@ function render() {{
   document.querySelector("#empty").hidden = tasks.length > 0;
 
   const count = tasks.filter((t) => !t.done).length;
-  document.querySelector("#count").textContent = count === 1 ? "{t["left_one"]}" : `{t["left_many"]}`;
+  document.querySelector("#count").textContent = leftText(count);
 
   for (const button of document.querySelectorAll("[data-filter]")) {{
     button.setAttribute("aria-pressed", String(button.dataset.filter === filter));

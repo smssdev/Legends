@@ -39,6 +39,8 @@
 @page ch15:first { @top-center { content: none; } }
 @page ch16 { @top-center { content: "الفصل 16: صفحات يصل إليها الجميع"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "الفصل 17: مشروع: ابنِ تطبيق ويب وانشره"; } }
+@page ch17:first { @top-center { content: none; } }
 </style></head>
 <body><section class="front half-title"><p class="ht">البرمجة من الصفر</p></section><section class="front title-page">
           <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الأول</p>
@@ -3919,7 +3921,7 @@ form.addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
   output.textContent = <span class="s">`أهلاً يا ${name}! مرحباً بك في الويب.`</span>;
   input.value = <span class="s">&quot;&quot;</span>;
 });</pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>greet.html</span><b>560px</b></div><img src="img/b1-ch12-ar-greet.html-560-0c6009.png" alt=""><figcaption><b>الشكل 12.4:</b> بعد كتابة الاسم والضغط على الزر.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>greet.html</span><b>560px</b></div><img src="img/b1-ch12-ar-greet.html-560-457e0d.png" alt=""><figcaption><b>الشكل 12.4:</b> بعد كتابة الاسم والضغط على الزر.</figcaption></figure>
 
 <ul>
 <li>يستلم المعالج <dfn>كائن الحدث</dfn> وفيه تفاصيل ما حدث.</li>
@@ -5046,8 +5048,8 @@ node_modules/
     <span class="k">&lt;/main</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
 <span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-ar-focus.html-560-d38a63.png" alt=""><figcaption><b>الشكل 16.2:</b> بعد ضغط Tab مرة: يظهر رابط التخطي المخفي.</figcaption></figure>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-ar-focus.html-560-71e346.png" alt=""><figcaption><b>الشكل 16.3:</b> بعد ضغطتين أخريين: على الرابط المحدد إطار سميك واضح.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-ar-focus.html-560-4cd342.png" alt=""><figcaption><b>الشكل 16.2:</b> بعد ضغط Tab مرة: يظهر رابط التخطي المخفي.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-ar-focus.html-560-24f4b4.png" alt=""><figcaption><b>الشكل 16.3:</b> بعد ضغطتين أخريين: على الرابط المحدد إطار سميك واضح.</figcaption></figure>
 
 <ul>
 <li><code>:focus-visible</code> تنسّق التركيز حين يستخدم المستخدم لوحة المفاتيح. ولا تُزل الإطار بـ <code>outline: none</code> أبداً إلا إن وضعت مكانه ما يظهر بالقدر نفسه على الأقل.</li>
@@ -5178,6 +5180,396 @@ node_modules/
 <div class="next">
 <p class="next-title">في الفصل 17</p>
 <p>صارت لديك كل مهارة يعلمها هذا الكتاب. وفي الفصل القادم ستجمعها كلها في مشروع واحد كامل، من الفكرة الأولى إلى عنوان حقيقي على الإنترنت ترسله إلى أصدقائك.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b1/ch17/ar">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">الفصل 17</p><h1>مشروع: ابنِ تطبيق ويب وانشره</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستفعل في هذا الفصل ما يلي</p>
+<ul>
+<li>تخطط للتطبيق قبل كتابة الكود: الميزات، والرسم، وشكل البيانات</li>
+<li>تبني تطبيق مهام يومية كاملاً بـ HTML وCSS وJavaScript</li>
+<li>تحفظ البيانات في المتصفح بـ <code>localStorage</code> فتبقى بعد إعادة التحميل</li>
+<li>تختبره كالمحترفين: لوحة المفاتيح، وعرض الهاتف، والحالات غير المعتادة</li>
+<li>تنشره على الإنترنت مجاناً بـ GitHub Pages</li>
+</ul>
+</div>
+
+<p class="lead">هذا الفصل الذي يجتمع فيه كل شيء. ستبني تطبيقاً حقيقياً تستخدمه كل يوم: قائمة مهام يومية تضيف إليها، وتعلّم المنجز منها، وتصفّيها، وتحذف منها، وتتذكر كل شيء حين تغلق المتصفح. ثم تعطيه عنواناً على الإنترنت تفتحه على هاتفك وترسله إلى أصدقائك. ولكل مهارة من الفصول الستة عشر السابقة دور فيه.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>هذا فصلي المفضل! في آخره لن تكون قد تعلمت البرمجة فقط، بل <em>أطلقت</em> شيئاً: تطبيقاً حقيقياً حياً على الويب، بنيته أنت من لا شيء. هيا بنا!</p></div></div>
+
+<h2><span class="sec">17.1</span><span>خطط أولاً</span></h2>
+
+<p>علّمك الفصل 2 أن تفكر قبل أن تكتب. والمحترفون يبدؤون كل مشروع بالطريقة نفسها: يكتبون ما يجب أن يفعله التطبيق، ويرسمون شكله، ويقررون البيانات التي يحتاجها.</p>
+
+<h3>ماذا يفعل التطبيق</h3>
+<ol>
+<li>يضيف مهمة حين تكتبها وتضغط Enter أو زر «أضف».</li>
+<li>يعلّم المهمة منجزة حين تضع عليها علامة، ويلغي ذلك.</li>
+<li>يحذف مهمة.</li>
+<li>يعرض كل المهام، أو المتبقية وحدها، أو المنجزة وحدها.</li>
+<li>يعرض عدد المهام المتبقية، ويحذف كل المنجزة دفعة واحدة.</li>
+<li>يتذكر كل شيء بعد إغلاق المتصفح.</li>
+<li>يعمل بلوحة المفاتيح، وعلى الهاتف، بالعربية أو الإنجليزية.</li>
+</ol>
+
+<h3>الرسم</h3>
+
+<figure>
+<svg viewBox="0 0 520 240" role="img" aria-label="رسم للتطبيق: العنوان، وخانة الإدخال مع زر أضف، وأزرار التصفية، وقائمة المهام، والتذييل">
+<rect x="110" y="10" width="300" height="220" rx="16" fill="#fff" stroke="#2b2b2b" stroke-width="2" stroke-dasharray="6 4"/>
+<g font-family="Cairo" font-size="12.5">
+<rect x="280" y="26" width="110" height="18" rx="4" fill="#c7d2fe"/><text x="270" y="40" fill="#5b5873" text-anchor="end">العنوان</text>
+<rect x="190" y="56" width="200" height="26" rx="8" fill="none" stroke="#5b5873" stroke-width="1.5"/><text x="380" y="74" fill="#9ca3af" text-anchor="end">مهمة جديدة…</text>
+<rect x="130" y="56" width="52" height="26" rx="13" fill="#2b2b2b"/><text x="156" y="74" fill="#fff" text-anchor="middle">أضف</text>
+<rect x="350" y="94" width="40" height="18" rx="9" fill="#2b2b2b"/><rect x="296" y="94" width="48" height="18" rx="9" fill="#eef2ff"/><rect x="246" y="94" width="44" height="18" rx="9" fill="#eef2ff"/><text x="238" y="107" fill="#5b5873" text-anchor="end">التصفية</text>
+<g stroke="#5b5873" stroke-width="1.5" fill="none"><rect x="378" y="124" width="12" height="12" rx="2"/><rect x="378" y="150" width="12" height="12" rx="2"/><rect x="378" y="176" width="12" height="12" rx="2"/></g>
+<rect x="230" y="126" width="140" height="8" rx="4" fill="#e5e7eb"/><rect x="260" y="152" width="110" height="8" rx="4" fill="#e5e7eb"/><rect x="210" y="178" width="160" height="8" rx="4" fill="#e5e7eb"/>
+<g fill="#efefef"><rect x="130" y="122" width="40" height="16" rx="8"/><rect x="130" y="148" width="40" height="16" rx="8"/><rect x="130" y="174" width="40" height="16" rx="8"/></g>
+<text x="390" y="214" fill="#5b5873" text-anchor="end">بقيت مهمتان</text><text x="130" y="214" fill="#5b5873">احذف المنجزة</text>
+</g>
+<g font-family="Cairo" font-size="12" font-weight="700" fill="#2b2b2b"><text x="420" y="74">النموذج</text><text x="420" y="107">أزرار التصفية</text><text x="420" y="160">قائمة المهام</text><text x="420" y="214">التذييل</text><text x="100" y="135" text-anchor="end">حذف</text></g>
+</svg>
+<figcaption><b>الشكل 17.1:</b> رسم على الورق (أو ببضعة مستطيلات) يوفر ساعات من تغيير الكود لاحقاً.</figcaption>
+</figure>
+
+<h3>البيانات</h3>
+
+<p>كل مهمة تحتاج <code>id</code> فريداً، ونصها <code>text</code>، وهل هي منجزة <code>done</code>. وبيانات التطبيق كله مصفوفة من هذه الكائنات، ومعها التصفية الحالية:</p>
+
+<pre class="plain">[
+  { id: 1741766400000, text: "اقرأ الفصل 17", done: true },
+  { id: 1741766460000, text: "تدرّب على Flexbox", done: false }
+]</pre>
+
+<p>وكل شيء آخر على الشاشة، القائمة والعدّاد والتصفية المميزة، يُحسب من هذه البيانات. وهذا القرار سيجعل الكود بسيطاً.</p>
+
+<h2><span class="sec">17.2</span><span>HTML</span></h2>
+
+<p>أنشئ مجلداً اسمه <code>my-tasks</code> فيه ثلاثة ملفات. HTML تحمل البنية، وتكاد تكون فارغة حيث ستأتي المهام:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">index.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;ar&quot;</span> <span class="n">dir</span>=<span class="s">&quot;rtl&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>مهامي<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;link</span> <span class="n">rel</span>=<span class="s">&quot;stylesheet&quot;</span> <span class="n">href</span>=<span class="s">&quot;style.css&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span> <span class="n">class</span>=<span class="s">&quot;app&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>مهامي<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;subtitle&quot;</span><span class="k">&gt;</span>خطوات صغيرة، كل يوم.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;form</span> <span class="n">id</span>=<span class="s">&quot;new-task&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;task-text&quot;</span> <span class="n">class</span>=<span class="s">&quot;visually-hidden&quot;</span><span class="k">&gt;</span>مهمة جديدة<span class="k">&lt;/label</span><span class="k">&gt;</span>
+        <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;task-text&quot;</span> <span class="n">type</span>=<span class="s">&quot;text&quot;</span> <span class="n">placeholder</span>=<span class="s">&quot;مثلاً: اقرأ الفصل 17&quot;</span> required<span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">class</span>=<span class="s">&quot;primary&quot;</span> <span class="n">type</span>=<span class="s">&quot;submit&quot;</span><span class="k">&gt;</span>أضف<span class="k">&lt;/button</span><span class="k">&gt;</span>
+      <span class="k">&lt;/form</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;filters&quot;</span> <span class="n">role</span>=<span class="s">&quot;group&quot;</span> <span class="n">aria-label</span>=<span class="s">&quot;اعرض&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">data-filter</span>=<span class="s">&quot;all&quot;</span> <span class="n">aria-pressed</span>=<span class="s">&quot;true&quot;</span><span class="k">&gt;</span>الكل<span class="k">&lt;/button</span><span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">data-filter</span>=<span class="s">&quot;active&quot;</span> <span class="n">aria-pressed</span>=<span class="s">&quot;false&quot;</span><span class="k">&gt;</span>المتبقية<span class="k">&lt;/button</span><span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">data-filter</span>=<span class="s">&quot;done&quot;</span> <span class="n">aria-pressed</span>=<span class="s">&quot;false&quot;</span><span class="k">&gt;</span>المنجزة<span class="k">&lt;/button</span><span class="k">&gt;</span>
+      <span class="k">&lt;/div</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;ul</span> <span class="n">id</span>=<span class="s">&quot;tasks&quot;</span><span class="k">&gt;</span><span class="k">&lt;/ul</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;empty&quot;</span> <span class="n">id</span>=<span class="s">&quot;empty&quot;</span><span class="k">&gt;</span>لا شيء هنا بعد. أضف أول مهمة لك في الأعلى!<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;footer</span><span class="k">&gt;</span>
+        <span class="k">&lt;span</span> <span class="n">id</span>=<span class="s">&quot;count&quot;</span> <span class="n">aria-live</span>=<span class="s">&quot;polite&quot;</span><span class="k">&gt;</span><span class="k">&lt;/span</span><span class="k">&gt;</span>
+        <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">id</span>=<span class="s">&quot;clear&quot;</span><span class="k">&gt;</span>احذف المنجزة<span class="k">&lt;/button</span><span class="k">&gt;</span>
+      <span class="k">&lt;/footer</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;app.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+
+<p>لاحظ تفاصيل الوصول من الفصل 16: <code>&lt;form&gt;</code> حقيقي ليعمل Enter، وتسمية لخانة الإدخال (مخفية بصرياً، لأن النص المؤقت والزر يوضحان الغرض للمبصرين)، وعناصر <code>&lt;button&gt;</code> حقيقية، و<code>aria-pressed</code> لتعرف قارئات الشاشة أي تصفية مفعّلة، و<code>aria-live</code> ليُعلن العدد حين يتغير.</p>
+
+<h2><span class="sec">17.3</span><span>CSS</span></h2>
+
+<p>ملف التنسيق يستخدم الخصائص المخصصة وFlexbox والزوايا المستديرة والتركيز الظاهر، كلها من الفصلين 6 و7. ولا يستخدم أي جهة فعلية، فالملف نفسه ينسّق النسخة العربية والإنجليزية. وهو في مستودع كود الكتاب باسم <code>style.css</code>، وهذه أطرف أجزائه:</p>
+
+<pre class="plain">form {
+  display: flex;
+  gap: 8px;
+}
+form input {
+  flex: 1;                /* the input takes all the free space */
+}
+.filters button[aria-pressed="true"] {
+  color: white;           /* the active filter is styled from */
+  background: var(--brand); /* the same attribute screen readers use */
+}
+li.done label {
+  color: var(--muted);
+  text-decoration: line-through;
+}</pre>
+
+<p>تنسيق التصفية المفعّلة بـ <code>[aria-pressed="true"]</code> حيلة احترافية أنيقة: الشكل ومعلومات الوصول لا يمكن أن يختلفا، لأنهما الخاصية نفسها.</p>
+
+<h2><span class="sec">17.4</span><span>JavaScript</span></h2>
+
+<p>البرنامج يتبع نمط الفصل 12: البيانات، والتغييرات، والعرض، والأحداث. اقرأه قسماً قسماً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app.js</div><pre class="code"><span class="c">// ---------- البيانات ----------</span>
+<span class="k">const</span> STORAGE_KEY = <span class="s">&quot;my-tasks&quot;</span>;
+<span class="k">let</span> tasks = load();
+<span class="k">let</span> filter = <span class="s">&quot;all&quot;</span>;
+
+<span class="k">function</span> load() {
+  <span class="k">const</span> saved = localStorage.getItem(STORAGE_KEY);
+  <span class="k">return</span> saved ? JSON.parse(saved) : [];
+}
+
+<span class="k">function</span> save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
+
+<span class="c">// ---------- التغييرات ----------</span>
+<span class="k">function</span> addTask(text) {
+  tasks.push({ id: Date.now(), text, done: <span class="k">false</span> });
+  update();
+}
+
+<span class="k">function</span> toggleTask(id) {
+  <span class="k">const</span> task = tasks.find((t) =&gt; t.id === id);
+  task.done = !task.done;
+  update();
+}
+
+<span class="k">function</span> deleteTask(id) {
+  tasks = tasks.filter((t) =&gt; t.id !== id);
+  update();
+}
+
+<span class="k">function</span> clearDone() {
+  tasks = tasks.filter((t) =&gt; !t.done);
+  update();
+}
+
+<span class="k">function</span> update() {
+  save();
+  render();
+}
+
+<span class="c">// ---------- العرض ----------</span>
+<span class="k">function</span> visibleTasks() {
+  <span class="k">if</span> (filter === <span class="s">&quot;active&quot;</span>) <span class="k">return</span> tasks.filter((t) =&gt; !t.done);
+  <span class="k">if</span> (filter === <span class="s">&quot;done&quot;</span>) <span class="k">return</span> tasks.filter((t) =&gt; t.done);
+  <span class="k">return</span> tasks;
+}
+
+<span class="k">function</span> taskItem(task) {
+  <span class="k">const</span> li = document.createElement(<span class="s">&quot;li&quot;</span>);
+  li.classList.toggle(<span class="s">&quot;done&quot;</span>, task.done);
+
+  <span class="k">const</span> box = document.createElement(<span class="s">&quot;input&quot;</span>);
+  box.type = <span class="s">&quot;checkbox&quot;</span>;
+  box.id = <span class="s">`task-${task.id}`</span>;
+  box.checked = task.done;
+  box.addEventListener(<span class="s">&quot;change&quot;</span>, () =&gt; toggleTask(task.id));
+
+  <span class="k">const</span> label = document.createElement(<span class="s">&quot;label&quot;</span>);
+  label.htmlFor = box.id;
+  label.textContent = task.text;
+
+  <span class="k">const</span> remove = document.createElement(<span class="s">&quot;button&quot;</span>);
+  remove.type = <span class="s">&quot;button&quot;</span>;
+  remove.className = <span class="s">&quot;delete&quot;</span>;
+  remove.textContent = <span class="s">&quot;احذف&quot;</span>;
+  remove.setAttribute(<span class="s">&quot;aria-label&quot;</span>, <span class="s">`احذف: ${task.text}`</span>);
+  remove.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; deleteTask(task.id));
+
+  li.append(box, label, remove);
+  <span class="k">return</span> li;
+}
+
+<span class="c">// العربية تغيّر صيغة الكلمة مع العدد</span>
+<span class="k">function</span> leftText(count) {
+  <span class="k">if</span> (count === <span class="n">0</span>) <span class="k">return</span> <span class="s">&quot;أنجزت كل مهامك!&quot;</span>;
+  <span class="k">if</span> (count === <span class="n">1</span>) <span class="k">return</span> <span class="s">&quot;بقيت مهمة واحدة&quot;</span>;
+  <span class="k">if</span> (count === <span class="n">2</span>) <span class="k">return</span> <span class="s">&quot;بقيت مهمتان&quot;</span>;
+  <span class="k">if</span> (count &lt;= <span class="n">10</span>) <span class="k">return</span> <span class="s">`بقيت ${count} مهام`</span>;
+  <span class="k">return</span> <span class="s">`بقيت ${count} مهمة`</span>;
+}
+
+<span class="k">function</span> render() {
+  <span class="k">const</span> list = document.querySelector(<span class="s">&quot;#tasks&quot;</span>);
+  list.replaceChildren(...visibleTasks().map(taskItem));
+
+  document.querySelector(<span class="s">&quot;#empty&quot;</span>).hidden = tasks.length &gt; <span class="n">0</span>;
+
+  <span class="k">const</span> count = tasks.filter((t) =&gt; !t.done).length;
+  document.querySelector(<span class="s">&quot;#count&quot;</span>).textContent = leftText(count);
+
+  <span class="k">for</span> (<span class="k">const</span> button <span class="k">of</span> document.querySelectorAll(<span class="s">&quot;[data-filter]&quot;</span>)) {
+    button.setAttribute(<span class="s">&quot;aria-pressed&quot;</span>, String(button.dataset.filter === filter));
+  }
+}
+
+<span class="c">// ---------- الأحداث ----------</span>
+document.querySelector(<span class="s">&quot;#new-task&quot;</span>).addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
+  event.preventDefault();
+  <span class="k">const</span> input = document.querySelector(<span class="s">&quot;#task-text&quot;</span>);
+  <span class="k">const</span> text = input.value.trim();
+  <span class="k">if</span> (text) {
+    addTask(text);
+    input.value = <span class="s">&quot;&quot;</span>;
+  }
+  input.focus();
+});
+
+<span class="k">for</span> (<span class="k">const</span> button <span class="k">of</span> document.querySelectorAll(<span class="s">&quot;[data-filter]&quot;</span>)) {
+  button.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; {
+    filter = button.dataset.filter;
+    render();
+  });
+}
+
+document.querySelector(<span class="s">&quot;#clear&quot;</span>).addEventListener(<span class="s">&quot;click&quot;</span>, clearDone);
+
+render();</pre></div>
+
+<h3>تذكّر البيانات: localStorage</h3>
+
+<p>المتغيرات تختفي حين تُغلق الصفحة. أما <code>localStorage</code> فمساحة تخزين صغيرة يأخذها كل موقع في المتصفح، وتبقى بعد إعادة التحميل وإعادة التشغيل. وهي تحفظ النصوص فقط، فنستخدم JSON من الفصل 11:</p>
+<ul>
+<li><code>save()</code> تحوّل المهام إلى JSON وتحفظها تحت المفتاح <code>"my-tasks"</code>.</li>
+<li><code>load()</code> تقرؤها حين تُفتح الصفحة، أو تبدأ بمصفوفة فارغة في المرة الأولى.</li>
+<li>وكل تغيير يمر بـ <code>update()</code> التي تحفظ ثم تعيد الرسم. ولأن الطريق واحد، لا يمكن أن تختلف الشاشة والتخزين.</li>
+</ul>
+
+<h3>العربية والأعداد</h3>
+
+<p>في النسخة العربية دالة <code>leftText</code> تختار صيغة الكلمة المناسبة للعدد: «مهمة واحدة»، و«مهمتان»، و«3 مهام»، و«11 مهمة». فالواجهة العربية الجيدة لا تكتفي بترجمة الكلمات، بل تحترم قواعد اللغة. والمتصفحات تقدم لهذا أداة جاهزة اسمها <code>Intl.PluralRules</code>، ستقابلها في كتاب الواجهات.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p><code>localStorage</code> تخص متصفحاً واحداً على جهاز واحد. فالمهام التي تضيفها على هاتفك لن تظهر على حاسوبك، ومسح بيانات المتصفح يحذفها. والمزامنة بين الأجهزة تحتاج خادماً وقاعدة بيانات، وهذا بالضبط ما تعلّمه كتب الخوادم في هذه السلسلة.</p></aside>
+
+<h3>تفاصيل أخرى تستحق الانتباه</h3>
+<ul>
+<li><code>Date.now()</code> تُرجع عدد أجزاء الألف من الثانية منذ 1970، وهي طريقة بسيطة لمعرّف فريد.</li>
+<li><code>tasks.filter(…)</code> تنشئ مصفوفات جديدة للحذف والمسح، وهذا أبسط وأسلم من حذف عناصر من وسط المصفوفة.</li>
+<li><code>replaceChildren(...visibleTasks().map(taskItem))</code> تعيد رسم القائمة كلها في سطر واحد: صيغة النشر من الفصل 11 تمرر كل عناصر <code>&lt;li&gt;</code> الجديدة دفعة واحدة.</li>
+<li>لكل مهمة مربع اختيار حقيقي مع <code>&lt;label&gt;</code>، فالنقر على النص يعلّم المربع، ولزر الحذف <code>aria-label</code> تقول <em>أي</em> مهمة يحذف.</li>
+</ul>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b1-ch17-ar-index.html-560-bdda88.png" alt=""><figcaption><b>الشكل 17.2:</b> التطبيق مكتملاً بثلاث مهام، إحداها منجزة.</figcaption></figure>
+
+<h2><span class="sec">17.5</span><span>اختبر كالمحترفين</span></h2>
+
+<p>قبل النشر مرّ على قائمة فحص، فالمحترفون يفعلون هذا قبل كل إصدار:</p>
+
+<table>
+<thead><tr><th>الاختبار</th><th>ما تتأكد منه</th></tr></thead>
+<tbody>
+<tr><td>الحالة الفارغة</td><td>بلا مهام تظهر الرسالة اللطيفة ويقول العدّاد «أنجزت كل مهامك!»</td></tr>
+<tr><td>مدخلات غير معتادة</td><td>المسافات وحدها تُتجاهل، والمهمة الطويلة جداً تلتف ولا تكسر التخطيط</td></tr>
+<tr><td>الحفظ</td><td>أضف مهام وأعد تحميل الصفحة: كل شيء ما زال هنا</td></tr>
+<tr><td>لوحة المفاتيح</td><td>أضف وعلّم وصفِّ واحذف بـ Tab وEnter والمسافة وحدها، والتركيز ظاهر دائماً</td></tr>
+<tr><td>الهاتف</td><td>بعرض 360 بكسل في شريط الأجهزة لا يفيض شيء</td></tr>
+<tr><td>الوصول</td><td>Lighthouse لا يذكر أي مشكلة وصول</td></tr>
+<tr><td>الأخطاء</td><td>لا رسائل حمراء في الـ Console</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">17.6</span><span>انشره بـ GitHub Pages</span></h2>
+
+<p><dfn>GitHub Pages</dfn> خدمة مجانية تحوّل مستودع GitHub إلى موقع. ولأن تطبيقك HTML وCSS وJavaScript فقط، بلا كود خادم، فيمكن استضافته عليها في دقائق:</p>
+
+<ol>
+<li>ضع مجلد <code>my-tasks</code> تحت Git واحفظ commit، كما في الفصل 15.</li>
+<li>أنشئ مستودعاً <strong>عاماً</strong> اسمه <code>my-tasks</code> على GitHub وأرسل إليه.</li>
+<li>في صفحة المستودع افتح <strong>Settings</strong> ثم <strong>Pages</strong>.</li>
+<li>تحت <strong>Build and deployment</strong> اختر <strong>Deploy from a branch</strong>، ثم الفرع <code>main</code> والمجلد <code>/ (root)</code>، واضغط <strong>Save</strong>.</li>
+<li>انتظر دقيقة وأعد التحميل، فيعرض GitHub عنوانك: <code>https://your-username.github.io/my-tasks/</code>.</li>
+</ol>
+
+<p>افتح ذلك العنوان على هاتفك. هذا تطبيقك على الإنترنت، عبر HTTPS، بنيته أنت. ومن الآن، كلما أرسلت commit جديداً إلى <code>main</code> يحدّث GitHub الموقع تلقائياً.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>الصفحة الرئيسية للموقع يجب أن يكون اسمها <code>index.html</code>، فهو الملف الذي يرسله خادم الويب حين ينتهي العنوان باسم مجلد. ولهذا سمّينا ملفنا هكذا من البداية.</p></aside>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أرسل الرابط إلى صديق واطلب منه أن يضيف مهمة. أن تشاهد شخصاً آخر يستخدم شيئاً صنعته من أجمل المشاعر في البرمجة. لقد فعلتها!</p></div></div>
+
+<h2><span class="sec">17.7</span><span>أفكار لتستمر</span></h2>
+
+<p>أفضل طريقة لمواصلة التعلم أن تواصل البناء. وهذه تحسينات مرتبة تقريباً من السهل إلى الصعب:</p>
+<ul>
+<li>عدّل المهمة بالنقر المزدوج على نصها.</li>
+<li>أضف تاريخ استحقاق لكل مهمة، ورتّب به.</li>
+<li>أضف وضعاً داكناً يتبع إعداد النظام بـ <code>prefers-color-scheme</code>.</li>
+<li>اسحب المهام لتعيد ترتيبها.</li>
+<li>أضف مفتاح لغة يبدّل كل نصوص التطبيق بين العربية والإنجليزية، ويضبط <code>lang</code> و<code>dir</code>.</li>
+</ul>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>خطط قبل البرمجة: اكتب <strong>الميزات</strong>، وارسم <strong>الشكل</strong>، وصمّم <strong>البيانات</strong>.</li>
+<li>احسب كل ما على الشاشة من البيانات، ومرّر كل تغيير بدالة واحدة تحفظ وتعيد الرسم.</li>
+<li><code>localStorage</code> تحفظ النصوص في المتصفح بعد إعادة التحميل، فاحفظ الكائنات <strong>JSON</strong>.</li>
+<li>ابنِ الوصول من البداية: نماذج وأزرار وتسميات حقيقية وتركيز ظاهر. واحترم قواعد العربية في الأعداد.</li>
+<li>اختبر الحالة الفارغة والمدخلات غير المعتادة والحفظ ولوحة المفاتيح وعرض الهاتف والـ Console قبل النشر.</li>
+<li><strong>GitHub Pages</strong> ينشر الموقع الثابت من المستودع مجاناً.</li>
+</ul>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> غيّر ألوان التطبيق وعنوانه ليصير خاصاً بك، وانشر النسخة الجديدة بـ <code>git push</code> واحدة.</li>
+<li><span class="level">سهل</span> أضف عدّاداً للمهام المنجزة بجانب عدّاد المتبقية.</li>
+<li><span class="level medium">متوسط</span> اسمح للمستخدم بتعديل نص المهمة بالنقر المزدوج عليه، واحفظ التعديل بـ Enter وألغه بـ Escape.</li>
+<li><span class="level medium">متوسط</span> أضف «أولوية» لكل مهمة (منخفضة، وعادية، وعالية) تُختار بـ <code>&lt;select&gt;</code> عند الإضافة، واعرض المهام العالية أولاً.</li>
+<li><span class="level hard">تحدٍّ</span> أضف إلى التطبيق مفتاح لغة. احفظ كل النصوص في كائن مثل <code>{ en: {…}, ar: {…} }</code>، وتذكّر الاختيار في <code>localStorage</code>، وحدّث <code>lang</code> و<code>dir</code> في عنصر <code>&lt;html&gt;</code>.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 18</p>
+<p>لقد بنيت تطبيقاً حقيقياً ونشرته. والفصل الأخير من هذا الكتاب ينظر إلى الأمام: المسارات التي تستطيع أن تسلكها من هنا، الواجهات أو الخوادم أو البرمجة الشاملة أو الموبايل، وكيف تواصل النمو حتى تبلغ مستوى الخبير.</p>
 </div>
 </section>
 </body></html>
