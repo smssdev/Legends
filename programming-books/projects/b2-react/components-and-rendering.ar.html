@@ -1,0 +1,51 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ابنِ كل مشروع في مشروع Vite منشأ من قالب <code>react-ts</code>: <code>npm create vite@latest my-react -- --template react-ts</code>. وقبل كتابة الكود ارسم الشاشة على ورق وضع دائرة حول كل مكوّن، ثم ابنِ من أصغر مكوّن صعوداً.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>بطاقة ملف شخصي</h3>
+<p class="project-goal">ابنِ بطاقة ملف شخصي من أربعة مكونات صغيرة، مع زر متابعة يغيّر عدد المتابعين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الخصائص بالأنواع، و<code>children</code>، وتقسيم التصميم إلى مكونات، وقطعة حالة واحدة.</p>
+<ol class="steps">
+<li>اكتب نوع <code>Person</code> فيه الاسم والدور والمدينة وعدد المشاريع وعدد المتابعين.</li>
+<li>ابنِ الأجزاء الصغيرة أولاً: <code>Avatar</code> (أول حرف من الاسم في دائرة) و<code>Stat</code> (رقم مع تسمية).</li>
+<li>ابنِ <code>ProfileCard</code>، تأخذ <code>person</code> و<code>children</code>، لتضع كل صفحة نصها داخل البطاقة.</li>
+<li>أضف <code>const [following, setFollowing] = useState(false)</code>. واعرض متابعاً إضافياً أثناء المتابعة، دون أن تغيّر <code>person</code>.</li>
+<li>أعطِ الزر <code>aria-pressed={following}</code>، ليعلن قارئ الشاشة هل هو مفعّل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> عدد المتابعين المعروض <em>يُحسب</em> من الخصائص والحالة في كل رسم. فلا تحفظه منفصلاً أبداً، فلا يمكن أن يكون خاطئاً. ويسمي الفصل التالي هذا «الحالة المشتقة».</p>
+<figure data-render="projects/profile.html" data-width="560" data-actions="click:button"><figcaption><b>مشروع {{n}}.1:</b> بطاقة الملف بعد ضغط «تابِع».</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>كتالوج بالتصفية</h3>
+<p class="project-goal">اعرض شبكة منتجات مع أزرار تصفية لكل فئة، وسطراً يقول كم منتجاً يظهر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> القوائم والمفاتيح، والحالة بنوع اتحادي، واشتقاق قائمة مصفّاة، والأزرار بـ <code>aria-pressed</code>.</p>
+<ol class="steps">
+<li>أعد استخدام <code>products.ts</code>، وأنشئ النوع <code>Filter = "all" | Product["category"]</code>: فيتحدث وحده إن أُضيفت فئة.</li>
+<li>احفظ أزرار التصفية بيانات، مصفوفة من <code>{ value, label }</code>، وارسمها بـ <code>map</code>.</li>
+<li>احفظ في الحالة الفلتر المختار فقط، واحسب <code>visible</code> منه في كل رسم بـ <code>filter</code>.</li>
+<li>اعرض «يظهر 3 من 4 منتجات» باستخدام <code>visible.length</code> و<code>products.length</code>.</li>
+<li>اجمع الأزرار بـ <code>role="group"</code> وتسمية، وعلّم الفعّال منها بـ <code>aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> من الأخطاء الشائعة حفظ <code>visible</code> في الحالة أيضاً، ثم نسيان تحديثها حين تتغير المنتجات. فإن أمكن حساب قيمة من حالة أخرى، فاحسبها.</p>
+<figure data-render="projects/catalogue.html" data-width="560" data-actions="click:.filters button:nth-child(3)"><figcaption><b>مشروع {{n}}.2:</b> الكتالوج مصفّى على الهدايا.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>تبويبات سهلة الوصول</h3>
+<p class="project-goal">ابنِ مكوّن <code>Tabs</code> قابلاً لإعادة الاستخدام، يعمل بالفأرة ولوحة المفاتيح وقارئ الشاشة، في الصفحات من اليسار إلى اليمين ومن اليمين إلى اليسار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تمرير المحتوى بيانات، وأدوار ARIA، و<code>useId</code> للمعرّفات الفريدة، و<code>useRef</code> لنقل التركيز، وأحداث لوحة المفاتيح.</p>
+<ol class="steps">
+<li>اجعل <code>Tabs</code> تأخذ <code>tabs: { label: string; content: ReactNode }[]</code> و<code>label</code> للمجموعة.</li>
+<li>ارسم <code>role="tablist"</code> فيها زر <code>role="tab"</code> لكل تبويب، و<code>role="tabpanel"</code> لكل تبويب، مخفية إلا الفعّالة.</li>
+<li>اربط كل تبويب ولوحته بـ <code>aria-controls</code> و<code>aria-labelledby</code>. واصنع المعرّفات بـ <code>useId()</code>، فلا يتعارض <code>Tabs</code> اثنان في صفحة واحدة.</li>
+<li>التبويب الفعّال وحده في ترتيب Tab (<code>tabIndex={0}</code>)، والباقي <code>-1</code>. وتنقل الأسهم بين التبويبات، وHome وEnd تقفزان إلى الطرفين.</li>
+<li>احفظ الأزرار في مصفوفة <code>useRef</code>، واستدعِ <code>focus()</code> على التبويب الجديد بعد الأسهم. وفي الصفحة من اليمين إلى اليسار ينقل السهم الأيمن إلى التبويب <em>السابق</em>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذا نمط لوحة المفاتيح الموصوف في WAI-ARIA Authoring Practices، المرجع لعناصر الواجهة سهلة الوصول. فحين تبني أي عنصر واجهة ابحث عنه هناك أولاً: سلوك لوحة المفاتيح الذي يتوقعه المستخدمون محدد سلفاً.</p>
+<figure data-render="projects/tabs.html" data-width="560" data-actions="click:[role=tab]:nth-child(1);press:[role=tab]:nth-child(1)|ArrowLeft"><figcaption><b>مشروع {{n}}.3:</b> بعد ضغط السهم الأيسر على التبويب الأول في الصفحة العربية: اختير التبويب التالي، والتركيز عليه.</figcaption></figure>
+</div>

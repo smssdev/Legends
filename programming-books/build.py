@@ -271,7 +271,7 @@ def answers_by_chapter(book, lang):
             k += 1
             src = ROOT / "src" / f'{ch.get("src") or book["id"] + "/" + f"ch{k:02d}"}.answers.{lang}.html'
             if src.exists():
-                body = re.sub(r"\{\{n(?:\+(\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
+                body = re.sub(r"\{\{n(?:([+-]\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
                 out.append(f'<h2>{TEXT[lang]["chapter"]} {k}</h2>\n{body}')
     return "\n\n".join(out)
 
@@ -292,7 +292,7 @@ def build(book, lang, edition):
             if not src.exists():
                 continue
             cid = f"ch{k:02d}"
-            text = re.sub(r"\{\{n(?:\+(\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
+            text = re.sub(r"\{\{n(?:([+-]\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
             text = decorate(fill_code(text, lang), lang, k)
             text = text.replace('<section class="chapter"', f'<section class="chapter" style="page: {cid}"', 1)
             chapters.append(text)

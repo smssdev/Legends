@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "Chapter 3: Modules, Tooling and Build Systems"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "Chapter 4: Components and Rendering"; } }
+@page ch04:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -1723,6 +1725,415 @@ https://api.bits-shop.example</pre></div>
 <p>The toolchain is ready, and the language foundations are in place. In the next chapter the framework arrives: you will build your first components, and see how a whole page can be described as a function of its data.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b2/react/components/en">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">Chapter 4</p><h1>Components and Rendering</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain the core idea of React: the screen is a function of the data</li>
+<li>write components with JSX, and know the rules that JSX adds to HTML</li>
+<li>pass data to components with typed props, and build bigger components from smaller ones</li>
+<li>render lists with keys, and choose what to show with conditions</li>
+<li>handle events and give a component its first piece of state</li>
+<li>keep components pure, so React can draw them safely as often as it needs</li>
+</ul>
+</div>
+
+<p class="lead">In Book 1 you built a tasks app with the DOM: find an element, listen for an event, change the element. It worked, but every new feature meant more code that changed the page by hand, and more chances to forget to update one part of it. <strong>React</strong> turns this around. You describe what the screen should look like <em>for the current data</em>, and React works out how to change the page to match. When the data changes, you describe the screen again, and React updates only what is different.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Remember the tip at the end of the quiz project in Book 1? “The data is the truth, and <code>show()</code> draws it on the page.” That is exactly React. The difference is that React redraws for you, quickly and correctly, every time the data changes.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>A component is a function</span></h2>
+
+<p>A <dfn>component</dfn> is a function whose name starts with a capital letter and which returns a description of some user interface. The description is written in <dfn>JSX</dfn>, a syntax that looks like HTML inside JavaScript:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">first.tsx</div><pre class="code">import { renderToStaticMarkup } from &quot;react-dom/server&quot;;
+
+function Greeting() {
+  return &lt;h1&gt;Hello, Sara!&lt;/h1&gt;;
+}
+
+console.log(renderToStaticMarkup(&lt;Greeting /&gt;));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>&lt;h1&gt;Hello, Sara!&lt;/h1&gt;</pre></div>
+
+<p>This example asks React to turn the component into plain HTML and print it, so you can see exactly what JSX produces. In a browser, React builds the same elements in the page instead. The files end in <code>.tsx</code>: TypeScript with JSX. The build tool translates each JSX tag into a function call, and TypeScript checks it like any other code.</p>
+
+<h3>The rules of JSX</h3>
+
+<p>JSX looks like HTML, but it is JavaScript, so a few things are different:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">jsx.tsx</div><pre class="code">import { renderToStaticMarkup } from &quot;react-dom/server&quot;;
+
+function CartSummary({ count, total }: { count: number; total: number }) {
+  const isEmpty = count === 0;
+  return (
+    &lt;&gt;
+      &lt;p className=&quot;summary&quot;&gt;
+        {count} items in your cart: {total.toFixed(2)} EGP
+      &lt;/p&gt;
+      &lt;button disabled={isEmpty} style={{ fontWeight: 700 }}&gt;
+        Add to cart
+      &lt;/button&gt;
+    &lt;/&gt;
+  );
+}
+
+console.log(renderToStaticMarkup(&lt;CartSummary count={3} total={41} /&gt;));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>&lt;p class=&quot;summary&quot;&gt;3 items in your cart: 41.00 EGP&lt;/p&gt;&lt;button style=&quot;font-weight:700&quot;&gt;Add to cart&lt;/button&gt;</pre></div>
+
+<ul>
+<li><strong>Curly braces</strong> put any JavaScript expression into the markup: <code>{count}</code>, <code>{total.toFixed(2)}</code>. Statements such as <code>if</code> and <code>for</code> are not expressions, so they cannot go inside braces; you will see what to use instead in a moment.</li>
+<li><code>className</code> instead of <code>class</code>, and <code>htmlFor</code> instead of <code>for</code>, because those words are reserved in JavaScript. Other attributes are written in camelCase: <code>onClick</code>, <code>tabIndex</code>.</li>
+<li>A component returns <strong>one</strong> root. When you do not want an extra <code>&lt;div&gt;</code>, wrap the elements in a <dfn>fragment</dfn>, <code>&lt;&gt;…&lt;/&gt;</code>, which adds nothing to the page.</li>
+<li>Every tag must be closed: <code>&lt;img /&gt;</code>, <code>&lt;br /&gt;</code>.</li>
+<li><code>style</code> takes an object, hence the double braces: <code>style={{ fontWeight: 700 }}</code>. Prefer CSS classes; inline styles are for values computed in code.</li>
+<li><code>disabled={isEmpty}</code> passes a boolean. React wrote no <code>disabled</code> attribute here, because the value was <code>false</code>.</li>
+</ul>
+
+<p>Text in braces is always <strong>escaped</strong>: if a product name contains <code>&lt;script&gt;</code>, React shows it as text and never runs it. This protects you from the XSS attacks you met in Book 1, by default.</p>
+
+<h2><span class="sec">4.2</span> <span>Props: passing data down</span></h2>
+
+<p>Components receive their inputs as <dfn>props</dfn> (properties): one object, written in JSX like HTML attributes. With TypeScript you describe the props as a type, and the editor then checks every place the component is used:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">products.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Product = {
+  id: number;
+  name: string;
+  price: number;
+  category: <span class="s">&quot;books&quot;</span> | <span class="s">&quot;gifts&quot;</span>;
+  isNew?: boolean;
+  inStock: boolean;
+};
+
+<span class="k">export</span> <span class="k">const</span> products: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;Code from Zero&quot;</span>, price: <span class="n">25</span>, category: <span class="s">&quot;books&quot;</span>, isNew: <span class="k">true</span>, inStock: <span class="k">true</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8</span>, category: <span class="s">&quot;gifts&quot;</span>, inStock: <span class="k">true</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;Bit sticker&quot;</span>, price: <span class="n">3</span>, category: <span class="s">&quot;gifts&quot;</span>, inStock: <span class="k">false</span> },
+  { id: <span class="n">4</span>, name: <span class="s">&quot;Bit cap&quot;</span>, price: <span class="n">12</span>, category: <span class="s">&quot;gifts&quot;</span>, isNew: <span class="k">true</span>, inStock: <span class="k">true</span> },
+];</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">cards.tsx</div><pre class="code">import { createRoot } from &quot;react-dom/client&quot;;
+import type { ReactNode } from &quot;react&quot;;
+import { products, type Product } from &quot;./products&quot;;
+
+type ProductCardProps = {
+  product: Product;
+  onAdd?: (id: number) =&gt; void;
+};
+
+function ProductCard({ product, onAdd }: ProductCardProps) {
+  return (
+    &lt;article className=&quot;card&quot;&gt;
+      {product.isNew &amp;&amp; &lt;span className=&quot;badge&quot;&gt;New&lt;/span&gt;}
+      &lt;h3&gt;{product.name}&lt;/h3&gt;
+      &lt;p className=&quot;price&quot;&gt;
+        {product.price.toFixed(2)} EGP
+      &lt;/p&gt;
+      &lt;button disabled={!product.inStock} onClick={() =&gt; onAdd?.(product.id)}&gt;
+        {product.inStock ? &quot;Add to cart&quot; : &quot;Sold out&quot;}
+      &lt;/button&gt;
+    &lt;/article&gt;
+  );
+}
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    &lt;section&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      {children}
+    &lt;/section&gt;
+  );
+}
+
+function App() {
+  return (
+    &lt;Section title=&quot;Bit&#x27;s shop&quot;&gt;
+      &lt;div className=&quot;grid&quot;&gt;
+        {products.map((product) =&gt; (
+          &lt;ProductCard key={product.id} product={product} /&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/Section&gt;
+  );
+}
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;App /&gt;);</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cards.html</span><b>560px</b></div><img src="img/react-components-en-cards.html-560.png" alt=""><figcaption><b>Figure 4.1:</b> Four <code>ProductCard</code>s inside a <code>Section</code>. The sticker is out of stock, so its button is disabled and says so.</figcaption></figure>
+
+<ul>
+<li>The props are <dfn>destructured</dfn> in the parameter list: <code>({ product, onAdd })</code>.</li>
+<li><code>onAdd?</code> is optional, and <code>onAdd?.(product.id)</code> calls it only if it was given. Passing functions as props is how a child tells its parent that something happened.</li>
+<li><code>children</code> is a special prop: whatever you put <em>between</em> the opening and closing tags. <code>Section</code> does not know or care what is inside it. This is called <dfn>composition</dfn>, and it is the main way React components are combined. Its type is <code>ReactNode</code>: anything React can draw.</li>
+<li>Props are <strong>read-only</strong>. A component never changes its own props; it asks its parent to change the data, and gets new props.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: small components with good names</p><p>When a piece of JSX grows past what fits on one screen, or when you want to give a piece a name in your head (“the price”, “the badge”), make it a component. Components cost nothing, and a page made of <code>&lt;ProductCard&gt;</code>, <code>&lt;CartSummary&gt;</code> and <code>&lt;Checkout&gt;</code> reads like a description of the page.</p></aside>
+
+<h2><span class="sec">4.3</span> <span>Lists and keys</span></h2>
+
+<p>To show a list, turn an array of data into an array of elements with <code>map</code>, as <code>App</code> does above. Each element in a list needs a <dfn>key</dfn>: a value that identifies that item among its brothers and sisters, such as <code>key={product.id}</code>.</p>
+
+<p>Keys tell React which item is which between two renders. If a product is removed from the middle of the list, the keys let React remove exactly that card, and keep the others with everything inside them: what the user typed, the scroll position, an animation. The rules are simple:</p>
+<ul>
+<li>Use a stable id from the data. Database ids are perfect.</li>
+<li>Do not use the array index if items can be added, removed or reordered: after a change, index 2 may be a different item, and React will reuse the wrong card.</li>
+<li>Keys only need to be unique within one list, and they are not passed to the component as a prop.</li>
+</ul>
+
+<h2><span class="sec">4.4</span> <span>Choosing what to show</span></h2>
+
+<p>Because <code>if</code> cannot go inside braces, React code chooses with three tools: an <strong>early <code>return</code></strong> for whole different screens, the <strong>ternary</strong> <code>a ? b : c</code> for one of two things, and <code>&amp;&amp;</code> for “this or nothing”. You saw the last two in <code>ProductCard</code>. Here is the first, with the discriminated union from Chapter 2:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">status.tsx</div><pre class="code">import { createRoot } from &quot;react-dom/client&quot;;
+
+type Orders =
+  | { status: &quot;loading&quot; }
+  | { status: &quot;error&quot;; message: string }
+  | { status: &quot;success&quot;; orders: string[] };
+
+function OrderList({ state }: { state: Orders }) {
+  if (state.status === &quot;loading&quot;) {
+    return (
+      &lt;p className=&quot;muted&quot;&gt;
+        &lt;span className=&quot;spinner&quot; /&gt;
+        Loading your orders…
+      &lt;/p&gt;
+    );
+  }
+  if (state.status === &quot;error&quot;) {
+    return (
+      &lt;p className=&quot;error&quot;&gt;
+        Could not load your orders: {state.message}
+        &lt;button className=&quot;secondary&quot;&gt;Try again&lt;/button&gt;
+      &lt;/p&gt;
+    );
+  }
+  if (state.orders.length === 0) {
+    return &lt;p className=&quot;muted&quot;&gt;You have no orders yet.&lt;/p&gt;;
+  }
+  return (
+    &lt;ul&gt;
+      {state.orders.map((order) =&gt; (
+        &lt;li key={order}&gt;{order}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+const examples: Orders[] = [
+  { status: &quot;loading&quot; },
+  { status: &quot;error&quot;, message: &quot;you are offline&quot; },
+  { status: &quot;success&quot;, orders: [] },
+  { status: &quot;success&quot;, orders: [&quot;#1042 · Code from Zero&quot;, &quot;#1043 · Bit mug&quot;] },
+];
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(
+  &lt;&gt;
+    {examples.map((state, i) =&gt; (
+      &lt;div className=&quot;panel&quot; key={i}&gt;
+        &lt;OrderList state={state} /&gt;
+      &lt;/div&gt;
+    ))}
+  &lt;/&gt;,
+);</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>status.html</span><b>560px</b></div><img src="img/react-components-en-status.html-560.png" alt=""><figcaption><b>Figure 4.2:</b> The same component in all four states. Each state has its own message, and the error offers a way forward.</figcaption></figure>
+
+<p>Professional interfaces design every state, not just the happy one: loading, empty, error and success. Users meet the other three more often than designers expect.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: <code>0</code> is drawn</p><p><code>{count &amp;&amp; &lt;Badge /&gt;}</code> shows a <code>0</code> on the screen when <code>count</code> is zero, because <code>0 &amp;&amp; …</code> is <code>0</code>, and React draws numbers. Write a real boolean on the left: <code>{count &gt; 0 &amp;&amp; &lt;Badge /&gt;}</code>.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does JSX use <code>className</code> and not <code>class</code>?</li><li>What is wrong with <code>key={index}</code> in a list where the user can delete items?</li><li>How does a child component tell its parent that a button was pressed?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">4.5</span> <span>Events and a first piece of state</span></h2>
+
+<p>Events are props too: <code>onClick</code>, <code>onChange</code>, <code>onSubmit</code>, each taking a function. To make a component change over time, it needs <dfn>state</dfn>: data that belongs to the component and that React remembers between renders. The <code>useState</code> function, a <dfn>hook</dfn>, gives you the current value and a function to change it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">like.tsx</div><pre class="code">import { useState } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+
+function LikeButton({ initial }: { initial: number }) {
+  const [likes, setLikes] = useState(initial);
+  const [liked, setLiked] = useState(false);
+
+  function toggle() {
+    setLiked(!liked);
+    setLikes(liked ? likes - 1 : likes + 1);
+  }
+
+  return (
+    &lt;button className={liked ? &quot;&quot; : &quot;secondary&quot;} aria-pressed={liked} onClick={toggle}&gt;
+      {liked ? &quot;♥ Liked&quot; : &quot;♡ Like&quot;} · {likes} likes
+    &lt;/button&gt;
+  );
+}
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(
+  &lt;p style={{ display: &quot;flex&quot;, gap: 8 }}&gt;
+    &lt;LikeButton initial={41} /&gt;
+    &lt;LikeButton initial={7} /&gt;
+  &lt;/p&gt;,
+);</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>like.html</span><b>560px</b></div><img src="img/react-components-en-like.html-560-c117d3.png" alt=""><figcaption><b>Figure 4.3:</b> Two independent like buttons after the first was pressed.</figcaption></figure>
+
+<p>Here is what happens when the button is pressed:</p>
+<ol>
+<li><code>toggle</code> calls <code>setLiked</code> and <code>setLikes</code>. These do not change the variables; they <em>ask</em> React for a new render with new values.</li>
+<li>React calls <code>LikeButton</code> again. This time <code>useState</code> returns the new values.</li>
+<li>The function returns new JSX, React compares it with the last one, and changes only the button’s text and class in the page.</li>
+</ol>
+
+<p>Each of the two buttons has its own state, because state belongs to a particular place in the screen, not to the function. The next chapter is all about state; for now, remember the cycle: <strong>event → set state → render → update the page</strong>.</p>
+
+<h2><span class="sec">4.6</span> <span>Keep components pure</span></h2>
+
+<p>React may call your component many times: whenever its state or its parent changes, and in development, twice on purpose, to help you find mistakes. That is only safe if the component is <dfn>pure</dfn>: given the same props and state, it returns the same JSX, and it changes nothing outside itself while doing so. This one breaks the rule:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">impure.tsx</div><pre class="code">import { renderToStaticMarkup } from &quot;react-dom/server&quot;;
+
+let visitors = 0;
+
+function Counter() {
+  visitors = visitors + 1; // Bad: changes a variable outside the component while rendering
+  return &lt;p&gt;Visitors so far: {visitors}&lt;/p&gt;;
+}
+
+console.log(&quot;First render:&quot;, renderToStaticMarkup(&lt;Counter /&gt;));
+console.log(&quot;Second render:&quot;, renderToStaticMarkup(&lt;Counter /&gt;));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>First render: &lt;p&gt;Visitors so far: 1&lt;/p&gt;
+Second render: &lt;p&gt;Visitors so far: 2&lt;/p&gt;</pre></div>
+
+<p>Nothing changed, yet the second render shows a different number. In a real app, this kind of bug makes numbers jump, lists double, and requests fire twice. Rendering must only <em>calculate</em>. Work that changes something, like saving data, starting a timer or sending a request, belongs in event handlers, or in effects, which the next chapter explains.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: develop in Strict Mode</p><p>Wrap the app in <code>&lt;StrictMode&gt;</code>, which Vite’s React template does for you. In development it renders every component twice and runs effects twice, so impure code shows its bugs on your screen instead of your users’. It does nothing in production.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A component name in lower case: <code>&lt;productCard /&gt;</code></td><td>React treats it as an unknown HTML tag</td><td>Capitalise: <code>ProductCard</code></td></tr>
+<tr><td><code>onClick={add()}</code></td><td><code>add</code> runs during render, not on click</td><td><code>onClick={add}</code> or <code>onClick={() =&gt; add(id)}</code></td></tr>
+<tr><td>A list without keys, or with index keys</td><td>A warning, and items mixed up after changes</td><td><code>key={item.id}</code></td></tr>
+<tr><td><code>{count &amp;&amp; …}</code> with a number</td><td>A stray <code>0</code> on the screen</td><td><code>{count &gt; 0 &amp;&amp; …}</code></td></tr>
+<tr><td>Changing props or outside variables while rendering</td><td>Values that jump between renders</td><td>Render only calculates; change things in event handlers</td></tr>
+<tr><td>Changing a state variable directly: <code>likes++</code></td><td>Nothing happens on screen</td><td>Call the setter: <code>setLikes(likes + 1)</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>In React, <strong>the screen is a function of the data</strong>. You describe it; React updates the page.</li>
+<li>A <strong>component</strong> is a capitalised function that returns <strong>JSX</strong>. Braces hold expressions; use <code>className</code>, close every tag, and wrap siblings in a fragment.</li>
+<li><strong>Props</strong> pass data down, typed with TypeScript and never changed by the child. <code>children</code> enables <strong>composition</strong>; function props pass events up.</li>
+<li>Lists are made with <code>map</code>, and every item needs a stable <strong>key</strong>.</li>
+<li>Choose what to show with early returns, ternaries and <code>&amp;&amp;</code>, and design all four states: loading, empty, error, success.</li>
+<li><strong>State</strong> from <code>useState</code> survives between renders; setting it causes a new render.</li>
+<li>Components must be <strong>pure</strong>. Strict Mode helps you find the ones that are not.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because JSX is JavaScript, where <code>class</code> is a reserved word. 2. After a deletion, the indexes of the following items change, so React matches the wrong items and may keep the wrong state on screen. 3. The parent passes a function as a prop, such as <code>onAdd</code>, and the child calls it.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Build each project in a Vite project created with the <code>react-ts</code> template: <code>npm create vite@latest my-react -- --template react-ts</code>. Before writing code, draw the screen on paper and circle the components. Then build from the smallest component upwards.</p>
+
+<div class="project">
+<p class="project-label">Project 4.1 · Easy</p>
+<h3>A profile card</h3>
+<p class="project-goal">Build a profile card from four small components, with a follow button that changes the number of followers.</p>
+<p class="project-skills"><strong>You will practise:</strong> typed props, <code>children</code>, splitting a design into components, and one piece of state.</p>
+<ol class="steps">
+<li>Write a type <code>Person</code> with a name, role, city, number of projects and number of followers.</li>
+<li>Build the small parts first: <code>Avatar</code> (the first letter of the name in a circle) and <code>Stat</code> (a number with a label).</li>
+<li>Build <code>ProfileCard</code>, which takes a <code>person</code> and <code>children</code>, so each page can put its own text inside the card.</li>
+<li>Add <code>const [following, setFollowing] = useState(false)</code>. Show one more follower while following; do not change <code>person</code>.</li>
+<li>Give the button <code>aria-pressed={following}</code>, so screen readers announce whether it is on.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the number of followers shown is <em>calculated</em> from the props and the state on every render. You never store it separately, so it can never be wrong. The next chapter calls this “derived state”.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>560px</b></div><img src="img/react-components-en-projects-profile.html-560-c117d3.png" alt=""><figcaption><b>Project 4.1:</b> the profile card after pressing “Follow”.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 4.2 · Medium</p>
+<h3>A catalogue with filters</h3>
+<p class="project-goal">Show a grid of products with filter buttons for each category and a line that says how many products are visible.</p>
+<p class="project-skills"><strong>You will practise:</strong> lists and keys, state typed with a union, deriving a filtered list, and buttons with <code>aria-pressed</code>.</p>
+<ol class="steps">
+<li>Reuse <code>products.ts</code>. Create the type <code>Filter = "all" | Product["category"]</code>: it updates itself if a category is added.</li>
+<li>Keep the filter buttons as data, an array of <code>{ value, label }</code>, and render them with <code>map</code>.</li>
+<li>Store only the chosen filter in state. Calculate <code>visible</code> from it on every render with <code>filter</code>.</li>
+<li>Show “Showing 3 of 4 products” using <code>visible.length</code> and <code>products.length</code>.</li>
+<li>Group the buttons with <code>role="group"</code> and a label, and mark the active one with <code>aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a common mistake is to keep <code>visible</code> in state too, and then forget to update it when the products change. If a value can be calculated from other state, calculate it.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>catalogue.html</span><b>560px</b></div><img src="img/react-components-en-projects-catalogue.html-560-d95291.png" alt=""><figcaption><b>Project 4.2:</b> the catalogue filtered to gifts.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 4.3 · Challenge</p>
+<h3>Accessible tabs</h3>
+<p class="project-goal">Build a reusable <code>Tabs</code> component that works with the mouse, the keyboard and screen readers, in both left-to-right and right-to-left pages.</p>
+<p class="project-skills"><strong>You will practise:</strong> passing content as data, ARIA roles, <code>useId</code> for unique ids, <code>useRef</code> to move the focus, and keyboard events.</p>
+<ol class="steps">
+<li>Make <code>Tabs</code> take <code>tabs: { label: string; content: ReactNode }[]</code> and a <code>label</code> for the group.</li>
+<li>Render a <code>role="tablist"</code> with one <code>role="tab"</code> button per tab, and one <code>role="tabpanel"</code> per tab, hidden unless active.</li>
+<li>Link each tab and panel with <code>aria-controls</code> and <code>aria-labelledby</code>. Make the ids with <code>useId()</code>, so two <code>Tabs</code> on one page never clash.</li>
+<li>Only the active tab is in the Tab order (<code>tabIndex={0}</code>); the others get <code>-1</code>. The arrow keys move between tabs, and Home and End jump to the ends.</li>
+<li>Keep the buttons in a <code>useRef</code> array, and call <code>focus()</code> on the new tab after the arrow keys. In a right-to-left page, the right arrow moves to the <em>previous</em> tab.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the keyboard pattern described in the WAI-ARIA Authoring Practices, the reference for accessible widgets. When you build any widget, look it up there first: the keyboard behaviour users expect is already decided.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>tabs.html</span><b>560px</b></div><img src="img/react-components-en-projects-tabs.html-560-f448da.png" alt=""><figcaption><b>Project 4.3:</b> after pressing the right arrow on the first tab: the next tab is selected and has the focus.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a <code>Price</code> component that takes <code>value</code> and <code>currency</code> and shows the value with two decimals, and use it in <code>ProductCard</code>.</li>
+<li><span class="level">Easy</span> Give <code>ProductCard</code> a <code>"-20%"</code> badge for products with a <code>discount</code> property, without showing anything for the others.</li>
+<li><span class="level medium">Medium</span> Pass an <code>onAdd</code> function from <code>App</code> that keeps a cart count in state, and show “3 items in your cart” above the grid.</li>
+<li><span class="level medium">Medium</span> Rewrite <code>OrderList</code> with a <code>switch</code> on <code>state.status</code> and an <code>assertNever</code> default, then add a fourth status, <code>"offline"</code>, and handle it.</li>
+<li><span class="level hard">Challenge</span> Make <code>impure.tsx</code> pure while still counting visitors: keep the count in the parent as state, increase it in an event handler, and pass it down as a prop.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 5</p>
+<p>You have used state for a like button. In the next chapter you will learn to design state for real screens: where it should live, how to update objects and lists in it, how to derive values instead of storing them, and how to talk to the world outside React with effects.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -1768,6 +2179,16 @@ https://api.bits-shop.example</pre></div>
 <li><code>^1.4.2</code> allows 1.4.9 and 1.9.0, but not 1.4.1 (older) or 2.0.0 (a new major version). <code>~1.4.2</code> allows only 1.4.9 from the list: it accepts patch updates within 1.4.</li>
 <li>ESLint reports <code>'x' is never reassigned. Use 'const' instead</code>. Change <code>let</code> to <code>const</code>, or run <code>npx eslint src --fix</code>, which makes this change by itself.</li>
 <li>Add a second button whose handler runs <code>const { showHelp } = await import("./help.ts")</code>. The build then lists <code>report-….js</code> and <code>help-….js</code> next to <code>index-….js</code>: one extra file per dynamic import.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 4</h2>
+<ol class="exercises">
+<li><code>function Price({ value, currency }: { value: number; currency: string }) { return &lt;p className="price"&gt;{value.toFixed(2)} {currency}&lt;/p&gt;; }</code>, then in <code>ProductCard</code> write <code>&lt;Price value={product.price} currency="EGP" /&gt;</code>.</li>
+<li>Add <code>discount?: number</code> to <code>Product</code> and, in the card, <code>{product.discount !== undefined &amp;&amp; &lt;span className="badge"&gt;-{product.discount * 100}%&lt;/span&gt;}</code>. Comparing with <code>undefined</code> keeps the left side a real boolean, so nothing is drawn for products without a discount.</li>
+<li>In <code>App</code>: <code>const [count, setCount] = useState(0)</code>; pass <code>onAdd={() =&gt; setCount(count + 1)}</code> to every <code>ProductCard</code>, and render <code>&lt;p&gt;{count} items in your cart&lt;/p&gt;</code> above the grid. The state lives in <code>App</code> because both the grid and the summary need it.</li>
+<li>Replace the <code>if</code> statements with <code>switch (state.status) { case "loading": … case "error": … case "success": … default: return assertNever(state); }</code>. After adding <code>| { status: "offline" }</code> to the type, the compiler reports the <code>default</code> line until you add <code>case "offline": return &lt;p className="muted"&gt;You are offline.&lt;/p&gt;;</code>.</li>
+<li>Move the number into the parent: <code>const [visitors, setVisitors] = useState(0)</code>, render <code>&lt;Counter visitors={visitors} /&gt;</code> and a button with <code>onClick={() =&gt; setVisitors(visitors + 1)}</code>. <code>Counter</code> now only displays its prop, so rendering it twice gives the same result.</li>
 </ol>
 
 </section>

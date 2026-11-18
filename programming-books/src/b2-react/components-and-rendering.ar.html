@@ -1,0 +1,217 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/react/components/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>المكونات والرسم</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح فكرة React الأساسية: الشاشة دالة في البيانات</li>
+<li>تكتب المكونات بـ JSX، وتعرف القواعد التي تضيفها JSX إلى HTML</li>
+<li>تمرر البيانات إلى المكونات بخصائص لها أنواع، وتبني مكونات كبيرة من أصغر منها</li>
+<li>ترسم القوائم بالمفاتيح، وتختار ما يظهر بالشروط</li>
+<li>تعالج الأحداث وتعطي المكوّن أول قطعة من الحالة</li>
+<li>تبقي المكونات نقية، ليرسمها React بأمان كلما احتاج</li>
+</ul>
+</div>
+
+<p class="lead">بنيت في الكتاب الأول تطبيق مهام بـ DOM: جِد العنصر، واستمع إلى الحدث، وغيّر العنصر. ونجح ذلك، لكن كل ميزة جديدة كانت تعني كوداً أكثر يغيّر الصفحة باليد، وفرصاً أكثر لنسيان تحديث جزء منها. و<strong>React</strong> تقلب هذا: تصف أنت كيف يجب أن تبدو الشاشة <em>للبيانات الحالية</em>، وتحسب React كيف تغيّر الصفحة لتطابقه. وحين تتغير البيانات تصف الشاشة من جديد، فتحدّث React ما اختلف فقط.</p>
+
+<aside class="bit" data-mood="wow"><p>أتذكر التلميح في آخر مشروع الاختبار في الكتاب الأول؟ «البيانات هي الحقيقة، و<code>show()</code> ترسمها على الصفحة». هذه هي React بالضبط. والفرق أن React تعيد الرسم نيابة عنك، بسرعة وصحة، كلما تغيرت البيانات.</p></aside>
+
+<h2>{{n}}.1 المكوّن دالة</h2>
+
+<p><dfn>المكوّن</dfn> (component) دالة يبدأ اسمها بحرف كبير، وتُرجع وصفاً لجزء من الواجهة. ويُكتب هذا الوصف بـ <dfn>JSX</dfn>، وهي صيغة تشبه HTML داخل JavaScript:</p>
+
+<pre data-code="first.tsx" data-title="first.tsx"></pre>
+<pre data-out="first.mjs"></pre>
+
+<p>يطلب هذا المثال من React تحويل المكوّن إلى HTML عادية وطباعتها، لترى بالضبط ما تنتجه JSX. وفي المتصفح تبني React العناصر نفسها داخل الصفحة بدلاً من ذلك. وتنتهي الملفات بـ <code>.tsx</code>: أي TypeScript مع JSX. وتترجم أداة البناء كل وسم JSX إلى استدعاء دالة، وتفحصه TypeScript كأي كود آخر.</p>
+
+<h3>قواعد JSX</h3>
+
+<p>تبدو JSX مثل HTML، لكنها JavaScript، فتختلف بضعة أشياء:</p>
+
+<pre data-code="jsx.tsx" data-title="jsx.tsx"></pre>
+<pre data-out="jsx.mjs"></pre>
+
+<ul>
+<li><strong>الأقواس المعقوصة</strong> تضع أي تعبير JavaScript داخل الوسوم: <code>{count}</code> و<code>{total.toFixed(2)}</code>. والجمل مثل <code>if</code> و<code>for</code> ليست تعبيرات، فلا توضع داخل الأقواس، وسترى بعد قليل ما يُستخدم بدلاً منها.</li>
+<li><code>className</code> بدل <code>class</code>، و<code>htmlFor</code> بدل <code>for</code>، لأن هاتين الكلمتين محجوزتان في JavaScript. وتُكتب الخصائص الأخرى بأسلوب camelCase: <code>onClick</code> و<code>tabIndex</code>.</li>
+<li>يُرجع المكوّن جذراً <strong>واحداً</strong>. وحين لا تريد <code>&lt;div&gt;</code> زائدة، غلّف العناصر بـ <dfn>جزء</dfn> (fragment)، <code>&lt;&gt;…&lt;/&gt;</code>، فلا يضيف شيئاً إلى الصفحة.</li>
+<li>كل وسم يجب أن يُغلق: <code>&lt;img /&gt;</code> و<code>&lt;br /&gt;</code>.</li>
+<li><code>style</code> تأخذ كائناً، ولهذا القوسان المزدوجان: <code>style={{ fontWeight: 700 }}</code>. وفضّل أصناف CSS، فالأنماط المضمّنة للقيم التي تُحسب في الكود.</li>
+<li><code>disabled={isEmpty}</code> تمرر قيمة منطقية. ولم تكتب React هنا خاصية <code>disabled</code> لأن القيمة كانت <code>false</code>.</li>
+</ul>
+
+<p>والنص داخل الأقواس <strong>يُهرَّب</strong> دائماً: فإن كان في اسم منتج <code>&lt;script&gt;</code> عرضته React نصاً ولم تشغّله أبداً. وهذا يحميك من هجمات XSS التي عرفتها في الكتاب الأول، تلقائياً.</p>
+
+<h2>{{n}}.2 الخصائص: تمرير البيانات إلى الأسفل</h2>
+
+<p>تستقبل المكونات مدخلاتها <dfn>خصائص</dfn> (props): كائناً واحداً يُكتب في JSX مثل خصائص HTML. ومع TypeScript تصف الخصائص نوعاً، فيفحص المحرر كل مكان يُستخدم فيه المكوّن:</p>
+
+<pre data-code="products.ts" data-title="products.ts"></pre>
+<pre data-code="cards.tsx" data-title="cards.tsx"></pre>
+
+<figure data-render="cards.html" data-width="560"><figcaption><b>شكل {{n}}.1:</b> أربع بطاقات <code>ProductCard</code> داخل <code>Section</code>. الملصق نفدت كميته، فزره معطّل ويقول ذلك.</figcaption></figure>
+
+<ul>
+<li>تُفكَّك الخصائص في قائمة المعاملات: <code>({ product, onAdd })</code>.</li>
+<li><code>onAdd?</code> اختيارية، و<code>onAdd?.(product.id)</code> تستدعيها فقط إن مُرّرت. وتمرير الدوال خصائصَ هو طريقة الابن في إخبار أبيه بأن شيئاً حدث.</li>
+<li><code>children</code> خاصية مميزة: كل ما تضعه <em>بين</em> وسمي الفتح والإغلاق. فـ <code>Section</code> لا تعرف ما بداخلها ولا يهمها. ويسمى هذا <dfn>التركيب</dfn> (composition)، وهو الطريقة الأساسية لجمع مكونات React. ونوعه <code>ReactNode</code>: أي شيء تستطيع React رسمه.</li>
+<li>الخصائص <strong>للقراءة فقط</strong>. لا يغيّر المكوّن خصائصه أبداً، بل يطلب من أبيه تغيير البيانات، فيأخذ خصائص جديدة.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">نصيحة: مكونات صغيرة بأسماء جيدة</p><p>حين تطول قطعة JSX فوق ما تتسع له شاشة واحدة، أو حين تريد أن تسمي قطعة في ذهنك («السعر»، «الشارة»)، فاجعلها مكوّناً. فالمكونات لا تكلّف شيئاً، والصفحة المصنوعة من <code>&lt;ProductCard&gt;</code> و<code>&lt;CartSummary&gt;</code> و<code>&lt;Checkout&gt;</code> تُقرأ كأنها وصف للصفحة.</p></aside>
+
+<h2>{{n}}.3 القوائم والمفاتيح</h2>
+
+<p>لتعرض قائمة حوّل مصفوفة البيانات إلى مصفوفة عناصر بـ <code>map</code>، كما يفعل <code>App</code> أعلاه. وكل عنصر في القائمة يحتاج <dfn>مفتاحاً</dfn> (key): قيمة تميّز هذا العنصر بين إخوته، مثل <code>key={product.id}</code>.</p>
+
+<p>تخبر المفاتيح React أي عنصر هو أيّه بين رسمين. فإن حُذف منتج من وسط القائمة، سمحت المفاتيح لـ React بحذف بطاقته هو بالضبط، وإبقاء البطاقات الأخرى بكل ما فيها: ما كتبه المستخدم، وموضع التمرير، والحركة الجارية. والقواعد بسيطة:</p>
+<ul>
+<li>استخدم معرّفاً ثابتاً من البيانات. ومعرّفات قاعدة البيانات مثالية.</li>
+<li>لا تستخدم رقم العنصر في المصفوفة إن كانت العناصر تُضاف أو تُحذف أو يُعاد ترتيبها: فبعد التغيير قد يصير الرقم 2 عنصراً آخر، فتعيد React استخدام البطاقة الخطأ.</li>
+<li>يكفي أن تكون المفاتيح فريدة داخل القائمة الواحدة، ولا تُمرَّر إلى المكوّن خاصيةً.</li>
+</ul>
+
+<h2>{{n}}.4 اختيار ما يظهر</h2>
+
+<p>لأن <code>if</code> لا توضع داخل الأقواس، يختار كود React بثلاث أدوات: <strong><code>return</code> مبكرة</strong> لشاشات مختلفة تماماً، و<strong>العامل الثلاثي</strong> <code>a ? b : c</code> لأحد شيئين، و<code>&amp;&amp;</code> لـ «هذا أو لا شيء». ورأيت الأخيرتين في <code>ProductCard</code>. وهذه الأولى، مع الاتحاد المميَّز من الفصل {{n-2}}:</p>
+
+<pre data-code="status.tsx" data-title="status.tsx"></pre>
+
+<figure data-render="status.html" data-width="560"><figcaption><b>شكل {{n}}.2:</b> المكوّن نفسه في حالاته الأربع. لكل حالة رسالتها، ويعرض الخطأ طريقاً للمتابعة.</figcaption></figure>
+
+<p>تصمم الواجهات الاحترافية كل حالة، لا الحالة السعيدة وحدها: التحميل، والفراغ، والخطأ، والنجاح. ويقابل المستخدمون الثلاث الأخرى أكثر مما يتوقع المصممون.</p>
+
+<aside class="box warn"><p class="box-title">انتبه: الصفر يُرسم</p><p><code>{count &amp;&amp; &lt;Badge /&gt;}</code> تُظهر <code>0</code> على الشاشة حين يكون <code>count</code> صفراً، لأن <code>0 &amp;&amp; …</code> تساوي <code>0</code>، وReact ترسم الأرقام. فاكتب قيمة منطقية حقيقية على اليسار: <code>{count &gt; 0 &amp;&amp; &lt;Badge /&gt;}</code>.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>لماذا تستخدم JSX <code>className</code> لا <code>class</code>؟</li><li>ما المشكلة في <code>key={index}</code> في قائمة يستطيع المستخدم حذف عناصرها؟</li><li>كيف يخبر المكوّن الابن أباه بأن زراً ضُغط؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.5 الأحداث وأول قطعة من الحالة</h2>
+
+<p>الأحداث خصائص أيضاً: <code>onClick</code> و<code>onChange</code> و<code>onSubmit</code>، وكل منها يأخذ دالة. ولكي يتغير المكوّن مع الوقت يحتاج <dfn>حالة</dfn> (state): بيانات تخص المكوّن وتتذكرها React بين الرسمات. والدالة <code>useState</code>، وهي <dfn>خطّاف</dfn> (hook)، تعطيك القيمة الحالية ودالة لتغييرها:</p>
+
+<pre data-code="like.tsx" data-title="like.tsx"></pre>
+
+<figure data-render="like.html" data-width="560" data-actions="click:button"><figcaption><b>شكل {{n}}.3:</b> زرا إعجاب مستقلان بعد ضغط الأول.</figcaption></figure>
+
+<p>وهذا ما يحدث حين يُضغط الزر:</p>
+<ol>
+<li>تستدعي <code>toggle</code> الدالتين <code>setLiked</code> و<code>setLikes</code>. وهما لا تغيّران المتغيرين، بل <em>تطلبان</em> من React رسماً جديداً بقيم جديدة.</li>
+<li>تستدعي React الدالة <code>LikeButton</code> من جديد، وهذه المرة تُرجع <code>useState</code> القيم الجديدة.</li>
+<li>تُرجع الدالة JSX جديدة، فتقارنها React بالسابقة، وتغيّر في الصفحة نص الزر وصنفه فقط.</li>
+</ol>
+
+<p>ولكل من الزرين حالته، لأن الحالة تخص مكاناً بعينه في الشاشة، لا الدالة. والفصل التالي كله عن الحالة، وتذكّر الآن الدورة: <strong>حدث ← تعيين الحالة ← رسم ← تحديث الصفحة</strong>.</p>
+
+<h2>{{n}}.6 أبقِ المكونات نقية</h2>
+
+<p>قد تستدعي React مكوّنك مرات كثيرة: كلما تغيرت حالته أو تغير أبوه، وأثناء التطوير مرتين عمداً، لتساعدك على اكتشاف الأخطاء. وهذا آمن فقط إن كان المكوّن <dfn>نقياً</dfn> (pure): يُرجع JSX نفسها للخصائص والحالة نفسها، ولا يغيّر شيئاً خارجه أثناء ذلك. وهذا المكوّن يخالف القاعدة:</p>
+
+<pre data-code="impure.tsx" data-title="impure.tsx"></pre>
+<pre data-out="impure.mjs"></pre>
+
+<p>لم يتغير شيء، ومع ذلك يُظهر الرسم الثاني رقماً مختلفاً. وفي تطبيق حقيقي يجعل هذا النوع من الأخطاء الأرقام تقفز، والقوائم تتضاعف، والطلبات تُرسل مرتين. فالرسم يجب أن <em>يحسب</em> فقط. أما العمل الذي يغيّر شيئاً، كحفظ البيانات أو بدء مؤقت أو إرسال طلب، فمكانه معالجات الأحداث، أو التأثيرات (effects) التي يشرحها الفصل التالي.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: طوّر في الوضع الصارم</p><p>غلّف التطبيق بـ <code>&lt;StrictMode&gt;</code>، ويفعل قالب React في Vite ذلك لك. فهو أثناء التطوير يرسم كل مكوّن مرتين ويشغّل التأثيرات مرتين، فتظهر أخطاء الكود غير النقي على شاشتك لا على شاشات مستخدميك. ولا يفعل شيئاً في الإنتاج.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>اسم مكوّن بحرف صغير: <code>&lt;productCard /&gt;</code></td><td>تعامله React كوسم HTML مجهول</td><td>ابدأه بحرف كبير: <code>ProductCard</code></td></tr>
+<tr><td><code>onClick={add()}</code></td><td>تعمل <code>add</code> أثناء الرسم لا عند الضغط</td><td><code>onClick={add}</code> أو <code>onClick={() =&gt; add(id)}</code></td></tr>
+<tr><td>قائمة بلا مفاتيح، أو بمفاتيح من الرقم</td><td>تحذير، وعناصر مختلطة بعد التغيير</td><td><code>key={item.id}</code></td></tr>
+<tr><td><code>{count &amp;&amp; …}</code> مع رقم</td><td><code>0</code> شاردة على الشاشة</td><td><code>{count &gt; 0 &amp;&amp; …}</code></td></tr>
+<tr><td>تغيير الخصائص أو متغيرات خارجية أثناء الرسم</td><td>قيم تقفز بين الرسمات</td><td>الرسم يحسب فقط، وغيّر الأشياء في معالجات الأحداث</td></tr>
+<tr><td>تغيير متغير الحالة مباشرة: <code>likes++</code></td><td>لا يحدث شيء على الشاشة</td><td>استدعِ دالة التعيين: <code>setLikes(likes + 1)</code></td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>في React <strong>الشاشة دالة في البيانات</strong>: تصفها أنت، وتحدّث React الصفحة.</li>
+<li><strong>المكوّن</strong> دالة باسم يبدأ بحرف كبير تُرجع <strong>JSX</strong>. الأقواس تحمل التعبيرات، واستخدم <code>className</code>، وأغلق كل وسم، وغلّف الإخوة بجزء (fragment).</li>
+<li><strong>الخصائص</strong> تمرر البيانات إلى الأسفل، بأنواع TypeScript، ولا يغيّرها الابن. و<code>children</code> تتيح <strong>التركيب</strong>، وخصائص الدوال ترفع الأحداث إلى الأعلى.</li>
+<li>تُصنع القوائم بـ <code>map</code>، وكل عنصر يحتاج <strong>مفتاحاً</strong> ثابتاً.</li>
+<li>اختر ما يظهر بـ return المبكرة والعامل الثلاثي و<code>&amp;&amp;</code>، وصمم الحالات الأربع: التحميل والفراغ والخطأ والنجاح.</li>
+<li><strong>الحالة</strong> من <code>useState</code> تبقى بين الرسمات، وتعيينها يسبب رسماً جديداً.</li>
+<li>يجب أن تكون المكونات <strong>نقية</strong>، والوضع الصارم يساعدك على اكتشاف غير النقي منها.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن JSX هي JavaScript، و<code>class</code> كلمة محجوزة فيها. 2. بعد الحذف تتغير أرقام العناصر التالية، فتطابق React العناصر الخطأ وقد تُبقي الحالة الخطأ على الشاشة. 3. يمرر الأب دالة خاصيةً، مثل <code>onAdd</code>، ويستدعيها الابن.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ابنِ كل مشروع في مشروع Vite منشأ من قالب <code>react-ts</code>: <code>npm create vite@latest my-react -- --template react-ts</code>. وقبل كتابة الكود ارسم الشاشة على ورق وضع دائرة حول كل مكوّن، ثم ابنِ من أصغر مكوّن صعوداً.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>بطاقة ملف شخصي</h3>
+<p class="project-goal">ابنِ بطاقة ملف شخصي من أربعة مكونات صغيرة، مع زر متابعة يغيّر عدد المتابعين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الخصائص بالأنواع، و<code>children</code>، وتقسيم التصميم إلى مكونات، وقطعة حالة واحدة.</p>
+<ol class="steps">
+<li>اكتب نوع <code>Person</code> فيه الاسم والدور والمدينة وعدد المشاريع وعدد المتابعين.</li>
+<li>ابنِ الأجزاء الصغيرة أولاً: <code>Avatar</code> (أول حرف من الاسم في دائرة) و<code>Stat</code> (رقم مع تسمية).</li>
+<li>ابنِ <code>ProfileCard</code>، تأخذ <code>person</code> و<code>children</code>، لتضع كل صفحة نصها داخل البطاقة.</li>
+<li>أضف <code>const [following, setFollowing] = useState(false)</code>. واعرض متابعاً إضافياً أثناء المتابعة، دون أن تغيّر <code>person</code>.</li>
+<li>أعطِ الزر <code>aria-pressed={following}</code>، ليعلن قارئ الشاشة هل هو مفعّل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> عدد المتابعين المعروض <em>يُحسب</em> من الخصائص والحالة في كل رسم. فلا تحفظه منفصلاً أبداً، فلا يمكن أن يكون خاطئاً. ويسمي الفصل التالي هذا «الحالة المشتقة».</p>
+<figure data-render="projects/profile.html" data-width="560" data-actions="click:button"><figcaption><b>مشروع {{n}}.1:</b> بطاقة الملف بعد ضغط «تابِع».</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>كتالوج بالتصفية</h3>
+<p class="project-goal">اعرض شبكة منتجات مع أزرار تصفية لكل فئة، وسطراً يقول كم منتجاً يظهر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> القوائم والمفاتيح، والحالة بنوع اتحادي، واشتقاق قائمة مصفّاة، والأزرار بـ <code>aria-pressed</code>.</p>
+<ol class="steps">
+<li>أعد استخدام <code>products.ts</code>، وأنشئ النوع <code>Filter = "all" | Product["category"]</code>: فيتحدث وحده إن أُضيفت فئة.</li>
+<li>احفظ أزرار التصفية بيانات، مصفوفة من <code>{ value, label }</code>، وارسمها بـ <code>map</code>.</li>
+<li>احفظ في الحالة الفلتر المختار فقط، واحسب <code>visible</code> منه في كل رسم بـ <code>filter</code>.</li>
+<li>اعرض «يظهر 3 من 4 منتجات» باستخدام <code>visible.length</code> و<code>products.length</code>.</li>
+<li>اجمع الأزرار بـ <code>role="group"</code> وتسمية، وعلّم الفعّال منها بـ <code>aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> من الأخطاء الشائعة حفظ <code>visible</code> في الحالة أيضاً، ثم نسيان تحديثها حين تتغير المنتجات. فإن أمكن حساب قيمة من حالة أخرى، فاحسبها.</p>
+<figure data-render="projects/catalogue.html" data-width="560" data-actions="click:.filters button:nth-child(3)"><figcaption><b>مشروع {{n}}.2:</b> الكتالوج مصفّى على الهدايا.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>تبويبات سهلة الوصول</h3>
+<p class="project-goal">ابنِ مكوّن <code>Tabs</code> قابلاً لإعادة الاستخدام، يعمل بالفأرة ولوحة المفاتيح وقارئ الشاشة، في الصفحات من اليسار إلى اليمين ومن اليمين إلى اليسار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تمرير المحتوى بيانات، وأدوار ARIA، و<code>useId</code> للمعرّفات الفريدة، و<code>useRef</code> لنقل التركيز، وأحداث لوحة المفاتيح.</p>
+<ol class="steps">
+<li>اجعل <code>Tabs</code> تأخذ <code>tabs: { label: string; content: ReactNode }[]</code> و<code>label</code> للمجموعة.</li>
+<li>ارسم <code>role="tablist"</code> فيها زر <code>role="tab"</code> لكل تبويب، و<code>role="tabpanel"</code> لكل تبويب، مخفية إلا الفعّالة.</li>
+<li>اربط كل تبويب ولوحته بـ <code>aria-controls</code> و<code>aria-labelledby</code>. واصنع المعرّفات بـ <code>useId()</code>، فلا يتعارض <code>Tabs</code> اثنان في صفحة واحدة.</li>
+<li>التبويب الفعّال وحده في ترتيب Tab (<code>tabIndex={0}</code>)، والباقي <code>-1</code>. وتنقل الأسهم بين التبويبات، وHome وEnd تقفزان إلى الطرفين.</li>
+<li>احفظ الأزرار في مصفوفة <code>useRef</code>، واستدعِ <code>focus()</code> على التبويب الجديد بعد الأسهم. وفي الصفحة من اليمين إلى اليسار ينقل السهم الأيمن إلى التبويب <em>السابق</em>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذا نمط لوحة المفاتيح الموصوف في WAI-ARIA Authoring Practices، المرجع لعناصر الواجهة سهلة الوصول. فحين تبني أي عنصر واجهة ابحث عنه هناك أولاً: سلوك لوحة المفاتيح الذي يتوقعه المستخدمون محدد سلفاً.</p>
+<figure data-render="projects/tabs.html" data-width="560" data-actions="click:[role=tab]:nth-child(1);press:[role=tab]:nth-child(1)|ArrowLeft"><figcaption><b>مشروع {{n}}.3:</b> بعد ضغط السهم الأيسر على التبويب الأول في الصفحة العربية: اختير التبويب التالي، والتركيز عليه.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب مكوّن <code>Price</code> يأخذ <code>value</code> و<code>currency</code> ويعرض القيمة بمنزلتين عشريتين، واستخدمه في <code>ProductCard</code>.</li>
+<li><span class="level">سهل</span> أعطِ <code>ProductCard</code> شارة <code>"-20%"</code> للمنتجات التي فيها خاصية <code>discount</code>، دون أن يظهر شيء للباقي.</li>
+<li><span class="level">متوسط</span> مرّر من <code>App</code> دالة <code>onAdd</code> تحفظ عدد عناصر السلة في الحالة، واعرض «3 عناصر في سلتك» فوق الشبكة.</li>
+<li><span class="level">متوسط</span> أعد كتابة <code>OrderList</code> بـ <code>switch</code> على <code>state.status</code> وفرع افتراضي <code>assertNever</code>، ثم أضف حالة رابعة <code>"offline"</code> وعالجها.</li>
+<li><span class="level">تحدٍّ</span> اجعل <code>impure.tsx</code> نقياً مع استمرار عدّ الزوار: احفظ العدد حالةً في الأب، وزِده في معالج حدث، ومرّره إلى الأسفل خاصيةً.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>استخدمت الحالة لزر إعجاب. وفي الفصل التالي ستتعلم تصميم الحالة لشاشات حقيقية: أين تعيش، وكيف تحدّث الكائنات والقوائم فيها، وكيف تشتق القيم بدل حفظها، وكيف تتحدث إلى العالم خارج React بالتأثيرات.</p>
+</div>
+</section>
