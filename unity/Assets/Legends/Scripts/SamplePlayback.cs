@@ -17,6 +17,13 @@ namespace Legends
 
         IEnumerator Start()
         {
+            // [X113] Only to try the scene in the editor (build.ps1 demo, the pictures, the tests). In a build the page
+            // sends the match: the recording played over it (another match's clubs, its 94 minutes, its speed).
+            if (!Application.isEditor)
+            {
+                enabled = false;
+                yield break;
+            }
             string path = System.IO.Path.Combine(Application.streamingAssetsPath, file);
             if (!path.Contains("://")) path = "file://" + path;
             using (var req = UnityWebRequest.Get(path))
@@ -41,6 +48,7 @@ namespace Legends
 
         void Update()
         {
+            if (!Application.isEditor) return;
             Time.timeScale = speed;
         }
 
