@@ -201,6 +201,72 @@
 <li><strong>MDN</strong> is the best reference. Ask questions with what you tried, what you expected and what happened.</li>
 </ul>
 
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">These projects make your new tools feel natural. Do them with the keyboard as much as you can: speed with the terminal and the editor comes from practice, not from reading.</p>
+
+<div class="project">
+<p class="project-label">Project 3.1 · Easy</p>
+<h3>A folder for your notes, terminal only</h3>
+<p class="project-goal">Create a folder structure for your notes on this book, moving around it using only the terminal.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>cd</code>, <code>mkdir</code>, <code>ls</code>, <code>pwd</code>, the Up arrow and Tab.</p>
+<ol class="steps">
+<li>Open the terminal and go into <code>code-from-zero</code>.</li>
+<li>Create a folder called <code>book-notes</code> and go into it.</li>
+<li>Create four folders, <code>part-1</code> to <code>part-4</code>, with one command: <code>mkdir</code> accepts several names separated by spaces.</li>
+<li>Go into <code>part-1</code>, check where you are with <code>pwd</code>, and come back up two levels with <code>cd ..</code> twice.</li>
+<li>Use the Up arrow to repeat a command, and Tab to complete a folder name, at least once each.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if you get lost, <code>pwd</code> always tells you where you are. Your folder paths will start differently, depending on your computer and your user name.</p>
+<p><strong>Your terminal should look like this:</strong></p>
+<pre data-code="projects/folders.sh" data-title="terminal"></pre>
+</div>
+
+<div class="project">
+<p class="project-label">Project 3.2 · Easy</p>
+<h3>Quote of the day</h3>
+<p class="project-goal">Write a small program that prints an encouraging programming quote, and run it from VS Code’s own terminal.</p>
+<p class="project-skills"><strong>You will practise:</strong> creating and running files, the VS Code terminal, Prettier, and a first look at lists.</p>
+<ol class="steps">
+<li>In VS Code, create <code>quote.js</code> in your <code>code-from-zero</code> folder.</li>
+<li>Write a list of four quotes between square brackets, separated by commas, as in the solution below. You will learn lists properly in Chapter 9.</li>
+<li>Print a title, then <code>quotes[today]</code>, where <code>today</code> is a number from 0 to 3.</li>
+<li>Mess up the spacing on purpose, then save: watch Prettier tidy it up.</li>
+<li>Open the terminal with <code>Ctrl</code> + <code>`</code> and run <code>node quote.js</code>. Change <code>today</code> and run it again with the Up arrow.</li>
+</ol>
+<pre class="plain">const quotes = [
+  "First, solve the problem. Then, write the code.",
+  "Every expert was once a beginner.",
+  "Small steps every day beat big steps once a month.",
+  "Read the error message. All of it.",
+];
+const today = 2;
+console.log("Quote of the day:");
+console.log(quotes[today]);
+console.log("Quotes in the list:", quotes.length);</pre>
+<p class="hint"><strong>Hint:</strong> the first quote is number 0, not 1. That surprises everybody at first; Chapter 9 explains why.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/quote.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 3.3 · Medium</p>
+<h3>DevTools detective</h3>
+<p class="project-goal">Investigate a real website with the browser’s developer tools, and write a short report of what you find.</p>
+<p class="project-skills"><strong>You will practise:</strong> the Elements, Console and Network panels, and looking things up on MDN.</p>
+<ol class="steps">
+<li>Choose a website you use often, open it, and press <code>F12</code>.</li>
+<li>In <strong>Elements</strong>, find the main heading. Which element is it (<code>h1</code>, <code>h2</code>, a <code>div</code>…)? Look up that element on MDN.</li>
+<li>In <strong>Network</strong>, reload the page. Write down: how many requests, how much data was transferred, and the type of the largest file.</li>
+<li>In <strong>Console</strong>, type <code>document.title</code> and press Enter. What do you get?</li>
+<li>Write your findings in a file called <code>detective.txt</code> in your <code>book-notes</code> folder, as a short table: question, answer.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the Network panel shows the totals at the bottom: number of requests, data transferred and the time the page took to load. Tick <strong>Disable cache</strong> to see a “first visit” load.</p>
+<p><strong>Your result:</strong> a short report. There is no single right answer; every website is different, and that is what makes the detective work interesting.</p>
+</div>
+<!-- /projects -->
+
 <h2>Exercises</h2>
 
 <ol class="exercises">

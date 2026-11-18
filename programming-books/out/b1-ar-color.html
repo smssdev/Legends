@@ -1162,6 +1162,86 @@ Node.js يعمل!
 <li><strong>MDN</strong> أفضل مرجع. واسأل بما جرّبته وما توقعته وما حدث.</li>
 </ul>
 
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">هذه المشاريع تجعل أدواتك الجديدة طبيعية في يدك. نفّذها بلوحة المفاتيح قدر ما تستطيع، فالسرعة في الطرفية والمحرر تأتي من الممارسة لا من القراءة.</p>
+
+<div class="project">
+<p class="project-label">مشروع 3.1 · سهل</p>
+<h3>مجلد لملاحظاتك بالطرفية وحدها</h3>
+<p class="project-goal">أنشئ بنية مجلدات لملاحظاتك عن هذا الكتاب، وتنقّل فيها بالطرفية وحدها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>cd</code> و<code>mkdir</code> و<code>ls</code> و<code>pwd</code> والسهم لأعلى وTab.</p>
+<ol class="steps">
+<li>افتح الطرفية وادخل إلى <code>code-from-zero</code>.</li>
+<li>أنشئ مجلداً اسمه <code>book-notes</code> وادخل إليه.</li>
+<li>أنشئ أربعة مجلدات من <code>part-1</code> إلى <code>part-4</code> بأمر واحد، فـ <code>mkdir</code> تقبل عدة أسماء تفصلها مسافات.</li>
+<li>ادخل إلى <code>part-1</code> وتأكد من مكانك بـ <code>pwd</code>، ثم اصعد مستويين بـ <code>cd ..</code> مرتين.</li>
+<li>استخدم السهم لأعلى لتكرار أمر، وTab لإكمال اسم مجلد، مرة واحدة على الأقل لكل منهما.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن تهت فـ <code>pwd</code> تخبرك دائماً أين أنت. وستبدأ مسارات مجلداتك بشكل مختلف حسب حاسوبك واسم المستخدم.</p>
+<p><strong>يجب أن تبدو الطرفية عندك هكذا:</strong></p>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c">$ </span><span class="k">cd code-from-zero</span>
+<span class="c">$ </span><span class="k">mkdir book-notes</span>
+<span class="c">$ </span><span class="k">cd book-notes</span>
+<span class="c">$ </span><span class="k">mkdir part-1 part-2 part-3 part-4</span>
+<span class="c">$ </span><span class="k">ls</span>
+part-1    part-2    part-3    part-4
+<span class="c">$ </span><span class="k">cd part-1</span>
+<span class="c">$ </span><span class="k">pwd</span>
+/Users/sara/code-from-zero/book-notes/part-1
+<span class="c">$ </span><span class="k">cd ..</span>
+<span class="c">$ </span><span class="k">cd ..</span>
+<span class="c">$ </span><span class="k">pwd</span>
+/Users/sara/code-from-zero</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label">مشروع 3.2 · سهل</p>
+<h3>اقتباس اليوم</h3>
+<p class="project-goal">اكتب برنامجاً صغيراً يطبع اقتباساً مشجعاً عن البرمجة، وشغّله من طرفية VS Code نفسها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إنشاء الملفات وتشغيلها، وطرفية VS Code، وPrettier، ونظرة أولى على القوائم.</p>
+<ol class="steps">
+<li>في VS Code أنشئ <code>quote.js</code> في مجلد <code>code-from-zero</code>.</li>
+<li>اكتب قائمة من أربعة اقتباسات بين قوسين مربعين تفصلها فواصل، كما في الحل أدناه. وستتعلم القوائم جيداً في الفصل 9.</li>
+<li>اطبع عنواناً، ثم <code>quotes[today]</code>، حيث <code>today</code> رقم من 0 إلى 3.</li>
+<li>أفسد المسافات عمداً ثم احفظ، وشاهد Prettier يرتّبها.</li>
+<li>افتح الطرفية بـ <code>Ctrl</code> + <code>`</code> وشغّل <code>node quote.js</code>. ثم غيّر <code>today</code> وشغّله مرة أخرى بالسهم لأعلى.</li>
+</ol>
+<pre class="plain">const quotes = [
+  "حُلّ المشكلة أولاً، ثم اكتب الكود.",
+  "كل خبير كان يوماً مبتدئاً.",
+  "خطوات صغيرة كل يوم خير من خطوة كبيرة كل شهر.",
+  "اقرأ رسالة الخطأ. كلها.",
+];
+const today = 2;
+console.log("اقتباس اليوم:");
+console.log(quotes[today]);
+console.log("عدد الاقتباسات:", quotes.length);</pre>
+<p class="hint"><strong>تلميح:</strong> أول اقتباس رقمه 0 لا 1. وهذا يفاجئ الجميع أول مرة، والفصل 9 يشرح السبب.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>اقتباس اليوم:
+خطوات صغيرة كل يوم خير من خطوة كبيرة كل شهر.
+عدد الاقتباسات: 4</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 3.3 · متوسط</p>
+<h3>محقق أدوات المطورين</h3>
+<p class="project-goal">حقق في موقع حقيقي بأدوات المطورين في المتصفح، واكتب تقريراً قصيراً بما وجدته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> لوحات Elements وConsole وNetwork، والبحث في MDN.</p>
+<ol class="steps">
+<li>اختر موقعاً تستخدمه كثيراً، وافتحه، واضغط <code>F12</code>.</li>
+<li>في <strong>Elements</strong> ابحث عن العنوان الرئيسي. أي عنصر هو (<code>h1</code> أم <code>h2</code> أم <code>div</code>…)؟ وابحث عن هذا العنصر في MDN.</li>
+<li>في <strong>Network</strong> أعد تحميل الصفحة، واكتب: كم طلباً، وكم بيانات نُقلت، ونوع أكبر ملف.</li>
+<li>في <strong>Console</strong> اكتب <code>document.title</code> واضغط Enter. ماذا حصلت؟</li>
+<li>اكتب ما وجدته في ملف اسمه <code>detective.txt</code> في مجلد <code>book-notes</code>، جدولاً قصيراً: السؤال والجواب.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لوحة Network تعرض المجاميع في أسفلها: عدد الطلبات، والبيانات المنقولة، ووقت تحميل الصفحة. وعلّم <strong>Disable cache</strong> لترى تحميل «الزيارة الأولى».</p>
+<p><strong>نتيجتك:</strong> تقرير قصير، وليس له جواب واحد صحيح؛ فكل موقع مختلف، وهذا ما يجعل عمل المحقق ممتعاً.</p>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">تمارين</h2>
 
 <ol class="exercises">
@@ -1474,6 +1554,80 @@ text/html; charset=utf-8
 </ul>
 
 <p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. المضيف <code>news.example.org</code> والمسار <code>/sport</code> (و<code>?team=ahly</code> هو الاستعلام). 2. «غير موجود»: الصفحة ليست موجودة، وهو خطأ العميل لأنه طلب شيئاً غير موجود. 3. الجزء، أي ما بعد <code>#</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">هذه المشاريع تجعلك تلعب دوري الويب كليهما: العميل الذي يقرأ العناوين ويطلب الصفحات، والخادم الذي يجيب. وبعض الكود يستخدم أفكاراً من فصول لاحقة؛ فاكتبه بعناية، وشغّله، وعد إليه حين تصل إلى تلك الفصول.</p>
+
+<div class="project">
+<p class="project-label">مشروع 4.1 · سهل</p>
+<h3>فاحص العناوين</h3>
+<p class="project-goal">فكّك قائمة من عناوين الويب، واطبع المضيف والمسار والاستعلام والجزء لكل واحد منها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> أجزاء عنوان URL، وكائن <code>URL</code>.</p>
+<ol class="steps">
+<li>قبل كتابة الكود، انسخ العناوين الثلاثة من الحل على ورقة، وضع خطاً تحت كل جزء بلون مختلف كما في الشكل 4.1.</li>
+<li>أنشئ <code>inspect-urls.js</code> فيه مصفوفة بالعناوين الثلاثة.</li>
+<li>لكل عنوان أنشئ <code>new URL(text)</code>، واطبع <code>hostname</code> و<code>pathname</code> و<code>search</code> و<code>hash</code> تفصلها <code>"|"</code>.</li>
+<li>بعض العناوين ليس فيها استعلام أو جزء، فتكون هذه الخصائص فارغة. اطبع <code>"-"</code> بدلاً منها بـ <code>url.search || "-"</code>.</li>
+<li>قارن المخرجات بورقتك. هل وجدت كل جزء صحيحاً؟</li>
+</ol>
+<pre class="plain">for (const text of addresses) {
+  const url = new URL(text);
+  console.log(url.hostname, "|", url.pathname, "|", url.search || "-", "|", url.hash || "-");
+}</pre>
+<p class="hint"><strong>تلميح:</strong> <code>for (const text of addresses)</code> تكرر الكود لكل عنوان (الفصل 9)، و<code>||</code> تختار الطرف الأيمن حين يكون الأيسر فارغاً (الفصل 8).</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>www.example.com | /news/sport | ?team=ahly&amp;page=2 | -
+localhost | /about | - | -
+shop.example.com | /cart | - | #summary</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 4.2 · متوسط</p>
+<h3>موقع من ثلاث صفحات وصفحة 404</h3>
+<p class="project-goal">وسّع خادمك ليقدم صفحة رئيسية وصفحة «من نحن» وصفحة «تواصل معنا»، ويجيب بـ <code>404 Not Found</code> لكل ما سواها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المسارات، ورموز الحالة، وكيف يقرر الخادم ما يرسله.</p>
+<ol class="steps">
+<li>انسخ <code>server.js</code> من القسم 4.7 إلى <code>site.js</code>.</li>
+<li>فوق الخادم أنشئ كائناً يربط كل مسار بصفحته: <code>"/"</code> و<code>"/about"</code> و<code>"/contact"</code>.</li>
+<li>داخل الخادم ابحث عن <code>pages[request.url]</code>. إن وُجدت الصفحة فأرسلها برمز <code>200</code>، وإلا فأرسل عنوان «الصفحة غير موجودة» برمز <code>404</code>.</li>
+<li>اختبر أربعة مسارات، أحدها غير موجود، واطبع المسار والرمز والصفحة.</li>
+<li>احذف <code>server.close()</code>، وافتح <code>http://localhost:3002/about</code> في متصفحك، وانظر إلى الرمز في تبويب Network.</li>
+</ol>
+<pre class="plain">const page = pages[request.url];
+if (page) {
+  response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+  response.end(page);
+} else {
+  response.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+  response.end("&lt;h1&gt;الصفحة غير موجودة&lt;/h1&gt;");
+}</pre>
+<p class="hint"><strong>تلميح:</strong> الكائن المستخدم هكذا «قاموس» صغير من المسارات إلى الصفحات. والخوادم الحقيقية تفعل الشيء نفسه بصفحات أكثر بكثير، ويُسمى ذلك <dfn>التوجيه</dfn> (routing).</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>/ 200 &lt;h1&gt;الرئيسية&lt;/h1&gt;
+/about 200 &lt;h1&gt;من نحن&lt;/h1&gt;
+/contact 200 &lt;h1&gt;تواصل معنا&lt;/h1&gt;
+/secret 404 &lt;h1&gt;الصفحة غير موجودة&lt;/h1&gt;</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 4.3 · تحدٍّ</p>
+<h3>واجهة برمجية لقائمة مطعم</h3>
+<p class="project-goal">ابنِ خادماً يجيب ببيانات بدل صفحة ويب: قائمة طعام مطعم بصيغة JSON، كما تحصل تطبيقات الموبايل الحقيقية على بياناتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الواجهات البرمجية، وترويسة <code>Content-Type</code>، وJSON (التي يشرحها الفصل 11 بعمق).</p>
+<ol class="steps">
+<li>أنشئ <code>menu-api.js</code> فيه مصفوفة من ثلاثة أطباق، لكل منها <code>name</code> و<code>price</code>.</li>
+<li>للمسار <code>/api/menu</code> أجب برمز <code>200</code>، والترويسة <code>Content-Type: application/json</code>، والجسم <code>JSON.stringify(menu)</code>.</li>
+<li>اجلب <code>/api/menu</code>، واطبع الرمز ونوع المحتوى والنص الذي استلمته.</li>
+<li>افتح العنوان في متصفحك والخادم يعمل؛ فمعظم المتصفحات تعرض JSON بشكل مرتب مقروء.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <dfn>الواجهة البرمجية</dfn> (API) خادم صُنع للبرامج لا للناس. والطقس في هاتفك، ونتائج المباريات في تطبيق رياضي، ومنتجات تطبيق متجر، كلها تأتي من واجهات برمجية مثل هذه.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>200 application/json; charset=utf-8
+[{&quot;name&quot;:&quot;كشري&quot;,&quot;price&quot;:45},{&quot;name&quot;:&quot;طبق فلافل&quot;,&quot;price&quot;:60},{&quot;name&quot;:&quot;شاي بالنعناع&quot;,&quot;price&quot;:25}]</pre></div>
+</div>
+<!-- /projects -->
 
 <h2 class="plain-h">تمارين</h2>
 

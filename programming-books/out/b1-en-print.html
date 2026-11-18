@@ -1058,6 +1058,86 @@ Node.js is working!
 <li><strong>MDN</strong> is the best reference. Ask questions with what you tried, what you expected and what happened.</li>
 </ul>
 
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">These projects make your new tools feel natural. Do them with the keyboard as much as you can: speed with the terminal and the editor comes from practice, not from reading.</p>
+
+<div class="project">
+<p class="project-label">Project 3.1 · Easy</p>
+<h3>A folder for your notes, terminal only</h3>
+<p class="project-goal">Create a folder structure for your notes on this book, moving around it using only the terminal.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>cd</code>, <code>mkdir</code>, <code>ls</code>, <code>pwd</code>, the Up arrow and Tab.</p>
+<ol class="steps">
+<li>Open the terminal and go into <code>code-from-zero</code>.</li>
+<li>Create a folder called <code>book-notes</code> and go into it.</li>
+<li>Create four folders, <code>part-1</code> to <code>part-4</code>, with one command: <code>mkdir</code> accepts several names separated by spaces.</li>
+<li>Go into <code>part-1</code>, check where you are with <code>pwd</code>, and come back up two levels with <code>cd ..</code> twice.</li>
+<li>Use the Up arrow to repeat a command, and Tab to complete a folder name, at least once each.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if you get lost, <code>pwd</code> always tells you where you are. Your folder paths will start differently, depending on your computer and your user name.</p>
+<p><strong>Your terminal should look like this:</strong></p>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c">$ </span><span class="k">cd code-from-zero</span>
+<span class="c">$ </span><span class="k">mkdir book-notes</span>
+<span class="c">$ </span><span class="k">cd book-notes</span>
+<span class="c">$ </span><span class="k">mkdir part-1 part-2 part-3 part-4</span>
+<span class="c">$ </span><span class="k">ls</span>
+part-1    part-2    part-3    part-4
+<span class="c">$ </span><span class="k">cd part-1</span>
+<span class="c">$ </span><span class="k">pwd</span>
+/Users/sara/code-from-zero/book-notes/part-1
+<span class="c">$ </span><span class="k">cd ..</span>
+<span class="c">$ </span><span class="k">cd ..</span>
+<span class="c">$ </span><span class="k">pwd</span>
+/Users/sara/code-from-zero</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label">Project 3.2 · Easy</p>
+<h3>Quote of the day</h3>
+<p class="project-goal">Write a small program that prints an encouraging programming quote, and run it from VS Code’s own terminal.</p>
+<p class="project-skills"><strong>You will practise:</strong> creating and running files, the VS Code terminal, Prettier, and a first look at lists.</p>
+<ol class="steps">
+<li>In VS Code, create <code>quote.js</code> in your <code>code-from-zero</code> folder.</li>
+<li>Write a list of four quotes between square brackets, separated by commas, as in the solution below. You will learn lists properly in Chapter 9.</li>
+<li>Print a title, then <code>quotes[today]</code>, where <code>today</code> is a number from 0 to 3.</li>
+<li>Mess up the spacing on purpose, then save: watch Prettier tidy it up.</li>
+<li>Open the terminal with <code>Ctrl</code> + <code>`</code> and run <code>node quote.js</code>. Change <code>today</code> and run it again with the Up arrow.</li>
+</ol>
+<pre class="plain">const quotes = [
+  "First, solve the problem. Then, write the code.",
+  "Every expert was once a beginner.",
+  "Small steps every day beat big steps once a month.",
+  "Read the error message. All of it.",
+];
+const today = 2;
+console.log("Quote of the day:");
+console.log(quotes[today]);
+console.log("Quotes in the list:", quotes.length);</pre>
+<p class="hint"><strong>Hint:</strong> the first quote is number 0, not 1. That surprises everybody at first; Chapter 9 explains why.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Quote of the day:
+Small steps every day beat big steps once a month.
+Quotes in the list: 4</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 3.3 · Medium</p>
+<h3>DevTools detective</h3>
+<p class="project-goal">Investigate a real website with the browser’s developer tools, and write a short report of what you find.</p>
+<p class="project-skills"><strong>You will practise:</strong> the Elements, Console and Network panels, and looking things up on MDN.</p>
+<ol class="steps">
+<li>Choose a website you use often, open it, and press <code>F12</code>.</li>
+<li>In <strong>Elements</strong>, find the main heading. Which element is it (<code>h1</code>, <code>h2</code>, a <code>div</code>…)? Look up that element on MDN.</li>
+<li>In <strong>Network</strong>, reload the page. Write down: how many requests, how much data was transferred, and the type of the largest file.</li>
+<li>In <strong>Console</strong>, type <code>document.title</code> and press Enter. What do you get?</li>
+<li>Write your findings in a file called <code>detective.txt</code> in your <code>book-notes</code> folder, as a short table: question, answer.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the Network panel shows the totals at the bottom: number of requests, data transferred and the time the page took to load. Tick <strong>Disable cache</strong> to see a “first visit” load.</p>
+<p><strong>Your result:</strong> a short report. There is no single right answer; every website is different, and that is what makes the detective work interesting.</p>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">Exercises</h2>
 
 <ol class="exercises">
@@ -1368,6 +1448,80 @@ text/html; charset=utf-8
 </ul>
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. The host is <code>news.example.org</code> and the path is <code>/sport</code> (<code>?team=ahly</code> is the query). 2. “Not Found”: the page does not exist. It is a client error, because the client asked for something that is not there. 3. The fragment, the part after <code>#</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">These projects let you play both sides of the web: the client that reads addresses and asks for pages, and the server that answers. Some code uses ideas from later chapters; type it carefully, run it, and come back to it when you reach those chapters.</p>
+
+<div class="project">
+<p class="project-label">Project 4.1 · Easy</p>
+<h3>URL inspector</h3>
+<p class="project-goal">Take a list of web addresses apart and print the host, path, query and fragment of each one.</p>
+<p class="project-skills"><strong>You will practise:</strong> the parts of a URL and the <code>URL</code> object.</p>
+<ol class="steps">
+<li>Before writing code, copy the three addresses from the solution onto paper and underline each part in a different colour, as in Figure 4.1.</li>
+<li>Create <code>inspect-urls.js</code> with an array of the three addresses.</li>
+<li>For each address, create <code>new URL(text)</code> and print <code>hostname</code>, <code>pathname</code>, <code>search</code> and <code>hash</code>, separated by <code>"|"</code>.</li>
+<li>Some addresses have no query or fragment, so those properties are empty. Print <code>"-"</code> instead, with <code>url.search || "-"</code>.</li>
+<li>Compare the output with your paper. Did you find every part correctly?</li>
+</ol>
+<pre class="plain">for (const text of addresses) {
+  const url = new URL(text);
+  console.log(url.hostname, "|", url.pathname, "|", url.search || "-", "|", url.hash || "-");
+}</pre>
+<p class="hint"><strong>Hint:</strong> <code>for (const text of addresses)</code> repeats the code for each address (Chapter 9), and <code>||</code> picks the right side when the left side is empty (Chapter 8).</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>www.example.com | /news/sport | ?team=ahly&amp;page=2 | -
+localhost | /about | - | -
+shop.example.com | /cart | - | #summary</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 4.2 · Medium</p>
+<h3>A three-page website with a 404 page</h3>
+<p class="project-goal">Extend your web server so that it serves a home page, an About page and a Contact page, and answers <code>404 Not Found</code> for anything else.</p>
+<p class="project-skills"><strong>You will practise:</strong> paths, status codes, and how a server decides what to send.</p>
+<ol class="steps">
+<li>Copy <code>server.js</code> from Section 4.7 into <code>site.js</code>.</li>
+<li>Above the server, create an object that maps each path to its page: <code>"/"</code>, <code>"/about"</code> and <code>"/contact"</code>.</li>
+<li>Inside the server, look up <code>pages[request.url]</code>. If a page exists, send it with status <code>200</code>; otherwise send a “Page not found” heading with status <code>404</code>.</li>
+<li>Test four paths, including one that does not exist, and print the path, the status and the page.</li>
+<li>Remove <code>server.close()</code>, open <code>http://localhost:3002/about</code> in your browser, and look at the status in the Network tab.</li>
+</ol>
+<pre class="plain">const page = pages[request.url];
+if (page) {
+  response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+  response.end(page);
+} else {
+  response.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+  response.end("&lt;h1&gt;Page not found&lt;/h1&gt;");
+}</pre>
+<p class="hint"><strong>Hint:</strong> an object used like this is a small “dictionary” from paths to pages. Real servers do the same thing with many more pages; it is called <dfn>routing</dfn>.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>/ 200 &lt;h1&gt;Home&lt;/h1&gt;
+/about 200 &lt;h1&gt;About us&lt;/h1&gt;
+/contact 200 &lt;h1&gt;Contact&lt;/h1&gt;
+/secret 404 &lt;h1&gt;Page not found&lt;/h1&gt;</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 4.3 · Challenge</p>
+<h3>A restaurant menu API</h3>
+<p class="project-goal">Build a server that answers with data instead of a web page: a restaurant’s menu as JSON, the way real mobile apps get their data.</p>
+<p class="project-skills"><strong>You will practise:</strong> APIs, the <code>Content-Type</code> header, and JSON (Chapter 11 explains it in depth).</p>
+<ol class="steps">
+<li>Create <code>menu-api.js</code> with an array of three dishes, each with a <code>name</code> and a <code>price</code>.</li>
+<li>For the path <code>/api/menu</code>, answer with status <code>200</code>, the header <code>Content-Type: application/json</code>, and the body <code>JSON.stringify(menu)</code>.</li>
+<li>Fetch <code>/api/menu</code> and print the status, the content type and the text you received.</li>
+<li>Open the address in your browser with the server running. Most browsers show JSON in a neat, readable way.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> an <dfn>API</dfn> (Application Programming Interface) is a server made for programs rather than people. The weather in your phone, the scores in a sports app and the products in a shop app all come from APIs like this one.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>200 application/json; charset=utf-8
+[{&quot;name&quot;:&quot;Koshari&quot;,&quot;price&quot;:45},{&quot;name&quot;:&quot;Falafel plate&quot;,&quot;price&quot;:60},{&quot;name&quot;:&quot;Mint tea&quot;,&quot;price&quot;:25}]</pre></div>
+</div>
+<!-- /projects -->
 
 <h2 class="plain-h">Exercises</h2>
 

@@ -1,0 +1,65 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">These projects let you play both sides of the web: the client that reads addresses and asks for pages, and the server that answers. Some code uses ideas from later chapters; type it carefully, run it, and come back to it when you reach those chapters.</p>
+
+<div class="project">
+<p class="project-label">Project 4.1 · Easy</p>
+<h3>URL inspector</h3>
+<p class="project-goal">Take a list of web addresses apart and print the host, path, query and fragment of each one.</p>
+<p class="project-skills"><strong>You will practise:</strong> the parts of a URL and the <code>URL</code> object.</p>
+<ol class="steps">
+<li>Before writing code, copy the three addresses from the solution onto paper and underline each part in a different colour, as in Figure 4.1.</li>
+<li>Create <code>inspect-urls.js</code> with an array of the three addresses.</li>
+<li>For each address, create <code>new URL(text)</code> and print <code>hostname</code>, <code>pathname</code>, <code>search</code> and <code>hash</code>, separated by <code>"|"</code>.</li>
+<li>Some addresses have no query or fragment, so those properties are empty. Print <code>"-"</code> instead, with <code>url.search || "-"</code>.</li>
+<li>Compare the output with your paper. Did you find every part correctly?</li>
+</ol>
+<pre class="plain">for (const text of addresses) {
+  const url = new URL(text);
+  console.log(url.hostname, "|", url.pathname, "|", url.search || "-", "|", url.hash || "-");
+}</pre>
+<p class="hint"><strong>Hint:</strong> <code>for (const text of addresses)</code> repeats the code for each address (Chapter 9), and <code>||</code> picks the right side when the left side is empty (Chapter 8).</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/inspect-urls.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 4.2 · Medium</p>
+<h3>A three-page website with a 404 page</h3>
+<p class="project-goal">Extend your web server so that it serves a home page, an About page and a Contact page, and answers <code>404 Not Found</code> for anything else.</p>
+<p class="project-skills"><strong>You will practise:</strong> paths, status codes, and how a server decides what to send.</p>
+<ol class="steps">
+<li>Copy <code>server.js</code> from Section 4.7 into <code>site.js</code>.</li>
+<li>Above the server, create an object that maps each path to its page: <code>"/"</code>, <code>"/about"</code> and <code>"/contact"</code>.</li>
+<li>Inside the server, look up <code>pages[request.url]</code>. If a page exists, send it with status <code>200</code>; otherwise send a “Page not found” heading with status <code>404</code>.</li>
+<li>Test four paths, including one that does not exist, and print the path, the status and the page.</li>
+<li>Remove <code>server.close()</code>, open <code>http://localhost:3002/about</code> in your browser, and look at the status in the Network tab.</li>
+</ol>
+<pre class="plain">const page = pages[request.url];
+if (page) {
+  response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+  response.end(page);
+} else {
+  response.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+  response.end("&lt;h1&gt;Page not found&lt;/h1&gt;");
+}</pre>
+<p class="hint"><strong>Hint:</strong> an object used like this is a small “dictionary” from paths to pages. Real servers do the same thing with many more pages; it is called <dfn>routing</dfn>.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/site.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 4.3 · Challenge</p>
+<h3>A restaurant menu API</h3>
+<p class="project-goal">Build a server that answers with data instead of a web page: a restaurant’s menu as JSON, the way real mobile apps get their data.</p>
+<p class="project-skills"><strong>You will practise:</strong> APIs, the <code>Content-Type</code> header, and JSON (Chapter 11 explains it in depth).</p>
+<ol class="steps">
+<li>Create <code>menu-api.js</code> with an array of three dishes, each with a <code>name</code> and a <code>price</code>.</li>
+<li>For the path <code>/api/menu</code>, answer with status <code>200</code>, the header <code>Content-Type: application/json</code>, and the body <code>JSON.stringify(menu)</code>.</li>
+<li>Fetch <code>/api/menu</code> and print the status, the content type and the text you received.</li>
+<li>Open the address in your browser with the server running. Most browsers show JSON in a neat, readable way.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> an <dfn>API</dfn> (Application Programming Interface) is a server made for programs rather than people. The weather in your phone, the scores in a sports app and the products in a shop app all come from APIs like this one.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/menu-api.js"></pre>
+</div>

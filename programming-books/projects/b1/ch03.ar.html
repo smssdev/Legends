@@ -1,0 +1,63 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">هذه المشاريع تجعل أدواتك الجديدة طبيعية في يدك. نفّذها بلوحة المفاتيح قدر ما تستطيع، فالسرعة في الطرفية والمحرر تأتي من الممارسة لا من القراءة.</p>
+
+<div class="project">
+<p class="project-label">مشروع 3.1 · سهل</p>
+<h3>مجلد لملاحظاتك بالطرفية وحدها</h3>
+<p class="project-goal">أنشئ بنية مجلدات لملاحظاتك عن هذا الكتاب، وتنقّل فيها بالطرفية وحدها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>cd</code> و<code>mkdir</code> و<code>ls</code> و<code>pwd</code> والسهم لأعلى وTab.</p>
+<ol class="steps">
+<li>افتح الطرفية وادخل إلى <code>code-from-zero</code>.</li>
+<li>أنشئ مجلداً اسمه <code>book-notes</code> وادخل إليه.</li>
+<li>أنشئ أربعة مجلدات من <code>part-1</code> إلى <code>part-4</code> بأمر واحد، فـ <code>mkdir</code> تقبل عدة أسماء تفصلها مسافات.</li>
+<li>ادخل إلى <code>part-1</code> وتأكد من مكانك بـ <code>pwd</code>، ثم اصعد مستويين بـ <code>cd ..</code> مرتين.</li>
+<li>استخدم السهم لأعلى لتكرار أمر، وTab لإكمال اسم مجلد، مرة واحدة على الأقل لكل منهما.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن تهت فـ <code>pwd</code> تخبرك دائماً أين أنت. وستبدأ مسارات مجلداتك بشكل مختلف حسب حاسوبك واسم المستخدم.</p>
+<p><strong>يجب أن تبدو الطرفية عندك هكذا:</strong></p>
+<pre data-code="projects/folders.sh" data-title="terminal"></pre>
+</div>
+
+<div class="project">
+<p class="project-label">مشروع 3.2 · سهل</p>
+<h3>اقتباس اليوم</h3>
+<p class="project-goal">اكتب برنامجاً صغيراً يطبع اقتباساً مشجعاً عن البرمجة، وشغّله من طرفية VS Code نفسها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إنشاء الملفات وتشغيلها، وطرفية VS Code، وPrettier، ونظرة أولى على القوائم.</p>
+<ol class="steps">
+<li>في VS Code أنشئ <code>quote.js</code> في مجلد <code>code-from-zero</code>.</li>
+<li>اكتب قائمة من أربعة اقتباسات بين قوسين مربعين تفصلها فواصل، كما في الحل أدناه. وستتعلم القوائم جيداً في الفصل 9.</li>
+<li>اطبع عنواناً، ثم <code>quotes[today]</code>، حيث <code>today</code> رقم من 0 إلى 3.</li>
+<li>أفسد المسافات عمداً ثم احفظ، وشاهد Prettier يرتّبها.</li>
+<li>افتح الطرفية بـ <code>Ctrl</code> + <code>`</code> وشغّل <code>node quote.js</code>. ثم غيّر <code>today</code> وشغّله مرة أخرى بالسهم لأعلى.</li>
+</ol>
+<pre class="plain">const quotes = [
+  "حُلّ المشكلة أولاً، ثم اكتب الكود.",
+  "كل خبير كان يوماً مبتدئاً.",
+  "خطوات صغيرة كل يوم خير من خطوة كبيرة كل شهر.",
+  "اقرأ رسالة الخطأ. كلها.",
+];
+const today = 2;
+console.log("اقتباس اليوم:");
+console.log(quotes[today]);
+console.log("عدد الاقتباسات:", quotes.length);</pre>
+<p class="hint"><strong>تلميح:</strong> أول اقتباس رقمه 0 لا 1. وهذا يفاجئ الجميع أول مرة، والفصل 9 يشرح السبب.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/quote.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 3.3 · متوسط</p>
+<h3>محقق أدوات المطورين</h3>
+<p class="project-goal">حقق في موقع حقيقي بأدوات المطورين في المتصفح، واكتب تقريراً قصيراً بما وجدته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> لوحات Elements وConsole وNetwork، والبحث في MDN.</p>
+<ol class="steps">
+<li>اختر موقعاً تستخدمه كثيراً، وافتحه، واضغط <code>F12</code>.</li>
+<li>في <strong>Elements</strong> ابحث عن العنوان الرئيسي. أي عنصر هو (<code>h1</code> أم <code>h2</code> أم <code>div</code>…)؟ وابحث عن هذا العنصر في MDN.</li>
+<li>في <strong>Network</strong> أعد تحميل الصفحة، واكتب: كم طلباً، وكم بيانات نُقلت، ونوع أكبر ملف.</li>
+<li>في <strong>Console</strong> اكتب <code>document.title</code> واضغط Enter. ماذا حصلت؟</li>
+<li>اكتب ما وجدته في ملف اسمه <code>detective.txt</code> في مجلد <code>book-notes</code>، جدولاً قصيراً: السؤال والجواب.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لوحة Network تعرض المجاميع في أسفلها: عدد الطلبات، والبيانات المنقولة، ووقت تحميل الصفحة. وعلّم <strong>Disable cache</strong> لترى تحميل «الزيارة الأولى».</p>
+<p><strong>نتيجتك:</strong> تقرير قصير، وليس له جواب واحد صحيح؛ فكل موقع مختلف، وهذا ما يجعل عمل المحقق ممتعاً.</p>
+</div>
