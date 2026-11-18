@@ -262,6 +262,16 @@ GREYS = {"#6366f1": "#a3a3a3", "#e0e7ff": "#f2f2f2", "#312e81": "#1a1a1a", "#818
 EDITIONS = ("color", "print")
 
 
+def only_edition(text, book):
+    """Shared chapters hold framework-specific parts between <!-- react --> and <!-- /react -->, or
+    <!-- vue --> and <!-- /vue -->. Each edition keeps its own parts and drops the others."""
+    keep = "react" if book["id"].endswith("react") else "vue" if book["id"].endswith("vue") else None
+    for fw in ("react", "vue"):
+        block = re.compile(rf"<!-- {fw} -->(.*?)<!-- /{fw} -->\n?", re.S)
+        text = block.sub((lambda m: m.group(1)) if fw == keep else "", text)
+    return text
+
+
 def answers_by_chapter(book, lang):
     """Book 2 and later keep each chapter's answers next to the chapter (src/<src>.answers.<lang>.html),
     so the appendix of each edition is put together here, with that edition's chapter numbers."""
@@ -272,6 +282,7 @@ def answers_by_chapter(book, lang):
             src = ROOT / "src" / f'{ch.get("src") or book["id"] + "/" + f"ch{k:02d}"}.answers.{lang}.html'
             if src.exists():
                 body = re.sub(r"\{\{n(?:([+-]\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
+                body = only_edition(body, book)
                 out.append(f'<h2>{TEXT[lang]["chapter"]} {k}</h2>\n{body}')
     return "\n\n".join(out)
 
@@ -293,6 +304,7 @@ def build(book, lang, edition):
                 continue
             cid = f"ch{k:02d}"
             text = re.sub(r"\{\{n(?:([+-]\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
+            text = only_edition(text, book)
             text = decorate(fill_code(text, lang), lang, k)
             text = text.replace('<section class="chapter"', f'<section class="chapter" style="page: {cid}"', 1)
             chapters.append(text)

@@ -1,0 +1,59 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ابنِ هذه المشاريع أولى قطع نظام تصميمك الصغير: مجلد رموز واحد، وورقة أنماط مولّدة منه، ومكونات قليلة لا تستخدم شيئاً غيرها.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>شارات وتنبيهات من الرموز</h3>
+<p class="project-goal">مكوّنان صغيران يعرضان الحالة: شارة للتسميات القصيرة، وتنبيه للرسائل، لكل منهما أربع نبرات ولا لون خاصاً به.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> خصائص النبرة بأنواع اتحادية، والرموز الدلالية، واختيار دور المنطقة الحية الصحيح.</p>
+<ol class="steps">
+<li>أضف رموز خلفية خفيفة لكل نبرة (<code>success-soft</code> و<code>warning-soft</code> و<code>danger-soft</code>) ورموز النص المقابلة، في المظهرين.</li>
+<li>اكتب أصناف CSS <code>.badge-…</code> و<code>.alert-…</code> باستخدام هذه الرموز وحدها.</li>
+<li>اكتب <code>Badge</code> بخاصية <code>tone</code> وأبناء.</li>
+<li>اكتب <code>Alert</code>: أيقونة مخفية عن قارئ الشاشة، والرسالة، ودوراً: <code>alert</code> للأخطاء، فيقاطع، و<code>status</code> للباقي، فينتظر توقفاً.</li>
+<li>لا تجعل اللون يحمل المعنى وحده: كلمتا «مدفوع» و«قيد الانتظار»، والأيقونات، تقولانه أيضاً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> استخدام <code>role="alert"</code> لكل شيء يبدو آمناً، لكنه يقاطع المستخدم مع كل إشعار صغير. فاحفظ المقاطعة لما يحتاج الانتباه الآن حقاً.</p>
+<!-- react -->
+<pre data-code="react/projects/Alert.tsx" data-title="Alert.tsx"></pre>
+<figure data-render="react/projects/feedback.html" data-width="560"><figcaption><b>مشروع {{n}}.1:</b> الشارات والتنبيهات بنبراتها الأربع.</figcaption></figure>
+<!-- /react -->
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>مفتاح يعمل بالطريقتين</h3>
+<p class="project-goal">مفتاح تشغيل وإيقاف يُستخدم مُتحكَّماً فيه أو غير مُتحكَّم فيه، ويعمل بلوحة المفاتيح وقارئ الشاشة، وواضح في كل مظهر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> نمط المُتحكَّم فيه وغير المُتحكَّم فيه، و<code>role="switch"</code> مع <code>aria-checked</code>، وخصائص CSS المنطقية، وفحص الحالات في كل مظهر.</p>
+<ol class="steps">
+<li>اقبل <code>checked</code> و<code>defaultChecked</code> و<code>onChange</code>. فإن مُرّرت <code>checked</code> ملك الأب القيمة، وإلا حفظها المكوّن بنفسه.</li>
+<li>ارسم <code>&lt;button type="button"&gt;</code> حقيقياً بـ <code>role="switch"</code> و<code>aria-checked</code>. فيعمل Enter والمسافة مجاناً.</li>
+<li>ارسم المسار والمقبض بالرموز، وحرّك المقبض بـ <code>inset-inline-start</code>، فينزلق في الاتجاه الصحيح بالعربية أيضاً.</li>
+<li>أعطِ حالة الإيقاف إطاراً وحالة التشغيل تعبئة. وافحص الاثنتين في المظهر الداكن: فحين كُتب هذا الكتاب بدت النسخة الأولى متطابقة في الحالتين في الوضع الداكن، حتى كشفتها اللقطة.</li>
+<li>استخدمه بثلاث طرق: غير مُتحكَّم فيه بـ <code>defaultChecked</code>، وغير مُتحكَّم فيه مطفأً، ومُتحكَّماً فيه يبدّل مظهر لوحته.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لا تنتقل أبداً من غير المُتحكَّم فيه إلى المُتحكَّم فيه خلال حياة المكوّن (من <code>checked={undefined}</code> إلى <code>checked={true}</code>). فـ React تحذّر منه لأنه علّة في الغالب دائماً: قرّر مرة واحدة، في الأب.</p>
+<!-- react -->
+<pre data-code="react/projects/Switch.tsx" data-title="Switch.tsx"></pre>
+<figure data-render="react/projects/switches.html" data-width="560" data-actions="click:.switch:nth-child(3)"><figcaption><b>مشروع {{n}}.2:</b> بعد تشغيل المظهر الداكن بالمفتاح المُتحكَّم فيه.</figcaption></figure>
+<!-- /react -->
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>حارس تباين للرموز</h3>
+<p class="project-goal">سكربت يفحص كل زوج مهم من النص والخلفية في كل مظهر وفق WCAG، ويُفشل البناء حين يكون أحدها ضعيفاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة JSON في Node، ومعادلة التباين، والصفوف ذات الأنواع، واستخدام رمز الخروج لإيقاف السلسلة.</p>
+<ol class="steps">
+<li>اقرأ <code>tokens.json</code>، واكتب <code>luminance</code> و<code>contrast</code> من معادلة الكتاب الأول.</li>
+<li>اسرد الأزواج التي تُستخدم معاً حقاً، صفوفاً <code>[foreground, background]</code> من الأسماء الدلالية.</li>
+<li>لكل مظهر وكل زوج حوّل الاسمين إلى لونين، واحسب النسبة، واطبعها مع ✓ أو ✗.</li>
+<li>اضبط <code>process.exitCode = 1</code> إن كان أي زوج أقل من 4.5، فيتوقف <code>npm run check</code> وCI.</li>
+<li>أضفه إلى سكربت <code>check</code>، ثم حاول كسره: فتّح <code>text-muted</code> في المظهر الفاتح وراقبه يفشل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هكذا يبقى نظام التصميم سهل الوصول وهو يكبر: لا بأن يتذكر الناس القواعد، بل بفحص يعمل كلما تغيّر أي شيء.</p>
+<pre data-code="projects/check-contrast.ts" data-title="check-contrast.ts"></pre>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/check-contrast.mjs"></pre>
+</div>

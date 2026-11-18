@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Global State without Pain"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "Chapter 9: Design Systems and Component Libraries"; } }
+@page ch09:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -3712,6 +3714,438 @@ export function useTheme() {
 <p>You can now build any screen. The next part of the book is about building them <em>well</em>, as a team. It starts with design systems: shared components, tokens and documentation that make a hundred screens look and behave like one product.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b2/design/en">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">Chapter 9</p><h1>Design Systems and Component Libraries</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what a design system is, and why teams build one</li>
+<li>keep every visual decision in design tokens, and generate CSS from them</li>
+<li>separate primitive tokens from semantic tokens, so themes are easy</li>
+<li>design component APIs that are small, predictable and hard to misuse</li>
+<li>support both controlled and uncontrolled use of a component</li>
+<li>document, test and version a component library</li>
+</ul>
+</div>
+
+<p class="lead">Open any big app made without a design system and count the shades of blue, the sizes of buttons, and the ways an error is shown. There will be dozens, because every screen was built by a different person on a different day. A <dfn>design system</dfn> is the shared set of decisions, <strong>tokens</strong>, <strong>components</strong>, <strong>patterns</strong> and their <strong>documentation</strong>, that makes a hundred screens look and behave like one product. For the team it means less code, fewer arguments and fewer accessibility bugs, because each decision is made, and tested, once.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Designers and developers often build two systems: one in the design tool and one in the code, slowly drifting apart. The best teams share one source of truth: the tokens. Book 9 shows the designer’s side in Figma; this chapter shows the developer’s.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>Design tokens</span></h2>
+
+<p>A <dfn>design token</dfn> is a named design decision: a colour, a spacing step, a radius, a font size. Instead of writing <code>#2b2b2b</code> in fifty places, everyone writes <code>var(--color-action)</code>. Tokens are kept in a neutral format, usually JSON, so that the same values can be turned into CSS for the web, into Swift and Kotlin for mobile apps, and into variables in the design tool.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tokens.json</div><pre class="code">{
+  <span class="s">&quot;primitive&quot;</span>: {
+    <span class="s">&quot;indigo-50&quot;</span>: <span class="s">&quot;#eef2ff&quot;</span>, <span class="s">&quot;indigo-600&quot;</span>: <span class="s">&quot;#2b2b2b&quot;</span>, <span class="s">&quot;indigo-800&quot;</span>: <span class="s">&quot;#1a1a1a&quot;</span>,
+    <span class="s">&quot;pink-600&quot;</span>: <span class="s">&quot;#2b2b2b&quot;</span>, <span class="s">&quot;red-50&quot;</span>: <span class="s">&quot;#fef2f2&quot;</span>, <span class="s">&quot;red-700&quot;</span>: <span class="s">&quot;#b91c1c&quot;</span>,
+    <span class="s">&quot;green-50&quot;</span>: <span class="s">&quot;#ecfdf5&quot;</span>, <span class="s">&quot;green-700&quot;</span>: <span class="s">&quot;#047857&quot;</span>, <span class="s">&quot;amber-50&quot;</span>: <span class="s">&quot;#fffbeb&quot;</span>, <span class="s">&quot;amber-800&quot;</span>: <span class="s">&quot;#92400e&quot;</span>,
+    <span class="s">&quot;gray-50&quot;</span>: <span class="s">&quot;#f5f5fb&quot;</span>, <span class="s">&quot;gray-400&quot;</span>: <span class="s">&quot;#a5a3bd&quot;</span>, <span class="s">&quot;gray-600&quot;</span>: <span class="s">&quot;#5b5873&quot;</span>, <span class="s">&quot;indigo-300&quot;</span>: <span class="s">&quot;#a5b4fc&quot;</span>, <span class="s">&quot;gray-900&quot;</span>: <span class="s">&quot;#1e1b2e&quot;</span>, <span class="s">&quot;gray-950&quot;</span>: <span class="s">&quot;#262626&quot;</span>, <span class="s">&quot;white&quot;</span>: <span class="s">&quot;#ffffff&quot;</span>
+  },
+  <span class="s">&quot;semantic&quot;</span>: {
+    <span class="s">&quot;light&quot;</span>: {
+      <span class="s">&quot;surface&quot;</span>: <span class="s">&quot;white&quot;</span>, <span class="s">&quot;surface-muted&quot;</span>: <span class="s">&quot;gray-50&quot;</span>, <span class="s">&quot;text&quot;</span>: <span class="s">&quot;gray-900&quot;</span>, <span class="s">&quot;text-muted&quot;</span>: <span class="s">&quot;gray-600&quot;</span>,
+      <span class="s">&quot;action&quot;</span>: <span class="s">&quot;indigo-600&quot;</span>, <span class="s">&quot;action-text&quot;</span>: <span class="s">&quot;white&quot;</span>, <span class="s">&quot;action-soft&quot;</span>: <span class="s">&quot;indigo-50&quot;</span>, <span class="s">&quot;action-soft-text&quot;</span>: <span class="s">&quot;indigo-800&quot;</span>,
+      <span class="s">&quot;danger&quot;</span>: <span class="s">&quot;red-700&quot;</span>, <span class="s">&quot;danger-soft&quot;</span>: <span class="s">&quot;red-50&quot;</span>, <span class="s">&quot;success&quot;</span>: <span class="s">&quot;green-700&quot;</span>, <span class="s">&quot;success-soft&quot;</span>: <span class="s">&quot;green-50&quot;</span>,
+      <span class="s">&quot;warning&quot;</span>: <span class="s">&quot;amber-800&quot;</span>, <span class="s">&quot;warning-soft&quot;</span>: <span class="s">&quot;amber-50&quot;</span>, <span class="s">&quot;focus&quot;</span>: <span class="s">&quot;pink-600&quot;</span>
+    },
+    <span class="s">&quot;dark&quot;</span>: {
+      <span class="s">&quot;surface&quot;</span>: <span class="s">&quot;gray-950&quot;</span>, <span class="s">&quot;surface-muted&quot;</span>: <span class="s">&quot;gray-900&quot;</span>, <span class="s">&quot;text&quot;</span>: <span class="s">&quot;gray-50&quot;</span>, <span class="s">&quot;text-muted&quot;</span>: <span class="s">&quot;gray-400&quot;</span>,
+      <span class="s">&quot;action&quot;</span>: <span class="s">&quot;indigo-300&quot;</span>, <span class="s">&quot;action-text&quot;</span>: <span class="s">&quot;indigo-800&quot;</span>, <span class="s">&quot;action-soft&quot;</span>: <span class="s">&quot;indigo-800&quot;</span>, <span class="s">&quot;action-soft-text&quot;</span>: <span class="s">&quot;indigo-50&quot;</span>,
+      <span class="s">&quot;danger&quot;</span>: <span class="s">&quot;red-50&quot;</span>, <span class="s">&quot;danger-soft&quot;</span>: <span class="s">&quot;red-700&quot;</span>, <span class="s">&quot;success&quot;</span>: <span class="s">&quot;green-50&quot;</span>, <span class="s">&quot;success-soft&quot;</span>: <span class="s">&quot;green-700&quot;</span>,
+      <span class="s">&quot;warning&quot;</span>: <span class="s">&quot;amber-50&quot;</span>, <span class="s">&quot;warning-soft&quot;</span>: <span class="s">&quot;amber-800&quot;</span>, <span class="s">&quot;focus&quot;</span>: <span class="s">&quot;pink-600&quot;</span>
+    }
+  },
+  <span class="s">&quot;space&quot;</span>: { <span class="s">&quot;1&quot;</span>: <span class="s">&quot;4px&quot;</span>, <span class="s">&quot;2&quot;</span>: <span class="s">&quot;8px&quot;</span>, <span class="s">&quot;3&quot;</span>: <span class="s">&quot;12px&quot;</span>, <span class="s">&quot;4&quot;</span>: <span class="s">&quot;16px&quot;</span>, <span class="s">&quot;6&quot;</span>: <span class="s">&quot;24px&quot;</span> },
+  <span class="s">&quot;radius&quot;</span>: { <span class="s">&quot;sm&quot;</span>: <span class="s">&quot;6px&quot;</span>, <span class="s">&quot;md&quot;</span>: <span class="s">&quot;10px&quot;</span>, <span class="s">&quot;full&quot;</span>: <span class="s">&quot;999px&quot;</span> }
+}</pre></div>
+
+<p>Notice the two levels:</p>
+<ul>
+<li><dfn>Primitive tokens</dfn> are the raw palette: <code>indigo-600</code>, <code>red-700</code>. They describe what a value <em>is</em>.</li>
+<li><dfn>Semantic tokens</dfn> describe what a value is <em>for</em>: <code>action</code>, <code>danger</code>, <code>text-muted</code>. Components only ever use semantic tokens.</li>
+</ul>
+
+<p>That separation is what makes themes cheap. The dark theme does not touch a single component; it simply points <code>action</code> and <code>surface</code> at different primitives. The same idea gives you a high-contrast theme, or a second brand, for free.</p>
+
+<p>A small script turns the JSON into CSS custom properties. In a real project it runs before every build, so the CSS can never disagree with the tokens:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">build-tokens.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+
+<span class="c">// Reads tokens.json and writes CSS variables for the light and dark themes</span>
+<span class="k">type</span> Tokens = {
+  primitive: Record&lt;string, string&gt;;
+  semantic: Record&lt;<span class="s">&quot;light&quot;</span> | <span class="s">&quot;dark&quot;</span>, Record&lt;string, string&gt;&gt;;
+  space: Record&lt;string, string&gt;;
+  radius: Record&lt;string, string&gt;;
+};
+
+<span class="k">const</span> tokens = JSON.parse(readFileSync(<span class="k">new</span> URL(<span class="s">&quot;./tokens.json&quot;</span>, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Tokens;
+
+<span class="k">function</span> resolve(name: string): string {
+  <span class="k">const</span> value = tokens.primitive[name];
+  <span class="k">if</span> (!value) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">`Unknown primitive token: ${name}`</span>);
+  <span class="k">return</span> value;
+}
+
+<span class="k">function</span> block(selector: string, vars: Record&lt;string, string&gt;): string {
+  <span class="k">const</span> lines = Object.entries(vars).map(([k, v]) =&gt; <span class="s">`  --${k}: ${v};`</span>);
+  <span class="k">return</span> <span class="s">`${selector} {\n${lines.join(&quot;\n&quot;)}\n}`</span>;
+}
+
+<span class="k">const</span> light = Object.fromEntries(Object.entries(tokens.semantic.light).map(([k, v]) =&gt; [<span class="s">`color-${k}`</span>, resolve(v)]));
+<span class="k">const</span> dark = Object.fromEntries(Object.entries(tokens.semantic.dark).map(([k, v]) =&gt; [<span class="s">`color-${k}`</span>, resolve(v)]));
+<span class="k">const</span> space = Object.fromEntries(Object.entries(tokens.space).map(([k, v]) =&gt; [<span class="s">`space-${k}`</span>, v]));
+<span class="k">const</span> radius = Object.fromEntries(Object.entries(tokens.radius).map(([k, v]) =&gt; [<span class="s">`radius-${k}`</span>, v]));
+
+<span class="k">const</span> css = [block(<span class="s">&quot;:root&quot;</span>, { ...light, ...space, ...radius }), block(<span class="s">&#x27;[data-theme=&quot;dark&quot;]&#x27;</span>, dark)].join(<span class="s">&quot;\n\n&quot;</span>);
+console.log(css.split(<span class="s">&quot;\n&quot;</span>).slice(<span class="n">0</span>, <span class="n">8</span>).join(<span class="s">&quot;\n&quot;</span>));
+console.log(<span class="s">&quot;  …&quot;</span>);
+console.log(<span class="s">`(${Object.keys(light).length} colours × 2 themes, ${Object.keys(space).length} spaces, ${Object.keys(radius).length} radii)`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>:root {
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f5fb;
+  --color-text: #1e1b2e;
+  --color-text-muted: #5b5873;
+  --color-action: #2b2b2b;
+  --color-action-text: #ffffff;
+  --color-action-soft: #eef2ff;
+  …
+(15 colours × 2 themes, 5 spaces, 3 radii)</pre></div>
+
+<p>The script throws an error if a semantic token points at a primitive that does not exist. That one check catches typos that would otherwise show up as a missing colour on one screen, weeks later.</p>
+
+<h2><span class="sec">9.2</span> <span>Designing a component’s API</span></h2>
+
+<p>The <dfn>API</dfn> of a component is its props, events and slots: everything other developers see. A good API is small, says what it means, and makes wrong use difficult. Here is a button built from the tokens:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">components.css (part)</div><pre class="code"><span class="k">.btn</span> { <span class="n">display</span><span class="s">: inline-flex</span>; <span class="n">align-items</span><span class="s">: center</span>; <span class="n">gap</span><span class="s">: var(--space-2)</span>; <span class="n">border</span><span class="s">: 2px solid transparent</span>;
+  <span class="n">border-radius</span><span class="s">: var(--radius-full)</span>; <span class="n">font</span><span class="s">: inherit</span>; <span class="n">font-weight</span><span class="s">: 600</span>; <span class="n">cursor</span><span class="s">: pointer</span>; }
+.<span class="n">btn</span><span class="s">:focus-visible </span>{ <span class="n">outline</span><span class="s">: 3px solid var(--color-focus)</span>; <span class="n">outline-offset</span><span class="s">: 2px</span>; }
+.<span class="n">btn</span><span class="s">:disabled </span>{ <span class="n">opacity</span><span class="s">: 0.55</span>; <span class="n">cursor</span><span class="s">: not-allowed</span>; }
+<span class="k">.btn-sm</span> { <span class="n">padding</span><span class="s">: 2px var(--space-3)</span>; <span class="n">font-size</span><span class="s">: 0.875rem</span>; }
+<span class="k">.btn-md</span> { <span class="n">padding</span><span class="s">: var(--space-1) var(--space-4)</span>; }
+<span class="k">.btn-lg</span> { <span class="n">padding</span><span class="s">: var(--space-2) var(--space-6)</span>; <span class="n">font-size</span><span class="s">: 1.125rem</span>; }
+<span class="k">.btn-primary</span> { <span class="n">background</span><span class="s">: var(--color-action)</span>; <span class="n">color</span><span class="s">: var(--color-action-text)</span>; }
+<span class="k">.btn-secondary</span> { <span class="n">background</span><span class="s">: var(--color-action-soft)</span>; <span class="n">color</span><span class="s">: var(--color-action-soft-text)</span>; }
+<span class="k">.btn-danger</span> { <span class="n">background</span><span class="s">: var(--color-danger)</span>; <span class="n">color</span><span class="s">: var(--color-surface)</span>; }
+<span class="k">.btn-ghost</span> { <span class="n">background</span><span class="s">: transparent</span>; <span class="n">color</span><span class="s">: var(--color-action)</span>; <span class="n">border-color</span><span class="s">: var(--color-action-soft)</span>; }
+<span class="k">.spinner</span> { <span class="n">width</span><span class="s">: 1em</span>; <span class="n">height</span><span class="s">: 1em</span>; <span class="n">border</span><span class="s">: 2px solid currentColor</span>; <span class="n">border-right-color</span><span class="s">: transparent</span>; <span class="n">border-radius</span><span class="s">: 50%</span>; <span class="n">animation</span><span class="s">: spin 0.8s linear infinite</span>; }
+<span class="k">@keyframes</span> <span class="k">spin</span> { <span class="k">to</span> { <span class="n">transform</span><span class="s">: rotate(360deg)</span>; } }
+<span class="k">@media</span> (<span class="n">prefers-reduced-motion</span><span class="s">: reduce) </span>{ <span class="k">.spinner</span> { <span class="n">animation-duration</span><span class="s">: 3s</span>; } }
+<span class="k">.badge</span> { <span class="n">display</span><span class="s">: inline-block</span>; <span class="n">padding</span><span class="s">: 0 var(--space-2)</span>; <span class="n">border-radius</span><span class="s">: var(--radius-full)</span>; <span class="n">font-size</span><span class="s">: 0.8rem</span>; <span class="n">font-weight</span><span class="s">: 700</span>; }
+<span class="k">.badge-neutral</span> { <span class="n">background</span><span class="s">: var(--color-action-soft)</span>; <span class="n">color</span><span class="s">: var(--color-action-soft-text)</span>; }
+<span class="k">.badge-success</span> { <span class="n">background</span><span class="s">: var(--color-success-soft)</span>; <span class="n">color</span><span class="s">: var(--color-success)</span>; }
+<span class="k">.badge-warning</span> { <span class="n">background</span><span class="s">: var(--color-warning-soft)</span>; <span class="n">color</span><span class="s">: var(--color-warning)</span>; }
+<span class="k">.badge-danger</span> { <span class="n">background</span><span class="s">: var(--color-danger-soft)</span>; <span class="n">color</span><span class="s">: var(--color-danger)</span>; }
+<span class="k">.alert</span> { <span class="n">display</span><span class="s">: flex</span>; <span class="n">gap</span><span class="s">: var(--space-2)</span>; <span class="n">padding</span><span class="s">: var(--space-3) var(--space-4)</span>; <span class="n">border-radius</span><span class="s">: var(--radius-md)</span>; <span class="n">border-inline-start</span><span class="s">: 4px solid</span>; <span class="n">margin-bottom</span><span class="s">: var(--space-2)</span>; }
+<span class="k">.alert-info</span> { <span class="n">background</span><span class="s">: var(--color-action-soft)</span>; <span class="n">color</span><span class="s">: var(--color-action-soft-text)</span>; }
+<span class="k">.alert-success</span> { <span class="n">background</span><span class="s">: var(--color-success-soft)</span>; <span class="n">color</span><span class="s">: var(--color-success)</span>; }
+<span class="k">.alert-warning</span> { <span class="n">background</span><span class="s">: var(--color-warning-soft)</span>; <span class="n">color</span><span class="s">: var(--color-warning)</span>; }
+<span class="k">.alert-danger</span> { <span class="n">background</span><span class="s">: var(--color-danger-soft)</span>; <span class="n">color</span><span class="s">: var(--color-danger)</span>; }
+<span class="k">.switch</span> { <span class="n">display</span><span class="s">: inline-flex</span>; <span class="n">align-items</span><span class="s">: center</span>; <span class="n">gap</span><span class="s">: var(--space-3)</span>; <span class="n">background</span><span class="s">: none</span>; <span class="n">border</span><span class="s">: 0</span>; <span class="n">padding</span><span class="s">: var(--space-1) 0</span>; <span class="n">font</span><span class="s">: inherit</span>; <span class="n">color</span><span class="s">: inherit</span>; <span class="n">cursor</span><span class="s">: pointer</span>; }
+.switch <span class="k">.track</span> { <span class="n">width</span><span class="s">: 44px</span>; <span class="n">height</span><span class="s">: 24px</span>; <span class="n">border-radius</span><span class="s">: var(--radius-full)</span>; <span class="n">background</span><span class="s">: var(--color-surface)</span>; <span class="n">border</span><span class="s">: 2px solid var(--color-text-muted)</span>; <span class="n">position</span><span class="s">: relative</span>; <span class="n">transition</span><span class="s">: background 0.2s</span>; }
+.switch <span class="k">.thumb</span> { <span class="n">position</span><span class="s">: absolute</span>; <span class="n">top</span><span class="s">: 2px</span>; <span class="n">inset-inline-start</span><span class="s">: 2px</span>; <span class="n">width</span><span class="s">: 16px</span>; <span class="n">height</span><span class="s">: 16px</span>; <span class="n">border-radius</span><span class="s">: 50%</span>; <span class="n">background</span><span class="s">: var(--color-text-muted)</span>; <span class="n">transition</span><span class="s">: inset-inline-start 0.2s</span>; }
+.switch[aria-checked=&quot;true&quot;] <span class="k">.track</span> { <span class="n">background</span><span class="s">: var(--color-action)</span>; <span class="n">border-color</span><span class="s">: var(--color-action)</span>; }
+.switch[aria-checked=&quot;true&quot;] <span class="k">.thumb</span> { <span class="n">inset-inline-start</span><span class="s">: 22px</span>; <span class="n">background</span><span class="s">: var(--color-action-text)</span>; }
+.<span class="n">switch</span><span class="s">:focus-visible .track </span>{ <span class="n">outline</span><span class="s">: 3px solid var(--color-focus)</span>; <span class="n">outline-offset</span><span class="s">: 2px</span>; }
+<span class="k">.gallery</span> { <span class="n">display</span><span class="s">: flex</span>; <span class="n">flex-direction</span><span class="s">: column</span>; <span class="n">gap</span><span class="s">: var(--space-3)</span>; <span class="n">background</span><span class="s">: var(--color-surface)</span>; <span class="n">color</span><span class="s">: var(--color-text)</span>; <span class="n">padding</span><span class="s">: var(--space-4)</span>; <span class="n">border-radius</span><span class="s">: var(--radius-md)</span>; }
+<span class="k">.row</span> { <span class="n">display</span><span class="s">: flex</span>; <span class="n">gap</span><span class="s">: var(--space-2)</span>; <span class="n">flex-wrap</span><span class="s">: wrap</span>; <span class="n">align-items</span><span class="s">: center</span>; }</pre></div>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Button.tsx</div><pre class="code">import type { ComponentProps } from &quot;react&quot;;
+
+type Variant = &quot;primary&quot; | &quot;secondary&quot; | &quot;danger&quot; | &quot;ghost&quot;;
+type Size = &quot;sm&quot; | &quot;md&quot; | &quot;lg&quot;;
+
+type ButtonProps = ComponentProps&lt;&quot;button&quot;&gt; &amp; {
+  variant?: Variant;
+  size?: Size;
+  loading?: boolean;
+};
+
+// Every native button prop (type, disabled, onClick, aria-…) still works
+export function Button({ variant = &quot;primary&quot;, size = &quot;md&quot;, loading = false, className, children, disabled, ...rest }: ButtonProps) {
+  const classes = [&quot;btn&quot;, `btn-${variant}`, `btn-${size}`, className].filter(Boolean).join(&quot; &quot;);
+  return (
+    &lt;button type=&quot;button&quot; className={classes} disabled={disabled || loading} aria-busy={loading || undefined} {...rest}&gt;
+      {loading &amp;&amp; &lt;span className=&quot;spinner&quot; aria-hidden=&quot;true&quot; /&gt;}
+      {children}
+    &lt;/button&gt;
+  );
+}</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>buttons.html</span><b>560px</b></div><img src="img/b2-design-en-react-buttons.html-560.png" alt=""><figcaption><b>Figure 9.1:</b> One <code>Button</code>, four variants and three sizes, with the loading and disabled states, in the light and dark themes. Not one line of the component changed between the themes.</figcaption></figure>
+
+<ul>
+<li><strong>Variants as one prop with a union type</strong>, <code>variant="danger"</code>, not separate booleans like <code>primary</code>, <code>danger</code>, <code>ghost</code>. With booleans, nothing stops someone from writing <code>&lt;Button primary danger&gt;</code>, and nobody knows what that means.</li>
+<li><strong>Build on the platform.</strong> <code>ComponentProps&lt;"button"&gt;</code> adds every prop a real button accepts, and <code>...rest</code> passes them on. <code>onClick</code>, <code>aria-label</code>, <code>form</code> and <code>type="submit"</code> all work, without the design system listing them one by one.</li>
+<li><strong>Safe defaults.</strong> <code>type="button"</code> by default, because a plain <code>&lt;button&gt;</code> inside a form submits it, a classic surprise. A loading button is also disabled, and tells assistive technology with <code>aria-busy</code>.</li>
+<li><strong>An escape hatch.</strong> <code>className</code> is merged, not replaced, for the rare screen that needs a margin.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: name things by purpose, never by appearance</p><p>A variant called <code>blue</code> becomes a lie the day the brand turns green. <code>primary</code>, <code>danger</code> and <code>subtle</code> stay true. The same rule applies to tokens: <code>color-action</code>, not <code>color-indigo</code>.</p></aside>
+
+<h2><span class="sec">9.3</span> <span>Composition over configuration</span></h2>
+
+<p>Components in a design system tend to grow props until nobody can use them: <code>showIcon</code>, <code>iconPosition</code>, <code>titleSize</code>, <code>footerAlign</code>… Each prop answers one screen’s wish, and together they form a maze. The cure is <dfn>composition</dfn>: instead of describing the content with props, let the user pass the content in. A card that accepts children can hold any header, picture or footer, today and next year, without a single new prop.</p>
+
+<p>A good rule: props for <em>how</em> it behaves and looks (<code>variant</code>, <code>size</code>, <code>disabled</code>), children or slots for <em>what</em> it contains.</p>
+
+<h3>Controlled and uncontrolled</h3>
+
+<p>Inputs in a design system should work the way native inputs do: <dfn>uncontrolled</dfn> when the user just wants a default and does not care about every change, and <dfn>controlled</dfn> when the page owns the value. By convention, <code>defaultChecked</code> or <code>defaultValue</code> means uncontrolled, and <code>checked</code> or <code>value</code> with a change handler means controlled. Project 9.3 builds a switch that supports both.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Should a button component use the token <code>indigo-600</code> or <code>color-action</code>?</li><li>What is wrong with props like <code>primary</code>, <code>secondary</code> and <code>danger</code> as three booleans?</li><li>Why should a button component default to <code>type="button"</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">9.4</span> <span>Accessibility, built in once</span></h2>
+
+<p>The greatest gift of a design system is that accessibility is solved once, by people who took the time, instead of fifty times by people in a hurry. Every component in the system should come with: the right element or ARIA role, a visible focus style from the <code>focus</code> token, full keyboard support, colours that pass contrast in every theme, and a reduced-motion version of any animation.</p>
+
+<p>Complex widgets, such as menus, dialogs, comboboxes and date pickers, are hard to get right. Many teams build them on <dfn>headless</dfn> libraries, which provide the behaviour and accessibility but no styles, and add their own tokens on top.
+For React, popular choices are Radix UI and React Aria.</p>
+
+<h2><span class="sec">9.5</span> <span>Documenting, testing and releasing</span></h2>
+
+<p>A component nobody can find is a component somebody will write again. Design systems are documented in a living catalogue, usually built with <strong>Storybook</strong>, where each component appears in all its variants and states, with its props, its do’s and don’ts, and the code to copy. Each of those examples, called a <dfn>story</dfn>, doubles as a test case:</p>
+<ul>
+<li><strong>Unit and interaction tests</strong> check behaviour: does the switch toggle with Space, does the loading button refuse clicks? (Chapter 11.)</li>
+<li><strong>Accessibility checks</strong> such as axe run on every story automatically. (Chapter 10.)</li>
+<li><strong>Visual regression tests</strong> take a screenshot of every story and compare it with the approved one, so a change to a shared token cannot silently break a screen.</li>
+</ul>
+
+<p>A design system used by several apps is published as a package, with <strong>semantic versions</strong> and a changelog (Chapter 3): renaming a prop is a breaking change and needs a major version, so app teams can upgrade when they are ready.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: start small, extract from real screens</p><p>Do not design forty components before the first screen exists. Build the product, notice what repeats, and promote it into the system when it has been used three times. A small system that everyone uses beats a large one that nobody trusts.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Hard-coded colours and sizes in components</td><td>Themes and rebrands mean editing every file</td><td>Semantic tokens only</td></tr>
+<tr><td>Tokens named after their look (<code>blue</code>)</td><td>The names lie after a redesign</td><td>Name by purpose (<code>action</code>)</td></tr>
+<tr><td>A boolean prop per variant</td><td>Impossible combinations</td><td>One <code>variant</code> prop with a union type</td></tr>
+<tr><td>Copying native props one by one</td><td>Missing props such as <code>form</code> or <code>aria-*</code></td><td>Extend the native element’s props and pass the rest on</td></tr>
+<tr><td>A prop for every layout wish</td><td>A component nobody understands</td><td>Composition with children or slots</td></tr>
+<tr><td>Checking a theme only in light mode</td><td>States that look the same, or text that vanishes, in dark mode</td><td>Show every story in every theme</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A <strong>design system</strong> is shared tokens, components, patterns and documentation that make a product consistent and accessible.</li>
+<li><strong>Design tokens</strong> are named decisions kept in a neutral format and generated into CSS and other platforms.</li>
+<li><strong>Primitive</strong> tokens are the palette; <strong>semantic</strong> tokens say what a value is for. Components use semantic tokens, and themes remap them.</li>
+<li>Good component APIs use <strong>one variant prop</strong>, <strong>extend native props</strong>, have <strong>safe defaults</strong>, and prefer <strong>composition</strong> to configuration.</li>
+<li>Inputs support <strong>controlled</strong> and <strong>uncontrolled</strong> use, like native inputs.</li>
+<li>Accessibility is built into each component once. Stories document the system and drive unit, accessibility and visual tests; releases follow semantic versioning.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>color-action</code>: a semantic token, so themes and rebrands work without touching the component. 2. Nothing stops two of them being true together, and nobody knows what that should look like; one <code>variant</code> prop with a union type allows exactly one. 3. Because a plain <code>&lt;button&gt;</code> inside a form is a submit button, and would submit the form by accident.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Build these as the first pieces of your own small design system: one folder of tokens, one stylesheet generated from them, and a few components that use nothing else.</p>
+
+<div class="project">
+<p class="project-label">Project 9.1 · Easy</p>
+<h3>Badges and alerts from tokens</h3>
+<p class="project-goal">Two small components that show status: a badge for short labels and an alert for messages, each with four tones and no colour of its own.</p>
+<p class="project-skills"><strong>You will practise:</strong> tone props with union types, semantic tokens, and choosing the right live-region role.</p>
+<ol class="steps">
+<li>Add soft background tokens for each tone (<code>success-soft</code>, <code>warning-soft</code>, <code>danger-soft</code>) and the matching text tokens, in both themes.</li>
+<li>Write the CSS classes <code>.badge-…</code> and <code>.alert-…</code> using only those tokens.</li>
+<li>Write <code>Badge</code> with a <code>tone</code> prop and children.</li>
+<li>Write <code>Alert</code>: an icon hidden from screen readers, the message, and a role: <code>alert</code> for errors, which interrupts, and <code>status</code> for the others, which waits for a pause.</li>
+<li>Never let colour carry the meaning alone: the words “Paid” and “Pending”, and the icons, say it too.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> using <code>role="alert"</code> for everything sounds safe, but it interrupts the user for every small notice. Keep interruptions for things that really need attention now.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Alert.tsx</div><pre class="code">import type { ReactNode } from &quot;react&quot;;
+
+type Tone = &quot;info&quot; | &quot;success&quot; | &quot;warning&quot; | &quot;danger&quot;;
+
+const ICONS: Record&lt;Tone, string&gt; = { info: &quot;ℹ&quot;, success: &quot;✓&quot;, warning: &quot;!&quot;, danger: &quot;✕&quot; };
+
+export function Alert({ tone = &quot;info&quot;, children }: { tone?: Tone; children: ReactNode }) {
+  // Errors interrupt (alert); everything else waits for a pause (status)
+  const role = tone === &quot;danger&quot; ? &quot;alert&quot; : &quot;status&quot;;
+  return (
+    &lt;div className={`alert alert-${tone}`} role={role}&gt;
+      &lt;span aria-hidden=&quot;true&quot;&gt;{ICONS[tone]}&lt;/span&gt;
+      &lt;span&gt;{children}&lt;/span&gt;
+    &lt;/div&gt;
+  );
+}</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>feedback.html</span><b>560px</b></div><img src="img/b2-design-en-react-projects-feedback.html-560.png" alt=""><figcaption><b>Project 9.1:</b> badges and alerts in their four tones.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 9.2 · Medium</p>
+<h3>A switch that works both ways</h3>
+<p class="project-goal">An on/off switch that can be used controlled or uncontrolled, works with the keyboard and screen readers, and is clear in every theme.</p>
+<p class="project-skills"><strong>You will practise:</strong> the controlled/uncontrolled pattern, <code>role="switch"</code> with <code>aria-checked</code>, logical CSS properties, and checking states in every theme.</p>
+<ol class="steps">
+<li>Accept <code>checked</code>, <code>defaultChecked</code> and <code>onChange</code>. If <code>checked</code> is given, the parent owns the value; otherwise the component keeps its own.</li>
+<li>Render a real <code>&lt;button type="button"&gt;</code> with <code>role="switch"</code> and <code>aria-checked</code>. Enter and Space work for free.</li>
+<li>Draw the track and thumb with tokens, and move the thumb with <code>inset-inline-start</code>, so it slides the right way in Arabic too.</li>
+<li>Give the off state an outline and the on state a fill. Check both in the dark theme: when this book was written, the first version looked the same on and off in dark mode, until the screenshot showed it.</li>
+<li>Use it three ways: uncontrolled with <code>defaultChecked</code>, uncontrolled off, and controlled, where it switches the theme of its own panel.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> never change from uncontrolled to controlled during a component’s life (from <code>checked={undefined}</code> to <code>checked={true}</code>). React warns about it, because it is almost always a bug: decide once, in the parent.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Switch.tsx</div><pre class="code">import { useState } from &quot;react&quot;;
+
+type SwitchProps = {
+  label: string;
+  checked?: boolean; // controlled: the parent owns the value
+  defaultChecked?: boolean; // uncontrolled: the switch owns it
+  onChange?: (checked: boolean) =&gt; void;
+};
+
+export function Switch({ label, checked, defaultChecked = false, onChange }: SwitchProps) {
+  const [inner, setInner] = useState(defaultChecked);
+  const isControlled = checked !== undefined;
+  const on = isControlled ? checked : inner;
+
+  function toggle() {
+    if (!isControlled) setInner(!on);
+    onChange?.(!on);
+  }
+
+  return (
+    &lt;button type=&quot;button&quot; role=&quot;switch&quot; aria-checked={on} className=&quot;switch&quot; onClick={toggle}&gt;
+      &lt;span className=&quot;track&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;span className=&quot;thumb&quot; /&gt;
+      &lt;/span&gt;
+      {label}
+    &lt;/button&gt;
+  );
+}</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>switches.html</span><b>560px</b></div><img src="img/b2-design-en-react-projects-switches.html-560-9a64f6.png" alt=""><figcaption><b>Project 9.2:</b> after turning on the dark theme with the controlled switch.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 9.3 · Challenge</p>
+<h3>A contrast guard for the tokens</h3>
+<p class="project-goal">A script that checks every important text-and-background pair in every theme against WCAG, and fails the build when one is too weak.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading JSON in Node, the contrast formula, typed tuples, and using the exit code to stop a pipeline.</p>
+<ol class="steps">
+<li>Read <code>tokens.json</code>, and write <code>luminance</code> and <code>contrast</code> from the formula in Book 1.</li>
+<li>List the pairs that are really used together, as <code>[foreground, background]</code> tuples of semantic names.</li>
+<li>For each theme and each pair, resolve both names to colours, compute the ratio, and print it with ✓ or ✗.</li>
+<li>Set <code>process.exitCode = 1</code> if any pair is below 4.5, so that <code>npm run check</code> and CI stop.</li>
+<li>Add it to your <code>check</code> script, then try to break it: make <code>text-muted</code> lighter in the light theme and watch it fail.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is how a design system stays accessible as it grows: not by people remembering the rules, but by a check that runs every time anything changes.</p>
+<div class="listing" dir="ltr"><div class="listing-title">check-contrast.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+
+<span class="k">type</span> Tokens = { primitive: Record&lt;string, string&gt;; semantic: Record&lt;string, Record&lt;string, string&gt;&gt; };
+<span class="k">const</span> tokens = JSON.parse(readFileSync(<span class="k">new</span> URL(<span class="s">&quot;../tokens.json&quot;</span>, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Tokens;
+
+<span class="c">// The WCAG formula from Book 1</span>
+<span class="k">function</span> luminance(hex: string): number {
+  <span class="k">const</span> [r, g, b] = [<span class="n">1</span>, <span class="n">3</span>, <span class="n">5</span>].map((i) =&gt; {
+    <span class="k">const</span> c = parseInt(hex.slice(i, i + <span class="n">2</span>), <span class="n">16</span>) / <span class="n">255</span>;
+    <span class="k">return</span> c &lt;= <span class="n">0.03928</span> ? c / <span class="n">12.92</span> : ((c + <span class="n">0.055</span>) / <span class="n">1.055</span>) ** <span class="n">2.4</span>;
+  }) as [number, number, number];
+  <span class="k">return</span> <span class="n">0.2126</span> * r + <span class="n">0.7152</span> * g + <span class="n">0.0722</span> * b;
+}
+
+<span class="k">function</span> contrast(a: string, b: string): number {
+  <span class="k">const</span> [hi, lo] = [luminance(a), luminance(b)].sort((x, y) =&gt; y - x) as [number, number];
+  <span class="k">return</span> (hi + <span class="n">0.05</span>) / (lo + <span class="n">0.05</span>);
+}
+
+<span class="c">// Each text colour is checked on the background it is used on</span>
+<span class="k">const</span> PAIRS: [string, string][] = [
+  [<span class="s">&quot;text&quot;</span>, <span class="s">&quot;surface&quot;</span>],
+  [<span class="s">&quot;text-muted&quot;</span>, <span class="s">&quot;surface&quot;</span>],
+  [<span class="s">&quot;action-text&quot;</span>, <span class="s">&quot;action&quot;</span>],
+  [<span class="s">&quot;action-soft-text&quot;</span>, <span class="s">&quot;action-soft&quot;</span>],
+  [<span class="s">&quot;danger&quot;</span>, <span class="s">&quot;danger-soft&quot;</span>],
+  [<span class="s">&quot;success&quot;</span>, <span class="s">&quot;success-soft&quot;</span>],
+  [<span class="s">&quot;warning&quot;</span>, <span class="s">&quot;warning-soft&quot;</span>],
+];
+
+<span class="k">let</span> failures = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> [theme, colours] <span class="k">of</span> Object.entries(tokens.semantic)) {
+  <span class="k">for</span> (<span class="k">const</span> [fg, bg] <span class="k">of</span> PAIRS) {
+    <span class="k">const</span> ratio = contrast(tokens.primitive[colours[fg]!]!, tokens.primitive[colours[bg]!]!);
+    <span class="k">const</span> ok = ratio &gt;= <span class="n">4.5</span>;
+    <span class="k">if</span> (!ok) failures++;
+    console.log(<span class="s">`${theme.padEnd(5)} ${`</span>${fg} / ${bg}<span class="s">`.padEnd(32)} ${ratio.toFixed(2).padStart(5)} ${ok ? &quot;✓&quot; : &quot;✗ below 4.5&quot;}`</span>);
+  }
+}
+console.log(failures === <span class="n">0</span> ? <span class="s">&quot;All pairs pass WCAG AA.&quot;</span> : <span class="s">`${failures} pairs fail. Fix the tokens before releasing.`</span>);
+process.exitCode = failures === <span class="n">0</span> ? <span class="n">0</span> : <span class="n">1</span>;</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>light text / surface                   16.78 ✓
+light text-muted / surface              6.80 ✓
+light action-text / action              7.90 ✓
+light action-soft-text / action-soft   10.22 ✓
+light danger / danger-soft              5.91 ✓
+light success / success-soft            5.21 ✓
+light warning / warning-soft            6.84 ✓
+dark  text / surface                   16.56 ✓
+dark  text-muted / surface              7.34 ✓
+dark  action-text / action              5.73 ✓
+dark  action-soft-text / action-soft   10.22 ✓
+dark  danger / danger-soft              5.91 ✓
+dark  success / success-soft            5.21 ✓
+dark  warning / warning-soft            6.84 ✓
+All pairs pass WCAG AA.</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a <code>space-8: 32px</code> token and a <code>radius-lg: 16px</code> token, run the script, and use the new radius for cards.</li>
+<li><span class="level">Easy</span> Add a primitive token whose semantic name is misspelled in the dark theme, run the script, and read the error. Then fix it.</li>
+<li><span class="level medium">Medium</span> Add a third theme, <code>[data-theme="contrast"]</code>, with black text on white, a dark blue action colour and a thick yellow focus colour. Which components needed changes? (The right answer is “none”.)</li>
+<li><span class="level medium">Medium</span> Add an <code>iconStart</code> slot to the button: a prop that accepts any icon element and places it before the text, with the correct gap in both directions.</li>
+<li><span class="level hard">Challenge</span> Add motion tokens, <code>duration-fast: 150ms</code> and <code>duration-normal: 250ms</code>, generate them with the script, and use them for the switch’s movement. Then make every duration <code>0ms</code> inside <code>@media (prefers-reduced-motion: reduce)</code>, by changing only the generated CSS, not the components.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 10</p>
+<p>Book 1 introduced accessibility. In the next chapter you will learn the standard that professionals work to, WCAG, and how to meet it in real component code: focus management in dialogs, live announcements, accessible names, and automatic checks in your tests.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3807,6 +4241,17 @@ export function useTheme() {
 <li>Create the store with <code>createStore&lt;CartState&gt;()((set) =&gt; ({ … }))</code> with the same functions; then call <code>store.getState().add(book)</code>, <code>add(mug)</code>, <code>add(mug)</code> and <code>clear()</code>, printing <code>selectCount(store.getState())</code> after each: 1, 2, 3, 0. The selectors work unchanged, because they are plain functions of the state.</li>
 <li>Both render once at the start. Then <code>CartBadge</code> renders once more for each product added (its count changed), while <code>ProductList</code> does not render again: it selects only <code>add</code>, which never changes. (In development, Strict Mode doubles every number.)</li>
 <li><code>type Auth = { status: "signed-out" } | { status: "signing-in" } | { status: "signed-in"; user: User }</code>, plus <code>signIn</code> and <code>signOut</code>. <code>signIn</code> sets <code>signing-in</code>, awaits the pretend API, then sets <code>signed-in</code> with the user. The header uses a <code>switch</code> on <code>status</code>: a sign-in button, a disabled “Signing in…” button, or the name and a sign-out button.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 9</h2>
+<ol class="exercises">
+<li>Add <code>"8": "32px"</code> to <code>space</code> and <code>"lg": "16px"</code> to <code>radius</code>, run the script, and write <code>border-radius: var(--radius-lg)</code> in the card style. The script prints 6 spaces and 4 radii.</li>
+<li>For example <code>"focus": "pink-60"</code> in the dark theme. The script stops with <code>Unknown primitive token: pink-60</code>, naming the exact value to fix. Without the check, the dark theme would silently have no focus colour.</li>
+<li>Add a <code>"contrast"</code> object under <code>semantic</code> with every semantic name, and generate a third block for <code>[data-theme="contrast"]</code>. No component changes: they only use semantic tokens. If one did need a change, it was using a hard-coded value, and that is the real bug.</li>
+
+<li>Add <code>iconStart?: ReactNode</code> to the props, and render <code>{iconStart &amp;&amp; &lt;span aria-hidden="true"&gt;{iconStart}&lt;/span&gt;}</code> before the children. The <code>gap</code> on <code>.btn</code> already spaces it correctly in both directions, because flexbox follows the text direction.</li>
+<li>Add <code>"duration": { "fast": "150ms", "normal": "250ms" }</code> to the tokens, generate <code>--duration-fast</code> and <code>--duration-normal</code>, and use <code>transition: inset-inline-start var(--duration-normal)</code> in the switch. Then have the script also write <code>@media (prefers-reduced-motion: reduce) { :root { --duration-fast: 0ms; --duration-normal: 0ms; } }</code>. Every component using the tokens stops moving, without a single change.</li>
 </ol>
 
 </section>

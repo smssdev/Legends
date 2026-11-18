@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: الحالة العامة بلا ألم"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "الفصل 9: أنظمة التصميم ومكتبات المكونات"; } }
+@page ch09:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -3712,6 +3714,438 @@ export function useTheme() {
 <p>تستطيع الآن بناء أي شاشة. والجزء التالي من الكتاب عن بنائها <em>جيداً</em>، فريقاً. ويبدأ بأنظمة التصميم: مكونات مشتركة ورموز تصميم وتوثيق تجعل مئة شاشة تبدو وتتصرف كمنتج واحد.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b2/design/ar">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">الفصل 9</p><h1>أنظمة التصميم ومكتبات المكونات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح ما نظام التصميم، ولماذا تبنيه الفرق</li>
+<li>تحفظ كل قرار بصري في رموز التصميم، وتولّد CSS منها</li>
+<li>تفصل الرموز الأولية عن الدلالية، فتصير المظاهر سهلة</li>
+<li>تصمم واجهات مكونات صغيرة ومتوقعة ويصعب إساءة استخدامها</li>
+<li>تدعم الاستخدام المُتحكَّم فيه وغير المُتحكَّم فيه للمكوّن</li>
+<li>توثّق مكتبة المكونات وتختبرها وتصدرها</li>
+</ul>
+</div>
+
+<p class="lead">افتح أي تطبيق كبير صُنع دون نظام تصميم، وعُدّ درجات الأزرق، وأحجام الأزرار، وطرق عرض الخطأ. ستجدها بالعشرات، لأن كل شاشة بناها شخص مختلف في يوم مختلف. و<dfn>نظام التصميم</dfn> (design system) هو مجموعة القرارات المشتركة، <strong>الرموز</strong> و<strong>المكونات</strong> و<strong>الأنماط</strong> و<strong>توثيقها</strong>، التي تجعل مئة شاشة تبدو وتتصرف كمنتج واحد. وللفريق يعني كوداً أقل، وجدالاً أقل، وأخطاء وصول أقل، لأن كل قرار يُتخذ ويُختبر مرة واحدة.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كثيراً ما يبني المصممون والمطورون نظامين: واحداً في أداة التصميم وآخر في الكود، يتباعدان ببطء. وأفضل الفرق تتشارك مصدر حقيقة واحداً: الرموز. ويعرض الكتاب التاسع جانب المصمم في Figma، وهذا الفصل جانب المطور.</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>رموز التصميم</span></h2>
+
+<p><dfn>رمز التصميم</dfn> (design token) قرار تصميم له اسم: لون، أو درجة مسافة، أو انحناء زاوية، أو حجم خط. فبدل أن يكتب الجميع <code>#2b2b2b</code> في خمسين مكاناً، يكتبون <code>var(--color-action)</code>. وتُحفظ الرموز بصيغة محايدة، غالباً JSON، لتتحول القيم نفسها إلى CSS للويب، وإلى Swift وKotlin لتطبيقات الجوال، وإلى متغيرات في أداة التصميم.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tokens.json</div><pre class="code">{
+  <span class="s">&quot;primitive&quot;</span>: {
+    <span class="s">&quot;indigo-50&quot;</span>: <span class="s">&quot;#eef2ff&quot;</span>, <span class="s">&quot;indigo-600&quot;</span>: <span class="s">&quot;#2b2b2b&quot;</span>, <span class="s">&quot;indigo-800&quot;</span>: <span class="s">&quot;#1a1a1a&quot;</span>,
+    <span class="s">&quot;pink-600&quot;</span>: <span class="s">&quot;#2b2b2b&quot;</span>, <span class="s">&quot;red-50&quot;</span>: <span class="s">&quot;#fef2f2&quot;</span>, <span class="s">&quot;red-700&quot;</span>: <span class="s">&quot;#b91c1c&quot;</span>,
+    <span class="s">&quot;green-50&quot;</span>: <span class="s">&quot;#ecfdf5&quot;</span>, <span class="s">&quot;green-700&quot;</span>: <span class="s">&quot;#047857&quot;</span>, <span class="s">&quot;amber-50&quot;</span>: <span class="s">&quot;#fffbeb&quot;</span>, <span class="s">&quot;amber-800&quot;</span>: <span class="s">&quot;#92400e&quot;</span>,
+    <span class="s">&quot;gray-50&quot;</span>: <span class="s">&quot;#f5f5fb&quot;</span>, <span class="s">&quot;gray-400&quot;</span>: <span class="s">&quot;#a5a3bd&quot;</span>, <span class="s">&quot;gray-600&quot;</span>: <span class="s">&quot;#5b5873&quot;</span>, <span class="s">&quot;indigo-300&quot;</span>: <span class="s">&quot;#a5b4fc&quot;</span>, <span class="s">&quot;gray-900&quot;</span>: <span class="s">&quot;#1e1b2e&quot;</span>, <span class="s">&quot;gray-950&quot;</span>: <span class="s">&quot;#262626&quot;</span>, <span class="s">&quot;white&quot;</span>: <span class="s">&quot;#ffffff&quot;</span>
+  },
+  <span class="s">&quot;semantic&quot;</span>: {
+    <span class="s">&quot;light&quot;</span>: {
+      <span class="s">&quot;surface&quot;</span>: <span class="s">&quot;white&quot;</span>, <span class="s">&quot;surface-muted&quot;</span>: <span class="s">&quot;gray-50&quot;</span>, <span class="s">&quot;text&quot;</span>: <span class="s">&quot;gray-900&quot;</span>, <span class="s">&quot;text-muted&quot;</span>: <span class="s">&quot;gray-600&quot;</span>,
+      <span class="s">&quot;action&quot;</span>: <span class="s">&quot;indigo-600&quot;</span>, <span class="s">&quot;action-text&quot;</span>: <span class="s">&quot;white&quot;</span>, <span class="s">&quot;action-soft&quot;</span>: <span class="s">&quot;indigo-50&quot;</span>, <span class="s">&quot;action-soft-text&quot;</span>: <span class="s">&quot;indigo-800&quot;</span>,
+      <span class="s">&quot;danger&quot;</span>: <span class="s">&quot;red-700&quot;</span>, <span class="s">&quot;danger-soft&quot;</span>: <span class="s">&quot;red-50&quot;</span>, <span class="s">&quot;success&quot;</span>: <span class="s">&quot;green-700&quot;</span>, <span class="s">&quot;success-soft&quot;</span>: <span class="s">&quot;green-50&quot;</span>,
+      <span class="s">&quot;warning&quot;</span>: <span class="s">&quot;amber-800&quot;</span>, <span class="s">&quot;warning-soft&quot;</span>: <span class="s">&quot;amber-50&quot;</span>, <span class="s">&quot;focus&quot;</span>: <span class="s">&quot;pink-600&quot;</span>
+    },
+    <span class="s">&quot;dark&quot;</span>: {
+      <span class="s">&quot;surface&quot;</span>: <span class="s">&quot;gray-950&quot;</span>, <span class="s">&quot;surface-muted&quot;</span>: <span class="s">&quot;gray-900&quot;</span>, <span class="s">&quot;text&quot;</span>: <span class="s">&quot;gray-50&quot;</span>, <span class="s">&quot;text-muted&quot;</span>: <span class="s">&quot;gray-400&quot;</span>,
+      <span class="s">&quot;action&quot;</span>: <span class="s">&quot;indigo-300&quot;</span>, <span class="s">&quot;action-text&quot;</span>: <span class="s">&quot;indigo-800&quot;</span>, <span class="s">&quot;action-soft&quot;</span>: <span class="s">&quot;indigo-800&quot;</span>, <span class="s">&quot;action-soft-text&quot;</span>: <span class="s">&quot;indigo-50&quot;</span>,
+      <span class="s">&quot;danger&quot;</span>: <span class="s">&quot;red-50&quot;</span>, <span class="s">&quot;danger-soft&quot;</span>: <span class="s">&quot;red-700&quot;</span>, <span class="s">&quot;success&quot;</span>: <span class="s">&quot;green-50&quot;</span>, <span class="s">&quot;success-soft&quot;</span>: <span class="s">&quot;green-700&quot;</span>,
+      <span class="s">&quot;warning&quot;</span>: <span class="s">&quot;amber-50&quot;</span>, <span class="s">&quot;warning-soft&quot;</span>: <span class="s">&quot;amber-800&quot;</span>, <span class="s">&quot;focus&quot;</span>: <span class="s">&quot;pink-600&quot;</span>
+    }
+  },
+  <span class="s">&quot;space&quot;</span>: { <span class="s">&quot;1&quot;</span>: <span class="s">&quot;4px&quot;</span>, <span class="s">&quot;2&quot;</span>: <span class="s">&quot;8px&quot;</span>, <span class="s">&quot;3&quot;</span>: <span class="s">&quot;12px&quot;</span>, <span class="s">&quot;4&quot;</span>: <span class="s">&quot;16px&quot;</span>, <span class="s">&quot;6&quot;</span>: <span class="s">&quot;24px&quot;</span> },
+  <span class="s">&quot;radius&quot;</span>: { <span class="s">&quot;sm&quot;</span>: <span class="s">&quot;6px&quot;</span>, <span class="s">&quot;md&quot;</span>: <span class="s">&quot;10px&quot;</span>, <span class="s">&quot;full&quot;</span>: <span class="s">&quot;999px&quot;</span> }
+}</pre></div>
+
+<p>لاحظ المستويين:</p>
+<ul>
+<li><dfn>الرموز الأولية</dfn> (primitive) لوحة الألوان الخام: <code>indigo-600</code> و<code>red-700</code>. تصف ما <em>هي</em> القيمة.</li>
+<li><dfn>الرموز الدلالية</dfn> (semantic) تصف <em>لأي شيء</em> القيمة: <code>action</code> و<code>danger</code> و<code>text-muted</code>. والمكونات لا تستخدم إلا الرموز الدلالية.</li>
+</ul>
+
+<p>وهذا الفصل هو ما يجعل المظاهر رخيصة. فالمظهر الداكن لا يلمس مكوّناً واحداً، بل يوجّه <code>action</code> و<code>surface</code> إلى رموز أولية أخرى. والفكرة نفسها تعطيك مظهراً عالي التباين، أو علامة تجارية ثانية، مجاناً.</p>
+
+<p>ويحوّل سكربت صغير ملف JSON إلى متغيرات CSS مخصصة. وفي المشروع الحقيقي يعمل قبل كل بناء، فلا يمكن أن تخالف CSS الرموز:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">build-tokens.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+
+<span class="c">// يقرأ tokens.json ويكتب متغيرات CSS للمظهرين الفاتح والداكن</span>
+<span class="k">type</span> Tokens = {
+  primitive: Record&lt;string, string&gt;;
+  semantic: Record&lt;<span class="s">&quot;light&quot;</span> | <span class="s">&quot;dark&quot;</span>, Record&lt;string, string&gt;&gt;;
+  space: Record&lt;string, string&gt;;
+  radius: Record&lt;string, string&gt;;
+};
+
+<span class="k">const</span> tokens = JSON.parse(readFileSync(<span class="k">new</span> URL(<span class="s">&quot;./tokens.json&quot;</span>, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Tokens;
+
+<span class="k">function</span> resolve(name: string): string {
+  <span class="k">const</span> value = tokens.primitive[name];
+  <span class="k">if</span> (!value) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">`Unknown primitive token: ${name}`</span>);
+  <span class="k">return</span> value;
+}
+
+<span class="k">function</span> block(selector: string, vars: Record&lt;string, string&gt;): string {
+  <span class="k">const</span> lines = Object.entries(vars).map(([k, v]) =&gt; <span class="s">`  --${k}: ${v};`</span>);
+  <span class="k">return</span> <span class="s">`${selector} {\n${lines.join(&quot;\n&quot;)}\n}`</span>;
+}
+
+<span class="k">const</span> light = Object.fromEntries(Object.entries(tokens.semantic.light).map(([k, v]) =&gt; [<span class="s">`color-${k}`</span>, resolve(v)]));
+<span class="k">const</span> dark = Object.fromEntries(Object.entries(tokens.semantic.dark).map(([k, v]) =&gt; [<span class="s">`color-${k}`</span>, resolve(v)]));
+<span class="k">const</span> space = Object.fromEntries(Object.entries(tokens.space).map(([k, v]) =&gt; [<span class="s">`space-${k}`</span>, v]));
+<span class="k">const</span> radius = Object.fromEntries(Object.entries(tokens.radius).map(([k, v]) =&gt; [<span class="s">`radius-${k}`</span>, v]));
+
+<span class="k">const</span> css = [block(<span class="s">&quot;:root&quot;</span>, { ...light, ...space, ...radius }), block(<span class="s">&#x27;[data-theme=&quot;dark&quot;]&#x27;</span>, dark)].join(<span class="s">&quot;\n\n&quot;</span>);
+console.log(css.split(<span class="s">&quot;\n&quot;</span>).slice(<span class="n">0</span>, <span class="n">8</span>).join(<span class="s">&quot;\n&quot;</span>));
+console.log(<span class="s">&quot;  …&quot;</span>);
+console.log(<span class="s">`(${Object.keys(light).length} colours × 2 themes, ${Object.keys(space).length} spaces, ${Object.keys(radius).length} radii)`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>:root {
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f5fb;
+  --color-text: #1e1b2e;
+  --color-text-muted: #5b5873;
+  --color-action: #2b2b2b;
+  --color-action-text: #ffffff;
+  --color-action-soft: #eef2ff;
+  …
+(15 colours × 2 themes, 5 spaces, 3 radii)</pre></div>
+
+<p>يرمي السكربت خطأً إن أشار رمز دلالي إلى رمز أولي غير موجود. وهذا الفحص الواحد يلتقط أخطاء كتابة كانت ستظهر لوناً ناقصاً في شاشة ما بعد أسابيع.</p>
+
+<h2><span class="sec">9.2</span> <span>تصميم واجهة المكوّن</span></h2>
+
+<p><dfn>واجهة</dfn> المكوّن (API) خصائصه وأحداثه وفتحاته: كل ما يراه المطورون الآخرون. والواجهة الجيدة صغيرة، وتقول ما تعنيه، وتجعل الاستخدام الخاطئ صعباً. وهذا زر مبني من الرموز:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">components.css (جزء)</div><pre class="code"><span class="k">.btn</span> { <span class="n">display</span><span class="s">: inline-flex</span>; <span class="n">align-items</span><span class="s">: center</span>; <span class="n">gap</span><span class="s">: var(--space-2)</span>; <span class="n">border</span><span class="s">: 2px solid transparent</span>;
+  <span class="n">border-radius</span><span class="s">: var(--radius-full)</span>; <span class="n">font</span><span class="s">: inherit</span>; <span class="n">font-weight</span><span class="s">: 600</span>; <span class="n">cursor</span><span class="s">: pointer</span>; }
+.<span class="n">btn</span><span class="s">:focus-visible </span>{ <span class="n">outline</span><span class="s">: 3px solid var(--color-focus)</span>; <span class="n">outline-offset</span><span class="s">: 2px</span>; }
+.<span class="n">btn</span><span class="s">:disabled </span>{ <span class="n">opacity</span><span class="s">: 0.55</span>; <span class="n">cursor</span><span class="s">: not-allowed</span>; }
+<span class="k">.btn-sm</span> { <span class="n">padding</span><span class="s">: 2px var(--space-3)</span>; <span class="n">font-size</span><span class="s">: 0.875rem</span>; }
+<span class="k">.btn-md</span> { <span class="n">padding</span><span class="s">: var(--space-1) var(--space-4)</span>; }
+<span class="k">.btn-lg</span> { <span class="n">padding</span><span class="s">: var(--space-2) var(--space-6)</span>; <span class="n">font-size</span><span class="s">: 1.125rem</span>; }
+<span class="k">.btn-primary</span> { <span class="n">background</span><span class="s">: var(--color-action)</span>; <span class="n">color</span><span class="s">: var(--color-action-text)</span>; }
+<span class="k">.btn-secondary</span> { <span class="n">background</span><span class="s">: var(--color-action-soft)</span>; <span class="n">color</span><span class="s">: var(--color-action-soft-text)</span>; }
+<span class="k">.btn-danger</span> { <span class="n">background</span><span class="s">: var(--color-danger)</span>; <span class="n">color</span><span class="s">: var(--color-surface)</span>; }
+<span class="k">.btn-ghost</span> { <span class="n">background</span><span class="s">: transparent</span>; <span class="n">color</span><span class="s">: var(--color-action)</span>; <span class="n">border-color</span><span class="s">: var(--color-action-soft)</span>; }
+<span class="k">.spinner</span> { <span class="n">width</span><span class="s">: 1em</span>; <span class="n">height</span><span class="s">: 1em</span>; <span class="n">border</span><span class="s">: 2px solid currentColor</span>; <span class="n">border-right-color</span><span class="s">: transparent</span>; <span class="n">border-radius</span><span class="s">: 50%</span>; <span class="n">animation</span><span class="s">: spin 0.8s linear infinite</span>; }
+<span class="k">@keyframes</span> <span class="k">spin</span> { <span class="k">to</span> { <span class="n">transform</span><span class="s">: rotate(360deg)</span>; } }
+<span class="k">@media</span> (<span class="n">prefers-reduced-motion</span><span class="s">: reduce) </span>{ <span class="k">.spinner</span> { <span class="n">animation-duration</span><span class="s">: 3s</span>; } }
+<span class="k">.badge</span> { <span class="n">display</span><span class="s">: inline-block</span>; <span class="n">padding</span><span class="s">: 0 var(--space-2)</span>; <span class="n">border-radius</span><span class="s">: var(--radius-full)</span>; <span class="n">font-size</span><span class="s">: 0.8rem</span>; <span class="n">font-weight</span><span class="s">: 700</span>; }
+<span class="k">.badge-neutral</span> { <span class="n">background</span><span class="s">: var(--color-action-soft)</span>; <span class="n">color</span><span class="s">: var(--color-action-soft-text)</span>; }
+<span class="k">.badge-success</span> { <span class="n">background</span><span class="s">: var(--color-success-soft)</span>; <span class="n">color</span><span class="s">: var(--color-success)</span>; }
+<span class="k">.badge-warning</span> { <span class="n">background</span><span class="s">: var(--color-warning-soft)</span>; <span class="n">color</span><span class="s">: var(--color-warning)</span>; }
+<span class="k">.badge-danger</span> { <span class="n">background</span><span class="s">: var(--color-danger-soft)</span>; <span class="n">color</span><span class="s">: var(--color-danger)</span>; }
+<span class="k">.alert</span> { <span class="n">display</span><span class="s">: flex</span>; <span class="n">gap</span><span class="s">: var(--space-2)</span>; <span class="n">padding</span><span class="s">: var(--space-3) var(--space-4)</span>; <span class="n">border-radius</span><span class="s">: var(--radius-md)</span>; <span class="n">border-inline-start</span><span class="s">: 4px solid</span>; <span class="n">margin-bottom</span><span class="s">: var(--space-2)</span>; }
+<span class="k">.alert-info</span> { <span class="n">background</span><span class="s">: var(--color-action-soft)</span>; <span class="n">color</span><span class="s">: var(--color-action-soft-text)</span>; }
+<span class="k">.alert-success</span> { <span class="n">background</span><span class="s">: var(--color-success-soft)</span>; <span class="n">color</span><span class="s">: var(--color-success)</span>; }
+<span class="k">.alert-warning</span> { <span class="n">background</span><span class="s">: var(--color-warning-soft)</span>; <span class="n">color</span><span class="s">: var(--color-warning)</span>; }
+<span class="k">.alert-danger</span> { <span class="n">background</span><span class="s">: var(--color-danger-soft)</span>; <span class="n">color</span><span class="s">: var(--color-danger)</span>; }
+<span class="k">.switch</span> { <span class="n">display</span><span class="s">: inline-flex</span>; <span class="n">align-items</span><span class="s">: center</span>; <span class="n">gap</span><span class="s">: var(--space-3)</span>; <span class="n">background</span><span class="s">: none</span>; <span class="n">border</span><span class="s">: 0</span>; <span class="n">padding</span><span class="s">: var(--space-1) 0</span>; <span class="n">font</span><span class="s">: inherit</span>; <span class="n">color</span><span class="s">: inherit</span>; <span class="n">cursor</span><span class="s">: pointer</span>; }
+.switch <span class="k">.track</span> { <span class="n">width</span><span class="s">: 44px</span>; <span class="n">height</span><span class="s">: 24px</span>; <span class="n">border-radius</span><span class="s">: var(--radius-full)</span>; <span class="n">background</span><span class="s">: var(--color-surface)</span>; <span class="n">border</span><span class="s">: 2px solid var(--color-text-muted)</span>; <span class="n">position</span><span class="s">: relative</span>; <span class="n">transition</span><span class="s">: background 0.2s</span>; }
+.switch <span class="k">.thumb</span> { <span class="n">position</span><span class="s">: absolute</span>; <span class="n">top</span><span class="s">: 2px</span>; <span class="n">inset-inline-start</span><span class="s">: 2px</span>; <span class="n">width</span><span class="s">: 16px</span>; <span class="n">height</span><span class="s">: 16px</span>; <span class="n">border-radius</span><span class="s">: 50%</span>; <span class="n">background</span><span class="s">: var(--color-text-muted)</span>; <span class="n">transition</span><span class="s">: inset-inline-start 0.2s</span>; }
+.switch[aria-checked=&quot;true&quot;] <span class="k">.track</span> { <span class="n">background</span><span class="s">: var(--color-action)</span>; <span class="n">border-color</span><span class="s">: var(--color-action)</span>; }
+.switch[aria-checked=&quot;true&quot;] <span class="k">.thumb</span> { <span class="n">inset-inline-start</span><span class="s">: 22px</span>; <span class="n">background</span><span class="s">: var(--color-action-text)</span>; }
+.<span class="n">switch</span><span class="s">:focus-visible .track </span>{ <span class="n">outline</span><span class="s">: 3px solid var(--color-focus)</span>; <span class="n">outline-offset</span><span class="s">: 2px</span>; }
+<span class="k">.gallery</span> { <span class="n">display</span><span class="s">: flex</span>; <span class="n">flex-direction</span><span class="s">: column</span>; <span class="n">gap</span><span class="s">: var(--space-3)</span>; <span class="n">background</span><span class="s">: var(--color-surface)</span>; <span class="n">color</span><span class="s">: var(--color-text)</span>; <span class="n">padding</span><span class="s">: var(--space-4)</span>; <span class="n">border-radius</span><span class="s">: var(--radius-md)</span>; }
+<span class="k">.row</span> { <span class="n">display</span><span class="s">: flex</span>; <span class="n">gap</span><span class="s">: var(--space-2)</span>; <span class="n">flex-wrap</span><span class="s">: wrap</span>; <span class="n">align-items</span><span class="s">: center</span>; }</pre></div>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Button.tsx</div><pre class="code">import type { ComponentProps } from &quot;react&quot;;
+
+type Variant = &quot;primary&quot; | &quot;secondary&quot; | &quot;danger&quot; | &quot;ghost&quot;;
+type Size = &quot;sm&quot; | &quot;md&quot; | &quot;lg&quot;;
+
+type ButtonProps = ComponentProps&lt;&quot;button&quot;&gt; &amp; {
+  variant?: Variant;
+  size?: Size;
+  loading?: boolean;
+};
+
+// كل خصائص الزر الأصلية (type وdisabled وonClick وaria-…) تبقى عاملة
+export function Button({ variant = &quot;primary&quot;, size = &quot;md&quot;, loading = false, className, children, disabled, ...rest }: ButtonProps) {
+  const classes = [&quot;btn&quot;, `btn-${variant}`, `btn-${size}`, className].filter(Boolean).join(&quot; &quot;);
+  return (
+    &lt;button type=&quot;button&quot; className={classes} disabled={disabled || loading} aria-busy={loading || undefined} {...rest}&gt;
+      {loading &amp;&amp; &lt;span className=&quot;spinner&quot; aria-hidden=&quot;true&quot; /&gt;}
+      {children}
+    &lt;/button&gt;
+  );
+}</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>buttons.html</span><b>560px</b></div><img src="img/b2-design-ar-react-buttons.html-560.png" alt=""><figcaption><b>شكل 9.1:</b> مكوّن <code>Button</code> واحد، بأربعة أشكال وثلاثة أحجام، مع حالتي التحميل والتعطيل، في المظهرين الفاتح والداكن. ولم يتغير سطر واحد في المكوّن بين المظهرين.</figcaption></figure>
+
+<ul>
+<li><strong>الأشكال خاصية واحدة بنوع اتحادي</strong>، <code>variant="danger"</code>، لا خصائص منطقية منفصلة مثل <code>primary</code> و<code>danger</code> و<code>ghost</code>. فمع الخصائص المنطقية لا يمنع شيء أحداً من كتابة <code>&lt;Button primary danger&gt;</code>، ولا يعرف أحد ماذا يعني ذلك.</li>
+<li><strong>ابنِ على المنصة.</strong> <code>ComponentProps&lt;"button"&gt;</code> تضيف كل خاصية يقبلها الزر الحقيقي، و<code>...rest</code> تمررها. فتعمل <code>onClick</code> و<code>aria-label</code> و<code>form</code> و<code>type="submit"</code>، دون أن يسردها نظام التصميم واحدة واحدة.</li>
+<li><strong>قيم افتراضية آمنة.</strong> <code>type="button"</code> افتراضياً، لأن <code>&lt;button&gt;</code> العادي داخل نموذج يرسله، وهذه مفاجأة كلاسيكية. والزر الذي يحمّل معطّل أيضاً، ويخبر التقنيات المساعدة بـ <code>aria-busy</code>.</li>
+<li><strong>باب للخروج.</strong> <code>className</code> تُدمج لا تُستبدل، للشاشة النادرة التي تحتاج هامشاً.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: سمِّ الأشياء بغرضها، لا بشكلها أبداً</p><p>الشكل المسمى <code>blue</code> يصير كذبة يوم تتحول العلامة التجارية إلى الأخضر. أما <code>primary</code> و<code>danger</code> و<code>subtle</code> فتبقى صادقة. والقاعدة نفسها للرموز: <code>color-action</code> لا <code>color-indigo</code>.</p></aside>
+
+<h2><span class="sec">9.3</span> <span>التركيب بدل الإعدادات</span></h2>
+
+<p>تميل مكونات نظام التصميم إلى تكديس الخصائص حتى لا يستطيع أحد استخدامها: <code>showIcon</code> و<code>iconPosition</code> و<code>titleSize</code> و<code>footerAlign</code>… كل خاصية تلبي رغبة شاشة واحدة، ومعاً تصنع متاهة. والعلاج <dfn>التركيب</dfn> (composition): بدل وصف المحتوى بالخصائص، دع المستخدم يمرر المحتوى نفسه. فالبطاقة التي تقبل أبناءً تحمل أي ترويسة أو صورة أو تذييل، اليوم والعام القادم، دون خاصية جديدة واحدة.</p>
+
+<p>وقاعدة جيدة: الخصائص لـ<em>كيف</em> يتصرف ويبدو (<code>variant</code> و<code>size</code> و<code>disabled</code>)، والأبناء أو الفتحات لـ<em>ما</em> يحتويه.</p>
+
+<h3>المُتحكَّم فيه وغير المُتحكَّم فيه</h3>
+
+<p>يجب أن تعمل حقول نظام التصميم كما تعمل الحقول الأصلية: <dfn>غير مُتحكَّم فيها</dfn> حين يريد المستخدم قيمة افتراضية ولا يهمه كل تغيير، و<dfn>مُتحكَّماً فيها</dfn> حين تملك الصفحة القيمة. وبالعرف تعني <code>defaultChecked</code> أو <code>defaultValue</code> عدم التحكم، وتعني <code>checked</code> أو <code>value</code> مع معالج تغيير التحكم. ويبني المشروع 9.3 مفتاحاً يدعم الاثنين.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>هل يستخدم مكوّن الزر الرمز <code>indigo-600</code> أم <code>color-action</code>؟</li><li>ما المشكلة في خصائص مثل <code>primary</code> و<code>secondary</code> و<code>danger</code> ثلاث قيم منطقية؟</li><li>لماذا يجب أن يكون <code>type="button"</code> افتراضياً في مكوّن الزر؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">9.4</span> <span>سهولة الوصول، مبنية مرة واحدة</span></h2>
+
+<p>أعظم هدية من نظام التصميم أن سهولة الوصول تُحل مرة واحدة، على يد من أخذ وقته، بدل خمسين مرة على يد المستعجلين. فكل مكوّن في النظام يجب أن يأتي معه: العنصر أو دور ARIA الصحيح، وإطار تركيز ظاهر من رمز <code>focus</code>، ودعم كامل للوحة المفاتيح، وألوان تنجح في التباين في كل مظهر، ونسخة حركة مخففة لأي حركة.</p>
+
+<p>والعناصر المعقدة، كالقوائم والنوافذ الحوارية ومربعات الاختيار المركبة ومنتقيات التاريخ، صعبة الإتقان. فتبنيها فرق كثيرة على مكتبات <dfn>بلا شكل</dfn> (headless)، تقدم السلوك وسهولة الوصول دون أنماط، وتضيف الفرق رموزها فوقها.
+وفي React من الخيارات الشائعة Radix UI وReact Aria.</p>
+
+<h2><span class="sec">9.5</span> <span>التوثيق والاختبار والإصدار</span></h2>
+
+<p>المكوّن الذي لا يجده أحد مكوّن سيكتبه أحد من جديد. وتُوثَّق أنظمة التصميم في كتالوج حي، يُبنى غالباً بـ <strong>Storybook</strong>، يظهر فيه كل مكوّن بكل أشكاله وحالاته، مع خصائصه، وما يُفعل وما لا يُفعل، والكود الجاهز للنسخ. وكل مثال من هذه، ويسمى <dfn>قصة</dfn> (story)، حالة اختبار أيضاً:</p>
+<ul>
+<li><strong>اختبارات الوحدات والتفاعل</strong> تفحص السلوك: هل يتبدل المفتاح بالمسافة، وهل يرفض الزر المحمّل الضغطات؟ (الفصل 11.)</li>
+<li><strong>فحوص سهولة الوصول</strong> مثل axe تعمل على كل قصة تلقائياً. (الفصل 10.)</li>
+<li><strong>اختبارات الانحدار البصري</strong> تلتقط صورة لكل قصة وتقارنها بالمعتمدة، فلا يكسر تغيير رمز مشترك شاشةً بصمت.</li>
+</ul>
+
+<p>ونظام التصميم الذي تستخدمه عدة تطبيقات يُنشر حزمةً، بـ<strong>ترقيم دلالي</strong> وسجل تغييرات (الفصل 3): فإعادة تسمية خاصية تغيير كاسر يحتاج إصداراً كبيراً، فتحدّث فرق التطبيقات حين تكون مستعدة.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: ابدأ صغيراً، واستخرج من الشاشات الحقيقية</p><p>لا تصمم أربعين مكوّناً قبل أن توجد أول شاشة. ابنِ المنتج، ولاحظ ما يتكرر، وارفعه إلى النظام حين يُستخدم ثلاث مرات. فالنظام الصغير الذي يستخدمه الجميع يغلب الكبير الذي لا يثق به أحد.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>ألوان وأحجام مكتوبة مباشرة في المكونات</td><td>المظاهر وتغيير الهوية يعنيان تعديل كل ملف</td><td>الرموز الدلالية فقط</td></tr>
+<tr><td>رموز مسماة بشكلها (<code>blue</code>)</td><td>تكذب الأسماء بعد إعادة التصميم</td><td>سمِّ بالغرض (<code>action</code>)</td></tr>
+<tr><td>خاصية منطقية لكل شكل</td><td>تركيبات مستحيلة</td><td>خاصية <code>variant</code> واحدة بنوع اتحادي</td></tr>
+<tr><td>نسخ الخصائص الأصلية واحدة واحدة</td><td>خصائص ناقصة مثل <code>form</code> أو <code>aria-*</code></td><td>وسّع خصائص العنصر الأصلي ومرّر الباقي</td></tr>
+<tr><td>خاصية لكل رغبة في التخطيط</td><td>مكوّن لا يفهمه أحد</td><td>التركيب بالأبناء أو الفتحات</td></tr>
+<tr><td>فحص المظهر في الوضع الفاتح وحده</td><td>حالات متشابهة، أو نص يختفي، في الوضع الداكن</td><td>اعرض كل قصة في كل مظهر</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>نظام التصميم</strong> رموز ومكونات وأنماط وتوثيق مشتركة تجعل المنتج متسقاً وسهل الوصول.</li>
+<li><strong>رموز التصميم</strong> قرارات مسماة تُحفظ بصيغة محايدة وتُولَّد منها CSS ومنصات أخرى.</li>
+<li>الرموز <strong>الأولية</strong> هي اللوحة، و<strong>الدلالية</strong> تقول الغرض من القيمة. والمكونات تستخدم الدلالية، والمظاهر تعيد توجيهها.</li>
+<li>واجهات المكونات الجيدة تستخدم <strong>خاصية شكل واحدة</strong>، و<strong>توسّع الخصائص الأصلية</strong>، ولها <strong>قيم افتراضية آمنة</strong>، وتفضّل <strong>التركيب</strong> على الإعدادات.</li>
+<li>الحقول تدعم الاستخدام <strong>المُتحكَّم فيه</strong> و<strong>غير المُتحكَّم فيه</strong>، كالحقول الأصلية.</li>
+<li>سهولة الوصول مبنية في كل مكوّن مرة واحدة. والقصص توثّق النظام وتقود اختبارات الوحدات والوصول والانحدار البصري، والإصدارات تتبع الترقيم الدلالي.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>color-action</code>: رمز دلالي، فتعمل المظاهر وتغييرات الهوية دون لمس المكوّن. 2. لا شيء يمنع أن يصدق اثنان منها معاً، ولا يعرف أحد كيف يجب أن يبدو ذلك، أما خاصية <code>variant</code> واحدة بنوع اتحادي فتسمح بقيمة واحدة بالضبط. 3. لأن <code>&lt;button&gt;</code> العادي داخل نموذج زر إرسال، فسيرسل النموذج بالخطأ.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ابنِ هذه المشاريع أولى قطع نظام تصميمك الصغير: مجلد رموز واحد، وورقة أنماط مولّدة منه، ومكونات قليلة لا تستخدم شيئاً غيرها.</p>
+
+<div class="project">
+<p class="project-label">مشروع 9.1 · سهل</p>
+<h3>شارات وتنبيهات من الرموز</h3>
+<p class="project-goal">مكوّنان صغيران يعرضان الحالة: شارة للتسميات القصيرة، وتنبيه للرسائل، لكل منهما أربع نبرات ولا لون خاصاً به.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> خصائص النبرة بأنواع اتحادية، والرموز الدلالية، واختيار دور المنطقة الحية الصحيح.</p>
+<ol class="steps">
+<li>أضف رموز خلفية خفيفة لكل نبرة (<code>success-soft</code> و<code>warning-soft</code> و<code>danger-soft</code>) ورموز النص المقابلة، في المظهرين.</li>
+<li>اكتب أصناف CSS <code>.badge-…</code> و<code>.alert-…</code> باستخدام هذه الرموز وحدها.</li>
+<li>اكتب <code>Badge</code> بخاصية <code>tone</code> وأبناء.</li>
+<li>اكتب <code>Alert</code>: أيقونة مخفية عن قارئ الشاشة، والرسالة، ودوراً: <code>alert</code> للأخطاء، فيقاطع، و<code>status</code> للباقي، فينتظر توقفاً.</li>
+<li>لا تجعل اللون يحمل المعنى وحده: كلمتا «مدفوع» و«قيد الانتظار»، والأيقونات، تقولانه أيضاً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> استخدام <code>role="alert"</code> لكل شيء يبدو آمناً، لكنه يقاطع المستخدم مع كل إشعار صغير. فاحفظ المقاطعة لما يحتاج الانتباه الآن حقاً.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Alert.tsx</div><pre class="code">import type { ReactNode } from &quot;react&quot;;
+
+type Tone = &quot;info&quot; | &quot;success&quot; | &quot;warning&quot; | &quot;danger&quot;;
+
+const ICONS: Record&lt;Tone, string&gt; = { info: &quot;ℹ&quot;, success: &quot;✓&quot;, warning: &quot;!&quot;, danger: &quot;✕&quot; };
+
+export function Alert({ tone = &quot;info&quot;, children }: { tone?: Tone; children: ReactNode }) {
+  // Errors interrupt (alert); everything else waits for a pause (status)
+  const role = tone === &quot;danger&quot; ? &quot;alert&quot; : &quot;status&quot;;
+  return (
+    &lt;div className={`alert alert-${tone}`} role={role}&gt;
+      &lt;span aria-hidden=&quot;true&quot;&gt;{ICONS[tone]}&lt;/span&gt;
+      &lt;span&gt;{children}&lt;/span&gt;
+    &lt;/div&gt;
+  );
+}</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>feedback.html</span><b>560px</b></div><img src="img/b2-design-ar-react-projects-feedback.html-560.png" alt=""><figcaption><b>مشروع 9.1:</b> الشارات والتنبيهات بنبراتها الأربع.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 9.2 · متوسط</p>
+<h3>مفتاح يعمل بالطريقتين</h3>
+<p class="project-goal">مفتاح تشغيل وإيقاف يُستخدم مُتحكَّماً فيه أو غير مُتحكَّم فيه، ويعمل بلوحة المفاتيح وقارئ الشاشة، وواضح في كل مظهر.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> نمط المُتحكَّم فيه وغير المُتحكَّم فيه، و<code>role="switch"</code> مع <code>aria-checked</code>، وخصائص CSS المنطقية، وفحص الحالات في كل مظهر.</p>
+<ol class="steps">
+<li>اقبل <code>checked</code> و<code>defaultChecked</code> و<code>onChange</code>. فإن مُرّرت <code>checked</code> ملك الأب القيمة، وإلا حفظها المكوّن بنفسه.</li>
+<li>ارسم <code>&lt;button type="button"&gt;</code> حقيقياً بـ <code>role="switch"</code> و<code>aria-checked</code>. فيعمل Enter والمسافة مجاناً.</li>
+<li>ارسم المسار والمقبض بالرموز، وحرّك المقبض بـ <code>inset-inline-start</code>، فينزلق في الاتجاه الصحيح بالعربية أيضاً.</li>
+<li>أعطِ حالة الإيقاف إطاراً وحالة التشغيل تعبئة. وافحص الاثنتين في المظهر الداكن: فحين كُتب هذا الكتاب بدت النسخة الأولى متطابقة في الحالتين في الوضع الداكن، حتى كشفتها اللقطة.</li>
+<li>استخدمه بثلاث طرق: غير مُتحكَّم فيه بـ <code>defaultChecked</code>، وغير مُتحكَّم فيه مطفأً، ومُتحكَّماً فيه يبدّل مظهر لوحته.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لا تنتقل أبداً من غير المُتحكَّم فيه إلى المُتحكَّم فيه خلال حياة المكوّن (من <code>checked={undefined}</code> إلى <code>checked={true}</code>). فـ React تحذّر منه لأنه علّة في الغالب دائماً: قرّر مرة واحدة، في الأب.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Switch.tsx</div><pre class="code">import { useState } from &quot;react&quot;;
+
+type SwitchProps = {
+  label: string;
+  checked?: boolean; // controlled: the parent owns the value
+  defaultChecked?: boolean; // uncontrolled: the switch owns it
+  onChange?: (checked: boolean) =&gt; void;
+};
+
+export function Switch({ label, checked, defaultChecked = false, onChange }: SwitchProps) {
+  const [inner, setInner] = useState(defaultChecked);
+  const isControlled = checked !== undefined;
+  const on = isControlled ? checked : inner;
+
+  function toggle() {
+    if (!isControlled) setInner(!on);
+    onChange?.(!on);
+  }
+
+  return (
+    &lt;button type=&quot;button&quot; role=&quot;switch&quot; aria-checked={on} className=&quot;switch&quot; onClick={toggle}&gt;
+      &lt;span className=&quot;track&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;span className=&quot;thumb&quot; /&gt;
+      &lt;/span&gt;
+      {label}
+    &lt;/button&gt;
+  );
+}</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>switches.html</span><b>560px</b></div><img src="img/b2-design-ar-react-projects-switches.html-560-9a64f6.png" alt=""><figcaption><b>مشروع 9.2:</b> بعد تشغيل المظهر الداكن بالمفتاح المُتحكَّم فيه.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 9.3 · تحدٍّ</p>
+<h3>حارس تباين للرموز</h3>
+<p class="project-goal">سكربت يفحص كل زوج مهم من النص والخلفية في كل مظهر وفق WCAG، ويُفشل البناء حين يكون أحدها ضعيفاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة JSON في Node، ومعادلة التباين، والصفوف ذات الأنواع، واستخدام رمز الخروج لإيقاف السلسلة.</p>
+<ol class="steps">
+<li>اقرأ <code>tokens.json</code>، واكتب <code>luminance</code> و<code>contrast</code> من معادلة الكتاب الأول.</li>
+<li>اسرد الأزواج التي تُستخدم معاً حقاً، صفوفاً <code>[foreground, background]</code> من الأسماء الدلالية.</li>
+<li>لكل مظهر وكل زوج حوّل الاسمين إلى لونين، واحسب النسبة، واطبعها مع ✓ أو ✗.</li>
+<li>اضبط <code>process.exitCode = 1</code> إن كان أي زوج أقل من 4.5، فيتوقف <code>npm run check</code> وCI.</li>
+<li>أضفه إلى سكربت <code>check</code>، ثم حاول كسره: فتّح <code>text-muted</code> في المظهر الفاتح وراقبه يفشل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هكذا يبقى نظام التصميم سهل الوصول وهو يكبر: لا بأن يتذكر الناس القواعد، بل بفحص يعمل كلما تغيّر أي شيء.</p>
+<div class="listing" dir="ltr"><div class="listing-title">check-contrast.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+
+<span class="k">type</span> Tokens = { primitive: Record&lt;string, string&gt;; semantic: Record&lt;string, Record&lt;string, string&gt;&gt; };
+<span class="k">const</span> tokens = JSON.parse(readFileSync(<span class="k">new</span> URL(<span class="s">&quot;../tokens.json&quot;</span>, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Tokens;
+
+<span class="c">// The WCAG formula from Book 1</span>
+<span class="k">function</span> luminance(hex: string): number {
+  <span class="k">const</span> [r, g, b] = [<span class="n">1</span>, <span class="n">3</span>, <span class="n">5</span>].map((i) =&gt; {
+    <span class="k">const</span> c = parseInt(hex.slice(i, i + <span class="n">2</span>), <span class="n">16</span>) / <span class="n">255</span>;
+    <span class="k">return</span> c &lt;= <span class="n">0.03928</span> ? c / <span class="n">12.92</span> : ((c + <span class="n">0.055</span>) / <span class="n">1.055</span>) ** <span class="n">2.4</span>;
+  }) as [number, number, number];
+  <span class="k">return</span> <span class="n">0.2126</span> * r + <span class="n">0.7152</span> * g + <span class="n">0.0722</span> * b;
+}
+
+<span class="k">function</span> contrast(a: string, b: string): number {
+  <span class="k">const</span> [hi, lo] = [luminance(a), luminance(b)].sort((x, y) =&gt; y - x) as [number, number];
+  <span class="k">return</span> (hi + <span class="n">0.05</span>) / (lo + <span class="n">0.05</span>);
+}
+
+<span class="c">// يُفحص كل لون نص على الخلفية التي يُستخدم عليها</span>
+<span class="k">const</span> PAIRS: [string, string][] = [
+  [<span class="s">&quot;text&quot;</span>, <span class="s">&quot;surface&quot;</span>],
+  [<span class="s">&quot;text-muted&quot;</span>, <span class="s">&quot;surface&quot;</span>],
+  [<span class="s">&quot;action-text&quot;</span>, <span class="s">&quot;action&quot;</span>],
+  [<span class="s">&quot;action-soft-text&quot;</span>, <span class="s">&quot;action-soft&quot;</span>],
+  [<span class="s">&quot;danger&quot;</span>, <span class="s">&quot;danger-soft&quot;</span>],
+  [<span class="s">&quot;success&quot;</span>, <span class="s">&quot;success-soft&quot;</span>],
+  [<span class="s">&quot;warning&quot;</span>, <span class="s">&quot;warning-soft&quot;</span>],
+];
+
+<span class="k">let</span> failures = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> [theme, colours] <span class="k">of</span> Object.entries(tokens.semantic)) {
+  <span class="k">for</span> (<span class="k">const</span> [fg, bg] <span class="k">of</span> PAIRS) {
+    <span class="k">const</span> ratio = contrast(tokens.primitive[colours[fg]!]!, tokens.primitive[colours[bg]!]!);
+    <span class="k">const</span> ok = ratio &gt;= <span class="n">4.5</span>;
+    <span class="k">if</span> (!ok) failures++;
+    console.log(<span class="s">`${theme.padEnd(5)} ${`</span>${fg} / ${bg}<span class="s">`.padEnd(32)} ${ratio.toFixed(2).padStart(5)} ${ok ? &quot;✓&quot; : &quot;✗ أقل من 4.5&quot;}`</span>);
+  }
+}
+console.log(failures === <span class="n">0</span> ? <span class="s">&quot;كل الأزواج تنجح في WCAG AA.&quot;</span> : <span class="s">`${failures} أزواج تفشل. أصلح الرموز قبل الإصدار.`</span>);
+process.exitCode = failures === <span class="n">0</span> ? <span class="n">0</span> : <span class="n">1</span>;</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>light text / surface                   16.78 ✓
+light text-muted / surface              6.80 ✓
+light action-text / action              7.90 ✓
+light action-soft-text / action-soft   10.22 ✓
+light danger / danger-soft              5.91 ✓
+light success / success-soft            5.21 ✓
+light warning / warning-soft            6.84 ✓
+dark  text / surface                   16.56 ✓
+dark  text-muted / surface              7.34 ✓
+dark  action-text / action              5.73 ✓
+dark  action-soft-text / action-soft   10.22 ✓
+dark  danger / danger-soft              5.91 ✓
+dark  success / success-soft            5.21 ✓
+dark  warning / warning-soft            6.84 ✓
+كل الأزواج تنجح في WCAG AA.</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف رمز <code>space-8: 32px</code> ورمز <code>radius-lg: 16px</code>، وشغّل السكربت، واستخدم الانحناء الجديد للبطاقات.</li>
+<li><span class="level">سهل</span> أضف رمزاً دلالياً في المظهر الداكن يشير إلى اسم أولي مكتوب خطأً، وشغّل السكربت، واقرأ الخطأ، ثم أصلحه.</li>
+<li><span class="level medium">متوسط</span> أضف مظهراً ثالثاً <code>[data-theme="contrast"]</code> بنص أسود على أبيض، ولون فعل أزرق داكن، ولون تركيز أصفر سميك. أي المكونات احتاجت تغييراً؟ (الجواب الصحيح «لا شيء».)</li>
+<li><span class="level medium">متوسط</span> أضف إلى الزر فتحة <code>iconStart</code>: خاصية تقبل أي عنصر أيقونة وتضعه قبل النص، مع المسافة الصحيحة في الاتجاهين.</li>
+<li><span class="level hard">تحدٍّ</span> أضف رموز حركة، <code>duration-fast: 150ms</code> و<code>duration-normal: 250ms</code>، وولّدها بالسكربت، واستخدمها لحركة المفتاح. ثم اجعل كل مدة <code>0ms</code> داخل <code>@media (prefers-reduced-motion: reduce)</code>، بتغيير CSS المولّدة وحدها، لا المكونات.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 10</p>
+<p>عرّفك الكتاب الأول بسهولة الوصول. وفي الفصل التالي ستتعلم المعيار الذي يعمل به المحترفون، WCAG، وكيف تحققه في كود مكونات حقيقي: إدارة التركيز في النوافذ الحوارية، والإعلانات الحية، والأسماء التي تفهمها التقنيات المساعدة، والفحوص الآلية في اختباراتك.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3807,6 +4241,17 @@ export function useTheme() {
 <li>أنشئ المخزن بـ <code>createStore&lt;CartState&gt;()((set) =&gt; ({ … }))</code> بالدوال نفسها، ثم استدعِ <code>store.getState().add(book)</code> و<code>add(mug)</code> و<code>add(mug)</code> و<code>clear()</code>، واطبع <code>selectCount(store.getState())</code> بعد كل منها: 1 ثم 2 ثم 3 ثم 0. وتعمل المحدِّدات دون تغيير، لأنها دوال عادية في الحالة.</li>
 <li>يُرسم كلاهما مرة في البداية. ثم يُرسم <code>CartBadge</code> مرة أخرى مع كل منتج يُضاف (تغيّر عدده)، ولا يُرسم <code>ProductList</code> من جديد: فهو يحدد <code>add</code> فقط، ولا تتغير أبداً. (وأثناء التطوير يضاعف الوضع الصارم كل رقم.)</li>
 <li><code>type Auth = { status: "signed-out" } | { status: "signing-in" } | { status: "signed-in"; user: User }</code>، مع <code>signIn</code> و<code>signOut</code>. تضبط <code>signIn</code> الحالة <code>signing-in</code>، وتنتظر الواجهة الوهمية، ثم تضبط <code>signed-in</code> مع المستخدم. وتستخدم الترويسة <code>switch</code> على <code>status</code>: زر دخول، أو زر «جارٍ الدخول…» معطّل، أو الاسم مع زر خروج.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 9</h2>
+<ol class="exercises">
+<li>أضف <code>"8": "32px"</code> إلى <code>space</code> و<code>"lg": "16px"</code> إلى <code>radius</code>، وشغّل السكربت، واكتب <code>border-radius: var(--radius-lg)</code> في نمط البطاقة. ويطبع السكربت 6 مسافات و4 انحناءات.</li>
+<li>مثلاً <code>"focus": "pink-60"</code> في المظهر الداكن. فيتوقف السكربت بـ <code>Unknown primitive token: pink-60</code>، مسمّياً القيمة التي يجب إصلاحها بالضبط. ودون الفحص كان المظهر الداكن سيبقى بلا لون تركيز بصمت.</li>
+<li>أضف كائن <code>"contrast"</code> تحت <code>semantic</code> بكل الأسماء الدلالية، وولّد كتلة ثالثة لـ <code>[data-theme="contrast"]</code>. ولا يتغير أي مكوّن: فهي تستخدم الرموز الدلالية وحدها. وإن احتاج أحدها تغييراً فهو يستخدم قيمة مكتوبة مباشرة، وتلك العلّة الحقيقية.</li>
+
+<li>أضف <code>iconStart?: ReactNode</code> إلى الخصائص، وارسم <code>{iconStart &amp;&amp; &lt;span aria-hidden="true"&gt;{iconStart}&lt;/span&gt;}</code> قبل الأبناء. والمسافة <code>gap</code> على <code>.btn</code> تضبط المسافة صحيحة في الاتجاهين أصلاً، لأن flexbox تتبع اتجاه النص.</li>
+<li>أضف <code>"duration": { "fast": "150ms", "normal": "250ms" }</code> إلى الرموز، وولّد <code>--duration-fast</code> و<code>--duration-normal</code>، واستخدم <code>transition: inset-inline-start var(--duration-normal)</code> في المفتاح. ثم اجعل السكربت يكتب أيضاً <code>@media (prefers-reduced-motion: reduce) { :root { --duration-fast: 0ms; --duration-normal: 0ms; } }</code>. فيتوقف كل مكوّن يستخدم الرموز عن الحركة، دون تغيير واحد.</li>
 </ol>
 
 </section>

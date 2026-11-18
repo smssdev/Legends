@@ -1,0 +1,59 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Build these as the first pieces of your own small design system: one folder of tokens, one stylesheet generated from them, and a few components that use nothing else.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Badges and alerts from tokens</h3>
+<p class="project-goal">Two small components that show status: a badge for short labels and an alert for messages, each with four tones and no colour of its own.</p>
+<p class="project-skills"><strong>You will practise:</strong> tone props with union types, semantic tokens, and choosing the right live-region role.</p>
+<ol class="steps">
+<li>Add soft background tokens for each tone (<code>success-soft</code>, <code>warning-soft</code>, <code>danger-soft</code>) and the matching text tokens, in both themes.</li>
+<li>Write the CSS classes <code>.badge-…</code> and <code>.alert-…</code> using only those tokens.</li>
+<li>Write <code>Badge</code> with a <code>tone</code> prop and children.</li>
+<li>Write <code>Alert</code>: an icon hidden from screen readers, the message, and a role: <code>alert</code> for errors, which interrupts, and <code>status</code> for the others, which waits for a pause.</li>
+<li>Never let colour carry the meaning alone: the words “Paid” and “Pending”, and the icons, say it too.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> using <code>role="alert"</code> for everything sounds safe, but it interrupts the user for every small notice. Keep interruptions for things that really need attention now.</p>
+<!-- react -->
+<pre data-code="react/projects/Alert.tsx" data-title="Alert.tsx"></pre>
+<figure data-render="react/projects/feedback.html" data-width="560"><figcaption><b>Project {{n}}.1:</b> badges and alerts in their four tones.</figcaption></figure>
+<!-- /react -->
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A switch that works both ways</h3>
+<p class="project-goal">An on/off switch that can be used controlled or uncontrolled, works with the keyboard and screen readers, and is clear in every theme.</p>
+<p class="project-skills"><strong>You will practise:</strong> the controlled/uncontrolled pattern, <code>role="switch"</code> with <code>aria-checked</code>, logical CSS properties, and checking states in every theme.</p>
+<ol class="steps">
+<li>Accept <code>checked</code>, <code>defaultChecked</code> and <code>onChange</code>. If <code>checked</code> is given, the parent owns the value; otherwise the component keeps its own.</li>
+<li>Render a real <code>&lt;button type="button"&gt;</code> with <code>role="switch"</code> and <code>aria-checked</code>. Enter and Space work for free.</li>
+<li>Draw the track and thumb with tokens, and move the thumb with <code>inset-inline-start</code>, so it slides the right way in Arabic too.</li>
+<li>Give the off state an outline and the on state a fill. Check both in the dark theme: when this book was written, the first version looked the same on and off in dark mode, until the screenshot showed it.</li>
+<li>Use it three ways: uncontrolled with <code>defaultChecked</code>, uncontrolled off, and controlled, where it switches the theme of its own panel.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> never change from uncontrolled to controlled during a component’s life (from <code>checked={undefined}</code> to <code>checked={true}</code>). React warns about it, because it is almost always a bug: decide once, in the parent.</p>
+<!-- react -->
+<pre data-code="react/projects/Switch.tsx" data-title="Switch.tsx"></pre>
+<figure data-render="react/projects/switches.html" data-width="560" data-actions="click:.switch:nth-child(3)"><figcaption><b>Project {{n}}.2:</b> after turning on the dark theme with the controlled switch.</figcaption></figure>
+<!-- /react -->
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A contrast guard for the tokens</h3>
+<p class="project-goal">A script that checks every important text-and-background pair in every theme against WCAG, and fails the build when one is too weak.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading JSON in Node, the contrast formula, typed tuples, and using the exit code to stop a pipeline.</p>
+<ol class="steps">
+<li>Read <code>tokens.json</code>, and write <code>luminance</code> and <code>contrast</code> from the formula in Book 1.</li>
+<li>List the pairs that are really used together, as <code>[foreground, background]</code> tuples of semantic names.</li>
+<li>For each theme and each pair, resolve both names to colours, compute the ratio, and print it with ✓ or ✗.</li>
+<li>Set <code>process.exitCode = 1</code> if any pair is below 4.5, so that <code>npm run check</code> and CI stop.</li>
+<li>Add it to your <code>check</code> script, then try to break it: make <code>text-muted</code> lighter in the light theme and watch it fail.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is how a design system stays accessible as it grows: not by people remembering the rules, but by a check that runs every time anything changes.</p>
+<pre data-code="projects/check-contrast.ts" data-title="check-contrast.ts"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/check-contrast.mjs"></pre>
+</div>
