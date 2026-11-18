@@ -168,9 +168,10 @@ import { ICON, SCENES, crest, esc, setKits, setLight, setRain, setRich, setSmoot
 import type { Kit, Scene, Side } from './kit'
 import { noteFrame, smooth, tier } from '../perf'
 import { SCENE_TIME } from './timing'
+import { planMinute } from './plan'
 // [Sprint 57 B2] The minute's story is the server's (tick.story); told() writes it for this screen.
 import { told, untold, type Item, type Story } from './told'
-import { director, type Cut } from './director'
+import type { Cut } from './director'
 import { soundsOf } from './cues'
 import { useBroadcastClock } from './useBroadcastClock'
 import { useStudio } from './useStudio'
@@ -340,31 +341,20 @@ const build = (s: Story) => SCENES[s.scene!]({ ...s.data, side: s.side })
 function play(tick: Tick, startAt: number | null = null) {
   finish()
   const s = story(tick) ?? untold()
-  const total = (tick.moment?.ms ?? 3000) / 1000
-  const nominal = s.scene ? SCENE_TIME[s.scene][0] : 0
-  // The scene takes most of the minute; the commentator sums it up after.
-  // At the broadcast's fixed pace a minute is 3.3 s [X35]: the scene takes up to nine tenths of it, a little faster.
-  const sceneT = s.scene ? Math.min(nominal, total * ((tick.moment?.ms ?? 0) <= 3400 ? 0.9 : 0.72)) : 0
-  // [Sprint 35 C1] The director's cutaways after the scene, as many as the tier and the minute's length allow; then
-  // [X41] a goal's replay in slow motion, as on TV.
-  const cuts = director(s, tick, total, sceneT, {
-      tier: tier.value,
-      looks: props.looks as Record<string, string> | null,
-      seed: props.seed,
-    }),
-    cutT = cuts.reduce((a, c) => a + c.dur, 0)
-  const at = sceneT + (cuts.length ? cutT + 0.5 : 2.6),
-    room = total - at - 0.8
-  // [Sprint 33 Q1] No replay at the lowest tier. Too little room for the whole scene slowed: its last part, the shot.
-  const rate = s.goal && s.scene && room > 1.6 && !smooth.value ? Math.max(0.4, Math.min(0.8, nominal / room)) : 0
-  const replay = rate ? { at, rate, off: Math.max(0, nominal - room * rate) } : null
+  // [Sprint 09 G1] The minute's timeline (plan.ts, shared with Unity through its golden vectors).
+  const { total, sceneT, cuts, cutT, rate, replay } = planMinute(s, tick, {
+    tier: tier.value,
+    looks: props.looks as Record<string, string> | null,
+    seed: props.seed,
+    smooth: smooth.value,
+  })
   const p: Plan = {
     s,
     total,
     sceneT,
     cuts,
     cutT,
-    rate: s.scene ? nominal / sceneT : 1,
+    rate,
     replay,
     fired: new Set(),
     built: [],

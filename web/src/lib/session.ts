@@ -9,7 +9,10 @@ import type { paths } from '../api/schema'
 export type Boot = paths['/bootstrap']['get']['responses']['200']['content']['application/json']
 type Health = paths['/health']['get']['responses']['200']['content']['application/json']
 /** The site's settings, as GET /health gives them. */
-export type SiteConfig = Pick<Health, 'version' | 'time' | 'clock_offset' | 'broadcast' | 'support' | 'bots' | 'adsense' | 'analytics'>
+export type SiteConfig = Pick<
+  Health,
+  'version' | 'time' | 'clock_offset' | 'broadcast' | 'support' | 'bots' | 'adsense' | 'analytics' | 'unity_build'
+>
 
 let first: Promise<Boot> | null = null
 let got: Boot | null = null

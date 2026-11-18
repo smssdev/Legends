@@ -538,7 +538,9 @@ return [
     // lightOf): night from night_from to day_from, dusk from dusk_from. The arena under its lights at night, the classic by day.
     'scene' => ['night_from' => 18, 'dusk_from' => 16, 'day_from' => 6, 'stadiums' => ['night' => 'arena', 'dusk' => 'arena', 'day' => 'classic']],
     'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6', 'voice-7'], 'default_commentator' => 'voice-6',
-        'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false)],
+        'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false),
+        // [Sprint 11 X1] The Unity web build on the server (backend/public/unity/<build>/), null when none is deployed.
+        'unity_build' => env('UNITY_BUILD') ? (string) env('UNITY_BUILD') : null],
     // [UP6] The welcome coins, paid once the account is verified by a WhatsApp code, which lasts verify_code_days.
     // [UP13] The owner's spec (7): an account unused inactive_days in a row (no holiday) is deleted, warned at
     // warn_after_days. A holiday of up to auto_vacation_days is granted at once, auto_vacations_per_season times in

@@ -38,7 +38,17 @@ class HealthController extends Controller
             'adsense' => AdSense::config(),
             // [X81] The site's measurement (Google Analytics 4, the Meta Pixel), null when both are off.
             'analytics' => Tracking::config(),
+            // [Sprint 11 X1] The Unity web build the match screen loads (/unity/<build>/Build/), null when none is deployed.
+            'unity_build' => self::unityBuild(),
         ]);
+    }
+
+    /** [Sprint 11 X1] The deployed Unity web build's name: letters, digits, dots and dashes only (it is a path). */
+    public static function unityBuild(): ?string
+    {
+        $build = (string) config('game.viewing.unity_build');
+
+        return preg_match('/^[A-Za-z0-9._-]{1,40}$/', $build) && ! str_contains($build, '..') ? $build : null;
     }
 
     /** The support buttons' links [X13]: null for a channel with no number or username. */

@@ -38,6 +38,8 @@ namespace Legends
         }
 
         public const string Dive = "dive", Referee = "referee";
+        /// <summary>[Sprint 09 U2] The assistant on the side of the play (MatchScene picks the near or the far one by the ball).</summary>
+        public const string Assistant = "assistant";
         /// <summary>A ball that goes this far (dm) after its holder's frame has been kicked.</summary>
         public const float Kicked = 30f;
         /// <summary>A ball this high (dm) is headed, not kicked.</summary>
@@ -80,8 +82,24 @@ namespace Legends
                     string player = MiniJson.Str(e, "player", null);
                     if (player != null) cues.Add(new Cue { Id = player, Move = "protest", At = Mathf.Max(0, last - 1) });
                     cues.Add(new Cue { Id = Referee, Move = "ref_card", At = Mathf.Max(0, last - 1) });
+                    // [Sprint 09 U2] a red card: he walks off, head down
+                    if (player != null && (MiniJson.Str(e, "color") == "red" || (e.TryGetValue("second_yellow", out var sy) && sy is bool two && two)))
+                        cues.Add(new Cue { Id = player, Move = "walk_off_sad", At = last });
                 }
+                // [Sprint 09 U2] a penalty or a free kick: the referee points to the spot or whistles, the taker strikes, the
+                // keeper goes for it (beaten when it goes in)
+                else if (type == "penalty" || type == "free_kick") SetPiece(m, e, type == "penalty", cues);
+                // [Sprint 09 U2] the injured man goes down and stays down
+                else if (type == "injury")
+                {
+                    string player = MiniJson.Str(e, "player", null);
+                    if (player != null && !cues.Exists(c => c.Id == player && c.Move == "fall")) cues.Add(new Cue { Id = player, Move = "fall", At = Mathf.Min(1, last) });
+                }
+                // [Sprint 09 U2] the end of a half or of the match: the referee's whistle
+                else if (type == "period") cues.Add(new Cue { Id = Referee, Move = "ref_whistle_free_kick", At = Mathf.Max(0, last - 1) });
             }
+            // [Sprint 09 U2] the offside trap sprung (the server's story): the assistant's flag goes up halfway through
+            if (m.Story != null && (m.Story.Scene == "trap" || m.Story.Scene == "offside")) cues.Add(new Cue { Id = Assistant, Move = "assistant_flag_up", At = last / 2f });
             // one move a player at a time: a later, more telling one (a shot) replaces his pass at the same frame
             cues.Sort((a, b) => a.At.CompareTo(b.At));
             for (int i = cues.Count - 1; i > 0; i--)
@@ -135,6 +153,29 @@ namespace Legends
                 if (dd < best) { best = dd; j = i; }
             }
             cues.Add(new Cue { Id = keeper, Move = Dive, At = j, OnContact = true, BallFrame = j, ShotFrame = k, Beaten = result == "goal" });
+        }
+
+        /// <summary>[Sprint 09 U2] A penalty or a free kick: the taker strikes from the frame he is nearest the ball, the keeper answers it.</summary>
+        static void SetPiece(MatchMinute m, Dictionary<string, object> e, bool penalty, List<Cue> cues)
+        {
+            int last = m.Frames.Count - 1;
+            cues.Add(new Cue { Id = Referee, Move = penalty ? "ref_point_spot" : "ref_whistle_free_kick", At = 0 });
+            string taker = MiniJson.Str(e, "taker", null), keeper = MiniJson.Str(e, "keeper", null);
+            if (taker == null) return;
+            int k = Nearest(m, taker, out float d);
+            if (k < 0 || d > Near) return;
+            cues.Add(new Cue { Id = taker, Move = Right(m, k, taker) ? "shot_power" : "shot_power_l", At = k, OnContact = true });
+            bool scored = e.TryGetValue("scored", out var sc) && sc is bool b && b;
+            if (keeper == null || k >= last) return;
+            int j = k + 1;
+            float best = float.MaxValue;
+            for (int i = k + 1; i <= last; i++)
+            {
+                if (!m.Frames[i].Players.TryGetValue(keeper, out var at)) continue;
+                float dd = Vector2.Distance(at, new Vector2(m.Frames[i].Ball.x, m.Frames[i].Ball.y));
+                if (dd < best) { best = dd; j = i; }
+            }
+            cues.Add(new Cue { Id = keeper, Move = Dive, At = j, OnContact = true, BallFrame = j, ShotFrame = k, Beaten = scored });
         }
 
         static void Foul(MatchMinute m, Dictionary<string, object> e, List<Cue> cues)

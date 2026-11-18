@@ -37,12 +37,15 @@
       >
         {{ $t('المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.') }}
       </p>
+      <p v-if="unityFailed" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">
+        {{ $t('لم يعمل المشهد ثلاثي الأبعاد على هذا الجهاز، فتكمل المباراة بالمحاكي الكرتوني بنفس التوقيت.') }}
+      </p>
     </div>
 
     <div v-if="view" class="match-stage">
       <section class="relative size-full overflow-hidden bg-bg-deep" :aria-label="$t('المباراة')">
         <MatchFeed
-          ref="pitch"
+          ref="feed"
           :kits="feedKits"
           :clubs="clubs"
           :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }"
@@ -66,6 +69,15 @@
           @say="(line: any) => audio.voice.say(line)"
           @near="(c: any) => audio.sound.near(c)"
           @intro-done="P.endIntro"
+        />
+        <!-- [Sprint 11 W3] The coach's «المطوّر»: the Unity scene over the cartoon, which keeps the time under it. -->
+        <UnityScene
+          v-if="unityOn"
+          ref="unity"
+          :build="viewing.unityBuild.value ?? ''"
+          :setup="unitySetup(view, teams, theme === 'light' ? 'day' : 'night')"
+          :tier="tier"
+          @failed="unityFailed = true"
         />
         <EmergencySub
           v-if="L.injuredId.value && live && league && !finished"
@@ -258,6 +270,10 @@ import Character from '../components/characters/Character.vue'
 import MatchRecap from '../components/shell/MatchRecap.vue'
 import MatchFeed from '../match/feed/MatchFeed.vue'
 import GoalReplay from '../match/feed/GoalReplay.vue'
+import UnityScene from '../components/match/UnityScene.vue'
+import { unitySetup, withUnity, type UnityPitch } from '../match/unity/bridge'
+import { tier } from '../match/perf'
+import { theme } from '../lib/theme'
 import { useViewing } from '../match/viewing'
 import { useMatchAudio } from '../match/useMatchAudio'
 import { useMatchClock } from '../match/useMatchClock'
@@ -280,6 +296,12 @@ const broadcast = useBroadcast()
 const league = !!props.league
 
 const pitch = ref<Pitch>()
+// [Sprint 11 W3] The page's pitch plays every minute on the cartoon (the timing) and on the Unity scene when it is on.
+const feed = ref<Pitch>()
+const unity = ref<UnityPitch>()
+watch(feed, (f) => (pitch.value = f ? withUnity(f, () => unity.value) : undefined))
+// [Sprint 11 W4] A scene that fails on this device stays off for the match: the cartoon is already playing under it.
+const unityFailed = ref(false)
 const audio = useMatchAudio()
 const replay = useReplay()
 const clock = useMatchClock()
@@ -303,6 +325,7 @@ const {
   live,
   minuteText,
 } = P
+const unityOn = computed(() => !!view.value && viewing.playing.value === 'unity' && !!viewing.unityBuild.value && !unityFailed.value)
 
 // Who this screen coaches: live, only the seat this device holds (the server checks every order); else the side set
 // to «me» (or the one chosen when both are).

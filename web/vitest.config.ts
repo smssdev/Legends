@@ -9,7 +9,8 @@ const LOGIC = [
   'src/lib/{action,clock,currentLeague,dates,errors,format,i18n,names,bots,rating,soundLevels,statuses,storage,theme,uuid}.ts',
   'src/match/{commentary,frames,perf,viewing}.ts',
   'src/match/use{CoachOrders,IntroMatch,LiveSync,MatchAnnouncer,MatchAudio,MatchClock,MatchPlayer,MatchSocial,Replay,WakeLock}.ts',
-  'src/match/feed/{director,clock,cues}.ts',
+  'src/match/feed/{director,clock,cues,plan,golden}.ts',
+  'src/match/unity/bridge.ts',
 ]
 
 export default defineConfig({
