@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Bit's shop</title>
+    <style>
+      body { font-family: system-ui, "Segoe UI", Tahoma, sans-serif; margin: 0; padding: 16px; background: #f5f5fb; color: #1e1b2e; }
+      header { display: flex; gap: 8px; align-items: center; background: white; padding: 8px 12px; border-radius: 12px; }
+      header .brand { font-weight: 800; color: #4338ca; margin-inline-end: auto; }
+      button { font: inherit; border: 0; border-radius: 999px; padding: 6px 12px; background: #4338ca; color: white; cursor: pointer; }
+      input { font: inherit; padding: 6px 10px; border: 2px solid #c7d2fe; border-radius: 10px; }
+      .card { background: white; border-radius: 12px; padding: 12px 14px; margin-top: 10px; display: flex; gap: 12px; align-items: center; }
+      .faint { color: #b4b2c6; }
+      .icon { padding: 6px 8px; display: inline-flex; }
+      :focus-visible { outline: 3px solid #db2777; outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">Bit's shop</div>
+      <input placeholder="Search products…">
+      <button class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+    </header>
+    <div class="card">
+      <img src="mug.svg" width="120" height="80">
+      <div>
+        <h4>New: the Bit mug</h4>
+        <p class="faint">Big enough for long coding nights. Only this week: 20% off.</p>
+        <a href="#mug">Click here</a>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Newsletter</h4>
+      <input type="email">
+      <div onclick="alert('ok')"><button tabindex="-1">Join</button></div>
+    </div>
+  </body>
+</html>

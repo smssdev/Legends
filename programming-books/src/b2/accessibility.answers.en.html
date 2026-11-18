@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>Add <code>aria-label</code> to the icon button (with <code>aria-hidden</code> on the icon), an <code>alt</code> to the image, and a <code>&lt;label&gt;</code> to the email field. The audit then still reports the contrast, the missing <code>lang</code> and the three structure rules: “critical” is not the same as “all”.</li>
+<li>Typical findings: focus that disappears behind a sticky header or a cookie banner; a size picker made of <code>div</code>s that Tab skips; a pop-up that opens without moving the focus; a “Pay” button that cannot be reached until a hidden checkbox is ticked with the mouse.</li>
+<li>In <code>package.json</code>: <code>"check": "tsc &amp;&amp; eslint src &amp;&amp; prettier --check src &amp;&amp; vite build &amp;&amp; node scripts/audit-all.mjs"</code>. The audit runs on the built pages, which are what users receive.</li>
+<li>Add the <code>RouteFocus</code> component from Project {{n}}.3 to the layout of the routing chapter’s app, inside the router. Each page already has one <code>h1</code> inside <code>main</code>, which is all the component needs.</li>
+<li>Common discoveries: images described by their file names; icon buttons read as “button”; the same “Read more” link ten times; errors that appear but are never read; and pages that change silently. Each one is a small fix, and each one now has a name you know from this chapter.</li>
+</ol>

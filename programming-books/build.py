@@ -119,9 +119,27 @@ def highlight(src, name):
     return html.escape(src)
 
 
+def run_cached(cmd, path):
+    """Runs a command for one example file, and remembers its output. The key is the content of every file
+    in the example's folder and the folder above, so a change to the file or anything it reads runs it again.
+    Every edition and language shares the result, and slow examples (a browser audit) run once per change."""
+    digest = hashlib.md5(" ".join(cmd).encode())
+    for folder in (path.parent, path.parent.parent):
+        for f in sorted(folder.iterdir()):
+            if f.is_file():
+                digest.update(f.name.encode() + f.read_bytes())
+    cache = OUT / ".runcache" / f"{digest.hexdigest()}.json"
+    if cache.exists():
+        return json.loads(cache.read_text())
+    r = subprocess.run(cmd, cwd=path.parent, capture_output=True, text=True, timeout=120)
+    result = {"out": r.stdout + r.stderr, "code": r.returncode}
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(json.dumps(result))
+    return result
+
+
 def run_node(path, stack=False):
-    r = subprocess.run(["node", path.name], cwd=path.parent, capture_output=True, text=True, timeout=20)
-    lines = (r.stdout + r.stderr).splitlines()
+    lines = run_cached(["node", path.name], path)["out"].splitlines()
     if stack:
         # Keep the stack trace, but only the reader's own code and without the build machine's paths.
         lines = [l.replace(str(path.parent) + "/", "") for l in lines if l.strip() and "node:internal" not in l
@@ -166,12 +184,11 @@ def fill_code(chapter, lang):
         f = re.search(r'data-check="([^"]+)"', attrs).group(1)
         path = code_dir / f
         tsc = next(d / "node_modules" / ".bin" / "tsc" for d in path.parents if (d / "node_modules" / ".bin" / "tsc").exists())
-        r = subprocess.run([str(tsc), "--noEmit", "--strict", "--noUncheckedIndexedAccess", "--target", "es2024",
-                            "--module", "nodenext", "--types", "node", "--jsx", "react-jsx", path.name],
-                           cwd=path.parent, capture_output=True, text=True, timeout=60)
-        printed = (r.stdout + r.stderr).strip().replace(str(path.parent) + "/", "")
+        r = run_cached([str(tsc), "--noEmit", "--strict", "--noUncheckedIndexedAccess", "--target", "es2024",
+                        "--module", "nodenext", "--types", "node", "--jsx", "react-jsx", path.name], path)
+        printed = r["out"].strip().replace(str(path.parent) + "/", "")
         lines = [f"$ npx tsc --noEmit {path.name}"] + ([printed] if printed else [TEXT[lang]["no_errors"]])
-        cls = "output error" if r.returncode else "output"
+        cls = "output error" if r["code"] else "output"
         return (f'<div class="{cls}" dir="ltr"><div class="output-bar"><i></i><i></i><i></i>'
                 f'<span class="output-title">{label}</span></div><pre>{html.escape(chr(10).join(lines))}</pre></div>')
 

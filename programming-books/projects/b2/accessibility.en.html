@@ -1,0 +1,59 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">After each project, do all three layers of testing from section {{n}}.2: run the audit, do a keyboard pass, and listen to it with a screen reader. Write down anything the audit missed.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>An accessibility gate for the build</h3>
+<p class="project-goal">Audit every page of a site in one command, and make the command fail when any page has a violation, so nobody can release one by accident.</p>
+<p class="project-skills"><strong>You will practise:</strong> reusing a module, looping with <code>await</code>, exit codes, and wiring a check into <code>npm run check</code>.</p>
+<ol class="steps">
+<li>Reuse <code>audit(page)</code> from <code>audit-lib.ts</code>, which returns the number of violations.</li>
+<li>List the pages to check. In a real project, read them from the router or from the built <code>dist</code> folder.</li>
+<li>Audit them one by one, printing a heading for each page and the violations under it.</li>
+<li>Set <code>process.exitCode = 1</code> when the total is not zero.</li>
+<li>Add it to your <code>check</code> script after the build, and watch it fail on the broken page and pass on the fixed one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> start with only the serious and critical rules if an old project has hundreds of problems, and tighten the gate as you fix them. A gate that fails forever is soon switched off.</p>
+<pre data-code="projects/audit-all.ts" data-title="audit-all.ts"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/audit-all.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A menu button by the book</h3>
+<p class="project-goal">A button that opens a short menu of actions, built exactly to the WAI-ARIA menu button pattern: every key does what screen reader users expect.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>aria-haspopup</code> and <code>aria-expanded</code>, <code>role="menu"</code> and <code>menuitem</code>, roving focus, and returning the focus.</p>
+<ol class="steps">
+<li>The button has <code>aria-haspopup="menu"</code>, <code>aria-expanded</code> and <code>aria-controls</code>. Down Arrow opens the menu on the first item, and Up Arrow on the last.</li>
+<li>The menu is a list with <code>role="menu"</code>; each item is a button with <code>role="menuitem"</code> and <code>tabIndex={-1}</code>, inside an <code>li</code> with <code>role="none"</code>.</li>
+<li>Keep the index of the active item in state, and move the real focus to it in an effect. Up and Down wrap around; Home and End jump.</li>
+<li>Escape and Tab close the menu and return the focus to the button. Choosing an item runs it and also returns the focus.</li>
+<li>Mark the destructive item in red <em>and</em> put it last, away from the others.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a “menu” in ARIA means a list of <em>actions</em>, like a desktop app’s menu. A list of links for navigation is not a menu: it is a <code>&lt;nav&gt;</code> with links, and needs none of this.</p>
+<!-- react -->
+<pre data-code="react/projects/MenuButton.tsx" data-title="MenuButton.tsx"></pre>
+<!-- /react -->
+<figure data-render="react/projects/menu.html" data-width="560" data-actions="click:.menu-wrap > button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>Project {{n}}.2:</b> the menu open, after pressing Down Arrow twice.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Navigation that screen readers notice</h3>
+<p class="project-goal">A small component that, after every route change, updates the page title, moves the focus to the new page’s heading, and announces it.</p>
+<p class="project-skills"><strong>You will practise:</strong> reacting to route changes in an effect, managing focus on non-interactive elements, and a live region that exists before its message.</p>
+<ol class="steps">
+<li>Read the current location from the router, and run an effect when its path changes.</li>
+<li>Skip the very first render: on the first load, the browser already announces the page.</li>
+<li>Find <code>main h1</code>, set <code>document.title</code> from its text, give it <code>tabIndex = -1</code>, and focus it.</li>
+<li>Put the heading’s text in a visually hidden <code>role="status"</code> paragraph that is always on the page.</li>
+<li>Test with a screen reader: follow a link, and check that you hear the new page’s name and that Tab continues from the heading.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> give the focused heading a visible outline too. Sighted keyboard users also need to see where the focus went.</p>
+<!-- react -->
+<pre data-code="react/projects/RouteFocus.tsx" data-title="RouteFocus.tsx"></pre>
+<!-- /react -->
+<figure data-render="react/projects/route-focus.html" data-width="560" data-actions="click:nav a:nth-child(2);wait:200"><figcaption><b>Project {{n}}.3:</b> after following the link, the focus is on the new heading.</figcaption></figure>
+</div>

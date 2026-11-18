@@ -59,6 +59,9 @@ function serve(dir) {
     if (kind === 'wait') await tab.waitForTimeout(Number(rest));
   }
   await tab.waitForTimeout(100);
+  // Grow the window to the page's height, so fixed things (dialogs, backdrops, toasts) cover the whole page
+  const height = await tab.evaluate(() => document.documentElement.scrollHeight);
+  if (height > 200) await tab.setViewportSize({ width: Number(width), height });
   await tab.screenshot({ path: out, fullPage: true });
   await browser.close();
   server.close();

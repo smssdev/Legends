@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>متجر بِت</title>
+    <style>
+      body { font-family: system-ui, "Segoe UI", Tahoma, sans-serif; margin: 0; padding: 16px; background: #f5f5fb; color: #1e1b2e; }
+      header { display: flex; gap: 8px; align-items: center; background: white; padding: 8px 12px; border-radius: 12px; }
+      header .brand { font-weight: 800; color: #4338ca; margin-inline-end: auto; }
+      button { font: inherit; border: 0; border-radius: 999px; padding: 6px 12px; background: #4338ca; color: white; cursor: pointer; }
+      input { font: inherit; padding: 6px 10px; border: 2px solid #c7d2fe; border-radius: 10px; }
+      .card { background: white; border-radius: 12px; padding: 12px 14px; margin-top: 10px; display: flex; gap: 12px; align-items: center; }
+      .faint { color: #b4b2c6; }
+      .icon { padding: 6px 8px; display: inline-flex; }
+      :focus-visible { outline: 3px solid #db2777; outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">متجر بِت</div>
+      <input placeholder="ابحث في المنتجات…">
+      <button class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+    </header>
+    <div class="card">
+      <img src="mug.svg" width="120" height="80">
+      <div>
+        <h4>جديد: كوب بِت</h4>
+        <p class="faint">كبير بما يكفي لليالي البرمجة الطويلة. هذا الأسبوع فقط: خصم 20%.</p>
+        <a href="#mug">اضغط هنا</a>
+      </div>
+    </div>
+    <div class="card">
+      <h4>النشرة البريدية</h4>
+      <input type="email">
+      <div onclick="alert('ok')"><button tabindex="-1">اشترك</button></div>
+    </div>
+  </body>
+</html>

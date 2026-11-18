@@ -1,0 +1,230 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/a11y/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Accessibility (WCAG) in Practice</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>read WCAG: its four principles, its levels, and how teams use it</li>
+<li>give every control an accessible name and the right role</li>
+<li>manage focus in dialogs, menus and route changes</li>
+<li>announce changes that happen without a page load</li>
+<li>run automatic checks with axe-core, and know what they cannot see</li>
+<li>test with the keyboard and a screen reader like a professional</li>
+</ul>
+</div>
+
+<p class="lead">About one person in six lives with a disability. Some cannot see the screen and listen to it with a <dfn>screen reader</dfn>; some cannot use a mouse; some see colours differently, need large text, or are confused by movement. Many more have a temporary or situational limit: a broken arm, bright sunlight, a baby on one arm. Book 1 showed the basics. This chapter turns them into a professional practice, with the standard the whole industry uses, and code that meets it in real components.</p>
+
+<aside class="bit" data-mood="happy"><p>In many countries accessibility is the law, for example through the European Accessibility Act since 2025, and big clients ask for it in contracts. But the best reason is simpler: an app that works for everyone has more users, and is usually better for all of them.</p></aside>
+
+<h2>{{n}}.1 WCAG</h2>
+
+<p>The <dfn>Web Content Accessibility Guidelines</dfn> (WCAG), published by the W3C, are the standard that laws and contracts refer to. They are organised under four principles, remembered as <strong>POUR</strong>:</p>
+
+<table>
+<thead><tr><th>Principle</th><th>Meaning</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td><strong>P</strong>erceivable</td><td>Everyone can perceive the content</td><td>Text for images, captions for videos, enough contrast, text that can be enlarged</td></tr>
+<tr><td><strong>O</strong>perable</td><td>Everyone can use the controls</td><td>Everything works with a keyboard, visible focus, enough time, no flashing</td></tr>
+<tr><td><strong>U</strong>nderstandable</td><td>Everyone can understand it</td><td>The page’s language is declared, clear labels and errors, predictable behaviour</td></tr>
+<tr><td><strong>R</strong>obust</td><td>It works with assistive technology</td><td>Valid roles, names and states, so screen readers can describe each control</td></tr>
+</tbody>
+</table>
+
+<p>Each principle contains testable <dfn>success criteria</dfn>, each at a level: <strong>A</strong> (the minimum), <strong>AA</strong> (what laws and most companies require) and <strong>AAA</strong> (extra, for special cases). “WCAG 2.2 AA” is the usual target, and it is the one this chapter works to.</p>
+
+<h2>{{n}}.2 What a machine can check</h2>
+
+<p><dfn>axe-core</dfn> is the open-source engine behind most accessibility checkers, in browsers, in CI and in test runners. This script opens a page in a real browser, runs axe on it, and prints every problem:</p>
+
+<pre data-code="audit-lib.ts" data-title="audit-lib.ts"></pre>
+
+<p>Here is a page that looks fine to a sighted mouse user:</p>
+
+<pre data-code="before.html" data-title="before.html" data-show="body"></pre>
+<pre data-out="audit-before.mjs"></pre>
+
+<p>Each line names the rule, how serious it is, and how many elements fail. Look up any rule by its id to see why it matters and how to fix it:</p>
+<ul>
+<li><code>button-name</code>: the search button contains only an icon, so a screen reader says just “button”. Give it <code>aria-label="Search"</code>, and hide the icon with <code>aria-hidden="true"</code>.</li>
+<li><code>image-alt</code>: the picture has no <code>alt</code>. A screen reader may read the file name, “mug dot svg”.</li>
+<li><code>label</code>: the email field has no label, so nobody knows what to type.</li>
+<li><code>color-contrast</code>: the grey text is too light. The minimum is 4.5:1 for normal text.</li>
+<li><code>html-has-lang</code>: without <code>lang</code>, a screen reader may read Arabic with an English voice.</li>
+<li>The last three are about structure: there is no <code>main</code> landmark and no <code>h1</code>, so screen reader users cannot jump to the content or see the outline of the page.</li>
+</ul>
+
+<p>Now read the list again, and notice what axe did <em>not</em> report. The link says “Click here”, which means nothing out of context. The “Join” button is unreachable by keyboard, because it has <code>tabindex="-1"</code> and the real click handler is on a <code>div</code>. And the search field has only a placeholder, which axe accepts as a name, though it disappears as soon as the user types. Automatic tools find roughly a third of real problems. They are essential, and never enough.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: three layers of testing</p><p>Automatic checks on every change, in CI and in component tests. A <strong>keyboard pass</strong> on every new screen: Tab through everything, use it all, and never lose sight of the focus. A <strong>screen reader pass</strong> on important flows before release: NVDA with Firefox or Chrome on Windows, VoiceOver with Safari on Mac and iPhone, and TalkBack on Android.</p></aside>
+
+<h2>{{n}}.3 Names, roles and states</h2>
+
+<p>Assistive technology describes each control with three facts: its <dfn>role</dfn> (button, link, checkbox, tab), its <dfn>accessible name</dfn> (“Search”, “Delete account”) and its <dfn>state</dfn> (pressed, expanded, checked, invalid). Native HTML elements provide all three. The rules, in order of preference:</p>
+<ol>
+<li><strong>Use the native element</strong>: <code>&lt;button&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;input type="checkbox"&gt;</code>, <code>&lt;dialog&gt;</code>. Keyboard support, role and state come free.</li>
+<li><strong>Name it with visible text</strong> whenever possible. The text users see is the name they will say to voice control software.</li>
+<li><strong>Use ARIA only when HTML has no element for the job</strong>, such as tabs or menus, and then follow the pattern in the WAI-ARIA Authoring Practices exactly. The first rule of ARIA is: no ARIA is better than bad ARIA.</li>
+</ol>
+
+<p>The fixed page applies all of these, and passes:</p>
+
+<pre data-code="after.html" data-title="after.html" data-show="body"></pre>
+<pre data-out="audit-after.mjs"></pre>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which WCAG level do most laws and companies require?</li><li>An icon-only button reads as just “button”. What two attributes fix it?</li><li>A page passes axe with no violations. Is it accessible?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Managing focus</h2>
+
+<p>On a classic website, every click loads a new page, and the browser puts the focus at the top. In a single-page app, content appears and disappears without a page load, so <em>your code</em> must decide where the keyboard focus goes. Three moments matter most:</p>
+
+<h3>Dialogs</h3>
+
+<p>When a dialog opens, the focus must move into it, stay inside it while it is open, close on Escape, and return to the button that opened it. The native <code>&lt;dialog&gt;</code> element, opened with <code>showModal()</code>, does all of this, and also makes the page behind it <em>inert</em>: unreachable by the keyboard and invisible to screen readers.</p>
+
+<!-- react -->
+<pre data-code="react/ConfirmDialog.tsx" data-title="ConfirmDialog.tsx"></pre>
+<!-- /react -->
+
+<figure data-render="react/dialog.html" data-width="560" data-actions="click:.card button;wait:200"><figcaption><b>Figure {{n}}.1:</b> A confirmation dialog. “Cancel” has the focus, so pressing Enter by reflex does not delete the account.</figcaption></figure>
+
+<p>Notice two choices. The dialog is named by its title (<code>aria-labelledby</code>) and described by its text (<code>aria-describedby</code>), so a screen reader reads both when it opens. And for a destructive action, the safe button gets the first focus.</p>
+
+<h3>Route changes</h3>
+
+<p>When the router shows a new page, a screen reader user hears nothing: no page loaded. After each navigation, move the focus to the new page’s <code>h1</code> (give it <code>tabIndex={-1}</code> so it can receive focus), and update <code>document.title</code>. Both tell the user where they are.</p>
+
+<h3>Things that disappear</h3>
+
+<p>If the focused element is removed, for example a “Delete” button in a list row that is deleted, the focus falls back to the top of the page. Move it somewhere sensible first: the next row, or the list’s heading.</p>
+
+<h2>{{n}}.5 Announcing changes</h2>
+
+<p>Changes that appear without a focus move, such as “3 results”, “Saved” or a new notification, must be announced through a <dfn>live region</dfn>: an element with <code>role="status"</code> (polite: waits for a pause) or <code>role="alert"</code> (assertive: interrupts). You built both in the earlier chapters: the error summary of the forms chapter and the notifications of the global state chapter. Two rules make live regions work:</p>
+<ul>
+<li>The region must exist in the page <em>before</em> the text appears in it. A region created together with its message is often not announced.</li>
+<li>Announce results, not every keystroke. A search box that announces after each letter is unusable.</li>
+</ul>
+
+<h2>{{n}}.6 More criteria that catch teams out</h2>
+
+<table>
+<thead><tr><th>Criterion</th><th>What it asks</th><th>In practice</th></tr></thead>
+<tbody>
+<tr><td>Reflow (1.4.10)</td><td>Content works at 320px wide without horizontal scrolling</td><td>Test at 400% zoom; this is the mobile-first layout of Book 1</td></tr>
+<tr><td>Text spacing (1.4.12)</td><td>Nothing breaks when users increase line and letter spacing</td><td>No fixed heights on text containers</td></tr>
+<tr><td>Focus visible and not obscured (2.4.7, 2.4.11)</td><td>The focus can always be seen, not hidden under a sticky header</td><td><code>:focus-visible</code> styles, and <code>scroll-margin</code> for sticky bars</td></tr>
+<tr><td>Target size (2.5.8)</td><td>Pointer targets at least 24×24 px</td><td>Small icon buttons get padding</td></tr>
+<tr><td>Animation (2.3.3)</td><td>Motion can be turned off</td><td>Respect <code>prefers-reduced-motion</code></td></tr>
+<tr><td>Consistent help (3.2.6)</td><td>Help is in the same place on every page</td><td>A fixed spot in the layout for contact or chat</td></tr>
+</tbody>
+</table>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>A <code>div</code> with <code>onClick</code></td><td>No keyboard, no role</td><td><code>&lt;button&gt;</code></td></tr>
+<tr><td>Icon buttons without a name</td><td>Screen readers say “button”</td><td><code>aria-label</code>, and <code>aria-hidden</code> on the icon</td></tr>
+<tr><td>Placeholder instead of a label</td><td>The hint disappears; low contrast</td><td>A visible <code>&lt;label&gt;</code></td></tr>
+<tr><td><code>outline: none</code> with nothing instead</td><td>Keyboard users are lost</td><td>A clear <code>:focus-visible</code> style</td></tr>
+<tr><td>A custom modal made of <code>div</code>s</td><td>Focus escapes behind it</td><td><code>&lt;dialog&gt;</code> with <code>showModal()</code></td></tr>
+<tr><td>Nothing happens to focus after navigation</td><td>Screen reader users do not know the page changed</td><td>Focus the new <code>h1</code>, update the title</td></tr>
+<tr><td>Trusting the automatic score</td><td>Most real problems remain</td><td>Add keyboard and screen reader passes</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>WCAG</strong> is the standard: four principles (<strong>POUR</strong>), testable success criteria, and three levels; <strong>2.2 AA</strong> is the usual target.</li>
+<li><strong>axe-core</strong> checks pages automatically and should run on every change, but finds only about a third of problems.</li>
+<li>Every control needs a <strong>role</strong>, an <strong>accessible name</strong> and its <strong>state</strong>. Native HTML first; ARIA only by the official patterns.</li>
+<li>Single-page apps must manage <strong>focus</strong>: into and out of dialogs, to the new page after navigation, and away from removed elements.</li>
+<li><strong>Live regions</strong> announce changes that do not move the focus; they must exist before their message.</li>
+<li>Test in three layers: automatic, keyboard, and screen reader.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. AA (WCAG 2.2 AA). 2. <code>aria-label</code> on the button, and <code>aria-hidden="true"</code> on the icon. 3. Not necessarily: automatic tools find only part of the problems, so keyboard and screen reader testing are still needed.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">After each project, do all three layers of testing from section {{n}}.2: run the audit, do a keyboard pass, and listen to it with a screen reader. Write down anything the audit missed.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>An accessibility gate for the build</h3>
+<p class="project-goal">Audit every page of a site in one command, and make the command fail when any page has a violation, so nobody can release one by accident.</p>
+<p class="project-skills"><strong>You will practise:</strong> reusing a module, looping with <code>await</code>, exit codes, and wiring a check into <code>npm run check</code>.</p>
+<ol class="steps">
+<li>Reuse <code>audit(page)</code> from <code>audit-lib.ts</code>, which returns the number of violations.</li>
+<li>List the pages to check. In a real project, read them from the router or from the built <code>dist</code> folder.</li>
+<li>Audit them one by one, printing a heading for each page and the violations under it.</li>
+<li>Set <code>process.exitCode = 1</code> when the total is not zero.</li>
+<li>Add it to your <code>check</code> script after the build, and watch it fail on the broken page and pass on the fixed one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> start with only the serious and critical rules if an old project has hundreds of problems, and tighten the gate as you fix them. A gate that fails forever is soon switched off.</p>
+<pre data-code="projects/audit-all.ts" data-title="audit-all.ts"></pre>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/audit-all.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A menu button by the book</h3>
+<p class="project-goal">A button that opens a short menu of actions, built exactly to the WAI-ARIA menu button pattern: every key does what screen reader users expect.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>aria-haspopup</code> and <code>aria-expanded</code>, <code>role="menu"</code> and <code>menuitem</code>, roving focus, and returning the focus.</p>
+<ol class="steps">
+<li>The button has <code>aria-haspopup="menu"</code>, <code>aria-expanded</code> and <code>aria-controls</code>. Down Arrow opens the menu on the first item, and Up Arrow on the last.</li>
+<li>The menu is a list with <code>role="menu"</code>; each item is a button with <code>role="menuitem"</code> and <code>tabIndex={-1}</code>, inside an <code>li</code> with <code>role="none"</code>.</li>
+<li>Keep the index of the active item in state, and move the real focus to it in an effect. Up and Down wrap around; Home and End jump.</li>
+<li>Escape and Tab close the menu and return the focus to the button. Choosing an item runs it and also returns the focus.</li>
+<li>Mark the destructive item in red <em>and</em> put it last, away from the others.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a “menu” in ARIA means a list of <em>actions</em>, like a desktop app’s menu. A list of links for navigation is not a menu: it is a <code>&lt;nav&gt;</code> with links, and needs none of this.</p>
+<!-- react -->
+<pre data-code="react/projects/MenuButton.tsx" data-title="MenuButton.tsx"></pre>
+<!-- /react -->
+<figure data-render="react/projects/menu.html" data-width="560" data-actions="click:.menu-wrap > button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>Project {{n}}.2:</b> the menu open, after pressing Down Arrow twice.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Navigation that screen readers notice</h3>
+<p class="project-goal">A small component that, after every route change, updates the page title, moves the focus to the new page’s heading, and announces it.</p>
+<p class="project-skills"><strong>You will practise:</strong> reacting to route changes in an effect, managing focus on non-interactive elements, and a live region that exists before its message.</p>
+<ol class="steps">
+<li>Read the current location from the router, and run an effect when its path changes.</li>
+<li>Skip the very first render: on the first load, the browser already announces the page.</li>
+<li>Find <code>main h1</code>, set <code>document.title</code> from its text, give it <code>tabIndex = -1</code>, and focus it.</li>
+<li>Put the heading’s text in a visually hidden <code>role="status"</code> paragraph that is always on the page.</li>
+<li>Test with a screen reader: follow a link, and check that you hear the new page’s name and that Tab continues from the heading.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> give the focused heading a visible outline too. Sighted keyboard users also need to see where the focus went.</p>
+<!-- react -->
+<pre data-code="react/projects/RouteFocus.tsx" data-title="RouteFocus.tsx"></pre>
+<!-- /react -->
+<figure data-render="react/projects/route-focus.html" data-width="560" data-actions="click:nav a:nth-child(2);wait:200"><figcaption><b>Project {{n}}.3:</b> after following the link, the focus is on the new heading.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In <code>before.html</code>, fix only the three critical problems, run the audit again, and write down which problems remain.</li>
+<li><span class="level">Easy</span> Unplug your mouse and complete a purchase on a big shopping site using only the keyboard. Write down three places where you got stuck or lost the focus.</li>
+<li><span class="level">Medium</span> Add <code>audit.ts</code> to the <code>check</code> script of a project, so that the build fails when a page has any violation.</li>
+<li><span class="level">Medium</span> Make the router of the routing chapter move the focus to the <code>h1</code> of each new page and update <code>document.title</code>. Test it with a screen reader.</li>
+<li><span class="level">Challenge</span> Turn on a screen reader (VoiceOver with Cmd+F5 on a Mac, Narrator with Ctrl+Win+Enter on Windows, or TalkBack on Android) and use one of your projects from this book with your eyes closed for five minutes. List what you would change.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>You have now checked pages by running them and looking. In the next chapter you will let the computer do the checking: unit tests for logic, component tests that use the page the way users do, and end-to-end tests that drive a real browser, all running on every change.</p>
+</div>
+</section>
