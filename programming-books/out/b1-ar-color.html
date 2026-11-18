@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: الدوال"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "الفصل 11: الكائنات وJSON"; } }
+@page ch11:first { @top-center { content: none; } }
 
 .cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
   background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
@@ -3537,6 +3539,282 @@ console.log(total);</pre></div>
 <div class="next">
 <p class="next-title">في الفصل 11</p>
 <p>قابلت أول كائناتك في مشروع الشبّاك. وفي الفصل القادم ستتعلم كيف تصف الكائنات الأشياء الحقيقية، من زائر إلى منتج إلى سلة تسوق كاملة، وكيف تتيح JSON للبرامج تبادلها عبر الإنترنت.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b1/ch11/ar">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">الفصل 11</p><h1>الكائنات وJSON</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تصف الأشياء الحقيقية بالكائنات: الخصائص والقيم</li>
+<li>تقرأ الخصائص وتغيّرها وتضيفها</li>
+<li>تتعامل مع مصفوفات الكائنات بـ <code>filter</code> و<code>find</code> و<code>map</code></li>
+<li>تفكك الكائنات وتنسخها بالتفكيك والنشر</li>
+<li>تحوّل الكائنات إلى نص JSON وتعيدها، وتبني سلة تسوق</li>
+</ul>
+</div>
+
+<p class="lead">الرقم يحفظ عمراً، والنص يحفظ اسماً. لكن الأشياء الحقيقية لها تفاصيل كثيرة معاً: للكتاب عنوان وسعر وعدد صفحات وقائمة وسوم. و<strong>الكائنات</strong> تتيح لك أن تُبقي كل تفاصيل الشيء الواحد معاً تحت أسماء واضحة. إنها طريقة JavaScript في وصف العالم، ومعظم البيانات التي ستقابلها كمطور كائنات.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>لو كنت كائناً لكنت <code>{ name: "بِت", colour: "بنفسجي", antennas: 1, loves: ["HTML", "CSS", "JavaScript"] }</code>. أرأيت؟ الكائنات طريقة طبيعية لوصف الأشياء!</p></div></div>
+
+<h2><span class="sec">11.1</span><span>إنشاء الكائنات وقراءتها</span></h2>
+
+<p>يُكتب <dfn>الكائن</dfn> (object) بين قوسين معقوصين، وبداخله <dfn>خصائص</dfn> (properties): أزواج من اسم (يُسمى <dfn>المفتاح</dfn>) وقيمة تفصلهما نقطتان، وبين الأزواج فواصل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">object.js</div><pre class="code"><span class="k">const</span> book = {
+  title: <span class="s">&quot;البرمجة من الصفر&quot;</span>,
+  pages: <span class="n">340</span>,
+  inStock: <span class="k">true</span>,
+  tags: [<span class="s">&quot;مبتدئين&quot;</span>, <span class="s">&quot;جافاسكربت&quot;</span>],
+};
+
+console.log(book.title);
+console.log(book[<span class="s">&quot;pages&quot;</span>]);
+console.log(book.tags[<span class="n">0</span>]);
+
+book.pages = <span class="n">352</span>;
+book.price = <span class="n">25</span>;
+console.log(book);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>البرمجة من الصفر
+340
+مبتدئين
+{
+  title: &#x27;البرمجة من الصفر&#x27;,
+  pages: 352,
+  inStock: true,
+  tags: [ &#x27;مبتدئين&#x27;, &#x27;جافاسكربت&#x27; ],
+  price: 25
+}</pre></div>
+
+<ul>
+<li><strong>صيغة النقطة</strong>، <code>book.title</code>، هي الطريقة المعتادة لقراءة الخاصية.</li>
+<li><strong>صيغة الأقواس</strong>، <code>book["pages"]</code>، تفعل الشيء نفسه والمفتاح نص، وتفيد حين يكون المفتاح في متغير: <code>book[field]</code>.</li>
+<li>القيمة يمكن أن تكون أي شيء: رقماً، أو نصاً، أو boolean، أو مصفوفة، أو حتى كائناً آخر.</li>
+<li>تغيّر الخاصية بأن تسند إليها قيمة، و<em>تضيف</em> خاصية بالطريقة نفسها: <code>book.price = 25</code> أنشأت خاصية لم تكن موجودة.</li>
+</ul>
+
+<p>وقراءة خاصية غير موجودة ليست خطأً، بل تحصل على <code>undefined</code>. هذا مريح، لكنه يعني أن خطأً إملائياً مثل <code>book.titel</code> يفشل بصمت، فانتبه لإملائك. ولاحظ أن المفاتيح تُكتب بالإنجليزية دائماً، أما القيم النصية فبأي لغة.</p>
+
+<h2><span class="sec">11.2</span><span>مصفوفات الكائنات</span></h2>
+
+<p>أكثر أشكال البيانات شيوعاً في البرامج الحقيقية هو <strong>مصفوفة الكائنات</strong>: قائمة منتجات، أو مستخدمين، أو رسائل، أو مباريات. ولكل كائن المفاتيح نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">products.js</div><pre class="code"><span class="k">const</span> products = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span>, category: <span class="s">&quot;كتاب&quot;</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span>, category: <span class="s">&quot;كوب&quot;</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;هندسة الواجهات&quot;</span>, price: <span class="n">30</span>, category: <span class="s">&quot;كتاب&quot;</span> },
+  { id: <span class="n">4</span>, name: <span class="s">&quot;ملصق بِت&quot;</span>, price: <span class="n">3</span>, category: <span class="s">&quot;ملصق&quot;</span> },
+];
+
+<span class="k">const</span> books = products.filter((p) =&gt; p.category === <span class="s">&quot;كتاب&quot;</span>);
+console.log(books.map((p) =&gt; p.name));
+
+<span class="k">const</span> found = products.find((p) =&gt; p.id === <span class="n">2</span>);
+console.log(found.name, found.price);
+
+<span class="k">const</span> cheapest = products.reduce((a, b) =&gt; (b.price &lt; a.price ? b : a));
+console.log(cheapest.name);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>[ &#x27;البرمجة من الصفر&#x27;, &#x27;هندسة الواجهات&#x27; ]
+كوب بِت 8
+ملصق بِت</pre></div>
+
+<p>هنا تتألق دوال الفصل 10. فـ <code>filter</code> تختار الكتب، و<code>map</code> تأخذ أسماءها فقط، و<code>find</code> تُرجع <em>أول</em> عنصر يطابق، أو <code>undefined</code> إن لم يوجد. ولاحظ أن كل سطر يُقرأ كأنه سؤال: «المنتجات التي فئتها كتاب»، و«المنتج الذي معرّفه 2».</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p><code>console.table(products)</code> تطبع مصفوفة الكائنات جدولاً مرتباً في الطرفية أو Console المتصفح. وهي من أنفع الحيل للنظر في البيانات.</p></aside>
+
+<h2><span class="sec">11.3</span><span>التفكيك والنشر</span></h2>
+
+<p>صيغتان قصيرتان تظهران في كل مكان في JavaScript الحديثة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">destructure.js</div><pre class="code"><span class="k">const</span> visitor = { name: <span class="s">&quot;سارة&quot;</span>, age: <span class="n">34</span>, city: <span class="s">&quot;الإسكندرية&quot;</span> };
+
+<span class="k">const</span> { name, city } = visitor;
+console.log(<span class="s">`${name} تسكن في ${city}`</span>);
+
+<span class="k">const</span> copy = { ...visitor, age: <span class="n">35</span> };
+console.log(visitor.age, copy.age);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>سارة تسكن في الإسكندرية
+34 35</pre></div>
+
+<ul>
+<li><dfn>التفكيك</dfn> (destructuring)، <code>const { name, city } = visitor</code>، ينشئ متغيرات من الخصائص التي تحمل الأسماء نفسها، وهو اختصار لـ <code>const name = visitor.name</code> و<code>const city = visitor.city</code>.</li>
+<li>وصيغة <dfn>النشر</dfn> (spread)، <code>{ ...visitor, age: 35 }</code>، تنسخ كل الخصائص إلى كائن جديد ثم تستبدل <code>age</code>. والأصل لا يتغير، كما تُظهر المخرجات.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: النسخ والمراجع</p><p><code>const copy = visitor</code> <strong>لا</strong> تنسخ الكائن. فالاسمان يشيران الآن إلى الكائن نفسه، وتغيير <code>copy.age</code> يغيّر <code>visitor.age</code> أيضاً، لأن الكائنات والمصفوفات تُشارَك بالمرجع. ولتحصل على نسخة مستقلة حقاً استخدم النشر: <code>{ ...visitor }</code> للكائنات، و<code>[...list]</code> للمصفوفات.</p></aside>
+
+<h2><span class="sec">11.4</span><span>JSON: الكائنات نصاً</span></h2>
+
+<p>الكائنات تعيش في ذاكرة البرنامج. فكيف تحفظ كائناً في ملف، أو ترسله من خادم إلى متصفح في الطرف الآخر من العالم؟ تحوّله إلى نص. والصيغة النصية المعتمدة للبيانات على الويب هي <dfn>JSON</dfn> (ترميز كائنات JavaScript)، وهي تشبه كائن JavaScript تماماً تقريباً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">json.js</div><pre class="code"><span class="k">const</span> order = { id: <span class="n">501</span>, items: [<span class="s">&quot;كتاب&quot;</span>, <span class="s">&quot;كوب&quot;</span>], paid: <span class="k">false</span> };
+
+<span class="k">const</span> text = JSON.stringify(order);
+console.log(text);
+console.log(<span class="k">typeof</span> text);
+
+<span class="k">const</span> back = JSON.parse(<span class="s">&#x27;{&quot;id&quot;:502,&quot;items&quot;:[&quot;ملصق&quot;],&quot;paid&quot;:true}&#x27;</span>);
+console.log(back.items[<span class="n">0</span>], back.paid);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>{&quot;id&quot;:501,&quot;items&quot;:[&quot;كتاب&quot;,&quot;كوب&quot;],&quot;paid&quot;:false}
+string
+ملصق true</pre></div>
+
+<ul>
+<li><code>JSON.stringify(value)</code> تحوّل القيمة إلى نص JSON. و<code>JSON.stringify(value, null, 2)</code> تضيف أسطراً جديدة وإزاحات تسهّل القراءة.</li>
+<li><code>JSON.parse(text)</code> تعيد نص JSON كائنات ومصفوفات.</li>
+</ul>
+
+<p>وJSON أكثر صرامة من JavaScript: المفاتيح بين علامتي تنصيص مزدوجتين، والنصوص كذلك، ولا تعليقات ولا دوال ولا فواصل زائدة في الآخر. ومعظم الواجهات البرمجية في العالم ترسل JSON وتستقبله. وفي الفصل 13 ستجلب JSON من خادم حقيقي.</p>
+
+<table>
+<thead><tr><th>كائن JavaScript</th><th>نص JSON</th></tr></thead>
+<tbody>
+<tr><td><code>{ name: 'Bit', antennas: 1 }</code></td><td><code>{"name":"Bit","antennas":1}</code></td></tr>
+<tr><td>يعيش في الذاكرة، ويمكن أن يحوي دوالاً</td><td>نص فقط، بيانات لا غير</td></tr>
+<tr><td>يُستخدم داخل برنامجك</td><td>يُستخدم لحفظ البيانات وإرسالها واستقبالها</td></tr>
+</tbody>
+</table>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>مع <code>const user = { name: "هدى", age: 22 }</code>، كيف تقرأ العمر؟</li><li>ماذا تُرجع <code>find</code> حين لا يطابق شيء؟</li><li>ماذا تنتج <code>JSON.stringify</code>: كائناً أم نصاً؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">11.5</span><span>مشروع: سلة تسوق</span></h2>
+
+<p>لنبنِ منطق سلة متجر إلكتروني: كتالوج منتجات، وسلة تتذكر أي المنتجات وكم منها، ودوال تضيف العناصر وتحسب المجاميع. وهذا المنطق نفسه الذي يعمل خلف المتاجر الحقيقية، لكنه أصغر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cart.js</div><pre class="code"><span class="k">const</span> catalog = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;ملصق بِت&quot;</span>, price: <span class="n">3</span> },
+];
+
+<span class="k">const</span> cart = [];
+
+<span class="k">function</span> addToCart(productId, quantity = <span class="n">1</span>) {
+  <span class="k">const</span> line = cart.find((item) =&gt; item.productId === productId);
+  <span class="k">if</span> (line) {
+    line.quantity += quantity;
+  } <span class="k">else</span> {
+    cart.push({ productId, quantity });
+  }
+}
+
+<span class="k">function</span> lineTotal(item) {
+  <span class="k">const</span> product = catalog.find((p) =&gt; p.id === item.productId);
+  <span class="k">return</span> product.price * item.quantity;
+}
+
+<span class="k">function</span> cartTotal() {
+  <span class="k">return</span> cart.reduce((sum, item) =&gt; sum + lineTotal(item), <span class="n">0</span>);
+}
+
+addToCart(<span class="n">1</span>);
+addToCart(<span class="n">3</span>, <span class="n">4</span>);
+addToCart(<span class="n">1</span>);
+
+<span class="k">for</span> (<span class="k">const</span> item <span class="k">of</span> cart) {
+  <span class="k">const</span> product = catalog.find((p) =&gt; p.id === item.productId);
+  console.log(<span class="s">`${product.name} × ${item.quantity} = ${lineTotal(item)}`</span>);
+}
+console.log(<span class="s">`المجموع: ${cartTotal()}`</span>);
+
+<span class="c">// جاهزة للحفظ أو الإرسال إلى خادم</span>
+console.log(JSON.stringify(cart));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>البرمجة من الصفر × 2 = 50
+ملصق بِت × 4 = 12
+المجموع: 62
+[{&quot;productId&quot;:1,&quot;quantity&quot;:2},{&quot;productId&quot;:3,&quot;quantity&quot;:4}]</pre></div>
+
+<p>تفاصيل تستحق الانتباه:</p>
+<ul>
+<li>السلة تحفظ <code>id</code> المنتج والكمية فقط، لا نسخة من المنتج. فالسعر يعيش في مكان واحد هو الكتالوج، وإن تغير سعر صارت كل السلال صحيحة تلقائياً. وقواعد البيانات الحقيقية مصممة على هذه الفكرة بالضبط.</li>
+<li>إضافة منتج موجود أصلاً في السلة تزيد كميته بدل إضافة سطر ثانٍ. و<code>+=</code> اختصار لـ <code>line.quantity = line.quantity + quantity</code>.</li>
+<li><code>{ productId, quantity }</code> اختصار لـ <code>{ productId: productId, quantity: quantity }</code>: حين يتطابق المفتاح واسم المتغير تكتبه مرة واحدة.</li>
+<li>السطر الأخير يحوّل السلة إلى JSON، جاهزة للحفظ في المتصفح أو الإرسال إلى خادم، وستفعل ذلك في الفصول القادمة.</li>
+</ul>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>مصفوفات وكائنات ودوال وحلقات وقرارات، كلها تعمل معاً. هذه السلة الصغيرة لها شكل الكود نفسه الذي يعمل داخل أكبر المتاجر على الإنترنت. والخطوة التالية: نضعها في صفحة ويب يضغط فيها الناس!</p></div></div>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>مفتاح بإملاء خاطئ: <code>book.titel</code></td><td><code>undefined</code> بلا رسالة خطأ</td><td>راجع الإملاء، واستخدم الإكمال التلقائي في VS Code</td></tr>
+<tr><td>قراءة خاصية من <code>undefined</code></td><td><code>TypeError: Cannot read properties of undefined</code></td><td>تأكد أولاً أن <code>find</code> وجدت شيئاً</td></tr>
+<tr><td><code>const b = a</code> لنسخ كائن</td><td>يتغير الاسمان معاً</td><td>استخدم <code>{ ...a }</code></td></tr>
+<tr><td>علامات تنصيص مفردة أو تعليقات في JSON</td><td><code>JSON.parse</code> ترمي <code>SyntaxError</code></td><td>JSON تحتاج علامات مزدوجة وبلا تعليقات</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>الكائن</strong> يجمع القيم المترابطة خصائصَ بالشكل <strong>key: value</strong>. واقرأ بـ <code>obj.key</code> أو <code>obj["key"]</code>.</li>
+<li>الإسناد إلى خاصية يغيّرها، أو يضيفها إن لم تكن موجودة. والخصائص غير الموجودة <code>undefined</code>.</li>
+<li><strong>مصفوفات الكائنات</strong> أكثر أشكال البيانات شيوعاً، واستخدم معها <code>filter</code> و<code>find</code> و<code>map</code> و<code>reduce</code>.</li>
+<li><strong>التفكيك</strong> يفك الخصائص إلى متغيرات، و<strong>النشر</strong> (<code>...</code>) ينسخ.</li>
+<li>الكائنات والمصفوفات تُشارَك <strong>بالمرجع</strong>.</li>
+<li><strong>JSON</strong> الصيغة النصية للبيانات، و<code>JSON.stringify</code> و<code>JSON.parse</code> تحوّلان في الاتجاهين.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>user.age</code> (أو <code>user["age"]</code>). 2. <code>undefined</code>. 3. نصاً.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أنشئ كائناً يصف فيلمك المفضل، فيه خمس خصائص على الأقل، إحداها مصفوفة. واطبعه بـ <code>console.log</code> وبـ <code>JSON.stringify(film, null, 2)</code>.</li>
+<li><span class="level">سهل</span> في <code>products.js</code>، اطبع أسماء كل المنتجات الأرخص من 10.</li>
+<li><span class="level medium">متوسط</span> أضف إلى السلة دالة <code>removeFromCart(productId)</code>. (تلميح: ابحث في MDN عن <code>findIndex</code> و<code>splice</code>، أو ابنِ مصفوفة جديدة بـ <code>filter</code>.)</li>
+<li><span class="level medium">متوسط</span> أعط المنتجات خاصية <code>discount</code> (مثلاً 0.1 لخصم 10%)، وغيّر <code>lineTotal</code> لتستخدمها.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب <code>receipt()</code> التي تُرجع الإيصال كله نصاً واحداً، بسطر لكل عنصر ثم المجموع، باستخدام <code>map</code> و<code>join("\n")</code>.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 12</p>
+<p>حتى الآن عاشت JavaScript التي تكتبها في الطرفية. وفي الفصل القادم تنتقل إلى المتصفح: ستغيّر صفحات الويب بـ DOM، وتتفاعل مع النقر والكتابة بالأحداث، وتحوّل سلة التسوق إلى صفحة تفاعلية حقيقية.</p>
 </div>
 </section>
 </body></html>

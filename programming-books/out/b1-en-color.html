@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Functions"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "Chapter 11: Objects and JSON"; } }
+@page ch11:first { @top-center { content: none; } }
 
 .cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
   background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
@@ -3518,6 +3520,282 @@ Huda: 3</pre></div>
 <div class="next">
 <p class="next-title">Coming up in Chapter 11</p>
 <p>You met your first objects in the kiosk project. In the next chapter you will learn how objects describe real things, from a visitor to a product to a whole shopping cart, and how JSON lets programs exchange them across the internet.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b1/ch11/en">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">Chapter 11</p><h1>Objects and JSON</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>describe real things with objects: properties and values</li>
+<li>read, change and add properties</li>
+<li>work with arrays of objects using <code>filter</code>, <code>find</code> and <code>map</code></li>
+<li>unpack and copy objects with destructuring and spread</li>
+<li>turn objects into JSON text and back, and build a shopping cart</li>
+</ul>
+</div>
+
+<p class="lead">A number can hold an age, and a string can hold a name. But real things have many details at once: a book has a title, a price, a number of pages and a list of tags. <strong>Objects</strong> let you keep all the details of one thing together, under clear names. They are how JavaScript describes the world, and almost every piece of data you will meet as a developer is an object.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>If I were an object, I would be <code>{ name: "Bit", colour: "purple", antennas: 1, loves: ["HTML", "CSS", "JavaScript"] }</code>. See? Objects are a natural way to describe things!</p></div></div>
+
+<h2><span class="sec">11.1</span><span>Creating and reading objects</span></h2>
+
+<p>An <dfn>object</dfn> is written with curly brackets. Inside are <dfn>properties</dfn>: pairs of a name (the <dfn>key</dfn>) and a value, separated by a colon, with commas between the pairs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">object.js</div><pre class="code"><span class="k">const</span> book = {
+  title: <span class="s">&quot;Code from Zero&quot;</span>,
+  pages: <span class="n">340</span>,
+  inStock: <span class="k">true</span>,
+  tags: [<span class="s">&quot;beginners&quot;</span>, <span class="s">&quot;javascript&quot;</span>],
+};
+
+console.log(book.title);
+console.log(book[<span class="s">&quot;pages&quot;</span>]);
+console.log(book.tags[<span class="n">0</span>]);
+
+book.pages = <span class="n">352</span>;
+book.price = <span class="n">25</span>;
+console.log(book);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Code from Zero
+340
+beginners
+{
+  title: &#x27;Code from Zero&#x27;,
+  pages: 352,
+  inStock: true,
+  tags: [ &#x27;beginners&#x27;, &#x27;javascript&#x27; ],
+  price: 25
+}</pre></div>
+
+<ul>
+<li><strong>Dot notation</strong>, <code>book.title</code>, is the usual way to read a property.</li>
+<li><strong>Bracket notation</strong>, <code>book["pages"]</code>, does the same with the key as a string. It is useful when the key is in a variable: <code>book[field]</code>.</li>
+<li>A value can be anything: a number, a string, a boolean, an array, or even another object.</li>
+<li>You change a property by assigning to it, and you <em>add</em> a property the same way: <code>book.price = 25</code> created a property that did not exist before.</li>
+</ul>
+
+<p>Reading a property that does not exist is not an error; you simply get <code>undefined</code>. That is convenient, but it also means a spelling mistake like <code>book.titel</code> fails silently, so watch your spelling.</p>
+
+<h2><span class="sec">11.2</span><span>Arrays of objects</span></h2>
+
+<p>The most common shape of data in real programs is an <strong>array of objects</strong>: a list of products, of users, of messages, of matches. Each object has the same keys:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">products.js</div><pre class="code"><span class="k">const</span> products = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;Code from Zero&quot;</span>, price: <span class="n">25</span>, category: <span class="s">&quot;book&quot;</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8</span>, category: <span class="s">&quot;mug&quot;</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;Senior Frontend&quot;</span>, price: <span class="n">30</span>, category: <span class="s">&quot;book&quot;</span> },
+  { id: <span class="n">4</span>, name: <span class="s">&quot;Bit sticker&quot;</span>, price: <span class="n">3</span>, category: <span class="s">&quot;sticker&quot;</span> },
+];
+
+<span class="k">const</span> books = products.filter((p) =&gt; p.category === <span class="s">&quot;book&quot;</span>);
+console.log(books.map((p) =&gt; p.name));
+
+<span class="k">const</span> found = products.find((p) =&gt; p.id === <span class="n">2</span>);
+console.log(found.name, found.price);
+
+<span class="k">const</span> cheapest = products.reduce((a, b) =&gt; (b.price &lt; a.price ? b : a));
+console.log(cheapest.name);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>[ &#x27;Code from Zero&#x27;, &#x27;Senior Frontend&#x27; ]
+Bit mug 8
+Bit sticker</pre></div>
+
+<p>Here the methods from Chapter 10 come into their own. <code>filter</code> selects the books, <code>map</code> takes just their names, and <code>find</code> returns the <em>first</em> item that matches, or <code>undefined</code> if there is none. Notice how each line reads almost like a question: “products where the category is book”, “the product whose id is 2”.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p><code>console.table(products)</code> prints an array of objects as a neat table in the terminal or the browser console. It is one of the most useful tricks for looking at data.</p></aside>
+
+<h2><span class="sec">11.3</span><span>Destructuring and spread</span></h2>
+
+<p>Two short syntaxes appear everywhere in modern JavaScript:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">destructure.js</div><pre class="code"><span class="k">const</span> visitor = { name: <span class="s">&quot;Sara&quot;</span>, age: <span class="n">34</span>, city: <span class="s">&quot;Alexandria&quot;</span> };
+
+<span class="k">const</span> { name, city } = visitor;
+console.log(<span class="s">`${name} lives in ${city}`</span>);
+
+<span class="k">const</span> copy = { ...visitor, age: <span class="n">35</span> };
+console.log(visitor.age, copy.age);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Sara lives in Alexandria
+34 35</pre></div>
+
+<ul>
+<li><dfn>Destructuring</dfn>, <code>const { name, city } = visitor</code>, creates variables from properties with the same names. It is a shortcut for <code>const name = visitor.name</code> and <code>const city = visitor.city</code>.</li>
+<li>The <dfn>spread</dfn> syntax, <code>{ ...visitor, age: 35 }</code>, copies every property into a new object and then overrides <code>age</code>. The original is not changed, as the output shows.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: copies and references</p><p><code>const copy = visitor</code> does <strong>not</strong> copy the object. Both names now point to the same object, so changing <code>copy.age</code> changes <code>visitor.age</code> too. Objects and arrays are shared by reference. To get a real separate copy, use spread: <code>{ ...visitor }</code> for objects and <code>[...list]</code> for arrays.</p></aside>
+
+<h2><span class="sec">11.4</span><span>JSON: objects as text</span></h2>
+
+<p>Objects live in a program’s memory. But how do you save one to a file, or send it from a server to a browser on the other side of the world? You turn it into text. The standard text format for data on the web is <dfn>JSON</dfn> (JavaScript Object Notation), and it looks almost exactly like a JavaScript object:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">json.js</div><pre class="code"><span class="k">const</span> order = { id: <span class="n">501</span>, items: [<span class="s">&quot;book&quot;</span>, <span class="s">&quot;mug&quot;</span>], paid: <span class="k">false</span> };
+
+<span class="k">const</span> text = JSON.stringify(order);
+console.log(text);
+console.log(<span class="k">typeof</span> text);
+
+<span class="k">const</span> back = JSON.parse(<span class="s">&#x27;{&quot;id&quot;:502,&quot;items&quot;:[&quot;sticker&quot;],&quot;paid&quot;:true}&#x27;</span>);
+console.log(back.items[<span class="n">0</span>], back.paid);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>{&quot;id&quot;:501,&quot;items&quot;:[&quot;book&quot;,&quot;mug&quot;],&quot;paid&quot;:false}
+string
+sticker true</pre></div>
+
+<ul>
+<li><code>JSON.stringify(value)</code> turns a value into a JSON string. <code>JSON.stringify(value, null, 2)</code> adds line breaks and indentation, which is easier to read.</li>
+<li><code>JSON.parse(text)</code> turns JSON text back into objects and arrays.</li>
+</ul>
+
+<p>JSON is stricter than JavaScript: keys must be in double quotes, strings must use double quotes, and there are no comments, no functions and no trailing commas. Almost every web API in the world sends and receives JSON. In Chapter 13 you will fetch JSON from a real server.</p>
+
+<table>
+<thead><tr><th>JavaScript object</th><th>JSON text</th></tr></thead>
+<tbody>
+<tr><td><code>{ name: 'Bit', antennas: 1 }</code></td><td><code>{"name":"Bit","antennas":1}</code></td></tr>
+<tr><td>Lives in memory; can contain functions</td><td>Just text; only data</td></tr>
+<tr><td>Used inside your program</td><td>Used to save, send and receive data</td></tr>
+</tbody>
+</table>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Given <code>const user = { name: "Huda", age: 22 }</code>, how do you read the age?</li><li>What does <code>find</code> return when nothing matches?</li><li>What does <code>JSON.stringify</code> produce: an object or a string?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">11.5</span><span>Project: a shopping cart</span></h2>
+
+<p>Let us build the logic of an online shop’s cart: a catalogue of products, a cart that remembers which products and how many, and functions that add items and calculate totals. This is the same logic that runs behind real shops, just smaller:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cart.js</div><pre class="code"><span class="k">const</span> catalog = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;Code from Zero&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;Bit sticker&quot;</span>, price: <span class="n">3</span> },
+];
+
+<span class="k">const</span> cart = [];
+
+<span class="k">function</span> addToCart(productId, quantity = <span class="n">1</span>) {
+  <span class="k">const</span> line = cart.find((item) =&gt; item.productId === productId);
+  <span class="k">if</span> (line) {
+    line.quantity += quantity;
+  } <span class="k">else</span> {
+    cart.push({ productId, quantity });
+  }
+}
+
+<span class="k">function</span> lineTotal(item) {
+  <span class="k">const</span> product = catalog.find((p) =&gt; p.id === item.productId);
+  <span class="k">return</span> product.price * item.quantity;
+}
+
+<span class="k">function</span> cartTotal() {
+  <span class="k">return</span> cart.reduce((sum, item) =&gt; sum + lineTotal(item), <span class="n">0</span>);
+}
+
+addToCart(<span class="n">1</span>);
+addToCart(<span class="n">3</span>, <span class="n">4</span>);
+addToCart(<span class="n">1</span>);
+
+<span class="k">for</span> (<span class="k">const</span> item <span class="k">of</span> cart) {
+  <span class="k">const</span> product = catalog.find((p) =&gt; p.id === item.productId);
+  console.log(<span class="s">`${product.name} × ${item.quantity} = ${lineTotal(item)}`</span>);
+}
+console.log(<span class="s">`Total: ${cartTotal()}`</span>);
+
+<span class="c">// Ready to save or send to a server</span>
+console.log(JSON.stringify(cart));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Code from Zero × 2 = 50
+Bit sticker × 4 = 12
+Total: 62
+[{&quot;productId&quot;:1,&quot;quantity&quot;:2},{&quot;productId&quot;:3,&quot;quantity&quot;:4}]</pre></div>
+
+<p>Some details worth noticing:</p>
+<ul>
+<li>The cart stores only the product’s <code>id</code> and a quantity, not a copy of the product. The price lives in one place, the catalogue, so if a price changes, every cart is right automatically. Real databases are designed on exactly this idea.</li>
+<li>Adding a product that is already in the cart increases its quantity instead of adding a second line. <code>+=</code> is short for <code>line.quantity = line.quantity + quantity</code>.</li>
+<li><code>{ productId, quantity }</code> is shorthand for <code>{ productId: productId, quantity: quantity }</code>: when the key and the variable have the same name, you write it once.</li>
+<li>The last line turns the cart into JSON, ready to be saved in the browser or sent to a server, which you will do in the coming chapters.</li>
+</ul>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Arrays, objects, functions, loops and decisions, all working together. This little cart has the same shape as the code inside the biggest shops on the internet. Next, let’s put it on a web page where people can click!</p></div></div>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Misspelled key: <code>book.titel</code></td><td><code>undefined</code>, with no error</td><td>Check spelling; use autocomplete in VS Code</td></tr>
+<tr><td>Reading a property of <code>undefined</code></td><td><code>TypeError: Cannot read properties of undefined</code></td><td>Check that <code>find</code> found something first</td></tr>
+<tr><td><code>const b = a</code> to copy an object</td><td>Both names change together</td><td>Use <code>{ ...a }</code></td></tr>
+<tr><td>Single quotes or comments in JSON</td><td><code>JSON.parse</code> throws a <code>SyntaxError</code></td><td>JSON needs double quotes and no comments</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>An <strong>object</strong> groups related values as <strong>key: value</strong> properties. Read with <code>obj.key</code> or <code>obj["key"]</code>.</li>
+<li>Assigning to a property changes it, or adds it if it was missing. Missing properties are <code>undefined</code>.</li>
+<li><strong>Arrays of objects</strong> are the most common data shape. Use <code>filter</code>, <code>find</code>, <code>map</code> and <code>reduce</code> on them.</li>
+<li><strong>Destructuring</strong> unpacks properties into variables; <strong>spread</strong> (<code>...</code>) copies.</li>
+<li>Objects and arrays are shared <strong>by reference</strong>.</li>
+<li><strong>JSON</strong> is the text format for data. <code>JSON.stringify</code> and <code>JSON.parse</code> convert both ways.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>user.age</code> (or <code>user["age"]</code>). 2. <code>undefined</code>. 3. A string.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Create an object describing your favourite film, with at least five properties, one of them an array. Print it with <code>console.log</code> and with <code>JSON.stringify(film, null, 2)</code>.</li>
+<li><span class="level">Easy</span> In <code>products.js</code>, print the names of all products cheaper than 10.</li>
+<li><span class="level medium">Medium</span> Add a function <code>removeFromCart(productId)</code> to the cart. (Hint: search MDN for <code>findIndex</code> and <code>splice</code>, or build a new array with <code>filter</code>.)</li>
+<li><span class="level medium">Medium</span> Give products a <code>discount</code> property (for example 0.1 for 10%) and change <code>lineTotal</code> to use it.</li>
+<li><span class="level hard">Challenge</span> Write <code>receipt()</code>, which returns the whole receipt as one string, with one line per item and the total, using <code>map</code> and <code>join("\n")</code>.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 12</p>
+<p>So far your JavaScript has lived in the terminal. In the next chapter it moves into the browser: you will change web pages with the DOM, react to clicks and typing with events, and turn the shopping cart into a real, interactive page.</p>
 </div>
 </section>
 </body></html>
