@@ -1,0 +1,53 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع هنا يتبع خطوات هذا الفصل الثلاث نفسها: جِد العناصر، واستمع إلى حدث، وغيّر الصفحة. افتح كل صفحة في متصفحك وجرّبها بيديك.</p>
+
+<div class="project">
+<p class="project-label">مشروع 12.1 · سهل</p>
+<h3>زر الوضع الليلي</h3>
+<p class="project-goal">زر واحد يبدّل الصفحة كلها بين مظهر نهاري ومظهر ليلي، ويقول عنوانه دائماً ما سيفعله في الضغطة التالية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>querySelector</code> و<code>addEventListener</code> و<code>classList.toggle</code> و<code>classList.contains</code>.</p>
+<ol class="steps">
+<li>أنشئ <code>theme.html</code> فيه عنوان وفقرة وزر بـ <code>id="theme"</code>.</li>
+<li>في CSS اكتب ألوان الليل تحت <code>body.dark</code>، مثلاً <code>body.dark { background: #1e1b4b; color: #e0e7ff; }</code>.</li>
+<li>في <code>theme.js</code> جِد الزر واستمع إلى <code>"click"</code>.</li>
+<li>مع كل ضغطة استدعِ <code>document.body.classList.toggle("dark")</code>: تضيف الصنف إن كان غائباً، وتحذفه إن كان موجوداً.</li>
+<li>حدّث <code>textContent</code> للزر بـ <code>classList.contains("dark")</code> والعامل الثلاثي.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> جافاسكربت تبدّل الصنف فقط، وCSS تقرر الشكل. وإبقاء الألوان في CSS يعني أن المصمم يستطيع تغييرها دون أن يلمس السكربت.</p>
+<figure data-render="projects/theme.html" data-width="560" data-actions="click:#theme"><figcaption><b>مشروع 12.1:</b> غرفة القراءة بعد ضغطة واحدة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 12.2 · متوسط</p>
+<h3>عدّاد حروف حي</h3>
+<p class="project-goal">بينما يكتب القارئ رسالته، اعرض كم حرفاً بقي من 120، واجعل الرقم أحمر حين يبقى أقل من 20.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حدث <code>input</code>، وقراءة <code>value</code>، وتسميات حقول النماذج، و<code>classList.toggle</code> بشرط.</p>
+<ol class="steps">
+<li>أضف <code>&lt;label for="message"&gt;</code> و<code>&lt;textarea id="message" maxlength="120"&gt;</code> وفقرة فيها <code>&lt;span id="left"&gt;120&lt;/span&gt;</code>.</li>
+<li>استمع إلى <code>"input"</code> على مربع النص. وهو بخلاف <code>"change"</code> يقع مع كل ضغطة مفتاح.</li>
+<li>احسب <code>limit - message.value.length</code> واعرضه في الـ span.</li>
+<li>استدعِ <code>left.classList.toggle("low", remaining &lt; 20)</code>. فبمعامل ثانٍ تضيف <code>toggle</code> الصنف حين يصدق الشرط وتحذفه حين لا يصدق.</li>
+<li>اكتب، ثم احذف بعض النص، وراقب اللون يعود.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>maxlength</code> توقف القارئ عند 120 أصلاً. فالسكربت لا يفرض الحد، بل يخبر القارئ أين وصل. والصفحات الجيدة تفعل الأمرين.</p>
+<figure data-render="projects/counter.html" data-width="560" data-actions="fill:#message|أتعلم جافاسكربت خطوة صغيرة كل يوم، واليوم صارت الصفحة ترد علي حين أكتب، وهذا شعور رائع جداً، والخطوة التالية تطبيق!"><figcaption><b>مشروع 12.2:</b> بقي أقل من 20 حرفاً، فصار الرقم أحمر.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 12.3 · تحدٍّ</p>
+<h3>اختبار يبني نفسه</h3>
+<p class="project-goal">اكتب الأسئلة بيانات، ودع جافاسكربت تبني أزرار كل سؤال، وتفحص الإجابة، وتنتقل إلى التالي، وتعرض النتيجة في النهاية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مصفوفات الكائنات، و<code>createElement</code> و<code>append</code>، و<code>replaceChildren</code>، والنصوص القالبية، وتقسيم العمل إلى دوال.</p>
+<ol class="steps">
+<li>أنشئ مصفوفة <code>questions</code>: في كل عنصر <code>text</code>، ومصفوفة <code>options</code>، و<code>answer</code> وهو رقم الخيار الصحيح.</li>
+<li>اكتب <code>show()</code>: اكتب رقم السؤال ونصه، وامسح الأزرار القديمة بـ <code>options.replaceChildren()</code>، ثم أنشئ زراً لكل خيار بـ <code>forEach</code>.</li>
+<li>كل زر يستدعي <code>choose(index)</code>. قارنه بـ <code>answer</code>، وأضف نقطة إن كان صحيحاً، واعرض التعليق بالأخضر أو الأحمر.</li>
+<li>انتقل إلى السؤال التالي. وحين لا يبقى سؤال استدعِ <code>finish()</code> لتعرض <code>نتيجتك: 2 من 3</code>.</li>
+<li>في <code>finish()</code> أضف زر «العب مرة أخرى» يعيد <code>current</code> و<code>points</code> إلى الصفر ويستدعي <code>show()</code>.</li>
+<li>أضف سؤالين من عندك إلى المصفوفة. ستكبر الصفحة دون سطر HTML جديد واحد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البيانات (<code>questions</code> و<code>current</code> و<code>points</code>) هي الحقيقة، و<code>show()</code> ترسمها على الصفحة. وهذه الفكرة، «ارسم الصفحة من البيانات»، هي بالضبط طريقة عمل React وVue.</p>
+<figure data-render="projects/quiz.html" data-width="560" data-actions="click:#options button:nth-child(2);click:#options button:nth-child(2)"><figcaption><b>مشروع 12.3:</b> بعد إجابة صحيحة وأخرى خاطئة، يشرح الاختبار وينتقل…</figcaption></figure>
+<figure data-render="projects/quiz.html" data-width="560" data-actions="click:#options button:nth-child(2);click:#options button:nth-child(2);click:#options button:nth-child(3)"><figcaption>…ويعرض النتيجة في النهاية.</figcaption></figure>
+</div>

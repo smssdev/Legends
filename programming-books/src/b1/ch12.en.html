@@ -153,6 +153,62 @@
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. <code>document.querySelector("#total")</code>. 2. So that every element is already on the page when the script looks for it. 3. It stops the browser from sending the form and reloading the page.</p>
 
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Every project here follows the same three steps from this chapter: find the elements, listen for an event, change the page. Open each page in your browser and try it with your own hands.</p>
+
+<div class="project">
+<p class="project-label">Project 12.1 · Easy</p>
+<h3>A night mode switch</h3>
+<p class="project-goal">One button switches the whole page between a day theme and a night theme, and its label always says what it will do next.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>querySelector</code>, <code>addEventListener</code>, <code>classList.toggle</code> and <code>classList.contains</code>.</p>
+<ol class="steps">
+<li>Create <code>theme.html</code> with a heading, a paragraph and a button with <code>id="theme"</code>.</li>
+<li>In the CSS, write the night colours under <code>body.dark</code>, for example <code>body.dark { background: #1e1b4b; color: #e0e7ff; }</code>.</li>
+<li>In <code>theme.js</code>, find the button and listen for <code>"click"</code>.</li>
+<li>On each click, call <code>document.body.classList.toggle("dark")</code>: it adds the class if it is missing and removes it if it is there.</li>
+<li>Update the button’s <code>textContent</code> using <code>classList.contains("dark")</code> and the ternary operator.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> JavaScript only switches a class; CSS decides how it looks. Keeping colours in CSS means a designer can change them without touching your script.</p>
+<figure data-render="projects/theme.html" data-width="560" data-actions="click:#theme"><figcaption><b>Project 12.1:</b> the reading room after one click.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 12.2 · Medium</p>
+<h3>A live character counter</h3>
+<p class="project-goal">As the reader types a message, show how many characters are left out of 120, and turn the number red when fewer than 20 remain.</p>
+<p class="project-skills"><strong>You will practise:</strong> the <code>input</code> event, reading <code>value</code>, labels for form fields, and <code>classList.toggle</code> with a condition.</p>
+<ol class="steps">
+<li>Add a <code>&lt;label for="message"&gt;</code>, a <code>&lt;textarea id="message" maxlength="120"&gt;</code> and a paragraph with <code>&lt;span id="left"&gt;120&lt;/span&gt;</code>.</li>
+<li>Listen for <code>"input"</code> on the text area. Unlike <code>"change"</code>, it fires on every key press.</li>
+<li>Work out <code>limit - message.value.length</code> and show it in the span.</li>
+<li>Call <code>left.classList.toggle("low", remaining &lt; 20)</code>. With a second argument, <code>toggle</code> adds the class when the condition is true and removes it when it is false.</li>
+<li>Type, then delete some text, and watch the colour come back.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>maxlength</code> already stops the reader at 120. Your script does not enforce the limit; it only tells the reader where they stand. Good pages do both.</p>
+<figure data-render="projects/counter.html" data-width="560" data-actions="fill:#message|Learning JavaScript one small step at a time, and today the page finally answers back when I type. Next: an app!"><figcaption><b>Project 12.2:</b> fewer than 20 characters left, so the number turns red.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 12.3 · Challenge</p>
+<h3>A quiz that builds itself</h3>
+<p class="project-goal">Write the questions as data, and let JavaScript build the buttons for each one, check the answer, move on, and show the score at the end.</p>
+<p class="project-skills"><strong>You will practise:</strong> arrays of objects, <code>createElement</code> and <code>append</code>, <code>replaceChildren</code>, template literals, and splitting the work into functions.</p>
+<ol class="steps">
+<li>Create an array <code>questions</code>: each item has <code>text</code>, an <code>options</code> array, and <code>answer</code>, the index of the right option.</li>
+<li>Write <code>show()</code>: write the question number and text, clear the old buttons with <code>options.replaceChildren()</code>, then create one button per option with <code>forEach</code>.</li>
+<li>Each button calls <code>choose(index)</code>. Compare it with <code>answer</code>, add a point if it is right, and show the feedback in green or red.</li>
+<li>Move to the next question. When there are none left, call <code>finish()</code> to show <code>Your score: 2 / 3</code>.</li>
+<li>In <code>finish()</code>, add a “Play again” button that resets <code>current</code> and <code>points</code> and calls <code>show()</code>.</li>
+<li>Add two questions of your own to the array. The page grows without a single new line of HTML.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the data (<code>questions</code>, <code>current</code>, <code>points</code>) is the truth, and <code>show()</code> draws it on the page. This idea, “draw the page from the data”, is exactly how React and Vue work.</p>
+<figure data-render="projects/quiz.html" data-width="560" data-actions="click:#options button:nth-child(2);click:#options button:nth-child(2)"><figcaption><b>Project 12.3:</b> after one right answer and one wrong one, the quiz explains and moves on…</figcaption></figure>
+<figure data-render="projects/quiz.html" data-width="560" data-actions="click:#options button:nth-child(2);click:#options button:nth-child(2);click:#options button:nth-child(3)"><figcaption>…and shows the score at the end.</figcaption></figure>
+</div>
+<!-- /projects -->
+
 <h2>Exercises</h2>
 
 <ol class="exercises">
