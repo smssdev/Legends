@@ -34,7 +34,7 @@ ssh_ 'free=$(df -Pm / | awk "NR==2 {print \$4}"); echo "Disk: ${free} MB free"; 
 # moves to the downloads volume, where the new image's public/downloads points. Nothing to do when it is there already.
 ssh_ 'docker exec -u root legends-app-1 sh -c "[ -d storage/app/downloads/bundled ] || { [ -f public/downloads/android.json ] && mkdir -p storage/app/downloads/bundled && cp public/downloads/* storage/app/downloads/bundled/ && chown -R www-data:www-data storage/app/downloads && echo \"The Android app moved to the downloads volume.\"; }" 2>/dev/null' || true
 # [Sprint 66] And brand/icons: the web's build checks its icons against them (Sprint 63).
-git archive --format=tar.gz HEAD Dockerfile .dockerignore backend data web mobile/pubspec.yaml brand/icons docs/design docs/api/frame-golden.json docs/api/director-golden.json deploy | ssh_ 'rm -rf /opt/legends/src.new && mkdir -p /opt/legends/src.new && tar -xz -C /opt/legends/src.new \
+git archive --format=tar.gz HEAD Dockerfile .dockerignore backend data web mobile/pubspec.yaml brand/icons docs/design docs/api/frame-golden.json docs/api/director-golden.json docs/api/samples/liverpool-arsenal-48213.json deploy | ssh_ 'rm -rf /opt/legends/src.new && mkdir -p /opt/legends/src.new && tar -xz -C /opt/legends/src.new \
   && rm -rf /opt/legends/src && mv /opt/legends/src.new /opt/legends/src'
 
 # The secrets, made once on the server: the database password and the app key's seed.
