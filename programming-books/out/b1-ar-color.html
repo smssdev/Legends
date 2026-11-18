@@ -4557,6 +4557,77 @@ console.log(JSON.stringify(cart));</pre></div>
 
 <p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>user.age</code> (أو <code>user["age"]</code>). 2. <code>undefined</code>. 3. نصاً.</p>
 
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">الكائنات هي طريقة البرامج في وصف العالم الحقيقي: كتاب، أو طالب، أو إعدادات مستخدم. تنتقل هذه المشاريع من كائن واحد، إلى قائمة منها، إلى حفظها نصاً.</p>
+
+<div class="project">
+<p class="project-label">مشروع 11.1 · سهل</p>
+<h3>بطاقة مكتبة لكتابك المفضل</h3>
+<p class="project-goal">صِف كتاباً واحداً بكائن، ثم غيّره، وأضف إليه، واطبع كل خصائصه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إنشاء الكائنات، وتغيير الخصائص وإضافتها، و<code>Object.entries</code> و<code>Object.keys</code>.</p>
+<ol class="steps">
+<li>أنشئ كائن <code>book</code> فيه <code>title</code> و<code>author</code> و<code>pages</code> و<code>read: false</code>.</li>
+<li>انتهيت من قراءته للتو: اجعل <code>book.read</code> تساوي <code>true</code>.</li>
+<li>أضف خاصية لم تكن موجودة: <code>book.rating = 5</code>.</li>
+<li>مرّ على <code>Object.entries(book)</code> بـ <code>for (const [key, value] of …)</code> واطبع كل زوج.</li>
+<li>اطبع عدد خصائص الكائن الآن بـ <code>Object.keys(book).length</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>Object.entries</code> تحوّل الكائن إلى مصفوفة أزواج <code>[key, value]</code>، والأقواس المربعة في الحلقة تفك كل زوج إلى متغيرين.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>title: الأمير الصغير
+author: أنطوان دو سانت إكزوبيري
+pages: 312
+read: true
+rating: 5
+عدد الخصائص: 5</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 11.2 · متوسط</p>
+<h3>تقرير الفصل</h3>
+<p class="project-goal">احتفظ بقائمة طلاب ودرجاتهم، واطبع متوسط كل طالب، واعرف الأول على الفصل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مصفوفات الكائنات، والتفكيك داخل الحلقة، ودالة مساعدة، وتتبّع أفضل قيمة حتى الآن.</p>
+<ol class="steps">
+<li>أنشئ مصفوفة <code>students</code>: كل عنصر فيها <code>{ name, marks }</code>، و<code>marks</code> مصفوفة من ثلاثة أرقام.</li>
+<li>اكتب <code>average(marks)</code> بـ <code>reduce</code> و<code>Math.round</code>.</li>
+<li>مرّ بـ <code>for (const { name, marks } of students)</code> واطبع كل اسم مع متوسطه.</li>
+<li>احتفظ بمتغير <code>best</code> يبدأ بـ <code>null</code>، واستبدله بـ <code>{ name, avg }</code> كلما تفوّق عليه طالب.</li>
+<li>بعد الحلقة اطبع الفائز. ثم غيّر الدرجات ليفوز طالب آخر، وتأكد أن التقرير يتبعها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>{ name, avg }</code> اختصار لـ <code>{ name: name, avg: avg }</code>. فحين يحمل المتغير اسم الخاصية نفسه تكتبه مرة واحدة.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>منى → 92
+عمر → 72
+سارة → 95
+الأول على الفصل: سارة (95)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 11.3 · تحدٍّ</p>
+<h3>إعدادات التطبيق محفوظة بصيغة JSON</h3>
+<p class="project-goal">التطبيقات الحقيقية تبدأ بإعدادات افتراضية، ثم تحمّل ما حفظه المستخدم في المرة الماضية، وتطبّق تغييراً، ثم تحفظ النتيجة من جديد. ابنِ هذه الدورة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>JSON.parse</code>، و<code>JSON.stringify</code> بمسافات، ودمج الكائنات بالنشر دون تغيير الأصل.</p>
+<ol class="steps">
+<li>أنشئ <code>defaults</code> فيه <code>theme</code> و<code>fontSize</code> و<code>language</code>.</li>
+<li>افترض أن التطبيق حفظ هذا النص في المرة الماضية: <code>'{"theme":"dark","fontSize":18}'</code>. ولاحظ أنه بلا <code>language</code>.</li>
+<li>ادمجهما: <code>{ ...defaults, ...JSON.parse(saved) }</code>. الخصائص اللاحقة تغلب، فالقيم المحفوظة تحل محل الافتراضية، والناقصة تبقى على افتراضيتها.</li>
+<li>المستخدم يكبّر الخط: أنشئ <code>updated</code> بالنشر و<code>fontSize + 2</code>، واطبع الحجمين لتثبت أن <code>settings</code> لم تتغير.</li>
+<li>أعد <code>updated</code> نصاً بـ <code>JSON.stringify(updated, null, 2)</code>، جاهزاً للحفظ.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الترتيب داخل الأقواس مهم. فلو بدّلت النشرين لمسحت الإعدادات الافتراضية ما حفظه المستخدم، وهذا خطأ شائع جداً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>{ theme: &#x27;dark&#x27;, fontSize: 18, language: &#x27;ar&#x27; }
+قبل: 18 بعد: 20
+{
+  &quot;theme&quot;: &quot;dark&quot;,
+  &quot;fontSize&quot;: 20,
+  &quot;language&quot;: &quot;ar&quot;
+}</pre></div>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">تمارين</h2>
 
 <ol class="exercises">
