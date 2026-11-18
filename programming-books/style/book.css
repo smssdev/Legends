@@ -60,8 +60,8 @@ code { font: 400 0.86em var(--mono); font-variant-ligatures: none; font-feature-
 .title-page p { text-align: center; }
 .tp-series { font: 700 9.5pt var(--head); letter-spacing: 0.12em; text-transform: uppercase; color: var(--brand-2); }
 :root:lang(ar) .tp-series { letter-spacing: 0; }
-.tp-title { font: 700 36pt/1.15 var(--head); margin: 0.2in 0 0.12in;
-  background: linear-gradient(90deg, var(--brand), var(--brand-2)); -webkit-background-clip: text; color: transparent; }
+.tp-title { font: 700 36pt/1.15 var(--head); margin: 0.2in 0 0.12in; color: var(--brand); }
+:root:lang(ar) .tp-sub { font-family: var(--body); }
 .tp-sub { font: 400 13.5pt/1.5 var(--head); color: var(--muted); max-width: 4.6in; }
 .tp-level { font: 700 9.5pt var(--head); color: #fff; background: var(--warn); border-radius: 20pt; padding: 4pt 14pt; margin: 0.15in 0 0.2in; }
 .tp-bit svg { width: 1.6in; height: auto; }

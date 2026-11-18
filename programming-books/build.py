@@ -27,14 +27,14 @@ KEYWORDS = ("const let var if else switch case break default return function for
 TEXT = {
     "en": {
         "contents": "Contents", "part": "Part", "chapter": "Chapter", "sample": "sample chapter",
-        "author": "Author Name", "edition": "First edition", "output": "Terminal",
+        "author": "Soliman Maged Saeed Salah", "edition": "First edition", "output": "Terminal",
         "rights": "All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.",
         "code": "The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.",
         "trademarks": "JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.",
     },
     "ar": {
         "contents": "المحتويات", "part": "الجزء", "chapter": "الفصل", "sample": "فصل نموذجي",
-        "author": "اسم المؤلف", "edition": "الطبعة الأولى", "output": "الطرفية",
+        "author": "سليمان ماجد سعيد صلاح", "edition": "الطبعة الأولى", "output": "الطرفية",
         "rights": "جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.",
         "code": "اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.",
         "trademarks": "JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.",
