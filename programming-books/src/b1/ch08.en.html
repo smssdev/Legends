@@ -1,0 +1,294 @@
+<section class="chapter" data-chapter="8" data-code="b1/ch08/en">
+<p class="chapter-kicker">Chapter 8</p>
+<h1>Values, Variables and Decisions</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>recognise the basic kinds of values JavaScript works with</li>
+<li>store values in variables with <code>let</code> and <code>const</code></li>
+<li>calculate and compare with operators</li>
+<li>make a program choose what to do with <code>if</code>, <code>else</code> and <code>switch</code></li>
+<li>build a small ticket kiosk that decides a price by itself</li>
+</ul>
+</div>
+
+<p class="lead">Every useful program does two things again and again: it remembers information, and it makes decisions based on that information. A cinema kiosk remembers your age and the day of the week, then decides what you should pay. A game remembers your score, then decides whether you have won. In this chapter you will teach JavaScript to do both.</p>
+
+<p>Open your editor and the terminal you set up in Chapter 3. Every example in this chapter is a small file you can run with Node.js. Type the examples yourself instead of copying them: your fingers learn the shape of the language faster than your eyes do.</p>
+
+<h2>8.1 Values: the raw material of a program</h2>
+
+<p>A <dfn>value</dfn> is a single piece of data: a number, a piece of text, or a yes-or-no answer. Values are the raw material that a program works with, in the same way that flour and water are the raw material of bread.</p>
+
+<p>Create a file called <code>values.js</code> and type this program:</p>
+
+<pre data-code="values.js" data-title="values.js"></pre>
+
+<p>Run it from the terminal with <code>node values.js</code>. You should see:</p>
+
+<pre data-out="values.js"></pre>
+
+<p>The command <code>console.log</code> prints a value to the terminal. It is the simplest way to see what your program is doing, and you will use it in every chapter of this book.</p>
+
+<p>The program shows three of the most common kinds of value, which programmers call <dfn>types</dfn>:</p>
+
+<table>
+<thead><tr><th>Type</th><th>What it holds</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td><code>number</code></td><td>Whole numbers and decimals</td><td><code>42</code>, <code>3.5</code>, <code>-7</code></td></tr>
+<tr><td><code>string</code></td><td>Text, written between quotes</td><td><code>"Hello"</code>, <code>'Cairo'</code></td></tr>
+<tr><td><code>boolean</code></td><td>Exactly one of two answers</td><td><code>true</code>, <code>false</code></td></tr>
+</tbody>
+</table>
+
+<p>The word <code>typeof</code> asks JavaScript for the type of a value. You will rarely need it in real programs, but it is a good way to check your understanding while you learn.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Quotes turn anything into text. <code>42</code> is a number, but <code>"42"</code> is a string that happens to contain the characters 4 and 2. This difference causes many beginner bugs, and we will meet it again in Section 8.3.</p></aside>
+
+<h2>8.2 Variables: giving a value a name</h2>
+
+<p>Values on their own disappear as soon as they are used. To keep a value so that you can use it later, you store it in a <dfn>variable</dfn>. A variable is a name that points to a value.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="Two labelled boxes: score holds 10, name holds Sara">
+<g font-family="JetBrains Mono" font-size="15" fill="#111">
+<rect x="20" y="40" width="200" height="70" rx="10" fill="#fff" stroke="#111" stroke-width="2.5"/>
+<rect x="20" y="20" width="90" height="30" rx="6" fill="#111"/>
+<text x="65" y="40" fill="#fff" text-anchor="middle">score</text>
+<text x="120" y="88" font-size="26" text-anchor="middle">10</text>
+<rect x="290" y="40" width="210" height="70" rx="10" fill="#fff" stroke="#111" stroke-width="2.5"/>
+<rect x="290" y="20" width="80" height="30" rx="6" fill="#111"/>
+<text x="330" y="40" fill="#fff" text-anchor="middle">name</text>
+<text x="395" y="88" font-size="24" text-anchor="middle">"Sara"</text>
+<text x="120" y="138" font-size="13" fill="#555" text-anchor="middle">let: can change</text>
+<text x="395" y="138" font-size="13" fill="#555" text-anchor="middle">const: stays the same</text>
+</g>
+</svg>
+<figcaption>Figure 8.1: A variable is a labelled box. The label is the name; the contents are the value.</figcaption>
+</figure>
+
+<p>JavaScript gives you two words for creating a variable: <code>let</code> and <code>const</code>.</p>
+
+<pre data-code="variables.js" data-title="variables.js"></pre>
+<pre data-out="variables.js"></pre>
+
+<p>Read the line <code>score = score + 10;</code> from right to left. JavaScript first works out <code>score + 10</code>, which is <code>0 + 10</code>, and then puts the result back into <code>score</code>. The single equals sign does not mean "is equal to" as it does in mathematics. It means "store the value on the right in the name on the left". Programmers call it the <dfn>assignment operator</dfn>.</p>
+
+<h3>let or const?</h3>
+
+<p>Use <code>let</code> for a value that will change, such as a score, a counter or a total. Use <code>const</code> for a value that will not change once it is set, such as a player's name or the maximum number of players. If you try to change a <code>const</code>, JavaScript stops your program with an error:</p>
+
+<pre data-code="const-error.js" data-title="const-error.js"></pre>
+<pre data-out="const-error.js" class="error"></pre>
+
+<p>This error is a gift, not a punishment. It tells you exactly which line broke a rule you set yourself. Professional developers use <code>const</code> by default and switch to <code>let</code> only when they know a value must change. You should do the same: the fewer things that can change, the fewer things can go wrong.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>You may see the older word <code>var</code> in tutorials and old code. It behaves in surprising ways that we will explain in Book 2. In new code, always use <code>let</code> or <code>const</code>.</p></aside>
+
+<h3>Choosing good names</h3>
+
+<p>A variable name may contain letters, digits, <code>_</code> and <code>$</code>, but it cannot start with a digit, and it cannot be a word that JavaScript already uses, such as <code>if</code> or <code>let</code>. When a name has several words, JavaScript developers join them in <dfn>camelCase</dfn>: the first word in lower case and each following word starting with a capital letter.</p>
+
+<table>
+<thead><tr><th>Good</th><th>Poor</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td><code>ticketPrice</code></td><td><code>tp</code></td><td>Says what it holds</td></tr>
+<tr><td><code>isMember</code></td><td><code>member1</code></td><td><code>is</code> tells you it is a boolean</td></tr>
+<tr><td><code>maxPlayers</code></td><td><code>max_players_number</code></td><td>Short, and follows the camelCase style</td></tr>
+</tbody>
+</table>
+
+<p>Write names for the person who will read your code in six months. Very often, that person is you.</p>
+
+<h2>8.3 Operators: calculating and comparing</h2>
+
+<p>An <dfn>operator</dfn> is a symbol that takes values and produces a new value. You already know most of the arithmetic operators from school.</p>
+
+<pre data-code="operators.js" data-title="operators.js"></pre>
+<pre data-out="operators.js"></pre>
+
+<p>Let us go through the program in three groups.</p>
+
+<h3>Arithmetic</h3>
+
+<p>The operators <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code> add, subtract, multiply and divide. The one that may be new to you is <code>%</code>, the <dfn>remainder</dfn> operator. <code>10 % 4</code> is <code>2</code> because 4 goes into 10 twice with 2 left over. It is more useful than it looks: <code>n % 2</code> is <code>0</code> exactly when <code>n</code> is even.</p>
+
+<h3>Joining text</h3>
+
+<p>When <code>+</code> is used with strings, it joins them together. A cleaner way to build text is a <dfn>template literal</dfn>: a string written between backticks (<code>`</code>) in which anything inside <code>${ }</code> is calculated and inserted. Compare the two styles in the program; most modern code uses template literals because they are easier to read.</p>
+
+<h3>Comparison</h3>
+
+<p>Comparison operators always produce a boolean:</p>
+
+<table>
+<thead><tr><th>Operator</th><th>Meaning</th><th>Example</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td><code>===</code></td><td>is equal to</td><td><code>3 === 3</code></td><td><code>true</code></td></tr>
+<tr><td><code>!==</code></td><td>is not equal to</td><td><code>3 !== 4</code></td><td><code>true</code></td></tr>
+<tr><td><code>&lt;</code> and <code>&gt;</code></td><td>less than, greater than</td><td><code>2 &lt; 1</code></td><td><code>false</code></td></tr>
+<tr><td><code>&lt;=</code> and <code>&gt;=</code></td><td>less or equal, greater or equal</td><td><code>5 &gt;= 5</code></td><td><code>true</code></td></tr>
+</tbody>
+</table>
+
+<p>Look carefully at the last two lines of the output. <code>5 === "5"</code> is <code>false</code>, because a number is not a string. But <code>5 == "5"</code> is <code>true</code>: the double equals quietly converts one value to the other type before comparing. That silent conversion hides bugs.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Always compare with <code>===</code> and <code>!==</code>. Never use <code>==</code> or <code>!=</code>. Most teams enforce this rule automatically with a tool called a linter, which you will set up in Book 2.</p></aside>
+
+<h2>8.4 Decisions with if and else</h2>
+
+<p>Now that you can compare values, you can make your program choose. The <code>if</code> statement runs a block of code only when a condition is <code>true</code>. A cinema charges different prices for different ages; here is how a program decides:</p>
+
+<pre data-code="ticket.js" data-title="ticket.js"></pre>
+<pre data-out="ticket.js"></pre>
+
+<p>JavaScript checks the conditions from top to bottom and stops at the first one that is <code>true</code>:</p>
+
+<figure>
+<svg viewBox="0 0 520 250" role="img" aria-label="Flow chart: age under 4 is free, under 13 is 6, 65 or over is 7, otherwise 10">
+<g font-family="Inter" font-size="14" fill="#111" stroke-linejoin="round">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#111"/></marker></defs>
+<g stroke="#111" stroke-width="2" fill="#fff">
+<rect x="20" y="15" width="150" height="40" rx="20"/>
+<rect x="20" y="75" width="150" height="40" rx="20"/>
+<rect x="20" y="135" width="150" height="40" rx="20"/>
+<rect x="20" y="195" width="150" height="40" rx="8"/>
+<rect x="290" y="15" width="110" height="40" rx="8"/>
+<rect x="290" y="75" width="110" height="40" rx="8"/>
+<rect x="290" y="135" width="110" height="40" rx="8"/>
+</g>
+<g stroke="#111" stroke-width="2" marker-end="url(#a)">
+<line x1="170" y1="35" x2="286" y2="35"/><line x1="170" y1="95" x2="286" y2="95"/><line x1="170" y1="155" x2="286" y2="155"/>
+<line x1="95" y1="55" x2="95" y2="72"/><line x1="95" y1="115" x2="95" y2="132"/><line x1="95" y1="175" x2="95" y2="192"/>
+</g>
+<text x="95" y="40" text-anchor="middle" font-family="JetBrains Mono">age &lt; 4 ?</text>
+<text x="95" y="100" text-anchor="middle" font-family="JetBrains Mono">age &lt; 13 ?</text>
+<text x="95" y="160" text-anchor="middle" font-family="JetBrains Mono">age &gt;= 65 ?</text>
+<text x="95" y="220" text-anchor="middle">price = 10</text>
+<text x="345" y="40" text-anchor="middle">price = 0</text>
+<text x="345" y="100" text-anchor="middle">price = 6</text>
+<text x="345" y="160" text-anchor="middle">price = 7</text>
+<g font-size="12" fill="#555"><text x="228" y="28" text-anchor="middle">yes</text><text x="228" y="88" text-anchor="middle">yes</text><text x="228" y="148" text-anchor="middle">yes</text>
+<text x="108" y="68">no</text><text x="108" y="128">no</text><text x="108" y="188">no</text></g>
+</g>
+</svg>
+<figcaption>Figure 8.2: The conditions are checked in order. The first one that is true wins.</figcaption>
+</figure>
+
+<p>Because the order matters, a 9-year-old is caught by <code>age &lt; 13</code> and never reaches the later checks. If you swapped the first two conditions, a 2-year-old would be charged 6 instead of nothing. When you write a chain of <code>else if</code>, always ask yourself: "which case should win if two are true?"</p>
+
+<p>The parts of the statement are:</p>
+<ul>
+<li><code>if (condition) { ... }</code>: the block runs only when the condition is <code>true</code>.</li>
+<li><code>else if (condition) { ... }</code>: checked only when every earlier condition was <code>false</code>. You can have as many as you need.</li>
+<li><code>else { ... }</code>: runs when nothing above was <code>true</code>. It is optional, and there can be only one.</li>
+</ul>
+
+<p>Notice also that <code>price</code> is declared with <code>let</code> and no value. It starts out as the special value <code>undefined</code>, meaning "nothing yet", and each branch gives it a real value.</p>
+
+<aside class="box try"><p class="box-title">Try it</p><p>Change <code>age</code> to 2, 13, 40 and 70, and run the program after each change. Predict the output before you press Enter. Being able to predict what code will do is the most important skill in this book.</p></aside>
+
+<h2>8.5 Combining conditions</h2>
+
+<p>Real decisions often depend on more than one thing. Three <dfn>logical operators</dfn> let you combine booleans:</p>
+
+<table>
+<thead><tr><th>Operator</th><th>Name</th><th>True when</th></tr></thead>
+<tbody>
+<tr><td><code>&amp;&amp;</code></td><td>and</td><td>both sides are true</td></tr>
+<tr><td><code>||</code></td><td>or</td><td>at least one side is true</td></tr>
+<tr><td><code>!</code></td><td>not</td><td>the value is false (it flips true and false)</td></tr>
+</tbody>
+</table>
+
+<pre data-code="logic.js" data-title="logic.js"></pre>
+<pre data-out="logic.js"></pre>
+
+<p>The first <code>if</code> gives half price only to members, and only on Tuesdays. The second reads naturally as "if not has ticket". The last two lines use a common trick that needs a little more explanation.</p>
+
+<h3>Truthy and falsy</h3>
+
+<p>In a condition, JavaScript accepts any value, not only <code>true</code> and <code>false</code>. Six values count as false, and programmers call them <dfn>falsy</dfn>: <code>false</code>, <code>0</code>, <code>""</code> (an empty string), <code>null</code>, <code>undefined</code> and <code>NaN</code>. Every other value is <dfn>truthy</dfn>.</p>
+
+<p>The <code>||</code> operator returns the first truthy value it finds. Because <code>nickname</code> is an empty string, which is falsy, <code>nickname || "Guest"</code> gives <code>"Guest"</code>. This is a quick way to provide a default value.</p>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>The default trick also replaces <code>0</code>, because <code>0</code> is falsy. If a score of zero is a real score, <code>score || 100</code> will wrongly give 100. Book 2 introduces the <code>??</code> operator, which only replaces <code>null</code> and <code>undefined</code>.</p></aside>
+
+<h2>8.6 Choosing between many fixed values with switch</h2>
+
+<p>When you compare one value against a list of exact possibilities, a <code>switch</code> statement can be easier to read than a long chain of <code>else if</code>:</p>
+
+<pre data-code="switch.js" data-title="switch.js"></pre>
+<pre data-out="switch.js"></pre>
+
+<p>JavaScript jumps to the <code>case</code> that matches <code>size</code> using <code>===</code>, and runs the code from there. The <code>break</code> statement ends the <code>switch</code>. If you forget it, JavaScript carries on into the next case, which is almost never what you want. The <code>default</code> case runs when nothing matches.</p>
+
+<p>Use <code>switch</code> for exact matches on one value, such as sizes, menu choices or days. Use <code>if</code> for ranges such as ages, or for conditions that involve several variables.</p>
+
+<h2>8.7 Project: a ticket kiosk</h2>
+
+<p>Let us put everything together. The kiosk below decides the price of a cinema ticket with four rules:</p>
+
+<ol>
+<li>Children under 4 enter free.</li>
+<li>Children under 13 and adults aged 65 or over pay 6; everyone else pays 10.</li>
+<li>Members pay half price on Tuesdays.</li>
+<li>Shows that start at 22:00 or later are 1 cheaper, unless the ticket is already free.</li>
+</ol>
+
+<pre data-code="kiosk.js" data-title="kiosk.js"></pre>
+<pre data-out="kiosk.js"></pre>
+
+<p>Follow the program as the computer does. The visitor is 34, so the first decision sets <code>price</code> to 10. They are a member and it is Tuesday, so the price is halved to 5. The show starts at 22:00, so one more is taken off, and the visitor pays 4.</p>
+
+<p>The last line uses one new piece of syntax, the <dfn>conditional operator</dfn>, often called the <em>ternary</em>:</p>
+
+<pre class="plain">condition ? valueIfTrue : valueIfFalse</pre>
+
+<p>It is a compact <code>if</code>/<code>else</code> that produces a value. Use it only for short, simple choices like this one; when either side grows long, a normal <code>if</code> is clearer.</p>
+
+<aside class="box try"><p class="box-title">Try it</p><p>Change the values at the top of <code>kiosk.js</code> so that the visitor gets in free. Then find a combination that costs exactly 3. Is there more than one?</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>if (age = 18)</code></td><td>Assigns 18 instead of comparing, so the condition is always true</td><td>Use <code>===</code></td></tr>
+<tr><td>Comparing <code>"5"</code> with <code>5</code></td><td><code>===</code> gives <code>false</code></td><td>Make sure both values have the same type</td></tr>
+<tr><td>Wrong order in <code>else if</code></td><td>An earlier, wider condition catches cases meant for a later one</td><td>Put the narrowest conditions first</td></tr>
+<tr><td>Forgetting <code>break</code></td><td>The next <code>case</code> runs too</td><td>End every <code>case</code> with <code>break</code></td></tr>
+<tr><td>Changing a <code>const</code></td><td><code>TypeError: Assignment to constant variable</code></td><td>Use <code>let</code> if the value must change</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A <strong>value</strong> is one piece of data. The basic types are <code>number</code>, <code>string</code> and <code>boolean</code>.</li>
+<li>A <strong>variable</strong> is a name for a value. Use <code>const</code> by default and <code>let</code> when the value must change.</li>
+<li>The single <code>=</code> stores a value; it does not compare.</li>
+<li><strong>Operators</strong> calculate (<code>+ - * / %</code>), join text, and compare. Always compare with <code>===</code>.</li>
+<li><code>if</code>, <code>else if</code> and <code>else</code> choose between blocks of code. The first true condition wins, so order matters.</li>
+<li><code>&amp;&amp;</code>, <code>||</code> and <code>!</code> combine conditions. Six values are falsy; every other value is truthy.</li>
+<li><code>switch</code> matches one value against fixed cases. End each case with <code>break</code>.</li>
+</ul>
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a program with a <code>const</code> called <code>temperature</code>. Print <code>"Cold"</code> below 15, <code>"Warm"</code> from 15 to 29, and <code>"Hot"</code> from 30 up.</li>
+<li><span class="level">Easy</span> Predict the output of each line, then check with Node: <code>7 % 3</code>, <code>"7" + 3</code>, <code>7 === "7"</code>, <code>!true</code>.</li>
+<li><span class="level">Medium</span> A number is even when <code>n % 2 === 0</code>. Print whether a number is even or odd, and whether it is positive, negative or zero.</li>
+<li><span class="level">Medium</span> Rewrite <code>switch.js</code> using <code>if</code> and <code>else if</code>. Which version do you find easier to read, and why?</li>
+<li><span class="level">Challenge</span> Add a fifth rule to the kiosk: on Fridays everyone pays 2 extra, but the price can never be more than 10. Test at least four different visitors.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book's code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 9</p>
+<p>Your kiosk can serve only one visitor at a time. In the next chapter you will learn to store whole lists of values in arrays, and to repeat work with loops, so the kiosk can serve a queue of a hundred visitors with the same few lines of code.</p>
+</div>
+</section>
