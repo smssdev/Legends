@@ -1,0 +1,54 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">الانتظار جزء من كل تطبيق حقيقي: انتظار مؤقت، أو ملف، أو خادم في الطرف الآخر من العالم. تعلّمك هذه المشاريع أن تنتظر دون أن يتجمد البرنامج، وأن تنتظر عدة أشياء معاً، وأن تنجو حين لا يأتي الرد أبداً.</p>
+
+<div class="project">
+<p class="project-label">مشروع 13.1 · سهل</p>
+<h3>عدّ تنازلي ينتظر بأدب</h3>
+<p class="project-goal">عُدّ تنازلياً من 3 مع توقف بين الأرقام، ثم قل «انطلق!»، واكتشف ماذا يفعل باقي البرنامج أثناء الانتظار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تغليف <code>setTimeout</code> في وعد (promise)، و<code>await</code> داخل حلقة، وترتيب تنفيذ الكود غير المتزامن.</p>
+<ol class="steps">
+<li>انسخ الدالة المساعدة <code>wait(ms)</code> من هذا الفصل: تُرجع وعداً يتحقق بعد <code>ms</code> ملي ثانية.</li>
+<li>اكتب <code>async function countdown(from)</code> فيها حلقة <code>for</code> تطبع <code>n</code> ثم <code>await wait(200)</code>.</li>
+<li>بعد الحلقة اطبع «انطلق!».</li>
+<li>استدعِ <code>countdown(3)</code>، وفي السطر التالي اطبع «استعد…».</li>
+<li>قبل التشغيل خمّن ترتيب الأسطر. ثم شغّله واشرح المفاجأة في جملة واحدة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الدالة <code>async</code> تعمل حتى أول <code>await</code> فيها، ثم تعيد التحكم. ولهذا يتسلل «استعد…» بعد الرقم 3.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/countdown.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 13.2 · متوسط</p>
+<h3>الفطور: واحداً بعد الآخر أم كله معاً؟</h3>
+<p class="project-goal">حضّر الشاي والخبز والبيض، مرة واحداً بعد الآخر ومرة كلها في الوقت نفسه، وقِس الفرق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> دوال تُرجع قيمها عبر الوعود، و<code>Promise.all</code>، وقياس زمن الكود بـ <code>Date.now()</code>.</p>
+<ol class="steps">
+<li>اكتب <code>async function make(item, ms)</code> تنتظر <code>ms</code> ثم تُرجع <code>item</code>.</li>
+<li>اكتب <code>seconds(start)</code>: الزمن منذ <code>start</code> مقرباً إلى منزلة عشرية واحدة.</li>
+<li>واحداً بعد الآخر: انتظر بـ <code>await</code> الأطباق الثلاثة بالدور (300 و400 و500 ملي ثانية) واطبع الزمن.</li>
+<li>كلها معاً: ابدأ الثلاثة داخل <code>Promise.all([…])</code>، وانتظرها بـ <code>await</code>، واطبع الزمن من جديد.</li>
+<li><code>Promise.all</code> تعيد مصفوفة النتائج بالترتيب نفسه. اطبعها موصولة بـ <code>" + "</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> واحداً بعد الآخر يأخذ <em>مجموع</em> الأزمنة، وكلها معاً يأخذ <em>أطولها</em> فقط. فحين تحتاج الصفحة ثلاث بيانات مستقلة، حمّلها معاً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/breakfast.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 13.3 · تحدٍّ</p>
+<h3>تقرير طقس لا ينكسر</h3>
+<p class="project-goal">اسأل واجهة طقس صغيرة عن ثلاث مدن، إحداها غير موجودة، وأكمل التقرير رغم ذلك.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>fetch</code>، وفحص <code>response.ok</code>، ورمي أخطائك بنفسك، و<code>try</code>/<code>catch</code> داخل حلقة.</p>
+<ol class="steps">
+<li>ابنِ الخادم الصغير كما في القسم 13.3: <code>/api/weather/cairo</code> يُرجع JSON، والمدينة المجهولة تُرجع 404.</li>
+<li>أعد استخدام <code>getJson(url)</code>: ترمي <code>Error</code> حين تكون <code>response.ok</code> خاطئة.</li>
+<li>اكتب <code>async function report(names)</code>: اطبع رسالة تحميل، ثم مرّ على الأسماء وانتظر كل مدينة بـ <code>await</code>.</li>
+<li>ضع <code>try</code>/<code>catch</code> <em>داخل</em> الحلقة، فتطبع المدينة الخاطئة «لا بيانات» وتكمل الحلقة.</li>
+<li>اطبع سطراً أخيراً ليعرف المستخدم أن التقرير اكتمل. ثم جرّب نقل <code>try</code> خارج الحلقة وانظر ماذا تخسر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مكان <code>try</code> يقرر كم يكسر الخطأ الواحد. فحول الحلقة كلها توقف مدينة خاطئة كل شيء، وحول كل طلب لا تكلّف إلا سطراً واحداً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/weather.js"></pre>
+</div>

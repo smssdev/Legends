@@ -5291,6 +5291,73 @@ start();</pre>
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. Because <code>setTimeout</code> does not wait: it schedules the function for later, and the program moves straight on. 2. No. <code>fetch</code> only fails when the request cannot be made at all; you must check <code>response.ok</code>. 3. Inside an <code>async</code> function, or at the top level of a module.</p>
 
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Waiting is part of every real app: for a timer, for a file, for a server on the other side of the world. These projects teach you to wait without freezing, to wait for several things at once, and to survive when the answer never comes.</p>
+
+<div class="project">
+<p class="project-label">Project 13.1 · Easy</p>
+<h3>A countdown that waits politely</h3>
+<p class="project-goal">Count down from 3 with a pause between numbers, then say “Go!”, and discover what the rest of the program does while it waits.</p>
+<p class="project-skills"><strong>You will practise:</strong> wrapping <code>setTimeout</code> in a promise, <code>await</code> inside a loop, and the order in which async code runs.</p>
+<ol class="steps">
+<li>Copy the <code>wait(ms)</code> helper from this chapter: it returns a promise that resolves after <code>ms</code> milliseconds.</li>
+<li>Write <code>async function countdown(from)</code> with a <code>for</code> loop that prints <code>n</code>, then <code>await wait(200)</code>.</li>
+<li>After the loop, print “Go!”.</li>
+<li>Call <code>countdown(3)</code>, and on the next line print “Get ready…”.</li>
+<li>Before you run it, guess the order of the lines. Then run it and explain the surprise in one sentence.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> an <code>async</code> function runs until its first <code>await</code>, then hands control back. That is why “Get ready…” sneaks in after the 3.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>3…
+Get ready…
+2…
+1…
+Go!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 13.2 · Medium</p>
+<h3>Breakfast: one by one, or all at once?</h3>
+<p class="project-goal">Make tea, toast and eggs, first one after another and then all at the same time, and measure the difference.</p>
+<p class="project-skills"><strong>You will practise:</strong> functions that return values through promises, <code>Promise.all</code>, and timing code with <code>Date.now()</code>.</p>
+<ol class="steps">
+<li>Write <code>async function make(item, ms)</code> that waits <code>ms</code> and returns <code>item</code>.</li>
+<li>Write <code>seconds(start)</code>: the time since <code>start</code>, rounded to one decimal place.</li>
+<li>One after another: <code>await</code> the three dishes in turn (300, 400 and 500 ms) and print the time.</li>
+<li>All at once: start all three inside <code>Promise.all([…])</code>, <code>await</code> it, and print the time again.</li>
+<li><code>Promise.all</code> gives back an array of results in the same order. Print them joined with <code>" + "</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> one by one takes the <em>sum</em> of the times; all at once takes only the <em>longest</em>. When a page needs three independent pieces of data, load them together.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>One after another: 1.2 seconds
+All at once: 0.5 seconds
+tea + toast + eggs</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 13.3 · Challenge</p>
+<h3>A weather report that does not break</h3>
+<p class="project-goal">Ask a small weather API about three cities, one of which does not exist, and finish the report anyway.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>fetch</code>, checking <code>response.ok</code>, throwing your own errors, and <code>try</code>/<code>catch</code> inside a loop.</p>
+<ol class="steps">
+<li>Build the tiny server the same way as in section 13.3: <code>/api/weather/cairo</code> returns JSON, and an unknown city returns 404.</li>
+<li>Reuse <code>getJson(url)</code>: it throws an <code>Error</code> when <code>response.ok</code> is false.</li>
+<li>Write <code>async function report(names)</code>: print a loading message, then loop over the names and <code>await</code> each city.</li>
+<li>Put the <code>try</code>/<code>catch</code> <em>inside</em> the loop, so one bad city prints “no data” and the loop carries on.</li>
+<li>Print a final line so the user knows the report is complete. Then try moving the <code>try</code> outside the loop and see what is lost.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> where you put <code>try</code> decides how much one failure can break. Around the whole loop, one bad city stops everything; around each request, it costs only one line.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Loading the weather…
+Cairo: 31°C, sunny
+atlantis: no data (HTTP 404)
+London: 14°C, light rain
+Report finished.</pre></div>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">Exercises</h2>
 
 <ol class="exercises">
