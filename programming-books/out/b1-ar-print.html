@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "الفصل 5: HTML: بنية الصفحة"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "الفصل 6: CSS: تنسيق الصفحة"; } }
+@page ch06:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: القيم والمتغيرات والقرارات"; } }
 @page ch08:first { @top-center { content: none; } }
 </style></head>
@@ -1414,7 +1416,7 @@ text/html; charset=utf-8
 
 <figure>
 <svg viewBox="0 0 520 200" role="img" aria-label="تخطيط صفحة فيها header وبداخله nav، وmain وبداخله article، وfooter">
-<g font-family="JetBrains Mono" font-size="13" font-weight="700">
+<g font-family="JetBrains Mono" font-size="13" font-weight="700" direction="ltr">
 <rect x="20" y="10" width="480" height="58" rx="8" fill="#eef2ff" stroke="#2b2b2b" stroke-width="2"/><text x="488" y="30" fill="#2b2b2b" text-anchor="end">&lt;header&gt;</text>
 <rect x="35" y="22" width="235" height="34" rx="6" fill="#fff" stroke="#2b2b2b" stroke-width="2"/><text x="258" y="44" fill="#2b2b2b" text-anchor="end">&lt;nav&gt;</text>
 <rect x="20" y="78" width="480" height="76" rx="8" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="488" y="98" fill="#2b2b2b" text-anchor="end">&lt;main&gt;</text>
@@ -1571,6 +1573,421 @@ text/html; charset=utf-8
 <div class="next">
 <p class="next-title">في الفصل 6</p>
 <p>لصفحتك التعريفية هيكل رائع. والآن تعطيها CSS الألوان والخطوط والمسافات والشخصية. وفي آخر الفصل 6 لن تكاد تعرفها.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b1/ch06/ar">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">الفصل 6</p><h1>CSS: تنسيق الصفحة</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تكتب قواعد CSS وتربط ملف التنسيق بالصفحة</li>
+<li>تختار العناصر بمحددات النوع والصنف والمعرّف</li>
+<li>تستخدم الألوان والخطوط والوحدات كالمحترفين</li>
+<li>تفهم نموذج الصندوق: المحتوى والحشوة والحدود والهامش</li>
+<li>تحوّل صفحتك التعريفية البسيطة إلى صفحة جميلة</li>
+</ul>
+</div>
+
+<p class="lead">في آخر الفصل الماضي كانت لصفحتك التعريفية بنية مثالية، بلا أي شخصية. وفي هذا الفصل ستعطيها الألوان والخطوط والمسافات والزوايا المستديرة والظلال. إنه أكثر فصول الكتاب بصرية: كل سطر تكتبه يغيّر شيئاً تراه بعينك.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>هذه الصورة هي هدفنا: HTML نفسها، ومعها ملف CSS واحد. حين رأيت لأول مرة ما تستطيع CSS فعله، أضاء هوائي رأسي!</p></div></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span></div><img src="img/b1-ch06-ar-profile.html.png" alt=""><figcaption><b>الشكل 6.1:</b> صفحة الفصل 5 التعريفية في آخر هذا الفصل. قارنها بالشكل 5.9: لم يتغير في HTML شيء.</figcaption></figure>
+
+<h2><span class="sec">6.1</span><span>ما CSS؟</span></h2>
+
+<p><dfn>CSS</dfn> اختصار «أوراق الأنماط المتتالية». HTML تقول ما <em>هي</em> كل قطعة من المحتوى، وCSS تقول كيف <em>تبدو</em>. والفصل بين الاثنين فكرة قوية: تستطيع أن تعيد تصميم موقع كامل بتغيير ملف CSS واحد، دون أن تلمس صفحة واحدة.</p>
+
+<p>وCSS قائمة من <dfn>القواعد</dfn>، كل قاعدة تقول «هذه العناصر يجب أن تبدو هكذا»:</p>
+
+<figure>
+<svg viewBox="0 0 520 170" role="img" aria-label="قاعدة CSS: المحدد، وكتلة التصريحات فيها الخاصية والقيمة">
+<g font-family="JetBrains Mono" font-size="18" direction="ltr">
+<text x="300" y="58"><tspan fill="#2b2b2b" font-weight="700">h1</tspan><tspan fill="#1e1b2e"> {</tspan></text>
+<text x="330" y="90"><tspan fill="#c2410c">color</tspan><tspan fill="#1e1b2e">: </tspan><tspan fill="#15803d">#2b2b2b</tspan><tspan fill="#1e1b2e">;</tspan></text>
+<text x="330" y="120"><tspan fill="#c2410c">font-size</tspan><tspan fill="#1e1b2e">: </tspan><tspan fill="#15803d">2rem</tspan><tspan fill="#1e1b2e">;</tspan></text>
+<text x="300" y="150" fill="#1e1b2e">}</text>
+</g>
+<g font-family="Cairo" font-size="13" font-weight="700" text-anchor="end" direction="ltr">
+<path d="M318,30 L318,22 L250,22" stroke="#2b2b2b" stroke-width="2.5" fill="none"/><text x="244" y="27" fill="#2b2b2b">المحدد: أي العناصر</text>
+<path d="M378,96 L378,100 L250,100" stroke="#c2410c" stroke-width="2.5" fill="none"/><text x="244" y="105" fill="#c2410c">الخاصية: ماذا نغيّر</text>
+<path d="M430,78 L250,62" stroke="#15803d" stroke-width="2.5" fill="none"/><text x="244" y="67" fill="#15803d">القيمة: كيف</text>
+<path d="M290,40 L284,40 L284,150 L290,150" stroke="#2b2b2b" stroke-width="2.5" fill="none"/><text x="244" y="141" fill="#2b2b2b">كتلة التصريحات { … }</text>
+</g>
+</svg>
+<figcaption><b>الشكل 6.2:</b> أجزاء قاعدة CSS، وكل سطر <code>property: value;</code> يُسمى تصريحاً.</figcaption>
+</figure>
+
+<p>اقرأ هذه القاعدة هكذا: «كل <code>h1</code> لونه <code>#2b2b2b</code> وحجم خطه <code>2rem</code>». وكل تصريح ينتهي بفاصلة منقوطة، والكتلة كلها بين قوسين معقوصين.</p>
+
+<h2><span class="sec">6.2</span><span>ربط CSS بالصفحة</span></h2>
+
+<p>هناك ثلاث طرق لإضافة CSS، والمحترفون يستخدمون الثالثة غالباً:</p>
+
+<ol>
+<li><strong>مباشرة في العنصر</strong> بالخاصية <code>style</code>: <code>&lt;p style="color: red"&gt;</code>. سريعة، لكنها تخلط الشكل بالمحتوى ويصعب تغييرها لاحقاً.</li>
+<li><strong>في عنصر <code>&lt;style&gt;</code></strong> داخل <code>&lt;head&gt;</code>. مفيدة للأمثلة الصغيرة، ونستخدمها في أمثلة هذا الفصل القصيرة.</li>
+<li><strong>في ملف <code>.css</code> مستقل</strong> مربوط من <code>&lt;head&gt;</code>. فملف تنسيق واحد ينسّق كل صفحات الموقع، ويحمّله المتصفح مرة واحدة.</li>
+</ol>
+
+<pre class="plain">&lt;link rel="stylesheet" href="style.css"&gt;</pre>
+
+<p>أضف هذا السطر داخل <code>&lt;head&gt;</code> في <code>profile.html</code>، وأنشئ ملف <code>style.css</code> فارغاً بجانبه، وصرت جاهزاً لبدء التنسيق.</p>
+
+<h2><span class="sec">6.3</span><span>المحددات: اختيار ما ننسّقه</span></h2>
+
+<p><dfn>المحدد</dfn> (selector) يقرر العناصر التي تنطبق عليها القاعدة. وأربعة أنواع من المحددات تغطي كل ما تحتاجه تقريباً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">selectors.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;ar&quot;</span> <span class="n">dir</span>=<span class="s">&quot;rtl&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>المحددات<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      h1 {
+        color: #2b2b2b;
+      }
+      .intro {
+        font-style: italic;
+      }
+      #featured {
+        background-color: #fef3c7;
+      }
+      li .badge {
+        color: white;
+        background-color: #2b2b2b;
+        font-size: 0.8rem;
+      }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>قائمة قراءة بِت<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;intro&quot;</span><span class="k">&gt;</span>كتب يجب أن يقرأها كل مطور جديد.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;ul</span><span class="k">&gt;</span>
+        <span class="k">&lt;li</span> <span class="n">id</span>=<span class="s">&quot;featured&quot;</span><span class="k">&gt;</span>البرمجة من الصفر <span class="k">&lt;span</span> <span class="n">class</span>=<span class="s">&quot;badge&quot;</span><span class="k">&gt;</span>جديد<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/li</span><span class="k">&gt;</span>
+        <span class="k">&lt;li</span><span class="k">&gt;</span>هندسة الواجهات باحتراف<span class="k">&lt;/li</span><span class="k">&gt;</span>
+        <span class="k">&lt;li</span><span class="k">&gt;</span>هندسة الخوادم باحتراف<span class="k">&lt;/li</span><span class="k">&gt;</span>
+    <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>تُحدَّث هذه القائمة كل شهر.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>selectors.html</span></div><img src="img/b1-ch06-ar-selectors.html.png" alt=""><figcaption><b>الشكل 6.3:</b> كل قاعدة تنسّق مجموعة مختلفة من العناصر.</figcaption></figure>
+
+<table>
+<thead><tr><th>المحدد</th><th>مثال</th><th>يختار</th></tr></thead>
+<tbody>
+<tr><td>النوع</td><td><code>h1</code></td><td>كل <code>&lt;h1&gt;</code> في الصفحة</td></tr>
+<tr><td>الصنف</td><td><code>.intro</code></td><td>كل عنصر فيه <code>class="intro"</code></td></tr>
+<tr><td>المعرّف</td><td><code>#featured</code></td><td>العنصر الوحيد الذي فيه <code>id="featured"</code></td></tr>
+<tr><td>السليل</td><td><code>li .badge</code></td><td>العناصر ذات الصنف <code>badge</code> الموجودة <em>داخل</em> <code>&lt;li&gt;</code></td></tr>
+</tbody>
+</table>
+
+<p>الأصناف (classes) هي حصان العمل في CSS. فالعنصر يمكن أن يأخذ أكثر من صنف تفصلها مسافات (<code>class="card highlighted"</code>)، وكثير من العناصر تشترك في صنف واحد. أما المعرّف (id) فيجب أن يكون فريداً في الصفحة، فهو أنسب للروابط مثل <code>#about</code> منه للتنسيق.</p>
+
+<h3>حين تختلف القواعد: التتالي</h3>
+
+<p>أحياناً تحاول قاعدتان ضبط الخاصية نفسها على العنصر نفسه، فتحسم CSS الخلاف بـ <dfn>التتالي</dfn> (cascade)، ومنه جاء حرف C في اسمها. وباختصار: المحدد الأكثر <dfn>تحديداً</dfn> يفوز (المعرّف يغلب الصنف، والصنف يغلب النوع)، وإن تساوى محددان في التحديد فاز الذي يأتي بعد الآخر.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>نسّق بالأصناف غالباً، واجعل محدداتك قصيرة. فالمحددات الطويلة شديدة التحديد يصعب تجاوزها لاحقاً، وتقودك إلى معارك محبطة مع CSS التي كتبتها بنفسك. وأدوات المطورين تريك بالضبط أي قاعدة فازت: اختر عنصراً في لوحة Elements وانظر إلى قسم <strong>Styles</strong>، حيث تظهر التصريحات الخاسرة مشطوبة.</p></aside>
+
+<p>وبعض الخصائص <dfn>تُورَّث</dfn>: إن ضبطت <code>color</code> أو <code>font-family</code> على <code>body</code> أخذ كل عنصر بداخله القيمة نفسها ما لم تقل قاعدة غير ذلك. ولهذا تضبط الخطوط مرة واحدة على <code>body</code>.</p>
+
+<h2><span class="sec">6.4</span><span>الألوان</span></h2>
+
+<p>تفهم CSS الألوان بأكثر من صيغة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">colors.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>الألوان<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;named&quot;</span><span class="k">&gt;</span>اسم: tomato<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;hex&quot;</span><span class="k">&gt;</span>سداسي: #2b2b2b<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;rgb&quot;</span><span class="k">&gt;</span>RGB: rgb(15, 118, 110)<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;alpha&quot;</span><span class="k">&gt;</span>مع شفافية<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>colors.html</span></div><img src="img/b1-ch06-ar-colors.html.png" alt=""><figcaption><b>الشكل 6.4:</b> أربع طرق لكتابة اللون.</figcaption></figure>
+
+<ul>
+<li><strong>الأسماء</strong> مثل <code>tomato</code> و<code>white</code>. سهلة، لكنها نحو 140 اسماً فقط.</li>
+<li><strong>الرموز السداسية</strong> مثل <code>#2b2b2b</code>: ثلاثة أزواج من الأرقام الست عشرية للأحمر والأخضر والأزرق. وهي ما يعطيك إياه المصممون عادة.</li>
+<li><strong><code>rgb()</code></strong> بثلاثة أرقام من 0 إلى 255. و<code>rgba()</code> تضيف رابعاً للشفافية، من 0 (غير مرئي) إلى 1 (معتم تماماً).</li>
+</ul>
+
+<p>رأيت في الفصل 1 أن كل نقطة على الشاشة تُحفظ أرقاماً للأحمر والأخضر والأزرق. والرمز السداسي و<code>rgb()</code> طريقتان فقط لكتابة هذه الأرقام الثلاثة.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>يجب أن يبرز النص عن خلفيته. فالنص الرمادي الفاتح على خلفية بيضاء قد يبدو أنيقاً لك، لكنه صعب القراءة على كثير من الناس، خصوصاً على هاتف في الشمس. وأدوات المطورين تقيس <strong>نسبة التباين</strong> للون: اجعلها 4.5 إلى 1 على الأقل للنص العادي. وستعرف المزيد في الفصل 16.</p></aside>
+
+<h2><span class="sec">6.5</span><span>النصوص والخطوط</span></h2>
+
+<table>
+<thead><tr><th>الخاصية</th><th>مثال</th><th>ماذا تفعل</th></tr></thead>
+<tbody>
+<tr><td><code>font-family</code></td><td><code>Tahoma, sans-serif</code></td><td>نوع الخط، مع بدائل إن لم يوجد الأول</td></tr>
+<tr><td><code>font-size</code></td><td><code>1.25rem</code></td><td>حجم الحروف</td></tr>
+<tr><td><code>font-weight</code></td><td><code>700</code></td><td>السماكة: 400 عادي و700 عريض</td></tr>
+<tr><td><code>line-height</code></td><td><code>1.6</code></td><td>المسافة بين الأسطر، مضاعفاً لحجم الخط</td></tr>
+<tr><td><code>text-align</code></td><td><code>center</code></td><td>المحاذاة: <code>start</code> و<code>center</code> و<code>end</code> و<code>justify</code></td></tr>
+<tr><td><code>text-decoration</code></td><td><code>none</code></td><td>الخطوط تحت النص، وكثيراً ما تُزال من الروابط</td></tr>
+</tbody>
+</table>
+
+<p>قائمة الخطوط في <code>font-family</code> قائمة أمنيات: يستخدم المتصفح أول خط يجده عنده. والخط العربي يحتاج عناية خاصة، فليس كل خط فيه حروف عربية؛ وفي ملف مشروعنا جعلنا <code>"Segoe UI"</code> و<code>Tahoma</code> أولاً لأنهما يعرضان العربية جيداً على Windows، ثم <code>system-ui</code>، وهو خط نظام التشغيل نفسه. واختم القائمة دائماً بعائلة عامة مثل <code>sans-serif</code> أو <code>serif</code>.</p>
+
+<h3>الوحدات: px وrem و%</h3>
+
+<p>الأحجام تحتاج وحدات، وأكثر ثلاث ستستخدمها:</p>
+<ul>
+<li><code>px</code>: البكسل. ثابتة ويمكن توقعها، وجيدة للحدود والتفاصيل الصغيرة.</li>
+<li><code>rem</code>: مضاعف لحجم الخط الجذري، وهو 16 بكسل افتراضياً. فـ <code>1.5rem</code> تساوي 24 بكسل. استخدم <code>rem</code> لأحجام الخطوط، لأنها تحترم من يكبّر حجم النص الافتراضي في متصفحه.</li>
+<li><code>%</code>: نسبة من حجم العنصر الأب، وجيدة للعروض.</li>
+</ul>
+
+<h2><span class="sec">6.6</span><span>نموذج الصندوق</span></h2>
+
+<p>هذه أهم فكرة في تخطيط CSS: <strong>كل عنصر صندوق مستطيل</strong>. العناوين والفقرات والصور والروابط كلها صناديق، ولكل صندوق أربع طبقات:</p>
+
+<figure>
+<svg viewBox="0 0 520 230" role="img" aria-label="نموذج الصندوق: الهامش حول الحدود حول الحشوة حول المحتوى">
+<rect x="20" y="10" width="480" height="210" rx="6" fill="#efefef" stroke="#2b2b2b" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="70" y="45" width="380" height="140" rx="4" fill="#2b2b2b"/>
+<rect x="80" y="55" width="360" height="120" fill="#efefef"/>
+<rect x="130" y="85" width="260" height="60" fill="#fff" stroke="#1e1b2e" stroke-width="1.5"/>
+<g font-family="Cairo" font-size="13.5" font-weight="700" text-anchor="middle">
+<text x="260" y="33" fill="#2b2b2b">الهامش (margin): مسافة خارج الحدود</text>
+<text x="260" y="78" fill="#2b2b2b">الحشوة (padding): مسافة داخل الحدود</text>
+<text x="260" y="118" fill="#1e1b2e">المحتوى</text>
+<text x="260" y="137" fill="#5b5873" font-size="11.5" font-weight="400">نصوص، صور…</text>
+<text x="260" y="168" fill="#2b2b2b" font-size="11.5" font-weight="400">الحشوة تأخذ لون الخلفية</text>
+<text x="45" y="120" fill="#2b2b2b" transform="rotate(-90 45 120)">الحدود (border)</text>
+</g>
+</svg>
+<figcaption><b>الشكل 6.5:</b> نموذج الصندوق. من الداخل إلى الخارج: المحتوى، ثم الحشوة، ثم الحدود، ثم الهامش.</figcaption>
+</figure>
+
+<div class="listing" dir="ltr"><div class="listing-title">box.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;box&quot;</span><span class="k">&gt;</span>أنا صندوق له حشوة وحدود وهامش.<span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>box.html</span></div><img src="img/b1-ch06-ar-box.html.png" alt=""><figcaption><b>الشكل 6.6:</b> صندوق بحشوة 20px وحدود 6px وهامش 30px.</figcaption></figure>
+
+<p>افتح <code>box.html</code> في متصفحك، وافتح أدوات المطورين، واختر الصندوق. في أسفل قسم Styles ترسم أدوات المطورين هذا المخطط بأرقامك الحقيقية بالضبط، وهو أفضل طريقة لتفهم لماذا يقف شيء في المكان الخطأ.</p>
+
+<p>ويمكن ضبط الهوامش والحشوة لكل جهة، أو للجهات كلها مرة واحدة:</p>
+
+<pre class="plain">padding: 20px;               /* all four sides */
+padding: 10px 20px;          /* top/bottom 10, sides 20 */
+padding: 10px 20px 30px;     /* top 10, sides 20, bottom 30 */
+margin: 0 auto;              /* centred horizontally */</pre>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>افتراضياً تضبط <code>width</code> المحتوى وحده، فتجعل الحشوة والحدود الصندوق أعرض مما طلبت. ولهذا يبدأ كل ملف تنسيق احترافي تقريباً بـ <code>*, *::before, *::after { box-sizing: border-box; }</code>، فتشمل <code>width</code> الحشوة والحدود، وتعني الأحجام بالضبط ما تتوقعه.</p></aside>
+
+<h3>الكتلة والسطر</h3>
+
+<p>الصناديق نوعان رئيسيان. عناصر <dfn>الكتلة</dfn> (block) مثل <code>&lt;p&gt;</code> و<code>&lt;h1&gt;</code> و<code>&lt;section&gt;</code> تبدأ في سطر جديد وتأخذ العرض كله. وعناصر <dfn>السطر</dfn> (inline) مثل <code>&lt;a&gt;</code> و<code>&lt;strong&gt;</code> و<code>&lt;span&gt;</code> تجلس داخل سطر النص وعرضها بقدر محتواها. ومع <code>display: inline-block</code> يبقى العنصر في السطر لكنه يقبل الحشوة والعرض مثل الكتلة، وهكذا صارت روابط القائمة ووسوم المهارات في مشروعنا على شكل كبسولات.</p>
+
+<h2><span class="sec">6.7</span><span>CSS للاتجاهين</span></h2>
+
+<p>كثير من المواقع اليوم تعمل باللغات التي تُكتب من اليسار ومن اليمين معاً. والخصائص مثل <code>margin-left</code> مربوطة بجهة فعلية، فتبدو خاطئة حين تنقلب الصفحة للعربية. وفي CSS الحديثة <dfn>خصائص منطقية</dfn> تتبع اتجاه القراءة بدل الجهة:</p>
+
+<table>
+<thead><tr><th>فعلية</th><th>منطقية</th><th>معناها</th></tr></thead>
+<tbody>
+<tr><td><code>margin-left</code></td><td><code>margin-inline-start</code></td><td>حيث يبدأ السطر: يسار في الإنجليزية ويمين في العربية</td></tr>
+<tr><td><code>padding-right</code></td><td><code>padding-inline-end</code></td><td>حيث ينتهي السطر</td></tr>
+<tr><td><code>text-align: left</code></td><td><code>text-align: start</code></td><td>المحاذاة إلى بداية السطر</td></tr>
+</tbody>
+</table>
+
+<p>ملف تنسيق صفحتنا التعريفية لا يستخدم أي جهة فعلية، فيعمل هو نفسه على النسختين العربية والإنجليزية من الصفحة. وهذه ميزة كبيرة للمطور العربي: استخدم الخصائص المنطقية في كل كود جديد، فمواقعك ستعمل باللغتين من اليوم الأول.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي محدد يختار كل عنصر فيه <code>class="price"</code>؟</li><li>صندوق فيه <code>width: 200px</code> و<code>padding: 10px</code> و<code>border: 2px solid</code>. كم عرضه على الشاشة بدون <code>box-sizing: border-box</code>؟ ومعها؟</li><li>لماذا نستخدم <code>rem</code> لأحجام الخطوط؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">6.8</span><span>مشروع: نسّق صفحتك التعريفية</span></h2>
+
+<p>هذا ملف التنسيق كاملاً للصفحة في الشكل 6.1، مقسماً إلى خمسة أجزاء بتعليقات، مثل ملفات التنسيق التي يكتبها المحترفون. اكتبه جزءاً جزءاً، وأعد تحميل الصفحة بعد كل جزء لترى ما يفعله.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">style.css</div><pre class="code"><span class="c">/* 1. ألوان الصفحة كلها وخطوطها */</span>
+<span class="s">:root </span>{
+  <span class="n">--brand</span><span class="s">: #2b2b2b</span>;
+  <span class="n">--accent</span><span class="s">: #2b2b2b</span>;
+  <span class="n">--soft</span><span class="s">: #eef2ff</span>;
+}
+
+<span class="k">body</span> {
+  <span class="n">margin</span><span class="s">: 0</span>;
+  <span class="n">font-family</span><span class="s">: &quot;Segoe UI&quot;, Tahoma, system-ui, sans-serif</span>;
+  <span class="n">line-height</span><span class="s">: 1.6</span>;
+  <span class="n">color</span><span class="s">: #1e1b2e</span>;
+  <span class="n">background-color</span><span class="s">: #f5f5fb</span>;
+}
+
+<span class="c">/* 2. الترويسة: شريط ملون فيه الصورة */</span>
+<span class="k">header</span> {
+  <span class="n">text-align</span><span class="s">: center</span>;
+  <span class="n">padding</span><span class="s">: 32px 16px 24px</span>;
+  <span class="n">color</span><span class="s">: white</span>;
+  <span class="n">background-color</span><span class="s">: var(--brand)</span>;
+}
+
+header <span class="k">img</span> {
+  <span class="n">background-color</span><span class="s">: white</span>;
+  <span class="n">border-radius</span><span class="s">: 50%</span>;
+  <span class="n">padding</span><span class="s">: 8px</span>;
+}
+
+header <span class="k">h1</span> {
+  <span class="n">margin</span><span class="s">: 8px 0 0</span>;
+  <span class="n">font-size</span><span class="s">: 2rem</span>;
+}
+
+header <span class="k">p</span> {
+  <span class="n">margin</span><span class="s">: 0 0 16px</span>;
+  <span class="n">opacity</span><span class="s">: 0.85</span>;
+}
+
+<span class="c">/* 3. القائمة: روابط تبدو أزراراً */</span>
+nav <span class="k">a</span> {
+  <span class="n">display</span><span class="s">: inline-block</span>;
+  <span class="n">padding</span><span class="s">: 6px 16px</span>;
+  <span class="n">margin</span><span class="s">: 4px</span>;
+  <span class="n">border-radius</span><span class="s">: 999px</span>;
+  <span class="n">color</span><span class="s">: var(--brand)</span>;
+  <span class="n">background-color</span><span class="s">: white</span>;
+  <span class="n">text-decoration</span><span class="s">: none</span>;
+  <span class="n">font-weight</span><span class="s">: 700</span>;
+}
+
+<span class="c">/* 4. المحتوى: بطاقات بيضاء في المنتصف */</span>
+<span class="k">main</span> {
+  <span class="n">max-width</span><span class="s">: 640px</span>;
+  <span class="n">margin</span><span class="s">: 24px auto</span>;
+  <span class="n">padding</span><span class="s">: 0 16px</span>;
+}
+
+<span class="k">section</span> {
+  <span class="n">background-color</span><span class="s">: white</span>;
+  <span class="n">border-radius</span><span class="s">: 16px</span>;
+  <span class="n">padding</span><span class="s">: 8px 24px 16px</span>;
+  <span class="n">margin-bottom</span><span class="s">: 16px</span>;
+  <span class="n">box-shadow</span><span class="s">: 0 2px 8px rgba(30, 27, 46, 0.08)</span>;
+}
+
+<span class="k">h2</span> {
+  <span class="n">color</span><span class="s">: var(--brand)</span>;
+  <span class="n">border-bottom</span><span class="s">: 3px solid var(--soft)</span>;
+  <span class="n">padding-bottom</span><span class="s">: 4px</span>;
+}
+
+<span class="c">/* 5. المهارات وسوماً ملونة */</span>
+<span class="k">ul</span> {
+  <span class="n">padding</span><span class="s">: 0</span>;
+}
+
+<span class="k">li</span> {
+  <span class="n">display</span><span class="s">: inline-block</span>;
+  <span class="n">list-style</span><span class="s">: none</span>;
+  <span class="n">padding</span><span class="s">: 4px 14px</span>;
+  <span class="n">margin</span><span class="s">: 4px</span>;
+  <span class="n">border-radius</span><span class="s">: 999px</span>;
+  <span class="n">color</span><span class="s">: white</span>;
+  <span class="n">background-color</span><span class="s">: var(--accent)</span>;
+}
+
+<span class="k">a</span> {
+  <span class="n">color</span><span class="s">: var(--accent)</span>;
+}
+
+<span class="k">footer</span> {
+  <span class="n">text-align</span><span class="s">: center</span>;
+  <span class="n">color</span><span class="s">: #5b5873</span>;
+  <span class="n">font-size</span><span class="s">: 0.9rem</span>;
+  <span class="n">padding-bottom</span><span class="s">: 24px</span>;
+}</pre></div>
+
+<p>بعض ما في هذا الملف جديد:</p>
+<ul>
+<li><strong>التعليقات</strong> في CSS تُكتب بين <code>/*</code> و<code>*/</code>، ويتجاهلها المتصفح.</li>
+<li><strong>الخصائص المخصصة</strong> مثل <code>--brand</code> متغيرات لـ CSS. تعرّف اللون مرة واحدة في <code>:root</code> وتستخدمه في كل مكان بـ <code>var(--brand)</code>. ولتغيير اللون الرئيسي للصفحة كلها تغيّر سطراً واحداً.</li>
+<li><code>border-radius</code> تستدير بها الزوايا؛ و<code>50%</code> تحوّل المربع إلى دائرة، وقيمة ضخمة مثل <code>999px</code> تصنع كبسولة.</li>
+<li><code>box-shadow</code> تضيف ظلاً ناعماً، فتبدو البطاقات كأنها تطفو.</li>
+<li><code>max-width: 640px</code> مع <code>margin: 24px auto</code> تُبقي المحتوى ضيقاً في المنتصف. فالأسطر الطويلة متعبة للقراءة، وهذا تصميم جيد لا زينة فقط.</li>
+</ul>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>غيّر <code>--brand</code> إلى <code>#2b2b2b</code> و<code>--accent</code> إلى <code>#2b2b2b</code> وأعد التحميل: صار للصفحة كلها نظام ألوان جديد. ثم جرّب ألوانك المفضلة، وافحص تباين النص في أدوات المطورين.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>نسيان الفاصلة المنقوطة بين التصريحات</td><td>يُتجاهل التصريح التالي</td><td>أنهِ كل تصريح بـ <code>;</code></td></tr>
+<tr><td>نسيان النقطة: <code>intro {</code></td><td>تبحث القاعدة عن عنصر <code>&lt;intro&gt;</code> غير موجود</td><td>الأصناف تحتاج نقطة: <code>.intro</code></td></tr>
+<tr><td>مسار خاطئ في <code>&lt;link href&gt;</code></td><td>لا تنسيق على الإطلاق</td><td>ابحث في تبويب Network عن <code>404</code></td></tr>
+<tr><td>مسافة في قيمة مثل <code>2 rem</code></td><td>يُتجاهل التصريح</td><td>اكتب الوحدة ملاصقة للرقم: <code>2rem</code></td></tr>
+<tr><td>استخدام <code>margin-left</code> في موقع ثنائي اللغة</td><td>المسافة في الجهة الخطأ في العربية</td><td>استخدم <code>margin-inline-start</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>لقاعدة CSS <strong>محدد</strong> و<strong>تصريحات</strong> (<code>property: value;</code>). واربط ملف التنسيق بـ <code>&lt;link rel="stylesheet"&gt;</code>.</li>
+<li>اختر بـ <strong>النوع</strong> (<code>h1</code>) أو <strong>الصنف</strong> (<code>.intro</code>) أو <strong>المعرّف</strong> (<code>#featured</code>) أو <strong>السليل</strong> (<code>li .badge</code>)، ونسّق بالأصناف غالباً.</li>
+<li><strong>التتالي</strong> يحسم بين القواعد المتعارضة: الأكثر تحديداً يفوز، ثم الأخير. وبعض الخصائص <strong>تُورَّث</strong>.</li>
+<li>الألوان أسماء أو رموز سداسية أو <code>rgb()</code>، وحافظ على <strong>تباين</strong> كافٍ.</li>
+<li>استخدم <code>rem</code> لأحجام الخطوط، و<code>px</code> للتفاصيل الصغيرة، و<code>%</code> للعروض.</li>
+<li>كل عنصر <strong>صندوق</strong>: محتوى وحشوة وحدود وهامش. واستخدم <code>box-sizing: border-box</code>.</li>
+<li><strong>الخصائص المنطقية</strong> مثل <code>margin-inline-start</code> تعمل في الاتجاهين.</li>
+<li><strong>الخصائص المخصصة</strong> (<code>--brand</code>) تحفظ القيم التي تكررها.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>.price</code>. 2. بدونها: 200 + 10 + 10 + 2 + 2 = 224 بكسل، ومعها: 200 بكسل بالضبط. 3. لأن <code>rem</code> تكبر مع حجم النص الافتراضي في المتصفح، فتحترم من يحتاج نصاً أكبر.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اجعل خلفية <code>footer</code> في الصفحة التعريفية داكنة ونصه أبيض.</li>
+<li><span class="level">سهل</span> اجعل روابط قسم التواصل عريضة، وأزل الخط من تحتها فقط حين تمر الفأرة عليها. (ابحث في MDN عن <code>:hover</code>.)</li>
+<li><span class="level medium">متوسط</span> أضف <code>class="highlight"</code> إلى إحدى المهارات، واكتب قاعدة تعطيها لوناً مختلفاً عن الباقي.</li>
+<li><span class="level medium">متوسط</span> نسّق صفحة الوصفة من تمارين الفصل 5 بملف تنسيق خاص بها، واستخدم خاصية مخصصة واحدة على الأقل.</li>
+<li><span class="level hard">تحدٍّ</span> افتح صفحتك التعريفية في أدوات المطورين وشغّل شريط الأجهزة (أيقونة الهاتف). اجعل الصفحة تبدو جيدة على عرض 360 بكسل. ماذا تحتاج أن تغيّر؟</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 7</p>
+<p>صفحتك جميلة، لكن كل شيء فيها ما زال مكدساً من الأعلى إلى الأسفل. وفي الفصل القادم ستتعلم Flexbox وGrid، أداتي التخطيط الحديثتين، وتبني تخطيطات بأعمدة تتكيف من الهاتف إلى الحاسوب.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/ar">

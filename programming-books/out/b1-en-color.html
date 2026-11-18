@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "Chapter 5: HTML: The Structure of a Page"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "Chapter 6: CSS: Styling a Page"; } }
+@page ch06:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Values, Variables and Decisions"; } }
 @page ch08:first { @top-center { content: none; } }
 
@@ -1654,6 +1656,421 @@ text/html; charset=utf-8
 <div class="next">
 <p class="next-title">Coming up in Chapter 6</p>
 <p>Your profile page has a great skeleton. Next, CSS gives it colours, fonts, spacing and personality. By the end of Chapter 6 you will hardly recognise it.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b1/ch06/en">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">Chapter 6</p><h1>CSS: Styling a Page</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>write CSS rules and connect a stylesheet to a page</li>
+<li>choose elements with type, class and id selectors</li>
+<li>use colours, fonts and units like a professional</li>
+<li>understand the box model: content, padding, border and margin</li>
+<li>turn your plain profile page into a beautiful one</li>
+</ul>
+</div>
+
+<p class="lead">At the end of the last chapter your profile page had a perfect structure and no personality at all. In this chapter you will give it colours, fonts, spacing, rounded corners and shadows. It is the most visual chapter in the book: every line you write changes something you can see.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Here’s the before-and-after we are aiming for. Same HTML, plus one CSS file. When I first saw what CSS can do, my antenna lit up!</p></div></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span></div><img src="img/b1-ch06-en-profile.html.png" alt=""><figcaption><b>Figure 6.1:</b> The profile page from Chapter 5 at the end of this chapter. Compare it with Figure 5.9: the HTML has not changed at all.</figcaption></figure>
+
+<h2><span class="sec">6.1</span><span>What CSS is</span></h2>
+
+<p><dfn>CSS</dfn> stands for Cascading Style Sheets. HTML says what each piece of content <em>is</em>; CSS says how it should <em>look</em>. Keeping the two apart is a powerful idea: you can redesign a whole website by changing one CSS file, without touching a single page.</p>
+
+<p>CSS is a list of <dfn>rules</dfn>. Each rule says “these elements should look like this”:</p>
+
+<figure>
+<svg viewBox="0 0 520 170" role="img" aria-label="A CSS rule: selector, declaration block with property and value">
+<g font-family="JetBrains Mono" font-size="18">
+<text x="40" y="58"><tspan fill="#7c3aed" font-weight="700">h1</tspan><tspan fill="#1e1b2e"> {</tspan></text>
+<text x="70" y="90"><tspan fill="#c2410c">color</tspan><tspan fill="#1e1b2e">: </tspan><tspan fill="#15803d">#4338ca</tspan><tspan fill="#1e1b2e">;</tspan></text>
+<text x="70" y="120"><tspan fill="#c2410c">font-size</tspan><tspan fill="#1e1b2e">: </tspan><tspan fill="#15803d">2rem</tspan><tspan fill="#1e1b2e">;</tspan></text>
+<text x="40" y="150" fill="#1e1b2e">}</text>
+</g>
+<g font-family="Inter" font-size="12.5" font-weight="700">
+<path d="M58,30 L58,22 L250,22" stroke="#7c3aed" stroke-width="2.5" fill="none"/><text x="256" y="26" fill="#7c3aed">selector: which elements</text>
+<path d="M118,96 L118,100 L300,100" stroke="#c2410c" stroke-width="2.5" fill="none"/><text x="306" y="104" fill="#c2410c">property: what to change</text>
+<path d="M210,78 L300,62" stroke="#15803d" stroke-width="2.5" fill="none"/><text x="306" y="66" fill="#15803d">value: how</text>
+<path d="M28,40 L22,40 L22,150 L28,150" stroke="#4338ca" stroke-width="2.5" fill="none"/><text x="306" y="140" fill="#4338ca">declaration block { … }</text>
+</g>
+</svg>
+<figcaption><b>Figure 6.2:</b> The parts of a CSS rule. Each <code>property: value;</code> line is called a declaration.</figcaption>
+</figure>
+
+<p>Read this rule as: “every <code>h1</code> should have the colour <code>#4338ca</code> and a font size of <code>2rem</code>”. Each declaration ends with a semicolon, and the whole block sits between curly brackets.</p>
+
+<h2><span class="sec">6.2</span><span>Connecting CSS to a page</span></h2>
+
+<p>There are three ways to add CSS, and professionals use mainly the third:</p>
+
+<ol>
+<li><strong>Inline</strong>, in a <code>style</code> attribute: <code>&lt;p style="color: red"&gt;</code>. Quick, but it mixes look and content and is hard to change later.</li>
+<li><strong>In a <code>&lt;style&gt;</code> element</strong> in the <code>&lt;head&gt;</code>. Handy for small examples, and we use it in this chapter’s short demos.</li>
+<li><strong>In a separate <code>.css</code> file</strong>, linked from the <code>&lt;head&gt;</code>. One stylesheet can style every page of a site, and the browser downloads it only once.</li>
+</ol>
+
+<pre class="plain">&lt;link rel="stylesheet" href="style.css"&gt;</pre>
+
+<p>Add that line inside the <code>&lt;head&gt;</code> of your <code>profile.html</code>, create an empty <code>style.css</code> next to it, and you are ready to start styling.</p>
+
+<h2><span class="sec">6.3</span><span>Selectors: choosing what to style</span></h2>
+
+<p>The <dfn>selector</dfn> decides which elements a rule applies to. Four kinds of selector cover almost everything you need:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">selectors.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;en&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>Selectors<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      h1 {
+        color: #4338ca;
+      }
+      .intro {
+        font-style: italic;
+      }
+      #featured {
+        background-color: #fef3c7;
+      }
+      li .badge {
+        color: white;
+        background-color: #db2777;
+        font-size: 0.8rem;
+      }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Bit’s reading list<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;intro&quot;</span><span class="k">&gt;</span>Books that every new developer should read.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;ul</span><span class="k">&gt;</span>
+        <span class="k">&lt;li</span> <span class="n">id</span>=<span class="s">&quot;featured&quot;</span><span class="k">&gt;</span>Code from Zero <span class="k">&lt;span</span> <span class="n">class</span>=<span class="s">&quot;badge&quot;</span><span class="k">&gt;</span>New<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/li</span><span class="k">&gt;</span>
+        <span class="k">&lt;li</span><span class="k">&gt;</span>Senior Frontend Engineering<span class="k">&lt;/li</span><span class="k">&gt;</span>
+        <span class="k">&lt;li</span><span class="k">&gt;</span>Senior Backend Engineering<span class="k">&lt;/li</span><span class="k">&gt;</span>
+    <span class="k">&lt;/ul</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>This list is updated every month.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>selectors.html</span></div><img src="img/b1-ch06-en-selectors.html.png" alt=""><figcaption><b>Figure 6.3:</b> Each rule styles a different set of elements.</figcaption></figure>
+
+<table>
+<thead><tr><th>Selector</th><th>Example</th><th>Chooses</th></tr></thead>
+<tbody>
+<tr><td>Type</td><td><code>h1</code></td><td>Every <code>&lt;h1&gt;</code> on the page</td></tr>
+<tr><td>Class</td><td><code>.intro</code></td><td>Every element with <code>class="intro"</code></td></tr>
+<tr><td>Id</td><td><code>#featured</code></td><td>The one element with <code>id="featured"</code></td></tr>
+<tr><td>Descendant</td><td><code>li .badge</code></td><td>Elements with class <code>badge</code> that are <em>inside</em> an <code>&lt;li&gt;</code></td></tr>
+</tbody>
+</table>
+
+<p>Classes are the workhorse of CSS. An element can have several, separated by spaces (<code>class="card highlighted"</code>), and many elements can share one. Ids must be unique on a page, so they are better for links like <code>#about</code> than for styling.</p>
+
+<h3>When rules disagree: the cascade</h3>
+
+<p>Sometimes two rules try to set the same property on the same element. CSS settles it with the <dfn>cascade</dfn>, which is where the “C” in CSS comes from. In short: a more <dfn>specific</dfn> selector wins (an id beats a class, and a class beats a type), and if two selectors are equally specific, the one that comes later wins.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Style mostly with classes, and keep your selectors short. Long, very specific selectors are hard to override later, and that leads to frustrating battles with your own CSS. DevTools shows you exactly which rule won: select an element in the Elements panel and look at the <strong>Styles</strong> pane, where losing declarations are crossed out.</p></aside>
+
+<p>Some properties are also <dfn>inherited</dfn>: if you set <code>color</code> or <code>font-family</code> on <code>body</code>, every element inside it gets the same value unless a rule says otherwise. That is why you set fonts once, on <code>body</code>.</p>
+
+<h2><span class="sec">6.4</span><span>Colours</span></h2>
+
+<p>CSS understands colours in several formats:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">colors.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Colours<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;named&quot;</span><span class="k">&gt;</span>Named: tomato<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;hex&quot;</span><span class="k">&gt;</span>Hex: #4338ca<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;rgb&quot;</span><span class="k">&gt;</span>RGB: rgb(15, 118, 110)<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;alpha&quot;</span><span class="k">&gt;</span>With transparency<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>colors.html</span></div><img src="img/b1-ch06-en-colors.html.png" alt=""><figcaption><b>Figure 6.4:</b> Four ways to write a colour.</figcaption></figure>
+
+<ul>
+<li><strong>Names</strong> such as <code>tomato</code> or <code>white</code>. Easy, but there are only about 140 of them.</li>
+<li><strong>Hex codes</strong> such as <code>#4338ca</code>: three pairs of hexadecimal digits for red, green and blue. This is what designers usually give you.</li>
+<li><strong><code>rgb()</code></strong> with three numbers from 0 to 255. <code>rgba()</code> adds a fourth, the opacity, from 0 (invisible) to 1 (solid).</li>
+</ul>
+
+<p>You saw in Chapter 1 that every dot on a screen is stored as red, green and blue numbers. Hex and <code>rgb()</code> are simply two ways of writing those three numbers.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>Text must stand out from its background. Light grey text on a white background may look elegant to you, but it is hard to read for many people, especially outdoors on a phone. Browsers’ DevTools can check a colour’s <strong>contrast ratio</strong>: aim for at least 4.5 to 1 for normal text. You will learn more about this in Chapter 16.</p></aside>
+
+<h2><span class="sec">6.5</span><span>Text and fonts</span></h2>
+
+<table>
+<thead><tr><th>Property</th><th>Example</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>font-family</code></td><td><code>system-ui, sans-serif</code></td><td>The typeface, with fallbacks if the first is missing</td></tr>
+<tr><td><code>font-size</code></td><td><code>1.25rem</code></td><td>The size of the letters</td></tr>
+<tr><td><code>font-weight</code></td><td><code>700</code></td><td>Thickness: 400 is normal, 700 is bold</td></tr>
+<tr><td><code>line-height</code></td><td><code>1.6</code></td><td>Space between lines, as a multiple of the font size</td></tr>
+<tr><td><code>text-align</code></td><td><code>center</code></td><td>Alignment: <code>start</code>, <code>center</code>, <code>end</code>, <code>justify</code></td></tr>
+<tr><td><code>text-decoration</code></td><td><code>none</code></td><td>Underlines, often removed from links</td></tr>
+</tbody>
+</table>
+
+<p>A list of fonts in <code>font-family</code> is a list of wishes: the browser uses the first one it has. <code>system-ui</code> means “the operating system’s own font”, which looks native on every device and costs nothing to download. Always end the list with a general family such as <code>sans-serif</code> or <code>serif</code>.</p>
+
+<h3>Units: px, rem and %</h3>
+
+<p>Sizes need units. The three you will use most are:</p>
+<ul>
+<li><code>px</code>: pixels. Fixed and predictable; good for borders and small details.</li>
+<li><code>rem</code>: a multiple of the root font size, which is 16 pixels by default. <code>1.5rem</code> is 24 pixels. Use <code>rem</code> for font sizes, because it respects users who set a bigger default text size in their browser.</li>
+<li><code>%</code>: a percentage of the parent element’s size. Good for widths.</li>
+</ul>
+
+<h2><span class="sec">6.6</span><span>The box model</span></h2>
+
+<p>Here is the most important idea in CSS layout: <strong>every element is a rectangular box</strong>. Headings, paragraphs, images and links are all boxes, and every box has four layers:</p>
+
+<figure>
+<svg viewBox="0 0 520 230" role="img" aria-label="Box model: margin around border around padding around content">
+<rect x="20" y="10" width="480" height="210" rx="6" fill="#fff4ea" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="70" y="45" width="380" height="140" rx="4" fill="#4338ca"/>
+<rect x="80" y="55" width="360" height="120" fill="#e6f7f4"/>
+<rect x="130" y="85" width="260" height="60" fill="#fff" stroke="#1e1b2e" stroke-width="1.5"/>
+<g font-family="Inter" font-size="13" font-weight="700" text-anchor="middle">
+<text x="260" y="32" fill="#ea580c">margin: space outside the border</text>
+<text x="260" y="78" fill="#0f766e">padding: space inside the border</text>
+<text x="260" y="120" fill="#1e1b2e">content</text>
+<text x="260" y="137" fill="#5b5873" font-size="11" font-weight="400">text, images…</text>
+<text x="260" y="168" fill="#0f766e" font-size="11" font-weight="400">padding takes the background colour</text>
+<text x="475" y="120" fill="#4338ca" transform="rotate(90 475 120)">border</text>
+</g>
+</svg>
+<figcaption><b>Figure 6.5:</b> The box model. From the inside out: content, padding, border, margin.</figcaption>
+</figure>
+
+<div class="listing" dir="ltr"><div class="listing-title">box.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;box&quot;</span><span class="k">&gt;</span>I am a box with padding, a border and a margin.<span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>box.html</span></div><img src="img/b1-ch06-en-box.html.png" alt=""><figcaption><b>Figure 6.6:</b> A box with 20px padding, a 6px border and a 30px margin.</figcaption></figure>
+
+<p>Look at <code>box.html</code> in your own browser, open DevTools, and select the box. At the bottom of the Styles pane, DevTools draws exactly this diagram with your real numbers. It is the best way to understand why something is in the wrong place.</p>
+
+<p>Margins and padding can be set for each side, or all at once:</p>
+
+<pre class="plain">padding: 20px;               /* all four sides */
+padding: 10px 20px;          /* top and bottom 10, left and right 20 */
+padding: 10px 20px 30px;     /* top 10, sides 20, bottom 30 */
+margin: 0 auto;              /* no vertical margin, centred horizontally */</pre>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>By default, <code>width</code> sets only the content, so padding and border make a box wider than you asked. Almost every professional stylesheet starts with <code>*, *::before, *::after { box-sizing: border-box; }</code>, which makes <code>width</code> include the padding and border. Sizes then mean exactly what you expect.</p></aside>
+
+<h3>Block and inline</h3>
+
+<p>Boxes come in two main kinds. <dfn>Block</dfn> elements, such as <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code> and <code>&lt;section&gt;</code>, start on a new line and take the full width. <dfn>Inline</dfn> elements, such as <code>&lt;a&gt;</code>, <code>&lt;strong&gt;</code> and <code>&lt;span&gt;</code>, sit inside a line of text and are only as wide as their content. With <code>display: inline-block</code>, an element stays in the line but accepts padding and width like a block. That is how the menu links and skill tags in our project become pills.</p>
+
+<h2><span class="sec">6.7</span><span>Writing CSS for both directions</span></h2>
+
+<p>Many websites today work in both left-to-right and right-to-left languages. Properties like <code>margin-left</code> are tied to a physical side, so they look wrong when the page is flipped for Arabic. Modern CSS has <dfn>logical properties</dfn> that follow the reading direction instead:</p>
+
+<table>
+<thead><tr><th>Physical</th><th>Logical</th><th>Means</th></tr></thead>
+<tbody>
+<tr><td><code>margin-left</code></td><td><code>margin-inline-start</code></td><td>Where lines start: left in English, right in Arabic</td></tr>
+<tr><td><code>padding-right</code></td><td><code>padding-inline-end</code></td><td>Where lines end</td></tr>
+<tr><td><code>text-align: left</code></td><td><code>text-align: start</code></td><td>Align to the start of the line</td></tr>
+</tbody>
+</table>
+
+<p>Our profile stylesheet uses no physical sides at all, so the very same CSS styles the Arabic version of the page correctly. Use logical properties in all your new code; your future international users will thank you.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which selector chooses every element with <code>class="price"</code>?</li><li>A box has <code>width: 200px</code>, <code>padding: 10px</code> and <code>border: 2px solid</code>. How wide is it on screen without <code>box-sizing: border-box</code>? And with it?</li><li>Why use <code>rem</code> for font sizes?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">6.8</span><span>Project: style your profile</span></h2>
+
+<p>Here is the complete stylesheet for the page in Figure 6.1. It is organised in five commented parts, like the stylesheets professionals write. Type it part by part, and reload the page after each part to see what it does.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">style.css</div><pre class="code"><span class="c">/* 1. Colours and fonts for the whole page */</span>
+<span class="s">:root </span>{
+  <span class="n">--brand</span><span class="s">: #4338ca</span>;
+  <span class="n">--accent</span><span class="s">: #db2777</span>;
+  <span class="n">--soft</span><span class="s">: #eef2ff</span>;
+}
+
+<span class="k">body</span> {
+  <span class="n">margin</span><span class="s">: 0</span>;
+  <span class="n">font-family</span><span class="s">: system-ui, sans-serif</span>;
+  <span class="n">line-height</span><span class="s">: 1.6</span>;
+  <span class="n">color</span><span class="s">: #1e1b2e</span>;
+  <span class="n">background-color</span><span class="s">: #f5f5fb</span>;
+}
+
+<span class="c">/* 2. The header: a coloured band with the avatar */</span>
+<span class="k">header</span> {
+  <span class="n">text-align</span><span class="s">: center</span>;
+  <span class="n">padding</span><span class="s">: 32px 16px 24px</span>;
+  <span class="n">color</span><span class="s">: white</span>;
+  <span class="n">background-color</span><span class="s">: var(--brand)</span>;
+}
+
+header <span class="k">img</span> {
+  <span class="n">background-color</span><span class="s">: white</span>;
+  <span class="n">border-radius</span><span class="s">: 50%</span>;
+  <span class="n">padding</span><span class="s">: 8px</span>;
+}
+
+header <span class="k">h1</span> {
+  <span class="n">margin</span><span class="s">: 8px 0 0</span>;
+  <span class="n">font-size</span><span class="s">: 2rem</span>;
+}
+
+header <span class="k">p</span> {
+  <span class="n">margin</span><span class="s">: 0 0 16px</span>;
+  <span class="n">opacity</span><span class="s">: 0.85</span>;
+}
+
+<span class="c">/* 3. The menu: links that look like buttons */</span>
+nav <span class="k">a</span> {
+  <span class="n">display</span><span class="s">: inline-block</span>;
+  <span class="n">padding</span><span class="s">: 6px 16px</span>;
+  <span class="n">margin</span><span class="s">: 4px</span>;
+  <span class="n">border-radius</span><span class="s">: 999px</span>;
+  <span class="n">color</span><span class="s">: var(--brand)</span>;
+  <span class="n">background-color</span><span class="s">: white</span>;
+  <span class="n">text-decoration</span><span class="s">: none</span>;
+  <span class="n">font-weight</span><span class="s">: 700</span>;
+}
+
+<span class="c">/* 4. The content: white cards, centred */</span>
+<span class="k">main</span> {
+  <span class="n">max-width</span><span class="s">: 640px</span>;
+  <span class="n">margin</span><span class="s">: 24px auto</span>;
+  <span class="n">padding</span><span class="s">: 0 16px</span>;
+}
+
+<span class="k">section</span> {
+  <span class="n">background-color</span><span class="s">: white</span>;
+  <span class="n">border-radius</span><span class="s">: 16px</span>;
+  <span class="n">padding</span><span class="s">: 8px 24px 16px</span>;
+  <span class="n">margin-bottom</span><span class="s">: 16px</span>;
+  <span class="n">box-shadow</span><span class="s">: 0 2px 8px rgba(30, 27, 46, 0.08)</span>;
+}
+
+<span class="k">h2</span> {
+  <span class="n">color</span><span class="s">: var(--brand)</span>;
+  <span class="n">border-bottom</span><span class="s">: 3px solid var(--soft)</span>;
+  <span class="n">padding-bottom</span><span class="s">: 4px</span>;
+}
+
+<span class="c">/* 5. Skills as coloured tags */</span>
+<span class="k">ul</span> {
+  <span class="n">padding</span><span class="s">: 0</span>;
+}
+
+<span class="k">li</span> {
+  <span class="n">display</span><span class="s">: inline-block</span>;
+  <span class="n">list-style</span><span class="s">: none</span>;
+  <span class="n">padding</span><span class="s">: 4px 14px</span>;
+  <span class="n">margin</span><span class="s">: 4px</span>;
+  <span class="n">border-radius</span><span class="s">: 999px</span>;
+  <span class="n">color</span><span class="s">: white</span>;
+  <span class="n">background-color</span><span class="s">: var(--accent)</span>;
+}
+
+<span class="k">a</span> {
+  <span class="n">color</span><span class="s">: var(--accent)</span>;
+}
+
+<span class="k">footer</span> {
+  <span class="n">text-align</span><span class="s">: center</span>;
+  <span class="n">color</span><span class="s">: #5b5873</span>;
+  <span class="n">font-size</span><span class="s">: 0.9rem</span>;
+  <span class="n">padding-bottom</span><span class="s">: 24px</span>;
+}</pre></div>
+
+<p>A few things in this file are new:</p>
+<ul>
+<li><strong>Comments</strong> in CSS go between <code>/*</code> and <code>*/</code>. The browser ignores them.</li>
+<li><strong>Custom properties</strong> such as <code>--brand</code> are variables for CSS. You define a colour once in <code>:root</code> and use it everywhere with <code>var(--brand)</code>. To change the whole page’s main colour, you now change one line.</li>
+<li><code>border-radius</code> rounds the corners; <code>50%</code> turns a square into a circle, and a huge value like <code>999px</code> makes a pill.</li>
+<li><code>box-shadow</code> adds a soft shadow, which makes the cards seem to float.</li>
+<li><code>max-width: 640px</code> with <code>margin: 24px auto</code> keeps the content narrow and centred. Long lines are tiring to read, so this is good design, not only decoration.</li>
+</ul>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>Change <code>--brand</code> to <code>#0f766e</code> and <code>--accent</code> to <code>#ea580c</code>, and reload. Your whole page has a new colour scheme. Now try your own favourite colours, and check the contrast of the text in DevTools.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Missing semicolon between declarations</td><td>The next declaration is ignored</td><td>End every declaration with <code>;</code></td></tr>
+<tr><td>Forgetting the dot: <code>intro {</code></td><td>The rule looks for an <code>&lt;intro&gt;</code> element, which does not exist</td><td>Classes need a dot: <code>.intro</code></td></tr>
+<tr><td>Wrong path in <code>&lt;link href&gt;</code></td><td>No styles at all</td><td>Check the Network tab for a <code>404</code></td></tr>
+<tr><td>A space in a value like <code>2 rem</code></td><td>The declaration is ignored</td><td>Write units right after the number: <code>2rem</code></td></tr>
+<tr><td>Using <code>margin-left</code> in a bilingual site</td><td>Spacing is on the wrong side in Arabic</td><td>Use <code>margin-inline-start</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>CSS rules have a <strong>selector</strong> and <strong>declarations</strong> (<code>property: value;</code>). Link a stylesheet with <code>&lt;link rel="stylesheet"&gt;</code>.</li>
+<li>Select by <strong>type</strong> (<code>h1</code>), <strong>class</strong> (<code>.intro</code>), <strong>id</strong> (<code>#featured</code>) or <strong>descendant</strong> (<code>li .badge</code>). Style mostly with classes.</li>
+<li>The <strong>cascade</strong> decides between conflicting rules: more specific wins, then later wins. Some properties are <strong>inherited</strong>.</li>
+<li>Colours can be names, hex codes or <code>rgb()</code>. Keep enough <strong>contrast</strong>.</li>
+<li>Use <code>rem</code> for font sizes, <code>px</code> for small details and <code>%</code> for widths.</li>
+<li>Every element is a <strong>box</strong>: content, padding, border, margin. Use <code>box-sizing: border-box</code>.</li>
+<li><strong>Logical properties</strong> like <code>margin-inline-start</code> work in both reading directions.</li>
+<li><strong>Custom properties</strong> (<code>--brand</code>) store values you reuse.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>.price</code>. 2. Without it: 200 + 10 + 10 + 2 + 2 = 224 pixels. With it: exactly 200 pixels. 3. Because <code>rem</code> grows with the browser’s default text size, so it respects users who need bigger text.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Give the profile page’s <code>footer</code> a dark background and white text.</li>
+<li><span class="level">Easy</span> Make the links in the Contact section bold, and remove their underline only when the mouse is over them. (Search MDN for the <code>:hover</code> pseudo-class.)</li>
+<li><span class="level medium">Medium</span> Add a <code>class="highlight"</code> to one skill and write a rule that gives it a different colour from the others.</li>
+<li><span class="level medium">Medium</span> Style the recipe page from Chapter 5’s exercises with its own stylesheet. Use at least one custom property.</li>
+<li><span class="level hard">Challenge</span> Open your profile page in DevTools and switch on the device toolbar (the phone icon). Make the page look good at 360 pixels wide. What do you need to change?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 7</p>
+<p>Your page is beautiful, but everything is still stacked from top to bottom. Next you will learn Flexbox and Grid, the two modern layout tools, and build layouts with columns that adapt from phone to desktop.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/en">
