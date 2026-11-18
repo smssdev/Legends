@@ -151,10 +151,17 @@
           "تجعل الصفحات تفاعلية بـ DOM والأحداث وfetch",
           "تستخدم Git وGitHub، وتنشر تطبيق الويب الخاص بك"
         ]
-      }
+      },
+      "tracks": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Git"
+      ],
+      "number": 1
     },
     {
-      "id": "b2",
+      "id": "b2-react",
       "level": {
         "en": "Junior → Senior",
         "ar": "مبتدئ محترف ← خبير"
@@ -277,10 +284,162 @@
             }
           ]
         }
-      ]
+      ],
+      "edition": {
+        "en": "React Edition",
+        "ar": "إصدار React"
+      },
+      "tracks": [
+        "TypeScript",
+        "React",
+        "Vite",
+        "Playwright"
+      ],
+      "number": 2
     },
     {
-      "id": "b3",
+      "id": "b2-vue",
+      "level": {
+        "en": "Junior → Senior",
+        "ar": "مبتدئ محترف ← خبير"
+      },
+      "title": {
+        "en": "Senior Frontend Engineering",
+        "ar": "هندسة الواجهات باحتراف"
+      },
+      "subtitle": {
+        "en": "TypeScript, Vue, Architecture, Performance and Quality",
+        "ar": "TypeScript وVue والمعمارية والأداء والجودة"
+      },
+      "reader": {
+        "en": "Readers of Book 1 or developers with a year of JavaScript.",
+        "ar": "من أنهى الكتاب الأول، أو مطوّر عنده سنة من JavaScript."
+      },
+      "pages": "380–440",
+      "parts": [
+        {
+          "title": {
+            "en": "The Language",
+            "ar": "اللغة"
+          },
+          "chapters": [
+            {
+              "en": "Modern JavaScript in Depth",
+              "ar": "JavaScript الحديثة بعمق"
+            },
+            {
+              "en": "TypeScript for Real Projects",
+              "ar": "TypeScript في المشاريع الحقيقية"
+            },
+            {
+              "en": "Modules, Tooling and Build Systems",
+              "ar": "الوحدات والأدوات وأنظمة البناء"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Vue",
+            "ar": "Vue"
+          },
+          "chapters": [
+            {
+              "en": "Components and Templates",
+              "ar": "المكونات والقوالب"
+            },
+            {
+              "en": "Reactivity and the Composition API",
+              "ar": "التفاعلية وComposition API"
+            },
+            {
+              "en": "Composables: Reusing Logic",
+              "ar": "Composables: إعادة استخدام المنطق"
+            },
+            {
+              "en": "Vue Router and Server Data",
+              "ar": "Vue Router وبيانات الخادم"
+            },
+            {
+              "en": "Forms and Validation",
+              "ar": "النماذج والتحقق"
+            },
+            {
+              "en": "Global State with Pinia",
+              "ar": "الحالة العامة بـ Pinia"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Quality",
+            "ar": "الجودة"
+          },
+          "chapters": [
+            {
+              "en": "Design Systems and Component Libraries",
+              "ar": "أنظمة التصميم ومكتبات المكونات"
+            },
+            {
+              "en": "Accessibility (WCAG) in Practice",
+              "ar": "الوصول (WCAG) عملياً"
+            },
+            {
+              "en": "Testing: Unit, Component and End-to-End",
+              "ar": "الاختبار: الوحدات والمكونات ومن الطرف للطرف"
+            },
+            {
+              "en": "Performance and Core Web Vitals",
+              "ar": "الأداء وCore Web Vitals"
+            },
+            {
+              "en": "Frontend Security",
+              "ar": "أمان الواجهات"
+            },
+            {
+              "en": "Internationalisation and RTL",
+              "ar": "تعدد اللغات والاتجاه من اليمين"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Senior Work",
+            "ar": "عمل الخبير"
+          },
+          "chapters": [
+            {
+              "en": "Frontend Architecture at Scale",
+              "ar": "معمارية الواجهات على نطاق واسع"
+            },
+            {
+              "en": "Server Rendering with Nuxt",
+              "ar": "الرسم على الخادم بـ Nuxt"
+            },
+            {
+              "en": "Code Review, Mentoring and Technical Decisions",
+              "ar": "مراجعة الكود والتوجيه والقرارات التقنية"
+            },
+            {
+              "en": "Capstone: A Production Dashboard",
+              "ar": "المشروع الختامي: لوحة تحكم للإنتاج"
+            }
+          ]
+        }
+      ],
+      "edition": {
+        "en": "Vue Edition",
+        "ar": "إصدار Vue"
+      },
+      "tracks": [
+        "TypeScript",
+        "Vue",
+        "Vite",
+        "Playwright"
+      ],
+      "number": 2
+    },
+    {
+      "id": "b3-node",
       "level": {
         "en": "Junior → Senior",
         "ar": "مبتدئ محترف ← خبير"
@@ -399,7 +558,155 @@
             }
           ]
         }
-      ]
+      ],
+      "edition": {
+        "en": "Node.js Edition",
+        "ar": "إصدار Node.js"
+      },
+      "tracks": [
+        "Node.js",
+        "TypeScript",
+        "PostgreSQL",
+        "Redis"
+      ],
+      "number": 3
+    },
+    {
+      "id": "b3-laravel",
+      "level": {
+        "en": "Junior → Senior",
+        "ar": "مبتدئ محترف ← خبير"
+      },
+      "title": {
+        "en": "Senior Backend Engineering",
+        "ar": "هندسة الخوادم باحتراف"
+      },
+      "subtitle": {
+        "en": "APIs, Databases, Security and Scale with Laravel and PostgreSQL",
+        "ar": "الواجهات البرمجية وقواعد البيانات والأمان والتوسع بـ Laravel وPostgreSQL"
+      },
+      "reader": {
+        "en": "Readers of Book 1 or developers who have built a small API.",
+        "ar": "من أنهى الكتاب الأول، أو مطوّر بنى واجهة برمجية صغيرة."
+      },
+      "pages": "400–460",
+      "parts": [
+        {
+          "title": {
+            "en": "Foundations",
+            "ar": "الأساسيات"
+          },
+          "chapters": [
+            {
+              "en": "How Servers Work: HTTP in Depth",
+              "ar": "كيف تعمل الخوادم: HTTP بعمق"
+            },
+            {
+              "en": "Modern PHP for JavaScript Developers",
+              "ar": "PHP الحديثة لمطوري JavaScript"
+            },
+            {
+              "en": "Laravel Essentials: Routes, Controllers and Requests",
+              "ar": "أساسيات Laravel: المسارات والمتحكمات والطلبات"
+            },
+            {
+              "en": "Designing REST APIs with API Resources",
+              "ar": "تصميم واجهات REST بـ API Resources"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Data",
+            "ar": "البيانات"
+          },
+          "chapters": [
+            {
+              "en": "SQL and PostgreSQL",
+              "ar": "SQL وPostgreSQL"
+            },
+            {
+              "en": "Eloquent, Relationships and Migrations",
+              "ar": "Eloquent والعلاقات والترحيلات"
+            },
+            {
+              "en": "Transactions, Locks and Consistency",
+              "ar": "المعاملات والأقفال والاتساق"
+            },
+            {
+              "en": "Caching with Redis",
+              "ar": "التخزين المؤقت بـ Redis"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Production",
+            "ar": "الإنتاج"
+          },
+          "chapters": [
+            {
+              "en": "Authentication with Sanctum and Policies",
+              "ar": "الهوية بـ Sanctum والصلاحيات بـ Policies"
+            },
+            {
+              "en": "Security: The OWASP Top 10 in Laravel",
+              "ar": "الأمان: أخطر عشر ثغرات (OWASP) في Laravel"
+            },
+            {
+              "en": "Queues, Jobs and the Scheduler",
+              "ar": "الطوابير والمهام والمجدول"
+            },
+            {
+              "en": "Real-Time with Laravel Reverb",
+              "ar": "الزمن الحقيقي بـ Laravel Reverb"
+            },
+            {
+              "en": "Testing with Pest",
+              "ar": "الاختبار بـ Pest"
+            },
+            {
+              "en": "Logging, Metrics and Tracing",
+              "ar": "السجلات والمقاييس والتتبع"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Senior Work",
+            "ar": "عمل الخبير"
+          },
+          "chapters": [
+            {
+              "en": "Performance and Scaling",
+              "ar": "الأداء والتوسع"
+            },
+            {
+              "en": "Architecture: Modules, Actions and Domains",
+              "ar": "المعمارية: الوحدات والأفعال والمجالات"
+            },
+            {
+              "en": "Docker and Deployment",
+              "ar": "Docker والنشر"
+            },
+            {
+              "en": "Capstone: A Production API",
+              "ar": "المشروع الختامي: واجهة برمجية للإنتاج"
+            }
+          ]
+        }
+      ],
+      "edition": {
+        "en": "Laravel Edition",
+        "ar": "إصدار Laravel"
+      },
+      "tracks": [
+        "PHP",
+        "Laravel",
+        "PostgreSQL",
+        "Redis"
+      ],
+      "number": 3
     },
     {
       "id": "b4",
@@ -416,8 +723,8 @@
         "ar": "تصميم الأنظمة والتسليم والقيادة من الفكرة إلى الإنتاج"
       },
       "reader": {
-        "en": "Readers of Books 2 and 3, or developers who work on both sides.",
-        "ar": "من أنهى الكتابين الثاني والثالث، أو مطوّر يعمل على الجانبين."
+        "en": "Readers of Book 2 and Book 3 (any edition), or developers who work on both sides.",
+        "ar": "من أنهى الكتابين الثاني والثالث (بأي إصدار)، أو مطوّر يعمل على الجانبين."
       },
       "pages": "360–420",
       "parts": [
@@ -517,7 +824,14 @@
             }
           ]
         }
-      ]
+      ],
+      "tracks": [
+        "System Design",
+        "CI/CD",
+        "Docker",
+        "Cloud"
+      ],
+      "number": 4
     },
     {
       "id": "b5",
@@ -623,7 +937,14 @@
             }
           ]
         }
-      ]
+      ],
+      "tracks": [
+        "Dart",
+        "Flutter",
+        "Android",
+        "iOS"
+      ],
+      "number": 5
     },
     {
       "id": "b6",
@@ -737,7 +1058,18 @@
             }
           ]
         }
-      ]
+      ],
+      "tracks": [
+        "Flutter",
+        "Riverpod",
+        "Testing",
+        "CI/CD"
+      ],
+      "number": 6
     }
-  ]
+  ],
+  "author": {
+    "en": "Soliman Maged Saeed Salah",
+    "ar": "سليمان ماجد سعيد صلاح"
+  }
 }

@@ -21,12 +21,10 @@ OUT = ROOT / "out"
 BLEED, TRIM_W, TRIM_H, PER_PAGE = 0.125, 7.0, 10.0, 0.002252
 
 WORDS = {
-    "en": {"book": "Book", "learn": "What you will learn", "author": "Soliman Maged Saeed Salah",
-           "code": "Every example is tested code. Download them all from the book’s repository.",
-           "tracks": ["HTML", "CSS", "JavaScript", "Git"]},
-    "ar": {"book": "الكتاب", "learn": "ماذا ستتعلم", "author": "سليمان ماجد سعيد صلاح",
-           "code": "كل مثال كود حقيقي مُختبر، وكلها في مستودع الكتاب.",
-           "tracks": ["HTML", "CSS", "JavaScript", "Git"]},
+    "en": {"book": "Book", "learn": "What you will learn", 
+           "code": "Every example is tested code. Download them all from the book’s repository."},
+    "ar": {"book": "الكتاب", "learn": "ماذا ستتعلم", 
+           "code": "كل مثال كود حقيقي مُختبر، وكلها في مستودع الكتاب."},
 }
 ORDINAL_AR = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس"]
 
@@ -60,6 +58,7 @@ STYLE = """
 .cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
 :root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
 .cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-edition { align-self: flex-start; font: 700 12pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 10pt 0 0; }
 .cv-mid { flex: 1; position: relative; }
 .cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
 .cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
@@ -110,15 +109,15 @@ def _code_card():
 
 def front_html(book, lang):
     w = WORDS[lang]
-    n = int(book["id"][1:])
+    n = book["number"]
     book_no = f'{w["book"]} {n}' if lang == "en" else f'{w["book"]} {ORDINAL_AR[n - 1]}'
-    tracks = "".join(f"<span>{t}</span>" for t in w["tracks"])
+    tracks = "".join(f"<span>{t}</span>" for t in book.get("tracks", []))
     return f"""<div class="front-in">
   <p class="cv-series">{SERIES["series"][lang]} · {book_no}</p>
   <h1 class="cv-title">{book["title"][lang]}</h1>
-  <p class="cv-sub">{book["subtitle"][lang]}</p>
+  <p class="cv-sub">{book["subtitle"][lang]}</p>{f'<p class="cv-edition">{book["edition"][lang]}</p>' if book.get("edition") else ""}
   <div class="cv-mid">{_code_card()}<div class="cv-tracks">{tracks}</div><div class="cv-bit">{bit("happy")}</div></div>
-  <div class="cv-foot"><span class="cv-level">{book["level"][lang]}</span><span class="cv-author">{w["author"]}</span></div>
+  <div class="cv-foot"><span class="cv-level">{book["level"][lang]}</span><span class="cv-author">{SERIES["author"][lang]}</span></div>
 </div>"""
 
 
@@ -153,7 +152,7 @@ def wrap(book, lang):
     height = 2 * BLEED + TRIM_H
     spine_text = ""
     if pages >= 79:
-        spine_text = f'<div class="spine-text"><span>{book["title"][lang]}</span><span>{WORDS[lang]["author"]}</span></div>'
+        spine_text = f'<div class="spine-text"><span>{book["title"][lang]}</span><span>{SERIES["author"][lang]}</span></div>'
     panel = f"width:{TRIM_W + BLEED}in;height:{height}in"
     front = f'<div class="cv" style="{panel}">{decor_layer()}<div style="position:absolute;inset:{BLEED}in {BLEED}in {BLEED}in 0">{front_html(book, lang)}</div></div>'
     back = f'<div class="cv" style="{panel}">{decor_layer()}<div style="position:absolute;inset:{BLEED}in 0 {BLEED}in {BLEED}in">{back_html(book, lang)}</div></div>'

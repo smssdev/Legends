@@ -63,6 +63,7 @@ code { font: 400 0.86em var(--mono); font-variant-ligatures: none; font-feature-
 .tp-title { font: 700 36pt/1.15 var(--head); margin: 0.2in 0 0.12in; color: var(--brand); }
 :root:lang(ar) .tp-sub { font-family: var(--body); }
 .tp-sub { font: 400 13.5pt/1.5 var(--head); color: var(--muted); max-width: 4.6in; }
+.tp-edition { font: 700 11pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 8pt 0 0; }
 .tp-level { font: 700 9.5pt var(--head); color: #fff; background: var(--warn); border-radius: 20pt; padding: 4pt 14pt; margin: 0.15in 0 0.2in; }
 .tp-bit svg { width: 1.6in; height: auto; }
 .tp-author { margin-top: 0.5in; font: 700 13pt var(--head); }

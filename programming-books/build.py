@@ -28,14 +28,14 @@ KEYWORDS = ("const let var if else switch case break default return function for
 TEXT = {
     "en": {
         "contents": "Contents", "part": "Part", "chapter": "Chapter", "sample": "sample chapter",
-        "author": "Soliman Maged Saeed Salah", "edition": "First edition", "output": "Terminal",
+        "author": SERIES["author"]["en"], "edition": "First edition", "output": "Terminal",
         "rights": "All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.",
         "code": "The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.",
         "trademarks": "JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.",
     },
     "ar": {
         "contents": "المحتويات", "part": "الجزء", "chapter": "الفصل", "sample": "فصل نموذجي",
-        "author": "سليمان ماجد سعيد صلاح", "edition": "الطبعة الأولى", "output": "الطرفية",
+        "author": SERIES["author"]["ar"], "edition": "الطبعة الأولى", "output": "الطرفية",
         "rights": "جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.",
         "code": "اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.",
         "trademarks": "JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.",
@@ -101,17 +101,22 @@ def fill_code(chapter, lang):
     return chapter
 
 
+def edition_pill(book, lang):
+    ed = book.get("edition")
+    return f'<p class="tp-edition">{ed[lang]}</p>' if ed else ""
+
+
 def front_matter(book, lang):
     t = TEXT[lang]
     series = SERIES["series"][lang]
-    n = int(book["id"][1:])
+    n = book["number"]
     book_no = f"Book {n}" if lang == "en" else f"الكتاب {ORDINAL_AR[n - 1]}"
     pages = [
         f'<section class="front half-title"><p class="ht">{book["title"][lang]}</p></section>',
         f'''<section class="front title-page">
           <p class="tp-series">{series} · {book_no}</p>
           <h1 class="tp-title">{book["title"][lang]}</h1>
-          <p class="tp-sub">{book["subtitle"][lang]}</p>
+          <p class="tp-sub">{book["subtitle"][lang]}</p>{edition_pill(book, lang)}
           <p class="tp-level">{book["level"][lang]}</p>
           <div class="tp-bit">{bit("happy")}</div>
           <p class="tp-author">{t["author"]}</p>
