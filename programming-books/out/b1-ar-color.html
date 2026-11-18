@@ -6060,6 +6060,141 @@ node_modules/
 
 <p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>git add</code> لاختيار التغييرات، ثم <code>git commit</code> لحفظها. 2. Git الأداة التي تسجّل النسخ على حاسوبك، وGitHub موقع يحفظ مستودعات Git على الإنترنت ويساعد الناس على العمل عليها معاً. 3. لأنها تبقى في التاريخ، حيث يجدها كل من يصل إلى المستودع.</p>
 
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">يُتعلَّم Git بالأصابع لا بالعيون. افتح الطرفية واكتب كل أمر بنفسك. والجلسات التالية حقيقية: هذا بالضبط ما طبعه Git. وستختلف أرقام الـ commit عندك لأنها تعتمد على اسمك والوقت، ويجب أن يطابق كل ما عداها.</p>
+
+<div class="project">
+<p class="project-label">مشروع 15.1 · سهل</p>
+<h3>دفتر تعلّم تحت إدارة الإصدارات</h3>
+<p class="project-goal">ابدأ مستودعاً لدفتر تكتب فيه ما تتعلمه، واحفظ commit واحداً لكل يوم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>git init</code> و<code>add</code> و<code>commit</code> و<code>commit -am</code> و<code>log --oneline</code> و<code>show</code>.</p>
+<ol class="steps">
+<li>أنشئ مجلداً اسمه <code>journal</code>، وافتحه في VS Code، وشغّل <code>git init</code> في طرفيته.</li>
+<li>أنشئ <code>journal.md</code> بعنوان، وأضفه، واصنع أول commit.</li>
+<li>كل يوم أضف سطراً عما تعلمته، واحفظه بـ commit برسالة قصيرة. و<code>-am</code> تضيف وتحفظ في خطوة واحدة، لكن للملفات التي يتتبعها Git أصلاً فقط.</li>
+<li>اقرأ تاريخك بـ <code>git log --oneline</code>.</li>
+<li>انظر داخل آخر commit بـ <code>git show --stat</code>. ثم جرّب <code>git show</code> وحدها لترى السطر الذي أضفته بالضبط.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> احتفظ بهذا الدفتر حتى آخر الكتاب. بعد أسابيع سيصير <code>git log</code> يوميات تقدّمك، وعادة الـ commit الصغير المتكرر هي بالضبط ما تتوقعه الفرق منك.</p>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># مجلد جديد لدفترك</span>
+<span class="c">$ </span><span class="k">git init</span>
+Initialized empty Git repository in /Users/sara/code/journal/.git/
+<span class="c"># أنشئ journal.md بعنوان، ثم:</span>
+<span class="c">$ </span><span class="k">git add journal.md</span>
+<span class="c">$ </span><span class="k">git commit -q -m &quot;بداية الدفتر&quot;</span>
+<span class="c"># أضف سطر اليوم 1، ثم:</span>
+<span class="c">$ </span><span class="k">git commit -q -am &quot;اليوم 1&quot;</span>
+<span class="c"># أضف سطر اليوم 2، ثم:</span>
+<span class="c">$ </span><span class="k">git commit -q -am &quot;اليوم 2&quot;</span>
+<span class="c"># ثلاث لقطات، الأحدث أولاً</span>
+<span class="c">$ </span><span class="k">git log --oneline</span>
+b9d7cf2 اليوم 2
+bf34050 اليوم 1
+eb4e70b بداية الدفتر
+<span class="c"># ما الذي تغيّر بالضبط في آخر commit؟</span>
+<span class="c">$ </span><span class="k">git show --stat --format=%s HEAD</span>
+اليوم 2
+
+ journal.md | 1 +
+ 1 file changed, 1 insertion(+)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 15.2 · متوسط</p>
+<h3>طريقتان للتراجع</h3>
+<p class="project-goal">اصنع خطأين عمداً، واحداً لم تحفظه بعد وآخر حفظته، وتراجع عن كل منهما بالأداة المناسبة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>git status --short</code>، و<code>git restore</code> للتغييرات غير المحفوظة، و<code>git revert</code> للـ commits.</p>
+<ol class="steps">
+<li>استبدل محتوى <code>journal.md</code> كله بسطر سخيف، واحفظ. فيُظهر <code>git status --short</code> الحرف <code>M</code>: معدَّل.</li>
+<li>شغّل <code>git restore journal.md</code>. يعود الملف إلى آخر commit، وتعود الحالة نظيفة.</li>
+<li>اكتب اليوم 3 كما يجب واحفظه بـ commit.</li>
+<li>الآن أنشئ <code>quote.md</code> وأضفه واحفظه بـ commit. وتخيّل أنك تندم على هذا الـ commit.</li>
+<li>شغّل <code>git revert --no-edit HEAD</code>. يصنع Git commit <em>جديداً</em> يفعل العكس، فيختفي الملف.</li>
+<li>اقرأ <code>git log --oneline</code>: الخطأ والتراجع عنه كلاهما في التاريخ، فلا يُفاجأ أحد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>restore</code> تتخلص من عمل لم يُحفظ أبداً، فلا رجعة فيه، فاستخدمها بحذر. أما <code>revert</code> فآمنة دائماً، حتى بعد الرفع، لأنها تضيف إلى التاريخ ولا تمحو منه.</p>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># عذراً: تعديل لم تقصده</span>
+<span class="c">$ </span><span class="k">git status --short</span>
+ M journal.md
+<span class="c"># تخلّص من التغيير في هذا الملف</span>
+<span class="c">$ </span><span class="k">git restore journal.md</span>
+<span class="c">$ </span><span class="k">git status --short</span>
+<span class="c"># الآن اكتب اليوم 3 كما يجب، ثم:</span>
+<span class="c">$ </span><span class="k">git commit -q -am &quot;اليوم 3&quot;</span>
+<span class="c"># commit تندم عليه، وقد حُفظ</span>
+<span class="c">$ </span><span class="k">git add quote.md</span>
+<span class="c">$ </span><span class="k">git commit -q -m &quot;إضافة اقتباس عشوائي&quot;</span>
+<span class="c"># ألغِه بـ commit جديد، فيبقى التاريخ صادقاً</span>
+<span class="c">$ </span><span class="k">git revert --no-edit HEAD</span>
+[main c089223] Revert &quot;إضافة اقتباس عشوائي&quot;
+ 1 file changed, 1 deletion(-)
+ delete mode 100644 quote.md
+<span class="c">$ </span><span class="k">git log --oneline</span>
+c089223 Revert &quot;إضافة اقتباس عشوائي&quot;
+e2ca80a إضافة اقتباس عشوائي
+e8f4536 اليوم 3
+b9d7cf2 اليوم 2
+bf34050 اليوم 1
+eb4e70b بداية الدفتر</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 15.3 · تحدٍّ</p>
+<h3>اصنع تعارض دمج ثم حُلّه</h3>
+<p class="project-goal">التعارضات تخيف المبتدئين حتى يحلّوا أول واحد. اصنع واحداً عمداً، واقرأه، وحلّه بهدوء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الفروع، و<code>git switch -c</code>، والدمج السريع والدمج الحقيقي، وعلامات التعارض، وإنهاء الدمج.</p>
+<ol class="steps">
+<li>على <code>main</code> أضف سطر عنوان في أعلى الدفتر واحفظه بـ commit.</li>
+<li>أنشئ فرعاً <code>personal</code>، وغيّر العنوان، واحفظ. ثم عُد إلى <code>main</code>.</li>
+<li>أنشئ فرعاً ثانياً <code>ambitious</code> <em>من main</em>، وغيّر سطر العنوان نفسه بشكل آخر، واحفظ. ثم عُد إلى <code>main</code>.</li>
+<li>ادمج <code>personal</code>: دمج سريع (fast-forward) لأن <code>main</code> لم يتحرك. ثم ادمج <code>ambitious</code>: لا يستطيع Git أن يختار بين تغييرين للسطر نفسه، فيتوقف.</li>
+<li>افتح الملف. بين <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> و<code>=======</code> نسختك (<code>HEAD</code>)، وبين <code>=======</code> و<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> النسخة القادمة.</li>
+<li>اكتب السطر الذي تريده فعلاً، واحذف أسطر العلامات الثلاثة، ثم <code>git add</code> و<code>git commit</code>. ويُظهر الرسم التقاء الفرعين.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التعارض ليس خطأ، بل Git يطلب بأدب أن يقرر إنسان. ويعرض VS Code أزراراً فوق كل تعارض («Accept Current» و«Accept Incoming» و«Accept Both»)، لكن اقرأ النتيجة دائماً قبل الحفظ.</p>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># أضف سطر عنوان في الأعلى، ثم:</span>
+<span class="c">$ </span><span class="k">git commit -q -am &quot;إضافة عنوان&quot;</span>
+<span class="c"># فرعان يغيّران السطر نفسه</span>
+<span class="c">$ </span><span class="k">git switch -q -c personal</span>
+<span class="c"># غيّر العنوان في هذا الفرع، ثم:</span>
+<span class="c">$ </span><span class="k">git commit -q -am &quot;عنوان شخصي&quot;</span>
+<span class="c">$ </span><span class="k">git switch -q main</span>
+<span class="c">$ </span><span class="k">git switch -q -c ambitious</span>
+<span class="c"># غيّر السطر نفسه بشكل آخر هنا، ثم:</span>
+<span class="c">$ </span><span class="k">git commit -q -am &quot;عنوان طموح&quot;</span>
+<span class="c">$ </span><span class="k">git switch -q main</span>
+<span class="c">$ </span><span class="k">git merge personal</span>
+Updating f59166c..4390b4a
+Fast-forward
+ journal.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+<span class="c"># دمج الثاني يسبب تعارضاً</span>
+<span class="c">$ </span><span class="k">git merge ambitious</span>
+Auto-merging journal.md
+CONFLICT (content): Merge conflict in journal.md
+Automatic merge failed; fix conflicts and then commit the result.
+<span class="c"># Git يضع النسختين داخل الملف</span>
+<span class="c">$ </span><span class="k">head -5 journal.md</span>
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+العنوان: دفتر تعلّم سارة
+=======
+العنوان: طريقي إلى الاحتراف
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; ambitious
+<span class="c"># أبقِ السطر الذي تريده، واحذف العلامات، ثم:</span>
+<span class="c">$ </span><span class="k">git add journal.md</span>
+<span class="c">$ </span><span class="k">git commit -q -m &quot;اختيار العنوان النهائي&quot;</span>
+<span class="c">$ </span><span class="k">git log --oneline --graph -4</span>
+*   c00d6d1 اختيار العنوان النهائي
+|\  
+| * be5d73e عنوان طموح
+* | 4390b4a عنوان شخصي
+|/  
+* f59166c إضافة عنوان</pre></div>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">تمارين</h2>
 
 <ol class="exercises">
