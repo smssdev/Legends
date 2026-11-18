@@ -3361,6 +3361,66 @@ console.log(message);</pre></div>
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. <code>"string"</code>, because the quotes make it text. 2. <code>2</code>, because 5 goes into 17 three times with 2 left over. 3. <code>false</code>, because a number is never the same as a string.</p>
 
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Programs that decide are everywhere: schools grade exams, shops price deliveries, calendars know how long each month is. Build all three, and test each one with many different values, including the strange ones.</p>
+
+<div class="project">
+<p class="project-label">Project 8.1 · Easy</p>
+<h3>Exam grade calculator</h3>
+<p class="project-goal">Turn a score from 0 to 100 into a letter grade, say whether the student passed, and refuse impossible scores.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>if</code>/<code>else if</code> chains, the order of conditions, <code>||</code> and <code>&amp;&amp;</code>, and the conditional operator.</p>
+<ol class="steps">
+<li>Write the grading table first: A from 90, B from 80, C from 70, D from 50, F below 50.</li>
+<li>Start the chain with the impossible cases: a score below 0 <em>or</em> above 100 is invalid. Why must this check come first?</li>
+<li>Continue the chain from the highest grade down. Each condition only needs the lower limit, because the earlier ones have already caught the higher scores.</li>
+<li>Calculate <code>passed</code> with <code>&amp;&amp;</code>, and print a message with the conditional operator.</li>
+<li>Test with 100, 90, 89, 50, 49, 0, -5 and 120. These are called <dfn>boundary values</dfn>: bugs love to hide there.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if you put <code>score &gt;= 50</code> before <code>score &gt;= 90</code>, every passing student gets a D. The first true condition wins.</p>
+<p><strong>Your result should look like this</strong> (for 83):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Score 83: grade B
+Passed. Well done!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 8.2 · Medium</p>
+<h3>Delivery cost calculator</h3>
+<p class="project-goal">An online shop charges for delivery by weight, doubles the price for express delivery, adds a fee outside the big cities, and delivers free on large orders that are not express.</p>
+<p class="project-skills"><strong>You will practise:</strong> several decisions in a row, <code>!==</code>, combining conditions, and rounding up with <code>Math.ceil</code>.</p>
+<ol class="steps">
+<li>Write the rules as a numbered list in plain language before any code: up to 1 kg costs 30; up to 5 kg costs 50; above 5 kg, 50 plus 10 for every extra kilogram started.</li>
+<li>Calculate the base cost from the weight. For the extra kilograms, <code>Math.ceil(weight - 5)</code> rounds up, so 6.2 kg counts as 2 extra kilograms.</li>
+<li>Apply express (× 2), then the fee for cities other than Cairo and Alexandria: the city is <em>not</em> Cairo <em>and</em> <em>not</em> Alexandria.</li>
+<li>Free delivery needs two things at once: an order total of 1000 or more, <em>and</em> not express (<code>!express</code>).</li>
+<li>Try at least five combinations and check each one by hand.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a classic mistake is <code>city !== "Cairo" || city !== "Alexandria"</code>, which is always true. Say the rule out loud: “not Cairo and not Alexandria”.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Weight: 3.5 kg, express: true, city: Alexandria
+Shipping: 100</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 8.3 · Challenge</p>
+<h3>How many days in this month?</h3>
+<p class="project-goal">Given a year and a month, work out how many days the month has, getting February right in leap years.</p>
+<p class="project-skills"><strong>You will practise:</strong> a complex condition with brackets, <code>%</code>, and a <code>switch</code> where several cases share one answer.</p>
+<ol class="steps">
+<li>Learn the leap year rule: a year is a leap year if it divides by 4, <em>except</em> years that divide by 100, <em>except</em> years that divide by 400. So 2024 and 2000 are leap years; 1900 is not.</li>
+<li>Write it as one boolean: <code>(year % 4 === 0 &amp;&amp; year % 100 !== 0) || year % 400 === 0</code>. Test it with 2024, 2023, 1900 and 2000.</li>
+<li>Write a <code>switch</code> on the month. February uses the leap year result. April, June, September and November have 30 days: let their <code>case</code>s fall through to the same code, with no <code>break</code> between them.</li>
+<li>Every other month has 31 days: that is the <code>default</code>.</li>
+<li>Print both results, and try February 1900. Many real programs have got that one wrong!</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> stacking <code>case 4:</code>, <code>case 6:</code>, <code>case 9:</code> and <code>case 11:</code> on top of each other is the one place where leaving out <code>break</code> is exactly what you want.</p>
+<p><strong>Your result should look like this</strong> (for February 2028):</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>2028 is a leap year: true
+Month 2 of 2028 has 29 days</pre></div>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">Exercises</h2>
 
 <ol class="exercises">
