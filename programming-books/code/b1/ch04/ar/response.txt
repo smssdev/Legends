@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 5120
+Cache-Control: max-age=600
+
+<!doctype html>
+<html lang="ar">
+  <head><title>أحذية</title></head>
+  ...

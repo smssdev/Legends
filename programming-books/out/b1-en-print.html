@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "Chapter 3: Your Developer Toolkit"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "Chapter 4: How the Web Works"; } }
+@page ch04:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Values, Variables and Decisions"; } }
 @page ch08:first { @top-center { content: none; } }
 </style></head>
@@ -838,6 +840,317 @@ Node.js is working!
 <div class="next">
 <p class="next-title">Coming up in Chapter 4</p>
 <p>Your tools are ready. Part 2 of the book is about the web. Before you build your first page, you will find out what really happens in the second between typing an address and seeing a website appear.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b1/ch04/en">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">Chapter 4</p><h1>How the Web Works</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn</p>
+<ul>
+<li>what clients and servers are, and how they talk to each other</li>
+<li>how to read every part of a web address</li>
+<li>how your computer finds a server anywhere in the world in milliseconds</li>
+<li>what an HTTP request and response look like, and what status codes mean</li>
+<li>how a browser turns HTML, CSS and JavaScript into a page, and how to build a tiny web server yourself</li>
+</ul>
+</div>
+
+<p class="lead">You type an address, press Enter, and less than a second later a page appears. It feels like magic, but behind it is a short, well-organised conversation between your computer and another computer that may be on the other side of the planet. In this chapter you will listen in on that conversation, and at the end you will take part in it with a server of your own.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>This chapter is the map for the rest of Part 2 and for your whole career on the web. Every website, every app and every API you will ever build uses the ideas in these pages. Let’s follow a request on its journey!</p></div></div>
+
+<h2><span class="sec">4.1</span><span>Clients and servers</span></h2>
+
+<p>The web is built on a simple idea. One computer asks for something; another computer answers. The one that asks is called the <dfn>client</dfn>. The one that answers is called the <dfn>server</dfn>.</p>
+
+<p>Think of a restaurant. You, the customer, are the client. You do not walk into the kitchen; you give your order to a waiter, who takes it to the kitchen and brings back your food. On the web, your browser is the customer, the server is the kitchen, and the waiter is a set of rules called <dfn>HTTP</dfn>, the HyperText Transfer Protocol, which both sides agree to follow.</p>
+
+<p>A server is not a special kind of machine. It is any computer running a program that waits for requests and answers them. Big websites use thousands of servers in data centres, but at the end of this chapter your own laptop will be a server for a moment.</p>
+
+<h2><span class="sec">4.2</span><span>Reading a web address</span></h2>
+
+<p>Every page on the web has an address called a <dfn>URL</dfn> (Uniform Resource Locator). A URL has several parts, and each one tells the browser something:</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="A URL split into protocol, host, port, path, query and fragment">
+<g font-family="JetBrains Mono" font-size="12">
+<text x="9" y="48" textLength="502" lengthAdjust="spacing"><tspan fill="#2b2b2b">https://</tspan><tspan fill="#2b2b2b">shop.example.com</tspan><tspan fill="#5b5873">:8080</tspan><tspan fill="#2b2b2b">/products/shoes</tspan><tspan fill="#2b2b2b">?size=42&amp;color=red</tspan><tspan fill="#2b2b2b">#reviews</tspan></text>
+</g>
+<g stroke-width="3" stroke-linecap="round">
+<line x1="9" y1="58" x2="63" y2="58" stroke="#2b2b2b"/><line x1="68" y1="58" x2="179" y2="58" stroke="#2b2b2b"/><line x1="183" y1="58" x2="215" y2="58" stroke="#5b5873"/>
+<line x1="219" y1="58" x2="323" y2="58" stroke="#2b2b2b"/><line x1="327" y1="58" x2="452" y2="58" stroke="#2b2b2b"/><line x1="457" y1="58" x2="511" y2="58" stroke="#2b2b2b"/>
+</g>
+<g font-family="Inter" font-size="11.5" font-weight="700" text-anchor="middle">
+<text x="36" y="82" fill="#2b2b2b">protocol</text><text x="123" y="82" fill="#2b2b2b">host (domain)</text><text x="199" y="100" fill="#5b5873">port</text>
+<text x="271" y="82" fill="#2b2b2b">path</text><text x="390" y="82" fill="#2b2b2b">query</text><text x="483" y="100" fill="#2b2b2b">fragment</text>
+</g>
+<g font-family="Inter" font-size="10" fill="#5b5873" text-anchor="middle">
+<text x="36" y="96">how to talk</text><text x="123" y="96">which server</text><text x="271" y="96">which page</text><text x="390" y="96">extra details</text>
+</g>
+</svg>
+<figcaption><b>Figure 4.1:</b> The six parts of a URL. Most addresses you type use only the first, second and fourth.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>Part</th><th>Example</th><th>What it means</th></tr></thead>
+<tbody>
+<tr><td>Protocol</td><td><code>https:</code></td><td>The language to use. <code>https</code> is HTTP with encryption.</td></tr>
+<tr><td>Host</td><td><code>shop.example.com</code></td><td>The name of the server to contact.</td></tr>
+<tr><td>Port</td><td><code>8080</code></td><td>Which “door” on the server. Usually hidden, because the web uses 443 for HTTPS and 80 for HTTP.</td></tr>
+<tr><td>Path</td><td><code>/products/shoes</code></td><td>Which page or file on that server.</td></tr>
+<tr><td>Query</td><td><code>?size=42&amp;color=red</code></td><td>Extra details, as <code>name=value</code> pairs joined with <code>&amp;</code>.</td></tr>
+<tr><td>Fragment</td><td><code>#reviews</code></td><td>A place inside the page. It is never sent to the server.</td></tr>
+</tbody>
+</table>
+
+<p>JavaScript can take a URL apart for you with <code>new URL()</code>. This is exactly what browsers do with every address you type:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">url.js</div><pre class="code"><span class="k">const</span> address = <span class="k">new</span> URL(
+  <span class="s">&quot;https://shop.example.com:8080/products/shoes?size=42&amp;color=red#reviews&quot;</span>
+);
+
+console.log(address.protocol);
+console.log(address.hostname);
+console.log(address.port);
+console.log(address.pathname);
+console.log(address.searchParams.get(<span class="s">&quot;size&quot;</span>));
+console.log(address.hash);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>https:
+shop.example.com
+8080
+/products/shoes
+42
+#reviews</pre></div>
+
+<h2><span class="sec">4.3</span><span>Finding the server: DNS</span></h2>
+
+<p>Computers on the internet do not find each other by name. Each one has a number called an <dfn>IP address</dfn>, such as <code>93.184.215.14</code>. Names like <code>example.com</code> exist only because people remember words better than numbers.</p>
+
+<p>So before your browser can talk to <code>shop.example.com</code>, it must find that server’s number. It asks the <dfn>Domain Name System</dfn> (DNS), which works like the contacts app on your phone: you tap a name, and the phone looks up the number. DNS is a huge, shared “contacts list” for the whole internet, spread across thousands of servers around the world.</p>
+
+<figure>
+<svg viewBox="0 0 520 200" role="img" aria-label="Steps from typing an address to seeing a page">
+<defs><marker id="w4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/></marker></defs>
+<g font-family="Inter" font-size="12" text-anchor="middle">
+<rect x="10" y="70" width="110" height="60" rx="12" fill="#2b2b2b"/><text x="65" y="97" fill="#fff" font-weight="700">Your browser</text><text x="65" y="115" fill="#f2f2f2" font-size="10.5">the client</text>
+<rect x="205" y="8" width="120" height="52" rx="12" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="265" y="31" fill="#2b2b2b" font-weight="700">DNS</text><text x="265" y="48" fill="#2b2b2b" font-size="10.5">name → number</text>
+<rect x="400" y="70" width="110" height="60" rx="12" fill="#262626"/><text x="455" y="97" fill="#fff" font-weight="700">Web server</text><text x="455" y="115" fill="#e8e8e8" font-size="10.5">93.184.215.14</text>
+</g>
+<g stroke="#2b2b2b" stroke-width="2.2" fill="none" marker-end="url(#w4)">
+<path d="M70,68 L200,32"/><path d="M205,48 L100,72"/><path d="M122,94 L396,94"/><path d="M398,112 L124,112"/>
+</g>
+<g font-family="Inter" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">
+<circle cx="128" cy="40" r="10" fill="#2b2b2b"/><text x="128" y="44">1</text>
+<circle cx="160" cy="70" r="10" fill="#2b2b2b"/><text x="160" y="74">2</text>
+<circle cx="260" cy="94" r="10" fill="#2b2b2b"/><text x="260" y="98">3</text>
+<circle cx="260" cy="112" r="10" fill="#2b2b2b"/><text x="260" y="116">4</text>
+</g>
+<g font-family="Inter" font-size="11" fill="#1e1b2e">
+<text x="10" y="156">1  “What is the number for shop.example.com?”</text>
+<text x="10" y="171">2  “It is 93.184.215.14.”</text>
+<text x="280" y="156">3  HTTP request: “GET /products/shoes”</text>
+<text x="280" y="171">4  HTTP response: “200 OK” and the page</text>
+</g>
+</svg>
+<figcaption><b>Figure 4.2:</b> The journey of a request. Steps 1 and 2 find the server; steps 3 and 4 are the HTTP conversation.</figcaption>
+</figure>
+
+<p>Your computer remembers DNS answers for a while, so this lookup usually takes only a few milliseconds, or no time at all if you visited the site recently.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>A request from Cairo to a server in New York travels roughly 9,000 kilometres through cables under the sea, and the reply comes back the same way, often in less than a quarter of a second. That is why big websites copy their files to servers in many countries: the closer the server, the faster the page.</p></aside>
+
+<h2><span class="sec">4.4</span><span>The HTTP conversation</span></h2>
+
+<p>Once the browser knows the server’s address, it sends an <dfn>HTTP request</dfn>. It is surprisingly readable plain text:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">request</div><pre class="code">GET /products/shoes?size=42 HTTP/1.1
+Host: shop.example.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0) Chrome/131
+Accept: text/html
+Accept-Language: en-US,en</pre></div>
+
+<p>The first line says <em>what</em> the browser wants: the <dfn>method</dfn> <code>GET</code> (“please give me”), the path, and the HTTP version. The lines below are <dfn>headers</dfn>: extra information, such as which browser this is and which languages the user prefers. That last header is how a website can show you Arabic or English automatically.</p>
+
+<p>The server answers with an <dfn>HTTP response</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">response</div><pre class="code">HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 5120
+Cache-Control: max-age=600
+
+&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;&lt;title&gt;Shoes&lt;/title&gt;&lt;/head&gt;
+  ...</pre></div>
+
+<p>The first line holds the <dfn>status code</dfn>, a three-digit number that says how things went. Then come the response headers, an empty line, and finally the <dfn>body</dfn>: the actual content, here an HTML page.</p>
+
+<h3>Methods</h3>
+
+<table>
+<thead><tr><th>Method</th><th>Meaning</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>GET</code></td><td>Give me something</td><td>Open a page, load a photo</td></tr>
+<tr><td><code>POST</code></td><td>Here is something new</td><td>Send a sign-up form, post a comment</td></tr>
+<tr><td><code>PUT</code> / <code>PATCH</code></td><td>Change something that exists</td><td>Edit your profile</td></tr>
+<tr><td><code>DELETE</code></td><td>Remove something</td><td>Delete a message</td></tr>
+</tbody>
+</table>
+
+<h3>Status codes</h3>
+
+<p>You do not need to memorise every code. The first digit tells you the family:</p>
+
+<table>
+<thead><tr><th>Family</th><th>Meaning</th><th>Common examples</th></tr></thead>
+<tbody>
+<tr><td><code>2xx</code></td><td>Success</td><td><code>200 OK</code>, <code>201 Created</code></td></tr>
+<tr><td><code>3xx</code></td><td>Look somewhere else</td><td><code>301 Moved Permanently</code>, <code>304 Not Modified</code></td></tr>
+<tr><td><code>4xx</code></td><td>The client made a mistake</td><td><code>404 Not Found</code>, <code>401 Unauthorized</code>, <code>403 Forbidden</code></td></tr>
+<tr><td><code>5xx</code></td><td>The server made a mistake</td><td><code>500 Internal Server Error</code>, <code>503 Service Unavailable</code></td></tr>
+</tbody>
+</table>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Here’s an easy way to remember it: 4xx means “you did something wrong” (like asking for a page that doesn’t exist), and 5xx means “I did something wrong” (the server broke). When you build servers later, choosing the right status code will be part of your job.</p></div></div>
+
+<h2><span class="sec">4.5</span><span>HTTPS and the padlock</span></h2>
+
+<p>Plain HTTP sends everything as readable text. Anyone on the way, for example on the same café Wi-Fi, could read your passwords. <dfn>HTTPS</dfn> solves this by <dfn>encrypting</dfn> the conversation: the browser and the server agree on a secret key, and everything is scrambled so that only they can read it. HTTPS also proves that the server really belongs to the website’s owner, thanks to a digital <dfn>certificate</dfn>.</p>
+
+<p>The padlock next to the address bar means the connection is encrypted. Today almost every website uses HTTPS, browsers warn you about sites that do not, and free certificates mean there is no excuse not to use it. Everything you publish in this book will use HTTPS.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The padlock means the connection is private. It does not mean the website is honest. A fake banking site can have a padlock too. Always check the domain name carefully before you type a password.</p></aside>
+
+<h2><span class="sec">4.6</span><span>How the browser builds the page</span></h2>
+
+<p>The first response is usually an HTML file. As the browser reads it, it finds links to other files it needs, such as stylesheets, scripts, images and fonts, and requests each one. A typical news page makes dozens or even hundreds of requests. You saw them in the Network tab in Chapter 3.</p>
+
+<p>Three languages work together to make every page, and the rest of Part 2 and Part 3 teaches all three:</p>
+
+<table>
+<thead><tr><th>Language</th><th>Job</th><th>In a house, it is…</th><th>Chapters</th></tr></thead>
+<tbody>
+<tr><td><strong>HTML</strong></td><td>Structure and content</td><td>The walls, rooms and furniture</td><td>5</td></tr>
+<tr><td><strong>CSS</strong></td><td>Appearance and layout</td><td>The paint, the curtains and where things stand</td><td>6 and 7</td></tr>
+<tr><td><strong>JavaScript</strong></td><td>Behaviour</td><td>The electricity: lights, doorbell and alarm</td><td>8 to 14</td></tr>
+</tbody>
+</table>
+
+<p>The browser turns the HTML into a tree of elements, applies the CSS rules to decide how each one looks and where it goes, paints the result on the screen, and runs the JavaScript, which can change any of it at any moment.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>In <code>https://news.example.org/sport?team=ahly</code>, what is the host, and what is the path?</li><li>What does a <code>404</code> status code mean, and whose mistake is it?</li><li>Which part of a URL is never sent to the server?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">4.7</span><span>Project: your own web server</span></h2>
+
+<p>Time to take part in the conversation yourself. Node.js includes everything you need to build a web server in a few lines. The program below plays both roles: it starts a server, and then it acts as a client and asks that server for a page, exactly as a browser would.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.js</div><pre class="code"><span class="k">const</span> http = require(<span class="s">&quot;node:http&quot;</span>);
+
+<span class="c">// The server: answers every request with a small HTML page.</span>
+<span class="k">const</span> server = http.createServer((request, response) =&gt; {
+  console.log(<span class="s">`Request: ${request.method} ${request.url}`</span>);
+  response.writeHead(<span class="n">200</span>, { <span class="s">&quot;Content-Type&quot;</span>: <span class="s">&quot;text/html; charset=utf-8&quot;</span> });
+  response.end(<span class="s">&quot;&lt;h1&gt;Hello from my server!&lt;/h1&gt;&quot;</span>);
+});
+
+server.listen(<span class="n">3000</span>, <span class="k">async</span> () =&gt; {
+  console.log(<span class="s">&quot;Server ready at http://localhost:3000&quot;</span>);
+
+  <span class="c">// The client: ask our own server for a page, like a browser would.</span>
+  <span class="k">const</span> reply = <span class="k">await</span> fetch(<span class="s">&quot;http://localhost:3000/hello&quot;</span>);
+  console.log(reply.status, reply.statusText);
+  console.log(reply.headers.get(<span class="s">&quot;content-type&quot;</span>));
+  console.log(<span class="k">await</span> reply.text());
+
+  server.close();
+});</pre></div>
+
+<p>Run it with <code>node server.js</code>:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Server ready at http://localhost:3000
+Request: GET /hello
+200 OK
+text/html; charset=utf-8
+&lt;h1&gt;Hello from my server!&lt;/h1&gt;</pre></div>
+
+<p>Read the output from top to bottom and you can see the whole conversation from this chapter. The server starts. A <code>GET</code> request for <code>/hello</code> arrives. The server answers with status <code>200 OK</code>, a <code>Content-Type</code> header saying “this is HTML”, and a body containing a heading. Then the program closes the server.</p>
+
+<p>A few new words appear in this program. <code>require</code> loads a module that comes with Node.js; <code>http.createServer</code> receives a function that runs once for every request; and <code>await</code> waits for the reply to arrive. You will learn functions in Chapter 10 and <code>await</code> in Chapter 13. For now, enjoy the fact that you have written a real web server.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>Delete the last line, <code>server.close();</code>, and run the program again. This time the server keeps running. Open your browser at <code>http://localhost:3000</code> and you will see your heading! Watch the terminal: every time you reload the page, a new request appears. Press <code>Ctrl</code> + <code>C</code> in the terminal to stop the server.</p></aside>
+
+<p>The name <code>localhost</code> always means “this computer”, and <code>3000</code> is the port. Developers run servers on their own machine like this all day while building websites.</p>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A <strong>client</strong> asks and a <strong>server</strong> answers. They talk using <strong>HTTP</strong>.</li>
+<li>A <strong>URL</strong> has a protocol, host, port, path, query and fragment.</li>
+<li><strong>DNS</strong> turns a domain name into an <strong>IP address</strong>, like the contacts list on a phone.</li>
+<li>A <strong>request</strong> has a method, a path and headers; a <strong>response</strong> has a status code, headers and a body.</li>
+<li>Status codes: <strong>2xx</strong> success, <strong>3xx</strong> redirect, <strong>4xx</strong> client error, <strong>5xx</strong> server error.</li>
+<li><strong>HTTPS</strong> encrypts the conversation and proves who the server is.</li>
+<li>Pages are built from <strong>HTML</strong> (structure), <strong>CSS</strong> (appearance) and <strong>JavaScript</strong> (behaviour).</li>
+<li>With Node.js you can build a web server in a few lines.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The host is <code>news.example.org</code> and the path is <code>/sport</code> (<code>?team=ahly</code> is the query). 2. “Not Found”: the page does not exist. It is a client error, because the client asked for something that is not there. 3. The fragment, the part after <code>#</code>.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write down the protocol, host, path and query of <code>https://www.example.com/search?q=javascript&amp;page=2</code>. Check your answer by changing <code>url.js</code>.</li>
+<li><span class="level">Easy</span> Visit a page that does not exist on any website, such as <code>/this-page-does-not-exist</code>. Open the Network tab and find the status code.</li>
+<li><span class="level medium">Medium</span> Change <code>server.js</code> so the page shows your name in the heading and a paragraph about you, using <code>&lt;p&gt;</code> after the <code>&lt;h1&gt;</code>.</li>
+<li><span class="level medium">Medium</span> In <code>server.js</code>, change the status code from <code>200</code> to <code>404</code>. What does the output show now? Does the browser still display the page?</li>
+<li><span class="level hard">Challenge</span> Make the server answer differently depending on the path: if <code>request.url</code> is <code>"/about"</code>, send an “About me” page; otherwise send the normal page. (Hint: use an <code>if</code>, from Chapter 8.)</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 5</p>
+<p>Your server sent a single heading. In the next chapter you will learn HTML properly and build your first real web page, with headings, paragraphs, links, images and lists, structured the way professionals do it.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/en">
