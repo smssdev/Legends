@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Values, Variables and Decisions"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "Chapter 9: Loops and Arrays"; } }
+@page ch09:first { @top-center { content: none; } }
 </style></head>
 <body><section class="front half-title"><p class="ht">Code from Zero</p></section><section class="front title-page">
           <p class="tp-series">From Zero to Senior · Book 1</p>
@@ -2823,6 +2825,296 @@ console.log(message);</pre></div>
 <div class="next">
 <p class="next-title">Coming up in Chapter 9</p>
 <p>Your kiosk can serve only one visitor at a time. In the next chapter you will learn to store whole lists of values in arrays, and to repeat work with loops, so the kiosk can serve a queue of a hundred visitors with the same few lines of code.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b1/ch09/en">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">Chapter 9</p><h1>Loops and Arrays</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>store many values in one variable with arrays</li>
+<li>read, add and find items in an array</li>
+<li>repeat work with <code>for</code>, <code>for…of</code> and <code>while</code> loops</li>
+<li>stop a loop early or skip a step with <code>break</code> and <code>continue</code></li>
+<li>serve a whole queue of visitors with your ticket kiosk</li>
+</ul>
+</div>
+
+<p class="lead">Computers are wonderful at doing the same thing again and again, without ever getting bored or making a careless mistake on the thousandth try. In this chapter you will learn the two tools that make that possible: <strong>arrays</strong>, which hold lists of values, and <strong>loops</strong>, which repeat code for each of them.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Remember the ticket kiosk from Chapter 8? It could serve only one visitor. By the end of this chapter, it will serve a whole queue, and the code will hardly be longer. That’s the magic of loops!</p></div></div>
+
+<h2><span class="sec">9.1</span><span>Arrays: lists of values</span></h2>
+
+<p>An <dfn>array</dfn> is an ordered list of values stored in one variable. You write it with square brackets, separating the items with commas:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">arrays.js</div><pre class="code"><span class="k">const</span> fruits = [<span class="s">&quot;apple&quot;</span>, <span class="s">&quot;banana&quot;</span>, <span class="s">&quot;mango&quot;</span>];
+
+console.log(fruits);
+console.log(fruits.length);
+console.log(fruits[<span class="n">0</span>]);
+console.log(fruits[fruits.length - <span class="n">1</span>]);
+
+fruits.push(<span class="s">&quot;orange&quot;</span>);
+console.log(fruits);
+
+console.log(fruits.includes(<span class="s">&quot;banana&quot;</span>));
+console.log(fruits.indexOf(<span class="s">&quot;mango&quot;</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>[ &#x27;apple&#x27;, &#x27;banana&#x27;, &#x27;mango&#x27; ]
+3
+apple
+mango
+[ &#x27;apple&#x27;, &#x27;banana&#x27;, &#x27;mango&#x27;, &#x27;orange&#x27; ]
+true
+2</pre></div>
+
+<p>Each item has a position called its <dfn>index</dfn>, and indexes start at <strong>zero</strong>, not one. So <code>fruits[0]</code> is the first item and <code>fruits[2]</code> is the third. The property <code>length</code> tells you how many items there are, which is why the last item is always at <code>length - 1</code>.</p>
+
+<figure>
+<svg viewBox="0 0 520 120" role="img" aria-label="An array of three fruits with indexes 0, 1 and 2">
+<g font-family="Inter" font-size="14" text-anchor="middle">
+<rect x="80" y="30" width="120" height="50" rx="8" fill="#eef2ff" stroke="#2b2b2b" stroke-width="2"/>
+<rect x="200" y="30" width="120" height="50" rx="8" fill="#eef2ff" stroke="#2b2b2b" stroke-width="2"/>
+<rect x="320" y="30" width="120" height="50" rx="8" fill="#eef2ff" stroke="#2b2b2b" stroke-width="2"/>
+<text x="140" y="61" font-family="JetBrains Mono" fill="#15803d">"apple"</text><text x="260" y="61" font-family="JetBrains Mono" fill="#15803d">"banana"</text><text x="380" y="61" font-family="JetBrains Mono" fill="#15803d">"mango"</text>
+<g font-weight="700" fill="#2b2b2b"><text x="140" y="104">index 0</text><text x="260" y="104">index 1</text><text x="380" y="104">index 2</text></g>
+<text x="40" y="61" font-family="JetBrains Mono" font-weight="700" fill="#2b2b2b">fruits</text>
+<text x="260" y="20" fill="#5b5873" font-size="12">length = 3</text>
+</g>
+</svg>
+<figcaption><b>Figure 9.1:</b> An array is a row of numbered boxes. The numbering starts at 0.</figcaption>
+</figure>
+
+<p>Arrays come with built-in tools called <dfn>methods</dfn>, used with a dot:</p>
+
+<table>
+<thead><tr><th>Method</th><th>What it does</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>push(x)</code></td><td>Adds <code>x</code> to the end</td><td><code>fruits.push("kiwi")</code></td></tr>
+<tr><td><code>pop()</code></td><td>Removes and returns the last item</td><td><code>fruits.pop()</code></td></tr>
+<tr><td><code>includes(x)</code></td><td>Is <code>x</code> in the array? (<code>true</code> or <code>false</code>)</td><td><code>fruits.includes("mango")</code></td></tr>
+<tr><td><code>indexOf(x)</code></td><td>Where is <code>x</code>? (<code>-1</code> if missing)</td><td><code>fruits.indexOf("mango")</code></td></tr>
+<tr><td><code>join(sep)</code></td><td>Joins all items into one string</td><td><code>fruits.join(", ")</code></td></tr>
+<tr><td><code>slice(a, b)</code></td><td>Copies the items from index <code>a</code> up to (not including) <code>b</code></td><td><code>fruits.slice(0, 2)</code></td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>An array declared with <code>const</code> can still change: you can push and pop items. What <code>const</code> forbids is pointing the variable at a different array (<code>fruits = []</code>). Think of it as a box that is glued to its shelf; you can still change what is inside the box.</p></aside>
+
+<h2><span class="sec">9.2</span><span>The <code>for</code> loop</span></h2>
+
+<p>A <dfn>loop</dfn> runs the same block of code several times. The classic <code>for</code> loop counts:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">for.js</div><pre class="code"><span class="k">for</span> (<span class="k">let</span> i = <span class="n">1</span>; i &lt;= <span class="n">5</span>; i++) {
+  console.log(<span class="s">`Step ${i}`</span>);
+}
+
+<span class="c">// Counting down</span>
+<span class="k">for</span> (<span class="k">let</span> n = <span class="n">3</span>; n &gt; <span class="n">0</span>; n--) {
+  console.log(n);
+}
+console.log(<span class="s">&quot;Go!&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Step 1
+Step 2
+Step 3
+Step 4
+Step 5
+3
+2
+1
+Go!</pre></div>
+
+<p>The line <code>for (let i = 1; i &lt;= 5; i++)</code> has three parts, separated by semicolons:</p>
+
+<ol>
+<li><strong>Start:</strong> <code>let i = 1</code> runs once, before the loop.</li>
+<li><strong>Condition:</strong> <code>i &lt;= 5</code> is checked before each round. When it becomes <code>false</code>, the loop ends.</li>
+<li><strong>Step:</strong> <code>i++</code> runs after each round. <code>i++</code> is short for <code>i = i + 1</code>, and <code>n--</code> means <code>n = n - 1</code>.</li>
+</ol>
+
+<p>Each round of a loop is called an <dfn>iteration</dfn>. The variable <code>i</code> is a tradition from mathematics; use it for simple counters and a meaningful name for anything else.</p>
+
+<h2><span class="sec">9.3</span><span><code>for…of</code>: one item at a time</span></h2>
+
+<p>Most of the time you do not care about counting; you want to do something with <em>each item</em> in an array. The <code>for…of</code> loop does exactly that, and it is the loop you will use most:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">for-of.js</div><pre class="code"><span class="k">const</span> prices = [<span class="n">12</span>, <span class="n">5</span>, <span class="n">30</span>, <span class="n">8</span>];
+<span class="k">let</span> total = <span class="n">0</span>;
+
+<span class="k">for</span> (<span class="k">const</span> price <span class="k">of</span> prices) {
+  total = total + price;
+}
+
+console.log(<span class="s">`Items: ${prices.length}`</span>);
+console.log(<span class="s">`Total: ${total}`</span>);
+console.log(<span class="s">`Average: ${total / prices.length}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Items: 4
+Total: 55
+Average: 13.75</pre></div>
+
+<p>Read <code>for (const price of prices)</code> as “for each price in prices”. In each iteration, <code>price</code> holds the next item. This pattern, a variable outside the loop that each iteration adds to, is called an <dfn>accumulator</dfn>. You will use it to compute totals, counts, maximums and much more. You already saw it in Chapter 2: finding the largest card was an accumulator too.</p>
+
+<h2><span class="sec">9.4</span><span>The <code>while</code> loop</span></h2>
+
+<p>Sometimes you do not know in advance how many rounds you need. A <code>while</code> loop keeps going <em>as long as</em> a condition is true:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">while.js</div><pre class="code"><span class="k">let</span> savings = <span class="n">0</span>;
+<span class="k">let</span> week = <span class="n">0</span>;
+<span class="k">const</span> goal = <span class="n">100</span>;
+
+<span class="k">while</span> (savings &lt; goal) {
+  week++;
+  savings = savings + <span class="n">15</span>;
+}
+
+console.log(<span class="s">`Reached ${savings} after ${week} weeks`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Reached 105 after 7 weeks</pre></div>
+
+<p>Saving 15 a week, how long until you have 100? The loop does not know; it simply keeps adding until the goal is reached. That is the kind of question <code>while</code> is for.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: infinite loops</p><p>If the condition of a <code>while</code> loop never becomes false, the loop never ends, and your program freezes. Forget the line <code>savings = savings + 15</code>, and <code>savings</code> stays 0 for ever. If it happens, press <code>Ctrl</code> + <code>C</code> in the terminal to stop Node.js, or close the browser tab. Every programmer does this sometimes; just make sure something inside the loop moves it towards the end.</p></aside>
+
+<h2><span class="sec">9.5</span><span><code>break</code> and <code>continue</code></span></h2>
+
+<p>Two words give you finer control inside any loop. <code>break</code> leaves the loop immediately. <code>continue</code> skips the rest of the current iteration and jumps to the next one:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">break.js</div><pre class="code"><span class="k">const</span> scores = [<span class="n">72</span>, <span class="n">85</span>, -<span class="n">1</span>, <span class="n">90</span>, <span class="n">64</span>];
+
+<span class="k">for</span> (<span class="k">const</span> score <span class="k">of</span> scores) {
+  <span class="k">if</span> (score &lt; <span class="n">0</span>) {
+    console.log(<span class="s">&quot;Invalid score, stopping.&quot;</span>);
+    <span class="k">break</span>;
+  }
+  <span class="k">if</span> (score &lt; <span class="n">75</span>) {
+    continue;
+  }
+  console.log(<span class="s">`Great score: ${score}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Great score: 85
+Invalid score, stopping.</pre></div>
+
+<p>The score 72 is skipped by <code>continue</code>, 85 is printed, and then <code>-1</code> is invalid, so <code>break</code> stops everything: 90 and 64 are never checked. Use both sparingly; a loop with many jumps becomes hard to follow.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>In <code>const days = ["Sat", "Sun", "Mon"]</code>, what is <code>days[1]</code>, and what is <code>days.length</code>?</li><li>How many times does <code>for (let i = 0; i &lt; 3; i++)</code> run its block?</li><li>Which loop would you use to print every name in an array of names?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">9.6</span><span>Project: the kiosk serves a queue</span></h2>
+
+<p>Here is the kiosk from Chapter 8, now serving a whole line of visitors. Each number in <code>queue</code> is the age of one visitor. The pricing rules are the same; what is new is the loop around them, and three accumulators that build a total, a count and a receipt:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">queue.js</div><pre class="code"><span class="c">// Ages of the visitors waiting in line</span>
+<span class="k">const</span> queue = [<span class="n">34</span>, <span class="n">9</span>, <span class="n">2</span>, <span class="n">70</span>, <span class="n">16</span>, <span class="n">41</span>, <span class="n">3</span>];
+
+<span class="k">let</span> total = <span class="n">0</span>;
+<span class="k">let</span> freeTickets = <span class="n">0</span>;
+<span class="k">const</span> receipt = [];
+
+<span class="k">for</span> (<span class="k">const</span> age <span class="k">of</span> queue) {
+  <span class="k">let</span> price;
+  <span class="k">if</span> (age &lt; <span class="n">4</span>) {
+    price = <span class="n">0</span>;
+    freeTickets++;
+  } <span class="k">else</span> <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) {
+    price = <span class="n">6</span>;
+  } <span class="k">else</span> {
+    price = <span class="n">10</span>;
+  }
+  total = total + price;
+  receipt.push(price);
+}
+
+console.log(<span class="s">`Visitors served: ${queue.length}`</span>);
+console.log(<span class="s">`Prices: ${receipt.join(&quot;, &quot;)}`</span>);
+console.log(<span class="s">`Free tickets: ${freeTickets}`</span>);
+console.log(<span class="s">`Total: ${total}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Visitors served: 7
+Prices: 10, 6, 0, 6, 10, 10, 0
+Free tickets: 2
+Total: 42</pre></div>
+
+<p>Seven visitors are served in a few milliseconds. Add a thousand ages to the array and it would still take only milliseconds, without one extra line of code. This is why computers are so useful: once you have described how to handle <em>one</em> item, a loop handles them <em>all</em>.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Look at the pieces working together: an <strong>array</strong> holds the queue, a <strong>loop</strong> visits each visitor, a <strong>decision</strong> picks the price, and <strong>accumulators</strong> collect the results. Sequence, selection and repetition, the three building blocks from Chapter 2, all in one program. You’re a real programmer now!</p></div></div>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Using <code>array[array.length]</code> for the last item</td><td><code>undefined</code>: there is nothing there</td><td>The last item is at <code>length - 1</code></td></tr>
+<tr><td><code>i &lt;= array.length</code> in a <code>for</code> loop</td><td>One extra iteration with <code>undefined</code></td><td>Use <code>i &lt; array.length</code>, or better, <code>for…of</code></td></tr>
+<tr><td>Declaring the accumulator inside the loop</td><td>It restarts at 0 every iteration</td><td>Declare it <em>before</em> the loop</td></tr>
+<tr><td>Nothing in a <code>while</code> loop changes the condition</td><td>Infinite loop; the program freezes</td><td>Make sure each iteration moves towards the end</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>An <strong>array</strong> is an ordered list: <code>["a", "b", "c"]</code>. Indexes start at <strong>0</strong>; <code>length</code> counts the items.</li>
+<li>Useful methods: <code>push</code>, <code>pop</code>, <code>includes</code>, <code>indexOf</code>, <code>join</code>, <code>slice</code>.</li>
+<li><code>for (let i = 0; i &lt; n; i++)</code> counts. <code>for (const x of list)</code> visits each item. <code>while (condition)</code> repeats until the condition is false.</li>
+<li>An <strong>accumulator</strong> is a variable outside the loop that each iteration updates.</li>
+<li><code>break</code> leaves a loop; <code>continue</code> skips to the next iteration.</li>
+<li>Always make sure a loop can end.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>"Sun"</code> (indexes start at 0), and 3. 2. Three times, with <code>i</code> being 0, 1 and 2. 3. <code>for…of</code>.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Print the multiplication table of 7, from <code>7 × 1 = 7</code> to <code>7 × 10 = 70</code>.</li>
+<li><span class="level">Easy</span> Make an array of five temperatures and print the highest and the lowest. (Hint: two accumulators.)</li>
+<li><span class="level medium">Medium</span> Given <code>const words = ["code", "is", "fun", "and", "useful"]</code>, build a new array containing only the words longer than three letters, then print it joined with spaces.</li>
+<li><span class="level medium">Medium</span> Count how many even numbers there are between 1 and 100, using a loop and <code>%</code>.</li>
+<li><span class="level hard">Challenge</span> Extend <code>queue.js</code>: if a visitor is 65 or older, also print “Senior discount applied”. At the end, print the average price and the most expensive ticket sold.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 10</p>
+<p>The pricing rules now sit inside a loop, and the program is getting longer. In the next chapter you will learn functions: how to give a piece of code a name, reuse it anywhere, and build programs from small, clear parts.</p>
 </div>
 </section>
 </body></html>

@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: القيم والمتغيرات والقرارات"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "الفصل 9: الحلقات والمصفوفات"; } }
+@page ch09:first { @top-center { content: none; } }
 
 .cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
   background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
@@ -2944,6 +2946,296 @@ console.log(message);</pre></div>
 <div class="next">
 <p class="next-title">في الفصل 9</p>
 <p>شبّاك التذاكر الآن يخدم زائراً واحداً فقط. وفي الفصل القادم ستتعلم أن تحفظ قوائم كاملة من القيم في المصفوفات، وأن تكرر العمل بالحلقات، فيخدم الشبّاك طابوراً من مئة زائر بالأسطر القليلة نفسها.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b1/ch09/ar">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">الفصل 9</p><h1>الحلقات والمصفوفات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تحفظ قيماً كثيرة في متغير واحد بالمصفوفات</li>
+<li>تقرأ عناصر المصفوفة وتضيف إليها وتبحث فيها</li>
+<li>تكرر العمل بحلقات <code>for</code> و<code>for…of</code> و<code>while</code></li>
+<li>توقف الحلقة مبكراً أو تتخطى خطوة بـ <code>break</code> و<code>continue</code></li>
+<li>تخدم طابوراً كاملاً من الزوار بشبّاك التذاكر</li>
+</ul>
+</div>
+
+<p class="lead">الحواسيب رائعة في فعل الشيء نفسه مرة بعد مرة، دون أن تملّ أو تخطئ سهواً في المحاولة الألف. وفي هذا الفصل ستتعلم الأداتين اللتين تجعلان ذلك ممكناً: <strong>المصفوفات</strong> التي تحفظ قوائم القيم، و<strong>الحلقات</strong> التي تكرر الكود لكل واحدة منها.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أتذكر شبّاك التذاكر من الفصل 8؟ كان يخدم زائراً واحداً فقط. وفي آخر هذا الفصل سيخدم طابوراً كاملاً، ولن يطول الكود إلا قليلاً. هذا سحر الحلقات!</p></div></div>
+
+<h2><span class="sec">9.1</span><span>المصفوفات: قوائم القيم</span></h2>
+
+<p><dfn>المصفوفة</dfn> (array) قائمة مرتبة من القيم محفوظة في متغير واحد. تكتبها بين قوسين مربعين، وتفصل العناصر بفواصل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">arrays.js</div><pre class="code"><span class="k">const</span> fruits = [<span class="s">&quot;تفاح&quot;</span>, <span class="s">&quot;موز&quot;</span>, <span class="s">&quot;مانجو&quot;</span>];
+
+console.log(fruits);
+console.log(fruits.length);
+console.log(fruits[<span class="n">0</span>]);
+console.log(fruits[fruits.length - <span class="n">1</span>]);
+
+fruits.push(<span class="s">&quot;برتقال&quot;</span>);
+console.log(fruits);
+
+console.log(fruits.includes(<span class="s">&quot;موز&quot;</span>));
+console.log(fruits.indexOf(<span class="s">&quot;مانجو&quot;</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>[ &#x27;تفاح&#x27;, &#x27;موز&#x27;, &#x27;مانجو&#x27; ]
+3
+تفاح
+مانجو
+[ &#x27;تفاح&#x27;, &#x27;موز&#x27;, &#x27;مانجو&#x27;, &#x27;برتقال&#x27; ]
+true
+2</pre></div>
+
+<p>لكل عنصر موضع يُسمى <dfn>الفهرس</dfn> (index)، والفهارس تبدأ من <strong>الصفر</strong> لا من الواحد. فـ <code>fruits[0]</code> أول عنصر، و<code>fruits[2]</code> الثالث. والخاصية <code>length</code> تخبرك بعدد العناصر، ولهذا يكون آخر عنصر دائماً عند <code>length - 1</code>.</p>
+
+<figure>
+<svg viewBox="0 0 520 120" role="img" aria-label="مصفوفة من ثلاث فواكه بالفهارس 0 و1 و2">
+<g font-family="Cairo" font-size="14" text-anchor="middle">
+<rect x="80" y="30" width="120" height="50" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<rect x="200" y="30" width="120" height="50" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<rect x="320" y="30" width="120" height="50" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<text x="140" y="61" fill="#15803d">"تفاح"</text><text x="260" y="61" fill="#15803d">"موز"</text><text x="380" y="61" fill="#15803d">"مانجو"</text>
+<g font-weight="700" fill="#db2777"><text x="140" y="106">الفهرس 0</text><text x="260" y="106">الفهرس 1</text><text x="380" y="106">الفهرس 2</text></g>
+<text x="40" y="61" font-family="JetBrains Mono" font-weight="700" fill="#4338ca">fruits</text>
+<text x="260" y="20" fill="#5b5873" font-size="12" font-family="JetBrains Mono">length = 3</text>
+</g>
+</svg>
+<figcaption><b>الشكل 9.1:</b> المصفوفة صف من الصناديق المرقمة، والترقيم يبدأ من 0. ولاحظ أن المصفوفة تُعرض في الكود من اليسار إلى اليمين دائماً، حتى لو كانت عناصرها عربية.</figcaption>
+</figure>
+
+<p>وتأتي المصفوفات مع أدوات جاهزة تُسمى <dfn>الدوال المدمجة</dfn> (methods)، وتُستخدم بنقطة:</p>
+
+<table>
+<thead><tr><th>الدالة</th><th>ماذا تفعل</th><th>مثال</th></tr></thead>
+<tbody>
+<tr><td><code>push(x)</code></td><td>تضيف <code>x</code> في الآخر</td><td><code>fruits.push("كيوي")</code></td></tr>
+<tr><td><code>pop()</code></td><td>تحذف آخر عنصر وتعيده</td><td><code>fruits.pop()</code></td></tr>
+<tr><td><code>includes(x)</code></td><td>هل <code>x</code> في المصفوفة؟ (<code>true</code> أو <code>false</code>)</td><td><code>fruits.includes("مانجو")</code></td></tr>
+<tr><td><code>indexOf(x)</code></td><td>أين <code>x</code>؟ (<code>-1</code> إن لم يوجد)</td><td><code>fruits.indexOf("مانجو")</code></td></tr>
+<tr><td><code>join(sep)</code></td><td>تصل كل العناصر في نص واحد</td><td><code>fruits.join("، ")</code></td></tr>
+<tr><td><code>slice(a, b)</code></td><td>تنسخ العناصر من الفهرس <code>a</code> إلى ما قبل <code>b</code></td><td><code>fruits.slice(0, 2)</code></td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>المصفوفة المعرّفة بـ <code>const</code> يمكن أن تتغير: تضيف إليها وتحذف منها. أما ما تمنعه <code>const</code> فهو أن تجعل المتغير يشير إلى مصفوفة أخرى (<code>fruits = []</code>). تخيّلها صندوقاً ملصوقاً برفّه: لا تنقله، لكنك تغيّر ما بداخله.</p></aside>
+
+<h2><span class="sec">9.2</span><span>حلقة <code>for</code></span></h2>
+
+<p><dfn>الحلقة</dfn> (loop) تنفّذ مجموعة الأسطر نفسها مرات عدة. وحلقة <code>for</code> التقليدية تعدّ:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">for.js</div><pre class="code"><span class="k">for</span> (<span class="k">let</span> i = <span class="n">1</span>; i &lt;= <span class="n">5</span>; i++) {
+  console.log(<span class="s">`الخطوة ${i}`</span>);
+}
+
+<span class="c">// العد التنازلي</span>
+<span class="k">for</span> (<span class="k">let</span> n = <span class="n">3</span>; n &gt; <span class="n">0</span>; n--) {
+  console.log(n);
+}
+console.log(<span class="s">&quot;انطلق!&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>الخطوة 1
+الخطوة 2
+الخطوة 3
+الخطوة 4
+الخطوة 5
+3
+2
+1
+انطلق!</pre></div>
+
+<p>في السطر <code>for (let i = 1; i &lt;= 5; i++)</code> ثلاثة أجزاء تفصلها فواصل منقوطة:</p>
+
+<ol>
+<li><strong>البداية:</strong> <code>let i = 1</code> تُنفَّذ مرة واحدة قبل الحلقة.</li>
+<li><strong>الشرط:</strong> <code>i &lt;= 5</code> يُفحص قبل كل دورة، فإن صار <code>false</code> انتهت الحلقة.</li>
+<li><strong>الخطوة:</strong> <code>i++</code> تُنفَّذ بعد كل دورة. و<code>i++</code> اختصار لـ <code>i = i + 1</code>، و<code>n--</code> تعني <code>n = n - 1</code>.</li>
+</ol>
+
+<p>وكل دورة من الحلقة تُسمى <dfn>تكراراً</dfn> (iteration). والاسم <code>i</code> عادة قديمة من الرياضيات؛ استخدمه للعدادات البسيطة، واختر اسماً له معنى لما سواها.</p>
+
+<h2><span class="sec">9.3</span><span><code>for…of</code>: عنصر بعد عنصر</span></h2>
+
+<p>في أغلب الأحيان لا يهمك العدّ، بل تريد أن تفعل شيئاً مع <em>كل عنصر</em> في المصفوفة. وحلقة <code>for…of</code> تفعل ذلك بالضبط، وهي الحلقة التي ستستخدمها أكثر من غيرها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">for-of.js</div><pre class="code"><span class="k">const</span> prices = [<span class="n">12</span>, <span class="n">5</span>, <span class="n">30</span>, <span class="n">8</span>];
+<span class="k">let</span> total = <span class="n">0</span>;
+
+<span class="k">for</span> (<span class="k">const</span> price <span class="k">of</span> prices) {
+  total = total + price;
+}
+
+console.log(<span class="s">`عدد الأصناف: ${prices.length}`</span>);
+console.log(<span class="s">`المجموع: ${total}`</span>);
+console.log(<span class="s">`المتوسط: ${total / prices.length}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>عدد الأصناف: 4
+المجموع: 55
+المتوسط: 13.75</pre></div>
+
+<p>اقرأ <code>for (const price of prices)</code> هكذا: «لكل سعر في الأسعار». في كل تكرار يحمل <code>price</code> العنصر التالي. وهذا النمط، متغير خارج الحلقة يضيف إليه كل تكرار، يُسمى <dfn>المُجمِّع</dfn> (accumulator). وستستخدمه لحساب المجاميع والأعداد والقيم الكبرى وغيرها كثير. وقد رأيته في الفصل 2: إيجاد أكبر بطاقة كان مجمِّعاً أيضاً.</p>
+
+<h2><span class="sec">9.4</span><span>حلقة <code>while</code></span></h2>
+
+<p>أحياناً لا تعرف مسبقاً كم دورة تحتاج. وحلقة <code>while</code> تستمر <em>ما دام</em> الشرط صحيحاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">while.js</div><pre class="code"><span class="k">let</span> savings = <span class="n">0</span>;
+<span class="k">let</span> week = <span class="n">0</span>;
+<span class="k">const</span> goal = <span class="n">100</span>;
+
+<span class="k">while</span> (savings &lt; goal) {
+  week++;
+  savings = savings + <span class="n">15</span>;
+}
+
+console.log(<span class="s">`وصلت إلى ${savings} بعد ${week} أسابيع`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>وصلت إلى 105 بعد 7 أسابيع</pre></div>
+
+<p>إن ادخرت 15 كل أسبوع، فمتى تصل إلى 100؟ الحلقة لا تعرف، بل تستمر في الإضافة حتى تبلغ الهدف. وهذا النوع من الأسئلة هو ما وُجدت له <code>while</code>.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: الحلقات اللانهائية</p><p>إن لم يصر شرط حلقة <code>while</code> خاطئاً أبداً، فلن تنتهي الحلقة أبداً، ويتجمد برنامجك. انسَ السطر <code>savings = savings + 15</code> فيبقى <code>savings</code> صفراً إلى الأبد. وإن حدث ذلك فاضغط <code>Ctrl</code> + <code>C</code> في الطرفية لإيقاف Node.js، أو أغلق تبويب المتصفح. كل مبرمج يقع في هذا أحياناً؛ فقط تأكد أن شيئاً داخل الحلقة يقربها من نهايتها.</p></aside>
+
+<h2><span class="sec">9.5</span><span><code>break</code> و<code>continue</code></span></h2>
+
+<p>كلمتان تعطيانك تحكماً أدق داخل أي حلقة. <code>break</code> تخرج من الحلقة فوراً. و<code>continue</code> تتخطى بقية التكرار الحالي وتقفز إلى التالي:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">break.js</div><pre class="code"><span class="k">const</span> scores = [<span class="n">72</span>, <span class="n">85</span>, -<span class="n">1</span>, <span class="n">90</span>, <span class="n">64</span>];
+
+<span class="k">for</span> (<span class="k">const</span> score <span class="k">of</span> scores) {
+  <span class="k">if</span> (score &lt; <span class="n">0</span>) {
+    console.log(<span class="s">&quot;درجة غير صحيحة، توقفنا.&quot;</span>);
+    <span class="k">break</span>;
+  }
+  <span class="k">if</span> (score &lt; <span class="n">75</span>) {
+    continue;
+  }
+  console.log(<span class="s">`درجة ممتازة: ${score}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>درجة ممتازة: 85
+درجة غير صحيحة، توقفنا.</pre></div>
+
+<p>الدرجة 72 تتخطاها <code>continue</code>، وتُطبع 85، ثم تأتي <code>-1</code> غير الصحيحة فتوقف <code>break</code> كل شيء، ولا تُفحص 90 ولا 64 أبداً. استخدم الاثنتين باعتدال، فالحلقة الكثيرة القفزات يصعب تتبعها.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>في <code>const days = ["السبت", "الأحد", "الاثنين"]</code> ما قيمة <code>days[1]</code>، وما قيمة <code>days.length</code>؟</li><li>كم مرة تنفّذ <code>for (let i = 0; i &lt; 3; i++)</code> ما بداخلها؟</li><li>أي حلقة تستخدم لطباعة كل اسم في مصفوفة أسماء؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">9.6</span><span>مشروع: الشبّاك يخدم طابوراً</span></h2>
+
+<p>هذا شبّاك التذاكر من الفصل 8، يخدم الآن طابوراً كاملاً من الزوار. كل رقم في <code>queue</code> عمر زائر. قواعد التسعير كما هي، والجديد هو الحلقة حولها، وثلاثة مجمِّعات تبني المجموع والعدد والإيصال:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">queue.js</div><pre class="code"><span class="c">// أعمار الزوار في الطابور</span>
+<span class="k">const</span> queue = [<span class="n">34</span>, <span class="n">9</span>, <span class="n">2</span>, <span class="n">70</span>, <span class="n">16</span>, <span class="n">41</span>, <span class="n">3</span>];
+
+<span class="k">let</span> total = <span class="n">0</span>;
+<span class="k">let</span> freeTickets = <span class="n">0</span>;
+<span class="k">const</span> receipt = [];
+
+<span class="k">for</span> (<span class="k">const</span> age <span class="k">of</span> queue) {
+  <span class="k">let</span> price;
+  <span class="k">if</span> (age &lt; <span class="n">4</span>) {
+    price = <span class="n">0</span>;
+    freeTickets++;
+  } <span class="k">else</span> <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) {
+    price = <span class="n">6</span>;
+  } <span class="k">else</span> {
+    price = <span class="n">10</span>;
+  }
+  total = total + price;
+  receipt.push(price);
+}
+
+console.log(<span class="s">`عدد الزوار: ${queue.length}`</span>);
+console.log(<span class="s">`الأسعار: ${receipt.join(&quot;، &quot;)}`</span>);
+console.log(<span class="s">`تذاكر مجانية: ${freeTickets}`</span>);
+console.log(<span class="s">`المجموع: ${total}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>عدد الزوار: 7
+الأسعار: 10، 6، 0، 6، 10، 10، 0
+تذاكر مجانية: 2
+المجموع: 42</pre></div>
+
+<p>سبعة زوار يُخدمون في أجزاء من الألف من الثانية. ولو أضفت ألف عمر إلى المصفوفة لبقي الأمر أجزاء من الألف من الثانية، دون سطر واحد إضافي. ولهذا الحواسيب نافعة إلى هذا الحد: حين تصف كيف تتعامل مع عنصر <em>واحد</em>، تتعامل الحلقة معها <em>كلها</em>.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>انظر إلى القطع وهي تعمل معاً: <strong>مصفوفة</strong> تحفظ الطابور، و<strong>حلقة</strong> تزور كل زائر، و<strong>قرار</strong> يختار السعر، و<strong>مجمِّعات</strong> تجمع النتائج. التسلسل والاختيار والتكرار، اللبنات الثلاث من الفصل 2، كلها في برنامج واحد. صرت مبرمجاً حقيقياً!</p></div></div>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>استخدام <code>array[array.length]</code> لآخر عنصر</td><td><code>undefined</code>: لا شيء هناك</td><td>آخر عنصر عند <code>length - 1</code></td></tr>
+<tr><td><code>i &lt;= array.length</code> في حلقة <code>for</code></td><td>تكرار زائد بقيمة <code>undefined</code></td><td>استخدم <code>i &lt; array.length</code>، والأفضل <code>for…of</code></td></tr>
+<tr><td>تعريف المجمِّع داخل الحلقة</td><td>يعود إلى الصفر في كل تكرار</td><td>عرّفه <em>قبل</em> الحلقة</td></tr>
+<tr><td>لا شيء في حلقة <code>while</code> يغيّر الشرط</td><td>حلقة لانهائية، والبرنامج يتجمد</td><td>تأكد أن كل تكرار يقترب من النهاية</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>المصفوفة</strong> قائمة مرتبة: <code>["a", "b", "c"]</code>. والفهارس تبدأ من <strong>0</strong>، و<code>length</code> تعدّ العناصر.</li>
+<li>دوال مفيدة: <code>push</code> و<code>pop</code> و<code>includes</code> و<code>indexOf</code> و<code>join</code> و<code>slice</code>.</li>
+<li><code>for (let i = 0; i &lt; n; i++)</code> تعدّ، و<code>for (const x of list)</code> تزور كل عنصر، و<code>while (condition)</code> تكرر حتى يصير الشرط خاطئاً.</li>
+<li><strong>المجمِّع</strong> متغير خارج الحلقة يحدّثه كل تكرار.</li>
+<li><code>break</code> تخرج من الحلقة، و<code>continue</code> تقفز إلى التكرار التالي.</li>
+<li>تأكد دائماً أن الحلقة تستطيع أن تنتهي.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>"الأحد"</code> (الفهارس تبدأ من 0)، و3. 2. ثلاث مرات، و<code>i</code> تساوي 0 ثم 1 ثم 2. 3. <code>for…of</code>.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اطبع جدول ضرب 7، من <code>7 × 1 = 7</code> إلى <code>7 × 10 = 70</code>.</li>
+<li><span class="level">سهل</span> اصنع مصفوفة من خمس درجات حرارة، واطبع أعلاها وأدناها. (تلميح: مجمِّعان.)</li>
+<li><span class="level medium">متوسط</span> مع <code>const words = ["البرمجة", "فن", "ممتع", "و", "مفيد"]</code>، ابنِ مصفوفة جديدة فيها الكلمات التي يزيد طولها على حرفين فقط، ثم اطبعها موصولة بمسافات.</li>
+<li><span class="level medium">متوسط</span> عُدّ الأرقام الزوجية بين 1 و100 بحلقة و<code>%</code>.</li>
+<li><span class="level hard">تحدٍّ</span> وسّع <code>queue.js</code>: إن كان عمر الزائر 65 أو أكثر فاطبع أيضاً «طُبّق خصم كبار السن». وفي النهاية اطبع متوسط السعر وأغلى تذكرة بيعت.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 10</p>
+<p>صارت قواعد التسعير داخل حلقة، والبرنامج يطول. وفي الفصل القادم ستتعلم الدوال: كيف تعطي قطعة من الكود اسماً، وتعيد استخدامها في أي مكان، وتبني البرامج من أجزاء صغيرة واضحة.</p>
 </div>
 </section>
 </body></html>
