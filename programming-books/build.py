@@ -28,14 +28,14 @@ KEYWORDS = ("const let var if else switch case break default return function for
 
 TEXT = {
     "en": {
-        "contents": "Contents", "part": "Part", "chapter": "Chapter", "sample": "sample chapter",
+        "contents": "Contents", "part": "Part", "preface": "How to Use This Book", "appendix": "Appendix", "answers": "Answers to the Exercises", "chapter": "Chapter", "sample": "sample chapter",
         "author": SERIES["author"]["en"], "edition": "First edition", "output": "Terminal",
         "rights": "All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.",
         "code": "The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.",
         "trademarks": "JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.",
     },
     "ar": {
-        "contents": "المحتويات", "part": "الجزء", "chapter": "الفصل", "sample": "فصل نموذجي",
+        "contents": "المحتويات", "part": "الجزء", "preface": "كيف تستخدم هذا الكتاب", "appendix": "ملحق", "answers": "حلول التمارين", "chapter": "الفصل", "sample": "فصل نموذجي",
         "author": SERIES["author"]["ar"], "edition": "الطبعة الأولى", "output": "الطرفية",
         "rights": "جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.",
         "code": "اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.",
@@ -185,7 +185,8 @@ def edition_pill(book, lang):
     return f'<p class="tp-edition">{ed[lang]}</p>' if ed else ""
 
 
-def front_matter(book, lang):
+def front_matter(book, lang, pages_of=None):
+    pages_of = pages_of or {}
     t = TEXT[lang]
     series = SERIES["series"][lang]
     n = book["number"]
@@ -210,12 +211,20 @@ def front_matter(book, lang):
         </section>''',
     ]
     toc, k = [], 0
+    nums = pages_of
+    def entry(key, label, title):
+        page = nums.get(key, "")
+        return f'<li class="toc-ch"><span class="toc-n">{label}</span><span class="toc-t">{title}</span><span class="toc-p">{page}</span></li>'
+    if (ROOT / "src" / book["id"] / f"preface.{lang}.html").exists():
+        toc.append(entry("preface", "", t["preface"]))
     for i, part in enumerate(book["parts"], 1):
         toc.append(f'<li class="toc-part">{t["part"]} {i}: {part["title"][lang]}</li>')
         for ch in part["chapters"]:
             k += 1
-            mark = f' <span class="toc-sample">({t["sample"]})</span>' if ch.get("sample") else ""
-            toc.append(f'<li class="toc-ch"><span class="toc-n">{k}</span>{ch[lang]}{mark}</li>')
+            toc.append(entry(f"ch{k:02d}", k, ch[lang]))
+    if (ROOT / "src" / book["id"] / f"answers.{lang}.html").exists():
+        toc.append(f'<li class="toc-part">{t["appendix"]}</li>')
+        toc.append(entry("answers", "", t["answers"]))
     pages.append(f'<section class="front toc"><h1>{t["contents"]}</h1><ol>{"".join(toc)}</ol></section>')
     return "".join(pages)
 
@@ -249,6 +258,17 @@ def build(book, lang, edition):
             titles.append((cid, f"{label} {k}: {ch[lang]}"))
     if not chapters:
         return None
+    extra = {"preface": TEXT[lang]["preface"], "answers": TEXT[lang]["answers"]}
+    for key, title in extra.items():
+        src = ROOT / "src" / book["id"] / f"{key}.{lang}.html"
+        if src.exists():
+            text = decorate(fill_code(src.read_text(), lang), lang, "")
+            text = text.replace('<section class="chapter', f'<section style="page: {key}" class="chapter', 1)
+            if key == "preface":
+                chapters.insert(0, text)
+            else:
+                chapters.append(text)
+            titles.append((key, title))
     rtl = lang == "ar"
     sheets = '<link rel="stylesheet" href="../style/book.css">'
     cover = ""
@@ -257,7 +277,9 @@ def build(book, lang, edition):
     else:
         cover = (f'<section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page">'
                  f'{decor_layer()}{front_html(book, lang)}</section>')
-    body = cover + front_matter(book, lang) + "".join(chapters)
+    pages_file = OUT / f"{book['id']}-{lang}-{edition}.pages.json"
+    pages_of = json.loads(pages_file.read_text()) if pages_file.exists() else {}
+    body = cover + front_matter(book, lang, pages_of) + "".join(chapters)
     if edition == "print":
         for c, g in GREYS.items():
             body = body.replace(c, g)

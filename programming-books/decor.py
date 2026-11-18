@@ -65,7 +65,7 @@ def decorate(chapter, lang, number):
                    f'<div class="opener-bit">{bit("happy")}</div></div>'),
         chapter, count=1, flags=re.S)
 
-    chapter = re.sub(r'<h2>(\d+\.\d+) (.*?)</h2>', r'<h2><span class="sec">\1</span><span>\2</span></h2>', chapter)
+    chapter = re.sub(r'<h2>(\d+\.\d+) (.*?)</h2>', r'<h2><span class="sec">\1</span> <span>\2</span></h2>', chapter)
     chapter = re.sub(r'<h2>(?!<span)', '<h2 class="plain-h">', chapter)
 
     def box(m):

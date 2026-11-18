@@ -173,3 +173,5 @@ figure.browser { background: #fff; border: 1.2pt solid #c9cbe0; border-radius: 9
 .browser-bar span { font: 400 7.5pt var(--mono); color: var(--muted); background: #fff; border-radius: 8pt; padding: 1pt 10pt; margin-inline-start: 8pt; flex: 1; text-align: left; }
 figure.browser img { display: block; width: 100%; height: auto; max-height: 6.4in; object-fit: contain; }
 .browser-bar b { font: 700 7pt var(--mono); color: var(--muted); }
+.toc-t { flex: 1; }
+.toc-p { font: 700 9.5pt var(--head); color: var(--brand); min-width: 22pt; text-align: end; }

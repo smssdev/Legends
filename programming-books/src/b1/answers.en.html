@@ -1,0 +1,173 @@
+<section class="chapter answers" data-chapter="19" data-code="b1/answers/en">
+<p class="chapter-kicker">Appendix</p>
+<h1>Answers to the Exercises</h1>
+
+<p class="lead">Try every exercise yourself before you look here. When your answer differs from this one, that is not necessarily wrong: most programming problems have several good solutions. If yours works for normal and unusual cases, and you can explain it, it is a good answer. The full code for every answer is in the book’s code repository.</p>
+
+<h2>Chapter 1</h2>
+<ol class="exercises">
+<li>Processor, memory, storage, and input and output. Input: keyboard, mouse, touch screen, microphone. Output: screen, speakers, printer.</li>
+<li>9 is <code>1001</code> in binary (8 + 1).</li>
+<li>It depends on the letter: for example <code>"S".charCodeAt(0)</code> is 83 and <code>"س".charCodeAt(0)</code> is 1587.</li>
+<li><code>15</code>, then <code>105</code> (two strings joined), then the text <code>10 + 5</code> (everything between the quotes is printed as it is).</li>
+<li>A good answer says exactly how much water, which cup, when to stop boiling, how long to wait, and what to do if something is missing. Words like “some” or “a bit” are the steps a robot would misunderstand.</li>
+</ol>
+
+<h2>Chapter 2</h2>
+<ol class="exercises">
+<li>The same algorithm with “smaller than” instead of “bigger than”, and a variable called SMALLEST.</li>
+<li>Start → Is the light green for pedestrians? → no: wait and ask again; yes: look both ways → Is the road clear? → no: wait; yes: cross → End.</li>
+<li>Set COUNT to 0; for each CARD, if CARD is bigger than 5, add 1 to COUNT; show COUNT. The trace gives 1 (7), 1, 2 (12), 2, 3 (9).</li>
+<li>10 steps for 1,000 names, because 2<sup>10</sup> = 1,024.</li>
+<li>Keep LARGEST and SECOND. For each card: if it is bigger than LARGEST, SECOND becomes LARGEST and LARGEST becomes the card; otherwise, if it is bigger than SECOND, SECOND becomes the card. For 7, 3, 12, 5, 9 you get 12 and 9. For 12, 12, 4 you get 12 and 12 (or 12 and 4, if you decide that the second-largest must be different; decide and say so).</li>
+</ol>
+
+<h2>Chapter 3</h2>
+<ol class="exercises">
+<li><code>cd code-from-zero</code>, <code>mkdir chapter-03</code>, <code>cd chapter-03</code>, <code>pwd</code>.</li>
+<li>Three <code>console.log</code> lines with your own text, run with <code>node me.js</code>.</li>
+<li>Among others: <code>console.error</code>, <code>console.warn</code>, <code>console.table</code>, <code>console.info</code>, <code>console.count</code>, <code>console.time</code>.</li>
+<li>It depends on the website; large news sites often make more than a hundred requests, and the largest files are usually images, videos or JavaScript bundles.</li>
+<li><code>mkdir practice</code>, <code>code practice/test.js</code>, write <code>console.log(365 * 24);</code>, run <code>node practice/test.js</code>. 8760 is the number of hours in a (non-leap) year.</li>
+</ol>
+
+<h2>Chapter 4</h2>
+<ol class="exercises">
+<li>Protocol <code>https:</code>, host <code>www.example.com</code>, path <code>/search</code>, query <code>?q=javascript&amp;page=2</code>.</li>
+<li>The status code is <code>404</code>.</li>
+<li>Change the body to <code>"&lt;h1&gt;Your name&lt;/h1&gt;&lt;p&gt;About you&lt;/p&gt;"</code>.</li>
+<li>The output shows <code>404 Not Found</code>. The browser still shows the page you sent: a status code describes the result; it does not stop the body.</li>
+<li><pre class="plain">if (request.url === "/about") {
+  response.end("&lt;h1&gt;About me&lt;/h1&gt;");
+} else {
+  response.end("&lt;h1&gt;Hello from my server!&lt;/h1&gt;");
+}</pre></li>
+</ol>
+
+<h2>Chapter 5</h2>
+<ol class="exercises">
+<li>The page skeleton with an <code>&lt;h1&gt;</code> and a <code>&lt;ul&gt;</code> containing five <code>&lt;li&gt;</code>.</li>
+<li><code>&lt;a href="profile.html"&gt;My profile&lt;/a&gt;</code> in one page and <code>&lt;a href="favourites.html"&gt;My favourites&lt;/a&gt;</code> in the other.</li>
+<li>An <code>&lt;h1&gt;</code>, an <code>&lt;img&gt;</code> with a descriptive <code>alt</code>, a <code>&lt;ul&gt;</code> of ingredients and an <code>&lt;ol&gt;</code> of steps.</li>
+<li>It depends on the site. Many modern sites use semantic elements; older ones often use only <code>&lt;div&gt;</code>s with classes.</li>
+<li>Three files that share the same <code>&lt;header&gt;</code> and <code>&lt;nav&gt;</code>; <code>contact.html</code> contains a <code>&lt;form&gt;</code> with labels, like <code>form.html</code>.</li>
+</ol>
+
+<h2>Chapter 6</h2>
+<ol class="exercises">
+<li><code>footer { background-color: #1e1b2e; color: white; padding: 16px; }</code></li>
+<li><code>#contact a { font-weight: 700; } #contact a:hover { text-decoration: none; }</code></li>
+<li><code>li.highlight { background-color: #0f766e; }</code></li>
+<li>Any stylesheet that defines a variable in <code>:root</code> and uses it with <code>var()</code>.</li>
+<li>Usually: smaller padding on the header, a smaller <code>h1</code>, less padding inside the cards, and making sure no fixed width is wider than the screen.</li>
+</ol>
+
+<h2>Chapter 7</h2>
+<ol class="exercises">
+<li><code>.buttons { display: flex; gap: 12px; justify-content: center; }</code></li>
+<li><code>minmax(200px, 1fr)</code>. With an 800-pixel window you get three columns, with 500 pixels two, and below 400 pixels one.</li>
+<li><code>.card { display: flex; gap: 16px; } @media (max-width: 500px) { .card { flex-direction: column; } }</code></li>
+<li>Add <code>&lt;aside class="ads"&gt;</code>, use <code>"head head" "side main" "side ads" "foot foot"</code> on wide screens, and <code>"head" "main" "side" "foot" "ads"</code> in the media query.</li>
+<li>A grid with named areas for the header, the main story, side stories and the footer, plus media queries at around 768 and 1024 pixels.</li>
+</ol>
+
+<h2>Chapter 8</h2>
+<ol class="exercises">
+<li><pre class="plain">const temperature = 22;
+if (temperature &lt; 15) {
+  console.log("Cold");
+} else if (temperature &lt; 30) {
+  console.log("Warm");
+} else {
+  console.log("Hot");
+}</pre></li>
+<li><code>1</code>, <code>"73"</code>, <code>false</code>, <code>false</code>.</li>
+<li>Check <code>n % 2 === 0</code> for even, then <code>n &gt; 0</code>, <code>n &lt; 0</code>, or zero in a second <code>if</code>.</li>
+<li>Each <code>case</code> becomes <code>if (size === "S")</code>, <code>else if (size === "M")</code> and so on. Most people find <code>switch</code> clearer for exact values and <code>if</code> clearer for ranges.</li>
+<li>After the other rules: <code>if (day === "Friday") { price = price + 2; } if (price &gt; 10) { price = 10; }</code></li>
+</ol>
+
+<h2>Chapter 9</h2>
+<ol class="exercises">
+<li><code>for (let i = 1; i &lt;= 10; i++) { console.log(`7 × ${i} = ${7 * i}`); }</code></li>
+<li>Start <code>highest</code> and <code>lowest</code> at the first temperature; in a <code>for…of</code>, update each when a temperature is bigger or smaller.</li>
+<li><code>const long = []; for (const w of words) { if (w.length &gt; 3) long.push(w); } console.log(long.join(" "));</code> gives <code>code useful</code>.</li>
+<li>50.</li>
+<li>Print the message inside the <code>age &gt;= 65</code> case; after the loop, divide <code>total</code> by <code>queue.length</code>, and keep a <code>highest</code> accumulator for the most expensive ticket.</li>
+</ol>
+
+<h2>Chapter 10</h2>
+<ol class="exercises">
+<li><code>function isEven(n) { return n % 2 === 0; }</code> gives <code>true</code>, <code>false</code>, <code>true</code>.</li>
+<li><code>function celsiusToFahrenheit(c) { return c * 9 / 5 + 32; }</code>; 37 °C is 98.6 °F.</li>
+<li>The largest-card algorithm inside a function. The built-in way is <code>Math.max(...numbers)</code>.</li>
+<li><code>prices.filter((p) =&gt; p &gt; 10).map((p) =&gt; (p * 0.8).toFixed(2))</code></li>
+<li><code>function applyNightShow(price, hour) { return hour &gt;= 22 ? Math.max(price - 1, 0) : price; }</code>, called on the result of <code>applyMemberDay</code>.</li>
+</ol>
+
+<h2>Chapter 11</h2>
+<ol class="exercises">
+<li>Any object with five properties, such as <code>title</code>, <code>year</code>, <code>director</code>, <code>rating</code> and an array <code>actors</code>.</li>
+<li><code>products.filter((p) =&gt; p.price &lt; 10).map((p) =&gt; p.name)</code></li>
+<li><code>function removeFromCart(id) { const i = cart.findIndex((item) =&gt; item.productId === id); if (i !== -1) cart.splice(i, 1); }</code></li>
+<li><code>return product.price * (1 - (product.discount ?? 0)) * item.quantity;</code> (or <code>|| 0</code>).</li>
+<li>Map each cart item to a line of text, add the total line, and <code>join("\n")</code>.</li>
+</ol>
+
+<h2>Chapter 12</h2>
+<ol class="exercises">
+<li>A third button whose handler does <code>if (count &gt; 0) count--;</code> then <code>show()</code>.</li>
+<li><code>button.addEventListener("click", () =&gt; document.body.classList.toggle("dark"));</code> and CSS for <code>body.dark</code>.</li>
+<li>Listen to <code>input</code>, set the text to <code>`${area.value.length} / 280`</code>, and toggle a class when the length is over 280.</li>
+<li>In <code>renderCart</code>, add a button to each line whose click handler removes the item from <code>cart</code> and calls <code>renderCart()</code>.</li>
+<li>Keep the search text in a variable; in <code>renderProducts</code>, loop over <code>catalog.filter((p) =&gt; p.name.toLowerCase().includes(text.toLowerCase()))</code>, and redraw on every <code>input</code> event.</li>
+</ol>
+
+<h2>Chapter 13</h2>
+<ol class="exercises">
+<li><code>for (const n of [3, 2, 1]) { console.log(n); await wait(1000); } console.log("Go!");</code> inside an <code>async</code> function.</li>
+<li>Add <code>else if (request.url === "/api/hello")</code> that sends <code>JSON.stringify({ message: "Hi!" })</code>.</li>
+<li>Show a button in the <code>catch</code> block; its click handler calls <code>start()</code>.</li>
+<li><code>const [a, b] = await Promise.all([getJson(url1), getJson(url2)]);</code></li>
+<li>Fetch <code>`https://api.github.com/users/${name}`</code>, check <code>response.status === 404</code> for “not found”, and show <code>name</code>, <code>avatar_url</code> and <code>public_repos</code>.</li>
+</ol>
+
+<h2>Chapter 14</h2>
+<ol class="exercises">
+<li><code>SyntaxError</code>, <code>TypeError</code> (assignment to a constant), <code>TypeError</code> (<code>list</code> is <code>undefined</code>), <code>ReferenceError</code>.</li>
+<li>Add <code>address: { city: "Alexandria" }</code> to the user, or write <code>return user.address ? user.address.city : "somewhere";</code></li>
+<li>Click the line number inside <code>addToCart</code> in the Sources panel, click the button on the page, and use Step.</li>
+<li><code>n = 1</code> should be <code>n = n + 1</code> (or <code>n++</code>).</li>
+<li>There is no single answer; the important part is writing down each step of the method.</li>
+</ol>
+
+<h2>Chapter 15</h2>
+<ol class="exercises">
+<li><code>git init</code>, <code>git add .</code>, <code>git commit -m "Add everything from chapters 1 to 14"</code>.</li>
+<li><code>git diff</code>, then <code>git restore file-name</code>.</li>
+<li><code>git switch -c dark-mode</code>, two commits, <code>git switch main</code>, <code>git merge dark-mode</code>.</li>
+<li><code>git remote add origin …</code> and <code>git push -u origin main</code>, as in Section 15.6.</li>
+<li>Change the same line on <code>main</code> and on another branch, merge, edit the file to keep the right version, delete the markers, then <code>git add</code> and <code>git commit</code>.</li>
+</ol>
+
+<h2>Chapter 16</h2>
+<ol class="exercises">
+<li>Typical fixes: replace clickable <code>div</code>s with buttons or links, and add a visible <code>:focus-visible</code> style.</li>
+<li>Copy the skip link and its CSS from <code>focus.html</code>, and add <code>id="main"</code> to <code>&lt;main&gt;</code>.</li>
+<li>Typical reports: missing <code>alt</code>, low contrast, missing labels, or a missing <code>lang</code> attribute.</li>
+<li>Run <code>contrast(textColour, backgroundColour)</code> for each pair; any result below 4.5 needs a darker text or a lighter background.</li>
+<li>There is no single answer; common problems are buttons without names, images without <code>alt</code>, and changes that are not announced.</li>
+</ol>
+
+<h2>Chapter 17</h2>
+<ol class="exercises">
+<li>Change the custom properties and the <code>&lt;h1&gt;</code>, commit, and <code>git push</code>; GitHub Pages updates within a minute.</li>
+<li>Count <code>tasks.filter((t) =&gt; t.done).length</code> in <code>render</code> and show it in a new element.</li>
+<li>On <code>dblclick</code>, replace the label with an <code>&lt;input&gt;</code>; on <code>keydown</code>, save on Enter (update the task’s <code>text</code> and call <code>update()</code>) and cancel on Escape (call <code>render()</code>).</li>
+<li>Add a <code>&lt;select&gt;</code> to the form, store <code>priority</code> in each task, and sort the visible tasks with <code>sort((a, b) =&gt; rank[b.priority] - rank[a.priority])</code>.</li>
+<li>Keep the texts in one object, write a function that fills every element from the chosen language, save the choice in <code>localStorage</code>, and set <code>document.documentElement.lang</code> and <code>.dir</code>.</li>
+</ol>
+
+<h2>Chapter 18</h2>
+<p>The exercises in Chapter 18 are about your own choices and your own projects, so there are no single answers. Share your results with a friend or an online community, and ask for feedback: that is the professional way to check your work.</p>
+</section>

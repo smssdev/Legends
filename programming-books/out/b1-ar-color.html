@@ -41,6 +41,12 @@
 @page ch16:first { @top-center { content: none; } }
 @page ch17 { @top-center { content: "الفصل 17: مشروع: ابنِ تطبيق ويب وانشره"; } }
 @page ch17:first { @top-center { content: none; } }
+@page ch18 { @top-center { content: "الفصل 18: اختيار مسارك"; } }
+@page ch18:first { @top-center { content: none; } }
+@page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
+@page preface:first { @top-center { content: none; } }
+@page answers { @top-center { content: "حلول التمارين"; } }
+@page answers:first { @top-center { content: none; } }
 
 .cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
   background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
@@ -171,7 +177,70 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: التفكير كمبرمج</li><li class="toc-ch"><span class="toc-n">1</span>كيف ينفّذ الحاسوب البرامج</li><li class="toc-ch"><span class="toc-n">2</span>التفكير بالخطوات: الخوارزميات</li><li class="toc-ch"><span class="toc-n">3</span>أدوات المبرمج</li><li class="toc-part">الجزء 2: البناء للويب</li><li class="toc-ch"><span class="toc-n">4</span>كيف يعمل الويب</li><li class="toc-ch"><span class="toc-n">5</span>HTML: بنية الصفحة</li><li class="toc-ch"><span class="toc-n">6</span>CSS: تنسيق الصفحة</li><li class="toc-ch"><span class="toc-n">7</span>التخطيط بـ Flexbox وGrid</li><li class="toc-part">الجزء 3: JavaScript</li><li class="toc-ch"><span class="toc-n">8</span>القيم والمتغيرات والقرارات <span class="toc-sample">(فصل نموذجي)</span></li><li class="toc-ch"><span class="toc-n">9</span>الحلقات والمصفوفات</li><li class="toc-ch"><span class="toc-n">10</span>الدوال</li><li class="toc-ch"><span class="toc-n">11</span>الكائنات وJSON</li><li class="toc-ch"><span class="toc-n">12</span>DOM والأحداث</li><li class="toc-ch"><span class="toc-n">13</span>JavaScript غير المتزامنة وfetch</li><li class="toc-ch"><span class="toc-n">14</span>قراءة الأخطاء وتتبّعها</li><li class="toc-part">الجزء 4: العمل كمحترف</li><li class="toc-ch"><span class="toc-n">15</span>Git وGitHub</li><li class="toc-ch"><span class="toc-n">16</span>صفحات يصل إليها الجميع</li><li class="toc-ch"><span class="toc-n">17</span>مشروع: ابنِ تطبيق ويب وانشره</li><li class="toc-ch"><span class="toc-n">18</span>اختيار مسارك</li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b1/ch01/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">كيف تستخدم هذا الكتاب</span><span class="toc-p">7</span></li><li class="toc-part">الجزء 1: التفكير كمبرمج</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف ينفّذ الحاسوب البرامج</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">التفكير بالخطوات: الخوارزميات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">أدوات المبرمج</span><span class="toc-p">28</span></li><li class="toc-part">الجزء 2: البناء للويب</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">كيف يعمل الويب</span><span class="toc-p">37</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">HTML: بنية الصفحة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">CSS: تنسيق الصفحة</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">التخطيط بـ Flexbox وGrid</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: JavaScript</li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">القيم والمتغيرات والقرارات</span><span class="toc-p">99</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الحلقات والمصفوفات</span><span class="toc-p">114</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">الدوال</span><span class="toc-p">124</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الكائنات وJSON</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">DOM والأحداث</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">JavaScript غير المتزامنة وfetch</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">قراءة الأخطاء وتتبّعها</span><span class="toc-p">169</span></li><li class="toc-part">الجزء 4: العمل كمحترف</li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Git وGitHub</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">صفحات يصل إليها الجميع</span><span class="toc-p">190</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">مشروع: ابنِ تطبيق ويب وانشره</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">اختيار مسارك</span><span class="toc-p">215</span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">221</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b1/preface/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">قبل أن تبدأ</p><h1>كيف تستخدم هذا الكتاب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">هذا الكتاب لكل من لم يكتب سطراً برمجياً من قبل. لا تحتاج أن تكون متفوقاً في الرياضيات، ولا أن تملك حاسوباً غالياً، ولا أن تعرف شيئاً عن البرمجة. تحتاج الفضول، وقليلاً من الصبر، ونحو ساعة بضع مرات في الأسبوع.</p>
+
+<h2 class="plain-h">ما تحتاجه</h2>
+<ul>
+<li>حاسوباً بنظام Windows أو macOS أو Linux. الهاتف أو الجهاز اللوحي لا يكفي لكتابة الكود، لكنه مثالي لاختبار صفحاتك.</li>
+<li>متصفح ويب حديثاً مثل Chrome أو Edge أو Firefox.</li>
+<li>أدوات مجانية ستثبّتها في الفصل 3: Visual Studio Code وNode.js، ثم Git في الفصل 15.</li>
+</ul>
+
+<h2 class="plain-h">كيف نُظّم الكتاب</h2>
+<p>الفصول الثمانية عشر مجموعة في أربعة أجزاء، فاقرأها بالترتيب، لأن كل فصل يُبنى على ما قبله. الجزء الأول يعلمك التفكير كمبرمج، والثاني يبني صفحات الويب بـ HTML وCSS، والثالث يبث فيها الحياة بـ JavaScript، والرابع يعلمك العمل كالمحترفين ونشر تطبيق حقيقي.</p>
+
+<p>وكل فصل يتبع النمط نفسه: قائمة بما ستتعلمه، وشرح بأمثلة حقيقية، ومشروع يستخدم الأفكار الجديدة، وجدول بالأخطاء الشائعة، وخلاصة، وتمارين بثلاثة مستويات. وحلول التمارين في آخر الكتاب.</p>
+
+<h2 class="plain-h">قراءة الأمثلة</h2>
+<p>كل مثال في هذا الكتاب ملف حقيقي شُغّل أثناء إعداد الكتاب، وكل مخرجات تراها هي بالضبط ما طبعه. والتبويب الداكن فوق المثال يحمل اسم الملف؛ أنشئ ذلك الملف في مجلد مشروعك، واكتب الكود بيدك، وشغّله.</p>
+<ul>
+<li>الصندوق ذو النقاط الملونة الثلاث في أعلاه يعرض ما يظهر في <strong>الطرفية</strong>.</li>
+<li>في جلسات الطرفية، السطر الذي يبدأ بـ <code>$</code> أمر تكتبه أنت (بدون <code>$</code>)، والأسطر تحته جواب الحاسوب.</li>
+<li>والصورة داخل إطار المتصفح تعرض شكل الصفحة في المتصفح، والعرض في زاويتها يخبرك بعرض النافذة.</li>
+</ul>
+
+<p>والكود يُكتب من اليسار إلى اليمين دائماً، حتى في كتاب عربي، لأن لغات البرمجة كلها تُكتب هكذا. أما التعليقات والنصوص التي يعرضها برنامجك فتكتبها بالعربية كما ترى في الأمثلة.</p>
+
+<h2 class="plain-h">الصناديق</h2>
+<table>
+<thead><tr><th>الصندوق</th><th>ما فيه</th></tr></thead>
+<tbody>
+<tr><td>نصيحة</td><td>اختصار أو طريقة أذكى لفعل شيء</td></tr>
+<tr><td>انتبه</td><td>فخ شائع، وكيف تتجنبه</td></tr>
+<tr><td>هل تعلم؟</td><td>قصة أو حقيقة صحيحة من عالم الحوسبة</td></tr>
+<tr><td>عادة المحترفين</td><td>كيف يعمل المطورون ذوو الخبرة، ولماذا</td></tr>
+<tr><td>جرّب</td><td>تجربة صغيرة تفعلها الآن على لوحة المفاتيح</td></tr>
+<tr><td>اختبر نفسك</td><td>ثلاثة أسئلة قصيرة في منتصف الفصل، وإجاباتها بعد الخلاصة</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">تعرّف على بِت</h2>
+<p>بِت روبوت بنفسجي صغير يحب الحواسيب، وسيرافقك في الكتاب كله. ستجده في فقاعات الحوار يرحب بك في الفصول الجديدة، ويشاركك الحيل، ويشجعك قبل المشاريع. ونصائح بِت تستحق القراءة دائماً.</p>
+
+<h2 class="plain-h">مستودع الكود</h2>
+<p>كل مثال وكل مشروع وكل حل تمرين موجود أيضاً في مستودع الكود الخاص بالكتاب، لتقارن عملك أو تبدأ من نسخة تعمل حين تتعثر. لكن اكتب الأمثلة بنفسك أولاً، فأصابعك تتعلم أسرع من عينيك.</p>
+
+<h2 class="plain-h">كلمة من المؤلف</h2>
+<p>كتبت هذه السلسلة لأني أؤمن أن أي إنسان يستطيع أن يتعلم بناء البرمجيات، بلغته هو، وبجودة التعليم نفسها التي تقدمها أفضل الكتب في العالم. وهذا الكتاب موجود بالعربية والإنجليزية، مكتوب لكل لغة لا مترجماً حرفياً. وأياً كانت النسخة التي تقرؤها، أرجو أن تمنحك الثقة لتواصل البناء. أهلاً بك، واستمتع بالرحلة.</p>
+<p><strong>سليمان ماجد سعيد صلاح</strong></p>
+</section>
+<section class="chapter" style="page: ch01" data-chapter="1" data-code="b1/ch01/ar">
 <div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>كيف ينفّذ الحاسوب البرامج</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -217,7 +286,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
 
 <p>قبل أن تكتب أي كود، يفيدك أن تفهم ما يحدث داخل الجهاز حين يعمل البرنامج. لن تحتاج أن تصير مهندساً، فتكفيك صورة واضحة في ذهنك، وستجعل كل الفصول القادمة أسهل في الفهم.</p>
 
-<h2><span class="sec">1.1</span><span>ما البرنامج؟</span></h2>
+<h2><span class="sec">1.1</span> <span>ما البرنامج؟</span></h2>
 
 <p><dfn>البرنامج</dfn> قائمة من التعليمات تخبر الحاسوب بالضبط بما يفعله، خطوة بعد خطوة. ويمكنك أن تتخيله وصفة طبخ. الوصفة تقول: خذ بيضتين، واخفقهما، وسخّن المقلاة، ثم صبّ البيض. والبرنامج يقول: اقرأ الرقم الذي كتبه المستخدم، وأضف إليه 10، واعرض النتيجة على الشاشة.</p>
 
@@ -227,7 +296,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
 
 <p>ولهذا لغات البرمجة دقيقة جداً، وكل فاصلة وقوس وعلامة تنصيص لها معنى. قد تبدو هذه الدقة صارمة في البداية، لكنها هي ما يجعل الحاسوب جديراً بالثقة: البرنامج نفسه، بالمدخلات نفسها، يعطي الجواب نفسه في كل مرة.</p>
 
-<h2><span class="sec">1.2</span><span>داخل الحاسوب</span></h2>
+<h2><span class="sec">1.2</span> <span>داخل الحاسوب</span></h2>
 
 <p>كل حاسوب، من الهاتف إلى الخادم الضخم في مراكز البيانات، فيه الأجزاء الأربعة الأساسية نفسها.</p>
 
@@ -260,7 +329,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
 
 <aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>يعمل معالج الهاتف الحديث بسرعة 3 غيغاهرتز تقريباً، أي أن ساعته تدقّ نحو ثلاثة مليارات مرة في الثانية، وكل دقة يمكن أن تتقدم بالبرنامج خطوة. ولو عددت رقماً كل ثانية بلا توقف، لاحتجت قرابة مئة عام لتصل إلى ثلاثة مليارات.</p></aside>
 
-<h2><span class="sec">1.3</span><span>كل شيء رقم</span></h2>
+<h2><span class="sec">1.3</span> <span>كل شيء رقم</span></h2>
 
 <p>هذه أغرب فكرة في هذا الفصل: داخل الحاسوب، <em>كل شيء</em> يُحفظ أرقاماً. رسائلك وصورك وموسيقاك، والبرامج نفسها، كلها في النهاية قوائم طويلة من الأرقام.</p>
 
@@ -322,7 +391,7 @@ Hi</pre></div>
 
 <p>الحرف A الكبير رقمه 65، وa الصغير 97، والحرف العربي ب رقمه 1576. والسطر الأخير يفعل العكس: الرقمان 72 و105 يصيران كلمة «Hi». والصورة تعمل بالطريقة نفسها: إنها شبكة من نقاط صغيرة، وكل نقطة تُحفظ ثلاثة أرقام لضوئها الأحمر والأخضر والأزرق.</p>
 
-<h2><span class="sec">1.4</span><span>من الكود إلى المعالج</span></h2>
+<h2><span class="sec">1.4</span> <span>من الكود إلى المعالج</span></h2>
 
 <p>المعالج لا يفهم إلا لغة واحدة: <dfn>لغة الآلة</dfn> (machine code)، وهي سلاسل طويلة من الأرقام، كل رقم منها تعليمة صغيرة مثل «اجمع هاتين القيمتين». والكتابة بلغة الآلة مباشرة ممكنة، لكنها بطيئة ومرهقة وسهلة الخطأ.</p>
 
@@ -356,7 +425,7 @@ Hi</pre></div>
 
 <p>وستشغّل JavaScript في هذا الكتاب في مكانين: في المتصفح، وفي الطرفية بـ <dfn>Node.js</dfn>، وهو برنامج ينقل محرك JavaScript من المتصفح إلى حاسوبك. وستثبّت Node.js في الفصل 3.</p>
 
-<h2><span class="sec">1.5</span><span>أول سطر لك</span></h2>
+<h2><span class="sec">1.5</span> <span>أول سطر لك</span></h2>
 
 <p>لا تحتاج أن تنتظر الفصل 3 لتجرب JavaScript، ففي كل متصفح أداة مخفية للمطورين. افتح Chrome أو Edge أو Firefox، واضغط <code>F12</code> (وعلى الماك <code>Cmd</code> + <code>Option</code> + <code>J</code>). ستنفتح لوحة؛ اضغط فيها التبويب <strong>Console</strong>. ثم اكتب كل سطر من هذه الأسطر واضغط Enter بعده:</p>
 
@@ -371,7 +440,7 @@ console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;
 
 <aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>اكتب في الـ Console السطر <code>console.log("اسمك هنا")</code> واكتب اسمك. ثم جرّب <code>console.log(7 * 6)</code>، فالنجمة <code>*</code> تعني الضرب. وماذا تتوقع أن تعرض <code>console.log(100 / 4)</code>؟</p></aside>
 
-<h2><span class="sec">1.6</span><span>ماذا يفعل المبرمجون حقاً</span></h2>
+<h2><span class="sec">1.6</span> <span>ماذا يفعل المبرمجون حقاً</span></h2>
 
 <p>كثيرون يتخيلون المبرمج يكتب بسرعة في غرفة مظلمة، لكن العمل الحقيقي مختلف تماماً. معظم وقت المبرمج يذهب إلى:</p>
 <ul>
@@ -471,7 +540,7 @@ console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;
 <ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>سأخبرك بسرّ: أمهر المبرمجين كثيراً ما يقضون وقتاً في التفكير بالورقة والقلم أكثر مما يقضونه في الكتابة. لن نهتم في هذا الفصل بتفاصيل JavaScript، بل سنتعلم كيف نفكر. وبعدها سيبدو الكود أسهل بكثير.</p></div></div>
 
-<h2><span class="sec">2.1</span><span>ما الخوارزمية؟</span></h2>
+<h2><span class="sec">2.1</span> <span>ما الخوارزمية؟</span></h2>
 
 <p><dfn>الخوارزمية</dfn> طريقة لحل مشكلة خطوة بعد خطوة. فوصفة الطبخ خوارزمية لصنع وجبة، وطريقة القسمة المطولة التي تعلمتها في المدرسة خوارزمية، والخطوات التي يتبعها تطبيق الخرائط ليجد أسرع طريق خوارزمية أيضاً، لكنها أكبر بكثير.</p>
 
@@ -489,7 +558,7 @@ console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;
 
 <aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>كلمة «خوارزمية» مأخوذة من اسم محمد بن موسى الخوارزمي، العالم الذي عمل في بيت الحكمة ببغداد في القرن التاسع الميلادي. علّمت كتبه أوروبا نظام الأرقام العشري، وحوّلت الترجمات اللاتينية اسمه إلى «Algoritmi»، ومنه جاءت كلمة algorithm التي يستخدمها مبرمجو العالم اليوم. وكلمة «الجبر» (algebra) جاءت أيضاً من عنوان كتابه.</p></aside>
 
-<h2><span class="sec">2.2</span><span>تقسيم المشكلة</span></h2>
+<h2><span class="sec">2.2</span> <span>تقسيم المشكلة</span></h2>
 
 <p>المشكلات الكبيرة تبدو مستحيلة حتى تقسمها إلى مشكلات صغيرة، ويسمي المبرمجون ذلك <dfn>التفكيك</dfn> (decomposition). فلنتدرب على مهمة حقيقية.</p>
 
@@ -501,7 +570,7 @@ console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>حين تتعثر، حُلّ المشكلة بيدك بأشياء حقيقية أو بأرقام قليلة على ورقة، وراقب ما تفعله، ثم اكتب خطواتك. فأنت أذكى مما تظن في الغالب، والحاسوب يستطيع أن ينسخ طريقتك.</p></aside>
 
-<h2><span class="sec">2.3</span><span>الكود الزائف: التخطيط بلغة بسيطة</span></h2>
+<h2><span class="sec">2.3</span> <span>الكود الزائف: التخطيط بلغة بسيطة</span></h2>
 
 <p><dfn>الكود الزائف</dfn> (pseudocode) طريقة لكتابة الخوارزمية بلغة بسيطة منظمة قبل تحويلها إلى كود حقيقي. ليست له قواعد صارمة، والمهم أن يكون واضحاً. وهذه خوارزمية البطاقات بالكود الزائف:</p>
 
@@ -513,7 +582,7 @@ console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;
 
 <p>الكود الزائف يتيح لك أن تركز على <em>الفكرة</em> دون أن تقلق من الفواصل والأقواس. وكثير من الفرق المحترفة تكتب كوداً زائفاً، أو مجرد قائمة خطوات في تعليق، قبل أن تكتب جزءاً صعباً من الكود. ولك أن تكتبه بالعربية كما ترى؛ فالمهم أن تكون الخطة واضحة لك.</p>
 
-<h2><span class="sec">2.4</span><span>المخطط الانسيابي: رسم الخطة</span></h2>
+<h2><span class="sec">2.4</span> <span>المخطط الانسيابي: رسم الخطة</span></h2>
 
 <p>بعض الناس يفكرون بالصور أفضل. و<dfn>المخطط الانسيابي</dfn> (flowchart) يرسم الخوارزمية صناديق تصلها أسهم. الصناديق المستديرة للبداية والنهاية، والمستطيلات للأفعال، والمعيّنات للأسئلة التي جوابها نعم أو لا.</p>
 
@@ -543,7 +612,7 @@ console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;
 
 <p>المخططات الانسيابية رائعة للخوارزميات الصغيرة ولشرح فكرتك لغيرك. أما في البرامج الكبيرة فتصير ضخمة جداً، ويكون الكود الزائف أو الكود الحقيقي أوضح.</p>
 
-<h2><span class="sec">2.5</span><span>اللبنات الثلاث</span></h2>
+<h2><span class="sec">2.5</span> <span>اللبنات الثلاث</span></h2>
 
 <p>هذه من أهم الحقائق في علوم الحاسوب: كل برنامج، مهما كبر، مبني من ثلاثة أنواع فقط من الخطوات.</p>
 
@@ -568,7 +637,7 @@ console.log(<span class="s">`المتوسط: ${average}`</span>);</pre></div>
 
 <p>كل سطر يُنفَّذ مرة واحدة بالضبط، من الأعلى إلى الأسفل. أما خوارزمية البطاقات فتحتاج اللبنات الثلاث: تنفّذ الخطوات <em>بالتسلسل</em>، و<em>تختار</em> («إن كانت هذه البطاقة أكبر»)، و<em>تكرر</em> («لكل بطاقة»).</p>
 
-<h2><span class="sec">2.6</span><span>من الكود الزائف إلى JavaScript</span></h2>
+<h2><span class="sec">2.6</span> <span>من الكود الزائف إلى JavaScript</span></h2>
 
 <p>والآن الجزء الممتع. انظر مرة أخرى إلى الكود الزائف في القسم 2.3، ثم إلى الخوارزمية نفسها مكتوبة بـ JavaScript:</p>
 
@@ -599,7 +668,7 @@ console.log(<span class="s">`أكبر بطاقة هي ${largest}`</span>);</pre>
 
 <p>هكذا يعمل المحترفون. التفكير يحدث في الخطة، والكود ترجمة لها إلى لغة يفهمها الحاسوب. وحين تكون الخطة واضحة تكون الترجمة سهلة.</p>
 
-<h2><span class="sec">2.7</span><span>الاختبار باليد: جدول التتبع</span></h2>
+<h2><span class="sec">2.7</span> <span>الاختبار باليد: جدول التتبع</span></h2>
 
 <p>كيف تعرف أن الخوارزمية صحيحة قبل أن تشغلها؟ <dfn>تتتبّعها</dfn>: تتظاهر بأنك الحاسوب، وتكتب قيمة كل متغير بعد كل خطوة. وهذا تتبّع خوارزميتنا مع البطاقات 7 و3 و12 و5 و9:</p>
 
@@ -619,7 +688,7 @@ console.log(<span class="s">`أكبر بطاقة هي ${largest}`</span>);</pre>
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>وماذا لو كانت الكومة فارغة؟ لا توجد بطاقة أولى، فتفشل الخطوة الأولى نفسها. والبرامج الحقيقية يجب أن تقرر ماذا تفعل حينها: تعرض رسالة، أو تعيد «لا جواب». والتفكير في الحالة الفارغة عادة تميز المبرمج الحريص عن غيره.</p></aside>
 
-<h2><span class="sec">2.8</span><span>لمحة عن الكفاءة</span></h2>
+<h2><span class="sec">2.8</span> <span>لمحة عن الكفاءة</span></h2>
 
 <p>قد تكون الخوارزميتان صحيحتين، وإحداهما أسرع بفارق هائل. تخيّل دليل هاتف فيه مليون اسم مرتبة أبجدياً، وتريد أن تجد «عمر».</p>
 
@@ -732,7 +801,7 @@ console.log(<span class="s">`عدد الخطوات: ${steps}`</span>);</pre></di
 <ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>تجهيز الأدوات هو الجزء الوحيد في البرمجة الذي قد يبدو مملاً قليلاً، لكنك تفعله مرة واحدة فقط! اتبعني خطوة بخطوة، وإن بدا شيء مختلفاً على شاشتك فلا تقلق: القوائم تتغير من إصدار لآخر، لكن الأفكار تبقى كما هي.</p></div></div>
 
-<h2><span class="sec">3.1</span><span>محرر الكود</span></h2>
+<h2><span class="sec">3.1</span> <span>محرر الكود</span></h2>
 
 <p>يمكنك أن تكتب الكود في أي برنامج للنصوص، لكن <dfn>محرر الكود</dfn> يجعل الحياة أسهل بكثير. فهو يلوّن الكود لتقرأه بسهولة، وينبهك إلى الأخطاء وأنت تكتب، ويكمل الكلمات الطويلة عنك، ويستطيع تشغيل برامجك دون أن تغادر نافذته.</p>
 
@@ -793,7 +862,7 @@ console.log(<span class="s">`عدد الخطوات: ${steps}`</span>);</pre></di
 
 <p>هذه الإعدادات تكبّر الخط، وتنسّق الكود مع كل حفظ، وتحفظ الملفات تلقائياً حين تنتقل لنافذة أخرى، وتلف الأسطر الطويلة فلا تحتاج أن تتمرر يميناً ويساراً.</p>
 
-<h2><span class="sec">3.2</span><span>الطرفية</span></h2>
+<h2><span class="sec">3.2</span> <span>الطرفية</span></h2>
 
 <p><dfn>الطرفية</dfn> (terminal)، وتُسمى أيضاً سطر الأوامر، نافذة تتحكم فيها بالحاسوب بكتابة الأوامر بدل النقر. قد تبدو قديمة الطراز، لكن كل مطور محترف يستخدمها كل يوم. فهي أسرع من النقر، وأدوات كثيرة، ومنها Node.js، تُستخدم أساساً من الطرفية.</p>
 
@@ -832,7 +901,7 @@ Desktop    Documents    Downloads    code-from-zero
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>اختصاران كالسحر</p><p>اضغط <strong>السهم لأعلى</strong> لتستعيد الأمر السابق فلا تعيد كتابته. واضغط <strong>Tab</strong> وأنت تكتب اسم ملف أو مجلد، فتكمله الطرفية عنك. المحترفون يضغطون Tab باستمرار، وهي تمنع أخطاء الكتابة أيضاً.</p></aside>
 
-<h2><span class="sec">3.3</span><span>تثبيت Node.js</span></h2>
+<h2><span class="sec">3.3</span> <span>تثبيت Node.js</span></h2>
 
 <p>شغّلت JavaScript في المتصفح في الفصل 1. أما <dfn>Node.js</dfn> فيتيح لك تشغيل ملفات JavaScript على حاسوبك مباشرة من الطرفية، وستستخدمه في معظم أمثلة هذا الكتاب.</p>
 
@@ -854,7 +923,7 @@ v22.12.0
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>إن قالت الطرفية <code>command not found</code> أو <code>is not recognized</code>، فالسبب الأشهر أن الطرفية كانت مفتوحة أثناء التثبيت. أغلق كل نوافذ الطرفية، وافتح واحدة جديدة وجرّب مرة أخرى. وإن لم ينجح ذلك فأعد تشغيل الحاسوب.</p></aside>
 
-<h2><span class="sec">3.4</span><span>مشروعك الأول</span></h2>
+<h2><span class="sec">3.4</span> <span>مشروعك الأول</span></h2>
 
 <p>المطورون يحفظون كل مشروع في مجلد خاص به. فلننشئ المجلد الذي ستستخدمه في كل أمثلة هذا الكتاب:</p>
 
@@ -893,7 +962,7 @@ Node.js يعمل!
 <circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>أحسنت! من الآن، كلما رأيت اسم ملف فوق مثال في هذا الكتاب، أنشئ الملف في مجلد <code>code-from-zero</code> وشغّله بـ <code>node</code> واسم الملف.</p></div></div>
 
-<h2><span class="sec">3.5</span><span>أدوات المطورين في المتصفح</span></h2>
+<h2><span class="sec">3.5</span> <span>أدوات المطورين في المتصفح</span></h2>
 
 <p>فتحت <dfn>أدوات المطورين</dfn> (DevTools) في المتصفح في الفصل 1 بـ <code>F12</code>، وفيها أكثر بكثير من الـ Console. وأكثر ثلاثة تبويبات ستستخدمها هي:</p>
 
@@ -908,7 +977,7 @@ Node.js يعمل!
 
 <aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>افتح أي موقع أخبار، واضغط <code>F12</code>، واختر <strong>Elements</strong>، واستخدم أيقونة السهم في زاوية اللوحة لتنقر على عنوان خبر. انقر نقرتين على النص في لوحة Elements وغيّره، فيتغير العنوان في الصفحة! لا تقلق: لقد غيّرت نسختك أنت فقط، وتختفي حين تعيد تحميل الصفحة.</p></aside>
 
-<h2><span class="sec">3.6</span><span>أين تجد المساعدة الجيدة</span></h2>
+<h2><span class="sec">3.6</span> <span>أين تجد المساعدة الجيدة</span></h2>
 
 <p>لا يوجد مطور يحفظ كل شيء، ومعرفة <em>أين تبحث</em> مهارة احترافية:</p>
 
@@ -921,7 +990,7 @@ Node.js يعمل!
 
 <aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>حين تطلب المساعدة قدّم ثلاثة أشياء: ما جرّبته، وما توقعته، وما حدث فعلاً، ومعه رسالة الخطأ كما هي. فالأسئلة الجيدة تحصل على إجابات سريعة، وكثيراً ما تساعدك كتابة السؤال نفسه على إيجاد الجواب.</p></aside>
 
-<h2><span class="sec">3.7</span><span>عادات صغيرة وفرق كبير</span></h2>
+<h2><span class="sec">3.7</span> <span>عادات صغيرة وفرق كبير</span></h2>
 
 <ul>
 <li><strong>سمِّ الملفات بحروف إنجليزية صغيرة، وبشرطات بدل المسافات:</strong> <code>ticket-kiosk.js</code> لا <code>Ticket Kiosk.js</code>. فالمسافات والحروف العربية في الأسماء تسبب مشكلات في الطرفية وعلى خوادم الويب.</li>
@@ -1012,7 +1081,7 @@ Node.js يعمل!
 <ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>هذا الفصل خريطة لبقية الجزء الثاني، ولمسيرتك كلها على الويب. فكل موقع وكل تطبيق وكل واجهة برمجية ستبنيها يوماً تستخدم الأفكار التي في هذه الصفحات. هيا نتبع رحلة طلب واحد!</p></div></div>
 
-<h2><span class="sec">4.1</span><span>العميل والخادم</span></h2>
+<h2><span class="sec">4.1</span> <span>العميل والخادم</span></h2>
 
 <p>الويب مبني على فكرة بسيطة: حاسوب يطلب شيئاً، وحاسوب آخر يجيب. والذي يطلب يُسمى <dfn>العميل</dfn> (client)، والذي يجيب يُسمى <dfn>الخادم</dfn> (server).</p>
 
@@ -1020,7 +1089,7 @@ Node.js يعمل!
 
 <p>والخادم ليس نوعاً خاصاً من الأجهزة، بل أي حاسوب يشغّل برنامجاً ينتظر الطلبات ويجيب عنها. المواقع الكبيرة تستخدم آلاف الخوادم في مراكز البيانات، وفي آخر هذا الفصل سيصير حاسوبك نفسه خادماً للحظات.</p>
 
-<h2><span class="sec">4.2</span><span>قراءة عنوان الويب</span></h2>
+<h2><span class="sec">4.2</span> <span>قراءة عنوان الويب</span></h2>
 
 <p>لكل صفحة على الويب عنوان يُسمى <dfn>URL</dfn> (محدد موقع المورد). وله أجزاء، كل جزء منها يخبر المتصفح بشيء:</p>
 
@@ -1075,7 +1144,7 @@ shop.example.com
 42
 #reviews</pre></div>
 
-<h2><span class="sec">4.3</span><span>إيجاد الخادم: DNS</span></h2>
+<h2><span class="sec">4.3</span> <span>إيجاد الخادم: DNS</span></h2>
 
 <p>الحواسيب على الإنترنت لا يجد بعضها بعضاً بالأسماء. فلكل حاسوب رقم يُسمى <dfn>عنوان IP</dfn>، مثل <code>93.184.215.14</code>. والأسماء مثل <code>example.com</code> موجودة لأن الناس يتذكرون الكلمات أفضل من الأرقام.</p>
 
@@ -1114,7 +1183,7 @@ shop.example.com
 
 <aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>الطلب من القاهرة إلى خادم في نيويورك يقطع نحو 9 آلاف كيلومتر في كابلات تحت البحر، ويعود الرد بالطريق نفسه، كثيراً في أقل من ربع ثانية. ولهذا تنسخ المواقع الكبيرة ملفاتها إلى خوادم في بلدان كثيرة: كلما اقترب الخادم أسرعت الصفحة.</p></aside>
 
-<h2><span class="sec">4.4</span><span>محادثة HTTP</span></h2>
+<h2><span class="sec">4.4</span> <span>محادثة HTTP</span></h2>
 
 <p>حين يعرف المتصفح عنوان الخادم، يرسل <dfn>طلب HTTP</dfn>. وهو نص عادي مقروء على نحو مفاجئ:</p>
 
@@ -1181,7 +1250,7 @@ Cache-Control: max-age=600
 <ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>إليك طريقة سهلة للتذكر: 4xx تعني «أنت أخطأت» (مثل أن تطلب صفحة غير موجودة)، و5xx تعني «أنا أخطأت» (الخادم تعطل). وحين تبني الخوادم لاحقاً، سيكون اختيار رمز الحالة المناسب جزءاً من عملك.</p></div></div>
 
-<h2><span class="sec">4.5</span><span>HTTPS والقفل</span></h2>
+<h2><span class="sec">4.5</span> <span>HTTPS والقفل</span></h2>
 
 <p>HTTP العادي يرسل كل شيء نصاً مقروءاً، فأي أحد في الطريق، على شبكة Wi-Fi نفسها في مقهى مثلاً، يستطيع قراءة كلمات مرورك. و<dfn>HTTPS</dfn> يحل هذه المشكلة <dfn>بتشفير</dfn> المحادثة: يتفق المتصفح والخادم على مفتاح سري، فتُخلط كل البيانات بحيث لا يقرؤها غيرهما. وHTTPS يثبت أيضاً أن الخادم يتبع صاحب الموقع حقاً، بفضل <dfn>شهادة</dfn> رقمية.</p>
 
@@ -1189,7 +1258,7 @@ Cache-Control: max-age=600
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>القفل يعني أن الاتصال خاص، لا أن الموقع صادق. فموقع بنك مزيف يمكن أن يكون عليه قفل أيضاً. تأكد دائماً من اسم النطاق جيداً قبل أن تكتب كلمة مرور.</p></aside>
 
-<h2><span class="sec">4.6</span><span>كيف يبني المتصفح الصفحة</span></h2>
+<h2><span class="sec">4.6</span> <span>كيف يبني المتصفح الصفحة</span></h2>
 
 <p>أول رد يكون عادة ملف HTML. وبينما يقرؤه المتصفح يجد فيه روابط لملفات أخرى يحتاجها، مثل ملفات التنسيق والسكربتات والصور والخطوط، فيطلب كل واحد منها. وصفحة أخبار عادية ترسل عشرات بل مئات الطلبات، وقد رأيتها في تبويب Network في الفصل 3.</p>
 
@@ -1208,7 +1277,7 @@ Cache-Control: max-age=600
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>في <code>https://news.example.org/sport?team=ahly</code> ما المضيف، وما المسار؟</li><li>ما معنى رمز الحالة <code>404</code>، ومن المخطئ؟</li><li>أي جزء من العنوان لا يُرسل إلى الخادم أبداً؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">4.7</span><span>مشروع: خادم ويب خاص بك</span></h2>
+<h2><span class="sec">4.7</span> <span>مشروع: خادم ويب خاص بك</span></h2>
 
 <p>حان وقت أن تشارك في المحادثة بنفسك. فـ Node.js فيه كل ما تحتاجه لتبني خادم ويب في أسطر قليلة. والبرنامج التالي يلعب الدورين: يشغّل خادماً، ثم يتصرف كعميل ويطلب من ذلك الخادم صفحة، تماماً كما يفعل المتصفح.</p>
 
@@ -1325,7 +1394,7 @@ text/html; charset=utf-8
 <ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>HTML ليست لغة برمجة بالمعنى الدقيق، فليس فيها حسابات ولا قرارات. إنها لغة <em>توصيف</em>: تصف محتواك لتخبر المتصفح بنوع كل قطعة منه. ولهذا هي المكان المثالي لتبدأ البناء!</p></div></div>
 
-<h2><span class="sec">5.1</span><span>العناصر والوسوم والخصائص</span></h2>
+<h2><span class="sec">5.1</span> <span>العناصر والوسوم والخصائص</span></h2>
 
 <p><dfn>HTML</dfn> اختصار «لغة توصيف النص الفائق». تكتب محتواك، وتحيط كل قطعة منه بـ <dfn>وسوم</dfn> (tags) تقول ما هي: عنوان، أو فقرة، أو رابط، أو صورة. والوسمان معاً مع المحتوى الذي بينهما يُسميان <dfn>عنصراً</dfn> (element).</p>
 
@@ -1356,7 +1425,7 @@ text/html; charset=utf-8
 
 <p>وأسماء الوسوم والخصائص إنجليزية دائماً، حتى في الصفحات العربية. أما المحتوى الذي بينها فيكون بأي لغة تريدها.</p>
 
-<h2><span class="sec">5.2</span><span>هيكل كل صفحة</span></h2>
+<h2><span class="sec">5.2</span> <span>هيكل كل صفحة</span></h2>
 
 <p>كل صفحة HTML تبدأ بالأسطر القليلة نفسها. أنشئ في مجلد <code>code-from-zero</code> مجلداً اسمه <code>chapter-05</code>، وفيه ملفاً اسمه <code>first.html</code>:</p>
 
@@ -1411,7 +1480,7 @@ text/html; charset=utf-8
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>في VS Code، اكتب <code>!</code> في ملف <code>.html</code> فارغ واضغط <code>Tab</code>، فيكتب المحرر الهيكل كله عنك. المحترفون يفعلون هذا كل يوم، لكن اكتبه بيدك بضع مرات أولاً لتفهم كل سطر فيه.</p></aside>
 
-<h2><span class="sec">5.3</span><span>النصوص: العناوين والفقرات</span></h2>
+<h2><span class="sec">5.3</span> <span>النصوص: العناوين والفقرات</span></h2>
 
 <p>معظم محتوى الويب نصوص، وفي HTML عناصر تعطيها بنية. ومن الآن ستعرض الأمثلة الطويلة <code>&lt;body&gt;</code> وحده، لأن <code>&lt;head&gt;</code> هو الهيكل نفسه كل مرة، ولا يتغير إلا <code>&lt;title&gt;</code>. والملفات كاملة في مستودع كود الكتاب.</p>
 
@@ -1438,7 +1507,7 @@ text/html; charset=utf-8
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>اختر مستوى العنوان لمعناه، لا لحجمه. فإن أردت عنواناً أصغر غيّرت حجمه بـ CSS في الفصل 6. وقارئات الشاشة، التي تقرأ الصفحات بصوت عالٍ للمكفوفين، تتيح القفز من عنوان لعنوان، فالترتيب الصحيح مهم حقاً.</p></aside>
 
-<h2><span class="sec">5.4</span><span>الروابط</span></h2>
+<h2><span class="sec">5.4</span> <span>الروابط</span></h2>
 
 <p>الروابط هي ما يجعل الويب «شبكة»: صفحات متصلة ببعضها في أنحاء العالم كله. والعنصر <code>&lt;a&gt;</code> ينشئ رابطاً، وخاصيته <code>href</code> تحدد وجهته:</p>
 
@@ -1456,7 +1525,7 @@ text/html; charset=utf-8
 
 <p>والرابط الثالث يفتح في تبويب جديد بسبب <code>target="_blank"</code>، و<code>rel="noopener"</code> معه إجراء أمني صغير أضفه دائماً معها.</p>
 
-<h2><span class="sec">5.5</span><span>الصور</span></h2>
+<h2><span class="sec">5.5</span> <span>الصور</span></h2>
 
 <p>العنصر <code>&lt;img&gt;</code> يعرض صورة. نزّل الملف <code>bit.svg</code> من مستودع كود الكتاب إلى مجلد <code>chapter-05</code>، أو استخدم أي صورة تحبها:</p>
 
@@ -1477,7 +1546,7 @@ text/html; charset=utf-8
 
 <aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>كل صورة تحتاج <code>alt</code>. صِف ما تعرضه الصورة ولماذا هي هنا في جملة قصيرة. وإن كانت الصورة للزينة فقط فاكتب <code>alt=""</code> لتتجاوزها قارئات الشاشة. ونص <code>alt</code> الجيد من أبسط الطرق لجعل الويب صالحاً للجميع.</p></aside>
 
-<h2><span class="sec">5.6</span><span>القوائم</span></h2>
+<h2><span class="sec">5.6</span> <span>القوائم</span></h2>
 
 <p>في HTML نوعان شائعان من القوائم: <code>&lt;ul&gt;</code> (قائمة غير مرتبة) حين لا يهم الترتيب، و<code>&lt;ol&gt;</code> (قائمة مرتبة) حين يهم. وداخل الاثنتين يكون كل بند <code>&lt;li&gt;</code>:</p>
 
@@ -1506,7 +1575,7 @@ text/html; charset=utf-8
 
 <p>القوائم في كل مكان على الويب، وكثيراً في أماكن لا تخطر ببالك: القائمة أعلى معظم المواقع قائمة روابط، نسّقتها CSS فلم تعد تبدو قائمة.</p>
 
-<h2><span class="sec">5.7</span><span>إعطاء الصفحة بنية</span></h2>
+<h2><span class="sec">5.7</span> <span>إعطاء الصفحة بنية</span></h2>
 
 <p>الصفحات الحقيقية لها أجزاء: منطقة علوية فيها اسم الموقع وقائمته، والمحتوى الرئيسي، وتذييل في الأسفل. وفي HTML <dfn>عناصر دلالية</dfn> لهذه الأجزاء، و«دلالية» تعني أنها تصف <em>معنى</em> محتواها لا شكله:</p>
 
@@ -1563,7 +1632,7 @@ text/html; charset=utf-8
 
 <p>وستقابل أيضاً عنصرين بلا معنى على الإطلاق: <code>&lt;div&gt;</code> كتلة عامة، و<code>&lt;span&gt;</code> قطعة عامة من النص داخل السطر. لا تستخدمهما إلا حين لا يناسبك عنصر دلالي، وغالباً كخطافات لـ CSS.</p>
 
-<h2><span class="sec">5.8</span><span>نظرة أولى على النماذج</span></h2>
+<h2><span class="sec">5.8</span> <span>نظرة أولى على النماذج</span></h2>
 
 <p>النماذج (forms) تتيح للزوار إرسال المعلومات: بحث، أو تسجيل دخول، أو اشتراك. وستبث فيها الحياة بـ JavaScript في الفصل 12، لكن بنيتها HTML خالصة:</p>
 
@@ -1589,7 +1658,7 @@ text/html; charset=utf-8
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>في <code>&lt;img src="cat.jpg" alt="قطة نائمة"&gt;</code> ما الخصائص، ولماذا ليس لهذا العنصر وسم إغلاق؟</li><li>متى تستخدم <code>&lt;ol&gt;</code> بدل <code>&lt;ul&gt;</code>؟</li><li>كم عنصر <code>&lt;h1&gt;</code> يجب أن يكون في الصفحة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">5.9</span><span>مشروع: صفحتك التعريفية</span></h2>
+<h2><span class="sec">5.9</span> <span>مشروع: صفحتك التعريفية</span></h2>
 
 <p>لنجمع كل شيء في صفحة حقيقية: ملف تعريفي لسارة، مطورة الويب الجديدة. واكتب بياناتك أنت بدل بياناتها وأنت تكتب.</p>
 
@@ -1743,7 +1812,7 @@ text/html; charset=utf-8
 
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>560px</b></div><img src="img/b1-ch06-ar-profile.html-560.png" alt=""><figcaption><b>الشكل 6.1:</b> صفحة الفصل 5 التعريفية في آخر هذا الفصل. قارنها بالشكل 5.9: لم يتغير في HTML شيء.</figcaption></figure>
 
-<h2><span class="sec">6.1</span><span>ما CSS؟</span></h2>
+<h2><span class="sec">6.1</span> <span>ما CSS؟</span></h2>
 
 <p><dfn>CSS</dfn> اختصار «أوراق الأنماط المتتالية». HTML تقول ما <em>هي</em> كل قطعة من المحتوى، وCSS تقول كيف <em>تبدو</em>. والفصل بين الاثنين فكرة قوية: تستطيع أن تعيد تصميم موقع كامل بتغيير ملف CSS واحد، دون أن تلمس صفحة واحدة.</p>
 
@@ -1769,7 +1838,7 @@ text/html; charset=utf-8
 
 <p>اقرأ هذه القاعدة هكذا: «كل <code>h1</code> لونه <code>#4338ca</code> وحجم خطه <code>2rem</code>». وكل تصريح ينتهي بفاصلة منقوطة، والكتلة كلها بين قوسين معقوصين.</p>
 
-<h2><span class="sec">6.2</span><span>ربط CSS بالصفحة</span></h2>
+<h2><span class="sec">6.2</span> <span>ربط CSS بالصفحة</span></h2>
 
 <p>هناك ثلاث طرق لإضافة CSS، والمحترفون يستخدمون الثالثة غالباً:</p>
 
@@ -1783,7 +1852,7 @@ text/html; charset=utf-8
 
 <p>أضف هذا السطر داخل <code>&lt;head&gt;</code> في <code>profile.html</code>، وأنشئ ملف <code>style.css</code> فارغاً بجانبه، وصرت جاهزاً لبدء التنسيق.</p>
 
-<h2><span class="sec">6.3</span><span>المحددات: اختيار ما ننسّقه</span></h2>
+<h2><span class="sec">6.3</span> <span>المحددات: اختيار ما ننسّقه</span></h2>
 
 <p><dfn>المحدد</dfn> (selector) يقرر العناصر التي تنطبق عليها القاعدة. وأربعة أنواع من المحددات تغطي كل ما تحتاجه تقريباً:</p>
 
@@ -1843,7 +1912,7 @@ text/html; charset=utf-8
 
 <p>وبعض الخصائص <dfn>تُورَّث</dfn>: إن ضبطت <code>color</code> أو <code>font-family</code> على <code>body</code> أخذ كل عنصر بداخله القيمة نفسها ما لم تقل قاعدة غير ذلك. ولهذا تضبط الخطوط مرة واحدة على <code>body</code>.</p>
 
-<h2><span class="sec">6.4</span><span>الألوان</span></h2>
+<h2><span class="sec">6.4</span> <span>الألوان</span></h2>
 
 <p>تفهم CSS الألوان بأكثر من صيغة:</p>
 
@@ -1868,7 +1937,7 @@ text/html; charset=utf-8
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>يجب أن يبرز النص عن خلفيته. فالنص الرمادي الفاتح على خلفية بيضاء قد يبدو أنيقاً لك، لكنه صعب القراءة على كثير من الناس، خصوصاً على هاتف في الشمس. وأدوات المطورين تقيس <strong>نسبة التباين</strong> للون: اجعلها 4.5 إلى 1 على الأقل للنص العادي. وستعرف المزيد في الفصل 16.</p></aside>
 
-<h2><span class="sec">6.5</span><span>النصوص والخطوط</span></h2>
+<h2><span class="sec">6.5</span> <span>النصوص والخطوط</span></h2>
 
 <table>
 <thead><tr><th>الخاصية</th><th>مثال</th><th>ماذا تفعل</th></tr></thead>
@@ -1893,7 +1962,7 @@ text/html; charset=utf-8
 <li><code>%</code>: نسبة من حجم العنصر الأب، وجيدة للعروض.</li>
 </ul>
 
-<h2><span class="sec">6.6</span><span>نموذج الصندوق</span></h2>
+<h2><span class="sec">6.6</span> <span>نموذج الصندوق</span></h2>
 
 <p>هذه أهم فكرة في تخطيط CSS: <strong>كل عنصر صندوق مستطيل</strong>. العناوين والفقرات والصور والروابط كلها صناديق، ولكل صندوق أربع طبقات:</p>
 
@@ -1937,7 +2006,7 @@ margin: 0 auto;              /* centred horizontally */</pre>
 
 <p>الصناديق نوعان رئيسيان. عناصر <dfn>الكتلة</dfn> (block) مثل <code>&lt;p&gt;</code> و<code>&lt;h1&gt;</code> و<code>&lt;section&gt;</code> تبدأ في سطر جديد وتأخذ العرض كله. وعناصر <dfn>السطر</dfn> (inline) مثل <code>&lt;a&gt;</code> و<code>&lt;strong&gt;</code> و<code>&lt;span&gt;</code> تجلس داخل سطر النص وعرضها بقدر محتواها. ومع <code>display: inline-block</code> يبقى العنصر في السطر لكنه يقبل الحشوة والعرض مثل الكتلة، وهكذا صارت روابط القائمة ووسوم المهارات في مشروعنا على شكل كبسولات.</p>
 
-<h2><span class="sec">6.7</span><span>CSS للاتجاهين</span></h2>
+<h2><span class="sec">6.7</span> <span>CSS للاتجاهين</span></h2>
 
 <p>كثير من المواقع اليوم تعمل باللغات التي تُكتب من اليسار ومن اليمين معاً. والخصائص مثل <code>margin-left</code> مربوطة بجهة فعلية، فتبدو خاطئة حين تنقلب الصفحة للعربية. وفي CSS الحديثة <dfn>خصائص منطقية</dfn> تتبع اتجاه القراءة بدل الجهة:</p>
 
@@ -1954,7 +2023,7 @@ margin: 0 auto;              /* centred horizontally */</pre>
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي محدد يختار كل عنصر فيه <code>class="price"</code>؟</li><li>صندوق فيه <code>width: 200px</code> و<code>padding: 10px</code> و<code>border: 2px solid</code>. كم عرضه على الشاشة بدون <code>box-sizing: border-box</code>؟ ومعها؟</li><li>لماذا نستخدم <code>rem</code> لأحجام الخطوط؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">6.8</span><span>مشروع: نسّق صفحتك التعريفية</span></h2>
+<h2><span class="sec">6.8</span> <span>مشروع: نسّق صفحتك التعريفية</span></h2>
 
 <p>هذا ملف التنسيق كاملاً للصفحة في الشكل 6.1، مقسماً إلى خمسة أجزاء بتعليقات، مثل ملفات التنسيق التي يكتبها المحترفون. اكتبه جزءاً جزءاً، وأعد تحميل الصفحة بعد كل جزء لترى ما يفعله.</p>
 
@@ -2156,7 +2225,7 @@ nav <span class="k">a</span> {
 <ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>معلومة طريفة: توسيط عنصر عمودياً كان أشهر نكتة بين مطوري الويب. وفي القسم 7.2 من هذا الفصل ستفعله في ثلاثة أسطر!</p></div></div>
 
-<h2><span class="sec">7.1</span><span>Flexbox: صف من الصناديق</span></h2>
+<h2><span class="sec">7.1</span> <span>Flexbox: صف من الصناديق</span></h2>
 
 <p>عناصر الكتلة تتكدس عادة من الأعلى إلى الأسفل. أضف <code>display: flex</code> إلى العنصر الأب، فيصطف أبناؤه في صف. ويُسمى الأب <dfn>حاوية مرنة</dfn> (flex container)، وأبناؤه المباشرون <dfn>عناصر مرنة</dfn> (flex items).</p>
 
@@ -2232,7 +2301,7 @@ nav <span class="k">a</span> {
 <figcaption><b>الشكل 7.2:</b> لـ Flexbox محوران. <code>justify-content</code> تعمل على المحور الرئيسي، و<code>align-items</code> عرضياً. وفي الصفحة العربية يبدأ المحور الرئيسي من اليمين.</figcaption>
 </figure>
 
-<h2><span class="sec">7.2</span><span>توسيط أي شيء</span></h2>
+<h2><span class="sec">7.2</span> <span>توسيط أي شيء</span></h2>
 
 <p>اجمع <code>justify-content: center</code> و<code>align-items: center</code>، فيقف العنصر في منتصف حاويته تماماً، أفقياً ورأسياً:</p>
 
@@ -2264,7 +2333,7 @@ nav <span class="k">a</span> {
 <circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>ثلاثة أسطر! المطورون الذين تعلموا CSS قبل Flexbox ما زالوا يبتسمون حين يرون هذا. لكن الحاوية تحتاج ارتفاعاً: هنا أعطتها <code>min-height</code> واحداً. وبدونه يكون الصندوق بطول محتواه فقط، فلا يبقى مكان للتوسيط.</p></div></div>
 
-<h2><span class="sec">7.3</span><span>Grid: الصفوف والأعمدة معاً</span></h2>
+<h2><span class="sec">7.3</span> <span>Grid: الصفوف والأعمدة معاً</span></h2>
 
 <p>Flexbox ترتب العناصر على خط واحد، أما <dfn>CSS Grid</dfn> فترتبها في بعدين معاً، مثل جدول أو جدول بيانات. ضع <code>display: grid</code> على الحاوية وصِف أعمدتها:</p>
 
@@ -2319,7 +2388,7 @@ nav <span class="k">a</span> {
 </tbody>
 </table>
 
-<h2><span class="sec">7.4</span><span>تخطيط الصفحة بالمناطق المسماة</span></h2>
+<h2><span class="sec">7.4</span> <span>تخطيط الصفحة بالمناطق المسماة</span></h2>
 
 <p>وتستطيع Grid أن تخطط صفحة كاملة. تعطي كل جزء اسماً، ثم «ترسم» التخطيط بهذه الأسماء، كأنه رسم بالحروف:</p>
 
@@ -2351,7 +2420,7 @@ footer { grid-area: foot; }</pre>
 
 <p>كل سطر بين علامتي تنصيص صف، وكل كلمة خلية. و<code>"head head"</code> تعني أن الترويسة تمتد على العمودين. وصار تغيير التخطيط كله مسألة إعادة رسم الصورة، وهذا بالضبط ما نفعله للشاشات الصغيرة.</p>
 
-<h2><span class="sec">7.5</span><span>التصميم المتجاوب باستعلامات الوسائط</span></h2>
+<h2><span class="sec">7.5</span> <span>التصميم المتجاوب باستعلامات الوسائط</span></h2>
 
 <p>أكثر من نصف زيارات الويب تأتي من الهواتف. و<dfn>استعلام الوسائط</dfn> (media query) يطبق CSS فقط حين يصح شرط ما، وغالباً عرض الشاشة:</p>
 
@@ -2372,7 +2441,7 @@ footer { grid-area: foot; }</pre>
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي خاصية تجعل أبناء العنصر يصطفون في صف؟</li><li>ما معنى <code>1fr</code> في الشبكة؟</li><li>ماذا يفعل <code>@media (min-width: 700px) { … }</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">7.6</span><span>مشروع: صفحة تعريفية متجاوبة</span></h2>
+<h2><span class="sec">7.6</span> <span>مشروع: صفحة تعريفية متجاوبة</span></h2>
 
 <p>صفحتك التعريفية جميلة، لكنها ما زالت عموداً واحداً طويلاً. فلنضف جزءاً سادساً إلى <code>style.css</code> فيه تخطيط حقيقي، دون أن يتغير شيء في HTML.</p>
 
@@ -2535,7 +2604,7 @@ header <span class="k">nav</span> {
 
 <p>افتح المحرر والطرفية اللذين جهزتهما في الفصل 3. كل مثال في هذا الفصل ملف صغير تشغّله بـ Node.js. اكتب الأمثلة بيدك ولا تنسخها: أصابعك تتعلم شكل اللغة أسرع من عينيك.</p>
 
-<h2><span class="sec">8.1</span><span>القيم: المادة الخام للبرنامج</span></h2>
+<h2><span class="sec">8.1</span> <span>القيم: المادة الخام للبرنامج</span></h2>
 
 <p><dfn>القيمة</dfn> قطعة واحدة من البيانات: رقم، أو نص، أو جواب بنعم أو لا. والقيم هي المادة الخام التي يعمل بها البرنامج، كما أن الدقيق والماء هما المادة الخام للخبز.</p>
 
@@ -2579,7 +2648,7 @@ boolean</pre></div>
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>علامات التنصيص تحوّل أي شيء إلى نص. <code>42</code> رقم، أما <code>"42"</code> فنص فيه الحرفان 4 و2. وهذا الفرق سبب لأخطاء كثيرة عند المبتدئين، وسنقابله مرة أخرى في القسم 8.3.</p></aside>
 
-<h2><span class="sec">8.2</span><span>المتغيرات: اسم للقيمة</span></h2>
+<h2><span class="sec">8.2</span> <span>المتغيرات: اسم للقيمة</span></h2>
 
 <p>القيمة وحدها تختفي بمجرد استخدامها. ولتحتفظ بها وتستعملها لاحقاً، تحفظها في <dfn>متغير</dfn>. والمتغير اسم يشير إلى قيمة.</p>
 
@@ -2646,7 +2715,7 @@ TypeError: Assignment to constant variable.</pre></div>
 
 <p>اكتب الأسماء للشخص الذي سيقرأ كودك بعد ستة أشهر. وكثيراً ما يكون هذا الشخص أنت.</p>
 
-<h2><span class="sec">8.3</span><span>العوامل: الحساب والمقارنة</span></h2>
+<h2><span class="sec">8.3</span> <span>العوامل: الحساب والمقارنة</span></h2>
 
 <p><dfn>العامل</dfn> (operator) رمز يأخذ قيماً وينتج قيمة جديدة. وأنت تعرف معظم عوامل الحساب من المدرسة.</p>
 
@@ -2704,7 +2773,7 @@ true</pre></div>
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>ماذا تعطي <code>typeof "10"</code>؟</li><li>كم تساوي <code>17 % 5</code>؟</li><li>هل <code>4 === "4"</code> صحيحة أم خاطئة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">8.4</span><span>القرارات بـ if وelse</span></h2>
+<h2><span class="sec">8.4</span> <span>القرارات بـ if وelse</span></h2>
 
 <p>الآن وقد صرت تقارن القيم، يمكنك أن تجعل برنامجك يختار. الجملة <code>if</code> تنفّذ مجموعة من الأسطر فقط حين يكون الشرط <code>true</code>. السينما تأخذ أسعاراً مختلفة حسب العمر، وهكذا يقرر البرنامج:</p>
 
@@ -2785,7 +2854,7 @@ console.log(<span class="s">`العمر ${age}: السعر ${price}$`</span>);</
 
 <aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>غيّر <code>age</code> إلى 2 ثم 13 ثم 40 ثم 70، وشغّل البرنامج بعد كل تغيير. وتوقّع المخرجات قبل أن تضغط Enter. فالقدرة على توقّع ما سيفعله الكود أهم مهارة في هذا الكتاب.</p></aside>
 
-<h2><span class="sec">8.5</span><span>الجمع بين الشروط</span></h2>
+<h2><span class="sec">8.5</span> <span>الجمع بين الشروط</span></h2>
 
 <p>القرارات الحقيقية تعتمد غالباً على أكثر من شيء. وثلاثة <dfn>عوامل منطقية</dfn> تجمع بين قيم boolean:</p>
 
@@ -2829,7 +2898,7 @@ console.log(shown);</pre></div>
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>هذه الحيلة تستبدل <code>0</code> أيضاً، لأن <code>0</code> قيمة falsy. فلو كان الصفر نتيجة حقيقية، فإن <code>score || 100</code> ستعطي 100 خطأً. وفي الكتاب الثاني نتعرف على العامل <code>??</code>، وهو لا يستبدل إلا <code>null</code> و<code>undefined</code>.</p></aside>
 
-<h2><span class="sec">8.6</span><span>الاختيار بين قيم ثابتة كثيرة بـ switch</span></h2>
+<h2><span class="sec">8.6</span> <span>الاختيار بين قيم ثابتة كثيرة بـ switch</span></h2>
 
 <p>حين تقارن قيمة واحدة بقائمة من الاحتمالات المحددة، تكون الجملة <code>switch</code> أسهل في القراءة من سلسلة طويلة من <code>else if</code>:</p>
 
@@ -2857,7 +2926,7 @@ console.log(<span class="s">`المشروب: ${drink}$`</span>);</pre></div>
 
 <p>استخدم <code>switch</code> للمطابقة التامة لقيمة واحدة، مثل المقاسات أو خيارات القائمة أو أيام الأسبوع. واستخدم <code>if</code> للنطاقات مثل الأعمار، أو للشروط التي تتضمن أكثر من متغير.</p>
 
-<h2><span class="sec">8.7</span><span>مشروع: شبّاك التذاكر</span></h2>
+<h2><span class="sec">8.7</span> <span>مشروع: شبّاك التذاكر</span></h2>
 
 <p>لنجمع كل ما تعلمناه. شبّاك التذاكر التالي يقرر سعر تذكرة السينما بأربع قواعد:</p>
 
@@ -3008,7 +3077,7 @@ console.log(message);</pre></div>
 <ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>أتذكر شبّاك التذاكر من الفصل 8؟ كان يخدم زائراً واحداً فقط. وفي آخر هذا الفصل سيخدم طابوراً كاملاً، ولن يطول الكود إلا قليلاً. هذا سحر الحلقات!</p></div></div>
 
-<h2><span class="sec">9.1</span><span>المصفوفات: قوائم القيم</span></h2>
+<h2><span class="sec">9.1</span> <span>المصفوفات: قوائم القيم</span></h2>
 
 <p><dfn>المصفوفة</dfn> (array) قائمة مرتبة من القيم محفوظة في متغير واحد. تكتبها بين قوسين مربعين، وتفصل العناصر بفواصل:</p>
 
@@ -3065,7 +3134,7 @@ true
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>المصفوفة المعرّفة بـ <code>const</code> يمكن أن تتغير: تضيف إليها وتحذف منها. أما ما تمنعه <code>const</code> فهو أن تجعل المتغير يشير إلى مصفوفة أخرى (<code>fruits = []</code>). تخيّلها صندوقاً ملصوقاً برفّه: لا تنقله، لكنك تغيّر ما بداخله.</p></aside>
 
-<h2><span class="sec">9.2</span><span>حلقة <code>for</code></span></h2>
+<h2><span class="sec">9.2</span> <span>حلقة <code>for</code></span></h2>
 
 <p><dfn>الحلقة</dfn> (loop) تنفّذ مجموعة الأسطر نفسها مرات عدة. وحلقة <code>for</code> التقليدية تعدّ:</p>
 
@@ -3098,7 +3167,7 @@ console.log(<span class="s">&quot;انطلق!&quot;</span>);</pre></div>
 
 <p>وكل دورة من الحلقة تُسمى <dfn>تكراراً</dfn> (iteration). والاسم <code>i</code> عادة قديمة من الرياضيات؛ استخدمه للعدادات البسيطة، واختر اسماً له معنى لما سواها.</p>
 
-<h2><span class="sec">9.3</span><span><code>for…of</code>: عنصر بعد عنصر</span></h2>
+<h2><span class="sec">9.3</span> <span><code>for…of</code>: عنصر بعد عنصر</span></h2>
 
 <p>في أغلب الأحيان لا يهمك العدّ، بل تريد أن تفعل شيئاً مع <em>كل عنصر</em> في المصفوفة. وحلقة <code>for…of</code> تفعل ذلك بالضبط، وهي الحلقة التي ستستخدمها أكثر من غيرها:</p>
 
@@ -3118,7 +3187,7 @@ console.log(<span class="s">`المتوسط: ${total / prices.length}`</span>);<
 
 <p>اقرأ <code>for (const price of prices)</code> هكذا: «لكل سعر في الأسعار». في كل تكرار يحمل <code>price</code> العنصر التالي. وهذا النمط، متغير خارج الحلقة يضيف إليه كل تكرار، يُسمى <dfn>المُجمِّع</dfn> (accumulator). وستستخدمه لحساب المجاميع والأعداد والقيم الكبرى وغيرها كثير. وقد رأيته في الفصل 2: إيجاد أكبر بطاقة كان مجمِّعاً أيضاً.</p>
 
-<h2><span class="sec">9.4</span><span>حلقة <code>while</code></span></h2>
+<h2><span class="sec">9.4</span> <span>حلقة <code>while</code></span></h2>
 
 <p>أحياناً لا تعرف مسبقاً كم دورة تحتاج. وحلقة <code>while</code> تستمر <em>ما دام</em> الشرط صحيحاً:</p>
 
@@ -3138,7 +3207,7 @@ console.log(<span class="s">`وصلت إلى ${savings} بعد ${week} أساب�
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: الحلقات اللانهائية</p><p>إن لم يصر شرط حلقة <code>while</code> خاطئاً أبداً، فلن تنتهي الحلقة أبداً، ويتجمد برنامجك. انسَ السطر <code>savings = savings + 15</code> فيبقى <code>savings</code> صفراً إلى الأبد. وإن حدث ذلك فاضغط <code>Ctrl</code> + <code>C</code> في الطرفية لإيقاف Node.js، أو أغلق تبويب المتصفح. كل مبرمج يقع في هذا أحياناً؛ فقط تأكد أن شيئاً داخل الحلقة يقربها من نهايتها.</p></aside>
 
-<h2><span class="sec">9.5</span><span><code>break</code> و<code>continue</code></span></h2>
+<h2><span class="sec">9.5</span> <span><code>break</code> و<code>continue</code></span></h2>
 
 <p>كلمتان تعطيانك تحكماً أدق داخل أي حلقة. <code>break</code> تخرج من الحلقة فوراً. و<code>continue</code> تتخطى بقية التكرار الحالي وتقفز إلى التالي:</p>
 
@@ -3161,7 +3230,7 @@ console.log(<span class="s">`وصلت إلى ${savings} بعد ${week} أساب�
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>في <code>const days = ["السبت", "الأحد", "الاثنين"]</code> ما قيمة <code>days[1]</code>، وما قيمة <code>days.length</code>؟</li><li>كم مرة تنفّذ <code>for (let i = 0; i &lt; 3; i++)</code> ما بداخلها؟</li><li>أي حلقة تستخدم لطباعة كل اسم في مصفوفة أسماء؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">9.6</span><span>مشروع: الشبّاك يخدم طابوراً</span></h2>
+<h2><span class="sec">9.6</span> <span>مشروع: الشبّاك يخدم طابوراً</span></h2>
 
 <p>هذا شبّاك التذاكر من الفصل 8، يخدم الآن طابوراً كاملاً من الزوار. كل رقم في <code>queue</code> عمر زائر. قواعد التسعير كما هي، والجديد هو الحلقة حولها، وثلاثة مجمِّعات تبني المجموع والعدد والإيصال:</p>
 
@@ -3298,7 +3367,7 @@ console.log(<span class="s">`المجموع: ${total}`</span>);</pre></div>
 <ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>تخيّل الدالة آلة صغيرة: تضع فيها شيئاً (عمراً مثلاً)، فتعمل، فيخرج منها شيء (سعر مثلاً). تبني الآلة مرة واحدة، وتستخدمها كلما شئت دون أن تفكر في أحشائها مرة أخرى.</p></div></div>
 
-<h2><span class="sec">10.1</span><span>دالتك الأولى</span></h2>
+<h2><span class="sec">10.1</span> <span>دالتك الأولى</span></h2>
 
 <div class="listing" dir="ltr"><div class="listing-title">greet.js</div><pre class="code"><span class="k">function</span> greet(name) {
   <span class="k">return</span> <span class="s">`أهلاً يا ${name}!`</span>;
@@ -3339,7 +3408,7 @@ console.log(greet(<span class="s">&quot;عمر&quot;</span>));</pre></div>
 <figcaption><b>الشكل 10.1:</b> الدالة آلة: الوسائط تدخل، والقيمة المُرجعة تخرج.</figcaption>
 </figure>
 
-<h2><span class="sec">10.2</span><span>الدوال تجعل الكود قابلاً لإعادة الاستخدام</span></h2>
+<h2><span class="sec">10.2</span> <span>الدوال تجعل الكود قابلاً لإعادة الاستخدام</span></h2>
 
 <p>هذه قواعد تسعير الشبّاك دالةً. وحين تُكتب مرة، يمكن استخدامها في أي مكان وبأي عدد من المرات:</p>
 
@@ -3366,7 +3435,7 @@ console.log(ticketPrice(<span class="n">70</span>));</pre></div>
 
 <aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: وظيفة واحدة لكل دالة</p><p>الدالة الجيدة تفعل شيئاً واحداً، واسمها يقول ما هو. فإن احتجت حرف «و» لتصفها («تحسب السعر <em>و</em>تطبع الإيصال») فقسّمها إلى دالتين. والدوال الصغيرة أسهل في القراءة والاختبار وإعادة الاستخدام والإصلاح.</p></aside>
 
-<h2><span class="sec">10.3</span><span>أكثر من معامل وقيم افتراضية</span></h2>
+<h2><span class="sec">10.3</span> <span>أكثر من معامل وقيم افتراضية</span></h2>
 
 <p>الدالة يمكن أن تأخذ عدة معاملات تفصلها فواصل، والترتيب مهم: الوسيط الأول يذهب إلى المعامل الأول. ويمكن أيضاً أن يكون للمعامل <dfn>قيمة افتراضية</dfn> تُستخدم حين لا يمرره المستدعي:</p>
 
@@ -3388,7 +3457,7 @@ console.log(welcome(<span class="s">&quot;لينا&quot;</span>, <span class="s"
 مرحباً يا لينا
 Welcome, لينا</pre></div>
 
-<h2><span class="sec">10.4</span><span>النطاق: أين تعيش المتغيرات</span></h2>
+<h2><span class="sec">10.4</span> <span>النطاق: أين تعيش المتغيرات</span></h2>
 
 <p>المتغير الذي يُنشأ داخل دالة لا يوجد إلا داخلها، ويُسمى هذا <dfn>النطاق</dfn> (scope):</p>
 
@@ -3410,7 +3479,7 @@ undefined</pre></div>
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>أبقِ المتغيرات في أضيق نطاق ممكن. فالمتغير الذي لا يُستخدم إلا داخل دالة يجب أن يُنشأ داخلها. وكلما قلّت الأماكن التي تستطيع تغيير متغير، قلّت الأماكن التي يختبئ فيها الخطأ.</p></aside>
 
-<h2><span class="sec">10.5</span><span>الدوال السهمية ودوال المصفوفات</span></h2>
+<h2><span class="sec">10.5</span> <span>الدوال السهمية ودوال المصفوفات</span></h2>
 
 <p>في JavaScript طريقة أقصر لكتابة الدوال الصغيرة، تُسمى <dfn>الدوال السهمية</dfn> (arrow functions):</p>
 
@@ -3452,7 +3521,7 @@ console.log(total);</pre></div>
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>ما الفرق بين المعامل والوسيط؟</li><li>ماذا تُرجع الدالة إن لم يكن فيها <code>return</code>؟</li><li>ماذا تعطي <code>[1, 2, 3].map((n) =&gt; n * 10)</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">10.6</span><span>مشروع: شبّاك من الدوال</span></h2>
+<h2><span class="sec">10.6</span> <span>مشروع: شبّاك من الدوال</span></h2>
 
 <p>لنعد بناء الشبّاك كما يفعل المحترف: من دوال صغيرة، لكل واحدة وظيفة واحدة. دالة تعرف السعر الأساسي، ودالة تطبق يوم الأعضاء، ودالة تبني سطر الإيصال من بيانات الزائر:</p>
 
@@ -3597,7 +3666,7 @@ console.log(total);</pre></div>
 <ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>لو كنت كائناً لكنت <code>{ name: "بِت", colour: "بنفسجي", antennas: 1, loves: ["HTML", "CSS", "JavaScript"] }</code>. أرأيت؟ الكائنات طريقة طبيعية لوصف الأشياء!</p></div></div>
 
-<h2><span class="sec">11.1</span><span>إنشاء الكائنات وقراءتها</span></h2>
+<h2><span class="sec">11.1</span> <span>إنشاء الكائنات وقراءتها</span></h2>
 
 <p>يُكتب <dfn>الكائن</dfn> (object) بين قوسين معقوصين، وبداخله <dfn>خصائص</dfn> (properties): أزواج من اسم (يُسمى <dfn>المفتاح</dfn>) وقيمة تفصلهما نقطتان، وبين الأزواج فواصل:</p>
 
@@ -3635,7 +3704,7 @@ console.log(book);</pre></div>
 
 <p>وقراءة خاصية غير موجودة ليست خطأً، بل تحصل على <code>undefined</code>. هذا مريح، لكنه يعني أن خطأً إملائياً مثل <code>book.titel</code> يفشل بصمت، فانتبه لإملائك. ولاحظ أن المفاتيح تُكتب بالإنجليزية دائماً، أما القيم النصية فبأي لغة.</p>
 
-<h2><span class="sec">11.2</span><span>مصفوفات الكائنات</span></h2>
+<h2><span class="sec">11.2</span> <span>مصفوفات الكائنات</span></h2>
 
 <p>أكثر أشكال البيانات شيوعاً في البرامج الحقيقية هو <strong>مصفوفة الكائنات</strong>: قائمة منتجات، أو مستخدمين، أو رسائل، أو مباريات. ولكل كائن المفاتيح نفسها:</p>
 
@@ -3662,7 +3731,7 @@ console.log(cheapest.name);</pre></div>
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p><code>console.table(products)</code> تطبع مصفوفة الكائنات جدولاً مرتباً في الطرفية أو Console المتصفح. وهي من أنفع الحيل للنظر في البيانات.</p></aside>
 
-<h2><span class="sec">11.3</span><span>التفكيك والنشر</span></h2>
+<h2><span class="sec">11.3</span> <span>التفكيك والنشر</span></h2>
 
 <p>صيغتان قصيرتان تظهران في كل مكان في JavaScript الحديثة:</p>
 
@@ -3683,7 +3752,7 @@ console.log(visitor.age, copy.age);</pre></div>
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: النسخ والمراجع</p><p><code>const copy = visitor</code> <strong>لا</strong> تنسخ الكائن. فالاسمان يشيران الآن إلى الكائن نفسه، وتغيير <code>copy.age</code> يغيّر <code>visitor.age</code> أيضاً، لأن الكائنات والمصفوفات تُشارَك بالمرجع. ولتحصل على نسخة مستقلة حقاً استخدم النشر: <code>{ ...visitor }</code> للكائنات، و<code>[...list]</code> للمصفوفات.</p></aside>
 
-<h2><span class="sec">11.4</span><span>JSON: الكائنات نصاً</span></h2>
+<h2><span class="sec">11.4</span> <span>JSON: الكائنات نصاً</span></h2>
 
 <p>الكائنات تعيش في ذاكرة البرنامج. فكيف تحفظ كائناً في ملف، أو ترسله من خادم إلى متصفح في الطرف الآخر من العالم؟ تحوّله إلى نص. والصيغة النصية المعتمدة للبيانات على الويب هي <dfn>JSON</dfn> (ترميز كائنات JavaScript)، وهي تشبه كائن JavaScript تماماً تقريباً:</p>
 
@@ -3717,7 +3786,7 @@ string
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>مع <code>const user = { name: "هدى", age: 22 }</code>، كيف تقرأ العمر؟</li><li>ماذا تُرجع <code>find</code> حين لا يطابق شيء؟</li><li>ماذا تنتج <code>JSON.stringify</code>: كائناً أم نصاً؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">11.5</span><span>مشروع: سلة تسوق</span></h2>
+<h2><span class="sec">11.5</span> <span>مشروع: سلة تسوق</span></h2>
 
 <p>لنبنِ منطق سلة متجر إلكتروني: كتالوج منتجات، وسلة تتذكر أي المنتجات وكم منها، ودوال تضيف العناصر وتحسب المجاميع. وهذا المنطق نفسه الذي يعمل خلف المتاجر الحقيقية، لكنه أصغر:</p>
 
@@ -3873,7 +3942,7 @@ console.log(JSON.stringify(cart));</pre></div>
 <circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل زر إعجاب، وكل «أضف إلى السلة»، وكل رسالة محادثة تظهر دون إعادة تحميل الصفحة: هذه JavaScript وDOM. وبعد هذا الفصل ستعرف كيف تعمل كلها!</p></div></div>
 
-<h2><span class="sec">12.1</span><span>DOM: الصفحة كائنات</span></h2>
+<h2><span class="sec">12.1</span> <span>DOM: الصفحة كائنات</span></h2>
 
 <p>حين يقرأ المتصفح HTML يبني في الذاكرة شجرة من الكائنات، كائناً لكل عنصر. وتُسمى هذه الشجرة <dfn>DOM</dfn> (نموذج كائنات المستند)، وقد رأيتها في لوحة Elements في أدوات المطورين في الفصل 5. وJavaScript تستطيع أن تقرأ هذه الشجرة وتغيّرها، وكل تغيير يظهر على الشاشة فوراً.</p>
 
@@ -3900,7 +3969,7 @@ console.log(JSON.stringify(cart));</pre></div>
 
 <p>ولماذا في الآخر؟ لأن المتصفح يشغّل السكربت بمجرد أن يصل إليه. وفي آخر body تكون كل العناصر التي فوقه موجودة، فيجدها كودك.</p>
 
-<h2><span class="sec">12.2</span><span>إيجاد العناصر وتغييرها</span></h2>
+<h2><span class="sec">12.2</span> <span>إيجاد العناصر وتغييرها</span></h2>
 
 <p><code>document.querySelector</code> تجد أول عنصر يطابق محدد CSS، وهي المحددات نفسها التي تعلمتها في الفصل 6. وحين يصير العنصر في يدك تستطيع تغييره:</p>
 
@@ -3944,7 +4013,7 @@ document.querySelector(<span class="s">&quot;#skills&quot;</span>).append(item);
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: textContent لا innerHTML</p><p>سترى كوداً يستخدم <code>innerHTML</code> لوضع النص في الصفحة. وهو يعمل، لكن إن جاء النص من المستخدم فقد يدسّ فيه HTML بل وسكربتات، وهذه ثغرة أمنية خطيرة اسمها <strong>XSS</strong>. استخدم <code>textContent</code> للنص و<code>createElement</code> للعناصر الجديدة كما في هذا الفصل. والكتاب الثاني يغطي أمان الويب بعمق.</p></aside>
 
-<h2><span class="sec">12.3</span><span>الأحداث: التفاعل مع الناس</span></h2>
+<h2><span class="sec">12.3</span> <span>الأحداث: التفاعل مع الناس</span></h2>
 
 <p><dfn>الحدث</dfn> (event) شيء يحدث في الصفحة: نقرة، أو ضغطة مفتاح، أو إرسال نموذج، أو حركة فأرة. وتخبر العنصر بما يفعله حين يقع حدث بـ <code>addEventListener</code>:</p>
 
@@ -3993,7 +4062,7 @@ resetButton.addEventListener(<span class="s">&quot;click&quot;</span>, () =&gt; 
 </tbody>
 </table>
 
-<h2><span class="sec">12.4</span><span>النماذج</span></h2>
+<h2><span class="sec">12.4</span> <span>النماذج</span></h2>
 
 <p>النماذج تحتاج خطوة إضافية. فإرسال النموذج يعيد تحميل الصفحة افتراضياً، فيمحو كل ما فعلته JavaScript. و<code>event.preventDefault()</code> توقف ذلك، فيتولى كودك النموذج بنفسه:</p>
 
@@ -4033,7 +4102,7 @@ form.addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي دالة تجد أول عنصر يطابق <code>#total</code>؟</li><li>لماذا نضع عنصر <code>&lt;script&gt;</code> في آخر body؟</li><li>ماذا تفعل <code>event.preventDefault()</code> في معالج submit؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">12.5</span><span>مشروع: متجر بِت</span></h2>
+<h2><span class="sec">12.5</span> <span>مشروع: متجر بِت</span></h2>
 
 <p>لنضع سلة التسوق من الفصل 11 في صفحة حقيقية. HTML تكاد تكون فارغة: مكان للمنتجات ومكان للسلة، وJavaScript ترسم كل شيء من البيانات:</p>
 
@@ -4231,7 +4300,7 @@ renderCart();</pre></div>
 <ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>تخيّل أنك تطلب الطعام في مطعم. لا تقف في المطبخ حتى ينضج، بل تجلس وتتحدث، ويأتيك النادل بالطعام حين يجهز. وJavaScript تتعامل مع المهام البطيئة بالطريقة نفسها!</p></div></div>
 
-<h2><span class="sec">13.1</span><span>الآن ولاحقاً</span></h2>
+<h2><span class="sec">13.1</span> <span>الآن ولاحقاً</span></h2>
 
 <p>شغّل هذا البرنامج وانظر جيداً إلى ترتيب المخرجات:</p>
 
@@ -4250,7 +4319,7 @@ console.log(<span class="s">&quot;2. أقرأ كتاباً وأنا أنتظر&q
 
 <p>الكود الذي يُنفَّذ سطراً بعد سطر، وكل سطر ينتظر الذي قبله، كود <dfn>متزامن</dfn> (synchronous). والكود الذي يبدأ مهمة ويستمر دون انتظار نتيجتها كود <dfn>غير متزامن</dfn> (asynchronous). والمؤقتات وطلبات الشبكة وقراءة الملفات كلها غير متزامنة.</p>
 
-<h2><span class="sec">13.2</span><span>الوعود وasync وawait</span></h2>
+<h2><span class="sec">13.2</span> <span>الوعود وasync وawait</span></h2>
 
 <p><dfn>الوعد</dfn> (promise) كائن يمثل نتيجة لم تجهز بعد: «أعدك أن أعطيك قيمة لاحقاً، أو أن أخبرك بما ساء». والوعد يكون أولاً <em>معلّقاً</em>، ثم إما <em>يُوفى</em> بقيمة أو <em>يُرفض</em> بخطأ.</p>
 
@@ -4281,7 +4350,7 @@ console.log(<span class="s">&quot;في الأثناء، أجهّز المائد�
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>نادراً ما ستنشئ وعوداً بنفسك كما تفعل <code>wait</code>. ففي أغلب الأحيان تستلمها من دوال جاهزة مثل <code>fetch</code>، وكل ما تفعله أن تنتظرها بـ <code>await</code>. وتذكّر القاعدة: <code>await</code> لا تعمل إلا داخل دالة <code>async</code> (أو في أعلى مستوى من الوحدة).</p></aside>
 
-<h2><span class="sec">13.3</span><span>fetch: طلب البيانات من خادم</span></h2>
+<h2><span class="sec">13.3</span> <span>fetch: طلب البيانات من خادم</span></h2>
 
 <p><code>fetch(url)</code> ترسل طلب HTTP، مثل الطلبات التي قرأتها في الفصل 4 تماماً، وتُرجع وعداً بالرد. ولكي يعمل المثال في أي مكان حتى بلا إنترنت، يشغّل أولاً خادم واجهة برمجية صغيراً خاصاً به:</p>
 
@@ -4336,7 +4405,7 @@ server.listen(<span class="n">3001</span>, <span class="k">async</span> () =&gt;
 <li><code>response.json()</code> تقرأ الجسم وتحلل JSON، وهذا يأخذ وقتاً أيضاً، فتُرجع وعداً كذلك.</li>
 </ol>
 
-<h2><span class="sec">13.4</span><span>حين يسوء شيء: try وcatch</span></h2>
+<h2><span class="sec">13.4</span> <span>حين يسوء شيء: try وcatch</span></h2>
 
 <p>الشبكة غير موثوقة: الهواتف تفقد الإشارة، والخوادم تتعطل، والعناوين تتغير. والكود الاحترافي يتوقع الفشل. فحين <dfn>يُرمى</dfn> خطأ، تقفز JavaScript إلى أقرب <code>catch</code>:</p>
 
@@ -4352,7 +4421,7 @@ server.listen(<span class="n">3001</span>, <span class="k">async</span> () =&gt;
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>في <code>timers.js</code>، لماذا طُبع «2.» قبل «3.»؟</li><li>هل ترمي <code>fetch</code> خطأً مع الرد <code>404</code>؟</li><li>أين يمكنك استخدام <code>await</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
-<h2><span class="sec">13.5</span><span>مشروع: المتجر يحمّل منتجاته</span></h2>
+<h2><span class="sec">13.5</span> <span>مشروع: المتجر يحمّل منتجاته</span></h2>
 
 <p>كانت منتجات متجر الفصل 12 مكتوبة داخل <code>shop.js</code>. أما المتاجر الحقيقية فتأخذها من خادم، ليغيّر صاحب المتجر منتجاته دون أن يلمس الكود. فلننقلها إلى ملف JSON بجانب الصفحة:</p>
 
@@ -4501,7 +4570,7 @@ start();</pre>
 <ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>هذه أهم جملة في الفصل: <strong>رسالة الخطأ تحاول مساعدتك</strong>. فهي تقول غالباً ما الذي ساء وأين بالضبط. ومعظم المبتدئين يرتبكون ويتوقفون عن القراءة بعد أول كلمة. فلنقرأها كلها معاً!</p></div></div>
 
-<h2><span class="sec">14.1</span><span>تشريح رسالة الخطأ</span></h2>
+<h2><span class="sec">14.1</span> <span>تشريح رسالة الخطأ</span></h2>
 
 <p>هذا برنامج صغير فيه خطأ إملائي، وهذا ما يقوله Node.js حين تشغّله:</p>
 
@@ -4534,7 +4603,7 @@ ReferenceError: scor is not defined</pre></div>
 
 <p>أخبرنا Node.js: في الملف <code>reference.js</code>، في السطر 2، في المكان الذي تشير إليه <code>^</code>، يوجد <code>ReferenceError</code>: <code>scor</code> غير معرّف. وهذا كل ما تحتاجه: تنظر إلى السطر 2، فترى <code>scor</code>، وتدرك أنك قصدت <code>score</code>. وConsole المتصفح يعرض المعلومات نفسها، واسم الملف ورقم السطر رابطاً تنقر عليه.</p>
 
-<h2><span class="sec">14.2</span><span>الأخطاء الثلاثة التي ستقابلها أكثر</span></h2>
+<h2><span class="sec">14.2</span> <span>الأخطاء الثلاثة التي ستقابلها أكثر</span></h2>
 
 <h3>ReferenceError: شيء غير موجود</h3>
 
@@ -4569,7 +4638,7 @@ SyntaxError: Unexpected token &#x27;;&#x27;</pre></div>
 </tbody>
 </table>
 
-<h2><span class="sec">14.3</span><span>مسار الاستدعاءات: كيف وصلنا إلى هنا؟</span></h2>
+<h2><span class="sec">14.3</span> <span>مسار الاستدعاءات: كيف وصلنا إلى هنا؟</span></h2>
 
 <p>في البرامج الأكبر تستدعي الدوال دوالاً تستدعي غيرها. وحين يقع خطأ في العمق يطبع Node.js <dfn>مسار الاستدعاءات</dfn> (stack trace): طريق الاستدعاءات الذي أدى إلى الخطأ.</p>
 
@@ -4594,7 +4663,7 @@ TypeError: Cannot read properties of undefined (reading &#x27;city&#x27;)
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>في المشاريع الحقيقية يحوي مسار الاستدعاءات أيضاً أسطراً كثيرة من المكتبات ومن Node.js نفسه. ابحث عن أول الأسطر التي تشير إلى ملفاتك <em>أنت</em>، فمن هناك تبدأ في الأغلب.</p></aside>
 
-<h2><span class="sec">14.4</span><span>علل بلا أخطاء</span></h2>
+<h2><span class="sec">14.4</span> <span>علل بلا أخطاء</span></h2>
 
 <p>أصعب العلل لا تُظهر أي خطأ: يعمل البرنامج ويعطي جواباً خاطئاً:</p>
 
@@ -4664,7 +4733,7 @@ console.error(<span class="s">&quot;هناك خطأ هنا!&quot;</span>);</pre>
 
 <p>أعطِ كل سطر طباعة عنواناً لتعرف أي سطر طبع ماذا. واستخدم <code>console.table</code> لمصفوفات الكائنات، و<code>console.error</code> للمشكلات، فهي تظهر في المتصفح بالأحمر مع مسار الاستدعاءات. وتذكّر أن تحذف أسطر التتبع حين تُصلح العلّة.</p>
 
-<h2><span class="sec">14.5</span><span>المصحّح: إيقاف الزمن</span></h2>
+<h2><span class="sec">14.5</span> <span>المصحّح: إيقاف الزمن</span></h2>
 
 <p><code>console.log</code> تعرض قيماً قليلة في لحظات قليلة. أما <dfn>المصحّح</dfn> (debugger) فيتيح لك أن <em>توقف</em> البرنامج عند أي سطر وتنظر إلى كل شيء. في المتصفح افتح أدوات المطورين، واذهب إلى لوحة <strong>Sources</strong>، وافتح ملفك، وانقر رقم سطر، فتظهر علامة زرقاء: <dfn>نقطة توقف</dfn> (breakpoint). وفي المرة التالية التي يُنفَّذ فيها ذلك السطر تتجمد الصفحة عنده.</p>
 
@@ -4698,7 +4767,7 @@ console.error(<span class="s">&quot;هناك خطأ هنا!&quot;</span>);</pre>
 
 <p>وأثناء التوقف تستطيع أن تمرر الفأرة على أي متغير لترى قيمته، وأن تراها كلها في قسم <strong>Scope</strong>، وأن تضغط <strong>Step</strong> لتنفّذ سطراً واحداً كل مرة وتشاهد القيم تتغير. ويمكنك أيضاً أن تكتب الكلمة <code>debugger;</code> في كودك، فحين تكون أدوات المطورين مفتوحة يتوقف البرنامج عندها. وفي VS Code الأدوات نفسها لبرامج Node.js، في عرض <strong>Run and Debug</strong>.</p>
 
-<h2><span class="sec">14.6</span><span>طريقة تصلح لكل علّة</span></h2>
+<h2><span class="sec">14.6</span> <span>طريقة تصلح لكل علّة</span></h2>
 
 <p>حين يسوء شيء، قاوم الرغبة في تغيير الأشياء عشوائياً، واتبع هذه الخطوات بدلاً من ذلك:</p>
 
@@ -4788,7 +4857,7 @@ console.error(<span class="s">&quot;هناك خطأ هنا!&quot;</span>);</pre>
 <ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>Git مثل نقاط الحفظ في ألعاب الفيديو. قبل أن تجرب شيئاً خطيراً تحفظ، وإن ساء الأمر تحمّل آخر حفظ وتحاول من جديد. لكن مع Git تحتفظ بـ<em>كل</em> حفظ إلى الأبد، ومعه ملاحظة عما فعلته!</p></div></div>
 
-<h2><span class="sec">15.1</span><span>ما التحكم في الإصدارات؟</span></h2>
+<h2><span class="sec">15.1</span> <span>ما التحكم في الإصدارات؟</span></h2>
 
 <p><dfn>نظام التحكم في الإصدارات</dfn> (version control) يسجّل تغييرات الملفات عبر الزمن. وبه تستطيع أن:</p>
 <ul>
@@ -4800,7 +4869,7 @@ console.error(<span class="s">&quot;هناك خطأ هنا!&quot;</span>);</pre>
 
 <p><dfn>Git</dfn> هو نظام التحكم في الإصدارات الذي يستخدمه الجميع تقريباً اليوم. وهو مجاني، ويعمل على حاسوبك، حتى بلا إنترنت. و<dfn>GitHub</dfn> موقع يحفظ مشاريع Git على الإنترنت، لتنسخها احتياطياً وتشاركها وتعمل عليها مع غيرك. فـ Git هو الأداة، وGitHub أحد الأماكن التي تحفظ فيها ما يسجّله Git.</p>
 
-<h2><span class="sec">15.2</span><span>تجهيز Git</span></h2>
+<h2><span class="sec">15.2</span> <span>تجهيز Git</span></h2>
 
 <p>نزّل Git من <code>git-scm.com</code> وثبّته بالخيارات الافتراضية (وعلى الماك قد يكون مثبتاً أصلاً: جرّب <code>git --version</code>). ثم أخبر Git باسمك وبريدك، فهو يكتبهما على كل لقطة تحفظها:</p>
 
@@ -4811,7 +4880,7 @@ console.error(<span class="s">&quot;هناك خطأ هنا!&quot;</span>);</pre>
 
 <p>السطر الأخير يجعل المشاريع الجديدة تسمي الفرع الرئيسي <code>main</code>، وهو المعيار اليوم. وستتعرف على الفروع في القسم 15.5.</p>
 
-<h2><span class="sec">15.3</span><span>أول commit لك</span></h2>
+<h2><span class="sec">15.3</span> <span>أول commit لك</span></h2>
 
 <p>مشروع Git يُسمى <dfn>مستودعاً</dfn> (repository أو repo)، واللقطة من المشروع تُسمى <dfn>commit</dfn>. وحفظ commit خطوتان: أولاً تختار التغييرات التي تدخل فيه، ثم تحفظها مع رسالة.</p>
 
@@ -4858,7 +4927,7 @@ A  style.css
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>رسائل commit بالعربية تعمل تماماً كما ترى. لكن في الفرق الدولية والمشاريع المفتوحة تُكتب الرسائل بالإنجليزية عادة، فتعوّد عليها مبكراً إن كنت تنوي العمل مع فرق من بلدان مختلفة.</p></aside>
 
-<h2><span class="sec">15.4</span><span>التاريخ والفروق</span></h2>
+<h2><span class="sec">15.4</span> <span>التاريخ والفروق</span></h2>
 
 <p>عدّل الآن <code>index.html</code> وأضف سطراً، واسأل Git عما تغيّر:</p>
 
@@ -4896,7 +4965,7 @@ f42d185 إضافة الوصف
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p><code>git restore</code> على ملف ترمي تغييراتك غير المحفوظة فيه، ولا يستطيع Git إعادتها لأنها لم تُحفظ أصلاً. احفظ commit كثيراً، فتصير هذه الحوادث مستحيلة.</p></aside>
 
-<h2><span class="sec">15.5</span><span>الفروع</span></h2>
+<h2><span class="sec">15.5</span> <span>الفروع</span></h2>
 
 <p><dfn>الفرع</dfn> (branch) خط عمل منفصل. والفرع الرئيسي، <code>main</code>، يحمل النسخة التي تعمل. وحين تبدأ ميزة جديدة تنشئ لها فرعاً، تعمل فيه وتحفظ بحرية، وحين تجهز <dfn>تدمجها</dfn> (merge) في <code>main</code>:</p>
 
@@ -4939,7 +5008,7 @@ Fast-forward
 
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: تعارضات الدمج</p><p>إن غيّر فرعان السطر نفسه بطريقتين مختلفتين، فلن يستطيع Git أن يخمّن أي نسخة تريد، فيبلّغ عن <strong>تعارض</strong> (conflict)، ويعلّم المكان في الملف بـ <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> و<code>=======</code> و<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>. لا تقلق: عدّل الملف لتُبقي النسخة الصحيحة، واحذف العلامات، ثم <code>git add</code> و<code>git commit</code>. وVS Code يعرض التعارضات بأزرار تسهّل ذلك.</p></aside>
 
-<h2><span class="sec">15.6</span><span>GitHub: كودك على الإنترنت</span></h2>
+<h2><span class="sec">15.6</span> <span>GitHub: كودك على الإنترنت</span></h2>
 
 <p>أنشئ حساباً مجانياً على <code>github.com</code>، واضغط <strong>New repository</strong>، وأعطه اسماً، واتركه فارغاً. فيعرض لك GitHub عنوانه. اربط مستودعك المحلي به وأرسل إليه لقطاتك:</p>
 
@@ -4976,7 +5045,7 @@ node_modules/
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا تحفظ الأسرار أبداً</p><p>كل ما ترسله إلى مستودع عام يستطيع أي أحد قراءته، والبرامج الآلية تفتش GitHub بحثاً عن المفاتيح خلال دقائق. وحذف الملف في commit لاحق لا يكفي، فهو يبقى في التاريخ. وإن أرسلت سراً بالخطأ يوماً، فغيّر كلمة المرور أو المفتاح فوراً.</p></aside>
 
-<h2><span class="sec">15.7</span><span>كيف تعمل الفرق معاً</span></h2>
+<h2><span class="sec">15.7</span> <span>كيف تعمل الفرق معاً</span></h2>
 
 <p>في الفريق لا يحفظ أحد مباشرة في <code>main</code>، بل يتبع كل تغيير المسار نفسه:</p>
 
@@ -5069,7 +5138,7 @@ node_modules/
 <ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>إليك الخبر السار: إن استخدمت HTML كما علّمك الفصل 5، فمعظم العمل منجز أصلاً! الوصول ليس ميزة إضافية تضيفها في النهاية، بل عادة تبنيها في كل صفحة من البداية.</p></div></div>
 
-<h2><span class="sec">16.1</span><span>من يستفيد من الوصول</span></h2>
+<h2><span class="sec">16.1</span> <span>من يستفيد من الوصول</span></h2>
 
 <table>
 <thead><tr><th>الأشخاص الذين…</th><th>يستخدمون…</th><th>ويحتاجون…</th></tr></thead>
@@ -5084,7 +5153,7 @@ node_modules/
 
 <p>والمعيار الدولي هو <dfn>إرشادات الوصول إلى محتوى الويب</dfn> (WCAG). وكثير من الدول تفرضه بالقانون على المواقع الحكومية والشركات الكبيرة، فالكود الذي يصل إليه الجميع متطلب مهني أيضاً. لكن أفضل سبب أبسط من ذلك: إنه الصواب، ويجعل الصفحات أفضل للجميع.</p>
 
-<h2><span class="sec">16.2</span><span>العنصر المناسب للمهمة</span></h2>
+<h2><span class="sec">16.2</span> <span>العنصر المناسب للمهمة</span></h2>
 
 <p>انظر إلى هذين الزرين:</p>
 
@@ -5106,7 +5175,7 @@ node_modules/
 
 <p>وحين لا تكفي HTML وحدها تضيف خصائص <dfn>ARIA</dfn> معلومات للتقنيات المساعدة، مثل <code>aria-label</code> لتسمية زر لا يعرض إلا أيقونة. لكن القاعدة الأولى لـ ARIA: لا تستخدم ARIA إن كان عنصر HTML أصيل يؤدي المهمة. فخاصية ARIA خاطئة أسوأ من غيابها.</p>
 
-<h2><span class="sec">16.3</span><span>اختبار لوحة المفاتيح</span></h2>
+<h2><span class="sec">16.3</span> <span>اختبار لوحة المفاتيح</span></h2>
 
 <p>أبعد الفأرة وجرّب استخدام صفحتك بلوحة المفاتيح وحدها. <code>Tab</code> تتقدم بين الروابط والأزرار والحقول، و<code>Shift</code> + <code>Tab</code> ترجع، و<code>Enter</code> تتبع الروابط وتضغط الأزرار، و<code>Space</code> تضغط الأزرار وتعلّم المربعات. ويجب أن يصح أمران:</p>
 
@@ -5159,7 +5228,7 @@ node_modules/
 <li><code>prefers-reduced-motion</code> استعلام وسائط يصح حين يطلب المستخدم من نظامه حركة أقل، فاستخدمه لإيقاف الحركات.</li>
 </ul>
 
-<h2><span class="sec">16.4</span><span>نصوص للصور</span></h2>
+<h2><span class="sec">16.4</span> <span>نصوص للصور</span></h2>
 
 <p>تعرفت على <code>alt</code> في الفصل 5، وهذه طريقة كتابتها جيداً:</p>
 
@@ -5175,7 +5244,7 @@ node_modules/
 
 <p>ولا تبدأ بـ «صورة لـ»؛ فقارئات الشاشة تقول أصلاً إنها صورة. صِف <em>الغرض</em> لا كل بكسل.</p>
 
-<h2><span class="sec">16.5</span><span>نماذج يصل إليها الجميع</span></h2>
+<h2><span class="sec">16.5</span> <span>نماذج يصل إليها الجميع</span></h2>
 
 <div class="listing" dir="ltr"><div class="listing-title">form.html</div><pre class="code">  ...
   <span class="k">&lt;body</span><span class="k">&gt;</span>
@@ -5204,7 +5273,7 @@ node_modules/
 <li><code>autocomplete</code> تتيح للمتصفحات ملء القيم المعروفة، وهي مساعدة كبيرة لمن تصعب عليهم الكتابة.</li>
 </ul>
 
-<h2><span class="sec">16.6</span><span>اللون والتباين</span></h2>
+<h2><span class="sec">16.6</span> <span>اللون والتباين</span></h2>
 
 <p>تطلب WCAG <dfn>نسبة تباين</dfn> لا تقل عن 4.5 إلى 1 بين النص العادي وخلفيته، و3 إلى 1 للنص الكبير. والنسبة من 1 (اللون نفسه) إلى 21 (أسود على أبيض). ورأيت أدوات المطورين تعرضها في الفصل 6. والآن، تمريناً أخيراً على JavaScript، لنحسبها بأنفسنا بالمعادلة الرسمية:</p>
 
@@ -5241,7 +5310,7 @@ node_modules/
 
 <aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا تعتمد على اللون وحده</p><p>نحو رجل من كل اثني عشر لديه شكل من عمى الألوان. فالنموذج الذي يعرض الأخطاء بالأحمر وحده، أو الرسم البياني الذي يميز خطوطه باللون وحده، يتركهم يخمّنون. أضف دائماً نصاً أو أيقونة أو نقشاً.</p></aside>
 
-<h2><span class="sec">16.7</span><span>فحص صفحاتك</span></h2>
+<h2><span class="sec">16.7</span> <span>فحص صفحاتك</span></h2>
 
 <p>الأدوات الآلية تجد مشكلات كثيرة بسرعة:</p>
 <ul>
@@ -5328,7 +5397,7 @@ node_modules/
 <circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>هذا فصلي المفضل! في آخره لن تكون قد تعلمت البرمجة فقط، بل <em>أطلقت</em> شيئاً: تطبيقاً حقيقياً حياً على الويب، بنيته أنت من لا شيء. هيا بنا!</p></div></div>
 
-<h2><span class="sec">17.1</span><span>خطط أولاً</span></h2>
+<h2><span class="sec">17.1</span> <span>خطط أولاً</span></h2>
 
 <p>علّمك الفصل 2 أن تفكر قبل أن تكتب. والمحترفون يبدؤون كل مشروع بالطريقة نفسها: يكتبون ما يجب أن يفعله التطبيق، ويرسمون شكله، ويقررون البيانات التي يحتاجها.</p>
 
@@ -5374,7 +5443,7 @@ node_modules/
 
 <p>وكل شيء آخر على الشاشة، القائمة والعدّاد والتصفية المميزة، يُحسب من هذه البيانات. وهذا القرار سيجعل الكود بسيطاً.</p>
 
-<h2><span class="sec">17.2</span><span>HTML</span></h2>
+<h2><span class="sec">17.2</span> <span>HTML</span></h2>
 
 <p>أنشئ مجلداً اسمه <code>my-tasks</code> فيه ثلاثة ملفات. HTML تحمل البنية، وتكاد تكون فارغة حيث ستأتي المهام:</p>
 
@@ -5417,7 +5486,7 @@ node_modules/
 
 <p>لاحظ تفاصيل الوصول من الفصل 16: <code>&lt;form&gt;</code> حقيقي ليعمل Enter، وتسمية لخانة الإدخال (مخفية بصرياً، لأن النص المؤقت والزر يوضحان الغرض للمبصرين)، وعناصر <code>&lt;button&gt;</code> حقيقية، و<code>aria-pressed</code> لتعرف قارئات الشاشة أي تصفية مفعّلة، و<code>aria-live</code> ليُعلن العدد حين يتغير.</p>
 
-<h2><span class="sec">17.3</span><span>CSS</span></h2>
+<h2><span class="sec">17.3</span> <span>CSS</span></h2>
 
 <p>ملف التنسيق يستخدم الخصائص المخصصة وFlexbox والزوايا المستديرة والتركيز الظاهر، كلها من الفصلين 6 و7. ولا يستخدم أي جهة فعلية، فالملف نفسه ينسّق النسخة العربية والإنجليزية. وهو في مستودع كود الكتاب باسم <code>style.css</code>، وهذه أطرف أجزائه:</p>
 
@@ -5439,7 +5508,7 @@ li.done label {
 
 <p>تنسيق التصفية المفعّلة بـ <code>[aria-pressed="true"]</code> حيلة احترافية أنيقة: الشكل ومعلومات الوصول لا يمكن أن يختلفا، لأنهما الخاصية نفسها.</p>
 
-<h2><span class="sec">17.4</span><span>JavaScript</span></h2>
+<h2><span class="sec">17.4</span> <span>JavaScript</span></h2>
 
 <p>البرنامج يتبع نمط الفصل 12: البيانات، والتغييرات، والعرض، والأحداث. اقرأه قسماً قسماً:</p>
 
@@ -5587,7 +5656,7 @@ render();</pre></div>
 
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b1-ch17-ar-index.html-560-bdda88.png" alt=""><figcaption><b>الشكل 17.2:</b> التطبيق مكتملاً بثلاث مهام، إحداها منجزة.</figcaption></figure>
 
-<h2><span class="sec">17.5</span><span>اختبر كالمحترفين</span></h2>
+<h2><span class="sec">17.5</span> <span>اختبر كالمحترفين</span></h2>
 
 <p>قبل النشر مرّ على قائمة فحص، فالمحترفون يفعلون هذا قبل كل إصدار:</p>
 
@@ -5604,7 +5673,7 @@ render();</pre></div>
 </tbody>
 </table>
 
-<h2><span class="sec">17.6</span><span>انشره بـ GitHub Pages</span></h2>
+<h2><span class="sec">17.6</span> <span>انشره بـ GitHub Pages</span></h2>
 
 <p><dfn>GitHub Pages</dfn> خدمة مجانية تحوّل مستودع GitHub إلى موقع. ولأن تطبيقك HTML وCSS وJavaScript فقط، بلا كود خادم، فيمكن استضافته عليها في دقائق:</p>
 
@@ -5635,7 +5704,7 @@ render();</pre></div>
 <circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>أرسل الرابط إلى صديق واطلب منه أن يضيف مهمة. أن تشاهد شخصاً آخر يستخدم شيئاً صنعته من أجمل المشاعر في البرمجة. لقد فعلتها!</p></div></div>
 
-<h2><span class="sec">17.7</span><span>أفكار لتستمر</span></h2>
+<h2><span class="sec">17.7</span> <span>أفكار لتستمر</span></h2>
 
 <p>أفضل طريقة لمواصلة التعلم أن تواصل البناء. وهذه تحسينات مرتبة تقريباً من السهل إلى الصعب:</p>
 <ul>
@@ -5673,5 +5742,363 @@ render();</pre></div>
 <p class="next-title">في الفصل 18</p>
 <p>لقد بنيت تطبيقاً حقيقياً ونشرته. والفصل الأخير من هذا الكتاب ينظر إلى الأمام: المسارات التي تستطيع أن تسلكها من هنا، الواجهات أو الخوادم أو البرمجة الشاملة أو الموبايل، وكيف تواصل النمو حتى تبلغ مستوى الخبير.</p>
 </div>
+</section>
+<section class="chapter" style="page: ch18" data-chapter="18" data-code="b1/ch18/ar">
+<div class="opener"><span class="opener-num">18</span><p class="chapter-kicker">الفصل 18</p><h1>اختيار مسارك</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستفعل في هذا الفصل ما يلي</p>
+<ul>
+<li>تنظر إلى كل ما تعلمته</li>
+<li>تتعرف على المسارات الأربعة الرئيسية في تطوير البرمجيات</li>
+<li>تعرف المعنى الحقيقي لـ «مبتدئ» و«متوسط» و«خبير»</li>
+<li>تتعلم العادات التي تحوّل المبتدئين إلى محترفين</li>
+<li>تخطط لخطواتك التالية ومعرض أعمالك ووظيفتك الأولى</li>
+</ul>
+</div>
+
+<p class="lead">تذكّر الفصل الأول، حين كان البرنامج لغزاً والطرفية نافذة سوداء غريبة. ومنذ ذلك الحين كتبت HTML وCSS وJavaScript، وبنيت متجراً، وقرأت رسائل الخطأ بهدوء، واستخدمت Git كالمحترفين، وصنعت صفحات للجميع، ونشرت تطبيقاً حقيقياً على الإنترنت. وهذا ليس شيئاً صغيراً؛ فكثيرون ممن يبدؤون تعلم البرمجة لا يصلون إلى هنا. وأنت وصلت.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أنا فخور بك جداً! حين التقينا لم تكن تعرف ما المتغير، والآن تبني تطبيقات الويب وتنشرها. وقبل أن نودّع بعضنا، لننظر إلى أين يمكنك أن تذهب من هنا.</p></div></div>
+
+<h2><span class="sec">18.1</span> <span>كم قطعت من الطريق</span></h2>
+
+<table>
+<thead><tr><th>الجزء</th><th>تعلمت أن</th></tr></thead>
+<tbody>
+<tr><td>1. التفكير كمبرمج</td><td>تفهم كيف ينفّذ الحاسوب الكود، وتخطط الخوارزميات، وتستخدم أدوات المحترفين</td></tr>
+<tr><td>2. البناء للويب</td><td>تشرح كيف يعمل الويب، وتبني الصفحات بـ HTML، وتنسقها بـ CSS، وتصنع تخطيطات متجاوبة</td></tr>
+<tr><td>3. JavaScript</td><td>تستخدم القيم والقرارات والحلقات والدوال والكائنات، وتغيّر الصفحات بـ DOM، وتحمّل البيانات بـ fetch، وتتتبع الأخطاء بهدوء</td></tr>
+<tr><td>4. العمل كمحترف</td><td>تستخدم Git وGitHub، وتبني صفحات يصل إليها الجميع، وتخطط لتطبيق كامل وتختبره وتنشره</td></tr>
+</tbody>
+</table>
+
+<p>هذه أسس كل مسار في تطوير البرمجيات. فمهما اخترت بعد ذلك ستستخدمها كلها كل يوم.</p>
+
+<h2><span class="sec">18.2</span> <span>أربعة مسارات</span></h2>
+
+<figure>
+<svg viewBox="0 0 520 220" role="img" aria-label="الكتاب الأول يقود إلى أربعة مسارات: الواجهات والخوادم والبرمجة الشاملة والموبايل">
+<defs><marker id="p18" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<rect x="190" y="8" width="140" height="44" rx="12" fill="#4338ca"/>
+<g font-family="Cairo" text-anchor="middle"><text x="260" y="28" fill="#fff" font-size="13" font-weight="700">الكتاب الأول</text><text x="260" y="45" fill="#e0e7ff" font-size="11">البرمجة من الصفر</text></g>
+<g stroke="#4338ca" stroke-width="2" fill="none" marker-end="url(#p18)"><path d="M300,52 L445,110"/><path d="M275,52 L315,110"/><path d="M245,52 L205,110"/><path d="M220,52 L75,110"/></g>
+<g font-family="Cairo" text-anchor="middle" font-size="12.5">
+<rect x="380" y="114" width="130" height="58" rx="12" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="445" y="135" fill="#0f766e" font-weight="700">الواجهات</text><text x="445" y="152" fill="#0f766e" font-size="10.5">الكتاب 2: React أو Vue</text><text x="445" y="167" fill="#0f766e" font-size="10.5">ما يراه الناس</text>
+<rect x="250" y="114" width="130" height="58" rx="12" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="315" y="135" fill="#ea580c" font-weight="700">الخوادم</text><text x="315" y="152" fill="#ea580c" font-size="10.5">الكتاب 3: Node.js أو Laravel</text><text x="315" y="167" fill="#ea580c" font-size="10.5">الخوادم والبيانات</text>
+<rect x="140" y="114" width="130" height="58" rx="12" fill="#f5f0ff" stroke="#7c3aed" stroke-width="2"/><text x="205" y="135" fill="#7c3aed" font-weight="700">البرمجة الشاملة</text><text x="205" y="152" fill="#7c3aed" font-size="10.5">الكتاب 4 بعد 2 و3</text><text x="205" y="167" fill="#7c3aed" font-size="10.5">النظام كله</text>
+<rect x="10" y="114" width="130" height="58" rx="12" fill="#fdf0f6" stroke="#db2777" stroke-width="2"/><text x="75" y="135" fill="#db2777" font-weight="700">الموبايل</text><text x="75" y="152" fill="#db2777" font-size="10.5">الكتابان 5 و6: Flutter</text><text x="75" y="167" fill="#db2777" font-size="10.5">تطبيقات الهواتف</text>
+</g>
+<text x="260" y="205" font-family="Cairo" font-size="12" fill="#5b5873" text-anchor="middle">كل مسار يقود، بالممارسة، إلى مستوى الخبير.</text>
+</svg>
+<figcaption><b>الشكل 18.1:</b> مسارات هذه السلسلة، وتستطيع أن تبدأ أياً منها الآن.</figcaption>
+</figure>
+
+<h3>مطور الواجهات (Frontend)</h3>
+<p>يبني ما يراه الناس ويلمسونه: صفحات المواقع وتطبيقات الويب وأزرارها ونماذجها وحركاتها. ويهتم بالتصميم والسرعة والوصول وكل تفصيل في تجربة المستخدم. ويعمل يومياً بـ HTML وCSS وJavaScript وTypeScript، ومعها إطار مثل <strong>React</strong> أو <strong>Vue</strong>. <em>التالي: الكتاب الثاني، هندسة الواجهات باحتراف، بإصدار React أو إصدار Vue.</em></p>
+
+<h3>مطور الخوادم (Backend)</h3>
+<p>يبني ما يحدث خلف الكواليس: الخوادم وقواعد البيانات والواجهات البرمجية التي تحفظ البيانات، وتتحقق من كلمات المرور، وتستقبل المدفوعات، وترسل الرسائل. ويهتم بالصحة والأمان والأداء تحت الضغط الكبير. ويعمل بلغة خادم مثل JavaScript مع <strong>Node.js</strong> أو PHP مع <strong>Laravel</strong>، ومع قواعد بيانات SQL. <em>التالي: الكتاب الثالث، هندسة الخوادم باحتراف، بإصدار Node.js أو إصدار Laravel.</em></p>
+
+<h3>المطور الشامل (Full stack)</h3>
+<p>يعمل على الجانبين ويصل بينهما: من قاعدة البيانات إلى الزر، ومن الفكرة إلى المنتج العامل. وهو قيّم بشكل خاص في الفرق الصغيرة والشركات الناشئة. <em>التالي: الكتابان الثاني والثالث، ثم الكتاب الرابع، هندسة البرمجيات الشاملة باحتراف.</em></p>
+
+<h3>مطور الموبايل</h3>
+<p>يبني تطبيقات الهواتف والأجهزة اللوحية. ومع <strong>Flutter</strong> يعمل كود واحد بلغة Dart على أندرويد والآيفون معاً. ويهتم بسلاسة الحركة وعمر البطارية والعمل بلا اتصال والنشر في متاجر التطبيقات. <em>التالي: الكتاب الخامس، Flutter من الصفر، ثم السادس، احتراف تطبيقات الموبايل بـ Flutter.</em></p>
+
+<h2><span class="sec">18.3</span> <span>كيف تختار</span></h2>
+
+<p>لا يوجد اختيار خاطئ؛ فالمهارات تنتقل بين كل المسارات، وكثير من المطورين يغيّرون مسارهم خلال حياتهم المهنية. وهذه الأسئلة قد تساعدك:</p>
+
+<table>
+<thead><tr><th>إن استمتعت أكثر بـ…</th><th>فقد تحب…</th></tr></thead>
+<tbody>
+<tr><td>الفصول 5 إلى 7 و12: جعل الصفحات جميلة وحية</td><td>الواجهات</td></tr>
+<tr><td>الفصول 4 و11 و13: الخوادم والبيانات وكيف تتصل الأشياء</td><td>الخوادم</td></tr>
+<tr><td>الفصل 17: بناء الشيء كله من الفكرة إلى الإطلاق</td><td>البرمجة الشاملة</td></tr>
+<tr><td>استخدام التطبيقات على هاتفك أكثر من المواقع</td><td>الموبايل</td></tr>
+</tbody>
+</table>
+
+<p>وانظر أيضاً إلى الوظائف المعلنة حيث تعيش أو حيث تريد أن تعمل: أي تقنيات تطلب؟ ففي كثير من الأسواق العربية مثلاً يكثر الطلب على Laravel وFlutter. وإن بقيت حائراً فاختر الواجهات: فهي تُبنى مباشرة على كل ما في هذا الكتاب، وترى نتائجها فوراً.</p>
+
+<h2><span class="sec">18.4</span> <span>المعنى الحقيقي لـ «خبير»</span></h2>
+
+<p>اسم هذه السلسلة «من الصفر إلى الاحتراف». والمطور الخبير (Senior) ليس مجرد من كتب الكود سنوات طويلة، أو يعرف حيلاً أكثر. الفرق في حجم المشكلات التي يُؤتمن عليها:</p>
+
+<table>
+<thead><tr><th></th><th>مبتدئ (Junior)</th><th>متوسط (Mid-level)</th><th>خبير (Senior)</th></tr></thead>
+<tbody>
+<tr><td>عمله المعتاد</td><td>مهمة محددة بوضوح</td><td>ميزة كاملة</td><td>نظام كامل، أو مشكلة صعبة غير واضحة</td></tr>
+<tr><td>يحتاج</td><td>توجيهاً ومراجعة للكود</td><td>نصيحة أحياناً</td><td>يوجّه غيره ويراجع كودهم</td></tr>
+<tr><td>يفكر في</td><td>أن يعمل الشيء</td><td>أن يكون نظيفاً ومختبراً</td><td>الموازنات: الكلفة والمخاطر والفريق والمستقبل</td></tr>
+<tr><td>أثره</td><td>كوده هو</td><td>ميزته</td><td>عمل الفريق كله</td></tr>
+</tbody>
+</table>
+
+<p>والخبرة تأتي من مشاريع حقيقية وأخطاء حقيقية ومستخدمين حقيقيين، ومعها العادات المقصودة التي في القسم التالي. وكتب الاحتراف في هذه السلسلة تعلّم الجانب التقني، أما العادات فعليك أنت.</p>
+
+<h2><span class="sec">18.5</span> <span>عادات تصنع المحترفين</span></h2>
+
+<ul>
+<li><strong>ابنِ كل أسبوع.</strong> القراءة تعلمك ما الموجود، والبناء يعلمك كيف تستخدمه. والمشاريع الصغيرة المكتملة أفضل من الكبيرة المهجورة.</li>
+<li><strong>اقرأ كود غيرك.</strong> المشاريع المفتوحة المصدر على GitHub مكتبة مجانية لطريقة كتابة المحترفين.</li>
+<li><strong>اعرض كودك للمراجعة</strong>، وراجع كود غيرك. انضم إلى مجموعة دراسة أو مجتمع على الإنترنت.</li>
+<li><strong>اشرح ما تتعلمه.</strong> اكتب منشورات قصيرة، أو علّم صديقاً. فالتعليم أسرع طريقة لتكتشف ما لم تفهمه حقاً. والمحتوى التقني العربي ما زال قليلاً، فكتابتك بالعربية تفيد غيرك كثيراً.</li>
+<li><strong>تدرّب على قراءة التوثيق.</strong> MDN اليوم، وتوثيق كل أداة رسمياً غداً. وتحسين إنجليزيتك التقنية استثمار ممتاز.</li>
+<li><strong>حافظ على الأساسيات.</strong> الأطر تتغير كل بضع سنوات، أما HTTP وHTML وCSS وJavaScript والتفكير الواضح فتبقى.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>عن مساعدي الذكاء الاصطناعي</p><p>أدوات الذكاء الاصطناعي صارت تكتب كوداً كثيراً. وهذا يجعل الفهم <em>أثمن</em> لا أرخص: فلا بد من أحد يقرر ما يُبنى، ويتأكد أن الكود صحيح وآمن، ويصلحه حين يتعطل، ويتحمل مسؤوليته. استخدم الذكاء الاصطناعي مساعداً سريعاً، وواصل بناء فهمك. فالمطورون الذين ينجحون هم الذين يستطيعون العمل بدونه.</p></aside>
+
+<h2><span class="sec">18.6</span> <span>معرض أعمالك ووظيفتك الأولى</span></h2>
+
+<p>أصحاب العمل يريدون أن يروا ما تستطيع فعله. فابدأ ببناء <dfn>معرض أعمال</dfn> (portfolio) من الآن:</p>
+<ol>
+<li>ضع أفضل مشاريعك على GitHub، ولكل منها ملف README قصير يشرح ما يفعله، مع صورة ورابط حي.</li>
+<li>انشر صفحتك التعريفية من الفصول 5 إلى 7 موقعاً شخصياً لك، فيه روابط مشاريعك.</li>
+<li>اجعل هدفك ثلاثة مشاريع متينة تُظهر مهارات مختلفة، لا عشرة غير مكتملة. وتطبيق المهام من الفصل 17، محسّناً بتمارينه، بداية رائعة.</li>
+<li>اجعل كل مشروع متجاوباً ويصل إليه الجميع، وقليل من المبتدئين يفعلون ذلك، فيميزك هذا.</li>
+<li>اجعل مشاريعك بالعربية والإنجليزية إن استطعت؛ فهذه ميزة نادرة يقدّرها أصحاب العمل في منطقتنا وخارجها.</li>
+</ol>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: ترفّق بنفسك</p><p>كل المطورين تقريباً، ومنهم ذوو الخبرة الطويلة، يشعرون أحياناً أن غيرهم يعرف أكثر. ولهذا الشعور اسم: <strong>متلازمة المحتال</strong> (impostor syndrome). إنه طبيعي، وليس صحيحاً. خذ استراحات، ونم جيداً، ولا تقارن نفسك إلا بنفسك قبل شهر. تعلّم البرمجة ماراثون لا سباق سرعة.</p></aside>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>صارت لديك أسس كل المسارات: كيف يعمل الحاسوب والويب، وHTML وCSS وJavaScript، وتتبّع الأخطاء، وGit، والوصول، والنشر.</li>
+<li>المسارات الأربعة الرئيسية: <strong>الواجهات</strong> و<strong>الخوادم</strong> و<strong>البرمجة الشاملة</strong> و<strong>الموبايل</strong>، ولكل منها كتب في هذه السلسلة.</li>
+<li>اختر بما استمتعت به أكثر وبالوظائف من حولك، فالمهارات تنتقل بين المسارات.</li>
+<li><strong>الخبير</strong> من يُؤتمن على مشكلات أكبر وأقل وضوحاً، ويجعل الفريق كله أفضل.</li>
+<li>ابنِ كل أسبوع، واقرأ الكود وراجعه، واشرح ما تتعلمه، وحافظ على الأساسيات.</li>
+<li>ابدأ <strong>معرض أعمالك</strong> الآن: مشاريع قليلة مكتملة ومنشورة يصل إليها الجميع.</li>
+</ul>
+
+<h2 class="plain-h">تمارين أخيرة</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب في ثلاث جمل أي مسار ستسلكه بعد هذا الكتاب، ولماذا.</li>
+<li><span class="level">سهل</span> اكتب ملف README لتطبيق المهام فيه صورة ورابط حي وقائمة بالميزات.</li>
+<li><span class="level medium">متوسط</span> ابحث عن ثلاثة إعلانات وظائف لمطورين مبتدئين في المدينة أو البلد الذي تريد العمل فيه. اكتب المهارات التي تطلبها، وعلّم ما تملكه منها.</li>
+<li><span class="level medium">متوسط</span> ابحث عن مشروع صغير مفتوح المصدر على GitHub يستخدم HTML وCSS وJavaScript. اقرأ كوده واكتب ثلاثة أشياء تعلمتها منه.</li>
+<li><span class="level hard">تحدٍّ</span> خطط وابنِ وانشر تطبيقاً جديداً من فكرتك أنت بطريقة الفصل 17، ثم أرسل رابطه إلى شخص لم يرَ عملك من قبل.</li>
+</ol>
+
+<div class="next">
+<p class="next-title">وداعاً من بِت</p>
+<p>هنا تنتهي رحلتنا معاً، وتبدأ رحلتك أنت حقاً. وتذكّر: كل خبير كان يوماً مبتدئاً لم يستسلم. واصل البناء، وواصل السؤال، واستمتع بالطريق. سأنتظرك في الكتاب القادم!</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="19" data-code="b1/answers/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">جرّب كل تمرين بنفسك قبل أن تنظر هنا. وإن اختلف جوابك عن هذا فليس بالضرورة خاطئاً: فلمعظم مسائل البرمجة أكثر من حل جيد. فإن عمل حلك مع الحالات العادية وغير المعتادة، واستطعت أن تشرحه، فهو جواب جيد. والكود الكامل لكل حل في مستودع الكود الخاص بالكتاب.</p>
+
+<h2 class="plain-h">الفصل 1</h2>
+<ol class="exercises">
+<li>المعالج، والذاكرة، والتخزين، والمدخلات والمخرجات. مُدخل: لوحة المفاتيح أو الفأرة أو شاشة اللمس أو الميكروفون. مُخرج: الشاشة أو السماعات أو الطابعة.</li>
+<li>9 بالثنائي <code>1001</code> (8 + 1).</li>
+<li>يعتمد على الحرف: مثلاً <code>"س".charCodeAt(0)</code> تساوي 1587، و<code>"S".charCodeAt(0)</code> تساوي 83.</li>
+<li><code>15</code>، ثم <code>105</code> (نصان موصولان)، ثم النص <code>10 + 5</code> (فكل ما بين علامتي التنصيص يُطبع كما هو).</li>
+<li>الجواب الجيد يقول بالضبط كم من الماء، وأي كوب، ومتى يتوقف الغلي، وكم ننتظر، وماذا نفعل إن نقص شيء. والكلمات مثل «قليل» و«بعض» هي الخطوات التي سيسيء الروبوت فهمها.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 2</h2>
+<ol class="exercises">
+<li>الخوارزمية نفسها مع «أصغر من» بدل «أكبر من»، ومتغير اسمه الأصغر.</li>
+<li>البداية ← هل إشارة المشاة خضراء؟ ← لا: انتظر واسأل مرة أخرى؛ نعم: انظر في الاتجاهين ← هل الطريق خالٍ؟ ← لا: انتظر؛ نعم: اعبر ← النهاية.</li>
+<li>اجعل العدد = 0؛ لكل بطاقة، إن كانت أكبر من 5 فأضف 1 إلى العدد؛ اعرض العدد. والتتبع يعطي 1 (7)، ثم 1، ثم 2 (12)، ثم 2، ثم 3 (9).</li>
+<li>10 خطوات لألف اسم، لأن 2<sup>10</sup> = 1024.</li>
+<li>احفظ الأكبر والثاني. لكل بطاقة: إن كانت أكبر من الأكبر صار الثاني هو الأكبر وصار الأكبر هو البطاقة؛ وإلا فإن كانت أكبر من الثاني صار الثاني هو البطاقة. مع 7 و3 و12 و5 و9 تحصل على 12 و9، ومع 12 و12 و4 تحصل على 12 و12 (أو 12 و4 إن قررت أن الثاني يجب أن يختلف؛ قرّر وصرّح بقرارك).</li>
+</ol>
+
+<h2 class="plain-h">الفصل 3</h2>
+<ol class="exercises">
+<li><code>cd code-from-zero</code> ثم <code>mkdir chapter-03</code> ثم <code>cd chapter-03</code> ثم <code>pwd</code>.</li>
+<li>ثلاثة أسطر <code>console.log</code> بنصوصك، وتشغّله بـ <code>node me.js</code>.</li>
+<li>منها: <code>console.error</code> و<code>console.warn</code> و<code>console.table</code> و<code>console.info</code> و<code>console.count</code> و<code>console.time</code>.</li>
+<li>يعتمد على الموقع؛ ومواقع الأخبار الكبيرة ترسل غالباً أكثر من مئة طلب، وأكبر الملفات عادة صور أو فيديو أو ملفات JavaScript.</li>
+<li><code>mkdir practice</code> ثم <code>code practice/test.js</code>، واكتب <code>console.log(365 * 24);</code> وشغّل <code>node practice/test.js</code>. والرقم 8760 عدد ساعات السنة غير الكبيسة.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 4</h2>
+<ol class="exercises">
+<li>البروتوكول <code>https:</code>، والمضيف <code>www.example.com</code>، والمسار <code>/search</code>، والاستعلام <code>?q=javascript&amp;page=2</code>.</li>
+<li>رمز الحالة <code>404</code>.</li>
+<li>غيّر الجسم إلى <code>"&lt;h1&gt;اسمك&lt;/h1&gt;&lt;p&gt;نبذة عنك&lt;/p&gt;"</code>.</li>
+<li>تعرض المخرجات <code>404 Not Found</code>، والمتصفح ما زال يعرض الصفحة التي أرسلتها: فرمز الحالة يصف النتيجة ولا يمنع الجسم.</li>
+<li><pre class="plain">if (request.url === "/about") {
+  response.end("&lt;h1&gt;من أنا&lt;/h1&gt;");
+} else {
+  response.end("&lt;h1&gt;مرحباً من خادمي!&lt;/h1&gt;");
+}</pre></li>
+</ol>
+
+<h2 class="plain-h">الفصل 5</h2>
+<ol class="exercises">
+<li>هيكل الصفحة ومعه <code>&lt;h1&gt;</code> و<code>&lt;ul&gt;</code> فيها خمسة <code>&lt;li&gt;</code>، ولا تنسَ <code>lang="ar" dir="rtl"</code>.</li>
+<li><code>&lt;a href="profile.html"&gt;صفحتي&lt;/a&gt;</code> في صفحة، و<code>&lt;a href="favourites.html"&gt;مفضلاتي&lt;/a&gt;</code> في الأخرى.</li>
+<li><code>&lt;h1&gt;</code>، و<code>&lt;img&gt;</code> بـ <code>alt</code> واصف، و<code>&lt;ul&gt;</code> للمكونات، و<code>&lt;ol&gt;</code> للخطوات.</li>
+<li>يعتمد على الموقع؛ فكثير من المواقع الحديثة تستخدم العناصر الدلالية، والقديمة كثيراً ما تستخدم <code>&lt;div&gt;</code> بأصناف فقط.</li>
+<li>ثلاثة ملفات تشترك في <code>&lt;header&gt;</code> و<code>&lt;nav&gt;</code> نفسهما، و<code>contact.html</code> فيه <code>&lt;form&gt;</code> بتسميات مثل <code>form.html</code>.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 6</h2>
+<ol class="exercises">
+<li><code>footer { background-color: #1e1b2e; color: white; padding: 16px; }</code></li>
+<li><code>#contact a { font-weight: 700; } #contact a:hover { text-decoration: none; }</code></li>
+<li><code>li.highlight { background-color: #0f766e; }</code></li>
+<li>أي ملف تنسيق يعرّف متغيراً في <code>:root</code> ويستخدمه بـ <code>var()</code>.</li>
+<li>غالباً: حشوة أصغر في الترويسة، و<code>h1</code> أصغر، وحشوة أقل داخل البطاقات، والتأكد ألا يزيد أي عرض ثابت على عرض الشاشة.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 7</h2>
+<ol class="exercises">
+<li><code>.buttons { display: flex; gap: 12px; justify-content: center; }</code></li>
+<li><code>minmax(200px, 1fr)</code>. بنافذة عرضها 800 بكسل تحصل على ثلاثة أعمدة، وبـ 500 على عمودين، وتحت 400 على عمود واحد.</li>
+<li><code>.card { display: flex; gap: 16px; } @media (max-width: 500px) { .card { flex-direction: column; } }</code></li>
+<li>أضف <code>&lt;aside class="ads"&gt;</code>، واستخدم <code>"head head" "side main" "side ads" "foot foot"</code> للشاشات العريضة، و<code>"head" "main" "side" "foot" "ads"</code> داخل استعلام الوسائط.</li>
+<li>شبكة بمناطق مسماة للترويسة والخبر الرئيسي والأخبار الجانبية والتذييل، واستعلامات وسائط عند 768 و1024 بكسل تقريباً.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 8</h2>
+<ol class="exercises">
+<li><pre class="plain">const temperature = 22;
+if (temperature &lt; 15) {
+  console.log("بارد");
+} else if (temperature &lt; 30) {
+  console.log("دافئ");
+} else {
+  console.log("حار");
+}</pre></li>
+<li><code>1</code> و<code>"73"</code> و<code>false</code> و<code>false</code>.</li>
+<li>افحص <code>n % 2 === 0</code> للزوجي، ثم <code>n &gt; 0</code> أو <code>n &lt; 0</code> أو الصفر في <code>if</code> ثانية.</li>
+<li>كل <code>case</code> تصير <code>if (size === "S")</code> ثم <code>else if (size === "M")</code> وهكذا. ومعظم الناس يجدون <code>switch</code> أوضح للقيم المحددة، و<code>if</code> أوضح للنطاقات.</li>
+<li>بعد القواعد الأخرى: <code>if (day === "الجمعة") { price = price + 2; } if (price &gt; 10) { price = 10; }</code></li>
+</ol>
+
+<h2 class="plain-h">الفصل 9</h2>
+<ol class="exercises">
+<li><code>for (let i = 1; i &lt;= 10; i++) { console.log(`7 × ${i} = ${7 * i}`); }</code></li>
+<li>ابدأ <code>highest</code> و<code>lowest</code> بأول درجة حرارة، وفي <code>for…of</code> حدّث كلاً منهما حين تجد درجة أكبر أو أصغر.</li>
+<li><code>const long = []; for (const w of words) { if (w.length &gt; 2) long.push(w); } console.log(long.join(" "));</code> تعطي <code>البرمجة ممتع مفيد</code>.</li>
+<li>50.</li>
+<li>اطبع الرسالة داخل حالة <code>age &gt;= 65</code>، وبعد الحلقة اقسم <code>total</code> على <code>queue.length</code>، واحتفظ بمجمِّع <code>highest</code> لأغلى تذكرة.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 10</h2>
+<ol class="exercises">
+<li><code>function isEven(n) { return n % 2 === 0; }</code> تعطي <code>true</code> و<code>false</code> و<code>true</code>.</li>
+<li><code>function celsiusToFahrenheit(c) { return c * 9 / 5 + 32; }</code>، و37 درجة مئوية تساوي 98.6 فهرنهايت.</li>
+<li>خوارزمية أكبر بطاقة داخل دالة، والطريقة الجاهزة <code>Math.max(...numbers)</code>.</li>
+<li><code>prices.filter((p) =&gt; p &gt; 10).map((p) =&gt; (p * 0.8).toFixed(2))</code></li>
+<li><code>function applyNightShow(price, hour) { return hour &gt;= 22 ? Math.max(price - 1, 0) : price; }</code>، وتستدعيها على نتيجة <code>applyMemberDay</code>.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 11</h2>
+<ol class="exercises">
+<li>أي كائن بخمس خصائص، مثل <code>title</code> و<code>year</code> و<code>director</code> و<code>rating</code> ومصفوفة <code>actors</code>.</li>
+<li><code>products.filter((p) =&gt; p.price &lt; 10).map((p) =&gt; p.name)</code></li>
+<li><code>function removeFromCart(id) { const i = cart.findIndex((item) =&gt; item.productId === id); if (i !== -1) cart.splice(i, 1); }</code></li>
+<li><code>return product.price * (1 - (product.discount ?? 0)) * item.quantity;</code> (أو <code>|| 0</code>).</li>
+<li>حوّل كل عنصر في السلة إلى سطر نصي بـ <code>map</code>، وأضف سطر المجموع، ثم <code>join("\n")</code>.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 12</h2>
+<ol class="exercises">
+<li>زر ثالث معالجه يفعل <code>if (count &gt; 0) count--;</code> ثم <code>show()</code>.</li>
+<li><code>button.addEventListener("click", () =&gt; document.body.classList.toggle("dark"));</code> وCSS لـ <code>body.dark</code>.</li>
+<li>استمع إلى <code>input</code>، واجعل النص <code>`${area.value.length} / 280`</code>، وبدّل صنفاً حين يتجاوز الطول 280.</li>
+<li>في <code>renderCart</code> أضف لكل سطر زراً يحذف معالجه العنصر من <code>cart</code> ثم يستدعي <code>renderCart()</code>.</li>
+<li>احفظ نص البحث في متغير، وفي <code>renderProducts</code> مرّ على <code>catalog.filter((p) =&gt; p.name.includes(text))</code>، وأعد الرسم مع كل حدث <code>input</code>.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 13</h2>
+<ol class="exercises">
+<li><code>for (const n of [3, 2, 1]) { console.log(n); await wait(1000); } console.log("انطلق!");</code> داخل دالة <code>async</code>.</li>
+<li>أضف <code>else if (request.url === "/api/hello")</code> ترسل <code>JSON.stringify({ message: "أهلاً!" })</code>.</li>
+<li>اعرض زراً في كتلة <code>catch</code>، ومعالج نقرته يستدعي <code>start()</code>.</li>
+<li><code>const [a, b] = await Promise.all([getJson(url1), getJson(url2)]);</code></li>
+<li>اجلب <code>`https://api.github.com/users/${name}`</code>، وافحص <code>response.status === 404</code> لحالة «غير موجود»، واعرض <code>name</code> و<code>avatar_url</code> و<code>public_repos</code>.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 14</h2>
+<ol class="exercises">
+<li><code>SyntaxError</code>، ثم <code>TypeError</code> (إسناد إلى ثابت)، ثم <code>TypeError</code> (<code>list</code> تساوي <code>undefined</code>)، ثم <code>ReferenceError</code>.</li>
+<li>أضف <code>address: { city: "الإسكندرية" }</code> إلى المستخدم، أو اكتب <code>return user.address ? user.address.city : "مكان ما";</code></li>
+<li>انقر رقم السطر داخل <code>addToCart</code> في لوحة Sources، ثم انقر الزر في الصفحة، واستخدم Step.</li>
+<li><code>n = 1</code> يجب أن تكون <code>n = n + 1</code> (أو <code>n++</code>).</li>
+<li>لا يوجد جواب واحد؛ المهم أن تكتب كل خطوة من الطريقة.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 15</h2>
+<ol class="exercises">
+<li><code>git init</code> ثم <code>git add .</code> ثم <code>git commit -m "إضافة كل ما في الفصول 1 إلى 14"</code>.</li>
+<li><code>git diff</code>، ثم <code>git restore اسم-الملف</code>.</li>
+<li><code>git switch -c dark-mode</code>، ثم commit اثنان، ثم <code>git switch main</code> و<code>git merge dark-mode</code>.</li>
+<li><code>git remote add origin …</code> و<code>git push -u origin main</code>، كما في القسم 15.6.</li>
+<li>غيّر السطر نفسه في <code>main</code> وفي فرع آخر، وادمج، ثم عدّل الملف لتُبقي النسخة الصحيحة، واحذف العلامات، ثم <code>git add</code> و<code>git commit</code>.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 16</h2>
+<ol class="exercises">
+<li>إصلاحات معتادة: استبدال عناصر <code>div</code> القابلة للنقر بأزرار أو روابط، وإضافة تنسيق <code>:focus-visible</code> ظاهر.</li>
+<li>انسخ رابط التخطي وتنسيقه من <code>focus.html</code>، وأضف <code>id="main"</code> إلى <code>&lt;main&gt;</code>.</li>
+<li>تقارير معتادة: <code>alt</code> ناقص، أو تباين ضعيف، أو تسميات ناقصة، أو خاصية <code>lang</code> مفقودة.</li>
+<li>شغّل <code>contrast(لون_النص, لون_الخلفية)</code> لكل زوج، وكل نتيجة أقل من 4.5 تحتاج نصاً أغمق أو خلفية أفتح.</li>
+<li>لا يوجد جواب واحد؛ ومن المشكلات الشائعة أزرار بلا أسماء، وصور بلا <code>alt</code>، وتغييرات لا تُعلن.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 17</h2>
+<ol class="exercises">
+<li>غيّر الخصائص المخصصة و<code>&lt;h1&gt;</code>، واحفظ commit، و<code>git push</code>؛ فيتحدث GitHub Pages خلال دقيقة.</li>
+<li>احسب <code>tasks.filter((t) =&gt; t.done).length</code> في <code>render</code> واعرضه في عنصر جديد.</li>
+<li>مع <code>dblclick</code> استبدل التسمية بـ <code>&lt;input&gt;</code>، ومع <code>keydown</code> احفظ عند Enter (حدّث <code>text</code> المهمة واستدعِ <code>update()</code>)، وألغِ عند Escape (استدعِ <code>render()</code>).</li>
+<li>أضف <code>&lt;select&gt;</code> إلى النموذج، واحفظ <code>priority</code> في كل مهمة، ورتّب المهام الظاهرة بـ <code>sort((a, b) =&gt; rank[b.priority] - rank[a.priority])</code>.</li>
+<li>احفظ النصوص في كائن واحد، واكتب دالة تملأ كل عنصر من اللغة المختارة، واحفظ الاختيار في <code>localStorage</code>، واضبط <code>document.documentElement.lang</code> و<code>.dir</code>.</li>
+</ol>
+
+<h2 class="plain-h">الفصل 18</h2>
+<p>تمارين الفصل 18 عن اختياراتك ومشاريعك أنت، فليس لها جواب واحد. شارك نتائجك مع صديق أو مجتمع على الإنترنت واطلب رأيهم؛ فهذه طريقة المحترفين في فحص عملهم.</p>
 </section>
 </body></html>

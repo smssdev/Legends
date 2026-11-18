@@ -1,0 +1,173 @@
+<section class="chapter answers" data-chapter="19" data-code="b1/answers/ar">
+<p class="chapter-kicker">ملحق</p>
+<h1>حلول التمارين</h1>
+
+<p class="lead">جرّب كل تمرين بنفسك قبل أن تنظر هنا. وإن اختلف جوابك عن هذا فليس بالضرورة خاطئاً: فلمعظم مسائل البرمجة أكثر من حل جيد. فإن عمل حلك مع الحالات العادية وغير المعتادة، واستطعت أن تشرحه، فهو جواب جيد. والكود الكامل لكل حل في مستودع الكود الخاص بالكتاب.</p>
+
+<h2>الفصل 1</h2>
+<ol class="exercises">
+<li>المعالج، والذاكرة، والتخزين، والمدخلات والمخرجات. مُدخل: لوحة المفاتيح أو الفأرة أو شاشة اللمس أو الميكروفون. مُخرج: الشاشة أو السماعات أو الطابعة.</li>
+<li>9 بالثنائي <code>1001</code> (8 + 1).</li>
+<li>يعتمد على الحرف: مثلاً <code>"س".charCodeAt(0)</code> تساوي 1587، و<code>"S".charCodeAt(0)</code> تساوي 83.</li>
+<li><code>15</code>، ثم <code>105</code> (نصان موصولان)، ثم النص <code>10 + 5</code> (فكل ما بين علامتي التنصيص يُطبع كما هو).</li>
+<li>الجواب الجيد يقول بالضبط كم من الماء، وأي كوب، ومتى يتوقف الغلي، وكم ننتظر، وماذا نفعل إن نقص شيء. والكلمات مثل «قليل» و«بعض» هي الخطوات التي سيسيء الروبوت فهمها.</li>
+</ol>
+
+<h2>الفصل 2</h2>
+<ol class="exercises">
+<li>الخوارزمية نفسها مع «أصغر من» بدل «أكبر من»، ومتغير اسمه الأصغر.</li>
+<li>البداية ← هل إشارة المشاة خضراء؟ ← لا: انتظر واسأل مرة أخرى؛ نعم: انظر في الاتجاهين ← هل الطريق خالٍ؟ ← لا: انتظر؛ نعم: اعبر ← النهاية.</li>
+<li>اجعل العدد = 0؛ لكل بطاقة، إن كانت أكبر من 5 فأضف 1 إلى العدد؛ اعرض العدد. والتتبع يعطي 1 (7)، ثم 1، ثم 2 (12)، ثم 2، ثم 3 (9).</li>
+<li>10 خطوات لألف اسم، لأن 2<sup>10</sup> = 1024.</li>
+<li>احفظ الأكبر والثاني. لكل بطاقة: إن كانت أكبر من الأكبر صار الثاني هو الأكبر وصار الأكبر هو البطاقة؛ وإلا فإن كانت أكبر من الثاني صار الثاني هو البطاقة. مع 7 و3 و12 و5 و9 تحصل على 12 و9، ومع 12 و12 و4 تحصل على 12 و12 (أو 12 و4 إن قررت أن الثاني يجب أن يختلف؛ قرّر وصرّح بقرارك).</li>
+</ol>
+
+<h2>الفصل 3</h2>
+<ol class="exercises">
+<li><code>cd code-from-zero</code> ثم <code>mkdir chapter-03</code> ثم <code>cd chapter-03</code> ثم <code>pwd</code>.</li>
+<li>ثلاثة أسطر <code>console.log</code> بنصوصك، وتشغّله بـ <code>node me.js</code>.</li>
+<li>منها: <code>console.error</code> و<code>console.warn</code> و<code>console.table</code> و<code>console.info</code> و<code>console.count</code> و<code>console.time</code>.</li>
+<li>يعتمد على الموقع؛ ومواقع الأخبار الكبيرة ترسل غالباً أكثر من مئة طلب، وأكبر الملفات عادة صور أو فيديو أو ملفات JavaScript.</li>
+<li><code>mkdir practice</code> ثم <code>code practice/test.js</code>، واكتب <code>console.log(365 * 24);</code> وشغّل <code>node practice/test.js</code>. والرقم 8760 عدد ساعات السنة غير الكبيسة.</li>
+</ol>
+
+<h2>الفصل 4</h2>
+<ol class="exercises">
+<li>البروتوكول <code>https:</code>، والمضيف <code>www.example.com</code>، والمسار <code>/search</code>، والاستعلام <code>?q=javascript&amp;page=2</code>.</li>
+<li>رمز الحالة <code>404</code>.</li>
+<li>غيّر الجسم إلى <code>"&lt;h1&gt;اسمك&lt;/h1&gt;&lt;p&gt;نبذة عنك&lt;/p&gt;"</code>.</li>
+<li>تعرض المخرجات <code>404 Not Found</code>، والمتصفح ما زال يعرض الصفحة التي أرسلتها: فرمز الحالة يصف النتيجة ولا يمنع الجسم.</li>
+<li><pre class="plain">if (request.url === "/about") {
+  response.end("&lt;h1&gt;من أنا&lt;/h1&gt;");
+} else {
+  response.end("&lt;h1&gt;مرحباً من خادمي!&lt;/h1&gt;");
+}</pre></li>
+</ol>
+
+<h2>الفصل 5</h2>
+<ol class="exercises">
+<li>هيكل الصفحة ومعه <code>&lt;h1&gt;</code> و<code>&lt;ul&gt;</code> فيها خمسة <code>&lt;li&gt;</code>، ولا تنسَ <code>lang="ar" dir="rtl"</code>.</li>
+<li><code>&lt;a href="profile.html"&gt;صفحتي&lt;/a&gt;</code> في صفحة، و<code>&lt;a href="favourites.html"&gt;مفضلاتي&lt;/a&gt;</code> في الأخرى.</li>
+<li><code>&lt;h1&gt;</code>، و<code>&lt;img&gt;</code> بـ <code>alt</code> واصف، و<code>&lt;ul&gt;</code> للمكونات، و<code>&lt;ol&gt;</code> للخطوات.</li>
+<li>يعتمد على الموقع؛ فكثير من المواقع الحديثة تستخدم العناصر الدلالية، والقديمة كثيراً ما تستخدم <code>&lt;div&gt;</code> بأصناف فقط.</li>
+<li>ثلاثة ملفات تشترك في <code>&lt;header&gt;</code> و<code>&lt;nav&gt;</code> نفسهما، و<code>contact.html</code> فيه <code>&lt;form&gt;</code> بتسميات مثل <code>form.html</code>.</li>
+</ol>
+
+<h2>الفصل 6</h2>
+<ol class="exercises">
+<li><code>footer { background-color: #1e1b2e; color: white; padding: 16px; }</code></li>
+<li><code>#contact a { font-weight: 700; } #contact a:hover { text-decoration: none; }</code></li>
+<li><code>li.highlight { background-color: #0f766e; }</code></li>
+<li>أي ملف تنسيق يعرّف متغيراً في <code>:root</code> ويستخدمه بـ <code>var()</code>.</li>
+<li>غالباً: حشوة أصغر في الترويسة، و<code>h1</code> أصغر، وحشوة أقل داخل البطاقات، والتأكد ألا يزيد أي عرض ثابت على عرض الشاشة.</li>
+</ol>
+
+<h2>الفصل 7</h2>
+<ol class="exercises">
+<li><code>.buttons { display: flex; gap: 12px; justify-content: center; }</code></li>
+<li><code>minmax(200px, 1fr)</code>. بنافذة عرضها 800 بكسل تحصل على ثلاثة أعمدة، وبـ 500 على عمودين، وتحت 400 على عمود واحد.</li>
+<li><code>.card { display: flex; gap: 16px; } @media (max-width: 500px) { .card { flex-direction: column; } }</code></li>
+<li>أضف <code>&lt;aside class="ads"&gt;</code>، واستخدم <code>"head head" "side main" "side ads" "foot foot"</code> للشاشات العريضة، و<code>"head" "main" "side" "foot" "ads"</code> داخل استعلام الوسائط.</li>
+<li>شبكة بمناطق مسماة للترويسة والخبر الرئيسي والأخبار الجانبية والتذييل، واستعلامات وسائط عند 768 و1024 بكسل تقريباً.</li>
+</ol>
+
+<h2>الفصل 8</h2>
+<ol class="exercises">
+<li><pre class="plain">const temperature = 22;
+if (temperature &lt; 15) {
+  console.log("بارد");
+} else if (temperature &lt; 30) {
+  console.log("دافئ");
+} else {
+  console.log("حار");
+}</pre></li>
+<li><code>1</code> و<code>"73"</code> و<code>false</code> و<code>false</code>.</li>
+<li>افحص <code>n % 2 === 0</code> للزوجي، ثم <code>n &gt; 0</code> أو <code>n &lt; 0</code> أو الصفر في <code>if</code> ثانية.</li>
+<li>كل <code>case</code> تصير <code>if (size === "S")</code> ثم <code>else if (size === "M")</code> وهكذا. ومعظم الناس يجدون <code>switch</code> أوضح للقيم المحددة، و<code>if</code> أوضح للنطاقات.</li>
+<li>بعد القواعد الأخرى: <code>if (day === "الجمعة") { price = price + 2; } if (price &gt; 10) { price = 10; }</code></li>
+</ol>
+
+<h2>الفصل 9</h2>
+<ol class="exercises">
+<li><code>for (let i = 1; i &lt;= 10; i++) { console.log(`7 × ${i} = ${7 * i}`); }</code></li>
+<li>ابدأ <code>highest</code> و<code>lowest</code> بأول درجة حرارة، وفي <code>for…of</code> حدّث كلاً منهما حين تجد درجة أكبر أو أصغر.</li>
+<li><code>const long = []; for (const w of words) { if (w.length &gt; 2) long.push(w); } console.log(long.join(" "));</code> تعطي <code>البرمجة ممتع مفيد</code>.</li>
+<li>50.</li>
+<li>اطبع الرسالة داخل حالة <code>age &gt;= 65</code>، وبعد الحلقة اقسم <code>total</code> على <code>queue.length</code>، واحتفظ بمجمِّع <code>highest</code> لأغلى تذكرة.</li>
+</ol>
+
+<h2>الفصل 10</h2>
+<ol class="exercises">
+<li><code>function isEven(n) { return n % 2 === 0; }</code> تعطي <code>true</code> و<code>false</code> و<code>true</code>.</li>
+<li><code>function celsiusToFahrenheit(c) { return c * 9 / 5 + 32; }</code>، و37 درجة مئوية تساوي 98.6 فهرنهايت.</li>
+<li>خوارزمية أكبر بطاقة داخل دالة، والطريقة الجاهزة <code>Math.max(...numbers)</code>.</li>
+<li><code>prices.filter((p) =&gt; p &gt; 10).map((p) =&gt; (p * 0.8).toFixed(2))</code></li>
+<li><code>function applyNightShow(price, hour) { return hour &gt;= 22 ? Math.max(price - 1, 0) : price; }</code>، وتستدعيها على نتيجة <code>applyMemberDay</code>.</li>
+</ol>
+
+<h2>الفصل 11</h2>
+<ol class="exercises">
+<li>أي كائن بخمس خصائص، مثل <code>title</code> و<code>year</code> و<code>director</code> و<code>rating</code> ومصفوفة <code>actors</code>.</li>
+<li><code>products.filter((p) =&gt; p.price &lt; 10).map((p) =&gt; p.name)</code></li>
+<li><code>function removeFromCart(id) { const i = cart.findIndex((item) =&gt; item.productId === id); if (i !== -1) cart.splice(i, 1); }</code></li>
+<li><code>return product.price * (1 - (product.discount ?? 0)) * item.quantity;</code> (أو <code>|| 0</code>).</li>
+<li>حوّل كل عنصر في السلة إلى سطر نصي بـ <code>map</code>، وأضف سطر المجموع، ثم <code>join("\n")</code>.</li>
+</ol>
+
+<h2>الفصل 12</h2>
+<ol class="exercises">
+<li>زر ثالث معالجه يفعل <code>if (count &gt; 0) count--;</code> ثم <code>show()</code>.</li>
+<li><code>button.addEventListener("click", () =&gt; document.body.classList.toggle("dark"));</code> وCSS لـ <code>body.dark</code>.</li>
+<li>استمع إلى <code>input</code>، واجعل النص <code>`${area.value.length} / 280`</code>، وبدّل صنفاً حين يتجاوز الطول 280.</li>
+<li>في <code>renderCart</code> أضف لكل سطر زراً يحذف معالجه العنصر من <code>cart</code> ثم يستدعي <code>renderCart()</code>.</li>
+<li>احفظ نص البحث في متغير، وفي <code>renderProducts</code> مرّ على <code>catalog.filter((p) =&gt; p.name.includes(text))</code>، وأعد الرسم مع كل حدث <code>input</code>.</li>
+</ol>
+
+<h2>الفصل 13</h2>
+<ol class="exercises">
+<li><code>for (const n of [3, 2, 1]) { console.log(n); await wait(1000); } console.log("انطلق!");</code> داخل دالة <code>async</code>.</li>
+<li>أضف <code>else if (request.url === "/api/hello")</code> ترسل <code>JSON.stringify({ message: "أهلاً!" })</code>.</li>
+<li>اعرض زراً في كتلة <code>catch</code>، ومعالج نقرته يستدعي <code>start()</code>.</li>
+<li><code>const [a, b] = await Promise.all([getJson(url1), getJson(url2)]);</code></li>
+<li>اجلب <code>`https://api.github.com/users/${name}`</code>، وافحص <code>response.status === 404</code> لحالة «غير موجود»، واعرض <code>name</code> و<code>avatar_url</code> و<code>public_repos</code>.</li>
+</ol>
+
+<h2>الفصل 14</h2>
+<ol class="exercises">
+<li><code>SyntaxError</code>، ثم <code>TypeError</code> (إسناد إلى ثابت)، ثم <code>TypeError</code> (<code>list</code> تساوي <code>undefined</code>)، ثم <code>ReferenceError</code>.</li>
+<li>أضف <code>address: { city: "الإسكندرية" }</code> إلى المستخدم، أو اكتب <code>return user.address ? user.address.city : "مكان ما";</code></li>
+<li>انقر رقم السطر داخل <code>addToCart</code> في لوحة Sources، ثم انقر الزر في الصفحة، واستخدم Step.</li>
+<li><code>n = 1</code> يجب أن تكون <code>n = n + 1</code> (أو <code>n++</code>).</li>
+<li>لا يوجد جواب واحد؛ المهم أن تكتب كل خطوة من الطريقة.</li>
+</ol>
+
+<h2>الفصل 15</h2>
+<ol class="exercises">
+<li><code>git init</code> ثم <code>git add .</code> ثم <code>git commit -m "إضافة كل ما في الفصول 1 إلى 14"</code>.</li>
+<li><code>git diff</code>، ثم <code>git restore اسم-الملف</code>.</li>
+<li><code>git switch -c dark-mode</code>، ثم commit اثنان، ثم <code>git switch main</code> و<code>git merge dark-mode</code>.</li>
+<li><code>git remote add origin …</code> و<code>git push -u origin main</code>، كما في القسم 15.6.</li>
+<li>غيّر السطر نفسه في <code>main</code> وفي فرع آخر، وادمج، ثم عدّل الملف لتُبقي النسخة الصحيحة، واحذف العلامات، ثم <code>git add</code> و<code>git commit</code>.</li>
+</ol>
+
+<h2>الفصل 16</h2>
+<ol class="exercises">
+<li>إصلاحات معتادة: استبدال عناصر <code>div</code> القابلة للنقر بأزرار أو روابط، وإضافة تنسيق <code>:focus-visible</code> ظاهر.</li>
+<li>انسخ رابط التخطي وتنسيقه من <code>focus.html</code>، وأضف <code>id="main"</code> إلى <code>&lt;main&gt;</code>.</li>
+<li>تقارير معتادة: <code>alt</code> ناقص، أو تباين ضعيف، أو تسميات ناقصة، أو خاصية <code>lang</code> مفقودة.</li>
+<li>شغّل <code>contrast(لون_النص, لون_الخلفية)</code> لكل زوج، وكل نتيجة أقل من 4.5 تحتاج نصاً أغمق أو خلفية أفتح.</li>
+<li>لا يوجد جواب واحد؛ ومن المشكلات الشائعة أزرار بلا أسماء، وصور بلا <code>alt</code>، وتغييرات لا تُعلن.</li>
+</ol>
+
+<h2>الفصل 17</h2>
+<ol class="exercises">
+<li>غيّر الخصائص المخصصة و<code>&lt;h1&gt;</code>، واحفظ commit، و<code>git push</code>؛ فيتحدث GitHub Pages خلال دقيقة.</li>
+<li>احسب <code>tasks.filter((t) =&gt; t.done).length</code> في <code>render</code> واعرضه في عنصر جديد.</li>
+<li>مع <code>dblclick</code> استبدل التسمية بـ <code>&lt;input&gt;</code>، ومع <code>keydown</code> احفظ عند Enter (حدّث <code>text</code> المهمة واستدعِ <code>update()</code>)، وألغِ عند Escape (استدعِ <code>render()</code>).</li>
+<li>أضف <code>&lt;select&gt;</code> إلى النموذج، واحفظ <code>priority</code> في كل مهمة، ورتّب المهام الظاهرة بـ <code>sort((a, b) =&gt; rank[b.priority] - rank[a.priority])</code>.</li>
+<li>احفظ النصوص في كائن واحد، واكتب دالة تملأ كل عنصر من اللغة المختارة، واحفظ الاختيار في <code>localStorage</code>، واضبط <code>document.documentElement.lang</code> و<code>.dir</code>.</li>
+</ol>
+
+<h2>الفصل 18</h2>
+<p>تمارين الفصل 18 عن اختياراتك ومشاريعك أنت، فليس لها جواب واحد. شارك نتائجك مع صديق أو مجتمع على الإنترنت واطلب رأيهم؛ فهذه طريقة المحترفين في فحص عملهم.</p>
+</section>

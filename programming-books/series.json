@@ -78,8 +78,7 @@
           "chapters": [
             {
               "en": "Values, Variables and Decisions",
-              "ar": "القيم والمتغيرات والقرارات",
-              "sample": true
+              "ar": "القيم والمتغيرات والقرارات"
             },
             {
               "en": "Loops and Arrays",

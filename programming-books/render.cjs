@@ -18,9 +18,10 @@ const path = require('path');
     await page.goto('file://' + path.join(out, f));
     await page.evaluate(() => document.fonts.ready);
     const pdf = path.join(out, name + '.pdf');
-    // The colour edition is read on screens, so it gets bookmarks from the headings and tags.
+    // Bookmarks come from the headings (toc.py reads them to number the contents); the colour
+    // edition, read on screens, is also tagged for screen readers.
     const screen = name.endsWith('-color');
-    await page.pdf({ path: pdf, preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false, outline: screen, tagged: screen });
+    await page.pdf({ path: pdf, preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false, outline: true, tagged: screen });
     execFileSync('pdftoppm', ['-r', '60', '-png', pdf, path.join(prev, name)]);
     const pages = execFileSync('pdfinfo', [pdf]).toString().match(/Pages:\s+(\d+)/)[1];
     console.log(`${name}.pdf: ${pages} pages`);
