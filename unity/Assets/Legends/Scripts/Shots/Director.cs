@@ -23,7 +23,11 @@ namespace Legends.Shots
         public ShotList.Shot Now { get; private set; }
 
         /// <summary>Every camera the director has, by the shot it films.</summary>
-        public static readonly string[] Kinds = { ShotList.Broadcast, ShotList.Close, "crowd", "coachReact", "brawl", "tunnel", "handshake", "meltdown" };
+        public static readonly string[] Kinds =
+        {
+            ShotList.Broadcast, ShotList.Close, "crowd", "coachReact", "brawl", "tunnel", "handshake", "meltdown",
+            ShotList.Spot, ShotList.Line, ShotList.RefereeShot, ShotList.PlayerShot, ShotList.ReplayGoal, ShotList.ReplaySide,
+        };
 
         void Awake() => scene = GetComponent<MatchScene>();
 
@@ -62,6 +66,11 @@ namespace Legends.Shots
             "coachReact" or "meltdown" => 24f,
             "handshake" => 34f,
             "tunnel" => 40f,
+            ShotList.Spot => 34f,
+            ShotList.Line => 40f,
+            ShotList.RefereeShot or ShotList.PlayerShot => 26f,
+            ShotList.ReplayGoal => 36f,
+            ShotList.ReplaySide => 24f,
             _ => 32f,
         };
 
@@ -75,7 +84,9 @@ namespace Legends.Shots
         /// <summary>Puts the shot's camera where it films from and cuts to it (dt: how far the broadcast camera eases after the ball).</summary>
         public void Show(ShotList.Shot shot, float dt)
         {
-            string kind = cams.ContainsKey(shot.Name) ? shot.Name : ShotList.Broadcast;
+            // [Sprint 09 U3] the replay from two sides: behind the goal, then low from the far touchline
+            string angle = ShotList.ReplayAngle(shot, scene.Elapsed);
+            string kind = angle ?? (cams.ContainsKey(shot.Name) ? shot.Name : ShotList.Broadcast);
             var cam = cams[kind];
             Place(cam.transform, kind, shot, dt);
             foreach (var kv in cams)
@@ -90,17 +101,67 @@ namespace Legends.Shots
             Now = new ShotList.Shot { Name = kind, Data = shot.Data, From = shot.From, To = shot.To };
         }
 
+        readonly List<Vector3> people = new List<Vector3>();
+
+        /// <summary>
+        /// [Sprint 09 U2] Where to film `target` from: the preferred place, unless someone stands between it and the target;
+        /// then, at the same distance and height, whichever of twelve sides leaves the most room between the camera's line
+        /// and everyone else, never behind the boards or the goal lines. Pure: the same frames give the same angle on every screen.
+        /// </summary>
+        public static Vector3 Clear(Vector3 target, Vector3 preferred, List<Vector3> others)
+        {
+            const float Room = 0.9f;   // a body's half width and a little
+            var off = preferred - target;
+            float r = new Vector2(off.x, off.z).magnitude, h = off.y, a0 = Mathf.Atan2(off.z, off.x);
+            float Gap(Vector3 at)
+            {
+                float least = float.MaxValue;
+                Vector2 s0 = new Vector2(at.x, at.z), s1 = new Vector2(target.x, target.z);
+                foreach (var p in others)
+                {
+                    var q = new Vector2(p.x, p.z);
+                    if (Vector2.Distance(q, s1) < 0.6f) continue;   // beside the target: in the picture, not in the way
+                    float t = Mathf.Clamp01(Vector2.Dot(q - s0, s1 - s0) / Mathf.Max(1e-4f, (s1 - s0).sqrMagnitude));
+                    least = Mathf.Min(least, Vector2.Distance(q, Vector2.Lerp(s0, s1, t * 0.9f)));
+                }
+                return least;
+            }
+            bool Inside(Vector3 at) => at.z > -36f && at.z < 36f && Mathf.Abs(at.x) < 54f;
+            if (Gap(preferred) >= Room) return preferred;
+            var best = preferred;
+            float room = Gap(preferred);
+            for (int i = 1; i < 12; i++)
+            {
+                float a = a0 + i * Mathf.PI / 6f;
+                var at = target + new Vector3(Mathf.Cos(a) * r, h, Mathf.Sin(a) * r);
+                if (!Inside(at)) continue;
+                float g = Gap(at);
+                if (g > room + 0.05f) { room = g; best = at; }
+                if (room >= Room) break;
+            }
+            return best;
+        }
+
         /// <summary>Where each camera stands and what it looks at, in the scene's metres (the centre spot at the origin).</summary>
         void Place(Transform cam, string kind, ShotList.Shot shot, float dt)
         {
             var ball = scene.Ball != null ? transform.InverseTransformPoint(scene.Ball.position) : Vector3.zero;
             float end = ball.x >= 0 ? 1f : -1f;   // the goal the play is nearer
+            // [Sprint 09 U2] where the scene starts: the ball on the spot or at the free kick, the line of the trap
+            var m = scene.OnAir;
+            var start = m != null && m.Frames.Count > 0 ? MatchScene.World(new Vector2(m.Frames[0].Ball.x, m.Frames[0].Ball.y), MatchScene.Flipped(m.Period)) : ball;
+            float goal = start.x >= 0 ? 1f : -1f;
+            // [Sprint 09 U3] the goal the scene ends at (where the ball goes in), for the replay
+            var last = m != null && m.Frames.Count > 0 ? MatchScene.World(new Vector2(m.Frames[m.Frames.Count - 1].Ball.x, m.Frames[m.Frames.Count - 1].Ball.y), MatchScene.Flipped(m.Period)) : ball;
+            float net = last.x >= 0 ? 1f : -1f;
             Vector3 at, look;
             switch (kind)
             {
                 case ShotList.Close:
-                    // low on the near side, a little back from the goal the ball is going to, the ball and its strikers in frame
-                    at = ball + new Vector3(-end * 3.5f, 2.2f, -9f);
+                    // low on the near side, a little back from the goal the ball is going to, the ball and its strikers in
+                    // frame; [U2] from another side when someone stands in the way
+                    scene.People(people);
+                    at = Clear(ball, ball + new Vector3(-end * 3.5f, 2.2f, -9f), people);
                     look = ball + Vector3.up * 0.8f;
                     break;
                 case "crowd":
@@ -117,6 +178,48 @@ namespace Legends.Shots
                     look = spot + Vector3.up * 1.45f;
                     break;
                 }
+                case ShotList.Spot:
+                    // behind the ball, low, the goal and the keeper beyond it
+                    at = start + new Vector3(-goal * 7f, 1.9f, start.z > 0 ? 1.5f : -1.5f);
+                    look = new Vector3(goal * 52.5f, 1.4f, start.z * 0.4f);
+                    break;
+                case ShotList.Line:
+                    // on the near touchline, square to the line of the trap
+                    at = new Vector3(start.x, 3f, -38f);
+                    look = new Vector3(start.x, 0.5f, 4f);
+                    break;
+                case ShotList.RefereeShot:
+                {
+                    var r = scene.Referee != null ? transform.InverseTransformPoint(scene.Referee.position) : ball;
+                    // from the pitch's side of him (never behind the boards on the near touchline), with no one in the way
+                    scene.People(people, scene.Referee);
+                    at = Clear(r, r + new Vector3(2.2f, 1.7f, r.z < -20f ? 5f : -5f), people);
+                    look = r + Vector3.up * 1.5f;
+                    break;
+                }
+                case ShotList.PlayerShot:
+                {
+                    // the man down (an injury): low beside him
+                    string id = null;
+                    if (m != null) foreach (var e in m.Events) if (MiniJson.Str(e, "type") == "injury") id = MiniJson.Str(e, "player", null);
+                    var who = scene.Player(id);
+                    var p = who != null ? transform.InverseTransformPoint(who.position) : ball;
+                    // from the pitch's side of him: by the near touchline the bench and the boards are behind the camera
+                    scene.People(people, who);
+                    at = Clear(p, p + new Vector3(3.2f, 2.1f, p.z < -20f ? 4.8f : -4.8f), people);
+                    look = p + Vector3.up * 0.4f;
+                    break;
+                }
+                case ShotList.ReplayGoal:
+                    // high behind the net the ball goes into, the shooter running at the camera
+                    at = new Vector3(net * 57f, 8f, Mathf.Clamp(ball.z, -12f, 12f) * 0.5f);
+                    look = ball + Vector3.up * 0.6f;
+                    break;
+                case ShotList.ReplaySide:
+                    // low from the far touchline, close on the ball (the reverse angle)
+                    at = ball + new Vector3(-net * 4f, 1.6f, 11f);
+                    look = ball + Vector3.up * 0.7f;
+                    break;
                 case "brawl":
                     at = ball + new Vector3(5f, 3f, -10f);
                     look = ball + Vector3.up * 1f;

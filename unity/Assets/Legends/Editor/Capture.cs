@@ -51,6 +51,13 @@ namespace Legends.EditorTools
         public static void RunPlays() => Begin(true, false, true);
 
         const string PlaysKey = "Legends.Capture.Plays";
+        const string ScenesKey = "Legends.Capture.Scenes";
+
+        [MenuItem("Legends/Capture every scene")]
+        public static void ScenesMenu() => Begin(false, false, false, true);
+
+        /// <summary>[Sprint 09 U2] For the command line: -executeMethod Legends.EditorTools.Capture.RunScenes (without -quit).</summary>
+        public static void RunScenes() => Begin(true, false, false, true);
         const string KitsKey = "Legends.Capture.Kits";
         const int KitsMinute = 20;
 
@@ -82,7 +89,7 @@ namespace Legends.EditorTools
 
         static bool QuitWhenDone => SessionState.GetBool("Legends.Capture.Quit", false);
 
-        static void Begin(bool quit, bool kits = false, bool plays = false)
+        static void Begin(bool quit, bool kits = false, bool plays = false, bool scenes = false)
         {
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(OpenMatch.Scene) == null)
             {
@@ -94,6 +101,8 @@ namespace Legends.EditorTools
             foreach (var old in Directory.GetFiles(Folder, plays ? "play-*.png" : kits ? "kits-*.png" : "minute-*.png")) File.Delete(old);
             if (plays) foreach (var old in Directory.GetFiles(Folder, "shot-*.png")) File.Delete(old);
             SessionState.SetBool(PlaysKey, plays);
+            SessionState.SetBool(ScenesKey, scenes);
+            if (scenes) foreach (var old in Directory.GetFiles(Folder, "scene-*.png")) File.Delete(old);
             SessionState.SetBool("Legends.Capture.Quit", quit);
             SessionState.SetBool(KitsKey, kits);
             SessionState.SetBool(RunKey, true);
@@ -132,6 +141,11 @@ namespace Legends.EditorTools
             if (SessionState.GetBool(PlaysKey, false))
             {
                 Plays(scene);
+                return;
+            }
+            if (SessionState.GetBool(ScenesKey, false))
+            {
+                Scenes(scene);
                 return;
             }
             int next = SessionState.GetInt(NextKey, 0);
@@ -267,6 +281,54 @@ namespace Legends.EditorTools
             Save(Still(Clear(scene, at), at + Vector3.up * 0.9f, 28f), file);
             Debug.Log($"Legends: captured {file}: {who} at {t:0.00}");
             playStep++;
+        }
+
+        // [Sprint 09 U2] the scenes run, in one play session as the kits
+        static int sceneStep = -1, sceneFrame;
+        static System.Collections.Generic.List<object> sceneList;
+        static MatchMinute sceneMinute;
+
+        /// <summary>
+        /// [Sprint 09 U2] Every kind of scene the engine tells (docs/api/samples/scenes.json, sim:golden --write), each in its
+        /// own match, held at its key moment (else six tenths into it) through the director's camera, as on air. Saved as
+        /// unity/Captures/scene-&lt;kind&gt;.png.
+        /// </summary>
+        static void Scenes(Legends.MatchScene scene)
+        {
+            if (sceneList == null)
+            {
+                string path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "docs", "api", "samples", "scenes.json"));
+                sceneList = MiniJson.Arr(MiniJson.Parse(File.ReadAllText(path)), "scenes");
+                var playback = Object.FindFirstObjectByType<Legends.SamplePlayback>();
+                if (playback != null) { playback.speed = 1f; playback.enabled = false; }
+                sceneStep = 0;
+            }
+            if (sceneStep >= sceneList.Count * 2)
+            {
+                Finish("saved " + sceneList.Count + " scenes", true);
+                sceneList = null;
+                return;
+            }
+            var entry = sceneList[sceneStep / 2];
+            string kind = MiniJson.Str(entry, "kind");
+            if (sceneStep % 2 == 0)
+            {
+                var tick = MiniJson.Obj(entry, "tick");
+                scene.Begin(MatchSetup.From(MiniJson.Parse(Legends.SamplePlayback.Setup(entry, new System.Collections.Generic.List<object> { tick }))));
+                sceneMinute = MatchMinute.From(tick, 3000);
+                scene.HoldAt(sceneMinute, 0);
+                sceneFrame = Time.frameCount + 3;
+                sceneStep++;
+                return;
+            }
+            double at = scene.KeyMoment ?? scene.Plan.SceneT * 0.6;
+            scene.HoldAt(sceneMinute, at);
+            if (Time.frameCount < sceneFrame) return;
+            var director = scene.GetComponent<Legends.Shots.Director>();
+            string file = "scene-" + kind.Replace(':', '-') + ".png";
+            Save(Camera.main, file);
+            Debug.Log($"Legends: captured {file}: {(director != null ? director.Now.ToString() : "no director")} at {at:0.00} s");
+            sceneStep++;
         }
 
         /// <summary>

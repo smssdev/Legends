@@ -43,7 +43,7 @@ namespace Legends.Tests
                     for (int i = 1; i < shots.Count; i++) Assert.AreEqual(shots[i - 1].To, shots[i].From, 1e-9, $"{scene} {ms}: {string.Join(" | ", shots)}");
                     Assert.AreEqual(p.Total, shots[shots.Count - 1].To, 1e-9, scene + " to the minute's end");
                     // the cutaways are the plan's, in its order
-                    var cuts = shots.Where(x => x.Name != ShotList.Broadcast && x.Name != ShotList.Close && x.Name != ShotList.Replay).Select(x => x.Name);
+                    var cuts = shots.Where(x => x.From >= p.SceneT - 1e-9 && x.Name != ShotList.Broadcast && x.Name != ShotList.Replay).Select(x => x.Name);
                     CollectionAssert.AreEqual(p.Cuts.Select(c => c.Name).ToList(), cuts.ToList(), scene);
                 }
         }

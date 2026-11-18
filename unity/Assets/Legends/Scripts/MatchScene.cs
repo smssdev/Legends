@@ -90,6 +90,7 @@ namespace Legends
             if (contacts == null && shadowMaterial != null) contacts = ContactShadows.On(gameObject, shadowMaterial);
             if (contacts != null) contacts.Clear();
             rolled = false;
+            slowNow = 1f;
 
             var art = PlayerArt.Load();
             if (art != null && art.models != null && art.models.Length == PlayerLook.Builds.Length && art.models[0] != null)
@@ -223,7 +224,38 @@ namespace Legends
 
         public void Push(MatchMinute minute) => queue.Enqueue(minute);
 
+        /// <summary>
+        /// [Sprint 09 U3] The match's highlights after the final whistle, as the cartoon's (useMatchPlayer highlights()):
+        /// the page picks the goals and the big moments and sends them; each plays again as it was, its scene, its
+        /// cutaways and a goal's replay, one after the other. What was playing stops.
+        /// </summary>
+        public void Highlights(IEnumerable<MatchMinute> minutes)
+        {
+            queue.Clear();
+            Current = null;
+            foreach (var m in minutes) queue.Enqueue(m);
+        }
+
         public bool Idle => Current == null && queue.Count == 0;
+
+        /// <summary>
+        /// [Sprint 11 W3] The page plays this minute now (its cartoon started it): whatever was waiting or playing gives
+        /// way, so the scene keeps the page's time and never falls behind it.
+        /// </summary>
+        public void PlayNow(MatchMinute minute)
+        {
+            queue.Clear();
+            Current = null;
+            queue.Enqueue(minute);
+        }
+
+        /// <summary>[Sprint 11 W3] The page skipped ahead (the result at once): the scene stops on the last minute shown.</summary>
+        public void Skip()
+        {
+            queue.Clear();
+            Current = null;
+            SlowTo(1f);
+        }
 
         void Update()
         {
@@ -231,13 +263,14 @@ namespace Legends
             {
                 if (queue.Count == 0) return;
                 Current = queue.Dequeue();
-                elapsedMs = 0;
+                elapsedMs = (float)(Current.Into * 1000.0);
                 OnAir = Current;
                 Plan = PlanFor(Current);
                 if (bench != null) bench.Feel(Current.HomeMood, Current.AwayMood);
             }
             elapsedMs += Time.deltaTime * 1000f;
             Elapsed = elapsedMs / 1000.0;
+            SlowTo(Slowness(Plan, Elapsed));
             Draw(Current, FramesAt(Plan, Elapsed));
             if (elapsedMs >= Current.Ms) Current = null;
         }
@@ -264,6 +297,7 @@ namespace Legends
             OnAir = m;
             Plan = PlanFor(m);
             Elapsed = seconds;
+            SlowTo(Slowness(Plan, seconds));
             Draw(m, FramesAt(Plan, seconds), true);
         }
 
@@ -297,8 +331,44 @@ namespace Legends
         /// </summary>
         public static double FramesSeconds(Shots.MinutePlan.Plan p) => p == null ? 3.0 : p.SceneT > 0 ? p.SceneT : p.Total;
 
-        /// <summary>[Sprint 09 U1] Where the frames are (0..1) at `seconds` into the minute.</summary>
-        public static float FramesAt(Shots.MinutePlan.Plan p, double seconds) => Mathf.Clamp01((float)(seconds / FramesSeconds(p)));
+        /// <summary>
+        /// [Sprint 09 U1] Where the frames are (0..1) at `seconds` into the minute. [U3] In a goal's replay window the
+        /// scene again, slowed as the cartoon slows it: from `Off` seconds into the scene (its nominal length) at `Rate`.
+        /// </summary>
+        public static float FramesAt(Shots.MinutePlan.Plan p, double seconds)
+        {
+            if (InReplay(p, seconds))
+            {
+                double nominal = p.SceneT * p.Rate;
+                return Mathf.Clamp01((float)((p.Replay.Off + (seconds - p.Replay.At) * p.Replay.Rate) / nominal));
+            }
+            return Mathf.Clamp01((float)(seconds / FramesSeconds(p)));
+        }
+
+        /// <summary>[Sprint 09 U3] The replay window of a goal's minute: from the plan's second to 0.8 s before the minute ends.</summary>
+        public static bool InReplay(Shots.MinutePlan.Plan p, double seconds) =>
+            p != null && p.Replay != null && p.SceneT > 0 && seconds >= p.Replay.At && seconds < p.Total - 0.8;
+
+        /// <summary>
+        /// [Sprint 09 U3] How fast the players' moves play against the scene's own pace (1 live): the replay goes through
+        /// the scene at Replay.Rate of its nominal seconds a second, live at Plan.Rate, so the strides slow by their ratio.
+        /// </summary>
+        public static float Slowness(Shots.MinutePlan.Plan p, double seconds) =>
+            InReplay(p, seconds) && p.Rate > 0 ? (float)(p.Replay.Rate / p.Rate) : 1f;
+
+        float slowNow = 1f;
+
+        /// <summary>[Sprint 09 U3] Every player's and official's moves at the replay's pace (or back to live).</summary>
+        void SlowTo(float slow)
+        {
+            if (Mathf.Approximately(slow, slowNow)) return;
+            slowNow = slow;
+            foreach (var t in players.Values) { var a = t.GetComponent<Animator>(); if (a != null) a.speed = slow; }
+            foreach (var t in officials) { var a = t.GetComponent<Animator>(); if (a != null) a.speed = slow; }
+        }
+
+        /// <summary>[Sprint 09 U3] Whether the replay is on air now (the scoreboard says so, the director films it from two sides).</summary>
+        public bool Replaying => InReplay(Plan, Elapsed);
 
         void Draw(MatchMinute m, float t, bool snap = false)
         {
@@ -420,6 +490,7 @@ namespace Legends
             {
                 if (fired.Contains(cue)) continue;
                 var who = cue.Id == PlayerMotion.Referee ? (officials.Count > 0 ? officials[0] : null)
+                    : cue.Id == PlayerMotion.Assistant ? AssistantNear(m.Frames[Mathf.Clamp(Mathf.RoundToInt(cue.At), 0, m.Frames.Count - 1)].Ball, flip)
                     : players.TryGetValue(cue.Id, out var tr) ? tr : null;
                 var stride = who != null && who.gameObject.activeInHierarchy ? who.GetComponent<PlayerStride>() : null;
                 if (stride == null) { fired.Add(cue); continue; }
@@ -447,6 +518,27 @@ namespace Legends
                 fired.Add(cue);
                 stride.Play(move, snap ? 0f : 0.12f, (now - start) * span);
             }
+        }
+
+        /// <summary>[Sprint 09 U2] The referee (the first official), for the director's shots of him; none before a match.</summary>
+        public Transform Referee => officials.Count > 0 ? officials[0] : null;
+
+        /// <summary>[Sprint 09 U2] Where everyone on the pitch stands (the scene's metres), but `except`: the director keeps them out of its close shots.</summary>
+        public void People(List<Vector3> into, Transform except = null)
+        {
+            into.Clear();
+            foreach (var t in players.Values) if (t != except && t.gameObject.activeInHierarchy) into.Add(t.localPosition);
+            foreach (var t in officials) if (t != except && t.gameObject.activeInHierarchy) into.Add(t.localPosition);
+        }
+
+        /// <summary>[Sprint 09 U2] A player by his id, for the director's shots of him (the injured man); none if not drawn.</summary>
+        public Transform Player(string id) => id != null && players.TryGetValue(id, out var t) ? t : null;
+
+        /// <summary>[Sprint 09 U2] The assistant on the ball's touchline: the far one (the first) when the ball is in the far half.</summary>
+        Transform AssistantNear(Vector3 ballDm, bool flip)
+        {
+            if (officials.Count < 3) return null;
+            return World(new Vector2(ballDm.x, ballDm.y), flip).z > 0 ? officials[1] : officials[2];
         }
 
         /// <summary>[Sprint 09 U1] The minute's key moment in its frames (s): its strike at goal, else its keeper's answer, else its card.</summary>

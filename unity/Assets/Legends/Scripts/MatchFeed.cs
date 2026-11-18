@@ -96,6 +96,8 @@ namespace Legends
         /// <summary>[Sprint 26 U1] How each coach feels after the minute, as the server says (App\Characters\Mood).</summary>
         public string HomeMood = "idle", AwayMood = "idle";
         public bool Finished;
+        /// <summary>[Sprint 11 W3] How far into the minute the page already is (s): a minute it started before the scene got it.</summary>
+        public double Into;
         public readonly List<Frame> Frames = new List<Frame>();
         /// <summary>[Sprint 09 U1] The minute's story from the server (MomentStory): the scene the director tells it with.</summary>
         public Shots.MinutePlan.Story Story = new Shots.MinutePlan.Story();
@@ -110,6 +112,7 @@ namespace Legends
                 Period = (int)MiniJson.Int(json, "period", 1),
             };
             if (json is Dictionary<string, object> d && d.TryGetValue("finished", out var f) && f is bool done) m.Finished = done;
+            if (json is Dictionary<string, object> di && di.TryGetValue("into", out var into) && (into is double || into is long)) m.Into = System.Math.Max(0, System.Convert.ToDouble(into));
             var minute = MiniJson.Arr(json, "minute");
             if (minute != null && minute.Count == 2)
             {

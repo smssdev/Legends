@@ -45,7 +45,7 @@ namespace Legends
         }
 
         /// <summary>The setup message from the recording: its clubs, timing, and the players of its first minute.</summary>
-        static string Setup(object root, List<object> ticks)
+        public static string Setup(object root, List<object> ticks)
         {
             var match = MiniJson.Obj(root, "match");
             var teams = MiniJson.Obj(ticks[0], "teams");
