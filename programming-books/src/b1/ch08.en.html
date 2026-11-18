@@ -15,6 +15,8 @@
 
 <p class="lead">Every useful program does two things again and again: it remembers information, and it makes decisions based on that information. A cinema kiosk remembers your age and the day of the week, then decides what you should pay. A game remembers your score, then decides whether you have won. In this chapter you will teach JavaScript to do both.</p>
 
+<aside class="bit" data-mood="happy"><p>Hi again! Today you will teach the computer to make choices. By the end of this chapter you will have built a ticket machine that thinks for itself. Let’s go!</p></aside>
+
 <p>Open your editor and the terminal you set up in Chapter 3. Every example in this chapter is a small file you can run with Node.js. Type the examples yourself instead of copying them: your fingers learn the shape of the language faster than your eyes do.</p>
 
 <h2>8.1 Values: the raw material of a program</h2>
@@ -43,6 +45,8 @@
 </table>
 
 <p>The word <code>typeof</code> asks JavaScript for the type of a value. You will rarely need it in real programs, but it is a good way to check your understanding while you learn.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>JavaScript was created in just ten days, in May 1995, by Brendan Eich at Netscape. Today it runs in every web browser and on almost every website in the world.</p></aside>
 
 <aside class="box tip"><p class="box-title">Tip</p><p>Quotes turn anything into text. <code>42</code> is a number, but <code>"42"</code> is a string that happens to contain the characters 4 and 2. This difference causes many beginner bugs, and we will meet it again in Section 8.3.</p></aside>
 
@@ -136,6 +140,8 @@
 
 <aside class="box rule"><p class="box-title">Professional habit</p><p>Always compare with <code>===</code> and <code>!==</code>. Never use <code>==</code> or <code>!=</code>. Most teams enforce this rule automatically with a tool called a linter, which you will set up in Book 2.</p></aside>
 
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What does <code>typeof "10"</code> give?</li><li>What is <code>17 % 5</code>?</li><li>Is <code>4 === "4"</code> true or false?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
 <h2>8.4 Decisions with if and else</h2>
 
 <p>Now that you can compare values, you can make your program choose. The <code>if</code> statement runs a block of code only when a condition is <code>true</code>. A cinema charges different prices for different ages; here is how a program decides:</p>
@@ -178,6 +184,8 @@
 
 <p>Because the order matters, a 9-year-old is caught by <code>age &lt; 13</code> and never reaches the later checks. If you swapped the first two conditions, a 2-year-old would be charged 6 instead of nothing. When you write a chain of <code>else if</code>, always ask yourself: "which case should win if two are true?"</p>
 
+<aside class="bit" data-mood="think"><p>My trick for long chains: put the narrowest condition first, and leave the “everyone else” case for the final <code>else</code>.</p></aside>
+
 <p>The parts of the statement are:</p>
 <ul>
 <li><code>if (condition) { ... }</code>: the block runs only when the condition is <code>true</code>.</li>
@@ -206,6 +214,8 @@
 <pre data-out="logic.js"></pre>
 
 <p>The first <code>if</code> gives half price only to members, and only on Tuesdays. The second reads naturally as "if not has ticket". The last two lines use a common trick that needs a little more explanation.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>The <code>boolean</code> type is named after George Boole, an English mathematician who showed in 1854 that logic can be written as algebra with only two values: true and false. Every computer chip is built on his idea.</p></aside>
 
 <h3>Truthy and falsy</h3>
 
@@ -236,6 +246,8 @@
 <li>Members pay half price on Tuesdays.</li>
 <li>Shows that start at 22:00 or later are 1 cheaper, unless the ticket is already free.</li>
 </ol>
+
+<aside class="bit" data-mood="wow"><p>This is your first program that makes real decisions on its own. Read it once, run it, then change the values and play!</p></aside>
 
 <pre data-code="kiosk.js" data-title="kiosk.js"></pre>
 <pre data-out="kiosk.js"></pre>
@@ -274,6 +286,8 @@
 <li><code>&amp;&amp;</code>, <code>||</code> and <code>!</code> combine conditions. Six values are falsy; every other value is truthy.</li>
 <li><code>switch</code> matches one value against fixed cases. End each case with <code>break</code>.</li>
 </ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>"string"</code>, because the quotes make it text. 2. <code>2</code>, because 5 goes into 17 three times with 2 left over. 3. <code>false</code>, because a number is never the same as a string.</p>
 
 <h2>Exercises</h2>
 
