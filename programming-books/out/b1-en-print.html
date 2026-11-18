@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "Chapter 2: Thinking in Steps: Algorithms"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "Chapter 3: Your Developer Toolkit"; } }
+@page ch03:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Values, Variables and Decisions"; } }
 @page ch08:first { @top-center { content: none; } }
 </style></head>
@@ -556,6 +558,286 @@ console.log(<span class="s">`Steps needed: ${steps}`</span>);</pre></div>
 <div class="next">
 <p class="next-title">Coming up in Chapter 3</p>
 <p>You now know how to think like a programmer. Next you will set up the tools that professionals use every day: a code editor, the terminal and Node.js, so you can turn your plans into programs on your own computer.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b1/ch03/en">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">Chapter 3</p><h1>Your Developer Toolkit</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>install and set up Visual Studio Code, a free professional code editor</li>
+<li>learn the handful of terminal commands every developer uses daily</li>
+<li>install Node.js and run a JavaScript file on your own computer</li>
+<li>create the project folder you will use for the rest of this book</li>
+<li>meet the browser’s developer tools and learn where to find good help</li>
+</ul>
+</div>
+
+<p class="lead">A carpenter needs a saw, a hammer and a tape measure before building anything. A programmer needs tools too, and the good news is that the best ones are free. By the end of this chapter your computer will be set up exactly like a professional developer’s, and every example in this book will run on it.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Setting up tools is the one part of programming that feels a bit boring. But you only do it once! Follow along step by step, and if something looks different on your screen, don’t worry: menus move around between versions, but the ideas stay the same.</p></div></div>
+
+<h2><span class="sec">3.1</span><span>The code editor</span></h2>
+
+<p>You could write code in any plain text program, but a <dfn>code editor</dfn> makes life much easier. It colours your code so you can read it, warns you about mistakes as you type, completes long words for you, and can run your programs without leaving the window.</p>
+
+<p>This book uses <strong>Visual Studio Code</strong>, usually called <strong>VS Code</strong>. It is free, it works on Windows, macOS and Linux, and it is the most popular editor among professional developers.</p>
+
+<ol>
+<li>Go to <code>code.visualstudio.com</code> and download the version for your computer.</li>
+<li>Install it like any other program. On Windows, tick the option <strong>Add to PATH</strong> if you see it.</li>
+<li>Open VS Code. You will see a welcome page, which you can close.</li>
+</ol>
+
+<h3>A quick tour</h3>
+
+<figure>
+<svg viewBox="0 0 520 250" role="img" aria-label="VS Code window with the activity bar, explorer, editor and terminal panel">
+<g font-family="Inter" font-size="12">
+<rect x="10" y="10" width="500" height="230" rx="10" fill="#1f1d36"/>
+<rect x="10" y="10" width="500" height="22" rx="10" fill="#2a2745"/><circle cx="26" cy="21" r="4" fill="#f87171"/><circle cx="40" cy="21" r="4" fill="#e0e0e0"/><circle cx="54" cy="21" r="4" fill="#34d399"/>
+<rect x="10" y="32" width="34" height="208" fill="#2a2745"/>
+<rect x="18" y="44" width="18" height="18" rx="3" fill="#c8c8c8"/><rect x="18" y="72" width="18" height="18" rx="3" fill="#5b5873"/><rect x="18" y="100" width="18" height="18" rx="3" fill="#5b5873"/>
+<rect x="44" y="32" width="120" height="208" fill="#24223d"/>
+<text x="54" y="50" fill="#a5a3c9" font-weight="700" font-size="10">EXPLORER</text>
+<text x="58" y="70" fill="#e7e5ff">▾ code-from-zero</text><text x="70" y="88" fill="#e7e5ff">check.js</text><text x="70" y="104" fill="#e7e5ff">hello.js</text>
+<rect x="164" y="32" width="346" height="130" fill="#262626"/>
+<text x="176" y="54" fill="#c4b5fd" font-family="JetBrains Mono">console</text><text x="227" y="54" fill="#e7e5ff" font-family="JetBrains Mono">.log(</text><text x="263" y="54" fill="#e8e8e8" font-family="JetBrains Mono">"Hi!"</text><text x="299" y="54" fill="#e7e5ff" font-family="JetBrains Mono">);</text>
+<rect x="164" y="162" width="346" height="78" fill="#0f0e1f"/>
+<text x="176" y="182" fill="#a5a3c9" font-size="10" font-weight="700">TERMINAL</text>
+<text x="176" y="202" fill="#e7e5ff" font-family="JetBrains Mono">$ node hello.js</text><text x="176" y="220" fill="#e8e8e8" font-family="JetBrains Mono">Hi!</text>
+</g>
+<g font-family="Inter" font-size="11" font-weight="700" fill="#fff">
+<rect x="14" y="214" width="26" height="18" rx="9" fill="#2b2b2b"/><text x="27" y="227" text-anchor="middle">1</text>
+<rect x="128" y="214" width="26" height="18" rx="9" fill="#2b2b2b"/><text x="141" y="227" text-anchor="middle">2</text>
+<rect x="474" y="40" width="26" height="18" rx="9" fill="#2b2b2b"/><text x="487" y="53" text-anchor="middle">3</text>
+<rect x="474" y="170" width="26" height="18" rx="9" fill="#2b2b2b"/><text x="487" y="183" text-anchor="middle">4</text>
+</g>
+</svg>
+<figcaption><b>Figure 3.1:</b> The four areas of VS Code: (1) the activity bar, (2) the Explorer with your files, (3) the editor, and (4) the built-in terminal.</figcaption>
+</figure>
+
+<ol>
+<li><strong>The activity bar</strong> on the far side switches between views: files, search, Git and extensions.</li>
+<li><strong>The Explorer</strong> shows the files in your project folder.</li>
+<li><strong>The editor</strong> is where you write code. You can open several files in tabs.</li>
+<li><strong>The terminal panel</strong> lets you run commands without leaving VS Code. Open it from the menu <strong>View → Terminal</strong>.</li>
+</ol>
+
+<h3>Settings that help beginners</h3>
+
+<p>Open the extensions view, search for <strong>Prettier</strong> and click <strong>Install</strong>. Prettier is a <dfn>formatter</dfn>: every time you save, it neatly arranges spaces and line breaks in your code, so you never have to worry about them. Then open the settings file with <code>Ctrl</code> + <code>Shift</code> + <code>P</code> (<code>Cmd</code> + <code>Shift</code> + <code>P</code> on a Mac), type <strong>Open User Settings (JSON)</strong>, and add these lines:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">settings.json</div><pre class="code">{
+  <span class="s">&quot;editor.fontSize&quot;</span>: <span class="n">16</span>,
+  <span class="s">&quot;editor.formatOnSave&quot;</span>: <span class="k">true</span>,
+  <span class="s">&quot;editor.defaultFormatter&quot;</span>: <span class="s">&quot;esbenp.prettier-vscode&quot;</span>,
+  <span class="s">&quot;files.autoSave&quot;</span>: <span class="s">&quot;onFocusChange&quot;</span>,
+  <span class="s">&quot;editor.wordWrap&quot;</span>: <span class="s">&quot;on&quot;</span>
+}</pre></div>
+
+<p>These settings make the text bigger, format your code on every save, save files automatically when you switch windows, and wrap long lines so you never have to scroll sideways.</p>
+
+<h2><span class="sec">3.2</span><span>The terminal</span></h2>
+
+<p>The <dfn>terminal</dfn> (also called the command line or shell) is a window where you control the computer by typing commands instead of clicking. It may look old-fashioned, but every professional developer uses it every day. It is faster than clicking, and many tools, including Node.js, are used mainly from the terminal.</p>
+
+<p>You can open it inside VS Code, or on its own:</p>
+<ul>
+<li><strong>Windows:</strong> open <strong>Terminal</strong> (or <strong>PowerShell</strong>) from the Start menu.</li>
+<li><strong>macOS:</strong> press <code>Cmd</code> + <code>Space</code>, type <strong>Terminal</strong>, and press Enter.</li>
+<li><strong>Linux:</strong> press <code>Ctrl</code> + <code>Alt</code> + <code>T</code> on most systems.</li>
+</ul>
+
+<p>The terminal shows a <dfn>prompt</dfn>, often ending in <code>$</code> or <code>&gt;</code>, and waits for you to type. In this book, a line that starts with <code>$</code> is a command for you to type (without the <code>$</code>), and the lines below it are what the computer answers.</p>
+
+<h3>Five commands you need</h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c">$ </span><span class="k">pwd</span>
+/Users/sara
+<span class="c">$ </span><span class="k">ls</span>
+Desktop    Documents    Downloads    code-from-zero
+<span class="c">$ </span><span class="k">cd code-from-zero</span>
+<span class="c">$ </span><span class="k">pwd</span>
+/Users/sara/code-from-zero
+<span class="c">$ </span><span class="k">cd ..</span></pre></div>
+
+<table>
+<thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>pwd</code></td><td>Shows which folder you are in (“print working directory”)</td><td><code>pwd</code></td></tr>
+<tr><td><code>ls</code></td><td>Lists the files and folders here</td><td><code>ls</code></td></tr>
+<tr><td><code>cd</code></td><td>Changes into another folder; <code>cd ..</code> goes up one level</td><td><code>cd code-from-zero</code></td></tr>
+<tr><td><code>mkdir</code></td><td>Makes a new folder</td><td><code>mkdir my-app</code></td></tr>
+<tr><td><code>clear</code></td><td>Clears the screen</td><td><code>clear</code></td></tr>
+</tbody>
+</table>
+
+<p>These five commands work the same in the macOS and Linux terminals and in Windows PowerShell, so you can follow this book on any computer.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Two shortcuts that feel like magic</p><p>Press the <strong>Up arrow</strong> to bring back the previous command, so you never retype it. Press <strong>Tab</strong> while typing a file or folder name, and the terminal completes it for you. Professionals press Tab constantly; it also prevents spelling mistakes.</p></aside>
+
+<h2><span class="sec">3.3</span><span>Installing Node.js</span></h2>
+
+<p>In Chapter 1 you ran JavaScript in the browser. <dfn>Node.js</dfn> lets you run JavaScript files directly on your computer from the terminal. You will use it for most of the examples in this book.</p>
+
+<ol>
+<li>Go to <code>nodejs.org</code>.</li>
+<li>Download the version marked <strong>LTS</strong>, which stands for “Long Term Support”. It is the stable version that companies use.</li>
+<li>Run the installer and accept the default options.</li>
+<li>Close and reopen your terminal, so it notices the new program.</li>
+</ol>
+
+<p>Check that everything works by asking for the version numbers:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c">$ </span><span class="k">node --version</span>
+v22.12.0
+<span class="c">$ </span><span class="k">npm --version</span>
+10.9.0</pre></div>
+
+<p>Your numbers will probably be different, and that is fine. Any LTS version from 22 upwards will run every example in this book. <code>npm</code> was installed together with Node.js; it is the tool for adding ready-made code packages to a project, and you will meet it in later chapters.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>If the terminal says <code>command not found</code> or <code>is not recognized</code>, the most common cause is that the terminal was already open during the installation. Close every terminal window, open a new one and try again. If that does not help, restart your computer.</p></aside>
+
+<h2><span class="sec">3.4</span><span>Your first project</span></h2>
+
+<p>Developers keep each project in its own folder. Let us create the folder you will use for every example in this book:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Make a folder for the book, go into it, and open it in VS Code</span>
+<span class="c">$ </span><span class="k">mkdir code-from-zero</span>
+<span class="c">$ </span><span class="k">cd code-from-zero</span>
+<span class="c">$ </span><span class="k">code .</span></pre></div>
+
+<p>The last command, <code>code .</code>, opens the current folder in VS Code. The dot means “this folder”. (On a Mac, if <code>code</code> is not found, open VS Code, press <code>Cmd</code> + <code>Shift</code> + <code>P</code> and run <strong>Shell Command: Install ‘code’ command in PATH</strong>.)</p>
+
+<p>In the VS Code Explorer, click the <strong>New File</strong> icon, name the file <code>check.js</code>, and type:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">check.js</div><pre class="code">console.log(<span class="s">&quot;Node.js is working!&quot;</span>);
+console.log(<span class="s">`2 + 2 = ${2 + 2}`</span>);</pre></div>
+
+<p>Save it, open the terminal panel in VS Code, and run it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c">$ </span><span class="k">node check.js</span>
+Node.js is working!
+2 + 2 = 4</pre></div>
+
+<p>If you see those two lines, your toolkit is complete. You wrote a file, saved it, and asked Node.js to run it. That is exactly how professional developers work all day long.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>You did it! From now on, whenever you see a file name above a listing in this book, create that file in your <code>code-from-zero</code> folder and run it with <code>node</code> and the file name.</p></div></div>
+
+<h2><span class="sec">3.5</span><span>The browser’s developer tools</span></h2>
+
+<p>You already opened the browser’s <dfn>developer tools</dfn> (DevTools) in Chapter 1 with <code>F12</code>. They contain much more than the console. The three tabs you will use most are:</p>
+
+<table>
+<thead><tr><th>Tab</th><th>What you can do there</th><th>Used in</th></tr></thead>
+<tbody>
+<tr><td><strong>Elements</strong></td><td>See and edit the HTML and CSS of any page, live</td><td>Chapters 5 to 7</td></tr>
+<tr><td><strong>Console</strong></td><td>Run JavaScript and see messages and errors</td><td>All JavaScript chapters</td></tr>
+<tr><td><strong>Network</strong></td><td>Watch every file and request the page loads</td><td>Chapters 4 and 13</td></tr>
+</tbody>
+</table>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>Open any news website, press <code>F12</code>, choose <strong>Elements</strong>, and use the arrow icon in the top corner of the panel to click on a headline. Double-click the text in the Elements panel and change it. The headline on the page changes too! Don’t worry: you only changed your own copy, and it disappears when you reload.</p></aside>
+
+<h2><span class="sec">3.6</span><span>Where to find good help</span></h2>
+
+<p>No developer remembers everything. Knowing <em>where to look</em> is a professional skill:</p>
+
+<ul>
+<li><strong>MDN Web Docs</strong> (<code>developer.mozilla.org</code>) is the most trusted reference for HTML, CSS and JavaScript. It explains every feature with examples. When you search the web, add “mdn” to your search.</li>
+<li><strong>Error messages</strong> are help too. Copy the main line of an error into a search engine; someone has almost always had the same problem before. Chapter 14 teaches you to read errors properly.</li>
+<li><strong>Q&amp;A sites and forums</strong>, such as Stack Overflow, have answers to millions of questions. Check the date of an answer, because old answers may describe outdated ways of working.</li>
+<li><strong>AI assistants</strong> can explain an idea in different words or help you understand an error. Use them as a patient tutor, not as a replacement for thinking: type the code yourself, and always test that it really works.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>When you ask for help, give three things: what you tried, what you expected, and what actually happened, including the exact error message. Good questions get fast answers, and very often, writing the question down helps you find the answer yourself.</p></aside>
+
+<h2><span class="sec">3.7</span><span>Small habits, big difference</span></h2>
+
+<ul>
+<li><strong>Name files in lowercase, with dashes instead of spaces:</strong> <code>ticket-kiosk.js</code>, not <code>Ticket Kiosk.js</code>. Spaces in names cause trouble in the terminal and on web servers.</li>
+<li><strong>One folder per project</strong>, and nothing unrelated inside it.</li>
+<li><strong>Learn a few keyboard shortcuts.</strong> They save hours over a year:</li>
+</ul>
+
+<table>
+<thead><tr><th>Action</th><th>Windows and Linux</th><th>macOS</th></tr></thead>
+<tbody>
+<tr><td>Save</td><td><code>Ctrl</code> + <code>S</code></td><td><code>Cmd</code> + <code>S</code></td></tr>
+<tr><td>Undo</td><td><code>Ctrl</code> + <code>Z</code></td><td><code>Cmd</code> + <code>Z</code></td></tr>
+<tr><td>Comment a line on or off</td><td><code>Ctrl</code> + <code>/</code></td><td><code>Cmd</code> + <code>/</code></td></tr>
+<tr><td>Open or close the terminal</td><td><code>Ctrl</code> + <code>`</code></td><td><code>Ctrl</code> + <code>`</code></td></tr>
+<tr><td>Command palette</td><td><code>Ctrl</code> + <code>Shift</code> + <code>P</code></td><td><code>Cmd</code> + <code>Shift</code> + <code>P</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>VS Code</strong> is a free, professional code editor. <strong>Prettier</strong> formats your code on every save.</li>
+<li>The <strong>terminal</strong> controls the computer with typed commands. Start with <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code> and <code>clear</code>, plus the Up arrow and Tab.</li>
+<li><strong>Node.js</strong> runs JavaScript files on your computer: <code>node file.js</code>. Install the <strong>LTS</strong> version.</li>
+<li>Keep each project in its own folder, and name files in lowercase with dashes.</li>
+<li>The browser’s <strong>DevTools</strong> let you inspect pages, run JavaScript and watch network requests.</li>
+<li><strong>MDN</strong> is the best reference. Ask questions with what you tried, what you expected and what happened.</li>
+</ul>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In the terminal, go into your <code>code-from-zero</code> folder, create a folder called <code>chapter-03</code> with <code>mkdir</code>, go into it, and check where you are with <code>pwd</code>.</li>
+<li><span class="level">Easy</span> Create <code>me.js</code> that prints your name, your city and your favourite food on three lines. Run it with Node.js.</li>
+<li><span class="level medium">Medium</span> Find the MDN page for <code>console.log</code>. What other <code>console</code> commands does it list? Try <code>console.error</code> and <code>console.table</code>.</li>
+<li><span class="level medium">Medium</span> Open any website’s DevTools, choose <strong>Network</strong>, and reload the page. How many requests did it make? Which was the largest file?</li>
+<li><span class="level hard">Challenge</span> Use only the terminal (no mouse) to create a folder <code>practice</code>, create a file inside it with the command <code>code practice/test.js</code>, write a program that prints the result of <code>365 * 24</code>, and run it. What does the number mean?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 4</p>
+<p>Your tools are ready. Part 2 of the book is about the web. Before you build your first page, you will find out what really happens in the second between typing an address and seeing a website appear.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/en">

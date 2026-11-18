@@ -105,7 +105,7 @@ def highlight_shell(src):
 
 def highlight(src, name):
     ext = name.rsplit(".", 1)[-1]
-    if ext == "js":
+    if ext in ("js", "json"):
         return highlight_js(src)
     if ext in ("html", "css"):
         return highlight_markup(src, ext)

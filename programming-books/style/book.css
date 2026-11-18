@@ -79,7 +79,7 @@ code { font: 400 0.86em var(--mono); font-variant-ligatures: none; font-feature-
 
 /* ---------- chapter opener ---------- */
 .chapter { break-before: page; }
-.opener { position: relative; border-radius: 14pt; padding: 22pt 22pt 20pt; margin: 0 0 16pt; color: #fff; overflow: hidden;
+.opener { position: relative; border-radius: 14pt; padding: 22pt 22pt 20pt; margin: 0 0 16pt; color: #fff; clip-path: inset(0 round 14pt);
   background: linear-gradient(125deg, var(--brand) 0%, var(--brand-2) 70%, var(--fact) 130%); min-height: 2.35in; }
 .opener::after { content: ""; position: absolute; inset-inline-end: -40pt; bottom: -60pt; width: 190pt; height: 190pt; border-radius: 50%; background: rgba(255,255,255,0.10); }
 .opener-num { position: absolute; inset-inline-end: 20pt; top: -18pt; font: 700 120pt/1 var(--head); color: rgba(255,255,255,0.16); }
