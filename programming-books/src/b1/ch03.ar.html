@@ -1,0 +1,286 @@
+<section class="chapter" data-chapter="3" data-code="b1/ch03/ar">
+<p class="chapter-kicker">الفصل 3</p>
+<h1>أدوات المبرمج</h1>
+
+<div class="goals">
+<p class="goals-title">ستفعل في هذا الفصل ما يلي</p>
+<ul>
+<li>تثبّت Visual Studio Code، وهو محرر كود احترافي مجاني، وتجهّزه</li>
+<li>تتعلم أوامر الطرفية القليلة التي يستخدمها كل مطور يومياً</li>
+<li>تثبّت Node.js وتشغّل ملف JavaScript على حاسوبك</li>
+<li>تنشئ مجلد المشروع الذي ستستخدمه في بقية الكتاب</li>
+<li>تتعرف على أدوات المطورين في المتصفح، وتعرف أين تجد المساعدة الجيدة</li>
+</ul>
+</div>
+
+<p class="lead">النجّار يحتاج منشاراً ومطرقة وشريط قياس قبل أن يبني أي شيء، والمبرمج يحتاج أدوات أيضاً. والخبر السار أن أفضلها مجاني. وفي آخر هذا الفصل سيكون حاسوبك مجهزاً تماماً مثل حاسوب مطور محترف، وستعمل عليه كل أمثلة هذا الكتاب.</p>
+
+<aside class="bit" data-mood="happy"><p>تجهيز الأدوات هو الجزء الوحيد في البرمجة الذي قد يبدو مملاً قليلاً، لكنك تفعله مرة واحدة فقط! اتبعني خطوة بخطوة، وإن بدا شيء مختلفاً على شاشتك فلا تقلق: القوائم تتغير من إصدار لآخر، لكن الأفكار تبقى كما هي.</p></aside>
+
+<h2>3.1 محرر الكود</h2>
+
+<p>يمكنك أن تكتب الكود في أي برنامج للنصوص، لكن <dfn>محرر الكود</dfn> يجعل الحياة أسهل بكثير. فهو يلوّن الكود لتقرأه بسهولة، وينبهك إلى الأخطاء وأنت تكتب، ويكمل الكلمات الطويلة عنك، ويستطيع تشغيل برامجك دون أن تغادر نافذته.</p>
+
+<p>يستخدم هذا الكتاب <strong>Visual Studio Code</strong>، ويُسمى غالباً <strong>VS Code</strong>. وهو مجاني، ويعمل على Windows وmacOS وLinux، وهو المحرر الأكثر انتشاراً بين المطورين المحترفين.</p>
+
+<ol>
+<li>ادخل إلى <code>code.visualstudio.com</code> ونزّل النسخة المناسبة لحاسوبك.</li>
+<li>ثبّته مثل أي برنامج آخر. وفي Windows ضع علامة على الخيار <strong>Add to PATH</strong> إن ظهر لك.</li>
+<li>افتح VS Code. ستظهر صفحة ترحيب، ويمكنك إغلاقها.</li>
+</ol>
+
+<h3>جولة سريعة</h3>
+
+<figure>
+<svg viewBox="0 0 520 250" role="img" aria-label="نافذة VS Code بشريط الأنشطة والمستكشف والمحرر والطرفية">
+<g font-family="Inter" font-size="12">
+<rect x="10" y="10" width="500" height="230" rx="10" fill="#1f1d36"/>
+<rect x="10" y="10" width="500" height="22" rx="10" fill="#2a2745"/><circle cx="26" cy="21" r="4" fill="#f87171"/><circle cx="40" cy="21" r="4" fill="#fbbf24"/><circle cx="54" cy="21" r="4" fill="#34d399"/>
+<rect x="10" y="32" width="34" height="208" fill="#2a2745"/>
+<rect x="18" y="44" width="18" height="18" rx="3" fill="#818cf8"/><rect x="18" y="72" width="18" height="18" rx="3" fill="#5b5873"/><rect x="18" y="100" width="18" height="18" rx="3" fill="#5b5873"/>
+<rect x="44" y="32" width="120" height="208" fill="#24223d"/>
+<text x="54" y="50" fill="#a5a3c9" font-weight="700" font-size="10">EXPLORER</text>
+<text x="58" y="70" fill="#e7e5ff">▾ code-from-zero</text><text x="70" y="88" fill="#e7e5ff">check.js</text><text x="70" y="104" fill="#e7e5ff">hello.js</text>
+<rect x="164" y="32" width="346" height="130" fill="#16142a"/>
+<text x="176" y="54" fill="#c4b5fd" font-family="JetBrains Mono">console</text><text x="227" y="54" fill="#e7e5ff" font-family="JetBrains Mono">.log(</text><text x="263" y="54" fill="#86efac" font-family="JetBrains Mono">"Hi!"</text><text x="299" y="54" fill="#e7e5ff" font-family="JetBrains Mono">);</text>
+<rect x="164" y="162" width="346" height="78" fill="#0f0e1f"/>
+<text x="176" y="182" fill="#a5a3c9" font-size="10" font-weight="700">TERMINAL</text>
+<text x="176" y="202" fill="#e7e5ff" font-family="JetBrains Mono">$ node hello.js</text><text x="176" y="220" fill="#86efac" font-family="JetBrains Mono">Hi!</text>
+</g>
+<g font-family="Inter" font-size="11" font-weight="700" fill="#fff">
+<rect x="14" y="214" width="26" height="18" rx="9" fill="#db2777"/><text x="27" y="227" text-anchor="middle">1</text>
+<rect x="128" y="214" width="26" height="18" rx="9" fill="#db2777"/><text x="141" y="227" text-anchor="middle">2</text>
+<rect x="474" y="40" width="26" height="18" rx="9" fill="#db2777"/><text x="487" y="53" text-anchor="middle">3</text>
+<rect x="474" y="170" width="26" height="18" rx="9" fill="#db2777"/><text x="487" y="183" text-anchor="middle">4</text>
+</g>
+</svg>
+<figcaption><b>الشكل 3.1:</b> أقسام VS Code الأربعة: (1) شريط الأنشطة، و(2) المستكشف وفيه ملفاتك، و(3) المحرر، و(4) الطرفية المدمجة. (واجهة VS Code بالإنجليزية افتراضياً، ويمكنك تعريبها بإضافة Arabic Language Pack، لكن أنصحك بإبقائها إنجليزية لتطابق ما ستجده في الشروحات حول العالم.)</figcaption>
+</figure>
+
+<ol>
+<li><strong>شريط الأنشطة</strong> في طرف النافذة ينقلك بين العروض: الملفات، والبحث، وGit، والإضافات.</li>
+<li><strong>المستكشف</strong> (Explorer) يعرض ملفات مجلد مشروعك.</li>
+<li><strong>المحرر</strong> هو مكان كتابة الكود، ويمكنك أن تفتح فيه عدة ملفات في تبويبات.</li>
+<li><strong>لوحة الطرفية</strong> تتيح لك تشغيل الأوامر دون مغادرة VS Code. افتحها من القائمة <strong>View ← Terminal</strong>.</li>
+</ol>
+
+<h3>إعدادات تساعد المبتدئ</h3>
+
+<p>افتح عرض الإضافات، وابحث عن <strong>Prettier</strong> واضغط <strong>Install</strong>. وPrettier <dfn>منسّق</dfn> (formatter): كلما حفظت الملف رتّب المسافات والأسطر في كودك بعناية، فلا تقلق منها أبداً. ثم افتح ملف الإعدادات بـ <code>Ctrl</code> + <code>Shift</code> + <code>P</code> (و<code>Cmd</code> + <code>Shift</code> + <code>P</code> على الماك)، واكتب <strong>Open User Settings (JSON)</strong>، وأضف هذه الأسطر:</p>
+
+<pre data-code="settings.json" data-title="settings.json"></pre>
+
+<p>هذه الإعدادات تكبّر الخط، وتنسّق الكود مع كل حفظ، وتحفظ الملفات تلقائياً حين تنتقل لنافذة أخرى، وتلف الأسطر الطويلة فلا تحتاج أن تتمرر يميناً ويساراً.</p>
+
+<h2>3.2 الطرفية</h2>
+
+<p><dfn>الطرفية</dfn> (terminal)، وتُسمى أيضاً سطر الأوامر، نافذة تتحكم فيها بالحاسوب بكتابة الأوامر بدل النقر. قد تبدو قديمة الطراز، لكن كل مطور محترف يستخدمها كل يوم. فهي أسرع من النقر، وأدوات كثيرة، ومنها Node.js، تُستخدم أساساً من الطرفية.</p>
+
+<p>يمكنك أن تفتحها داخل VS Code، أو وحدها:</p>
+<ul>
+<li><strong>Windows:</strong> افتح <strong>Terminal</strong> (أو <strong>PowerShell</strong>) من قائمة ابدأ.</li>
+<li><strong>macOS:</strong> اضغط <code>Cmd</code> + <code>Space</code> واكتب <strong>Terminal</strong> ثم Enter.</li>
+<li><strong>Linux:</strong> اضغط <code>Ctrl</code> + <code>Alt</code> + <code>T</code> في معظم الأنظمة.</li>
+</ul>
+
+<p>تعرض الطرفية <dfn>محثّاً</dfn> (prompt) ينتهي غالباً بـ <code>$</code> أو <code>&gt;</code>، وتنتظر أن تكتب. وفي هذا الكتاب، السطر الذي يبدأ بـ <code>$</code> أمر تكتبه أنت (بدون <code>$</code>)، والأسطر تحته هي ما يجيب به الحاسوب.</p>
+
+<h3>خمسة أوامر تحتاجها</h3>
+
+<pre data-code="navigate.sh" data-title="terminal"></pre>
+
+<table>
+<thead><tr><th>الأمر</th><th>ماذا يفعل</th><th>مثال</th></tr></thead>
+<tbody>
+<tr><td><code>pwd</code></td><td>يعرض المجلد الذي أنت فيه</td><td><code>pwd</code></td></tr>
+<tr><td><code>ls</code></td><td>يعرض الملفات والمجلدات هنا</td><td><code>ls</code></td></tr>
+<tr><td><code>cd</code></td><td>ينقلك إلى مجلد آخر، و<code>cd ..</code> يصعد بك مستوى واحداً</td><td><code>cd code-from-zero</code></td></tr>
+<tr><td><code>mkdir</code></td><td>ينشئ مجلداً جديداً</td><td><code>mkdir my-app</code></td></tr>
+<tr><td><code>clear</code></td><td>يمسح الشاشة</td><td><code>clear</code></td></tr>
+</tbody>
+</table>
+
+<p>هذه الأوامر الخمسة تعمل بالطريقة نفسها في طرفية macOS وLinux وفي PowerShell على Windows، فتستطيع أن تتابع هذا الكتاب على أي حاسوب.</p>
+
+<aside class="box tip"><p class="box-title">اختصاران كالسحر</p><p>اضغط <strong>السهم لأعلى</strong> لتستعيد الأمر السابق فلا تعيد كتابته. واضغط <strong>Tab</strong> وأنت تكتب اسم ملف أو مجلد، فتكمله الطرفية عنك. المحترفون يضغطون Tab باستمرار، وهي تمنع أخطاء الكتابة أيضاً.</p></aside>
+
+<h2>3.3 تثبيت Node.js</h2>
+
+<p>شغّلت JavaScript في المتصفح في الفصل 1. أما <dfn>Node.js</dfn> فيتيح لك تشغيل ملفات JavaScript على حاسوبك مباشرة من الطرفية، وستستخدمه في معظم أمثلة هذا الكتاب.</p>
+
+<ol>
+<li>ادخل إلى <code>nodejs.org</code>.</li>
+<li>نزّل النسخة المكتوب عليها <strong>LTS</strong>، أي «الدعم طويل الأمد»، وهي النسخة المستقرة التي تستخدمها الشركات.</li>
+<li>شغّل المثبّت واقبل الخيارات الافتراضية.</li>
+<li>أغلق الطرفية وافتحها من جديد لتتعرف على البرنامج الجديد.</li>
+</ol>
+
+<p>وتأكد أن كل شيء يعمل بطلب أرقام الإصدارات:</p>
+
+<pre data-code="versions.sh" data-title="terminal"></pre>
+
+<p>الأرجح أن أرقامك ستختلف، ولا بأس في ذلك. فأي إصدار LTS من 22 فما فوق يشغّل كل أمثلة هذا الكتاب. و<code>npm</code> ثُبّت مع Node.js، وهو أداة إضافة حزم الكود الجاهزة إلى المشروع، وستتعرف عليه في الفصول القادمة.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>إن قالت الطرفية <code>command not found</code> أو <code>is not recognized</code>، فالسبب الأشهر أن الطرفية كانت مفتوحة أثناء التثبيت. أغلق كل نوافذ الطرفية، وافتح واحدة جديدة وجرّب مرة أخرى. وإن لم ينجح ذلك فأعد تشغيل الحاسوب.</p></aside>
+
+<h2>3.4 مشروعك الأول</h2>
+
+<p>المطورون يحفظون كل مشروع في مجلد خاص به. فلننشئ المجلد الذي ستستخدمه في كل أمثلة هذا الكتاب:</p>
+
+<pre data-code="first-project.sh" data-title="terminal"></pre>
+
+<p>الأمر الأخير، <code>code .</code>، يفتح المجلد الحالي في VS Code، والنقطة تعني «هذا المجلد». (وعلى الماك، إن لم يُعرف الأمر <code>code</code>، افتح VS Code واضغط <code>Cmd</code> + <code>Shift</code> + <code>P</code> وشغّل <strong>Shell Command: Install ‘code’ command in PATH</strong>.)</p>
+
+<p>في مستكشف VS Code، اضغط أيقونة <strong>New File</strong>، وسمِّ الملف <code>check.js</code>، واكتب فيه:</p>
+
+<pre data-code="check.js" data-title="check.js"></pre>
+
+<p>احفظه، وافتح لوحة الطرفية في VS Code، وشغّله:</p>
+
+<pre data-code="run.sh" data-title="terminal"></pre>
+
+<p>إن رأيت هذين السطرين فقد اكتملت أدواتك. كتبت ملفاً وحفظته وطلبت من Node.js أن يشغّله، وهذا بالضبط ما يفعله المطورون المحترفون طوال اليوم.</p>
+
+<aside class="bit" data-mood="wow"><p>أحسنت! من الآن، كلما رأيت اسم ملف فوق مثال في هذا الكتاب، أنشئ الملف في مجلد <code>code-from-zero</code> وشغّله بـ <code>node</code> واسم الملف.</p></aside>
+
+<h2>3.5 أدوات المطورين في المتصفح</h2>
+
+<p>فتحت <dfn>أدوات المطورين</dfn> (DevTools) في المتصفح في الفصل 1 بـ <code>F12</code>، وفيها أكثر بكثير من الـ Console. وأكثر ثلاثة تبويبات ستستخدمها هي:</p>
+
+<table>
+<thead><tr><th>التبويب</th><th>ما تفعله فيه</th><th>يُستخدم في</th></tr></thead>
+<tbody>
+<tr><td><strong>Elements</strong></td><td>ترى HTML وCSS لأي صفحة وتعدّلهما مباشرة</td><td>الفصول 5 إلى 7</td></tr>
+<tr><td><strong>Console</strong></td><td>تشغّل JavaScript وترى الرسائل والأخطاء</td><td>كل فصول JavaScript</td></tr>
+<tr><td><strong>Network</strong></td><td>تراقب كل ملف وطلب تحمّله الصفحة</td><td>الفصلان 4 و13</td></tr>
+</tbody>
+</table>
+
+<aside class="box try"><p class="box-title">جرّب</p><p>افتح أي موقع أخبار، واضغط <code>F12</code>، واختر <strong>Elements</strong>، واستخدم أيقونة السهم في زاوية اللوحة لتنقر على عنوان خبر. انقر نقرتين على النص في لوحة Elements وغيّره، فيتغير العنوان في الصفحة! لا تقلق: لقد غيّرت نسختك أنت فقط، وتختفي حين تعيد تحميل الصفحة.</p></aside>
+
+<h2>3.6 أين تجد المساعدة الجيدة</h2>
+
+<p>لا يوجد مطور يحفظ كل شيء، ومعرفة <em>أين تبحث</em> مهارة احترافية:</p>
+
+<ul>
+<li><strong>MDN Web Docs</strong> (<code>developer.mozilla.org</code>) أوثق مرجع لـ HTML وCSS وJavaScript، ويشرح كل ميزة بأمثلة، وأجزاء كبيرة منه مترجمة إلى العربية. وحين تبحث في الإنترنت أضف كلمة «mdn» إلى بحثك.</li>
+<li><strong>رسائل الخطأ</strong> مساعدة أيضاً. انسخ السطر الرئيسي من الخطأ إلى محرك البحث، فالأغلب أن أحداً واجه المشكلة نفسها من قبل. والفصل 14 يعلمك قراءة الأخطاء جيداً. وابحث بالإنجليزية، ففيها أكثر الإجابات.</li>
+<li><strong>مواقع الأسئلة والمنتديات</strong>، مثل Stack Overflow، فيها إجابات ملايين الأسئلة. وانتبه لتاريخ الإجابة، فالإجابات القديمة قد تصف طرقاً لم تعد مستخدمة.</li>
+<li><strong>مساعدو الذكاء الاصطناعي</strong> يمكنهم شرح الفكرة بكلمات مختلفة أو مساعدتك على فهم خطأ. استخدمهم كمعلّم صبور لا كبديل عن التفكير: اكتب الكود بنفسك، وتأكد دائماً أنه يعمل فعلاً.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>حين تطلب المساعدة قدّم ثلاثة أشياء: ما جرّبته، وما توقعته، وما حدث فعلاً، ومعه رسالة الخطأ كما هي. فالأسئلة الجيدة تحصل على إجابات سريعة، وكثيراً ما تساعدك كتابة السؤال نفسه على إيجاد الجواب.</p></aside>
+
+<h2>3.7 عادات صغيرة وفرق كبير</h2>
+
+<ul>
+<li><strong>سمِّ الملفات بحروف إنجليزية صغيرة، وبشرطات بدل المسافات:</strong> <code>ticket-kiosk.js</code> لا <code>Ticket Kiosk.js</code>. فالمسافات والحروف العربية في الأسماء تسبب مشكلات في الطرفية وعلى خوادم الويب.</li>
+<li><strong>مجلد واحد لكل مشروع</strong>، ولا شيء غريب عنه بداخله.</li>
+<li><strong>تعلّم بعض اختصارات لوحة المفاتيح.</strong> فهي توفر ساعات على مدار السنة:</li>
+</ul>
+
+<table>
+<thead><tr><th>الفعل</th><th>Windows وLinux</th><th>macOS</th></tr></thead>
+<tbody>
+<tr><td>الحفظ</td><td><code>Ctrl</code> + <code>S</code></td><td><code>Cmd</code> + <code>S</code></td></tr>
+<tr><td>التراجع</td><td><code>Ctrl</code> + <code>Z</code></td><td><code>Cmd</code> + <code>Z</code></td></tr>
+<tr><td>تحويل السطر إلى تعليق أو العكس</td><td><code>Ctrl</code> + <code>/</code></td><td><code>Cmd</code> + <code>/</code></td></tr>
+<tr><td>فتح الطرفية أو إغلاقها</td><td><code>Ctrl</code> + <code>`</code></td><td><code>Ctrl</code> + <code>`</code></td></tr>
+<tr><td>لوحة الأوامر</td><td><code>Ctrl</code> + <code>Shift</code> + <code>P</code></td><td><code>Cmd</code> + <code>Shift</code> + <code>P</code></td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>VS Code</strong> محرر كود احترافي مجاني، و<strong>Prettier</strong> ينسق كودك مع كل حفظ.</li>
+<li><strong>الطرفية</strong> تتحكم بالحاسوب بالأوامر المكتوبة. ابدأ بـ <code>pwd</code> و<code>ls</code> و<code>cd</code> و<code>mkdir</code> و<code>clear</code>، ومعها السهم لأعلى وTab.</li>
+<li><strong>Node.js</strong> يشغّل ملفات JavaScript على حاسوبك: <code>node file.js</code>. وثبّت إصدار <strong>LTS</strong>.</li>
+<li>احفظ كل مشروع في مجلده، وسمِّ الملفات بحروف إنجليزية صغيرة وشرطات.</li>
+<li><strong>أدوات المطورين</strong> في المتصفح تتيح لك فحص الصفحات وتشغيل JavaScript ومراقبة طلبات الشبكة.</li>
+<li><strong>MDN</strong> أفضل مرجع. واسأل بما جرّبته وما توقعته وما حدث.</li>
+</ul>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">هذه المشاريع تجعل أدواتك الجديدة طبيعية في يدك. نفّذها بلوحة المفاتيح قدر ما تستطيع، فالسرعة في الطرفية والمحرر تأتي من الممارسة لا من القراءة.</p>
+
+<div class="project">
+<p class="project-label">مشروع 3.1 · سهل</p>
+<h3>مجلد لملاحظاتك بالطرفية وحدها</h3>
+<p class="project-goal">أنشئ بنية مجلدات لملاحظاتك عن هذا الكتاب، وتنقّل فيها بالطرفية وحدها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>cd</code> و<code>mkdir</code> و<code>ls</code> و<code>pwd</code> والسهم لأعلى وTab.</p>
+<ol class="steps">
+<li>افتح الطرفية وادخل إلى <code>code-from-zero</code>.</li>
+<li>أنشئ مجلداً اسمه <code>book-notes</code> وادخل إليه.</li>
+<li>أنشئ أربعة مجلدات من <code>part-1</code> إلى <code>part-4</code> بأمر واحد، فـ <code>mkdir</code> تقبل عدة أسماء تفصلها مسافات.</li>
+<li>ادخل إلى <code>part-1</code> وتأكد من مكانك بـ <code>pwd</code>، ثم اصعد مستويين بـ <code>cd ..</code> مرتين.</li>
+<li>استخدم السهم لأعلى لتكرار أمر، وTab لإكمال اسم مجلد، مرة واحدة على الأقل لكل منهما.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن تهت فـ <code>pwd</code> تخبرك دائماً أين أنت. وستبدأ مسارات مجلداتك بشكل مختلف حسب حاسوبك واسم المستخدم.</p>
+<p><strong>يجب أن تبدو الطرفية عندك هكذا:</strong></p>
+<pre data-code="projects/folders.sh" data-title="terminal"></pre>
+</div>
+
+<div class="project">
+<p class="project-label">مشروع 3.2 · سهل</p>
+<h3>اقتباس اليوم</h3>
+<p class="project-goal">اكتب برنامجاً صغيراً يطبع اقتباساً مشجعاً عن البرمجة، وشغّله من طرفية VS Code نفسها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إنشاء الملفات وتشغيلها، وطرفية VS Code، وPrettier، ونظرة أولى على القوائم.</p>
+<ol class="steps">
+<li>في VS Code أنشئ <code>quote.js</code> في مجلد <code>code-from-zero</code>.</li>
+<li>اكتب قائمة من أربعة اقتباسات بين قوسين مربعين تفصلها فواصل، كما في الحل أدناه. وستتعلم القوائم جيداً في الفصل 9.</li>
+<li>اطبع عنواناً، ثم <code>quotes[today]</code>، حيث <code>today</code> رقم من 0 إلى 3.</li>
+<li>أفسد المسافات عمداً ثم احفظ، وشاهد Prettier يرتّبها.</li>
+<li>افتح الطرفية بـ <code>Ctrl</code> + <code>`</code> وشغّل <code>node quote.js</code>. ثم غيّر <code>today</code> وشغّله مرة أخرى بالسهم لأعلى.</li>
+</ol>
+<pre class="plain">const quotes = [
+  "حُلّ المشكلة أولاً، ثم اكتب الكود.",
+  "كل خبير كان يوماً مبتدئاً.",
+  "خطوات صغيرة كل يوم خير من خطوة كبيرة كل شهر.",
+  "اقرأ رسالة الخطأ. كلها.",
+];
+const today = 2;
+console.log("اقتباس اليوم:");
+console.log(quotes[today]);
+console.log("عدد الاقتباسات:", quotes.length);</pre>
+<p class="hint"><strong>تلميح:</strong> أول اقتباس رقمه 0 لا 1. وهذا يفاجئ الجميع أول مرة، والفصل 9 يشرح السبب.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/quote.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 3.3 · متوسط</p>
+<h3>محقق أدوات المطورين</h3>
+<p class="project-goal">حقق في موقع حقيقي بأدوات المطورين في المتصفح، واكتب تقريراً قصيراً بما وجدته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> لوحات Elements وConsole وNetwork، والبحث في MDN.</p>
+<ol class="steps">
+<li>اختر موقعاً تستخدمه كثيراً، وافتحه، واضغط <code>F12</code>.</li>
+<li>في <strong>Elements</strong> ابحث عن العنوان الرئيسي. أي عنصر هو (<code>h1</code> أم <code>h2</code> أم <code>div</code>…)؟ وابحث عن هذا العنصر في MDN.</li>
+<li>في <strong>Network</strong> أعد تحميل الصفحة، واكتب: كم طلباً، وكم بيانات نُقلت، ونوع أكبر ملف.</li>
+<li>في <strong>Console</strong> اكتب <code>document.title</code> واضغط Enter. ماذا حصلت؟</li>
+<li>اكتب ما وجدته في ملف اسمه <code>detective.txt</code> في مجلد <code>book-notes</code>، جدولاً قصيراً: السؤال والجواب.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لوحة Network تعرض المجاميع في أسفلها: عدد الطلبات، والبيانات المنقولة، ووقت تحميل الصفحة. وعلّم <strong>Disable cache</strong> لترى تحميل «الزيارة الأولى».</p>
+<p><strong>نتيجتك:</strong> تقرير قصير، وليس له جواب واحد صحيح؛ فكل موقع مختلف، وهذا ما يجعل عمل المحقق ممتعاً.</p>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> في الطرفية، ادخل إلى مجلد <code>code-from-zero</code>، وأنشئ مجلداً اسمه <code>chapter-03</code> بـ <code>mkdir</code>، وادخل إليه، وتأكد من مكانك بـ <code>pwd</code>.</li>
+<li><span class="level">سهل</span> أنشئ <code>me.js</code> يطبع اسمك ومدينتك وأكلتك المفضلة في ثلاثة أسطر، وشغّله بـ Node.js.</li>
+<li><span class="level">متوسط</span> ابحث عن صفحة <code>console.log</code> في MDN. ما أوامر <code>console</code> الأخرى المذكورة فيها؟ جرّب <code>console.error</code> و<code>console.table</code>.</li>
+<li><span class="level">متوسط</span> افتح أدوات المطورين في أي موقع، واختر <strong>Network</strong>، وأعد تحميل الصفحة. كم طلباً أرسلت؟ وما أكبر ملف؟</li>
+<li><span class="level">تحدٍّ</span> استخدم الطرفية وحدها (بلا فأرة) لتنشئ مجلداً اسمه <code>practice</code>، ثم أنشئ ملفاً بداخله بالأمر <code>code practice/test.js</code>، واكتب برنامجاً يطبع ناتج <code>365 * 24</code>، وشغّله. ماذا يعني هذا الرقم؟</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 4</p>
+<p>أدواتك جاهزة. والجزء الثاني من الكتاب عن الويب. وقبل أن تبني صفحتك الأولى، ستعرف ما يحدث حقاً في الثانية التي بين كتابة العنوان وظهور الموقع أمامك.</p>
+</div>
+</section>

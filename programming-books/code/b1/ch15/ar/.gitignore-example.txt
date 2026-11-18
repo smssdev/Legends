@@ -1,0 +1,5 @@
+# ملفات لا يتتبعها Git أبداً
+node_modules/
+.env
+.DS_Store
+*.log

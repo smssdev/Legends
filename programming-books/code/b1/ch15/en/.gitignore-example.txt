@@ -1,0 +1,5 @@
+# Files Git should never track
+node_modules/
+.env
+.DS_Store
+*.log

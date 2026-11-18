@@ -1,0 +1,216 @@
+<section class="chapter" data-chapter="9" data-code="b1/ch09/en">
+<p class="chapter-kicker">Chapter 9</p>
+<h1>Loops and Arrays</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>store many values in one variable with arrays</li>
+<li>read, add and find items in an array</li>
+<li>repeat work with <code>for</code>, <code>for…of</code> and <code>while</code> loops</li>
+<li>stop a loop early or skip a step with <code>break</code> and <code>continue</code></li>
+<li>serve a whole queue of visitors with your ticket kiosk</li>
+</ul>
+</div>
+
+<p class="lead">Computers are wonderful at doing the same thing again and again, without ever getting bored or making a careless mistake on the thousandth try. In this chapter you will learn the two tools that make that possible: <strong>arrays</strong>, which hold lists of values, and <strong>loops</strong>, which repeat code for each of them.</p>
+
+<aside class="bit" data-mood="happy"><p>Remember the ticket kiosk from Chapter 8? It could serve only one visitor. By the end of this chapter, it will serve a whole queue, and the code will hardly be longer. That’s the magic of loops!</p></aside>
+
+<h2>9.1 Arrays: lists of values</h2>
+
+<p>An <dfn>array</dfn> is an ordered list of values stored in one variable. You write it with square brackets, separating the items with commas:</p>
+
+<pre data-code="arrays.js" data-title="arrays.js"></pre>
+<pre data-out="arrays.js"></pre>
+
+<p>Each item has a position called its <dfn>index</dfn>, and indexes start at <strong>zero</strong>, not one. So <code>fruits[0]</code> is the first item and <code>fruits[2]</code> is the third. The property <code>length</code> tells you how many items there are, which is why the last item is always at <code>length - 1</code>.</p>
+
+<figure>
+<svg viewBox="0 0 520 120" role="img" aria-label="An array of three fruits with indexes 0, 1 and 2">
+<g font-family="Inter" font-size="14" text-anchor="middle">
+<rect x="80" y="30" width="120" height="50" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<rect x="200" y="30" width="120" height="50" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<rect x="320" y="30" width="120" height="50" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<text x="140" y="61" font-family="JetBrains Mono" fill="#15803d">"apple"</text><text x="260" y="61" font-family="JetBrains Mono" fill="#15803d">"banana"</text><text x="380" y="61" font-family="JetBrains Mono" fill="#15803d">"mango"</text>
+<g font-weight="700" fill="#db2777"><text x="140" y="104">index 0</text><text x="260" y="104">index 1</text><text x="380" y="104">index 2</text></g>
+<text x="40" y="61" font-family="JetBrains Mono" font-weight="700" fill="#4338ca">fruits</text>
+<text x="260" y="20" fill="#5b5873" font-size="12">length = 3</text>
+</g>
+</svg>
+<figcaption><b>Figure 9.1:</b> An array is a row of numbered boxes. The numbering starts at 0.</figcaption>
+</figure>
+
+<p>Arrays come with built-in tools called <dfn>methods</dfn>, used with a dot:</p>
+
+<table>
+<thead><tr><th>Method</th><th>What it does</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>push(x)</code></td><td>Adds <code>x</code> to the end</td><td><code>fruits.push("kiwi")</code></td></tr>
+<tr><td><code>pop()</code></td><td>Removes and returns the last item</td><td><code>fruits.pop()</code></td></tr>
+<tr><td><code>includes(x)</code></td><td>Is <code>x</code> in the array? (<code>true</code> or <code>false</code>)</td><td><code>fruits.includes("mango")</code></td></tr>
+<tr><td><code>indexOf(x)</code></td><td>Where is <code>x</code>? (<code>-1</code> if missing)</td><td><code>fruits.indexOf("mango")</code></td></tr>
+<tr><td><code>join(sep)</code></td><td>Joins all items into one string</td><td><code>fruits.join(", ")</code></td></tr>
+<tr><td><code>slice(a, b)</code></td><td>Copies the items from index <code>a</code> up to (not including) <code>b</code></td><td><code>fruits.slice(0, 2)</code></td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>An array declared with <code>const</code> can still change: you can push and pop items. What <code>const</code> forbids is pointing the variable at a different array (<code>fruits = []</code>). Think of it as a box that is glued to its shelf; you can still change what is inside the box.</p></aside>
+
+<h2>9.2 The <code>for</code> loop</h2>
+
+<p>A <dfn>loop</dfn> runs the same block of code several times. The classic <code>for</code> loop counts:</p>
+
+<pre data-code="for.js" data-title="for.js"></pre>
+<pre data-out="for.js"></pre>
+
+<p>The line <code>for (let i = 1; i &lt;= 5; i++)</code> has three parts, separated by semicolons:</p>
+
+<ol>
+<li><strong>Start:</strong> <code>let i = 1</code> runs once, before the loop.</li>
+<li><strong>Condition:</strong> <code>i &lt;= 5</code> is checked before each round. When it becomes <code>false</code>, the loop ends.</li>
+<li><strong>Step:</strong> <code>i++</code> runs after each round. <code>i++</code> is short for <code>i = i + 1</code>, and <code>n--</code> means <code>n = n - 1</code>.</li>
+</ol>
+
+<p>Each round of a loop is called an <dfn>iteration</dfn>. The variable <code>i</code> is a tradition from mathematics; use it for simple counters and a meaningful name for anything else.</p>
+
+<h2>9.3 <code>for…of</code>: one item at a time</h2>
+
+<p>Most of the time you do not care about counting; you want to do something with <em>each item</em> in an array. The <code>for…of</code> loop does exactly that, and it is the loop you will use most:</p>
+
+<pre data-code="for-of.js" data-title="for-of.js"></pre>
+<pre data-out="for-of.js"></pre>
+
+<p>Read <code>for (const price of prices)</code> as “for each price in prices”. In each iteration, <code>price</code> holds the next item. This pattern, a variable outside the loop that each iteration adds to, is called an <dfn>accumulator</dfn>. You will use it to compute totals, counts, maximums and much more. You already saw it in Chapter 2: finding the largest card was an accumulator too.</p>
+
+<h2>9.4 The <code>while</code> loop</h2>
+
+<p>Sometimes you do not know in advance how many rounds you need. A <code>while</code> loop keeps going <em>as long as</em> a condition is true:</p>
+
+<pre data-code="while.js" data-title="while.js"></pre>
+<pre data-out="while.js"></pre>
+
+<p>Saving 15 a week, how long until you have 100? The loop does not know; it simply keeps adding until the goal is reached. That is the kind of question <code>while</code> is for.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: infinite loops</p><p>If the condition of a <code>while</code> loop never becomes false, the loop never ends, and your program freezes. Forget the line <code>savings = savings + 15</code>, and <code>savings</code> stays 0 for ever. If it happens, press <code>Ctrl</code> + <code>C</code> in the terminal to stop Node.js, or close the browser tab. Every programmer does this sometimes; just make sure something inside the loop moves it towards the end.</p></aside>
+
+<h2>9.5 <code>break</code> and <code>continue</code></h2>
+
+<p>Two words give you finer control inside any loop. <code>break</code> leaves the loop immediately. <code>continue</code> skips the rest of the current iteration and jumps to the next one:</p>
+
+<pre data-code="break.js" data-title="break.js"></pre>
+<pre data-out="break.js"></pre>
+
+<p>The score 72 is skipped by <code>continue</code>, 85 is printed, and then <code>-1</code> is invalid, so <code>break</code> stops everything: 90 and 64 are never checked. Use both sparingly; a loop with many jumps becomes hard to follow.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>In <code>const days = ["Sat", "Sun", "Mon"]</code>, what is <code>days[1]</code>, and what is <code>days.length</code>?</li><li>How many times does <code>for (let i = 0; i &lt; 3; i++)</code> run its block?</li><li>Which loop would you use to print every name in an array of names?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>9.6 Project: the kiosk serves a queue</h2>
+
+<p>Here is the kiosk from Chapter 8, now serving a whole line of visitors. Each number in <code>queue</code> is the age of one visitor. The pricing rules are the same; what is new is the loop around them, and three accumulators that build a total, a count and a receipt:</p>
+
+<pre data-code="queue.js" data-title="queue.js"></pre>
+<pre data-out="queue.js"></pre>
+
+<p>Seven visitors are served in a few milliseconds. Add a thousand ages to the array and it would still take only milliseconds, without one extra line of code. This is why computers are so useful: once you have described how to handle <em>one</em> item, a loop handles them <em>all</em>.</p>
+
+<aside class="bit" data-mood="wow"><p>Look at the pieces working together: an <strong>array</strong> holds the queue, a <strong>loop</strong> visits each visitor, a <strong>decision</strong> picks the price, and <strong>accumulators</strong> collect the results. Sequence, selection and repetition, the three building blocks from Chapter 2, all in one program. You’re a real programmer now!</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Using <code>array[array.length]</code> for the last item</td><td><code>undefined</code>: there is nothing there</td><td>The last item is at <code>length - 1</code></td></tr>
+<tr><td><code>i &lt;= array.length</code> in a <code>for</code> loop</td><td>One extra iteration with <code>undefined</code></td><td>Use <code>i &lt; array.length</code>, or better, <code>for…of</code></td></tr>
+<tr><td>Declaring the accumulator inside the loop</td><td>It restarts at 0 every iteration</td><td>Declare it <em>before</em> the loop</td></tr>
+<tr><td>Nothing in a <code>while</code> loop changes the condition</td><td>Infinite loop; the program freezes</td><td>Make sure each iteration moves towards the end</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>An <strong>array</strong> is an ordered list: <code>["a", "b", "c"]</code>. Indexes start at <strong>0</strong>; <code>length</code> counts the items.</li>
+<li>Useful methods: <code>push</code>, <code>pop</code>, <code>includes</code>, <code>indexOf</code>, <code>join</code>, <code>slice</code>.</li>
+<li><code>for (let i = 0; i &lt; n; i++)</code> counts. <code>for (const x of list)</code> visits each item. <code>while (condition)</code> repeats until the condition is false.</li>
+<li>An <strong>accumulator</strong> is a variable outside the loop that each iteration updates.</li>
+<li><code>break</code> leaves a loop; <code>continue</code> skips to the next iteration.</li>
+<li>Always make sure a loop can end.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>"Sun"</code> (indexes start at 0), and 3. 2. Three times, with <code>i</code> being 0, 1 and 2. 3. <code>for…of</code>.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Arrays and loops turn small programs into useful tools. The third project contains a famous interview question; once you can solve it, you will never forget it.</p>
+
+<div class="project">
+<p class="project-label">Project 9.1 · Easy</p>
+<h3>Class statistics</h3>
+<p class="project-goal">A teacher has the scores of a whole class. In one pass through the list, find the average, the highest and lowest score, and how many students passed.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>for…of</code>, several accumulators at once, and <code>+=</code> and <code>++</code>.</p>
+<ol class="steps">
+<li>Create an array of eight scores.</li>
+<li>Before the loop, create four accumulators: <code>total</code> starting at 0, <code>highest</code> and <code>lowest</code> starting at the first score, and <code>passed</code> starting at 0.</li>
+<li>In one <code>for…of</code> loop, update all four. <code>total += score</code> is short for <code>total = total + score</code>.</li>
+<li>After the loop, print the number of students, the average (<code>total / scores.length</code>), the highest, the lowest, and “passed out of total”.</li>
+<li>Add a score of 100 and one of 0 to the array, and check that the results change as you expect.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> start <code>highest</code> and <code>lowest</code> at the first score, not at 0. If you start <code>lowest</code> at 0, it never changes, because no score is below 0.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/class-stats.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 9.2 · Medium</p>
+<h3>A shopping list without duplicates</h3>
+<p class="project-goal">Add new items to a shopping list, skipping any item that is already there, and print the list numbered from 1.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>includes</code>, <code>push</code>, and the classic <code>for</code> loop with an index.</p>
+<ol class="steps">
+<li>Start with a list of two items, and an array <code>toAdd</code> of three items, one of which is already on the list.</li>
+<li>Loop over <code>toAdd</code>. If the list already <code>includes</code> the item, print a message; otherwise <code>push</code> it.</li>
+<li>Print the final list with a classic <code>for</code> loop, so that you have the index <code>i</code> to number each line.</li>
+<li>People count from 1, arrays from 0: print <code>i + 1</code>, not <code>i</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> “Bread” and “bread” are different strings for JavaScript. If users may type either, compare <code>item.toLowerCase()</code> instead.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/shopping-list.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 9.3 · Challenge</p>
+<h3>The counting game and a triangle of stars</h3>
+<p class="project-goal">Two classic loop puzzles. First, count from 1 to 15, but say “Bit” for multiples of 3, “Bot” for multiples of 5, and “Bit Bot” for multiples of both. Second, draw a triangle of stars.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>%</code> inside a loop, the order of conditions, and nested loops.</p>
+<ol class="steps">
+<li>Write a <code>for</code> loop from 1 to 15.</li>
+<li>Inside, check for “both” first: <code>n % 3 === 0 &amp;&amp; n % 5 === 0</code>. Then 3 alone, then 5 alone, else the number itself.</li>
+<li>For the triangle, write an outer loop for the rows, 1 to 4. Inside it, start an empty string <code>line</code>.</li>
+<li>An inner loop adds <code>"* "</code> to the line once for each row number: row 1 gets one star, row 4 gets four.</li>
+<li>Print the line after the inner loop. Then change the program to draw 10 rows, or an upside-down triangle.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this counting game (usually called FizzBuzz) is a very common question in programming interviews. The trap is the order: if “3” is checked before “both”, 15 prints only “Bit”.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/patterns.js"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Print the multiplication table of 7, from <code>7 × 1 = 7</code> to <code>7 × 10 = 70</code>.</li>
+<li><span class="level">Easy</span> Make an array of five temperatures and print the highest and the lowest. (Hint: two accumulators.)</li>
+<li><span class="level">Medium</span> Given <code>const words = ["code", "is", "fun", "and", "useful"]</code>, build a new array containing only the words longer than three letters, then print it joined with spaces.</li>
+<li><span class="level">Medium</span> Count how many even numbers there are between 1 and 100, using a loop and <code>%</code>.</li>
+<li><span class="level">Challenge</span> Extend <code>queue.js</code>: if a visitor is 65 or older, also print “Senior discount applied”. At the end, print the average price and the most expensive ticket sold.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 10</p>
+<p>The pricing rules now sit inside a loop, and the program is getting longer. In the next chapter you will learn functions: how to give a piece of code a name, reuse it anywhere, and build programs from small, clear parts.</p>
+</div>
+</section>

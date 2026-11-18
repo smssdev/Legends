@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign up</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; max-width: 420px; }
+      label { display: block; font-weight: 700; margin-top: 14px; }
+      input { display: block; width: 100%; box-sizing: border-box; padding: 8px; font: inherit;
+        border: 2px solid #5b5873; border-radius: 8px; }
+      input[aria-invalid="true"] { border-color: #b91c1c; }
+      .hint { color: #4a4760; margin: 4px 0 0; font-size: 0.9rem; }
+      .error { color: #b91c1c; font-weight: 700; margin: 4px 0 0; }
+      button { margin-top: 18px; padding: 10px 22px; border: 0; border-radius: 999px; color: white; background: #4338ca; font: inherit; }
+    </style>
+  </head>
+  <body>
+    <h1>Create an account</h1>
+    <form novalidate>
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email"
+             aria-describedby="email-hint email-error" aria-invalid="true" value="sara@">
+      <p class="hint" id="email-hint">We never share your email.</p>
+      <p class="error" id="email-error" role="alert">Please enter a valid email address.</p>
+
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="new-password">
+
+      <button type="submit">Create account</button>
+    </form>
+  </body>
+</html>

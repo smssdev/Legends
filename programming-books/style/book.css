@@ -1,0 +1,192 @@
+/* Full-colour interior shared by every book. Page size, margins and running heads are added by
+   build.py; everything else lives here. Arabic changes sit under :root:lang(ar). */
+
+@font-face{font-family:'Source Serif 4';font-weight:400;src:url(../fonts/source-serif-4-latin-400-normal.woff2)}
+@font-face{font-family:'Source Serif 4';font-weight:600;src:url(../fonts/source-serif-4-latin-600-normal.woff2)}
+@font-face{font-family:'Source Serif 4';font-weight:700;src:url(../fonts/source-serif-4-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:400;src:url(../fonts/inter-latin-400-normal.woff2)}
+@font-face{font-family:Inter;font-weight:600;src:url(../fonts/inter-latin-600-normal.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(../fonts/inter-latin-700-normal.woff2)}
+@font-face{font-family:'JetBrains Mono';font-weight:400;src:url(../fonts/jetbrains-mono-latin-400-normal.woff2)}
+@font-face{font-family:'JetBrains Mono';font-weight:700;src:url(../fonts/jetbrains-mono-latin-700-normal.woff2)}
+@font-face{font-family:'Noto Naskh Arabic';font-weight:400;src:url(../fonts/noto-naskh-arabic-arabic-400-normal.woff2)}
+@font-face{font-family:'Noto Naskh Arabic';font-weight:700;src:url(../fonts/noto-naskh-arabic-arabic-700-normal.woff2)}
+@font-face{font-family:Cairo;font-weight:600;src:url(../fonts/cairo-arabic-600-normal.woff2)}
+@font-face{font-family:Cairo;font-weight:700;src:url(../fonts/cairo-arabic-700-normal.woff2)}
+
+:root {
+  --ink: #1e1b2e;
+  --muted: #5b5873;
+  --brand: #4338ca;      /* indigo: headings, code tabs, page numbers */
+  --brand-2: #7c3aed;    /* violet: gradients */
+  --brand-soft: #eef2ff;
+  --tip: #0f766e;   --tip-soft: #e6f7f4;
+  --warn: #ea580c;  --warn-soft: #fff4ea;
+  --fact: #db2777;  --fact-soft: #fdf0f6;
+  --try: #7c3aed;   --try-soft: #f5f0ff;
+  --quiz: #ca8a04;  --quiz-soft: #fefae8;
+  --code-bg: #f7f8fc;
+  --term-bg: #16142a;
+  --body: 'Source Serif 4', 'Noto Naskh Arabic', serif;
+  --head: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', 'Noto Naskh Arabic', monospace;
+  --size: 10.5pt;
+  --leading: 1.52;
+}
+:root:lang(ar) {
+  --body: 'Noto Naskh Arabic', 'Source Serif 4', serif;
+  --head: 'Cairo', 'Inter', sans-serif;
+  --size: 11pt;
+  --leading: 1.8;
+}
+
+html { font: 400 var(--size)/var(--leading) var(--body); color: var(--ink); }
+body { margin: 0; }
+p { margin: 0 0 0.7em; text-align: justify; hyphens: auto; orphans: 3; widows: 3; }
+strong, dfn { font-weight: 700; font-style: normal; }
+dfn { color: var(--brand); }
+ul, ol { margin: 0 0 0.8em; padding-inline-start: 1.4em; }
+li { margin-bottom: 0.25em; }
+li::marker { color: var(--brand); font-weight: 700; }
+
+code { font: 400 0.86em var(--mono); font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0;
+  background: var(--brand-soft); color: #312e81; padding: 0.5pt 3pt; border-radius: 3pt; unicode-bidi: isolate; direction: ltr; }
+
+/* ---------- front matter ---------- */
+.front { page: front; break-after: page; }
+.half-title { display: flex; align-items: center; justify-content: center; height: 8.3in; }
+.ht { font: 700 22pt var(--head); color: var(--brand); text-align: center; }
+.title-page { height: 8.3in; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title-page p { text-align: center; }
+.tp-series { font: 700 9.5pt var(--head); letter-spacing: 0.12em; text-transform: uppercase; color: var(--brand-2); }
+:root:lang(ar) .tp-series { letter-spacing: 0; }
+.tp-title { font: 700 36pt/1.15 var(--head); margin: 0.2in 0 0.12in; color: var(--brand); }
+:root:lang(ar) .tp-sub { font-family: var(--body); }
+.tp-sub { font: 400 13.5pt/1.5 var(--head); color: var(--muted); max-width: 4.6in; }
+.tp-edition { font: 700 11pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 8pt 0 0; }
+.tp-level { font: 700 9.5pt var(--head); color: #fff; background: var(--warn); border-radius: 20pt; padding: 4pt 14pt; margin: 0.15in 0 0.2in; }
+.tp-bit svg { width: 1.6in; height: auto; }
+.tp-author { margin-top: 0.5in; font: 700 13pt var(--head); }
+.copyright { display: flex; flex-direction: column; justify-content: flex-end; height: 8.3in; font-size: 8.5pt; color: var(--muted); }
+.copyright p { text-align: start; }
+.toc h1 { font: 700 26pt var(--head); color: var(--brand); margin: 0 0 0.25in; }
+.toc ol { list-style: none; padding: 0; margin: 0; }
+.toc-part { font: 700 10pt var(--head); color: #fff; background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  border-radius: 5pt; padding: 3pt 9pt; margin: 12pt 0 5pt; }
+.toc-ch { display: flex; gap: 10pt; padding: 2.5pt 4pt; border-bottom: 0.6pt dotted #b9b6d3; }
+.toc-n { font: 700 9.5pt var(--head); color: var(--brand); width: 18pt; }
+.toc-sample { font: 700 7.5pt var(--head); color: #fff; background: var(--fact); border-radius: 8pt; padding: 0 6pt; align-self: center; }
+
+/* ---------- chapter opener ---------- */
+.chapter { break-before: page; }
+.opener { position: relative; border-radius: 14pt; padding: 22pt 22pt 20pt; margin: 0 0 16pt; color: #fff; clip-path: inset(0 round 14pt);
+  background: linear-gradient(125deg, var(--brand) 0%, var(--brand-2) 70%, var(--fact) 130%); min-height: 2.35in; }
+.opener::after { content: ""; position: absolute; inset-inline-end: -40pt; bottom: -60pt; width: 190pt; height: 190pt; border-radius: 50%; background: rgba(255,255,255,0.10); }
+.opener-num { position: absolute; inset-inline-end: 20pt; top: -18pt; font: 700 120pt/1 var(--head); color: rgba(255,255,255,0.16); }
+.opener-bit { position: absolute; inset-inline-end: 22pt; bottom: 12pt; width: 1.35in; z-index: 1; }
+.chapter-kicker { font: 700 10pt var(--head); letter-spacing: 0.16em; text-transform: uppercase; margin: 0 0 6pt; color: #fde68a; text-align: start; }
+:root:lang(ar) .chapter-kicker { letter-spacing: 0; }
+.opener h1 { font: 700 25pt/1.2 var(--head); margin: 0; max-width: 3.6in; color: #fff; position: relative; z-index: 1; }
+
+.goals { background: var(--brand-soft); border-radius: 10pt; padding: 9pt 14pt 5pt; margin: 0 0 1.2em; break-inside: avoid; }
+.goals-title { font: 700 9.5pt var(--head); color: var(--brand); margin: 0 0 4pt; text-align: start; }
+.goals ul { margin-bottom: 4pt; list-style: none; padding: 0; }
+.goals li { padding-inline-start: 16pt; position: relative; }
+.goals li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: var(--tip); font: 700 10pt var(--head); }
+.lead { font-size: 1.1em; }
+.lead::first-letter { font: 700 3.1em/0.9 var(--head); color: var(--brand); float: inline-start; margin-inline-end: 4pt; margin-top: 2pt; }
+:root:lang(ar) .lead::first-letter { font: inherit; color: inherit; float: none; margin: 0; }
+
+/* ---------- headings ---------- */
+h2 { font: 700 15pt/1.35 var(--head); color: var(--ink); margin: 1.5em 0 0.55em; break-after: avoid; display: flex; align-items: center; gap: 8pt; }
+h2 .sec { font: 700 10pt var(--head); color: #fff; background: var(--brand); border-radius: 6pt; padding: 2pt 7pt; flex: none; }
+h2.plain-h { border-bottom: 2.5pt solid var(--brand); padding-bottom: 3pt; }
+h3 { font: 700 11.5pt/1.4 var(--head); color: var(--brand); margin: 1.1em 0 0.4em; break-after: avoid; }
+
+/* ---------- code and terminal ---------- */
+pre { font: 400 8.6pt/1.55 var(--mono); font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0;
+  margin: 0; white-space: pre-wrap; text-align: left; }
+.listing { margin: 0.9em 0 0.35em; break-inside: avoid; }
+.listing-title { font: 700 7.5pt var(--mono); background: var(--brand); color: #fff; display: inline-block; padding: 2.5pt 9pt; border-radius: 5pt 5pt 0 0; }
+pre.code { background: var(--code-bg); border: 1pt solid #d9dbea; border-left: 4pt solid var(--brand); border-radius: 0 6pt 6pt 6pt; padding: 8pt 10pt; }
+pre.plain { background: var(--code-bg); border: 1pt solid #d9dbea; border-radius: 6pt; padding: 7pt 10pt; margin: 0.6em 0; direction: ltr; }
+.k { color: #7c3aed; font-weight: 700; } .s { color: #15803d; } .n { color: #c2410c; } .c { color: #6b7280; font-style: italic; }
+
+.output { margin: 0 0 1.1em; background: var(--term-bg); border-radius: 6pt; padding: 0 0 7pt; break-inside: avoid; overflow: hidden; }
+.output-bar { display: flex; align-items: center; gap: 4pt; padding: 4pt 8pt; background: #2a2745; }
+.output-bar i { width: 6pt; height: 6pt; border-radius: 50%; display: inline-block; }
+.output-bar i:nth-child(1) { background: #f87171; } .output-bar i:nth-child(2) { background: #fbbf24; } .output-bar i:nth-child(3) { background: #34d399; }
+.output-title { font: 600 7pt var(--head); color: #a5a3c9; text-transform: uppercase; letter-spacing: 0.08em; margin-inline-start: 6pt; }
+.output pre { color: #e7e5ff; padding: 6pt 10pt 0; font-size: 8.4pt; unicode-bidi: plaintext; }
+.output.error pre { color: #fca5a5; }
+
+/* ---------- tables and figures ---------- */
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 0.6em 0 1em; font-size: 0.9em; break-inside: avoid; border-radius: 7pt; overflow: hidden; border: 1pt solid #d9dbea; }
+th { font: 700 8.5pt var(--head); color: #fff; background: var(--brand); text-align: start; padding: 4pt 6pt; }
+td { padding: 3.5pt 6pt; vertical-align: top; border-top: 0.6pt solid #e3e4f0; }
+tbody tr:nth-child(even) td { background: #f7f7fd; }
+figure { margin: 1.1em 0; text-align: center; break-inside: avoid; background: #fafaff; border-radius: 10pt; padding: 10pt 8pt 6pt; }
+figure svg { width: 90%; height: auto; }
+figcaption { font: 400 8.5pt/1.5 var(--head); color: var(--muted); margin-top: 4pt; }
+figcaption b { color: var(--brand); }
+
+/* ---------- boxes ---------- */
+.box { --c: var(--tip); --bg: var(--tip-soft); background: var(--bg); border-radius: 10pt; padding: 8pt 12pt 3pt 12pt; margin: 1.1em 0; break-inside: avoid; border-inline-start: 4pt solid var(--c); }
+.box.warn { --c: var(--warn); --bg: var(--warn-soft); }
+.box.fact { --c: var(--fact); --bg: var(--fact-soft); }
+.box.try  { --c: var(--try);  --bg: var(--try-soft); }
+.box.quiz { --c: var(--quiz); --bg: var(--quiz-soft); }
+.box.rule { --c: var(--brand); background: linear-gradient(110deg, var(--brand), var(--brand-2)); color: #fff; border: none; }
+.box.rule code { background: rgba(255,255,255,0.18); color: #fff; }
+.box-title { font: 700 9.5pt var(--head); color: var(--c); margin: 0 0 4pt; display: flex; align-items: center; gap: 6pt; text-align: start; }
+.box.rule .box-title { color: #fde68a; }
+.box-title svg { width: 14pt; height: 14pt; flex: none; }
+
+/* Bit, the book's guide, talking in a speech bubble */
+.bit { display: flex; align-items: flex-end; gap: 8pt; margin: 1.1em 0; break-inside: avoid; }
+.bit svg { width: 0.72in; height: auto; flex: none; }
+.bubble { position: relative; background: #fff; border: 1.6pt solid var(--brand); border-radius: 12pt; padding: 7pt 11pt 2pt; flex: 1; }
+.bubble::before { content: ""; position: absolute; bottom: 10pt; inset-inline-start: -8pt; width: 12pt; height: 12pt; background: #fff;
+  border-inline-start: 1.6pt solid var(--brand); border-bottom: 1.6pt solid var(--brand); transform: rotate(45deg); }
+:root:lang(ar) .bubble::before { transform: rotate(-45deg); }
+.bubble-name { font: 700 8pt var(--head); color: var(--brand); margin: 0 0 1pt; text-align: start; }
+
+/* ---------- end of chapter ---------- */
+.summary { list-style: none; padding: 0; }
+.summary li { background: var(--brand-soft); border-radius: 6pt; padding: 3pt 9pt; margin-bottom: 4pt; }
+.exercises .level { font: 700 7.5pt var(--head); color: #fff; border-radius: 8pt; padding: 0.5pt 7pt; margin-inline-end: 6pt; background: var(--tip); }
+.exercises .level.medium { background: var(--warn); }
+.exercises .level.hard { background: var(--fact); }
+.exercises li { margin-bottom: 0.55em; }
+.answers-note { font-size: 0.9em; color: var(--muted); }
+.next { background: linear-gradient(110deg, var(--brand-soft), #fdf0f6); border-radius: 10pt; margin-top: 1.4em; padding: 9pt 13pt 3pt; break-inside: avoid; }
+.next-title { font: 700 9.5pt var(--head); color: var(--fact); margin: 0 0 3pt; text-align: start; }
+
+/* Pseudocode written in the reader’s language (Arabic pseudocode runs right to left). */
+.pseudo { background: var(--code-bg); border: 1pt solid #d9dbea; border-inline-start: 4pt solid var(--try); border-radius: 6pt; padding: 7pt 12pt; margin: 0.6em 0 0.9em; white-space: pre-wrap; font: 700 0.92em/1.75 var(--head); color: var(--ink); break-inside: avoid; }
+
+/* A rendered example page, shown inside a simple browser frame. */
+figure.browser { background: #fff; border: 1.2pt solid #c9cbe0; border-radius: 9pt; padding: 0 0 6pt; overflow: hidden; }
+.browser-bar { display: flex; align-items: center; gap: 4pt; background: #eef0f8; padding: 5pt 8pt; margin-bottom: 6pt; }
+.browser-bar i { width: 6pt; height: 6pt; border-radius: 50%; background: #f87171; display: inline-block; }
+.browser-bar i:nth-child(2) { background: #fbbf24; } .browser-bar i:nth-child(3) { background: #34d399; }
+.browser-bar span { font: 400 7.5pt var(--mono); color: var(--muted); background: #fff; border-radius: 8pt; padding: 1pt 10pt; margin-inline-start: 8pt; flex: 1; text-align: left; }
+figure.browser img { display: block; width: 100%; height: auto; max-height: 6.4in; object-fit: contain; }
+.browser-bar b { font: 700 7pt var(--mono); color: var(--muted); }
+.toc-t { flex: 1; }
+.toc-p { font: 700 9.5pt var(--head); color: var(--brand); min-width: 22pt; text-align: end; }
+
+/* Practice projects at the end of every chapter: guided, step by step. */
+.projects-intro { color: var(--muted); }
+.project { border: 1.5pt solid var(--brand); border-radius: 12pt; padding: 10pt 14pt 6pt; margin: 1.1em 0 1.3em; background: linear-gradient(180deg, var(--brand-soft), #fff 70pt); }
+.project-label { display: block; width: fit-content; break-after: avoid; font: 700 8pt var(--head); color: #fff; background: var(--brand); border-radius: 8pt; padding: 1pt 9pt; margin: 0 0 4pt; }
+.project-label.medium { background: var(--warn); } .project-label.hard { background: var(--fact); }
+.project h3 { margin: 2pt 0 4pt; font-size: 12.5pt; color: var(--ink); break-after: avoid; }
+.project-goal { font-size: 1.02em; break-after: avoid; }
+.project-skills { font-size: 0.92em; color: var(--muted); }
+.project .steps { counter-reset: step; list-style: none; padding: 0; }
+.project .steps > li { counter-increment: step; position: relative; padding-inline-start: 26pt; margin-bottom: 6pt; }
+.project .steps > li::before { content: counter(step); position: absolute; inset-inline-start: 0; top: 1pt; width: 17pt; height: 17pt; border-radius: 50%; background: var(--brand); color: #fff; font: 700 8.5pt/17pt var(--head); text-align: center; }
+.hint { background: var(--tip-soft); border-radius: 8pt; padding: 5pt 10pt; font-size: 0.93em; }
+.solution { font-size: 0.88em; color: var(--muted); }
+pre.code.md { unicode-bidi: plaintext; }

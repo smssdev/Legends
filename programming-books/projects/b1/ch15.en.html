@@ -1,0 +1,53 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Git is learned with your fingers, not your eyes. Open a terminal and type every command yourself. The sessions below are real: Git printed exactly this. Your commit ids will be different, because they depend on your name and the time; everything else should match.</p>
+
+<div class="project">
+<p class="project-label">Project 15.1 · Easy</p>
+<h3>A learning journal under version control</h3>
+<p class="project-goal">Start a repository for a journal of what you learn, and save one commit per day.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>git init</code>, <code>add</code>, <code>commit</code>, <code>commit -am</code>, <code>log --oneline</code> and <code>show</code>.</p>
+<ol class="steps">
+<li>Make a new folder called <code>journal</code>, open it in VS Code, and run <code>git init</code> in its terminal.</li>
+<li>Create <code>journal.md</code> with a heading. Add it and make your first commit.</li>
+<li>Each day, add one line about what you learned and commit it with a short message. <code>-am</code> adds and commits in one step, but only for files Git already tracks.</li>
+<li>Read your history with <code>git log --oneline</code>.</li>
+<li>Look inside the last commit with <code>git show --stat</code>. Then try plain <code>git show</code> to see the exact line you added.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> keep this journal for the rest of the book. In a few weeks, <code>git log</code> will be a diary of your progress, and the habit of small, frequent commits is exactly what teams expect.</p>
+<pre data-code="projects/journal.sh" data-title="terminal"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 15.2 · Medium</p>
+<h3>Two ways to undo</h3>
+<p class="project-goal">Make two mistakes on purpose, one not yet committed and one already committed, and undo each with the right tool.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>git status --short</code>, <code>git restore</code> for uncommitted changes, and <code>git revert</code> for commits.</p>
+<ol class="steps">
+<li>Replace the whole contents of <code>journal.md</code> with one silly line, and save. <code>git status --short</code> shows <code>M</code>: modified.</li>
+<li>Run <code>git restore journal.md</code>. The file goes back to the last commit, and the status is clean again.</li>
+<li>Write Day 3 properly and commit it.</li>
+<li>Now create <code>quote.md</code>, add it and commit it. Pretend you regret this commit.</li>
+<li>Run <code>git revert --no-edit HEAD</code>. Git makes a <em>new</em> commit that does the opposite, and the file disappears.</li>
+<li>Read <code>git log --oneline</code>: the mistake and its undo are both in the history, so nobody is surprised.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>restore</code> throws away work that was never saved, so there is no way back; use it with care. <code>revert</code> is always safe, even after you have pushed, because it adds history instead of erasing it.</p>
+<pre data-code="projects/undo.sh" data-title="terminal"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 15.3 · Challenge</p>
+<h3>Create a merge conflict, then solve it</h3>
+<p class="project-goal">Conflicts frighten beginners only until they have solved one. Create one on purpose, read it, and resolve it calmly.</p>
+<p class="project-skills"><strong>You will practise:</strong> branches, <code>git switch -c</code>, fast-forward and real merges, conflict markers, and finishing a merge.</p>
+<ol class="steps">
+<li>On <code>main</code>, add a title line at the top of the journal and commit it.</li>
+<li>Create a branch <code>personal</code>, change the title, and commit. Go back to <code>main</code>.</li>
+<li>Create a second branch <code>ambitious</code> <em>from main</em>, change the same title line differently, and commit. Go back to <code>main</code>.</li>
+<li>Merge <code>personal</code>: it is a fast-forward, because <code>main</code> had not moved. Then merge <code>ambitious</code>: Git cannot choose between two changes to the same line, so it stops.</li>
+<li>Open the file. Between <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> and <code>=======</code> is your version (<code>HEAD</code>); between <code>=======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> is the incoming one.</li>
+<li>Write the line you really want, delete all three marker lines, then <code>git add</code> and <code>git commit</code>. The graph shows the two branches joining.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a conflict is not an error. It is Git politely asking a human to decide. VS Code shows buttons above each conflict (“Accept Current”, “Accept Incoming”, “Accept Both”), but always read the result before you commit.</p>
+<pre data-code="projects/conflict.sh" data-title="terminal"></pre>
+</div>

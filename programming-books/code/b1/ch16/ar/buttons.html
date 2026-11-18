@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>أزرار يصل إليها الجميع</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; }
+      .fake, button { display: inline-block; padding: 10px 20px; border: 0; border-radius: 999px;
+        color: white; background: #4338ca; font: inherit; cursor: pointer; margin: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>زرّان</h1>
+    <!-- سيئ: يبدو زراً لكنه صندوق فقط -->
+    <div class="fake" onclick="alert('Hi')">أنا div</div>
+    <!-- جيد: زر حقيقي -->
+    <button type="button" onclick="alert('Hi')">أنا زر</button>
+    <p>يبدوان متشابهين، لكن واحداً منهما فقط يعمل بلوحة المفاتيح وقارئ الشاشة.</p>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">حان وقت أن تُلبس الصفحات الثلاث التي بنيتها في الفصل 5. كل مشروع يعطي صفحته شخصيتها الخاصة، فترى كم تستطيع CSS وحدها أن تغيّر. واربط كل صفحة بملف تنسيق خاص بها.</p>
+
+<div class="project">
+<p class="project-label">مشروع 6.1 · سهل</p>
+<h3>صفحة وصفة دافئة</h3>
+<p class="project-goal">أعط صفحة الوصفة شكل كتاب طبخ دافئ: خلفية كريمية، وخطاً مزخرفاً، ولمسات برتقالية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> ربط ملف التنسيق، ومحددات النوع، والألوان، والخطوط، و<code>line-height</code>، والحدود.</p>
+<ol class="steps">
+<li>أنشئ <code>recipe.css</code> واربطه في <code>&lt;head&gt;</code> في <code>recipe.html</code>.</li>
+<li>على <code>body</code> اضبط خلفية كريمية (<code>#fdf6ec</code>)، ولون نص بنياً داكناً، وخطاً، و<code>line-height: 1.6</code>.</li>
+<li>كبّر <code>h1</code> واجعله برتقالياً، وأعط عناوين <code>h2</code> لوناً مختلفاً و<code>border-bottom</code> ملوناً.</li>
+<li>اجعل زوايا الصورة مستديرة، وأعطها إطاراً أبيض بـ <code>padding</code> و<code>background-color</code>.</li>
+<li>لوّن نص <code>strong</code> ليبرز وقت الطبخ.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الحشوة حول الصورة تُظهر لون خلفيتها حولها مثل إطار الصور. جرّب <code>border-radius: 16px</code> وشاهد زوايا الإطار تستدير. وليس كل خط فيه حروف عربية، فإن اخترت خطاً إنجليزياً للعناوين سيعرض المتصفح العربية بخط بديل.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/recipe.html" data-width="520"><figcaption><b>مشروع 6.1:</b> صفحة الوصفة بملف تنسيق خاص بها.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 6.2 · متوسط</p>
+<h3>هوية للمقهى بالخصائص المخصصة</h3>
+<p class="project-goal">أعط موقع المقهى هوية: ثلاثة ألوان تُعرّف مرة واحدة خصائصَ مخصصة وتُستخدم في كل مكان.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الخصائص المخصصة، ونموذج الصندوق، وكبسولات <code>inline-block</code>، والبطاقات، والتوسيط بـ <code>max-width</code>.</p>
+<ol class="steps">
+<li>في <code>cafe.css</code> عرّف <code>--brown</code> و<code>--cream</code> و<code>--gold</code> في <code>:root</code>.</li>
+<li>اجعل <code>header</code> شريطاً بنياً نصه أبيض في المنتصف، وحوّل روابط القائمة إلى كبسولات كريمية بـ <code>display: inline-block</code> و<code>padding</code> و<code>border-radius: 999px</code>.</li>
+<li>أبقِ <code>main</code> ضيقاً في المنتصف بـ <code>max-width: 560px</code> و<code>margin: 24px auto</code>.</li>
+<li>حوّل كل <code>section</code> إلى بطاقة بيضاء مستديرة الزوايا لها حد علوي ذهبي.</li>
+<li>أخيراً غيّر الخصائص المخصصة الثلاث وحدها إلى ألوان مختلفة تماماً، وشاهد الموقع كله يتغير.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن بدت الكبسولة منضغطة فتأكد أن لها <code>display: inline-block</code>؛ فالروابط العادية تتجاهل الحشوة الرأسية في التخطيط. ولاحظ أن ملف التنسيق نفسه يعمل في الصفحة العربية والإنجليزية، لأنه لا يستخدم يميناً ولا يساراً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/cafe.html" data-width="520"><figcaption><b>مشروع 6.2:</b> موقع المقهى بهوية خاصة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 6.3 · تحدٍّ</p>
+<h3>نموذج تسجيل احترافي</h3>
+<p class="project-goal">حوّل نموذج التسجيل البسيط إلى بطاقة أنيقة مريحة في التعبئة، بحالات تركيز واضحة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>box-sizing</code>، وتنسيق حقول النماذج، ومحددات الخصائص، و<code>:focus</code>، و<code>box-shadow</code>.</p>
+<ol class="steps">
+<li>ابدأ <code>signup.css</code> بقاعدة <code>box-sizing: border-box</code> من القسم 6.6، فلا تفيض الحقول ذات الحشوة أبداً.</li>
+<li>حوّل <code>form</code> إلى بطاقة بيضاء بظل ناعم و<code>max-width</code>، على خلفية فاتحة.</li>
+<li>نسّق <code>input</code> و<code>select</code> و<code>textarea</code> معاً بقائمة محددات واحدة: عرض كامل، وحشوة، وحدود، وزوايا مستديرة. واستخدم <code>font: inherit</code> لتأخذ خط الصفحة.</li>
+<li>مربع الاختيار لا يجب أن يأخذ العرض كله: اختره بمحدد الخاصية <code>input[type="checkbox"]</code> واضبط <code>width: auto</code>.</li>
+<li>أضف تنسيق تركيز واضحاً: حدوداً ملونة و«توهجاً» ناعماً بـ <code>box-shadow: 0 0 0 3px</code>، وانقر في كل حقل لتختبره.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لا تُزل إطار التركيز أبداً دون أن تضع مكانه ما يظهر بالقدر نفسه؛ فمستخدمو لوحة المفاتيح يحتاجون أن يروا أين هم. والفصل 16 يشرح السبب.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/signup.html" data-width="520"><figcaption><b>مشروع 6.3:</b> نموذج التسجيل بطاقةً منسقة.</figcaption></figure>
+</div>

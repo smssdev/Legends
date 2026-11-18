@@ -1,0 +1,55 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">في كل مشروع اجرِ اختبار لوحة المفاتيح من القسم 16.3 قبل أن تعدّه منتهياً: أبعِد الفأرة واستخدم Tab وShift+Tab وEnter والمسافة فقط. فإن استطعت أن تفعل كل شيء، ورأيت دائماً أين أنت، فأنت على الطريق الصحيح.</p>
+
+<div class="project">
+<p class="project-label">مشروع 16.1 · سهل</p>
+<h3>أنقذ بطاقة الوصفة</h3>
+<p class="project-goal">تبدو هذه البطاقة جيدة، لكن مستخدم قارئ الشاشة، ومستخدم لوحة المفاتيح، ومن يقرأ تحت شمس قوية، سيعانون معها جميعاً. جِد خمس مشكلات وأصلحها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأزرار الحقيقية، والعناوين والمعالم، ونص <code>alt</code>، والتسميات، والتباين، وإطار التركيز الظاهر.</p>
+<pre data-code="projects/recipe-before.html" data-title="recipe-before.html" data-show="body"></pre>
+<ol class="steps">
+<li>العنوان <code>div</code>. اجعله <code>h1</code> ليظهر في قائمة العناوين عند قارئ الشاشة.</li>
+<li>الصورة بلا <code>alt</code>. صِف ما يراه القارئ المبصر في جملة قصيرة.</li>
+<li>مربع البحث بنص إرشادي (placeholder) فقط، يختفي بمجرد الكتابة. أعطه <code>&lt;label&gt;</code> حقيقياً، وضعه في <code>&lt;form role="search"&gt;</code>.</li>
+<li>«ابحث» و«احفظ الوصفة» عنصرا <code>div</code>: يتخطاهما Tab. حوّلهما إلى <code>&lt;button&gt;</code>.</li>
+<li>نص الوقت الرمادي (<code>#c4c4c4</code> على الأبيض) تباينه نحو 1.7. اجعله أغمق، <code>#4b5563</code>، وتحقق من النسبة بسكربت القسم 16.6.</li>
+<li>غلّف الصفحة بـ <code>header</code> و<code>main</code> و<code>article</code>، ثم اجرِ اختبار لوحة المفاتيح.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> معظم إصلاحات سهولة الوصول ليست عملاً إضافياً، بل هي العنصر الصحيح في HTML للمهمة، والذي كنت ستستخدمه أصلاً لو اعتنيت قليلاً.</p>
+<figure data-render="projects/recipe.html" data-width="560" data-actions="press:button.secondary|Shift+Tab"><figcaption><b>مشروع 16.1:</b> البطاقة بعد الإصلاح، والتركيز على «احفظ الوصفة».</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 16.2 · متوسط</p>
+<h3>نموذج يشرح أخطاءه</h3>
+<p class="project-goal">حين يخطئ الزائر، أخبره ما الخطأ، وأين هو، وكيف يصلحه، بطريقة تلاحظها العين وقارئ الشاشة معاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>label</code> و<code>autocomplete</code> و<code>aria-describedby</code> و<code>aria-invalid</code> و<code>role="alert"</code>، ونقل التركيز بجافاسكربت.</p>
+<ol class="steps">
+<li>ابنِ النموذج بتسمية لكل حقل، وأضف <code>novalidate</code> ليعرض سكربتك الرسائل لا المتصفح. وحقل البريد يأخذ <code>dir="ltr"</code> فيُكتب العنوان بترتيبه الصحيح.</li>
+<li>تحت كل حقل أضف <code>&lt;p class="error"&gt;</code> فارغاً، واربطه بالحقل بـ <code>aria-describedby</code>، فيقرؤه قارئ الشاشة مع الحقل.</li>
+<li>احتفظ بالقواعد بيانات: مصفوفة من <code>{ id, message, ok }</code>، و<code>ok</code> دالة صغيرة تختبر القيمة.</li>
+<li>عند الإرسال افحص كل قاعدة. اكتب الرسالة، وضع <code>aria-invalid="true"</code> على كل حقل لا ينجح.</li>
+<li>املأ صندوق ملخص في الأعلى برابط لكل مشكلة، وأظهره، واستدعِ <code>summary.focus()</code>. ولأن فيه <code>role="alert"</code> يُعلَن فوراً.</li>
+<li>حين يصح كل شيء، أخفِ الملخص واعرض رسالة نجاح في عنصر <code>role="status"</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لا تعتمد على اللون وحده في الأخطاء. فهنا للرسالة كلمات، ويتغير الإطار، ويكررها الملخص، فيعرف ما يفعل من لا يرى الأحمر.</p>
+<figure data-render="projects/join.html" data-width="560" data-actions="fill:#email|sara@;click:button"><figcaption><b>مشروع 16.2:</b> بعد الإرسال باسم فارغ وبريد ناقص.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 16.3 · تحدٍّ</p>
+<h3>أسئلة شائعة سهلة الوصول</h3>
+<p class="project-goal">ابنِ أسئلة تفتح إجاباتها وتغلقها، وتخبر التقنيات المساعدة هل كل منها مفتوح.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأزرار داخل العناوين، و<code>aria-expanded</code> و<code>aria-controls</code>، والخاصية <code>hidden</code>، و<code>querySelectorAll</code>.</p>
+<ol class="steps">
+<li>لكل سؤال اكتب <code>h2</code> فيه <code>&lt;button type="button" aria-expanded="false" aria-controls="answer-1"&gt;</code>.</li>
+<li>تحته ضع الإجابة في <code>&lt;div id="answer-1" hidden&gt;</code>. و<code>hidden</code> تخفيها عن الجميع، بمن فيهم قارئ الشاشة.</li>
+<li>جِد كل الأزرار بـ <code>querySelectorAll</code> وأعطِ كلاً منها مستمعاً للضغط.</li>
+<li>عند الضغط اقرأ <code>aria-expanded</code> واقلبها، واجعل <code>hidden</code> للإجابة تتبعها.</li>
+<li>ارسم + و− بـ CSS من الخاصية نفسها: <code>button[aria-expanded="true"]::after</code>. فلا يمكن أن يخالف الشكل ما يقوله قارئ الشاشة.</li>
+<li>اختبره بلوحة المفاتيح وحدها: Tab إلى سؤال، ثم Enter أو المسافة، ثم Tab إلى داخل الإجابة المفتوحة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لأنك استخدمت أزراراً حقيقية، يعمل Enter والمسافة دون كود إضافي. ولو استخدمت <code>div</code> بمستمع ضغط لاحتجت عشرات الأسطر لتقلّد ما يعطيك <code>&lt;button&gt;</code> مجاناً.</p>
+<figure data-render="projects/faq.html" data-width="560" data-actions="click:.faq h2:nth-of-type(2) button"><figcaption><b>مشروع 16.3:</b> الأسئلة والإجابة الثانية مفتوحة.</figcaption></figure>
+</div>

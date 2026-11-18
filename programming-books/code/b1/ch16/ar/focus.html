@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>أهلاً بك</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; }
+      .skip { position: absolute; inset-inline-start: 8px; top: -60px; padding: 8px 14px;
+        background: #1e1b2e; color: white; border-radius: 8px; }
+      .skip:focus { top: 8px; }
+      nav { display: flex; gap: 8px; padding: 56px 16px 16px; background: #eef2ff; }
+      nav a { padding: 6px 14px; border-radius: 8px; color: #312e81; font-weight: 700; }
+      a:focus-visible { outline: 3px solid #db2777; outline-offset: 3px; }
+      main { padding: 0 16px; }
+      @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#main">تخطَّ إلى المحتوى الرئيسي</a>
+    <header>
+      <nav aria-label="الرئيسية">
+        <a href="#">الرئيسية</a>
+        <a href="#">المشاريع</a>
+        <a href="#">تواصل</a>
+      </nav>
+    </header>
+    <main id="main">
+      <h1>أهلاً بك</h1>
+      <p>اضغط Tab للتنقل بين الروابط، والرابط المحدد عليه إطار واضح.</p>
+    </main>
+  </body>
+</html>

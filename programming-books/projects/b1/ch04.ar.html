@@ -1,0 +1,65 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">هذه المشاريع تجعلك تلعب دوري الويب كليهما: العميل الذي يقرأ العناوين ويطلب الصفحات، والخادم الذي يجيب. وبعض الكود يستخدم أفكاراً من فصول لاحقة؛ فاكتبه بعناية، وشغّله، وعد إليه حين تصل إلى تلك الفصول.</p>
+
+<div class="project">
+<p class="project-label">مشروع 4.1 · سهل</p>
+<h3>فاحص العناوين</h3>
+<p class="project-goal">فكّك قائمة من عناوين الويب، واطبع المضيف والمسار والاستعلام والجزء لكل واحد منها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> أجزاء عنوان URL، وكائن <code>URL</code>.</p>
+<ol class="steps">
+<li>قبل كتابة الكود، انسخ العناوين الثلاثة من الحل على ورقة، وضع خطاً تحت كل جزء بلون مختلف كما في الشكل 4.1.</li>
+<li>أنشئ <code>inspect-urls.js</code> فيه مصفوفة بالعناوين الثلاثة.</li>
+<li>لكل عنوان أنشئ <code>new URL(text)</code>، واطبع <code>hostname</code> و<code>pathname</code> و<code>search</code> و<code>hash</code> تفصلها <code>"|"</code>.</li>
+<li>بعض العناوين ليس فيها استعلام أو جزء، فتكون هذه الخصائص فارغة. اطبع <code>"-"</code> بدلاً منها بـ <code>url.search || "-"</code>.</li>
+<li>قارن المخرجات بورقتك. هل وجدت كل جزء صحيحاً؟</li>
+</ol>
+<pre class="plain">for (const text of addresses) {
+  const url = new URL(text);
+  console.log(url.hostname, "|", url.pathname, "|", url.search || "-", "|", url.hash || "-");
+}</pre>
+<p class="hint"><strong>تلميح:</strong> <code>for (const text of addresses)</code> تكرر الكود لكل عنوان (الفصل 9)، و<code>||</code> تختار الطرف الأيمن حين يكون الأيسر فارغاً (الفصل 8).</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/inspect-urls.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 4.2 · متوسط</p>
+<h3>موقع من ثلاث صفحات وصفحة 404</h3>
+<p class="project-goal">وسّع خادمك ليقدم صفحة رئيسية وصفحة «من نحن» وصفحة «تواصل معنا»، ويجيب بـ <code>404 Not Found</code> لكل ما سواها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المسارات، ورموز الحالة، وكيف يقرر الخادم ما يرسله.</p>
+<ol class="steps">
+<li>انسخ <code>server.js</code> من القسم 4.7 إلى <code>site.js</code>.</li>
+<li>فوق الخادم أنشئ كائناً يربط كل مسار بصفحته: <code>"/"</code> و<code>"/about"</code> و<code>"/contact"</code>.</li>
+<li>داخل الخادم ابحث عن <code>pages[request.url]</code>. إن وُجدت الصفحة فأرسلها برمز <code>200</code>، وإلا فأرسل عنوان «الصفحة غير موجودة» برمز <code>404</code>.</li>
+<li>اختبر أربعة مسارات، أحدها غير موجود، واطبع المسار والرمز والصفحة.</li>
+<li>احذف <code>server.close()</code>، وافتح <code>http://localhost:3002/about</code> في متصفحك، وانظر إلى الرمز في تبويب Network.</li>
+</ol>
+<pre class="plain">const page = pages[request.url];
+if (page) {
+  response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+  response.end(page);
+} else {
+  response.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+  response.end("&lt;h1&gt;الصفحة غير موجودة&lt;/h1&gt;");
+}</pre>
+<p class="hint"><strong>تلميح:</strong> الكائن المستخدم هكذا «قاموس» صغير من المسارات إلى الصفحات. والخوادم الحقيقية تفعل الشيء نفسه بصفحات أكثر بكثير، ويُسمى ذلك <dfn>التوجيه</dfn> (routing).</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/site.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 4.3 · تحدٍّ</p>
+<h3>واجهة برمجية لقائمة مطعم</h3>
+<p class="project-goal">ابنِ خادماً يجيب ببيانات بدل صفحة ويب: قائمة طعام مطعم بصيغة JSON، كما تحصل تطبيقات الموبايل الحقيقية على بياناتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الواجهات البرمجية، وترويسة <code>Content-Type</code>، وJSON (التي يشرحها الفصل 11 بعمق).</p>
+<ol class="steps">
+<li>أنشئ <code>menu-api.js</code> فيه مصفوفة من ثلاثة أطباق، لكل منها <code>name</code> و<code>price</code>.</li>
+<li>للمسار <code>/api/menu</code> أجب برمز <code>200</code>، والترويسة <code>Content-Type: application/json</code>، والجسم <code>JSON.stringify(menu)</code>.</li>
+<li>اجلب <code>/api/menu</code>، واطبع الرمز ونوع المحتوى والنص الذي استلمته.</li>
+<li>افتح العنوان في متصفحك والخادم يعمل؛ فمعظم المتصفحات تعرض JSON بشكل مرتب مقروء.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <dfn>الواجهة البرمجية</dfn> (API) خادم صُنع للبرامج لا للناس. والطقس في هاتفك، ونتائج المباريات في تطبيق رياضي، ومنتجات تطبيق متجر، كلها تأتي من واجهات برمجية مثل هذه.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/menu-api.js"></pre>
+</div>

@@ -1,0 +1,201 @@
+<section class="chapter" data-chapter="11" data-code="b1/ch11/en">
+<p class="chapter-kicker">Chapter 11</p>
+<h1>Objects and JSON</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>describe real things with objects: properties and values</li>
+<li>read, change and add properties</li>
+<li>work with arrays of objects using <code>filter</code>, <code>find</code> and <code>map</code></li>
+<li>unpack and copy objects with destructuring and spread</li>
+<li>turn objects into JSON text and back, and build a shopping cart</li>
+</ul>
+</div>
+
+<p class="lead">A number can hold an age, and a string can hold a name. But real things have many details at once: a book has a title, a price, a number of pages and a list of tags. <strong>Objects</strong> let you keep all the details of one thing together, under clear names. They are how JavaScript describes the world, and almost every piece of data you will meet as a developer is an object.</p>
+
+<aside class="bit" data-mood="happy"><p>If I were an object, I would be <code>{ name: "Bit", colour: "purple", antennas: 1, loves: ["HTML", "CSS", "JavaScript"] }</code>. See? Objects are a natural way to describe things!</p></aside>
+
+<h2>11.1 Creating and reading objects</h2>
+
+<p>An <dfn>object</dfn> is written with curly brackets. Inside are <dfn>properties</dfn>: pairs of a name (the <dfn>key</dfn>) and a value, separated by a colon, with commas between the pairs:</p>
+
+<pre data-code="object.js" data-title="object.js"></pre>
+<pre data-out="object.js"></pre>
+
+<ul>
+<li><strong>Dot notation</strong>, <code>book.title</code>, is the usual way to read a property.</li>
+<li><strong>Bracket notation</strong>, <code>book["pages"]</code>, does the same with the key as a string. It is useful when the key is in a variable: <code>book[field]</code>.</li>
+<li>A value can be anything: a number, a string, a boolean, an array, or even another object.</li>
+<li>You change a property by assigning to it, and you <em>add</em> a property the same way: <code>book.price = 25</code> created a property that did not exist before.</li>
+</ul>
+
+<p>Reading a property that does not exist is not an error; you simply get <code>undefined</code>. That is convenient, but it also means a spelling mistake like <code>book.titel</code> fails silently, so watch your spelling.</p>
+
+<h2>11.2 Arrays of objects</h2>
+
+<p>The most common shape of data in real programs is an <strong>array of objects</strong>: a list of products, of users, of messages, of matches. Each object has the same keys:</p>
+
+<pre data-code="products.js" data-title="products.js"></pre>
+<pre data-out="products.js"></pre>
+
+<p>Here the methods from Chapter 10 come into their own. <code>filter</code> selects the books, <code>map</code> takes just their names, and <code>find</code> returns the <em>first</em> item that matches, or <code>undefined</code> if there is none. Notice how each line reads almost like a question: “products where the category is book”, “the product whose id is 2”.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p><code>console.table(products)</code> prints an array of objects as a neat table in the terminal or the browser console. It is one of the most useful tricks for looking at data.</p></aside>
+
+<h2>11.3 Destructuring and spread</h2>
+
+<p>Two short syntaxes appear everywhere in modern JavaScript:</p>
+
+<pre data-code="destructure.js" data-title="destructure.js"></pre>
+<pre data-out="destructure.js"></pre>
+
+<ul>
+<li><dfn>Destructuring</dfn>, <code>const { name, city } = visitor</code>, creates variables from properties with the same names. It is a shortcut for <code>const name = visitor.name</code> and <code>const city = visitor.city</code>.</li>
+<li>The <dfn>spread</dfn> syntax, <code>{ ...visitor, age: 35 }</code>, copies every property into a new object and then overrides <code>age</code>. The original is not changed, as the output shows.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out: copies and references</p><p><code>const copy = visitor</code> does <strong>not</strong> copy the object. Both names now point to the same object, so changing <code>copy.age</code> changes <code>visitor.age</code> too. Objects and arrays are shared by reference. To get a real separate copy, use spread: <code>{ ...visitor }</code> for objects and <code>[...list]</code> for arrays.</p></aside>
+
+<h2>11.4 JSON: objects as text</h2>
+
+<p>Objects live in a program’s memory. But how do you save one to a file, or send it from a server to a browser on the other side of the world? You turn it into text. The standard text format for data on the web is <dfn>JSON</dfn> (JavaScript Object Notation), and it looks almost exactly like a JavaScript object:</p>
+
+<pre data-code="json.js" data-title="json.js"></pre>
+<pre data-out="json.js"></pre>
+
+<ul>
+<li><code>JSON.stringify(value)</code> turns a value into a JSON string. <code>JSON.stringify(value, null, 2)</code> adds line breaks and indentation, which is easier to read.</li>
+<li><code>JSON.parse(text)</code> turns JSON text back into objects and arrays.</li>
+</ul>
+
+<p>JSON is stricter than JavaScript: keys must be in double quotes, strings must use double quotes, and there are no comments, no functions and no trailing commas. Almost every web API in the world sends and receives JSON. In Chapter 13 you will fetch JSON from a real server.</p>
+
+<table>
+<thead><tr><th>JavaScript object</th><th>JSON text</th></tr></thead>
+<tbody>
+<tr><td><code>{ name: 'Bit', antennas: 1 }</code></td><td><code>{"name":"Bit","antennas":1}</code></td></tr>
+<tr><td>Lives in memory; can contain functions</td><td>Just text; only data</td></tr>
+<tr><td>Used inside your program</td><td>Used to save, send and receive data</td></tr>
+</tbody>
+</table>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Given <code>const user = { name: "Huda", age: 22 }</code>, how do you read the age?</li><li>What does <code>find</code> return when nothing matches?</li><li>What does <code>JSON.stringify</code> produce: an object or a string?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>11.5 Project: a shopping cart</h2>
+
+<p>Let us build the logic of an online shop’s cart: a catalogue of products, a cart that remembers which products and how many, and functions that add items and calculate totals. This is the same logic that runs behind real shops, just smaller:</p>
+
+<pre data-code="cart.js" data-title="cart.js"></pre>
+<pre data-out="cart.js"></pre>
+
+<p>Some details worth noticing:</p>
+<ul>
+<li>The cart stores only the product’s <code>id</code> and a quantity, not a copy of the product. The price lives in one place, the catalogue, so if a price changes, every cart is right automatically. Real databases are designed on exactly this idea.</li>
+<li>Adding a product that is already in the cart increases its quantity instead of adding a second line. <code>+=</code> is short for <code>line.quantity = line.quantity + quantity</code>.</li>
+<li><code>{ productId, quantity }</code> is shorthand for <code>{ productId: productId, quantity: quantity }</code>: when the key and the variable have the same name, you write it once.</li>
+<li>The last line turns the cart into JSON, ready to be saved in the browser or sent to a server, which you will do in the coming chapters.</li>
+</ul>
+
+<aside class="bit" data-mood="wow"><p>Arrays, objects, functions, loops and decisions, all working together. This little cart has the same shape as the code inside the biggest shops on the internet. Next, let’s put it on a web page where people can click!</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Misspelled key: <code>book.titel</code></td><td><code>undefined</code>, with no error</td><td>Check spelling; use autocomplete in VS Code</td></tr>
+<tr><td>Reading a property of <code>undefined</code></td><td><code>TypeError: Cannot read properties of undefined</code></td><td>Check that <code>find</code> found something first</td></tr>
+<tr><td><code>const b = a</code> to copy an object</td><td>Both names change together</td><td>Use <code>{ ...a }</code></td></tr>
+<tr><td>Single quotes or comments in JSON</td><td><code>JSON.parse</code> throws a <code>SyntaxError</code></td><td>JSON needs double quotes and no comments</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>An <strong>object</strong> groups related values as <strong>key: value</strong> properties. Read with <code>obj.key</code> or <code>obj["key"]</code>.</li>
+<li>Assigning to a property changes it, or adds it if it was missing. Missing properties are <code>undefined</code>.</li>
+<li><strong>Arrays of objects</strong> are the most common data shape. Use <code>filter</code>, <code>find</code>, <code>map</code> and <code>reduce</code> on them.</li>
+<li><strong>Destructuring</strong> unpacks properties into variables; <strong>spread</strong> (<code>...</code>) copies.</li>
+<li>Objects and arrays are shared <strong>by reference</strong>.</li>
+<li><strong>JSON</strong> is the text format for data. <code>JSON.stringify</code> and <code>JSON.parse</code> convert both ways.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>user.age</code> (or <code>user["age"]</code>). 2. <code>undefined</code>. 3. A string.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Objects are how programs describe the real world: a book, a student, a user’s settings. These projects move from one object, to a list of them, to saving them as text.</p>
+
+<div class="project">
+<p class="project-label">Project 11.1 · Easy</p>
+<h3>A library card for your favourite book</h3>
+<p class="project-goal">Describe one book as an object, change it, add to it, and print every property it has.</p>
+<p class="project-skills"><strong>You will practise:</strong> object literals, changing and adding properties, <code>Object.entries</code> and <code>Object.keys</code>.</p>
+<ol class="steps">
+<li>Create a <code>book</code> object with <code>title</code>, <code>author</code>, <code>pages</code> and <code>read: false</code>.</li>
+<li>You have just finished it: set <code>book.read</code> to <code>true</code>.</li>
+<li>Add a property that did not exist before: <code>book.rating = 5</code>.</li>
+<li>Loop over <code>Object.entries(book)</code> with <code>for (const [key, value] of …)</code> and print each pair.</li>
+<li>Print how many properties the object has now with <code>Object.keys(book).length</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>Object.entries</code> turns an object into an array of <code>[key, value]</code> pairs, and the square brackets in the loop unpack each pair into two variables.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/book-card.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 11.2 · Medium</p>
+<h3>The class report</h3>
+<p class="project-goal">Keep a list of students and their marks, print each student’s average, and find the top of the class.</p>
+<p class="project-skills"><strong>You will practise:</strong> arrays of objects, destructuring in a loop, a helper function, and tracking the best value so far.</p>
+<ol class="steps">
+<li>Create an array <code>students</code>: each item is <code>{ name, marks }</code>, where <code>marks</code> is an array of three numbers.</li>
+<li>Write <code>average(marks)</code> using <code>reduce</code> and <code>Math.round</code>.</li>
+<li>Loop with <code>for (const { name, marks } of students)</code> and print each name with its average.</li>
+<li>Keep a variable <code>best</code>, starting at <code>null</code>. Replace it with <code>{ name, avg }</code> whenever a student beats it.</li>
+<li>After the loop, print the winner. Then change the marks so a different student wins, and check that the report follows.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>{ name, avg }</code> is a shortcut for <code>{ name: name, avg: avg }</code>. When a variable has the same name as the property, you write it once.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/grades.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 11.3 · Challenge</p>
+<h3>App settings saved as JSON</h3>
+<p class="project-goal">Real apps start from default settings, load what the user saved last time, apply a change, and save the result again. Build that cycle.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>JSON.parse</code>, <code>JSON.stringify</code> with indentation, and merging objects with spread without changing the originals.</p>
+<ol class="steps">
+<li>Create <code>defaults</code> with <code>theme</code>, <code>fontSize</code> and <code>language</code>.</li>
+<li>Pretend the app saved this text last time: <code>'{"theme":"dark","fontSize":18}'</code>. Notice that it has no <code>language</code>.</li>
+<li>Merge them: <code>{ ...defaults, ...JSON.parse(saved) }</code>. Later properties win, so the saved values replace the defaults, and the missing ones keep their defaults.</li>
+<li>The user makes the text bigger: create <code>updated</code> with spread and <code>fontSize + 2</code>. Print both sizes to prove <code>settings</code> did not change.</li>
+<li>Turn <code>updated</code> back into text with <code>JSON.stringify(updated, null, 2)</code>, ready to be saved.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the order inside the braces matters. Swap the two spreads and the defaults would wipe out what the user saved, a very common bug.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/settings.js"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Create an object describing your favourite film, with at least five properties, one of them an array. Print it with <code>console.log</code> and with <code>JSON.stringify(film, null, 2)</code>.</li>
+<li><span class="level">Easy</span> In <code>products.js</code>, print the names of all products cheaper than 10.</li>
+<li><span class="level">Medium</span> Add a function <code>removeFromCart(productId)</code> to the cart. (Hint: search MDN for <code>findIndex</code> and <code>splice</code>, or build a new array with <code>filter</code>.)</li>
+<li><span class="level">Medium</span> Give products a <code>discount</code> property (for example 0.1 for 10%) and change <code>lineTotal</code> to use it.</li>
+<li><span class="level">Challenge</span> Write <code>receipt()</code>, which returns the whole receipt as one string, with one line per item and the total, using <code>map</code> and <code>join("\n")</code>.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 12</p>
+<p>So far your JavaScript has lived in the terminal. In the next chapter it moves into the browser: you will change web pages with the DOM, react to clicks and typing with events, and turn the shopping cart into a real, interactive page.</p>
+</div>
+</section>

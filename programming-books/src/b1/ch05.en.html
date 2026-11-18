@@ -1,0 +1,285 @@
+<section class="chapter" data-chapter="5" data-code="b1/ch05/en">
+<p class="chapter-kicker">Chapter 5</p>
+<h1>HTML: The Structure of a Page</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>read and write HTML elements, tags and attributes</li>
+<li>build the skeleton that every web page starts with</li>
+<li>add headings, paragraphs, links, images and lists</li>
+<li>give a page meaningful structure with header, nav, main and footer</li>
+<li>build your first real page: a personal profile</li>
+</ul>
+</div>
+
+<p class="lead">Every web page you have ever visited, from a small blog to a giant online shop, is built on HTML. It is the first language of the web, and also the friendliest: in this chapter you will write real pages in minutes, open them in your browser, and see exactly what each line does.</p>
+
+<aside class="bit" data-mood="happy"><p>HTML is not really a programming language. There are no calculations and no decisions. It is a <em>markup</em> language: you mark up your content to tell the browser what each piece is. That’s why it’s the perfect place to start building!</p></aside>
+
+<h2>5.1 Elements, tags and attributes</h2>
+
+<p><dfn>HTML</dfn> stands for HyperText Markup Language. You write your content, and you wrap each piece of it in <dfn>tags</dfn> that say what it is: a heading, a paragraph, a link, an image. A pair of tags together with the content between them is called an <dfn>element</dfn>.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="An HTML element: opening tag with an attribute, content, and closing tag">
+<g font-family="JetBrains Mono" font-size="17">
+<text x="20" y="62"><tspan fill="#4338ca" font-weight="700">&lt;a</tspan><tspan fill="#c2410c"> href</tspan><tspan fill="#1e1b2e">=</tspan><tspan fill="#15803d">"first.html"</tspan><tspan fill="#4338ca" font-weight="700">&gt;</tspan><tspan fill="#1e1b2e">My first page</tspan><tspan fill="#4338ca" font-weight="700">&lt;/a&gt;</tspan></text>
+</g>
+<g stroke-width="3" stroke-linecap="round" fill="none">
+<path d="M20,76 L20,84 L232,84 L232,76" stroke="#4338ca"/><path d="M238,76 L238,84 L364,84 L364,76" stroke="#1e1b2e"/><path d="M370,76 L370,84 L406,84 L406,76" stroke="#4338ca"/>
+<path d="M44,44 L44,36 L222,36 L222,44" stroke="#c2410c"/>
+</g>
+<g font-family="Inter" font-size="12.5" font-weight="700" text-anchor="middle">
+<text x="126" y="104" fill="#4338ca">opening tag</text><text x="301" y="104" fill="#1e1b2e">content</text><text x="410" y="122" fill="#4338ca">closing tag</text>
+<text x="133" y="26" fill="#c2410c">attribute (name = "value")</text>
+</g>
+<text x="226" y="136" font-family="Inter" font-size="12.5" fill="#5b5873" text-anchor="middle">The whole thing, from &lt;a&gt; to &lt;/a&gt;, is one element.</text>
+</svg>
+<figcaption><b>Figure 5.1:</b> The parts of an HTML element.</figcaption>
+</figure>
+
+<ul>
+<li>The <strong>opening tag</strong> is the element’s name between angle brackets: <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;a&gt;</code>.</li>
+<li>The <strong>closing tag</strong> is the same, with a slash: <code>&lt;/p&gt;</code>.</li>
+<li><dfn>Attributes</dfn> go inside the opening tag and give extra information, always as <code>name="value"</code>. Here, <code>href</code> says where the link goes.</li>
+<li>A few elements have no content and no closing tag, such as <code>&lt;img&gt;</code> and <code>&lt;br&gt;</code>. They are called <dfn>void elements</dfn>.</li>
+</ul>
+
+<h2>5.2 The skeleton of every page</h2>
+
+<p>Every HTML page starts with the same few lines. In your <code>code-from-zero</code> folder, create a folder called <code>chapter-05</code> and in it a file called <code>first.html</code>:</p>
+
+<pre data-code="first.html" data-title="first.html"></pre>
+
+<p>Double-click the file to open it in your browser (or drag it into a browser window):</p>
+
+<figure data-render="first.html" data-width="560"><figcaption><b>Figure 5.2:</b> Your first web page.</figcaption></figure>
+
+<p>Each line of the skeleton has a job:</p>
+
+<table>
+<thead><tr><th>Line</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;!doctype html&gt;</code></td><td>Tells the browser this is a modern HTML page.</td></tr>
+<tr><td><code>&lt;html lang="en"&gt;</code></td><td>The root element that wraps everything. <code>lang</code> says which language the page is in, which helps screen readers and search engines.</td></tr>
+<tr><td><code>&lt;head&gt;</code></td><td>Information <em>about</em> the page, which is not shown in the page itself.</td></tr>
+<tr><td><code>&lt;meta charset="utf-8"&gt;</code></td><td>Uses UTF-8, the encoding for Unicode, so every language and emoji displays correctly.</td></tr>
+<tr><td><code>&lt;meta name="viewport" …&gt;</code></td><td>Makes the page fit phone screens properly.</td></tr>
+<tr><td><code>&lt;title&gt;</code></td><td>The text in the browser tab and in search results.</td></tr>
+<tr><td><code>&lt;body&gt;</code></td><td>Everything the visitor sees.</td></tr>
+</tbody>
+</table>
+
+<p>Notice how the lines are indented: elements inside other elements are moved two spaces to the right. The browser does not care about indentation, but people do. It shows at a glance which element is inside which, and Prettier does it for you every time you save.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>In VS Code, type <code>!</code> in an empty <code>.html</code> file and press <code>Tab</code>. The editor writes the whole skeleton for you. Professionals do this every day, but type it by hand a few times first so that you understand every line.</p></aside>
+
+<h2>5.3 Text: headings and paragraphs</h2>
+
+<p>Most web content is text, and HTML has elements to give it structure. From now on, listings show only the <code>&lt;body&gt;</code>, because the <code>&lt;head&gt;</code> is the same skeleton every time; only the <code>&lt;title&gt;</code> changes. The full files are in the book’s code repository.</p>
+
+<pre data-code="text.html" data-title="text.html" data-show="body"></pre>
+<figure data-render="text.html" data-width="560"><figcaption><b>Figure 5.3:</b> Headings, paragraphs and emphasis, with the browser’s default styles.</figcaption></figure>
+
+<ul>
+<li><code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code> are <strong>headings</strong>, from the most important to the least. Use one <code>&lt;h1&gt;</code> per page for its main title, then <code>&lt;h2&gt;</code> for sections, <code>&lt;h3&gt;</code> for sub-sections, and so on, like the chapters and sections of this book.</li>
+<li><code>&lt;p&gt;</code> is a <strong>paragraph</strong>. The browser adds space around each one.</li>
+<li><code>&lt;strong&gt;</code> marks text as <strong>important</strong> (shown in bold), and <code>&lt;em&gt;</code> gives it <em>emphasis</em> (shown in italics).</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p>Choose a heading level for its meaning, never for its size. If you want a heading to look smaller, you will change its size with CSS in Chapter 6. Screen readers, which read pages aloud for blind users, let people jump from heading to heading, so a correct order really matters.</p></aside>
+
+<h2>5.4 Links</h2>
+
+<p>Links are what make the web a <em>web</em>: pages connected to each other all over the world. The anchor element <code>&lt;a&gt;</code> creates a link, and its <code>href</code> attribute says where it goes:</p>
+
+<pre data-code="links.html" data-title="links.html" data-show="body"></pre>
+<figure data-render="links.html" data-width="560"><figcaption><b>Figure 5.4:</b> Links are blue and underlined by default.</figcaption></figure>
+
+<p>The first link is <strong>absolute</strong>: it contains the full address of another website. The second is <strong>relative</strong>: <code>first.html</code> means “the file called <code>first.html</code> in the same folder as this page”. Use relative links between the pages of your own site, so they keep working when you move the whole site to a server.</p>
+
+<p>The third link opens in a new tab because of <code>target="_blank"</code>. The extra <code>rel="noopener"</code> is a small security measure that you should always add with it.</p>
+
+<h2>5.5 Images</h2>
+
+<p>The <code>&lt;img&gt;</code> element shows a picture. Download the file <code>bit.svg</code> from the book’s code repository into your <code>chapter-05</code> folder, or use any picture you like:</p>
+
+<pre data-code="image.html" data-title="image.html" data-show="body"></pre>
+<figure data-render="image.html" data-width="560"><figcaption><b>Figure 5.5:</b> An image on the page.</figcaption></figure>
+
+<ul>
+<li><code>src</code> is the image file: a relative path, or a full address on the web.</li>
+<li><code>alt</code> is a text description of the image. Screen readers read it aloud, search engines index it, and browsers show it if the image cannot load.</li>
+<li><code>width</code> and <code>height</code> tell the browser how much space to keep, so the page does not jump around while the image loads.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">Professional habit</p><p>Every image needs an <code>alt</code>. Describe what the image shows and why it is there, in a short sentence. If an image is pure decoration, write <code>alt=""</code>, so screen readers skip it. Good <code>alt</code> text is one of the simplest ways to make the web usable for everyone.</p></aside>
+
+<h2>5.6 Lists</h2>
+
+<p>HTML has two common kinds of list. Use <code>&lt;ul&gt;</code> (unordered list) when the order does not matter, and <code>&lt;ol&gt;</code> (ordered list) when it does. Inside both, each item is an <code>&lt;li&gt;</code>:</p>
+
+<pre data-code="lists.html" data-title="lists.html" data-show="body"></pre>
+<figure data-render="lists.html" data-width="560"><figcaption><b>Figure 5.6:</b> The browser adds bullets and numbers for you.</figcaption></figure>
+
+<p>Lists are everywhere on the web, often in places you would not guess: the menu at the top of most websites is a list of links, styled with CSS so it no longer looks like a list.</p>
+
+<h2>5.7 Giving a page structure</h2>
+
+<p>Real pages have parts: a top area with the site’s name and menu, the main content, and a footer at the bottom. HTML has <dfn>semantic elements</dfn> for these parts. “Semantic” means they describe the <em>meaning</em> of their content, not its look:</p>
+
+<pre data-code="structure.html" data-title="structure.html" data-show="body"></pre>
+
+<figure>
+<svg viewBox="0 0 520 200" role="img" aria-label="Layout of a page with header containing nav, main containing article, and footer">
+<g font-family="JetBrains Mono" font-size="13" font-weight="700">
+<rect x="20" y="10" width="480" height="58" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/><text x="32" y="30" fill="#4338ca">&lt;header&gt;</text>
+<rect x="250" y="22" width="235" height="34" rx="6" fill="#fff" stroke="#7c3aed" stroke-width="2"/><text x="262" y="44" fill="#7c3aed">&lt;nav&gt;</text>
+<rect x="20" y="78" width="480" height="76" rx="8" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="32" y="98" fill="#0f766e">&lt;main&gt;</text>
+<rect x="40" y="106" width="440" height="38" rx="6" fill="#fff" stroke="#0f766e" stroke-width="2"/><text x="52" y="130" fill="#0f766e">&lt;article&gt;</text>
+<rect x="20" y="164" width="480" height="30" rx="8" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="32" y="184" fill="#ea580c">&lt;footer&gt;</text>
+</g>
+</svg>
+<figcaption><b>Figure 5.7:</b> The parts of the page above. Without CSS they look like plain text, but the browser, search engines and screen readers know what each part is.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>Element</th><th>Use it for</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;header&gt;</code></td><td>The introduction of the page or a section: logo, title, menu</td></tr>
+<tr><td><code>&lt;nav&gt;</code></td><td>The main navigation links</td></tr>
+<tr><td><code>&lt;main&gt;</code></td><td>The main content. Only one per page.</td></tr>
+<tr><td><code>&lt;section&gt;</code></td><td>A themed part of the content, usually with a heading</td></tr>
+<tr><td><code>&lt;article&gt;</code></td><td>Content that makes sense on its own: a blog post, a news story, a product</td></tr>
+<tr><td><code>&lt;footer&gt;</code></td><td>The end of the page or section: copyright, contacts, links</td></tr>
+</tbody>
+</table>
+
+<p>You will also meet two elements with no meaning at all: <code>&lt;div&gt;</code>, a general block, and <code>&lt;span&gt;</code>, a general piece of inline text. Use them only when no semantic element fits, usually as hooks for CSS.</p>
+
+<h2>5.8 A first look at forms</h2>
+
+<p>Forms let visitors send information: a search, a login, a sign-up. You will make forms come alive with JavaScript in Chapter 12, but the structure is pure HTML:</p>
+
+<pre data-code="form.html" data-title="form.html" data-show="body"></pre>
+<figure data-render="form.html" data-width="560"><figcaption><b>Figure 5.8:</b> A form with two fields and a button.</figcaption></figure>
+
+<p>Each <code>&lt;input&gt;</code> has a <code>&lt;label&gt;</code>, connected by matching <code>for</code> and <code>id</code> values. Clicking the label puts the cursor in the field, and screen readers announce the label. <code>type="email"</code> brings the right keyboard on phones, and <code>required</code> makes the browser refuse to send an empty field. Try pressing the button with the fields empty!</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>In <code>&lt;img src="cat.jpg" alt="A sleeping cat"&gt;</code>, what are the attributes, and why does this element have no closing tag?</li><li>When should you use <code>&lt;ol&gt;</code> instead of <code>&lt;ul&gt;</code>?</li><li>How many <code>&lt;h1&gt;</code> elements should a page have?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>5.9 Project: your profile page</h2>
+
+<p>Let us combine everything into a real page: a profile of Sara, a new web developer. Replace her details with your own as you type.</p>
+
+<pre data-code="profile.html" data-title="profile.html" data-show="body"></pre>
+<figure data-render="profile.html" data-width="560"><figcaption><b>Figure 5.9:</b> The profile page, with HTML only and no styling yet.</figcaption></figure>
+
+<p>Two new tricks appear here. The links in the menu point to <code>#about</code>, <code>#skills</code> and <code>#contact</code>: a <code>#</code> followed by an <code>id</code> jumps to the element with that <code>id</code> on the same page. And the contact link starts with <code>mailto:</code>, which opens the visitor’s email app.</p>
+
+<p>The page works, and its structure is excellent, but it is plain. That is normal: HTML’s job is structure, not beauty. In the next two chapters you will turn exactly this page into something you will be proud to share.</p>
+
+<aside class="bit" data-mood="wow"><p>Right-click your page and choose <strong>Inspect</strong>. The Elements panel shows the tree of elements you wrote. You built that tree! Hover over each element and watch the browser highlight it on the page.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting a closing tag, such as <code>&lt;/p&gt;</code></td><td>The browser guesses where the element ends, sometimes wrongly</td><td>Close every element that has content</td></tr>
+<tr><td>Wrong nesting: <code>&lt;p&gt;&lt;strong&gt;…&lt;/p&gt;&lt;/strong&gt;</code></td><td>Unpredictable layout</td><td>Close elements in the reverse order you opened them</td></tr>
+<tr><td>Missing <code>&lt;meta charset="utf-8"&gt;</code></td><td>Arabic or accented letters show as strange symbols</td><td>Always start with the full skeleton</td></tr>
+<tr><td>Spaces or capital letters in file names</td><td>Links work on your computer but break on a server</td><td>Use names like <code>about-me.html</code></td></tr>
+<tr><td>Image without <code>alt</code></td><td>Screen reader users do not know what it shows</td><td>Describe every meaningful image</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>HTML marks up content with <strong>elements</strong>: an opening tag, content, and a closing tag. <strong>Attributes</strong> add information as <code>name="value"</code>.</li>
+<li>Every page starts with the same <strong>skeleton</strong>: doctype, <code>html</code> with <code>lang</code>, <code>head</code> with charset, viewport and title, and <code>body</code>.</li>
+<li>Use headings <code>h1</code> to <code>h6</code> in order, paragraphs <code>p</code>, and <code>strong</code> and <code>em</code> for importance and emphasis.</li>
+<li><code>a</code> makes links with <code>href</code>; <code>img</code> shows images with <code>src</code> and a meaningful <code>alt</code>.</li>
+<li><code>ul</code> and <code>ol</code> hold list items <code>li</code>.</li>
+<li><strong>Semantic elements</strong> such as <code>header</code>, <code>nav</code>, <code>main</code>, <code>section</code>, <code>article</code> and <code>footer</code> describe the structure of the page.</li>
+<li>Forms use <code>form</code>, <code>label</code>, <code>input</code> and <code>button</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The attributes are <code>src</code> and <code>alt</code>. <code>&lt;img&gt;</code> is a void element: it has no content between tags, so it needs no closing tag. 2. When the order of the items matters, such as steps or a ranking. 3. One.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Three real pages, each a little bigger than the last. Use HTML only: no CSS yet. Keep these files, because you will style them in Chapters 6 and 7.</p>
+
+<div class="project">
+<p class="project-label">Project 5.1 · Easy</p>
+<h3>A recipe page</h3>
+<p class="project-goal">Write the page for a recipe you love, with a picture, a list of ingredients and numbered steps.</p>
+<p class="project-skills"><strong>You will practise:</strong> the page skeleton, headings, paragraphs, <code>strong</code>, images with <code>alt</code>, and both kinds of list.</p>
+<ol class="steps">
+<li>Create a folder <code>projects-05</code>, and in it <code>recipe.html</code> with the full skeleton from Section 5.2.</li>
+<li>Add an <code>&lt;h1&gt;</code> with the recipe’s name, and a short paragraph that says how long it takes and how many people it serves. Mark the time with <code>&lt;strong&gt;</code>.</li>
+<li>Add a picture of the dish with <code>&lt;img&gt;</code>. Write an <code>alt</code> that describes it in one sentence, and give it a <code>width</code> and <code>height</code>.</li>
+<li>Add an <code>&lt;h2&gt;</code> “Ingredients” with an unordered list, and an <code>&lt;h2&gt;</code> “Steps” with an ordered list.</li>
+<li>Open the page in the browser, and then in the DevTools Elements panel. Is the tree what you expected?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the order of ingredients does not matter, so use <code>&lt;ul&gt;</code>; the order of steps does, so use <code>&lt;ol&gt;</code>. If you have no photo, use any picture, or <code>soup.svg</code> from the code repository.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-render="projects/recipe.html" data-width="520"><figcaption><b>Project 5.1:</b> a recipe page with HTML only.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 5.2 · Medium</p>
+<h3>A website for a small café</h3>
+<p class="project-goal">Build the one-page website of a neighbourhood café, with a proper semantic structure and a menu that jumps to each section.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>header</code>, <code>nav</code>, <code>main</code>, <code>section</code>, <code>footer</code>, links to <code>#id</code>, and <code>tel:</code> links.</p>
+<ol class="steps">
+<li>Plan the page on paper first: draw boxes for the header, the three sections (menu, opening hours, address) and the footer.</li>
+<li>Write the <code>&lt;header&gt;</code> with the café’s name, a one-line description, and a <code>&lt;nav&gt;</code> with three links: <code>#menu</code>, <code>#hours</code> and <code>#find</code>.</li>
+<li>Inside <code>&lt;main&gt;</code>, write three <code>&lt;section&gt;</code>s, each with the matching <code>id</code>, an <code>&lt;h2&gt;</code>, and a list or a paragraph.</li>
+<li>In the address section, add a phone link: <code>&lt;a href="tel:+201000000000"&gt;</code>. On a phone, tapping it starts a call.</li>
+<li>Finish with a <code>&lt;footer&gt;</code>. Then make the window small and click the menu links: the page jumps to each section.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the <code>&amp;</code> sign has a special meaning in HTML, so write it as <code>&amp;amp;</code>, for example <code>Bean &amp;amp; Book</code>.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-render="projects/cafe.html" data-width="520"><figcaption><b>Project 5.2:</b> a café website with a semantic structure.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 5.3 · Challenge</p>
+<h3>A course sign-up form</h3>
+<p class="project-goal">Build a complete sign-up form with six kinds of field, each with a proper label.</p>
+<p class="project-skills"><strong>You will practise:</strong> forms, <code>label</code> with <code>for</code>, input types, <code>select</code>, <code>textarea</code>, checkboxes and <code>required</code>.</p>
+<ol class="steps">
+<li>Create <code>signup.html</code> with a heading and a <code>&lt;form&gt;</code>.</li>
+<li>Add text, email and phone fields (<code>type="text"</code>, <code>"email"</code> and <code>"tel"</code>), each with a <code>&lt;label&gt;</code> whose <code>for</code> matches the field’s <code>id</code>.</li>
+<li>Add a <code>&lt;select&gt;</code> for the student’s level, with three <code>&lt;option&gt;</code>s.</li>
+<li>Add a <code>&lt;textarea&gt;</code> for “Why do you want to learn?”, and a checkbox for agreeing to emails, with its label after it.</li>
+<li>Make the name and email <code>required</code>, and test: press the button with empty fields, then with an email that has no <code>@</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> on a phone, <code>type="email"</code> shows a keyboard with <code>@</code>, and <code>type="tel"</code> shows a number pad. Try it with the DevTools device toolbar, or on your own phone.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-render="projects/signup.html" data-width="520"><figcaption><b>Project 5.3:</b> a sign-up form with six kinds of field.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Create <code>favourites.html</code> with a heading and an unordered list of your five favourite films, books or games.</li>
+<li><span class="level">Easy</span> Add a link from <code>favourites.html</code> to <code>profile.html</code>, and a link back again.</li>
+<li><span class="level">Medium</span> Write a recipe page for a dish you like, with an <code>&lt;h1&gt;</code>, an image with a good <code>alt</code>, a list of ingredients and numbered steps.</li>
+<li><span class="level">Medium</span> Open any large website, open DevTools and look at the Elements panel. Find its <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code> and <code>&lt;footer&gt;</code>. Does it use semantic elements, or only <code>&lt;div&gt;</code>s?</li>
+<li><span class="level">Challenge</span> Turn your profile page into a small three-page website: <code>index.html</code> (about you), <code>projects.html</code> and <code>contact.html</code> with a form. Every page should have the same <code>&lt;header&gt;</code> and <code>&lt;nav&gt;</code> linking to the other two.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 6</p>
+<p>Your profile page has a great skeleton. Next, CSS gives it colours, fonts, spacing and personality. By the end of Chapter 6 you will hardly recognise it.</p>
+</div>
+</section>

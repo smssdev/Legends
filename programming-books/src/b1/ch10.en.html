@@ -1,0 +1,225 @@
+<section class="chapter" data-chapter="10" data-code="b1/ch10/en">
+<p class="chapter-kicker">Chapter 10</p>
+<h1>Functions</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>package a piece of code as a named, reusable function</li>
+<li>pass information in with parameters and get results out with <code>return</code></li>
+<li>understand where variables live: scope</li>
+<li>write short arrow functions and use them with <code>map</code>, <code>filter</code> and <code>reduce</code></li>
+<li>rebuild the ticket kiosk from small, clear functions</li>
+</ul>
+</div>
+
+<p class="lead">You have already used many functions without writing one: <code>console.log</code>, <code>push</code>, <code>join</code>. Someone wrote them once, gave them names, and now millions of programmers use them every day. In this chapter you will write your own. Functions are how programmers turn a long, tangled program into small pieces that each do one job well.</p>
+
+<aside class="bit" data-mood="happy"><p>Think of a function as a little machine. You put something in (like an age), it does its work, and something comes out (like a price). You build the machine once and use it as often as you like, without thinking about its insides again.</p></aside>
+
+<h2>10.1 Your first function</h2>
+
+<pre data-code="greet.js" data-title="greet.js"></pre>
+<pre data-out="greet.js"></pre>
+
+<p>A function has three parts:</p>
+<ul>
+<li>The <strong>name</strong>, <code>greet</code>, which you use to call it. Function names are usually verbs, because functions <em>do</em> things.</li>
+<li>The <dfn>parameters</dfn> in brackets, here <code>name</code>: the inputs. Inside the function, a parameter works like a variable.</li>
+<li>The <strong>body</strong> in curly brackets: the code that runs each time the function is called.</li>
+</ul>
+
+<p>Defining a function does nothing on its own. The code runs only when you <dfn>call</dfn> the function, by writing its name followed by brackets: <code>greet("Sara")</code>. The value you pass, <code>"Sara"</code>, is called an <dfn>argument</dfn>. Inside the function, <code>name</code> becomes <code>"Sara"</code>.</p>
+
+<h3>Returning a value</h3>
+
+<p>The word <code>return</code> sends a value back to whoever called the function, and ends the function immediately. That is why <code>const message = greet("Sara")</code> works: the call is replaced by the returned value. A function without <code>return</code> gives back <code>undefined</code>.</p>
+
+<figure>
+<svg viewBox="0 0 520 120" role="img" aria-label="An argument goes into a function and a return value comes out">
+<defs><marker id="f10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<rect x="180" y="20" width="160" height="80" rx="16" fill="#4338ca"/>
+<g font-family="JetBrains Mono" text-anchor="middle">
+<text x="260" y="55" fill="#fff" font-size="16" font-weight="700">ticketPrice</text>
+<text x="260" y="78" fill="#c7d2fe" font-size="12">(age)</text>
+<text x="80" y="66" fill="#15803d" font-size="18" font-weight="700">34</text>
+<text x="440" y="66" fill="#c2410c" font-size="18" font-weight="700">10</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.5" marker-end="url(#f10)"><line x1="110" y1="60" x2="174" y2="60"/><line x1="342" y1="60" x2="406" y2="60"/></g>
+<g font-family="Inter" font-size="12" font-weight="700" text-anchor="middle"><text x="80" y="95" fill="#15803d">argument in</text><text x="440" y="95" fill="#c2410c">return value out</text></g>
+</svg>
+<figcaption><b>Figure 10.1:</b> A function is a machine: arguments go in, a return value comes out.</figcaption>
+</figure>
+
+<h2>10.2 Functions make code reusable</h2>
+
+<p>Here are the kiosk’s pricing rules as a function. Once written, it can be used anywhere, as often as you like:</p>
+
+<pre data-code="price.js" data-title="price.js"></pre>
+<pre data-out="price.js"></pre>
+
+<p>Notice the style: instead of one long <code>if</code>/<code>else if</code> chain, each case <code>return</code>s as soon as it knows the answer. Programmers call these <dfn>early returns</dfn>. They make the logic easy to read from top to bottom: “if it’s a small child, it’s free; done.”</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: one job per function</p><p>A good function does one thing, and its name says what. If you need the word “and” to describe it (“calculate the price <em>and</em> print the receipt”), split it into two functions. Small functions are easier to read, test, reuse and fix.</p></aside>
+
+<h2>10.3 Several parameters and default values</h2>
+
+<p>A function can take several parameters, separated by commas. The order matters: the first argument goes to the first parameter. A parameter can also have a <dfn>default value</dfn>, used when the caller leaves it out:</p>
+
+<pre data-code="params.js" data-title="params.js"></pre>
+<pre data-out="params.js"></pre>
+
+<h2>10.4 Scope: where variables live</h2>
+
+<p>A variable created inside a function exists only inside that function. This is called <dfn>scope</dfn>:</p>
+
+<pre data-code="scope.js" data-title="scope.js"></pre>
+<pre data-out="scope.js"></pre>
+
+<p><code>total</code> lives inside <code>withTax</code>; outside, it does not exist, so <code>typeof total</code> is <code>"undefined"</code>. But <code>tax</code>, created outside, can be read inside the function. The rule: code can see variables in its own block and in the blocks around it, never in the blocks inside it.</p>
+
+<p>Scope is a gift. It means two functions can each have their own variable called <code>total</code> without disturbing each other, just as two families can each have a child called Omar.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>Keep variables in the smallest scope that works. A variable used only inside a function should be created inside it. The fewer places that can change a variable, the fewer places a bug can hide.</p></aside>
+
+<h2>10.5 Arrow functions and array methods</h2>
+
+<p>JavaScript has a shorter way to write small functions, called <dfn>arrow functions</dfn>:</p>
+
+<pre class="plain">function double(n) { return n * 2; }   // a normal function
+const double = (n) =&gt; n * 2;           // the same, as an arrow function</pre>
+
+<p>When the body is a single expression, the arrow function returns it automatically, without <code>return</code> or curly brackets. Arrow functions shine when you give a function to <em>another</em> function. Arrays have three famous methods that do exactly that:</p>
+
+<pre data-code="arrow.js" data-title="arrow.js"></pre>
+<pre data-out="arrow.js"></pre>
+
+<table>
+<thead><tr><th>Method</th><th>What it does</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td><code>map(f)</code></td><td>Calls <code>f</code> on every item and collects the results</td><td>A new array, same length</td></tr>
+<tr><td><code>filter(f)</code></td><td>Keeps the items for which <code>f</code> returns <code>true</code></td><td>A new, shorter (or equal) array</td></tr>
+<tr><td><code>reduce(f, start)</code></td><td>Combines all items into one value, like an accumulator</td><td>One value</td></tr>
+</tbody>
+</table>
+
+<p>A function passed to another function is called a <dfn>callback</dfn>. <code>map</code> calls your callback once for each price, with the price as the argument. These three methods often replace a whole loop with one readable line, and you will see them everywhere in professional code.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: 13.200000000000001?</p><p>Look at the first result of <code>map</code>: 12 × 1.1 gave <code>13.200000000000001</code>, not 13.2. This is not a JavaScript bug. Computers store decimals in binary (Chapter 1), and just as 1/3 cannot be written exactly in decimal, 1.1 cannot be written exactly in binary. Every language has this effect. For display, round with <code>price.toFixed(2)</code>; for money, professionals store whole numbers of the smallest unit, such as cents or piastres.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What is the difference between a parameter and an argument?</li><li>What does a function return if it has no <code>return</code>?</li><li>What does <code>[1, 2, 3].map((n) =&gt; n * 10)</code> give?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>10.6 Project: a kiosk made of functions</h2>
+
+<p>Let us rebuild the kiosk the way a professional would: from small functions, each with one job. One function knows the base price, one applies the members’ day, and one builds a receipt line from a visitor:</p>
+
+<pre data-code="kiosk.js" data-title="kiosk.js"></pre>
+<pre data-out="kiosk.js"></pre>
+
+<p>Each visitor is written as <code>{ name: "Sara", age: 34, member: true }</code>, an <dfn>object</dfn> that groups several values under names. You read them with a dot: <code>visitor.age</code>. Objects are the subject of the next chapter.</p>
+
+<p>Compare this with the long kiosk in Chapter 8. Each piece now has a name that explains it, and each piece can be changed without touching the others. If the cinema changes its prices, you change <code>ticketPrice</code> and nothing else. That is the real power of functions: not fewer lines, but clearer ones.</p>
+
+<aside class="bit" data-mood="think"><p>Notice how the last function reads almost like a sentence: “the base price is the ticket price for this age; the price is the base after the members’ day.” Good names make code explain itself. I always say: code is read far more often than it is written.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting the brackets: <code>greet</code> instead of <code>greet()</code></td><td>You get the function itself, not its result</td><td>Call with <code>()</code></td></tr>
+<tr><td>Forgetting <code>return</code></td><td>The result is <code>undefined</code></td><td>Return the value you computed</td></tr>
+<tr><td>Code after <code>return</code></td><td>It never runs</td><td><code>return</code> ends the function</td></tr>
+<tr><td>Arguments in the wrong order</td><td>Wrong results, often without an error</td><td>Check the order of the parameters</td></tr>
+<tr><td>Using a variable outside its scope</td><td><code>ReferenceError: … is not defined</code></td><td>Return the value instead</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A <strong>function</strong> is named, reusable code. Define it with <code>function name(params) { … }</code> and call it with <code>name(args)</code>.</li>
+<li><strong>Parameters</strong> are the inputs; <strong>arguments</strong> are the values passed in. Parameters can have <strong>default values</strong>.</li>
+<li><code>return</code> sends a value back and ends the function.</li>
+<li>Variables live in their <strong>scope</strong>: inside a function, they are invisible outside it.</li>
+<li><strong>Arrow functions</strong> (<code>(n) =&gt; n * 2</code>) are a short form, perfect as <strong>callbacks</strong>.</li>
+<li><code>map</code>, <code>filter</code> and <code>reduce</code> transform, select and combine arrays.</li>
+<li>Write small functions with one job and clear names.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A parameter is the name in the function’s definition; an argument is the actual value passed when calling it. 2. <code>undefined</code>. 3. <code>[10, 20, 30]</code>.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project builds a small toolbox of functions that work together. Give every function one job and a name that says what it does.</p>
+
+<div class="project">
+<p class="project-label">Project 10.1 · Easy</p>
+<h3>A unit converter</h3>
+<p class="project-goal">Write a set of small conversion functions, plus one helper for rounding, and use them together.</p>
+<p class="project-skills"><strong>You will practise:</strong> parameters, <code>return</code>, default values, and calling functions inside other calls.</p>
+<ol class="steps">
+<li>Write <code>kmToMiles(km)</code> (× 0.621371), <code>kgToPounds(kg)</code> (× 2.20462) and <code>celsiusToFahrenheit(c)</code>.</li>
+<li>Write a helper <code>round(value, digits = 1)</code> that returns <code>Number(value.toFixed(digits))</code>. The default means you usually do not have to pass <code>digits</code>.</li>
+<li>Print four conversions, passing the result of one function straight into another: <code>round(kmToMiles(10))</code>.</li>
+<li>Convert the length of a marathon, 42.195 km, with two decimal places.</li>
+<li>Add one more converter of your own, for example litres to cups.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>toFixed</code> returns a string; <code>Number(…)</code> turns it back into a number, so you can keep calculating with it.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/converter.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 10.2 · Medium</p>
+<h3>Password strength checker</h3>
+<p class="project-goal">Rate passwords as weak, okay or strong, using small helper functions that each check one thing.</p>
+<p class="project-skills"><strong>You will practise:</strong> functions that return booleans, early returns, looping over the letters of a string, and combining small functions.</p>
+<ol class="steps">
+<li>Write <code>hasDigit(text)</code>: loop over the characters with <code>for…of</code>, and return <code>true</code> as soon as one is a digit. After the loop, return <code>false</code>.</li>
+<li>Write <code>hasUpper(text)</code>: a text has a capital letter if it changes when you make it lower case.</li>
+<li>Write <code>strength(password)</code>: give one point each for 8 or more characters, 12 or more characters, a digit, and a capital letter.</li>
+<li>Turn the points into a word with early returns: 0–1 weak, 2–3 okay, 4 strong.</li>
+<li>Test four passwords, from the weakest to the strongest.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> length matters more than anything else for a password’s strength. A long, unusual sentence beats a short word with symbols.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/password.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 10.3 · Challenge</p>
+<h3>Sales report with map, filter and reduce</h3>
+<p class="project-goal">A small shop has a list of orders. Answer three business questions, each in one or two lines, without writing a single <code>for</code> loop.</p>
+<p class="project-skills"><strong>You will practise:</strong> arrow functions, <code>map</code>, <code>filter</code>, <code>reduce</code>, and chaining them.</p>
+<ol class="steps">
+<li>Create an array of five orders, each an object with a <code>product</code>, a <code>quantity</code> and a <code>price</code>.</li>
+<li>Write an arrow function <code>lineTotal(order)</code> that returns quantity × price.</li>
+<li>Total revenue: <code>map</code> each order to its line total, then <code>reduce</code> to one sum.</li>
+<li>Big orders: <code>filter</code> the orders whose line total is 25 or more, and print how many.</li>
+<li>Stickers sold: <code>filter</code> the sticker orders, then <code>reduce</code> their quantities. Writing <code>.filter(…)</code> and <code>.reduce(…)</code> on separate lines makes the chain easy to read.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> read a chain from top to bottom as a sentence: “orders, only the stickers, add up the quantities”. Professional code is full of chains like this.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/sales.js"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write <code>isEven(n)</code> that returns <code>true</code> or <code>false</code>. Test it with 4, 7 and 0.</li>
+<li><span class="level">Easy</span> Write <code>celsiusToFahrenheit(c)</code>, using <code>c * 9 / 5 + 32</code>. What is 37 °C in Fahrenheit?</li>
+<li><span class="level">Medium</span> Write <code>maxOf(numbers)</code> that returns the largest number in an array, using the algorithm from Chapter 2. Then find the built-in way with <code>Math.max</code> on MDN.</li>
+<li><span class="level">Medium</span> Given an array of prices, use <code>filter</code> and <code>map</code> to get the prices over 10 with a 20% discount applied, rounded with <code>toFixed(2)</code>.</li>
+<li><span class="level">Challenge</span> Add a function <code>applyNightShow(price, hour)</code> to the kiosk (1 cheaper from 22:00, never below 0), give each visitor an <code>hour</code>, and use the new function in <code>receiptLine</code>.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 11</p>
+<p>You met your first objects in the kiosk project. In the next chapter you will learn how objects describe real things, from a visitor to a product to a whole shopping cart, and how JSON lets programs exchange them across the internet.</p>
+</div>
+</section>

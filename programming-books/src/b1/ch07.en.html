@@ -1,0 +1,260 @@
+<section class="chapter" data-chapter="7" data-code="b1/ch07/en">
+<p class="chapter-kicker">Chapter 7</p>
+<h1>Layout with Flexbox and Grid</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>place elements in a row or a column with Flexbox</li>
+<li>space, align and centre elements in both directions</li>
+<li>build two-dimensional layouts with CSS Grid</li>
+<li>make pages adapt to every screen with media queries</li>
+<li>give your profile page a real, responsive layout</li>
+</ul>
+</div>
+
+<p class="lead">For years, putting two boxes side by side on a web page was surprisingly hard, and developers used clever tricks that broke easily. Today CSS has two tools designed exactly for layout: <strong>Flexbox</strong> for arranging things along one line, and <strong>Grid</strong> for rows and columns together. With them, layouts that once took a day take a few lines.</p>
+
+<aside class="bit" data-mood="happy"><p>Here’s a fun fact: centring something vertically used to be the most famous joke among web developers. By section 7.2 of this chapter, you’ll do it in three lines!</p></aside>
+
+<h2>7.1 Flexbox: a row of boxes</h2>
+
+<p>Normally block elements stack from top to bottom. Add <code>display: flex</code> to a parent element, and its children line up in a row instead. The parent is called the <dfn>flex container</dfn>, and its direct children are <dfn>flex items</dfn>.</p>
+
+<pre data-code="flex.html" data-title="flex.html"></pre>
+<figure data-render="flex.html" data-width="560"><figcaption><b>Figure 7.1:</b> The same menu with three values of <code>justify-content</code>.</figcaption></figure>
+
+<p>Three properties do most of the work:</p>
+
+<table>
+<thead><tr><th>Property</th><th>Common values</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>gap</code></td><td><code>8px</code>, <code>1rem</code></td><td>Space between items, and nowhere else</td></tr>
+<tr><td><code>justify-content</code></td><td><code>flex-start</code>, <code>center</code>, <code>space-between</code>, <code>flex-end</code></td><td>Where items sit along the row</td></tr>
+<tr><td><code>align-items</code></td><td><code>stretch</code>, <code>center</code>, <code>flex-start</code>, <code>flex-end</code></td><td>How items line up across the row (vertically, for a row)</td></tr>
+</tbody>
+</table>
+
+<p>Notice that “start” means where the reading direction starts. In the Arabic version of this page the same CSS puts the menu on the right, with no extra code. Flexbox and Grid are built on the logical directions you met in Chapter 6.</p>
+
+<h3>Rows, columns and wrapping</h3>
+
+<p><code>flex-direction: column</code> turns the row into a column. <code>flex-wrap: wrap</code> lets items move onto a new line when there is not enough room, instead of squeezing. And on an item, <code>flex: 1</code> means “grow to fill the free space”, which is how you make a search box stretch next to a fixed-size button.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="Main axis runs along the row, cross axis runs across it">
+<defs><marker id="m7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker>
+<marker id="m7b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#db2777"/></marker></defs>
+<rect x="60" y="30" width="400" height="90" rx="10" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<g fill="#4338ca"><rect x="76" y="48" width="70" height="54" rx="8"/><rect x="158" y="48" width="70" height="54" rx="8"/><rect x="240" y="48" width="70" height="54" rx="8"/></g>
+<g font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle"><text x="111" y="80">1</text><text x="193" y="80">2</text><text x="275" y="80">3</text></g>
+<line x1="70" y1="138" x2="450" y2="138" stroke="#4338ca" stroke-width="2.5" marker-end="url(#m7)"/>
+<text x="260" y="22" font-family="Inter" font-size="12.5" font-weight="700" fill="#4338ca" text-anchor="middle">main axis: justify-content</text>
+<line x1="480" y1="34" x2="480" y2="116" stroke="#db2777" stroke-width="2.5" marker-end="url(#m7b)"/>
+<text x="500" y="75" font-family="Inter" font-size="12" font-weight="700" fill="#db2777" text-anchor="middle" transform="rotate(90 500 75)">cross axis: align-items</text>
+</svg>
+<figcaption><b>Figure 7.2:</b> Flexbox has two axes. <code>justify-content</code> works along the main axis, <code>align-items</code> across it.</figcaption>
+</figure>
+
+<h2>7.2 Centring anything</h2>
+
+<p>Put <code>justify-content: center</code> and <code>align-items: center</code> together, and an item sits exactly in the middle of its container, horizontally and vertically:</p>
+
+<pre data-code="center.html" data-title="center.html" data-show="body"></pre>
+<pre class="plain">body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 260px;
+}</pre>
+<figure data-render="center.html" data-width="560"><figcaption><b>Figure 7.3:</b> Centred in both directions.</figcaption></figure>
+
+<aside class="bit" data-mood="wow"><p>Three lines! Developers who learned CSS before Flexbox still smile when they see this. The container needs a height, though: here <code>min-height</code> gives it one. Without it, the box is only as tall as its content, so there is nothing to centre in.</p></aside>
+
+<h2>7.3 Grid: rows and columns together</h2>
+
+<p>Flexbox arranges items along one line. <dfn>CSS Grid</dfn> arranges them in two dimensions at once, like a table or a spreadsheet. Set <code>display: grid</code> on the container and describe its columns:</p>
+
+<pre data-code="grid.html" data-title="grid.html"></pre>
+<figure data-render="grid.html" data-width="560"><figcaption><b>Figure 7.4:</b> A gallery: as many 140-pixel-or-wider columns as fit.</figcaption></figure>
+
+<p>The magic line is:</p>
+<pre class="plain">grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));</pre>
+
+<p>Read it from the inside out. <code>1fr</code> means “one fraction of the free space”. <code>minmax(140px, 1fr)</code> means “at least 140 pixels, otherwise share the space equally”. <code>repeat(auto-fit, …)</code> means “as many columns like that as fit”. So on a wide screen you get four columns, on a phone two, and you never wrote a single rule for either. That is the heart of responsive design.</p>
+
+<table>
+<thead><tr><th>You write</th><th>You get</th></tr></thead>
+<tbody>
+<tr><td><code>grid-template-columns: 1fr 1fr</code></td><td>Two equal columns</td></tr>
+<tr><td><code>grid-template-columns: 200px 1fr</code></td><td>A fixed sidebar and a flexible main column</td></tr>
+<tr><td><code>grid-template-columns: repeat(3, 1fr)</code></td><td>Three equal columns</td></tr>
+<tr><td><code>grid-column: 1 / -1</code> (on an item)</td><td>The item spans every column, from the first line to the last</td></tr>
+</tbody>
+</table>
+
+<h2>7.4 Page layouts with named areas</h2>
+
+<p>Grid can also lay out a whole page. You give each part a name and then “draw” the layout with those names, almost like ASCII art:</p>
+
+<pre data-code="layout.html" data-title="layout.html" data-show="body"></pre>
+<pre class="plain">.page {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  grid-template-areas:
+    "head head"
+    "side main"
+    "foot foot";
+  gap: 10px;
+}
+header { grid-area: head; }
+aside  { grid-area: side; }
+main   { grid-area: main; }
+footer { grid-area: foot; }</pre>
+
+<figure data-render="layout.html" data-width="760"><figcaption><b>Figure 7.5:</b> The page layout on a wide screen.</figcaption></figure>
+
+<p>Each quoted line is a row; each word is a cell. <code>"head head"</code> means the header spans both columns. Changing the whole layout is now a matter of redrawing the picture, which is exactly what we do for small screens.</p>
+
+<h2>7.5 Responsive design with media queries</h2>
+
+<p>More than half of all web visits come from phones. A <dfn>media query</dfn> applies CSS only when a condition is true, usually a screen width:</p>
+
+<pre class="plain">@media (max-width: 600px) {
+  .page {
+    grid-template-columns: 1fr;
+    grid-template-areas: "head" "main" "side" "foot";
+  }
+}</pre>
+
+<p>On screens 600 pixels wide or less, the page becomes a single column, and the main content moves above the sidebar, because on a phone the content is what people came for:</p>
+
+<figure data-render="layout.html" data-width="360"><figcaption><b>Figure 7.6:</b> The same page and the same HTML at phone width.</figcaption></figure>
+
+<aside class="box rule"><p class="box-title">Professional habit: mobile first</p><p>Most professionals write the phone layout first, as the default, and then add <code>@media (min-width: …)</code> rules for bigger screens. Phone layouts are usually simpler, so the CSS stays simpler. Always test with the DevTools device toolbar, and on a real phone when you can.</p></aside>
+
+<aside class="box tip"><p class="box-title">Flexbox or Grid?</p><p>A simple rule: use <strong>Flexbox</strong> for a line of things (a menu, a row of buttons, tags, a card’s header) and <strong>Grid</strong> for a layout of things (a page, a gallery, a dashboard). They work perfectly together: a Grid page can contain Flexbox menus, and the other way round.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which property makes the children of an element line up in a row?</li><li>What does <code>1fr</code> mean in a grid?</li><li>What does <code>@media (min-width: 700px) { … }</code> do?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>7.6 Project: a responsive profile</h2>
+
+<p>Your profile page is beautiful but still a single tall column. Let us add a sixth part to <code>style.css</code> with a real layout. Nothing in the HTML changes.</p>
+
+<pre data-code="layout-step.css" data-title="style.css (part 6, add at the end)"></pre>
+
+<figure data-render="profile.html" data-width="760"><figcaption><b>Figure 7.7:</b> On a wide screen: avatar beside the name, cards in two columns.</figcaption></figure>
+
+<figure data-render="profile.html" data-width="380"><figcaption><b>Figure 7.8:</b> On a phone: one column, everything centred. Same HTML, same CSS file.</figcaption></figure>
+
+<p>Look at what each piece does:</p>
+<ul>
+<li>The <code>header</code> is now a flex container that wraps. On a wide screen the avatar and name sit side by side; <code>flex-basis: 100%</code> forces the menu onto its own line.</li>
+<li><code>main</code> is a grid with a <code>gap</code>, so the cards are spaced by the grid instead of by their own margins.</li>
+<li>The skills list is a wrapping flex container: tags flow onto a new line on narrow screens.</li>
+<li>Inside the media query, <code>main</code> gets two columns, and the About card spans both with <code>grid-column: 1 / -1</code>.</li>
+<li><code>padding-inline</code> is a logical property: in the Arabic page, the extra padding moves to the correct sides automatically.</li>
+</ul>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Putting <code>display: flex</code> on the items instead of the parent</td><td>Nothing lines up</td><td>Flex and grid go on the <strong>container</strong></td></tr>
+<tr><td>Using margins to space flex or grid items</td><td>Uneven spacing at the edges</td><td>Use <code>gap</code></td></tr>
+<tr><td>Centring vertically in a container with no height</td><td>The item does not move</td><td>Give the container a height or <code>min-height</code></td></tr>
+<tr><td>Forgetting the viewport meta tag</td><td>Phones show a tiny desktop page and media queries seem broken</td><td>Keep <code>&lt;meta name="viewport"&gt;</code> in the head</td></tr>
+<tr><td>Fixed widths like <code>width: 900px</code></td><td>Sideways scrolling on phones</td><td>Use <code>max-width</code>, <code>%</code> and <code>fr</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><code>display: flex</code> lines children up in a row (or a column). Use <code>gap</code>, <code>justify-content</code> and <code>align-items</code>.</li>
+<li>Flexbox has a <strong>main axis</strong> and a <strong>cross axis</strong>. <code>flex-wrap: wrap</code> lets items flow onto new lines.</li>
+<li><code>justify-content: center</code> plus <code>align-items: center</code> centres anything.</li>
+<li><code>display: grid</code> makes rows and columns. <code>fr</code> shares free space; <code>repeat(auto-fit, minmax(…, 1fr))</code> makes responsive galleries.</li>
+<li><code>grid-template-areas</code> draws page layouts with names.</li>
+<li><strong>Media queries</strong> apply CSS at certain screen widths. Design mobile first.</li>
+<li>Flexbox for a line of things, Grid for a layout of things.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>display: flex</code> on the parent. 2. One fraction of the free space: two <code>1fr</code> columns share it equally. 3. It applies the CSS inside it only when the screen is at least 700 pixels wide.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Layout is learned by building layouts. Each project below is a pattern you will meet on real websites again and again. Test every one at phone width and desktop width with the DevTools device toolbar.</p>
+
+<div class="project">
+<p class="project-label">Project 7.1 · Easy</p>
+<h3>The café, side by side</h3>
+<p class="project-goal">Give the café website from Project 6.2 a real layout: on wide screens, its sections sit next to each other as cards.</p>
+<p class="project-skills"><strong>You will practise:</strong> Grid with <code>auto-fit</code> and <code>minmax</code>, <code>gap</code>, and a wrapping Flexbox menu.</p>
+<ol class="steps">
+<li>Open <code>cafe.css</code> from Chapter 6 and add a new part at the end, with a comment: <code>/* Chapter 7 */</code>.</li>
+<li>Make <code>main</code> a grid with <code>grid-template-columns: repeat(auto-fit, minmax(240px, 1fr))</code> and a <code>gap</code>, and widen its <code>max-width</code> to 900 pixels.</li>
+<li>Remove the bottom margin of the sections: the <code>gap</code> now does the spacing.</li>
+<li>Make the <code>nav</code> a wrapping flex container, centred, with a <code>gap</code> between the pills.</li>
+<li>Resize the window slowly from wide to narrow, and watch the cards go from three columns to two to one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> you did not write a single media query, yet the layout adapts. That is the power of <code>auto-fit</code> with <code>minmax</code>.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-render="projects/cafe.html" data-width="760"><figcaption><b>Project 7.1:</b> the café on a wide screen.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 7.2 · Medium</p>
+<h3>A “Meet the team” page</h3>
+<p class="project-goal">Build a grid of team member cards, each with a round avatar, a name and a role, perfectly centred inside the card.</p>
+<p class="project-skills"><strong>You will practise:</strong> Grid for the page, Flexbox inside each card, and centring in both directions.</p>
+<ol class="steps">
+<li>In <code>team.html</code>, write a <code>&lt;main class="team"&gt;</code> containing six <code>&lt;article class="person"&gt;</code>, each with a <code>&lt;div class="avatar"&gt;</code> (the first letter of the name), an <code>&lt;h2&gt;</code> and a <code>&lt;p&gt;</code>.</li>
+<li>Make <code>.team</code> a responsive grid of cards at least 150 pixels wide.</li>
+<li>Make each <code>.person</code> a flex column with <code>align-items: center</code>, so everything inside is centred.</li>
+<li>Make <code>.avatar</code> a 64-pixel circle (<code>border-radius: 50%</code>) and centre its letter with Flexbox: <code>justify-content</code> and <code>align-items</code> both set to <code>center</code>.</li>
+<li>Check the page at 360 pixels: how many cards per row?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the “Flexbox inside Grid” pattern from the Tip in Section 7.5: Grid places the cards; Flexbox arranges what is inside each card.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-render="projects/team.html" data-width="560"><figcaption><b>Project 7.2:</b> a team grid with centred cards.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 7.3 · Challenge</p>
+<h3>A product landing page</h3>
+<p class="project-goal">Build the classic landing page that almost every product has: a top bar, a “hero” with text and a picture, and three feature cards. It must look right on phones too.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>space-between</code>, <code>flex: 1</code>, fixed grid columns, and a media query that changes direction.</p>
+<ol class="steps">
+<li>Sketch the page first: a bar with the brand on one side and links on the other; a hero with text beside a picture; a row of three cards; a footer.</li>
+<li>Make the bar a flex container with <code>justify-content: space-between</code>, so the brand and the links are pushed to opposite sides.</li>
+<li>Make the hero a flex container. Give its text block <code>flex: 1</code>, so it takes all the space the picture does not need.</li>
+<li>Lay out the three features with <code>grid-template-columns: repeat(3, 1fr)</code>.</li>
+<li>Add a media query for screens up to 600 pixels: the hero becomes a centred column (<code>flex-direction: column</code>) and the grid becomes one column.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the picture is decorative, so its <code>alt</code> is empty (<code>alt=""</code>). The heading already says everything that matters.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-render="projects/landing.html" data-width="760"><figcaption><b>Project 7.3:</b> the landing page on a wide screen…</figcaption></figure>
+<figure data-render="projects/landing.html" data-width="380"><figcaption>…and on a phone.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Make a row of three buttons with Flexbox, with 12 pixels between them, centred on the page.</li>
+<li><span class="level">Easy</span> Change the gallery so that each column is at least 200 pixels wide. How many columns do you get at different window widths?</li>
+<li><span class="level">Medium</span> Build a card for a product with an image on one side and text on the other, using Flexbox. On screens narrower than 500 pixels, put the image above the text.</li>
+<li><span class="level">Medium</span> Add a fourth area, <code>ads</code>, to <code>layout.html</code>, shown to the end of the main content on wide screens and at the very bottom on phones.</li>
+<li><span class="level">Challenge</span> Recreate the layout of the home page of a news website you like, with Grid areas and coloured boxes instead of real content. Make it work at 360, 768 and 1280 pixels wide.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 8</p>
+<p>Your pages now have structure, style and layout. What they cannot do yet is <em>think</em>. Part 3 brings JavaScript: values, variables and decisions, the first step to pages that react to their visitors.</p>
+</div>
+</section>

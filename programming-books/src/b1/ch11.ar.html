@@ -1,0 +1,201 @@
+<section class="chapter" data-chapter="11" data-code="b1/ch11/ar">
+<p class="chapter-kicker">الفصل 11</p>
+<h1>الكائنات وJSON</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تصف الأشياء الحقيقية بالكائنات: الخصائص والقيم</li>
+<li>تقرأ الخصائص وتغيّرها وتضيفها</li>
+<li>تتعامل مع مصفوفات الكائنات بـ <code>filter</code> و<code>find</code> و<code>map</code></li>
+<li>تفكك الكائنات وتنسخها بالتفكيك والنشر</li>
+<li>تحوّل الكائنات إلى نص JSON وتعيدها، وتبني سلة تسوق</li>
+</ul>
+</div>
+
+<p class="lead">الرقم يحفظ عمراً، والنص يحفظ اسماً. لكن الأشياء الحقيقية لها تفاصيل كثيرة معاً: للكتاب عنوان وسعر وعدد صفحات وقائمة وسوم. و<strong>الكائنات</strong> تتيح لك أن تُبقي كل تفاصيل الشيء الواحد معاً تحت أسماء واضحة. إنها طريقة JavaScript في وصف العالم، ومعظم البيانات التي ستقابلها كمطور كائنات.</p>
+
+<aside class="bit" data-mood="happy"><p>لو كنت كائناً لكنت <code>{ name: "بِت", colour: "بنفسجي", antennas: 1, loves: ["HTML", "CSS", "JavaScript"] }</code>. أرأيت؟ الكائنات طريقة طبيعية لوصف الأشياء!</p></aside>
+
+<h2>11.1 إنشاء الكائنات وقراءتها</h2>
+
+<p>يُكتب <dfn>الكائن</dfn> (object) بين قوسين معقوصين، وبداخله <dfn>خصائص</dfn> (properties): أزواج من اسم (يُسمى <dfn>المفتاح</dfn>) وقيمة تفصلهما نقطتان، وبين الأزواج فواصل:</p>
+
+<pre data-code="object.js" data-title="object.js"></pre>
+<pre data-out="object.js"></pre>
+
+<ul>
+<li><strong>صيغة النقطة</strong>، <code>book.title</code>، هي الطريقة المعتادة لقراءة الخاصية.</li>
+<li><strong>صيغة الأقواس</strong>، <code>book["pages"]</code>، تفعل الشيء نفسه والمفتاح نص، وتفيد حين يكون المفتاح في متغير: <code>book[field]</code>.</li>
+<li>القيمة يمكن أن تكون أي شيء: رقماً، أو نصاً، أو boolean، أو مصفوفة، أو حتى كائناً آخر.</li>
+<li>تغيّر الخاصية بأن تسند إليها قيمة، و<em>تضيف</em> خاصية بالطريقة نفسها: <code>book.price = 25</code> أنشأت خاصية لم تكن موجودة.</li>
+</ul>
+
+<p>وقراءة خاصية غير موجودة ليست خطأً، بل تحصل على <code>undefined</code>. هذا مريح، لكنه يعني أن خطأً إملائياً مثل <code>book.titel</code> يفشل بصمت، فانتبه لإملائك. ولاحظ أن المفاتيح تُكتب بالإنجليزية دائماً، أما القيم النصية فبأي لغة.</p>
+
+<h2>11.2 مصفوفات الكائنات</h2>
+
+<p>أكثر أشكال البيانات شيوعاً في البرامج الحقيقية هو <strong>مصفوفة الكائنات</strong>: قائمة منتجات، أو مستخدمين، أو رسائل، أو مباريات. ولكل كائن المفاتيح نفسها:</p>
+
+<pre data-code="products.js" data-title="products.js"></pre>
+<pre data-out="products.js"></pre>
+
+<p>هنا تتألق دوال الفصل 10. فـ <code>filter</code> تختار الكتب، و<code>map</code> تأخذ أسماءها فقط، و<code>find</code> تُرجع <em>أول</em> عنصر يطابق، أو <code>undefined</code> إن لم يوجد. ولاحظ أن كل سطر يُقرأ كأنه سؤال: «المنتجات التي فئتها كتاب»، و«المنتج الذي معرّفه 2».</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p><code>console.table(products)</code> تطبع مصفوفة الكائنات جدولاً مرتباً في الطرفية أو Console المتصفح. وهي من أنفع الحيل للنظر في البيانات.</p></aside>
+
+<h2>11.3 التفكيك والنشر</h2>
+
+<p>صيغتان قصيرتان تظهران في كل مكان في JavaScript الحديثة:</p>
+
+<pre data-code="destructure.js" data-title="destructure.js"></pre>
+<pre data-out="destructure.js"></pre>
+
+<ul>
+<li><dfn>التفكيك</dfn> (destructuring)، <code>const { name, city } = visitor</code>، ينشئ متغيرات من الخصائص التي تحمل الأسماء نفسها، وهو اختصار لـ <code>const name = visitor.name</code> و<code>const city = visitor.city</code>.</li>
+<li>وصيغة <dfn>النشر</dfn> (spread)، <code>{ ...visitor, age: 35 }</code>، تنسخ كل الخصائص إلى كائن جديد ثم تستبدل <code>age</code>. والأصل لا يتغير، كما تُظهر المخرجات.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">انتبه: النسخ والمراجع</p><p><code>const copy = visitor</code> <strong>لا</strong> تنسخ الكائن. فالاسمان يشيران الآن إلى الكائن نفسه، وتغيير <code>copy.age</code> يغيّر <code>visitor.age</code> أيضاً، لأن الكائنات والمصفوفات تُشارَك بالمرجع. ولتحصل على نسخة مستقلة حقاً استخدم النشر: <code>{ ...visitor }</code> للكائنات، و<code>[...list]</code> للمصفوفات.</p></aside>
+
+<h2>11.4 JSON: الكائنات نصاً</h2>
+
+<p>الكائنات تعيش في ذاكرة البرنامج. فكيف تحفظ كائناً في ملف، أو ترسله من خادم إلى متصفح في الطرف الآخر من العالم؟ تحوّله إلى نص. والصيغة النصية المعتمدة للبيانات على الويب هي <dfn>JSON</dfn> (ترميز كائنات JavaScript)، وهي تشبه كائن JavaScript تماماً تقريباً:</p>
+
+<pre data-code="json.js" data-title="json.js"></pre>
+<pre data-out="json.js"></pre>
+
+<ul>
+<li><code>JSON.stringify(value)</code> تحوّل القيمة إلى نص JSON. و<code>JSON.stringify(value, null, 2)</code> تضيف أسطراً جديدة وإزاحات تسهّل القراءة.</li>
+<li><code>JSON.parse(text)</code> تعيد نص JSON كائنات ومصفوفات.</li>
+</ul>
+
+<p>وJSON أكثر صرامة من JavaScript: المفاتيح بين علامتي تنصيص مزدوجتين، والنصوص كذلك، ولا تعليقات ولا دوال ولا فواصل زائدة في الآخر. ومعظم الواجهات البرمجية في العالم ترسل JSON وتستقبله. وفي الفصل 13 ستجلب JSON من خادم حقيقي.</p>
+
+<table>
+<thead><tr><th>كائن JavaScript</th><th>نص JSON</th></tr></thead>
+<tbody>
+<tr><td><code>{ name: 'Bit', antennas: 1 }</code></td><td><code>{"name":"Bit","antennas":1}</code></td></tr>
+<tr><td>يعيش في الذاكرة، ويمكن أن يحوي دوالاً</td><td>نص فقط، بيانات لا غير</td></tr>
+<tr><td>يُستخدم داخل برنامجك</td><td>يُستخدم لحفظ البيانات وإرسالها واستقبالها</td></tr>
+</tbody>
+</table>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>مع <code>const user = { name: "هدى", age: 22 }</code>، كيف تقرأ العمر؟</li><li>ماذا تُرجع <code>find</code> حين لا يطابق شيء؟</li><li>ماذا تنتج <code>JSON.stringify</code>: كائناً أم نصاً؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>11.5 مشروع: سلة تسوق</h2>
+
+<p>لنبنِ منطق سلة متجر إلكتروني: كتالوج منتجات، وسلة تتذكر أي المنتجات وكم منها، ودوال تضيف العناصر وتحسب المجاميع. وهذا المنطق نفسه الذي يعمل خلف المتاجر الحقيقية، لكنه أصغر:</p>
+
+<pre data-code="cart.js" data-title="cart.js"></pre>
+<pre data-out="cart.js"></pre>
+
+<p>تفاصيل تستحق الانتباه:</p>
+<ul>
+<li>السلة تحفظ <code>id</code> المنتج والكمية فقط، لا نسخة من المنتج. فالسعر يعيش في مكان واحد هو الكتالوج، وإن تغير سعر صارت كل السلال صحيحة تلقائياً. وقواعد البيانات الحقيقية مصممة على هذه الفكرة بالضبط.</li>
+<li>إضافة منتج موجود أصلاً في السلة تزيد كميته بدل إضافة سطر ثانٍ. و<code>+=</code> اختصار لـ <code>line.quantity = line.quantity + quantity</code>.</li>
+<li><code>{ productId, quantity }</code> اختصار لـ <code>{ productId: productId, quantity: quantity }</code>: حين يتطابق المفتاح واسم المتغير تكتبه مرة واحدة.</li>
+<li>السطر الأخير يحوّل السلة إلى JSON، جاهزة للحفظ في المتصفح أو الإرسال إلى خادم، وستفعل ذلك في الفصول القادمة.</li>
+</ul>
+
+<aside class="bit" data-mood="wow"><p>مصفوفات وكائنات ودوال وحلقات وقرارات، كلها تعمل معاً. هذه السلة الصغيرة لها شكل الكود نفسه الذي يعمل داخل أكبر المتاجر على الإنترنت. والخطوة التالية: نضعها في صفحة ويب يضغط فيها الناس!</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>مفتاح بإملاء خاطئ: <code>book.titel</code></td><td><code>undefined</code> بلا رسالة خطأ</td><td>راجع الإملاء، واستخدم الإكمال التلقائي في VS Code</td></tr>
+<tr><td>قراءة خاصية من <code>undefined</code></td><td><code>TypeError: Cannot read properties of undefined</code></td><td>تأكد أولاً أن <code>find</code> وجدت شيئاً</td></tr>
+<tr><td><code>const b = a</code> لنسخ كائن</td><td>يتغير الاسمان معاً</td><td>استخدم <code>{ ...a }</code></td></tr>
+<tr><td>علامات تنصيص مفردة أو تعليقات في JSON</td><td><code>JSON.parse</code> ترمي <code>SyntaxError</code></td><td>JSON تحتاج علامات مزدوجة وبلا تعليقات</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>الكائن</strong> يجمع القيم المترابطة خصائصَ بالشكل <strong>key: value</strong>. واقرأ بـ <code>obj.key</code> أو <code>obj["key"]</code>.</li>
+<li>الإسناد إلى خاصية يغيّرها، أو يضيفها إن لم تكن موجودة. والخصائص غير الموجودة <code>undefined</code>.</li>
+<li><strong>مصفوفات الكائنات</strong> أكثر أشكال البيانات شيوعاً، واستخدم معها <code>filter</code> و<code>find</code> و<code>map</code> و<code>reduce</code>.</li>
+<li><strong>التفكيك</strong> يفك الخصائص إلى متغيرات، و<strong>النشر</strong> (<code>...</code>) ينسخ.</li>
+<li>الكائنات والمصفوفات تُشارَك <strong>بالمرجع</strong>.</li>
+<li><strong>JSON</strong> الصيغة النصية للبيانات، و<code>JSON.stringify</code> و<code>JSON.parse</code> تحوّلان في الاتجاهين.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>user.age</code> (أو <code>user["age"]</code>). 2. <code>undefined</code>. 3. نصاً.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">الكائنات هي طريقة البرامج في وصف العالم الحقيقي: كتاب، أو طالب، أو إعدادات مستخدم. تنتقل هذه المشاريع من كائن واحد، إلى قائمة منها، إلى حفظها نصاً.</p>
+
+<div class="project">
+<p class="project-label">مشروع 11.1 · سهل</p>
+<h3>بطاقة مكتبة لكتابك المفضل</h3>
+<p class="project-goal">صِف كتاباً واحداً بكائن، ثم غيّره، وأضف إليه، واطبع كل خصائصه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إنشاء الكائنات، وتغيير الخصائص وإضافتها، و<code>Object.entries</code> و<code>Object.keys</code>.</p>
+<ol class="steps">
+<li>أنشئ كائن <code>book</code> فيه <code>title</code> و<code>author</code> و<code>pages</code> و<code>read: false</code>.</li>
+<li>انتهيت من قراءته للتو: اجعل <code>book.read</code> تساوي <code>true</code>.</li>
+<li>أضف خاصية لم تكن موجودة: <code>book.rating = 5</code>.</li>
+<li>مرّ على <code>Object.entries(book)</code> بـ <code>for (const [key, value] of …)</code> واطبع كل زوج.</li>
+<li>اطبع عدد خصائص الكائن الآن بـ <code>Object.keys(book).length</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>Object.entries</code> تحوّل الكائن إلى مصفوفة أزواج <code>[key, value]</code>، والأقواس المربعة في الحلقة تفك كل زوج إلى متغيرين.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/book-card.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 11.2 · متوسط</p>
+<h3>تقرير الفصل</h3>
+<p class="project-goal">احتفظ بقائمة طلاب ودرجاتهم، واطبع متوسط كل طالب، واعرف الأول على الفصل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مصفوفات الكائنات، والتفكيك داخل الحلقة، ودالة مساعدة، وتتبّع أفضل قيمة حتى الآن.</p>
+<ol class="steps">
+<li>أنشئ مصفوفة <code>students</code>: كل عنصر فيها <code>{ name, marks }</code>، و<code>marks</code> مصفوفة من ثلاثة أرقام.</li>
+<li>اكتب <code>average(marks)</code> بـ <code>reduce</code> و<code>Math.round</code>.</li>
+<li>مرّ بـ <code>for (const { name, marks } of students)</code> واطبع كل اسم مع متوسطه.</li>
+<li>احتفظ بمتغير <code>best</code> يبدأ بـ <code>null</code>، واستبدله بـ <code>{ name, avg }</code> كلما تفوّق عليه طالب.</li>
+<li>بعد الحلقة اطبع الفائز. ثم غيّر الدرجات ليفوز طالب آخر، وتأكد أن التقرير يتبعها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>{ name, avg }</code> اختصار لـ <code>{ name: name, avg: avg }</code>. فحين يحمل المتغير اسم الخاصية نفسه تكتبه مرة واحدة.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/grades.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 11.3 · تحدٍّ</p>
+<h3>إعدادات التطبيق محفوظة بصيغة JSON</h3>
+<p class="project-goal">التطبيقات الحقيقية تبدأ بإعدادات افتراضية، ثم تحمّل ما حفظه المستخدم في المرة الماضية، وتطبّق تغييراً، ثم تحفظ النتيجة من جديد. ابنِ هذه الدورة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>JSON.parse</code>، و<code>JSON.stringify</code> بمسافات، ودمج الكائنات بالنشر دون تغيير الأصل.</p>
+<ol class="steps">
+<li>أنشئ <code>defaults</code> فيه <code>theme</code> و<code>fontSize</code> و<code>language</code>.</li>
+<li>افترض أن التطبيق حفظ هذا النص في المرة الماضية: <code>'{"theme":"dark","fontSize":18}'</code>. ولاحظ أنه بلا <code>language</code>.</li>
+<li>ادمجهما: <code>{ ...defaults, ...JSON.parse(saved) }</code>. الخصائص اللاحقة تغلب، فالقيم المحفوظة تحل محل الافتراضية، والناقصة تبقى على افتراضيتها.</li>
+<li>المستخدم يكبّر الخط: أنشئ <code>updated</code> بالنشر و<code>fontSize + 2</code>، واطبع الحجمين لتثبت أن <code>settings</code> لم تتغير.</li>
+<li>أعد <code>updated</code> نصاً بـ <code>JSON.stringify(updated, null, 2)</code>، جاهزاً للحفظ.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الترتيب داخل الأقواس مهم. فلو بدّلت النشرين لمسحت الإعدادات الافتراضية ما حفظه المستخدم، وهذا خطأ شائع جداً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/settings.js"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أنشئ كائناً يصف فيلمك المفضل، فيه خمس خصائص على الأقل، إحداها مصفوفة. واطبعه بـ <code>console.log</code> وبـ <code>JSON.stringify(film, null, 2)</code>.</li>
+<li><span class="level">سهل</span> في <code>products.js</code>، اطبع أسماء كل المنتجات الأرخص من 10.</li>
+<li><span class="level">متوسط</span> أضف إلى السلة دالة <code>removeFromCart(productId)</code>. (تلميح: ابحث في MDN عن <code>findIndex</code> و<code>splice</code>، أو ابنِ مصفوفة جديدة بـ <code>filter</code>.)</li>
+<li><span class="level">متوسط</span> أعط المنتجات خاصية <code>discount</code> (مثلاً 0.1 لخصم 10%)، وغيّر <code>lineTotal</code> لتستخدمها.</li>
+<li><span class="level">تحدٍّ</span> اكتب <code>receipt()</code> التي تُرجع الإيصال كله نصاً واحداً، بسطر لكل عنصر ثم المجموع، باستخدام <code>map</code> و<code>join("\n")</code>.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 12</p>
+<p>حتى الآن عاشت JavaScript التي تكتبها في الطرفية. وفي الفصل القادم تنتقل إلى المتصفح: ستغيّر صفحات الويب بـ DOM، وتتفاعل مع النقر والكتابة بالأحداث، وتحوّل سلة التسوق إلى صفحة تفاعلية حقيقية.</p>
+</div>
+</section>

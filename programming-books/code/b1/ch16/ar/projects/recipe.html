@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>وصفة</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body { margin: 0; padding: 24px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; background: #f5f5fb; color: #1e1b2e; line-height: 1.5; }
+      h1 { color: #4338ca; margin-top: 0; }
+      button { font: inherit; padding: 8px 18px; border: 0; border-radius: 999px; color: white; background: #4338ca; cursor: pointer; }
+      :focus-visible { outline: 3px solid #db2777; outline-offset: 3px; }
+      .search { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+      .search input { font: inherit; padding: 7px 10px; border: 2px solid #6b7280; border-radius: 8px; }
+      .card { max-width: 26em; background: white; border-radius: 16px; overflow: hidden; }
+      .card img { width: 100%; display: block; }
+      .body { padding: 16px; }
+      .card h2 { margin: 0 0 4px; }
+      .time { color: #4b5563; margin: 0 0 12px; }
+      .secondary { background: #e0e7ff; color: #312e81; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <form class="search" role="search">
+        <label for="q">ابحث في الوصفات</label>
+        <input id="q" type="search">
+        <button type="submit">ابحث</button>
+      </form>
+    </header>
+    <main>
+      <h1>شوربة العدس عند بِت</h1>
+      <article class="card">
+        <img src="soup.svg" alt="طبق شوربة عدس برتقالية وبجانبه ليمون">
+        <div class="body">
+          <p class="time">جاهزة في 30 دقيقة · تكفي 4 أشخاص</p>
+          <button type="button">احفظ الوصفة</button>
+          <button type="button" class="secondary">اطبع</button>
+        </div>
+      </article>
+    </main>
+  </body>
+</html>

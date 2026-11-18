@@ -1,0 +1,52 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project takes you step by step. Try it on your own first; when you are stuck, read the hint. Your result should look like the output shown, and the full solution is in the book’s code repository.</p>
+
+<div class="project">
+<p class="project-label">Project 1.1 · Easy</p>
+<h3>Your life in numbers</h3>
+<p class="project-goal">Write a program that tells you how many months, days, hours and minutes you have been alive (roughly).</p>
+<p class="project-skills"><strong>You will practise:</strong> running JavaScript, numbers and the <code>*</code> operator, and printing several values.</p>
+<ol class="steps">
+<li>Create a file called <code>my-numbers.js</code> in your <code>code-from-zero</code> folder, or open the browser console.</li>
+<li>Write <code>const age = 20;</code> on the first line, with your own age instead of 20.</li>
+<li>Print the number of months: <code>console.log("Months:", age * 12);</code>. Notice that <code>console.log</code> can print a label and a number together, separated by a comma.</li>
+<li>Add three more lines for days (<code>age * 365</code>), hours and minutes. Each one multiplies the line before by a little more.</li>
+<li>Run the program and check one answer with a calculator.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> hours are days × 24, and minutes are hours × 60, so the minutes line is <code>age * 365 * 24 * 60</code>.</p>
+<p><strong>Your result should look like this</strong> (for age 20):</p>
+<pre data-out="projects/my-numbers.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label">Project 1.2 · Easy</p>
+<h3>A secret code in Unicode</h3>
+<p class="project-goal">Turn a name into secret numbers, and the numbers back into the name, using the Unicode table from Section 1.3.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>charCodeAt</code>, <code>String.fromCharCode</code> and the idea that letters are numbers.</p>
+<ol class="steps">
+<li>Print the Unicode number of each letter of <code>Bit</code>: <code>"B".charCodeAt(0)</code>, then <code>"i"</code>, then <code>"t"</code>, all in one <code>console.log</code> separated by commas.</li>
+<li>Now decode: <code>String.fromCharCode(66, 105, 116)</code> should print the name again.</li>
+<li>The Arabic name بِت has three characters too: the letter ب, the small vowel mark under it (a <em>kasra</em>), and ت. Their numbers are 1576, 1616 and 1578. Decode them the same way.</li>
+<li>Send a friend a “secret message” as numbers and ask them to decode it with the browser console.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> vowel marks such as the kasra are separate characters in Unicode, with their own numbers. That is why the Arabic name needs three numbers even though you see two letters.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/secret-code.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 1.3 · Medium</p>
+<h3>Your birthday in binary</h3>
+<p class="project-goal">Show the day, month and year of a birthday in binary, and check the result by turning it back.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>toString(2)</code>, <code>parseInt</code> and checking your own work.</p>
+<ol class="steps">
+<li>Create three constants: <code>day</code>, <code>month</code> and <code>year</code>, with a birthday you like.</li>
+<li>Print each one in binary with <code>.toString(2)</code>, with a label.</li>
+<li>Before running the program, work out the day in binary on paper, using the table in Section 1.3. Did you get the same answer as the computer?</li>
+<li>Prove that the conversion is correct: turn the year’s binary back into a normal number with <code>parseInt(year.toString(2), 2)</code>. It must print the year again.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> checking a result by converting it back is a habit professionals use everywhere: encode and decode, save and load, send and receive.</p>
+<p><strong>Your result should look like this</strong> (for 14 March 2008):</p>
+<pre data-out="projects/binary-birthday.js"></pre>
+</div>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>انضم إلى النادي</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body { margin: 0; padding: 24px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; background: #f5f5fb; color: #1e1b2e; line-height: 1.5; }
+      h1 { color: #4338ca; margin-top: 0; }
+      button { font: inherit; padding: 8px 18px; border: 0; border-radius: 999px; color: white; background: #4338ca; cursor: pointer; }
+      :focus-visible { outline: 3px solid #db2777; outline-offset: 3px; }
+      form { max-width: 24em; display: flex; flex-direction: column; gap: 4px; }
+      label { font-weight: 700; margin-top: 10px; }
+      input { font: inherit; padding: 8px 10px; border: 2px solid #6b7280; border-radius: 8px; }
+      input[aria-invalid="true"] { border-color: #b91c1c; }
+      .hint { color: #4b5563; margin: 0; font-size: 0.9rem; }
+      .error { color: #b91c1c; margin: 0; font-weight: 700; }
+      .error:empty { display: none; }
+      #summary { background: #fee2e2; border-inline-start: 5px solid #b91c1c; padding: 10px 14px; border-radius: 8px; max-width: 24em; }
+      #summary[hidden] { display: none; }
+      #summary ul { margin: 4px 0 0; }
+      #summary a { color: #7f1d1d; }
+      #done { color: #047857; font-weight: 700; }
+      button { margin-top: 14px; align-self: flex-start; }
+    </style>
+  </head>
+  <body>
+    <h1>انضم إلى نادي البرمجة</h1>
+    <div id="summary" role="alert" tabindex="-1" hidden></div>
+    <form id="join" novalidate>
+      <label for="name">الاسم الكامل</label>
+      <input id="name" autocomplete="name" aria-describedby="name-error">
+      <p class="error" id="name-error"></p>
+
+      <label for="email">البريد الإلكتروني</label>
+      <input id="email" type="email" autocomplete="email" dir="ltr" aria-describedby="email-hint email-error">
+      <p class="hint" id="email-hint">سنستخدمه فقط لإرسال مواعيد اللقاءات.</p>
+      <p class="error" id="email-error"></p>
+
+      <button type="submit">انضم</button>
+    </form>
+    <p id="done" role="status"></p>
+    <script src="join.js"></script>
+  </body>
+</html>

@@ -1,0 +1,255 @@
+<section class="chapter" data-chapter="14" data-code="b1/ch14/en">
+<p class="chapter-kicker">Chapter 14</p>
+<h1>Reading Errors and Debugging</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>read an error message and find exactly where the problem is</li>
+<li>recognise the three most common kinds of error</li>
+<li>follow a stack trace back to the real cause</li>
+<li>find bugs that give no error at all, with <code>console.log</code> and the debugger</li>
+<li>use a calm, step-by-step method that works for any bug</li>
+</ul>
+</div>
+
+<p class="lead">Every programmer, from the first day to the fortieth year, spends a large part of their time fixing things that do not work. The difference between a beginner and a professional is not that the professional makes fewer mistakes. It is that the professional is not afraid of them, reads what the computer is saying, and follows a method. By the end of this chapter, red text in the terminal will feel like a helpful note, not a disaster.</p>
+
+<aside class="bit" data-mood="think"><p>Here is the most important sentence in this chapter: <strong>the error message is trying to help you</strong>. It usually says what went wrong and exactly where. Most beginners panic and stop reading after the first word. Let’s read the whole thing together!</p></aside>
+
+<h2>14.1 Anatomy of an error message</h2>
+
+<p>Here is a small program with a typo, and what Node.js says when you run it:</p>
+
+<pre data-code="reference.js" data-title="reference.js"></pre>
+<pre data-out="reference.js" class="error"></pre>
+
+<figure>
+<svg viewBox="0 0 520 170" role="img" aria-label="An error message with its parts labelled: file and line, the code, the pointer, the error type and the message">
+<rect x="10" y="10" width="330" height="120" rx="10" fill="#16142a"/>
+<g font-family="JetBrains Mono" font-size="13">
+<text x="24" y="38" fill="#e7e5ff">reference.js:2</text>
+<text x="24" y="62" fill="#e7e5ff">console.log(scor);</text>
+<text x="24" y="84" fill="#fca5a5">            ^</text>
+<text x="24" y="112" fill="#fca5a5">ReferenceError: scor is not defined</text>
+</g>
+<g font-family="Inter" font-size="12" font-weight="700">
+<line x1="140" y1="34" x2="356" y2="30" stroke="#0f766e" stroke-width="2"/><text x="362" y="34" fill="#0f766e">1. which file and line</text>
+<line x1="180" y1="58" x2="356" y2="58" stroke="#4338ca" stroke-width="2"/><text x="362" y="62" fill="#4338ca">2. the line of code</text>
+<line x1="124" y1="80" x2="356" y2="86" stroke="#ea580c" stroke-width="2"/><text x="362" y="90" fill="#ea580c">3. where in the line</text>
+<line x1="150" y1="122" x2="356" y2="118" stroke="#db2777" stroke-width="2"/><text x="362" y="114" fill="#db2777">4. the type of error</text>
+<text x="362" y="130" fill="#db2777">5. what went wrong</text>
+<text x="24" y="156" fill="#5b5873" font-weight="400">Read it from the bottom up: what happened, then where.</text>
+</g>
+</svg>
+<figcaption><b>Figure 14.1:</b> Five pieces of information in one short error message.</figcaption>
+</figure>
+
+<p>Node.js told us: in the file <code>reference.js</code>, on line 2, at the place marked by the <code>^</code>, there is a <code>ReferenceError</code>: <code>scor</code> is not defined. That is everything you need. You look at line 2, see <code>scor</code>, and realise you meant <code>score</code>. The browser console shows the same information, with the file name and line number as a link you can click.</p>
+
+<h2>14.2 The three errors you will meet most</h2>
+
+<h3>ReferenceError: something does not exist</h3>
+
+<p>You used a name that JavaScript does not know, as above. The cause is almost always a typo, a variable used outside its scope (Chapter 10), or something used before it was created.</p>
+
+<h3>TypeError: the right name, the wrong kind of value</h3>
+
+<pre data-code="type.js" data-title="type.js"></pre>
+<pre data-out="type.js" class="error"></pre>
+
+<p>This is the most common error in all of JavaScript. You tried to read <code>name</code> from <code>undefined</code>, which has no properties. In real programs, <code>user</code> is <code>undefined</code> because a <code>find</code> found nothing, a server returned no data, or a property name was misspelled. The question to ask is: “why is this value <code>undefined</code>, when I expected an object?”</p>
+
+<h3>SyntaxError: the code is not valid JavaScript</h3>
+
+<pre data-code="syntax.js" data-title="syntax.js"></pre>
+<pre data-out="syntax.js" class="error"></pre>
+
+<p>A <code>SyntaxError</code> happens before anything runs: JavaScript cannot even understand the code. Here, the array opened with <code>[</code> was never closed with <code>]</code>. With syntax errors, the real mistake is often a little <em>before</em> the place marked: a missing bracket, quote or comma. VS Code underlines most of them in red as you type, before you even run the code.</p>
+
+<table>
+<thead><tr><th>Error</th><th>Means</th><th>First thing to check</th></tr></thead>
+<tbody>
+<tr><td><code>ReferenceError</code></td><td>The name does not exist here</td><td>Spelling and scope</td></tr>
+<tr><td><code>TypeError</code></td><td>The value is the wrong kind, often <code>undefined</code></td><td>Where the value came from</td></tr>
+<tr><td><code>SyntaxError</code></td><td>The code is not valid JavaScript</td><td>Brackets, quotes and commas, just before the marked place</td></tr>
+</tbody>
+</table>
+
+<h2>14.3 Stack traces: how did we get here?</h2>
+
+<p>In bigger programs, functions call functions that call other functions. When an error happens deep inside, Node.js prints a <dfn>stack trace</dfn>: the path of calls that led to the error.</p>
+
+<pre data-code="stack.js" data-title="stack.js"></pre>
+<pre data-out="stack.js" class="error" data-stack></pre>
+
+<p>Read the lines starting with <code>at</code> from top to bottom: the error happened in <code>getCity</code> (line 2), which was called by <code>welcome</code> (line 6), which was called from the main code (line 9). The error is in <code>getCity</code>, but the <em>cause</em> is where the data came from: the user object on line 9 has no <code>address</code>. Stack traces let you walk backwards from the symptom to the cause.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>In real projects, stack traces also contain many lines from libraries and from Node.js itself. Look for the first lines that point to <em>your</em> files; that is almost always where to start.</p></aside>
+
+<h2>14.4 Bugs without errors</h2>
+
+<p>The hardest bugs do not produce any error. The program runs and gives the wrong answer:</p>
+
+<pre data-code="average-bug.js" data-title="average-bug.js"></pre>
+<pre data-out="average-bug.js"></pre>
+
+<p>No red text, but 16.67 is not 20. When nothing tells you where the problem is, you make the program tell you. The simplest tool is <code>console.log</code>: print the values you are unsure about, at the moments you are unsure about them.</p>
+
+<pre data-code="average-trace.js" data-title="average-trace.js"></pre>
+<pre data-out="average-trace.js"></pre>
+
+<p>Now the bug is obvious: the loop starts at <code>i = 1</code>, so it never adds the first number, 10. The total is 50 instead of 60. This is the trace table from Chapter 2, written by the computer. Fix the cause, here by using <code>for…of</code>, which cannot skip the first item, and test again, including an unusual case:</p>
+
+<pre data-code="average-fixed.js" data-title="average-fixed.js"></pre>
+<pre data-out="average-fixed.js"></pre>
+
+<h3>Better console tools</h3>
+
+<pre data-code="console.js" data-title="console.js"></pre>
+<pre data-out="console.js"></pre>
+
+<p>Give every log a label, so you know which line printed what. Use <code>console.table</code> for arrays of objects, and <code>console.error</code> for problems; in the browser it is shown in red with a stack trace. And remember to remove your debugging logs when the bug is fixed.</p>
+
+<h2>14.5 The debugger: pausing time</h2>
+
+<p><code>console.log</code> shows a few values at a few moments. The <dfn>debugger</dfn> lets you <em>pause</em> the program at any line and look at everything. In the browser, open DevTools, go to the <strong>Sources</strong> panel, open your file and click a line number. A blue marker appears: a <dfn>breakpoint</dfn>. The next time that line runs, the page freezes there.</p>
+
+<figure>
+<svg viewBox="0 0 520 210" role="img" aria-label="DevTools Sources panel paused at a breakpoint, with buttons to continue and step, and variable values on the side">
+<rect x="10" y="10" width="500" height="190" rx="10" fill="#1f1d36"/>
+<rect x="10" y="10" width="500" height="28" rx="10" fill="#2a2745"/>
+<g font-family="Inter" font-size="11" fill="#a5a3c9" font-weight="700"><text x="24" y="29">Elements</text><text x="90" y="29">Console</text><text x="152" y="29" fill="#fff">Sources</text><text x="214" y="29">Network</text></g>
+<rect x="150" y="34" width="56" height="3" fill="#818cf8"/>
+<g font-family="JetBrains Mono" font-size="12">
+<text x="24" y="66" fill="#6b7280">2</text><text x="48" y="66" fill="#e7e5ff">let total = 0;</text>
+<rect x="18" y="74" width="322" height="20" fill="#3b3a1f"/>
+<path d="M18,76 L34,76 L40,84 L34,92 L18,92 Z" fill="#4f8ef7"/>
+<text x="22" y="88" fill="#fff" font-size="10">3</text><text x="48" y="88" fill="#fde68a">for (let i = 1; i &lt; …</text>
+<text x="24" y="110" fill="#6b7280">4</text><text x="48" y="110" fill="#e7e5ff">  total = total + …</text>
+<text x="24" y="132" fill="#6b7280">5</text><text x="48" y="132" fill="#e7e5ff">}</text>
+</g>
+<rect x="352" y="46" width="150" height="146" rx="6" fill="#24223d"/>
+<g font-family="Inter" font-size="11" font-weight="700" fill="#a5a3c9"><text x="362" y="66">Scope</text></g>
+<g font-family="JetBrains Mono" font-size="11.5"><text x="362" y="90" fill="#c4b5fd">numbers:</text><text x="430" y="90" fill="#86efac">[10, 20, 30]</text>
+<text x="362" y="110" fill="#c4b5fd">total:</text><text x="430" y="110" fill="#fdba74">0</text>
+<text x="362" y="130" fill="#c4b5fd">i:</text><text x="430" y="130" fill="#fdba74">1</text></g>
+<g font-family="Inter" font-size="11" font-weight="700" fill="#fff">
+<rect x="362" y="150" width="62" height="24" rx="6" fill="#4338ca"/><text x="372" y="166">Resume</text>
+<rect x="432" y="150" width="62" height="24" rx="6" fill="#4338ca"/><text x="446" y="166">Step</text>
+</g>
+<text x="24" y="182" font-family="Inter" font-size="11" fill="#a5a3c9">Paused on a breakpoint on line 3</text>
+</svg>
+<figcaption><b>Figure 14.2:</b> Paused on a breakpoint. The Scope pane shows every variable’s value right now; the buttons move the program one step at a time.</figcaption>
+</figure>
+
+<p>While paused, you can hover over any variable to see its value, look at all of them in the <strong>Scope</strong> pane, and press <strong>Step</strong> to run one line at a time and watch the values change. You can also write the word <code>debugger;</code> in your code; when DevTools is open, the program pauses there. VS Code has the same tools for Node.js programs, in its <strong>Run and Debug</strong> view.</p>
+
+<h2>14.6 A method for any bug</h2>
+
+<p>When something is wrong, resist the urge to change things at random. Follow these steps instead:</p>
+
+<ol>
+<li><strong>Reproduce it.</strong> Find the exact steps that make the bug happen every time.</li>
+<li><strong>Read the error</strong>, all of it, from the bottom: what happened, and where.</li>
+<li><strong>Form a guess.</strong> “I think <code>user</code> is <code>undefined</code> because <code>find</code> found nothing.”</li>
+<li><strong>Test the guess</strong> with a <code>console.log</code> or a breakpoint, not by changing code blindly.</li>
+<li><strong>Fix the cause</strong>, not the symptom, then run the program again, with unusual cases too.</li>
+</ol>
+
+<aside class="box rule"><p class="box-title">Professional habit: rubber duck debugging</p><p>Many programmers keep a small toy, often a rubber duck, on their desk. When they are stuck, they explain the code to it, line by line, out loud. Very often, halfway through the explanation, they hear themselves say the mistake. It sounds silly and works astonishingly well. (Bit is also happy to listen.)</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What does <code>TypeError: Cannot read properties of undefined (reading 'price')</code> tell you?</li><li>In a stack trace, which line do you usually look at first?</li><li>A program runs without errors but prints a wrong total. What is your first tool?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Error messages say <strong>what</strong> went wrong and <strong>where</strong>: the file, the line and the position. Read all of it.</li>
+<li><strong>ReferenceError</strong>: the name does not exist. <strong>TypeError</strong>: the value is the wrong kind, often <code>undefined</code>. <strong>SyntaxError</strong>: the code is not valid.</li>
+<li>A <strong>stack trace</strong> lists the calls that led to the error; walk back from the symptom to the cause.</li>
+<li>For bugs without errors, make the program show its values with labelled <code>console.log</code>, <code>console.table</code> and <code>console.error</code>.</li>
+<li>The <strong>debugger</strong> pauses at <strong>breakpoints</strong> so you can inspect and step through code.</li>
+<li>Method: reproduce, read, guess, test the guess, fix the cause.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Some code tried to read <code>.price</code> from a value that is <code>undefined</code>; find out why that value is missing. 2. The first line that points to one of your own files. 3. <code>console.log</code> with labels (or a breakpoint) to see the values step by step.</p>
+
+<!-- projects -->
+<h2>Practice projects: bug hunts</h2>
+
+<p class="projects-intro">In this chapter the projects are reversed: the code is already written, and it is broken. Type each program as it is, run it, and see the bug for yourself. Then use the method from section 14.6 (read, reproduce, narrow down, fix, test) until your output matches the fixed one. Professionals spend more time doing this than writing new code.</p>
+
+<div class="project">
+<p class="project-label">Project 14.1 · Easy</p>
+<h3>The greeting that will not start</h3>
+<p class="project-goal">The program crashes before it prints anything. Read the error message and fix it with a single character.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading an error message from top to bottom: the line, the caret, the type and the description.</p>
+<pre data-code="projects/greet-bug.js" data-title="greet-bug.js"></pre>
+<pre data-out="projects/greet-bug.js" class="error"></pre>
+<ol class="steps">
+<li>Find the <strong>type</strong> of error. A <code>ReferenceError</code> means “I do not know this name”.</li>
+<li>Find the <strong>line</strong> and the caret <code>^</code>: they point at the exact name JavaScript could not find.</li>
+<li>Compare that name, letter by letter, with the variable you created at the top. JavaScript is case-sensitive.</li>
+<li>Fix it, run the program again, and make sure the output below appears.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> most errors you will ever meet are typos. Your editor can help: when you click on a variable, it highlights every place with the same name. A name that does not light up is a typo.</p>
+<p><strong>After the fix:</strong></p>
+<pre data-out="projects/greet-fixed.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 14.2 · Medium</p>
+<h3>The checkout that cannot add</h3>
+<p class="project-goal">No error at all, but the total is nonsense. Find the <em>two</em> bugs hiding in five lines.</p>
+<p class="project-skills"><strong>You will practise:</strong> bugs without errors, tracing values with <code>console.log</code>, the difference between text and numbers, and off-by-one loops.</p>
+<pre data-code="projects/cart-bug.js" data-title="cart-bug.js"></pre>
+<pre data-out="projects/cart-bug.js"></pre>
+<ol class="steps">
+<li>Read the wrong total carefully. Numbers stuck together like <code>01204535</code> are a clue: something is joining text, not adding numbers.</li>
+<li>Add <code>console.log(i, list[i], typeof list[i])</code> inside the loop and run again.</li>
+<li>Bug 1: the prices are strings, so <code>+</code> glues them. Convert each one with <code>Number(…)</code>.</li>
+<li>Bug 2: the last line of your trace shows <code>i</code> equal to 3 and the value <code>undefined</code>. The array has no item 3. Change <code>&lt;=</code> to <code>&lt;</code>.</li>
+<li>Remove your <code>console.log</code> lines, run once more, and check the result by hand: 120 + 45 + 35 = 200.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>NaN</code> (“not a number”) spreads like a stain: any sum that touches it becomes <code>NaN</code>. When you see it, look for the first <code>undefined</code> or text that went into a calculation.</p>
+<p><strong>After both fixes:</strong></p>
+<pre data-out="projects/cart-fixed.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 14.3 · Challenge</p>
+<h3>The order that breaks the list</h3>
+<p class="project-goal">The first order prints, then the program dies. Follow the stack trace back to the cause, and fix it so every order prints.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading a stack trace, finding bad data rather than bad code, and guarding against missing values.</p>
+<pre data-code="projects/orders-bug.js" data-title="orders-bug.js"></pre>
+<pre data-out="projects/orders-bug.js" class="error" data-stack></pre>
+<ol class="steps">
+<li>Read the stack from the top: the crash is in <code>label</code>, which was called by <code>printAll</code>, which was called from line 17.</li>
+<li>The message says it could not read <code>name</code> of <code>undefined</code>. So in <code>order.customer.name</code>, the <code>undefined</code> is <code>order.customer</code>.</li>
+<li>One order printed before the crash, so the problem is the second order. Look at the data: order 2 has no <code>customer</code>.</li>
+<li>Decide what should happen. Here a missing customer is a guest, so add an <code>if (!order.customer)</code> at the start of <code>label</code> and return a “guest” line.</li>
+<li>Run again. All three orders should print, and the program should finish normally.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the line that crashes is often not the line that is wrong. The code in <code>label</code> was fine; the data was not what it expected. Real data from users and servers is always missing something, so professionals check before they read deep inside an object.</p>
+<p><strong>After the fix:</strong></p>
+<pre data-out="projects/orders-fixed.js"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Each line below has one bug. Predict the error type, then check with Node: <code>console.log("hi)</code>, <code>const a = 1; a = 2;</code>, <code>let list; list.push(1);</code>, <code>consol.log(5);</code></li>
+<li><span class="level">Easy</span> Fix <code>stack.js</code> in two ways: by giving the user an address, and by making <code>getCity</code> return <code>"somewhere"</code> when there is no address.</li>
+<li><span class="level">Medium</span> Put a breakpoint inside <code>addToCart</code> in the shop from Chapter 12. Click “Add to cart” and step through the function, watching <code>cart</code> change.</li>
+<li><span class="level">Medium</span> This function should count the words longer than three letters, but returns the wrong number. Find the bug with <code>console.log</code>: <code>function count(words) { let n = 0; for (const w of words) { if (w.length &gt; 3) n = 1; } return n; }</code></li>
+<li><span class="level">Challenge</span> Take a program from an earlier chapter that works. Ask a friend to add one small bug without telling you where. Find it using only the method in Section 14.6, and write down each step you took.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 15</p>
+<p>Part 4 is about working like a professional. It begins with Git, the tool that remembers every version of your code, lets you undo any mistake, and lets whole teams work on the same project without stepping on each other’s toes.</p>
+</div>
+</section>

@@ -1,0 +1,294 @@
+<section class="chapter" data-chapter="4" data-code="b1/ch04/ar">
+<p class="chapter-kicker">الفصل 4</p>
+<h1>كيف يعمل الويب</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل</p>
+<ul>
+<li>ما العميل والخادم، وكيف يتحدثان</li>
+<li>كيف تقرأ كل جزء من عنوان الويب</li>
+<li>كيف يجد حاسوبك خادماً في أي مكان في العالم في أجزاء من الثانية</li>
+<li>كيف يبدو طلب HTTP ورده، وما معنى رموز الحالة</li>
+<li>كيف يحوّل المتصفح HTML وCSS وJavaScript إلى صفحة، وكيف تبني خادم ويب صغيراً بنفسك</li>
+</ul>
+</div>
+
+<p class="lead">تكتب العنوان وتضغط Enter، وفي أقل من ثانية تظهر الصفحة. يبدو الأمر سحراً، لكن وراءه محادثة قصيرة ومنظمة جيداً بين حاسوبك وحاسوب آخر قد يكون في الطرف الآخر من الكوكب. وفي هذا الفصل ستستمع إلى هذه المحادثة، وفي آخره ستشارك فيها بخادم من صنعك.</p>
+
+<aside class="bit" data-mood="happy"><p>هذا الفصل خريطة لبقية الجزء الثاني، ولمسيرتك كلها على الويب. فكل موقع وكل تطبيق وكل واجهة برمجية ستبنيها يوماً تستخدم الأفكار التي في هذه الصفحات. هيا نتبع رحلة طلب واحد!</p></aside>
+
+<h2>4.1 العميل والخادم</h2>
+
+<p>الويب مبني على فكرة بسيطة: حاسوب يطلب شيئاً، وحاسوب آخر يجيب. والذي يطلب يُسمى <dfn>العميل</dfn> (client)، والذي يجيب يُسمى <dfn>الخادم</dfn> (server).</p>
+
+<p>فكّر في مطعم. أنت الزبون، أي العميل. لا تدخل المطبخ بنفسك، بل تعطي طلبك للنادل، فيأخذه إلى المطبخ ويعود إليك بالطعام. وعلى الويب، متصفحك هو الزبون، والخادم هو المطبخ، والنادل مجموعة قواعد اسمها <dfn>HTTP</dfn> (بروتوكول نقل النص الفائق) يتفق الطرفان على اتباعها.</p>
+
+<p>والخادم ليس نوعاً خاصاً من الأجهزة، بل أي حاسوب يشغّل برنامجاً ينتظر الطلبات ويجيب عنها. المواقع الكبيرة تستخدم آلاف الخوادم في مراكز البيانات، وفي آخر هذا الفصل سيصير حاسوبك نفسه خادماً للحظات.</p>
+
+<h2>4.2 قراءة عنوان الويب</h2>
+
+<p>لكل صفحة على الويب عنوان يُسمى <dfn>URL</dfn> (محدد موقع المورد). وله أجزاء، كل جزء منها يخبر المتصفح بشيء:</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="عنوان URL مقسم إلى البروتوكول والمضيف والمنفذ والمسار والاستعلام والجزء">
+<g font-family="JetBrains Mono" font-size="12">
+<text x="9" y="48" textLength="502" lengthAdjust="spacing" direction="ltr"><tspan fill="#0f766e">https://</tspan><tspan fill="#4338ca">shop.example.com</tspan><tspan fill="#5b5873">:8080</tspan><tspan fill="#ea580c">/products/shoes</tspan><tspan fill="#7c3aed">?size=42&amp;color=red</tspan><tspan fill="#db2777">#reviews</tspan></text>
+</g>
+<g stroke-width="3" stroke-linecap="round">
+<line x1="9" y1="58" x2="63" y2="58" stroke="#0f766e"/><line x1="68" y1="58" x2="179" y2="58" stroke="#4338ca"/><line x1="183" y1="58" x2="215" y2="58" stroke="#5b5873"/>
+<line x1="219" y1="58" x2="323" y2="58" stroke="#ea580c"/><line x1="327" y1="58" x2="452" y2="58" stroke="#7c3aed"/><line x1="457" y1="58" x2="511" y2="58" stroke="#db2777"/>
+</g>
+<g font-family="Cairo" font-size="12" font-weight="700" text-anchor="middle">
+<text x="36" y="82" fill="#0f766e">البروتوكول</text><text x="123" y="82" fill="#4338ca">المضيف (النطاق)</text><text x="199" y="102" fill="#5b5873">المنفذ</text>
+<text x="271" y="82" fill="#ea580c">المسار</text><text x="390" y="82" fill="#7c3aed">الاستعلام</text><text x="483" y="102" fill="#db2777">الجزء</text>
+</g>
+<g font-family="Cairo" font-size="10.5" fill="#5b5873" text-anchor="middle">
+<text x="36" y="98">لغة التخاطب</text><text x="123" y="98">أي خادم</text><text x="271" y="98">أي صفحة</text><text x="390" y="98">تفاصيل إضافية</text>
+</g>
+</svg>
+<figcaption><b>الشكل 4.1:</b> أجزاء عنوان URL الستة. ومعظم العناوين التي تكتبها لا تستخدم إلا الأول والثاني والرابع.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>الجزء</th><th>مثال</th><th>معناه</th></tr></thead>
+<tbody>
+<tr><td>البروتوكول</td><td><code>https:</code></td><td>اللغة المستخدمة. و<code>https</code> هو HTTP مع التشفير.</td></tr>
+<tr><td>المضيف</td><td><code>shop.example.com</code></td><td>اسم الخادم الذي نتصل به.</td></tr>
+<tr><td>المنفذ</td><td><code>8080</code></td><td>أي «باب» في الخادم. وغالباً يكون مخفياً، لأن الويب يستخدم 443 لـ HTTPS و80 لـ HTTP.</td></tr>
+<tr><td>المسار</td><td><code>/products/shoes</code></td><td>أي صفحة أو ملف على ذلك الخادم.</td></tr>
+<tr><td>الاستعلام</td><td><code>?size=42&amp;color=red</code></td><td>تفاصيل إضافية، أزواجاً من <code>name=value</code> تفصلها <code>&amp;</code>.</td></tr>
+<tr><td>الجزء</td><td><code>#reviews</code></td><td>مكان داخل الصفحة، ولا يُرسل إلى الخادم أبداً.</td></tr>
+</tbody>
+</table>
+
+<p>وتستطيع JavaScript أن تفكك عنوان URL بـ <code>new URL()</code>، وهذا بالضبط ما يفعله المتصفح مع كل عنوان تكتبه:</p>
+
+<pre data-code="url.js" data-title="url.js"></pre>
+<pre data-out="url.js"></pre>
+
+<h2>4.3 إيجاد الخادم: DNS</h2>
+
+<p>الحواسيب على الإنترنت لا يجد بعضها بعضاً بالأسماء. فلكل حاسوب رقم يُسمى <dfn>عنوان IP</dfn>، مثل <code>93.184.215.14</code>. والأسماء مثل <code>example.com</code> موجودة لأن الناس يتذكرون الكلمات أفضل من الأرقام.</p>
+
+<p>فقبل أن يتحدث متصفحك مع <code>shop.example.com</code>، يجب أن يعرف رقم ذلك الخادم. فيسأل <dfn>نظام أسماء النطاقات</dfn> (DNS)، وهو يعمل مثل جهات الاتصال في هاتفك: تضغط على الاسم فيبحث الهاتف عن الرقم. وDNS «قائمة جهات اتصال» ضخمة مشتركة للإنترنت كله، موزعة على آلاف الخوادم حول العالم.</p>
+
+<figure>
+<svg viewBox="0 0 520 140" role="img" aria-label="الخطوات من كتابة العنوان إلى ظهور الصفحة">
+<defs><marker id="w4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<g font-family="Cairo" font-size="12.5" text-anchor="middle">
+<rect x="10" y="70" width="110" height="60" rx="12" fill="#4338ca"/><text x="65" y="97" fill="#fff" font-weight="700">متصفحك</text><text x="65" y="116" fill="#e0e7ff" font-size="11">العميل</text>
+<rect x="205" y="8" width="120" height="52" rx="12" fill="#f5f0ff" stroke="#7c3aed" stroke-width="2"/><text x="265" y="31" fill="#7c3aed" font-weight="700">DNS</text><text x="265" y="50" fill="#7c3aed" font-size="11">الاسم ← الرقم</text>
+<rect x="400" y="70" width="110" height="60" rx="12" fill="#16142a"/><text x="455" y="97" fill="#fff" font-weight="700">خادم الويب</text><text x="455" y="116" fill="#86efac" font-size="11" font-family="Inter">93.184.215.14</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.2" fill="none" marker-end="url(#w4)">
+<path d="M70,68 L200,32"/><path d="M205,48 L100,72"/><path d="M122,94 L396,94"/><path d="M398,112 L124,112"/>
+</g>
+<g font-family="Inter" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">
+<circle cx="128" cy="40" r="10" fill="#db2777"/><text x="128" y="44">1</text>
+<circle cx="160" cy="70" r="10" fill="#db2777"/><text x="160" y="74">2</text>
+<circle cx="260" cy="94" r="10" fill="#db2777"/><text x="260" y="98">3</text>
+<circle cx="260" cy="112" r="10" fill="#db2777"/><text x="260" y="116">4</text>
+</g>
+
+</svg>
+<figcaption><b>الشكل 4.2:</b> رحلة الطلب. الخطوتان 1 و2 تجدان الخادم، والخطوتان 3 و4 محادثة HTTP.</figcaption>
+</figure>
+
+<ol>
+<li>المتصفح يسأل DNS: «ما رقم <code>shop.example.com</code>؟»</li>
+<li>DNS يجيب: «رقمه <code>93.184.215.14</code>».</li>
+<li>المتصفح يرسل طلب HTTP إلى ذلك الرقم: «<code>GET /products/shoes</code>».</li>
+<li>الخادم يرد: «<code>200 OK</code>» ومعه الصفحة.</li>
+</ol>
+
+<p>ويتذكر حاسوبك إجابات DNS مدة من الوقت، فيستغرق هذا البحث عادة أجزاء قليلة من الألف من الثانية، أو لا وقت على الإطلاق إن كنت زرت الموقع قريباً.</p>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p>الطلب من القاهرة إلى خادم في نيويورك يقطع نحو 9 آلاف كيلومتر في كابلات تحت البحر، ويعود الرد بالطريق نفسه، كثيراً في أقل من ربع ثانية. ولهذا تنسخ المواقع الكبيرة ملفاتها إلى خوادم في بلدان كثيرة: كلما اقترب الخادم أسرعت الصفحة.</p></aside>
+
+<h2>4.4 محادثة HTTP</h2>
+
+<p>حين يعرف المتصفح عنوان الخادم، يرسل <dfn>طلب HTTP</dfn>. وهو نص عادي مقروء على نحو مفاجئ:</p>
+
+<pre data-code="request.txt" data-title="request"></pre>
+
+<p>السطر الأول يقول <em>ماذا</em> يريد المتصفح: <dfn>الطريقة</dfn> (method) <code>GET</code> أي «أعطني من فضلك»، ثم المسار، ثم إصدار HTTP. والأسطر التي تحته <dfn>ترويسات</dfn> (headers): معلومات إضافية مثل نوع المتصفح واللغات التي يفضلها المستخدم. وهذه الترويسة الأخيرة هي ما يجعل الموقع يعرض لك العربية أو الإنجليزية تلقائياً.</p>
+
+<p>ويجيب الخادم بـ <dfn>رد HTTP</dfn>:</p>
+
+<pre data-code="response.txt" data-title="response"></pre>
+
+<p>في السطر الأول <dfn>رمز الحالة</dfn> (status code)، وهو رقم من ثلاث خانات يقول كيف سارت الأمور. ثم تأتي ترويسات الرد، ثم سطر فارغ، وأخيراً <dfn>الجسم</dfn> (body): المحتوى نفسه، وهنا صفحة HTML.</p>
+
+<h3>الطرق</h3>
+
+<table>
+<thead><tr><th>الطريقة</th><th>معناها</th><th>مثال</th></tr></thead>
+<tbody>
+<tr><td><code>GET</code></td><td>أعطني شيئاً</td><td>فتح صفحة، وتحميل صورة</td></tr>
+<tr><td><code>POST</code></td><td>هذا شيء جديد</td><td>إرسال نموذج تسجيل، ونشر تعليق</td></tr>
+<tr><td><code>PUT</code> / <code>PATCH</code></td><td>غيّر شيئاً موجوداً</td><td>تعديل ملفك الشخصي</td></tr>
+<tr><td><code>DELETE</code></td><td>احذف شيئاً</td><td>حذف رسالة</td></tr>
+</tbody>
+</table>
+
+<h3>رموز الحالة</h3>
+
+<p>لا تحتاج أن تحفظ كل الرموز، فالرقم الأول يخبرك بالعائلة:</p>
+
+<table>
+<thead><tr><th>العائلة</th><th>معناها</th><th>أمثلة شائعة</th></tr></thead>
+<tbody>
+<tr><td><code>2xx</code></td><td>نجاح</td><td><code>200 OK</code> و<code>201 Created</code></td></tr>
+<tr><td><code>3xx</code></td><td>ابحث في مكان آخر</td><td><code>301 Moved Permanently</code> و<code>304 Not Modified</code></td></tr>
+<tr><td><code>4xx</code></td><td>العميل أخطأ</td><td><code>404 Not Found</code> و<code>401 Unauthorized</code> و<code>403 Forbidden</code></td></tr>
+<tr><td><code>5xx</code></td><td>الخادم أخطأ</td><td><code>500 Internal Server Error</code> و<code>503 Service Unavailable</code></td></tr>
+</tbody>
+</table>
+
+<aside class="bit" data-mood="think"><p>إليك طريقة سهلة للتذكر: 4xx تعني «أنت أخطأت» (مثل أن تطلب صفحة غير موجودة)، و5xx تعني «أنا أخطأت» (الخادم تعطل). وحين تبني الخوادم لاحقاً، سيكون اختيار رمز الحالة المناسب جزءاً من عملك.</p></aside>
+
+<h2>4.5 HTTPS والقفل</h2>
+
+<p>HTTP العادي يرسل كل شيء نصاً مقروءاً، فأي أحد في الطريق، على شبكة Wi-Fi نفسها في مقهى مثلاً، يستطيع قراءة كلمات مرورك. و<dfn>HTTPS</dfn> يحل هذه المشكلة <dfn>بتشفير</dfn> المحادثة: يتفق المتصفح والخادم على مفتاح سري، فتُخلط كل البيانات بحيث لا يقرؤها غيرهما. وHTTPS يثبت أيضاً أن الخادم يتبع صاحب الموقع حقاً، بفضل <dfn>شهادة</dfn> رقمية.</p>
+
+<p>القفل بجانب شريط العنوان يعني أن الاتصال مشفّر. واليوم يستخدم كل المواقع تقريباً HTTPS، والمتصفحات تحذرك من المواقع التي لا تستخدمه، والشهادات المجانية لم تترك عذراً لأحد. وكل ما ستنشره في هذا الكتاب سيستخدم HTTPS.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>القفل يعني أن الاتصال خاص، لا أن الموقع صادق. فموقع بنك مزيف يمكن أن يكون عليه قفل أيضاً. تأكد دائماً من اسم النطاق جيداً قبل أن تكتب كلمة مرور.</p></aside>
+
+<h2>4.6 كيف يبني المتصفح الصفحة</h2>
+
+<p>أول رد يكون عادة ملف HTML. وبينما يقرؤه المتصفح يجد فيه روابط لملفات أخرى يحتاجها، مثل ملفات التنسيق والسكربتات والصور والخطوط، فيطلب كل واحد منها. وصفحة أخبار عادية ترسل عشرات بل مئات الطلبات، وقد رأيتها في تبويب Network في الفصل 3.</p>
+
+<p>وثلاث لغات تعمل معاً لتصنع كل صفحة، وبقية الجزأين الثاني والثالث تعلمك الثلاث:</p>
+
+<table>
+<thead><tr><th>اللغة</th><th>وظيفتها</th><th>في البيت هي…</th><th>الفصول</th></tr></thead>
+<tbody>
+<tr><td><strong>HTML</strong></td><td>البنية والمحتوى</td><td>الجدران والغرف والأثاث</td><td>5</td></tr>
+<tr><td><strong>CSS</strong></td><td>الشكل والتخطيط</td><td>الطلاء والستائر وأماكن الأشياء</td><td>6 و7</td></tr>
+<tr><td><strong>JavaScript</strong></td><td>السلوك</td><td>الكهرباء: الأنوار والجرس والإنذار</td><td>8 إلى 14</td></tr>
+</tbody>
+</table>
+
+<p>يحوّل المتصفح HTML إلى شجرة من العناصر، ويطبق قواعد CSS ليقرر شكل كل عنصر ومكانه، ثم يرسم النتيجة على الشاشة، ويشغّل JavaScript التي تستطيع أن تغيّر أي شيء من ذلك في أي لحظة.</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>في <code>https://news.example.org/sport?team=ahly</code> ما المضيف، وما المسار؟</li><li>ما معنى رمز الحالة <code>404</code>، ومن المخطئ؟</li><li>أي جزء من العنوان لا يُرسل إلى الخادم أبداً؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>4.7 مشروع: خادم ويب خاص بك</h2>
+
+<p>حان وقت أن تشارك في المحادثة بنفسك. فـ Node.js فيه كل ما تحتاجه لتبني خادم ويب في أسطر قليلة. والبرنامج التالي يلعب الدورين: يشغّل خادماً، ثم يتصرف كعميل ويطلب من ذلك الخادم صفحة، تماماً كما يفعل المتصفح.</p>
+
+<pre data-code="server.js" data-title="server.js"></pre>
+
+<p>شغّله بـ <code>node server.js</code>:</p>
+
+<pre data-out="server.js"></pre>
+
+<p>اقرأ المخرجات من الأعلى إلى الأسفل، وسترى المحادثة كلها التي شرحها هذا الفصل. الخادم يبدأ، ويصل طلب <code>GET</code> للمسار <code>/hello</code>، فيجيب الخادم برمز الحالة <code>200 OK</code>، وترويسة <code>Content-Type</code> تقول «هذا HTML»، وجسم فيه عنوان. ثم يغلق البرنامج الخادم.</p>
+
+<p>تظهر في هذا البرنامج كلمات جديدة قليلة. <code>require</code> تحمّل وحدة تأتي مع Node.js، و<code>http.createServer</code> تأخذ دالة تُنفَّذ مرة مع كل طلب، و<code>await</code> تنتظر وصول الرد. ستتعلم الدوال في الفصل 10، و<code>await</code> في الفصل 13. أما الآن فاستمتع بأنك كتبت خادم ويب حقيقياً.</p>
+
+<aside class="box try"><p class="box-title">جرّب</p><p>احذف السطر الأخير <code>server.close();</code> وشغّل البرنامج مرة أخرى. هذه المرة يبقى الخادم يعمل. افتح متصفحك على <code>http://localhost:3000</code> وسترى عنوانك! وراقب الطرفية: كلما أعدت تحميل الصفحة ظهر طلب جديد. واضغط <code>Ctrl</code> + <code>C</code> في الطرفية لتوقف الخادم.</p></aside>
+
+<p>الاسم <code>localhost</code> يعني دائماً «هذا الحاسوب»، و<code>3000</code> هو المنفذ. والمطورون يشغّلون خوادم على أجهزتهم هكذا طوال اليوم وهم يبنون المواقع.</p>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>العميل</strong> يطلب و<strong>الخادم</strong> يجيب، ويتحدثان بـ <strong>HTTP</strong>.</li>
+<li>عنوان <strong>URL</strong> فيه بروتوكول ومضيف ومنفذ ومسار واستعلام وجزء.</li>
+<li><strong>DNS</strong> يحوّل اسم النطاق إلى <strong>عنوان IP</strong>، مثل جهات الاتصال في الهاتف.</li>
+<li><strong>الطلب</strong> فيه طريقة ومسار وترويسات، و<strong>الرد</strong> فيه رمز حالة وترويسات وجسم.</li>
+<li>رموز الحالة: <strong>2xx</strong> نجاح، و<strong>3xx</strong> تحويل، و<strong>4xx</strong> خطأ العميل، و<strong>5xx</strong> خطأ الخادم.</li>
+<li><strong>HTTPS</strong> يشفّر المحادثة ويثبت هوية الخادم.</li>
+<li>الصفحات تُبنى من <strong>HTML</strong> (البنية) و<strong>CSS</strong> (الشكل) و<strong>JavaScript</strong> (السلوك).</li>
+<li>بـ Node.js تبني خادم ويب في أسطر قليلة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. المضيف <code>news.example.org</code> والمسار <code>/sport</code> (و<code>?team=ahly</code> هو الاستعلام). 2. «غير موجود»: الصفحة ليست موجودة، وهو خطأ العميل لأنه طلب شيئاً غير موجود. 3. الجزء، أي ما بعد <code>#</code>.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">هذه المشاريع تجعلك تلعب دوري الويب كليهما: العميل الذي يقرأ العناوين ويطلب الصفحات، والخادم الذي يجيب. وبعض الكود يستخدم أفكاراً من فصول لاحقة؛ فاكتبه بعناية، وشغّله، وعد إليه حين تصل إلى تلك الفصول.</p>
+
+<div class="project">
+<p class="project-label">مشروع 4.1 · سهل</p>
+<h3>فاحص العناوين</h3>
+<p class="project-goal">فكّك قائمة من عناوين الويب، واطبع المضيف والمسار والاستعلام والجزء لكل واحد منها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> أجزاء عنوان URL، وكائن <code>URL</code>.</p>
+<ol class="steps">
+<li>قبل كتابة الكود، انسخ العناوين الثلاثة من الحل على ورقة، وضع خطاً تحت كل جزء بلون مختلف كما في الشكل 4.1.</li>
+<li>أنشئ <code>inspect-urls.js</code> فيه مصفوفة بالعناوين الثلاثة.</li>
+<li>لكل عنوان أنشئ <code>new URL(text)</code>، واطبع <code>hostname</code> و<code>pathname</code> و<code>search</code> و<code>hash</code> تفصلها <code>"|"</code>.</li>
+<li>بعض العناوين ليس فيها استعلام أو جزء، فتكون هذه الخصائص فارغة. اطبع <code>"-"</code> بدلاً منها بـ <code>url.search || "-"</code>.</li>
+<li>قارن المخرجات بورقتك. هل وجدت كل جزء صحيحاً؟</li>
+</ol>
+<pre class="plain">for (const text of addresses) {
+  const url = new URL(text);
+  console.log(url.hostname, "|", url.pathname, "|", url.search || "-", "|", url.hash || "-");
+}</pre>
+<p class="hint"><strong>تلميح:</strong> <code>for (const text of addresses)</code> تكرر الكود لكل عنوان (الفصل 9)، و<code>||</code> تختار الطرف الأيمن حين يكون الأيسر فارغاً (الفصل 8).</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/inspect-urls.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 4.2 · متوسط</p>
+<h3>موقع من ثلاث صفحات وصفحة 404</h3>
+<p class="project-goal">وسّع خادمك ليقدم صفحة رئيسية وصفحة «من نحن» وصفحة «تواصل معنا»، ويجيب بـ <code>404 Not Found</code> لكل ما سواها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المسارات، ورموز الحالة، وكيف يقرر الخادم ما يرسله.</p>
+<ol class="steps">
+<li>انسخ <code>server.js</code> من القسم 4.7 إلى <code>site.js</code>.</li>
+<li>فوق الخادم أنشئ كائناً يربط كل مسار بصفحته: <code>"/"</code> و<code>"/about"</code> و<code>"/contact"</code>.</li>
+<li>داخل الخادم ابحث عن <code>pages[request.url]</code>. إن وُجدت الصفحة فأرسلها برمز <code>200</code>، وإلا فأرسل عنوان «الصفحة غير موجودة» برمز <code>404</code>.</li>
+<li>اختبر أربعة مسارات، أحدها غير موجود، واطبع المسار والرمز والصفحة.</li>
+<li>احذف <code>server.close()</code>، وافتح <code>http://localhost:3002/about</code> في متصفحك، وانظر إلى الرمز في تبويب Network.</li>
+</ol>
+<pre class="plain">const page = pages[request.url];
+if (page) {
+  response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+  response.end(page);
+} else {
+  response.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+  response.end("&lt;h1&gt;الصفحة غير موجودة&lt;/h1&gt;");
+}</pre>
+<p class="hint"><strong>تلميح:</strong> الكائن المستخدم هكذا «قاموس» صغير من المسارات إلى الصفحات. والخوادم الحقيقية تفعل الشيء نفسه بصفحات أكثر بكثير، ويُسمى ذلك <dfn>التوجيه</dfn> (routing).</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/site.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 4.3 · تحدٍّ</p>
+<h3>واجهة برمجية لقائمة مطعم</h3>
+<p class="project-goal">ابنِ خادماً يجيب ببيانات بدل صفحة ويب: قائمة طعام مطعم بصيغة JSON، كما تحصل تطبيقات الموبايل الحقيقية على بياناتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الواجهات البرمجية، وترويسة <code>Content-Type</code>، وJSON (التي يشرحها الفصل 11 بعمق).</p>
+<ol class="steps">
+<li>أنشئ <code>menu-api.js</code> فيه مصفوفة من ثلاثة أطباق، لكل منها <code>name</code> و<code>price</code>.</li>
+<li>للمسار <code>/api/menu</code> أجب برمز <code>200</code>، والترويسة <code>Content-Type: application/json</code>، والجسم <code>JSON.stringify(menu)</code>.</li>
+<li>اجلب <code>/api/menu</code>، واطبع الرمز ونوع المحتوى والنص الذي استلمته.</li>
+<li>افتح العنوان في متصفحك والخادم يعمل؛ فمعظم المتصفحات تعرض JSON بشكل مرتب مقروء.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <dfn>الواجهة البرمجية</dfn> (API) خادم صُنع للبرامج لا للناس. والطقس في هاتفك، ونتائج المباريات في تطبيق رياضي، ومنتجات تطبيق متجر، كلها تأتي من واجهات برمجية مثل هذه.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/menu-api.js"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب البروتوكول والمضيف والمسار والاستعلام في <code>https://www.example.com/search?q=javascript&amp;page=2</code>، وتحقق من جوابك بتعديل <code>url.js</code>.</li>
+<li><span class="level">سهل</span> افتح صفحة غير موجودة في أي موقع، مثل <code>/this-page-does-not-exist</code>، ثم افتح تبويب Network وابحث عن رمز الحالة.</li>
+<li><span class="level">متوسط</span> عدّل <code>server.js</code> لتعرض الصفحة اسمك في العنوان وفقرة عنك بـ <code>&lt;p&gt;</code> بعد <code>&lt;h1&gt;</code>.</li>
+<li><span class="level">متوسط</span> في <code>server.js</code> غيّر رمز الحالة من <code>200</code> إلى <code>404</code>. ماذا تعرض المخرجات الآن؟ وهل ما زال المتصفح يعرض الصفحة؟</li>
+<li><span class="level">تحدٍّ</span> اجعل الخادم يجيب بشكل مختلف حسب المسار: إن كان <code>request.url</code> يساوي <code>"/about"</code> فأرسل صفحة «من أنا»، وإلا فأرسل الصفحة العادية. (تلميح: استخدم <code>if</code> من الفصل 8.)</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 5</p>
+<p>أرسل خادمك عنواناً واحداً. وفي الفصل القادم ستتعلم HTML كما يجب، وتبني أول صفحة ويب حقيقية لك، فيها عناوين وفقرات وروابط وصور وقوائم، ببنية مثل التي يكتبها المحترفون.</p>
+</div>
+</section>

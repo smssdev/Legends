@@ -1,0 +1,289 @@
+<section class="chapter" data-chapter="5" data-code="b1/ch05/ar">
+<p class="chapter-kicker">الفصل 5</p>
+<h1>HTML: بنية الصفحة</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تقرأ عناصر HTML ووسومها وخصائصها وتكتبها</li>
+<li>تبني الهيكل الذي تبدأ به كل صفحة ويب</li>
+<li>تضيف العناوين والفقرات والروابط والصور والقوائم</li>
+<li>تعطي الصفحة بنية ذات معنى بـ header وnav وmain وfooter</li>
+<li>تبني أول صفحة حقيقية لك: ملف تعريفي شخصي</li>
+</ul>
+</div>
+
+<p class="lead">كل صفحة ويب زرتها في حياتك، من مدونة صغيرة إلى متجر إلكتروني عملاق، مبنية على HTML. إنها اللغة الأولى للويب وأكثرها لطفاً أيضاً: ففي هذا الفصل ستكتب صفحات حقيقية في دقائق، وتفتحها في متصفحك، وترى بالضبط ما يفعله كل سطر.</p>
+
+<aside class="bit" data-mood="happy"><p>HTML ليست لغة برمجة بالمعنى الدقيق، فليس فيها حسابات ولا قرارات. إنها لغة <em>توصيف</em>: تصف محتواك لتخبر المتصفح بنوع كل قطعة منه. ولهذا هي المكان المثالي لتبدأ البناء!</p></aside>
+
+<h2>5.1 العناصر والوسوم والخصائص</h2>
+
+<p><dfn>HTML</dfn> اختصار «لغة توصيف النص الفائق». تكتب محتواك، وتحيط كل قطعة منه بـ <dfn>وسوم</dfn> (tags) تقول ما هي: عنوان، أو فقرة، أو رابط، أو صورة. والوسمان معاً مع المحتوى الذي بينهما يُسميان <dfn>عنصراً</dfn> (element).</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="عنصر HTML: وسم الفتح مع خاصية، ثم المحتوى، ثم وسم الإغلاق">
+<g font-family="JetBrains Mono" font-size="17" direction="ltr">
+<text x="20" y="62"><tspan fill="#4338ca" font-weight="700">&lt;a</tspan><tspan fill="#c2410c"> href</tspan><tspan fill="#1e1b2e">=</tspan><tspan fill="#15803d">"first.html"</tspan><tspan fill="#4338ca" font-weight="700">&gt;</tspan><tspan fill="#1e1b2e">My first page</tspan><tspan fill="#4338ca" font-weight="700">&lt;/a&gt;</tspan></text>
+</g>
+<g stroke-width="3" stroke-linecap="round" fill="none">
+<path d="M20,76 L20,84 L232,84 L232,76" stroke="#4338ca"/><path d="M238,76 L238,84 L364,84 L364,76" stroke="#1e1b2e"/><path d="M370,76 L370,84 L406,84 L406,76" stroke="#4338ca"/>
+<path d="M44,44 L44,36 L222,36 L222,44" stroke="#c2410c"/>
+</g>
+<g font-family="Cairo" font-size="13" font-weight="700" text-anchor="middle">
+<text x="126" y="104" fill="#4338ca">وسم الفتح</text><text x="301" y="104" fill="#1e1b2e">المحتوى</text><text x="410" y="122" fill="#4338ca">وسم الإغلاق</text>
+<text x="133" y="26" fill="#c2410c">خاصية (الاسم = "القيمة")</text>
+</g>
+<text x="226" y="140" font-family="Cairo" font-size="12.5" fill="#5b5873" text-anchor="middle">كل ما بين &lt;a&gt; و&lt;/a&gt; عنصر واحد.</text>
+</svg>
+<figcaption><b>الشكل 5.1:</b> أجزاء عنصر HTML.</figcaption>
+</figure>
+
+<ul>
+<li><strong>وسم الفتح</strong> هو اسم العنصر بين قوسين زاويين: <code>&lt;p&gt;</code> و<code>&lt;h1&gt;</code> و<code>&lt;a&gt;</code>.</li>
+<li><strong>وسم الإغلاق</strong> مثله مع شرطة مائلة: <code>&lt;/p&gt;</code>.</li>
+<li><dfn>الخصائص</dfn> (attributes) تُكتب داخل وسم الفتح وتعطي معلومات إضافية، دائماً بالشكل <code>name="value"</code>. وهنا تقول <code>href</code> إلى أين يذهب الرابط.</li>
+<li>بعض العناصر ليس لها محتوى ولا وسم إغلاق، مثل <code>&lt;img&gt;</code> و<code>&lt;br&gt;</code>، وتُسمى <dfn>العناصر الفارغة</dfn>.</li>
+</ul>
+
+<p>وأسماء الوسوم والخصائص إنجليزية دائماً، حتى في الصفحات العربية. أما المحتوى الذي بينها فيكون بأي لغة تريدها.</p>
+
+<h2>5.2 هيكل كل صفحة</h2>
+
+<p>كل صفحة HTML تبدأ بالأسطر القليلة نفسها. أنشئ في مجلد <code>code-from-zero</code> مجلداً اسمه <code>chapter-05</code>، وفيه ملفاً اسمه <code>first.html</code>:</p>
+
+<pre data-code="first.html" data-title="first.html"></pre>
+
+<p>انقر على الملف نقرتين ليفتح في المتصفح (أو اسحبه إلى نافذة المتصفح):</p>
+
+<figure data-render="first.html" data-width="560"><figcaption><b>الشكل 5.2:</b> أول صفحة ويب لك.</figcaption></figure>
+
+<p>ولكل سطر في الهيكل وظيفة:</p>
+
+<table>
+<thead><tr><th>السطر</th><th>وظيفته</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;!doctype html&gt;</code></td><td>يخبر المتصفح أن هذه صفحة HTML حديثة.</td></tr>
+<tr><td><code>&lt;html lang="ar" dir="rtl"&gt;</code></td><td>العنصر الجذر الذي يحيط بكل شيء. <code>lang</code> تحدد لغة الصفحة، و<code>dir="rtl"</code> تجعل اتجاهها من اليمين إلى اليسار، وهي ضرورية لكل صفحة عربية.</td></tr>
+<tr><td><code>&lt;head&gt;</code></td><td>معلومات <em>عن</em> الصفحة لا تظهر فيها.</td></tr>
+<tr><td><code>&lt;meta charset="utf-8"&gt;</code></td><td>يستخدم ترميز UTF-8 الخاص بيونيكود، فتظهر العربية وكل اللغات صحيحة.</td></tr>
+<tr><td><code>&lt;meta name="viewport" …&gt;</code></td><td>يجعل الصفحة تناسب شاشات الهواتف.</td></tr>
+<tr><td><code>&lt;title&gt;</code></td><td>النص الذي يظهر في تبويب المتصفح ونتائج البحث.</td></tr>
+<tr><td><code>&lt;body&gt;</code></td><td>كل ما يراه الزائر.</td></tr>
+</tbody>
+</table>
+
+<aside class="bit" data-mood="think"><p>جرّب أن تحذف <code>dir="rtl"</code> من صفحتك وتعيد تحميلها: سيلتصق النص العربي بيسار الصفحة، وستقفز علامات الترقيم إلى أماكن غريبة. سطر صغير يصنع فرقاً كبيراً!</p></aside>
+
+<p>ولاحظ إزاحة الأسطر: العناصر التي داخل غيرها مُزاحة مسافتين إلى الداخل. المتصفح لا يهتم بالإزاحة، لكن البشر يهتمون، فهي تريك بنظرة أي عنصر داخل أي عنصر، وPrettier يضبطها لك مع كل حفظ.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>في VS Code، اكتب <code>!</code> في ملف <code>.html</code> فارغ واضغط <code>Tab</code>، فيكتب المحرر الهيكل كله عنك. المحترفون يفعلون هذا كل يوم، لكن اكتبه بيدك بضع مرات أولاً لتفهم كل سطر فيه.</p></aside>
+
+<h2>5.3 النصوص: العناوين والفقرات</h2>
+
+<p>معظم محتوى الويب نصوص، وفي HTML عناصر تعطيها بنية. ومن الآن ستعرض الأمثلة الطويلة <code>&lt;body&gt;</code> وحده، لأن <code>&lt;head&gt;</code> هو الهيكل نفسه كل مرة، ولا يتغير إلا <code>&lt;title&gt;</code>. والملفات كاملة في مستودع كود الكتاب.</p>
+
+<pre data-code="text.html" data-title="text.html" data-show="body"></pre>
+<figure data-render="text.html" data-width="560"><figcaption><b>الشكل 5.3:</b> العناوين والفقرات والتأكيد، بتنسيق المتصفح الافتراضي.</figcaption></figure>
+
+<ul>
+<li><code>&lt;h1&gt;</code> إلى <code>&lt;h6&gt;</code> <strong>عناوين</strong> من الأهم إلى الأقل أهمية. استخدم <code>&lt;h1&gt;</code> واحداً لعنوان الصفحة الرئيسي، ثم <code>&lt;h2&gt;</code> للأقسام، و<code>&lt;h3&gt;</code> للأقسام الفرعية، وهكذا، مثل فصول هذا الكتاب وأقسامه.</li>
+<li><code>&lt;p&gt;</code> <strong>فقرة</strong>، ويضع المتصفح مسافة حول كل واحدة.</li>
+<li><code>&lt;strong&gt;</code> تجعل النص <strong>مهماً</strong> (ويظهر عريضاً)، و<code>&lt;em&gt;</code> <em>تؤكده</em> (ويظهر مائلاً).</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>اختر مستوى العنوان لمعناه، لا لحجمه. فإن أردت عنواناً أصغر غيّرت حجمه بـ CSS في الفصل 6. وقارئات الشاشة، التي تقرأ الصفحات بصوت عالٍ للمكفوفين، تتيح القفز من عنوان لعنوان، فالترتيب الصحيح مهم حقاً.</p></aside>
+
+<h2>5.4 الروابط</h2>
+
+<p>الروابط هي ما يجعل الويب «شبكة»: صفحات متصلة ببعضها في أنحاء العالم كله. والعنصر <code>&lt;a&gt;</code> ينشئ رابطاً، وخاصيته <code>href</code> تحدد وجهته:</p>
+
+<pre data-code="links.html" data-title="links.html" data-show="body"></pre>
+<figure data-render="links.html" data-width="560"><figcaption><b>الشكل 5.4:</b> الروابط زرقاء وتحتها خط افتراضياً.</figcaption></figure>
+
+<p>الرابط الأول <strong>مطلق</strong>: فيه العنوان الكامل لموقع آخر. والثاني <strong>نسبي</strong>: <code>first.html</code> تعني «الملف المسمى <code>first.html</code> في مجلد هذه الصفحة نفسه». استخدم الروابط النسبية بين صفحات موقعك، فتبقى تعمل حين تنقل الموقع كله إلى خادم.</p>
+
+<p>والرابط الثالث يفتح في تبويب جديد بسبب <code>target="_blank"</code>، و<code>rel="noopener"</code> معه إجراء أمني صغير أضفه دائماً معها.</p>
+
+<h2>5.5 الصور</h2>
+
+<p>العنصر <code>&lt;img&gt;</code> يعرض صورة. نزّل الملف <code>bit.svg</code> من مستودع كود الكتاب إلى مجلد <code>chapter-05</code>، أو استخدم أي صورة تحبها:</p>
+
+<pre data-code="image.html" data-title="image.html" data-show="body"></pre>
+<figure data-render="image.html" data-width="560"><figcaption><b>الشكل 5.5:</b> صورة في الصفحة.</figcaption></figure>
+
+<ul>
+<li><code>src</code> ملف الصورة: مسار نسبي، أو عنوان كامل على الويب.</li>
+<li><code>alt</code> وصف نصي للصورة. تقرؤه قارئات الشاشة، وتفهرسه محركات البحث، وتعرضه المتصفحات إن لم تُحمّل الصورة.</li>
+<li><code>width</code> و<code>height</code> تخبران المتصفح كم مساحة يحجز، فلا تقفز الصفحة أثناء تحميل الصورة.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>كل صورة تحتاج <code>alt</code>. صِف ما تعرضه الصورة ولماذا هي هنا في جملة قصيرة. وإن كانت الصورة للزينة فقط فاكتب <code>alt=""</code> لتتجاوزها قارئات الشاشة. ونص <code>alt</code> الجيد من أبسط الطرق لجعل الويب صالحاً للجميع.</p></aside>
+
+<h2>5.6 القوائم</h2>
+
+<p>في HTML نوعان شائعان من القوائم: <code>&lt;ul&gt;</code> (قائمة غير مرتبة) حين لا يهم الترتيب، و<code>&lt;ol&gt;</code> (قائمة مرتبة) حين يهم. وداخل الاثنتين يكون كل بند <code>&lt;li&gt;</code>:</p>
+
+<pre data-code="lists.html" data-title="lists.html" data-show="body"></pre>
+<figure data-render="lists.html" data-width="560"><figcaption><b>الشكل 5.6:</b> يضيف المتصفح النقاط والأرقام عنك، وفي الصفحة العربية تكون على اليمين.</figcaption></figure>
+
+<p>القوائم في كل مكان على الويب، وكثيراً في أماكن لا تخطر ببالك: القائمة أعلى معظم المواقع قائمة روابط، نسّقتها CSS فلم تعد تبدو قائمة.</p>
+
+<h2>5.7 إعطاء الصفحة بنية</h2>
+
+<p>الصفحات الحقيقية لها أجزاء: منطقة علوية فيها اسم الموقع وقائمته، والمحتوى الرئيسي، وتذييل في الأسفل. وفي HTML <dfn>عناصر دلالية</dfn> لهذه الأجزاء، و«دلالية» تعني أنها تصف <em>معنى</em> محتواها لا شكله:</p>
+
+<pre data-code="structure.html" data-title="structure.html" data-show="body"></pre>
+
+<figure>
+<svg viewBox="0 0 520 200" role="img" aria-label="تخطيط صفحة فيها header وبداخله nav، وmain وبداخله article، وfooter">
+<g font-family="JetBrains Mono" font-size="13" font-weight="700" direction="ltr">
+<rect x="20" y="10" width="480" height="58" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/><text x="488" y="30" fill="#4338ca" text-anchor="end">&lt;header&gt;</text>
+<rect x="35" y="22" width="235" height="34" rx="6" fill="#fff" stroke="#7c3aed" stroke-width="2"/><text x="258" y="44" fill="#7c3aed" text-anchor="end">&lt;nav&gt;</text>
+<rect x="20" y="78" width="480" height="76" rx="8" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="488" y="98" fill="#0f766e" text-anchor="end">&lt;main&gt;</text>
+<rect x="40" y="106" width="440" height="38" rx="6" fill="#fff" stroke="#0f766e" stroke-width="2"/><text x="468" y="130" fill="#0f766e" text-anchor="end">&lt;article&gt;</text>
+<rect x="20" y="164" width="480" height="30" rx="8" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="488" y="184" fill="#ea580c" text-anchor="end">&lt;footer&gt;</text>
+</g>
+</svg>
+<figcaption><b>الشكل 5.7:</b> أجزاء الصفحة السابقة. بلا CSS تبدو نصاً عادياً، لكن المتصفح ومحركات البحث وقارئات الشاشة تعرف ما كل جزء.</figcaption>
+</figure>
+
+<table>
+<thead><tr><th>العنصر</th><th>استخدمه لـ</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;header&gt;</code></td><td>مقدمة الصفحة أو القسم: الشعار والعنوان والقائمة</td></tr>
+<tr><td><code>&lt;nav&gt;</code></td><td>روابط التنقل الرئيسية</td></tr>
+<tr><td><code>&lt;main&gt;</code></td><td>المحتوى الرئيسي، وواحد فقط في الصفحة</td></tr>
+<tr><td><code>&lt;section&gt;</code></td><td>جزء من المحتوى له موضوع، وغالباً له عنوان</td></tr>
+<tr><td><code>&lt;article&gt;</code></td><td>محتوى مفهوم وحده: تدوينة، أو خبر، أو منتج</td></tr>
+<tr><td><code>&lt;footer&gt;</code></td><td>آخر الصفحة أو القسم: الحقوق، ووسائل التواصل، والروابط</td></tr>
+</tbody>
+</table>
+
+<p>وستقابل أيضاً عنصرين بلا معنى على الإطلاق: <code>&lt;div&gt;</code> كتلة عامة، و<code>&lt;span&gt;</code> قطعة عامة من النص داخل السطر. لا تستخدمهما إلا حين لا يناسبك عنصر دلالي، وغالباً كخطافات لـ CSS.</p>
+
+<h2>5.8 نظرة أولى على النماذج</h2>
+
+<p>النماذج (forms) تتيح للزوار إرسال المعلومات: بحث، أو تسجيل دخول، أو اشتراك. وستبث فيها الحياة بـ JavaScript في الفصل 12، لكن بنيتها HTML خالصة:</p>
+
+<pre data-code="form.html" data-title="form.html" data-show="body"></pre>
+<figure data-render="form.html" data-width="560"><figcaption><b>الشكل 5.8:</b> نموذج فيه حقلان وزر.</figcaption></figure>
+
+<p>لكل <code>&lt;input&gt;</code> عنصر <code>&lt;label&gt;</code> يرتبط به بتطابق قيمتي <code>for</code> و<code>id</code>. فالنقر على التسمية يضع المؤشر في الحقل، وقارئات الشاشة تنطق التسمية. و<code>type="email"</code> تُظهر لوحة المفاتيح المناسبة على الهواتف، و<code>required</code> تجعل المتصفح يرفض إرسال حقل فارغ. جرّب الضغط على الزر والحقلان فارغان!</p>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>في <code>&lt;img src="cat.jpg" alt="قطة نائمة"&gt;</code> ما الخصائص، ولماذا ليس لهذا العنصر وسم إغلاق؟</li><li>متى تستخدم <code>&lt;ol&gt;</code> بدل <code>&lt;ul&gt;</code>؟</li><li>كم عنصر <code>&lt;h1&gt;</code> يجب أن يكون في الصفحة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>5.9 مشروع: صفحتك التعريفية</h2>
+
+<p>لنجمع كل شيء في صفحة حقيقية: ملف تعريفي لسارة، مطورة الويب الجديدة. واكتب بياناتك أنت بدل بياناتها وأنت تكتب.</p>
+
+<pre data-code="profile.html" data-title="profile.html" data-show="body"></pre>
+<figure data-render="profile.html" data-width="560"><figcaption><b>الشكل 5.9:</b> الصفحة التعريفية، بـ HTML وحدها وبلا تنسيق بعد.</figcaption></figure>
+
+<p>تظهر هنا حيلتان جديدتان. روابط القائمة تشير إلى <code>#about</code> و<code>#skills</code> و<code>#contact</code>، و<code>#</code> يتبعها <code>id</code> تقفز إلى العنصر صاحب هذا الـ <code>id</code> في الصفحة نفسها. ورابط التواصل يبدأ بـ <code>mailto:</code> فيفتح تطبيق البريد عند الزائر.</p>
+
+<p>الصفحة تعمل، وبنيتها ممتازة، لكنها بسيطة الشكل. وهذا طبيعي: وظيفة HTML البنية لا الجمال. وفي الفصلين القادمين ستحوّل هذه الصفحة بالذات إلى شيء تفخر بمشاركته.</p>
+
+<aside class="bit" data-mood="wow"><p>انقر بالزر الأيمن على صفحتك واختر <strong>Inspect</strong> (فحص). لوحة Elements تعرض شجرة العناصر التي كتبتها. أنت بنيت هذه الشجرة! مرّر الفأرة على كل عنصر وشاهد المتصفح يحدده في الصفحة.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>نسيان وسم الإغلاق، مثل <code>&lt;/p&gt;</code></td><td>يخمّن المتصفح أين ينتهي العنصر، وأحياناً يخطئ</td><td>أغلق كل عنصر له محتوى</td></tr>
+<tr><td>تداخل خاطئ: <code>&lt;p&gt;&lt;strong&gt;…&lt;/p&gt;&lt;/strong&gt;</code></td><td>تخطيط لا يمكن توقعه</td><td>أغلق العناصر بعكس ترتيب فتحها</td></tr>
+<tr><td>نسيان <code>dir="rtl"</code> في صفحة عربية</td><td>النص ملتصق باليسار والترقيم في أماكن غريبة</td><td>ابدأ كل صفحة عربية بـ <code>lang="ar" dir="rtl"</code></td></tr>
+<tr><td>غياب <code>&lt;meta charset="utf-8"&gt;</code></td><td>تظهر الحروف العربية رموزاً غريبة</td><td>ابدأ دائماً بالهيكل الكامل</td></tr>
+<tr><td>أسماء ملفات عربية أو فيها مسافات</td><td>الروابط تعمل على حاسوبك وتتعطل على الخادم</td><td>استخدم أسماء مثل <code>about-me.html</code></td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>HTML تصف المحتوى بـ <strong>العناصر</strong>: وسم فتح ومحتوى ووسم إغلاق. و<strong>الخصائص</strong> تضيف معلومات بالشكل <code>name="value"</code>.</li>
+<li>كل صفحة تبدأ بالـ <strong>هيكل</strong> نفسه: doctype، ثم <code>html</code> مع <code>lang</code> (و<code>dir="rtl"</code> للعربية)، ثم <code>head</code> فيه الترميز وviewport والعنوان، ثم <code>body</code>.</li>
+<li>استخدم العناوين من <code>h1</code> إلى <code>h6</code> بالترتيب، والفقرات <code>p</code>، و<code>strong</code> و<code>em</code> للأهمية والتأكيد.</li>
+<li><code>a</code> تنشئ الروابط بـ <code>href</code>، و<code>img</code> تعرض الصور بـ <code>src</code> و<code>alt</code> له معنى.</li>
+<li><code>ul</code> و<code>ol</code> تحويان بنود القائمة <code>li</code>.</li>
+<li><strong>العناصر الدلالية</strong> مثل <code>header</code> و<code>nav</code> و<code>main</code> و<code>section</code> و<code>article</code> و<code>footer</code> تصف بنية الصفحة.</li>
+<li>النماذج تستخدم <code>form</code> و<code>label</code> و<code>input</code> و<code>button</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. الخصائص <code>src</code> و<code>alt</code>. و<code>&lt;img&gt;</code> عنصر فارغ: ليس فيه محتوى بين وسمين، فلا يحتاج وسم إغلاق. 2. حين يهم ترتيب البنود، مثل الخطوات أو الترتيب في مسابقة. 3. واحد.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ثلاث صفحات حقيقية، كل واحدة أكبر قليلاً من التي قبلها، بـ HTML وحدها بلا CSS بعد. واحتفظ بهذه الملفات، فستنسّقها في الفصلين 6 و7.</p>
+
+<div class="project">
+<p class="project-label">مشروع 5.1 · سهل</p>
+<h3>صفحة وصفة</h3>
+<p class="project-goal">اكتب صفحة لوصفة تحبها، فيها صورة وقائمة مكونات وخطوات مرقمة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> هيكل الصفحة، والعناوين، والفقرات، و<code>strong</code>، والصور مع <code>alt</code>، ونوعي القوائم.</p>
+<ol class="steps">
+<li>أنشئ مجلداً اسمه <code>projects-05</code>، وفيه <code>recipe.html</code> بالهيكل الكامل من القسم 5.2، ولا تنسَ <code>lang="ar" dir="rtl"</code>.</li>
+<li>أضف <code>&lt;h1&gt;</code> باسم الوصفة، وفقرة قصيرة تقول كم تستغرق ولكم شخصاً تكفي، وميّز الوقت بـ <code>&lt;strong&gt;</code>.</li>
+<li>أضف صورة الطبق بـ <code>&lt;img&gt;</code>، واكتب <code>alt</code> يصفه في جملة، وأعطها <code>width</code> و<code>height</code>.</li>
+<li>أضف <code>&lt;h2&gt;</code> «المكونات» وتحته قائمة غير مرتبة، و<code>&lt;h2&gt;</code> «الخطوات» وتحته قائمة مرتبة.</li>
+<li>افتح الصفحة في المتصفح، ثم في لوحة Elements. هل الشجرة كما توقعت؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ترتيب المكونات لا يهم فاستخدم <code>&lt;ul&gt;</code>، وترتيب الخطوات يهم فاستخدم <code>&lt;ol&gt;</code>. وإن لم تكن عندك صورة فاستخدم أي صورة، أو <code>soup.svg</code> من مستودع الكود.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/recipe.html" data-width="520"><figcaption><b>مشروع 5.1:</b> صفحة وصفة بـ HTML وحدها.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 5.2 · متوسط</p>
+<h3>موقع لمقهى صغير</h3>
+<p class="project-goal">ابنِ موقع الصفحة الواحدة لمقهى في الحي، ببنية دلالية صحيحة وقائمة تقفز إلى كل قسم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>header</code> و<code>nav</code> و<code>main</code> و<code>section</code> و<code>footer</code>، والروابط إلى <code>#id</code>، وروابط <code>tel:</code>.</p>
+<ol class="steps">
+<li>خطط للصفحة على الورق أولاً: ارسم صناديق للترويسة، والأقسام الثلاثة (القائمة، ومواعيد العمل، والعنوان)، والتذييل.</li>
+<li>اكتب <code>&lt;header&gt;</code> فيه اسم المقهى ووصف في سطر و<code>&lt;nav&gt;</code> بثلاثة روابط: <code>#menu</code> و<code>#hours</code> و<code>#find</code>.</li>
+<li>داخل <code>&lt;main&gt;</code> اكتب ثلاثة <code>&lt;section&gt;</code>، لكل منها <code>id</code> المطابق، و<code>&lt;h2&gt;</code>، وقائمة أو فقرة.</li>
+<li>في قسم العنوان أضف رابط هاتف: <code>&lt;a href="tel:+201000000000"&gt;</code>، فالضغط عليه في الهاتف يبدأ مكالمة.</li>
+<li>اختم بـ <code>&lt;footer&gt;</code>، ثم صغّر النافذة وانقر روابط القائمة: تقفز الصفحة إلى كل قسم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المعرّفات (<code>id</code>) تُكتب بالإنجليزية دائماً، حتى في الصفحة العربية. ورقم الهاتف داخل جملة عربية قد تنقلب مجموعاته فيظهر «0000 0000 010»؛ فأضف <code>dir="ltr"</code> إلى رابطه ليبقى بترتيبه الصحيح.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/cafe.html" data-width="520"><figcaption><b>مشروع 5.2:</b> موقع مقهى ببنية دلالية.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 5.3 · تحدٍّ</p>
+<h3>نموذج التسجيل في دورة</h3>
+<p class="project-goal">ابنِ نموذج تسجيل كاملاً فيه ستة أنواع من الحقول، لكل منها تسمية صحيحة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> النماذج، و<code>label</code> مع <code>for</code>، وأنواع الحقول، و<code>select</code>، و<code>textarea</code>، ومربعات الاختيار، و<code>required</code>.</p>
+<ol class="steps">
+<li>أنشئ <code>signup.html</code> فيه عنوان و<code>&lt;form&gt;</code>.</li>
+<li>أضف حقول النص والبريد والهاتف (<code>type="text"</code> و<code>"email"</code> و<code>"tel"</code>)، لكل منها <code>&lt;label&gt;</code> تطابق <code>for</code> فيه <code>id</code> الحقل.</li>
+<li>أضف <code>&lt;select&gt;</code> لمستوى الطالب، فيه ثلاثة <code>&lt;option&gt;</code>.</li>
+<li>أضف <code>&lt;textarea&gt;</code> لسؤال «لماذا تريد أن تتعلم؟»، ومربع اختيار للموافقة على الرسائل وتسميته بعده.</li>
+<li>اجعل الاسم والبريد <code>required</code>، واختبر: اضغط الزر والحقول فارغة، ثم ببريد ليس فيه <code>@</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> على الهاتف تُظهر <code>type="email"</code> لوحة مفاتيح فيها <code>@</code>، و<code>type="tel"</code> لوحة أرقام. جرّب ذلك بشريط الأجهزة في أدوات المطورين، أو على هاتفك.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<figure data-render="projects/signup.html" data-width="520"><figcaption><b>مشروع 5.3:</b> نموذج تسجيل بستة أنواع من الحقول.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أنشئ <code>favourites.html</code> فيه عنوان وقائمة غير مرتبة بخمسة أفلام أو كتب أو ألعاب تحبها.</li>
+<li><span class="level">سهل</span> أضف رابطاً من <code>favourites.html</code> إلى <code>profile.html</code>، ورابطاً للعودة.</li>
+<li><span class="level">متوسط</span> اكتب صفحة وصفة لطبق تحبه، فيها <code>&lt;h1&gt;</code>، وصورة بـ <code>alt</code> جيد، وقائمة المكونات، وخطوات مرقمة.</li>
+<li><span class="level">متوسط</span> افتح أي موقع كبير، وافتح أدوات المطورين وانظر إلى لوحة Elements. ابحث عن <code>&lt;header&gt;</code> و<code>&lt;nav&gt;</code> و<code>&lt;footer&gt;</code>. هل يستخدم العناصر الدلالية، أم <code>&lt;div&gt;</code> فقط؟</li>
+<li><span class="level">تحدٍّ</span> حوّل صفحتك التعريفية إلى موقع صغير من ثلاث صفحات: <code>index.html</code> (عنك)، و<code>projects.html</code>، و<code>contact.html</code> فيها نموذج. وفي كل صفحة <code>&lt;header&gt;</code> و<code>&lt;nav&gt;</code> نفسهما بروابط للصفحتين الأخريين.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 6</p>
+<p>لصفحتك التعريفية هيكل رائع. والآن تعطيها CSS الألوان والخطوط والمسافات والشخصية. وفي آخر الفصل 6 لن تكاد تعرفها.</p>
+</div>
+</section>

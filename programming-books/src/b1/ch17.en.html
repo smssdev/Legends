@@ -1,0 +1,251 @@
+<section class="chapter" data-chapter="17" data-code="b1/ch17/en">
+<p class="chapter-kicker">Chapter 17</p>
+<h1>Project: Build and Publish a Web App</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>plan an app before writing code: features, a sketch and the shape of the data</li>
+<li>build a complete daily tasks app with HTML, CSS and JavaScript</li>
+<li>save data in the browser with <code>localStorage</code>, so it survives a reload</li>
+<li>test it like a professional: keyboard, phone width and unusual cases</li>
+<li>publish it on the internet for free with GitHub Pages</li>
+</ul>
+</div>
+
+<p class="lead">This is the chapter where everything comes together. You will build a real app that you can use every day: a list of daily tasks that you can add, tick off, filter and delete, and that remembers everything when you close the browser. Then you will give it an address on the internet that you can open on your phone and send to your friends. Every skill from the previous sixteen chapters has a part to play.</p>
+
+<aside class="bit" data-mood="wow"><p>This is my favourite chapter! At the end of it, you won’t just have learned to code. You’ll have <em>shipped</em> something: a real app, live on the web, built by you from nothing. Let’s go!</p></aside>
+
+<h2>17.1 Plan first</h2>
+
+<p>Chapter 2 taught you to think before you type. Professionals start every project the same way: they write down what the app must do, sketch how it will look, and decide what data it needs.</p>
+
+<h3>What the app does</h3>
+<ol>
+<li>Add a task by typing it and pressing Enter or the Add button.</li>
+<li>Tick a task to mark it as done, and untick it again.</li>
+<li>Delete a task.</li>
+<li>Show all tasks, only the tasks still to do, or only the finished ones.</li>
+<li>Show how many tasks are left, and clear all finished tasks at once.</li>
+<li>Remember everything after the browser is closed.</li>
+<li>Work with a keyboard, on a phone, and in English or Arabic.</li>
+</ol>
+
+<h3>A sketch</h3>
+
+<figure>
+<svg viewBox="0 0 520 240" role="img" aria-label="A sketch of the app: title, input with Add button, filter buttons, task list and footer">
+<rect x="110" y="10" width="300" height="220" rx="16" fill="#fff" stroke="#4338ca" stroke-width="2" stroke-dasharray="6 4"/>
+<g font-family="Inter" font-size="12">
+<rect x="130" y="26" width="110" height="18" rx="4" fill="#c7d2fe"/><text x="250" y="40" fill="#5b5873">title</text>
+<rect x="130" y="56" width="200" height="26" rx="8" fill="none" stroke="#5b5873" stroke-width="1.5"/><text x="140" y="74" fill="#9ca3af">new task…</text>
+<rect x="338" y="56" width="52" height="26" rx="13" fill="#4338ca"/><text x="351" y="74" fill="#fff">Add</text>
+<rect x="130" y="94" width="40" height="18" rx="9" fill="#4338ca"/><rect x="176" y="94" width="48" height="18" rx="9" fill="#eef2ff"/><rect x="230" y="94" width="44" height="18" rx="9" fill="#eef2ff"/><text x="282" y="107" fill="#5b5873">filters</text>
+<g stroke="#5b5873" stroke-width="1.5" fill="none"><rect x="130" y="124" width="12" height="12" rx="2"/><rect x="130" y="150" width="12" height="12" rx="2"/><rect x="130" y="176" width="12" height="12" rx="2"/></g>
+<rect x="150" y="126" width="140" height="8" rx="4" fill="#e5e7eb"/><rect x="150" y="152" width="110" height="8" rx="4" fill="#e5e7eb"/><rect x="150" y="178" width="160" height="8" rx="4" fill="#e5e7eb"/>
+<g fill="#fdf0f6"><rect x="350" y="122" width="40" height="16" rx="8"/><rect x="350" y="148" width="40" height="16" rx="8"/><rect x="350" y="174" width="40" height="16" rx="8"/></g>
+<text x="130" y="214" fill="#5b5873">2 tasks left</text><text x="320" y="214" fill="#5b5873">Clear done</text>
+</g>
+<g font-family="Inter" font-size="11.5" font-weight="700" fill="#db2777"><text x="10" y="74">form</text><text x="10" y="107">filter buttons</text><text x="10" y="160">task list</text><text x="10" y="214">footer</text><text x="420" y="135">delete</text></g>
+</svg>
+<figcaption><b>Figure 17.1:</b> A sketch on paper (or in a few boxes) saves hours of changing code later.</figcaption>
+</figure>
+
+<h3>The data</h3>
+
+<p>Each task needs a unique <code>id</code>, its <code>text</code>, and whether it is <code>done</code>. The whole app’s data is an array of these objects, plus the current filter:</p>
+
+<pre class="plain">[
+  { id: 1741766400000, text: "Read chapter 17", done: true },
+  { id: 1741766460000, text: "Practise Flexbox", done: false }
+]</pre>
+
+<p>Everything else on the screen, the list, the counter and the highlighted filter, can be calculated from this data. That decision will make the code simple.</p>
+
+<h2>17.2 The HTML</h2>
+
+<p>Create a folder called <code>my-tasks</code> with three files. The HTML holds the structure, and is almost empty where the tasks will go:</p>
+
+<pre data-code="index.html" data-title="index.html"></pre>
+
+<p>Notice the accessibility details from Chapter 16: a real <code>&lt;form&gt;</code> so Enter works, a label for the input (visually hidden, because the placeholder and button make the purpose clear to sighted users), real <code>&lt;button&gt;</code> elements, <code>aria-pressed</code> to tell screen readers which filter is on, and <code>aria-live</code> so the count is announced when it changes.</p>
+
+<h2>17.3 The CSS</h2>
+
+<p>The stylesheet uses custom properties, Flexbox, rounded corners and visible focus, all from Chapters 6 and 7. It uses no physical directions, so the same file styles the Arabic version. It is in the book’s code repository as <code>style.css</code>; here are the most interesting parts:</p>
+
+<pre class="plain">form {
+  display: flex;
+  gap: 8px;
+}
+form input {
+  flex: 1;                /* the input takes all the free space */
+}
+.filters button[aria-pressed="true"] {
+  color: white;           /* the active filter is styled from */
+  background: var(--brand); /* the same attribute screen readers use */
+}
+li.done label {
+  color: var(--muted);
+  text-decoration: line-through;
+}</pre>
+
+<p>Styling the active filter with <code>[aria-pressed="true"]</code> is a neat professional trick: the look and the accessibility information can never disagree, because they are the same attribute.</p>
+
+<h2>17.4 The JavaScript</h2>
+
+<p>The program follows the pattern from Chapter 12: data, changes, display, and events. Read it section by section:</p>
+
+<pre data-code="app.js" data-title="app.js"></pre>
+
+<h3>Remembering data: localStorage</h3>
+
+<p>Variables disappear when the page is closed. <code>localStorage</code> is a small storage space that each website gets in the browser, and it survives reloads and restarts. It stores only strings, so we use JSON from Chapter 11:</p>
+<ul>
+<li><code>save()</code> turns the tasks into JSON and stores them under the key <code>"my-tasks"</code>.</li>
+<li><code>load()</code> reads them back when the page opens, or starts with an empty array the very first time.</li>
+<li>Every change goes through <code>update()</code>, which saves and then redraws. Because there is only one path, the screen and the storage can never get out of step.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p><code>localStorage</code> belongs to one browser on one device. Tasks added on your phone will not appear on your laptop, and clearing the browser’s data deletes them. Syncing between devices needs a server and a database, which is exactly what the backend books in this series teach.</p></aside>
+
+<h3>Other details worth noticing</h3>
+<ul>
+<li><code>Date.now()</code> returns the number of milliseconds since 1970, a simple way to get a unique id.</li>
+<li><code>tasks.filter(…)</code> creates new arrays for deleting and clearing, which is simpler and safer than removing items from the middle of an array.</li>
+<li><code>replaceChildren(...visibleTasks().map(taskItem))</code> redraws the whole list in one line: the spread syntax from Chapter 11 passes every new <code>&lt;li&gt;</code> at once.</li>
+<li>Every task has a real checkbox with a <code>&lt;label&gt;</code>, so clicking the text ticks the box, and the delete button has an <code>aria-label</code> that says <em>which</em> task it deletes.</li>
+</ul>
+
+<figure data-render="index.html" data-width="560" data-actions="fill:#task-text|Read chapter 17;press:#task-text|Enter;fill:#task-text|Practise Flexbox;press:#task-text|Enter;fill:#task-text|Push the app to GitHub;press:#task-text|Enter;click:#tasks li:nth-child(1) input"><figcaption><b>Figure 17.2:</b> The finished app with three tasks, one of them done.</figcaption></figure>
+
+<h2>17.5 Test like a professional</h2>
+
+<p>Before you publish, go through a checklist. Professionals do this before every release:</p>
+
+<table>
+<thead><tr><th>Test</th><th>What to check</th></tr></thead>
+<tbody>
+<tr><td>Empty state</td><td>With no tasks, the friendly message shows and the counter says “All done!”</td></tr>
+<tr><td>Unusual input</td><td>Spaces only are ignored; a very long task wraps instead of breaking the layout</td></tr>
+<tr><td>Persistence</td><td>Add tasks, reload the page: everything is still there</td></tr>
+<tr><td>Keyboard</td><td>Add, tick, filter and delete with Tab, Enter and Space only; the focus is always visible</td></tr>
+<tr><td>Phone</td><td>At 360 pixels wide in the DevTools device toolbar, nothing overflows</td></tr>
+<tr><td>Accessibility</td><td>Lighthouse reports no accessibility problems</td></tr>
+<tr><td>Errors</td><td>The Console shows no red messages</td></tr>
+</tbody>
+</table>
+
+<h2>17.6 Publish it with GitHub Pages</h2>
+
+<p><dfn>GitHub Pages</dfn> is a free service that turns a GitHub repository into a website. Because your app is just HTML, CSS and JavaScript, with no server code, it can be hosted there in a few minutes:</p>
+
+<ol>
+<li>Put the <code>my-tasks</code> folder under Git and commit, as in Chapter 15.</li>
+<li>Create a <strong>public</strong> repository called <code>my-tasks</code> on GitHub and push to it.</li>
+<li>On the repository page, open <strong>Settings</strong>, then <strong>Pages</strong>.</li>
+<li>Under <strong>Build and deployment</strong>, choose <strong>Deploy from a branch</strong>, select the branch <code>main</code> and the folder <code>/ (root)</code>, and click <strong>Save</strong>.</li>
+<li>Wait a minute and reload. GitHub shows your address: <code>https://your-username.github.io/my-tasks/</code>.</li>
+</ol>
+
+<p>Open that address on your phone. That is your app, on the internet, served over HTTPS, built by you. From now on, every time you push a new commit to <code>main</code>, GitHub updates the site automatically.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>The main page of a site must be called <code>index.html</code>; that is the file a web server sends when the address ends with a folder name. That is why we named our file that way from the start.</p></aside>
+
+<aside class="bit" data-mood="wow"><p>Send the link to a friend and ask them to add a task. Watching someone else use something you made is one of the best feelings in programming. You did it!</p></aside>
+
+<h2>17.7 Ideas to keep going</h2>
+
+<p>The best way to keep learning is to keep building. Here are improvements, roughly from easy to hard:</p>
+<ul>
+<li>Edit a task by double-clicking its text.</li>
+<li>Add a due date to each task, and sort by it.</li>
+<li>Add a dark theme that follows the system setting with <code>prefers-color-scheme</code>.</li>
+<li>Drag tasks to reorder them.</li>
+<li>Add a language switch that changes all the app’s texts between English and Arabic, and sets <code>lang</code> and <code>dir</code>.</li>
+</ul>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Plan before coding: list the <strong>features</strong>, draw a <strong>sketch</strong>, and design the <strong>data</strong>.</li>
+<li>Calculate everything on the screen from the data, and send every change through one function that saves and redraws.</li>
+<li><code>localStorage</code> keeps strings in the browser across reloads; store objects as <strong>JSON</strong>.</li>
+<li>Build accessibility in from the start: real forms, buttons, labels and visible focus.</li>
+<li>Test the empty state, unusual input, persistence, keyboard, phone width and the Console before publishing.</li>
+<li><strong>GitHub Pages</strong> publishes a static site from a repository for free.</li>
+</ul>
+
+<!-- projects -->
+<h2>Practice projects: upgrade your app</h2>
+
+<p class="projects-intro">The app is finished, and this is where real development begins: improving something that already works without breaking it. Copy the whole app folder for each project, make a branch in Git, and commit as you go. Each project touches all three files, just like a real feature.</p>
+
+<div class="project">
+<p class="project-label">Project 17.1 · Easy</p>
+<h3>A progress bar</h3>
+<p class="project-goal">Show how much of the list is done, as a bar and in words, and keep it in step with every change.</p>
+<p class="project-skills"><strong>You will practise:</strong> the <code>&lt;progress&gt;</code> element, adding to <code>render()</code>, and <code>accent-color</code>.</p>
+<ol class="steps">
+<li>In the HTML, above the list, add <code>&lt;progress id="progress" max="1" value="0"&gt;</code> and a <code>&lt;span id="progress-text"&gt;</code>. Link them with <code>aria-labelledby</code> so the bar has a name.</li>
+<li>In the CSS, let the bar fill the row with <code>flex: 1</code>, and colour it with <code>accent-color: var(--brand)</code>.</li>
+<li>In <code>render()</code>, work out <code>done = tasks.length - count</code>, then set the bar’s <code>max</code> and <code>value</code>.</li>
+<li>Use <code>tasks.length || 1</code> for <code>max</code>, so an empty list does not divide by zero.</li>
+<li>Write “1 of 3 done” into the span. Tick, untick, add and delete tasks, and check that the bar is always right.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> you did not touch <code>addTask</code>, <code>toggleTask</code> or <code>deleteTask</code>. Because every change ends in <code>render()</code>, one new block there is enough. That is the reward for the structure you built in this chapter.</p>
+<figure data-render="projects/progress/index.html" data-width="560" data-actions="fill:#task-text|Read chapter 17;press:#task-text|Enter;fill:#task-text|Build the progress bar;press:#task-text|Enter;fill:#task-text|Publish on GitHub Pages;press:#task-text|Enter;click:#tasks li:nth-child(1) input"><figcaption><b>Project 17.1:</b> one of three tasks done.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 17.2 · Medium</p>
+<h3>Edit a task</h3>
+<p class="project-goal">Typos happen. Let the user fix a task’s text in place: Enter saves, Escape cancels.</p>
+<p class="project-skills"><strong>You will practise:</strong> a new change function, <code>replaceWith</code>, keyboard events, <code>focus()</code> and <code>select()</code>.</p>
+<ol class="steps">
+<li>Add <code>renameTask(id, text)</code> next to the other change functions: find the task, change its text, and call <code>update()</code>.</li>
+<li>In <code>taskItem</code>, add an “Edit” button with an <code>aria-label</code> that names the task, like the delete button.</li>
+<li>Write <code>startEditing(li, task)</code>: create an input holding the current text, and swap it in with <code>label.replaceWith(input)</code>. Then call <code>focus()</code> and <code>select()</code>.</li>
+<li>Listen for <code>keydown</code> on the input. On <code>"Enter"</code>, save the trimmed text if it is not empty. On <code>"Escape"</code>, just call <code>render()</code>.</li>
+<li>When the input loses focus (<code>blur</code>), call <code>render()</code> too, so a half-edited task never stays on screen.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> section 17.7 suggested double-clicking. A button is better: double-click cannot be done with a keyboard or easily on a phone, and you learned in chapter 16 why that matters.</p>
+<figure data-render="projects/edit/index.html" data-width="560" data-actions="fill:#task-text|Read chapter 17;press:#task-text|Enter;fill:#task-text|Build the progress bar;press:#task-text|Enter;fill:#task-text|Publish on GitHub Pages;press:#task-text|Enter;click:#tasks li:nth-child(1) input;click:#tasks li:nth-child(2) .edit;fill:.edit-text|Build the progress bar and test it"><figcaption><b>Project 17.2:</b> editing the second task.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 17.3 · Challenge</p>
+<h3>English and Arabic in one app</h3>
+<p class="project-goal">Add a button that switches every text in the app between English and Arabic, flips the layout from left-to-right to right-to-left, and remembers the choice.</p>
+<p class="project-skills"><strong>You will practise:</strong> keeping texts as data, <code>data-*</code> attributes, functions stored in objects, <code>lang</code> and <code>dir</code>, and a second <code>localStorage</code> key.</p>
+<ol class="steps">
+<li>Create a <code>TEXTS</code> object with an <code>en</code> and an <code>ar</code> part, holding every word the app shows. <code>left</code> is a function, because the Arabic plural changes with the number.</li>
+<li>Write a tiny helper, <code>t(key)</code>, that returns the text for the current <code>language</code>.</li>
+<li>In the HTML, mark each text with its key: <code>&lt;h1 data-text="title"&gt;</code>. Add a language button in the header.</li>
+<li>Write <code>applyLanguage()</code>: set <code>document.documentElement.lang</code> and <code>dir</code>, fill every <code>[data-text]</code> element, set the placeholder and the labels, then <code>render()</code>.</li>
+<li>Replace every fixed word in <code>app.js</code> with <code>t(…)</code>, then delete the old <code>leftText</code>.</li>
+<li>The button switches <code>language</code>, saves it under its own key, and calls <code>applyLanguage()</code>. Reload the page: it should open in the last language you chose.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because the CSS uses <code>flex</code> and <code>gap</code>, and no fixed “left” or “right”, the whole layout mirrors itself when <code>dir</code> changes. Real apps keep their texts this way, which is how they are translated into many languages without touching the code.</p>
+<figure data-render="projects/languages/index.html" data-width="560" data-actions="fill:#task-text|Read chapter 17;press:#task-text|Enter;fill:#task-text|Translate the app;press:#task-text|Enter;click:#tasks li:nth-child(1) input;click:#language"><figcaption><b>Project 17.3:</b> one click, and the whole app speaks Arabic, right to left. The tasks themselves keep the words the user typed.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Change the colours and the title of the app to make it your own, and publish the new version with a single <code>git push</code>.</li>
+<li><span class="level">Easy</span> Add a counter of finished tasks next to the counter of tasks left.</li>
+<li><span class="level">Medium</span> Let the user edit a task’s text by double-clicking it. Save the change with Enter and cancel with Escape.</li>
+<li><span class="level">Medium</span> Add a “priority” to each task (low, normal, high), chosen with a <code>&lt;select&gt;</code> when adding, and show high-priority tasks first.</li>
+<li><span class="level">Challenge</span> Add a language switch to the app. Keep all texts in an object like <code>{ en: {…}, ar: {…} }</code>, remember the choice in <code>localStorage</code>, and update <code>lang</code> and <code>dir</code> on the <code>&lt;html&gt;</code> element.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 18</p>
+<p>You have built and published a real app. The last chapter of this book looks ahead: the paths you can take from here, frontend, backend, full stack or mobile, and how to keep growing until you reach the senior level.</p>
+</div>
+</section>

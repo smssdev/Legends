@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FAQ</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body { margin: 0; padding: 24px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; background: #f5f5fb; color: #1e1b2e; line-height: 1.5; }
+      h1 { color: #4338ca; margin-top: 0; }
+      button { font: inherit; padding: 8px 18px; border: 0; border-radius: 999px; color: white; background: #4338ca; cursor: pointer; }
+      :focus-visible { outline: 3px solid #db2777; outline-offset: 3px; }
+      .faq { max-width: 30em; }
+      .faq h2 { margin: 0 0 8px; font-size: 1.05rem; }
+      .faq h2 button { width: 100%; text-align: start; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; gap: 12px; }
+      .faq h2 button::after { content: "+"; font-weight: 700; }
+      .faq h2 button[aria-expanded="true"]::after { content: "−"; }
+      .answer { background: white; border-radius: 12px; padding: 4px 16px; margin: -4px 0 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>Questions about the course</h1>
+    <div class="faq">
+      <h2>
+        <button type="button" aria-expanded="false" aria-controls="answer-1">Do I need to install anything?</button>
+      </h2>
+      <div id="answer-1" class="answer" hidden>
+        <p>Only a browser and VS Code. Both are free.</p>
+      </div>
+      <h2>
+        <button type="button" aria-expanded="false" aria-controls="answer-2">How long does each chapter take?</button>
+      </h2>
+      <div id="answer-2" class="answer" hidden>
+        <p>Most readers finish a chapter in two or three evenings, projects included.</p>
+      </div>
+      <h2>
+        <button type="button" aria-expanded="false" aria-controls="answer-3">What if I get stuck?</button>
+      </h2>
+      <div id="answer-3" class="answer" hidden>
+        <p>Re-read the hint, use the debugging method from chapter 14, then ask the community.</p>
+      </div>
+    </div>
+    <script src="faq.js"></script>
+  </body>
+</html>

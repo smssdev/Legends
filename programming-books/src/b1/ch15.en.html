@@ -1,0 +1,239 @@
+<section class="chapter" data-chapter="15" data-code="b1/ch15/en">
+<p class="chapter-kicker">Chapter 15</p>
+<h1>Git and GitHub</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what version control is and why every developer uses it</li>
+<li>save snapshots of your project with <code>git add</code> and <code>git commit</code></li>
+<li>look at the history, see what changed and undo mistakes</li>
+<li>work on new features safely in branches</li>
+<li>put your project on GitHub and understand how teams work together</li>
+</ul>
+</div>
+
+<p class="lead">Have you ever saved files called <code>profile-final.html</code>, <code>profile-final-2.html</code> and <code>profile-REALLY-final.html</code>? Professional developers had the same problem, and they solved it with a tool called <strong>Git</strong>. Git remembers every version of every file in your project, lets you go back to any of them, and lets many people work on the same code at the same time. It is used by almost every software team in the world.</p>
+
+<aside class="bit" data-mood="happy"><p>Git is like the save points in a video game. Before trying something risky, you save. If it goes wrong, you load the last save and try again. Except with Git, you keep <em>every</em> save, forever, with a note about what you did!</p></aside>
+
+<h2>15.1 What is version control?</h2>
+
+<p>A <dfn>version control system</dfn> records changes to files over time. With it you can:</p>
+<ul>
+<li>see exactly what changed, when, and why;</li>
+<li>go back to any earlier version when something breaks;</li>
+<li>try new ideas without risking the working version;</li>
+<li>combine the work of several people without overwriting each other.</li>
+</ul>
+
+<p><dfn>Git</dfn> is the version control system that almost everyone uses today. It is free, it runs on your own computer, and it works even without the internet. <dfn>GitHub</dfn> is a website that stores Git projects online, so you can back them up, share them and work on them with others. Git is the tool; GitHub is one of the places to keep what Git records.</p>
+
+<h2>15.2 Setting up Git</h2>
+
+<p>Download Git from <code>git-scm.com</code> and install it with the default options (on a Mac, it may already be installed: try <code>git --version</code>). Then tell Git your name and email, which it writes on every snapshot you make:</p>
+
+<pre data-code="config.sh" data-title="terminal"></pre>
+
+<p>The last line makes new projects use the name <code>main</code> for the main branch, which is today’s standard. You will learn about branches in Section 15.5.</p>
+
+<h2>15.3 Your first commit</h2>
+
+<p>A Git project is called a <dfn>repository</dfn>, or repo. A snapshot of the project is called a <dfn>commit</dfn>. Making a commit takes two steps: first you choose which changes go into it, then you save them with a message.</p>
+
+<figure>
+<svg viewBox="0 0 520 170" role="img" aria-label="Working folder, staging area and repository, with git add and git commit moving changes between them">
+<defs><marker id="g15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<g font-family="Inter" font-size="13" font-weight="700" text-anchor="middle">
+<rect x="10" y="40" width="140" height="80" rx="12" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="80" y="72" fill="#0f766e">Working folder</text><text x="80" y="92" fill="#0f766e" font-size="11" font-weight="400">files you edit</text>
+<rect x="190" y="40" width="140" height="80" rx="12" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="260" y="72" fill="#ea580c">Staging area</text><text x="260" y="92" fill="#ea580c" font-size="11" font-weight="400">the next snapshot</text>
+<rect x="370" y="40" width="140" height="80" rx="12" fill="#4338ca"/><text x="440" y="72" fill="#fff">Repository</text><text x="440" y="92" fill="#e0e7ff" font-size="11" font-weight="400">all saved snapshots</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.5" marker-end="url(#g15)"><line x1="152" y1="80" x2="186" y2="80"/><line x1="332" y1="80" x2="366" y2="80"/></g>
+<g font-family="JetBrains Mono" font-size="12" font-weight="700" text-anchor="middle" fill="#1e1b2e"><text x="170" y="145">git add</text><text x="350" y="145">git commit</text></g>
+</svg>
+<figcaption><b>Figure 15.1:</b> Changes move from your folder to the staging area with <code>git add</code>, and into the history with <code>git commit</code>.</figcaption>
+</figure>
+
+<p>Here is the whole process for the profile site from Chapter 7, run in its folder:</p>
+
+<pre data-code="first-commit.sh" data-title="terminal"></pre>
+
+<ul>
+<li><code>git init</code> turns the folder into a repository. It creates a hidden <code>.git</code> folder where the history lives; never edit it by hand.</li>
+<li><code>git status</code> is the command you will type most. <code>--short</code> gives a compact view: <code>??</code> means a new file Git does not track yet, <code>A</code> means added to the staging area.</li>
+<li><code>git add</code> puts changes into the staging area. <code>git add .</code> adds everything in the folder.</li>
+<li><code>git commit -m "…"</code> saves the snapshot. Git gives it an id, here <code>96c0a17</code>, which you can use to find it later.</li>
+</ul>
+
+<h2>15.4 History and differences</h2>
+
+<p>Now edit <code>index.html</code>, add a line, and ask Git what changed:</p>
+
+<pre data-code="history.sh" data-title="terminal"></pre>
+
+<p><code>git diff</code> shows the changes you have not committed yet: lines starting with <code>+</code> were added, lines with <code>-</code> were removed. <code>git commit -am</code> adds all changed tracked files and commits in one step. <code>git log --oneline</code> shows the history, one commit per line.</p>
+
+<h3>Undoing things</h3>
+
+<table>
+<thead><tr><th>Situation</th><th>Command</th></tr></thead>
+<tbody>
+<tr><td>Throw away my unsaved changes to a file</td><td><code>git restore index.html</code></td></tr>
+<tr><td>Take a file out of the staging area</td><td><code>git restore --staged index.html</code></td></tr>
+<tr><td>Look at the project as it was in an old commit</td><td><code>git switch --detach 96c0a17</code> (and <code>git switch main</code> to come back)</td></tr>
+<tr><td>Undo a commit by adding a new one that reverses it</td><td><code>git revert 8be4da4</code></td></tr>
+</tbody>
+</table>
+
+<aside class="box warn"><p class="box-title">Watch out</p><p><code>git restore</code> on a file throws away your uncommitted changes to it, and Git cannot bring them back, because they were never saved. Commit often, and these accidents become impossible to lose.</p></aside>
+
+<h2>15.5 Branches</h2>
+
+<p>A <dfn>branch</dfn> is a separate line of work. The main branch, <code>main</code>, holds the version that works. When you start a new feature, you create a branch for it, work and commit there freely, and when it is ready you <dfn>merge</dfn> it back into <code>main</code>:</p>
+
+<figure>
+<svg viewBox="0 0 520 140" role="img" aria-label="The main branch with three commits, and a contact branch with one commit merged back">
+<line x1="40" y1="90" x2="480" y2="90" stroke="#4338ca" stroke-width="4"/>
+<path d="M200,90 C230,90 230,40 260,40 L330,40 C360,40 360,90 390,90" fill="none" stroke="#db2777" stroke-width="4"/>
+<g stroke="#fff" stroke-width="3"><circle cx="80" cy="90" r="12" fill="#4338ca"/><circle cx="200" cy="90" r="12" fill="#4338ca"/><circle cx="295" cy="40" r="12" fill="#db2777"/><circle cx="390" cy="90" r="12" fill="#4338ca"/></g>
+<g font-family="Inter" font-size="11.5" text-anchor="middle" fill="#1e1b2e"><text x="80" y="120">Add profile page</text><text x="200" y="120">Add tagline</text><text x="295" y="18">Add contact section</text><text x="390" y="120">merged</text></g>
+<g font-family="JetBrains Mono" font-size="12" font-weight="700"><text x="440" y="80" fill="#4338ca">main</text><text x="350" y="30" fill="#db2777">contact</text></g>
+</svg>
+<figcaption><b>Figure 15.2:</b> A feature branch leaves <code>main</code>, gets its own commits, and is merged back.</figcaption>
+</figure>
+
+<pre data-code="branch.sh" data-title="terminal"></pre>
+
+<p><code>git switch -c contact</code> creates a branch called <code>contact</code> and moves to it. Commits made there do not touch <code>main</code>: when you switch back, <code>contact.html</code> disappears from your folder, and reappears when you switch to <code>contact</code> again. <code>git merge contact</code> brings the branch’s commits into <code>main</code>. Because <code>main</code> had not changed in the meantime, Git simply moved it forward, which it calls a <dfn>fast-forward</dfn>.</p>
+
+<aside class="box tip"><p class="box-title">Tip: merge conflicts</p><p>If two branches change the same line differently, Git cannot guess which version you want and reports a <strong>conflict</strong>. It marks the place in the file with <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>. Don’t panic: edit the file to keep the right version, delete the markers, then <code>git add</code> and <code>git commit</code>. VS Code shows conflicts with buttons that make this easy.</p></aside>
+
+<h2>15.6 GitHub: your code online</h2>
+
+<p>Create a free account on <code>github.com</code>, click <strong>New repository</strong>, give it a name, and leave it empty. GitHub then shows you its address. Connect your local repository to it and send your commits:</p>
+
+<pre data-code="github.sh" data-title="terminal"></pre>
+
+<ul>
+<li>A <dfn>remote</dfn> is a copy of the repository somewhere else. By tradition the main one is called <code>origin</code>.</li>
+<li><code>git push</code> sends your commits to the remote. The first time, <code>-u origin main</code> remembers where to push, so afterwards plain <code>git push</code> is enough.</li>
+<li><code>git clone</code> downloads a whole repository, with its history, onto another computer.</li>
+<li><code>git pull</code> brings down commits that others (or you, on another computer) have pushed.</li>
+</ul>
+
+<p>The first time you push, Git asks you to sign in to GitHub. Follow the instructions in the browser window it opens; GitHub no longer accepts your account password directly in the terminal.</p>
+
+<h3>Files that should not be in Git</h3>
+
+<p>Some files do not belong in a repository: downloaded packages that can be reinstalled, system files, logs, and above all <strong>secrets</strong> such as passwords and API keys. List them in a file called <code>.gitignore</code> and Git will never track them:</p>
+
+<pre data-code=".gitignore-example.txt" data-title=".gitignore"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out: never commit secrets</p><p>Anything you push to a public repository can be read by anyone, and automated bots scan GitHub for keys within minutes. Deleting the file in a later commit is not enough: it stays in the history. If you ever push a secret by mistake, change that password or key immediately.</p></aside>
+
+<h2>15.7 How teams work together</h2>
+
+<p>On a team, nobody commits straight to <code>main</code>. Instead, each change follows the same path:</p>
+
+<ol>
+<li>Create a branch for the change, and commit there.</li>
+<li>Push the branch to GitHub.</li>
+<li>Open a <dfn>pull request</dfn> (PR): a page on GitHub that shows the changes and asks for them to be merged.</li>
+<li>Teammates <dfn>review</dfn> the code, comment, and ask for improvements. Automatic checks run the tests.</li>
+<li>When everyone is happy, the PR is merged into <code>main</code>.</li>
+</ol>
+
+<p>This way, every line in <code>main</code> has been seen by at least two people. Code review is one of the best ways to learn: you will learn as much from reading others’ pull requests as from writing your own.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: good commit messages</p><p>Write commit messages for the person who will read the history in a year. Start with a short summary in the imperative, as if giving an order: “Add contact section”, “Fix price for children”, not “stuff” or “changes”. Make each commit one logical change. Small, well-described commits make bugs easy to find and easy to undo.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What are the two steps to save a snapshot?</li><li>What is the difference between Git and GitHub?</li><li>Why should passwords never be committed, even if you delete them later?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Git</strong> records every version of a project. <strong>GitHub</strong> stores Git repositories online.</li>
+<li><code>git init</code> starts a repository; <code>git status</code> shows where things stand.</li>
+<li><code>git add</code> stages changes; <code>git commit -m</code> saves a snapshot with a message.</li>
+<li><code>git diff</code> and <code>git log --oneline</code> show changes and history; <code>git restore</code> and <code>git revert</code> undo.</li>
+<li><strong>Branches</strong> (<code>git switch -c</code>) keep new work separate until it is <strong>merged</strong>.</li>
+<li><code>git push</code>, <code>git pull</code> and <code>git clone</code> work with a <strong>remote</strong> such as GitHub.</li>
+<li><code>.gitignore</code> keeps secrets and generated files out. Teams work with branches and <strong>pull requests</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>git add</code> to choose the changes, then <code>git commit</code> to save them. 2. Git is the tool that records versions on your computer; GitHub is a website that stores Git repositories online and helps people work on them together. 3. Because they stay in the history, where anyone with access to the repository can find them.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Git is learned with your fingers, not your eyes. Open a terminal and type every command yourself. The sessions below are real: Git printed exactly this. Your commit ids will be different, because they depend on your name and the time; everything else should match.</p>
+
+<div class="project">
+<p class="project-label">Project 15.1 · Easy</p>
+<h3>A learning journal under version control</h3>
+<p class="project-goal">Start a repository for a journal of what you learn, and save one commit per day.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>git init</code>, <code>add</code>, <code>commit</code>, <code>commit -am</code>, <code>log --oneline</code> and <code>show</code>.</p>
+<ol class="steps">
+<li>Make a new folder called <code>journal</code>, open it in VS Code, and run <code>git init</code> in its terminal.</li>
+<li>Create <code>journal.md</code> with a heading. Add it and make your first commit.</li>
+<li>Each day, add one line about what you learned and commit it with a short message. <code>-am</code> adds and commits in one step, but only for files Git already tracks.</li>
+<li>Read your history with <code>git log --oneline</code>.</li>
+<li>Look inside the last commit with <code>git show --stat</code>. Then try plain <code>git show</code> to see the exact line you added.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> keep this journal for the rest of the book. In a few weeks, <code>git log</code> will be a diary of your progress, and the habit of small, frequent commits is exactly what teams expect.</p>
+<pre data-code="projects/journal.sh" data-title="terminal"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 15.2 · Medium</p>
+<h3>Two ways to undo</h3>
+<p class="project-goal">Make two mistakes on purpose, one not yet committed and one already committed, and undo each with the right tool.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>git status --short</code>, <code>git restore</code> for uncommitted changes, and <code>git revert</code> for commits.</p>
+<ol class="steps">
+<li>Replace the whole contents of <code>journal.md</code> with one silly line, and save. <code>git status --short</code> shows <code>M</code>: modified.</li>
+<li>Run <code>git restore journal.md</code>. The file goes back to the last commit, and the status is clean again.</li>
+<li>Write Day 3 properly and commit it.</li>
+<li>Now create <code>quote.md</code>, add it and commit it. Pretend you regret this commit.</li>
+<li>Run <code>git revert --no-edit HEAD</code>. Git makes a <em>new</em> commit that does the opposite, and the file disappears.</li>
+<li>Read <code>git log --oneline</code>: the mistake and its undo are both in the history, so nobody is surprised.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>restore</code> throws away work that was never saved, so there is no way back; use it with care. <code>revert</code> is always safe, even after you have pushed, because it adds history instead of erasing it.</p>
+<pre data-code="projects/undo.sh" data-title="terminal"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 15.3 · Challenge</p>
+<h3>Create a merge conflict, then solve it</h3>
+<p class="project-goal">Conflicts frighten beginners only until they have solved one. Create one on purpose, read it, and resolve it calmly.</p>
+<p class="project-skills"><strong>You will practise:</strong> branches, <code>git switch -c</code>, fast-forward and real merges, conflict markers, and finishing a merge.</p>
+<ol class="steps">
+<li>On <code>main</code>, add a title line at the top of the journal and commit it.</li>
+<li>Create a branch <code>personal</code>, change the title, and commit. Go back to <code>main</code>.</li>
+<li>Create a second branch <code>ambitious</code> <em>from main</em>, change the same title line differently, and commit. Go back to <code>main</code>.</li>
+<li>Merge <code>personal</code>: it is a fast-forward, because <code>main</code> had not moved. Then merge <code>ambitious</code>: Git cannot choose between two changes to the same line, so it stops.</li>
+<li>Open the file. Between <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> and <code>=======</code> is your version (<code>HEAD</code>); between <code>=======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> is the incoming one.</li>
+<li>Write the line you really want, delete all three marker lines, then <code>git add</code> and <code>git commit</code>. The graph shows the two branches joining.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a conflict is not an error. It is Git politely asking a human to decide. VS Code shows buttons above each conflict (“Accept Current”, “Accept Incoming”, “Accept Both”), but always read the result before you commit.</p>
+<pre data-code="projects/conflict.sh" data-title="terminal"></pre>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Put your <code>code-from-zero</code> folder under Git, and make your first commit with everything you have written so far.</li>
+<li><span class="level">Easy</span> Change one file, look at the change with <code>git diff</code>, then throw it away with <code>git restore</code>.</li>
+<li><span class="level">Medium</span> Create a branch called <code>dark-mode</code>, add a dark theme to your profile page there in two commits, and merge it into <code>main</code>.</li>
+<li><span class="level">Medium</span> Create a repository on GitHub and push your profile site to it. Open the repository page and click on a commit to see its changes.</li>
+<li><span class="level">Challenge</span> Make a merge conflict on purpose: change the same line of <code>index.html</code> differently on two branches, merge them, and resolve the conflict.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 16</p>
+<p>Your code is safe and shareable. Next, we make sure your pages are usable by <em>everyone</em>, including people who use screen readers, keyboards instead of a mouse, or large text. It is the mark of a professional, and it is easier than you think.</p>
+</div>
+</section>

@@ -1,0 +1,365 @@
+<section class="chapter" data-chapter="8" data-code="b1/ch08/ar">
+<p class="chapter-kicker">الفصل 8</p>
+<h1>القيم والمتغيرات والقرارات</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تميّز الأنواع الأساسية للقيم التي تتعامل معها JavaScript</li>
+<li>تحفظ القيم في متغيرات بـ <code>let</code> و<code>const</code></li>
+<li>تحسب وتقارن بالعوامل</li>
+<li>تجعل البرنامج يختار ما يفعله بـ <code>if</code> و<code>else</code> و<code>switch</code></li>
+<li>تبني شبّاك تذاكر صغيراً يقرر السعر بنفسه</li>
+</ul>
+</div>
+
+<p class="lead">كل برنامج مفيد يفعل شيئين مرة بعد مرة: يتذكر معلومات، ثم يتخذ قرارات بناءً عليها. شبّاك التذاكر في السينما يتذكر عمرك واليوم من الأسبوع، ثم يقرر كم تدفع. واللعبة تتذكر نقاطك، ثم تقرر هل فزت. وفي هذا الفصل ستعلّم JavaScript أن تفعل الاثنين.</p>
+
+<aside class="bit" data-mood="happy"><p>أهلاً من جديد! اليوم ستعلّم الحاسوب أن يختار. وفي آخر هذا الفصل ستكون قد بنيت آلة تذاكر تفكر بنفسها. هيا بنا!</p></aside>
+
+<p>افتح المحرر والطرفية اللذين جهزتهما في الفصل 3. كل مثال في هذا الفصل ملف صغير تشغّله بـ Node.js. اكتب الأمثلة بيدك ولا تنسخها: أصابعك تتعلم شكل اللغة أسرع من عينيك.</p>
+
+<h2>8.1 القيم: المادة الخام للبرنامج</h2>
+
+<p><dfn>القيمة</dfn> قطعة واحدة من البيانات: رقم، أو نص، أو جواب بنعم أو لا. والقيم هي المادة الخام التي يعمل بها البرنامج، كما أن الدقيق والماء هما المادة الخام للخبز.</p>
+
+<p>أنشئ ملفاً اسمه <code>values.js</code> واكتب فيه هذا البرنامج:</p>
+
+<pre data-code="values.js" data-title="values.js"></pre>
+
+<p>شغّله من الطرفية بالأمر <code>node values.js</code>، وسترى:</p>
+
+<pre data-out="values.js"></pre>
+
+<p>الأمر <code>console.log</code> يطبع قيمة في الطرفية. وهو أبسط طريقة لترى ما يفعله برنامجك، وستستخدمه في كل فصول هذا الكتاب.</p>
+
+<p>ويعرض البرنامج ثلاثة من أشهر أنواع القيم، ويسميها المبرمجون <dfn>الأنواع</dfn> (types):</p>
+
+<table>
+<thead><tr><th>النوع</th><th>ماذا يحمل</th><th>أمثلة</th></tr></thead>
+<tbody>
+<tr><td><code>number</code></td><td>الأعداد الصحيحة والعشرية</td><td><code>42</code> و<code>3.5</code> و<code>-7</code></td></tr>
+<tr><td><code>string</code></td><td>النص، ويُكتب بين علامتي تنصيص</td><td><code>"مرحباً"</code> و<code>'القاهرة'</code></td></tr>
+<tr><td><code>boolean</code></td><td>واحد فقط من جوابين</td><td><code>true</code> و<code>false</code></td></tr>
+</tbody>
+</table>
+
+<p>الكلمة <code>typeof</code> تسأل JavaScript عن نوع القيمة. لن تحتاجها كثيراً في البرامج الحقيقية، لكنها طريقة جيدة لتختبر فهمك وأنت تتعلم.</p>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p>كُتبت JavaScript في عشرة أيام فقط، في مايو 1995، كتبها برندان آيك في شركة Netscape. واليوم تعمل في كل متصفح، وفي كل مواقع العالم تقريباً.</p></aside>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>علامات التنصيص تحوّل أي شيء إلى نص. <code>42</code> رقم، أما <code>"42"</code> فنص فيه الحرفان 4 و2. وهذا الفرق سبب لأخطاء كثيرة عند المبتدئين، وسنقابله مرة أخرى في القسم 8.3.</p></aside>
+
+<h2>8.2 المتغيرات: اسم للقيمة</h2>
+
+<p>القيمة وحدها تختفي بمجرد استخدامها. ولتحتفظ بها وتستعملها لاحقاً، تحفظها في <dfn>متغير</dfn>. والمتغير اسم يشير إلى قيمة.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="صندوقان عليهما اسمان: score فيه 10 وname فيه سارة">
+<g font-family="JetBrains Mono" font-size="15" fill="#111">
+<rect x="20" y="40" width="200" height="70" rx="10" fill="#fff" stroke="#111" stroke-width="2.5"/>
+<rect x="20" y="20" width="90" height="30" rx="6" fill="#111"/>
+<text x="65" y="40" fill="#fff" text-anchor="middle">score</text>
+<text x="120" y="88" font-size="26" text-anchor="middle">10</text>
+<rect x="290" y="40" width="210" height="70" rx="10" fill="#fff" stroke="#111" stroke-width="2.5"/>
+<rect x="290" y="20" width="80" height="30" rx="6" fill="#111"/>
+<text x="330" y="40" fill="#fff" text-anchor="middle">name</text>
+<text x="395" y="88" font-size="24" text-anchor="middle" font-family="Noto Naskh Arabic" direction="rtl">"سارة"</text>
+<text x="120" y="138" font-size="14" fill="#555" text-anchor="middle" font-family="Cairo" direction="rtl">let: قابل للتغيير</text>
+<text x="395" y="138" font-size="14" fill="#555" text-anchor="middle" font-family="Cairo" direction="rtl">const: ثابت</text>
+</g>
+</svg>
+<figcaption>الشكل 8.1: المتغير صندوق عليه اسم. الاسم هو الملصق، والمحتوى هو القيمة.</figcaption>
+</figure>
+
+<p>تعطيك JavaScript كلمتين لإنشاء متغير: <code>let</code> و<code>const</code>.</p>
+
+<pre data-code="variables.js" data-title="variables.js"></pre>
+<pre data-out="variables.js"></pre>
+
+<p>اقرأ السطر <code>score = score + 10;</code> من اليمين إلى اليسار. تحسب JavaScript أولاً <code>score + 10</code>، أي <code>0 + 10</code>، ثم تضع النتيجة في <code>score</code>. علامة التساوي الواحدة لا تعني «يساوي» كما في الرياضيات، بل تعني «احفظ القيمة التي على اليمين في الاسم الذي على اليسار». ويسميها المبرمجون <dfn>عامل الإسناد</dfn>.</p>
+
+<h3>let أم const؟</h3>
+
+<p>استخدم <code>let</code> لقيمة ستتغير، مثل النقاط أو العدّاد أو المجموع. واستخدم <code>const</code> لقيمة لن تتغير بعد أن تُحدَّد، مثل اسم اللاعب أو أقصى عدد للاعبين. وإن حاولت تغيير <code>const</code> أوقفت JavaScript برنامجك بخطأ:</p>
+
+<pre data-code="const-error.js" data-title="const-error.js"></pre>
+<pre data-out="const-error.js" class="error"></pre>
+
+<p>هذا الخطأ هدية لا عقوبة. فهو يخبرك بالضبط أي سطر خالف قاعدة وضعتها أنت. والمطورون المحترفون يستخدمون <code>const</code> دائماً، ولا ينتقلون إلى <code>let</code> إلا حين يعرفون أن القيمة يجب أن تتغير. افعل مثلهم: كلما قلّ ما يتغير، قلّ ما يمكن أن يخطئ.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>قد ترى الكلمة القديمة <code>var</code> في الدروس والكود القديم. سلوكها مفاجئ في مواقف سنشرحها في الكتاب الثاني. وفي أي كود جديد استخدم <code>let</code> أو <code>const</code> دائماً.</p></aside>
+
+<h3>اختيار أسماء جيدة</h3>
+
+<p>اسم المتغير يمكن أن يحتوي على حروف وأرقام و<code>_</code> و<code>$</code>، لكنه لا يبدأ برقم، ولا يكون كلمة تستخدمها JavaScript أصلاً مثل <code>if</code> أو <code>let</code>. وحين يتكون الاسم من عدة كلمات، يصلها مطورو JavaScript بطريقة <dfn>camelCase</dfn>: الكلمة الأولى بحروف صغيرة، وكل كلمة بعدها تبدأ بحرف كبير. والأسماء تُكتب بالإنجليزية، فهي اللغة المشتركة بين المبرمجين في كل مكان.</p>
+
+<table>
+<thead><tr><th>جيد</th><th>ضعيف</th><th>السبب</th></tr></thead>
+<tbody>
+<tr><td><code>ticketPrice</code></td><td><code>tp</code></td><td>يقول ماذا يحمل</td></tr>
+<tr><td><code>isMember</code></td><td><code>member1</code></td><td><code>is</code> تخبرك أنه boolean</td></tr>
+<tr><td><code>maxPlayers</code></td><td><code>max_players_number</code></td><td>قصير، ويتبع أسلوب camelCase</td></tr>
+</tbody>
+</table>
+
+<p>اكتب الأسماء للشخص الذي سيقرأ كودك بعد ستة أشهر. وكثيراً ما يكون هذا الشخص أنت.</p>
+
+<h2>8.3 العوامل: الحساب والمقارنة</h2>
+
+<p><dfn>العامل</dfn> (operator) رمز يأخذ قيماً وينتج قيمة جديدة. وأنت تعرف معظم عوامل الحساب من المدرسة.</p>
+
+<pre data-code="operators.js" data-title="operators.js"></pre>
+<pre data-out="operators.js"></pre>
+
+<p>لنمرّ على البرنامج في ثلاث مجموعات.</p>
+
+<h3>الحساب</h3>
+
+<p>العوامل <code>+</code> و<code>-</code> و<code>*</code> و<code>/</code> تجمع وتطرح وتضرب وتقسم. وقد يكون الجديد عليك هو <code>%</code>، عامل <dfn>باقي القسمة</dfn>. فـ <code>10 % 4</code> تساوي <code>2</code>، لأن 4 تدخل في 10 مرتين ويبقى 2. وهو أنفع مما يبدو: <code>n % 2</code> تساوي <code>0</code> فقط حين يكون <code>n</code> زوجياً.</p>
+
+<h3>وصل النصوص</h3>
+
+<p>حين يُستخدم <code>+</code> مع النصوص فإنه يصلها ببعضها. وأنظف طريقة لبناء النص هي <dfn>القالب النصي</dfn> (template literal): نص بين علامتي <code>`</code>، وكل ما بداخل <code>${ }</code> فيه يُحسب ويوضع في مكانه. قارن الطريقتين في البرنامج؛ معظم الكود الحديث يستخدم القوالب النصية لأنها أسهل في القراءة.</p>
+
+<h3>المقارنة</h3>
+
+<p>عوامل المقارنة تنتج دائماً قيمة boolean:</p>
+
+<table>
+<thead><tr><th>العامل</th><th>المعنى</th><th>مثال</th><th>النتيجة</th></tr></thead>
+<tbody>
+<tr><td><code>===</code></td><td>يساوي</td><td><code>3 === 3</code></td><td><code>true</code></td></tr>
+<tr><td><code>!==</code></td><td>لا يساوي</td><td><code>3 !== 4</code></td><td><code>true</code></td></tr>
+<tr><td><code>&lt;</code> و<code>&gt;</code></td><td>أصغر من، أكبر من</td><td><code>2 &lt; 1</code></td><td><code>false</code></td></tr>
+<tr><td><code>&lt;=</code> و<code>&gt;=</code></td><td>أصغر أو يساوي، أكبر أو يساوي</td><td><code>5 &gt;= 5</code></td><td><code>true</code></td></tr>
+</tbody>
+</table>
+
+<p>انظر جيداً إلى آخر سطرين في المخرجات. <code>5 === "5"</code> تعطي <code>false</code>، لأن الرقم ليس نصاً. أما <code>5 == "5"</code> فتعطي <code>true</code>: علامة التساوي المزدوجة تحوّل إحدى القيمتين إلى نوع الأخرى بصمت قبل المقارنة. وهذا التحويل الصامت يخفي الأخطاء.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين</p><p>قارن دائماً بـ <code>===</code> و<code>!==</code>، ولا تستخدم <code>==</code> أو <code>!=</code> أبداً. ومعظم الفرق تفرض هذه القاعدة تلقائياً بأداة اسمها linter، ستجهزها في الكتاب الثاني.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>ماذا تعطي <code>typeof "10"</code>؟</li><li>كم تساوي <code>17 % 5</code>؟</li><li>هل <code>4 === "4"</code> صحيحة أم خاطئة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>8.4 القرارات بـ if وelse</h2>
+
+<p>الآن وقد صرت تقارن القيم، يمكنك أن تجعل برنامجك يختار. الجملة <code>if</code> تنفّذ مجموعة من الأسطر فقط حين يكون الشرط <code>true</code>. السينما تأخذ أسعاراً مختلفة حسب العمر، وهكذا يقرر البرنامج:</p>
+
+<pre data-code="ticket.js" data-title="ticket.js"></pre>
+<pre data-out="ticket.js"></pre>
+
+<p>تفحص JavaScript الشروط من الأعلى إلى الأسفل، وتتوقف عند أول شرط يكون <code>true</code>:</p>
+
+<figure>
+<svg viewBox="0 0 520 250" role="img" aria-label="مخطط: العمر أقل من 4 مجاناً، وأقل من 13 بستة، و65 فأكثر بسبعة، وغير ذلك بعشرة">
+<g font-family="Inter" font-size="14" fill="#111" stroke-linejoin="round">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#111"/></marker></defs>
+<g stroke="#111" stroke-width="2" fill="#fff">
+<rect x="20" y="15" width="150" height="40" rx="20"/>
+<rect x="20" y="75" width="150" height="40" rx="20"/>
+<rect x="20" y="135" width="150" height="40" rx="20"/>
+<rect x="20" y="195" width="150" height="40" rx="8"/>
+<rect x="290" y="15" width="110" height="40" rx="8"/>
+<rect x="290" y="75" width="110" height="40" rx="8"/>
+<rect x="290" y="135" width="110" height="40" rx="8"/>
+</g>
+<g stroke="#111" stroke-width="2" marker-end="url(#a)">
+<line x1="170" y1="35" x2="286" y2="35"/><line x1="170" y1="95" x2="286" y2="95"/><line x1="170" y1="155" x2="286" y2="155"/>
+<line x1="95" y1="55" x2="95" y2="72"/><line x1="95" y1="115" x2="95" y2="132"/><line x1="95" y1="175" x2="95" y2="192"/>
+</g>
+<text x="95" y="40" text-anchor="middle" font-family="JetBrains Mono">age &lt; 4 ?</text>
+<text x="95" y="100" text-anchor="middle" font-family="JetBrains Mono">age &lt; 13 ?</text>
+<text x="95" y="160" text-anchor="middle" font-family="JetBrains Mono">age &gt;= 65 ?</text>
+<text x="95" y="220" text-anchor="middle">price = 10</text>
+<text x="345" y="40" text-anchor="middle">price = 0</text>
+<text x="345" y="100" text-anchor="middle">price = 6</text>
+<text x="345" y="160" text-anchor="middle">price = 7</text>
+<g font-size="13" fill="#555" font-family="Cairo"><text x="228" y="28" text-anchor="middle">نعم</text><text x="228" y="88" text-anchor="middle">نعم</text><text x="228" y="148" text-anchor="middle">نعم</text>
+<text x="104" y="68">لا</text><text x="104" y="128">لا</text><text x="104" y="188">لا</text></g>
+</g>
+</svg>
+<figcaption>الشكل 8.2: تُفحص الشروط بالترتيب، وأول شرط صحيح هو الذي يُنفَّذ.</figcaption>
+</figure>
+
+<p>ولأن الترتيب مهم، فالطفل ذو التسع سنوات يقع في <code>age &lt; 13</code> ولا يصل إلى الشروط التي بعده. ولو بدّلت الشرطين الأولين لدفع طفل في الثانية 6 بدل أن يدخل مجاناً. وحين تكتب سلسلة <code>else if</code> اسأل نفسك دائماً: «لو صحّ شرطان معاً، أيهما يجب أن يُنفَّذ؟»</p>
+
+<aside class="bit" data-mood="think"><p>حيلتي في السلاسل الطويلة: ضع أضيق شرط أولاً، واترك حالة «كل من سواهم» لـ <code>else</code> في الآخر.</p></aside>
+
+<p>وأجزاء الجملة هي:</p>
+<ul>
+<li><code>if (condition) { ... }</code>: تُنفَّذ الأسطر فقط حين يكون الشرط <code>true</code>.</li>
+<li><code>else if (condition) { ... }</code>: يُفحص فقط حين تكون كل الشروط قبله <code>false</code>، ويمكنك أن تضع منه ما تحتاج.</li>
+<li><code>else { ... }</code>: يُنفَّذ حين لا يصح شيء مما قبله. وهو اختياري، ولا يكون إلا واحداً.</li>
+</ul>
+
+<p>ولاحظ أيضاً أن <code>price</code> عُرّف بـ <code>let</code> بلا قيمة. فيبدأ بالقيمة الخاصة <code>undefined</code>، أي «لا شيء بعد»، ثم يعطيه كل فرع قيمة حقيقية.</p>
+
+<aside class="box try"><p class="box-title">جرّب</p><p>غيّر <code>age</code> إلى 2 ثم 13 ثم 40 ثم 70، وشغّل البرنامج بعد كل تغيير. وتوقّع المخرجات قبل أن تضغط Enter. فالقدرة على توقّع ما سيفعله الكود أهم مهارة في هذا الكتاب.</p></aside>
+
+<h2>8.5 الجمع بين الشروط</h2>
+
+<p>القرارات الحقيقية تعتمد غالباً على أكثر من شيء. وثلاثة <dfn>عوامل منطقية</dfn> تجمع بين قيم boolean:</p>
+
+<table>
+<thead><tr><th>العامل</th><th>الاسم</th><th>يكون صحيحاً حين</th></tr></thead>
+<tbody>
+<tr><td><code>&amp;&amp;</code></td><td>و (and)</td><td>يصح الطرفان معاً</td></tr>
+<tr><td><code>||</code></td><td>أو (or)</td><td>يصح طرف واحد على الأقل</td></tr>
+<tr><td><code>!</code></td><td>ليس (not)</td><td>تكون القيمة false (يقلب الصحيح والخطأ)</td></tr>
+</tbody>
+</table>
+
+<pre data-code="logic.js" data-title="logic.js"></pre>
+<pre data-out="logic.js"></pre>
+
+<p>الجملة <code>if</code> الأولى تعطي نصف السعر للأعضاء وحدهم، ويوم الثلاثاء وحده. والثانية تُقرأ بسهولة: «إن لم تكن معه تذكرة». أما آخر سطرين فيستخدمان حيلة شائعة تحتاج شرحاً.</p>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟</p><p>النوع <code>boolean</code> سُمّي على اسم جورج بول، عالم الرياضيات الإنجليزي الذي أثبت في 1854 أن المنطق يمكن أن يُكتب جبراً بقيمتين فقط: صح وخطأ. وكل شريحة في أي حاسوب مبنية على فكرته.</p></aside>
+
+<h3>القيم الصادقة والكاذبة</h3>
+
+<p>تقبل JavaScript في الشرط أي قيمة، لا <code>true</code> و<code>false</code> وحدهما. وست قيم تُعامل كأنها خطأ، ويسميها المبرمجون <dfn>falsy</dfn>: <code>false</code> و<code>0</code> و<code>""</code> (النص الفارغ) و<code>null</code> و<code>undefined</code> و<code>NaN</code>. وكل قيمة غيرها <dfn>truthy</dfn>.</p>
+
+<p>والعامل <code>||</code> يعيد أول قيمة truthy يجدها. ولأن <code>nickname</code> نص فارغ، وهو falsy، فإن <code>nickname || "ضيف"</code> تعطي <code>"ضيف"</code>. وهذه طريقة سريعة لوضع قيمة افتراضية.</p>
+
+<aside class="box warn"><p class="box-title">انتبه</p><p>هذه الحيلة تستبدل <code>0</code> أيضاً، لأن <code>0</code> قيمة falsy. فلو كان الصفر نتيجة حقيقية، فإن <code>score || 100</code> ستعطي 100 خطأً. وفي الكتاب الثاني نتعرف على العامل <code>??</code>، وهو لا يستبدل إلا <code>null</code> و<code>undefined</code>.</p></aside>
+
+<h2>8.6 الاختيار بين قيم ثابتة كثيرة بـ switch</h2>
+
+<p>حين تقارن قيمة واحدة بقائمة من الاحتمالات المحددة، تكون الجملة <code>switch</code> أسهل في القراءة من سلسلة طويلة من <code>else if</code>:</p>
+
+<pre data-code="switch.js" data-title="switch.js"></pre>
+<pre data-out="switch.js"></pre>
+
+<p>تقفز JavaScript إلى الحالة <code>case</code> التي تطابق <code>size</code> بالمقارنة <code>===</code>، وتنفّذ الكود من هناك. والجملة <code>break</code> تُنهي <code>switch</code>. فإن نسيتها أكملت JavaScript إلى الحالة التالية، وهذا ما لا تريده تقريباً أبداً. والحالة <code>default</code> تُنفَّذ حين لا يطابق شيء.</p>
+
+<p>استخدم <code>switch</code> للمطابقة التامة لقيمة واحدة، مثل المقاسات أو خيارات القائمة أو أيام الأسبوع. واستخدم <code>if</code> للنطاقات مثل الأعمار، أو للشروط التي تتضمن أكثر من متغير.</p>
+
+<h2>8.7 مشروع: شبّاك التذاكر</h2>
+
+<p>لنجمع كل ما تعلمناه. شبّاك التذاكر التالي يقرر سعر تذكرة السينما بأربع قواعد:</p>
+
+<ol>
+<li>الأطفال تحت 4 سنوات يدخلون مجاناً.</li>
+<li>الأطفال تحت 13 سنة والكبار من 65 فأكثر يدفعون 6، والباقون 10.</li>
+<li>الأعضاء يدفعون نصف السعر يوم الثلاثاء.</li>
+<li>العروض التي تبدأ في الساعة 22:00 أو بعدها أرخص بواحد، إلا إن كانت التذكرة مجانية أصلاً.</li>
+</ol>
+
+<aside class="bit" data-mood="wow"><p>هذا أول برنامج لك يتخذ قرارات حقيقية وحده. اقرأه مرة، وشغّله، ثم غيّر القيم والعب به!</p></aside>
+
+<pre data-code="kiosk.js" data-title="kiosk.js"></pre>
+<pre data-out="kiosk.js"></pre>
+
+<p>تتبّع البرنامج كما يفعل الحاسوب. الزائر عمره 34، فيجعل القرار الأول <code>price</code> عشرة. وهو عضو واليوم ثلاثاء، فينزل السعر إلى النصف ويصير 5. والعرض يبدأ في الساعة 22:00، فيُخصم واحد آخر، ويدفع الزائر 4.</p>
+
+<p>والسطر الأخير يستخدم شيئاً جديداً واحداً، هو <dfn>العامل الشرطي</dfn>، ويُسمى كثيراً <em>ternary</em>:</p>
+
+<pre class="plain">condition ? valueIfTrue : valueIfFalse</pre>
+
+<p>إنه <code>if</code>/<code>else</code> مختصرة تنتج قيمة. استخدمه للاختيارات القصيرة البسيطة مثل هذا فقط؛ وحين يطول أحد طرفيه تكون <code>if</code> العادية أوضح.</p>
+
+<aside class="box try"><p class="box-title">جرّب</p><p>غيّر القيم في أعلى <code>kiosk.js</code> حتى يدخل الزائر مجاناً. ثم ابحث عن قيم تجعل التذكرة بثلاثة بالضبط. هل يوجد أكثر من حل؟</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td><code>if (age = 18)</code></td><td>يُسند 18 بدل أن يقارن، فيصح الشرط دائماً</td><td>استخدم <code>===</code></td></tr>
+<tr><td>مقارنة <code>"5"</code> بـ <code>5</code></td><td><code>===</code> تعطي <code>false</code></td><td>تأكد أن القيمتين من النوع نفسه</td></tr>
+<tr><td>ترتيب خاطئ في <code>else if</code></td><td>شرط أوسع في الأعلى يلتقط حالات تخص شرطاً بعده</td><td>ضع أضيق الشروط أولاً</td></tr>
+<tr><td>نسيان <code>break</code></td><td>تُنفَّذ الحالة <code>case</code> التالية أيضاً</td><td>أنهِ كل <code>case</code> بـ <code>break</code></td></tr>
+<tr><td>تغيير <code>const</code></td><td><code>TypeError: Assignment to constant variable</code></td><td>استخدم <code>let</code> إن كانت القيمة ستتغير</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>القيمة</strong> قطعة واحدة من البيانات، وأنواعها الأساسية <code>number</code> و<code>string</code> و<code>boolean</code>.</li>
+<li><strong>المتغير</strong> اسم لقيمة. استخدم <code>const</code> دائماً، و<code>let</code> حين يجب أن تتغير القيمة.</li>
+<li>علامة <code>=</code> الواحدة تحفظ قيمة، ولا تقارن.</li>
+<li><strong>العوامل</strong> تحسب (<code>+ - * / %</code>) وتصل النصوص وتقارن. وقارن دائماً بـ <code>===</code>.</li>
+<li><code>if</code> و<code>else if</code> و<code>else</code> تختار بين مجموعات من الأسطر. وأول شرط صحيح هو الذي يُنفَّذ، فالترتيب مهم.</li>
+<li><code>&amp;&amp;</code> و<code>||</code> و<code>!</code> تجمع بين الشروط. وست قيم falsy، وكل ما عداها truthy.</li>
+<li><code>switch</code> تطابق قيمة واحدة بحالات ثابتة، وتنتهي كل حالة بـ <code>break</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>"string"</code>، لأن علامات التنصيص تجعلها نصاً. 2. <code>2</code>، لأن 5 تدخل في 17 ثلاث مرات ويبقى 2. 3. <code>false</code>، لأن الرقم لا يساوي النص أبداً.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">البرامج التي تقرر في كل مكان: المدارس تقيّم الاختبارات، والمتاجر تسعّر التوصيل، والتقويمات تعرف طول كل شهر. ابنِ الثلاثة، واختبر كلاً منها بقيم مختلفة كثيرة، ومنها القيم الغريبة.</p>
+
+<div class="project">
+<p class="project-label">مشروع 8.1 · سهل</p>
+<h3>حاسبة تقدير الاختبار</h3>
+<p class="project-goal">حوّل درجة من 0 إلى 100 إلى تقدير بحرف، وقل هل نجح الطالب، وارفض الدرجات المستحيلة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سلاسل <code>if</code>/<code>else if</code>، وترتيب الشروط، و<code>||</code> و<code>&amp;&amp;</code>، والعامل الشرطي.</p>
+<ol class="steps">
+<li>اكتب جدول التقديرات أولاً: A من 90، وB من 80، وC من 70، وD من 50، وF تحت 50.</li>
+<li>ابدأ السلسلة بالحالات المستحيلة: الدرجة تحت 0 <em>أو</em> فوق 100 غير صحيحة. لماذا يجب أن يأتي هذا الفحص أولاً؟</li>
+<li>أكمل السلسلة من التقدير الأعلى نزولاً. ولا يحتاج كل شرط إلا الحد الأدنى، لأن الشروط السابقة التقطت الدرجات الأعلى.</li>
+<li>احسب <code>passed</code> بـ <code>&amp;&amp;</code>، واطبع رسالة بالعامل الشرطي.</li>
+<li>اختبر بـ 100 و90 و89 و50 و49 و0 و-5 و120. وتُسمى هذه <dfn>القيم الحدية</dfn>، والعلل تحب أن تختبئ عندها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن وضعت <code>score &gt;= 50</code> قبل <code>score &gt;= 90</code> حصل كل ناجح على D، فأول شرط صحيح هو الذي يُنفَّذ.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (للدرجة 83):</p>
+<pre data-out="projects/grade.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 8.2 · متوسط</p>
+<h3>حاسبة تكلفة التوصيل</h3>
+<p class="project-goal">متجر إلكتروني يحسب التوصيل بالوزن، ويضاعفه للتوصيل السريع، ويضيف رسماً خارج المدن الكبرى، ويوصّل مجاناً للطلبات الكبيرة غير السريعة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> عدة قرارات متتالية، و<code>!==</code>، والجمع بين الشروط، والتقريب لأعلى بـ <code>Math.ceil</code>.</p>
+<ol class="steps">
+<li>اكتب القواعد قائمة مرقمة بلغة بسيطة قبل أي كود: حتى 1 كجم بـ 30، وحتى 5 كجم بـ 50، وفوق 5 كجم 50 و10 لكل كيلوغرام إضافي بدأ.</li>
+<li>احسب التكلفة الأساسية من الوزن. وللكيلوغرامات الإضافية <code>Math.ceil(weight - 5)</code> تقرّب لأعلى، فـ 6.2 كجم تُحسب كيلوغرامين إضافيين.</li>
+<li>طبّق السريع (× 2)، ثم رسم المدن غير القاهرة والإسكندرية: المدينة <em>ليست</em> القاهرة <em>و</em><em>ليست</em> الإسكندرية.</li>
+<li>التوصيل المجاني يحتاج شيئين معاً: مجموع طلب 1000 أو أكثر، <em>و</em>ليس سريعاً (<code>!express</code>).</li>
+<li>جرّب خمس حالات على الأقل، وتحقق من كل واحدة بيدك.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> خطأ شائع أن تكتب <code>city !== "القاهرة" || city !== "الإسكندرية"</code>، وهو صحيح دائماً. قل القاعدة بصوت عالٍ: «ليست القاهرة وليست الإسكندرية».</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/shipping.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 8.3 · تحدٍّ</p>
+<h3>كم يوماً في هذا الشهر؟</h3>
+<p class="project-goal">مع سنة وشهر، احسب عدد أيام الشهر، وأصب في فبراير في السنوات الكبيسة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> شرط مركب بأقواس، و<code>%</code>، و<code>switch</code> تشترك فيها عدة حالات في جواب واحد.</p>
+<ol class="steps">
+<li>تعلّم قاعدة السنة الكبيسة: السنة كبيسة إن قبلت القسمة على 4، <em>إلا</em> السنوات التي تقبل القسمة على 100، <em>إلا</em> التي تقبل القسمة على 400. فـ 2024 و2000 كبيستان، و1900 ليست كبيسة.</li>
+<li>اكتبها قيمة boolean واحدة: <code>(year % 4 === 0 &amp;&amp; year % 100 !== 0) || year % 400 === 0</code>، واختبرها بـ 2024 و2023 و1900 و2000.</li>
+<li>اكتب <code>switch</code> على الشهر. فبراير يستخدم نتيجة السنة الكبيسة، وأبريل ويونيو وسبتمبر ونوفمبر فيها 30 يوماً: اجعل حالاتها تنزلق إلى الكود نفسه بلا <code>break</code> بينها.</li>
+<li>وكل شهر آخر فيه 31 يوماً: هذا هو <code>default</code>.</li>
+<li>اطبع النتيجتين، وجرّب فبراير 1900. برامج حقيقية كثيرة أخطأت فيه!</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> تكديس <code>case 4:</code> و<code>case 6:</code> و<code>case 9:</code> و<code>case 11:</code> فوق بعضها هو المكان الوحيد الذي يكون فيه حذف <code>break</code> هو ما تريده بالضبط.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (لفبراير 2028):</p>
+<pre data-out="projects/calendar.js"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب برنامجاً فيه <code>const</code> اسمه <code>temperature</code>. اطبع «بارد» تحت 15، و«دافئ» من 15 إلى 29، و«حار» من 30 فأكثر.</li>
+<li><span class="level">سهل</span> توقّع نتيجة كل سطر، ثم تحقق بـ Node: <code>7 % 3</code> و<code>"7" + 3</code> و<code>7 === "7"</code> و<code>!true</code>.</li>
+<li><span class="level">متوسط</span> يكون العدد زوجياً حين <code>n % 2 === 0</code>. اطبع هل العدد زوجي أم فردي، وهل هو موجب أم سالب أم صفر.</li>
+<li><span class="level">متوسط</span> أعد كتابة <code>switch.js</code> بـ <code>if</code> و<code>else if</code>. أي النسختين أسهل عليك في القراءة، ولماذا؟</li>
+<li><span class="level">تحدٍّ</span> أضف قاعدة خامسة إلى شبّاك التذاكر: يوم الجمعة يدفع الجميع 2 زيادة، لكن السعر لا يتجاوز 10 أبداً. واختبر البرنامج بأربعة زوار مختلفين على الأقل.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 9</p>
+<p>شبّاك التذاكر الآن يخدم زائراً واحداً فقط. وفي الفصل القادم ستتعلم أن تحفظ قوائم كاملة من القيم في المصفوفات، وأن تكرر العمل بالحلقات، فيخدم الشبّاك طابوراً من مئة زائر بالأسطر القليلة نفسها.</p>
+</div>
+</section>

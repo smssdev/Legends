@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="signup.css">
+    <title>Course sign-up</title>
+  </head>
+  <body>
+    <form>
+      <h1>Join the web course</h1>
+      <p>
+        <label for="name">Full name</label><br>
+        <input id="name" type="text" required>
+      </p>
+      <p>
+        <label for="email">Email</label><br>
+        <input id="email" type="email" required>
+      </p>
+      <p>
+        <label for="phone">Phone</label><br>
+        <input id="phone" type="tel">
+      </p>
+      <p>
+        <label for="level">Your level</label><br>
+        <select id="level">
+        <option>Complete beginner</option>
+        <option>I know some HTML</option>
+        <option>I know HTML and CSS</option>
+        </select>
+      </p>
+      <p>
+        <label for="why">Why do you want to learn?</label><br>
+        <textarea id="why" rows="3" cols="40"></textarea>
+      </p>
+      <p>
+        <input id="agree" type="checkbox">
+        <label for="agree">I agree to receive emails about the course</label>
+      </p>
+      <button type="submit">Sign me up</button>
+    </form>
+  </body>
+</html>
