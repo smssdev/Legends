@@ -161,3 +161,6 @@ figcaption b { color: var(--brand); }
 .answers-note { font-size: 0.9em; color: var(--muted); }
 .next { background: linear-gradient(110deg, var(--brand-soft), #fdf0f6); border-radius: 10pt; margin-top: 1.4em; padding: 9pt 13pt 3pt; break-inside: avoid; }
 .next-title { font: 700 9.5pt var(--head); color: var(--fact); margin: 0 0 3pt; text-align: start; }
+
+/* Pseudocode written in the reader’s language (Arabic pseudocode runs right to left). */
+.pseudo { background: var(--code-bg); border: 1pt solid #d9dbea; border-inline-start: 4pt solid var(--try); border-radius: 6pt; padding: 7pt 12pt; margin: 0.6em 0 0.9em; white-space: pre-wrap; font: 700 0.92em/1.75 var(--head); color: var(--ink); break-inside: avoid; }

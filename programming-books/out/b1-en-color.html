@@ -9,6 +9,8 @@
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page ch01 { @top-center { content: "Chapter 1: How Computers Run Programs"; } }
 @page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "Chapter 2: Thinking in Steps: Algorithms"; } }
+@page ch02:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Values, Variables and Decisions"; } }
 @page ch08:first { @top-center { content: none; } }
 
@@ -395,6 +397,267 @@ console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;
 <div class="next">
 <p class="next-title">Coming up in Chapter 2</p>
 <p>Exercise 5 is a taste of the next chapter. Before programmers write code, they plan the steps. In Chapter 2 you will learn to turn any problem into a clear list of steps, called an algorithm, and to check that it works before you type a single line.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b1/ch02/en">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">Chapter 2</p><h1>Thinking in Steps: Algorithms</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what an algorithm is, and what makes a good one</li>
+<li>break a big problem into small, clear steps</li>
+<li>write your plan as pseudocode and draw it as a flowchart</li>
+<li>recognise the three building blocks of every program</li>
+<li>test an algorithm by hand before you write any code</li>
+</ul>
+</div>
+
+<p class="lead">Imagine giving someone directions to your home. If you say “go straight, then turn somewhere near the big shop”, they will probably get lost. If you say “walk 200 metres to the traffic lights, turn left, and stop at the third door on the right”, they will arrive. Programming is mostly the skill of giving the second kind of directions.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Here’s a secret: the best programmers often spend more time thinking with a pen and paper than typing. In this chapter we will not worry about the details of JavaScript. We will learn how to think. The code will feel much easier afterwards.</p></div></div>
+
+<h2><span class="sec">2.1</span><span>What is an algorithm?</span></h2>
+
+<p>An <dfn>algorithm</dfn> is a step-by-step method for solving a problem. A recipe is an algorithm for a meal. The method you learned at school for long division is an algorithm. The steps a map app follows to find the fastest road are an algorithm too, just a much bigger one.</p>
+
+<p>A good algorithm has four qualities:</p>
+
+<table>
+<thead><tr><th>Quality</th><th>What it means</th><th>Bad example</th></tr></thead>
+<tbody>
+<tr><td>Precise</td><td>Every step has exactly one meaning</td><td>“Add a little sugar”</td></tr>
+<tr><td>Ordered</td><td>The steps happen in a clear order</td><td>Pouring the tea before boiling the water</td></tr>
+<tr><td>Finite</td><td>It always finishes</td><td>“Keep stirring”, with no point at which to stop</td></tr>
+<tr><td>Correct</td><td>It gives the right answer for every possible input</td><td>A method that works for 3 cards but not for 1</td></tr>
+</tbody>
+</table>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>The word “algorithm” comes from the name of Muhammad ibn Musa al-Khwarizmi, a Persian mathematician who worked at the House of Wisdom in Baghdad in the ninth century. His books taught Europe the decimal number system, and Latin translations turned his name, “Algoritmi”, into the word we use today. The word “algebra” comes from the title of his book too.</p></aside>
+
+<h2><span class="sec">2.2</span><span>Breaking a problem down</span></h2>
+
+<p>Big problems feel impossible until you split them into small ones. Programmers call this <dfn>decomposition</dfn>. Let us practise on a real task.</p>
+
+<p><strong>The problem:</strong> you have a pile of numbered cards, face down. You want to find the card with the largest number.</p>
+
+<p>How would <em>you</em> do it, with real cards? Most people do something like this: turn over the first card and remember its number. Then look at each of the other cards in turn. Whenever a card is bigger than the one you remember, remember the new card instead. When there are no more cards, the one you remember is the largest.</p>
+
+<p>That is already an algorithm. Notice what made it work: you only ever had to remember <em>one</em> number, the largest so far. That small idea is what makes the problem easy for a computer, too.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>When you are stuck, solve the problem by hand with real objects or a few written numbers, and watch what you do. Then write down your own steps. You are almost always more clever than you think, and the computer can copy your method.</p></aside>
+
+<h2><span class="sec">2.3</span><span>Pseudocode: planning in plain language</span></h2>
+
+<p><dfn>Pseudocode</dfn> is a way of writing an algorithm in simple, structured language before you turn it into real code. There are no strict rules; it only needs to be clear. Here is our card algorithm as pseudocode:</p>
+
+<div class="pseudo">set LARGEST to the first card
+for each CARD in the pile:
+    if CARD is bigger than LARGEST:
+        set LARGEST to CARD
+show LARGEST</div>
+
+<p>Pseudocode lets you focus on the <em>idea</em> without worrying about commas and brackets. Many professional teams write pseudocode, or simply a list of steps in a comment, before writing a tricky piece of code.</p>
+
+<h2><span class="sec">2.4</span><span>Flowcharts: drawing the plan</span></h2>
+
+<p>Some people think better with pictures. A <dfn>flowchart</dfn> draws an algorithm as boxes connected by arrows. Rounded boxes show the start and end, rectangles show actions, and diamonds show questions with yes or no answers.</p>
+
+<figure>
+<svg viewBox="0 0 520 330" role="img" aria-label="Flowchart of finding the largest card">
+<defs><marker id="f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<g font-family="Inter" font-size="13" text-anchor="middle">
+<rect x="200" y="8" width="120" height="34" rx="17" fill="#4338ca"/><text x="260" y="30" fill="#fff" font-weight="700">Start</text>
+<rect x="165" y="62" width="190" height="38" rx="6" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="260" y="86" fill="#0f766e">LARGEST = first card</text>
+<path d="M260,120 L340,158 L260,196 L180,158 Z" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="260" y="154" fill="#ea580c">More cards</text><text x="260" y="170" fill="#ea580c">left?</text>
+<path d="M260,214 L340,250 L260,286 L180,250 Z" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="260" y="246" fill="#ea580c">CARD bigger</text><text x="260" y="262" fill="#ea580c">than LARGEST?</text>
+<rect x="370" y="231" width="140" height="38" rx="6" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="440" y="255" fill="#0f766e">LARGEST = CARD</text>
+<rect x="20" y="139" width="120" height="38" rx="6" fill="#f5f0ff" stroke="#7c3aed" stroke-width="2"/><text x="80" y="163" fill="#7c3aed">Show LARGEST</text>
+<rect x="20" y="210" width="120" height="34" rx="17" fill="#4338ca"/><text x="80" y="232" fill="#fff" font-weight="700">End</text>
+<g font-size="11" fill="#5b5873"><text x="272" y="208">yes</text><text x="160" y="150">no</text><text x="355" y="242">yes</text><text x="272" y="302">no</text></g>
+</g>
+<g stroke="#4338ca" stroke-width="2.2" fill="none" marker-end="url(#f2)">
+<line x1="260" y1="42" x2="260" y2="58"/><line x1="260" y1="100" x2="260" y2="116"/>
+<line x1="260" y1="196" x2="260" y2="210"/><line x1="180" y1="158" x2="144" y2="158"/>
+<line x1="340" y1="250" x2="366" y2="250"/><line x1="80" y1="177" x2="80" y2="206"/>
+<path d="M260,286 L260,314 L480,314 L480,158 L344,158"/>
+<path d="M440,231 L440,200 L480,200"/>
+</g>
+</svg>
+<figcaption><b>Figure 2.1:</b> The card algorithm as a flowchart. Follow the arrows with your finger for the cards 7, 3 and 12.</figcaption>
+</figure>
+
+<p>Flowcharts are wonderful for small algorithms and for explaining your idea to someone else. For big programs they become too large, and pseudocode or real code is clearer.</p>
+
+<h2><span class="sec">2.5</span><span>The three building blocks</span></h2>
+
+<p>Here is one of the most important facts in computer science: every program, however large, is built from just three kinds of step.</p>
+
+<ol>
+<li><strong>Sequence:</strong> do this, then this, then this, in order.</li>
+<li><strong>Selection:</strong> if something is true, do this; otherwise, do that. (You will learn this properly in Chapter 8.)</li>
+<li><strong>Repetition:</strong> do this again and again, for each item or until something happens. (This is Chapter 9.)</li>
+</ol>
+
+<p>A simple program that uses only sequence looks like this. It works out the average of three test scores:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">average.js</div><pre class="code"><span class="c">// Sequence: each step runs once, in order.</span>
+<span class="k">const</span> first = <span class="n">8</span>;
+<span class="k">const</span> second = <span class="n">6</span>;
+<span class="k">const</span> third = <span class="n">10</span>;
+
+<span class="k">const</span> total = first + second + third;
+<span class="k">const</span> average = total / <span class="n">3</span>;
+
+console.log(<span class="s">`Average: ${average}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Average: 8</pre></div>
+
+<p>Every line runs exactly once, from top to bottom. Our card algorithm needs all three blocks: it runs steps in <em>sequence</em>, it <em>selects</em> (“if this card is bigger”), and it <em>repeats</em> (“for each card”).</p>
+
+<h2><span class="sec">2.6</span><span>From pseudocode to JavaScript</span></h2>
+
+<p>Now the exciting part. Look at the pseudocode from Section 2.3 again, and then at the same algorithm written in JavaScript:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">largest.js</div><pre class="code"><span class="k">const</span> cards = [<span class="n">7</span>, <span class="n">3</span>, <span class="n">12</span>, <span class="n">5</span>, <span class="n">9</span>];
+<span class="k">let</span> largest = cards[<span class="n">0</span>];
+
+<span class="k">for</span> (<span class="k">const</span> card <span class="k">of</span> cards) {
+  <span class="k">if</span> (card &gt; largest) {
+    largest = card;
+  }
+}
+
+console.log(<span class="s">`The largest card is ${largest}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>The largest card is 12</pre></div>
+
+<p>You have not learned all of this syntax yet, and that is fine. Put the two versions side by side and you can see that the code follows the plan line by line:</p>
+
+<table>
+<thead><tr><th>Pseudocode</th><th>JavaScript</th></tr></thead>
+<tbody>
+<tr><td>set LARGEST to the first card</td><td><code>let largest = cards[0];</code></td></tr>
+<tr><td>for each CARD in the pile</td><td><code>for (const card of cards)</code></td></tr>
+<tr><td>if CARD is bigger than LARGEST</td><td><code>if (card &gt; largest)</code></td></tr>
+<tr><td>set LARGEST to CARD</td><td><code>largest = card;</code></td></tr>
+<tr><td>show LARGEST</td><td><code>console.log(…)</code></td></tr>
+</tbody>
+</table>
+
+<p>This is how professionals work. The thinking happens in the plan; the code is a translation of the plan into a language the computer understands. When the plan is clear, the translation is easy.</p>
+
+<h2><span class="sec">2.7</span><span>Testing by hand: the trace table</span></h2>
+
+<p>How do you know an algorithm is correct before you run it? You <dfn>trace</dfn> it: you pretend to be the computer, and you write down the value of every variable after every step. Here is a trace of our algorithm with the cards 7, 3, 12, 5 and 9:</p>
+
+<table>
+<thead><tr><th>Step</th><th>card</th><th>card &gt; largest?</th><th>largest</th></tr></thead>
+<tbody>
+<tr><td>start</td><td>–</td><td>–</td><td>7</td></tr>
+<tr><td>1</td><td>7</td><td>no</td><td>7</td></tr>
+<tr><td>2</td><td>3</td><td>no</td><td>7</td></tr>
+<tr><td>3</td><td>12</td><td>yes</td><td>12</td></tr>
+<tr><td>4</td><td>5</td><td>no</td><td>12</td></tr>
+<tr><td>5</td><td>9</td><td>no</td><td>12</td></tr>
+</tbody>
+</table>
+
+<p>The final value is 12, which is correct. A good tester also tries the unusual cases. What if there is only one card? What if the largest card is first, or last? What if two cards are equal? Try each one in your head with the trace table. You will find that this algorithm handles them all.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>What if the pile is empty? There is no first card, so the very first step fails. Real programs must decide what to do in that case: show a message, or return “no answer”. Thinking about the empty case is a habit that separates careful programmers from the rest.</p></aside>
+
+<h2><span class="sec">2.8</span><span>A taste of efficiency</span></h2>
+
+<p>Two algorithms can both be correct, while one is enormously faster. Imagine a phone book with a million names in alphabetical order, and you want to find “Omar”.</p>
+
+<p><strong>Method 1:</strong> read the names one by one from the start. In the worst case you read all one million.</p>
+
+<p><strong>Method 2:</strong> open the book in the middle. If “Omar” comes before that page, throw away the second half; otherwise throw away the first half. Repeat with the half that is left. Each step halves the problem. How many steps does it take? Let the computer count:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">halving.js</div><pre class="code"><span class="k">let</span> names = <span class="n">1000000</span>;
+<span class="k">let</span> steps = <span class="n">0</span>;
+
+<span class="k">while</span> (names &gt; <span class="n">1</span>) {
+  names = Math.ceil(names / <span class="n">2</span>);
+  steps = steps + <span class="n">1</span>;
+}
+
+console.log(<span class="s">`Steps needed: ${steps}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Steps needed: 20</pre></div>
+
+<p>Twenty steps instead of a million! This method is called <dfn>binary search</dfn>, and it only works because the names are sorted. Choosing the right algorithm often matters far more than having a fast computer. You will meet this idea again throughout the senior books in this series.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Twenty steps for a million names, and only thirty for a billion! Every time the list doubles, binary search needs just one more step. That is the power of a good idea.</p></div></div>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Name the three building blocks of every program.</li><li>Why does the card algorithm only need to remember one number?</li><li>Why can binary search not be used on a list of names in random order?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>An <strong>algorithm</strong> is a precise, ordered, finite and correct list of steps for solving a problem.</li>
+<li><strong>Decomposition</strong> means breaking a big problem into small ones. Solving it by hand first often shows you the steps.</li>
+<li><strong>Pseudocode</strong> and <strong>flowcharts</strong> let you plan without worrying about syntax.</li>
+<li>Every program is built from <strong>sequence</strong>, <strong>selection</strong> and <strong>repetition</strong>.</li>
+<li>Code is a translation of the plan. When the plan is clear, the code is easy.</li>
+<li>A <strong>trace table</strong> tests an algorithm by hand. Always try unusual cases, especially the empty one.</li>
+<li>A better algorithm, such as <strong>binary search</strong>, can be millions of times faster.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Sequence, selection and repetition. 2. Because only the largest card seen so far can matter; any smaller card can never be the answer. 3. Because throwing away half the list only works when you know the name must be in the other half, and that is true only when the list is sorted.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write pseudocode for finding the <em>smallest</em> card. What do you need to change from the largest-card algorithm?</li>
+<li><span class="level">Easy</span> Draw a flowchart for crossing a road at traffic lights.</li>
+<li><span class="level medium">Medium</span> Write pseudocode that counts how many cards are bigger than 5. Trace it with the cards 7, 3, 12, 5, 9. (The answer should be 3.)</li>
+<li><span class="level medium">Medium</span> Using binary search, how many steps do you need for 1,000 names? Change <code>halving.js</code> to check your answer.</li>
+<li><span class="level hard">Challenge</span> Write pseudocode that finds both the largest <em>and</em> the second-largest card in one pass through the pile. Trace it with 7, 3, 12, 5, 9, and then with 12, 12, 4.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 3</p>
+<p>You now know how to think like a programmer. Next you will set up the tools that professionals use every day: a code editor, the terminal and Node.js, so you can turn your plans into programs on your own computer.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/en">

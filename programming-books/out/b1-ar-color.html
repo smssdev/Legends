@@ -9,6 +9,8 @@
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page ch01 { @top-center { content: "الفصل 1: كيف ينفّذ الحاسوب البرامج"; } }
 @page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "الفصل 2: التفكير بالخطوات: الخوارزميات"; } }
+@page ch02:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: القيم والمتغيرات والقرارات"; } }
 @page ch08:first { @top-center { content: none; } }
 
@@ -395,6 +397,267 @@ console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;
 <div class="next">
 <p class="next-title">في الفصل 2</p>
 <p>التمرين 5 تذوّق للفصل القادم. فقبل أن يكتب المبرمجون الكود يخططون للخطوات. وفي الفصل 2 ستتعلم أن تحوّل أي مشكلة إلى قائمة واضحة من الخطوات تُسمى خوارزمية، وأن تتأكد أنها تعمل قبل أن تكتب سطراً واحداً.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b1/ch02/ar">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">الفصل 2</p><h1>التفكير بالخطوات: الخوارزميات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح ما الخوارزمية، وما الذي يجعلها جيدة</li>
+<li>تقسّم المشكلة الكبيرة إلى خطوات صغيرة واضحة</li>
+<li>تكتب خطتك بالكود الزائف وترسمها مخططاً انسيابياً</li>
+<li>تميّز اللبنات الثلاث التي يُبنى منها كل برنامج</li>
+<li>تختبر الخوارزمية بيدك قبل أن تكتب أي كود</li>
+</ul>
+</div>
+
+<p class="lead">تخيّل أنك تصف لشخص الطريق إلى بيتك. لو قلت له «امشِ على طول، ثم انعطف في مكان ما قرب المحل الكبير»، فالأغلب أنه سيضيع. أما لو قلت «امشِ 200 متر حتى إشارة المرور، ثم انعطف يساراً، وقف عند الباب الثالث على يمينك»، فسيصل. والبرمجة في معظمها هي مهارة إعطاء الوصف الثاني.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>سأخبرك بسرّ: أمهر المبرمجين كثيراً ما يقضون وقتاً في التفكير بالورقة والقلم أكثر مما يقضونه في الكتابة. لن نهتم في هذا الفصل بتفاصيل JavaScript، بل سنتعلم كيف نفكر. وبعدها سيبدو الكود أسهل بكثير.</p></div></div>
+
+<h2><span class="sec">2.1</span><span>ما الخوارزمية؟</span></h2>
+
+<p><dfn>الخوارزمية</dfn> طريقة لحل مشكلة خطوة بعد خطوة. فوصفة الطبخ خوارزمية لصنع وجبة، وطريقة القسمة المطولة التي تعلمتها في المدرسة خوارزمية، والخطوات التي يتبعها تطبيق الخرائط ليجد أسرع طريق خوارزمية أيضاً، لكنها أكبر بكثير.</p>
+
+<p>والخوارزمية الجيدة لها أربع صفات:</p>
+
+<table>
+<thead><tr><th>الصفة</th><th>معناها</th><th>مثال سيئ</th></tr></thead>
+<tbody>
+<tr><td>دقيقة</td><td>لكل خطوة معنى واحد فقط</td><td>«أضف قليلاً من السكر»</td></tr>
+<tr><td>مرتبة</td><td>الخطوات تأتي بترتيب واضح</td><td>صبّ الشاي قبل غلي الماء</td></tr>
+<tr><td>منتهية</td><td>تنتهي دائماً</td><td>«استمر في التقليب» دون لحظة للتوقف</td></tr>
+<tr><td>صحيحة</td><td>تعطي الجواب الصحيح لكل مدخل ممكن</td><td>طريقة تنجح مع 3 بطاقات وتفشل مع بطاقة واحدة</td></tr>
+</tbody>
+</table>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>كلمة «خوارزمية» مأخوذة من اسم محمد بن موسى الخوارزمي، العالم الذي عمل في بيت الحكمة ببغداد في القرن التاسع الميلادي. علّمت كتبه أوروبا نظام الأرقام العشري، وحوّلت الترجمات اللاتينية اسمه إلى «Algoritmi»، ومنه جاءت كلمة algorithm التي يستخدمها مبرمجو العالم اليوم. وكلمة «الجبر» (algebra) جاءت أيضاً من عنوان كتابه.</p></aside>
+
+<h2><span class="sec">2.2</span><span>تقسيم المشكلة</span></h2>
+
+<p>المشكلات الكبيرة تبدو مستحيلة حتى تقسمها إلى مشكلات صغيرة، ويسمي المبرمجون ذلك <dfn>التفكيك</dfn> (decomposition). فلنتدرب على مهمة حقيقية.</p>
+
+<p><strong>المشكلة:</strong> أمامك كومة من البطاقات المرقمة، ووجهها إلى الأسفل، وتريد أن تجد البطاقة ذات الرقم الأكبر.</p>
+
+<p>كيف ستفعلها <em>أنت</em> بالبطاقات الحقيقية؟ معظم الناس يفعلون شيئاً كهذا: يقلبون البطاقة الأولى ويتذكرون رقمها. ثم ينظرون إلى كل بطاقة من البطاقات الباقية بالدور. وكلما وجدوا بطاقة أكبر من التي يتذكرونها، تذكروا البطاقة الجديدة بدلها. وحين تنتهي البطاقات، تكون البطاقة التي يتذكرونها هي الأكبر.</p>
+
+<p>هذه خوارزمية بالفعل. ولاحظ ما الذي جعلها تنجح: لم تحتج إلا أن تتذكر رقماً <em>واحداً</em>، هو الأكبر حتى الآن. وهذه الفكرة الصغيرة هي ما يجعل المشكلة سهلة على الحاسوب أيضاً.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>حين تتعثر، حُلّ المشكلة بيدك بأشياء حقيقية أو بأرقام قليلة على ورقة، وراقب ما تفعله، ثم اكتب خطواتك. فأنت أذكى مما تظن في الغالب، والحاسوب يستطيع أن ينسخ طريقتك.</p></aside>
+
+<h2><span class="sec">2.3</span><span>الكود الزائف: التخطيط بلغة بسيطة</span></h2>
+
+<p><dfn>الكود الزائف</dfn> (pseudocode) طريقة لكتابة الخوارزمية بلغة بسيطة منظمة قبل تحويلها إلى كود حقيقي. ليست له قواعد صارمة، والمهم أن يكون واضحاً. وهذه خوارزمية البطاقات بالكود الزائف:</p>
+
+<div class="pseudo">اجعل الأكبر = البطاقة الأولى
+لكل بطاقة في الكومة:
+    إن كانت البطاقة أكبر من الأكبر:
+        اجعل الأكبر = البطاقة
+اعرض الأكبر</div>
+
+<p>الكود الزائف يتيح لك أن تركز على <em>الفكرة</em> دون أن تقلق من الفواصل والأقواس. وكثير من الفرق المحترفة تكتب كوداً زائفاً، أو مجرد قائمة خطوات في تعليق، قبل أن تكتب جزءاً صعباً من الكود. ولك أن تكتبه بالعربية كما ترى؛ فالمهم أن تكون الخطة واضحة لك.</p>
+
+<h2><span class="sec">2.4</span><span>المخطط الانسيابي: رسم الخطة</span></h2>
+
+<p>بعض الناس يفكرون بالصور أفضل. و<dfn>المخطط الانسيابي</dfn> (flowchart) يرسم الخوارزمية صناديق تصلها أسهم. الصناديق المستديرة للبداية والنهاية، والمستطيلات للأفعال، والمعيّنات للأسئلة التي جوابها نعم أو لا.</p>
+
+<figure>
+<svg viewBox="0 0 520 330" role="img" aria-label="مخطط انسيابي لإيجاد أكبر بطاقة">
+<defs><marker id="f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<g font-family="Cairo" font-size="13" text-anchor="middle">
+<rect x="200" y="8" width="120" height="34" rx="17" fill="#4338ca"/><text x="260" y="30" fill="#fff" font-weight="700">البداية</text>
+<rect x="165" y="62" width="190" height="38" rx="6" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="260" y="86" fill="#0f766e">الأكبر = البطاقة الأولى</text>
+<path d="M260,120 L340,158 L260,196 L180,158 Z" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="260" y="154" fill="#ea580c">بقيت</text><text x="260" y="171" fill="#ea580c">بطاقات؟</text>
+<path d="M260,214 L340,250 L260,286 L180,250 Z" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="260" y="246" fill="#ea580c">البطاقة أكبر</text><text x="260" y="263" fill="#ea580c">من الأكبر؟</text>
+<rect x="370" y="231" width="140" height="38" rx="6" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="440" y="255" fill="#0f766e">الأكبر = البطاقة</text>
+<rect x="20" y="139" width="120" height="38" rx="6" fill="#f5f0ff" stroke="#7c3aed" stroke-width="2"/><text x="80" y="163" fill="#7c3aed">اعرض الأكبر</text>
+<rect x="20" y="210" width="120" height="34" rx="17" fill="#4338ca"/><text x="80" y="232" fill="#fff" font-weight="700">النهاية</text>
+<g font-size="12" fill="#5b5873"><text x="275" y="208">نعم</text><text x="160" y="150">لا</text><text x="355" y="242">نعم</text><text x="272" y="302">لا</text></g>
+</g>
+<g stroke="#4338ca" stroke-width="2.2" fill="none" marker-end="url(#f2)">
+<line x1="260" y1="42" x2="260" y2="58"/><line x1="260" y1="100" x2="260" y2="116"/>
+<line x1="260" y1="196" x2="260" y2="210"/><line x1="180" y1="158" x2="144" y2="158"/>
+<line x1="340" y1="250" x2="366" y2="250"/><line x1="80" y1="177" x2="80" y2="206"/>
+<path d="M260,286 L260,314 L480,314 L480,158 L344,158"/>
+<path d="M440,231 L440,200 L480,200"/>
+</g>
+</svg>
+<figcaption><b>الشكل 2.1:</b> خوارزمية البطاقات مخططاً انسيابياً. تتبّع الأسهم بإصبعك مع البطاقات 7 و3 و12.</figcaption>
+</figure>
+
+<p>المخططات الانسيابية رائعة للخوارزميات الصغيرة ولشرح فكرتك لغيرك. أما في البرامج الكبيرة فتصير ضخمة جداً، ويكون الكود الزائف أو الكود الحقيقي أوضح.</p>
+
+<h2><span class="sec">2.5</span><span>اللبنات الثلاث</span></h2>
+
+<p>هذه من أهم الحقائق في علوم الحاسوب: كل برنامج، مهما كبر، مبني من ثلاثة أنواع فقط من الخطوات.</p>
+
+<ol>
+<li><strong>التسلسل:</strong> افعل هذا، ثم هذا، ثم هذا، بالترتيب.</li>
+<li><strong>الاختيار:</strong> إن كان شيء ما صحيحاً فافعل هذا، وإلا فافعل ذاك. (ستتعلمه جيداً في الفصل 8.)</li>
+<li><strong>التكرار:</strong> افعل هذا مرة بعد مرة، لكل عنصر أو حتى يحدث شيء ما. (وهذا الفصل 9.)</li>
+</ol>
+
+<p>وهذا برنامج بسيط لا يستخدم إلا التسلسل، يحسب متوسط ثلاث درجات اختبار:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">average.js</div><pre class="code"><span class="c">// التسلسل: كل خطوة تُنفَّذ مرة واحدة بالترتيب.</span>
+<span class="k">const</span> first = <span class="n">8</span>;
+<span class="k">const</span> second = <span class="n">6</span>;
+<span class="k">const</span> third = <span class="n">10</span>;
+
+<span class="k">const</span> total = first + second + third;
+<span class="k">const</span> average = total / <span class="n">3</span>;
+
+console.log(<span class="s">`المتوسط: ${average}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>المتوسط: 8</pre></div>
+
+<p>كل سطر يُنفَّذ مرة واحدة بالضبط، من الأعلى إلى الأسفل. أما خوارزمية البطاقات فتحتاج اللبنات الثلاث: تنفّذ الخطوات <em>بالتسلسل</em>، و<em>تختار</em> («إن كانت هذه البطاقة أكبر»)، و<em>تكرر</em> («لكل بطاقة»).</p>
+
+<h2><span class="sec">2.6</span><span>من الكود الزائف إلى JavaScript</span></h2>
+
+<p>والآن الجزء الممتع. انظر مرة أخرى إلى الكود الزائف في القسم 2.3، ثم إلى الخوارزمية نفسها مكتوبة بـ JavaScript:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">largest.js</div><pre class="code"><span class="k">const</span> cards = [<span class="n">7</span>, <span class="n">3</span>, <span class="n">12</span>, <span class="n">5</span>, <span class="n">9</span>];
+<span class="k">let</span> largest = cards[<span class="n">0</span>];
+
+<span class="k">for</span> (<span class="k">const</span> card <span class="k">of</span> cards) {
+  <span class="k">if</span> (card &gt; largest) {
+    largest = card;
+  }
+}
+
+console.log(<span class="s">`أكبر بطاقة هي ${largest}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>أكبر بطاقة هي 12</pre></div>
+
+<p>لم تتعلم كل هذه الصياغة بعد، ولا بأس في ذلك. ضع النسختين جنباً إلى جنب، وسترى أن الكود يتبع الخطة سطراً بسطر:</p>
+
+<table>
+<thead><tr><th>الكود الزائف</th><th>JavaScript</th></tr></thead>
+<tbody>
+<tr><td>اجعل الأكبر = البطاقة الأولى</td><td><code>let largest = cards[0];</code></td></tr>
+<tr><td>لكل بطاقة في الكومة</td><td><code>for (const card of cards)</code></td></tr>
+<tr><td>إن كانت البطاقة أكبر من الأكبر</td><td><code>if (card &gt; largest)</code></td></tr>
+<tr><td>اجعل الأكبر = البطاقة</td><td><code>largest = card;</code></td></tr>
+<tr><td>اعرض الأكبر</td><td><code>console.log(…)</code></td></tr>
+</tbody>
+</table>
+
+<p>هكذا يعمل المحترفون. التفكير يحدث في الخطة، والكود ترجمة لها إلى لغة يفهمها الحاسوب. وحين تكون الخطة واضحة تكون الترجمة سهلة.</p>
+
+<h2><span class="sec">2.7</span><span>الاختبار باليد: جدول التتبع</span></h2>
+
+<p>كيف تعرف أن الخوارزمية صحيحة قبل أن تشغلها؟ <dfn>تتتبّعها</dfn>: تتظاهر بأنك الحاسوب، وتكتب قيمة كل متغير بعد كل خطوة. وهذا تتبّع خوارزميتنا مع البطاقات 7 و3 و12 و5 و9:</p>
+
+<table>
+<thead><tr><th>الخطوة</th><th>card</th><th>card &gt; largest؟</th><th>largest</th></tr></thead>
+<tbody>
+<tr><td>البداية</td><td>–</td><td>–</td><td>7</td></tr>
+<tr><td>1</td><td>7</td><td>لا</td><td>7</td></tr>
+<tr><td>2</td><td>3</td><td>لا</td><td>7</td></tr>
+<tr><td>3</td><td>12</td><td>نعم</td><td>12</td></tr>
+<tr><td>4</td><td>5</td><td>لا</td><td>12</td></tr>
+<tr><td>5</td><td>9</td><td>لا</td><td>12</td></tr>
+</tbody>
+</table>
+
+<p>القيمة الأخيرة 12، وهي صحيحة. والمختبر الجيد يجرب أيضاً الحالات غير المعتادة: ماذا لو كانت هناك بطاقة واحدة؟ ماذا لو كانت الكبرى أولى البطاقات أو آخرها؟ ماذا لو تساوت بطاقتان؟ جرّب كل حالة في ذهنك بجدول التتبع، وستجد أن الخوارزمية تتعامل معها كلها.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>وماذا لو كانت الكومة فارغة؟ لا توجد بطاقة أولى، فتفشل الخطوة الأولى نفسها. والبرامج الحقيقية يجب أن تقرر ماذا تفعل حينها: تعرض رسالة، أو تعيد «لا جواب». والتفكير في الحالة الفارغة عادة تميز المبرمج الحريص عن غيره.</p></aside>
+
+<h2><span class="sec">2.8</span><span>لمحة عن الكفاءة</span></h2>
+
+<p>قد تكون الخوارزميتان صحيحتين، وإحداهما أسرع بفارق هائل. تخيّل دليل هاتف فيه مليون اسم مرتبة أبجدياً، وتريد أن تجد «عمر».</p>
+
+<p><strong>الطريقة الأولى:</strong> تقرأ الأسماء واحداً واحداً من البداية، وفي أسوأ الأحوال تقرأ المليون كلها.</p>
+
+<p><strong>الطريقة الثانية:</strong> تفتح الدليل من منتصفه. فإن كان «عمر» قبل تلك الصفحة رميت النصف الثاني، وإلا رميت النصف الأول. ثم تكرر مع النصف الباقي، فكل خطوة تقسم المشكلة إلى نصفين. كم خطوة تحتاج؟ دع الحاسوب يعدّ:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">halving.js</div><pre class="code"><span class="k">let</span> names = <span class="n">1000000</span>;
+<span class="k">let</span> steps = <span class="n">0</span>;
+
+<span class="k">while</span> (names &gt; <span class="n">1</span>) {
+  names = Math.ceil(names / <span class="n">2</span>);
+  steps = steps + <span class="n">1</span>;
+}
+
+console.log(<span class="s">`عدد الخطوات: ${steps}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>عدد الخطوات: 20</pre></div>
+
+<p>عشرون خطوة بدل مليون! تُسمى هذه الطريقة <dfn>البحث الثنائي</dfn> (binary search)، ولا تنجح إلا لأن الأسماء مرتبة. واختيار الخوارزمية المناسبة كثيراً ما يكون أهم بكثير من امتلاك حاسوب سريع، وستقابل هذه الفكرة مرة بعد مرة في كتب الاحتراف في هذه السلسلة.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>عشرون خطوة لمليون اسم، وثلاثون فقط لمليار! وكلما تضاعفت القائمة احتاج البحث الثنائي خطوة واحدة إضافية. هذه قوة الفكرة الجيدة.</p></div></div>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>اذكر اللبنات الثلاث التي يُبنى منها كل برنامج.</li><li>لماذا لا تحتاج خوارزمية البطاقات أن تتذكر إلا رقماً واحداً؟</li><li>لماذا لا يصلح البحث الثنائي لقائمة أسماء غير مرتبة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>الخوارزمية</strong> قائمة خطوات دقيقة ومرتبة ومنتهية وصحيحة لحل مشكلة.</li>
+<li><strong>التفكيك</strong> تقسيم المشكلة الكبيرة إلى مشكلات صغيرة، وحلّها باليد أولاً كثيراً ما يكشف لك الخطوات.</li>
+<li><strong>الكود الزائف</strong> و<strong>المخطط الانسيابي</strong> يتيحان لك التخطيط دون القلق من الصياغة.</li>
+<li>كل برنامج مبني من <strong>التسلسل</strong> و<strong>الاختيار</strong> و<strong>التكرار</strong>.</li>
+<li>الكود ترجمة للخطة، وحين تكون الخطة واضحة يكون الكود سهلاً.</li>
+<li><strong>جدول التتبع</strong> يختبر الخوارزمية باليد. وجرّب دائماً الحالات غير المعتادة، وخصوصاً الحالة الفارغة.</li>
+<li>الخوارزمية الأفضل، مثل <strong>البحث الثنائي</strong>، قد تكون أسرع بملايين المرات.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. التسلسل والاختيار والتكرار. 2. لأن أكبر بطاقة رأيتها حتى الآن هي وحدها ما يهم، وأي بطاقة أصغر منها لا يمكن أن تكون الجواب. 3. لأن رمي نصف القائمة لا يصح إلا إذا عرفت أن الاسم في النصف الآخر، ولا تعرف ذلك إلا إن كانت القائمة مرتبة.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب كوداً زائفاً لإيجاد <em>أصغر</em> بطاقة. ماذا تحتاج أن تغيّر في خوارزمية أكبر بطاقة؟</li>
+<li><span class="level">سهل</span> ارسم مخططاً انسيابياً لعبور الشارع عند إشارة المرور.</li>
+<li><span class="level medium">متوسط</span> اكتب كوداً زائفاً يعدّ البطاقات الأكبر من 5، وتتبّعه بالبطاقات 7 و3 و12 و5 و9. (يجب أن يكون الجواب 3.)</li>
+<li><span class="level medium">متوسط</span> كم خطوة يحتاج البحث الثنائي لألف اسم؟ عدّل <code>halving.js</code> لتتحقق من جوابك.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب كوداً زائفاً يجد أكبر بطاقة <em>والبطاقة الثانية في الكِبَر</em> معاً في مرور واحد على الكومة. وتتبّعه بالبطاقات 7 و3 و12 و5 و9، ثم بـ 12 و12 و4.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 3</p>
+<p>صرت تعرف كيف تفكر كمبرمج. وفي الفصل القادم ستجهّز الأدوات التي يستخدمها المحترفون كل يوم: محرر الكود، والطرفية، وNode.js، لتحوّل خططك إلى برامج على حاسوبك.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/ar">
