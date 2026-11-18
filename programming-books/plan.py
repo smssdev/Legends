@@ -22,6 +22,7 @@ SPECS = [
 ]
 
 OPEN = [
+    ("الكتب المقترحة (13 إلى 16)", "أضفت أربعة كتب لم تطلبها بالاسم لأنها مما يحتاجه كل مبرمج محترف: الكود النظيف وأنماط التصميم، وقواعد البيانات وSQL، وDevOps وDocker والسحابة، والمسيرة المهنية. وهي معلّمة «مقترح» حتى توافق عليها أو تحذفها."),
     ("إصداران للواجهات وإصداران للخوادم", "الكتاب الثاني بإصدارين مستقلين: React وVue، والثالث بإصدارين: Node.js وLaravel. وكل إصدار كتاب كامل بعنوانه وغلافه وكوده، يشترك مع أخيه في الفصول العامة (مثل HTTP وSQL والأمان والاختبار) ويختلف في فصول الإطار. والكتاب الرابع (الشامل) يُكتب ليصلح بعد أي إصدار منهما."),
     ("تكلفة الطباعة الملونة", "الطباعة الملونة في KDP أغلى بكثير من الأبيض والأسود، وتزيد مع عدد الصفحات، فكتاب من 350 صفحة ملونة قد يحتاج سعراً أعلى من المعتاد. والحل الذي جهزناه: النسخة الملونة أساسية، ونسخة Kindle الإلكترونية ملونة بلا تكلفة طباعة، ويمكن إخراج نسخة ورقية أبيض وأسود أرخص من المصدر نفسه."),
     ("ISBN", "KDP يعطي رقماً مجانياً لكل نسخة ورقية (الإنجليزية والعربية رقمان منفصلان)، أو تشتري أرقامك من Bowker."),
@@ -42,7 +43,7 @@ def book(b):
             items += f'<li><span class="n">{k}</span>{ch["ar"]}<span class="en" dir="ltr">{ch["en"]}</span>{s}</li>'
         parts += f'<div class="part"><h4>الجزء {i}: {p["title"]["ar"]}</h4><ol>{items}</ol></div>'
     return f"""<section class="book">
-      <div class="bhead"><span class="num">{n}</span><div>
+      <div class="bhead"><span class="num">{n}</span><div>{'<span class="tag">مقترح: ينتظر موافقتك</span>' if b.get("status") == "proposed" else ""}
         <h2>{b["title"]["ar"]}{(" · " + b["edition"]["ar"]) if b.get("edition") else ""}</h2><p class="en-title" dir="ltr">{b["title"]["en"]}: {b["subtitle"]["en"]}</p>
         <p class="sub">{b["subtitle"]["ar"]}</p></div></div>
       <table class="meta"><tr><th>المستوى</th><td>{b["level"]["ar"]}</td><th>الصفحات المتوقعة</th><td dir="ltr">{b["pages"]}</td><th>الفصول</th><td>{k}</td></tr>
@@ -55,7 +56,19 @@ def main():
     specs = "".join(f"<tr><th>{a}</th><td>{b}</td></tr>" for a, b in SPECS)
     opens = "".join(f"<li><strong>{a}:</strong> {b}</li>" for a, b in OPEN)
     books = "".join(book(b) for b in S["books"])
-    path_rows = "".join(f'<li><strong>{b["title"]["ar"]}</strong> ({b["level"]["ar"]})</li>' for b in S["books"])
+    standards = "".join(f"<li>{x}</li>" for x in S.get("standards", {}).get("ar", []))
+    names = {"foundations": "الأساس", "frontend": "الواجهات", "backend": "الخوادم", "fullstack": "البرمجة الشاملة",
+             "mobile": "الموبايل", "tools": "أدوات المحترف", "craft": "صنعة البرمجة", "career": "المسيرة المهنية",
+             "leadership": "القيادة"}
+    tracks_html = ""
+    for key, name in names.items():
+        items = "".join(
+            f'<li><strong>{b["number"]}. {b["title"]["ar"]}</strong>{(" · " + b["edition"]["ar"]) if b.get("edition") else ""}'
+            f'{" <span class=tag>مقترح</span>" if b.get("status") == "proposed" else ""}</li>'
+            for b in S["books"] if b.get("track") == key)
+        if items:
+            tracks_html += f'<h4>{name}</h4><ul class="path">{items}</ul>'
+
     html = f"""<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>خطة السلسلة</title><style>
 @font-face{{font-family:'Noto Naskh Arabic';font-weight:400;src:url(../fonts/noto-naskh-arabic-arabic-400-normal.woff2)}}
 @font-face{{font-family:'Noto Naskh Arabic';font-weight:700;src:url(../fonts/noto-naskh-arabic-arabic-700-normal.woff2)}}
@@ -91,16 +104,17 @@ ul.open li {{ margin-bottom: 4pt; }}
 </style></head><body>
 <h1>خطة السلسلة: {S["series"]["ar"]}</h1>
 <p class="en-title" dir="ltr" style="font-size:11pt">{S["series"]["en"]}</p>
-<p class="lead">ستة كتب تأخذ القارئ من الصفر إلى مستوى الخبير (Senior) في ثلاثة مسارات: الواجهات، والخوادم، والبرمجة الشاملة، ومعها مساران للموبايل بـ Flutter. والكتابان الثاني والثالث بإصدارين لكل منهما (React وVue، وNode.js وLaravel). وكل إصدار له نسختان مستقلتان، عربية وإنجليزية، مكتوبتان بلغتهما لا مترجمتان حرفياً، بالأمثلة نفسها. فالمجموع {len(S["books"])} إصدارات، و{total} فصلاً في كل لغة، و{len(S["books"]) * 2} كتاباً على أمازون. والمؤلف سليمان ماجد سعيد صلاح (Soliman Maged Saeed Salah).</p>
-<h3>ترتيب القراءة</h3>
-<ul class="path">{path_rows}</ul>
-<p>الكتاب الأول أساس الجميع. ثم يختار القارئ: الثاني (الواجهات) أو الثالث (الخوادم)، والرابع (الشامل) بعدهما. ومسار الموبايل الخامس ثم السادس، ويكفيه الجزآن الأول والثالث من الكتاب الأول.</p>
+<p class="lead">سلسلة كاملة تأخذ القارئ من الصفر إلى مستوى الخبير (Senior) ثم قائد الفريق: أساس واحد، ومسارات تقنية (الواجهات والخوادم والبرمجة الشاملة والموبايل)، وكتب لأدوات المحترف (الذكاء الاصطناعي وClaude وFigma وGitHub وJira)، وكتب لصنعة البرمجة والمسيرة المهنية، وكتاب لقيادة الفرق. وكل كتاب له نسختان مستقلتان، عربية وإنجليزية، مكتوبتان بلغتهما لا مترجمتان. فالمجموع {len(S["books"])} كتاباً وإصداراً، و{total} فصلاً في كل لغة، و{len(S["books"]) * 2} كتاباً على أمازون. والمؤلف سليمان ماجد سعيد صلاح (Soliman Maged Saeed Salah).</p>
+<h3>معايير كل كتاب في السلسلة</h3>
+<ul class="open">{standards}</ul>
+<h3>المسارات</h3>
+{tracks_html}
 <h3>مواصفات أمازون KDP للسلسلة</h3>
 <table>{specs}</table>
 <h3>قرارات تنتظر رأيك</h3>
 <ul class="open">{opens}</ul>
 <h3>ما أُنجز</h3>
-<p>الفصل 8 من الكتاب الأول («القيم والمتغيرات والقرارات») كاملاً بالنسختين، مع صفحة العنوان وصفحة الحقوق والمحتويات، بنسخه الثلاث لكل لغة: PDF ملون للتصفح، وداخل أبيض وأسود للطباعة (الإنجليزية 19 صفحة والعربية 20)، وغلاف ملون كامل. والفصل يحدد شكل كل الكتب، فبعد اعتماده تُكتب الفصول الباقية بنفس النظام.</p>
+<p>الكتاب الأول «البرمجة من الصفر» مكتمل بالعربية والإنجليزية: المقدمة، والفصول الثمانية عشر، وملحق حلول التمارين، والمحتويات بأرقام الصفحات. ولكل لغة ثلاثة ملفات: PDF ملون للتصفح، وداخل أبيض وأسود للطباعة، وغلاف ملون كامل. والخطوة التالية بطلب المؤلف: إضافة مشروعين أو ثلاثة مشاريع تطبيقية موجهة لكل فصل في الكتاب الأول حسب معايير السلسلة، ثم الكتاب التالي.</p>
 {books}
 </body></html>"""
     (ROOT / "out").mkdir(exist_ok=True)

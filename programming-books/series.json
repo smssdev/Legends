@@ -157,7 +157,9 @@
         "JavaScript",
         "Git"
       ],
-      "number": 1
+      "number": 1,
+      "status": "approved",
+      "track": "foundations"
     },
     {
       "id": "b2-react",
@@ -294,7 +296,9 @@
         "Vite",
         "Playwright"
       ],
-      "number": 2
+      "number": 2,
+      "status": "approved",
+      "track": "frontend"
     },
     {
       "id": "b2-vue",
@@ -435,7 +439,9 @@
         "Vite",
         "Playwright"
       ],
-      "number": 2
+      "number": 2,
+      "status": "approved",
+      "track": "frontend"
     },
     {
       "id": "b3-node",
@@ -568,7 +574,9 @@
         "PostgreSQL",
         "Redis"
       ],
-      "number": 3
+      "number": 3,
+      "status": "approved",
+      "track": "backend"
     },
     {
       "id": "b3-laravel",
@@ -705,7 +713,9 @@
         "PostgreSQL",
         "Redis"
       ],
-      "number": 3
+      "number": 3,
+      "status": "approved",
+      "track": "backend"
     },
     {
       "id": "b4",
@@ -830,7 +840,9 @@
         "Docker",
         "Cloud"
       ],
-      "number": 4
+      "number": 4,
+      "status": "approved",
+      "track": "fullstack"
     },
     {
       "id": "b5",
@@ -943,7 +955,9 @@
         "Android",
         "iOS"
       ],
-      "number": 5
+      "number": 5,
+      "status": "approved",
+      "track": "mobile"
     },
     {
       "id": "b6",
@@ -1064,11 +1078,1171 @@
         "Testing",
         "CI/CD"
       ],
-      "number": 6
+      "number": 6,
+      "status": "approved",
+      "track": "mobile"
+    },
+    {
+      "id": "b7",
+      "number": 7,
+      "track": "tools",
+      "status": "approved",
+      "level": {
+        "en": "All levels",
+        "ar": "كل المستويات"
+      },
+      "title": {
+        "en": "AI for Developers",
+        "ar": "الذكاء الاصطناعي للمطورين"
+      },
+      "subtitle": {
+        "en": "Working Faster and Better with AI Tools, from Code to Daily Tasks",
+        "ar": "العمل أسرع وأفضل بأدوات الذكاء الاصطناعي، من الكود إلى مهام العمل اليومية"
+      },
+      "reader": {
+        "en": "Any developer who has finished Book 1, and anyone in a software team.",
+        "ar": "كل مطور أنهى الكتاب الأول، وكل من يعمل في فريق برمجيات."
+      },
+      "pages": "300–360",
+      "tracks": [
+        "AI",
+        "Prompts",
+        "Agents",
+        "Automation"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "Understanding AI",
+            "ar": "فهم الذكاء الاصطناعي"
+          },
+          "chapters": [
+            {
+              "en": "How Large Language Models Work",
+              "ar": "كيف تعمل النماذج اللغوية الكبيرة"
+            },
+            {
+              "en": "The AI Toolbox for Developers",
+              "ar": "صندوق أدوات الذكاء الاصطناعي للمطورين"
+            },
+            {
+              "en": "Prompting That Works",
+              "ar": "كتابة أوامر تنجح"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "AI in Your Code",
+            "ar": "الذكاء الاصطناعي في كودك"
+          },
+          "chapters": [
+            {
+              "en": "Pair Programming with AI",
+              "ar": "البرمجة الثنائية مع الذكاء الاصطناعي"
+            },
+            {
+              "en": "Reading and Explaining Unfamiliar Code",
+              "ar": "قراءة الكود الغريب وشرحه"
+            },
+            {
+              "en": "Debugging with AI",
+              "ar": "تتبّع الأخطاء مع الذكاء الاصطناعي"
+            },
+            {
+              "en": "Tests, Refactoring and Code Review",
+              "ar": "الاختبارات وإعادة الهيكلة ومراجعة الكود"
+            },
+            {
+              "en": "Documentation and Commit Messages",
+              "ar": "التوثيق ورسائل الحفظ"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "AI in Your Work",
+            "ar": "الذكاء الاصطناعي في عملك"
+          },
+          "chapters": [
+            {
+              "en": "From Idea to Specification and Tasks",
+              "ar": "من الفكرة إلى المواصفات والمهام"
+            },
+            {
+              "en": "Meetings, Emails and Reports",
+              "ar": "الاجتماعات والرسائل والتقارير"
+            },
+            {
+              "en": "Automating Repetitive Work",
+              "ar": "أتمتة العمل المتكرر"
+            },
+            {
+              "en": "AI Agents that Do Multi-Step Work",
+              "ar": "وكلاء الذكاء الاصطناعي للمهام متعددة الخطوات"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Building with AI",
+            "ar": "البناء بالذكاء الاصطناعي"
+          },
+          "chapters": [
+            {
+              "en": "Calling AI Models from Your Apps",
+              "ar": "استدعاء نماذج الذكاء الاصطناعي من تطبيقاتك"
+            },
+            {
+              "en": "Retrieval: AI That Knows Your Data",
+              "ar": "الاسترجاع: ذكاء اصطناعي يعرف بياناتك"
+            },
+            {
+              "en": "Security, Privacy and Licensing",
+              "ar": "الأمان والخصوصية والتراخيص"
+            },
+            {
+              "en": "Judgement: When Not to Trust the AI",
+              "ar": "الحكمة: متى لا تثق بالذكاء الاصطناعي"
+            },
+            {
+              "en": "Capstone: An AI-Powered Assistant for Your Team",
+              "ar": "المشروع الختامي: مساعد ذكي لفريقك"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b8",
+      "number": 8,
+      "track": "tools",
+      "status": "approved",
+      "level": {
+        "en": "All levels",
+        "ar": "كل المستويات"
+      },
+      "title": {
+        "en": "Mastering Claude",
+        "ar": "احتراف Claude"
+      },
+      "subtitle": {
+        "en": "Claude.ai, Claude Code, the API and Agents, for Developers and Teams",
+        "ar": "Claude.ai وClaude Code والواجهة البرمجية والوكلاء، للمطورين والفرق"
+      },
+      "reader": {
+        "en": "Developers and teams who want to use Claude professionally.",
+        "ar": "المطورون والفرق الذين يريدون استخدام Claude باحتراف."
+      },
+      "pages": "320–380",
+      "tracks": [
+        "Claude",
+        "Claude Code",
+        "API",
+        "MCP"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "Claude.ai",
+            "ar": "Claude.ai"
+          },
+          "chapters": [
+            {
+              "en": "Meet Claude: Models, Strengths and Limits",
+              "ar": "تعرّف على Claude: النماذج ونقاط القوة والحدود"
+            },
+            {
+              "en": "Conversations, Files and Images",
+              "ar": "المحادثات والملفات والصور"
+            },
+            {
+              "en": "Projects and Knowledge",
+              "ar": "المشاريع والمعرفة"
+            },
+            {
+              "en": "Artifacts: Apps, Documents and Diagrams",
+              "ar": "Artifacts: التطبيقات والمستندات والرسوم"
+            },
+            {
+              "en": "Research, Connectors and Tools",
+              "ar": "البحث والموصلات والأدوات"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Claude Code",
+            "ar": "Claude Code"
+          },
+          "chapters": [
+            {
+              "en": "Claude Code in the Terminal",
+              "ar": "Claude Code في الطرفية"
+            },
+            {
+              "en": "Working on a Real Codebase",
+              "ar": "العمل على مستودع كود حقيقي"
+            },
+            {
+              "en": "CLAUDE.md, Skills and Hooks",
+              "ar": "CLAUDE.md والمهارات والخطافات"
+            },
+            {
+              "en": "From Issue to Pull Request",
+              "ar": "من المهمة إلى طلب الدمج"
+            },
+            {
+              "en": "Claude Code for Teams and CI",
+              "ar": "Claude Code للفرق والتكامل المستمر"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Building with Claude",
+            "ar": "البناء بـ Claude"
+          },
+          "chapters": [
+            {
+              "en": "The Claude API",
+              "ar": "واجهة Claude البرمجية"
+            },
+            {
+              "en": "Tool Use and Structured Output",
+              "ar": "استخدام الأدوات والمخرجات المنظمة"
+            },
+            {
+              "en": "MCP: Connecting Claude to Your Systems",
+              "ar": "MCP: ربط Claude بأنظمتك"
+            },
+            {
+              "en": "Building Agents",
+              "ar": "بناء الوكلاء"
+            },
+            {
+              "en": "Cost, Speed and Caching",
+              "ar": "التكلفة والسرعة والتخزين المؤقت"
+            },
+            {
+              "en": "Safety, Evaluation and Production",
+              "ar": "الأمان والتقييم والإنتاج"
+            },
+            {
+              "en": "Capstone: A Claude-Powered Product",
+              "ar": "المشروع الختامي: منتج يعمل بـ Claude"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b9",
+      "number": 9,
+      "track": "tools",
+      "status": "approved",
+      "level": {
+        "en": "Beginner → Professional",
+        "ar": "مبتدئ ← محترف"
+      },
+      "title": {
+        "en": "UI/UX Design with Figma",
+        "ar": "تصميم UI/UX بـ Figma"
+      },
+      "subtitle": {
+        "en": "From User Research to Design Systems and Developer Handoff",
+        "ar": "من فهم المستخدم إلى أنظمة التصميم وتسليم التصميم للمطورين"
+      },
+      "reader": {
+        "en": "Developers who want to design well, and anyone starting in product design.",
+        "ar": "المطورون الذين يريدون تصميماً جيداً، وكل من يبدأ في تصميم المنتجات."
+      },
+      "pages": "320–380",
+      "tracks": [
+        "Figma",
+        "UX",
+        "UI",
+        "Prototypes"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "UX: Designing for People",
+            "ar": "UX: التصميم للناس"
+          },
+          "chapters": [
+            {
+              "en": "What UX Really Is",
+              "ar": "ما UX حقاً"
+            },
+            {
+              "en": "Understanding Users: Research and Personas",
+              "ar": "فهم المستخدمين: البحث والشخصيات"
+            },
+            {
+              "en": "User Flows and Information Architecture",
+              "ar": "مسارات المستخدم وبنية المعلومات"
+            },
+            {
+              "en": "Wireframes",
+              "ar": "الإطارات الأولية"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "UI: Making It Beautiful and Clear",
+            "ar": "UI: الجمال والوضوح"
+          },
+          "chapters": [
+            {
+              "en": "Layout, Grids and Spacing",
+              "ar": "التخطيط والشبكات والمسافات"
+            },
+            {
+              "en": "Typography, Including Arabic",
+              "ar": "الخطوط والطباعة، ومعها العربية"
+            },
+            {
+              "en": "Colour and Contrast",
+              "ar": "الألوان والتباين"
+            },
+            {
+              "en": "Icons, Images and Illustration",
+              "ar": "الأيقونات والصور والرسوم"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Figma",
+            "ar": "Figma"
+          },
+          "chapters": [
+            {
+              "en": "Figma Essentials",
+              "ar": "أساسيات Figma"
+            },
+            {
+              "en": "Auto Layout and Constraints",
+              "ar": "Auto Layout والقيود"
+            },
+            {
+              "en": "Components and Variants",
+              "ar": "المكونات والمتغيرات"
+            },
+            {
+              "en": "Variables, Modes and Design Tokens",
+              "ar": "المتغيرات والأوضاع ورموز التصميم"
+            },
+            {
+              "en": "Interactive Prototypes",
+              "ar": "النماذج التفاعلية"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Working Like a Professional",
+            "ar": "العمل كمحترف"
+          },
+          "chapters": [
+            {
+              "en": "Design Systems",
+              "ar": "أنظمة التصميم"
+            },
+            {
+              "en": "Designing for RTL and Many Languages",
+              "ar": "التصميم من اليمين ولغات كثيرة"
+            },
+            {
+              "en": "Accessibility in Design",
+              "ar": "الوصول في التصميم"
+            },
+            {
+              "en": "Usability Testing",
+              "ar": "اختبار سهولة الاستخدام"
+            },
+            {
+              "en": "Handoff to Developers and Dev Mode",
+              "ar": "التسليم للمطورين وDev Mode"
+            },
+            {
+              "en": "Capstone: Design a Complete App",
+              "ar": "المشروع الختامي: صمّم تطبيقاً كاملاً"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b10",
+      "number": 10,
+      "track": "tools",
+      "status": "approved",
+      "level": {
+        "en": "Beginner → Professional",
+        "ar": "مبتدئ ← محترف"
+      },
+      "title": {
+        "en": "GitHub Like a Pro",
+        "ar": "احتراف GitHub"
+      },
+      "subtitle": {
+        "en": "Git, Collaboration, Code Review, Actions and Open Source",
+        "ar": "Git والتعاون ومراجعة الكود وGitHub Actions والمصادر المفتوحة"
+      },
+      "reader": {
+        "en": "Readers of Book 1 Chapter 15, and every developer who works in a team.",
+        "ar": "من قرأ الفصل 15 من الكتاب الأول، وكل مطور يعمل في فريق."
+      },
+      "pages": "280–340",
+      "tracks": [
+        "Git",
+        "GitHub",
+        "Actions",
+        "Open Source"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "Git in Depth",
+            "ar": "Git بعمق"
+          },
+          "chapters": [
+            {
+              "en": "How Git Really Works",
+              "ar": "كيف يعمل Git حقاً"
+            },
+            {
+              "en": "Branching Strategies",
+              "ar": "استراتيجيات الفروع"
+            },
+            {
+              "en": "Rewriting History Safely: Rebase and Friends",
+              "ar": "إعادة كتابة التاريخ بأمان: rebase ورفاقها"
+            },
+            {
+              "en": "Finding Bugs with Git: bisect and blame",
+              "ar": "إيجاد العلل بـ Git: bisect وblame"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Collaboration",
+            "ar": "التعاون"
+          },
+          "chapters": [
+            {
+              "en": "Repositories, Teams and Permissions",
+              "ar": "المستودعات والفرق والصلاحيات"
+            },
+            {
+              "en": "Pull Requests That Get Merged",
+              "ar": "طلبات دمج تُقبل"
+            },
+            {
+              "en": "Code Review: Giving and Receiving",
+              "ar": "مراجعة الكود: أن تعطي وأن تتلقى"
+            },
+            {
+              "en": "Issues, Projects and Discussions",
+              "ar": "المهام والمشاريع والنقاشات"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Automation",
+            "ar": "الأتمتة"
+          },
+          "chapters": [
+            {
+              "en": "GitHub Actions from Zero",
+              "ar": "GitHub Actions من الصفر"
+            },
+            {
+              "en": "CI: Tests and Checks on Every Push",
+              "ar": "التكامل المستمر: الاختبارات والفحوص مع كل دفع"
+            },
+            {
+              "en": "CD: Deploying Automatically",
+              "ar": "النشر المستمر: النشر تلقائياً"
+            },
+            {
+              "en": "Security: Dependabot, Secrets and Code Scanning",
+              "ar": "الأمان: Dependabot والأسرار وفحص الكود"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Beyond Code",
+            "ar": "أبعد من الكود"
+          },
+          "chapters": [
+            {
+              "en": "GitHub Pages, Releases and Packages",
+              "ar": "GitHub Pages والإصدارات والحزم"
+            },
+            {
+              "en": "Contributing to Open Source",
+              "ar": "المساهمة في المصادر المفتوحة"
+            },
+            {
+              "en": "Your GitHub Profile as a Portfolio",
+              "ar": "ملفك على GitHub معرضاً لأعمالك"
+            },
+            {
+              "en": "Capstone: Run a Project Like a Maintainer",
+              "ar": "المشروع الختامي: أدر مشروعاً كالمسؤولين عنه"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b11",
+      "number": 11,
+      "track": "tools",
+      "status": "approved",
+      "level": {
+        "en": "All levels",
+        "ar": "كل المستويات"
+      },
+      "title": {
+        "en": "Jira and Agile Teams",
+        "ar": "Jira والفرق الرشيقة"
+      },
+      "subtitle": {
+        "en": "Planning, Tracking and Delivering Software with Scrum and Kanban",
+        "ar": "التخطيط والمتابعة وتسليم البرمجيات بـ Scrum وKanban"
+      },
+      "reader": {
+        "en": "Developers, team leaders and anyone who plans or tracks software work.",
+        "ar": "المطورون وقادة الفرق وكل من يخطط لعمل البرمجيات أو يتابعه."
+      },
+      "pages": "240–300",
+      "tracks": [
+        "Jira",
+        "Scrum",
+        "Kanban",
+        "Agile"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "Agile Thinking",
+            "ar": "التفكير الرشيق"
+          },
+          "chapters": [
+            {
+              "en": "Why Agile: From Plans to Feedback",
+              "ar": "لماذا Agile: من الخطط إلى التغذية الراجعة"
+            },
+            {
+              "en": "Scrum in Practice",
+              "ar": "Scrum عملياً"
+            },
+            {
+              "en": "Kanban and Flow",
+              "ar": "Kanban والتدفق"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Jira Essentials",
+            "ar": "أساسيات Jira"
+          },
+          "chapters": [
+            {
+              "en": "Projects, Boards and Issues",
+              "ar": "المشاريع واللوحات والمهام"
+            },
+            {
+              "en": "Writing Good User Stories and Tasks",
+              "ar": "كتابة قصص مستخدم ومهام جيدة"
+            },
+            {
+              "en": "Backlogs, Sprints and Estimation",
+              "ar": "قوائم العمل والسبرنتات والتقدير"
+            },
+            {
+              "en": "Workflows and Statuses",
+              "ar": "سير العمل والحالات"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Jira for Professionals",
+            "ar": "Jira للمحترفين"
+          },
+          "chapters": [
+            {
+              "en": "Filters and JQL",
+              "ar": "المرشحات وJQL"
+            },
+            {
+              "en": "Dashboards and Reports",
+              "ar": "لوحات المتابعة والتقارير"
+            },
+            {
+              "en": "Automation Rules",
+              "ar": "قواعد الأتمتة"
+            },
+            {
+              "en": "Connecting Jira with GitHub and Slack",
+              "ar": "ربط Jira بـ GitHub وSlack"
+            },
+            {
+              "en": "Capstone: Run a Release from Idea to Launch",
+              "ar": "المشروع الختامي: أدر إصداراً من الفكرة إلى الإطلاق"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b12",
+      "number": 12,
+      "track": "leadership",
+      "status": "approved",
+      "level": {
+        "en": "Senior → Lead",
+        "ar": "خبير ← قائد"
+      },
+      "title": {
+        "en": "The Team Leader's Handbook",
+        "ar": "دليل قائد الفريق"
+      },
+      "subtitle": {
+        "en": "Leading Developers, Delivering Projects and Growing People",
+        "ar": "قيادة المطورين وتسليم المشاريع وتنمية الأفراد"
+      },
+      "reader": {
+        "en": "Senior developers becoming team leaders, and new tech leads.",
+        "ar": "المطورون الخبراء الذين يصيرون قادة فرق، وقادة الفرق التقنية الجدد."
+      },
+      "pages": "300–360",
+      "tracks": [
+        "Leadership",
+        "Delivery",
+        "Mentoring",
+        "Hiring"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "Becoming a Leader",
+            "ar": "أن تصير قائداً"
+          },
+          "chapters": [
+            {
+              "en": "From Developer to Team Leader",
+              "ar": "من مطور إلى قائد فريق"
+            },
+            {
+              "en": "Tech Lead, Team Lead and Engineering Manager",
+              "ar": "القائد التقني وقائد الفريق ومدير الهندسة"
+            },
+            {
+              "en": "Your First 90 Days",
+              "ar": "أيامك التسعون الأولى"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Leading the Work",
+            "ar": "قيادة العمل"
+          },
+          "chapters": [
+            {
+              "en": "Planning and Estimation",
+              "ar": "التخطيط والتقدير"
+            },
+            {
+              "en": "Technical Decisions and Architecture Records",
+              "ar": "القرارات التقنية وسجلات المعمارية"
+            },
+            {
+              "en": "Quality: Reviews, Standards and Definition of Done",
+              "ar": "الجودة: المراجعات والمعايير وتعريف الإنجاز"
+            },
+            {
+              "en": "Managing Risk and Delays",
+              "ar": "إدارة المخاطر والتأخير"
+            },
+            {
+              "en": "Incidents and Postmortems",
+              "ar": "الأعطال ومراجعة ما بعدها"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Leading People",
+            "ar": "قيادة الناس"
+          },
+          "chapters": [
+            {
+              "en": "One-to-Ones and Feedback",
+              "ar": "الجلسات الفردية والتغذية الراجعة"
+            },
+            {
+              "en": "Mentoring and Growing Developers",
+              "ar": "توجيه المطورين وتنميتهم"
+            },
+            {
+              "en": "Hiring and Interviews",
+              "ar": "التوظيف والمقابلات"
+            },
+            {
+              "en": "Motivation, Conflict and Hard Conversations",
+              "ar": "التحفيز والخلاف والمحادثات الصعبة"
+            },
+            {
+              "en": "Remote and Distributed Teams",
+              "ar": "الفرق عن بعد والموزعة"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Leading Upwards and Outwards",
+            "ar": "القيادة نحو الإدارة والعملاء"
+          },
+          "chapters": [
+            {
+              "en": "Working with Product, Design and Clients",
+              "ar": "العمل مع فريق المنتج والتصميم والعملاء"
+            },
+            {
+              "en": "Reporting Status Honestly",
+              "ar": "الإبلاغ عن الحال بصدق"
+            },
+            {
+              "en": "Leading with AI Tools",
+              "ar": "القيادة بأدوات الذكاء الاصطناعي"
+            },
+            {
+              "en": "Capstone: Your Team Playbook",
+              "ar": "المشروع الختامي: دليل فريقك"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b13",
+      "number": 13,
+      "track": "craft",
+      "status": "proposed",
+      "level": {
+        "en": "Junior → Senior",
+        "ar": "مبتدئ محترف ← خبير"
+      },
+      "title": {
+        "en": "Clean Code and Design Patterns",
+        "ar": "الكود النظيف وأنماط التصميم"
+      },
+      "subtitle": {
+        "en": "Writing Software That Is Easy to Read, Change and Test",
+        "ar": "كتابة برمجيات سهلة القراءة والتغيير والاختبار"
+      },
+      "reader": {
+        "en": "Developers on any path, after Book 1.",
+        "ar": "المطورون في أي مسار، بعد الكتاب الأول."
+      },
+      "pages": "300–360",
+      "tracks": [
+        "Clean Code",
+        "SOLID",
+        "Patterns",
+        "Refactoring"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "Clean Code",
+            "ar": "الكود النظيف"
+          },
+          "chapters": [
+            {
+              "en": "Names, Functions and Comments",
+              "ar": "الأسماء والدوال والتعليقات"
+            },
+            {
+              "en": "Errors and Edge Cases",
+              "ar": "الأخطاء والحالات الحدية"
+            },
+            {
+              "en": "Refactoring Step by Step",
+              "ar": "إعادة الهيكلة خطوة بخطوة"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Design",
+            "ar": "التصميم"
+          },
+          "chapters": [
+            {
+              "en": "SOLID Principles in Plain Language",
+              "ar": "مبادئ SOLID بلغة بسيطة"
+            },
+            {
+              "en": "Creational Patterns",
+              "ar": "أنماط الإنشاء"
+            },
+            {
+              "en": "Structural Patterns",
+              "ar": "أنماط البنية"
+            },
+            {
+              "en": "Behavioural Patterns",
+              "ar": "أنماط السلوك"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Quality",
+            "ar": "الجودة"
+          },
+          "chapters": [
+            {
+              "en": "Unit Testing and TDD",
+              "ar": "اختبار الوحدات والتطوير بالاختبار"
+            },
+            {
+              "en": "Testing the Hard Parts",
+              "ar": "اختبار الأجزاء الصعبة"
+            },
+            {
+              "en": "Capstone: Rescue a Legacy Codebase",
+              "ar": "المشروع الختامي: إنقاذ كود قديم"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b14",
+      "number": 14,
+      "track": "craft",
+      "status": "proposed",
+      "level": {
+        "en": "Beginner → Senior",
+        "ar": "مبتدئ ← خبير"
+      },
+      "title": {
+        "en": "Databases and SQL",
+        "ar": "قواعد البيانات وSQL"
+      },
+      "subtitle": {
+        "en": "Designing, Querying and Scaling Data with PostgreSQL",
+        "ar": "تصميم البيانات والاستعلام عنها وتوسيعها بـ PostgreSQL"
+      },
+      "reader": {
+        "en": "Readers of Book 1; essential for the backend and full stack paths.",
+        "ar": "من قرأ الكتاب الأول؛ وهو أساسي لمساري الخوادم والبرمجة الشاملة."
+      },
+      "pages": "300–360",
+      "tracks": [
+        "SQL",
+        "PostgreSQL",
+        "Modelling",
+        "Performance"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "SQL",
+            "ar": "SQL"
+          },
+          "chapters": [
+            {
+              "en": "Tables, Rows and Your First Queries",
+              "ar": "الجداول والصفوف وأول استعلاماتك"
+            },
+            {
+              "en": "Filtering, Sorting and Grouping",
+              "ar": "التصفية والترتيب والتجميع"
+            },
+            {
+              "en": "Joins",
+              "ar": "الربط بين الجداول"
+            },
+            {
+              "en": "Changing Data Safely",
+              "ar": "تغيير البيانات بأمان"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Design",
+            "ar": "التصميم"
+          },
+          "chapters": [
+            {
+              "en": "Data Modelling and Normalisation",
+              "ar": "نمذجة البيانات والتطبيع"
+            },
+            {
+              "en": "Keys, Constraints and Integrity",
+              "ar": "المفاتيح والقيود وسلامة البيانات"
+            },
+            {
+              "en": "Migrations",
+              "ar": "الترحيلات"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Production",
+            "ar": "الإنتاج"
+          },
+          "chapters": [
+            {
+              "en": "Indexes and Query Plans",
+              "ar": "الفهارس وخطط الاستعلام"
+            },
+            {
+              "en": "Transactions and Concurrency",
+              "ar": "المعاملات والتزامن"
+            },
+            {
+              "en": "Backups, Replication and Scaling",
+              "ar": "النسخ الاحتياطي والنسخ المتماثل والتوسع"
+            },
+            {
+              "en": "Capstone: Design the Database of a Real App",
+              "ar": "المشروع الختامي: صمّم قاعدة بيانات تطبيق حقيقي"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b15",
+      "number": 15,
+      "track": "craft",
+      "status": "proposed",
+      "level": {
+        "en": "Junior → Senior",
+        "ar": "مبتدئ محترف ← خبير"
+      },
+      "title": {
+        "en": "DevOps, Docker and the Cloud",
+        "ar": "DevOps وDocker والسحابة"
+      },
+      "subtitle": {
+        "en": "Shipping and Running Software Reliably",
+        "ar": "تسليم البرمجيات وتشغيلها بثقة"
+      },
+      "reader": {
+        "en": "Developers on any path who want to deploy and run their own work.",
+        "ar": "المطورون في أي مسار ممن يريدون نشر أعمالهم وتشغيلها."
+      },
+      "pages": "300–360",
+      "tracks": [
+        "Linux",
+        "Docker",
+        "CI/CD",
+        "Cloud"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "Foundations",
+            "ar": "الأساسيات"
+          },
+          "chapters": [
+            {
+              "en": "Linux and the Command Line for Servers",
+              "ar": "Linux وسطر الأوامر للخوادم"
+            },
+            {
+              "en": "Networking, DNS and HTTPS",
+              "ar": "الشبكات وDNS وHTTPS"
+            },
+            {
+              "en": "Docker from Zero",
+              "ar": "Docker من الصفر"
+            },
+            {
+              "en": "Docker Compose for Real Apps",
+              "ar": "Docker Compose للتطبيقات الحقيقية"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Delivery",
+            "ar": "التسليم"
+          },
+          "chapters": [
+            {
+              "en": "CI/CD Pipelines",
+              "ar": "خطوط التكامل والنشر المستمر"
+            },
+            {
+              "en": "Your Own Server: a VPS from Scratch",
+              "ar": "خادمك الخاص: VPS من الصفر"
+            },
+            {
+              "en": "The Cloud: What to Use and When",
+              "ar": "السحابة: ماذا تستخدم ومتى"
+            },
+            {
+              "en": "Infrastructure as Code",
+              "ar": "البنية ككود"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Operations",
+            "ar": "التشغيل"
+          },
+          "chapters": [
+            {
+              "en": "Monitoring, Logs and Alerts",
+              "ar": "المراقبة والسجلات والتنبيهات"
+            },
+            {
+              "en": "Security and Backups",
+              "ar": "الأمان والنسخ الاحتياطي"
+            },
+            {
+              "en": "Capstone: Deploy a Full Stack App with Zero Downtime",
+              "ar": "المشروع الختامي: انشر تطبيقاً شاملاً بلا توقف"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b16",
+      "number": 16,
+      "track": "career",
+      "status": "proposed",
+      "level": {
+        "en": "All levels",
+        "ar": "كل المستويات"
+      },
+      "title": {
+        "en": "The Developer's Career",
+        "ar": "المسيرة المهنية للمطور"
+      },
+      "subtitle": {
+        "en": "Portfolios, Interviews, Freelancing and Growing to Senior",
+        "ar": "معرض الأعمال والمقابلات والعمل الحر والنمو إلى مستوى الخبير"
+      },
+      "reader": {
+        "en": "Developers looking for their first job, their next job, or their own clients.",
+        "ar": "المطورون الباحثون عن وظيفتهم الأولى أو التالية أو عن عملائهم الخاصين."
+      },
+      "pages": "220–280",
+      "tracks": [
+        "Portfolio",
+        "Interviews",
+        "Freelance",
+        "Growth"
+      ],
+      "parts": [
+        {
+          "title": {
+            "en": "Getting Hired",
+            "ar": "الحصول على وظيفة"
+          },
+          "chapters": [
+            {
+              "en": "A Portfolio That Gets Interviews",
+              "ar": "معرض أعمال يأتيك بالمقابلات"
+            },
+            {
+              "en": "CVs and LinkedIn for Developers",
+              "ar": "السيرة الذاتية وLinkedIn للمطورين"
+            },
+            {
+              "en": "Technical Interviews and Coding Challenges",
+              "ar": "المقابلات التقنية وتحديات الكود"
+            },
+            {
+              "en": "System Design Interviews",
+              "ar": "مقابلات تصميم الأنظمة"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Working for Yourself",
+            "ar": "العمل لحسابك"
+          },
+          "chapters": [
+            {
+              "en": "Freelancing: Finding and Keeping Clients",
+              "ar": "العمل الحر: إيجاد العملاء والحفاظ عليهم"
+            },
+            {
+              "en": "Pricing, Contracts and Getting Paid",
+              "ar": "التسعير والعقود والحصول على أجرك"
+            },
+            {
+              "en": "Working Remotely for Companies Abroad",
+              "ar": "العمل عن بعد لشركات في الخارج"
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Growing",
+            "ar": "النمو"
+          },
+          "chapters": [
+            {
+              "en": "Learning How to Learn",
+              "ar": "تعلّم كيف تتعلم"
+            },
+            {
+              "en": "Writing, Speaking and Building a Name",
+              "ar": "الكتابة والحديث وبناء اسمك"
+            },
+            {
+              "en": "From Senior to Staff, Lead or Founder",
+              "ar": "من الخبير إلى القائد أو المؤسس"
+            }
+          ]
+        }
+      ]
     }
   ],
   "author": {
     "en": "Soliman Maged Saeed Salah",
     "ar": "سليمان ماجد سعيد صلاح"
+  },
+  "standards": {
+    "en": [
+      "Simple, clear language: one idea at a time, short sentences, every new word explained the first time.",
+      "Every concept with a real, tested example and its real output.",
+      "Every chapter ends with two or three guided practice projects that take the reader step by step, with hints and a full solution in the code repository.",
+      "Every part ends with a bigger project that combines its chapters.",
+      "Professional habits in every chapter: how experienced developers really work."
+    ],
+    "ar": [
+      "لغة بسيطة واضحة: فكرة واحدة كل مرة، وجمل قصيرة، وكل مصطلح جديد يُشرح عند أول ظهور.",
+      "كل مفهوم بمثال حقيقي مُختبر ومخرجاته الحقيقية.",
+      "كل فصل ينتهي بمشروعين أو ثلاثة مشاريع تطبيقية موجهة تأخذ بيد القارئ خطوة بخطوة، مع تلميحات وحل كامل في مستودع الكود.",
+      "كل جزء ينتهي بمشروع أكبر يجمع فصوله.",
+      "عادات المحترفين في كل فصل: كيف يعمل المطورون ذوو الخبرة حقاً."
+    ]
   }
 }
