@@ -27,9 +27,9 @@
   --quiz: #ca8a04;  --quiz-soft: #fefae8;
   --code-bg: #f7f8fc;
   --term-bg: #16142a;
-  --body: 'Source Serif 4', serif;
+  --body: 'Source Serif 4', 'Noto Naskh Arabic', serif;
   --head: 'Inter', sans-serif;
-  --mono: 'JetBrains Mono', monospace;
+  --mono: 'JetBrains Mono', 'Noto Naskh Arabic', monospace;
   --size: 10.5pt;
   --leading: 1.52;
 }

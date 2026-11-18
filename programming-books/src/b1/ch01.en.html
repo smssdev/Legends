@@ -1,0 +1,202 @@
+<section class="chapter" data-chapter="1" data-code="b1/ch01/en">
+<p class="chapter-kicker">Chapter 1</p>
+<h1>How Computers Run Programs</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn</p>
+<ul>
+<li>what a program really is</li>
+<li>the four main parts inside every computer, and what each one does</li>
+<li>why computers store everything, even letters and pictures, as numbers</li>
+<li>how the code you write becomes something a processor can run</li>
+<li>how to run your very first line of JavaScript</li>
+</ul>
+</div>
+
+<p class="lead">Today you have probably used dozens of programs without thinking about it. Your phone’s alarm woke you up, a map found you the fastest road, and a chat app carried your messages across the world in less than a second. Every one of those programs was written by a person, line by line, using the same basic ideas you will learn in this book.</p>
+
+<aside class="bit" data-mood="happy"><p>Hello! I’m Bit, and I’ll be your guide through this whole book. I love computers, but I promise: you do not need to be good at maths or “a computer person” to learn programming. You only need curiosity and a little patience. Ready?</p></aside>
+
+<p>Before you write any code, it helps to understand what happens inside the machine when a program runs. You do not need to become an engineer. A clear picture in your head is enough, and it will make everything in later chapters easier to understand.</p>
+
+<h2>1.1 What is a program?</h2>
+
+<p>A <dfn>program</dfn> is a list of instructions that tells a computer exactly what to do, step by step. You can think of it as a recipe. A recipe says: take two eggs, beat them, heat the pan, pour the eggs in. A program says: read the number the user typed, add 10 to it, show the result on the screen.</p>
+
+<p>There is one big difference between a cook and a computer. A cook understands what you <em>mean</em>. If a recipe says “add some salt”, a cook decides how much. A computer cannot guess. It does exactly what the instructions say, nothing more and nothing less, millions of times per second, without ever getting tired or bored.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>When your program does something strange, remember: the computer did exactly what you told it to do. The question is never “why is the computer wrong?” but “what did I actually tell it?” This mindset will save you hours.</p></aside>
+
+<p>That is why programming languages are so precise. Every comma, bracket and quote matters. At first this may feel strict, but it is also what makes computers so reliable: the same program, given the same input, gives the same answer every time.</p>
+
+<h2>1.2 Inside the computer</h2>
+
+<p>Every computer, from a phone to a huge server in a data centre, has the same four main parts.</p>
+
+<figure>
+<svg viewBox="0 0 520 230" role="img" aria-label="Input goes into the processor, which works with memory and storage, and sends results to output">
+<defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<g font-family="Inter" font-size="14" text-anchor="middle">
+<rect x="185" y="20" width="150" height="70" rx="14" fill="#4338ca"/><text x="260" y="50" fill="#fff" font-weight="700">Processor (CPU)</text><text x="260" y="70" fill="#e0e7ff" font-size="12">follows instructions</text>
+<rect x="20" y="40" width="120" height="50" rx="12" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="80" y="62" fill="#0f766e" font-weight="700">Input</text><text x="80" y="79" fill="#0f766e" font-size="11">keyboard, touch</text>
+<rect x="380" y="40" width="120" height="50" rx="12" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="440" y="62" fill="#ea580c" font-weight="700">Output</text><text x="440" y="79" fill="#ea580c" font-size="11">screen, sound</text>
+<rect x="80" y="145" width="160" height="60" rx="12" fill="#f5f0ff" stroke="#7c3aed" stroke-width="2"/><text x="160" y="170" fill="#7c3aed" font-weight="700">Memory (RAM)</text><text x="160" y="188" fill="#7c3aed" font-size="11">fast, forgets when off</text>
+<rect x="280" y="145" width="160" height="60" rx="12" fill="#fdf0f6" stroke="#db2777" stroke-width="2"/><text x="360" y="170" fill="#db2777" font-weight="700">Storage (disk)</text><text x="360" y="188" fill="#db2777" font-size="11">slower, keeps files</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.5" marker-end="url(#ar1)" fill="none">
+<line x1="140" y1="65" x2="181" y2="58"/><line x1="335" y1="58" x2="376" y2="65"/>
+<line x1="225" y1="92" x2="180" y2="141"/><line x1="295" y1="92" x2="340" y2="141"/>
+</g>
+</svg>
+<figcaption><b>Figure 1.1:</b> The four main parts of a computer and how information flows between them.</figcaption>
+</figure>
+
+<ul>
+<li><strong>The processor (CPU)</strong> is the part that actually follows the instructions. It is very simple-minded: it can add numbers, compare them, and move them around. But it does this billions of times every second.</li>
+<li><strong>Memory (RAM)</strong> is the processor’s desk. It holds the program that is running and the data it is working on right now. It is very fast, but it forgets everything when the power goes off.</li>
+<li><strong>Storage</strong>, such as an SSD, is the filing cabinet. It keeps your files, photos and installed programs, even when the computer is off. It is much slower than memory.</li>
+<li><strong>Input and output</strong> connect the computer to the world: the keyboard, mouse, touch screen and microphone bring information in; the screen and speakers send it out. A network connection does both.</li>
+</ul>
+
+<p>When you open an app, the computer copies the program from storage into memory, and the processor starts following its instructions one by one. When the program needs your name, it waits for input. When it has an answer, it sends output to the screen.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>A modern phone processor runs at around 3 GHz. That means its clock ticks about three billion times every second, and each tick can move the program forward. If you counted one number per second without stopping, it would take you almost a hundred years to reach three billion.</p></aside>
+
+<h2>1.3 Everything is a number</h2>
+
+<p>Here is the most surprising idea in this chapter: inside a computer, <em>everything</em> is stored as numbers. Your messages, your photos, your music and the programs themselves are all, in the end, long lists of numbers.</p>
+
+<p>And not just any numbers. Computers are built from billions of tiny electronic switches, and each switch can be in only two states: off or on. We write these as <code>0</code> and <code>1</code>. One switch is called a <dfn>bit</dfn>, short for “binary digit”. Eight bits together make a <dfn>byte</dfn>.</p>
+
+<aside class="bit" data-mood="wow"><p>Yes, my name comes from there! A bit is the smallest piece of information a computer can hold. Small, but very important. Just like me.</p></aside>
+
+<p>Counting with only <code>0</code> and <code>1</code> is called <dfn>binary</dfn>. It works just like the decimal counting you know, except that you run out of digits after 1 instead of after 9:</p>
+
+<table>
+<thead><tr><th>Decimal</th><th>Binary</th><th>Decimal</th><th>Binary</th></tr></thead>
+<tbody>
+<tr><td>0</td><td><code>0</code></td><td>5</td><td><code>101</code></td></tr>
+<tr><td>1</td><td><code>1</code></td><td>6</td><td><code>110</code></td></tr>
+<tr><td>2</td><td><code>10</code></td><td>7</td><td><code>111</code></td></tr>
+<tr><td>3</td><td><code>11</code></td><td>8</td><td><code>1000</code></td></tr>
+<tr><td>4</td><td><code>100</code></td><td>255</td><td><code>11111111</code></td></tr>
+</tbody>
+</table>
+
+<p>You will almost never write binary yourself; the computer handles it for you. But JavaScript can show you what a number looks like in binary, and we can check the table:</p>
+
+<pre data-code="binary.js" data-title="binary.js"></pre>
+<pre data-out="binary.js"></pre>
+
+<p>The <code>toString(2)</code> part means “write this number in base 2”, which is binary. <code>parseInt("1101", 2)</code> goes the other way and reads binary back into a normal number.</p>
+
+<h3>Letters are numbers too</h3>
+
+<p>If everything is a number, how does a computer store the letter A? It uses an agreed table that gives every character a number. The modern table is called <dfn>Unicode</dfn>, and it contains more than 150,000 characters from almost every writing system in the world, including Arabic, Chinese, and even emoji.</p>
+
+<pre data-code="letters.js" data-title="letters.js"></pre>
+<pre data-out="letters.js"></pre>
+
+<p>Capital A is number 65, small a is 97, and the Arabic letter ب is 1576. The last line goes the other way: the numbers 72 and 105 become the word “Hi”. A photo works the same way: it is a grid of tiny dots, and each dot is stored as three numbers for its red, green and blue light.</p>
+
+<h2>1.4 From your code to the processor</h2>
+
+<p>A processor understands only one language: <dfn>machine code</dfn>, which is long sequences of numbers, each one a tiny instruction such as “add these two values”. Writing programs directly in machine code is possible, but painfully slow and easy to get wrong.</p>
+
+<p>So people invented <dfn>programming languages</dfn>. A programming language lets you write instructions in a form that is much closer to human language, such as:</p>
+
+<pre class="plain">if (score &gt; 100) { console.log("You win!"); }</pre>
+
+<p>A special program then translates your code into machine code. Some languages translate the whole program in advance, which is called <dfn>compiling</dfn>. Others translate and run it as they go, which is called <dfn>interpreting</dfn>. Modern JavaScript does a clever mix of both, but the important idea is simple: you write readable code, and a translator turns it into numbers for the processor.</p>
+
+<figure>
+<svg viewBox="0 0 520 110" role="img" aria-label="Your code goes into a JavaScript engine which produces machine code that the processor runs">
+<defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<g font-family="Inter" font-size="13" text-anchor="middle">
+<rect x="10" y="25" width="140" height="60" rx="12" fill="#f7f8fc" stroke="#4338ca" stroke-width="2"/><text x="80" y="50" font-weight="700" fill="#4338ca">Your code</text><text x="80" y="70" font-family="JetBrains Mono" font-size="11" fill="#1e1b2e">console.log(…)</text>
+<rect x="190" y="25" width="140" height="60" rx="12" fill="#4338ca"/><text x="260" y="50" font-weight="700" fill="#fff">JavaScript engine</text><text x="260" y="70" font-size="11" fill="#e0e7ff">translates</text>
+<rect x="370" y="25" width="140" height="60" rx="12" fill="#16142a"/><text x="440" y="50" font-weight="700" fill="#fff">Machine code</text><text x="440" y="70" font-family="JetBrains Mono" font-size="11" fill="#86efac">10110000 01100001</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.5" marker-end="url(#ar2)"><line x1="150" y1="55" x2="186" y2="55"/><line x1="330" y1="55" x2="366" y2="55"/></g>
+</svg>
+<figcaption><b>Figure 1.2:</b> A JavaScript engine turns your readable code into machine code.</figcaption>
+</figure>
+
+<h3>Why JavaScript?</h3>
+
+<p>There are hundreds of programming languages. This book starts with JavaScript for three good reasons:</p>
+<ol>
+<li><strong>It is everywhere.</strong> Every web browser has a JavaScript engine built in, so you already own everything you need to run it.</li>
+<li><strong>It does almost everything.</strong> The same language builds websites, servers (with Node.js), mobile apps and even desktop programs.</li>
+<li><strong>It is in demand.</strong> For many years JavaScript has been one of the most used languages by professional developers around the world.</li>
+</ol>
+
+<p>In this book you will run JavaScript in two places: in the browser, and in the terminal with <dfn>Node.js</dfn>, a program that brings the browser’s JavaScript engine to your computer. You will install Node.js in Chapter 3.</p>
+
+<h2>1.5 Your first line of code</h2>
+
+<p>You do not have to wait until Chapter 3 to try JavaScript. Every browser has a hidden tool for developers. Open Chrome, Edge or Firefox, then press <code>F12</code> (on a Mac, press <code>Cmd</code> + <code>Option</code> + <code>J</code>). A panel opens; click the tab called <strong>Console</strong>. Type each of these lines and press Enter after each one:</p>
+
+<pre data-code="hello.js" data-title="hello.js"></pre>
+<pre data-out="hello.js"></pre>
+
+<p>Congratulations: you have just run your first program! Look closely at the last two lines, because they hide a lesson. <code>2 + 3</code> adds two numbers and gives <code>5</code>. But <code>"2" + "3"</code> gives <code>23</code>. The quotes turn the digits into text, and adding two pieces of text joins them together. You will learn all about this difference in Chapter 8.</p>
+
+<aside class="box try"><p class="box-title">Try it</p><p>In the console, type <code>console.log("Your name here")</code> with your own name. Then try <code>console.log(7 * 6)</code>. The star <code>*</code> means multiply. What do you think <code>console.log(100 / 4)</code> will show?</p></aside>
+
+<h2>1.6 What programmers really do</h2>
+
+<p>Many people imagine programmers typing fast in a dark room. The real job looks quite different. Most of a programmer’s time goes into:</p>
+<ul>
+<li><strong>Understanding the problem.</strong> What exactly should happen? What should happen when something goes wrong?</li>
+<li><strong>Planning.</strong> Breaking a big problem into small steps. This is the subject of Chapter 2.</li>
+<li><strong>Writing code</strong>, which is often the shortest part.</li>
+<li><strong>Testing and fixing.</strong> Running the program, finding where it behaves wrongly, and correcting it.</li>
+<li><strong>Reading code</strong> written by others, or by yourself months ago.</li>
+</ul>
+
+<p>A mistake in a program is called a <dfn>bug</dfn>, and finding and fixing it is called <dfn>debugging</dfn>. Every programmer writes bugs every day, including the very best. What makes someone a good programmer is not avoiding bugs, but finding and fixing them calmly.</p>
+
+<aside class="box fact"><p class="box-title">Did you know?</p><p>In 1947, engineers working on the Harvard Mark II computer found a real moth stuck inside the machine and taped it into their logbook with the note “First actual case of bug being found”. Grace Hopper, a computing pioneer who worked on that machine, loved telling the story. The word “bug” was already used for faults, but this moth made it famous.</p></aside>
+
+<h2>Common misunderstandings</h2>
+
+<table>
+<thead><tr><th>People often think…</th><th>In reality…</th></tr></thead>
+<tbody>
+<tr><td>You must be very good at maths</td><td>Most programming needs only basic arithmetic and clear thinking</td></tr>
+<tr><td>Computers are smart</td><td>Computers are fast and exact, but they only follow instructions</td></tr>
+<tr><td>Good programmers do not make mistakes</td><td>Good programmers make mistakes all the time and fix them well</td></tr>
+<tr><td>You must memorise everything</td><td>Professionals look things up every day; understanding matters more than memory</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A <strong>program</strong> is a precise list of instructions. The computer does exactly what it says.</li>
+<li>Every computer has a <strong>processor</strong>, <strong>memory</strong>, <strong>storage</strong>, and <strong>input and output</strong>.</li>
+<li>Everything inside a computer is stored as numbers made of <strong>bits</strong>; eight bits are a <strong>byte</strong>.</li>
+<li>Letters are numbers too, thanks to <strong>Unicode</strong>.</li>
+<li>Programming languages are translated into <strong>machine code</strong> by compilers or interpreters.</li>
+<li>JavaScript runs in every browser and, with <strong>Node.js</strong>, on your computer.</li>
+<li>Programming is mostly understanding, planning, testing and fixing; mistakes are called <strong>bugs</strong>.</li>
+</ul>
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Name the four main parts of a computer, and give one example of input and one of output.</li>
+<li><span class="level">Easy</span> Using the table in Section 1.3, what is 9 in binary? Check your answer with <code>(9).toString(2)</code> in the browser console.</li>
+<li><span class="level">Medium</span> Find the Unicode number of the first letter of your name with <code>"X".charCodeAt(0)</code>, replacing X with your letter.</li>
+<li><span class="level">Medium</span> Predict what each line prints, then check in the console: <code>console.log(10 + 5)</code>, <code>console.log("10" + "5")</code>, <code>console.log("10 + 5")</code>.</li>
+<li><span class="level">Challenge</span> Write the steps for making a cup of tea so precisely that a robot who knows nothing could follow them. Then ask a friend to find a step a robot could misunderstand.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 2</p>
+<p>Exercise 5 is a taste of the next chapter. Before programmers write code, they plan the steps. In Chapter 2 you will learn to turn any problem into a clear list of steps, called an algorithm, and to check that it works before you type a single line.</p>
+</div>
+</section>

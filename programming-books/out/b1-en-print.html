@@ -7,6 +7,8 @@
 @page :left { margin-left: 0.625in; margin-right: 0.875in; }
 @page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "Chapter 1: How Computers Run Programs"; } }
+@page ch01:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "Chapter 8: Values, Variables and Decisions"; } }
 @page ch08:first { @top-center { content: none; } }
 </style></head>
@@ -37,7 +39,263 @@
           <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
           <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: Thinking Like a Programmer</li><li class="toc-ch"><span class="toc-n">1</span>How Computers Run Programs</li><li class="toc-ch"><span class="toc-n">2</span>Thinking in Steps: Algorithms</li><li class="toc-ch"><span class="toc-n">3</span>Your Developer Toolkit</li><li class="toc-part">Part 2: Building for the Web</li><li class="toc-ch"><span class="toc-n">4</span>How the Web Works</li><li class="toc-ch"><span class="toc-n">5</span>HTML: The Structure of a Page</li><li class="toc-ch"><span class="toc-n">6</span>CSS: Styling a Page</li><li class="toc-ch"><span class="toc-n">7</span>Layout with Flexbox and Grid</li><li class="toc-part">Part 3: JavaScript</li><li class="toc-ch"><span class="toc-n">8</span>Values, Variables and Decisions <span class="toc-sample">(sample chapter)</span></li><li class="toc-ch"><span class="toc-n">9</span>Loops and Arrays</li><li class="toc-ch"><span class="toc-n">10</span>Functions</li><li class="toc-ch"><span class="toc-n">11</span>Objects and JSON</li><li class="toc-ch"><span class="toc-n">12</span>The DOM and Events</li><li class="toc-ch"><span class="toc-n">13</span>Asynchronous JavaScript and fetch</li><li class="toc-ch"><span class="toc-n">14</span>Reading Errors and Debugging</li><li class="toc-part">Part 4: Working Like a Professional</li><li class="toc-ch"><span class="toc-n">15</span>Git and GitHub</li><li class="toc-ch"><span class="toc-n">16</span>Accessible Pages for Everyone</li><li class="toc-ch"><span class="toc-n">17</span>Project: Build and Publish a Web App</li><li class="toc-ch"><span class="toc-n">18</span>Choosing Your Path</li></ol></section><section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: Thinking Like a Programmer</li><li class="toc-ch"><span class="toc-n">1</span>How Computers Run Programs</li><li class="toc-ch"><span class="toc-n">2</span>Thinking in Steps: Algorithms</li><li class="toc-ch"><span class="toc-n">3</span>Your Developer Toolkit</li><li class="toc-part">Part 2: Building for the Web</li><li class="toc-ch"><span class="toc-n">4</span>How the Web Works</li><li class="toc-ch"><span class="toc-n">5</span>HTML: The Structure of a Page</li><li class="toc-ch"><span class="toc-n">6</span>CSS: Styling a Page</li><li class="toc-ch"><span class="toc-n">7</span>Layout with Flexbox and Grid</li><li class="toc-part">Part 3: JavaScript</li><li class="toc-ch"><span class="toc-n">8</span>Values, Variables and Decisions <span class="toc-sample">(sample chapter)</span></li><li class="toc-ch"><span class="toc-n">9</span>Loops and Arrays</li><li class="toc-ch"><span class="toc-n">10</span>Functions</li><li class="toc-ch"><span class="toc-n">11</span>Objects and JSON</li><li class="toc-ch"><span class="toc-n">12</span>The DOM and Events</li><li class="toc-ch"><span class="toc-n">13</span>Asynchronous JavaScript and fetch</li><li class="toc-ch"><span class="toc-n">14</span>Reading Errors and Debugging</li><li class="toc-part">Part 4: Working Like a Professional</li><li class="toc-ch"><span class="toc-n">15</span>Git and GitHub</li><li class="toc-ch"><span class="toc-n">16</span>Accessible Pages for Everyone</li><li class="toc-ch"><span class="toc-n">17</span>Project: Build and Publish a Web App</li><li class="toc-ch"><span class="toc-n">18</span>Choosing Your Path</li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b1/ch01/en">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>How Computers Run Programs</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn</p>
+<ul>
+<li>what a program really is</li>
+<li>the four main parts inside every computer, and what each one does</li>
+<li>why computers store everything, even letters and pictures, as numbers</li>
+<li>how the code you write becomes something a processor can run</li>
+<li>how to run your very first line of JavaScript</li>
+</ul>
+</div>
+
+<p class="lead">Today you have probably used dozens of programs without thinking about it. Your phone’s alarm woke you up, a map found you the fastest road, and a chat app carried your messages across the world in less than a second. Every one of those programs was written by a person, line by line, using the same basic ideas you will learn in this book.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Hello! I’m Bit, and I’ll be your guide through this whole book. I love computers, but I promise: you do not need to be good at maths or “a computer person” to learn programming. You only need curiosity and a little patience. Ready?</p></div></div>
+
+<p>Before you write any code, it helps to understand what happens inside the machine when a program runs. You do not need to become an engineer. A clear picture in your head is enough, and it will make everything in later chapters easier to understand.</p>
+
+<h2><span class="sec">1.1</span><span>What is a program?</span></h2>
+
+<p>A <dfn>program</dfn> is a list of instructions that tells a computer exactly what to do, step by step. You can think of it as a recipe. A recipe says: take two eggs, beat them, heat the pan, pour the eggs in. A program says: read the number the user typed, add 10 to it, show the result on the screen.</p>
+
+<p>There is one big difference between a cook and a computer. A cook understands what you <em>mean</em>. If a recipe says “add some salt”, a cook decides how much. A computer cannot guess. It does exactly what the instructions say, nothing more and nothing less, millions of times per second, without ever getting tired or bored.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>When your program does something strange, remember: the computer did exactly what you told it to do. The question is never “why is the computer wrong?” but “what did I actually tell it?” This mindset will save you hours.</p></aside>
+
+<p>That is why programming languages are so precise. Every comma, bracket and quote matters. At first this may feel strict, but it is also what makes computers so reliable: the same program, given the same input, gives the same answer every time.</p>
+
+<h2><span class="sec">1.2</span><span>Inside the computer</span></h2>
+
+<p>Every computer, from a phone to a huge server in a data centre, has the same four main parts.</p>
+
+<figure>
+<svg viewBox="0 0 520 230" role="img" aria-label="Input goes into the processor, which works with memory and storage, and sends results to output">
+<defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/></marker></defs>
+<g font-family="Inter" font-size="14" text-anchor="middle">
+<rect x="185" y="20" width="150" height="70" rx="14" fill="#2b2b2b"/><text x="260" y="50" fill="#fff" font-weight="700">Processor (CPU)</text><text x="260" y="70" fill="#f2f2f2" font-size="12">follows instructions</text>
+<rect x="20" y="40" width="120" height="50" rx="12" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="80" y="62" fill="#2b2b2b" font-weight="700">Input</text><text x="80" y="79" fill="#2b2b2b" font-size="11">keyboard, touch</text>
+<rect x="380" y="40" width="120" height="50" rx="12" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="440" y="62" fill="#2b2b2b" font-weight="700">Output</text><text x="440" y="79" fill="#2b2b2b" font-size="11">screen, sound</text>
+<rect x="80" y="145" width="160" height="60" rx="12" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="160" y="170" fill="#2b2b2b" font-weight="700">Memory (RAM)</text><text x="160" y="188" fill="#2b2b2b" font-size="11">fast, forgets when off</text>
+<rect x="280" y="145" width="160" height="60" rx="12" fill="#efefef" stroke="#2b2b2b" stroke-width="2"/><text x="360" y="170" fill="#2b2b2b" font-weight="700">Storage (disk)</text><text x="360" y="188" fill="#2b2b2b" font-size="11">slower, keeps files</text>
+</g>
+<g stroke="#2b2b2b" stroke-width="2.5" marker-end="url(#ar1)" fill="none">
+<line x1="140" y1="65" x2="181" y2="58"/><line x1="335" y1="58" x2="376" y2="65"/>
+<line x1="225" y1="92" x2="180" y2="141"/><line x1="295" y1="92" x2="340" y2="141"/>
+</g>
+</svg>
+<figcaption><b>Figure 1.1:</b> The four main parts of a computer and how information flows between them.</figcaption>
+</figure>
+
+<ul>
+<li><strong>The processor (CPU)</strong> is the part that actually follows the instructions. It is very simple-minded: it can add numbers, compare them, and move them around. But it does this billions of times every second.</li>
+<li><strong>Memory (RAM)</strong> is the processor’s desk. It holds the program that is running and the data it is working on right now. It is very fast, but it forgets everything when the power goes off.</li>
+<li><strong>Storage</strong>, such as an SSD, is the filing cabinet. It keeps your files, photos and installed programs, even when the computer is off. It is much slower than memory.</li>
+<li><strong>Input and output</strong> connect the computer to the world: the keyboard, mouse, touch screen and microphone bring information in; the screen and speakers send it out. A network connection does both.</li>
+</ul>
+
+<p>When you open an app, the computer copies the program from storage into memory, and the processor starts following its instructions one by one. When the program needs your name, it waits for input. When it has an answer, it sends output to the screen.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>A modern phone processor runs at around 3 GHz. That means its clock ticks about three billion times every second, and each tick can move the program forward. If you counted one number per second without stopping, it would take you almost a hundred years to reach three billion.</p></aside>
+
+<h2><span class="sec">1.3</span><span>Everything is a number</span></h2>
+
+<p>Here is the most surprising idea in this chapter: inside a computer, <em>everything</em> is stored as numbers. Your messages, your photos, your music and the programs themselves are all, in the end, long lists of numbers.</p>
+
+<p>And not just any numbers. Computers are built from billions of tiny electronic switches, and each switch can be in only two states: off or on. We write these as <code>0</code> and <code>1</code>. One switch is called a <dfn>bit</dfn>, short for “binary digit”. Eight bits together make a <dfn>byte</dfn>.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Yes, my name comes from there! A bit is the smallest piece of information a computer can hold. Small, but very important. Just like me.</p></div></div>
+
+<p>Counting with only <code>0</code> and <code>1</code> is called <dfn>binary</dfn>. It works just like the decimal counting you know, except that you run out of digits after 1 instead of after 9:</p>
+
+<table>
+<thead><tr><th>Decimal</th><th>Binary</th><th>Decimal</th><th>Binary</th></tr></thead>
+<tbody>
+<tr><td>0</td><td><code>0</code></td><td>5</td><td><code>101</code></td></tr>
+<tr><td>1</td><td><code>1</code></td><td>6</td><td><code>110</code></td></tr>
+<tr><td>2</td><td><code>10</code></td><td>7</td><td><code>111</code></td></tr>
+<tr><td>3</td><td><code>11</code></td><td>8</td><td><code>1000</code></td></tr>
+<tr><td>4</td><td><code>100</code></td><td>255</td><td><code>11111111</code></td></tr>
+</tbody>
+</table>
+
+<p>You will almost never write binary yourself; the computer handles it for you. But JavaScript can show you what a number looks like in binary, and we can check the table:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">binary.js</div><pre class="code">console.log((<span class="n">5</span>).toString(<span class="n">2</span>));
+console.log((<span class="n">13</span>).toString(<span class="n">2</span>));
+console.log((<span class="n">255</span>).toString(<span class="n">2</span>));
+console.log(parseInt(<span class="s">&quot;1101&quot;</span>, <span class="n">2</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>101
+1101
+11111111
+13</pre></div>
+
+<p>The <code>toString(2)</code> part means “write this number in base 2”, which is binary. <code>parseInt("1101", 2)</code> goes the other way and reads binary back into a normal number.</p>
+
+<h3>Letters are numbers too</h3>
+
+<p>If everything is a number, how does a computer store the letter A? It uses an agreed table that gives every character a number. The modern table is called <dfn>Unicode</dfn>, and it contains more than 150,000 characters from almost every writing system in the world, including Arabic, Chinese, and even emoji.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">letters.js</div><pre class="code">console.log(<span class="s">&quot;A&quot;</span>.charCodeAt(<span class="n">0</span>));
+console.log(<span class="s">&quot;a&quot;</span>.charCodeAt(<span class="n">0</span>));
+console.log(<span class="s">&quot;ب&quot;</span>.charCodeAt(<span class="n">0</span>));
+console.log(String.fromCharCode(<span class="n">72</span>, <span class="n">105</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>65
+97
+1576
+Hi</pre></div>
+
+<p>Capital A is number 65, small a is 97, and the Arabic letter ب is 1576. The last line goes the other way: the numbers 72 and 105 become the word “Hi”. A photo works the same way: it is a grid of tiny dots, and each dot is stored as three numbers for its red, green and blue light.</p>
+
+<h2><span class="sec">1.4</span><span>From your code to the processor</span></h2>
+
+<p>A processor understands only one language: <dfn>machine code</dfn>, which is long sequences of numbers, each one a tiny instruction such as “add these two values”. Writing programs directly in machine code is possible, but painfully slow and easy to get wrong.</p>
+
+<p>So people invented <dfn>programming languages</dfn>. A programming language lets you write instructions in a form that is much closer to human language, such as:</p>
+
+<pre class="plain">if (score &gt; 100) { console.log("You win!"); }</pre>
+
+<p>A special program then translates your code into machine code. Some languages translate the whole program in advance, which is called <dfn>compiling</dfn>. Others translate and run it as they go, which is called <dfn>interpreting</dfn>. Modern JavaScript does a clever mix of both, but the important idea is simple: you write readable code, and a translator turns it into numbers for the processor.</p>
+
+<figure>
+<svg viewBox="0 0 520 110" role="img" aria-label="Your code goes into a JavaScript engine which produces machine code that the processor runs">
+<defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/></marker></defs>
+<g font-family="Inter" font-size="13" text-anchor="middle">
+<rect x="10" y="25" width="140" height="60" rx="12" fill="#f5f5f5" stroke="#2b2b2b" stroke-width="2"/><text x="80" y="50" font-weight="700" fill="#2b2b2b">Your code</text><text x="80" y="70" font-family="JetBrains Mono" font-size="11" fill="#1e1b2e">console.log(…)</text>
+<rect x="190" y="25" width="140" height="60" rx="12" fill="#2b2b2b"/><text x="260" y="50" font-weight="700" fill="#fff">JavaScript engine</text><text x="260" y="70" font-size="11" fill="#f2f2f2">translates</text>
+<rect x="370" y="25" width="140" height="60" rx="12" fill="#262626"/><text x="440" y="50" font-weight="700" fill="#fff">Machine code</text><text x="440" y="70" font-family="JetBrains Mono" font-size="11" fill="#e8e8e8">10110000 01100001</text>
+</g>
+<g stroke="#2b2b2b" stroke-width="2.5" marker-end="url(#ar2)"><line x1="150" y1="55" x2="186" y2="55"/><line x1="330" y1="55" x2="366" y2="55"/></g>
+</svg>
+<figcaption><b>Figure 1.2:</b> A JavaScript engine turns your readable code into machine code.</figcaption>
+</figure>
+
+<h3>Why JavaScript?</h3>
+
+<p>There are hundreds of programming languages. This book starts with JavaScript for three good reasons:</p>
+<ol>
+<li><strong>It is everywhere.</strong> Every web browser has a JavaScript engine built in, so you already own everything you need to run it.</li>
+<li><strong>It does almost everything.</strong> The same language builds websites, servers (with Node.js), mobile apps and even desktop programs.</li>
+<li><strong>It is in demand.</strong> For many years JavaScript has been one of the most used languages by professional developers around the world.</li>
+</ol>
+
+<p>In this book you will run JavaScript in two places: in the browser, and in the terminal with <dfn>Node.js</dfn>, a program that brings the browser’s JavaScript engine to your computer. You will install Node.js in Chapter 3.</p>
+
+<h2><span class="sec">1.5</span><span>Your first line of code</span></h2>
+
+<p>You do not have to wait until Chapter 3 to try JavaScript. Every browser has a hidden tool for developers. Open Chrome, Edge or Firefox, then press <code>F12</code> (on a Mac, press <code>Cmd</code> + <code>Option</code> + <code>J</code>). A panel opens; click the tab called <strong>Console</strong>. Type each of these lines and press Enter after each one:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">hello.js</div><pre class="code">console.log(<span class="s">&quot;Hello, world!&quot;</span>);
+console.log(<span class="n">2</span> + <span class="n">3</span>);
+console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Hello, world!
+5
+23</pre></div>
+
+<p>Congratulations: you have just run your first program! Look closely at the last two lines, because they hide a lesson. <code>2 + 3</code> adds two numbers and gives <code>5</code>. But <code>"2" + "3"</code> gives <code>23</code>. The quotes turn the digits into text, and adding two pieces of text joins them together. You will learn all about this difference in Chapter 8.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>In the console, type <code>console.log("Your name here")</code> with your own name. Then try <code>console.log(7 * 6)</code>. The star <code>*</code> means multiply. What do you think <code>console.log(100 / 4)</code> will show?</p></aside>
+
+<h2><span class="sec">1.6</span><span>What programmers really do</span></h2>
+
+<p>Many people imagine programmers typing fast in a dark room. The real job looks quite different. Most of a programmer’s time goes into:</p>
+<ul>
+<li><strong>Understanding the problem.</strong> What exactly should happen? What should happen when something goes wrong?</li>
+<li><strong>Planning.</strong> Breaking a big problem into small steps. This is the subject of Chapter 2.</li>
+<li><strong>Writing code</strong>, which is often the shortest part.</li>
+<li><strong>Testing and fixing.</strong> Running the program, finding where it behaves wrongly, and correcting it.</li>
+<li><strong>Reading code</strong> written by others, or by yourself months ago.</li>
+</ul>
+
+<p>A mistake in a program is called a <dfn>bug</dfn>, and finding and fixing it is called <dfn>debugging</dfn>. Every programmer writes bugs every day, including the very best. What makes someone a good programmer is not avoiding bugs, but finding and fixing them calmly.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>In 1947, engineers working on the Harvard Mark II computer found a real moth stuck inside the machine and taped it into their logbook with the note “First actual case of bug being found”. Grace Hopper, a computing pioneer who worked on that machine, loved telling the story. The word “bug” was already used for faults, but this moth made it famous.</p></aside>
+
+<h2 class="plain-h">Common misunderstandings</h2>
+
+<table>
+<thead><tr><th>People often think…</th><th>In reality…</th></tr></thead>
+<tbody>
+<tr><td>You must be very good at maths</td><td>Most programming needs only basic arithmetic and clear thinking</td></tr>
+<tr><td>Computers are smart</td><td>Computers are fast and exact, but they only follow instructions</td></tr>
+<tr><td>Good programmers do not make mistakes</td><td>Good programmers make mistakes all the time and fix them well</td></tr>
+<tr><td>You must memorise everything</td><td>Professionals look things up every day; understanding matters more than memory</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A <strong>program</strong> is a precise list of instructions. The computer does exactly what it says.</li>
+<li>Every computer has a <strong>processor</strong>, <strong>memory</strong>, <strong>storage</strong>, and <strong>input and output</strong>.</li>
+<li>Everything inside a computer is stored as numbers made of <strong>bits</strong>; eight bits are a <strong>byte</strong>.</li>
+<li>Letters are numbers too, thanks to <strong>Unicode</strong>.</li>
+<li>Programming languages are translated into <strong>machine code</strong> by compilers or interpreters.</li>
+<li>JavaScript runs in every browser and, with <strong>Node.js</strong>, on your computer.</li>
+<li>Programming is mostly understanding, planning, testing and fixing; mistakes are called <strong>bugs</strong>.</li>
+</ul>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Name the four main parts of a computer, and give one example of input and one of output.</li>
+<li><span class="level">Easy</span> Using the table in Section 1.3, what is 9 in binary? Check your answer with <code>(9).toString(2)</code> in the browser console.</li>
+<li><span class="level medium">Medium</span> Find the Unicode number of the first letter of your name with <code>"X".charCodeAt(0)</code>, replacing X with your letter.</li>
+<li><span class="level medium">Medium</span> Predict what each line prints, then check in the console: <code>console.log(10 + 5)</code>, <code>console.log("10" + "5")</code>, <code>console.log("10 + 5")</code>.</li>
+<li><span class="level hard">Challenge</span> Write the steps for making a cup of tea so precisely that a robot who knows nothing could follow them. Then ask a friend to find a step a robot could misunderstand.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 2</p>
+<p>Exercise 5 is a taste of the next chapter. Before programmers write code, they plan the steps. In Chapter 2 you will learn to turn any problem into a clear list of steps, called an algorithm, and to check that it works before you type a single line.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/en">
 <div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">Chapter 8</p><h1>Values, Variables and Decisions</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>

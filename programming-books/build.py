@@ -67,6 +67,53 @@ def highlight_js(src):
     return "".join(out)
 
 
+def highlight_markup(src, kind):
+    """HTML and CSS: tags and properties in the keyword colour, values and strings in the string colour."""
+    if kind == "html":
+        token = re.compile(r"(<!--.*?-->)|(</?[a-zA-Z][\w-]*|/?>)|(\b[a-zA-Z-]+(?==))|(\"[^\"]*\")", re.S)
+    else:
+        token = re.compile(r"(/\*.*?\*/)|([.#]?[a-zA-Z][\w-]*(?=\s*\{)|@[a-z-]+)|([a-z-]+(?=\s*:))|(:\s*[^;{}\n]+)", re.S)
+    out, pos = [], 0
+    for m in token.finditer(src):
+        out.append(html.escape(src[pos:m.start()]))
+        text = html.escape(m.group(0))
+        if m.group(1):
+            out.append(f'<span class="c">{text}</span>')
+        elif m.group(2):
+            out.append(f'<span class="k">{text}</span>')
+        elif m.group(3):
+            out.append(f'<span class="n">{text}</span>')
+        else:
+            out.append(f'<span class="s">{text}</span>')
+        pos = m.end()
+    out.append(html.escape(src[pos:]))
+    return "".join(out)
+
+
+def highlight_shell(src):
+    """Terminal sessions: the prompt and the command stand out from what the computer answers."""
+    lines = []
+    for line in src.split("\n"):
+        if line.startswith("$ ") or line.startswith("> "):
+            lines.append(f'<span class="c">{html.escape(line[:2])}</span><span class="k">{html.escape(line[2:])}</span>')
+        elif line.startswith("#"):
+            lines.append(f'<span class="c">{html.escape(line)}</span>')
+        else:
+            lines.append(html.escape(line))
+    return "\n".join(lines)
+
+
+def highlight(src, name):
+    ext = name.rsplit(".", 1)[-1]
+    if ext == "js":
+        return highlight_js(src)
+    if ext in ("html", "css"):
+        return highlight_markup(src, ext)
+    if ext in ("sh", "txt"):
+        return highlight_shell(src)
+    return html.escape(src)
+
+
 def run_node(path):
     r = subprocess.run(["node", path.name], cwd=path.parent, capture_output=True, text=True, timeout=20)
     lines = (r.stdout + r.stderr).splitlines()
@@ -86,7 +133,7 @@ def fill_code(chapter, lang):
         title = re.search(r'data-title="([^"]+)"', attrs)
         head = f'<div class="listing-title">{title.group(1)}</div>' if title else ""
         src = (code_dir / f).read_text().rstrip("\n")
-        return f'<div class="listing" dir="ltr">{head}<pre class="code">{highlight_js(src)}</pre></div>'
+        return f'<div class="listing" dir="ltr">{head}<pre class="code">{highlight(src, f)}</pre></div>'
 
     def out(m):
         attrs = m.group(1)
@@ -143,7 +190,11 @@ def front_matter(book, lang):
 
 # Bit in greys for the black-and-white edition.
 GREYS = {"#6366f1": "#a3a3a3", "#e0e7ff": "#f2f2f2", "#312e81": "#1a1a1a", "#818cf8": "#c8c8c8",
-         "#fbbf24": "#e0e0e0", "#f472b6": "#8c8c8c", "#f9a8d4": "#d4d4d4", "#1e1b4b": "#111111"}
+         "#fbbf24": "#e0e0e0", "#f472b6": "#8c8c8c", "#f9a8d4": "#d4d4d4", "#1e1b4b": "#111111",
+         # figure palette
+         "#4338ca": "#2b2b2b", "#0f766e": "#2b2b2b", "#ea580c": "#2b2b2b", "#7c3aed": "#2b2b2b",
+         "#db2777": "#2b2b2b", "#16142a": "#262626", "#86efac": "#e8e8e8", "#e6f7f4": "#efefef",
+         "#fff4ea": "#efefef", "#f5f0ff": "#efefef", "#fdf0f6": "#efefef", "#f7f8fc": "#f5f5f5"}
 EDITIONS = ("color", "print")
 
 

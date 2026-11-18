@@ -7,6 +7,8 @@
 @page :left { margin-left: 0.75in; margin-right: 0.75in; }
 @page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
 @page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "الفصل 1: كيف ينفّذ الحاسوب البرامج"; } }
+@page ch01:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: القيم والمتغيرات والقرارات"; } }
 @page ch08:first { @top-center { content: none; } }
 
@@ -139,7 +141,263 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: التفكير كمبرمج</li><li class="toc-ch"><span class="toc-n">1</span>كيف ينفّذ الحاسوب البرامج</li><li class="toc-ch"><span class="toc-n">2</span>التفكير بالخطوات: الخوارزميات</li><li class="toc-ch"><span class="toc-n">3</span>أدوات المبرمج</li><li class="toc-part">الجزء 2: البناء للويب</li><li class="toc-ch"><span class="toc-n">4</span>كيف يعمل الويب</li><li class="toc-ch"><span class="toc-n">5</span>HTML: بنية الصفحة</li><li class="toc-ch"><span class="toc-n">6</span>CSS: تنسيق الصفحة</li><li class="toc-ch"><span class="toc-n">7</span>التخطيط بـ Flexbox وGrid</li><li class="toc-part">الجزء 3: JavaScript</li><li class="toc-ch"><span class="toc-n">8</span>القيم والمتغيرات والقرارات <span class="toc-sample">(فصل نموذجي)</span></li><li class="toc-ch"><span class="toc-n">9</span>الحلقات والمصفوفات</li><li class="toc-ch"><span class="toc-n">10</span>الدوال</li><li class="toc-ch"><span class="toc-n">11</span>الكائنات وJSON</li><li class="toc-ch"><span class="toc-n">12</span>DOM والأحداث</li><li class="toc-ch"><span class="toc-n">13</span>JavaScript غير المتزامنة وfetch</li><li class="toc-ch"><span class="toc-n">14</span>قراءة الأخطاء وتتبّعها</li><li class="toc-part">الجزء 4: العمل كمحترف</li><li class="toc-ch"><span class="toc-n">15</span>Git وGitHub</li><li class="toc-ch"><span class="toc-n">16</span>صفحات يصل إليها الجميع</li><li class="toc-ch"><span class="toc-n">17</span>مشروع: ابنِ تطبيق ويب وانشره</li><li class="toc-ch"><span class="toc-n">18</span>اختيار مسارك</li></ol></section><section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: التفكير كمبرمج</li><li class="toc-ch"><span class="toc-n">1</span>كيف ينفّذ الحاسوب البرامج</li><li class="toc-ch"><span class="toc-n">2</span>التفكير بالخطوات: الخوارزميات</li><li class="toc-ch"><span class="toc-n">3</span>أدوات المبرمج</li><li class="toc-part">الجزء 2: البناء للويب</li><li class="toc-ch"><span class="toc-n">4</span>كيف يعمل الويب</li><li class="toc-ch"><span class="toc-n">5</span>HTML: بنية الصفحة</li><li class="toc-ch"><span class="toc-n">6</span>CSS: تنسيق الصفحة</li><li class="toc-ch"><span class="toc-n">7</span>التخطيط بـ Flexbox وGrid</li><li class="toc-part">الجزء 3: JavaScript</li><li class="toc-ch"><span class="toc-n">8</span>القيم والمتغيرات والقرارات <span class="toc-sample">(فصل نموذجي)</span></li><li class="toc-ch"><span class="toc-n">9</span>الحلقات والمصفوفات</li><li class="toc-ch"><span class="toc-n">10</span>الدوال</li><li class="toc-ch"><span class="toc-n">11</span>الكائنات وJSON</li><li class="toc-ch"><span class="toc-n">12</span>DOM والأحداث</li><li class="toc-ch"><span class="toc-n">13</span>JavaScript غير المتزامنة وfetch</li><li class="toc-ch"><span class="toc-n">14</span>قراءة الأخطاء وتتبّعها</li><li class="toc-part">الجزء 4: العمل كمحترف</li><li class="toc-ch"><span class="toc-n">15</span>Git وGitHub</li><li class="toc-ch"><span class="toc-n">16</span>صفحات يصل إليها الجميع</li><li class="toc-ch"><span class="toc-n">17</span>مشروع: ابنِ تطبيق ويب وانشره</li><li class="toc-ch"><span class="toc-n">18</span>اختيار مسارك</li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b1/ch01/ar">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>كيف ينفّذ الحاسوب البرامج</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل</p>
+<ul>
+<li>ما البرنامج حقاً</li>
+<li>الأجزاء الأربعة الأساسية في كل حاسوب، ووظيفة كل منها</li>
+<li>لماذا يحفظ الحاسوب كل شيء أرقاماً، حتى الحروف والصور</li>
+<li>كيف يتحول الكود الذي تكتبه إلى شيء يفهمه المعالج</li>
+<li>كيف تشغّل أول سطر لك بـ JavaScript</li>
+</ul>
+</div>
+
+<p class="lead">ربما استخدمت اليوم عشرات البرامج دون أن تفكر فيها. منبّه هاتفك أيقظك، وتطبيق الخرائط وجد لك أسرع طريق، وتطبيق المحادثة نقل رسائلك إلى الطرف الآخر من العالم في أقل من ثانية. وكل واحد من هذه البرامج كتبه إنسان، سطراً بعد سطر، بالأفكار الأساسية نفسها التي ستتعلمها في هذا الكتاب.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أهلاً! أنا «بِت»، وسأرافقك في هذا الكتاب كله. أحب الحواسيب كثيراً، لكني أعدك: لا تحتاج أن تكون متفوقاً في الرياضيات، ولا «خبيراً في الكمبيوتر» لتتعلم البرمجة. يكفيك الفضول وقليل من الصبر. مستعد؟</p></div></div>
+
+<p>قبل أن تكتب أي كود، يفيدك أن تفهم ما يحدث داخل الجهاز حين يعمل البرنامج. لن تحتاج أن تصير مهندساً، فتكفيك صورة واضحة في ذهنك، وستجعل كل الفصول القادمة أسهل في الفهم.</p>
+
+<h2><span class="sec">1.1</span><span>ما البرنامج؟</span></h2>
+
+<p><dfn>البرنامج</dfn> قائمة من التعليمات تخبر الحاسوب بالضبط بما يفعله، خطوة بعد خطوة. ويمكنك أن تتخيله وصفة طبخ. الوصفة تقول: خذ بيضتين، واخفقهما، وسخّن المقلاة، ثم صبّ البيض. والبرنامج يقول: اقرأ الرقم الذي كتبه المستخدم، وأضف إليه 10، واعرض النتيجة على الشاشة.</p>
+
+<p>لكن بين الطاهي والحاسوب فرقاً كبيراً. الطاهي يفهم ما <em>تقصده</em>؛ فإن قالت الوصفة «أضف قليلاً من الملح» قرر هو الكمية. أما الحاسوب فلا يخمّن. إنه ينفّذ ما تقوله التعليمات بالضبط، لا أكثر ولا أقل، ملايين المرات في الثانية، دون أن يتعب أو يملّ.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>حين يفعل برنامجك شيئاً غريباً، تذكّر: الحاسوب فعل بالضبط ما أمرته به. فالسؤال ليس «لماذا أخطأ الحاسوب؟» بل «ماذا قلت له فعلاً؟». وهذه الطريقة في التفكير ستوفر عليك ساعات.</p></aside>
+
+<p>ولهذا لغات البرمجة دقيقة جداً، وكل فاصلة وقوس وعلامة تنصيص لها معنى. قد تبدو هذه الدقة صارمة في البداية، لكنها هي ما يجعل الحاسوب جديراً بالثقة: البرنامج نفسه، بالمدخلات نفسها، يعطي الجواب نفسه في كل مرة.</p>
+
+<h2><span class="sec">1.2</span><span>داخل الحاسوب</span></h2>
+
+<p>كل حاسوب، من الهاتف إلى الخادم الضخم في مراكز البيانات، فيه الأجزاء الأربعة الأساسية نفسها.</p>
+
+<figure>
+<svg viewBox="0 0 520 230" role="img" aria-label="المدخلات تذهب إلى المعالج الذي يعمل مع الذاكرة والتخزين ويرسل النتائج إلى المخرجات">
+<defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<g font-family="Cairo" font-size="14" text-anchor="middle" direction="rtl">
+<rect x="185" y="20" width="150" height="70" rx="14" fill="#4338ca"/><text x="260" y="50" fill="#fff" font-weight="700">المعالج (CPU)</text><text x="260" y="72" fill="#e0e7ff" font-size="12">ينفّذ التعليمات</text>
+<rect x="380" y="40" width="120" height="50" rx="12" fill="#e6f7f4" stroke="#0f766e" stroke-width="2"/><text x="440" y="62" fill="#0f766e" font-weight="700">المدخلات</text><text x="440" y="81" fill="#0f766e" font-size="11">لوحة المفاتيح، اللمس</text>
+<rect x="20" y="40" width="120" height="50" rx="12" fill="#fff4ea" stroke="#ea580c" stroke-width="2"/><text x="80" y="62" fill="#ea580c" font-weight="700">المخرجات</text><text x="80" y="81" fill="#ea580c" font-size="11">الشاشة، الصوت</text>
+<rect x="280" y="145" width="160" height="60" rx="12" fill="#f5f0ff" stroke="#7c3aed" stroke-width="2"/><text x="360" y="170" fill="#7c3aed" font-weight="700">الذاكرة (RAM)</text><text x="360" y="190" fill="#7c3aed" font-size="11">سريعة، وتنسى عند الإطفاء</text>
+<rect x="80" y="145" width="160" height="60" rx="12" fill="#fdf0f6" stroke="#db2777" stroke-width="2"/><text x="160" y="170" fill="#db2777" font-weight="700">التخزين (القرص)</text><text x="160" y="190" fill="#db2777" font-size="11">أبطأ، ويحفظ الملفات</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.5" marker-end="url(#ar1)" fill="none">
+<line x1="380" y1="65" x2="339" y2="58"/><line x1="185" y1="58" x2="144" y2="65"/>
+<line x1="295" y1="92" x2="340" y2="141"/><line x1="225" y1="92" x2="180" y2="141"/>
+</g>
+</svg>
+<figcaption><b>الشكل 1.1:</b> الأجزاء الأربعة الأساسية في الحاسوب، وكيف تنتقل المعلومات بينها.</figcaption>
+</figure>
+
+<ul>
+<li><strong>المعالج (CPU)</strong> هو الجزء الذي ينفّذ التعليمات فعلاً. وهو بسيط جداً في تفكيره: يجمع الأرقام ويقارنها وينقلها من مكان لآخر، لكنه يفعل ذلك مليارات المرات في الثانية.</li>
+<li><strong>الذاكرة (RAM)</strong> هي مكتب المعالج. فيها البرنامج الذي يعمل الآن والبيانات التي يشتغل عليها. وهي سريعة جداً، لكنها تنسى كل شيء حين ينقطع التيار.</li>
+<li><strong>التخزين</strong>، مثل قرص SSD، هو خزانة الملفات. يحفظ ملفاتك وصورك والبرامج المثبتة حتى والجهاز مطفأ، لكنه أبطأ كثيراً من الذاكرة.</li>
+<li><strong>المدخلات والمخرجات</strong> تصل الحاسوب بالعالم: لوحة المفاتيح والفأرة وشاشة اللمس والميكروفون تُدخل المعلومات، والشاشة والسماعات تُخرجها. والشبكة تفعل الاثنين.</li>
+</ul>
+
+<p>حين تفتح تطبيقاً، ينسخ الحاسوب البرنامج من التخزين إلى الذاكرة، ويبدأ المعالج في تنفيذ تعليماته واحدة بعد أخرى. وحين يحتاج البرنامج اسمك ينتظر المدخلات، وحين يصل إلى جواب يرسله مخرجاتٍ إلى الشاشة.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>يعمل معالج الهاتف الحديث بسرعة 3 غيغاهرتز تقريباً، أي أن ساعته تدقّ نحو ثلاثة مليارات مرة في الثانية، وكل دقة يمكن أن تتقدم بالبرنامج خطوة. ولو عددت رقماً كل ثانية بلا توقف، لاحتجت قرابة مئة عام لتصل إلى ثلاثة مليارات.</p></aside>
+
+<h2><span class="sec">1.3</span><span>كل شيء رقم</span></h2>
+
+<p>هذه أغرب فكرة في هذا الفصل: داخل الحاسوب، <em>كل شيء</em> يُحفظ أرقاماً. رسائلك وصورك وموسيقاك، والبرامج نفسها، كلها في النهاية قوائم طويلة من الأرقام.</p>
+
+<p>وليست أي أرقام. فالحاسوب مبني من مليارات المفاتيح الإلكترونية الصغيرة، وكل مفتاح له حالتان فقط: مطفأ أو مشغّل، ونكتبهما <code>0</code> و<code>1</code>. ويُسمى المفتاح الواحد <dfn>بِت</dfn> (bit)، وهي اختصار «رقم ثنائي» بالإنجليزية. وثمانية بِتات معاً تكوّن <dfn>بايت</dfn> (byte).</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>نعم، من هنا جاء اسمي! البِت أصغر قطعة معلومات يمكن أن يحملها الحاسوب. صغير، لكنه مهم جداً. تماماً مثلي.</p></div></div>
+
+<p>والعدّ بالرقمين <code>0</code> و<code>1</code> وحدهما يُسمى <dfn>النظام الثنائي</dfn> (binary). وهو يعمل مثل العدّ العشري الذي تعرفه، إلا أن الأرقام تنتهي بعد 1 بدل أن تنتهي بعد 9:</p>
+
+<table>
+<thead><tr><th>عشري</th><th>ثنائي</th><th>عشري</th><th>ثنائي</th></tr></thead>
+<tbody>
+<tr><td>0</td><td><code>0</code></td><td>5</td><td><code>101</code></td></tr>
+<tr><td>1</td><td><code>1</code></td><td>6</td><td><code>110</code></td></tr>
+<tr><td>2</td><td><code>10</code></td><td>7</td><td><code>111</code></td></tr>
+<tr><td>3</td><td><code>11</code></td><td>8</td><td><code>1000</code></td></tr>
+<tr><td>4</td><td><code>100</code></td><td>255</td><td><code>11111111</code></td></tr>
+</tbody>
+</table>
+
+<p>نادراً ما ستكتب بالنظام الثنائي بنفسك، فالحاسوب يتولى ذلك عنك. لكن JavaScript تستطيع أن تريك شكل الرقم بالثنائي، فلنتحقق من الجدول:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">binary.js</div><pre class="code">console.log((<span class="n">5</span>).toString(<span class="n">2</span>));
+console.log((<span class="n">13</span>).toString(<span class="n">2</span>));
+console.log((<span class="n">255</span>).toString(<span class="n">2</span>));
+console.log(parseInt(<span class="s">&quot;1101&quot;</span>, <span class="n">2</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>101
+1101
+11111111
+13</pre></div>
+
+<p>الجزء <code>toString(2)</code> معناه «اكتب هذا الرقم بالأساس 2»، أي بالثنائي. و<code>parseInt("1101", 2)</code> تفعل العكس، فتقرأ الثنائي وتعيده رقماً عادياً.</p>
+
+<h3>الحروف أرقام أيضاً</h3>
+
+<p>إن كان كل شيء رقماً، فكيف يحفظ الحاسوب حرف A؟ إنه يستخدم جدولاً متفقاً عليه يعطي كل حرف رقماً. والجدول الحديث اسمه <dfn>يونيكود</dfn> (Unicode)، وفيه أكثر من 150 ألف حرف من كل أنظمة الكتابة في العالم تقريباً، ومنها العربية والصينية، وحتى الوجوه التعبيرية.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">letters.js</div><pre class="code">console.log(<span class="s">&quot;A&quot;</span>.charCodeAt(<span class="n">0</span>));
+console.log(<span class="s">&quot;a&quot;</span>.charCodeAt(<span class="n">0</span>));
+console.log(<span class="s">&quot;ب&quot;</span>.charCodeAt(<span class="n">0</span>));
+console.log(String.fromCharCode(<span class="n">72</span>, <span class="n">105</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>65
+97
+1576
+Hi</pre></div>
+
+<p>الحرف A الكبير رقمه 65، وa الصغير 97، والحرف العربي ب رقمه 1576. والسطر الأخير يفعل العكس: الرقمان 72 و105 يصيران كلمة «Hi». والصورة تعمل بالطريقة نفسها: إنها شبكة من نقاط صغيرة، وكل نقطة تُحفظ ثلاثة أرقام لضوئها الأحمر والأخضر والأزرق.</p>
+
+<h2><span class="sec">1.4</span><span>من الكود إلى المعالج</span></h2>
+
+<p>المعالج لا يفهم إلا لغة واحدة: <dfn>لغة الآلة</dfn> (machine code)، وهي سلاسل طويلة من الأرقام، كل رقم منها تعليمة صغيرة مثل «اجمع هاتين القيمتين». والكتابة بلغة الآلة مباشرة ممكنة، لكنها بطيئة ومرهقة وسهلة الخطأ.</p>
+
+<p>ولهذا اخترع الناس <dfn>لغات البرمجة</dfn>. فلغة البرمجة تتيح لك أن تكتب التعليمات بشكل أقرب كثيراً إلى لغة البشر، مثل:</p>
+
+<pre class="plain">if (score &gt; 100) { console.log("You win!"); }</pre>
+
+<p>ثم يترجم برنامج خاص كودك إلى لغة الآلة. بعض اللغات تُترجم البرنامج كله مسبقاً، ويُسمى هذا <dfn>الترجمة</dfn> (compiling). وبعضها تترجمه وتنفّذه سطراً سطراً أثناء العمل، ويُسمى هذا <dfn>التفسير</dfn> (interpreting). وJavaScript الحديثة تمزج بين الطريقتين بذكاء، لكن الفكرة المهمة بسيطة: أنت تكتب كوداً مقروءاً، والمترجم يحوله أرقاماً للمعالج.</p>
+
+<figure>
+<svg viewBox="0 0 520 110" role="img" aria-label="كودك يدخل محرك JavaScript فيخرج لغة آلة ينفذها المعالج">
+<defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<g font-family="Cairo" font-size="13" text-anchor="middle">
+<rect x="370" y="25" width="140" height="60" rx="12" fill="#f7f8fc" stroke="#4338ca" stroke-width="2"/><text x="440" y="50" font-weight="700" fill="#4338ca">كودك</text><text x="440" y="72" font-family="JetBrains Mono" font-size="11" fill="#1e1b2e">console.log(…)</text>
+<rect x="190" y="25" width="140" height="60" rx="12" fill="#4338ca"/><text x="260" y="50" font-weight="700" fill="#fff">محرك JavaScript</text><text x="260" y="72" font-size="11" fill="#e0e7ff">يترجم</text>
+<rect x="10" y="25" width="140" height="60" rx="12" fill="#16142a"/><text x="80" y="50" font-weight="700" fill="#fff">لغة الآلة</text><text x="80" y="72" font-family="JetBrains Mono" font-size="11" fill="#86efac">10110000 01100001</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.5" marker-end="url(#ar2)"><line x1="370" y1="55" x2="334" y2="55"/><line x1="190" y1="55" x2="154" y2="55"/></g>
+</svg>
+<figcaption><b>الشكل 1.2:</b> محرك JavaScript يحوّل الكود المقروء إلى لغة آلة.</figcaption>
+</figure>
+
+<h3>لماذا JavaScript؟</h3>
+
+<p>هناك مئات من لغات البرمجة، ويبدأ هذا الكتاب بـ JavaScript لثلاثة أسباب وجيهة:</p>
+<ol>
+<li><strong>إنها في كل مكان.</strong> كل متصفح ويب فيه محرك JavaScript، فأنت تملك أصلاً كل ما تحتاجه لتشغيلها.</li>
+<li><strong>إنها تفعل كل شيء تقريباً.</strong> اللغة نفسها تبني المواقع، والخوادم (بـ Node.js)، وتطبيقات الموبايل، وحتى برامج سطح المكتب.</li>
+<li><strong>إنها مطلوبة.</strong> منذ سنوات كثيرة وJavaScript من أكثر اللغات استخداماً بين المطورين المحترفين في العالم.</li>
+</ol>
+
+<p>وستشغّل JavaScript في هذا الكتاب في مكانين: في المتصفح، وفي الطرفية بـ <dfn>Node.js</dfn>، وهو برنامج ينقل محرك JavaScript من المتصفح إلى حاسوبك. وستثبّت Node.js في الفصل 3.</p>
+
+<h2><span class="sec">1.5</span><span>أول سطر لك</span></h2>
+
+<p>لا تحتاج أن تنتظر الفصل 3 لتجرب JavaScript، ففي كل متصفح أداة مخفية للمطورين. افتح Chrome أو Edge أو Firefox، واضغط <code>F12</code> (وعلى الماك <code>Cmd</code> + <code>Option</code> + <code>J</code>). ستنفتح لوحة؛ اضغط فيها التبويب <strong>Console</strong>. ثم اكتب كل سطر من هذه الأسطر واضغط Enter بعده:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">hello.js</div><pre class="code">console.log(<span class="s">&quot;مرحباً بالعالم!&quot;</span>);
+console.log(<span class="n">2</span> + <span class="n">3</span>);
+console.log(<span class="s">&quot;2&quot;</span> + <span class="s">&quot;3&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>مرحباً بالعالم!
+5
+23</pre></div>
+
+<p>مبروك: لقد شغّلت أول برنامج لك! وانظر جيداً إلى آخر سطرين، ففيهما درس مخفي. <code>2 + 3</code> تجمع رقمين وتعطي <code>5</code>. أما <code>"2" + "3"</code> فتعطي <code>23</code>. علامات التنصيص حوّلت الأرقام إلى نص، وجمع نصين يعني وصلهما. وستتعلم كل شيء عن هذا الفرق في الفصل 8.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>اكتب في الـ Console السطر <code>console.log("اسمك هنا")</code> واكتب اسمك. ثم جرّب <code>console.log(7 * 6)</code>، فالنجمة <code>*</code> تعني الضرب. وماذا تتوقع أن تعرض <code>console.log(100 / 4)</code>؟</p></aside>
+
+<h2><span class="sec">1.6</span><span>ماذا يفعل المبرمجون حقاً</span></h2>
+
+<p>كثيرون يتخيلون المبرمج يكتب بسرعة في غرفة مظلمة، لكن العمل الحقيقي مختلف تماماً. معظم وقت المبرمج يذهب إلى:</p>
+<ul>
+<li><strong>فهم المشكلة.</strong> ماذا يجب أن يحدث بالضبط؟ وماذا يحدث حين يسوء شيء؟</li>
+<li><strong>التخطيط.</strong> تقسيم المشكلة الكبيرة إلى خطوات صغيرة، وهذا موضوع الفصل 2.</li>
+<li><strong>كتابة الكود</strong>، وكثيراً ما يكون أقصر الأجزاء.</li>
+<li><strong>الاختبار والإصلاح.</strong> تشغيل البرنامج، والبحث عن موضع الخطأ في سلوكه، وتصحيحه.</li>
+<li><strong>قراءة الكود</strong> الذي كتبه غيرك، أو كتبته أنت قبل شهور.</li>
+</ul>
+
+<p>الخطأ في البرنامج يُسمى <dfn>علّة</dfn> (bug)، والبحث عنه وإصلاحه يُسمى <dfn>تصحيح الأخطاء</dfn> (debugging). وكل مبرمج يكتب أخطاء كل يوم، ومنهم أمهر المبرمجين. فما يجعل المبرمج جيداً ليس تجنب الأخطاء، بل إيجادها وإصلاحها بهدوء.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>في عام 1947 وجد مهندسون يعملون على حاسوب Harvard Mark II فراشة ليلية حقيقية عالقة داخل الجهاز، فألصقوها في سجلهم وكتبوا بجانبها: «أول حالة فعلية لوجود حشرة». وكانت رائدة الحوسبة غريس هوبر، التي عملت على ذلك الجهاز، تحب أن تحكي هذه القصة. وكلمة bug (حشرة) كانت تُستخدم للأعطال من قبل، لكن هذه الفراشة جعلتها مشهورة.</p></aside>
+
+<h2 class="plain-h">أفكار خاطئة شائعة</h2>
+
+<table>
+<thead><tr><th>يظن الناس كثيراً أن…</th><th>والحقيقة أن…</th></tr></thead>
+<tbody>
+<tr><td>المبرمج يجب أن يكون متفوقاً في الرياضيات</td><td>معظم البرمجة تحتاج حساباً بسيطاً وتفكيراً واضحاً</td></tr>
+<tr><td>الحاسوب ذكي</td><td>الحاسوب سريع ودقيق، لكنه لا يفعل إلا ما يُؤمر به</td></tr>
+<tr><td>المبرمج الجيد لا يخطئ</td><td>المبرمج الجيد يخطئ دائماً ويُصلح أخطاءه جيداً</td></tr>
+<tr><td>يجب أن تحفظ كل شيء</td><td>المحترفون يبحثون في المراجع كل يوم، والفهم أهم من الحفظ</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>البرنامج</strong> قائمة دقيقة من التعليمات، والحاسوب ينفّذها بالضبط.</li>
+<li>في كل حاسوب <strong>معالج</strong> و<strong>ذاكرة</strong> و<strong>تخزين</strong> و<strong>مدخلات ومخرجات</strong>.</li>
+<li>كل شيء داخل الحاسوب يُحفظ أرقاماً من <strong>بِتات</strong>، وكل ثمانية بِتات <strong>بايت</strong>.</li>
+<li>الحروف أرقام أيضاً بفضل <strong>يونيكود</strong>.</li>
+<li>لغات البرمجة تُترجم إلى <strong>لغة الآلة</strong> بالترجمة أو التفسير.</li>
+<li>JavaScript تعمل في كل متصفح، وعلى حاسوبك بـ <strong>Node.js</strong>.</li>
+<li>البرمجة في معظمها فهم وتخطيط واختبار وإصلاح، والأخطاء تُسمى <strong>علل</strong> (bugs).</li>
+</ul>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اذكر الأجزاء الأربعة الأساسية في الحاسوب، وأعط مثالاً لمُدخل ومثالاً لمُخرج.</li>
+<li><span class="level">سهل</span> من الجدول في القسم 1.3، كيف يُكتب الرقم 9 بالثنائي؟ وتحقق من جوابك بـ <code>(9).toString(2)</code> في Console المتصفح.</li>
+<li><span class="level medium">متوسط</span> اعرف رقم يونيكود لأول حرف من اسمك بـ <code>"X".charCodeAt(0)</code>، وضع حرفك مكان X.</li>
+<li><span class="level medium">متوسط</span> توقّع ما يطبعه كل سطر ثم تحقق في الـ Console: <code>console.log(10 + 5)</code> و<code>console.log("10" + "5")</code> و<code>console.log("10 + 5")</code>.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب خطوات إعداد كوب شاي بدقة تجعل روبوتاً لا يعرف شيئاً يستطيع اتباعها. ثم اطلب من صديق أن يجد خطوة قد يسيء الروبوت فهمها.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 2</p>
+<p>التمرين 5 تذوّق للفصل القادم. فقبل أن يكتب المبرمجون الكود يخططون للخطوات. وفي الفصل 2 ستتعلم أن تحوّل أي مشكلة إلى قائمة واضحة من الخطوات تُسمى خوارزمية، وأن تتأكد أنها تعمل قبل أن تكتب سطراً واحداً.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/ar">
 <div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">الفصل 8</p><h1>القيم والمتغيرات والقرارات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
