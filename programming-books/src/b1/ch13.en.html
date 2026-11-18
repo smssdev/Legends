@@ -1,0 +1,154 @@
+<section class="chapter" data-chapter="13" data-code="b1/ch13/en">
+<p class="chapter-kicker">Chapter 13</p>
+<h1>Asynchronous JavaScript and fetch</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>understand why some work in JavaScript happens “later”</li>
+<li>use timers, promises, <code>async</code> and <code>await</code></li>
+<li>load JSON data from a server with <code>fetch</code></li>
+<li>handle errors with <code>try</code> and <code>catch</code>, and show loading and error states</li>
+<li>make the shop load its products from the server</li>
+</ul>
+</div>
+
+<p class="lead">Some things take time. Asking a server on another continent for data might take half a second; a slow mobile connection might take five. If JavaScript simply stopped and waited, your whole page would freeze: no scrolling, no clicking, nothing. Instead, JavaScript starts the slow work, carries on with other things, and comes back when the result is ready. This is called <strong>asynchronous</strong> programming, and it is how every modern app talks to the internet.</p>
+
+<aside class="bit" data-mood="think"><p>Think of ordering food in a restaurant. You don’t stand in the kitchen until it’s cooked; you sit down, chat, and the waiter brings the food when it’s ready. JavaScript works the same way with slow tasks!</p></aside>
+
+<h2>13.1 Now and later</h2>
+
+<p>Run this program and look carefully at the order of the output:</p>
+
+<pre data-code="timers.js" data-title="timers.js"></pre>
+<pre data-out="timers.js"></pre>
+
+<p>The second line was printed <em>before</em> the third, even though it comes after it in the code. <code>setTimeout</code> does not wait. It asks the computer to run a function after 1,000 milliseconds, and immediately moves on. When the time is up, the function runs.</p>
+
+<p>Code that runs line after line, each line waiting for the one before, is <dfn>synchronous</dfn>. Code that starts a task and continues without waiting for the result is <dfn>asynchronous</dfn>. Timers, network requests and reading files are all asynchronous.</p>
+
+<h2>13.2 Promises, async and await</h2>
+
+<p>A <dfn>promise</dfn> is an object that represents a result that is not ready yet: “I promise to give you a value later, or to tell you what went wrong.” A promise is first <em>pending</em>; later it is either <em>fulfilled</em> with a value or <em>rejected</em> with an error.</p>
+
+<p>Modern JavaScript makes promises easy to use with two words. A function marked <code>async</code> can use <code>await</code>, which pauses <em>that function</em> until a promise is ready, without freezing anything else:</p>
+
+<pre data-code="promise.js" data-title="promise.js"></pre>
+<pre data-out="promise.js"></pre>
+
+<p>Inside <code>makeTea</code>, the steps happen in order, so the code reads like a recipe. But while it waits, the rest of the program keeps going: “Meanwhile, I set the table” is printed second. An <code>async</code> function always returns a promise; <code>.then()</code> runs a callback with its result when it is ready.</p>
+
+<aside class="box tip"><p class="box-title">Tip</p><p>You will rarely create promises yourself, as <code>wait</code> does. Most of the time you receive them from built-in functions like <code>fetch</code>, and you simply <code>await</code> them. Remember the rule: <code>await</code> works only inside an <code>async</code> function (or at the top level of a module).</p></aside>
+
+<h2>13.3 fetch: asking a server for data</h2>
+
+<p><code>fetch(url)</code> sends an HTTP request, exactly like the ones you read in Chapter 4, and returns a promise of the response. To make the example run anywhere, even without the internet, it starts its own small API server first:</p>
+
+<pre data-code="fetch.js" data-title="fetch.js"></pre>
+<pre data-out="fetch.js"></pre>
+
+<p>The function <code>getJson</code> is the heart of the chapter. Read it slowly, because you will write code like it for the rest of your career:</p>
+
+<ol>
+<li><code>await fetch(url)</code> sends the request and waits for the response headers.</li>
+<li><code>response.ok</code> is <code>true</code> for status codes 200 to 299. A <code>404</code> or <code>500</code> is <em>not</em> an error for <code>fetch</code>; you must check yourself.</li>
+<li><code>throw new Error(…)</code> reports a problem. It stops the function, like <code>return</code>, but as a failure.</li>
+<li><code>response.json()</code> reads the body and parses the JSON, which also takes time, so it returns a promise too.</li>
+</ol>
+
+<h2>13.4 When things go wrong: try and catch</h2>
+
+<p>The network is unreliable: phones lose signal, servers go down, addresses change. Professional code expects failure. When an error is <dfn>thrown</dfn>, JavaScript jumps to the nearest <code>catch</code>:</p>
+
+<pre class="plain">try {
+  // code that might fail
+} catch (error) {
+  // what to do if it does: error.message says what happened
+}</pre>
+
+<p>In <code>fetch.js</code>, asking for <code>/api/missing</code> returned a <code>404</code>, <code>getJson</code> threw an error, and the <code>catch</code> printed a calm message instead of crashing the program. In a web page, the same pattern lets you show a friendly “please try again” instead of a broken page.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: three states</p><p>Every piece of a page that loads data has three possible states: <strong>loading</strong>, <strong>success</strong> and <strong>error</strong>. Design and code all three. Users forgive slow connections if they can see that something is happening; they do not forgive a blank screen.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>In <code>timers.js</code>, why is “2.” printed before “3.”?</li><li>Does <code>fetch</code> throw an error for a <code>404</code> response?</li><li>Where can you use <code>await</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>13.5 Project: the shop loads its products</h2>
+
+<p>The shop from Chapter 12 had its products written inside <code>shop.js</code>. Real shops get them from a server, so that the owner can change products without touching the code. Let us move them into a JSON file next to the page:</p>
+
+<pre data-code="products.json" data-title="products.json"></pre>
+
+<p>Now <code>catalog</code> starts empty, and a new <code>start</code> function loads the data and shows the three states. Here is the new end of <code>shop.js</code>; the rest of the file is unchanged from Chapter 12:</p>
+
+<pre class="plain">let catalog = [];
+…
+async function start() {
+  const status = document.querySelector("#status");
+  status.textContent = "Loading products…";
+  try {
+    const response = await fetch("products.json");
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    catalog = await response.json();
+    status.textContent = "";
+    renderProducts();
+    renderCart();
+  } catch (error) {
+    status.textContent = "Sorry, the products could not be loaded. Please try again.";
+    console.error(error);
+  }
+}
+
+start();</pre>
+
+<figure data-render="shop.html" data-width="640" data-actions="click:.card:nth-child(5) button"><figcaption><b>Figure 13.1:</b> The shop now shows the five products from <code>products.json</code>, including the new cap.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title">Watch out: open it through a server</p><p>If you double-click <code>shop.html</code>, the browser opens it as a file (<code>file://</code>), and for security reasons <code>fetch</code> refuses to read other files that way. You will see the error message. Serve the folder instead: in VS Code, install the free <strong>Live Server</strong> extension and click <strong>Go Live</strong>, or run <code>npx serve</code> in the terminal and open the address it shows. This is also how real websites work: everything comes from a server.</p></aside>
+
+<p>To test the error state, rename <code>products.json</code> and reload: you will see the friendly message instead of an empty page. Open the Network tab in DevTools to watch the request for <code>products.json</code> and its <code>404</code>.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting <code>await</code></td><td>You get a <code>Promise</code> object instead of the data</td><td><code>await</code> every promise you need the value of</td></tr>
+<tr><td><code>await</code> outside an <code>async</code> function</td><td><code>SyntaxError</code></td><td>Mark the function <code>async</code></td></tr>
+<tr><td>Not checking <code>response.ok</code></td><td>A 404 page is parsed as JSON and fails strangely</td><td>Check <code>ok</code> and throw a clear error</td></tr>
+<tr><td>No <code>try</code>/<code>catch</code></td><td>One network problem breaks the whole page</td><td>Catch errors and show a message</td></tr>
+<tr><td>Opening a fetching page with <code>file://</code></td><td>The request is blocked</td><td>Use Live Server or <code>npx serve</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Asynchronous</strong> code starts slow work and continues without waiting. Timers and network requests are asynchronous.</li>
+<li>A <strong>promise</strong> is a value that will arrive later: pending, then fulfilled or rejected.</li>
+<li><code>async</code> functions can <code>await</code> promises; the code reads in order while the page stays responsive.</li>
+<li><code>fetch(url)</code> returns a response. Check <code>response.ok</code>, then <code>await response.json()</code>.</li>
+<li><code>throw</code> reports errors; <code>try</code>/<code>catch</code> handles them.</li>
+<li>Every data-loading view has three states: <strong>loading</strong>, <strong>success</strong> and <strong>error</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because <code>setTimeout</code> does not wait: it schedules the function for later, and the program moves straight on. 2. No. <code>fetch</code> only fails when the request cannot be made at all; you must check <code>response.ok</code>. 3. Inside an <code>async</code> function, or at the top level of a module.</p>
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a countdown that prints 3, 2, 1, “Go!”, one line per second, using <code>async</code>, <code>await</code> and the <code>wait</code> function.</li>
+<li><span class="level">Easy</span> In <code>fetch.js</code>, add a second address, <code>/api/hello</code>, that returns <code>{"message": "Hi!"}</code>, and fetch it.</li>
+<li><span class="level">Medium</span> Add a “Reload” button to the shop that appears with the error message and calls <code>start()</code> again.</li>
+<li><span class="level">Medium</span> Look up <code>Promise.all</code> on MDN. Use it to fetch two JSON files at the same time and print both results.</li>
+<li><span class="level">Challenge</span> Use the free public API at <code>https://api.github.com/users/</code> followed by a username to build a page that shows a GitHub user’s name, picture and number of public repositories. Handle the “user not found” case.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 14</p>
+<p>As programs grow, so do the ways they can break. The next chapter turns error messages from something scary into your most helpful friend, and teaches the debugging techniques professionals use every day.</p>
+</div>
+</section>

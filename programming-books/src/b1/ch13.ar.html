@@ -1,0 +1,154 @@
+<section class="chapter" data-chapter="13" data-code="b1/ch13/ar">
+<p class="chapter-kicker">الفصل 13</p>
+<h1>JavaScript غير المتزامنة وfetch</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تفهم لماذا يحدث بعض العمل في JavaScript «لاحقاً»</li>
+<li>تستخدم المؤقتات والوعود و<code>async</code> و<code>await</code></li>
+<li>تحمّل بيانات JSON من خادم بـ <code>fetch</code></li>
+<li>تتعامل مع الأخطاء بـ <code>try</code> و<code>catch</code>، وتعرض حالتي التحميل والخطأ</li>
+<li>تجعل المتجر يحمّل منتجاته من الخادم</li>
+</ul>
+</div>
+
+<p class="lead">بعض الأشياء تستغرق وقتاً. فطلب بيانات من خادم في قارة أخرى قد يأخذ نصف ثانية، واتصال هاتف بطيء قد يأخذ خمس ثوانٍ. ولو توقفت JavaScript وانتظرت لتجمدت صفحتك كلها: لا تمرير ولا نقر ولا شيء. بدلاً من ذلك تبدأ JavaScript العمل البطيء، وتمضي في أشياء أخرى، وتعود حين تجهز النتيجة. ويُسمى هذا البرمجة <strong>غير المتزامنة</strong>، وهي الطريقة التي يتحدث بها كل تطبيق حديث مع الإنترنت.</p>
+
+<aside class="bit" data-mood="think"><p>تخيّل أنك تطلب الطعام في مطعم. لا تقف في المطبخ حتى ينضج، بل تجلس وتتحدث، ويأتيك النادل بالطعام حين يجهز. وJavaScript تتعامل مع المهام البطيئة بالطريقة نفسها!</p></aside>
+
+<h2>13.1 الآن ولاحقاً</h2>
+
+<p>شغّل هذا البرنامج وانظر جيداً إلى ترتيب المخرجات:</p>
+
+<pre data-code="timers.js" data-title="timers.js"></pre>
+<pre data-out="timers.js"></pre>
+
+<p>طُبع السطر الثاني <em>قبل</em> الثالث مع أنه بعده في الكود. فـ <code>setTimeout</code> لا تنتظر، بل تطلب من الحاسوب تشغيل دالة بعد 1000 جزء من الثانية، وتمضي فوراً. وحين يحين الوقت تُنفَّذ الدالة.</p>
+
+<p>الكود الذي يُنفَّذ سطراً بعد سطر، وكل سطر ينتظر الذي قبله، كود <dfn>متزامن</dfn> (synchronous). والكود الذي يبدأ مهمة ويستمر دون انتظار نتيجتها كود <dfn>غير متزامن</dfn> (asynchronous). والمؤقتات وطلبات الشبكة وقراءة الملفات كلها غير متزامنة.</p>
+
+<h2>13.2 الوعود وasync وawait</h2>
+
+<p><dfn>الوعد</dfn> (promise) كائن يمثل نتيجة لم تجهز بعد: «أعدك أن أعطيك قيمة لاحقاً، أو أن أخبرك بما ساء». والوعد يكون أولاً <em>معلّقاً</em>، ثم إما <em>يُوفى</em> بقيمة أو <em>يُرفض</em> بخطأ.</p>
+
+<p>وJavaScript الحديثة تسهّل استخدام الوعود بكلمتين. فالدالة الموسومة بـ <code>async</code> تستطيع استخدام <code>await</code>، التي توقف <em>تلك الدالة وحدها</em> حتى يجهز الوعد، دون أن تجمّد أي شيء آخر:</p>
+
+<pre data-code="promise.js" data-title="promise.js"></pre>
+<pre data-out="promise.js"></pre>
+
+<p>داخل <code>makeTea</code> تحدث الخطوات بالترتيب، فيُقرأ الكود كأنه وصفة. لكن أثناء انتظارها يستمر بقية البرنامج: «في الأثناء، أجهّز المائدة» طُبعت ثانياً. والدالة <code>async</code> تُرجع دائماً وعداً، و<code>.then()</code> تشغّل دالة بنتيجته حين يجهز.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>نادراً ما ستنشئ وعوداً بنفسك كما تفعل <code>wait</code>. ففي أغلب الأحيان تستلمها من دوال جاهزة مثل <code>fetch</code>، وكل ما تفعله أن تنتظرها بـ <code>await</code>. وتذكّر القاعدة: <code>await</code> لا تعمل إلا داخل دالة <code>async</code> (أو في أعلى مستوى من الوحدة).</p></aside>
+
+<h2>13.3 fetch: طلب البيانات من خادم</h2>
+
+<p><code>fetch(url)</code> ترسل طلب HTTP، مثل الطلبات التي قرأتها في الفصل 4 تماماً، وتُرجع وعداً بالرد. ولكي يعمل المثال في أي مكان حتى بلا إنترنت، يشغّل أولاً خادم واجهة برمجية صغيراً خاصاً به:</p>
+
+<pre data-code="fetch.js" data-title="fetch.js"></pre>
+<pre data-out="fetch.js"></pre>
+
+<p>الدالة <code>getJson</code> قلب هذا الفصل. اقرأها ببطء، فستكتب كوداً مثلها بقية مسيرتك:</p>
+
+<ol>
+<li><code>await fetch(url)</code> ترسل الطلب وتنتظر ترويسات الرد.</li>
+<li><code>response.ok</code> قيمتها <code>true</code> لرموز الحالة من 200 إلى 299. و<code>404</code> أو <code>500</code> <em>ليسا</em> خطأً عند <code>fetch</code>، فعليك أن تفحص بنفسك.</li>
+<li><code>throw new Error(…)</code> تبلّغ عن مشكلة. توقف الدالة مثل <code>return</code>، لكن فشلاً.</li>
+<li><code>response.json()</code> تقرأ الجسم وتحلل JSON، وهذا يأخذ وقتاً أيضاً، فتُرجع وعداً كذلك.</li>
+</ol>
+
+<h2>13.4 حين يسوء شيء: try وcatch</h2>
+
+<p>الشبكة غير موثوقة: الهواتف تفقد الإشارة، والخوادم تتعطل، والعناوين تتغير. والكود الاحترافي يتوقع الفشل. فحين <dfn>يُرمى</dfn> خطأ، تقفز JavaScript إلى أقرب <code>catch</code>:</p>
+
+<pre class="plain">try {
+  // code that might fail
+} catch (error) {
+  // what to do if it does: error.message says what happened
+}</pre>
+
+<p>في <code>fetch.js</code> أرجع طلب <code>/api/missing</code> الرمز <code>404</code>، فرمت <code>getJson</code> خطأً، وطبع <code>catch</code> رسالة هادئة بدل أن ينهار البرنامج. وفي صفحة الويب يتيح لك النمط نفسه أن تعرض «حاول مرة أخرى» لطيفة بدل صفحة معطوبة.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: ثلاث حالات</p><p>كل جزء من الصفحة يحمّل بيانات له ثلاث حالات ممكنة: <strong>التحميل</strong>، و<strong>النجاح</strong>، و<strong>الخطأ</strong>. صمّم الثلاث واكتب كودها. فالمستخدمون يسامحون الاتصال البطيء إن رأوا أن شيئاً يحدث، ولا يسامحون شاشة فارغة.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>في <code>timers.js</code>، لماذا طُبع «2.» قبل «3.»؟</li><li>هل ترمي <code>fetch</code> خطأً مع الرد <code>404</code>؟</li><li>أين يمكنك استخدام <code>await</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>13.5 مشروع: المتجر يحمّل منتجاته</h2>
+
+<p>كانت منتجات متجر الفصل 12 مكتوبة داخل <code>shop.js</code>. أما المتاجر الحقيقية فتأخذها من خادم، ليغيّر صاحب المتجر منتجاته دون أن يلمس الكود. فلننقلها إلى ملف JSON بجانب الصفحة:</p>
+
+<pre data-code="products.json" data-title="products.json"></pre>
+
+<p>الآن يبدأ <code>catalog</code> فارغاً، ودالة جديدة اسمها <code>start</code> تحمّل البيانات وتعرض الحالات الثلاث. وهذه نهاية <code>shop.js</code> الجديدة، وبقية الملف كما كان في الفصل 12:</p>
+
+<pre class="plain">let catalog = [];
+…
+async function start() {
+  const status = document.querySelector("#status");
+  status.textContent = "جارٍ تحميل المنتجات…";
+  try {
+    const response = await fetch("products.json");
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    catalog = await response.json();
+    status.textContent = "";
+    renderProducts();
+    renderCart();
+  } catch (error) {
+    status.textContent = "عذراً، تعذّر تحميل المنتجات. حاول مرة أخرى.";
+    console.error(error);
+  }
+}
+
+start();</pre>
+
+<figure data-render="shop.html" data-width="640" data-actions="click:.card:nth-child(5) button"><figcaption><b>الشكل 13.1:</b> يعرض المتجر الآن المنتجات الخمسة من <code>products.json</code>، ومعها القبعة الجديدة.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title">انتبه: افتحها عبر خادم</p><p>إن نقرت <code>shop.html</code> نقرتين فتحها المتصفح ملفاً (<code>file://</code>)، ولأسباب أمنية ترفض <code>fetch</code> قراءة الملفات الأخرى بهذه الطريقة، فترى رسالة الخطأ. شغّل المجلد عبر خادم بدلاً من ذلك: في VS Code ثبّت الإضافة المجانية <strong>Live Server</strong> واضغط <strong>Go Live</strong>، أو شغّل <code>npx serve</code> في الطرفية وافتح العنوان الذي يعرضه. وهكذا تعمل المواقع الحقيقية أيضاً: كل شيء يأتي من خادم.</p></aside>
+
+<p>ولتختبر حالة الخطأ، غيّر اسم <code>products.json</code> وأعد التحميل: سترى الرسالة اللطيفة بدل صفحة فارغة. وافتح تبويب Network في أدوات المطورين لترى طلب <code>products.json</code> ورمزه <code>404</code>.</p>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>await</code></td><td>تحصل على كائن <code>Promise</code> بدل البيانات</td><td>انتظر بـ <code>await</code> كل وعد تحتاج قيمته</td></tr>
+<tr><td><code>await</code> خارج دالة <code>async</code></td><td><code>SyntaxError</code></td><td>اوسم الدالة بـ <code>async</code></td></tr>
+<tr><td>عدم فحص <code>response.ok</code></td><td>تُحلَّل صفحة 404 على أنها JSON فتفشل بغرابة</td><td>افحص <code>ok</code> وارمِ خطأً واضحاً</td></tr>
+<tr><td>لا <code>try</code>/<code>catch</code></td><td>مشكلة شبكة واحدة تعطل الصفحة كلها</td><td>التقط الأخطاء واعرض رسالة</td></tr>
+<tr><td>فتح صفحة تستخدم fetch بـ <code>file://</code></td><td>يُحجب الطلب</td><td>استخدم Live Server أو <code>npx serve</code></td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>الكود <strong>غير المتزامن</strong> يبدأ العمل البطيء ويستمر دون انتظار، والمؤقتات وطلبات الشبكة غير متزامنة.</li>
+<li><strong>الوعد</strong> قيمة ستصل لاحقاً: معلّق، ثم يُوفى أو يُرفض.</li>
+<li>دوال <code>async</code> تنتظر الوعود بـ <code>await</code>، فيُقرأ الكود بالترتيب وتبقى الصفحة مستجيبة.</li>
+<li><code>fetch(url)</code> تُرجع رداً. افحص <code>response.ok</code> ثم <code>await response.json()</code>.</li>
+<li><code>throw</code> تبلّغ عن الأخطاء، و<code>try</code>/<code>catch</code> تتعامل معها.</li>
+<li>كل عرض يحمّل بيانات له ثلاث حالات: <strong>التحميل</strong> و<strong>النجاح</strong> و<strong>الخطأ</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن <code>setTimeout</code> لا تنتظر: تجدول الدالة لاحقاً ويمضي البرنامج مباشرة. 2. لا. <code>fetch</code> لا تفشل إلا حين يتعذر إرسال الطلب أصلاً، وعليك فحص <code>response.ok</code>. 3. داخل دالة <code>async</code>، أو في أعلى مستوى من الوحدة.</p>
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب عداً تنازلياً يطبع 3 ثم 2 ثم 1 ثم «انطلق!»، سطراً كل ثانية، باستخدام <code>async</code> و<code>await</code> والدالة <code>wait</code>.</li>
+<li><span class="level">سهل</span> في <code>fetch.js</code> أضف عنواناً ثانياً، <code>/api/hello</code>، يُرجع <code>{"message": "أهلاً!"}</code>، واجلبه.</li>
+<li><span class="level">متوسط</span> أضف إلى المتجر زر «إعادة التحميل» يظهر مع رسالة الخطأ ويستدعي <code>start()</code> مرة أخرى.</li>
+<li><span class="level">متوسط</span> ابحث في MDN عن <code>Promise.all</code>، واستخدمها لجلب ملفي JSON في الوقت نفسه وطباعة النتيجتين.</li>
+<li><span class="level">تحدٍّ</span> استخدم الواجهة البرمجية العامة المجانية <code>https://api.github.com/users/</code> متبوعة باسم مستخدم، لتبني صفحة تعرض اسم مستخدم GitHub وصورته وعدد مستودعاته العامة. وتعامل مع حالة «المستخدم غير موجود».</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 14</p>
+<p>كلما كبرت البرامج زادت طرق تعطلها. والفصل القادم يحوّل رسائل الخطأ من شيء مخيف إلى أكثر أصدقائك نفعاً، ويعلمك تقنيات تتبّع الأخطاء التي يستخدمها المحترفون كل يوم.</p>
+</div>
+</section>

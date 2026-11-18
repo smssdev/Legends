@@ -31,6 +31,8 @@
 @page ch11:first { @top-center { content: none; } }
 @page ch12 { @top-center { content: "الفصل 12: DOM والأحداث"; } }
 @page ch12:first { @top-center { content: none; } }
+@page ch13 { @top-center { content: "الفصل 13: JavaScript غير المتزامنة وfetch"; } }
+@page ch13:first { @top-center { content: none; } }
 
 .cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
   background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
@@ -4175,6 +4177,276 @@ renderCart();</pre></div>
 <div class="next">
 <p class="next-title">في الفصل 13</p>
 <p>منتجات المتجر مكتوبة داخل ملف JavaScript، أما المتاجر الحقيقية فتحمّلها من خادم. وفي الفصل القادم ستتعلم JavaScript غير المتزامنة وfetch، وتحمّل بيانات حقيقية من الإنترنت دون أن تتجمد الصفحة.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch13" data-chapter="13" data-code="b1/ch13/ar">
+<div class="opener"><span class="opener-num">13</span><p class="chapter-kicker">الفصل 13</p><h1>JavaScript غير المتزامنة وfetch</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تفهم لماذا يحدث بعض العمل في JavaScript «لاحقاً»</li>
+<li>تستخدم المؤقتات والوعود و<code>async</code> و<code>await</code></li>
+<li>تحمّل بيانات JSON من خادم بـ <code>fetch</code></li>
+<li>تتعامل مع الأخطاء بـ <code>try</code> و<code>catch</code>، وتعرض حالتي التحميل والخطأ</li>
+<li>تجعل المتجر يحمّل منتجاته من الخادم</li>
+</ul>
+</div>
+
+<p class="lead">بعض الأشياء تستغرق وقتاً. فطلب بيانات من خادم في قارة أخرى قد يأخذ نصف ثانية، واتصال هاتف بطيء قد يأخذ خمس ثوانٍ. ولو توقفت JavaScript وانتظرت لتجمدت صفحتك كلها: لا تمرير ولا نقر ولا شيء. بدلاً من ذلك تبدأ JavaScript العمل البطيء، وتمضي في أشياء أخرى، وتعود حين تجهز النتيجة. ويُسمى هذا البرمجة <strong>غير المتزامنة</strong>، وهي الطريقة التي يتحدث بها كل تطبيق حديث مع الإنترنت.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>تخيّل أنك تطلب الطعام في مطعم. لا تقف في المطبخ حتى ينضج، بل تجلس وتتحدث، ويأتيك النادل بالطعام حين يجهز. وJavaScript تتعامل مع المهام البطيئة بالطريقة نفسها!</p></div></div>
+
+<h2><span class="sec">13.1</span><span>الآن ولاحقاً</span></h2>
+
+<p>شغّل هذا البرنامج وانظر جيداً إلى ترتيب المخرجات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">timers.js</div><pre class="code">console.log(<span class="s">&quot;1. تم الطلب&quot;</span>);
+
+setTimeout(() =&gt; {
+  console.log(<span class="s">&quot;3. وصل الطعام!&quot;</span>);
+}, <span class="n">1000</span>);
+
+console.log(<span class="s">&quot;2. أقرأ كتاباً وأنا أنتظر&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>1. تم الطلب
+2. أقرأ كتاباً وأنا أنتظر
+3. وصل الطعام!</pre></div>
+
+<p>طُبع السطر الثاني <em>قبل</em> الثالث مع أنه بعده في الكود. فـ <code>setTimeout</code> لا تنتظر، بل تطلب من الحاسوب تشغيل دالة بعد 1000 جزء من الثانية، وتمضي فوراً. وحين يحين الوقت تُنفَّذ الدالة.</p>
+
+<p>الكود الذي يُنفَّذ سطراً بعد سطر، وكل سطر ينتظر الذي قبله، كود <dfn>متزامن</dfn> (synchronous). والكود الذي يبدأ مهمة ويستمر دون انتظار نتيجتها كود <dfn>غير متزامن</dfn> (asynchronous). والمؤقتات وطلبات الشبكة وقراءة الملفات كلها غير متزامنة.</p>
+
+<h2><span class="sec">13.2</span><span>الوعود وasync وawait</span></h2>
+
+<p><dfn>الوعد</dfn> (promise) كائن يمثل نتيجة لم تجهز بعد: «أعدك أن أعطيك قيمة لاحقاً، أو أن أخبرك بما ساء». والوعد يكون أولاً <em>معلّقاً</em>، ثم إما <em>يُوفى</em> بقيمة أو <em>يُرفض</em> بخطأ.</p>
+
+<p>وJavaScript الحديثة تسهّل استخدام الوعود بكلمتين. فالدالة الموسومة بـ <code>async</code> تستطيع استخدام <code>await</code>، التي توقف <em>تلك الدالة وحدها</em> حتى يجهز الوعد، دون أن تجمّد أي شيء آخر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">promise.js</div><pre class="code"><span class="k">function</span> wait(ms) {
+  <span class="k">return</span> <span class="k">new</span> Promise((resolve) =&gt; setTimeout(resolve, ms));
+}
+
+<span class="k">async</span> <span class="k">function</span> makeTea() {
+  console.log(<span class="s">&quot;أغلي الماء…&quot;</span>);
+  <span class="k">await</span> wait(<span class="n">300</span>);
+  console.log(<span class="s">&quot;أنقع الشاي…&quot;</span>);
+  <span class="k">await</span> wait(<span class="n">300</span>);
+  console.log(<span class="s">&quot;انتهيت.&quot;</span>);
+  <span class="k">return</span> <span class="s">&quot;كوب من الشاي&quot;</span>;
+}
+
+makeTea().then((result) =&gt; console.log(result));
+console.log(<span class="s">&quot;في الأثناء، أجهّز المائدة.&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>أغلي الماء…
+في الأثناء، أجهّز المائدة.
+أنقع الشاي…
+انتهيت.
+كوب من الشاي</pre></div>
+
+<p>داخل <code>makeTea</code> تحدث الخطوات بالترتيب، فيُقرأ الكود كأنه وصفة. لكن أثناء انتظارها يستمر بقية البرنامج: «في الأثناء، أجهّز المائدة» طُبعت ثانياً. والدالة <code>async</code> تُرجع دائماً وعداً، و<code>.then()</code> تشغّل دالة بنتيجته حين يجهز.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>نادراً ما ستنشئ وعوداً بنفسك كما تفعل <code>wait</code>. ففي أغلب الأحيان تستلمها من دوال جاهزة مثل <code>fetch</code>، وكل ما تفعله أن تنتظرها بـ <code>await</code>. وتذكّر القاعدة: <code>await</code> لا تعمل إلا داخل دالة <code>async</code> (أو في أعلى مستوى من الوحدة).</p></aside>
+
+<h2><span class="sec">13.3</span><span>fetch: طلب البيانات من خادم</span></h2>
+
+<p><code>fetch(url)</code> ترسل طلب HTTP، مثل الطلبات التي قرأتها في الفصل 4 تماماً، وتُرجع وعداً بالرد. ولكي يعمل المثال في أي مكان حتى بلا إنترنت، يشغّل أولاً خادم واجهة برمجية صغيراً خاصاً به:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">fetch.js</div><pre class="code"><span class="k">const</span> http = require(<span class="s">&quot;node:http&quot;</span>);
+
+<span class="c">// خادم واجهة برمجية صغير له عنوان واحد: /api/products</span>
+<span class="k">const</span> products = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;ملصق بِت&quot;</span>, price: <span class="n">3</span> },
+];
+<span class="k">const</span> server = http.createServer((request, response) =&gt; {
+  <span class="k">if</span> (request.url === <span class="s">&quot;/api/products&quot;</span>) {
+    response.writeHead(<span class="n">200</span>, { <span class="s">&quot;Content-Type&quot;</span>: <span class="s">&quot;application/json&quot;</span> });
+    response.end(JSON.stringify(products));
+  } <span class="k">else</span> {
+    response.writeHead(<span class="n">404</span>);
+    response.end();
+  }
+});
+
+<span class="c">// كود العميل: هذا ما يعمل في التطبيق الحقيقي</span>
+<span class="k">async</span> <span class="k">function</span> getJson(url) {
+  <span class="k">const</span> response = <span class="k">await</span> fetch(url);
+  <span class="k">if</span> (!response.ok) {
+    <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">`HTTP ${response.status}`</span>);
+  }
+  <span class="k">return</span> response.json();
+}
+
+server.listen(<span class="n">3001</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> list = <span class="k">await</span> getJson(<span class="s">&quot;http://localhost:3001/api/products&quot;</span>);
+  console.log(list.length, list[<span class="n">0</span>].name);
+
+  <span class="k">try</span> {
+    <span class="k">await</span> getJson(<span class="s">&quot;http://localhost:3001/api/missing&quot;</span>);
+  } <span class="k">catch</span> (error) {
+    console.log(<span class="s">&quot;تعذّر التحميل:&quot;</span>, error.message);
+  }
+
+  server.close();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>3 البرمجة من الصفر
+تعذّر التحميل: HTTP 404</pre></div>
+
+<p>الدالة <code>getJson</code> قلب هذا الفصل. اقرأها ببطء، فستكتب كوداً مثلها بقية مسيرتك:</p>
+
+<ol>
+<li><code>await fetch(url)</code> ترسل الطلب وتنتظر ترويسات الرد.</li>
+<li><code>response.ok</code> قيمتها <code>true</code> لرموز الحالة من 200 إلى 299. و<code>404</code> أو <code>500</code> <em>ليسا</em> خطأً عند <code>fetch</code>، فعليك أن تفحص بنفسك.</li>
+<li><code>throw new Error(…)</code> تبلّغ عن مشكلة. توقف الدالة مثل <code>return</code>، لكن فشلاً.</li>
+<li><code>response.json()</code> تقرأ الجسم وتحلل JSON، وهذا يأخذ وقتاً أيضاً، فتُرجع وعداً كذلك.</li>
+</ol>
+
+<h2><span class="sec">13.4</span><span>حين يسوء شيء: try وcatch</span></h2>
+
+<p>الشبكة غير موثوقة: الهواتف تفقد الإشارة، والخوادم تتعطل، والعناوين تتغير. والكود الاحترافي يتوقع الفشل. فحين <dfn>يُرمى</dfn> خطأ، تقفز JavaScript إلى أقرب <code>catch</code>:</p>
+
+<pre class="plain">try {
+  // code that might fail
+} catch (error) {
+  // what to do if it does: error.message says what happened
+}</pre>
+
+<p>في <code>fetch.js</code> أرجع طلب <code>/api/missing</code> الرمز <code>404</code>، فرمت <code>getJson</code> خطأً، وطبع <code>catch</code> رسالة هادئة بدل أن ينهار البرنامج. وفي صفحة الويب يتيح لك النمط نفسه أن تعرض «حاول مرة أخرى» لطيفة بدل صفحة معطوبة.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: ثلاث حالات</p><p>كل جزء من الصفحة يحمّل بيانات له ثلاث حالات ممكنة: <strong>التحميل</strong>، و<strong>النجاح</strong>، و<strong>الخطأ</strong>. صمّم الثلاث واكتب كودها. فالمستخدمون يسامحون الاتصال البطيء إن رأوا أن شيئاً يحدث، ولا يسامحون شاشة فارغة.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>في <code>timers.js</code>، لماذا طُبع «2.» قبل «3.»؟</li><li>هل ترمي <code>fetch</code> خطأً مع الرد <code>404</code>؟</li><li>أين يمكنك استخدام <code>await</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">13.5</span><span>مشروع: المتجر يحمّل منتجاته</span></h2>
+
+<p>كانت منتجات متجر الفصل 12 مكتوبة داخل <code>shop.js</code>. أما المتاجر الحقيقية فتأخذها من خادم، ليغيّر صاحب المتجر منتجاته دون أن يلمس الكود. فلننقلها إلى ملف JSON بجانب الصفحة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">products.json</div><pre class="code">[
+  {
+    <span class="s">&quot;id&quot;</span>: <span class="n">1</span>,
+    <span class="s">&quot;name&quot;</span>: <span class="s">&quot;البرمجة من الصفر&quot;</span>,
+    <span class="s">&quot;price&quot;</span>: <span class="n">25</span>
+  },
+  {
+    <span class="s">&quot;id&quot;</span>: <span class="n">2</span>,
+    <span class="s">&quot;name&quot;</span>: <span class="s">&quot;كوب بِت&quot;</span>,
+    <span class="s">&quot;price&quot;</span>: <span class="n">8</span>
+  },
+  {
+    <span class="s">&quot;id&quot;</span>: <span class="n">3</span>,
+    <span class="s">&quot;name&quot;</span>: <span class="s">&quot;ملصق بِت&quot;</span>,
+    <span class="s">&quot;price&quot;</span>: <span class="n">3</span>
+  },
+  {
+    <span class="s">&quot;id&quot;</span>: <span class="n">4</span>,
+    <span class="s">&quot;name&quot;</span>: <span class="s">&quot;قميص بِت&quot;</span>,
+    <span class="s">&quot;price&quot;</span>: <span class="n">15</span>
+  },
+  {
+    <span class="s">&quot;id&quot;</span>: <span class="n">5</span>,
+    <span class="s">&quot;name&quot;</span>: <span class="s">&quot;قبعة بِت&quot;</span>,
+    <span class="s">&quot;price&quot;</span>: <span class="n">12</span>
+  }
+]</pre></div>
+
+<p>الآن يبدأ <code>catalog</code> فارغاً، ودالة جديدة اسمها <code>start</code> تحمّل البيانات وتعرض الحالات الثلاث. وهذه نهاية <code>shop.js</code> الجديدة، وبقية الملف كما كان في الفصل 12:</p>
+
+<pre class="plain">let catalog = [];
+…
+async function start() {
+  const status = document.querySelector("#status");
+  status.textContent = "جارٍ تحميل المنتجات…";
+  try {
+    const response = await fetch("products.json");
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    catalog = await response.json();
+    status.textContent = "";
+    renderProducts();
+    renderCart();
+  } catch (error) {
+    status.textContent = "عذراً، تعذّر تحميل المنتجات. حاول مرة أخرى.";
+    console.error(error);
+  }
+}
+
+start();</pre>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>shop.html</span><b>640px</b></div><img src="img/b1-ch13-ar-shop.html-640-d6ae2a.png" alt=""><figcaption><b>الشكل 13.1:</b> يعرض المتجر الآن المنتجات الخمسة من <code>products.json</code>، ومعها القبعة الجديدة.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: افتحها عبر خادم</p><p>إن نقرت <code>shop.html</code> نقرتين فتحها المتصفح ملفاً (<code>file://</code>)، ولأسباب أمنية ترفض <code>fetch</code> قراءة الملفات الأخرى بهذه الطريقة، فترى رسالة الخطأ. شغّل المجلد عبر خادم بدلاً من ذلك: في VS Code ثبّت الإضافة المجانية <strong>Live Server</strong> واضغط <strong>Go Live</strong>، أو شغّل <code>npx serve</code> في الطرفية وافتح العنوان الذي يعرضه. وهكذا تعمل المواقع الحقيقية أيضاً: كل شيء يأتي من خادم.</p></aside>
+
+<p>ولتختبر حالة الخطأ، غيّر اسم <code>products.json</code> وأعد التحميل: سترى الرسالة اللطيفة بدل صفحة فارغة. وافتح تبويب Network في أدوات المطورين لترى طلب <code>products.json</code> ورمزه <code>404</code>.</p>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>await</code></td><td>تحصل على كائن <code>Promise</code> بدل البيانات</td><td>انتظر بـ <code>await</code> كل وعد تحتاج قيمته</td></tr>
+<tr><td><code>await</code> خارج دالة <code>async</code></td><td><code>SyntaxError</code></td><td>اوسم الدالة بـ <code>async</code></td></tr>
+<tr><td>عدم فحص <code>response.ok</code></td><td>تُحلَّل صفحة 404 على أنها JSON فتفشل بغرابة</td><td>افحص <code>ok</code> وارمِ خطأً واضحاً</td></tr>
+<tr><td>لا <code>try</code>/<code>catch</code></td><td>مشكلة شبكة واحدة تعطل الصفحة كلها</td><td>التقط الأخطاء واعرض رسالة</td></tr>
+<tr><td>فتح صفحة تستخدم fetch بـ <code>file://</code></td><td>يُحجب الطلب</td><td>استخدم Live Server أو <code>npx serve</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>الكود <strong>غير المتزامن</strong> يبدأ العمل البطيء ويستمر دون انتظار، والمؤقتات وطلبات الشبكة غير متزامنة.</li>
+<li><strong>الوعد</strong> قيمة ستصل لاحقاً: معلّق، ثم يُوفى أو يُرفض.</li>
+<li>دوال <code>async</code> تنتظر الوعود بـ <code>await</code>، فيُقرأ الكود بالترتيب وتبقى الصفحة مستجيبة.</li>
+<li><code>fetch(url)</code> تُرجع رداً. افحص <code>response.ok</code> ثم <code>await response.json()</code>.</li>
+<li><code>throw</code> تبلّغ عن الأخطاء، و<code>try</code>/<code>catch</code> تتعامل معها.</li>
+<li>كل عرض يحمّل بيانات له ثلاث حالات: <strong>التحميل</strong> و<strong>النجاح</strong> و<strong>الخطأ</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن <code>setTimeout</code> لا تنتظر: تجدول الدالة لاحقاً ويمضي البرنامج مباشرة. 2. لا. <code>fetch</code> لا تفشل إلا حين يتعذر إرسال الطلب أصلاً، وعليك فحص <code>response.ok</code>. 3. داخل دالة <code>async</code>، أو في أعلى مستوى من الوحدة.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب عداً تنازلياً يطبع 3 ثم 2 ثم 1 ثم «انطلق!»، سطراً كل ثانية، باستخدام <code>async</code> و<code>await</code> والدالة <code>wait</code>.</li>
+<li><span class="level">سهل</span> في <code>fetch.js</code> أضف عنواناً ثانياً، <code>/api/hello</code>، يُرجع <code>{"message": "أهلاً!"}</code>، واجلبه.</li>
+<li><span class="level medium">متوسط</span> أضف إلى المتجر زر «إعادة التحميل» يظهر مع رسالة الخطأ ويستدعي <code>start()</code> مرة أخرى.</li>
+<li><span class="level medium">متوسط</span> ابحث في MDN عن <code>Promise.all</code>، واستخدمها لجلب ملفي JSON في الوقت نفسه وطباعة النتيجتين.</li>
+<li><span class="level hard">تحدٍّ</span> استخدم الواجهة البرمجية العامة المجانية <code>https://api.github.com/users/</code> متبوعة باسم مستخدم، لتبني صفحة تعرض اسم مستخدم GitHub وصورته وعدد مستودعاته العامة. وتعامل مع حالة «المستخدم غير موجود».</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 14</p>
+<p>كلما كبرت البرامج زادت طرق تعطلها. والفصل القادم يحوّل رسائل الخطأ من شيء مخيف إلى أكثر أصدقائك نفعاً، ويعلمك تقنيات تتبّع الأخطاء التي يستخدمها المحترفون كل يوم.</p>
 </div>
 </section>
 </body></html>
