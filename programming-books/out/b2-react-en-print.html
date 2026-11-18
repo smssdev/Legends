@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "Chapter 5: State, Effects and Data Flow"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "Chapter 6: Routing and Server Data"; } }
+@page ch06:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -2460,6 +2462,484 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Timer /&gt;);<
 <p>Real apps have many pages and load their data from servers. In the next chapter you will add a router with an address for every page, load data the professional way with caching, loading and error states handled for you, and stop writing fetch effects by hand.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b2/react/routing/en">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">Chapter 6</p><h1>Routing and Server Data</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>give every screen of an app its own address with React Router</li>
+<li>share a layout between pages with nested routes and <code>Outlet</code></li>
+<li>read route parameters, and keep filters in the address so they can be shared</li>
+<li>load server data with TanStack Query: caching, loading and error states, retries</li>
+<li>change server data with mutations, including optimistic updates that roll back on failure</li>
+<li>handle pages and records that do not exist</li>
+</ul>
+</div>
+
+<p class="lead">A real app is many screens: a list, a details page, a basket, a profile. Users expect each one to have an address they can bookmark, share and reach with the back button. And almost every screen shows data that lives on a server, which arrives late, sometimes fails, and changes while the user looks at it. This chapter adds the two libraries that most React teams use for these jobs: <strong>React Router</strong> for addresses, and <strong>TanStack Query</strong> for server data.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>In the last chapter you wrote a search effect with a debounce, an abort controller and four states, and it took a whole project. TanStack Query does that work, and much more, for every request in the app. It is still worth knowing how it works inside, and now you do.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>Routes</span></h2>
+
+<p>An app with a router is still one HTML page, a <dfn>single-page application</dfn>. The router reads the address, decides which components to show, and, when the user clicks a link, changes the address without reloading the page. The routes are plain data: a tree of objects, each with a <code>path</code> and an <code>element</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes.tsx</div><pre class="code">import { Link, NavLink, Outlet, useParams, useRouteError, useSearchParams } from &quot;react-router&quot;;
+import type { RouteObject } from &quot;react-router&quot;;
+import { useQuery } from &quot;@tanstack/react-query&quot;;
+import { getProduct, getProducts, NotFoundError } from &quot;./api&quot;;
+
+function Layout() {
+  return (
+    &lt;div className=&quot;layout&quot;&gt;
+      &lt;nav&gt;
+        &lt;span className=&quot;brand&quot;&gt;Bit&#x27;s shop&lt;/span&gt;
+        &lt;NavLink to=&quot;/&quot; end&gt;
+          Home
+        &lt;/NavLink&gt;
+        &lt;NavLink to=&quot;/products&quot;&gt;Products&lt;/NavLink&gt;
+      &lt;/nav&gt;
+      &lt;Outlet /&gt;
+    &lt;/div&gt;
+  );
+}
+
+function Home() {
+  return &lt;p className=&quot;card&quot;&gt;Welcome! Browse the products, or search for something.&lt;/p&gt;;
+}
+
+const CATEGORIES = [
+  { value: null, label: &quot;All&quot; },
+  { value: &quot;books&quot;, label: &quot;Books&quot; },
+  { value: &quot;gifts&quot;, label: &quot;Gifts&quot; },
+];
+
+function Products() {
+  const [params] = useSearchParams();
+  const category = params.get(&quot;category&quot;);
+  const query = useQuery({
+    queryKey: [&quot;products&quot;, category],
+    queryFn: () =&gt; getProducts(category),
+  });
+
+  return (
+    &lt;section className=&quot;card&quot;&gt;
+      &lt;div className=&quot;filters&quot;&gt;
+        {CATEGORIES.map((c) =&gt; (
+          &lt;Link key={c.label} to={c.value ? `?category=${c.value}` : &quot;.&quot;} className={c.value === category ? &quot;on&quot; : &quot;&quot;}&gt;
+            {c.label}
+          &lt;/Link&gt;
+        ))}
+      &lt;/div&gt;
+      {query.isPending &amp;&amp; &lt;Skeleton /&gt;}
+      {query.isError &amp;&amp; &lt;p className=&quot;error&quot;&gt;Something went wrong: {query.error.message}&lt;/p&gt;}
+      {query.isSuccess &amp;&amp; (
+        &lt;ul className=&quot;list&quot;&gt;
+          {query.data.map((p) =&gt; (
+            &lt;li key={p.id}&gt;
+              &lt;Link to={`/products/${p.id}`}&gt;{p.name}&lt;/Link&gt;
+              &lt;span className=&quot;price&quot;&gt;
+                {p.price} EGP
+              &lt;/span&gt;
+            &lt;/li&gt;
+          ))}
+        &lt;/ul&gt;
+      )}
+    &lt;/section&gt;
+  );
+}
+
+function Product() {
+  const { id } = useParams();
+  const query = useQuery({
+    queryKey: [&quot;product&quot;, Number(id)],
+    queryFn: () =&gt; getProduct(Number(id)),
+    retry: (count, error) =&gt; !(error instanceof NotFoundError) &amp;&amp; count &lt; 2,
+  });
+
+  if (query.isPending) return &lt;Skeleton /&gt;;
+  if (query.isError) {
+    const missing = query.error instanceof NotFoundError;
+    return &lt;p className=&quot;card error&quot;&gt;{missing ? &quot;There is no product with this number.&quot; : query.error.message}&lt;/p&gt;;
+  }
+  const p = query.data;
+  return (
+    &lt;article className=&quot;card&quot;&gt;
+      &lt;h2&gt;{p.name}&lt;/h2&gt;
+      &lt;p&gt;{p.description}&lt;/p&gt;
+      &lt;p className=&quot;price&quot;&gt;
+        {p.price} EGP
+      &lt;/p&gt;
+      &lt;Link to=&quot;/products&quot;&gt;← Back to products&lt;/Link&gt;
+    &lt;/article&gt;
+  );
+}
+
+function Skeleton() {
+  return (
+    &lt;div aria-busy=&quot;true&quot; aria-label=&quot;Loading…&quot;&gt;
+      &lt;div className=&quot;skeleton&quot; /&gt;
+      &lt;div className=&quot;skeleton&quot; /&gt;
+    &lt;/div&gt;
+  );
+}
+
+function ErrorPage() {
+  const error = useRouteError();
+  return (
+    &lt;p className=&quot;card error&quot;&gt;
+      Something went wrong: {String(error)}
+    &lt;/p&gt;
+  );
+}
+
+function NotFound() {
+  return &lt;p className=&quot;card&quot;&gt;Page not found&lt;/p&gt;;
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: &quot;/&quot;,
+    element: &lt;Layout /&gt;,
+    errorElement: &lt;ErrorPage /&gt;,
+    children: [
+      { index: true, element: &lt;Home /&gt; },
+      { path: &quot;products&quot;, element: &lt;Products /&gt; },
+      { path: &quot;products/:id&quot;, element: &lt;Product /&gt; },
+      { path: &quot;*&quot;, element: &lt;NotFound /&gt; },
+    ],
+  },
+];</pre></div>
+
+<p>Read the <code>routes</code> array at the bottom first; it is the map of the whole app.</p>
+
+<ul>
+<li>The route <code>/</code> renders <code>Layout</code>. Its <code>children</code> render <em>inside</em> it, where <code>Layout</code> places <code>&lt;Outlet /&gt;</code>. The navigation bar is written once and every page gets it. These are <dfn>nested routes</dfn>.</li>
+<li><code>index: true</code> marks the child shown at exactly <code>/</code>.</li>
+<li><code>products/:id</code> has a <dfn>route parameter</dfn>. For the address <code>/products/2</code>, <code>useParams()</code> returns <code>{ id: "2" }</code>. Parameters are always strings; convert them yourself.</li>
+<li><code>path: "*"</code> matches anything the other routes did not, so mistyped addresses get a friendly page instead of an empty screen. <code>errorElement</code> catches errors thrown while rendering the routes inside it.</li>
+</ul>
+
+<p>The app starts in <code>main.tsx</code>, which creates a router from the routes and a query client, and provides both to the whole tree:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">main.tsx</div><pre class="code">import { StrictMode } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+import { createBrowserRouter, RouterProvider } from &quot;react-router&quot;;
+import { QueryClient, QueryClientProvider } from &quot;@tanstack/react-query&quot;;
+import { routes } from &quot;./routes&quot;;
+
+const router = createBrowserRouter(routes);
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 30_000 } },
+});
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(
+  &lt;StrictMode&gt;
+    &lt;QueryClientProvider client={queryClient}&gt;
+      &lt;RouterProvider router={router} /&gt;
+    &lt;/QueryClientProvider&gt;
+  &lt;/StrictMode&gt;,
+);</pre></div>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>About the screenshots</p><p>A browser router reads the real address of the page. The screenshots in this chapter are taken from files, not from a site, so they start the same <code>routes</code> with <code>createMemoryRouter</code>, which keeps its address in memory, and then click the links exactly as a user would.</p></aside>
+
+<h2><span class="sec">6.2</span> <span>Links and navigation</span></h2>
+
+<p>Inside the app, never write <code>&lt;a href&gt;</code> for your own pages: it would reload the whole page and lose all state. Use <code>&lt;Link to="/products"&gt;</code>, which changes the address and re-renders only what changed. <code>NavLink</code> is a link that knows whether it points to the current page and adds the class <code>active</code>, so the navigation bar can highlight it. In code, after saving a form for example, <code>const navigate = useNavigate()</code> and then <code>navigate("/products")</code> move the user.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>560px</b></div><img src="img/react-routing-en-page.html-560-8b290c.png" alt=""><figcaption><b>Figure 6.1:</b> The details page at <code>/products/2</code>, reached by clicking “Products” and then the mug. “Products” is highlighted by <code>NavLink</code>.</figcaption></figure>
+
+<h3>The address is state too</h3>
+
+<p>Look at how <code>Products</code> filters by category. It does not use <code>useState</code>: the category lives in the address, as a <dfn>search parameter</dfn>, <code>/products?category=gifts</code>, read with <code>useSearchParams()</code>. The filter links simply point to <code>?category=…</code>. This costs nothing and gives users three things for free: they can share the filtered list, bookmark it, and use the back button to undo a filter. Search text, sorting, the current page of results and the selected tab are all good candidates for the address.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>560px</b></div><img src="img/react-routing-en-page.html-560-a96198.png" alt=""><figcaption><b>Figure 6.2:</b> <code>/products?category=gifts</code>. The highlighted filter is derived from the address.</figcaption></figure>
+
+<h2><span class="sec">6.3</span> <span>Server data with TanStack Query</span></h2>
+
+<p>Data from a server is not like state that your app owns. Someone else can change it at any time, you only ever have a copy, and getting that copy takes time and can fail. Fetching it in effects, as in the last chapter, works for one screen, but a real app soon needs much more:</p>
+<ul>
+<li>A <strong>cache</strong>, so going back to a page shows it instantly instead of loading again.</li>
+<li><strong>Deduplication</strong>, so two components asking for the same data make one request.</li>
+<li><strong>Retries</strong> when the network fails for a moment.</li>
+<li><strong>Refreshing</strong> stale data when the user comes back to the tab.</li>
+<li>Protection from the <strong>race</strong> between old and new requests.</li>
+</ul>
+
+<p>TanStack Query provides all of these through one hook. You give <code>useQuery</code> a <dfn>query key</dfn>, an array that names the data, and a <dfn>query function</dfn> that returns a promise:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes.tsx (part)</div><pre class="code">const query = useQuery({
+  queryKey: ["products", category],
+  queryFn: () =&gt; getProducts(category),
+});</pre></div>
+
+<ul>
+<li>The key works like the dependency array of an effect, and like a name in a cache. <code>["products", "gifts"]</code> and <code>["products", null]</code> are cached separately. When <code>category</code> changes, the key changes and the right data is loaded, or shown at once if it is already cached.</li>
+<li>The result tells you the state: <code>isPending</code>, <code>isError</code> with <code>error</code>, and <code>isSuccess</code> with <code>data</code>, which TypeScript knows is a <code>Product[]</code>. These are the four states you designed in Chapter 4, ready-made.</li>
+<li><code>staleTime: 30_000</code> in <code>main.tsx</code> says data stays fresh for 30 seconds; inside that time, visiting the page again makes no request at all.</li>
+<li>The details page uses <code>retry</code> to try twice on network errors, but never on <code>NotFoundError</code>: retrying a product that does not exist is pointless.</li>
+</ul>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>560px</b></div><img src="img/react-routing-en-page.html-560-e772d1.png" alt=""><figcaption><b>Figure 6.3:</b> The first moment on the products page: grey “skeleton” lines show where the list will appear, so the page does not jump when it arrives.</figcaption></figure>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: skeletons instead of spinners</p><p>A skeleton that has roughly the shape of the coming content feels faster than a spinner, and stops the layout from jumping. Mark it with <code>aria-busy="true"</code> and a label, so screen readers know that content is on its way.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why should an app use <code>&lt;Link&gt;</code> instead of <code>&lt;a href&gt;</code> for its own pages?</li><li>What is the type of <code>id</code> in <code>const { id } = useParams()</code> for the address <code>/products/2</code>?</li><li>Two components call <code>useQuery</code> with the key <code>["product", 2]</code> at the same time. How many requests are sent?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">6.4</span> <span>Changing server data</span></h2>
+
+<p>Reading uses queries; writing uses <dfn>mutations</dfn>. <code>useMutation</code> wraps a function that changes data on the server, and gives you <code>mutate</code> to call it, plus <code>isPending</code> and <code>isError</code> for the screen. After a successful change, the cached copies are out of date, so you <dfn>invalidate</dfn> them: <code>queryClient.invalidateQueries({ queryKey: ["products"] })</code> marks every query whose key starts with <code>"products"</code> as stale, and the ones on screen reload.</p>
+
+<p>Waiting for the server makes small actions, like a heart or a tick, feel slow. An <dfn>optimistic update</dfn> changes the screen at once, assuming the server will agree, and puts the old value back if it does not. Project 6.3 builds one, in three short steps: change the cache and remember the old value; restore it on error; reload the truth from the server either way.</p>
+
+<h2><span class="sec">6.5</span> <span>Splitting the app by route</span></h2>
+
+<p>Each route is a natural place to split the code (Chapter 3): users who never open the admin pages should never download them. React Router can load a route’s component only when the route is first visited:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes.tsx</div><pre class="code">{
+  path: "admin",
+  lazy: async () =&gt; ({ Component: (await import("./admin")).AdminPage }),
+}</pre></div>
+
+<p>The build puts <code>admin</code> in its own file, and the router shows the page as soon as the file has arrived.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: every page needs four states and a way out</p><p>For each route, ask: what does the user see while it loads, when it is empty, when it fails, and when the address is wrong? Each answer should offer a way forward: a retry button, a link to the list, a link home. Nobody should ever reach a blank screen.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;a href="/products"&gt;</code> inside the app</td><td>The page reloads and all state is lost</td><td><code>&lt;Link to="/products"&gt;</code></td></tr>
+<tr><td>Forgetting <code>&lt;Outlet /&gt;</code> in a layout</td><td>Child routes never appear</td><td>Place <code>&lt;Outlet /&gt;</code> where children should go</td></tr>
+<tr><td>Using a route parameter as a number</td><td><code>"2" === 2</code> is false</td><td><code>Number(id)</code>, and handle <code>NaN</code></td></tr>
+<tr><td>A query key that misses a variable</td><td>Changing the filter shows the old data</td><td>Put every input of the query function in the key</td></tr>
+<tr><td>Copying query data into <code>useState</code></td><td>The copy goes stale</td><td>Read <code>query.data</code> directly</td></tr>
+<tr><td>Forgetting to invalidate after a mutation</td><td>The screen shows the old data</td><td><code>invalidateQueries</code> in <code>onSettled</code></td></tr>
+<tr><td>No catch-all route</td><td>A blank screen for mistyped addresses</td><td><code>path: "*"</code> with a helpful page</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>React Router</strong> maps addresses to components. Routes are data; <strong>nested routes</strong> share a layout through <code>&lt;Outlet /&gt;</code>.</li>
+<li><code>useParams</code> reads <strong>route parameters</strong>; <code>useSearchParams</code> keeps filters and other shareable state in the <strong>address</strong>.</li>
+<li>Navigate with <code>Link</code>, <code>NavLink</code> and <code>useNavigate</code>, never with plain links to your own pages.</li>
+<li><strong>TanStack Query</strong> caches server data by <strong>query key</strong>, removes duplicate requests, retries and refreshes, and reports pending, error and success.</li>
+<li><strong>Mutations</strong> change server data; <strong>invalidate</strong> the affected queries afterwards. <strong>Optimistic updates</strong> change the screen first and roll back on failure.</li>
+<li>Split code by route with <code>lazy</code>, and give every route its loading, empty, error and not-found states.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A plain link reloads the whole page and loses the app’s state; <code>Link</code> only changes the address and the parts of the screen that differ. 2. A string, <code>"2"</code>. 3. One: queries with the same key share a single request and a single cache entry.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Start each project from the routes, written as data, before any component. If you can read the whole app from the <code>routes</code> array, the design is right.</p>
+
+<div class="project">
+<p class="project-label">Project 6.1 · Easy</p>
+<h3>A small blog with pretty addresses</h3>
+<p class="project-goal">A list of posts and a page for each post, at addresses like <code>/posts/rules-for-state</code>, with a kind message for posts that do not exist.</p>
+<p class="project-skills"><strong>You will practise:</strong> nested routes, an index route, a route parameter, <code>Link</code> and <code>NavLink</code>, and not-found handling.</p>
+<ol class="steps">
+<li>Give each post a <dfn>slug</dfn>: a short, readable id made from the title, such as <code>keys-explained</code>. Readable addresses are better for users and for search engines.</li>
+<li>Write a <code>Layout</code> with the blog’s name, a <code>NavLink</code> to the list, and an <code>Outlet</code>.</li>
+<li>The index route shows the list; <code>posts/:slug</code> shows one post.</li>
+<li>In <code>PostPage</code>, find the post by <code>useParams().slug</code>. If it does not exist, say so and link back home.</li>
+<li>Try a wrong address by hand, such as <code>/posts/nothing</code>, and check the message.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the data here is a constant, so no query is needed. Not every page needs TanStack Query; use it when the data comes from a server.</p>
+<div class="listing" dir="ltr"><div class="listing-title">blog-routes.tsx</div><pre class="code">import { Link, NavLink, Outlet, useParams } from &quot;react-router&quot;;
+import type { RouteObject } from &quot;react-router&quot;;
+
+type Post = { slug: string; title: string; body: string; minutes: number };
+
+const posts: Post[] = [
+  { slug: &quot;why-typescript&quot;, title: &quot;Why I love TypeScript&quot;, body: &quot;Types catch mistakes while I type, so my evenings are free.&quot;, minutes: 4 },
+  { slug: &quot;rules-for-state&quot;, title: &quot;Three rules for state&quot;, body: &quot;Keep it minimal, derive the rest, and never change it in place.&quot;, minutes: 6 },
+  { slug: &quot;keys-explained&quot;, title: &quot;Keys, explained&quot;, body: &quot;A key tells React which item is which between two renders.&quot;, minutes: 3 },
+];
+
+function Layout() {
+  return (
+    &lt;div className=&quot;layout&quot;&gt;
+      &lt;nav&gt;
+        &lt;span className=&quot;brand&quot;&gt;Bit&#x27;s blog&lt;/span&gt;
+        &lt;NavLink to=&quot;/&quot; end&gt;
+          Posts
+        &lt;/NavLink&gt;
+      &lt;/nav&gt;
+      &lt;Outlet /&gt;
+    &lt;/div&gt;
+  );
+}
+
+function PostList() {
+  return (
+    &lt;ul className=&quot;list card&quot;&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.slug}&gt;
+          &lt;Link to={`/posts/${post.slug}`}&gt;{post.title}&lt;/Link&gt;
+          &lt;span className=&quot;muted&quot;&gt;
+            {post.minutes} min read
+          &lt;/span&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+function PostPage() {
+  const { slug } = useParams();
+  const post = posts.find((p) =&gt; p.slug === slug);
+  if (!post) {
+    return (
+      &lt;p className=&quot;card&quot;&gt;
+        This post does not exist. &lt;Link to=&quot;/&quot;&gt;Go to the home page&lt;/Link&gt;
+      &lt;/p&gt;
+    );
+  }
+  return (
+    &lt;article className=&quot;card&quot;&gt;
+      &lt;h2&gt;{post.title}&lt;/h2&gt;
+      &lt;p className=&quot;muted&quot;&gt;
+        by Bit · {post.minutes} min read
+      &lt;/p&gt;
+      &lt;p&gt;{post.body}&lt;/p&gt;
+    &lt;/article&gt;
+  );
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: &quot;/&quot;,
+    element: &lt;Layout /&gt;,
+    children: [
+      { index: true, element: &lt;PostList /&gt; },
+      { path: &quot;posts/:slug&quot;, element: &lt;PostPage /&gt; },
+    ],
+  },
+];</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>blog-page.html</span><b>560px</b></div><img src="img/react-routing-en-projects-blog-page.html-560-9576b8.png" alt=""><figcaption><b>Project 6.1:</b> a post page, reached from the list.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 6.2 · Medium</p>
+<h3>A product list you can share</h3>
+<p class="project-goal">Extend the shop from this chapter so that the category <em>and</em> a search text live in the address, and every combination can be shared as a link.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useSearchParams</code> for reading and writing, query keys with several parts, and keeping the address in step with an input.</p>
+<ol class="steps">
+<li>Read <code>category</code> and <code>q</code> from the search parameters. Both may be missing.</li>
+<li>Put both in the query key: <code>["products", category, q]</code>, and pass both to the API function.</li>
+<li>Make the search input controlled by the address: its value is <code>q ?? ""</code>, and <code>onChange</code> calls <code>setParams</code> with the new text, keeping the category.</li>
+<li>Pass <code>{ replace: true }</code> to <code>setParams</code> while typing, so every letter does not become a new entry in the back button’s history.</li>
+<li>Open the same address in a new tab and check that you see exactly the same list.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> to change one parameter and keep the others, copy them first: <code>const next = new URLSearchParams(params); next.set("q", text); setParams(next, { replace: true });</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 6.3 · Challenge</p>
+<h3>An optimistic favourite button</h3>
+<p class="project-goal">A heart that fills the moment it is pressed, saves in the background, and quietly puts things back if the server refuses.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useMutation</code>, reading and writing the query cache, rolling back with a context value, and invalidating.</p>
+<ol class="steps">
+<li>Load the product with <code>useQuery</code> under the key <code>["product", id]</code>.</li>
+<li>Create a mutation whose <code>mutationFn</code> calls <code>setFavourite(id, value)</code>.</li>
+<li>In <code>onMutate</code>, cancel queries for the key (so an old answer cannot overwrite you), save the current value with <code>getQueryData</code>, write the new value with <code>setQueryData</code>, and return <code>{ previous }</code>.</li>
+<li>In <code>onError</code>, write <code>context.previous</code> back. In <code>onSettled</code>, invalidate the key, so the screen ends with the server’s truth.</li>
+<li>Test the failure: the fake API has a <code>server.failNextSave</code> switch. Watch the heart fill, then empty, with a message.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> use optimistic updates for small, frequent, reversible actions, such as likes, ticks and reordering. For payments and anything hard to undo, show a clear “Saving…” state and wait for the server instead.</p>
+<div class="listing" dir="ltr"><div class="listing-title">favourite.tsx</div><pre class="code">import { useMutation, useQuery, useQueryClient } from &quot;@tanstack/react-query&quot;;
+import { getProduct, setFavourite, type Product } from &quot;../api&quot;;
+
+export function FavouriteButton({ id }: { id: number }) {
+  const client = useQueryClient();
+  const key = [&quot;product&quot;, id];
+  const product = useQuery({ queryKey: key, queryFn: () =&gt; getProduct(id) });
+
+  const mutation = useMutation({
+    mutationFn: (favourite: boolean) =&gt; setFavourite(id, favourite),
+    // 1. Before the server answers: change the cache, and remember the old value
+    onMutate: async (favourite) =&gt; {
+      await client.cancelQueries({ queryKey: key });
+      const previous = client.getQueryData&lt;Product&gt;(key);
+      client.setQueryData&lt;Product&gt;(key, (old) =&gt; (old ? { ...old, favourite } : old));
+      return { previous };
+    },
+    // 2. If it fails: put the old value back
+    onError: (_error, _favourite, context) =&gt; {
+      client.setQueryData(key, context?.previous);
+    },
+    // 3. Either way: ask the server for the truth
+    onSettled: () =&gt; client.invalidateQueries({ queryKey: key }),
+  });
+
+  if (!product.data) return &lt;p className=&quot;muted&quot;&gt;Loading…&lt;/p&gt;;
+  const on = product.data.favourite;
+  return (
+    &lt;div className=&quot;card&quot;&gt;
+      &lt;h2&gt;{product.data.name}&lt;/h2&gt;
+      &lt;button aria-pressed={on} className={on ? &quot;&quot; : &quot;secondary&quot;} onClick={() =&gt; mutation.mutate(!on)}&gt;
+        {on ? &quot;♥ Favourite&quot; : &quot;♡ Favourite&quot;}
+      &lt;/button&gt;
+      {mutation.isPending &amp;&amp; &lt;span className=&quot;muted&quot;&gt; Saving…&lt;/span&gt;}
+      {mutation.isError &amp;&amp; &lt;p className=&quot;error&quot;&gt;Could not save. The change was undone.&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>fav-fail-page.html</span><b>560px</b></div><img src="img/react-routing-en-projects-fav-fail-page.html-560-8bbb72.png" alt=""><figcaption><b>Project 6.3:</b> 100 ms after pressing: the heart is already full, and the save is on its way…</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>fav-fail-page.html</span><b>560px</b></div><img src="img/react-routing-en-projects-fav-fail-page.html-560-be2a4b.png" alt=""><figcaption>…and after the server refused: the change was rolled back, and the user is told.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add an “About” page at <code>/about</code> with a <code>NavLink</code> in the navigation bar.</li>
+<li><span class="level">Easy</span> On the details page, show “Product 2 of 4” using the cached list, if it is already in the cache, with <code>queryClient.getQueryData(["products", null])</code>.</li>
+<li><span class="level medium">Medium</span> Add a search box to the products page that keeps its text in the address as <code>?q=</code>, together with the category, and filters the list by name.</li>
+<li><span class="level medium">Medium</span> Make the details page handle an address like <code>/products/abc</code>, where the id is not a number, without calling the API.</li>
+<li><span class="level hard">Challenge</span> Add a “Next product” link to the details page, and make it feel instant: when the page loads, call <code>queryClient.prefetchQuery</code> for the next product, so it is already cached when the user clicks.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 7</p>
+<p>Users do not only read data; they send it, through forms. In the next chapter you will build forms that validate as the user types, show helpful errors, describe their rules once in a schema shared with TypeScript, and send the result to the server safely.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2525,6 +3005,16 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Timer /&gt;);<
 <li>Only <code>seconds</code> and <code>running</code> are state. The display is derived: <code>`${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`</code>. “Reset” calls <code>setSeconds(0)</code> (and may also <code>setRunning(false)</code>).</li>
 <li><code>const [width, setWidth] = useState(window.innerWidth); useEffect(() =&gt; { const onResize = () =&gt; setWidth(window.innerWidth); window.addEventListener("resize", onResize); return () =&gt; window.removeEventListener("resize", onResize); }, []);</code>. The empty dependency array is right because the effect uses nothing from props or state.</li>
 <li>The reducer takes <code>Line[]</code> and actions <code>{ type: "added"; product: Product } | { type: "decreased"; id: number } | { type: "removed"; id: number }</code>, and its cases contain exactly the logic of <code>add</code>, the answer to exercise 1, and <code>remove</code>. Test it by folding a list of actions as in <code>reducer-test.ts</code>; then in the component, <code>const [lines, dispatch] = useReducer(cartReducer, [])</code>.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 6</h2>
+<ol class="exercises">
+<li>Add <code>{ path: "about", element: &lt;About /&gt; }</code> to the children of the layout route, and <code>&lt;NavLink to="/about"&gt;About&lt;/NavLink&gt;</code> to the navigation bar. <code>NavLink</code> highlights it by itself.</li>
+<li><code>const client = useQueryClient(); const list = client.getQueryData&lt;Product[]&gt;(["products", null]); const index = list?.findIndex((p) =&gt; p.id === id);</code>, then render <code>Product {index + 1} of {list.length}</code> only when <code>list</code> exists and the index is not −1. Reading the cache makes no request.</li>
+<li>Read <code>q</code> with <code>params.get("q")</code>, add it to the key, and filter with <code>p.name.toLowerCase().includes(q.toLowerCase())</code>. Update it as in Project 6.2, copying the parameters first so the category is kept.</li>
+<li><code>const id = Number(params.id); if (!Number.isInteger(id)) return &lt;p&gt;There is no product with this number.&lt;/p&gt;;</code> before the query, or pass <code>enabled: Number.isInteger(id)</code> to <code>useQuery</code> so it never runs.</li>
+<li><code>useEffect(() =&gt; { client.prefetchQuery({ queryKey: ["product", id + 1], queryFn: () =&gt; getProduct(id + 1) }); }, [id]);</code> and <code>&lt;Link to={`/products/${id + 1}`}&gt;</code>. When the user clicks, the query finds the product in the cache and shows it without a skeleton.</li>
 </ol>
 
 </section>

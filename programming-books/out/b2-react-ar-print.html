@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "الفصل 5: الحالة والتأثيرات وتدفق البيانات"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "الفصل 6: التوجيه وبيانات الخادم"; } }
+@page ch06:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -2460,6 +2462,484 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Timer /&gt;);<
 <p>التطبيقات الحقيقية فيها صفحات كثيرة وتحمّل بياناتها من الخوادم. وفي الفصل التالي ستضيف موجّهاً بعنوان لكل صفحة، وتحمّل البيانات بطريقة المحترفين، مع الذاكرة المؤقتة وحالات التحميل والخطأ معالَجة لك، وتتوقف عن كتابة تأثيرات الجلب باليد.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b2/react/routing/ar">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">الفصل 6</p><h1>التوجيه وبيانات الخادم</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تعطي كل شاشة في التطبيق عنوانها الخاص بـ React Router</li>
+<li>تشارك تخطيطاً بين الصفحات بالمسارات المتداخلة و<code>Outlet</code></li>
+<li>تقرأ معاملات المسار، وتحفظ عوامل التصفية في العنوان لتُشارك</li>
+<li>تحمّل بيانات الخادم بـ TanStack Query: الذاكرة المؤقتة، وحالتي التحميل والخطأ، وإعادة المحاولة</li>
+<li>تغيّر بيانات الخادم بالتعديلات (mutations)، ومنها التحديثات المتفائلة التي تتراجع عند الفشل</li>
+<li>تعالج الصفحات والسجلات غير الموجودة</li>
+</ul>
+</div>
+
+<p class="lead">التطبيق الحقيقي شاشات كثيرة: قائمة، وصفحة تفاصيل، وسلة، وملف شخصي. ويتوقع المستخدمون أن يكون لكل منها عنوان يحفظونه ويشاركونه ويصلون إليه بزر الرجوع. ومعظم الشاشات تعرض بيانات تعيش على خادم، تصل متأخرة، وتفشل أحياناً، وتتغير والمستخدم ينظر إليها. ويضيف هذا الفصل المكتبتين اللتين تستخدمهما معظم فرق React لهاتين المهمتين: <strong>React Router</strong> للعناوين، و<strong>TanStack Query</strong> لبيانات الخادم.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>في الفصل السابق كتبت تأثير بحث بتأجيل وAbortController وأربع حالات، واحتاج مشروعاً كاملاً. وTanStack Query تؤدي هذا العمل وأكثر بكثير لكل طلب في التطبيق. ومع ذلك تستحق معرفة كيف تعمل من الداخل، وها أنت تعرفها الآن.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>المسارات</span></h2>
+
+<p>التطبيق ذو الموجّه ما زال صفحة HTML واحدة، أي <dfn>تطبيق صفحة واحدة</dfn> (SPA). يقرأ الموجّه العنوان ويقرر أي المكونات يعرض، وحين يضغط المستخدم رابطاً يغيّر العنوان دون إعادة تحميل الصفحة. والمسارات بيانات عادية: شجرة كائنات، لكل منها <code>path</code> و<code>element</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes.tsx</div><pre class="code">import { Link, NavLink, Outlet, useParams, useRouteError, useSearchParams } from &quot;react-router&quot;;
+import type { RouteObject } from &quot;react-router&quot;;
+import { useQuery } from &quot;@tanstack/react-query&quot;;
+import { getProduct, getProducts, NotFoundError } from &quot;./api&quot;;
+
+function Layout() {
+  return (
+    &lt;div className=&quot;layout&quot;&gt;
+      &lt;nav&gt;
+        &lt;span className=&quot;brand&quot;&gt;متجر بِت&lt;/span&gt;
+        &lt;NavLink to=&quot;/&quot; end&gt;
+          الرئيسية
+        &lt;/NavLink&gt;
+        &lt;NavLink to=&quot;/products&quot;&gt;المنتجات&lt;/NavLink&gt;
+      &lt;/nav&gt;
+      &lt;Outlet /&gt;
+    &lt;/div&gt;
+  );
+}
+
+function Home() {
+  return &lt;p className=&quot;card&quot;&gt;أهلاً بك! تصفّح المنتجات، أو ابحث عن شيء.&lt;/p&gt;;
+}
+
+const CATEGORIES = [
+  { value: null, label: &quot;الكل&quot; },
+  { value: &quot;books&quot;, label: &quot;كتب&quot; },
+  { value: &quot;gifts&quot;, label: &quot;هدايا&quot; },
+];
+
+function Products() {
+  const [params] = useSearchParams();
+  const category = params.get(&quot;category&quot;);
+  const query = useQuery({
+    queryKey: [&quot;products&quot;, category],
+    queryFn: () =&gt; getProducts(category),
+  });
+
+  return (
+    &lt;section className=&quot;card&quot;&gt;
+      &lt;div className=&quot;filters&quot;&gt;
+        {CATEGORIES.map((c) =&gt; (
+          &lt;Link key={c.label} to={c.value ? `?category=${c.value}` : &quot;.&quot;} className={c.value === category ? &quot;on&quot; : &quot;&quot;}&gt;
+            {c.label}
+          &lt;/Link&gt;
+        ))}
+      &lt;/div&gt;
+      {query.isPending &amp;&amp; &lt;Skeleton /&gt;}
+      {query.isError &amp;&amp; &lt;p className=&quot;error&quot;&gt;حدث خطأ: {query.error.message}&lt;/p&gt;}
+      {query.isSuccess &amp;&amp; (
+        &lt;ul className=&quot;list&quot;&gt;
+          {query.data.map((p) =&gt; (
+            &lt;li key={p.id}&gt;
+              &lt;Link to={`/products/${p.id}`}&gt;{p.name}&lt;/Link&gt;
+              &lt;span className=&quot;price&quot;&gt;
+                {p.price} جنيهاً
+              &lt;/span&gt;
+            &lt;/li&gt;
+          ))}
+        &lt;/ul&gt;
+      )}
+    &lt;/section&gt;
+  );
+}
+
+function Product() {
+  const { id } = useParams();
+  const query = useQuery({
+    queryKey: [&quot;product&quot;, Number(id)],
+    queryFn: () =&gt; getProduct(Number(id)),
+    retry: (count, error) =&gt; !(error instanceof NotFoundError) &amp;&amp; count &lt; 2,
+  });
+
+  if (query.isPending) return &lt;Skeleton /&gt;;
+  if (query.isError) {
+    const missing = query.error instanceof NotFoundError;
+    return &lt;p className=&quot;card error&quot;&gt;{missing ? &quot;لا يوجد منتج بهذا الرقم.&quot; : query.error.message}&lt;/p&gt;;
+  }
+  const p = query.data;
+  return (
+    &lt;article className=&quot;card&quot;&gt;
+      &lt;h2&gt;{p.name}&lt;/h2&gt;
+      &lt;p&gt;{p.description}&lt;/p&gt;
+      &lt;p className=&quot;price&quot;&gt;
+        {p.price} جنيهاً
+      &lt;/p&gt;
+      &lt;Link to=&quot;/products&quot;&gt;→ عودة إلى المنتجات&lt;/Link&gt;
+    &lt;/article&gt;
+  );
+}
+
+function Skeleton() {
+  return (
+    &lt;div aria-busy=&quot;true&quot; aria-label=&quot;جارٍ التحميل…&quot;&gt;
+      &lt;div className=&quot;skeleton&quot; /&gt;
+      &lt;div className=&quot;skeleton&quot; /&gt;
+    &lt;/div&gt;
+  );
+}
+
+function ErrorPage() {
+  const error = useRouteError();
+  return (
+    &lt;p className=&quot;card error&quot;&gt;
+      حدث خطأ: {String(error)}
+    &lt;/p&gt;
+  );
+}
+
+function NotFound() {
+  return &lt;p className=&quot;card&quot;&gt;الصفحة غير موجودة&lt;/p&gt;;
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: &quot;/&quot;,
+    element: &lt;Layout /&gt;,
+    errorElement: &lt;ErrorPage /&gt;,
+    children: [
+      { index: true, element: &lt;Home /&gt; },
+      { path: &quot;products&quot;, element: &lt;Products /&gt; },
+      { path: &quot;products/:id&quot;, element: &lt;Product /&gt; },
+      { path: &quot;*&quot;, element: &lt;NotFound /&gt; },
+    ],
+  },
+];</pre></div>
+
+<p>اقرأ مصفوفة <code>routes</code> في الأسفل أولاً، فهي خريطة التطبيق كله.</p>
+
+<ul>
+<li>المسار <code>/</code> يرسم <code>Layout</code>. و<code>children</code> تُرسم <em>داخله</em>، حيث يضع <code>Layout</code> العنصر <code>&lt;Outlet /&gt;</code>. فشريط التنقل يُكتب مرة وتأخذه كل صفحة. وهذه <dfn>المسارات المتداخلة</dfn>.</li>
+<li><code>index: true</code> تعلّم الابن الذي يظهر عند <code>/</code> بالضبط.</li>
+<li><code>products/:id</code> فيه <dfn>معامل مسار</dfn>. فللعنوان <code>/products/2</code> تُرجع <code>useParams()</code> القيمة <code>{ id: "2" }</code>. والمعاملات نصوص دائماً، فحوّلها بنفسك.</li>
+<li><code>path: "*"</code> يطابق كل ما لم تطابقه المسارات الأخرى، فتحصل العناوين المكتوبة خطأً على صفحة ودودة بدل شاشة فارغة. و<code>errorElement</code> يلتقط الأخطاء التي تُرمى أثناء رسم المسارات التي بداخله.</li>
+</ul>
+
+<p>ويبدأ التطبيق في <code>main.tsx</code>، الذي ينشئ موجّهاً من المسارات وعميل استعلامات، ويقدمهما للشجرة كلها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">main.tsx</div><pre class="code">import { StrictMode } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+import { createBrowserRouter, RouterProvider } from &quot;react-router&quot;;
+import { QueryClient, QueryClientProvider } from &quot;@tanstack/react-query&quot;;
+import { routes } from &quot;./routes&quot;;
+
+const router = createBrowserRouter(routes);
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 30_000 } },
+});
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(
+  &lt;StrictMode&gt;
+    &lt;QueryClientProvider client={queryClient}&gt;
+      &lt;RouterProvider router={router} /&gt;
+    &lt;/QueryClientProvider&gt;
+  &lt;/StrictMode&gt;,
+);</pre></div>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عن لقطات الشاشة</p><p>موجّه المتصفح يقرأ العنوان الحقيقي للصفحة. ولقطات هذا الفصل مأخوذة من ملفات لا من موقع، فتبدأ المسارات <code>routes</code> نفسها بـ <code>createMemoryRouter</code>، الذي يحفظ عنوانه في الذاكرة، ثم تضغط الروابط كما يفعل المستخدم تماماً.</p></aside>
+
+<h2><span class="sec">6.2</span> <span>الروابط والتنقل</span></h2>
+
+<p>داخل التطبيق لا تكتب أبداً <code>&lt;a href&gt;</code> لصفحاتك: فهي تعيد تحميل الصفحة كلها وتضيع الحالة كلها. استخدم <code>&lt;Link to="/products"&gt;</code>، فهو يغيّر العنوان ويعيد رسم ما تغيّر فقط. و<code>NavLink</code> رابط يعرف هل يشير إلى الصفحة الحالية فيضيف الصنف <code>active</code>، ليبرزه شريط التنقل. وفي الكود، بعد حفظ نموذج مثلاً، تنقل <code>const navigate = useNavigate()</code> ثم <code>navigate("/products")</code> المستخدمَ.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>560px</b></div><img src="img/react-routing-ar-page.html-560-8b290c.png" alt=""><figcaption><b>شكل 6.1:</b> صفحة التفاصيل على <code>/products/2</code>، بالضغط على «المنتجات» ثم الكوب. و«المنتجات» بارزة بفضل <code>NavLink</code>.</figcaption></figure>
+
+<h3>العنوان حالة أيضاً</h3>
+
+<p>انظر كيف يصفّي <code>Products</code> حسب الفئة. لا يستخدم <code>useState</code>: فالفئة تعيش في العنوان <dfn>معاملَ بحث</dfn> (search parameter)، <code>/products?category=gifts</code>، ويقرؤها <code>useSearchParams()</code>. وروابط التصفية تشير ببساطة إلى <code>?category=…</code>. وهذا لا يكلّف شيئاً، ويعطي المستخدمين ثلاثة أشياء مجاناً: مشاركة القائمة المصفّاة، وحفظها، والتراجع عن التصفية بزر الرجوع. ونص البحث والترتيب ورقم صفحة النتائج والتبويب المختار كلها مرشحة جيدة للعنوان.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>560px</b></div><img src="img/react-routing-ar-page.html-560-a96198.png" alt=""><figcaption><b>شكل 6.2:</b> <code>/products?category=gifts</code>. والفلتر البارز مشتق من العنوان.</figcaption></figure>
+
+<h2><span class="sec">6.3</span> <span>بيانات الخادم بـ TanStack Query</span></h2>
+
+<p>بيانات الخادم ليست كالحالة التي يملكها تطبيقك. فقد يغيّرها غيرك في أي وقت، وما معك إلا نسخة منها، والحصول على تلك النسخة يأخذ وقتاً وقد يفشل. وجلبها في التأثيرات، كما في الفصل السابق، ينجح لشاشة واحدة، لكن التطبيق الحقيقي يحتاج سريعاً أكثر من ذلك بكثير:</p>
+<ul>
+<li><strong>ذاكرة مؤقتة</strong>، فالعودة إلى صفحة تعرضها فوراً بدل التحميل من جديد.</li>
+<li><strong>منع التكرار</strong>، فمكوّنان يطلبان البيانات نفسها يرسلان طلباً واحداً.</li>
+<li><strong>إعادة المحاولة</strong> حين تتعطل الشبكة لحظة.</li>
+<li><strong>تحديث</strong> البيانات القديمة حين يعود المستخدم إلى التبويب.</li>
+<li>الحماية من <strong>السباق</strong> بين الطلبات القديمة والجديدة.</li>
+</ul>
+
+<p>وتقدم TanStack Query هذا كله عبر خطّاف واحد. تعطي <code>useQuery</code> <dfn>مفتاح استعلام</dfn>، مصفوفة تسمّي البيانات، و<dfn>دالة استعلام</dfn> تُرجع وعداً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes.tsx (جزء)</div><pre class="code">const query = useQuery({
+  queryKey: ["products", category],
+  queryFn: () =&gt; getProducts(category),
+});</pre></div>
+
+<ul>
+<li>يعمل المفتاح مثل مصفوفة اعتماديات التأثير، ومثل اسم في الذاكرة المؤقتة. فـ <code>["products", "gifts"]</code> و<code>["products", null]</code> تُحفظان منفصلتين. وحين تتغير <code>category</code> يتغير المفتاح فتُحمَّل البيانات الصحيحة، أو تظهر فوراً إن كانت محفوظة.</li>
+<li>تخبرك النتيجة بالحالة: <code>isPending</code>، و<code>isError</code> مع <code>error</code>، و<code>isSuccess</code> مع <code>data</code>، التي تعرف TypeScript أنها <code>Product[]</code>. وهذه الحالات الأربع التي صممتها في الفصل 4، جاهزة.</li>
+<li><code>staleTime: 30_000</code> في <code>main.tsx</code> تقول إن البيانات تبقى طازجة 30 ثانية، وفي هذه المدة لا تسبب زيارة الصفحة من جديد أي طلب.</li>
+<li>تستخدم صفحة التفاصيل <code>retry</code> لتعيد المحاولة مرتين عند أخطاء الشبكة، ولا تعيدها أبداً مع <code>NotFoundError</code>: فلا فائدة من إعادة طلب منتج غير موجود.</li>
+</ul>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>560px</b></div><img src="img/react-routing-ar-page.html-560-e772d1.png" alt=""><figcaption><b>شكل 6.3:</b> اللحظة الأولى في صفحة المنتجات: خطوط رمادية «هيكلية» تُظهر مكان القائمة القادمة، فلا تقفز الصفحة حين تصل.</figcaption></figure>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: الهياكل بدل دوائر الانتظار</p><p>الهيكل الذي يشبه شكل المحتوى القادم يبدو أسرع من دائرة الانتظار، ويمنع التخطيط من القفز. وعلّمه بـ <code>aria-busy="true"</code> وتسمية، ليعرف قارئ الشاشة أن المحتوى في الطريق.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يستخدم التطبيق <code>&lt;Link&gt;</code> بدل <code>&lt;a href&gt;</code> لصفحاته؟</li><li>ما نوع <code>id</code> في <code>const { id } = useParams()</code> للعنوان <code>/products/2</code>؟</li><li>مكوّنان يستدعيان <code>useQuery</code> بالمفتاح <code>["product", 2]</code> في الوقت نفسه. كم طلباً يُرسل؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">6.4</span> <span>تغيير بيانات الخادم</span></h2>
+
+<p>القراءة بالاستعلامات، والكتابة بـ <dfn>التعديلات</dfn> (mutations). تغلّف <code>useMutation</code> دالة تغيّر البيانات على الخادم، وتعطيك <code>mutate</code> لاستدعائها، و<code>isPending</code> و<code>isError</code> للشاشة. وبعد التغيير الناجح تصير النسخ المحفوظة قديمة، فـ <dfn>تُبطلها</dfn>: <code>queryClient.invalidateQueries({ queryKey: ["products"] })</code> تعلّم كل استعلام يبدأ مفتاحه بـ <code>"products"</code> قديماً، فيعيد المعروض منها التحميل.</p>
+
+<p>وانتظار الخادم يجعل الأفعال الصغيرة، كالقلب أو علامة الصح، تبدو بطيئة. و<dfn>التحديث المتفائل</dfn> (optimistic update) يغيّر الشاشة فوراً مفترضاً أن الخادم سيوافق، ويعيد القيمة القديمة إن لم يوافق. ويبني المشروع 6.3 واحداً في ثلاث خطوات قصيرة: غيّر الذاكرة المؤقتة وتذكّر القيمة القديمة، وأعدها عند الخطأ، وحمّل الحقيقة من الخادم في الحالتين.</p>
+
+<h2><span class="sec">6.5</span> <span>تقسيم التطبيق حسب المسارات</span></h2>
+
+<p>كل مسار مكان طبيعي لتقسيم الكود (الفصل 3): فمن لا يفتح صفحات الإدارة أبداً لا ينبغي أن ينزّلها أبداً. ويستطيع React Router تحميل مكوّن المسار فقط حين يُزار أول مرة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes.tsx</div><pre class="code">{
+  path: "admin",
+  lazy: async () =&gt; ({ Component: (await import("./admin")).AdminPage }),
+}</pre></div>
+
+<p>فيضع البناء <code>admin</code> في ملف خاص، ويعرض الموجّه الصفحة بمجرد وصول الملف.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: لكل صفحة أربع حالات وطريق للخروج</p><p>لكل مسار اسأل: ماذا يرى المستخدم أثناء التحميل، وحين تكون فارغة، وحين تفشل، وحين يكون العنوان خطأً؟ وكل جواب يجب أن يقدم طريقاً للمتابعة: زر إعادة المحاولة، أو رابطاً إلى القائمة، أو رابطاً إلى الرئيسية. فلا يصل أحد أبداً إلى شاشة بيضاء.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;a href="/products"&gt;</code> داخل التطبيق</td><td>تُعاد الصفحة وتضيع الحالة كلها</td><td><code>&lt;Link to="/products"&gt;</code></td></tr>
+<tr><td>نسيان <code>&lt;Outlet /&gt;</code> في التخطيط</td><td>لا تظهر المسارات الأبناء أبداً</td><td>ضع <code>&lt;Outlet /&gt;</code> حيث يجب أن يظهر الأبناء</td></tr>
+<tr><td>استخدام معامل المسار رقماً</td><td><code>"2" === 2</code> خاطئة</td><td><code>Number(id)</code>، وعالج <code>NaN</code></td></tr>
+<tr><td>مفتاح استعلام ينقصه متغير</td><td>تغيير الفلتر يعرض البيانات القديمة</td><td>ضع كل مدخل لدالة الاستعلام في المفتاح</td></tr>
+<tr><td>نسخ بيانات الاستعلام إلى <code>useState</code></td><td>تصير النسخة قديمة</td><td>اقرأ <code>query.data</code> مباشرة</td></tr>
+<tr><td>نسيان الإبطال بعد التعديل</td><td>تعرض الشاشة البيانات القديمة</td><td><code>invalidateQueries</code> في <code>onSettled</code></td></tr>
+<tr><td>غياب مسار يلتقط الباقي</td><td>شاشة بيضاء للعناوين الخاطئة</td><td><code>path: "*"</code> مع صفحة مفيدة</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>يربط <strong>React Router</strong> العناوين بالمكونات. والمسارات بيانات، و<strong>المسارات المتداخلة</strong> تتشارك تخطيطاً عبر <code>&lt;Outlet /&gt;</code>.</li>
+<li><code>useParams</code> تقرأ <strong>معاملات المسار</strong>، و<code>useSearchParams</code> تحفظ عوامل التصفية وغيرها من الحالة القابلة للمشاركة في <strong>العنوان</strong>.</li>
+<li>تنقّل بـ <code>Link</code> و<code>NavLink</code> و<code>useNavigate</code>، لا بالروابط العادية إلى صفحاتك أبداً.</li>
+<li><strong>TanStack Query</strong> تحفظ بيانات الخادم حسب <strong>مفتاح الاستعلام</strong>، وتمنع الطلبات المكررة، وتعيد المحاولة وتحدّث، وتبلّغ عن التحميل والخطأ والنجاح.</li>
+<li><strong>التعديلات</strong> تغيّر بيانات الخادم، و<strong>أبطل</strong> الاستعلامات المتأثرة بعدها. و<strong>التحديثات المتفائلة</strong> تغيّر الشاشة أولاً وتتراجع عند الفشل.</li>
+<li>قسّم الكود حسب المسارات بـ <code>lazy</code>، وأعطِ كل مسار حالات التحميل والفراغ والخطأ وعدم الوجود.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. الرابط العادي يعيد تحميل الصفحة كلها ويضيّع حالة التطبيق، و<code>Link</code> يغيّر العنوان وأجزاء الشاشة المختلفة فقط. 2. نص، <code>"2"</code>. 3. طلب واحد: الاستعلامات بالمفتاح نفسه تتشارك طلباً واحداً ومدخلاً واحداً في الذاكرة المؤقتة.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ابدأ كل مشروع من المسارات مكتوبة بيانات، قبل أي مكوّن. فإن استطعت قراءة التطبيق كله من مصفوفة <code>routes</code> فالتصميم سليم.</p>
+
+<div class="project">
+<p class="project-label">مشروع 6.1 · سهل</p>
+<h3>مدونة صغيرة بعناوين جميلة</h3>
+<p class="project-goal">قائمة تدوينات وصفحة لكل تدوينة، على عناوين مثل <code>/posts/rules-for-state</code>، مع رسالة لطيفة للتدوينات غير الموجودة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المسارات المتداخلة، ومسار الفهرس، ومعامل المسار، و<code>Link</code> و<code>NavLink</code>، ومعالجة غير الموجود.</p>
+<ol class="steps">
+<li>أعطِ كل تدوينة <dfn>معرّفاً نصياً</dfn> (slug): معرّفاً قصيراً مقروءاً مصنوعاً من العنوان، مثل <code>keys-explained</code>. والعناوين المقروءة أفضل للمستخدمين ولمحركات البحث.</li>
+<li>اكتب <code>Layout</code> فيه اسم المدونة، و<code>NavLink</code> إلى القائمة، و<code>Outlet</code>.</li>
+<li>مسار الفهرس يعرض القائمة، و<code>posts/:slug</code> يعرض تدوينة واحدة.</li>
+<li>في <code>PostPage</code> جِد التدوينة بـ <code>useParams().slug</code>. فإن لم توجد قل ذلك واربط إلى الرئيسية.</li>
+<li>جرّب عنواناً خاطئاً بيدك، مثل <code>/posts/nothing</code>، وتحقق من الرسالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البيانات هنا ثابتة، فلا حاجة إلى استعلام. فليست كل صفحة بحاجة إلى TanStack Query، واستخدمها حين تأتي البيانات من خادم.</p>
+<div class="listing" dir="ltr"><div class="listing-title">blog-routes.tsx</div><pre class="code">import { Link, NavLink, Outlet, useParams } from &quot;react-router&quot;;
+import type { RouteObject } from &quot;react-router&quot;;
+
+type Post = { slug: string; title: string; body: string; minutes: number };
+
+const posts: Post[] = [
+  { slug: &quot;why-typescript&quot;, title: &quot;لماذا أحب TypeScript&quot;, body: &quot;الأنواع تلتقط الأخطاء وأنا أكتب، فتبقى أمسياتي فارغة.&quot;, minutes: 4 },
+  { slug: &quot;rules-for-state&quot;, title: &quot;ثلاث قواعد للحالة&quot;, body: &quot;احفظ الأقل، واشتق الباقي، ولا تغيّرها في مكانها أبداً.&quot;, minutes: 6 },
+  { slug: &quot;keys-explained&quot;, title: &quot;المفاتيح ببساطة&quot;, body: &quot;المفتاح يخبر React أي عنصر هو أيّه بين رسمين.&quot;, minutes: 3 },
+];
+
+function Layout() {
+  return (
+    &lt;div className=&quot;layout&quot;&gt;
+      &lt;nav&gt;
+        &lt;span className=&quot;brand&quot;&gt;مدونة بِت&lt;/span&gt;
+        &lt;NavLink to=&quot;/&quot; end&gt;
+          التدوينات
+        &lt;/NavLink&gt;
+      &lt;/nav&gt;
+      &lt;Outlet /&gt;
+    &lt;/div&gt;
+  );
+}
+
+function PostList() {
+  return (
+    &lt;ul className=&quot;list card&quot;&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.slug}&gt;
+          &lt;Link to={`/posts/${post.slug}`}&gt;{post.title}&lt;/Link&gt;
+          &lt;span className=&quot;muted&quot;&gt;
+            {post.minutes} دقائق قراءة
+          &lt;/span&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+function PostPage() {
+  const { slug } = useParams();
+  const post = posts.find((p) =&gt; p.slug === slug);
+  if (!post) {
+    return (
+      &lt;p className=&quot;card&quot;&gt;
+        هذه التدوينة غير موجودة. &lt;Link to=&quot;/&quot;&gt;اذهب إلى الرئيسية&lt;/Link&gt;
+      &lt;/p&gt;
+    );
+  }
+  return (
+    &lt;article className=&quot;card&quot;&gt;
+      &lt;h2&gt;{post.title}&lt;/h2&gt;
+      &lt;p className=&quot;muted&quot;&gt;
+        بقلم بِت · {post.minutes} دقائق قراءة
+      &lt;/p&gt;
+      &lt;p&gt;{post.body}&lt;/p&gt;
+    &lt;/article&gt;
+  );
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: &quot;/&quot;,
+    element: &lt;Layout /&gt;,
+    children: [
+      { index: true, element: &lt;PostList /&gt; },
+      { path: &quot;posts/:slug&quot;, element: &lt;PostPage /&gt; },
+    ],
+  },
+];</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>blog-page.html</span><b>560px</b></div><img src="img/react-routing-ar-projects-blog-page.html-560-9576b8.png" alt=""><figcaption><b>مشروع 6.1:</b> صفحة تدوينة، بالوصول إليها من القائمة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 6.2 · متوسط</p>
+<h3>قائمة منتجات تُشارَك</h3>
+<p class="project-goal">وسّع متجر هذا الفصل لتعيش الفئة <em>ونص البحث</em> في العنوان، فيُشارك كل اختيار رابطاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>useSearchParams</code> للقراءة والكتابة، ومفاتيح الاستعلام متعددة الأجزاء، وإبقاء العنوان متوافقاً مع حقل إدخال.</p>
+<ol class="steps">
+<li>اقرأ <code>category</code> و<code>q</code> من معاملات البحث، وكلاهما قد يغيب.</li>
+<li>ضع الاثنين في مفتاح الاستعلام: <code>["products", category, q]</code>، ومرّرهما إلى دالة الواجهة البرمجية.</li>
+<li>اجعل حقل البحث محكوماً بالعنوان: قيمته <code>q ?? ""</code>، و<code>onChange</code> تستدعي <code>setParams</code> بالنص الجديد مع إبقاء الفئة.</li>
+<li>مرّر <code>{ replace: true }</code> إلى <code>setParams</code> أثناء الكتابة، كي لا يصير كل حرف مدخلاً جديداً في تاريخ زر الرجوع.</li>
+<li>افتح العنوان نفسه في تبويب جديد، وتحقق أنك ترى القائمة نفسها بالضبط.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لتغيّر معاملاً واحداً وتبقي الباقي انسخها أولاً: <code>const next = new URLSearchParams(params); next.set("q", text); setParams(next, { replace: true });</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 6.3 · تحدٍّ</p>
+<h3>زر مفضلة متفائل</h3>
+<p class="project-goal">قلب يمتلئ لحظة الضغط، ويحفظ في الخلفية، ويعيد الأمور بهدوء إن رفض الخادم.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>useMutation</code>، وقراءة ذاكرة الاستعلامات والكتابة فيها، والتراجع بقيمة سياق، والإبطال.</p>
+<ol class="steps">
+<li>حمّل المنتج بـ <code>useQuery</code> بالمفتاح <code>["product", id]</code>.</li>
+<li>أنشئ تعديلاً (mutation) تستدعي <code>mutationFn</code> فيه <code>setFavourite(id, value)</code>.</li>
+<li>في <code>onMutate</code> ألغِ استعلامات المفتاح (كي لا يكتب رد قديم فوقك)، واحفظ القيمة الحالية بـ <code>getQueryData</code>، واكتب الجديدة بـ <code>setQueryData</code>، وأرجع <code>{ previous }</code>.</li>
+<li>في <code>onError</code> أعد كتابة <code>context.previous</code>. وفي <code>onSettled</code> أبطل المفتاح، لتنتهي الشاشة بحقيقة الخادم.</li>
+<li>اختبر الفشل: في الواجهة الوهمية مفتاح <code>server.failNextSave</code>. وراقب القلب يمتلئ ثم يفرغ، مع رسالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> استخدم التحديثات المتفائلة للأفعال الصغيرة المتكررة القابلة للتراجع، كالإعجاب وعلامات الصح وإعادة الترتيب. أما المدفوعات وكل ما يصعب التراجع عنه، فاعرض حالة «جارٍ الحفظ…» واضحة وانتظر الخادم.</p>
+<div class="listing" dir="ltr"><div class="listing-title">favourite.tsx</div><pre class="code">import { useMutation, useQuery, useQueryClient } from &quot;@tanstack/react-query&quot;;
+import { getProduct, setFavourite, type Product } from &quot;../api&quot;;
+
+export function FavouriteButton({ id }: { id: number }) {
+  const client = useQueryClient();
+  const key = [&quot;product&quot;, id];
+  const product = useQuery({ queryKey: key, queryFn: () =&gt; getProduct(id) });
+
+  const mutation = useMutation({
+    mutationFn: (favourite: boolean) =&gt; setFavourite(id, favourite),
+    // 1. Before the server answers: change the cache, and remember the old value
+    onMutate: async (favourite) =&gt; {
+      await client.cancelQueries({ queryKey: key });
+      const previous = client.getQueryData&lt;Product&gt;(key);
+      client.setQueryData&lt;Product&gt;(key, (old) =&gt; (old ? { ...old, favourite } : old));
+      return { previous };
+    },
+    // 2. If it fails: put the old value back
+    onError: (_error, _favourite, context) =&gt; {
+      client.setQueryData(key, context?.previous);
+    },
+    // 3. Either way: ask the server for the truth
+    onSettled: () =&gt; client.invalidateQueries({ queryKey: key }),
+  });
+
+  if (!product.data) return &lt;p className=&quot;muted&quot;&gt;جارٍ التحميل…&lt;/p&gt;;
+  const on = product.data.favourite;
+  return (
+    &lt;div className=&quot;card&quot;&gt;
+      &lt;h2&gt;{product.data.name}&lt;/h2&gt;
+      &lt;button aria-pressed={on} className={on ? &quot;&quot; : &quot;secondary&quot;} onClick={() =&gt; mutation.mutate(!on)}&gt;
+        {on ? &quot;♥ مفضّل&quot; : &quot;♡ مفضّل&quot;}
+      &lt;/button&gt;
+      {mutation.isPending &amp;&amp; &lt;span className=&quot;muted&quot;&gt; جارٍ الحفظ…&lt;/span&gt;}
+      {mutation.isError &amp;&amp; &lt;p className=&quot;error&quot;&gt;تعذّر الحفظ، وأُلغي التغيير.&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>fav-fail-page.html</span><b>560px</b></div><img src="img/react-routing-ar-projects-fav-fail-page.html-560-8bbb72.png" alt=""><figcaption><b>مشروع 6.3:</b> بعد 100 ملي ثانية من الضغط: القلب ممتلئ، والحفظ في الطريق…</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>fav-fail-page.html</span><b>560px</b></div><img src="img/react-routing-ar-projects-fav-fail-page.html-560-be2a4b.png" alt=""><figcaption>…وبعد أن رفض الخادم: تراجع التغيير، وأُخبر المستخدم.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف صفحة «من نحن» على <code>/about</code> مع <code>NavLink</code> في شريط التنقل.</li>
+<li><span class="level">سهل</span> في صفحة التفاصيل اعرض «المنتج 2 من 4» من القائمة المحفوظة، إن كانت في الذاكرة المؤقتة، بـ <code>queryClient.getQueryData(["products", null])</code>.</li>
+<li><span class="level medium">متوسط</span> أضف مربع بحث إلى صفحة المنتجات يحفظ نصه في العنوان <code>?q=</code>، مع الفئة، ويصفّي القائمة بالاسم.</li>
+<li><span class="level medium">متوسط</span> اجعل صفحة التفاصيل تعالج عنواناً مثل <code>/products/abc</code>، معرّفه ليس رقماً، دون أن تستدعي الواجهة البرمجية.</li>
+<li><span class="level hard">تحدٍّ</span> أضف رابط «المنتج التالي» إلى صفحة التفاصيل، واجعله يبدو فورياً: حين تُحمَّل الصفحة استدعِ <code>queryClient.prefetchQuery</code> للمنتج التالي، فيكون محفوظاً حين يضغط المستخدم.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 7</p>
+<p>المستخدمون لا يقرؤون البيانات فقط، بل يرسلونها عبر النماذج. وفي الفصل التالي ستبني نماذج تتحقق أثناء الكتابة، وتعرض أخطاء مفيدة، وتصف قواعدها مرة واحدة في مخطط تتشاركه مع TypeScript، وترسل النتيجة إلى الخادم بأمان.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2525,6 +3005,16 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Timer /&gt;);<
 <li>الحالة هي <code>seconds</code> و<code>running</code> فقط. والعرض مشتق: <code>`${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`</code>. و«صفّر» تستدعي <code>setSeconds(0)</code> (ويمكنها أيضاً <code>setRunning(false)</code>).</li>
 <li><code>const [width, setWidth] = useState(window.innerWidth); useEffect(() =&gt; { const onResize = () =&gt; setWidth(window.innerWidth); window.addEventListener("resize", onResize); return () =&gt; window.removeEventListener("resize", onResize); }, []);</code>. ومصفوفة الاعتماديات الفارغة صحيحة لأن التأثير لا يستخدم شيئاً من الخصائص أو الحالة.</li>
 <li>تأخذ دالة الاختزال <code>Line[]</code> والأفعال <code>{ type: "added"; product: Product } | { type: "decreased"; id: number } | { type: "removed"; id: number }</code>، وفي حالاتها منطق <code>add</code> وحل التمرين 1 و<code>remove</code> بالضبط. اختبرها بتمرير قائمة أفعال كما في <code>reducer-test.ts</code>، ثم في المكوّن: <code>const [lines, dispatch] = useReducer(cartReducer, [])</code>.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 6</h2>
+<ol class="exercises">
+<li>أضف <code>{ path: "about", element: &lt;About /&gt; }</code> إلى أبناء مسار التخطيط، و<code>&lt;NavLink to="/about"&gt;من نحن&lt;/NavLink&gt;</code> إلى شريط التنقل. ويبرزه <code>NavLink</code> وحده.</li>
+<li><code>const client = useQueryClient(); const list = client.getQueryData&lt;Product[]&gt;(["products", null]);</code> ثم ابحث عن موضع المنتج بـ <code>findIndex</code>، وارسم «المنتج {index + 1} من {list.length}» فقط حين توجد <code>list</code> ولا يساوي الموضع −1. وقراءة الذاكرة المؤقتة لا ترسل أي طلب.</li>
+<li>اقرأ <code>q</code> بـ <code>params.get("q")</code>، وأضفه إلى المفتاح، وصفِّ بـ <code>p.name.toLowerCase().includes(q.toLowerCase())</code>. وحدّثه كما في المشروع 6.2، بنسخ المعاملات أولاً لتبقى الفئة.</li>
+<li><code>const id = Number(params.id); if (!Number.isInteger(id)) return &lt;p&gt;لا يوجد منتج بهذا الرقم.&lt;/p&gt;;</code> قبل الاستعلام، أو مرّر <code>enabled: Number.isInteger(id)</code> إلى <code>useQuery</code> فلا يعمل أبداً.</li>
+<li><code>useEffect(() =&gt; { client.prefetchQuery({ queryKey: ["product", id + 1], queryFn: () =&gt; getProduct(id + 1) }); }, [id]);</code> و<code>&lt;Link to={`/products/${id + 1}`}&gt;</code>. وحين يضغط المستخدم يجد الاستعلام المنتج في الذاكرة المؤقتة فيعرضه دون هيكل تحميل.</li>
 </ol>
 
 </section>

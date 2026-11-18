@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 ESBUILD = ROOT / "node_modules" / ".bin" / "esbuild"
-REACT = ["react", "react-dom", "react-dom/client", "react/jsx-runtime"]
+REACT = ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react-router", "@tanstack/react-query"]
 
 IMPORT_MAP = """    <script type="importmap">
       {
@@ -22,7 +22,9 @@ IMPORT_MAP = """    <script type="importmap">
           "react": "/vendor/react.js",
           "react-dom": "/vendor/react-dom.js",
           "react-dom/client": "/vendor/react-dom-client.js",
-          "react/jsx-runtime": "/vendor/jsx-runtime.js"
+          "react/jsx-runtime": "/vendor/jsx-runtime.js",
+          "react-router": "/vendor/react-router.js",
+          "@tanstack/react-query": "/vendor/react-query.js"
         }
       }
     </script>"""

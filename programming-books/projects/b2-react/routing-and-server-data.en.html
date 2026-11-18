@@ -1,0 +1,53 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Start each project from the routes, written as data, before any component. If you can read the whole app from the <code>routes</code> array, the design is right.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A small blog with pretty addresses</h3>
+<p class="project-goal">A list of posts and a page for each post, at addresses like <code>/posts/rules-for-state</code>, with a kind message for posts that do not exist.</p>
+<p class="project-skills"><strong>You will practise:</strong> nested routes, an index route, a route parameter, <code>Link</code> and <code>NavLink</code>, and not-found handling.</p>
+<ol class="steps">
+<li>Give each post a <dfn>slug</dfn>: a short, readable id made from the title, such as <code>keys-explained</code>. Readable addresses are better for users and for search engines.</li>
+<li>Write a <code>Layout</code> with the blog’s name, a <code>NavLink</code> to the list, and an <code>Outlet</code>.</li>
+<li>The index route shows the list; <code>posts/:slug</code> shows one post.</li>
+<li>In <code>PostPage</code>, find the post by <code>useParams().slug</code>. If it does not exist, say so and link back home.</li>
+<li>Try a wrong address by hand, such as <code>/posts/nothing</code>, and check the message.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the data here is a constant, so no query is needed. Not every page needs TanStack Query; use it when the data comes from a server.</p>
+<pre data-code="projects/blog-routes.tsx" data-title="blog-routes.tsx"></pre>
+<figure data-render="projects/blog-page.html" data-width="560" data-actions="click:ul.list li:nth-child(2) a"><figcaption><b>Project {{n}}.1:</b> a post page, reached from the list.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A product list you can share</h3>
+<p class="project-goal">Extend the shop from this chapter so that the category <em>and</em> a search text live in the address, and every combination can be shared as a link.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useSearchParams</code> for reading and writing, query keys with several parts, and keeping the address in step with an input.</p>
+<ol class="steps">
+<li>Read <code>category</code> and <code>q</code> from the search parameters. Both may be missing.</li>
+<li>Put both in the query key: <code>["products", category, q]</code>, and pass both to the API function.</li>
+<li>Make the search input controlled by the address: its value is <code>q ?? ""</code>, and <code>onChange</code> calls <code>setParams</code> with the new text, keeping the category.</li>
+<li>Pass <code>{ replace: true }</code> to <code>setParams</code> while typing, so every letter does not become a new entry in the back button’s history.</li>
+<li>Open the same address in a new tab and check that you see exactly the same list.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> to change one parameter and keep the others, copy them first: <code>const next = new URLSearchParams(params); next.set("q", text); setParams(next, { replace: true });</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>An optimistic favourite button</h3>
+<p class="project-goal">A heart that fills the moment it is pressed, saves in the background, and quietly puts things back if the server refuses.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useMutation</code>, reading and writing the query cache, rolling back with a context value, and invalidating.</p>
+<ol class="steps">
+<li>Load the product with <code>useQuery</code> under the key <code>["product", id]</code>.</li>
+<li>Create a mutation whose <code>mutationFn</code> calls <code>setFavourite(id, value)</code>.</li>
+<li>In <code>onMutate</code>, cancel queries for the key (so an old answer cannot overwrite you), save the current value with <code>getQueryData</code>, write the new value with <code>setQueryData</code>, and return <code>{ previous }</code>.</li>
+<li>In <code>onError</code>, write <code>context.previous</code> back. In <code>onSettled</code>, invalidate the key, so the screen ends with the server’s truth.</li>
+<li>Test the failure: the fake API has a <code>server.failNextSave</code> switch. Watch the heart fill, then empty, with a message.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> use optimistic updates for small, frequent, reversible actions, such as likes, ticks and reordering. For payments and anything hard to undo, show a clear “Saving…” state and wait for the server instead.</p>
+<pre data-code="projects/favourite.tsx" data-title="favourite.tsx"></pre>
+<figure data-render="projects/fav-fail-page.html" data-width="560" data-actions="wait:500;click:button;wait:100"><figcaption><b>Project {{n}}.3:</b> 100 ms after pressing: the heart is already full, and the save is on its way…</figcaption></figure>
+<figure data-render="projects/fav-fail-page.html" data-width="560" data-actions="wait:500;click:button;wait:900"><figcaption>…and after the server refused: the change was rolled back, and the user is told.</figcaption></figure>
+</div>

@@ -16,6 +16,8 @@ const entries = {
   "react-dom": "react-dom",
   "react-dom-client": "react-dom/client",
   "jsx-runtime": "react/jsx-runtime",
+  "react-router": "react-router",
+  "react-query": "@tanstack/react-query",
 };
 for (const [file, pkg] of Object.entries(entries)) {
   const names = Object.keys(require(pkg)).filter((n) => /^[A-Za-z_$][\w$]*$/.test(n) && n !== "default");
