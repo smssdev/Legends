@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Tasks</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="app">
+      <header class="top">
+        <h1 data-text="title">My Tasks</h1>
+        <button type="button" id="language" lang="ar">العربية</button>
+      </header>
+      <p class="subtitle" data-text="subtitle">Small steps, every day.</p>
+
+      <form id="new-task">
+        <label for="task-text" class="visually-hidden" data-text="newTask">New task</label>
+        <input id="task-text" type="text" placeholder="e.g. Read chapter 17" required>
+        <button class="primary" type="submit" data-text="add">Add</button>
+      </form>
+
+      <div class="filters" role="group" aria-label="Show">
+        <button type="button" data-filter="all" aria-pressed="true" data-text="all">All</button>
+        <button type="button" data-filter="active" aria-pressed="false" data-text="active">To do</button>
+        <button type="button" data-filter="done" aria-pressed="false" data-text="done">Done</button>
+      </div>
+
+      <ul id="tasks"></ul>
+      <p class="empty" id="empty" data-text="empty">Nothing here yet. Add your first task above!</p>
+
+      <footer>
+        <span id="count" aria-live="polite"></span>
+        <button type="button" id="clear" data-text="clear">Clear done</button>
+      </footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

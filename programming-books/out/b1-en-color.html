@@ -6884,6 +6884,61 @@ render();</pre></div>
 <li><strong>GitHub Pages</strong> publishes a static site from a repository for free.</li>
 </ul>
 
+<!-- projects -->
+<h2 class="plain-h">Practice projects: upgrade your app</h2>
+
+<p class="projects-intro">The app is finished, and this is where real development begins: improving something that already works without breaking it. Copy the whole app folder for each project, make a branch in Git, and commit as you go. Each project touches all three files, just like a real feature.</p>
+
+<div class="project">
+<p class="project-label">Project 17.1 · Easy</p>
+<h3>A progress bar</h3>
+<p class="project-goal">Show how much of the list is done, as a bar and in words, and keep it in step with every change.</p>
+<p class="project-skills"><strong>You will practise:</strong> the <code>&lt;progress&gt;</code> element, adding to <code>render()</code>, and <code>accent-color</code>.</p>
+<ol class="steps">
+<li>In the HTML, above the list, add <code>&lt;progress id="progress" max="1" value="0"&gt;</code> and a <code>&lt;span id="progress-text"&gt;</code>. Link them with <code>aria-labelledby</code> so the bar has a name.</li>
+<li>In the CSS, let the bar fill the row with <code>flex: 1</code>, and colour it with <code>accent-color: var(--brand)</code>.</li>
+<li>In <code>render()</code>, work out <code>done = tasks.length - count</code>, then set the bar’s <code>max</code> and <code>value</code>.</li>
+<li>Use <code>tasks.length || 1</code> for <code>max</code>, so an empty list does not divide by zero.</li>
+<li>Write “1 of 3 done” into the span. Tick, untick, add and delete tasks, and check that the bar is always right.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> you did not touch <code>addTask</code>, <code>toggleTask</code> or <code>deleteTask</code>. Because every change ends in <code>render()</code>, one new block there is enough. That is the reward for the structure you built in this chapter.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b1-ch17-en-projects-progress-index.html-560-50f8be.png" alt=""><figcaption><b>Project 17.1:</b> one of three tasks done.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 17.2 · Medium</p>
+<h3>Edit a task</h3>
+<p class="project-goal">Typos happen. Let the user fix a task’s text in place: Enter saves, Escape cancels.</p>
+<p class="project-skills"><strong>You will practise:</strong> a new change function, <code>replaceWith</code>, keyboard events, <code>focus()</code> and <code>select()</code>.</p>
+<ol class="steps">
+<li>Add <code>renameTask(id, text)</code> next to the other change functions: find the task, change its text, and call <code>update()</code>.</li>
+<li>In <code>taskItem</code>, add an “Edit” button with an <code>aria-label</code> that names the task, like the delete button.</li>
+<li>Write <code>startEditing(li, task)</code>: create an input holding the current text, and swap it in with <code>label.replaceWith(input)</code>. Then call <code>focus()</code> and <code>select()</code>.</li>
+<li>Listen for <code>keydown</code> on the input. On <code>"Enter"</code>, save the trimmed text if it is not empty. On <code>"Escape"</code>, just call <code>render()</code>.</li>
+<li>When the input loses focus (<code>blur</code>), call <code>render()</code> too, so a half-edited task never stays on screen.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> section 17.7 suggested double-clicking. A button is better: double-click cannot be done with a keyboard or easily on a phone, and you learned in chapter 16 why that matters.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b1-ch17-en-projects-edit-index.html-560-9d3e64.png" alt=""><figcaption><b>Project 17.2:</b> editing the second task.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 17.3 · Challenge</p>
+<h3>English and Arabic in one app</h3>
+<p class="project-goal">Add a button that switches every text in the app between English and Arabic, flips the layout from left-to-right to right-to-left, and remembers the choice.</p>
+<p class="project-skills"><strong>You will practise:</strong> keeping texts as data, <code>data-*</code> attributes, functions stored in objects, <code>lang</code> and <code>dir</code>, and a second <code>localStorage</code> key.</p>
+<ol class="steps">
+<li>Create a <code>TEXTS</code> object with an <code>en</code> and an <code>ar</code> part, holding every word the app shows. <code>left</code> is a function, because the Arabic plural changes with the number.</li>
+<li>Write a tiny helper, <code>t(key)</code>, that returns the text for the current <code>language</code>.</li>
+<li>In the HTML, mark each text with its key: <code>&lt;h1 data-text="title"&gt;</code>. Add a language button in the header.</li>
+<li>Write <code>applyLanguage()</code>: set <code>document.documentElement.lang</code> and <code>dir</code>, fill every <code>[data-text]</code> element, set the placeholder and the labels, then <code>render()</code>.</li>
+<li>Replace every fixed word in <code>app.js</code> with <code>t(…)</code>, then delete the old <code>leftText</code>.</li>
+<li>The button switches <code>language</code>, saves it under its own key, and calls <code>applyLanguage()</code>. Reload the page: it should open in the last language you chose.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because the CSS uses <code>flex</code> and <code>gap</code>, and no fixed “left” or “right”, the whole layout mirrors itself when <code>dir</code> changes. Real apps keep their texts this way, which is how they are translated into many languages without touching the code.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b1-ch17-en-projects-languages-index.html-560-9cab1a.png" alt=""><figcaption><b>Project 17.3:</b> one click, and the whole app speaks Arabic, right to left. The tasks themselves keep the words the user typed.</figcaption></figure>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">Exercises</h2>
 
 <ol class="exercises">

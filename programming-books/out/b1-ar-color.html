@@ -6914,6 +6914,61 @@ render();</pre></div>
 <li><strong>GitHub Pages</strong> ينشر الموقع الثابت من المستودع مجاناً.</li>
 </ul>
 
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية: طوّر تطبيقك</h2>
+
+<p class="projects-intro">انتهى التطبيق، وهنا يبدأ التطوير الحقيقي: تحسين شيء يعمل أصلاً دون أن تكسره. انسخ مجلد التطبيق كله لكل مشروع، وأنشئ فرعاً في Git، واحفظ بـ commit كلما تقدمت. وكل مشروع يلمس الملفات الثلاثة، تماماً كأي ميزة حقيقية.</p>
+
+<div class="project">
+<p class="project-label">مشروع 17.1 · سهل</p>
+<h3>شريط التقدّم</h3>
+<p class="project-goal">اعرض كم أُنجز من القائمة، شريطاً وكلمات، وأبقِه متوافقاً مع كل تغيير.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> العنصر <code>&lt;progress&gt;</code>، والإضافة إلى <code>render()</code>، و<code>accent-color</code>.</p>
+<ol class="steps">
+<li>في HTML، فوق القائمة، أضف <code>&lt;progress id="progress" max="1" value="0"&gt;</code> و<code>&lt;span id="progress-text"&gt;</code>، واربطهما بـ <code>aria-labelledby</code> ليكون للشريط اسم.</li>
+<li>في CSS اجعل الشريط يملأ السطر بـ <code>flex: 1</code>، ولوّنه بـ <code>accent-color: var(--brand)</code>.</li>
+<li>في <code>render()</code> احسب <code>done = tasks.length - count</code>، ثم اضبط <code>max</code> و<code>value</code> للشريط.</li>
+<li>استخدم <code>tasks.length || 1</code> لـ <code>max</code>، فلا تقسم القائمة الفارغة على صفر.</li>
+<li>اكتب «1 من 3 منجزة» في الـ span. علّم المهام وألغِ علامتها وأضف واحذف، وتحقق أن الشريط صحيح دائماً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لم تلمس <code>addTask</code> ولا <code>toggleTask</code> ولا <code>deleteTask</code>. فلأن كل تغيير ينتهي بـ <code>render()</code> تكفي كتلة واحدة جديدة هناك. وهذه مكافأة البنية التي بنيتها في هذا الفصل.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b1-ch17-ar-projects-progress-index.html-560-266aee.png" alt=""><figcaption><b>مشروع 17.1:</b> أُنجزت مهمة من ثلاث.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 17.2 · متوسط</p>
+<h3>تعديل المهمة</h3>
+<p class="project-goal">الأخطاء الإملائية تحدث. دع المستخدم يصحح نص المهمة في مكانها: Enter يحفظ، وEscape يلغي.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> دالة تغيير جديدة، و<code>replaceWith</code>، وأحداث لوحة المفاتيح، و<code>focus()</code> و<code>select()</code>.</p>
+<ol class="steps">
+<li>أضف <code>renameTask(id, text)</code> بجانب دوال التغيير الأخرى: جِد المهمة، وغيّر نصها، واستدعِ <code>update()</code>.</li>
+<li>في <code>taskItem</code> أضف زر «عدّل» بـ <code>aria-label</code> يسمّي المهمة، مثل زر الحذف.</li>
+<li>اكتب <code>startEditing(li, task)</code>: أنشئ حقلاً فيه النص الحالي، وضعه مكان التسمية بـ <code>label.replaceWith(input)</code>، ثم استدعِ <code>focus()</code> و<code>select()</code>.</li>
+<li>استمع إلى <code>keydown</code> على الحقل. عند <code>"Enter"</code> احفظ النص بعد تنظيفه إن لم يكن فارغاً، وعند <code>"Escape"</code> استدعِ <code>render()</code> فقط.</li>
+<li>حين يفقد الحقل التركيز (<code>blur</code>) استدعِ <code>render()</code> أيضاً، فلا تبقى مهمة نصف معدّلة على الشاشة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اقترح القسم 17.7 النقر المزدوج، والزر أفضل: فالنقر المزدوج لا تؤديه لوحة المفاتيح ولا يسهل على الجوال، وعرفت في الفصل 16 لماذا يهم هذا.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b1-ch17-ar-projects-edit-index.html-560-0fce49.png" alt=""><figcaption><b>مشروع 17.2:</b> تعديل المهمة الثانية.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 17.3 · تحدٍّ</p>
+<h3>العربية والإنجليزية في تطبيق واحد</h3>
+<p class="project-goal">أضف زراً يبدّل كل نصوص التطبيق بين العربية والإنجليزية، ويقلب الاتجاه بين اليمين واليسار، ويتذكر الاختيار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حفظ النصوص بيانات، وخصائص <code>data-*</code>، والدوال المحفوظة في الكائنات، و<code>lang</code> و<code>dir</code>، ومفتاح ثانٍ في <code>localStorage</code>.</p>
+<ol class="steps">
+<li>أنشئ كائن <code>TEXTS</code> بجزأين <code>en</code> و<code>ar</code>، فيهما كل كلمة يعرضها التطبيق. و<code>left</code> دالة، لأن الجمع العربي يتغير مع العدد.</li>
+<li>اكتب دالة مساعدة صغيرة <code>t(key)</code> تُرجع النص باللغة الحالية <code>language</code>.</li>
+<li>في HTML علّم كل نص بمفتاحه: <code>&lt;h1 data-text="title"&gt;</code>، وأضف زر اللغة في الترويسة.</li>
+<li>اكتب <code>applyLanguage()</code>: اضبط <code>lang</code> و<code>dir</code> على <code>document.documentElement</code>، واملأ كل عنصر <code>[data-text]</code>، واضبط النص الإرشادي والتسميات، ثم <code>render()</code>.</li>
+<li>استبدل كل كلمة ثابتة في <code>app.js</code> بـ <code>t(…)</code>، ثم احذف <code>leftText</code> القديمة.</li>
+<li>الزر يبدّل <code>language</code>، ويحفظها بمفتاحها الخاص، ويستدعي <code>applyLanguage()</code>. أعد تحميل الصفحة: يجب أن تفتح باللغة التي اخترتها آخر مرة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لأن CSS تستخدم <code>flex</code> و<code>gap</code> ولا «يسار» أو «يمين» ثابتاً، ينعكس التخطيط كله وحده حين يتغير <code>dir</code>. والتطبيقات الحقيقية تحفظ نصوصها هكذا، وبهذا تُترجم إلى لغات كثيرة دون أن يُلمس الكود.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b1-ch17-ar-projects-languages-index.html-560-e2bfa2.png" alt=""><figcaption><b>مشروع 17.3:</b> التطبيق بالعربية من اليمين إلى اليسار، وزر «English» يقلبه كله بضغطة.</figcaption></figure>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">تمارين</h2>
 
 <ol class="exercises">

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>مهامي</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="app">
+      <h1>مهامي</h1>
+      <p class="subtitle">خطوات صغيرة، كل يوم.</p>
+
+      <form id="new-task">
+        <label for="task-text" class="visually-hidden">مهمة جديدة</label>
+        <input id="task-text" type="text" placeholder="مثلاً: اقرأ الفصل 17" required>
+        <button class="primary" type="submit">أضف</button>
+      </form>
+
+      <div class="filters" role="group" aria-label="اعرض">
+        <button type="button" data-filter="all" aria-pressed="true">الكل</button>
+        <button type="button" data-filter="active" aria-pressed="false">المتبقية</button>
+        <button type="button" data-filter="done" aria-pressed="false">المنجزة</button>
+      </div>
+
+      <div class="progress">
+        <progress id="progress" max="1" value="0" aria-labelledby="progress-text"></progress>
+        <span id="progress-text"></span>
+      </div>
+
+      <ul id="tasks"></ul>
+      <p class="empty" id="empty">لا شيء هنا بعد. أضف أول مهمة لك في الأعلى!</p>
+
+      <footer>
+        <span id="count" aria-live="polite"></span>
+        <button type="button" id="clear">احذف المنجزة</button>
+      </footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
