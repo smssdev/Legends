@@ -29,14 +29,32 @@ fi
 
 DIR=/app/backend/storage/app/downloads/unity
 echo "Uploading the build as $BUILD..."
-tar -C "$WEB" -czf - Build $( [ -d "$WEB/StreamingAssets" ] && echo StreamingAssets ) |
-  ssh_ "docker exec -i -u root legends-app-1 sh -c 'mkdir -p $DIR/$BUILD && tar -xzf - -C $DIR/$BUILD && chown -R www-data:www-data $DIR'"
+# [X112] In 10 MB pieces, each tried five times, then checked whole on the server: one long stream over SSH was cut
+# halfway (connection reset by peer) and the build never arrived.
+TMP=$(mktemp -d)
+tar -C "$WEB" -czf "$TMP/build.tgz" Build $( [ -d "$WEB/StreamingAssets" ] && echo StreamingAssets )
+(cd "$TMP" && split -b 10m build.tgz part. && sha256sum build.tgz | cut -d' ' -f1 > sum)
+ssh_ 'rm -rf /tmp/unity-up && mkdir -p /tmp/unity-up'
+for p in "$TMP"/part.* "$TMP/sum"; do
+  ok=0
+  for try in 1 2 3 4 5; do
+    if [ "$HOST" = local ]; then cp "$p" /tmp/unity-up/ && ok=1; else scp -q -i "$KEY" -o BatchMode=yes -o ServerAliveInterval=10 "$p" "$HOST:/tmp/unity-up/" && ok=1; fi
+    [ "$ok" = 1 ] && break
+    sleep 3
+  done
+  [ "$ok" = 1 ] || { echo "Could not send $(basename "$p"): try again."; rm -rf "$TMP"; exit 1; }
+done
+rm -rf "$TMP"
+ssh_ "cd /tmp/unity-up && cat part.* > build.tgz && [ \"\$(sha256sum build.tgz | cut -d' ' -f1)\" = \"\$(cat sum)\" ] || { echo 'The build arrived damaged: try again.'; exit 1; }"
+ssh_ "docker exec -u root legends-app-1 mkdir -p $DIR/$BUILD && docker cp /tmp/unity-up/build.tgz legends-app-1:/tmp/build.tgz   && docker exec -u root legends-app-1 sh -c 'tar -xzf /tmp/build.tgz -C $DIR/$BUILD && rm /tmp/build.tgz && chown -R www-data:www-data $DIR' && rm -rf /tmp/unity-up"
 # The last three builds stay (a screen still on the one before keeps loading it); the older ones go.
 ssh_ "docker exec -u root legends-app-1 sh -c 'cd $DIR && ls -1t | tail -n +4 | xargs -r rm -rf'"
 
-ssh_ "f=/opt/legends/.env; grep -v '^UNITY_BUILD=' \$f > \$f.tmp || true; echo UNITY_BUILD=$BUILD >> \$f.tmp; chmod 600 \$f.tmp; mv \$f.tmp \$f; cd /opt/legends/src/deploy/vps && docker compose --env-file \$f up -d > /dev/null 2>&1"
+# [X112] The restart goes on by itself on the server (nohup): an SSH connection dropped while the services were being
+# recreated once left only the database and Redis running.
+ssh_ "f=/opt/legends/.env; grep -v '^UNITY_BUILD=' \$f > \$f.tmp || true; echo UNITY_BUILD=$BUILD >> \$f.tmp; chmod 600 \$f.tmp; mv \$f.tmp \$f; cd /opt/legends/src/deploy/vps && nohup docker compose --env-file \$f up -d --wait --wait-timeout 300 > /tmp/legends-unity-up.log 2>&1 &"
 echo "UNITY_BUILD=$BUILD. Waiting for the game to come back..."
-for i in $(seq 1 30); do
+for i in $(seq 1 60); do
   got=$(ssh_ "docker exec legends-app-1 php -r 'echo json_decode(@file_get_contents(\"http://127.0.0.1:8000/api/v1/health\"), true)[\"unity_build\"] ?? \"\";'" 2>/dev/null || true)
   if [ "$got" = "$BUILD" ]; then
     echo "Done: the match screen loads /unity/$BUILD/ (the coach picks «المطوّر»)."
