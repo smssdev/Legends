@@ -1,0 +1,54 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Time to dress the three pages you built in Chapter 5. Each project gives the page its own personality, so you see how much CSS alone can change. Link each page to its own stylesheet.</p>
+
+<div class="project">
+<p class="project-label">Project 6.1 · Easy</p>
+<h3>A warm recipe page</h3>
+<p class="project-goal">Give the recipe page the warm look of a cookbook: a cream background, a serif font, and orange accents.</p>
+<p class="project-skills"><strong>You will practise:</strong> linking a stylesheet, type selectors, colours, fonts, <code>line-height</code> and borders.</p>
+<ol class="steps">
+<li>Create <code>recipe.css</code> and link it in the <code>&lt;head&gt;</code> of <code>recipe.html</code>.</li>
+<li>On <code>body</code>, set a cream background (<code>#fdf6ec</code>), a dark brown text colour, a serif font such as <code>Georgia</code>, and <code>line-height: 1.6</code>.</li>
+<li>Make the <code>h1</code> bigger and orange. Turn the <code>h2</code>s into small capitals with <code>text-transform: uppercase</code>, some <code>letter-spacing</code>, and a coloured <code>border-bottom</code>.</li>
+<li>Round the corners of the picture and give it a white frame with <code>padding</code> and <code>background-color</code>.</li>
+<li>Colour the <code>strong</code> text so the cooking time stands out.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> padding on an image shows its background colour around it, like a photo frame. Try <code>border-radius: 16px</code> and see the frame’s corners round.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-render="projects/recipe.html" data-width="520"><figcaption><b>Project 6.1:</b> the recipe page with its own stylesheet.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 6.2 · Medium</p>
+<h3>A café brand with custom properties</h3>
+<p class="project-goal">Give the café website a brand: three colours defined once as custom properties, used everywhere.</p>
+<p class="project-skills"><strong>You will practise:</strong> custom properties, the box model, <code>inline-block</code> pills, cards and centring with <code>max-width</code>.</p>
+<ol class="steps">
+<li>In <code>cafe.css</code>, define <code>--brown</code>, <code>--cream</code> and <code>--gold</code> in <code>:root</code>.</li>
+<li>Make the <code>header</code> a brown band with centred white text, and turn the menu links into cream pills with <code>display: inline-block</code>, <code>padding</code> and <code>border-radius: 999px</code>.</li>
+<li>Keep <code>main</code> narrow and centred with <code>max-width: 560px</code> and <code>margin: 24px auto</code>.</li>
+<li>Turn each <code>section</code> into a white card with rounded corners and a gold top border.</li>
+<li>Finally, change only the three custom properties to a completely different palette, and watch the whole site change.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if a pill looks squashed, check that it has <code>display: inline-block</code>; plain inline links ignore vertical padding in the layout.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-render="projects/cafe.html" data-width="520"><figcaption><b>Project 6.2:</b> the café website with a brand.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 6.3 · Challenge</p>
+<h3>A professional sign-up form</h3>
+<p class="project-goal">Turn the plain sign-up form into a clean card that is pleasant to fill in, with clear focus states.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>box-sizing</code>, styling form fields, attribute selectors, <code>:focus</code> and <code>box-shadow</code>.</p>
+<ol class="steps">
+<li>Start <code>signup.css</code> with the <code>box-sizing: border-box</code> rule from Section 6.6, so that fields with padding never overflow.</li>
+<li>Turn the <code>form</code> into a white card with a soft shadow and a <code>max-width</code>, on a light background.</li>
+<li>Style <code>input</code>, <code>select</code> and <code>textarea</code> together, with one selector list: full width, padding, a border and rounded corners. Use <code>font: inherit</code> so they use the page’s font.</li>
+<li>The checkbox should not be full width: select it with the attribute selector <code>input[type="checkbox"]</code> and set <code>width: auto</code>.</li>
+<li>Add a clear focus style: a coloured border and a soft “glow” made with <code>box-shadow: 0 0 0 3px</code>. Click into each field to test it.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> never remove the focus outline without replacing it with something just as visible; keyboard users need to see where they are. Chapter 16 explains why.</p>
+<p><strong>Your result should look like this:</strong></p>
+<figure data-render="projects/signup.html" data-width="520"><figcaption><b>Project 6.3:</b> the sign-up form as a styled card.</figcaption></figure>
+</div>

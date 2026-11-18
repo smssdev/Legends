@@ -1,0 +1,62 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  font-family: system-ui, "Segoe UI", Tahoma, sans-serif;
+  background-color: #eef2ff;
+  color: #1e1b2e;
+}
+
+form {
+  max-width: 420px;
+  padding: 8px 24px 24px;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(30, 27, 46, 0.1);
+}
+
+h1 {
+  color: #4338ca;
+}
+
+label {
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 12px;
+  font: inherit;
+  border: 2px solid #c7c5dd;
+  border-radius: 10px;
+}
+
+input[type="checkbox"] {
+  width: auto;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #4338ca;
+  box-shadow: 0 0 0 3px #c7d2fe;
+}
+
+button {
+  padding: 10px 24px;
+  font: inherit;
+  font-weight: 700;
+  color: white;
+  background-color: #4338ca;
+  border: 0;
+  border-radius: 999px;
+}
