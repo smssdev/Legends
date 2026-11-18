@@ -14,6 +14,10 @@ namespace Legends
         /// <summary>[Sprint 26 U1] Each human coach's look on the bench (C1 to C3); empty for a club with no coach.</summary>
         public string HomeLook = "", AwayLook = "";
         public int TickMs = 3000;
+        /// <summary>[Sprint 09 U1] The match's seed: the director's crowd and fights vary by it, as the cartoon's (MinutePlan).</summary>
+        public int Seed = 1;
+        /// <summary>[Sprint 08 U4] The stadium's light: night, dusk or day (the page's, or the /scene route's by the kick-off's hour).</summary>
+        public string Light = "night";
 
         /// <summary>
         /// {clubs: {home, away}, players: {home: [...], away: [...]}, tick_ms}. The same shape the sample recording
@@ -29,6 +33,8 @@ namespace Legends
             setup.Home = ClubKit.From(MiniJson.Obj(clubs, "home"));
             setup.Away = ClubKit.From(MiniJson.Obj(clubs, "away"));
             setup.TickMs = (int)MiniJson.Int(json, "tick_ms", 3000);
+            setup.Seed = (int)MiniJson.Int(json, "seed", 1);
+            setup.Light = MiniJson.Str(json, "light", "night");
             var looks = MiniJson.Obj(json, "coach_looks");
             setup.HomeLook = MiniJson.Str(looks, "home");
             setup.AwayLook = MiniJson.Str(looks, "away");
@@ -93,7 +99,11 @@ namespace Legends
         /// <summary>[Sprint 26 U1] How each coach feels after the minute, as the server says (App\Characters\Mood).</summary>
         public string HomeMood = "idle", AwayMood = "idle";
         public bool Finished;
+        /// <summary>[Sprint 11 W3] How far into the minute the page already is (s): a minute it started before the scene got it.</summary>
+        public double Into;
         public readonly List<Frame> Frames = new List<Frame>();
+        /// <summary>[Sprint 09 U1] The minute's story from the server (MomentStory): the scene the director tells it with.</summary>
+        public Shots.MinutePlan.Story Story = new Shots.MinutePlan.Story();
         /// <summary>[Sprint 07 U6] The minute's events as the server sent them (README appendix A): who does what (PlayerMotion).</summary>
         public readonly List<Dictionary<string, object>> Events = new List<Dictionary<string, object>>();
 
@@ -105,6 +115,7 @@ namespace Legends
                 Period = (int)MiniJson.Int(json, "period", 1),
             };
             if (json is Dictionary<string, object> d && d.TryGetValue("finished", out var f) && f is bool done) m.Finished = done;
+            if (json is Dictionary<string, object> di && di.TryGetValue("into", out var into) && (into is double || into is long)) m.Into = System.Math.Max(0, System.Convert.ToDouble(into));
             var minute = MiniJson.Arr(json, "minute");
             if (minute != null && minute.Count == 2)
             {
@@ -121,6 +132,15 @@ namespace Legends
             m.AwayMood = MiniJson.Str(moods, "away", "idle");
             m.Ms = (int)MiniJson.Int(moment, "ms", tickMs);
             if (m.Ms <= 0) m.Ms = tickMs;
+            var story = MiniJson.Obj(json, "story");
+            if (story != null)
+                m.Story = new Shots.MinutePlan.Story
+                {
+                    Scene = MiniJson.Str(story, "scene", null),
+                    Side = MiniJson.Str(story, "side", "home"),
+                    Goal = story.TryGetValue("goal", out var g) && g is bool goal && goal,
+                    Data = MiniJson.Obj(story, "data") ?? new Dictionary<string, object>(),
+                };
             foreach (var ev in MiniJson.Arr(json, "events") ?? new List<object>())
                 if (ev is Dictionary<string, object> e) m.Events.Add(e);
             foreach (var fr in MiniJson.Arr(json, "frames") ?? new List<object>())

@@ -45,7 +45,7 @@ namespace Legends
         }
 
         /// <summary>The setup message from the recording: its clubs, timing, and the players of its first minute.</summary>
-        static string Setup(object root, List<object> ticks)
+        public static string Setup(object root, List<object> ticks)
         {
             var match = MiniJson.Obj(root, "match");
             var teams = MiniJson.Obj(ticks[0], "teams");
@@ -53,6 +53,7 @@ namespace Legends
             {
                 ["clubs"] = MiniJson.Obj(match, "clubs"),
                 ["tick_ms"] = MiniJson.Int(MiniJson.Obj(match, "timing"), "tick_ms", 3000),
+                ["seed"] = MiniJson.Int(match, "seed", 1),
                 // [Sprint 26 U1] The recording is older than the coaches' looks: two of them, to see the bench.
                 ["coach_looks"] = (object)MiniJson.Obj(match, "coach_looks") ?? new Dictionary<string, object> { ["home"] = "C1", ["away"] = "C2" },
                 ["players"] = new Dictionary<string, object>

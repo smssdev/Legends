@@ -4,8 +4,10 @@
 //   opens with the mouse, and a real button in its name cell opens it with the keys.
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const root = new URL('../src/', import.meta.url).pathname
+// [X109] fileURLToPath, not .pathname: on Windows the pathname is /D:/… and no folder.
+const root = fileURLToPath(new URL('../src/', import.meta.url))
 const walk = (d) =>
   fs
     .readdirSync(d, { withFileTypes: true })

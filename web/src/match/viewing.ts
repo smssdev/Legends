@@ -4,6 +4,7 @@ import { storage } from '../lib/storage'
 import { computed, ref } from 'vue'
 import { api } from '../api/client'
 import { useAuth } from '../stores/auth'
+import { siteConfig } from '../lib/session'
 
 export type MatchView = 'cartoon' | 'unity'
 /** [Sprint 26 W7] The coach on the touchline: the three approved looks (README section 0). */
@@ -35,11 +36,26 @@ function keep(key: string, value: string) {
 // This device's choice: a guest's only one, and a signed-in coach's until their account answers.
 const guestView = ref<MatchView>(local<MatchView>('matchView', ['cartoon', 'unity'], 'cartoon'))
 
+// [Sprint 11 X1] The Unity web build on the server (GET /bootstrap's config.unity_build), asked once a visit.
+const unityBuild = ref<string | null>(null)
+let askedBuild = false
+function askBuild() {
+  if (askedBuild) return
+  askedBuild = true
+  try {
+    void siteConfig()
+      .then((c) => (unityBuild.value = c?.unity_build ?? null))
+      .catch(() => {})
+  } catch {}
+}
+
 export function useViewing() {
   const auth = useAuth()
   const chosenView = computed<MatchView>(() => auth.user?.viewing?.match_view ?? guestView.value)
-  const unityReady = computed(() => !!auth.user?.viewing?.unity_ready)
-  /** What plays: Unity only once its web build is deployed (Sprint 8); until then the cartoon one. */
+  askBuild()
+  /** [Sprint 11 X1] Unity once its web build is deployed: the server names it (guests too), or the account says so. */
+  const unityReady = computed(() => !!unityBuild.value || !!auth.user?.viewing?.unity_ready)
+  /** What plays: Unity only once its web build is deployed; until then the cartoon one. */
   const playing = computed<MatchView>(() => (chosenView.value === 'unity' && unityReady.value ? 'unity' : 'cartoon'))
 
   const coachLook = computed<CoachLook>(() => (auth.user?.viewing as { coach_look?: CoachLook } | undefined)?.coach_look ?? 'C1')
@@ -51,5 +67,5 @@ export function useViewing() {
     if (data?.user) auth.set(data.user)
   }
 
-  return { chosenView, unityReady, playing, coachLook, save }
+  return { chosenView, unityReady, unityBuild, playing, coachLook, save }
 }

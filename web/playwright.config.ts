@@ -3,6 +3,9 @@
 // API (SQLite, the game's data imported) and the web, or uses them when already running (`composer dev`).
 import { defineConfig, devices } from '@playwright/test'
 
+// [X109] The API on another port when 8000 is taken on this computer (vite.config.ts reads the same variable).
+const api = process.env.GLM_API_PORT || '8000'
+
 export default defineConfig({
   testDir: './e2e',
   timeout: 120_000,
@@ -21,9 +24,9 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: 'php artisan serve --port=8000',
+      command: `php artisan serve --port=${api}`,
       cwd: '../backend',
-      url: 'http://localhost:8000/api/v1/health',
+      url: `http://localhost:${api}/api/v1/health`,
       reuseExistingServer: true,
       timeout: 120_000,
       // [Sprint 66 T5] Each journey signs up a coach: the sign-up limits raised for this server only.

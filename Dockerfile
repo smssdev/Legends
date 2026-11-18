@@ -18,6 +18,10 @@ COPY data/names ./data/names
 COPY data/arab/arab_players.csv ./data/arab/arab_players.csv
 # The RenderFrame golden vectors, checked before the build [Sprint 21 E8.4].
 COPY docs/api/frame-golden.json ./docs/api/frame-golden.json
+# [Sprint 09 G1] The director's golden vectors, shared with Unity: plan.test.ts (npm test, before the build) checks them.
+COPY docs/api/director-golden.json ./docs/api/director-golden.json
+# [X111] and the recorded match it plans every minute of (plan.test.ts).
+COPY docs/api/samples/liverpool-arsenal-48213.json ./docs/api/samples/liverpool-arsenal-48213.json
 # [Sprint 63, fixed in Sprint 66] The icons' one source: scripts/icons.mjs checks the site's icons come from it.
 COPY brand/icons ./brand/icons
 # [Sprint 39 B3] The site's address (PUBLIC_URL on the server, deploy/vps/compose.yml) goes into the canonical links, the
@@ -58,6 +62,7 @@ COPY --from=web /app/web/dist ./public-web
 RUN composer dump-autoload --optimize --no-dev \
  && cp -r public-web/. public/ && rm -rf public-web \
  && rm -rf public/downloads && ln -s ../storage/app/downloads/bundled public/downloads && mkdir -p storage/app/downloads \
+ && rm -rf public/unity && ln -s ../storage/app/downloads/unity public/unity \
  && find public -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.html' -o -name '*.wasm' -o -name '*.data' \) -size +1k -exec gzip -k -9 {} \; \
  && apk add --no-cache --virtual .brotli brotli \
  && find public -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.html' -o -name '*.wasm' -o -name '*.data' \) -size +1k -exec brotli -k -q 11 {} \; \
@@ -78,6 +83,7 @@ RUN composer dump-autoload --optimize --no-dev \
 # [Sprint 52 B7] public/downloads is a link into the downloads volume (deploy/vps/compose.yml): the Android app that
 # ships with the site lives on the server (deploy.sh moved it there once), not in the repository and the image (44 MB).
 # Caddy follows the link and sends the file itself. A newer app comes through the admin panel's upload (AppReleases).
+# [Sprint 11 X1] public/unity too: the Unity web builds (deploy/vps/unity.sh puts each in downloads/unity/<build>/).
 
 # The start script: the public address, sign-in, email and Google from the run-time variables, the configuration
 # cached then (not here, before they are known), and the queue, scheduler, live matches and Reverb.

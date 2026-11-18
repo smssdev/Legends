@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import '../../api/gen/models.g.dart' as api;
 import '../../api/read.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
+import '../../core/config.dart';
 
 /// A club the simulator can field (the data's clubs, the national teams left out by the server).
 class SimClub {
@@ -41,10 +43,21 @@ class SimRepository {
 
   final ApiClient _api;
 
+  /// The clubs' Arabic names by their Latin ones: the site's names dictionary, fetched once (null: not had yet).
+  Future<Map<String, String>>? _arabic;
+
   /// The clubs, strongest first, matching [q] (the server answers a list).
+  ///
+  /// [X109] The server stores the Latin names only: an Arabic search also sends the Latin names whose Arabic, in the
+  /// site's names dictionary (web/public/names/ar.json), holds it, as the site does (clubsNamed in lib/names.ts).
   Future<List<SimClub>> clubs(String q) async {
     try {
-      final r = await _api.dio.get<dynamic>('/sim/clubs', queryParameters: {if (q.trim().isNotEmpty) 'q': q.trim()});
+      final term = q.trim();
+      final names = hasArabic(term) ? clubsNamed(await _arabicNames(), term) : const <String>[];
+      final r = await _api.dio.get<dynamic>(
+        '/sim/clubs',
+        queryParameters: {if (term.isNotEmpty) 'q': term, if (names.isNotEmpty) 'names[]': names},
+      );
       return [for (final c in (r.data as List<dynamic>? ?? const [])) SimClub.of(api.ClubSummary.fromJson(c))];
     } catch (e) {
       throw ApiError.from(e);
@@ -67,8 +80,45 @@ class SimRepository {
     final seats = r.objectOrNull('seats', api.MatchViewSeats.fromJson);
     return (id: r.string('id'), home: seats?.home, away: seats?.away);
   }
+
+  /// The dictionary's clubs; without it (no network, an old server) the search is the Latin one alone.
+  Future<Map<String, String>> _arabicNames() => _arabic ??= () async {
+    try {
+      final r = await _api.dio.get<dynamic>('${AppConfig.siteUrl}/names/ar.json');
+      final data = r.data is String ? jsonDecode(r.data as String) : r.data;
+      final clubs = data is Map ? data['clubs'] : null;
+      return clubs is Map ? {for (final e in clubs.entries) '${e.key}': '${e.value}'} : <String, String>{};
+    } catch (_) {
+      _arabic = null; // tried again on the next search
+      return <String, String>{};
+    }
+  }();
 }
 
 final simRepositoryProvider = Provider<SimRepository>((ref) => SimRepository(ref.watch(apiProvider)));
 
 final simClubsProvider = FutureProvider.autoDispose.family<List<SimClub>, String>((ref, q) => ref.read(simRepositoryProvider).clubs(q));
+
+/// [X109] Whether a search is written in Arabic letters.
+bool hasArabic(String q) => RegExp('[\u0600-\u06FF]').hasMatch(q);
+
+/// [X109] One spelling for a search: no diacritics or tatweel, the alefs, taa marbuta and alef maqsura as one.
+String foldArabic(String s) => s
+    .replaceAll(RegExp('[\u064B-\u0652\u0640]'), '')
+    .replaceAll(RegExp('[\u0623\u0625\u0622]'), '\u0627')
+    .replaceAll('\u0629', '\u0647')
+    .replaceAll('\u0649', '\u064A')
+    .toLowerCase()
+    .trim();
+
+/// [X109] The Latin names of the clubs whose Arabic name (in [arabic], by Latin name) holds [q], at most [max].
+List<String> clubsNamed(Map<String, String> arabic, String q, {int max = 60}) {
+  if (!hasArabic(q)) return const [];
+  final want = foldArabic(q);
+  final out = <String>[];
+  for (final e in arabic.entries) {
+    if (out.length >= max) break;
+    if (foldArabic(e.value).contains(want)) out.add(e.key);
+  }
+  return out;
+}

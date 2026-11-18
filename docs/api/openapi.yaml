@@ -598,7 +598,7 @@ paths:
                       coach: { type: object, additionalProperties: true, description: "GET /home's coach" }
                       slots: { type: array, items: { type: object, additionalProperties: true }, description: "GET /home's slots" }
                   unread: { type: integer }
-                  config: { type: object, additionalProperties: true, description: "GET /health's version, time, clock_offset, broadcast, support, bots, adsense and analytics" }
+                  config: { type: object, additionalProperties: true, description: "GET /health's version, time, clock_offset, broadcast, support, bots, adsense, analytics and unity_build" }
         '401': { $ref: '#/components/responses/Error' }
   /health:
     get:
@@ -661,6 +661,11 @@ paths:
                     properties:
                       ga: { type: string, nullable: true, example: G-XXXXXXXXXX, description: Google Analytics 4 measurement id }
                       pixel: { type: string, nullable: true, description: Meta Pixel id }
+                  unity_build:
+                    type: string
+                    nullable: true
+                    example: '2026.11.18'
+                    description: '[Sprint 11 X1] The Unity web build the match screen loads from /unity/<build>/Build/, null when none is deployed (the cartoon plays)'
   /health/ping:
     post:
       tags: [system]
@@ -2563,6 +2568,7 @@ paths:
                   light: { type: string, enum: [night, dusk, day] }
                   kickoff_at: { type: string, format: date-time }
                   tick_ms: { type: integer }
+                  seed: { type: integer, description: "[Sprint 11] The match's seed, as GET /matches/{match} gives it: the director's crowd and fights vary by it, as the cartoon's" }
         '404': { description: Not a member of the match's league }
   /matches/{match}/live:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
@@ -4352,6 +4358,10 @@ paths:
       parameters:
         - { name: q, in: query, schema: { type: string, maxLength: 60 } }
         - { name: league, in: query, schema: { type: string, maxLength: 80 } }
+        - name: 'names[]'
+          in: query
+          description: '[X109] The Latin names the site matched to an Arabic q in its names dictionary; a club with one of them is found too'
+          schema: { type: array, maxItems: 60, items: { type: string, maxLength: 80 } }
       responses:
         '200':
           description: Up to 60 clubs, strongest first

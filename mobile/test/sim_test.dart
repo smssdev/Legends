@@ -38,7 +38,61 @@ class _Answer implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
+/// [X109] An answer by the request's path (its end), and every URL asked, with its query.
+class _Routes implements HttpClientAdapter {
+  _Routes(this.asked, this.bodies);
+
+  final List<String> asked;
+  final Map<String, Object> bodies;
+
+  @override
+  Future<ResponseBody> fetch(RequestOptions options, Stream<Uint8List>? requestStream, Future<void>? cancelFuture) async {
+    asked.add(options.uri.toString());
+    final body = bodies.entries.firstWhere((e) => options.uri.path.endsWith(e.key)).value;
+    return ResponseBody.fromString(
+      jsonEncode(body),
+      200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
 void main() {
+  // [X109] The server stores the Latin names only: an Arabic search also sends the Latin names the dictionary matches.
+  test('an Arabic search finds the clubs by the names dictionary, by any alef', () {
+    const arabic = {
+      'Liverpool': '\u0644\u064A\u0641\u0631\u0628\u0648\u0644',
+      'Real Madrid': '\u0631\u064A\u0627\u0644 \u0645\u062F\u0631\u064A\u062F',
+    };
+    expect(clubsNamed(arabic, '\u0644\u064A\u0641\u0631'), ['Liverpool']);
+    expect(clubsNamed(arabic, '\u0631\u064A\u0623\u0644'), ['Real Madrid']);
+    expect(clubsNamed(arabic, 'Liver'), isEmpty);
+    expect(clubsNamed(arabic, '\u0631\u064A\u0627\u0644', max: 0), isEmpty);
+  });
+
+  test('the search sends those Latin names to the server, the dictionary fetched once', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final asked = <String>[];
+    final answer = _Routes(asked, {
+      '/names/ar.json': {
+        'clubs': {'Liverpool': '\u0644\u064A\u0641\u0631\u0628\u0648\u0644'},
+      },
+      '/sim/clubs': [
+        {'id': 7, 'name': 'Liverpool', 'code': 'LIV'},
+      ],
+    });
+    final repo = SimRepository(ApiClient(TokenStore(), dio: Dio()..httpClientAdapter = answer));
+    expect((await repo.clubs('\u0644\u064A\u0641\u0631\u0628\u0648\u0644')).single.name, 'Liverpool');
+    await repo.clubs('\u0644\u064A\u0641\u0631');
+    expect(asked.where((a) => a.endsWith('/names/ar.json')), hasLength(1));
+    expect(asked.last, contains('names%5B%5D=Liverpool'));
+  });
+
   test('a match made here: its id is the server\'s ULID (a string), and the two seats of a match with a friend', () async {
     FlutterSecureStorage.setMockInitialValues({});
     final answer = _Answer(201, {

@@ -49,12 +49,13 @@ class MatchSceneTest extends TestCase
     {
         $res = $this->actingAs($this->owner)->getJson("/api/v1/matches/{$this->match->id}/scene")->assertOk()
             ->assertJsonStructure([
-                'id', 'stadium', 'light', 'kickoff_at', 'tick_ms', 'captains' => ['home', 'away'], 'coach_looks' => ['home', 'away'],
+                'id', 'stadium', 'light', 'kickoff_at', 'tick_ms', 'seed', 'captains' => ['home', 'away'], 'coach_looks' => ['home', 'away'],
                 'clubs' => ['home' => ['id', 'name', 'code', 'primary', 'secondary', 'pattern', 'away_kit'], 'away' => ['id', 'name', 'code', 'primary', 'secondary']],
                 'players' => ['home' => [['id', 'name', 'no', 'pos', 'line', 'starter']], 'away' => [['id', 'name', 'no', 'pos', 'line', 'starter']]],
             ]);
 
         $this->assertContains($res->json('stadium'), ['arena', 'classic']);
+        $this->assertSame((int) $this->match->seed, $res->json('seed'), 'the seed, as the match view gives it');
         $this->assertContains($res->json('light'), ['night', 'dusk', 'day']);
         foreach (['home', 'away'] as $side) {
             $this->assertSame(11, collect($res->json("players.$side"))->where('starter', true)->count());

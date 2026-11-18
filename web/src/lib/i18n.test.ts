@@ -14,7 +14,8 @@ describe('i18n', () => {
     setLocale('en')
     expect(document.documentElement.dir).toBe('ltr')
     expect(document.documentElement.lang).toBe('en')
-    await expect.poll(() => t('المكتب')).toBe('Office')
+    // [X109] The dictionary is a chunk loaded on demand: in the server's image build it took over the default second.
+    await expect.poll(() => t('المكتب'), { timeout: 10_000 }).toBe('Office')
     expect(t('جملة ليست في القاموس')).toBe('جملة ليست في القاموس')
     expect(intlLocale()).toBe('en-GB')
   })

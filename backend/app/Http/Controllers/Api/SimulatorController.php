@@ -27,10 +27,16 @@ class SimulatorController extends Controller
 
     public function clubs(Request $request)
     {
-        $data = $request->validate(['q' => 'nullable|string|max:60', 'league' => 'nullable|string|max:80']);
+        $data = $request->validate([
+            'q' => 'nullable|string|max:60', 'league' => 'nullable|string|max:80',
+            // [X109] The Latin names the site found for an Arabic search in its names dictionary (lib/names.ts).
+            'names' => 'nullable|array|max:60', 'names.*' => 'string|max:80',
+        ]);
+        $names = array_values(array_filter($data['names'] ?? []));
 
         return MasterClub::query()->where('source', '!=', 'nation')
-            ->when($data['q'] ?? null, fn ($q, $term) => $q->whereLike('name', '%'.$term.'%'))
+            ->when($data['q'] ?? null, fn ($q, $term) => $q->where(fn ($w) => $w->whereLike('name', '%'.$term.'%')
+                ->when($names, fn ($w) => $w->orWhereIn('name', $names))))
             ->when($data['league'] ?? null, fn ($q, $league) => $q->where('league_name', $league))
             ->orderByDesc('strength_cp')->limit(60)
             ->get(['id', 'name', 'code', 'league_name', 'strength_cp', 'color_primary', 'color_secondary']);
