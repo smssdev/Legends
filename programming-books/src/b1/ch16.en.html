@@ -1,0 +1,149 @@
+<section class="chapter" data-chapter="16" data-code="b1/ch16/en">
+<p class="chapter-kicker">Chapter 16</p>
+<h1>Accessible Pages for Everyone</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what accessibility is and who it helps</li>
+<li>use the right HTML element, the single most important accessibility skill</li>
+<li>make pages that work with a keyboard, with visible focus and a skip link</li>
+<li>write accessible forms, images and colours, and measure contrast yourself</li>
+<li>check a page with the browser’s own tools</li>
+</ul>
+</div>
+
+<p class="lead">More than a billion people live with some form of disability. Some cannot see the screen and listen to a screen reader. Some cannot use a mouse and move through pages with a keyboard or a switch. Some need large text, strong colours, or pages that do not move. And all of us are “temporarily disabled” sometimes: with a broken arm, in bright sunlight, holding a baby in one hand. <strong>Accessibility</strong>, often written <strong>a11y</strong>, means building pages that work for all of them.</p>
+
+<aside class="bit" data-mood="happy"><p>Here’s the good news: if you use HTML the way Chapter 5 taught you, most of the work is already done! Accessibility is not an extra feature you add at the end; it’s a habit you build into every page from the start.</p></aside>
+
+<h2>16.1 Who accessibility helps</h2>
+
+<table>
+<thead><tr><th>People who…</th><th>Use…</th><th>Need…</th></tr></thead>
+<tbody>
+<tr><td>are blind or have low vision</td><td>screen readers, zoom</td><td>real headings, text for images, labels, enough contrast</td></tr>
+<tr><td>cannot use a mouse</td><td>keyboard, switches, voice</td><td>everything reachable with Tab, visible focus</td></tr>
+<tr><td>are deaf or hard of hearing</td><td>captions</td><td>captions and transcripts for audio and video</td></tr>
+<tr><td>have cognitive differences</td><td>simple layouts</td><td>clear language, predictable pages, helpful error messages</td></tr>
+<tr><td>get dizzy from motion</td><td>reduced-motion settings</td><td>animations that can be turned off</td></tr>
+</tbody>
+</table>
+
+<p>The international standard is the <dfn>Web Content Accessibility Guidelines</dfn> (WCAG). Many countries require it by law for government sites and large companies, so accessible code is also a professional requirement. But the best reason is simpler: it is the right thing to do, and it makes pages better for everyone.</p>
+
+<h2>16.2 The right element for the job</h2>
+
+<p>Look at these two buttons:</p>
+
+<pre data-code="buttons.html" data-title="buttons.html" data-show="body"></pre>
+<figure data-render="buttons.html" data-width="560"><figcaption><b>Figure 16.1:</b> They look the same. They are not the same.</figcaption></figure>
+
+<p>The <code>&lt;div&gt;</code> works with a mouse, and nothing else. You cannot reach it with the Tab key, Enter does nothing, and a screen reader announces it as plain text, so a blind user never learns that there is something to press. The <code>&lt;button&gt;</code> gets all of that for free: it can be focused, it responds to Enter and Space, and it is announced as “button”.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: HTML first</p><p>If something navigates to another page, use <code>&lt;a href&gt;</code>. If it does something on this page, use <code>&lt;button&gt;</code>. Use headings in order, lists for lists, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code> and <code>&lt;footer&gt;</code> for the parts of the page. Every semantic element brings built-in behaviour that you would otherwise have to rebuild by hand, and would probably get wrong.</p></aside>
+
+<p>When HTML alone is not enough, <dfn>ARIA</dfn> attributes add information for assistive technology, such as <code>aria-label</code> to name a button that only shows an icon. But the first rule of ARIA is: do not use ARIA if a native HTML element does the job. A wrong ARIA attribute is worse than none.</p>
+
+<h2>16.3 The keyboard test</h2>
+
+<p>Put your mouse away and try to use your page with the keyboard only. <code>Tab</code> moves forward through links, buttons and fields, <code>Shift</code> + <code>Tab</code> moves back, <code>Enter</code> follows links and presses buttons, and <code>Space</code> presses buttons and ticks boxes. Two things must be true:</p>
+
+<ol>
+<li><strong>You can reach and use everything.</strong></li>
+<li><strong>You can always see where you are.</strong> The element that has the keyboard <dfn>focus</dfn> must be clearly visible.</li>
+</ol>
+
+<pre data-code="focus.html" data-title="focus.html"></pre>
+<figure data-render="focus.html" data-width="560" data-actions="press:body|Tab"><figcaption><b>Figure 16.2:</b> After pressing Tab once: the hidden skip link appears.</figcaption></figure>
+<figure data-render="focus.html" data-width="560" data-actions="press:body|Tab;press:body|Tab;press:body|Tab"><figcaption><b>Figure 16.3:</b> Two more presses: the focused link has a thick, clear outline.</figcaption></figure>
+
+<ul>
+<li><code>:focus-visible</code> styles the focus when the user is using the keyboard. Never remove the outline with <code>outline: none</code> unless you replace it with something at least as visible.</li>
+<li>The <dfn>skip link</dfn> is the first thing on the page. It stays hidden until it is focused, and lets keyboard and screen reader users jump past the menu straight to the content, instead of tabbing through every link on every page.</li>
+<li><code>prefers-reduced-motion</code> is a media query that is true when the user has asked their system for less motion. Use it to turn off animations.</li>
+</ul>
+
+<h2>16.4 Text for images</h2>
+
+<p>You met <code>alt</code> in Chapter 5. Here is how to write it well:</p>
+
+<table>
+<thead><tr><th>Image</th><th>Good <code>alt</code></th></tr></thead>
+<tbody>
+<tr><td>A photo in a news story</td><td>What it shows and why it matters: “Fans celebrating in Tahrir Square after the final”</td></tr>
+<tr><td>A logo that links to the home page</td><td>Where it goes: “Bit’s Shop, home page”</td></tr>
+<tr><td>An icon on a button with no text</td><td>What the button does: “Search”</td></tr>
+<tr><td>A purely decorative pattern</td><td>Empty: <code>alt=""</code></td></tr>
+</tbody>
+</table>
+
+<p>Do not start with “image of”; screen readers already say it is an image. Describe the <em>purpose</em>, not every pixel.</p>
+
+<h2>16.5 Accessible forms</h2>
+
+<pre data-code="form.html" data-title="form.html" data-show="body"></pre>
+<figure data-render="form.html" data-width="560"><figcaption><b>Figure 16.4:</b> A field with a hint and an error message that everyone can perceive.</figcaption></figure>
+
+<ul>
+<li>Every field has a visible <code>&lt;label&gt;</code>. A placeholder is not a label: it disappears when you type.</li>
+<li><code>aria-describedby</code> connects the hint and the error to the field, so screen readers read them when the field gets focus.</li>
+<li><code>aria-invalid="true"</code> tells assistive technology the value is wrong, and <code>role="alert"</code> makes screen readers announce the error at once.</li>
+<li>The error is shown in text, not only by turning the border red. People who cannot see red would never notice.</li>
+<li><code>autocomplete</code> lets browsers fill in known values, a big help for people who find typing hard.</li>
+</ul>
+
+<h2>16.6 Colour and contrast</h2>
+
+<p>WCAG asks for a <dfn>contrast ratio</dfn> of at least 4.5 to 1 between normal text and its background, and 3 to 1 for large text. The ratio goes from 1 (the same colour) to 21 (black on white). You saw DevTools show it in Chapter 6. Now, as a final JavaScript exercise, let us compute it ourselves with the official formula:</p>
+
+<pre data-code="contrast.js" data-title="contrast.js"></pre>
+<pre data-out="contrast.js"></pre>
+
+<p>Our dark ink and our brand indigo pass easily on white. The light grey, often used for “elegant” small print, fails, and white text on bright yellow is almost unreadable. You do not need to remember the formula; the point is that contrast is a number you can check, not a matter of taste.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: never rely on colour alone</p><p>About one man in twelve has some form of colour blindness. A form that shows errors only in red, or a chart that tells lines apart only by colour, leaves them guessing. Always add text, an icon, or a pattern as well.</p></aside>
+
+<h2>16.7 Checking your pages</h2>
+
+<p>Automatic tools find many problems quickly:</p>
+<ul>
+<li>In Chrome or Edge, open DevTools, choose the <strong>Lighthouse</strong> panel, tick <strong>Accessibility</strong> and click <strong>Analyze</strong>. You get a score and a list of problems with explanations.</li>
+<li>The <strong>Elements</strong> panel has an <strong>Accessibility</strong> pane that shows how a screen reader understands any element: its role and its name.</li>
+</ul>
+
+<p>But automatic tools find only part of the problems. Always add two manual tests: use the page with the keyboard only, and turn on your system’s screen reader for a few minutes (VoiceOver on Mac and iPhone, Narrator on Windows, TalkBack on Android). Hearing your own page read aloud is an unforgettable lesson.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why is <code>&lt;button&gt;</code> better than a clickable <code>&lt;div&gt;</code>?</li><li>What contrast ratio does normal text need?</li><li>What is a skip link for?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Accessibility</strong> makes pages work for people with all kinds of abilities, and better for everyone.</li>
+<li>Use the <strong>right HTML element</strong>: <code>&lt;button&gt;</code> for actions, <code>&lt;a&gt;</code> for links, headings and landmarks for structure. ARIA only when HTML is not enough.</li>
+<li>Everything must work with the <strong>keyboard</strong>, with a clearly visible <strong>focus</strong>. Add a <strong>skip link</strong>.</li>
+<li>Write <code>alt</code> for purpose; use <code>alt=""</code> for decoration.</li>
+<li>Forms need visible labels, connected hints and errors in text.</li>
+<li>Normal text needs a <strong>contrast ratio</strong> of at least 4.5:1. Never use colour alone.</li>
+<li>Test with Lighthouse, the keyboard, and a real screen reader.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It can be reached with Tab, works with Enter and Space, and screen readers announce it as a button; a <code>&lt;div&gt;</code> does none of this. 2. At least 4.5 to 1 (3 to 1 for large text). 3. It lets keyboard and screen reader users jump past the navigation straight to the main content.</p>
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Use your profile page with the keyboard only. Can you reach every link? Can you always see where the focus is? Fix what you find.</li>
+<li><span class="level">Easy</span> Add a skip link to your profile page.</li>
+<li><span class="level">Medium</span> Run Lighthouse’s accessibility check on your profile page and on the shop from Chapter 13. Fix every problem it reports.</li>
+<li><span class="level">Medium</span> Use <code>contrast.js</code> to check every text colour in your profile page’s stylesheet. Change any colour that fails.</li>
+<li><span class="level">Challenge</span> Turn on your computer’s or phone’s screen reader and try to buy a sticker in Bit’s shop without looking at the screen. Write down every moment you got lost, and fix the page.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 17</p>
+<p>You now have every skill this book teaches. In the next chapter you will put them all together in one complete project, from the first idea to a real address on the internet that you can send to your friends.</p>
+</div>
+</section>

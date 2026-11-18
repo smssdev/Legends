@@ -1,5 +1,5 @@
 // Screenshots an example web page for the book: node shot.cjs <page.html> <out.png> <width> [actions]
-// actions, run before the screenshot, separated by ';': click:<selector>, fill:<selector>=<text>, press:<selector>=<key>
+// actions, run before the screenshot, separated by ';': click:<selector>, fill:<selector>|<text>, press:<selector>|<key>, wait:<ms>
 // The page is shown as a browser would show it. Only the default font is swapped for the book's
 // serif fonts, because the build machine's default fonts differ from the readers' (who mostly see
 // Times New Roman, or an Arabic system font).
@@ -45,7 +45,7 @@ function serve(dir) {
   await tab.evaluate(() => document.fonts.ready);
   for (const step of actions.split(';').filter(Boolean)) {
     const [kind, rest] = [step.slice(0, step.indexOf(':')), step.slice(step.indexOf(':') + 1)];
-    const [selector, text] = rest.split('=');
+    const [selector, text] = rest.split('|');
     if (kind === 'click') await tab.click(selector);
     if (kind === 'fill') await tab.fill(selector, text);
     if (kind === 'press') await tab.press(selector, text);

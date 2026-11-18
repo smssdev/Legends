@@ -37,6 +37,8 @@
 @page ch14:first { @top-center { content: none; } }
 @page ch15 { @top-center { content: "الفصل 15: Git وGitHub"; } }
 @page ch15:first { @top-center { content: none; } }
+@page ch16 { @top-center { content: "الفصل 16: صفحات يصل إليها الجميع"; } }
+@page ch16:first { @top-center { content: none; } }
 </style></head>
 <body><section class="front half-title"><p class="ht">البرمجة من الصفر</p></section><section class="front title-page">
           <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الأول</p>
@@ -4917,6 +4919,265 @@ node_modules/
 <div class="next">
 <p class="next-title">في الفصل 16</p>
 <p>صار كودك آمناً وقابلاً للمشاركة. والخطوة التالية أن نتأكد أن صفحاتك صالحة <em>للجميع</em>، ومنهم من يستخدمون قارئات الشاشة، أو لوحة المفاتيح بدل الفأرة، أو النص الكبير. إنها علامة المحترف، وهي أسهل مما تظن.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch16" data-chapter="16" data-code="b1/ch16/ar">
+<div class="opener"><span class="opener-num">16</span><p class="chapter-kicker">الفصل 16</p><h1>صفحات يصل إليها الجميع</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح ما الوصول (accessibility) ومن يستفيد منه</li>
+<li>تستخدم عنصر HTML المناسب، وهي أهم مهارة في الوصول</li>
+<li>تصنع صفحات تعمل بلوحة المفاتيح، بتركيز ظاهر ورابط تخطٍّ</li>
+<li>تكتب نماذج وصوراً وألواناً يصل إليها الجميع، وتقيس التباين بنفسك</li>
+<li>تفحص الصفحة بأدوات المتصفح نفسه</li>
+</ul>
+</div>
+
+<p class="lead">أكثر من مليار إنسان يعيشون مع شكل من أشكال الإعاقة. بعضهم لا يرى الشاشة فيستمع إلى قارئ شاشة، وبعضهم لا يستخدم الفأرة فيتنقل في الصفحات بلوحة المفاتيح أو بمفتاح خاص، وبعضهم يحتاج نصاً كبيراً أو ألواناً قوية أو صفحات لا تتحرك. وكلنا «معاقون مؤقتاً» أحياناً: بذراع مكسورة، أو في ضوء الشمس الساطع، أو ونحن نحمل طفلاً بيد واحدة. و<strong>الوصول</strong> (accessibility، وتُكتب اختصاراً <strong>a11y</strong>) يعني بناء صفحات تعمل لهم جميعاً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>إليك الخبر السار: إن استخدمت HTML كما علّمك الفصل 5، فمعظم العمل منجز أصلاً! الوصول ليس ميزة إضافية تضيفها في النهاية، بل عادة تبنيها في كل صفحة من البداية.</p></div></div>
+
+<h2><span class="sec">16.1</span><span>من يستفيد من الوصول</span></h2>
+
+<table>
+<thead><tr><th>الأشخاص الذين…</th><th>يستخدمون…</th><th>ويحتاجون…</th></tr></thead>
+<tbody>
+<tr><td>مكفوفون أو ضعاف بصر</td><td>قارئات الشاشة والتكبير</td><td>عناوين حقيقية، ونصاً للصور، وتسميات، وتبايناً كافياً</td></tr>
+<tr><td>لا يستخدمون الفأرة</td><td>لوحة المفاتيح، والمفاتيح الخاصة، والصوت</td><td>أن يصلوا إلى كل شيء بـ Tab، وتركيزاً ظاهراً</td></tr>
+<tr><td>صمّ أو ضعاف سمع</td><td>الترجمة النصية</td><td>ترجمة نصية ونصوصاً مكتوبة للصوت والفيديو</td></tr>
+<tr><td>لديهم اختلافات إدراكية</td><td>التخطيطات البسيطة</td><td>لغة واضحة، وصفحات متوقعة، ورسائل خطأ مفيدة</td></tr>
+<tr><td>يصيبهم الدوار من الحركة</td><td>إعدادات تقليل الحركة</td><td>حركات يمكن إيقافها</td></tr>
+</tbody>
+</table>
+
+<p>والمعيار الدولي هو <dfn>إرشادات الوصول إلى محتوى الويب</dfn> (WCAG). وكثير من الدول تفرضه بالقانون على المواقع الحكومية والشركات الكبيرة، فالكود الذي يصل إليه الجميع متطلب مهني أيضاً. لكن أفضل سبب أبسط من ذلك: إنه الصواب، ويجعل الصفحات أفضل للجميع.</p>
+
+<h2><span class="sec">16.2</span><span>العنصر المناسب للمهمة</span></h2>
+
+<p>انظر إلى هذين الزرين:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">buttons.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>زرّان<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="c">&lt;!-- سيئ: يبدو زراً لكنه صندوق فقط --&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;fake&quot;</span> <span class="n">onclick</span>=<span class="s">&quot;alert(&#x27;Hi&#x27;)&quot;</span><span class="k">&gt;</span>أنا div<span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="c">&lt;!-- جيد: زر حقيقي --&gt;</span>
+    <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">onclick</span>=<span class="s">&quot;alert(&#x27;Hi&#x27;)&quot;</span><span class="k">&gt;</span>أنا زر<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>يبدوان متشابهين، لكن واحداً منهما فقط يعمل بلوحة المفاتيح وقارئ الشاشة.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>buttons.html</span><b>560px</b></div><img src="img/b1-ch16-ar-buttons.html-560.png" alt=""><figcaption><b>الشكل 16.1:</b> يبدوان متشابهين، وليسا كذلك.</figcaption></figure>
+
+<p><code>&lt;div&gt;</code> يعمل بالفأرة ولا شيء غيرها. لا تصل إليه بمفتاح Tab، وEnter لا يفعل شيئاً، وقارئ الشاشة يعلنه نصاً عادياً، فلا يعرف المستخدم الكفيف أبداً أن هناك ما يُضغط. أما <code>&lt;button&gt;</code> فيأخذ كل ذلك مجاناً: يتلقى التركيز، ويستجيب لـ Enter والمسافة، ويُعلن «زر».</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: HTML أولاً</p><p>إن كان الشيء ينقل إلى صفحة أخرى فاستخدم <code>&lt;a href&gt;</code>، وإن كان يفعل شيئاً في هذه الصفحة فاستخدم <code>&lt;button&gt;</code>. واستخدم العناوين بالترتيب، والقوائم للقوائم، و<code>&lt;nav&gt;</code> و<code>&lt;main&gt;</code> و<code>&lt;footer&gt;</code> لأجزاء الصفحة. فكل عنصر دلالي يأتي بسلوك مدمج كنت ستعيد بناءه بيدك، والأرجح أنك كنت ستخطئ فيه.</p></aside>
+
+<p>وحين لا تكفي HTML وحدها تضيف خصائص <dfn>ARIA</dfn> معلومات للتقنيات المساعدة، مثل <code>aria-label</code> لتسمية زر لا يعرض إلا أيقونة. لكن القاعدة الأولى لـ ARIA: لا تستخدم ARIA إن كان عنصر HTML أصيل يؤدي المهمة. فخاصية ARIA خاطئة أسوأ من غيابها.</p>
+
+<h2><span class="sec">16.3</span><span>اختبار لوحة المفاتيح</span></h2>
+
+<p>أبعد الفأرة وجرّب استخدام صفحتك بلوحة المفاتيح وحدها. <code>Tab</code> تتقدم بين الروابط والأزرار والحقول، و<code>Shift</code> + <code>Tab</code> ترجع، و<code>Enter</code> تتبع الروابط وتضغط الأزرار، و<code>Space</code> تضغط الأزرار وتعلّم المربعات. ويجب أن يصح أمران:</p>
+
+<ol>
+<li><strong>تصل إلى كل شيء وتستخدمه.</strong></li>
+<li><strong>ترى دائماً أين أنت.</strong> فالعنصر الذي عليه <dfn>تركيز</dfn> لوحة المفاتيح (focus) يجب أن يظهر بوضوح.</li>
+</ol>
+
+<div class="listing" dir="ltr"><div class="listing-title">focus.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;ar&quot;</span> <span class="n">dir</span>=<span class="s">&quot;rtl&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>أهلاً بك<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, sans-serif; margin: 0; }
+      .skip { position: absolute; inset-inline-start: 8px; top: -60px; padding: 8px 14px;
+        background: #1e1b2e; color: white; border-radius: 8px; }
+      .skip:focus { top: 8px; }
+      nav { display: flex; gap: 8px; padding: 56px 16px 16px; background: #eef2ff; }
+      nav a { padding: 6px 14px; border-radius: 8px; color: #1a1a1a; font-weight: 700; }
+      a:focus-visible { outline: 3px solid #2b2b2b; outline-offset: 3px; }
+      main { padding: 0 16px; }
+      @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; }
+      }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;a</span> <span class="n">class</span>=<span class="s">&quot;skip&quot;</span> <span class="n">href</span>=<span class="s">&quot;#main&quot;</span><span class="k">&gt;</span>تخطَّ إلى المحتوى الرئيسي<span class="k">&lt;/a</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>
+      <span class="k">&lt;nav</span> <span class="n">aria-label</span>=<span class="s">&quot;الرئيسية&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>الرئيسية<span class="k">&lt;/a</span><span class="k">&gt;</span>
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>المشاريع<span class="k">&lt;/a</span><span class="k">&gt;</span>
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>تواصل<span class="k">&lt;/a</span><span class="k">&gt;</span>
+      <span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;/header</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span> <span class="n">id</span>=<span class="s">&quot;main&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>أهلاً بك<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>اضغط Tab للتنقل بين الروابط، والرابط المحدد عليه إطار واضح.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-ar-focus.html-560-d38a63.png" alt=""><figcaption><b>الشكل 16.2:</b> بعد ضغط Tab مرة: يظهر رابط التخطي المخفي.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-ar-focus.html-560-71e346.png" alt=""><figcaption><b>الشكل 16.3:</b> بعد ضغطتين أخريين: على الرابط المحدد إطار سميك واضح.</figcaption></figure>
+
+<ul>
+<li><code>:focus-visible</code> تنسّق التركيز حين يستخدم المستخدم لوحة المفاتيح. ولا تُزل الإطار بـ <code>outline: none</code> أبداً إلا إن وضعت مكانه ما يظهر بالقدر نفسه على الأقل.</li>
+<li><dfn>رابط التخطي</dfn> (skip link) أول شيء في الصفحة، يبقى مخفياً حتى يتلقى التركيز، ويتيح لمستخدمي لوحة المفاتيح وقارئات الشاشة القفز فوق القائمة إلى المحتوى مباشرة، بدل المرور على كل رابط في كل صفحة.</li>
+<li><code>prefers-reduced-motion</code> استعلام وسائط يصح حين يطلب المستخدم من نظامه حركة أقل، فاستخدمه لإيقاف الحركات.</li>
+</ul>
+
+<h2><span class="sec">16.4</span><span>نصوص للصور</span></h2>
+
+<p>تعرفت على <code>alt</code> في الفصل 5، وهذه طريقة كتابتها جيداً:</p>
+
+<table>
+<thead><tr><th>الصورة</th><th><code>alt</code> جيد</th></tr></thead>
+<tbody>
+<tr><td>صورة في خبر</td><td>ما تعرضه ولماذا يهم: «مشجعون يحتفلون في ميدان التحرير بعد النهائي»</td></tr>
+<tr><td>شعار يربط بالصفحة الرئيسية</td><td>إلى أين يذهب: «متجر بِت، الصفحة الرئيسية»</td></tr>
+<tr><td>أيقونة على زر بلا نص</td><td>ما يفعله الزر: «بحث»</td></tr>
+<tr><td>نقش للزينة فقط</td><td>فارغ: <code>alt=""</code></td></tr>
+</tbody>
+</table>
+
+<p>ولا تبدأ بـ «صورة لـ»؛ فقارئات الشاشة تقول أصلاً إنها صورة. صِف <em>الغرض</em> لا كل بكسل.</p>
+
+<h2><span class="sec">16.5</span><span>نماذج يصل إليها الجميع</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">form.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>أنشئ حساباً<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;form</span> novalidate<span class="k">&gt;</span>
+      <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;email&quot;</span><span class="k">&gt;</span>البريد الإلكتروني<span class="k">&lt;/label</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;email&quot;</span> <span class="n">type</span>=<span class="s">&quot;email&quot;</span> <span class="n">autocomplete</span>=<span class="s">&quot;email&quot;</span>
+             <span class="n">aria-describedby</span>=<span class="s">&quot;email-hint email-error&quot;</span> <span class="n">aria-invalid</span>=<span class="s">&quot;true&quot;</span> <span class="n">value</span>=<span class="s">&quot;sara@&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;hint&quot;</span> <span class="n">id</span>=<span class="s">&quot;email-hint&quot;</span><span class="k">&gt;</span>لن نشارك بريدك مع أحد أبداً.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;error&quot;</span> <span class="n">id</span>=<span class="s">&quot;email-error&quot;</span> <span class="n">role</span>=<span class="s">&quot;alert&quot;</span><span class="k">&gt;</span>من فضلك اكتب بريداً إلكترونياً صحيحاً.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;password&quot;</span><span class="k">&gt;</span>كلمة المرور<span class="k">&lt;/label</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;password&quot;</span> <span class="n">type</span>=<span class="s">&quot;password&quot;</span> <span class="n">autocomplete</span>=<span class="s">&quot;new-password&quot;</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;submit&quot;</span><span class="k">&gt;</span>أنشئ الحساب<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/form</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>form.html</span><b>560px</b></div><img src="img/b1-ch16-ar-form.html-560.png" alt=""><figcaption><b>الشكل 16.4:</b> حقل له تلميح ورسالة خطأ يدركهما الجميع.</figcaption></figure>
+
+<ul>
+<li>لكل حقل <code>&lt;label&gt;</code> ظاهر. والنص المؤقت (placeholder) ليس تسمية، فهو يختفي حين تكتب.</li>
+<li><code>aria-describedby</code> تربط التلميح والخطأ بالحقل، فتقرؤهما قارئات الشاشة حين يتلقى الحقل التركيز.</li>
+<li><code>aria-invalid="true"</code> تخبر التقنيات المساعدة أن القيمة خاطئة، و<code>role="alert"</code> تجعل قارئات الشاشة تعلن الخطأ فوراً.</li>
+<li>الخطأ يظهر نصاً، لا بتحويل الحدود إلى الأحمر فقط. فمن لا يرى الأحمر لن يلاحظه أبداً.</li>
+<li><code>autocomplete</code> تتيح للمتصفحات ملء القيم المعروفة، وهي مساعدة كبيرة لمن تصعب عليهم الكتابة.</li>
+</ul>
+
+<h2><span class="sec">16.6</span><span>اللون والتباين</span></h2>
+
+<p>تطلب WCAG <dfn>نسبة تباين</dfn> لا تقل عن 4.5 إلى 1 بين النص العادي وخلفيته، و3 إلى 1 للنص الكبير. والنسبة من 1 (اللون نفسه) إلى 21 (أسود على أبيض). ورأيت أدوات المطورين تعرضها في الفصل 6. والآن، تمريناً أخيراً على JavaScript، لنحسبها بأنفسنا بالمعادلة الرسمية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">contrast.js</div><pre class="code"><span class="c">// نسبة التباين بين لونين بمعادلة WCAG</span>
+<span class="k">function</span> luminance(hex) {
+  <span class="k">const</span> channels = [<span class="n">1</span>, <span class="n">3</span>, <span class="n">5</span>].map((i) =&gt; parseInt(hex.slice(i, i + <span class="n">2</span>), <span class="n">16</span>) / <span class="n">255</span>);
+  <span class="k">const</span> linear = channels.map((c) =&gt; (c &lt;= <span class="n">0.03928</span> ? c / <span class="n">12.92</span> : ((c + <span class="n">0.055</span>) / <span class="n">1.055</span>) ** <span class="n">2.4</span>));
+  <span class="k">return</span> <span class="n">0.2126</span> * linear[<span class="n">0</span>] + <span class="n">0.7152</span> * linear[<span class="n">1</span>] + <span class="n">0.0722</span> * linear[<span class="n">2</span>];
+}
+
+<span class="k">function</span> contrast(foreground, background) {
+  <span class="k">const</span> [a, b] = [luminance(foreground), luminance(background)].sort((x, y) =&gt; y - x);
+  <span class="k">return</span> (a + <span class="n">0.05</span>) / (b + <span class="n">0.05</span>);
+}
+
+<span class="k">const</span> pairs = [
+  [<span class="s">&quot;#1e1b2e&quot;</span>, <span class="s">&quot;#ffffff&quot;</span>],
+  [<span class="s">&quot;#2b2b2b&quot;</span>, <span class="s">&quot;#ffffff&quot;</span>],
+  [<span class="s">&quot;#9ca3af&quot;</span>, <span class="s">&quot;#ffffff&quot;</span>],
+  [<span class="s">&quot;#ffffff&quot;</span>, <span class="s">&quot;#e0e0e0&quot;</span>],
+];
+
+<span class="k">for</span> (<span class="k">const</span> [fg, bg] <span class="k">of</span> pairs) {
+  <span class="k">const</span> ratio = contrast(fg, bg);
+  <span class="k">const</span> verdict = ratio &gt;= <span class="n">4.5</span> ? <span class="s">&quot;ناجح&quot;</span> : <span class="s">&quot;راسب&quot;</span>;
+  console.log(<span class="s">`${fg} / ${bg}: ${ratio.toFixed(2)} → ${verdict}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>#1e1b2e / #ffffff: 16.78 → ناجح
+#2b2b2b / #ffffff: 7.90 → ناجح
+#9ca3af / #ffffff: 2.54 → راسب
+#ffffff / #e0e0e0: 1.67 → راسب</pre></div>
+
+<p>الحبر الداكن ولوننا البنفسجي ينجحان بسهولة على الأبيض. أما الرمادي الفاتح، الذي يُستخدم كثيراً للخط الصغير «الأنيق»، فيرسب، والنص الأبيض على الأصفر الفاقع يكاد لا يُقرأ. لا تحتاج أن تحفظ المعادلة؛ المهم أن التباين رقم تستطيع فحصه، لا مسألة ذوق.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا تعتمد على اللون وحده</p><p>نحو رجل من كل اثني عشر لديه شكل من عمى الألوان. فالنموذج الذي يعرض الأخطاء بالأحمر وحده، أو الرسم البياني الذي يميز خطوطه باللون وحده، يتركهم يخمّنون. أضف دائماً نصاً أو أيقونة أو نقشاً.</p></aside>
+
+<h2><span class="sec">16.7</span><span>فحص صفحاتك</span></h2>
+
+<p>الأدوات الآلية تجد مشكلات كثيرة بسرعة:</p>
+<ul>
+<li>في Chrome أو Edge افتح أدوات المطورين، واختر لوحة <strong>Lighthouse</strong>، وعلّم <strong>Accessibility</strong> واضغط <strong>Analyze</strong>، فتحصل على درجة وقائمة بالمشكلات مع شرحها.</li>
+<li>وفي لوحة <strong>Elements</strong> قسم <strong>Accessibility</strong> يعرض كيف يفهم قارئ الشاشة أي عنصر: دوره واسمه.</li>
+</ul>
+
+<p>لكن الأدوات الآلية لا تجد إلا جزءاً من المشكلات. فأضف دائماً اختبارين يدويين: استخدم الصفحة بلوحة المفاتيح وحدها، وشغّل قارئ الشاشة في نظامك بضع دقائق (VoiceOver على الماك والآيفون، وNarrator على Windows، وTalkBack على أندرويد). وسماع صفحتك تُقرأ بصوت عالٍ درس لا يُنسى، وجرّبه مع صفحتك العربية خصوصاً.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا <code>&lt;button&gt;</code> أفضل من <code>&lt;div&gt;</code> قابل للنقر؟</li><li>كم نسبة التباين التي يحتاجها النص العادي؟</li><li>ما فائدة رابط التخطي؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>الوصول</strong> يجعل الصفحات تعمل للناس بكل قدراتهم، وأفضل للجميع.</li>
+<li>استخدم <strong>عنصر HTML المناسب</strong>: <code>&lt;button&gt;</code> للأفعال، و<code>&lt;a&gt;</code> للروابط، والعناوين والمعالم للبنية. وARIA فقط حين لا تكفي HTML.</li>
+<li>كل شيء يجب أن يعمل بـ <strong>لوحة المفاتيح</strong>، و<strong>التركيز</strong> ظاهر بوضوح، وأضف <strong>رابط تخطٍّ</strong>.</li>
+<li>اكتب <code>alt</code> للغرض، و<code>alt=""</code> للزينة.</li>
+<li>النماذج تحتاج تسميات ظاهرة، وتلميحات مربوطة، وأخطاء نصية.</li>
+<li>النص العادي يحتاج <strong>نسبة تباين</strong> لا تقل عن 4.5:1، ولا تعتمد على اللون وحده.</li>
+<li>افحص بـ Lighthouse ولوحة المفاتيح وقارئ شاشة حقيقي.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأنه يُصل إليه بـ Tab، ويعمل بـ Enter والمسافة، وتعلنه قارئات الشاشة زراً، و<code>&lt;div&gt;</code> لا يفعل شيئاً من ذلك. 2. لا تقل عن 4.5 إلى 1 (و3 إلى 1 للنص الكبير). 3. يتيح لمستخدمي لوحة المفاتيح وقارئات الشاشة القفز فوق التنقل إلى المحتوى الرئيسي مباشرة.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> استخدم صفحتك التعريفية بلوحة المفاتيح وحدها. هل تصل إلى كل رابط؟ هل ترى دائماً مكان التركيز؟ أصلح ما تجده.</li>
+<li><span class="level">سهل</span> أضف رابط تخطٍّ إلى صفحتك التعريفية.</li>
+<li><span class="level medium">متوسط</span> شغّل فحص الوصول في Lighthouse على صفحتك التعريفية وعلى متجر الفصل 13، وأصلح كل مشكلة يذكرها.</li>
+<li><span class="level medium">متوسط</span> استخدم <code>contrast.js</code> لفحص كل لون نص في ملف تنسيق صفحتك التعريفية، وغيّر كل لون يرسب.</li>
+<li><span class="level hard">تحدٍّ</span> شغّل قارئ الشاشة في حاسوبك أو هاتفك، وحاول أن تشتري ملصقاً من متجر بِت دون أن تنظر إلى الشاشة. اكتب كل لحظة تهت فيها، وأصلح الصفحة.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 17</p>
+<p>صارت لديك كل مهارة يعلمها هذا الكتاب. وفي الفصل القادم ستجمعها كلها في مشروع واحد كامل، من الفكرة الأولى إلى عنوان حقيقي على الإنترنت ترسله إلى أصدقائك.</p>
 </div>
 </section>
 </body></html>

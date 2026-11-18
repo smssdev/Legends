@@ -37,6 +37,8 @@
 @page ch14:first { @top-center { content: none; } }
 @page ch15 { @top-center { content: "Chapter 15: Git and GitHub"; } }
 @page ch15:first { @top-center { content: none; } }
+@page ch16 { @top-center { content: "Chapter 16: Accessible Pages for Everyone"; } }
+@page ch16:first { @top-center { content: none; } }
 
 .cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
   background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
@@ -4998,6 +5000,265 @@ node_modules/
 <div class="next">
 <p class="next-title">Coming up in Chapter 16</p>
 <p>Your code is safe and shareable. Next, we make sure your pages are usable by <em>everyone</em>, including people who use screen readers, keyboards instead of a mouse, or large text. It is the mark of a professional, and it is easier than you think.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch16" data-chapter="16" data-code="b1/ch16/en">
+<div class="opener"><span class="opener-num">16</span><p class="chapter-kicker">Chapter 16</p><h1>Accessible Pages for Everyone</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what accessibility is and who it helps</li>
+<li>use the right HTML element, the single most important accessibility skill</li>
+<li>make pages that work with a keyboard, with visible focus and a skip link</li>
+<li>write accessible forms, images and colours, and measure contrast yourself</li>
+<li>check a page with the browser’s own tools</li>
+</ul>
+</div>
+
+<p class="lead">More than a billion people live with some form of disability. Some cannot see the screen and listen to a screen reader. Some cannot use a mouse and move through pages with a keyboard or a switch. Some need large text, strong colours, or pages that do not move. And all of us are “temporarily disabled” sometimes: with a broken arm, in bright sunlight, holding a baby in one hand. <strong>Accessibility</strong>, often written <strong>a11y</strong>, means building pages that work for all of them.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Here’s the good news: if you use HTML the way Chapter 5 taught you, most of the work is already done! Accessibility is not an extra feature you add at the end; it’s a habit you build into every page from the start.</p></div></div>
+
+<h2><span class="sec">16.1</span><span>Who accessibility helps</span></h2>
+
+<table>
+<thead><tr><th>People who…</th><th>Use…</th><th>Need…</th></tr></thead>
+<tbody>
+<tr><td>are blind or have low vision</td><td>screen readers, zoom</td><td>real headings, text for images, labels, enough contrast</td></tr>
+<tr><td>cannot use a mouse</td><td>keyboard, switches, voice</td><td>everything reachable with Tab, visible focus</td></tr>
+<tr><td>are deaf or hard of hearing</td><td>captions</td><td>captions and transcripts for audio and video</td></tr>
+<tr><td>have cognitive differences</td><td>simple layouts</td><td>clear language, predictable pages, helpful error messages</td></tr>
+<tr><td>get dizzy from motion</td><td>reduced-motion settings</td><td>animations that can be turned off</td></tr>
+</tbody>
+</table>
+
+<p>The international standard is the <dfn>Web Content Accessibility Guidelines</dfn> (WCAG). Many countries require it by law for government sites and large companies, so accessible code is also a professional requirement. But the best reason is simpler: it is the right thing to do, and it makes pages better for everyone.</p>
+
+<h2><span class="sec">16.2</span><span>The right element for the job</span></h2>
+
+<p>Look at these two buttons:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">buttons.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Two buttons<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="c">&lt;!-- Bad: looks like a button, but is only a box --&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;fake&quot;</span> <span class="n">onclick</span>=<span class="s">&quot;alert(&#x27;Hi&#x27;)&quot;</span><span class="k">&gt;</span>I am a div<span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="c">&lt;!-- Good: a real button --&gt;</span>
+    <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">onclick</span>=<span class="s">&quot;alert(&#x27;Hi&#x27;)&quot;</span><span class="k">&gt;</span>I am a button<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;p</span><span class="k">&gt;</span>Both look the same. Only one works with a keyboard and a screen reader.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>buttons.html</span><b>560px</b></div><img src="img/b1-ch16-en-buttons.html-560.png" alt=""><figcaption><b>Figure 16.1:</b> They look the same. They are not the same.</figcaption></figure>
+
+<p>The <code>&lt;div&gt;</code> works with a mouse, and nothing else. You cannot reach it with the Tab key, Enter does nothing, and a screen reader announces it as plain text, so a blind user never learns that there is something to press. The <code>&lt;button&gt;</code> gets all of that for free: it can be focused, it responds to Enter and Space, and it is announced as “button”.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: HTML first</p><p>If something navigates to another page, use <code>&lt;a href&gt;</code>. If it does something on this page, use <code>&lt;button&gt;</code>. Use headings in order, lists for lists, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code> and <code>&lt;footer&gt;</code> for the parts of the page. Every semantic element brings built-in behaviour that you would otherwise have to rebuild by hand, and would probably get wrong.</p></aside>
+
+<p>When HTML alone is not enough, <dfn>ARIA</dfn> attributes add information for assistive technology, such as <code>aria-label</code> to name a button that only shows an icon. But the first rule of ARIA is: do not use ARIA if a native HTML element does the job. A wrong ARIA attribute is worse than none.</p>
+
+<h2><span class="sec">16.3</span><span>The keyboard test</span></h2>
+
+<p>Put your mouse away and try to use your page with the keyboard only. <code>Tab</code> moves forward through links, buttons and fields, <code>Shift</code> + <code>Tab</code> moves back, <code>Enter</code> follows links and presses buttons, and <code>Space</code> presses buttons and ticks boxes. Two things must be true:</p>
+
+<ol>
+<li><strong>You can reach and use everything.</strong></li>
+<li><strong>You can always see where you are.</strong> The element that has the keyboard <dfn>focus</dfn> must be clearly visible.</li>
+</ol>
+
+<div class="listing" dir="ltr"><div class="listing-title">focus.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;en&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>Welcome<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, sans-serif; margin: 0; }
+      .skip { position: absolute; inset-inline-start: 8px; top: -60px; padding: 8px 14px;
+        background: #1e1b2e; color: white; border-radius: 8px; }
+      .skip:focus { top: 8px; }
+      nav { display: flex; gap: 8px; padding: 56px 16px 16px; background: #eef2ff; }
+      nav a { padding: 6px 14px; border-radius: 8px; color: #312e81; font-weight: 700; }
+      a:focus-visible { outline: 3px solid #db2777; outline-offset: 3px; }
+      main { padding: 0 16px; }
+      @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; }
+      }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;a</span> <span class="n">class</span>=<span class="s">&quot;skip&quot;</span> <span class="n">href</span>=<span class="s">&quot;#main&quot;</span><span class="k">&gt;</span>Skip to main content<span class="k">&lt;/a</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>
+      <span class="k">&lt;nav</span> <span class="n">aria-label</span>=<span class="s">&quot;Main&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Home<span class="k">&lt;/a</span><span class="k">&gt;</span>
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Projects<span class="k">&lt;/a</span><span class="k">&gt;</span>
+        <span class="k">&lt;a</span> <span class="n">href</span>=<span class="s">&quot;#&quot;</span><span class="k">&gt;</span>Contact<span class="k">&lt;/a</span><span class="k">&gt;</span>
+      <span class="k">&lt;/nav</span><span class="k">&gt;</span>
+    <span class="k">&lt;/header</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span> <span class="n">id</span>=<span class="s">&quot;main&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>Welcome<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>Press Tab to move between links. The focused link has a clear outline.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-en-focus.html-560-d38a63.png" alt=""><figcaption><b>Figure 16.2:</b> After pressing Tab once: the hidden skip link appears.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>focus.html</span><b>560px</b></div><img src="img/b1-ch16-en-focus.html-560-71e346.png" alt=""><figcaption><b>Figure 16.3:</b> Two more presses: the focused link has a thick, clear outline.</figcaption></figure>
+
+<ul>
+<li><code>:focus-visible</code> styles the focus when the user is using the keyboard. Never remove the outline with <code>outline: none</code> unless you replace it with something at least as visible.</li>
+<li>The <dfn>skip link</dfn> is the first thing on the page. It stays hidden until it is focused, and lets keyboard and screen reader users jump past the menu straight to the content, instead of tabbing through every link on every page.</li>
+<li><code>prefers-reduced-motion</code> is a media query that is true when the user has asked their system for less motion. Use it to turn off animations.</li>
+</ul>
+
+<h2><span class="sec">16.4</span><span>Text for images</span></h2>
+
+<p>You met <code>alt</code> in Chapter 5. Here is how to write it well:</p>
+
+<table>
+<thead><tr><th>Image</th><th>Good <code>alt</code></th></tr></thead>
+<tbody>
+<tr><td>A photo in a news story</td><td>What it shows and why it matters: “Fans celebrating in Tahrir Square after the final”</td></tr>
+<tr><td>A logo that links to the home page</td><td>Where it goes: “Bit’s Shop, home page”</td></tr>
+<tr><td>An icon on a button with no text</td><td>What the button does: “Search”</td></tr>
+<tr><td>A purely decorative pattern</td><td>Empty: <code>alt=""</code></td></tr>
+</tbody>
+</table>
+
+<p>Do not start with “image of”; screen readers already say it is an image. Describe the <em>purpose</em>, not every pixel.</p>
+
+<h2><span class="sec">16.5</span><span>Accessible forms</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">form.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span><span class="k">&gt;</span>Create an account<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="k">&lt;form</span> novalidate<span class="k">&gt;</span>
+      <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;email&quot;</span><span class="k">&gt;</span>Email<span class="k">&lt;/label</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;email&quot;</span> <span class="n">type</span>=<span class="s">&quot;email&quot;</span> <span class="n">autocomplete</span>=<span class="s">&quot;email&quot;</span>
+             <span class="n">aria-describedby</span>=<span class="s">&quot;email-hint email-error&quot;</span> <span class="n">aria-invalid</span>=<span class="s">&quot;true&quot;</span> <span class="n">value</span>=<span class="s">&quot;sara@&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;hint&quot;</span> <span class="n">id</span>=<span class="s">&quot;email-hint&quot;</span><span class="k">&gt;</span>We never share your email.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span> <span class="n">class</span>=<span class="s">&quot;error&quot;</span> <span class="n">id</span>=<span class="s">&quot;email-error&quot;</span> <span class="n">role</span>=<span class="s">&quot;alert&quot;</span><span class="k">&gt;</span>Please enter a valid email address.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;label</span> <span class="n">for</span>=<span class="s">&quot;password&quot;</span><span class="k">&gt;</span>Password<span class="k">&lt;/label</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> <span class="n">id</span>=<span class="s">&quot;password&quot;</span> <span class="n">type</span>=<span class="s">&quot;password&quot;</span> <span class="n">autocomplete</span>=<span class="s">&quot;new-password&quot;</span><span class="k">&gt;</span>
+
+      <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;submit&quot;</span><span class="k">&gt;</span>Create account<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/form</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>form.html</span><b>560px</b></div><img src="img/b1-ch16-en-form.html-560.png" alt=""><figcaption><b>Figure 16.4:</b> A field with a hint and an error message that everyone can perceive.</figcaption></figure>
+
+<ul>
+<li>Every field has a visible <code>&lt;label&gt;</code>. A placeholder is not a label: it disappears when you type.</li>
+<li><code>aria-describedby</code> connects the hint and the error to the field, so screen readers read them when the field gets focus.</li>
+<li><code>aria-invalid="true"</code> tells assistive technology the value is wrong, and <code>role="alert"</code> makes screen readers announce the error at once.</li>
+<li>The error is shown in text, not only by turning the border red. People who cannot see red would never notice.</li>
+<li><code>autocomplete</code> lets browsers fill in known values, a big help for people who find typing hard.</li>
+</ul>
+
+<h2><span class="sec">16.6</span><span>Colour and contrast</span></h2>
+
+<p>WCAG asks for a <dfn>contrast ratio</dfn> of at least 4.5 to 1 between normal text and its background, and 3 to 1 for large text. The ratio goes from 1 (the same colour) to 21 (black on white). You saw DevTools show it in Chapter 6. Now, as a final JavaScript exercise, let us compute it ourselves with the official formula:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">contrast.js</div><pre class="code"><span class="c">// Contrast ratio between two colours, using the WCAG formula</span>
+<span class="k">function</span> luminance(hex) {
+  <span class="k">const</span> channels = [<span class="n">1</span>, <span class="n">3</span>, <span class="n">5</span>].map((i) =&gt; parseInt(hex.slice(i, i + <span class="n">2</span>), <span class="n">16</span>) / <span class="n">255</span>);
+  <span class="k">const</span> linear = channels.map((c) =&gt; (c &lt;= <span class="n">0.03928</span> ? c / <span class="n">12.92</span> : ((c + <span class="n">0.055</span>) / <span class="n">1.055</span>) ** <span class="n">2.4</span>));
+  <span class="k">return</span> <span class="n">0.2126</span> * linear[<span class="n">0</span>] + <span class="n">0.7152</span> * linear[<span class="n">1</span>] + <span class="n">0.0722</span> * linear[<span class="n">2</span>];
+}
+
+<span class="k">function</span> contrast(foreground, background) {
+  <span class="k">const</span> [a, b] = [luminance(foreground), luminance(background)].sort((x, y) =&gt; y - x);
+  <span class="k">return</span> (a + <span class="n">0.05</span>) / (b + <span class="n">0.05</span>);
+}
+
+<span class="k">const</span> pairs = [
+  [<span class="s">&quot;#1e1b2e&quot;</span>, <span class="s">&quot;#ffffff&quot;</span>],
+  [<span class="s">&quot;#4338ca&quot;</span>, <span class="s">&quot;#ffffff&quot;</span>],
+  [<span class="s">&quot;#9ca3af&quot;</span>, <span class="s">&quot;#ffffff&quot;</span>],
+  [<span class="s">&quot;#ffffff&quot;</span>, <span class="s">&quot;#fbbf24&quot;</span>],
+];
+
+<span class="k">for</span> (<span class="k">const</span> [fg, bg] <span class="k">of</span> pairs) {
+  <span class="k">const</span> ratio = contrast(fg, bg);
+  <span class="k">const</span> verdict = ratio &gt;= <span class="n">4.5</span> ? <span class="s">&quot;pass&quot;</span> : <span class="s">&quot;fail&quot;</span>;
+  console.log(<span class="s">`${fg} / ${bg}: ${ratio.toFixed(2)} → ${verdict}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>#1e1b2e / #ffffff: 16.78 → pass
+#4338ca / #ffffff: 7.90 → pass
+#9ca3af / #ffffff: 2.54 → fail
+#ffffff / #fbbf24: 1.67 → fail</pre></div>
+
+<p>Our dark ink and our brand indigo pass easily on white. The light grey, often used for “elegant” small print, fails, and white text on bright yellow is almost unreadable. You do not need to remember the formula; the point is that contrast is a number you can check, not a matter of taste.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: never rely on colour alone</p><p>About one man in twelve has some form of colour blindness. A form that shows errors only in red, or a chart that tells lines apart only by colour, leaves them guessing. Always add text, an icon, or a pattern as well.</p></aside>
+
+<h2><span class="sec">16.7</span><span>Checking your pages</span></h2>
+
+<p>Automatic tools find many problems quickly:</p>
+<ul>
+<li>In Chrome or Edge, open DevTools, choose the <strong>Lighthouse</strong> panel, tick <strong>Accessibility</strong> and click <strong>Analyze</strong>. You get a score and a list of problems with explanations.</li>
+<li>The <strong>Elements</strong> panel has an <strong>Accessibility</strong> pane that shows how a screen reader understands any element: its role and its name.</li>
+</ul>
+
+<p>But automatic tools find only part of the problems. Always add two manual tests: use the page with the keyboard only, and turn on your system’s screen reader for a few minutes (VoiceOver on Mac and iPhone, Narrator on Windows, TalkBack on Android). Hearing your own page read aloud is an unforgettable lesson.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why is <code>&lt;button&gt;</code> better than a clickable <code>&lt;div&gt;</code>?</li><li>What contrast ratio does normal text need?</li><li>What is a skip link for?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Accessibility</strong> makes pages work for people with all kinds of abilities, and better for everyone.</li>
+<li>Use the <strong>right HTML element</strong>: <code>&lt;button&gt;</code> for actions, <code>&lt;a&gt;</code> for links, headings and landmarks for structure. ARIA only when HTML is not enough.</li>
+<li>Everything must work with the <strong>keyboard</strong>, with a clearly visible <strong>focus</strong>. Add a <strong>skip link</strong>.</li>
+<li>Write <code>alt</code> for purpose; use <code>alt=""</code> for decoration.</li>
+<li>Forms need visible labels, connected hints and errors in text.</li>
+<li>Normal text needs a <strong>contrast ratio</strong> of at least 4.5:1. Never use colour alone.</li>
+<li>Test with Lighthouse, the keyboard, and a real screen reader.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. It can be reached with Tab, works with Enter and Space, and screen readers announce it as a button; a <code>&lt;div&gt;</code> does none of this. 2. At least 4.5 to 1 (3 to 1 for large text). 3. It lets keyboard and screen reader users jump past the navigation straight to the main content.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Use your profile page with the keyboard only. Can you reach every link? Can you always see where the focus is? Fix what you find.</li>
+<li><span class="level">Easy</span> Add a skip link to your profile page.</li>
+<li><span class="level medium">Medium</span> Run Lighthouse’s accessibility check on your profile page and on the shop from Chapter 13. Fix every problem it reports.</li>
+<li><span class="level medium">Medium</span> Use <code>contrast.js</code> to check every text colour in your profile page’s stylesheet. Change any colour that fails.</li>
+<li><span class="level hard">Challenge</span> Turn on your computer’s or phone’s screen reader and try to buy a sticker in Bit’s shop without looking at the screen. Write down every moment you got lost, and fix the page.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 17</p>
+<p>You now have every skill this book teaches. In the next chapter you will put them all together in one complete project, from the first idea to a real address on the internet that you can send to your friends.</p>
 </div>
 </section>
 </body></html>
