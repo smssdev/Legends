@@ -1,0 +1,168 @@
+<section class="chapter" data-chapter="10" data-code="b1/ch10/ar">
+<p class="chapter-kicker">الفصل 10</p>
+<h1>الدوال</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تحزم قطعة من الكود في دالة لها اسم وتُعاد استخدامها</li>
+<li>تُدخل المعلومات بالمعاملات وتُخرج النتائج بـ <code>return</code></li>
+<li>تفهم أين تعيش المتغيرات: النطاق</li>
+<li>تكتب دوال سهمية قصيرة وتستخدمها مع <code>map</code> و<code>filter</code> و<code>reduce</code></li>
+<li>تعيد بناء شبّاك التذاكر من دوال صغيرة واضحة</li>
+</ul>
+</div>
+
+<p class="lead">لقد استخدمت دوال كثيرة دون أن تكتب واحدة: <code>console.log</code> و<code>push</code> و<code>join</code>. كتبها أحدهم مرة، وأعطاها أسماء، والآن يستخدمها ملايين المبرمجين كل يوم. وفي هذا الفصل ستكتب دوالك أنت. فالدوال هي الطريقة التي يحوّل بها المبرمجون برنامجاً طويلاً متشابكاً إلى قطع صغيرة، كل واحدة تتقن وظيفة واحدة.</p>
+
+<aside class="bit" data-mood="happy"><p>تخيّل الدالة آلة صغيرة: تضع فيها شيئاً (عمراً مثلاً)، فتعمل، فيخرج منها شيء (سعر مثلاً). تبني الآلة مرة واحدة، وتستخدمها كلما شئت دون أن تفكر في أحشائها مرة أخرى.</p></aside>
+
+<h2>10.1 دالتك الأولى</h2>
+
+<pre data-code="greet.js" data-title="greet.js"></pre>
+<pre data-out="greet.js"></pre>
+
+<p>للدالة ثلاثة أجزاء:</p>
+<ul>
+<li><strong>الاسم</strong>، <code>greet</code>، وبه تستدعيها. وأسماء الدوال أفعال غالباً، لأن الدوال <em>تفعل</em> أشياء.</li>
+<li><dfn>المعاملات</dfn> (parameters) بين القوسين، وهنا <code>name</code>: المدخلات. وداخل الدالة يعمل المعامل كأنه متغير.</li>
+<li><strong>الجسم</strong> بين القوسين المعقوصين: الكود الذي يُنفَّذ كلما استُدعيت الدالة.</li>
+</ul>
+
+<p>تعريف الدالة وحده لا يفعل شيئاً. فالكود لا يُنفَّذ إلا حين <dfn>تستدعي</dfn> الدالة بكتابة اسمها ثم القوسين: <code>greet("سارة")</code>. والقيمة التي تمررها، <code>"سارة"</code>، تُسمى <dfn>وسيطاً</dfn> (argument)، وداخل الدالة يصير <code>name</code> مساوياً لـ <code>"سارة"</code>.</p>
+
+<h3>إرجاع قيمة</h3>
+
+<p>الكلمة <code>return</code> ترسل قيمة إلى من استدعى الدالة، وتنهي الدالة فوراً. ولهذا تعمل <code>const message = greet("سارة")</code>: يُستبدل الاستدعاء بالقيمة المُرجعة. والدالة التي ليس فيها <code>return</code> تعيد <code>undefined</code>.</p>
+
+<figure>
+<svg viewBox="0 0 520 120" role="img" aria-label="الوسيط يدخل الدالة والقيمة المرجعة تخرج منها">
+<defs><marker id="f10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<rect x="180" y="20" width="160" height="80" rx="16" fill="#4338ca"/>
+<g font-family="JetBrains Mono" text-anchor="middle">
+<text x="260" y="55" fill="#fff" font-size="16" font-weight="700">ticketPrice</text>
+<text x="260" y="78" fill="#c7d2fe" font-size="12">(age)</text>
+<text x="440" y="66" fill="#15803d" font-size="18" font-weight="700">34</text>
+<text x="80" y="66" fill="#c2410c" font-size="18" font-weight="700">10</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.5" marker-end="url(#f10)"><line x1="410" y1="60" x2="346" y2="60"/><line x1="178" y1="60" x2="114" y2="60"/></g>
+<g font-family="Cairo" font-size="12.5" font-weight="700" text-anchor="middle"><text x="440" y="96" fill="#15803d">الوسيط يدخل</text><text x="80" y="96" fill="#c2410c">القيمة المُرجعة تخرج</text></g>
+</svg>
+<figcaption><b>الشكل 10.1:</b> الدالة آلة: الوسائط تدخل، والقيمة المُرجعة تخرج.</figcaption>
+</figure>
+
+<h2>10.2 الدوال تجعل الكود قابلاً لإعادة الاستخدام</h2>
+
+<p>هذه قواعد تسعير الشبّاك دالةً. وحين تُكتب مرة، يمكن استخدامها في أي مكان وبأي عدد من المرات:</p>
+
+<pre data-code="price.js" data-title="price.js"></pre>
+<pre data-out="price.js"></pre>
+
+<p>لاحظ الأسلوب: بدل سلسلة طويلة من <code>if</code>/<code>else if</code>، تُرجع كل حالة النتيجة بمجرد أن تعرفها. ويسمي المبرمجون هذا <dfn>الإرجاع المبكر</dfn> (early return). وهو يجعل المنطق سهل القراءة من الأعلى إلى الأسفل: «إن كان طفلاً صغيراً فالدخول مجاني، وانتهينا».</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: وظيفة واحدة لكل دالة</p><p>الدالة الجيدة تفعل شيئاً واحداً، واسمها يقول ما هو. فإن احتجت حرف «و» لتصفها («تحسب السعر <em>و</em>تطبع الإيصال») فقسّمها إلى دالتين. والدوال الصغيرة أسهل في القراءة والاختبار وإعادة الاستخدام والإصلاح.</p></aside>
+
+<h2>10.3 أكثر من معامل وقيم افتراضية</h2>
+
+<p>الدالة يمكن أن تأخذ عدة معاملات تفصلها فواصل، والترتيب مهم: الوسيط الأول يذهب إلى المعامل الأول. ويمكن أيضاً أن يكون للمعامل <dfn>قيمة افتراضية</dfn> تُستخدم حين لا يمرره المستدعي:</p>
+
+<pre data-code="params.js" data-title="params.js"></pre>
+<pre data-out="params.js"></pre>
+
+<h2>10.4 النطاق: أين تعيش المتغيرات</h2>
+
+<p>المتغير الذي يُنشأ داخل دالة لا يوجد إلا داخلها، ويُسمى هذا <dfn>النطاق</dfn> (scope):</p>
+
+<pre data-code="scope.js" data-title="scope.js"></pre>
+<pre data-out="scope.js"></pre>
+
+<p><code>total</code> يعيش داخل <code>withTax</code>، وخارجها لا وجود له، فتكون <code>typeof total</code> مساوية لـ <code>"undefined"</code>. أما <code>tax</code> الذي أُنشئ خارجها فيمكن قراءته داخل الدالة. والقاعدة: الكود يرى المتغيرات في كتلته وفي الكتل المحيطة بها، ولا يرى أبداً ما في الكتل التي بداخله.</p>
+
+<p>والنطاق نعمة. فمعناه أن دالتين تستطيع كل منهما أن تملك متغيراً اسمه <code>total</code> دون أن تزعج إحداهما الأخرى، تماماً كما يمكن لعائلتين أن يكون في كل منهما طفل اسمه عمر.</p>
+
+<aside class="box tip"><p class="box-title">نصيحة</p><p>أبقِ المتغيرات في أضيق نطاق ممكن. فالمتغير الذي لا يُستخدم إلا داخل دالة يجب أن يُنشأ داخلها. وكلما قلّت الأماكن التي تستطيع تغيير متغير، قلّت الأماكن التي يختبئ فيها الخطأ.</p></aside>
+
+<h2>10.5 الدوال السهمية ودوال المصفوفات</h2>
+
+<p>في JavaScript طريقة أقصر لكتابة الدوال الصغيرة، تُسمى <dfn>الدوال السهمية</dfn> (arrow functions):</p>
+
+<pre class="plain">function double(n) { return n * 2; }   // a normal function
+const double = (n) =&gt; n * 2;           // the same, as an arrow function</pre>
+
+<p>حين يكون الجسم تعبيراً واحداً، تُرجعه الدالة السهمية تلقائياً بلا <code>return</code> ولا أقواس معقوصة. وتتألق الدوال السهمية حين تعطي دالةً لدالة <em>أخرى</em>. وللمصفوفات ثلاث دوال مشهورة تفعل ذلك بالضبط:</p>
+
+<pre data-code="arrow.js" data-title="arrow.js"></pre>
+<pre data-out="arrow.js"></pre>
+
+<table>
+<thead><tr><th>الدالة</th><th>ماذا تفعل</th><th>النتيجة</th></tr></thead>
+<tbody>
+<tr><td><code>map(f)</code></td><td>تستدعي <code>f</code> على كل عنصر وتجمع النتائج</td><td>مصفوفة جديدة بالطول نفسه</td></tr>
+<tr><td><code>filter(f)</code></td><td>تُبقي العناصر التي تُرجع لها <code>f</code> القيمة <code>true</code></td><td>مصفوفة جديدة أقصر (أو مساوية)</td></tr>
+<tr><td><code>reduce(f, start)</code></td><td>تجمع كل العناصر في قيمة واحدة، مثل المجمِّع</td><td>قيمة واحدة</td></tr>
+</tbody>
+</table>
+
+<p>الدالة التي تُمرَّر إلى دالة أخرى تُسمى <dfn>دالة رد النداء</dfn> (callback). فـ <code>map</code> تستدعي دالتك مرة لكل سعر، والسعر وسيطاً. وهذه الدوال الثلاث كثيراً ما تستبدل حلقة كاملة بسطر واحد مقروء، وستراها في كل مكان في الكود الاحترافي.</p>
+
+<aside class="box warn"><p class="box-title">انتبه: 13.200000000000001؟</p><p>انظر إلى أول نتيجة لـ <code>map</code>: 12 × 1.1 أعطت <code>13.200000000000001</code> لا 13.2. هذه ليست علّة في JavaScript. فالحاسوب يحفظ الكسور بالنظام الثنائي (الفصل 1)، وكما أن 1/3 لا يُكتب بالضبط بالعشري، فإن 1.1 لا يُكتب بالضبط بالثنائي، وكل اللغات فيها هذا الأثر. وللعرض قرّب النتيجة بـ <code>price.toFixed(2)</code>، أما في المال فيحفظ المحترفون أعداداً صحيحة من أصغر وحدة، مثل القروش أو الهللات.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>ما الفرق بين المعامل والوسيط؟</li><li>ماذا تُرجع الدالة إن لم يكن فيها <code>return</code>؟</li><li>ماذا تعطي <code>[1, 2, 3].map((n) =&gt; n * 10)</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>10.6 مشروع: شبّاك من الدوال</h2>
+
+<p>لنعد بناء الشبّاك كما يفعل المحترف: من دوال صغيرة، لكل واحدة وظيفة واحدة. دالة تعرف السعر الأساسي، ودالة تطبق يوم الأعضاء، ودالة تبني سطر الإيصال من بيانات الزائر:</p>
+
+<pre data-code="kiosk.js" data-title="kiosk.js"></pre>
+<pre data-out="kiosk.js"></pre>
+
+<p>كل زائر مكتوب بالشكل <code>{ name: "سارة", age: 34, member: true }</code>، وهو <dfn>كائن</dfn> (object) يجمع عدة قيم تحت أسماء، وتقرؤها بنقطة: <code>visitor.age</code>. والكائنات موضوع الفصل القادم.</p>
+
+<p>قارن هذا بالشبّاك الطويل في الفصل 8. صار لكل قطعة اسم يشرحها، وصار تغيير أي قطعة ممكناً دون لمس غيرها. فإن غيّرت السينما أسعارها غيّرت <code>ticketPrice</code> ولا شيء غيرها. وهذه قوة الدوال الحقيقية: ليست أسطراً أقل، بل أسطراً أوضح.</p>
+
+<aside class="bit" data-mood="think"><p>لاحظ كيف تُقرأ الدالة الأخيرة كأنها جملة: «السعر الأساسي هو سعر التذكرة لهذا العمر، والسعر هو الأساسي بعد يوم الأعضاء». الأسماء الجيدة تجعل الكود يشرح نفسه. وأنا أقول دائماً: الكود يُقرأ أكثر بكثير مما يُكتب.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>نسيان القوسين: <code>greet</code> بدل <code>greet()</code></td><td>تحصل على الدالة نفسها لا نتيجتها</td><td>استدعِ بـ <code>()</code></td></tr>
+<tr><td>نسيان <code>return</code></td><td>النتيجة <code>undefined</code></td><td>أرجع القيمة التي حسبتها</td></tr>
+<tr><td>كود بعد <code>return</code></td><td>لا يُنفَّذ أبداً</td><td><code>return</code> تنهي الدالة</td></tr>
+<tr><td>الوسائط بترتيب خاطئ</td><td>نتائج خاطئة، كثيراً بلا رسالة خطأ</td><td>راجع ترتيب المعاملات</td></tr>
+<tr><td>استخدام متغير خارج نطاقه</td><td><code>ReferenceError: … is not defined</code></td><td>أرجع القيمة بدلاً من ذلك</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>الدالة</strong> كود له اسم ويُعاد استخدامه. عرّفها بـ <code>function name(params) { … }</code> واستدعها بـ <code>name(args)</code>.</li>
+<li><strong>المعاملات</strong> هي المدخلات، و<strong>الوسائط</strong> القيم الممررة، ويمكن أن يكون للمعاملات <strong>قيم افتراضية</strong>.</li>
+<li><code>return</code> ترسل قيمة إلى المستدعي وتنهي الدالة.</li>
+<li>المتغيرات تعيش في <strong>نطاقها</strong>: ما داخل الدالة لا يُرى خارجها.</li>
+<li><strong>الدوال السهمية</strong> (<code>(n) =&gt; n * 2</code>) صيغة قصيرة، ومثالية <strong>دوالَّ رد نداء</strong>.</li>
+<li><code>map</code> و<code>filter</code> و<code>reduce</code> تحوّل المصفوفات وتختار منها وتجمعها.</li>
+<li>اكتب دوالاً صغيرة لكل منها وظيفة واحدة واسم واضح.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. المعامل هو الاسم في تعريف الدالة، والوسيط القيمة الفعلية الممررة عند استدعائها. 2. <code>undefined</code>. 3. <code>[10, 20, 30]</code>.</p>
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب <code>isEven(n)</code> التي تُرجع <code>true</code> أو <code>false</code>، واختبرها بـ 4 و7 و0.</li>
+<li><span class="level">سهل</span> اكتب <code>celsiusToFahrenheit(c)</code> بالمعادلة <code>c * 9 / 5 + 32</code>. كم تساوي 37 درجة مئوية بالفهرنهايت؟</li>
+<li><span class="level">متوسط</span> اكتب <code>maxOf(numbers)</code> التي تُرجع أكبر رقم في مصفوفة بخوارزمية الفصل 2. ثم ابحث في MDN عن الطريقة الجاهزة بـ <code>Math.max</code>.</li>
+<li><span class="level">متوسط</span> مع مصفوفة أسعار، استخدم <code>filter</code> و<code>map</code> لتحصل على الأسعار التي تزيد على 10 بعد خصم 20%، مقربة بـ <code>toFixed(2)</code>.</li>
+<li><span class="level">تحدٍّ</span> أضف إلى الشبّاك دالة <code>applyNightShow(price, hour)</code> (أرخص بواحد من الساعة 22:00، ولا يقل السعر عن 0)، وأعط كل زائر <code>hour</code>، واستخدم الدالة الجديدة في <code>receiptLine</code>.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 11</p>
+<p>قابلت أول كائناتك في مشروع الشبّاك. وفي الفصل القادم ستتعلم كيف تصف الكائنات الأشياء الحقيقية، من زائر إلى منتج إلى سلة تسوق كاملة، وكيف تتيح JSON للبرامج تبادلها عبر الإنترنت.</p>
+</div>
+</section>

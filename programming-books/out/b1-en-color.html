@@ -25,6 +25,8 @@
 @page ch08:first { @top-center { content: none; } }
 @page ch09 { @top-center { content: "Chapter 9: Loops and Arrays"; } }
 @page ch09:first { @top-center { content: none; } }
+@page ch10 { @top-center { content: "Chapter 10: Functions"; } }
+@page ch10:first { @top-center { content: none; } }
 
 .cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
   background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
@@ -3217,6 +3219,305 @@ Total: 42</pre></div>
 <div class="next">
 <p class="next-title">Coming up in Chapter 10</p>
 <p>The pricing rules now sit inside a loop, and the program is getting longer. In the next chapter you will learn functions: how to give a piece of code a name, reuse it anywhere, and build programs from small, clear parts.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch10" data-chapter="10" data-code="b1/ch10/en">
+<div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">Chapter 10</p><h1>Functions</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>package a piece of code as a named, reusable function</li>
+<li>pass information in with parameters and get results out with <code>return</code></li>
+<li>understand where variables live: scope</li>
+<li>write short arrow functions and use them with <code>map</code>, <code>filter</code> and <code>reduce</code></li>
+<li>rebuild the ticket kiosk from small, clear functions</li>
+</ul>
+</div>
+
+<p class="lead">You have already used many functions without writing one: <code>console.log</code>, <code>push</code>, <code>join</code>. Someone wrote them once, gave them names, and now millions of programmers use them every day. In this chapter you will write your own. Functions are how programmers turn a long, tangled program into small pieces that each do one job well.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Think of a function as a little machine. You put something in (like an age), it does its work, and something comes out (like a price). You build the machine once and use it as often as you like, without thinking about its insides again.</p></div></div>
+
+<h2><span class="sec">10.1</span><span>Your first function</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">greet.js</div><pre class="code"><span class="k">function</span> greet(name) {
+  <span class="k">return</span> <span class="s">`Hello, ${name}!`</span>;
+}
+
+<span class="k">const</span> message = greet(<span class="s">&quot;Sara&quot;</span>);
+console.log(message);
+console.log(greet(<span class="s">&quot;Omar&quot;</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Hello, Sara!
+Hello, Omar!</pre></div>
+
+<p>A function has three parts:</p>
+<ul>
+<li>The <strong>name</strong>, <code>greet</code>, which you use to call it. Function names are usually verbs, because functions <em>do</em> things.</li>
+<li>The <dfn>parameters</dfn> in brackets, here <code>name</code>: the inputs. Inside the function, a parameter works like a variable.</li>
+<li>The <strong>body</strong> in curly brackets: the code that runs each time the function is called.</li>
+</ul>
+
+<p>Defining a function does nothing on its own. The code runs only when you <dfn>call</dfn> the function, by writing its name followed by brackets: <code>greet("Sara")</code>. The value you pass, <code>"Sara"</code>, is called an <dfn>argument</dfn>. Inside the function, <code>name</code> becomes <code>"Sara"</code>.</p>
+
+<h3>Returning a value</h3>
+
+<p>The word <code>return</code> sends a value back to whoever called the function, and ends the function immediately. That is why <code>const message = greet("Sara")</code> works: the call is replaced by the returned value. A function without <code>return</code> gives back <code>undefined</code>.</p>
+
+<figure>
+<svg viewBox="0 0 520 120" role="img" aria-label="An argument goes into a function and a return value comes out">
+<defs><marker id="f10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4338ca"/></marker></defs>
+<rect x="180" y="20" width="160" height="80" rx="16" fill="#4338ca"/>
+<g font-family="JetBrains Mono" text-anchor="middle">
+<text x="260" y="55" fill="#fff" font-size="16" font-weight="700">ticketPrice</text>
+<text x="260" y="78" fill="#c7d2fe" font-size="12">(age)</text>
+<text x="80" y="66" fill="#15803d" font-size="18" font-weight="700">34</text>
+<text x="440" y="66" fill="#c2410c" font-size="18" font-weight="700">10</text>
+</g>
+<g stroke="#4338ca" stroke-width="2.5" marker-end="url(#f10)"><line x1="110" y1="60" x2="174" y2="60"/><line x1="342" y1="60" x2="406" y2="60"/></g>
+<g font-family="Inter" font-size="12" font-weight="700" text-anchor="middle"><text x="80" y="95" fill="#15803d">argument in</text><text x="440" y="95" fill="#c2410c">return value out</text></g>
+</svg>
+<figcaption><b>Figure 10.1:</b> A function is a machine: arguments go in, a return value comes out.</figcaption>
+</figure>
+
+<h2><span class="sec">10.2</span><span>Functions make code reusable</span></h2>
+
+<p>Here are the kiosk’s pricing rules as a function. Once written, it can be used anywhere, as often as you like:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">price.js</div><pre class="code"><span class="k">function</span> ticketPrice(age) {
+  <span class="k">if</span> (age &lt; <span class="n">4</span>) {
+    <span class="k">return</span> <span class="n">0</span>;
+  }
+  <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) {
+    <span class="k">return</span> <span class="n">6</span>;
+  }
+  <span class="k">return</span> <span class="n">10</span>;
+}
+
+console.log(ticketPrice(<span class="n">2</span>));
+console.log(ticketPrice(<span class="n">9</span>));
+console.log(ticketPrice(<span class="n">34</span>));
+console.log(ticketPrice(<span class="n">70</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>0
+6
+10
+6</pre></div>
+
+<p>Notice the style: instead of one long <code>if</code>/<code>else if</code> chain, each case <code>return</code>s as soon as it knows the answer. Programmers call these <dfn>early returns</dfn>. They make the logic easy to read from top to bottom: “if it’s a small child, it’s free; done.”</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: one job per function</p><p>A good function does one thing, and its name says what. If you need the word “and” to describe it (“calculate the price <em>and</em> print the receipt”), split it into two functions. Small functions are easier to read, test, reuse and fix.</p></aside>
+
+<h2><span class="sec">10.3</span><span>Several parameters and default values</span></h2>
+
+<p>A function can take several parameters, separated by commas. The order matters: the first argument goes to the first parameter. A parameter can also have a <dfn>default value</dfn>, used when the caller leaves it out:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">params.js</div><pre class="code"><span class="k">function</span> area(width, height) {
+  <span class="k">return</span> width * height;
+}
+
+<span class="k">function</span> welcome(name, language = <span class="s">&quot;en&quot;</span>) {
+  <span class="k">if</span> (language === <span class="s">&quot;ar&quot;</span>) {
+    <span class="k">return</span> <span class="s">`مرحباً يا ${name}`</span>;
+  }
+  <span class="k">return</span> <span class="s">`Welcome, ${name}`</span>;
+}
+
+console.log(area(<span class="n">4</span>, <span class="n">5</span>));
+console.log(welcome(<span class="s">&quot;Lina&quot;</span>));
+console.log(welcome(<span class="s">&quot;Lina&quot;</span>, <span class="s">&quot;ar&quot;</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>20
+Welcome, Lina
+مرحباً يا Lina</pre></div>
+
+<h2><span class="sec">10.4</span><span>Scope: where variables live</span></h2>
+
+<p>A variable created inside a function exists only inside that function. This is called <dfn>scope</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">scope.js</div><pre class="code"><span class="k">const</span> tax = <span class="n">0.14</span>;
+
+<span class="k">function</span> withTax(price) {
+  <span class="k">const</span> total = price + price * tax;
+  <span class="k">return</span> total;
+}
+
+console.log(withTax(<span class="n">100</span>));
+console.log(<span class="k">typeof</span> total);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>114
+undefined</pre></div>
+
+<p><code>total</code> lives inside <code>withTax</code>; outside, it does not exist, so <code>typeof total</code> is <code>"undefined"</code>. But <code>tax</code>, created outside, can be read inside the function. The rule: code can see variables in its own block and in the blocks around it, never in the blocks inside it.</p>
+
+<p>Scope is a gift. It means two functions can each have their own variable called <code>total</code> without disturbing each other, just as two families can each have a child called Omar.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Keep variables in the smallest scope that works. A variable used only inside a function should be created inside it. The fewer places that can change a variable, the fewer places a bug can hide.</p></aside>
+
+<h2><span class="sec">10.5</span><span>Arrow functions and array methods</span></h2>
+
+<p>JavaScript has a shorter way to write small functions, called <dfn>arrow functions</dfn>:</p>
+
+<pre class="plain">function double(n) { return n * 2; }   // a normal function
+const double = (n) =&gt; n * 2;           // the same, as an arrow function</pre>
+
+<p>When the body is a single expression, the arrow function returns it automatically, without <code>return</code> or curly brackets. Arrow functions shine when you give a function to <em>another</em> function. Arrays have three famous methods that do exactly that:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">arrow.js</div><pre class="code"><span class="k">const</span> double = (n) =&gt; n * <span class="n">2</span>;
+console.log(double(<span class="n">21</span>));
+
+<span class="k">const</span> prices = [<span class="n">12</span>, <span class="n">5</span>, <span class="n">30</span>, <span class="n">8</span>];
+
+<span class="k">const</span> withVat = prices.map((p) =&gt; p * <span class="n">1.1</span>);
+console.log(withVat);
+
+<span class="k">const</span> cheap = prices.filter((p) =&gt; p &lt; <span class="n">10</span>);
+console.log(cheap);
+
+<span class="k">const</span> total = prices.reduce((sum, p) =&gt; sum + p, <span class="n">0</span>);
+console.log(total);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>42
+[ 13.200000000000001, 5.5, 33, 8.8 ]
+[ 5, 8 ]
+55</pre></div>
+
+<table>
+<thead><tr><th>Method</th><th>What it does</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td><code>map(f)</code></td><td>Calls <code>f</code> on every item and collects the results</td><td>A new array, same length</td></tr>
+<tr><td><code>filter(f)</code></td><td>Keeps the items for which <code>f</code> returns <code>true</code></td><td>A new, shorter (or equal) array</td></tr>
+<tr><td><code>reduce(f, start)</code></td><td>Combines all items into one value, like an accumulator</td><td>One value</td></tr>
+</tbody>
+</table>
+
+<p>A function passed to another function is called a <dfn>callback</dfn>. <code>map</code> calls your callback once for each price, with the price as the argument. These three methods often replace a whole loop with one readable line, and you will see them everywhere in professional code.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: 13.200000000000001?</p><p>Look at the first result of <code>map</code>: 12 × 1.1 gave <code>13.200000000000001</code>, not 13.2. This is not a JavaScript bug. Computers store decimals in binary (Chapter 1), and just as 1/3 cannot be written exactly in decimal, 1.1 cannot be written exactly in binary. Every language has this effect. For display, round with <code>price.toFixed(2)</code>; for money, professionals store whole numbers of the smallest unit, such as cents or piastres.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What is the difference between a parameter and an argument?</li><li>What does a function return if it has no <code>return</code>?</li><li>What does <code>[1, 2, 3].map((n) =&gt; n * 10)</code> give?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">10.6</span><span>Project: a kiosk made of functions</span></h2>
+
+<p>Let us rebuild the kiosk the way a professional would: from small functions, each with one job. One function knows the base price, one applies the members’ day, and one builds a receipt line from a visitor:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c">// Small functions, each with one job</span>
+<span class="k">function</span> ticketPrice(age) {
+  <span class="k">if</span> (age &lt; <span class="n">4</span>) <span class="k">return</span> <span class="n">0</span>;
+  <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) <span class="k">return</span> <span class="n">6</span>;
+  <span class="k">return</span> <span class="n">10</span>;
+}
+
+<span class="k">function</span> applyMemberDay(price, isMember, day) {
+  <span class="k">if</span> (isMember &amp;&amp; day === <span class="s">&quot;Tuesday&quot;</span>) {
+    <span class="k">return</span> price / <span class="n">2</span>;
+  }
+  <span class="k">return</span> price;
+}
+
+<span class="k">function</span> receiptLine(visitor) {
+  <span class="k">const</span> base = ticketPrice(visitor.age);
+  <span class="k">const</span> price = applyMemberDay(base, visitor.member, <span class="s">&quot;Tuesday&quot;</span>);
+  <span class="k">return</span> <span class="s">`${visitor.name}: ${price}`</span>;
+}
+
+<span class="c">// Each visitor is an object; you will learn objects in Chapter 11.</span>
+<span class="k">const</span> visitors = [
+  { name: <span class="s">&quot;Sara&quot;</span>, age: <span class="n">34</span>, member: <span class="k">true</span> },
+  { name: <span class="s">&quot;Adam&quot;</span>, age: <span class="n">9</span>, member: <span class="k">false</span> },
+  { name: <span class="s">&quot;Huda&quot;</span>, age: <span class="n">70</span>, member: <span class="k">true</span> },
+];
+
+<span class="k">for</span> (<span class="k">const</span> visitor <span class="k">of</span> visitors) {
+  console.log(receiptLine(visitor));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Sara: 5
+Adam: 6
+Huda: 3</pre></div>
+
+<p>Each visitor is written as <code>{ name: "Sara", age: 34, member: true }</code>, an <dfn>object</dfn> that groups several values under names. You read them with a dot: <code>visitor.age</code>. Objects are the subject of the next chapter.</p>
+
+<p>Compare this with the long kiosk in Chapter 8. Each piece now has a name that explains it, and each piece can be changed without touching the others. If the cinema changes its prices, you change <code>ticketPrice</code> and nothing else. That is the real power of functions: not fewer lines, but clearer ones.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Notice how the last function reads almost like a sentence: “the base price is the ticket price for this age; the price is the base after the members’ day.” Good names make code explain itself. I always say: code is read far more often than it is written.</p></div></div>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting the brackets: <code>greet</code> instead of <code>greet()</code></td><td>You get the function itself, not its result</td><td>Call with <code>()</code></td></tr>
+<tr><td>Forgetting <code>return</code></td><td>The result is <code>undefined</code></td><td>Return the value you computed</td></tr>
+<tr><td>Code after <code>return</code></td><td>It never runs</td><td><code>return</code> ends the function</td></tr>
+<tr><td>Arguments in the wrong order</td><td>Wrong results, often without an error</td><td>Check the order of the parameters</td></tr>
+<tr><td>Using a variable outside its scope</td><td><code>ReferenceError: … is not defined</code></td><td>Return the value instead</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A <strong>function</strong> is named, reusable code. Define it with <code>function name(params) { … }</code> and call it with <code>name(args)</code>.</li>
+<li><strong>Parameters</strong> are the inputs; <strong>arguments</strong> are the values passed in. Parameters can have <strong>default values</strong>.</li>
+<li><code>return</code> sends a value back and ends the function.</li>
+<li>Variables live in their <strong>scope</strong>: inside a function, they are invisible outside it.</li>
+<li><strong>Arrow functions</strong> (<code>(n) =&gt; n * 2</code>) are a short form, perfect as <strong>callbacks</strong>.</li>
+<li><code>map</code>, <code>filter</code> and <code>reduce</code> transform, select and combine arrays.</li>
+<li>Write small functions with one job and clear names.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. A parameter is the name in the function’s definition; an argument is the actual value passed when calling it. 2. <code>undefined</code>. 3. <code>[10, 20, 30]</code>.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write <code>isEven(n)</code> that returns <code>true</code> or <code>false</code>. Test it with 4, 7 and 0.</li>
+<li><span class="level">Easy</span> Write <code>celsiusToFahrenheit(c)</code>, using <code>c * 9 / 5 + 32</code>. What is 37 °C in Fahrenheit?</li>
+<li><span class="level medium">Medium</span> Write <code>maxOf(numbers)</code> that returns the largest number in an array, using the algorithm from Chapter 2. Then find the built-in way with <code>Math.max</code> on MDN.</li>
+<li><span class="level medium">Medium</span> Given an array of prices, use <code>filter</code> and <code>map</code> to get the prices over 10 with a 20% discount applied, rounded with <code>toFixed(2)</code>.</li>
+<li><span class="level hard">Challenge</span> Add a function <code>applyNightShow(price, hour)</code> to the kiosk (1 cheaper from 22:00, never below 0), give each visitor an <code>hour</code>, and use the new function in <code>receiptLine</code>.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 11</p>
+<p>You met your first objects in the kiosk project. In the next chapter you will learn how objects describe real things, from a visitor to a product to a whole shopping cart, and how JSON lets programs exchange them across the internet.</p>
 </div>
 </section>
 </body></html>
