@@ -81,6 +81,12 @@ export function unityMinute(t: Tick, startAt: number | null | undefined, now: nu
   return JSON.stringify(into > 0.05 ? { ...t, into: Math.round(into * 1000) / 1000 } : t)
 }
 
+/** [X113] Bridge.OnClock's message: the page's minute, how far into it (s), and how fast its time runs (0 stopped). */
+export function unityClock(tick: number, t: number, rate: number): string {
+  const r = Number.isFinite(rate) ? Math.max(0, Math.min(8, rate)) : 1
+  return `${tick},${Math.max(0, t).toFixed(3)},${r}`
+}
+
 /** What UnityScene exposes: it plays and skips with the cartoon. */
 export type UnityPitch = { play: (t: Tick, startAt?: number | null) => void; skip: () => void }
 

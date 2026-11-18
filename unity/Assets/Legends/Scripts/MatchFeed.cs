@@ -106,6 +106,8 @@ namespace Legends
         public Shots.MinutePlan.Story Story = new Shots.MinutePlan.Story();
         /// <summary>[Sprint 07 U6] The minute's events as the server sent them (README appendix A): who does what (PlayerMotion).</summary>
         public readonly List<Dictionary<string, object>> Events = new List<Dictionary<string, object>>();
+        /// <summary>[X113] The home side's players this minute (its teams), to tell team-mates apart (a card's swarm).</summary>
+        public readonly HashSet<string> HomeIds = new HashSet<string>();
 
         public static MatchMinute From(object json, int tickMs)
         {
@@ -141,6 +143,11 @@ namespace Legends
                     Goal = story.TryGetValue("goal", out var g) && g is bool goal && goal,
                     Data = MiniJson.Obj(story, "data") ?? new Dictionary<string, object>(),
                 };
+            foreach (var p in MiniJson.Arr(MiniJson.Obj(MiniJson.Obj(json, "teams"), "home"), "players") ?? new List<object>())
+            {
+                string id = MiniJson.Str(p, "id", null);
+                if (id != null) m.HomeIds.Add(id);
+            }
             foreach (var ev in MiniJson.Arr(json, "events") ?? new List<object>())
                 if (ev is Dictionary<string, object> e) m.Events.Add(e);
             foreach (var fr in MiniJson.Arr(json, "frames") ?? new List<object>())

@@ -65,6 +65,37 @@ namespace Legends.Tests
         [UnityTest]
         public IEnumerator SecondHalfMinuteIsMirrored() => Follow(60);
 
+        /// <summary>
+        /// [X113] The web page's way: the minute played now (OnPlay), then the page's clock (OnClock) a few times a second.
+        /// The scene keeps to the page's second, runs at its speed (x2) and stands still when it stops (0).
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheSceneKeepsToThePagesClock()
+        {
+            Time.timeScale = 1f;
+            var tick = ticks[19];
+            int no = (int)MiniJson.Int(tick, "tick");
+            bridge.OnPlay(Write(tick));
+            yield return null;
+            Assert.NotNull(scene.Current, "the page's minute is on");
+            bridge.OnClock(no + ",2.500,1");
+            yield return null;
+            Assert.AreEqual(2.5, scene.Elapsed, 0.2, "jumped to the page's second");
+            bridge.OnClock(no + ",2.600,2");
+            Assert.AreEqual(2f, Time.timeScale, 1e-6f, "the page's x2");
+            bridge.OnClock(no + ",2.700,0");
+            Assert.AreEqual(0f, Time.timeScale, 1e-6f, "the page stopped");
+            yield return null;   // the page's second taken
+            double held = scene.Elapsed;
+            yield return null;
+            yield return null;
+            Assert.AreEqual(held, scene.Elapsed, 1e-6, "still while the page is still");
+            bridge.OnClock((no + 5) + ",1.000,1");
+            Assert.AreEqual(no, scene.Current.Tick, "a minute it was not given is left alone");
+            bridge.OnClock("nonsense");
+            Time.timeScale = 4f;
+        }
+
         [UnityTest]
         public IEnumerator TheMinutesPlayInOrder()
         {

@@ -31,6 +31,23 @@ namespace Legends
             scene.PlayNow(MatchMinute.From(MiniJson.Parse(json), scene.Setup != null ? scene.Setup.TickMs : 3000));
         }
 
+        /// <summary>
+        /// [X113] The page's clock, several times a second: "tick,seconds,rate" (the minute on its screen, how far into it,
+        /// and how fast its time runs: its speed, 0 paused). The scene keeps to it: the same second as the page's
+        /// commentary and score at every speed, and still when the page stops.
+        /// </summary>
+        public void OnClock(string clock)
+        {
+            var parts = clock.Split(',');
+            if (parts.Length < 3) return;
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            if (!int.TryParse(parts[0], System.Globalization.NumberStyles.Integer, inv, out int tick)) return;
+            if (!double.TryParse(parts[1], System.Globalization.NumberStyles.Float, inv, out double seconds)) return;
+            if (!float.TryParse(parts[2], System.Globalization.NumberStyles.Float, inv, out float rate)) return;
+            Time.timeScale = MatchScene.ClockRate(rate);
+            scene.Sync(tick, seconds);
+        }
+
         /// <summary>[Sprint 11 W3] The page skipped to the result: the scene stops where it is.</summary>
         public void OnSkip(string _) => scene.Skip();
 

@@ -37,6 +37,9 @@
       >
         {{ $t('المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.') }}
       </p>
+      <p v-if="unityOn && !unityReady && !unityFailed" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">
+        {{ $t('نجهّز الملعب ثلاثي الأبعاد ({v0}٪)، والمباراة مستمرة بالكرتوني حتى يجهز', { v0: Math.round(unityProgress * 100) }) }}
+      </p>
       <p v-if="unityFailed" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">
         {{ $t('لم يعمل المشهد ثلاثي الأبعاد على هذا الجهاز، فتكمل المباراة بالمحاكي الكرتوني بنفس التوقيت.') }}
       </p>
@@ -44,8 +47,23 @@
 
     <div v-if="view" class="match-stage">
       <section class="relative size-full overflow-hidden bg-bg-deep" :aria-label="$t('المباراة')">
+        <!-- [Sprint 11 W3, X113] The coach's «ثلاثي الأبعاد»: the Unity scene is the picture, under the feed, which keeps the
+             time, the captions, the score and the commentary over it (scene3d). Until it is ready, the cartoon. -->
+        <UnityScene
+          v-if="unityOn"
+          ref="unity"
+          :build="viewing.unityBuild.value ?? ''"
+          :setup="unitySetup(view, teams, theme === 'light' ? 'day' : 'night')"
+          :tier="tier"
+          :clock="() => feed?.now?.() ?? null"
+          :rate="live ? 1 : P.playing.value ? speed : 0"
+          @progress="(p: number) => (unityProgress = p)"
+          @ready="unityReady = true"
+          @failed="unityFailed = true"
+        />
         <MatchFeed
           ref="feed"
+          :scene3d="unityOn && unityReady"
           :kits="feedKits"
           :clubs="clubs"
           :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }"
@@ -69,15 +87,6 @@
           @say="(line: any) => audio.voice.say(line)"
           @near="(c: any) => audio.sound.near(c)"
           @intro-done="P.endIntro"
-        />
-        <!-- [Sprint 11 W3] The coach's «المطوّر»: the Unity scene over the cartoon, which keeps the time under it. -->
-        <UnityScene
-          v-if="unityOn"
-          ref="unity"
-          :build="viewing.unityBuild.value ?? ''"
-          :setup="unitySetup(view, teams, theme === 'light' ? 'day' : 'night')"
-          :tier="tier"
-          @failed="unityFailed = true"
         />
         <EmergencySub
           v-if="L.injuredId.value && live && league && !finished"
@@ -297,11 +306,14 @@ const league = !!props.league
 
 const pitch = ref<Pitch>()
 // [Sprint 11 W3] The page's pitch plays every minute on the cartoon (the timing) and on the Unity scene when it is on.
-const feed = ref<Pitch>()
+const feed = ref<Pitch & { now?: () => { tick: number; t: number } | null }>()
 const unity = ref<UnityPitch>()
 watch(feed, (f) => (pitch.value = f ? withUnity(f, () => unity.value) : undefined))
 // [Sprint 11 W4] A scene that fails on this device stays off for the match: the cartoon is already playing under it.
 const unityFailed = ref(false)
+// [X113] Shown once loaded (the cartoon until then), and how far the load is.
+const unityReady = ref(false)
+const unityProgress = ref(0)
 const audio = useMatchAudio()
 const replay = useReplay()
 const clock = useMatchClock()
@@ -326,6 +338,16 @@ const {
   minuteText,
 } = P
 const unityOn = computed(() => !!view.value && viewing.playing.value === 'unity' && !!viewing.unityBuild.value && !unityFailed.value)
+// [X113] Switched off, the scene goes (its load and its readiness with it); chosen again, it may try again.
+watch(unityOn, (on) => {
+  if (on) return
+  unityReady.value = false
+  unityProgress.value = 0
+})
+watch(
+  () => viewing.chosenView.value,
+  (v) => v === 'unity' && (unityFailed.value = false),
+)
 
 // Who this screen coaches: live, only the seat this device holds (the server checks every order); else the side set
 // to «me» (or the one chosen when both are).

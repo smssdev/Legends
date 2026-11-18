@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { canRunUnity, unityFiles, unityMinute, unityQuality, unitySetup, withUnity } from './bridge'
+import { canRunUnity, unityClock, unityFiles, unityMinute, unityQuality, unitySetup, withUnity } from './bridge'
 import type { Tick } from '../../api/sim'
 
 const view = {
@@ -61,6 +61,13 @@ describe('the Unity bridge', () => {
     expect(JSON.parse(unityMinute(t, null, 5000))).toEqual({ tick: 7 })
     expect(JSON.parse(unityMinute(t, 1000, 3500))).toEqual({ tick: 7, into: 2.5 })
     expect(JSON.parse(unityMinute(t, 5000, 5010))).toEqual({ tick: 7 })
+  })
+
+  it('tells the scene the page clock: the minute, the second, the speed', () => {
+    expect(unityClock(12, 3.14159, 2)).toBe('12,3.142,2')
+    expect(unityClock(1, -1, 0)).toBe('1,0.000,0')
+    expect(unityClock(1, 0, 20)).toBe('1,0.000,8')
+    expect(unityClock(1, 0, Number.NaN)).toBe('1,0.000,1')
   })
 
   it('plays every minute on the cartoon, and on Unity when it is on', () => {

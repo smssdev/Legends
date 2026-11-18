@@ -1087,3 +1087,42 @@
     display: none;
   }
 }
+
+/* [X113] The owner's (2026-11-18): Unity plays the shots only, as the cartoon's clips. Between the moments the feed is
+   the cartoon's own, the studio and its two commentators; at a moment (.scene: the clip, the cutaways, the replay) the
+   picture is the Unity scene under the feed: no sky, no studio, no clip box, while the score, the caption with the event
+   and the player, the replay tag, the scorer's burst and the commentator's bar stay over it, the caption at its foot. */
+.mc.s3d.scene {
+  background: transparent;
+}
+.mc.s3d.scene .atmo,
+.mc.s3d.scene .clockface,
+.mc.s3d.scene .tl,
+.mc.s3d.scene .moment::before,
+.mc.s3d .stage {
+  display: none;
+}
+.mc.s3d .moment {
+  place-items: end stretch;
+  padding: 0 10px 74px;
+}
+.mc.s3d .mbox {
+  width: auto;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+.mc.s3d .lower {
+  border-radius: 12px;
+}
+.mc.s3d .replay {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+.mc.s3d .party {
+  inset: auto 0 100% 0;
+  aspect-ratio: auto;
+  height: 55cqh;
+}

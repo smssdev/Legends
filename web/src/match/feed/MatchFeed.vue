@@ -2,7 +2,7 @@
   <div
     ref="host"
     class="mc theme-night"
-    :class="{ smooth, scene: sceneOn, day: theme === 'light' }"
+    :class="{ smooth, scene: sceneOn, day: theme === 'light', s3d: scene3d }"
     dir="rtl"
     :style="{ '--H': kits.home.kit, '--A': kits.away.kit }"
   >
@@ -197,6 +197,12 @@ const props = defineProps<{
   intro: boolean
   live: boolean
   countdown: number
+  /**
+   * [X113] The Unity scene plays the shots (the owner's, 2026-11-18): at a moment the feed is see-through over it and
+   * draws no clip (their timing, cues, commentary, sounds and captions go on as ever); between moments it is the
+   * cartoon's studio with its two commentators, as without it.
+   */
+  scene3d?: boolean
 }>()
 const emit = defineEmits<{
   cue: [name: string]
@@ -335,7 +341,12 @@ let raf = 0,
   keySeq = 0,
   drawn = 0
 const story = (tick: Tick) => told(tick.story, { players: players.value, clubs: props.clubs })
-const build = (s: Story) => SCENES[s.scene!]({ ...s.data, side: s.side })
+// [X113] With the Unity scene under the feed a clip is only its timing: an empty picture, nothing to draw.
+const blank = (): Scene => ({
+  svg: document.createElementNS('http://www.w3.org/2000/svg', 'svg') as unknown as Scene['svg'],
+  update: () => {},
+})
+const build = (s: Story) => (props.scene3d ? blank() : SCENES[s.scene!]({ ...s.data, side: s.side }))
 // startAt (live): when the minute starts on performance.now(). The scene follows that clock
 // instead of counting frames, so two screens stay on the same instant even if one is slow.
 function play(tick: Tick, startAt: number | null = null) {
@@ -392,7 +403,7 @@ function play(tick: Tick, startAt: number | null = null) {
       () => {
         if (plan !== p || p.built[i]) return
         try {
-          p.built[i] = SCENES[c.name](c.data as never)
+          p.built[i] = props.scene3d ? blank() : SCENES[c.name](c.data as never)
           p.built[i].update(0)
           stash(p.built[i].svg)
         } catch (e) {
@@ -503,7 +514,11 @@ function prepare(tick: Tick) {
     }
   }, 800)
 }
-defineExpose({ play, skip, react, prepare })
+/** [X113] Where the feed is: the minute on screen and how far into it (s), for the Unity scene to keep to; none between minutes. */
+function now(): { tick: number; t: number } | null {
+  return plan ? { tick: plan.tick.tick, t } : null
+}
+defineExpose({ play, skip, react, prepare, now })
 
 // [X41] A hidden page gets no animation frames, but the broadcast plays on (the commentator and the crowd): a timer
 // steps the minute instead, so its lines and sounds still come on time. Browsers let a page that plays sound run.
@@ -583,7 +598,7 @@ function step(now: number) {
       fire('cut' + n, () => {
         party.value = null
         try {
-          cutScene = p.built[n] ?? SCENES[c.name](c.data as never)
+          cutScene = p.built[n] ?? (props.scene3d ? blank() : SCENES[c.name](c.data as never))
           cutScene.update(0)
           showSvg(cutScene.svg)
           sceneOn.value = true

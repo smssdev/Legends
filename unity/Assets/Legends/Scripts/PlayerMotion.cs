@@ -100,6 +100,8 @@ namespace Legends
             }
             // [Sprint 09 U2] the offside trap sprung (the server's story): the assistant's flag goes up halfway through
             if (m.Story != null && (m.Story.Scene == "trap" || m.Story.Scene == "offside")) cues.Add(new Cue { Id = Assistant, Move = "assistant_flag_up", At = last / 2f });
+            // [X113] the story's dramas, as the cartoon's clips tell them
+            Dramas(m, cues);
             // one move a player at a time: a later, more telling one (a shot) replaces his pass at the same frame
             cues.Sort((a, b) => a.At.CompareTo(b.At));
             for (int i = cues.Count - 1; i > 0; i--)
@@ -195,8 +197,63 @@ namespace Legends
             // fouled as he plays the ball: the ball leaves his foot, then he goes down
             bool played = cues.Exists(c => c.Id == victim && c.OnContact && Mathf.Abs(c.At - at) < 0.75f);
             cues.Add(new Cue { Id = victim, Move = "fall", At = played ? Mathf.Min(m.Frames.Count - 1, at + 0.8f) : at, OnContact = false });
-            if (best < 25f) cues.Add(new Cue { Id = player, Move = Right(m, at, player) ? "slide_tackle" : "slide_tackle_l", At = at, OnContact = true });
+            // [X113] a dive (the story's drama, as the cartoon's foul clip): untouched, no tackle, he throws himself down
+            bool dive = m.Story != null && m.Story.Str("drama") == "dive";
+            if (best < 25f && !dive) cues.Add(new Cue { Id = player, Move = Right(m, at, player) ? "slide_tackle" : "slide_tackle_l", At = at, OnContact = true });
         }
+
+        /// <summary>
+        /// [X113] The story's dramas the cartoon's clips play, from the same fields (MomentStory's data): a card's swarm
+        /// (the booked player's nearest four team-mates protest at the referee with him), a double save (the keeper goes
+        /// down a second time, to the rebound), a slip in the rain (the player on the ball goes down). Pure, as the rest.
+        /// </summary>
+        static void Dramas(MatchMinute m, List<Cue> cues)
+        {
+            var s = m.Story;
+            if (s == null || string.IsNullOrEmpty(s.Scene) || m.Frames.Count < 2) return;
+            int last = m.Frames.Count - 1;
+            string drama = s.Str("drama");
+            if (s.Scene == "card" && drama == "swarm")
+            {
+                var card = cues.Find(c => c.Move == "ref_card");
+                var booked = cues.Find(c => c.Move == "protest");
+                if (card != null && booked != null)
+                {
+                    var f = m.Frames[Mathf.Clamp(Mathf.RoundToInt(card.At), 0, last)];
+                    if (f.Players.TryGetValue(booked.Id, out var at))
+                    {
+                        bool homeSide = booked.Id != null && IsHome(m, booked.Id);
+                        var mates = new List<(string id, float d)>();
+                        foreach (var kv in f.Players)
+                            if (kv.Key != booked.Id && IsHome(m, kv.Key) == homeSide) mates.Add((kv.Key, Vector2.Distance(kv.Value, at)));
+                        mates.Sort((a, b) => a.d.CompareTo(b.d));
+                        for (int i = 0; i < mates.Count && i < 4; i++) cues.Add(new Cue { Id = mates[i].id, Move = "protest", At = Mathf.Max(0, card.At - 0.3f * i) });
+                    }
+                }
+            }
+            if (s.Scene == "save" && drama == "double")
+            {
+                var first = cues.Find(c => c.Move == Dive);
+                if (first != null && last >= 1)
+                {
+                    // the rebound's save, 1.4 frames after the first (at the last frame at the latest); when that is too
+                    // near, the first comes earlier: the keeper is down and up again before the frames end
+                    float second = Mathf.Min(last, first.At + 1.4f);
+                    if (second - first.At < 0.8f) first.At = Mathf.Max(0f, second - 0.8f);
+                    cues.Add(new Cue { Id = first.Id, Move = Dive, At = second, OnContact = true, BallFrame = last, ShotFrame = Mathf.Clamp(Mathf.RoundToInt(first.At + 0.5f), 0, last) });
+                }
+            }
+            if (s.Scene == "slip")
+            {
+                int mid = last / 2;
+                string holder = null;
+                for (int i = mid; i >= 0 && holder == null; i--) holder = m.Frames[i].Holder;
+                if (holder != null && !cues.Exists(c => c.Id == holder && c.Move == "fall")) cues.Add(new Cue { Id = holder, Move = "fall", At = mid });
+            }
+        }
+
+        /// <summary>Whether a player is on the home side: the minute's teams when it has them, else his frame-0 half.</summary>
+        static bool IsHome(MatchMinute m, string id) => m.HomeIds == null || m.HomeIds.Count == 0 ? true : m.HomeIds.Contains(id);
 
         /// <summary>The frame a player is nearest the ball before the last (where he can strike it), and how near (dm).</summary>
         static int Nearest(MatchMinute m, string id, out float d)

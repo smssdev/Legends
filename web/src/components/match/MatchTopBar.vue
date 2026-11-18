@@ -57,6 +57,19 @@
         {{ skipping ? '...' : $t('تخطٍّ للنهاية') }}
       </button>
     </div>
+    <!-- [X113] The two views, the coach's to switch at any time: the cartoon, or the Unity scene (once it is on the server). -->
+    <div v-if="viewing.unityBuild.value" class="flex items-center gap-1" role="group" :aria-label="$t('طريقة العرض')">
+      <button
+        v-for="v in VIEWS"
+        :key="v.id"
+        type="button"
+        class="ui-choice px-3 text-sm"
+        :aria-pressed="viewing.chosenView.value === v.id"
+        @click="viewing.chosenView.value !== v.id && viewing.save({ match_view: v.id }).catch(() => {})"
+      >
+        {{ $t(v.name) }}
+      </button>
+    </div>
     <button type="button" class="match-btn" :aria-label="$t('إعدادات العرض')" :aria-expanded="settingsOpen" @click="emit('settings')">
       <Icon name="settings" :size="18" />
     </button>
@@ -69,6 +82,7 @@ import { computed } from 'vue'
 import { t } from '../../lib/i18n'
 import type { MatchPlayer } from '../../match/useMatchPlayer'
 import type { LiveMatch } from '../../match/useLiveMatch'
+import { useViewing } from '../../match/viewing'
 
 const props = defineProps<{
   player: MatchPlayer
@@ -79,6 +93,11 @@ const props = defineProps<{
   settingsOpen: boolean
 }>()
 const emit = defineEmits<{ settings: [] }>()
+const viewing = useViewing()
+const VIEWS = [
+  { id: 'cartoon', name: 'كرتوني' },
+  { id: 'unity', name: 'ثلاثي الأبعاد' },
+] as const
 const { playing, speed, finished, skipping, rerun, live: isLive } = props.player
 const { copied } = props.live
 const connected = props.live.sync.connected
