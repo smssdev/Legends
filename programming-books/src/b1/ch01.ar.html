@@ -183,6 +183,61 @@
 <li>البرمجة في معظمها فهم وتخطيط واختبار وإصلاح، والأخطاء تُسمى <strong>علل</strong> (bugs).</li>
 </ul>
 
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يأخذك خطوة بخطوة. جرّبه وحدك أولاً، وحين تتعثر اقرأ التلميح. ويجب أن تشبه نتيجتك المخرجات المعروضة، والحل الكامل في مستودع كود الكتاب.</p>
+
+<div class="project">
+<p class="project-label">مشروع 1.1 · سهل</p>
+<h3>حياتك بالأرقام</h3>
+<p class="project-goal">اكتب برنامجاً يخبرك كم شهراً ويوماً وساعة ودقيقة عشت (تقريباً).</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تشغيل JavaScript، والأرقام والعامل <code>*</code>، وطباعة أكثر من قيمة.</p>
+<ol class="steps">
+<li>أنشئ ملفاً اسمه <code>my-numbers.js</code> في مجلد <code>code-from-zero</code>، أو افتح Console المتصفح.</li>
+<li>اكتب في السطر الأول <code>const age = 20;</code> وضع عمرك مكان 20.</li>
+<li>اطبع عدد الشهور: <code>console.log("الشهور:", age * 12);</code>. ولاحظ أن <code>console.log</code> تطبع عنواناً ورقماً معاً تفصلهما فاصلة.</li>
+<li>أضف ثلاثة أسطر للأيام (<code>age * 365</code>) والساعات والدقائق، وكل سطر يضرب السطر الذي قبله في رقم آخر.</li>
+<li>شغّل البرنامج وتحقق من إجابة واحدة بالآلة الحاسبة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الساعات = الأيام × 24، والدقائق = الساعات × 60، فسطر الدقائق هو <code>age * 365 * 24 * 60</code>.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (لعمر 20 سنة):</p>
+<pre data-out="projects/my-numbers.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label">مشروع 1.2 · سهل</p>
+<h3>شفرة سرية بيونيكود</h3>
+<p class="project-goal">حوّل اسماً إلى أرقام سرية، ثم أعد الأرقام اسماً، بجدول يونيكود من القسم 1.3.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>charCodeAt</code> و<code>String.fromCharCode</code> وفكرة أن الحروف أرقام.</p>
+<ol class="steps">
+<li>اطبع رقم يونيكود لكل حرف من <code>Bit</code>: <code>"B".charCodeAt(0)</code> ثم <code>"i"</code> ثم <code>"t"</code>، في <code>console.log</code> واحدة تفصلها فواصل.</li>
+<li>والآن فكّ الشفرة: <code>String.fromCharCode(66, 105, 116)</code> يجب أن تطبع الاسم من جديد.</li>
+<li>والاسم العربي «بِت» فيه ثلاثة رموز أيضاً: حرف الباء، وعلامة الكسرة تحته، والتاء، وأرقامها 1576 و1616 و1578. فكّ شفرتها بالطريقة نفسها.</li>
+<li>أرسل لصديق «رسالة سرية» أرقاماً، واطلب منه أن يفك شفرتها في Console المتصفح.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> علامات التشكيل مثل الكسرة رموز مستقلة في يونيكود ولها أرقامها، ولهذا يحتاج الاسم العربي ثلاثة أرقام مع أنك ترى حرفين.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/secret-code.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 1.3 · متوسط</p>
+<h3>عيد ميلادك بالنظام الثنائي</h3>
+<p class="project-goal">اعرض يوم عيد الميلاد وشهره وسنته بالثنائي، وتحقق من النتيجة بإعادتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>toString(2)</code> و<code>parseInt</code> والتحقق من عملك بنفسك.</p>
+<ol class="steps">
+<li>أنشئ ثلاثة ثوابت: <code>day</code> و<code>month</code> و<code>year</code>، بتاريخ ميلاد تحبه.</li>
+<li>اطبع كلاً منها بالثنائي بـ <code>.toString(2)</code> مع عنوان.</li>
+<li>قبل التشغيل، احسب اليوم بالثنائي على الورق بجدول القسم 1.3. هل حصلت على جواب الحاسوب نفسه؟</li>
+<li>أثبت أن التحويل صحيح: أعد ثنائي السنة رقماً عادياً بـ <code>parseInt(year.toString(2), 2)</code>، ويجب أن تُطبع السنة من جديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التحقق من النتيجة بعكسها عادة يستخدمها المحترفون في كل مكان: الترميز وفكّه، والحفظ والتحميل، والإرسال والاستقبال.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا</strong> (لتاريخ 14 مارس 2008):</p>
+<pre data-out="projects/binary-birthday.js"></pre>
+</div>
+<!-- /projects -->
+
 <h2>تمارين</h2>
 
 <ol class="exercises">

@@ -53,3 +53,6 @@ figure { background: #fafafa; }
 figure.browser { border-color: #bbb; }
 .browser-bar { background: #eee; }
 .browser-bar i:nth-child(n) { background: #fff; border: 1pt solid #777; }
+.project { background: #fff; border-color: #111; }
+.project-label, .project-label.medium, .project-label.hard { background: #111; }
+.project .steps > li::before { background: #111; }

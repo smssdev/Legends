@@ -179,6 +179,80 @@ show LARGEST</div>
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. Sequence, selection and repetition. 2. Because only the largest card seen so far can matter; any smaller card can never be the answer. 3. Because throwing away half the list only works when you know the name must be in the other half, and that is true only when the list is sorted.</p>
 
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">In these projects you plan first and code second, exactly as this chapter teaches. Write your pseudocode on paper before you open the editor.</p>
+
+<div class="project">
+<p class="project-label">Project 2.1 · Easy</p>
+<h3>The cheapest product</h3>
+<p class="project-goal">A shopper wants the cheapest item in a list of prices. Plan the algorithm, test it by hand, then turn it into JavaScript.</p>
+<p class="project-skills"><strong>You will practise:</strong> decomposition, pseudocode, trace tables, and translating a plan into code.</p>
+<ol class="steps">
+<li>Write the pseudocode. Start from the largest-card algorithm in Section 2.3: what is the one word you need to change?</li>
+<li>Make a trace table for the prices 42, 18, 35, 9 and 27, with the columns “price”, “price &lt; cheapest?” and “cheapest”.</li>
+<li>Copy <code>largest.js</code> from Section 2.6 into a new file, <code>cheapest.js</code>, and change it to follow your pseudocode. Rename the variables so that they say what they mean.</li>
+<li>Run it, and compare the answer with the last line of your trace table.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> only the comparison changes: <code>&lt;</code> instead of <code>&gt;</code>. Good names, like <code>cheapest</code> instead of <code>largest</code>, make the code tell the truth.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/cheapest.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 2.2 · Medium</p>
+<h3>Guess my number</h3>
+<p class="project-goal">A friend thinks of a number from 1 to 100 and answers only “too high” or “too low”. Write the strategy that always wins in at most seven guesses, and let the computer play it.</p>
+<p class="project-skills"><strong>You will practise:</strong> binary search, keeping track of a range, and repetition.</p>
+<ol class="steps">
+<li>Play the game with a friend, on paper. Always guess the middle of the numbers that are still possible. Write down each guess.</li>
+<li>Write the strategy as pseudocode with two values, LOW and HIGH. What happens to them after “too low”? After “too high”?</li>
+<li>Type the solution below into <code>guess.js</code>. It uses a <code>while</code> loop and <code>break</code>, which you will learn properly in Chapter 9; for now, follow the shape: <em>repeat: guess the middle; if right, stop; otherwise move LOW or HIGH</em>.</li>
+<li>Change <code>secret</code> to other numbers, such as 1, 100 and 64. Does it ever need more than seven guesses?</li>
+</ol>
+<pre class="plain">const secret = 73;
+let low = 1;
+let high = 100;
+let tries = 0;
+
+while (true) {
+  const guess = Math.floor((low + high) / 2);
+  tries++;
+  if (guess === secret) {
+    console.log(`Guess ${tries}: ${guess}. Got it!`);
+    break;
+  }
+  if (guess &lt; secret) {
+    console.log(`Guess ${tries}: ${guess}, too low`);
+    low = guess + 1;
+  } else {
+    console.log(`Guess ${tries}: ${guess}, too high`);
+    high = guess - 1;
+  }
+}</pre>
+<p class="hint"><strong>Hint:</strong> <code>Math.floor</code> rounds down, so the middle of 1 and 100 is 50, not 50.5. Seven guesses are always enough because 2<sup>7</sup> = 128, which is more than 100.</p>
+<p><strong>Your result should look like this:</strong></p>
+<pre data-out="projects/guess.js"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 2.3 · Challenge</p>
+<h3>Sort three cards</h3>
+<p class="project-goal">Put three numbers in order from smallest to largest, using only comparisons and swaps, the way a sorting machine does.</p>
+<p class="project-skills"><strong>You will practise:</strong> designing an algorithm, testing every case, and thinking about correctness.</p>
+<ol class="steps">
+<li>Take three cards and sort them by hand, only ever comparing two neighbours and swapping them if they are in the wrong order. How many comparisons do you need?</li>
+<li>Write the steps as pseudocode: “if A &gt; B, swap A and B”, and so on.</li>
+<li>Test your algorithm by hand on all six possible orders of 1, 2 and 3. A correct algorithm must sort every one of them.</li>
+<li>Write it in JavaScript. A neat way to swap two variables is <code>[a, b] = [b, a];</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> compare A with B, then B with C (now the largest is at the end), then A with B again. Three comparisons are enough for three numbers.</p>
+<p><strong>Your result should look like this</strong> (for 12, 3 and 7):</p>
+<pre data-out="projects/sort-three.js"></pre>
+</div>
+<!-- /projects -->
+
 <h2>Exercises</h2>
 
 <ol class="exercises">
