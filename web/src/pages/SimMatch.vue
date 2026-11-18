@@ -75,7 +75,7 @@
           v-if="unityOn"
           ref="unity"
           :build="viewing.unityBuild.value ?? ''"
-          :setup="unitySetup(view, teams)"
+          :setup="unitySetup(view, teams, theme === 'light' ? 'day' : 'night')"
           :tier="tier"
           @failed="unityFailed = true"
         />
@@ -273,6 +273,7 @@ import GoalReplay from '../match/feed/GoalReplay.vue'
 import UnityScene from '../components/match/UnityScene.vue'
 import { unitySetup, withUnity, type UnityPitch } from '../match/unity/bridge'
 import { tier } from '../match/perf'
+import { theme } from '../lib/theme'
 import { useViewing } from '../match/viewing'
 import { useMatchAudio } from '../match/useMatchAudio'
 import { useMatchClock } from '../match/useMatchClock'

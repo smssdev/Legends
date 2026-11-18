@@ -84,6 +84,8 @@ namespace Legends
             queue.Clear();
             Current = null;
             Setup = setup;
+            // [Sprint 08 U4] the stadium lit as the setup says
+            StadiumLight.Apply(setup.Light, transform.parent);
             // [Sprint 09 U1] the broadcast's director, on every match scene
             if (GetComponent<Shots.Director>() == null) gameObject.AddComponent<Shots.Director>();
             if (bench != null) bench.Setup(setup.HomeLook, setup.AwayLook);

@@ -13,3 +13,7 @@ tools/unity/players/downloads/
 
 # [Sprint 52 B7] The Android app lives on the server (the downloads volume), never in the repository.
 web/public/downloads/
+
+# [Sprint 11] A Unity web build copied for local trials (unity/build.ps1 webgl, then web/public/unity/<build>/): the server keeps its own (deploy/vps/unity.sh)
+web/public/unity/
+backend/public/unity/

@@ -32,7 +32,8 @@ describe('the Unity bridge', () => {
       { id: 10, name: 'Sub', no: 20, pos: 'CM', line: 'MF', starter: false },
     ])
     expect(s.players.away).toEqual([])
-    expect([s.tick_ms, s.seed, s.coach_looks]).toEqual([3300, 48213, { home: 'C2', away: null }])
+    expect([s.tick_ms, s.seed, s.coach_looks, s.light]).toEqual([3300, 48213, { home: 'C2', away: null }, 'night'])
+    expect(unitySetup(view, teams, 'day').light).toBe('day')
   })
 
   it('finds the build under /unity/<build>/Build', () => {

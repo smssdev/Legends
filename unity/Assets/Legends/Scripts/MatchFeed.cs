@@ -16,6 +16,8 @@ namespace Legends
         public int TickMs = 3000;
         /// <summary>[Sprint 09 U1] The match's seed: the director's crowd and fights vary by it, as the cartoon's (MinutePlan).</summary>
         public int Seed = 1;
+        /// <summary>[Sprint 08 U4] The stadium's light: night, dusk or day (the page's, or the /scene route's by the kick-off's hour).</summary>
+        public string Light = "night";
 
         /// <summary>
         /// {clubs: {home, away}, players: {home: [...], away: [...]}, tick_ms}. The same shape the sample recording
@@ -32,6 +34,7 @@ namespace Legends
             setup.Away = ClubKit.From(MiniJson.Obj(clubs, "away"));
             setup.TickMs = (int)MiniJson.Int(json, "tick_ms", 3000);
             setup.Seed = (int)MiniJson.Int(json, "seed", 1);
+            setup.Light = MiniJson.Str(json, "light", "night");
             var looks = MiniJson.Obj(json, "coach_looks");
             setup.HomeLook = MiniJson.Str(looks, "home");
             setup.AwayLook = MiniJson.Str(looks, "away");

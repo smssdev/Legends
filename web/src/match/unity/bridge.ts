@@ -7,10 +7,14 @@ import type { MatchView, Side, TeamSnapshot, Tick } from '../../api/sim'
 import type { Pitch } from '../useMatchPlayer'
 import type { Tier } from '../perf'
 
-/** What Unity's Bridge.OnSetup reads (MatchSetup.From): the clubs, both squads, the minute's length, the seed, the coaches' looks. */
+/**
+ * What Unity's Bridge.OnSetup reads (MatchSetup.From): the clubs, both squads, the minute's length, the seed, the coaches'
+ * looks, and [Sprint 08 U4] the stadium's light, the cartoon's (Sprint 43 C7: day by the site's day look, else night).
+ */
 export function unitySetup(
   view: Pick<MatchView, 'clubs' | 'kits' | 'timing' | 'seed' | 'coach_looks'>,
   teams: Partial<Record<Side, TeamSnapshot>>,
+  light: 'day' | 'night' = 'night',
 ) {
   const club = (side: Side) => {
     const c = view.clubs[side]
@@ -32,6 +36,7 @@ export function unitySetup(
     tick_ms: view.timing.tick_ms,
     seed: view.seed,
     coach_looks: { home: view.coach_looks?.home ?? null, away: view.coach_looks?.away ?? null },
+    light,
   }
 }
 
