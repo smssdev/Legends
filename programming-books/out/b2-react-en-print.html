@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "Chapter 2: TypeScript for Real Projects"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "Chapter 3: Modules, Tooling and Build Systems"; } }
+@page ch03:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -1148,6 +1150,477 @@ typed-emitter-bad.ts(29,18): error TS2345: Argument of type &#x27;(id: string) =
 <p>Real apps are not one file. In the next chapter you will split code into modules, install packages with npm, and set up a modern project with Vite, TypeScript, a linter and a formatter: the same foundation every chapter after it builds on.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b2/tooling/en">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">Chapter 3</p><h1>Modules, Tooling and Build Systems</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>split code into ES modules with named and default exports</li>
+<li>read and manage <code>package.json</code>: dependencies, versions, the lockfile and scripts</li>
+<li>create a project with Vite, and understand the development server and the production build</li>
+<li>load rarely used code only when it is needed</li>
+<li>keep code clean and consistent with ESLint and Prettier</li>
+<li>solve a dependency conflict instead of forcing it</li>
+</ul>
+</div>
+
+<p class="lead">Until now every example was a single file. A real frontend has hundreds of files, uses dozens of packages written by other people, and must reach the browser as a few small, fast files. The tools that make this possible are called the <dfn>toolchain</dfn>. You do not need to know how they work inside, but you must know what each one does, how to read its output, and what to do when it complains. This chapter sets up the same toolchain that the rest of the book uses.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Every command in this chapter was really run while the book was made, and you see exactly what it printed, warnings and errors included. Version numbers on your screen will be newer. That is normal: read the meaning, not the numbers.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>ES modules</span></h2>
+
+<p>A <dfn>module</dfn> is a file with its own scope. Nothing inside it is visible to other files unless it is <dfn>exported</dfn>, and nothing outside is visible inside unless it is <dfn>imported</dfn>. This is the standard module system of JavaScript, called <dfn>ES modules</dfn> (ESM), and it works the same way in browsers, in Node and in every build tool.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">prices.mjs</div><pre class="code"><span class="c">// This line runs once, however many modules import this file</span>
+globalThis.priceLoads = (globalThis.priceLoads ?? <span class="n">0</span>) + <span class="n">1</span>;
+
+<span class="c">// Named exports: any number per module</span>
+<span class="k">export</span> <span class="k">const</span> VAT = <span class="n">0.14</span>;
+<span class="k">export</span> <span class="k">function</span> withVat(price) {
+  <span class="k">return</span> Math.round(price * (<span class="n">1</span> + VAT) * <span class="n">100</span>) / <span class="n">100</span>;
+}
+
+<span class="c">// One default export per module, at most</span>
+<span class="k">export</span> <span class="k">default</span> <span class="k">function</span> formatPrice(value) {
+  <span class="k">return</span> <span class="s">`${value.toFixed(2)} EGP`</span>;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">cart.mjs</div><pre class="code"><span class="k">import</span> formatPrice, { withVat } <span class="k">from</span> <span class="s">&quot;./prices.mjs&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> cartTotal(prices) {
+  <span class="k">return</span> formatPrice(withVat(prices.reduce((sum, p) =&gt; sum + p, <span class="n">0</span>)));
+}</pre></div>
+
+<ul>
+<li>A <strong>named export</strong>, <code>export const VAT</code>, is imported with the same name in braces: <code>import { withVat } from "./prices.mjs"</code>.</li>
+<li>A <strong>default export</strong> is imported without braces, under any name you choose: <code>import formatPrice from …</code>. A module has at most one.</li>
+<li>The path starts with <code>./</code> for your own files. A bare name, like <code>"vite"</code>, means a package from <code>node_modules</code>.</li>
+</ul>
+
+<p>Big folders often have an <code>index</code> file that re-exports their public parts, so other code imports from one place and the folder can reorganise its insides freely:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">index.mjs</div><pre class="code"><span class="c">// A &quot;barrel&quot;: one entry point that re-exports the public parts</span>
+<span class="k">export</span> { cartTotal } <span class="k">from</span> <span class="s">&quot;./cart.mjs&quot;</span>;
+<span class="k">export</span> { <span class="k">default</span> as formatPrice, VAT } <span class="k">from</span> <span class="s">&quot;./prices.mjs&quot;</span>;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">main.mjs</div><pre class="code"><span class="k">import</span> { cartTotal, formatPrice, VAT } <span class="k">from</span> <span class="s">&quot;./index.mjs&quot;</span>;
+<span class="k">import</span> * as prices <span class="k">from</span> <span class="s">&quot;./prices.mjs&quot;</span>;
+
+console.log(<span class="s">&quot;Imported:&quot;</span>, <span class="k">typeof</span> cartTotal, <span class="k">typeof</span> formatPrice, VAT);
+console.log(<span class="s">&quot;Cart total:&quot;</span>, cartTotal([<span class="n">25</span>, <span class="n">8</span>, <span class="n">3</span>]));
+console.log(prices.withVat(<span class="n">100</span>), prices.<span class="k">default</span>(<span class="n">9</span>));
+console.log(<span class="s">&quot;Times the price module was loaded:&quot;</span>, globalThis.priceLoads);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Imported: function function 0.14
+Cart total: 41.04 EGP
+114 9.00 EGP
+Times the price module was loaded: 1</pre></div>
+
+<p>Look at the last line. <code>prices.mjs</code> was imported by three files, but it was loaded and run only <strong>once</strong>. Every importer receives the same module object. That is why a module is a natural place for things there should be only one of: a configuration, a cache, a connection to a server.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know? <code>require</code> and <code>module.exports</code></p><p>Older Node code uses a different system, <dfn>CommonJS</dfn>: <code>const x = require("x")</code> and <code>module.exports = …</code>. You will still meet it in tutorials and old packages. For new code use ES modules everywhere: set <code>"type": "module"</code> in <code>package.json</code>, or name files <code>.mjs</code>, as in this example.</p></aside>
+
+<h2><span class="sec">3.2</span> <span>A project with Vite</span></h2>
+
+<p>Browsers can load ES modules directly, but a real app needs more: TypeScript must lose its types, hundreds of files should become a few, images need unique names so caches stay correct, and while you work, the page should update the moment you save. <strong>Vite</strong> (French for “fast”) does all of this and has become the standard starting point for React, Vue and plain TypeScript projects. Create a project with one command:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Create a project from the vanilla TypeScript template</span>
+<span class="c">$ </span><span class="k">npm create vite@latest my-shop -- --template vanilla-ts --no-interactive</span>
+create-vite v9.3.4
+Scaffolding project in ~/code/my-shop...
+<span class="c">$ </span><span class="k">cd my-shop</span>
+<span class="c"># Download the packages it needs</span>
+<span class="c">$ </span><span class="k">npm install</span>
+added 17 packages, and audited 18 packages in 5s
+<span class="c"># What the template created</span>
+<span class="c">$ </span><span class="k">find . -path ./node_modules -prune -o -type f -print | sort</span>
+./.gitignore
+./index.html
+./package-lock.json
+./package.json
+./src/format.ts
+./src/main.ts
+./src/products.ts
+./src/style.css
+./tsconfig.json</pre></div>
+
+<p>The template creates a demo page; it was replaced here by a small product list in three files, <code>products.ts</code>, <code>format.ts</code> and <code>main.ts</code>, so you can follow every line. Notice that the TypeScript files import each other with the <code>.ts</code> extension: Vite understands it, and the template’s settings allow it.</p>
+
+<h3>Reading <code>package.json</code></h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">package.json</div><pre class="code">{
+  <span class="s">&quot;name&quot;</span>: <span class="s">&quot;my-shop&quot;</span>,
+  <span class="s">&quot;private&quot;</span>: <span class="k">true</span>,
+  <span class="s">&quot;version&quot;</span>: <span class="s">&quot;0.0.0&quot;</span>,
+  <span class="s">&quot;type&quot;</span>: <span class="s">&quot;module&quot;</span>,
+  <span class="s">&quot;scripts&quot;</span>: {
+    <span class="s">&quot;dev&quot;</span>: <span class="s">&quot;vite&quot;</span>,
+    <span class="s">&quot;build&quot;</span>: <span class="s">&quot;tsc &amp;&amp; vite build&quot;</span>,
+    <span class="s">&quot;preview&quot;</span>: <span class="s">&quot;vite preview&quot;</span>
+  },
+  <span class="s">&quot;devDependencies&quot;</span>: {
+    <span class="s">&quot;typescript&quot;</span>: <span class="s">&quot;~7.0.2&quot;</span>,
+    <span class="s">&quot;vite&quot;</span>: <span class="s">&quot;^8.3.6&quot;</span>
+  }
+}</pre></div>
+
+<ul>
+<li><code>"type": "module"</code> makes every <code>.js</code> file an ES module.</li>
+<li><code>scripts</code> are named commands. <code>npm run dev</code> starts Vite’s development server; <code>npm run build</code> first checks the types with <code>tsc</code>, then builds; <code>npm run preview</code> serves the finished build.</li>
+<li><code>devDependencies</code> are tools needed to <em>build</em> the app. Libraries the app itself uses at run time go under <code>dependencies</code>; <code>npm install some-library</code> puts them there.</li>
+</ul>
+
+<p>The version numbers follow <dfn>semantic versioning</dfn>: <code>MAJOR.MINOR.PATCH</code>. A patch fixes bugs, a minor version adds features, and a major version may break your code. <code>^8.3.6</code> means “8.3.6 or any newer 8.x.x”; <code>~7.0.2</code> means “7.0.2 or any newer 7.0.x”. The exact versions that were installed are recorded in <code>package-lock.json</code>. Commit that file, and use <code>npm ci</code> on servers: it installs exactly what the lockfile says, so every computer runs the same code.</p>
+
+<h3>The development server</h3>
+
+<p><code>npm run dev</code> starts a server, usually at <code>http://localhost:5173</code>. It does not bundle anything: it sends each module to the browser as it is requested, translating TypeScript on the fly, which is why it starts in a moment even for big apps. When you save a file, it pushes the change to the open page, often without even reloading it. This is called <dfn>hot module replacement</dfn> (HMR), and it is why frontend work today feels instant.</p>
+
+<h2><span class="sec">3.3</span> <span>The production build</span></h2>
+
+<p>For real visitors, speed matters more than convenience. <code>npm run build</code> creates the <code>dist</code> folder, ready to upload to any static host:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Build the site for production</span>
+<span class="c">$ </span><span class="k">npm run build</span>
+✓ 7 modules transformed.
+dist/index.html                 0.39 kB │ gzip: 0.26 kB
+dist/assets/index-D9CP7r17.css  0.06 kB │ gzip: 0.08 kB
+dist/assets/index-D9l0HIoC.js   1.05 kB │ gzip: 0.55 kB
+✓ built in 85ms</pre></div>
+
+<ul>
+<li>All seven modules became <strong>one</strong> JavaScript file and one CSS file: fewer requests.</li>
+<li>The code is <dfn>minified</dfn>: spaces, comments and long names are removed. The “gzip” column is the size actually sent over the network, because servers compress text.</li>
+<li>Each file name contains a <dfn>hash</dfn> of its content, such as <code>index-D9l0HIoC.js</code>. When the content changes, the name changes, so browsers can keep files in their cache forever and still never show an old version.</li>
+<li>Code that nobody imports is dropped. This is called <dfn>tree shaking</dfn>, and it works best with named exports, which the tools can follow.</li>
+</ul>
+
+<h3>Loading code only when it is needed</h3>
+
+<p>Some code is used by few visitors: a report, a chart, an admin page. A <dfn>dynamic import</dfn>, <code>await import("./report.ts")</code>, is a function call that loads a module when the line runs. Vite sees it and puts that module in a separate file:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/main.ts</div><pre class="code"><span class="k">import</span> <span class="s">&quot;./style.css&quot;</span>;
+<span class="k">import</span> { products } <span class="k">from</span> <span class="s">&quot;./products.ts&quot;</span>;
+<span class="k">import</span> { formatPrice } <span class="k">from</span> <span class="s">&quot;./format.ts&quot;</span>;
+
+<span class="k">const</span> app = document.querySelector&lt;HTMLElement&gt;(<span class="s">&quot;#app&quot;</span>)!;
+
+<span class="k">const</span> heading = document.createElement(<span class="s">&quot;h1&quot;</span>);
+heading.textContent = <span class="s">&quot;Bit&#x27;s shop&quot;</span>;
+<span class="k">const</span> list = document.createElement(<span class="s">&quot;ul&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> product <span class="k">of</span> products) {
+  <span class="k">const</span> item = document.createElement(<span class="s">&quot;li&quot;</span>);
+  item.textContent = <span class="s">`${product.name}: ${formatPrice(product.price)}`</span>;
+  list.append(item);
+}
+app.append(heading, list);
+
+<span class="k">const</span> button = document.createElement(<span class="s">&quot;button&quot;</span>);
+button.textContent = <span class="s">&quot;Show report&quot;</span>;
+button.addEventListener(<span class="s">&quot;click&quot;</span>, <span class="k">async</span> () =&gt; {
+  button.textContent = <span class="s">&quot;Loading the report…&quot;</span>;
+  <span class="k">const</span> { buildReport } = <span class="k">await</span> <span class="k">import</span>(<span class="s">&quot;./report.ts&quot;</span>);
+  app.append(buildReport(products));
+  button.remove();
+});
+app.append(button);</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Build again after adding a lazy import</span>
+<span class="c">$ </span><span class="k">npm run build</span>
+✓ 9 modules transformed.
+dist/index.html                 0.39 kB │ gzip: 0.26 kB
+dist/assets/index-D9CP7r17.css  0.06 kB │ gzip: 0.08 kB
+dist/assets/report-BcorEaka.js  0.36 kB │ gzip: 0.22 kB
+dist/assets/index-Bu7zpKrj.js   2.96 kB │ gzip: 1.36 kB
+✓ built in 75ms</pre></div>
+
+<p>The new file, <code>report-….js</code>, is downloaded only when someone presses the button. This technique is called <dfn>code splitting</dfn>; frameworks use it to load each page of an app separately, as you will see in the chapter on routing.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b2-tooling-en-my-shop-index.html-560-51da9b.png" alt=""><figcaption><b>Figure 3.1:</b> The built site, served from <code>dist</code>, after pressing the button: the report module was loaded on demand.</figcaption></figure>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>How many times does a module run if five other modules import it?</li><li>Does <code>^2.4.1</code> allow version 3.0.0 to be installed?</li><li>Why do built files have names like <code>index-D9l0HIoC.js</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">3.4</span> <span>Linting and formatting</span></h2>
+
+<p>Two more tools belong in every project. A <dfn>linter</dfn> reads your code and reports likely bugs and bad patterns. A <dfn>formatter</dfn> rewrites the layout of your code, spaces, quotes and line breaks, in one consistent style, so that nobody argues about it in code reviews. The standard choices are <strong>ESLint</strong> and <strong>Prettier</strong>. Installing them gave a surprise:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Add a linter and a formatter</span>
+<span class="c">$ </span><span class="k">npm install -D eslint @eslint/js typescript-eslint prettier</span>
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error Found: typescript@7.0.2
+npm error Could not resolve dependency:
+npm error peer typescript@&quot;&gt;=4.8.4 &lt;6.1.0&quot; from typescript-eslint@8.73.0
+<span class="c"># Choose a TypeScript that typescript-eslint supports</span>
+<span class="c">$ </span><span class="k">npm install -D typescript@~6.0.0 eslint @eslint/js typescript-eslint prettier</span>
+added 96 packages, removed 1 package, changed 1 package, and audited 113 packages in 4s
+<span class="c"># The direct dependencies, and their exact versions</span>
+<span class="c">$ </span><span class="k">npm ls --depth=0</span>
+├── @eslint/js@10.0.1
+├── eslint@10.15.0
+├── prettier@3.10.1
+├── typescript-eslint@8.73.0
+├── typescript@6.0.3
+└── vite@8.3.8
+<span class="c"># Name the commands the team will run</span>
+<span class="c">$ </span><span class="k">npm pkg set scripts.lint=&quot;eslint src&quot; scripts.format=&quot;prettier --write src&quot; scripts.check=&quot;tsc &amp;&amp; eslint src &amp;&amp; prettier --check src&quot;</span></pre></div>
+
+<h3>Reading a dependency conflict</h3>
+
+<p>The first install stopped with <code>ERESOLVE</code>. Read the three lines that matter: the project has <code>typescript@7.0.2</code>; the package <code>typescript-eslint</code> declares a <dfn>peer dependency</dfn> on TypeScript, saying it only works with versions from 4.8.4 up to, but not including, 6.1.0. TypeScript 7 was so new that this tool did not support it yet. You will meet this situation in every real project.</p>
+
+<p>You have three honest choices: wait for the tool to support the new version; use another tool; or, as here, choose a version that every package supports. TypeScript 6.0 is fully supported, and its type checking is the same for everything in this book, so the second command installs it with the other tools. The wrong choice is <code>--force</code> or <code>--legacy-peer-deps</code>. They install anyway, and the tool may then fail in strange ways weeks later.</p>
+
+<p>The last command adds three scripts. From now on, everyone on the team runs <code>npm run lint</code>, <code>npm run format</code> and <code>npm run check</code>, without having to remember the exact commands:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">package.json (after)</div><pre class="code">{
+  <span class="s">&quot;name&quot;</span>: <span class="s">&quot;my-shop&quot;</span>,
+  <span class="s">&quot;private&quot;</span>: <span class="k">true</span>,
+  <span class="s">&quot;version&quot;</span>: <span class="s">&quot;0.0.0&quot;</span>,
+  <span class="s">&quot;type&quot;</span>: <span class="s">&quot;module&quot;</span>,
+  <span class="s">&quot;scripts&quot;</span>: {
+    <span class="s">&quot;dev&quot;</span>: <span class="s">&quot;vite&quot;</span>,
+    <span class="s">&quot;build&quot;</span>: <span class="s">&quot;tsc &amp;&amp; vite build&quot;</span>,
+    <span class="s">&quot;preview&quot;</span>: <span class="s">&quot;vite preview&quot;</span>,
+    <span class="s">&quot;lint&quot;</span>: <span class="s">&quot;eslint src&quot;</span>,
+    <span class="s">&quot;format&quot;</span>: <span class="s">&quot;prettier --write src&quot;</span>,
+    <span class="s">&quot;check&quot;</span>: <span class="s">&quot;tsc &amp;&amp; eslint src &amp;&amp; prettier --check src&quot;</span>
+  },
+  <span class="s">&quot;devDependencies&quot;</span>: {
+    <span class="s">&quot;@eslint/js&quot;</span>: <span class="s">&quot;^10.0.1&quot;</span>,
+    <span class="s">&quot;eslint&quot;</span>: <span class="s">&quot;^10.15.0&quot;</span>,
+    <span class="s">&quot;prettier&quot;</span>: <span class="s">&quot;^3.10.1&quot;</span>,
+    <span class="s">&quot;typescript&quot;</span>: <span class="s">&quot;~6.0.0&quot;</span>,
+    <span class="s">&quot;typescript-eslint&quot;</span>: <span class="s">&quot;^8.73.0&quot;</span>,
+    <span class="s">&quot;vite&quot;</span>: <span class="s">&quot;^8.3.6&quot;</span>
+  }
+}</pre></div>
+
+<h3>ESLint</h3>
+
+<p>ESLint is configured in <code>eslint.config.js</code>. This configuration starts from the recommended rules for JavaScript and TypeScript and adds two of its own: <code>eqeqeq</code> forbids <code>==</code>, and <code>no-console</code> warns about forgotten debugging lines:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">eslint.config.js</div><pre class="code"><span class="k">import</span> js <span class="k">from</span> <span class="s">&quot;@eslint/js&quot;</span>;
+<span class="k">import</span> tseslint <span class="k">from</span> <span class="s">&quot;typescript-eslint&quot;</span>;
+
+<span class="k">export</span> <span class="k">default</span> tseslint.config(
+  { ignores: [<span class="s">&quot;dist&quot;</span>] },
+  js.configs.recommended,
+  tseslint.configs.recommended,
+  {
+    rules: {
+      eqeqeq: <span class="s">&quot;error&quot;</span>,
+      <span class="s">&quot;no-console&quot;</span>: <span class="s">&quot;warn&quot;</span>,
+    },
+  },
+);</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">src/total.ts</div><pre class="code"><span class="k">const</span> greeting = <span class="s">&quot;Hello&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> total(prices: any[]) {
+  <span class="k">let</span> sum = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> price <span class="k">of</span> prices) {
+    <span class="k">if</span> (price == <span class="k">null</span>) continue;
+    sum += price;
+  }
+  <span class="k">return</span> sum;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Check the code</span>
+<span class="c">$ </span><span class="k">npx eslint src</span>
+~/code/my-shop/src/total.ts
+  1:7   error  &#x27;greeting&#x27; is assigned a value but never used  @typescript-eslint/no-unused-vars
+  3:31  error  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  6:15  error  Expected &#x27;===&#x27; and instead saw &#x27;==&#x27;            eqeqeq
+✖ 3 problems (3 errors, 0 warnings)</pre></div>
+
+<p>Each line gives the position, the problem and the rule’s name. Search for the name when a message is not clear; every rule has a page explaining why it exists. Editors show these problems as you type, like TypeScript errors.</p>
+
+<h3>Prettier</h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Is the code formatted?</span>
+<span class="c">$ </span><span class="k">npx prettier --check src</span>
+Checking formatting...
+[warn] src/format.ts
+[warn] src/style.css
+[warn] Code style issues found in 2 files. Run Prettier with --write to fix.
+<span class="c"># Format every file</span>
+<span class="c">$ </span><span class="k">npx prettier --write src</span>
+src/format.ts 67ms
+src/main.ts 22ms (unchanged)
+src/products.ts 8ms (unchanged)
+src/style.css 19ms
+<span class="c">$ </span><span class="k">cat src/format.ts</span>
+export function formatPrice(value: number): string {
+  return `${value.toFixed(2)} EGP`;
+}</pre></div>
+
+<p><code>--check</code> only reports; <code>--write</code> fixes. Set your editor to run Prettier every time you save, and you will never format code by hand again.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: let the machine check, before every commit</p><p>Put all checks behind one command, here <code>npm run check</code>, and run it before every commit and in CI, the server that checks every pull request. Humans then review what only humans can judge: the design, the names, the logic. Arguments about spaces and quotes disappear for good.</p></aside>
+
+<h2><span class="sec">3.5</span> <span>Configuration and secrets</span></h2>
+
+<p>Apps often need settings that differ between your computer and the real site, such as the address of the API. Vite reads them from <code>.env</code> files and exposes variables whose names start with <code>VITE_</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.env.production</div><pre class="code">VITE_API_URL=https://api.example.com</pre></div>
+
+<p>In code, <code>import.meta.env.VITE_API_URL</code> gives the value, and the build writes it into the JavaScript files.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: the frontend has no secrets</p><p>Everything in the built files can be read by anyone who opens the site: press F12 and look. Never put a password, a private API key or a database address in frontend code or in a <code>VITE_</code> variable. Secrets live on the server, which talks to other services on the user’s behalf.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Forgetting <code>./</code> in an import path</td><td>The tool looks for a package with that name and fails</td><td><code>"./format.ts"</code> for your own files</td></tr>
+<tr><td>Not committing <code>package-lock.json</code></td><td>Different computers install different versions</td><td>Commit it; use <code>npm ci</code> in CI and on servers</td></tr>
+<tr><td>Committing <code>node_modules</code> or <code>dist</code></td><td>Huge repositories and endless conflicts</td><td>Keep them in <code>.gitignore</code></td></tr>
+<tr><td>Installing with <code>--force</code> after <code>ERESOLVE</code></td><td>Tools fail later in confusing ways</td><td>Read the conflict, then choose compatible versions</td></tr>
+<tr><td>Opening <code>dist/index.html</code> by double-clicking</td><td>A blank page: modules need a server</td><td><code>npm run preview</code></td></tr>
+<tr><td>A secret in a <code>VITE_</code> variable</td><td>Anyone can read it</td><td>Keep secrets on the server</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>ES modules</strong> share code with <code>export</code> and <code>import</code>. A module runs once; every importer gets the same instance.</li>
+<li><code>package.json</code> lists <strong>scripts</strong> and <strong>dependencies</strong>; <strong>semantic versions</strong> say which updates are allowed, and the <strong>lockfile</strong> records the exact ones.</li>
+<li><strong>Vite</strong> serves modules instantly while you work (with HMR) and <strong>builds</strong> minified, hashed, tree-shaken files for production.</li>
+<li><strong>Dynamic imports</strong> split rarely used code into files that load on demand.</li>
+<li><strong>ESLint</strong> finds likely bugs; <strong>Prettier</strong> keeps one style. Run both through scripts, before every commit.</li>
+<li>A <strong>peer dependency</strong> conflict is information. Choose compatible versions instead of forcing.</li>
+<li>Configuration goes in <code>.env</code> files; <strong>secrets never go in the frontend</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Once. 2. No: the caret allows minor and patch updates within major version 2. 3. The hash changes whenever the content changes, so browsers can cache the files forever and still always load the newest version.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">These projects set up habits rather than features. You will use all three in every project for the rest of this book, so take the time to do them properly in your own Vite project.</p>
+
+<div class="project">
+<p class="project-label">Project 3.1 · Easy</p>
+<h3>A small utility library with a public face</h3>
+<p class="project-goal">Organise helper functions into modules, and decide which of them the rest of the app may use.</p>
+<p class="project-skills"><strong>You will practise:</strong> named exports, re-exports, a barrel file, and keeping some code internal.</p>
+<ol class="steps">
+<li>Create a folder <code>modules</code> with <code>text.mjs</code> (<code>slugify</code> and <code>truncate</code>) and <code>numbers.mjs</code> (<code>clamp</code> and <code>percent</code>).</li>
+<li><code>slugify</code> turns a title into a web address: lower case, no spaces at the ends, and every run of other characters becomes one <code>-</code>. The pattern <code>\p{L}</code> means “any letter in any language”, so it works for Arabic too.</li>
+<li>Add <code>internal.mjs</code> with a helper used only inside the folder.</li>
+<li>Write <code>index.mjs</code> that re-exports the four public functions, and <em>not</em> the internal one.</li>
+<li>In <code>app.mjs</code>, import only from <code>./index.mjs</code> and try each function.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the barrel is a promise to the rest of the team: “these functions are stable; everything else may change”. Keep it small.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>modern-javascript-in-depth
+Modern JavaScript…
+100 0
+35%</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 3.2 · Medium</p>
+<h3>One command to check everything</h3>
+<p class="project-goal">Give your project a <code>check</code> script that runs the type checker, the linter and the formatter in order, and stops at the first problem.</p>
+<p class="project-skills"><strong>You will practise:</strong> npm scripts, <code>&amp;&amp;</code> to chain commands, ESLint rules, and reading which tool failed.</p>
+<ol class="steps">
+<li>Install ESLint, typescript-eslint and Prettier as in section 3.4, resolving the TypeScript version if needed.</li>
+<li>Add the scripts with <code>npm pkg set</code>: <code>lint</code>, <code>format</code> and <code>check</code>, where <code>check</code> is <code>tsc &amp;&amp; eslint src &amp;&amp; prettier --check src</code>.</li>
+<li>Add a file that uses <code>var</code>, and run <code>npm run check</code>. Notice that <code>tsc</code> passed silently and ESLint stopped the chain.</li>
+<li>Fix the problem and run the check again until it passes.</li>
+<li>Make it a habit: run <code>npm run check</code> before every <code>git commit</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>&amp;&amp;</code> runs the next command only if the previous one succeeded. Put the fastest checks first, so you hear about problems sooner. Many teams also run this script automatically with a Git hook.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Run every check before committing</span>
+<span class="c">$ </span><span class="k">npm run check</span>
+~/code/my-shop/src/discount.ts
+  2:3  error  Unexpected var, use let or const instead  no-var
+✖ 1 problem (1 error, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+<span class="c"># After fixing the problem</span>
+<span class="c">$ </span><span class="k">npm run check</span>
+All matched files use Prettier code style!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 3.3 · Challenge</p>
+<h3>Settings for every environment</h3>
+<p class="project-goal">Use one API address while you develop and another in production, read them in one typed module, and prove which one the build used.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>.env</code> files, <code>import.meta.env</code>, failing early on missing settings, and inspecting build output.</p>
+<ol class="steps">
+<li>Create <code>.env.development</code> and <code>.env.production</code>, each with a different <code>VITE_API_URL</code>.</li>
+<li>Write <code>src/config.ts</code>, the only file that reads <code>import.meta.env</code>. If the address is missing, throw an error with a helpful message straight away.</li>
+<li>Export one read-only <code>config</code> object, and import it wherever the address is needed.</li>
+<li>Run <code>npm run dev</code> and check the development address in the console. Then build.</li>
+<li>Search the built JavaScript with <code>grep</code> to confirm that the production address, and only that one, went in.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> step 5 is how you prove what is really inside your build. Use the same trick to check that no secret slipped in: if you can find it with <code>grep</code>, so can anyone.</p>
+<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="c">// All settings are read and checked in one place</span>
+<span class="k">const</span> apiUrl = <span class="k">import</span>.meta.env.VITE_API_URL;
+<span class="k">if</span> (!apiUrl) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;VITE_API_URL is not set: add it to a .env file&quot;</span>);
+
+<span class="k">export</span> <span class="k">const</span> config = {
+  apiUrl,
+  isProduction: <span class="k">import</span>.meta.env.PROD,
+} as <span class="k">const</span>;</pre></div>
+<p><strong>Your result should look like this:</strong></p>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Two settings files</span>
+<span class="c">$ </span><span class="k">cat .env.development .env.production</span>
+VITE_API_URL=http://localhost:8000
+VITE_API_URL=https://api.bits-shop.example
+<span class="c"># Build the site for production</span>
+<span class="c">$ </span><span class="k">npm run build</span>
+✓ built in 78ms
+<span class="c"># Which address went into the built file?</span>
+<span class="c">$ </span><span class="k">grep -o &#x27;https://[a-z.-]*example&#x27; dist/assets/index-*.js</span>
+https://api.bits-shop.example</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a named export <code>FREE_SHIPPING = 50</code> to <code>prices.mjs</code>, re-export it from <code>index.mjs</code>, and print it from <code>main.mjs</code>.</li>
+<li><span class="level">Easy</span> In your own Vite project, run <code>npm run build</code>, change one word in <code>main.ts</code>, and build again. Which file names changed, and which stayed the same? Why?</li>
+<li><span class="level medium">Medium</span> Write down which of these versions <code>^1.4.2</code> allows: 1.4.1, 1.4.9, 1.9.0, 2.0.0. Do the same for <code>~1.4.2</code>.</li>
+<li><span class="level medium">Medium</span> Add the ESLint rule <code>"prefer-const": "error"</code>, write a <code>let</code> that is never reassigned, and fix the error that <code>npm run lint</code> reports.</li>
+<li><span class="level hard">Challenge</span> Split a second feature into its own chunk: a “Help” button that loads <code>help.ts</code> with a dynamic import. Build, and confirm in the output that there are now two extra JavaScript files.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 4</p>
+<p>The toolchain is ready, and the language foundations are in place. In the next chapter the framework arrives: you will build your first components, and see how a whole page can be described as a function of its data.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1183,6 +1656,16 @@ typed-emitter-bad.ts(29,18): error TS2345: Argument of type &#x27;(id: string) =
 <li>The check reports that <code>{ status: "empty" }</code> is not assignable to <code>never</code> in the <code>default</code> branch. Add <code>case "empty": return "Nothing here yet";</code> (or any message you like) and the error disappears.</li>
 <li><code>last</code> can simply <code>return list.at(-1)</code>. For <code>groupBy</code>, start with <code>const groups = {} as Record&lt;K, T[]&gt;</code>, then for each item write <code>(groups[key(item)] ??= []).push(item)</code>. This is one of the few honest uses of <code>as</code>: the object starts empty and is filled by the loop.</li>
 <li>Write <code>isProduct(value: unknown): value is Product</code> that checks the object and each field with <code>typeof</code>, then <code>isProductList = (value: unknown): value is Product[] =&gt; Array.isArray(value) &amp;&amp; value.every(isProduct)</code>. Good data passes; the price written as a string and the object that is not an array are both rejected.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 3</h2>
+<ol class="exercises">
+<li>In <code>prices.mjs</code> add <code>export const FREE_SHIPPING = 50;</code>; in <code>index.mjs</code> change the second line to <code>export { default as formatPrice, VAT, FREE_SHIPPING } from "./prices.mjs";</code>; then import it in <code>main.mjs</code> with the others and print it.</li>
+<li>The JavaScript file gets a new name, because its content changed, and so does <code>index.html</code>’s content, because it points to the new name. The CSS file keeps its name: it did not change, so visitors who already have it in their cache do not download it again.</li>
+<li><code>^1.4.2</code> allows 1.4.9 and 1.9.0, but not 1.4.1 (older) or 2.0.0 (a new major version). <code>~1.4.2</code> allows only 1.4.9 from the list: it accepts patch updates within 1.4.</li>
+<li>ESLint reports <code>'x' is never reassigned. Use 'const' instead</code>. Change <code>let</code> to <code>const</code>, or run <code>npx eslint src --fix</code>, which makes this change by itself.</li>
+<li>Add a second button whose handler runs <code>const { showHelp } = await import("./help.ts")</code>. The build then lists <code>report-….js</code> and <code>help-….js</code> next to <code>index-….js</code>: one extra file per dynamic import.</li>
 </ol>
 
 </section>

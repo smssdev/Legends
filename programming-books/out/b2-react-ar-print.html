@@ -11,6 +11,8 @@
 @page ch01:first { @top-center { content: none; } }
 @page ch02 { @top-center { content: "الفصل 2: TypeScript في المشاريع الحقيقية"; } }
 @page ch02:first { @top-center { content: none; } }
+@page ch03 { @top-center { content: "الفصل 3: الوحدات والأدوات وأنظمة البناء"; } }
+@page ch03:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -1148,6 +1150,477 @@ typed-emitter-bad.ts(29,18): error TS2345: Argument of type &#x27;(id: string) =
 <p>التطبيقات الحقيقية ليست ملفاً واحداً. في الفصل التالي ستقسم الكود إلى وحدات، وتثبّت الحزم بـ npm، وتجهز مشروعاً حديثاً بـ Vite وTypeScript ومدقق للكود ومنسّق له: الأساس نفسه الذي تبني عليه كل الفصول بعده.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch03" data-chapter="3" data-code="b2/tooling/ar">
+<div class="opener"><span class="opener-num">3</span><p class="chapter-kicker">الفصل 3</p><h1>الوحدات والأدوات وأنظمة البناء</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تقسم الكود إلى وحدات ES بتصديرات مسماة وافتراضية</li>
+<li>تقرأ <code>package.json</code> وتديره: الاعتماديات، والإصدارات، وملف القفل، والسكربتات</li>
+<li>تنشئ مشروعاً بـ Vite، وتفهم خادم التطوير وبناء الإنتاج</li>
+<li>تحمّل الكود قليل الاستخدام حين يُحتاج إليه فقط</li>
+<li>تبقي الكود نظيفاً ومتسقاً بـ ESLint وPrettier</li>
+<li>تحل تعارض الاعتماديات بدل أن تفرضه</li>
+</ul>
+</div>
+
+<p class="lead">كان كل مثال حتى الآن ملفاً واحداً. أما واجهة حقيقية ففيها مئات الملفات، وتستخدم عشرات الحزم التي كتبها آخرون، ويجب أن تصل إلى المتصفح ملفات قليلة صغيرة سريعة. والأدوات التي تجعل هذا ممكناً تسمى <dfn>سلسلة الأدوات</dfn> (toolchain). لا تحتاج أن تعرف كيف تعمل من الداخل، لكن يجب أن تعرف ماذا تفعل كل واحدة، وكيف تقرأ مخرجاتها، وماذا تفعل حين تعترض. وهذا الفصل يجهز سلسلة الأدوات نفسها التي يستخدمها باقي الكتاب.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>كل أمر في هذا الفصل شُغّل فعلاً أثناء صنع الكتاب، وترى بالضبط ما طبعه، بتحذيراته وأخطائه. وستكون أرقام الإصدارات على شاشتك أحدث، وهذا طبيعي: اقرأ المعنى لا الأرقام.</p></div></div>
+
+<h2><span class="sec">3.1</span> <span>وحدات ES</span></h2>
+
+<p><dfn>الوحدة</dfn> (module) ملف له نطاقه الخاص. لا يُرى شيء بداخله من الملفات الأخرى إلا إن <dfn>صُدّر</dfn>، ولا يُرى شيء من الخارج بداخله إلا إن <dfn>استُورد</dfn>. وهذا نظام الوحدات القياسي في JavaScript، ويسمى <dfn>وحدات ES</dfn> (ES modules)، ويعمل بالطريقة نفسها في المتصفحات وNode وكل أدوات البناء.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">prices.mjs</div><pre class="code"><span class="c">// هذا السطر يعمل مرة واحدة، مهما كان عدد الوحدات التي تستورد هذا الملف</span>
+globalThis.priceLoads = (globalThis.priceLoads ?? <span class="n">0</span>) + <span class="n">1</span>;
+
+<span class="c">// تصديرات مسماة: أي عدد في الوحدة</span>
+<span class="k">export</span> <span class="k">const</span> VAT = <span class="n">0.14</span>;
+<span class="k">export</span> <span class="k">function</span> withVat(price) {
+  <span class="k">return</span> Math.round(price * (<span class="n">1</span> + VAT) * <span class="n">100</span>) / <span class="n">100</span>;
+}
+
+<span class="c">// تصدير افتراضي واحد في الوحدة على الأكثر</span>
+<span class="k">export</span> <span class="k">default</span> <span class="k">function</span> formatPrice(value) {
+  <span class="k">return</span> <span class="s">`${value.toFixed(2)} جنيهاً`</span>;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">cart.mjs</div><pre class="code"><span class="k">import</span> formatPrice, { withVat } <span class="k">from</span> <span class="s">&quot;./prices.mjs&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> cartTotal(prices) {
+  <span class="k">return</span> formatPrice(withVat(prices.reduce((sum, p) =&gt; sum + p, <span class="n">0</span>)));
+}</pre></div>
+
+<ul>
+<li><strong>التصدير المسمى</strong>، <code>export const VAT</code>، يُستورد بالاسم نفسه بين قوسين: <code>import { withVat } from "./prices.mjs"</code>.</li>
+<li><strong>التصدير الافتراضي</strong> يُستورد دون قوسين، وبأي اسم تختاره: <code>import formatPrice from …</code>. وفي الوحدة واحد على الأكثر.</li>
+<li>يبدأ المسار بـ <code>./</code> لملفاتك أنت. أما الاسم المجرد، مثل <code>"vite"</code>، فيعني حزمة من <code>node_modules</code>.</li>
+</ul>
+
+<p>وكثيراً ما يكون في المجلدات الكبيرة ملف <code>index</code> يعيد تصدير أجزائها العامة، فيستورد الكود الآخر من مكان واحد، ويستطيع المجلد ترتيب داخله بحرية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">index.mjs</div><pre class="code"><span class="c">// «برميل»: مدخل واحد يعيد تصدير الأجزاء العامة</span>
+<span class="k">export</span> { cartTotal } <span class="k">from</span> <span class="s">&quot;./cart.mjs&quot;</span>;
+<span class="k">export</span> { <span class="k">default</span> as formatPrice, VAT } <span class="k">from</span> <span class="s">&quot;./prices.mjs&quot;</span>;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">main.mjs</div><pre class="code"><span class="k">import</span> { cartTotal, formatPrice, VAT } <span class="k">from</span> <span class="s">&quot;./index.mjs&quot;</span>;
+<span class="k">import</span> * as prices <span class="k">from</span> <span class="s">&quot;./prices.mjs&quot;</span>;
+
+console.log(<span class="s">&quot;المستورد:&quot;</span>, <span class="k">typeof</span> cartTotal, <span class="k">typeof</span> formatPrice, VAT);
+console.log(<span class="s">&quot;مجموع السلة:&quot;</span>, cartTotal([<span class="n">25</span>, <span class="n">8</span>, <span class="n">3</span>]));
+console.log(prices.withVat(<span class="n">100</span>), prices.<span class="k">default</span>(<span class="n">9</span>));
+console.log(<span class="s">&quot;عدد مرات تحميل وحدة الأسعار:&quot;</span>, globalThis.priceLoads);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>المستورد: function function 0.14
+مجموع السلة: 41.04 جنيهاً
+114 9.00 جنيهاً
+عدد مرات تحميل وحدة الأسعار: 1</pre></div>
+
+<p>انظر إلى السطر الأخير. استوردت ثلاثة ملفات <code>prices.mjs</code>، لكنها حُمّلت وعملت <strong>مرة واحدة</strong>. فكل مستورد يأخذ كائن الوحدة نفسه. ولهذا الوحدة مكان طبيعي لما يجب أن يكون منه واحد فقط: الإعدادات، أو ذاكرة مؤقتة، أو اتصال بخادم.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟ <code>require</code> و<code>module.exports</code></p><p>يستخدم كود Node الأقدم نظاماً مختلفاً اسمه <dfn>CommonJS</dfn>: <code>const x = require("x")</code> و<code>module.exports = …</code>. وما زلت ستقابله في الدروس والحزم القديمة. أما الكود الجديد فاستخدم فيه وحدات ES في كل مكان: اكتب <code>"type": "module"</code> في <code>package.json</code>، أو سمِّ الملفات <code>.mjs</code> كما في هذا المثال.</p></aside>
+
+<h2><span class="sec">3.2</span> <span>مشروع بـ Vite</span></h2>
+
+<p>تستطيع المتصفحات تحميل وحدات ES مباشرة، لكن التطبيق الحقيقي يحتاج أكثر: يجب أن تفقد TypeScript أنواعها، وأن تصير مئات الملفات قليلة، وأن تأخذ الصور أسماء فريدة لتبقى الذاكرة المؤقتة صحيحة، وأثناء عملك يجب أن تتحدث الصفحة لحظة تحفظ. و<strong>Vite</strong> (تعني «سريع» بالفرنسية) تفعل هذا كله، وصارت نقطة البداية القياسية لمشاريع React وVue وTypeScript البسيطة. أنشئ مشروعاً بأمر واحد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># أنشئ مشروعاً من قالب TypeScript البسيط</span>
+<span class="c">$ </span><span class="k">npm create vite@latest my-shop -- --template vanilla-ts --no-interactive</span>
+create-vite v9.3.4
+Scaffolding project in ~/code/my-shop...
+<span class="c">$ </span><span class="k">cd my-shop</span>
+<span class="c"># نزّل الحزم التي يحتاجها</span>
+<span class="c">$ </span><span class="k">npm install</span>
+added 17 packages, and audited 18 packages in 3s
+<span class="c"># ما أنشأه القالب</span>
+<span class="c">$ </span><span class="k">find . -path ./node_modules -prune -o -type f -print | sort</span>
+./.gitignore
+./index.html
+./package-lock.json
+./package.json
+./src/format.ts
+./src/main.ts
+./src/products.ts
+./src/style.css
+./tsconfig.json</pre></div>
+
+<p>ينشئ القالب صفحة تجريبية، واستُبدلت هنا بقائمة منتجات صغيرة في ثلاثة ملفات، <code>products.ts</code> و<code>format.ts</code> و<code>main.ts</code>، لتتابع كل سطر. ولاحظ أن ملفات TypeScript تستورد بعضها بالامتداد <code>.ts</code>: فـ Vite تفهمه، وإعدادات القالب تسمح به.</p>
+
+<h3>قراءة <code>package.json</code></h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">package.json</div><pre class="code">{
+  <span class="s">&quot;name&quot;</span>: <span class="s">&quot;my-shop&quot;</span>,
+  <span class="s">&quot;private&quot;</span>: <span class="k">true</span>,
+  <span class="s">&quot;version&quot;</span>: <span class="s">&quot;0.0.0&quot;</span>,
+  <span class="s">&quot;type&quot;</span>: <span class="s">&quot;module&quot;</span>,
+  <span class="s">&quot;scripts&quot;</span>: {
+    <span class="s">&quot;dev&quot;</span>: <span class="s">&quot;vite&quot;</span>,
+    <span class="s">&quot;build&quot;</span>: <span class="s">&quot;tsc &amp;&amp; vite build&quot;</span>,
+    <span class="s">&quot;preview&quot;</span>: <span class="s">&quot;vite preview&quot;</span>
+  },
+  <span class="s">&quot;devDependencies&quot;</span>: {
+    <span class="s">&quot;typescript&quot;</span>: <span class="s">&quot;~7.0.2&quot;</span>,
+    <span class="s">&quot;vite&quot;</span>: <span class="s">&quot;^8.3.6&quot;</span>
+  }
+}</pre></div>
+
+<ul>
+<li><code>"type": "module"</code> تجعل كل ملف <code>.js</code> وحدة ES.</li>
+<li><code>scripts</code> أوامر مسماة. <code>npm run dev</code> تشغّل خادم التطوير في Vite، و<code>npm run build</code> تفحص الأنواع أولاً بـ <code>tsc</code> ثم تبني، و<code>npm run preview</code> تعرض البناء النهائي.</li>
+<li><code>devDependencies</code> أدوات يحتاجها <em>بناء</em> التطبيق. أما المكتبات التي يستخدمها التطبيق نفسه وقت التشغيل فمكانها <code>dependencies</code>، و<code>npm install some-library</code> تضعها هناك.</li>
+</ul>
+
+<p>وتتبع أرقام الإصدارات <dfn>الترقيم الدلالي</dfn> (semantic versioning): <code>MAJOR.MINOR.PATCH</code>. الإصدار الصغير جداً (patch) يصلح أخطاء، والصغير (minor) يضيف مزايا، والكبير (major) قد يكسر كودك. و<code>^8.3.6</code> تعني «8.3.6 أو أي 8.x.x أحدث»، و<code>~7.0.2</code> تعني «7.0.2 أو أي 7.0.x أحدث». والإصدارات التي ثُبّتت بالضبط مسجلة في <code>package-lock.json</code>. احفظ هذا الملف في Git، واستخدم <code>npm ci</code> على الخوادم: فهي تثبّت ما في ملف القفل بالضبط، فيشغّل كل حاسوب الكود نفسه.</p>
+
+<h3>خادم التطوير</h3>
+
+<p><code>npm run dev</code> تشغّل خادماً، عادة على <code>http://localhost:5173</code>. ولا تجمع شيئاً: بل ترسل كل وحدة إلى المتصفح حين تُطلب، وتترجم TypeScript في اللحظة، ولهذا تبدأ في لحظة حتى مع التطبيقات الكبيرة. وحين تحفظ ملفاً تدفع التغيير إلى الصفحة المفتوحة، غالباً دون إعادة تحميلها. ويسمى هذا <dfn>الاستبدال الحي للوحدات</dfn> (HMR)، وبسببه صار عمل الواجهات اليوم فورياً.</p>
+
+<h2><span class="sec">3.3</span> <span>بناء الإنتاج</span></h2>
+
+<p>للزوار الحقيقيين تهم السرعة أكثر من الراحة. و<code>npm run build</code> تنشئ مجلد <code>dist</code>، جاهزاً للرفع إلى أي استضافة ثابتة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># ابنِ الموقع للإنتاج</span>
+<span class="c">$ </span><span class="k">npm run build</span>
+✓ 7 modules transformed.
+dist/index.html                 0.41 kB │ gzip: 0.28 kB
+dist/assets/index-D9CP7r17.css  0.06 kB │ gzip: 0.08 kB
+dist/assets/index-C1rdS_29.js   1.07 kB │ gzip: 0.59 kB
+✓ built in 66ms</pre></div>
+
+<ul>
+<li>صارت الوحدات السبع ملف JavaScript <strong>واحداً</strong> وملف CSS واحداً: طلبات أقل.</li>
+<li>الكود <dfn>مصغَّر</dfn> (minified): حُذفت المسافات والتعليقات والأسماء الطويلة. وعمود «gzip» هو الحجم الذي يُرسل فعلاً عبر الشبكة، لأن الخوادم تضغط النصوص.</li>
+<li>في اسم كل ملف <dfn>بصمة</dfn> (hash) من محتواه، مثل <code>index-D9l0HIoC.js</code>. فحين يتغير المحتوى يتغير الاسم، فتحتفظ المتصفحات بالملفات في ذاكرتها إلى الأبد ولا تعرض نسخة قديمة أبداً.</li>
+<li>الكود الذي لا يستورده أحد يُحذف. ويسمى هذا <dfn>هز الشجرة</dfn> (tree shaking)، ويعمل أفضل مع التصديرات المسماة التي تستطيع الأدوات تتبعها.</li>
+</ul>
+
+<h3>تحميل الكود حين يُحتاج إليه فقط</h3>
+
+<p>بعض الكود لا يستخدمه إلا قليل من الزوار: تقرير، أو رسم بياني، أو صفحة للإدارة. و<dfn>الاستيراد الديناميكي</dfn>، <code>await import("./report.ts")</code>، استدعاء دالة يحمّل الوحدة حين يعمل السطر. وتراه Vite فتضع تلك الوحدة في ملف منفصل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/main.ts</div><pre class="code"><span class="k">import</span> <span class="s">&quot;./style.css&quot;</span>;
+<span class="k">import</span> { products } <span class="k">from</span> <span class="s">&quot;./products.ts&quot;</span>;
+<span class="k">import</span> { formatPrice } <span class="k">from</span> <span class="s">&quot;./format.ts&quot;</span>;
+
+<span class="k">const</span> app = document.querySelector&lt;HTMLElement&gt;(<span class="s">&quot;#app&quot;</span>)!;
+
+<span class="k">const</span> heading = document.createElement(<span class="s">&quot;h1&quot;</span>);
+heading.textContent = <span class="s">&quot;متجر بِت&quot;</span>;
+<span class="k">const</span> list = document.createElement(<span class="s">&quot;ul&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> product <span class="k">of</span> products) {
+  <span class="k">const</span> item = document.createElement(<span class="s">&quot;li&quot;</span>);
+  item.textContent = <span class="s">`${product.name}: ${formatPrice(product.price)}`</span>;
+  list.append(item);
+}
+app.append(heading, list);
+
+<span class="k">const</span> button = document.createElement(<span class="s">&quot;button&quot;</span>);
+button.textContent = <span class="s">&quot;اعرض التقرير&quot;</span>;
+button.addEventListener(<span class="s">&quot;click&quot;</span>, <span class="k">async</span> () =&gt; {
+  button.textContent = <span class="s">&quot;جارٍ تحميل التقرير…&quot;</span>;
+  <span class="k">const</span> { buildReport } = <span class="k">await</span> <span class="k">import</span>(<span class="s">&quot;./report.ts&quot;</span>);
+  app.append(buildReport(products));
+  button.remove();
+});
+app.append(button);</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># ابنِ من جديد بعد إضافة استيراد كسول</span>
+<span class="c">$ </span><span class="k">npm run build</span>
+✓ 9 modules transformed.
+dist/index.html                 0.41 kB │ gzip: 0.28 kB
+dist/assets/index-D9CP7r17.css  0.06 kB │ gzip: 0.08 kB
+dist/assets/report-DakXw7zk.js  0.37 kB │ gzip: 0.24 kB
+dist/assets/index-C9nd_bJF.js   3.01 kB │ gzip: 1.44 kB
+✓ built in 75ms</pre></div>
+
+<p>الملف الجديد، <code>report-….js</code>، لا يُنزَّل إلا حين يضغط أحد الزر. وتسمى هذه التقنية <dfn>تقسيم الكود</dfn> (code splitting)، وتستخدمها أُطر العمل لتحميل كل صفحة من التطبيق وحدها، كما سترى في فصل التوجيه.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>index.html</span><b>560px</b></div><img src="img/b2-tooling-ar-my-shop-index.html-560-51da9b.png" alt=""><figcaption><b>شكل 3.1:</b> الموقع المبني، معروضاً من <code>dist</code>، بعد ضغط الزر: حُمّلت وحدة التقرير عند الطلب.</figcaption></figure>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>كم مرة تعمل الوحدة إن استوردتها خمس وحدات أخرى؟</li><li>هل تسمح <code>^2.4.1</code> بتثبيت الإصدار 3.0.0؟</li><li>لماذا للملفات المبنية أسماء مثل <code>index-D9l0HIoC.js</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">3.4</span> <span>التدقيق والتنسيق</span></h2>
+
+<p>أداتان أخريان مكانهما في كل مشروع. <dfn>المدقق</dfn> (linter) يقرأ كودك ويبلّغ عن الأخطاء المحتملة والأنماط السيئة. و<dfn>المنسّق</dfn> (formatter) يعيد كتابة شكل الكود، المسافات وعلامات التنصيص وفواصل الأسطر، بأسلوب واحد متسق، فلا يتجادل أحد فيه في مراجعات الكود. والخياران القياسيان <strong>ESLint</strong> و<strong>Prettier</strong>. وتثبيتهما جاء بمفاجأة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># أضف مدققاً للكود ومنسّقاً له</span>
+<span class="c">$ </span><span class="k">npm install -D eslint @eslint/js typescript-eslint prettier</span>
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error Found: typescript@7.0.2
+npm error Could not resolve dependency:
+npm error peer typescript@&quot;&gt;=4.8.4 &lt;6.1.0&quot; from typescript-eslint@8.73.0
+<span class="c"># اختر نسخة TypeScript يدعمها typescript-eslint</span>
+<span class="c">$ </span><span class="k">npm install -D typescript@~6.0.0 eslint @eslint/js typescript-eslint prettier</span>
+added 96 packages, removed 1 package, changed 1 package, and audited 113 packages in 6s
+<span class="c"># الاعتماديات المباشرة، ونسخها بالضبط</span>
+<span class="c">$ </span><span class="k">npm ls --depth=0</span>
+├── @eslint/js@10.0.1
+├── eslint@10.15.0
+├── prettier@3.10.1
+├── typescript-eslint@8.73.0
+├── typescript@6.0.3
+└── vite@8.3.8
+<span class="c"># سمِّ الأوامر التي سيشغّلها الفريق</span>
+<span class="c">$ </span><span class="k">npm pkg set scripts.lint=&quot;eslint src&quot; scripts.format=&quot;prettier --write src&quot; scripts.check=&quot;tsc &amp;&amp; eslint src &amp;&amp; prettier --check src&quot;</span></pre></div>
+
+<h3>قراءة تعارض الاعتماديات</h3>
+
+<p>توقف التثبيت الأول بـ <code>ERESOLVE</code>. اقرأ الأسطر الثلاثة المهمة: في المشروع <code>typescript@7.0.2</code>، والحزمة <code>typescript-eslint</code> تعلن <dfn>اعتمادية نظيرة</dfn> (peer dependency) على TypeScript، تقول إنها لا تعمل إلا مع الإصدارات من 4.8.4 حتى 6.1.0 دون أن تشمله. فقد كانت TypeScript 7 جديدة جداً فلم تدعمها هذه الأداة بعد. وستقابل هذا الموقف في كل مشروع حقيقي.</p>
+
+<p>أمامك ثلاثة خيارات صادقة: أن تنتظر حتى تدعم الأداة الإصدار الجديد، أو تستخدم أداة أخرى، أو، كما هنا، تختار إصداراً تدعمه كل الحزم. فـ TypeScript 6.0 مدعومة بالكامل، وفحصها للأنواع هو نفسه لكل ما في هذا الكتاب، فيثبّتها الأمر الثاني مع باقي الأدوات. أما الخيار الخاطئ فهو <code>--force</code> أو <code>--legacy-peer-deps</code>: يثبّتان رغم التعارض، وقد تفشل الأداة بعد أسابيع بطرق غريبة.</p>
+
+<p>والأمر الأخير يضيف ثلاثة سكربتات. فمن الآن يشغّل كل الفريق <code>npm run lint</code> و<code>npm run format</code> و<code>npm run check</code>، دون أن يتذكر أحد الأوامر بالضبط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">package.json (بعد)</div><pre class="code">{
+  <span class="s">&quot;name&quot;</span>: <span class="s">&quot;my-shop&quot;</span>,
+  <span class="s">&quot;private&quot;</span>: <span class="k">true</span>,
+  <span class="s">&quot;version&quot;</span>: <span class="s">&quot;0.0.0&quot;</span>,
+  <span class="s">&quot;type&quot;</span>: <span class="s">&quot;module&quot;</span>,
+  <span class="s">&quot;scripts&quot;</span>: {
+    <span class="s">&quot;dev&quot;</span>: <span class="s">&quot;vite&quot;</span>,
+    <span class="s">&quot;build&quot;</span>: <span class="s">&quot;tsc &amp;&amp; vite build&quot;</span>,
+    <span class="s">&quot;preview&quot;</span>: <span class="s">&quot;vite preview&quot;</span>,
+    <span class="s">&quot;lint&quot;</span>: <span class="s">&quot;eslint src&quot;</span>,
+    <span class="s">&quot;format&quot;</span>: <span class="s">&quot;prettier --write src&quot;</span>,
+    <span class="s">&quot;check&quot;</span>: <span class="s">&quot;tsc &amp;&amp; eslint src &amp;&amp; prettier --check src&quot;</span>
+  },
+  <span class="s">&quot;devDependencies&quot;</span>: {
+    <span class="s">&quot;@eslint/js&quot;</span>: <span class="s">&quot;^10.0.1&quot;</span>,
+    <span class="s">&quot;eslint&quot;</span>: <span class="s">&quot;^10.15.0&quot;</span>,
+    <span class="s">&quot;prettier&quot;</span>: <span class="s">&quot;^3.10.1&quot;</span>,
+    <span class="s">&quot;typescript&quot;</span>: <span class="s">&quot;~6.0.0&quot;</span>,
+    <span class="s">&quot;typescript-eslint&quot;</span>: <span class="s">&quot;^8.73.0&quot;</span>,
+    <span class="s">&quot;vite&quot;</span>: <span class="s">&quot;^8.3.6&quot;</span>
+  }
+}</pre></div>
+
+<h3>ESLint</h3>
+
+<p>يُضبط ESLint في <code>eslint.config.js</code>. وهذا الإعداد يبدأ بالقواعد الموصى بها لـ JavaScript وTypeScript، ويضيف قاعدتين: <code>eqeqeq</code> تمنع <code>==</code>، و<code>no-console</code> تحذّر من أسطر التصحيح المنسية:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">eslint.config.js</div><pre class="code"><span class="k">import</span> js <span class="k">from</span> <span class="s">&quot;@eslint/js&quot;</span>;
+<span class="k">import</span> tseslint <span class="k">from</span> <span class="s">&quot;typescript-eslint&quot;</span>;
+
+<span class="k">export</span> <span class="k">default</span> tseslint.config(
+  { ignores: [<span class="s">&quot;dist&quot;</span>] },
+  js.configs.recommended,
+  tseslint.configs.recommended,
+  {
+    rules: {
+      eqeqeq: <span class="s">&quot;error&quot;</span>,
+      <span class="s">&quot;no-console&quot;</span>: <span class="s">&quot;warn&quot;</span>,
+    },
+  },
+);</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">src/total.ts</div><pre class="code"><span class="k">const</span> greeting = <span class="s">&quot;مرحباً&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> total(prices: any[]) {
+  <span class="k">let</span> sum = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> price <span class="k">of</span> prices) {
+    <span class="k">if</span> (price == <span class="k">null</span>) continue;
+    sum += price;
+  }
+  <span class="k">return</span> sum;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># افحص الكود</span>
+<span class="c">$ </span><span class="k">npx eslint src</span>
+~/code/my-shop/src/total.ts
+  1:7   error  &#x27;greeting&#x27; is assigned a value but never used  @typescript-eslint/no-unused-vars
+  3:31  error  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  6:15  error  Expected &#x27;===&#x27; and instead saw &#x27;==&#x27;            eqeqeq
+✖ 3 problems (3 errors, 0 warnings)</pre></div>
+
+<p>كل سطر يذكر الموضع والمشكلة واسم القاعدة. ابحث بالاسم حين لا تكون الرسالة واضحة، فلكل قاعدة صفحة تشرح سبب وجودها. وتعرض المحررات هذه المشكلات وأنت تكتب، مثل أخطاء TypeScript.</p>
+
+<h3>Prettier</h3>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># هل الكود منسّق؟</span>
+<span class="c">$ </span><span class="k">npx prettier --check src</span>
+Checking formatting...
+[warn] src/format.ts
+[warn] src/style.css
+[warn] Code style issues found in 2 files. Run Prettier with --write to fix.
+<span class="c"># نسّق كل الملفات</span>
+<span class="c">$ </span><span class="k">npx prettier --write src</span>
+src/format.ts 54ms
+src/main.ts 15ms (unchanged)
+src/products.ts 7ms (unchanged)
+src/style.css 18ms
+<span class="c">$ </span><span class="k">cat src/format.ts</span>
+export function formatPrice(value: number): string {
+  return `${value.toFixed(2)} جنيهاً`;
+}</pre></div>
+
+<p><code>--check</code> تبلّغ فقط، و<code>--write</code> تصلح. اضبط محررك ليشغّل Prettier كلما حفظت، ولن تنسّق كوداً بيدك بعد اليوم.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: دع الآلة تفحص، قبل كل commit</p><p>ضع كل الفحوص خلف أمر واحد، هنا <code>npm run check</code>، وشغّله قبل كل commit وفي CI، الخادم الذي يفحص كل طلب دمج. وعندها يراجع البشر ما لا يحكم فيه إلا البشر: التصميم، والأسماء، والمنطق. ويختفي الجدال في المسافات وعلامات التنصيص إلى الأبد.</p></aside>
+
+<h2><span class="sec">3.5</span> <span>الإعدادات والأسرار</span></h2>
+
+<p>تحتاج التطبيقات كثيراً إلى إعدادات تختلف بين حاسوبك والموقع الحقيقي، مثل عنوان الواجهة البرمجية. وتقرؤها Vite من ملفات <code>.env</code>، وتتيح المتغيرات التي تبدأ أسماؤها بـ <code>VITE_</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.env.production</div><pre class="code">VITE_API_URL=https://api.example.com</pre></div>
+
+<p>وفي الكود تعطيك <code>import.meta.env.VITE_API_URL</code> القيمة، ويكتبها البناء داخل ملفات JavaScript.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا أسرار في الواجهة</p><p>كل ما في الملفات المبنية يقرؤه أي شخص يفتح الموقع: اضغط F12 وانظر. فلا تضع أبداً كلمة مرور أو مفتاح واجهة خاصاً أو عنوان قاعدة بيانات في كود الواجهة أو في متغير <code>VITE_</code>. الأسرار مكانها الخادم، وهو يتحدث إلى الخدمات الأخرى نيابة عن المستخدم.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>./</code> في مسار الاستيراد</td><td>تبحث الأداة عن حزمة بهذا الاسم وتفشل</td><td><code>"./format.ts"</code> لملفاتك</td></tr>
+<tr><td>عدم حفظ <code>package-lock.json</code></td><td>تثبّت الحواسيب المختلفة إصدارات مختلفة</td><td>احفظه، واستخدم <code>npm ci</code> في CI وعلى الخوادم</td></tr>
+<tr><td>حفظ <code>node_modules</code> أو <code>dist</code> في Git</td><td>مستودعات ضخمة وتعارضات بلا نهاية</td><td>أبقِهما في <code>.gitignore</code></td></tr>
+<tr><td>التثبيت بـ <code>--force</code> بعد <code>ERESOLVE</code></td><td>تفشل الأدوات لاحقاً بطرق محيّرة</td><td>اقرأ التعارض، ثم اختر إصدارات متوافقة</td></tr>
+<tr><td>فتح <code>dist/index.html</code> بالنقر المزدوج</td><td>صفحة بيضاء: الوحدات تحتاج خادماً</td><td><code>npm run preview</code></td></tr>
+<tr><td>سرّ في متغير <code>VITE_</code></td><td>يقرؤه أي أحد</td><td>أبقِ الأسرار على الخادم</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>وحدات ES</strong> تتشارك الكود بـ <code>export</code> و<code>import</code>. والوحدة تعمل مرة واحدة، وكل مستورد يأخذ النسخة نفسها.</li>
+<li>يسرد <code>package.json</code> <strong>السكربتات</strong> و<strong>الاعتماديات</strong>، و<strong>الترقيم الدلالي</strong> يحدد التحديثات المسموحة، و<strong>ملف القفل</strong> يسجل الإصدارات بالضبط.</li>
+<li><strong>Vite</strong> تخدم الوحدات فوراً أثناء العمل (مع HMR)، و<strong>تبني</strong> للإنتاج ملفات مصغّرة ببصمات ومهزوزة الشجرة.</li>
+<li><strong>الاستيراد الديناميكي</strong> يفصل الكود قليل الاستخدام في ملفات تُحمّل عند الطلب.</li>
+<li><strong>ESLint</strong> يجد الأخطاء المحتملة، و<strong>Prettier</strong> يحفظ أسلوباً واحداً. شغّلهما عبر السكربتات قبل كل commit.</li>
+<li>تعارض <strong>الاعتمادية النظيرة</strong> معلومة: اختر إصدارات متوافقة بدل الفرض.</li>
+<li>الإعدادات في ملفات <code>.env</code>، و<strong>الأسرار لا تدخل الواجهة أبداً</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. مرة واحدة. 2. لا: علامة ^ تسمح بتحديثات minor وpatch داخل الإصدار الكبير 2. 3. البصمة تتغير كلما تغير المحتوى، فتحفظ المتصفحات الملفات إلى الأبد وتحمّل دائماً أحدث نسخة.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">تبني هذه المشاريع عادات لا مزايا. وستستخدم الثلاثة في كل مشروع حتى آخر هذا الكتاب، فخذ وقتك لتنفذها كما يجب في مشروع Vite خاص بك.</p>
+
+<div class="project">
+<p class="project-label">مشروع 3.1 · سهل</p>
+<h3>مكتبة أدوات صغيرة بواجهة عامة</h3>
+<p class="project-goal">نظّم الدوال المساعدة في وحدات، وقرّر أيها يحق لباقي التطبيق استخدامه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التصديرات المسماة، وإعادة التصدير، وملف «البرميل»، وإبقاء بعض الكود داخلياً.</p>
+<ol class="steps">
+<li>أنشئ مجلد <code>modules</code> فيه <code>text.mjs</code> (<code>slugify</code> و<code>truncate</code>) و<code>numbers.mjs</code> (<code>clamp</code> و<code>percent</code>).</li>
+<li><code>slugify</code> تحوّل العنوان إلى جزء من رابط: حروف صغيرة، وبلا مسافات في الطرفين، وكل تتابع من الرموز الأخرى يصير <code>-</code> واحدة. والنمط <code>\p{L}</code> يعني «أي حرف في أي لغة»، فيعمل مع العربية أيضاً.</li>
+<li>أضف <code>internal.mjs</code> فيه دالة مساعدة تُستخدم داخل المجلد فقط.</li>
+<li>اكتب <code>index.mjs</code> يعيد تصدير الدوال العامة الأربع، <em>دون</em> الداخلية.</li>
+<li>في <code>app.mjs</code> استورد من <code>./index.mjs</code> فقط، وجرّب كل دالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البرميل وعد لباقي الفريق: «هذه الدوال ثابتة، وكل ما عداها قد يتغير». فأبقِه صغيراً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>جافاسكربت-الحديثة-بعمق
+جافاسكربت الحديثة…
+100 0
+35%</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 3.2 · متوسط</p>
+<h3>أمر واحد يفحص كل شيء</h3>
+<p class="project-goal">أعطِ مشروعك سكربت <code>check</code> يشغّل فاحص الأنواع والمدقق والمنسّق بالترتيب، ويتوقف عند أول مشكلة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سكربتات npm، و<code>&amp;&amp;</code> لربط الأوامر، وقواعد ESLint، ومعرفة أي أداة فشلت.</p>
+<ol class="steps">
+<li>ثبّت ESLint وtypescript-eslint وPrettier كما في القسم 3.4، وحل تعارض إصدار TypeScript إن ظهر.</li>
+<li>أضف السكربتات بـ <code>npm pkg set</code>: <code>lint</code> و<code>format</code> و<code>check</code>، و<code>check</code> هي <code>tsc &amp;&amp; eslint src &amp;&amp; prettier --check src</code>.</li>
+<li>أضف ملفاً يستخدم <code>var</code>، وشغّل <code>npm run check</code>. ولاحظ أن <code>tsc</code> نجح بصمت وأن ESLint أوقف السلسلة.</li>
+<li>أصلح المشكلة وشغّل الفحص من جديد حتى ينجح.</li>
+<li>اجعلها عادة: شغّل <code>npm run check</code> قبل كل <code>git commit</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>&amp;&amp;</code> تشغّل الأمر التالي فقط إن نجح الذي قبله. فضع الفحوص الأسرع أولاً لتعرف المشكلات أبكر. وكثير من الفرق تشغّل هذا السكربت تلقائياً بخطاف Git (Git hook).</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># شغّل كل الفحوص قبل الـ commit</span>
+<span class="c">$ </span><span class="k">npm run check</span>
+~/code/my-shop/src/discount.ts
+  2:3  error  Unexpected var, use let or const instead  no-var
+✖ 1 problem (1 error, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+<span class="c"># بعد إصلاح المشكلة</span>
+<span class="c">$ </span><span class="k">npm run check</span>
+All matched files use Prettier code style!</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 3.3 · تحدٍّ</p>
+<h3>إعدادات لكل بيئة</h3>
+<p class="project-goal">استخدم عنوان واجهة برمجية أثناء التطوير وآخر في الإنتاج، واقرأهما في وحدة واحدة بالأنواع، وأثبت أيهما استخدمه البناء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> ملفات <code>.env</code>، و<code>import.meta.env</code>، والفشل المبكر عند نقص الإعدادات، وفحص مخرجات البناء.</p>
+<ol class="steps">
+<li>أنشئ <code>.env.development</code> و<code>.env.production</code>، في كل منهما <code>VITE_API_URL</code> مختلف.</li>
+<li>اكتب <code>src/config.ts</code>، الملف الوحيد الذي يقرأ <code>import.meta.env</code>. فإن كان العنوان ناقصاً ارمِ خطأً برسالة مفيدة فوراً.</li>
+<li>صدّر كائن <code>config</code> واحداً للقراءة فقط، واستورده حيثما احتجت العنوان.</li>
+<li>شغّل <code>npm run dev</code> وتحقق من عنوان التطوير في Console، ثم ابنِ.</li>
+<li>ابحث في JavaScript المبنية بـ <code>grep</code> لتتأكد أن عنوان الإنتاج، وهو وحده، دخلها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الخطوة 5 هي طريقتك لإثبات ما في بنائك حقاً. واستخدم الحيلة نفسها لتتأكد أن سراً لم يتسلل: فإن وجدته بـ <code>grep</code> فسيجده أي أحد.</p>
+<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="c">// كل الإعدادات تُقرأ وتُفحص في مكان واحد</span>
+<span class="k">const</span> apiUrl = <span class="k">import</span>.meta.env.VITE_API_URL;
+<span class="k">if</span> (!apiUrl) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;VITE_API_URL غير مضبوط: أضفه إلى ملف .env&quot;</span>);
+
+<span class="k">export</span> <span class="k">const</span> config = {
+  apiUrl,
+  isProduction: <span class="k">import</span>.meta.env.PROD,
+} as <span class="k">const</span>;</pre></div>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># ملفا إعدادات</span>
+<span class="c">$ </span><span class="k">cat .env.development .env.production</span>
+VITE_API_URL=http://localhost:8000
+VITE_API_URL=https://api.bits-shop.example
+<span class="c"># ابنِ الموقع للإنتاج</span>
+<span class="c">$ </span><span class="k">npm run build</span>
+✓ built in 72ms
+<span class="c"># أي عنوان دخل الملف المبني؟</span>
+<span class="c">$ </span><span class="k">grep -o &#x27;https://[a-z.-]*example&#x27; dist/assets/index-*.js</span>
+https://api.bits-shop.example</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف تصديراً مسمى <code>FREE_SHIPPING = 50</code> إلى <code>prices.mjs</code>، وأعد تصديره من <code>index.mjs</code>، واطبعه من <code>main.mjs</code>.</li>
+<li><span class="level">سهل</span> في مشروع Vite خاص بك شغّل <code>npm run build</code>، ثم غيّر كلمة واحدة في <code>main.ts</code> وابنِ من جديد. أي أسماء الملفات تغيرت، وأيها بقي كما هو؟ ولماذا؟</li>
+<li><span class="level medium">متوسط</span> اكتب أي هذه الإصدارات تسمح بها <code>^1.4.2</code>: 1.4.1، و1.4.9، و1.9.0، و2.0.0. ثم افعل الشيء نفسه لـ <code>~1.4.2</code>.</li>
+<li><span class="level medium">متوسط</span> أضف قاعدة ESLint <code>"prefer-const": "error"</code>، واكتب <code>let</code> لا يُعاد إسنادها أبداً، وأصلح الخطأ الذي تبلّغ عنه <code>npm run lint</code>.</li>
+<li><span class="level hard">تحدٍّ</span> افصل ميزة ثانية في ملفها: زر «مساعدة» يحمّل <code>help.ts</code> باستيراد ديناميكي. ابنِ، وتأكد من المخرجات أن هناك الآن ملفي JavaScript إضافيين.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 4</p>
+<p>سلسلة الأدوات جاهزة، وأسس اللغة في مكانها. وفي الفصل التالي يصل إطار العمل: ستبني مكوناتك الأولى، وترى كيف تُوصف صفحة كاملة دالةً لبياناتها.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1183,6 +1656,16 @@ typed-emitter-bad.ts(29,18): error TS2345: Argument of type &#x27;(id: string) =
 <li>يقول الفحص إن <code>{ status: "empty" }</code> لا يمكن إسنادها إلى <code>never</code> في فرع <code>default</code>. أضف <code>case "empty": return "لا شيء هنا بعد";</code> (أو أي رسالة تريدها) فيختفي الخطأ.</li>
 <li><code>last</code> تستطيع ببساطة أن تكتب <code>return list.at(-1)</code>. ولـ <code>groupBy</code> ابدأ بـ <code>const groups = {} as Record&lt;K, T[]&gt;</code>، ثم لكل عنصر اكتب <code>(groups[key(item)] ??= []).push(item)</code>. وهذا من الاستخدامات القليلة الصادقة لـ <code>as</code>: فالكائن يبدأ فارغاً وتملؤه الحلقة.</li>
 <li>اكتب <code>isProduct(value: unknown): value is Product</code> تفحص الكائن وكل حقل بـ <code>typeof</code>، ثم <code>isProductList = (value: unknown): value is Product[] =&gt; Array.isArray(value) &amp;&amp; value.every(isProduct)</code>. فتمر البيانات السليمة، ويُرفض السعر المكتوب نصاً والكائن الذي ليس مصفوفة.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 3</h2>
+<ol class="exercises">
+<li>في <code>prices.mjs</code> أضف <code>export const FREE_SHIPPING = 50;</code>، وفي <code>index.mjs</code> غيّر السطر الثاني إلى <code>export { default as formatPrice, VAT, FREE_SHIPPING } from "./prices.mjs";</code>، ثم استورده في <code>main.mjs</code> مع الباقي واطبعه.</li>
+<li>يأخذ ملف JavaScript اسماً جديداً لأن محتواه تغير، ويتغير محتوى <code>index.html</code> أيضاً لأنه يشير إلى الاسم الجديد. أما ملف CSS فيحتفظ باسمه: لم يتغير، فلا ينزّله من سبق أن حفظه في ذاكرته المؤقتة.</li>
+<li><code>^1.4.2</code> تسمح بـ 1.4.9 و1.9.0، ولا تسمح بـ 1.4.1 (أقدم) ولا بـ 2.0.0 (إصدار كبير جديد). و<code>~1.4.2</code> لا تسمح من القائمة إلا بـ 1.4.9: فهي تقبل تحديثات patch داخل 1.4 فقط.</li>
+<li>يبلّغ ESLint بأن <code>'x' is never reassigned. Use 'const' instead</code>. غيّر <code>let</code> إلى <code>const</code>، أو شغّل <code>npx eslint src --fix</code> فيُجري هذا التغيير وحده.</li>
+<li>أضف زراً ثانياً يشغّل معالجه <code>const { showHelp } = await import("./help.ts")</code>. وعندها يسرد البناء <code>report-….js</code> و<code>help-….js</code> بجانب <code>index-….js</code>: ملف إضافي لكل استيراد ديناميكي.</li>
 </ol>
 
 </section>

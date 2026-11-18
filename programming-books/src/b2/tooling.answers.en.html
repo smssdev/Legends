@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>In <code>prices.mjs</code> add <code>export const FREE_SHIPPING = 50;</code>; in <code>index.mjs</code> change the second line to <code>export { default as formatPrice, VAT, FREE_SHIPPING } from "./prices.mjs";</code>; then import it in <code>main.mjs</code> with the others and print it.</li>
+<li>The JavaScript file gets a new name, because its content changed, and so does <code>index.html</code>’s content, because it points to the new name. The CSS file keeps its name: it did not change, so visitors who already have it in their cache do not download it again.</li>
+<li><code>^1.4.2</code> allows 1.4.9 and 1.9.0, but not 1.4.1 (older) or 2.0.0 (a new major version). <code>~1.4.2</code> allows only 1.4.9 from the list: it accepts patch updates within 1.4.</li>
+<li>ESLint reports <code>'x' is never reassigned. Use 'const' instead</code>. Change <code>let</code> to <code>const</code>, or run <code>npx eslint src --fix</code>, which makes this change by itself.</li>
+<li>Add a second button whose handler runs <code>const { showHelp } = await import("./help.ts")</code>. The build then lists <code>report-….js</code> and <code>help-….js</code> next to <code>index-….js</code>: one extra file per dynamic import.</li>
+</ol>

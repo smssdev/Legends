@@ -1,0 +1,55 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">تبني هذه المشاريع عادات لا مزايا. وستستخدم الثلاثة في كل مشروع حتى آخر هذا الكتاب، فخذ وقتك لتنفذها كما يجب في مشروع Vite خاص بك.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>مكتبة أدوات صغيرة بواجهة عامة</h3>
+<p class="project-goal">نظّم الدوال المساعدة في وحدات، وقرّر أيها يحق لباقي التطبيق استخدامه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التصديرات المسماة، وإعادة التصدير، وملف «البرميل»، وإبقاء بعض الكود داخلياً.</p>
+<ol class="steps">
+<li>أنشئ مجلد <code>modules</code> فيه <code>text.mjs</code> (<code>slugify</code> و<code>truncate</code>) و<code>numbers.mjs</code> (<code>clamp</code> و<code>percent</code>).</li>
+<li><code>slugify</code> تحوّل العنوان إلى جزء من رابط: حروف صغيرة، وبلا مسافات في الطرفين، وكل تتابع من الرموز الأخرى يصير <code>-</code> واحدة. والنمط <code>\p{L}</code> يعني «أي حرف في أي لغة»، فيعمل مع العربية أيضاً.</li>
+<li>أضف <code>internal.mjs</code> فيه دالة مساعدة تُستخدم داخل المجلد فقط.</li>
+<li>اكتب <code>index.mjs</code> يعيد تصدير الدوال العامة الأربع، <em>دون</em> الداخلية.</li>
+<li>في <code>app.mjs</code> استورد من <code>./index.mjs</code> فقط، وجرّب كل دالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البرميل وعد لباقي الفريق: «هذه الدوال ثابتة، وكل ما عداها قد يتغير». فأبقِه صغيراً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/modules/app.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>أمر واحد يفحص كل شيء</h3>
+<p class="project-goal">أعطِ مشروعك سكربت <code>check</code> يشغّل فاحص الأنواع والمدقق والمنسّق بالترتيب، ويتوقف عند أول مشكلة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سكربتات npm، و<code>&amp;&amp;</code> لربط الأوامر، وقواعد ESLint، ومعرفة أي أداة فشلت.</p>
+<ol class="steps">
+<li>ثبّت ESLint وtypescript-eslint وPrettier كما في القسم {{n}}.4، وحل تعارض إصدار TypeScript إن ظهر.</li>
+<li>أضف السكربتات بـ <code>npm pkg set</code>: <code>lint</code> و<code>format</code> و<code>check</code>، و<code>check</code> هي <code>tsc &amp;&amp; eslint src &amp;&amp; prettier --check src</code>.</li>
+<li>أضف ملفاً يستخدم <code>var</code>، وشغّل <code>npm run check</code>. ولاحظ أن <code>tsc</code> نجح بصمت وأن ESLint أوقف السلسلة.</li>
+<li>أصلح المشكلة وشغّل الفحص من جديد حتى ينجح.</li>
+<li>اجعلها عادة: شغّل <code>npm run check</code> قبل كل <code>git commit</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>&amp;&amp;</code> تشغّل الأمر التالي فقط إن نجح الذي قبله. فضع الفحوص الأسرع أولاً لتعرف المشكلات أبكر. وكثير من الفرق تشغّل هذا السكربت تلقائياً بخطاف Git (Git hook).</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-code="projects/check.sh" data-title="الطرفية"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>إعدادات لكل بيئة</h3>
+<p class="project-goal">استخدم عنوان واجهة برمجية أثناء التطوير وآخر في الإنتاج، واقرأهما في وحدة واحدة بالأنواع، وأثبت أيهما استخدمه البناء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> ملفات <code>.env</code>، و<code>import.meta.env</code>، والفشل المبكر عند نقص الإعدادات، وفحص مخرجات البناء.</p>
+<ol class="steps">
+<li>أنشئ <code>.env.development</code> و<code>.env.production</code>، في كل منهما <code>VITE_API_URL</code> مختلف.</li>
+<li>اكتب <code>src/config.ts</code>، الملف الوحيد الذي يقرأ <code>import.meta.env</code>. فإن كان العنوان ناقصاً ارمِ خطأً برسالة مفيدة فوراً.</li>
+<li>صدّر كائن <code>config</code> واحداً للقراءة فقط، واستورده حيثما احتجت العنوان.</li>
+<li>شغّل <code>npm run dev</code> وتحقق من عنوان التطوير في Console، ثم ابنِ.</li>
+<li>ابحث في JavaScript المبنية بـ <code>grep</code> لتتأكد أن عنوان الإنتاج، وهو وحده، دخلها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الخطوة 5 هي طريقتك لإثبات ما في بنائك حقاً. واستخدم الحيلة نفسها لتتأكد أن سراً لم يتسلل: فإن وجدته بـ <code>grep</code> فسيجده أي أحد.</p>
+<pre data-code="projects/config.ts" data-title="src/config.ts"></pre>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-code="projects/env.sh" data-title="الطرفية"></pre>
+</div>

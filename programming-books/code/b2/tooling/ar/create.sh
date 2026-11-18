@@ -1,0 +1,19 @@
+# أنشئ مشروعاً من قالب TypeScript البسيط
+$ npm create vite@latest my-shop -- --template vanilla-ts --no-interactive
+create-vite v9.3.4
+Scaffolding project in ~/code/my-shop...
+$ cd my-shop
+# نزّل الحزم التي يحتاجها
+$ npm install
+added 17 packages, and audited 18 packages in 3s
+# ما أنشأه القالب
+$ find . -path ./node_modules -prune -o -type f -print | sort
+./.gitignore
+./index.html
+./package-lock.json
+./package.json
+./src/format.ts
+./src/main.ts
+./src/products.ts
+./src/style.css
+./tsconfig.json

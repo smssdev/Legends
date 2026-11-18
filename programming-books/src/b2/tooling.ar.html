@@ -1,0 +1,240 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/tooling/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>الوحدات والأدوات وأنظمة البناء</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تقسم الكود إلى وحدات ES بتصديرات مسماة وافتراضية</li>
+<li>تقرأ <code>package.json</code> وتديره: الاعتماديات، والإصدارات، وملف القفل، والسكربتات</li>
+<li>تنشئ مشروعاً بـ Vite، وتفهم خادم التطوير وبناء الإنتاج</li>
+<li>تحمّل الكود قليل الاستخدام حين يُحتاج إليه فقط</li>
+<li>تبقي الكود نظيفاً ومتسقاً بـ ESLint وPrettier</li>
+<li>تحل تعارض الاعتماديات بدل أن تفرضه</li>
+</ul>
+</div>
+
+<p class="lead">كان كل مثال حتى الآن ملفاً واحداً. أما واجهة حقيقية ففيها مئات الملفات، وتستخدم عشرات الحزم التي كتبها آخرون، ويجب أن تصل إلى المتصفح ملفات قليلة صغيرة سريعة. والأدوات التي تجعل هذا ممكناً تسمى <dfn>سلسلة الأدوات</dfn> (toolchain). لا تحتاج أن تعرف كيف تعمل من الداخل، لكن يجب أن تعرف ماذا تفعل كل واحدة، وكيف تقرأ مخرجاتها، وماذا تفعل حين تعترض. وهذا الفصل يجهز سلسلة الأدوات نفسها التي يستخدمها باقي الكتاب.</p>
+
+<aside class="bit" data-mood="think"><p>كل أمر في هذا الفصل شُغّل فعلاً أثناء صنع الكتاب، وترى بالضبط ما طبعه، بتحذيراته وأخطائه. وستكون أرقام الإصدارات على شاشتك أحدث، وهذا طبيعي: اقرأ المعنى لا الأرقام.</p></aside>
+
+<h2>{{n}}.1 وحدات ES</h2>
+
+<p><dfn>الوحدة</dfn> (module) ملف له نطاقه الخاص. لا يُرى شيء بداخله من الملفات الأخرى إلا إن <dfn>صُدّر</dfn>، ولا يُرى شيء من الخارج بداخله إلا إن <dfn>استُورد</dfn>. وهذا نظام الوحدات القياسي في JavaScript، ويسمى <dfn>وحدات ES</dfn> (ES modules)، ويعمل بالطريقة نفسها في المتصفحات وNode وكل أدوات البناء.</p>
+
+<pre data-code="modules/prices.mjs" data-title="prices.mjs"></pre>
+<pre data-code="modules/cart.mjs" data-title="cart.mjs"></pre>
+
+<ul>
+<li><strong>التصدير المسمى</strong>، <code>export const VAT</code>، يُستورد بالاسم نفسه بين قوسين: <code>import { withVat } from "./prices.mjs"</code>.</li>
+<li><strong>التصدير الافتراضي</strong> يُستورد دون قوسين، وبأي اسم تختاره: <code>import formatPrice from …</code>. وفي الوحدة واحد على الأكثر.</li>
+<li>يبدأ المسار بـ <code>./</code> لملفاتك أنت. أما الاسم المجرد، مثل <code>"vite"</code>، فيعني حزمة من <code>node_modules</code>.</li>
+</ul>
+
+<p>وكثيراً ما يكون في المجلدات الكبيرة ملف <code>index</code> يعيد تصدير أجزائها العامة، فيستورد الكود الآخر من مكان واحد، ويستطيع المجلد ترتيب داخله بحرية:</p>
+
+<pre data-code="modules/index.mjs" data-title="index.mjs"></pre>
+<pre data-code="modules/main.mjs" data-title="main.mjs"></pre>
+<pre data-out="modules/main.mjs"></pre>
+
+<p>انظر إلى السطر الأخير. استوردت ثلاثة ملفات <code>prices.mjs</code>، لكنها حُمّلت وعملت <strong>مرة واحدة</strong>. فكل مستورد يأخذ كائن الوحدة نفسه. ولهذا الوحدة مكان طبيعي لما يجب أن يكون منه واحد فقط: الإعدادات، أو ذاكرة مؤقتة، أو اتصال بخادم.</p>
+
+<aside class="box fact"><p class="box-title">هل تعلم؟ <code>require</code> و<code>module.exports</code></p><p>يستخدم كود Node الأقدم نظاماً مختلفاً اسمه <dfn>CommonJS</dfn>: <code>const x = require("x")</code> و<code>module.exports = …</code>. وما زلت ستقابله في الدروس والحزم القديمة. أما الكود الجديد فاستخدم فيه وحدات ES في كل مكان: اكتب <code>"type": "module"</code> في <code>package.json</code>، أو سمِّ الملفات <code>.mjs</code> كما في هذا المثال.</p></aside>
+
+<h2>{{n}}.2 مشروع بـ Vite</h2>
+
+<p>تستطيع المتصفحات تحميل وحدات ES مباشرة، لكن التطبيق الحقيقي يحتاج أكثر: يجب أن تفقد TypeScript أنواعها، وأن تصير مئات الملفات قليلة، وأن تأخذ الصور أسماء فريدة لتبقى الذاكرة المؤقتة صحيحة، وأثناء عملك يجب أن تتحدث الصفحة لحظة تحفظ. و<strong>Vite</strong> (تعني «سريع» بالفرنسية) تفعل هذا كله، وصارت نقطة البداية القياسية لمشاريع React وVue وTypeScript البسيطة. أنشئ مشروعاً بأمر واحد:</p>
+
+<pre data-code="create.sh" data-title="الطرفية"></pre>
+
+<p>ينشئ القالب صفحة تجريبية، واستُبدلت هنا بقائمة منتجات صغيرة في ثلاثة ملفات، <code>products.ts</code> و<code>format.ts</code> و<code>main.ts</code>، لتتابع كل سطر. ولاحظ أن ملفات TypeScript تستورد بعضها بالامتداد <code>.ts</code>: فـ Vite تفهمه، وإعدادات القالب تسمح به.</p>
+
+<h3>قراءة <code>package.json</code></h3>
+
+<pre data-code="package.json" data-title="package.json"></pre>
+
+<ul>
+<li><code>"type": "module"</code> تجعل كل ملف <code>.js</code> وحدة ES.</li>
+<li><code>scripts</code> أوامر مسماة. <code>npm run dev</code> تشغّل خادم التطوير في Vite، و<code>npm run build</code> تفحص الأنواع أولاً بـ <code>tsc</code> ثم تبني، و<code>npm run preview</code> تعرض البناء النهائي.</li>
+<li><code>devDependencies</code> أدوات يحتاجها <em>بناء</em> التطبيق. أما المكتبات التي يستخدمها التطبيق نفسه وقت التشغيل فمكانها <code>dependencies</code>، و<code>npm install some-library</code> تضعها هناك.</li>
+</ul>
+
+<p>وتتبع أرقام الإصدارات <dfn>الترقيم الدلالي</dfn> (semantic versioning): <code>MAJOR.MINOR.PATCH</code>. الإصدار الصغير جداً (patch) يصلح أخطاء، والصغير (minor) يضيف مزايا، والكبير (major) قد يكسر كودك. و<code>^8.3.6</code> تعني «8.3.6 أو أي 8.x.x أحدث»، و<code>~7.0.2</code> تعني «7.0.2 أو أي 7.0.x أحدث». والإصدارات التي ثُبّتت بالضبط مسجلة في <code>package-lock.json</code>. احفظ هذا الملف في Git، واستخدم <code>npm ci</code> على الخوادم: فهي تثبّت ما في ملف القفل بالضبط، فيشغّل كل حاسوب الكود نفسه.</p>
+
+<h3>خادم التطوير</h3>
+
+<p><code>npm run dev</code> تشغّل خادماً، عادة على <code>http://localhost:5173</code>. ولا تجمع شيئاً: بل ترسل كل وحدة إلى المتصفح حين تُطلب، وتترجم TypeScript في اللحظة، ولهذا تبدأ في لحظة حتى مع التطبيقات الكبيرة. وحين تحفظ ملفاً تدفع التغيير إلى الصفحة المفتوحة، غالباً دون إعادة تحميلها. ويسمى هذا <dfn>الاستبدال الحي للوحدات</dfn> (HMR)، وبسببه صار عمل الواجهات اليوم فورياً.</p>
+
+<h2>{{n}}.3 بناء الإنتاج</h2>
+
+<p>للزوار الحقيقيين تهم السرعة أكثر من الراحة. و<code>npm run build</code> تنشئ مجلد <code>dist</code>، جاهزاً للرفع إلى أي استضافة ثابتة:</p>
+
+<pre data-code="build.sh" data-title="الطرفية"></pre>
+
+<ul>
+<li>صارت الوحدات السبع ملف JavaScript <strong>واحداً</strong> وملف CSS واحداً: طلبات أقل.</li>
+<li>الكود <dfn>مصغَّر</dfn> (minified): حُذفت المسافات والتعليقات والأسماء الطويلة. وعمود «gzip» هو الحجم الذي يُرسل فعلاً عبر الشبكة، لأن الخوادم تضغط النصوص.</li>
+<li>في اسم كل ملف <dfn>بصمة</dfn> (hash) من محتواه، مثل <code>index-D9l0HIoC.js</code>. فحين يتغير المحتوى يتغير الاسم، فتحتفظ المتصفحات بالملفات في ذاكرتها إلى الأبد ولا تعرض نسخة قديمة أبداً.</li>
+<li>الكود الذي لا يستورده أحد يُحذف. ويسمى هذا <dfn>هز الشجرة</dfn> (tree shaking)، ويعمل أفضل مع التصديرات المسماة التي تستطيع الأدوات تتبعها.</li>
+</ul>
+
+<h3>تحميل الكود حين يُحتاج إليه فقط</h3>
+
+<p>بعض الكود لا يستخدمه إلا قليل من الزوار: تقرير، أو رسم بياني، أو صفحة للإدارة. و<dfn>الاستيراد الديناميكي</dfn>، <code>await import("./report.ts")</code>، استدعاء دالة يحمّل الوحدة حين يعمل السطر. وتراه Vite فتضع تلك الوحدة في ملف منفصل:</p>
+
+<pre data-code="main.ts" data-title="src/main.ts"></pre>
+<pre data-code="split.sh" data-title="الطرفية"></pre>
+
+<p>الملف الجديد، <code>report-….js</code>، لا يُنزَّل إلا حين يضغط أحد الزر. وتسمى هذه التقنية <dfn>تقسيم الكود</dfn> (code splitting)، وتستخدمها أُطر العمل لتحميل كل صفحة من التطبيق وحدها، كما سترى في فصل التوجيه.</p>
+
+<figure data-render="my-shop/index.html" data-width="560" data-actions="click:button;wait:300"><figcaption><b>شكل {{n}}.1:</b> الموقع المبني، معروضاً من <code>dist</code>، بعد ضغط الزر: حُمّلت وحدة التقرير عند الطلب.</figcaption></figure>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>كم مرة تعمل الوحدة إن استوردتها خمس وحدات أخرى؟</li><li>هل تسمح <code>^2.4.1</code> بتثبيت الإصدار 3.0.0؟</li><li>لماذا للملفات المبنية أسماء مثل <code>index-D9l0HIoC.js</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.4 التدقيق والتنسيق</h2>
+
+<p>أداتان أخريان مكانهما في كل مشروع. <dfn>المدقق</dfn> (linter) يقرأ كودك ويبلّغ عن الأخطاء المحتملة والأنماط السيئة. و<dfn>المنسّق</dfn> (formatter) يعيد كتابة شكل الكود، المسافات وعلامات التنصيص وفواصل الأسطر، بأسلوب واحد متسق، فلا يتجادل أحد فيه في مراجعات الكود. والخياران القياسيان <strong>ESLint</strong> و<strong>Prettier</strong>. وتثبيتهما جاء بمفاجأة:</p>
+
+<pre data-code="install.sh" data-title="الطرفية"></pre>
+
+<h3>قراءة تعارض الاعتماديات</h3>
+
+<p>توقف التثبيت الأول بـ <code>ERESOLVE</code>. اقرأ الأسطر الثلاثة المهمة: في المشروع <code>typescript@7.0.2</code>، والحزمة <code>typescript-eslint</code> تعلن <dfn>اعتمادية نظيرة</dfn> (peer dependency) على TypeScript، تقول إنها لا تعمل إلا مع الإصدارات من 4.8.4 حتى 6.1.0 دون أن تشمله. فقد كانت TypeScript 7 جديدة جداً فلم تدعمها هذه الأداة بعد. وستقابل هذا الموقف في كل مشروع حقيقي.</p>
+
+<p>أمامك ثلاثة خيارات صادقة: أن تنتظر حتى تدعم الأداة الإصدار الجديد، أو تستخدم أداة أخرى، أو، كما هنا، تختار إصداراً تدعمه كل الحزم. فـ TypeScript 6.0 مدعومة بالكامل، وفحصها للأنواع هو نفسه لكل ما في هذا الكتاب، فيثبّتها الأمر الثاني مع باقي الأدوات. أما الخيار الخاطئ فهو <code>--force</code> أو <code>--legacy-peer-deps</code>: يثبّتان رغم التعارض، وقد تفشل الأداة بعد أسابيع بطرق غريبة.</p>
+
+<p>والأمر الأخير يضيف ثلاثة سكربتات. فمن الآن يشغّل كل الفريق <code>npm run lint</code> و<code>npm run format</code> و<code>npm run check</code>، دون أن يتذكر أحد الأوامر بالضبط:</p>
+
+<pre data-code="package.final.json" data-title="package.json (بعد)"></pre>
+
+<h3>ESLint</h3>
+
+<p>يُضبط ESLint في <code>eslint.config.js</code>. وهذا الإعداد يبدأ بالقواعد الموصى بها لـ JavaScript وTypeScript، ويضيف قاعدتين: <code>eqeqeq</code> تمنع <code>==</code>، و<code>no-console</code> تحذّر من أسطر التصحيح المنسية:</p>
+
+<pre data-code="eslint.config.js" data-title="eslint.config.js"></pre>
+<pre data-code="total.ts" data-title="src/total.ts"></pre>
+<pre data-code="lint.sh" data-title="الطرفية"></pre>
+
+<p>كل سطر يذكر الموضع والمشكلة واسم القاعدة. ابحث بالاسم حين لا تكون الرسالة واضحة، فلكل قاعدة صفحة تشرح سبب وجودها. وتعرض المحررات هذه المشكلات وأنت تكتب، مثل أخطاء TypeScript.</p>
+
+<h3>Prettier</h3>
+
+<pre data-code="format.sh" data-title="الطرفية"></pre>
+
+<p><code>--check</code> تبلّغ فقط، و<code>--write</code> تصلح. اضبط محررك ليشغّل Prettier كلما حفظت، ولن تنسّق كوداً بيدك بعد اليوم.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: دع الآلة تفحص، قبل كل commit</p><p>ضع كل الفحوص خلف أمر واحد، هنا <code>npm run check</code>، وشغّله قبل كل commit وفي CI، الخادم الذي يفحص كل طلب دمج. وعندها يراجع البشر ما لا يحكم فيه إلا البشر: التصميم، والأسماء، والمنطق. ويختفي الجدال في المسافات وعلامات التنصيص إلى الأبد.</p></aside>
+
+<h2>{{n}}.5 الإعدادات والأسرار</h2>
+
+<p>تحتاج التطبيقات كثيراً إلى إعدادات تختلف بين حاسوبك والموقع الحقيقي، مثل عنوان الواجهة البرمجية. وتقرؤها Vite من ملفات <code>.env</code>، وتتيح المتغيرات التي تبدأ أسماؤها بـ <code>VITE_</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.env.production</div><pre class="code">VITE_API_URL=https://api.example.com</pre></div>
+
+<p>وفي الكود تعطيك <code>import.meta.env.VITE_API_URL</code> القيمة، ويكتبها البناء داخل ملفات JavaScript.</p>
+
+<aside class="box warn"><p class="box-title">انتبه: لا أسرار في الواجهة</p><p>كل ما في الملفات المبنية يقرؤه أي شخص يفتح الموقع: اضغط F12 وانظر. فلا تضع أبداً كلمة مرور أو مفتاح واجهة خاصاً أو عنوان قاعدة بيانات في كود الواجهة أو في متغير <code>VITE_</code>. الأسرار مكانها الخادم، وهو يتحدث إلى الخدمات الأخرى نيابة عن المستخدم.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نسيان <code>./</code> في مسار الاستيراد</td><td>تبحث الأداة عن حزمة بهذا الاسم وتفشل</td><td><code>"./format.ts"</code> لملفاتك</td></tr>
+<tr><td>عدم حفظ <code>package-lock.json</code></td><td>تثبّت الحواسيب المختلفة إصدارات مختلفة</td><td>احفظه، واستخدم <code>npm ci</code> في CI وعلى الخوادم</td></tr>
+<tr><td>حفظ <code>node_modules</code> أو <code>dist</code> في Git</td><td>مستودعات ضخمة وتعارضات بلا نهاية</td><td>أبقِهما في <code>.gitignore</code></td></tr>
+<tr><td>التثبيت بـ <code>--force</code> بعد <code>ERESOLVE</code></td><td>تفشل الأدوات لاحقاً بطرق محيّرة</td><td>اقرأ التعارض، ثم اختر إصدارات متوافقة</td></tr>
+<tr><td>فتح <code>dist/index.html</code> بالنقر المزدوج</td><td>صفحة بيضاء: الوحدات تحتاج خادماً</td><td><code>npm run preview</code></td></tr>
+<tr><td>سرّ في متغير <code>VITE_</code></td><td>يقرؤه أي أحد</td><td>أبقِ الأسرار على الخادم</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>وحدات ES</strong> تتشارك الكود بـ <code>export</code> و<code>import</code>. والوحدة تعمل مرة واحدة، وكل مستورد يأخذ النسخة نفسها.</li>
+<li>يسرد <code>package.json</code> <strong>السكربتات</strong> و<strong>الاعتماديات</strong>، و<strong>الترقيم الدلالي</strong> يحدد التحديثات المسموحة، و<strong>ملف القفل</strong> يسجل الإصدارات بالضبط.</li>
+<li><strong>Vite</strong> تخدم الوحدات فوراً أثناء العمل (مع HMR)، و<strong>تبني</strong> للإنتاج ملفات مصغّرة ببصمات ومهزوزة الشجرة.</li>
+<li><strong>الاستيراد الديناميكي</strong> يفصل الكود قليل الاستخدام في ملفات تُحمّل عند الطلب.</li>
+<li><strong>ESLint</strong> يجد الأخطاء المحتملة، و<strong>Prettier</strong> يحفظ أسلوباً واحداً. شغّلهما عبر السكربتات قبل كل commit.</li>
+<li>تعارض <strong>الاعتمادية النظيرة</strong> معلومة: اختر إصدارات متوافقة بدل الفرض.</li>
+<li>الإعدادات في ملفات <code>.env</code>، و<strong>الأسرار لا تدخل الواجهة أبداً</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. مرة واحدة. 2. لا: علامة ^ تسمح بتحديثات minor وpatch داخل الإصدار الكبير 2. 3. البصمة تتغير كلما تغير المحتوى، فتحفظ المتصفحات الملفات إلى الأبد وتحمّل دائماً أحدث نسخة.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">تبني هذه المشاريع عادات لا مزايا. وستستخدم الثلاثة في كل مشروع حتى آخر هذا الكتاب، فخذ وقتك لتنفذها كما يجب في مشروع Vite خاص بك.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>مكتبة أدوات صغيرة بواجهة عامة</h3>
+<p class="project-goal">نظّم الدوال المساعدة في وحدات، وقرّر أيها يحق لباقي التطبيق استخدامه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التصديرات المسماة، وإعادة التصدير، وملف «البرميل»، وإبقاء بعض الكود داخلياً.</p>
+<ol class="steps">
+<li>أنشئ مجلد <code>modules</code> فيه <code>text.mjs</code> (<code>slugify</code> و<code>truncate</code>) و<code>numbers.mjs</code> (<code>clamp</code> و<code>percent</code>).</li>
+<li><code>slugify</code> تحوّل العنوان إلى جزء من رابط: حروف صغيرة، وبلا مسافات في الطرفين، وكل تتابع من الرموز الأخرى يصير <code>-</code> واحدة. والنمط <code>\p{L}</code> يعني «أي حرف في أي لغة»، فيعمل مع العربية أيضاً.</li>
+<li>أضف <code>internal.mjs</code> فيه دالة مساعدة تُستخدم داخل المجلد فقط.</li>
+<li>اكتب <code>index.mjs</code> يعيد تصدير الدوال العامة الأربع، <em>دون</em> الداخلية.</li>
+<li>في <code>app.mjs</code> استورد من <code>./index.mjs</code> فقط، وجرّب كل دالة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> البرميل وعد لباقي الفريق: «هذه الدوال ثابتة، وكل ما عداها قد يتغير». فأبقِه صغيراً.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-out="projects/modules/app.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>أمر واحد يفحص كل شيء</h3>
+<p class="project-goal">أعطِ مشروعك سكربت <code>check</code> يشغّل فاحص الأنواع والمدقق والمنسّق بالترتيب، ويتوقف عند أول مشكلة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سكربتات npm، و<code>&amp;&amp;</code> لربط الأوامر، وقواعد ESLint، ومعرفة أي أداة فشلت.</p>
+<ol class="steps">
+<li>ثبّت ESLint وtypescript-eslint وPrettier كما في القسم {{n}}.4، وحل تعارض إصدار TypeScript إن ظهر.</li>
+<li>أضف السكربتات بـ <code>npm pkg set</code>: <code>lint</code> و<code>format</code> و<code>check</code>، و<code>check</code> هي <code>tsc &amp;&amp; eslint src &amp;&amp; prettier --check src</code>.</li>
+<li>أضف ملفاً يستخدم <code>var</code>، وشغّل <code>npm run check</code>. ولاحظ أن <code>tsc</code> نجح بصمت وأن ESLint أوقف السلسلة.</li>
+<li>أصلح المشكلة وشغّل الفحص من جديد حتى ينجح.</li>
+<li>اجعلها عادة: شغّل <code>npm run check</code> قبل كل <code>git commit</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>&amp;&amp;</code> تشغّل الأمر التالي فقط إن نجح الذي قبله. فضع الفحوص الأسرع أولاً لتعرف المشكلات أبكر. وكثير من الفرق تشغّل هذا السكربت تلقائياً بخطاف Git (Git hook).</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-code="projects/check.sh" data-title="الطرفية"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>إعدادات لكل بيئة</h3>
+<p class="project-goal">استخدم عنوان واجهة برمجية أثناء التطوير وآخر في الإنتاج، واقرأهما في وحدة واحدة بالأنواع، وأثبت أيهما استخدمه البناء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> ملفات <code>.env</code>، و<code>import.meta.env</code>، والفشل المبكر عند نقص الإعدادات، وفحص مخرجات البناء.</p>
+<ol class="steps">
+<li>أنشئ <code>.env.development</code> و<code>.env.production</code>، في كل منهما <code>VITE_API_URL</code> مختلف.</li>
+<li>اكتب <code>src/config.ts</code>، الملف الوحيد الذي يقرأ <code>import.meta.env</code>. فإن كان العنوان ناقصاً ارمِ خطأً برسالة مفيدة فوراً.</li>
+<li>صدّر كائن <code>config</code> واحداً للقراءة فقط، واستورده حيثما احتجت العنوان.</li>
+<li>شغّل <code>npm run dev</code> وتحقق من عنوان التطوير في Console، ثم ابنِ.</li>
+<li>ابحث في JavaScript المبنية بـ <code>grep</code> لتتأكد أن عنوان الإنتاج، وهو وحده، دخلها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الخطوة 5 هي طريقتك لإثبات ما في بنائك حقاً. واستخدم الحيلة نفسها لتتأكد أن سراً لم يتسلل: فإن وجدته بـ <code>grep</code> فسيجده أي أحد.</p>
+<pre data-code="projects/config.ts" data-title="src/config.ts"></pre>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<pre data-code="projects/env.sh" data-title="الطرفية"></pre>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف تصديراً مسمى <code>FREE_SHIPPING = 50</code> إلى <code>prices.mjs</code>، وأعد تصديره من <code>index.mjs</code>، واطبعه من <code>main.mjs</code>.</li>
+<li><span class="level">سهل</span> في مشروع Vite خاص بك شغّل <code>npm run build</code>، ثم غيّر كلمة واحدة في <code>main.ts</code> وابنِ من جديد. أي أسماء الملفات تغيرت، وأيها بقي كما هو؟ ولماذا؟</li>
+<li><span class="level">متوسط</span> اكتب أي هذه الإصدارات تسمح بها <code>^1.4.2</code>: 1.4.1، و1.4.9، و1.9.0، و2.0.0. ثم افعل الشيء نفسه لـ <code>~1.4.2</code>.</li>
+<li><span class="level">متوسط</span> أضف قاعدة ESLint <code>"prefer-const": "error"</code>، واكتب <code>let</code> لا يُعاد إسنادها أبداً، وأصلح الخطأ الذي تبلّغ عنه <code>npm run lint</code>.</li>
+<li><span class="level">تحدٍّ</span> افصل ميزة ثانية في ملفها: زر «مساعدة» يحمّل <code>help.ts</code> باستيراد ديناميكي. ابنِ، وتأكد من المخرجات أن هناك الآن ملفي JavaScript إضافيين.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>سلسلة الأدوات جاهزة، وأسس اللغة في مكانها. وفي الفصل التالي يصل إطار العمل: ستبني مكوناتك الأولى، وترى كيف تُوصف صفحة كاملة دالةً لبياناتها.</p>
+</div>
+</section>

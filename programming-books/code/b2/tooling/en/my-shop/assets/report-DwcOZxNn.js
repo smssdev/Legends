@@ -1,0 +1,1 @@
+import{t as e}from"./index-CMnGzeQd.js";function t(t){let n=document.createElement(`table`);for(let r of t){let t=n.insertRow();t.insertCell().textContent=r.name,t.insertCell().textContent=e(r.price)}let r=t.reduce((e,t)=>e+t.price,0),i=n.createTFoot().insertRow();return i.insertCell().textContent=`Total`,i.insertCell().textContent=e(r),n}export{t as buildReport};
