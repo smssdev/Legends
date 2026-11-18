@@ -4093,6 +4093,71 @@ Huda: 3</pre></div>
 
 <p class="answers-note"><strong>Quick check answers:</strong> 1. A parameter is the name in the function’s definition; an argument is the actual value passed when calling it. 2. <code>undefined</code>. 3. <code>[10, 20, 30]</code>.</p>
 
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project builds a small toolbox of functions that work together. Give every function one job and a name that says what it does.</p>
+
+<div class="project">
+<p class="project-label">Project 10.1 · Easy</p>
+<h3>A unit converter</h3>
+<p class="project-goal">Write a set of small conversion functions, plus one helper for rounding, and use them together.</p>
+<p class="project-skills"><strong>You will practise:</strong> parameters, <code>return</code>, default values, and calling functions inside other calls.</p>
+<ol class="steps">
+<li>Write <code>kmToMiles(km)</code> (× 0.621371), <code>kgToPounds(kg)</code> (× 2.20462) and <code>celsiusToFahrenheit(c)</code>.</li>
+<li>Write a helper <code>round(value, digits = 1)</code> that returns <code>Number(value.toFixed(digits))</code>. The default means you usually do not have to pass <code>digits</code>.</li>
+<li>Print four conversions, passing the result of one function straight into another: <code>round(kmToMiles(10))</code>.</li>
+<li>Convert the length of a marathon, 42.195 km, with two decimal places.</li>
+<li>Add one more converter of your own, for example litres to cups.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>toFixed</code> returns a string; <code>Number(…)</code> turns it back into a number, so you can keep calculating with it.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>10 km = 6.2 miles
+70 kg = 154.3 pounds
+37 °C = 98.6 °F
+42.195 km = 26.22 miles</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 10.2 · Medium</p>
+<h3>Password strength checker</h3>
+<p class="project-goal">Rate passwords as weak, okay or strong, using small helper functions that each check one thing.</p>
+<p class="project-skills"><strong>You will practise:</strong> functions that return booleans, early returns, looping over the letters of a string, and combining small functions.</p>
+<ol class="steps">
+<li>Write <code>hasDigit(text)</code>: loop over the characters with <code>for…of</code>, and return <code>true</code> as soon as one is a digit. After the loop, return <code>false</code>.</li>
+<li>Write <code>hasUpper(text)</code>: a text has a capital letter if it changes when you make it lower case.</li>
+<li>Write <code>strength(password)</code>: give one point each for 8 or more characters, 12 or more characters, a digit, and a capital letter.</li>
+<li>Turn the points into a word with early returns: 0–1 weak, 2–3 okay, 4 strong.</li>
+<li>Test four passwords, from the weakest to the strongest.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> length matters more than anything else for a password’s strength. A long, unusual sentence beats a short word with symbols.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>cat → weak
+sunshine → weak
+sunshine2026 → okay
+Sunshine2026Blue → strong</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 10.3 · Challenge</p>
+<h3>Sales report with map, filter and reduce</h3>
+<p class="project-goal">A small shop has a list of orders. Answer three business questions, each in one or two lines, without writing a single <code>for</code> loop.</p>
+<p class="project-skills"><strong>You will practise:</strong> arrow functions, <code>map</code>, <code>filter</code>, <code>reduce</code>, and chaining them.</p>
+<ol class="steps">
+<li>Create an array of five orders, each an object with a <code>product</code>, a <code>quantity</code> and a <code>price</code>.</li>
+<li>Write an arrow function <code>lineTotal(order)</code> that returns quantity × price.</li>
+<li>Total revenue: <code>map</code> each order to its line total, then <code>reduce</code> to one sum.</li>
+<li>Big orders: <code>filter</code> the orders whose line total is 25 or more, and print how many.</li>
+<li>Stickers sold: <code>filter</code> the sticker orders, then <code>reduce</code> their quantities. Writing <code>.filter(…)</code> and <code>.reduce(…)</code> on separate lines makes the chain easy to read.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> read a chain from top to bottom as a sentence: “orders, only the stickers, add up the quantities”. Professional code is full of chains like this.</p>
+<p><strong>Your result should look like this:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Revenue: 128
+Orders of 25 or more: 3
+Stickers sold: 15</pre></div>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">Exercises</h2>
 
 <ol class="exercises">

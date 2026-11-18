@@ -4114,6 +4114,71 @@ console.log(total);</pre></div>
 
 <p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. المعامل هو الاسم في تعريف الدالة، والوسيط القيمة الفعلية الممررة عند استدعائها. 2. <code>undefined</code>. 3. <code>[10, 20, 30]</code>.</p>
 
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يبني صندوق أدوات صغيراً من الدوال التي تعمل معاً. أعط كل دالة وظيفة واحدة، واسماً يقول ما تفعله.</p>
+
+<div class="project">
+<p class="project-label">مشروع 10.1 · سهل</p>
+<h3>محوّل الوحدات</h3>
+<p class="project-goal">اكتب مجموعة دوال تحويل صغيرة، ومعها دالة مساعدة للتقريب، واستخدمها معاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المعاملات، و<code>return</code>، والقيم الافتراضية، واستدعاء الدوال داخل استدعاءات أخرى.</p>
+<ol class="steps">
+<li>اكتب <code>kmToMiles(km)</code> (× 0.621371) و<code>kgToPounds(kg)</code> (× 2.20462) و<code>celsiusToFahrenheit(c)</code>.</li>
+<li>اكتب دالة مساعدة <code>round(value, digits = 1)</code> تُرجع <code>Number(value.toFixed(digits))</code>. والقيمة الافتراضية تعني أنك لا تحتاج غالباً أن تمرر <code>digits</code>.</li>
+<li>اطبع أربعة تحويلات، مع تمرير نتيجة دالة إلى أخرى مباشرة: <code>round(kmToMiles(10))</code>.</li>
+<li>حوّل طول الماراثون، 42.195 كم، بمنزلتين عشريتين.</li>
+<li>أضف محوّلاً من عندك، مثلاً من اللترات إلى الأكواب.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>toFixed</code> تُرجع نصاً، و<code>Number(…)</code> تعيده رقماً، فتستطيع أن تواصل الحساب به.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>10 km = 6.2 ميلاً
+70 kg = 154.3 رطلاً
+37 °C = 98.6 °F
+42.195 km = 26.22 ميلاً</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 10.2 · متوسط</p>
+<h3>فاحص قوة كلمة المرور</h3>
+<p class="project-goal">قيّم كلمات المرور ضعيفة أو مقبولة أو قوية، بدوال مساعدة صغيرة تفحص كل منها شيئاً واحداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> دوال تُرجع boolean، والإرجاع المبكر، والمرور على حروف النص، وجمع الدوال الصغيرة.</p>
+<ol class="steps">
+<li>اكتب <code>hasDigit(text)</code>: مرّ على الحروف بـ <code>for…of</code>، وأرجع <code>true</code> بمجرد أن تجد رقماً، وبعد الحلقة أرجع <code>false</code>.</li>
+<li>اكتب <code>hasUpper(text)</code>: في النص حرف كبير إن تغيّر حين تحوّله إلى حروف صغيرة.</li>
+<li>اكتب <code>strength(password)</code>: أعطِ نقطة لكل من: 8 حروف أو أكثر، و12 حرفاً أو أكثر، ورقم، وحرف كبير.</li>
+<li>حوّل النقاط إلى كلمة بالإرجاع المبكر: 0 أو 1 ضعيفة، و2 أو 3 مقبولة، و4 قوية.</li>
+<li>اختبر أربع كلمات مرور، من الأضعف إلى الأقوى.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الطول أهم شيء في قوة كلمة المرور. فجملة طويلة غير مألوفة تغلب كلمة قصيرة فيها رموز.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>cat → ضعيفة
+sunshine → ضعيفة
+sunshine2026 → مقبولة
+Sunshine2026Blue → قوية</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 10.3 · تحدٍّ</p>
+<h3>تقرير مبيعات بـ map وfilter وreduce</h3>
+<p class="project-goal">متجر صغير عنده قائمة طلبات. أجب عن ثلاثة أسئلة تجارية، كل منها في سطر أو اثنين، دون أن تكتب حلقة <code>for</code> واحدة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الدوال السهمية، و<code>map</code> و<code>filter</code> و<code>reduce</code>، وتسلسلها.</p>
+<ol class="steps">
+<li>أنشئ مصفوفة من خمسة طلبات، كل منها كائن فيه <code>product</code> و<code>quantity</code> و<code>price</code>.</li>
+<li>اكتب دالة سهمية <code>lineTotal(order)</code> تُرجع الكمية × السعر.</li>
+<li>الإيرادات الكلية: حوّل كل طلب إلى قيمته بـ <code>map</code>، ثم اجمعها بـ <code>reduce</code>.</li>
+<li>الطلبات الكبيرة: صفِّ بـ <code>filter</code> الطلبات التي قيمتها 25 أو أكثر، واطبع عددها.</li>
+<li>الملصقات المبيعة: صفِّ طلبات الملصقات، ثم اجمع كمياتها. وكتابة <code>.filter(…)</code> و<code>.reduce(…)</code> في سطرين منفصلين تجعل التسلسل سهل القراءة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اقرأ التسلسل من الأعلى إلى الأسفل كأنه جملة: «الطلبات، الملصقات منها فقط، اجمع كمياتها». والكود الاحترافي مليء بتسلسلات كهذه.</p>
+<p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>الإيرادات: 128
+طلبات بقيمة 25 أو أكثر: 3
+الملصقات المبيعة: 15</pre></div>
+</div>
+<!-- /projects -->
+
 <h2 class="plain-h">تمارين</h2>
 
 <ol class="exercises">
