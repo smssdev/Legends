@@ -20,6 +20,8 @@ COPY data/arab/arab_players.csv ./data/arab/arab_players.csv
 COPY docs/api/frame-golden.json ./docs/api/frame-golden.json
 # [Sprint 09 G1] The director's golden vectors, shared with Unity: plan.test.ts (npm test, before the build) checks them.
 COPY docs/api/director-golden.json ./docs/api/director-golden.json
+# [X111] and the recorded match it plans every minute of (plan.test.ts).
+COPY docs/api/samples/liverpool-arsenal-48213.json ./docs/api/samples/liverpool-arsenal-48213.json
 # [Sprint 63, fixed in Sprint 66] The icons' one source: scripts/icons.mjs checks the site's icons come from it.
 COPY brand/icons ./brand/icons
 # [Sprint 39 B3] The site's address (PUBLIC_URL on the server, deploy/vps/compose.yml) goes into the canonical links, the
