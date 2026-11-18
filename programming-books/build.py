@@ -167,7 +167,7 @@ def fill_code(chapter, lang):
         path = code_dir / f
         tsc = next(d / "node_modules" / ".bin" / "tsc" for d in path.parents if (d / "node_modules" / ".bin" / "tsc").exists())
         r = subprocess.run([str(tsc), "--noEmit", "--strict", "--noUncheckedIndexedAccess", "--target", "es2024",
-                            "--module", "nodenext", "--types", "node", path.name],
+                            "--module", "nodenext", "--types", "node", "--jsx", "react-jsx", path.name],
                            cwd=path.parent, capture_output=True, text=True, timeout=60)
         printed = (r.stdout + r.stderr).strip().replace(str(path.parent) + "/", "")
         lines = [f"$ npx tsc --noEmit {path.name}"] + ([printed] if printed else [TEXT[lang]["no_errors"]])
