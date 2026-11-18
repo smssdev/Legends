@@ -2,7 +2,8 @@
   <!-- [Sprint 11 W3] The Unity scene over the cartoon, which keeps playing under it (the page's clock, cues and sound):
        a failure or a weak device only uncovers the cartoon at the same second (W4). -->
   <div v-show="state !== 'failed'" class="absolute inset-0 z-10 bg-bg-deep" :aria-hidden="state !== 'ready'">
-    <canvas ref="canvas" class="size-full" tabindex="-1" :aria-label="$t('مشهد المباراة ثلاثي الأبعاد')" />
+    <!-- Unity finds its canvas by its id (its keyboard listener): without one it stops on start. -->
+    <canvas id="glm-unity-scene" ref="canvas" class="size-full" tabindex="-1" :aria-label="$t('مشهد المباراة ثلاثي الأبعاد')" />
     <div v-if="state === 'loading'" class="absolute inset-0 grid place-items-center bg-bg-deep/90" role="status">
       <div class="flex w-56 flex-col items-center gap-2 text-center">
         <span class="text-sm font-bold">{{ $t('نجهّز الملعب ثلاثي الأبعاد...') }}</span>

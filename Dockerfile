@@ -18,6 +18,8 @@ COPY data/names ./data/names
 COPY data/arab/arab_players.csv ./data/arab/arab_players.csv
 # The RenderFrame golden vectors, checked before the build [Sprint 21 E8.4].
 COPY docs/api/frame-golden.json ./docs/api/frame-golden.json
+# [Sprint 09 G1] The director's golden vectors, shared with Unity: plan.test.ts (npm test, before the build) checks them.
+COPY docs/api/director-golden.json ./docs/api/director-golden.json
 # [Sprint 63, fixed in Sprint 66] The icons' one source: scripts/icons.mjs checks the site's icons come from it.
 COPY brand/icons ./brand/icons
 # [Sprint 39 B3] The site's address (PUBLIC_URL on the server, deploy/vps/compose.yml) goes into the canonical links, the
