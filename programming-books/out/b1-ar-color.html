@@ -1,0 +1,616 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>البرمجة من الصفر</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "البرمجة من الصفر"; font: 700 8pt 'Cairo', 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Cairo', 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch08 { @top-center { content: "الفصل 8: القيم والمتغيرات والقرارات"; } }
+@page ch08:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">من الصفر إلى الاحتراف · الكتاب الأول</p>
+  <h1 class="cv-title">البرمجة من الصفر</h1>
+  <p class="cv-sub">أساسيات البرمجة والويب بـ HTML وCSS وJavaScript</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
+<span class="k">let</span> price;
+
+<span class="k">if</span> (age &lt; <span class="n">13</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Git</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">مبتدئ ← مبرمج مبتدئ محترف</span><span class="cv-author">سليمان ماجد سعيد صلاح</span></div>
+</div></section><section class="front half-title"><p class="ht">البرمجة من الصفر</p></section><section class="front title-page">
+          <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الأول</p>
+          <h1 class="tp-title">البرمجة من الصفر</h1>
+          <p class="tp-sub">أساسيات البرمجة والويب بـ HTML وCSS وJavaScript</p>
+          <p class="tp-level">مبتدئ ← مبرمج مبتدئ محترف</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">سليمان ماجد سعيد صلاح</p>
+        </section><section class="front copyright">
+          <p><strong>البرمجة من الصفر</strong><br>أساسيات البرمجة والويب بـ HTML وCSS وJavaScript</p>
+          <p>© 2026 سليمان ماجد سعيد صلاح. جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.</p>
+          <p>الطبعة الأولى, 2026</p>
+          <p>اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.</p>
+          <p>JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: التفكير كمبرمج</li><li class="toc-ch"><span class="toc-n">1</span>كيف ينفّذ الحاسوب البرامج</li><li class="toc-ch"><span class="toc-n">2</span>التفكير بالخطوات: الخوارزميات</li><li class="toc-ch"><span class="toc-n">3</span>أدوات المبرمج</li><li class="toc-part">الجزء 2: البناء للويب</li><li class="toc-ch"><span class="toc-n">4</span>كيف يعمل الويب</li><li class="toc-ch"><span class="toc-n">5</span>HTML: بنية الصفحة</li><li class="toc-ch"><span class="toc-n">6</span>CSS: تنسيق الصفحة</li><li class="toc-ch"><span class="toc-n">7</span>التخطيط بـ Flexbox وGrid</li><li class="toc-part">الجزء 3: JavaScript</li><li class="toc-ch"><span class="toc-n">8</span>القيم والمتغيرات والقرارات <span class="toc-sample">(فصل نموذجي)</span></li><li class="toc-ch"><span class="toc-n">9</span>الحلقات والمصفوفات</li><li class="toc-ch"><span class="toc-n">10</span>الدوال</li><li class="toc-ch"><span class="toc-n">11</span>الكائنات وJSON</li><li class="toc-ch"><span class="toc-n">12</span>DOM والأحداث</li><li class="toc-ch"><span class="toc-n">13</span>JavaScript غير المتزامنة وfetch</li><li class="toc-ch"><span class="toc-n">14</span>قراءة الأخطاء وتتبّعها</li><li class="toc-part">الجزء 4: العمل كمحترف</li><li class="toc-ch"><span class="toc-n">15</span>Git وGitHub</li><li class="toc-ch"><span class="toc-n">16</span>صفحات يصل إليها الجميع</li><li class="toc-ch"><span class="toc-n">17</span>مشروع: ابنِ تطبيق ويب وانشره</li><li class="toc-ch"><span class="toc-n">18</span>اختيار مسارك</li></ol></section><section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/ar">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">الفصل 8</p><h1>القيم والمتغيرات والقرارات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تميّز الأنواع الأساسية للقيم التي تتعامل معها JavaScript</li>
+<li>تحفظ القيم في متغيرات بـ <code>let</code> و<code>const</code></li>
+<li>تحسب وتقارن بالعوامل</li>
+<li>تجعل البرنامج يختار ما يفعله بـ <code>if</code> و<code>else</code> و<code>switch</code></li>
+<li>تبني شبّاك تذاكر صغيراً يقرر السعر بنفسه</li>
+</ul>
+</div>
+
+<p class="lead">كل برنامج مفيد يفعل شيئين مرة بعد مرة: يتذكر معلومات، ثم يتخذ قرارات بناءً عليها. شبّاك التذاكر في السينما يتذكر عمرك واليوم من الأسبوع، ثم يقرر كم تدفع. واللعبة تتذكر نقاطك، ثم تقرر هل فزت. وفي هذا الفصل ستعلّم JavaScript أن تفعل الاثنين.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أهلاً من جديد! اليوم ستعلّم الحاسوب أن يختار. وفي آخر هذا الفصل ستكون قد بنيت آلة تذاكر تفكر بنفسها. هيا بنا!</p></div></div>
+
+<p>افتح المحرر والطرفية اللذين جهزتهما في الفصل 3. كل مثال في هذا الفصل ملف صغير تشغّله بـ Node.js. اكتب الأمثلة بيدك ولا تنسخها: أصابعك تتعلم شكل اللغة أسرع من عينيك.</p>
+
+<h2><span class="sec">8.1</span><span>القيم: المادة الخام للبرنامج</span></h2>
+
+<p><dfn>القيمة</dfn> قطعة واحدة من البيانات: رقم، أو نص، أو جواب بنعم أو لا. والقيم هي المادة الخام التي يعمل بها البرنامج، كما أن الدقيق والماء هما المادة الخام للخبز.</p>
+
+<p>أنشئ ملفاً اسمه <code>values.js</code> واكتب فيه هذا البرنامج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">values.js</div><pre class="code">console.log(<span class="n">42</span>);
+console.log(<span class="n">3.5</span>);
+console.log(<span class="s">&quot;مرحباً&quot;</span>);
+console.log(<span class="k">true</span>);
+
+console.log(<span class="k">typeof</span> <span class="n">42</span>);
+console.log(<span class="k">typeof</span> <span class="s">&quot;مرحباً&quot;</span>);
+console.log(<span class="k">typeof</span> <span class="k">true</span>);</pre></div>
+
+<p>شغّله من الطرفية بالأمر <code>node values.js</code>، وسترى:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>42
+3.5
+مرحباً
+true
+number
+string
+boolean</pre></div>
+
+<p>الأمر <code>console.log</code> يطبع قيمة في الطرفية. وهو أبسط طريقة لترى ما يفعله برنامجك، وستستخدمه في كل فصول هذا الكتاب.</p>
+
+<p>ويعرض البرنامج ثلاثة من أشهر أنواع القيم، ويسميها المبرمجون <dfn>الأنواع</dfn> (types):</p>
+
+<table>
+<thead><tr><th>النوع</th><th>ماذا يحمل</th><th>أمثلة</th></tr></thead>
+<tbody>
+<tr><td><code>number</code></td><td>الأعداد الصحيحة والعشرية</td><td><code>42</code> و<code>3.5</code> و<code>-7</code></td></tr>
+<tr><td><code>string</code></td><td>النص، ويُكتب بين علامتي تنصيص</td><td><code>"مرحباً"</code> و<code>'القاهرة'</code></td></tr>
+<tr><td><code>boolean</code></td><td>واحد فقط من جوابين</td><td><code>true</code> و<code>false</code></td></tr>
+</tbody>
+</table>
+
+<p>الكلمة <code>typeof</code> تسأل JavaScript عن نوع القيمة. لن تحتاجها كثيراً في البرامج الحقيقية، لكنها طريقة جيدة لتختبر فهمك وأنت تتعلم.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>كُتبت JavaScript في عشرة أيام فقط، في مايو 1995، كتبها برندان آيك في شركة Netscape. واليوم تعمل في كل متصفح، وفي كل مواقع العالم تقريباً.</p></aside>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة</p><p>علامات التنصيص تحوّل أي شيء إلى نص. <code>42</code> رقم، أما <code>"42"</code> فنص فيه الحرفان 4 و2. وهذا الفرق سبب لأخطاء كثيرة عند المبتدئين، وسنقابله مرة أخرى في القسم 8.3.</p></aside>
+
+<h2><span class="sec">8.2</span><span>المتغيرات: اسم للقيمة</span></h2>
+
+<p>القيمة وحدها تختفي بمجرد استخدامها. ولتحتفظ بها وتستعملها لاحقاً، تحفظها في <dfn>متغير</dfn>. والمتغير اسم يشير إلى قيمة.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="صندوقان عليهما اسمان: score فيه 10 وname فيه سارة">
+<g font-family="JetBrains Mono" font-size="15" fill="#111">
+<rect x="20" y="40" width="200" height="70" rx="10" fill="#fff" stroke="#111" stroke-width="2.5"/>
+<rect x="20" y="20" width="90" height="30" rx="6" fill="#111"/>
+<text x="65" y="40" fill="#fff" text-anchor="middle">score</text>
+<text x="120" y="88" font-size="26" text-anchor="middle">10</text>
+<rect x="290" y="40" width="210" height="70" rx="10" fill="#fff" stroke="#111" stroke-width="2.5"/>
+<rect x="290" y="20" width="80" height="30" rx="6" fill="#111"/>
+<text x="330" y="40" fill="#fff" text-anchor="middle">name</text>
+<text x="395" y="88" font-size="24" text-anchor="middle" font-family="Noto Naskh Arabic" direction="rtl">"سارة"</text>
+<text x="120" y="138" font-size="14" fill="#555" text-anchor="middle" font-family="Cairo" direction="rtl">let: قابل للتغيير</text>
+<text x="395" y="138" font-size="14" fill="#555" text-anchor="middle" font-family="Cairo" direction="rtl">const: ثابت</text>
+</g>
+</svg>
+<figcaption>الشكل 8.1: المتغير صندوق عليه اسم. الاسم هو الملصق، والمحتوى هو القيمة.</figcaption>
+</figure>
+
+<p>تعطيك JavaScript كلمتين لإنشاء متغير: <code>let</code> و<code>const</code>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">variables.js</div><pre class="code"><span class="k">let</span> score = <span class="n">0</span>;
+console.log(score);
+
+score = score + <span class="n">10</span>;
+console.log(score);
+
+<span class="k">const</span> name = <span class="s">&quot;سارة&quot;</span>;
+console.log(<span class="s">&quot;اللاعبة:&quot;</span>, name);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>0
+10
+اللاعبة: سارة</pre></div>
+
+<p>اقرأ السطر <code>score = score + 10;</code> من اليمين إلى اليسار. تحسب JavaScript أولاً <code>score + 10</code>، أي <code>0 + 10</code>، ثم تضع النتيجة في <code>score</code>. علامة التساوي الواحدة لا تعني «يساوي» كما في الرياضيات، بل تعني «احفظ القيمة التي على اليمين في الاسم الذي على اليسار». ويسميها المبرمجون <dfn>عامل الإسناد</dfn>.</p>
+
+<h3>let أم const؟</h3>
+
+<p>استخدم <code>let</code> لقيمة ستتغير، مثل النقاط أو العدّاد أو المجموع. واستخدم <code>const</code> لقيمة لن تتغير بعد أن تُحدَّد، مثل اسم اللاعب أو أقصى عدد للاعبين. وإن حاولت تغيير <code>const</code> أوقفت JavaScript برنامجك بخطأ:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">const-error.js</div><pre class="code"><span class="k">const</span> maxPlayers = <span class="n">4</span>;
+maxPlayers = <span class="n">5</span>;</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>maxPlayers = 5;
+           ^
+TypeError: Assignment to constant variable.</pre></div>
+
+<p>هذا الخطأ هدية لا عقوبة. فهو يخبرك بالضبط أي سطر خالف قاعدة وضعتها أنت. والمطورون المحترفون يستخدمون <code>const</code> دائماً، ولا ينتقلون إلى <code>let</code> إلا حين يعرفون أن القيمة يجب أن تتغير. افعل مثلهم: كلما قلّ ما يتغير، قلّ ما يمكن أن يخطئ.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>قد ترى الكلمة القديمة <code>var</code> في الدروس والكود القديم. سلوكها مفاجئ في مواقف سنشرحها في الكتاب الثاني. وفي أي كود جديد استخدم <code>let</code> أو <code>const</code> دائماً.</p></aside>
+
+<h3>اختيار أسماء جيدة</h3>
+
+<p>اسم المتغير يمكن أن يحتوي على حروف وأرقام و<code>_</code> و<code>$</code>، لكنه لا يبدأ برقم، ولا يكون كلمة تستخدمها JavaScript أصلاً مثل <code>if</code> أو <code>let</code>. وحين يتكون الاسم من عدة كلمات، يصلها مطورو JavaScript بطريقة <dfn>camelCase</dfn>: الكلمة الأولى بحروف صغيرة، وكل كلمة بعدها تبدأ بحرف كبير. والأسماء تُكتب بالإنجليزية، فهي اللغة المشتركة بين المبرمجين في كل مكان.</p>
+
+<table>
+<thead><tr><th>جيد</th><th>ضعيف</th><th>السبب</th></tr></thead>
+<tbody>
+<tr><td><code>ticketPrice</code></td><td><code>tp</code></td><td>يقول ماذا يحمل</td></tr>
+<tr><td><code>isMember</code></td><td><code>member1</code></td><td><code>is</code> تخبرك أنه boolean</td></tr>
+<tr><td><code>maxPlayers</code></td><td><code>max_players_number</code></td><td>قصير، ويتبع أسلوب camelCase</td></tr>
+</tbody>
+</table>
+
+<p>اكتب الأسماء للشخص الذي سيقرأ كودك بعد ستة أشهر. وكثيراً ما يكون هذا الشخص أنت.</p>
+
+<h2><span class="sec">8.3</span><span>العوامل: الحساب والمقارنة</span></h2>
+
+<p><dfn>العامل</dfn> (operator) رمز يأخذ قيماً وينتج قيمة جديدة. وأنت تعرف معظم عوامل الحساب من المدرسة.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">operators.js</div><pre class="code"><span class="k">const</span> price = <span class="n">12</span>;
+<span class="k">const</span> count = <span class="n">3</span>;
+
+console.log(price * count);
+console.log(<span class="n">10</span> / <span class="n">4</span>);
+console.log(<span class="n">10</span> % <span class="n">4</span>);
+
+<span class="k">const</span> first = <span class="s">&quot;سارة&quot;</span>;
+<span class="k">const</span> last = <span class="s">&quot;خان&quot;</span>;
+console.log(first + <span class="s">&quot; &quot;</span> + last);
+console.log(<span class="s">`المجموع: ${price * count} دولاراً`</span>);
+
+console.log(<span class="n">5</span> === <span class="n">5</span>);
+console.log(<span class="n">5</span> === <span class="s">&quot;5&quot;</span>);
+console.log(<span class="n">5</span> == <span class="s">&quot;5&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>36
+2.5
+2
+سارة خان
+المجموع: 36 دولاراً
+true
+false
+true</pre></div>
+
+<p>لنمرّ على البرنامج في ثلاث مجموعات.</p>
+
+<h3>الحساب</h3>
+
+<p>العوامل <code>+</code> و<code>-</code> و<code>*</code> و<code>/</code> تجمع وتطرح وتضرب وتقسم. وقد يكون الجديد عليك هو <code>%</code>، عامل <dfn>باقي القسمة</dfn>. فـ <code>10 % 4</code> تساوي <code>2</code>، لأن 4 تدخل في 10 مرتين ويبقى 2. وهو أنفع مما يبدو: <code>n % 2</code> تساوي <code>0</code> فقط حين يكون <code>n</code> زوجياً.</p>
+
+<h3>وصل النصوص</h3>
+
+<p>حين يُستخدم <code>+</code> مع النصوص فإنه يصلها ببعضها. وأنظف طريقة لبناء النص هي <dfn>القالب النصي</dfn> (template literal): نص بين علامتي <code>`</code>، وكل ما بداخل <code>${ }</code> فيه يُحسب ويوضع في مكانه. قارن الطريقتين في البرنامج؛ معظم الكود الحديث يستخدم القوالب النصية لأنها أسهل في القراءة.</p>
+
+<h3>المقارنة</h3>
+
+<p>عوامل المقارنة تنتج دائماً قيمة boolean:</p>
+
+<table>
+<thead><tr><th>العامل</th><th>المعنى</th><th>مثال</th><th>النتيجة</th></tr></thead>
+<tbody>
+<tr><td><code>===</code></td><td>يساوي</td><td><code>3 === 3</code></td><td><code>true</code></td></tr>
+<tr><td><code>!==</code></td><td>لا يساوي</td><td><code>3 !== 4</code></td><td><code>true</code></td></tr>
+<tr><td><code>&lt;</code> و<code>&gt;</code></td><td>أصغر من، أكبر من</td><td><code>2 &lt; 1</code></td><td><code>false</code></td></tr>
+<tr><td><code>&lt;=</code> و<code>&gt;=</code></td><td>أصغر أو يساوي، أكبر أو يساوي</td><td><code>5 &gt;= 5</code></td><td><code>true</code></td></tr>
+</tbody>
+</table>
+
+<p>انظر جيداً إلى آخر سطرين في المخرجات. <code>5 === "5"</code> تعطي <code>false</code>، لأن الرقم ليس نصاً. أما <code>5 == "5"</code> فتعطي <code>true</code>: علامة التساوي المزدوجة تحوّل إحدى القيمتين إلى نوع الأخرى بصمت قبل المقارنة. وهذا التحويل الصامت يخفي الأخطاء.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين</p><p>قارن دائماً بـ <code>===</code> و<code>!==</code>، ولا تستخدم <code>==</code> أو <code>!=</code> أبداً. ومعظم الفرق تفرض هذه القاعدة تلقائياً بأداة اسمها linter، ستجهزها في الكتاب الثاني.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>ماذا تعطي <code>typeof "10"</code>؟</li><li>كم تساوي <code>17 % 5</code>؟</li><li>هل <code>4 === "4"</code> صحيحة أم خاطئة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">8.4</span><span>القرارات بـ if وelse</span></h2>
+
+<p>الآن وقد صرت تقارن القيم، يمكنك أن تجعل برنامجك يختار. الجملة <code>if</code> تنفّذ مجموعة من الأسطر فقط حين يكون الشرط <code>true</code>. السينما تأخذ أسعاراً مختلفة حسب العمر، وهكذا يقرر البرنامج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ticket.js</div><pre class="code"><span class="k">const</span> age = <span class="n">9</span>;
+<span class="k">let</span> price;
+
+<span class="k">if</span> (age &lt; <span class="n">4</span>) {
+  price = <span class="n">0</span>;
+} <span class="k">else</span> <span class="k">if</span> (age &lt; <span class="n">13</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> <span class="k">if</span> (age &gt;= <span class="n">65</span>) {
+  price = <span class="n">7</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+console.log(<span class="s">`العمر ${age}: السعر ${price}$`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>العمر 9: السعر 6$</pre></div>
+
+<p>تفحص JavaScript الشروط من الأعلى إلى الأسفل، وتتوقف عند أول شرط يكون <code>true</code>:</p>
+
+<figure>
+<svg viewBox="0 0 520 250" role="img" aria-label="مخطط: العمر أقل من 4 مجاناً، وأقل من 13 بستة، و65 فأكثر بسبعة، وغير ذلك بعشرة">
+<g font-family="Inter" font-size="14" fill="#111" stroke-linejoin="round">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#111"/></marker></defs>
+<g stroke="#111" stroke-width="2" fill="#fff">
+<rect x="20" y="15" width="150" height="40" rx="20"/>
+<rect x="20" y="75" width="150" height="40" rx="20"/>
+<rect x="20" y="135" width="150" height="40" rx="20"/>
+<rect x="20" y="195" width="150" height="40" rx="8"/>
+<rect x="290" y="15" width="110" height="40" rx="8"/>
+<rect x="290" y="75" width="110" height="40" rx="8"/>
+<rect x="290" y="135" width="110" height="40" rx="8"/>
+</g>
+<g stroke="#111" stroke-width="2" marker-end="url(#a)">
+<line x1="170" y1="35" x2="286" y2="35"/><line x1="170" y1="95" x2="286" y2="95"/><line x1="170" y1="155" x2="286" y2="155"/>
+<line x1="95" y1="55" x2="95" y2="72"/><line x1="95" y1="115" x2="95" y2="132"/><line x1="95" y1="175" x2="95" y2="192"/>
+</g>
+<text x="95" y="40" text-anchor="middle" font-family="JetBrains Mono">age &lt; 4 ?</text>
+<text x="95" y="100" text-anchor="middle" font-family="JetBrains Mono">age &lt; 13 ?</text>
+<text x="95" y="160" text-anchor="middle" font-family="JetBrains Mono">age &gt;= 65 ?</text>
+<text x="95" y="220" text-anchor="middle">price = 10</text>
+<text x="345" y="40" text-anchor="middle">price = 0</text>
+<text x="345" y="100" text-anchor="middle">price = 6</text>
+<text x="345" y="160" text-anchor="middle">price = 7</text>
+<g font-size="13" fill="#555" font-family="Cairo"><text x="228" y="28" text-anchor="middle">نعم</text><text x="228" y="88" text-anchor="middle">نعم</text><text x="228" y="148" text-anchor="middle">نعم</text>
+<text x="104" y="68">لا</text><text x="104" y="128">لا</text><text x="104" y="188">لا</text></g>
+</g>
+</svg>
+<figcaption>الشكل 8.2: تُفحص الشروط بالترتيب، وأول شرط صحيح هو الذي يُنفَّذ.</figcaption>
+</figure>
+
+<p>ولأن الترتيب مهم، فالطفل ذو التسع سنوات يقع في <code>age &lt; 13</code> ولا يصل إلى الشروط التي بعده. ولو بدّلت الشرطين الأولين لدفع طفل في الثانية 6 بدل أن يدخل مجاناً. وحين تكتب سلسلة <code>else if</code> اسأل نفسك دائماً: «لو صحّ شرطان معاً، أيهما يجب أن يُنفَّذ؟»</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>حيلتي في السلاسل الطويلة: ضع أضيق شرط أولاً، واترك حالة «كل من سواهم» لـ <code>else</code> في الآخر.</p></div></div>
+
+<p>وأجزاء الجملة هي:</p>
+<ul>
+<li><code>if (condition) { ... }</code>: تُنفَّذ الأسطر فقط حين يكون الشرط <code>true</code>.</li>
+<li><code>else if (condition) { ... }</code>: يُفحص فقط حين تكون كل الشروط قبله <code>false</code>، ويمكنك أن تضع منه ما تحتاج.</li>
+<li><code>else { ... }</code>: يُنفَّذ حين لا يصح شيء مما قبله. وهو اختياري، ولا يكون إلا واحداً.</li>
+</ul>
+
+<p>ولاحظ أيضاً أن <code>price</code> عُرّف بـ <code>let</code> بلا قيمة. فيبدأ بالقيمة الخاصة <code>undefined</code>، أي «لا شيء بعد»، ثم يعطيه كل فرع قيمة حقيقية.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>غيّر <code>age</code> إلى 2 ثم 13 ثم 40 ثم 70، وشغّل البرنامج بعد كل تغيير. وتوقّع المخرجات قبل أن تضغط Enter. فالقدرة على توقّع ما سيفعله الكود أهم مهارة في هذا الكتاب.</p></aside>
+
+<h2><span class="sec">8.5</span><span>الجمع بين الشروط</span></h2>
+
+<p>القرارات الحقيقية تعتمد غالباً على أكثر من شيء. وثلاثة <dfn>عوامل منطقية</dfn> تجمع بين قيم boolean:</p>
+
+<table>
+<thead><tr><th>العامل</th><th>الاسم</th><th>يكون صحيحاً حين</th></tr></thead>
+<tbody>
+<tr><td><code>&amp;&amp;</code></td><td>و (and)</td><td>يصح الطرفان معاً</td></tr>
+<tr><td><code>||</code></td><td>أو (or)</td><td>يصح طرف واحد على الأقل</td></tr>
+<tr><td><code>!</code></td><td>ليس (not)</td><td>تكون القيمة false (يقلب الصحيح والخطأ)</td></tr>
+</tbody>
+</table>
+
+<div class="listing" dir="ltr"><div class="listing-title">logic.js</div><pre class="code"><span class="k">const</span> isMember = <span class="k">true</span>;
+<span class="k">const</span> day = <span class="s">&quot;الثلاثاء&quot;</span>;
+
+<span class="k">if</span> (isMember &amp;&amp; day === <span class="s">&quot;الثلاثاء&quot;</span>) {
+  console.log(<span class="s">&quot;نصف السعر اليوم!&quot;</span>);
+}
+
+<span class="k">const</span> hasTicket = <span class="k">false</span>;
+<span class="k">if</span> (!hasTicket) {
+  console.log(<span class="s">&quot;من فضلك اشترِ تذكرة.&quot;</span>);
+}
+
+<span class="k">const</span> nickname = <span class="s">&quot;&quot;</span>;
+<span class="k">const</span> shown = nickname || <span class="s">&quot;ضيف&quot;</span>;
+console.log(shown);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>نصف السعر اليوم!
+من فضلك اشترِ تذكرة.
+ضيف</pre></div>
+
+<p>الجملة <code>if</code> الأولى تعطي نصف السعر للأعضاء وحدهم، ويوم الثلاثاء وحده. والثانية تُقرأ بسهولة: «إن لم تكن معه تذكرة». أما آخر سطرين فيستخدمان حيلة شائعة تحتاج شرحاً.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>هل تعلم؟</p><p>النوع <code>boolean</code> سُمّي على اسم جورج بول، عالم الرياضيات الإنجليزي الذي أثبت في 1854 أن المنطق يمكن أن يُكتب جبراً بقيمتين فقط: صح وخطأ. وكل شريحة في أي حاسوب مبنية على فكرته.</p></aside>
+
+<h3>القيم الصادقة والكاذبة</h3>
+
+<p>تقبل JavaScript في الشرط أي قيمة، لا <code>true</code> و<code>false</code> وحدهما. وست قيم تُعامل كأنها خطأ، ويسميها المبرمجون <dfn>falsy</dfn>: <code>false</code> و<code>0</code> و<code>""</code> (النص الفارغ) و<code>null</code> و<code>undefined</code> و<code>NaN</code>. وكل قيمة غيرها <dfn>truthy</dfn>.</p>
+
+<p>والعامل <code>||</code> يعيد أول قيمة truthy يجدها. ولأن <code>nickname</code> نص فارغ، وهو falsy، فإن <code>nickname || "ضيف"</code> تعطي <code>"ضيف"</code>. وهذه طريقة سريعة لوضع قيمة افتراضية.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه</p><p>هذه الحيلة تستبدل <code>0</code> أيضاً، لأن <code>0</code> قيمة falsy. فلو كان الصفر نتيجة حقيقية، فإن <code>score || 100</code> ستعطي 100 خطأً. وفي الكتاب الثاني نتعرف على العامل <code>??</code>، وهو لا يستبدل إلا <code>null</code> و<code>undefined</code>.</p></aside>
+
+<h2><span class="sec">8.6</span><span>الاختيار بين قيم ثابتة كثيرة بـ switch</span></h2>
+
+<p>حين تقارن قيمة واحدة بقائمة من الاحتمالات المحددة، تكون الجملة <code>switch</code> أسهل في القراءة من سلسلة طويلة من <code>else if</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">switch.js</div><pre class="code"><span class="k">const</span> size = <span class="s">&quot;M&quot;</span>;
+<span class="k">let</span> drink;
+
+<span class="k">switch</span> (size) {
+  <span class="k">case</span> <span class="s">&quot;S&quot;</span>:
+    drink = <span class="n">2</span>;
+    <span class="k">break</span>;
+  <span class="k">case</span> <span class="s">&quot;M&quot;</span>:
+    drink = <span class="n">3</span>;
+    <span class="k">break</span>;
+  <span class="k">case</span> <span class="s">&quot;L&quot;</span>:
+    drink = <span class="n">4</span>;
+    <span class="k">break</span>;
+  <span class="k">default</span>:
+    drink = <span class="n">0</span>;
+}
+
+console.log(<span class="s">`المشروب: ${drink}$`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>المشروب: 3$</pre></div>
+
+<p>تقفز JavaScript إلى الحالة <code>case</code> التي تطابق <code>size</code> بالمقارنة <code>===</code>، وتنفّذ الكود من هناك. والجملة <code>break</code> تُنهي <code>switch</code>. فإن نسيتها أكملت JavaScript إلى الحالة التالية، وهذا ما لا تريده تقريباً أبداً. والحالة <code>default</code> تُنفَّذ حين لا يطابق شيء.</p>
+
+<p>استخدم <code>switch</code> للمطابقة التامة لقيمة واحدة، مثل المقاسات أو خيارات القائمة أو أيام الأسبوع. واستخدم <code>if</code> للنطاقات مثل الأعمار، أو للشروط التي تتضمن أكثر من متغير.</p>
+
+<h2><span class="sec">8.7</span><span>مشروع: شبّاك التذاكر</span></h2>
+
+<p>لنجمع كل ما تعلمناه. شبّاك التذاكر التالي يقرر سعر تذكرة السينما بأربع قواعد:</p>
+
+<ol>
+<li>الأطفال تحت 4 سنوات يدخلون مجاناً.</li>
+<li>الأطفال تحت 13 سنة والكبار من 65 فأكثر يدفعون 6، والباقون 10.</li>
+<li>الأعضاء يدفعون نصف السعر يوم الثلاثاء.</li>
+<li>العروض التي تبدأ في الساعة 22:00 أو بعدها أرخص بواحد، إلا إن كانت التذكرة مجانية أصلاً.</li>
+</ol>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>هذا أول برنامج لك يتخذ قرارات حقيقية وحده. اقرأه مرة، وشغّله، ثم غيّر القيم والعب به!</p></div></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c">// شبّاك التذاكر: غيّر هذه القيم وشغّل البرنامج من جديد.</span>
+<span class="k">const</span> age = <span class="n">34</span>;
+<span class="k">const</span> isMember = <span class="k">true</span>;
+<span class="k">const</span> day = <span class="s">&quot;الثلاثاء&quot;</span>;
+<span class="k">const</span> showTime = <span class="n">22</span>; <span class="c">// بنظام 24 ساعة</span>
+
+<span class="k">let</span> price;
+<span class="k">if</span> (age &lt; <span class="n">4</span>) {
+  price = <span class="n">0</span>;
+} <span class="k">else</span> <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+<span class="k">if</span> (isMember &amp;&amp; day === <span class="s">&quot;الثلاثاء&quot;</span>) {
+  price = price / <span class="n">2</span>;
+}
+
+<span class="k">if</span> (showTime &gt;= <span class="n">22</span> &amp;&amp; price &gt; <span class="n">0</span>) {
+  price = price - <span class="n">1</span>;
+}
+
+<span class="k">const</span> message = price === <span class="n">0</span> ? <span class="s">&quot;الدخول مجاني&quot;</span> : <span class="s">`ادفع ${price}$ من فضلك`</span>;
+console.log(message);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>ادفع 4$ من فضلك</pre></div>
+
+<p>تتبّع البرنامج كما يفعل الحاسوب. الزائر عمره 34، فيجعل القرار الأول <code>price</code> عشرة. وهو عضو واليوم ثلاثاء، فينزل السعر إلى النصف ويصير 5. والعرض يبدأ في الساعة 22:00، فيُخصم واحد آخر، ويدفع الزائر 4.</p>
+
+<p>والسطر الأخير يستخدم شيئاً جديداً واحداً، هو <dfn>العامل الشرطي</dfn>، ويُسمى كثيراً <em>ternary</em>:</p>
+
+<pre class="plain">condition ? valueIfTrue : valueIfFalse</pre>
+
+<p>إنه <code>if</code>/<code>else</code> مختصرة تنتج قيمة. استخدمه للاختيارات القصيرة البسيطة مثل هذا فقط؛ وحين يطول أحد طرفيه تكون <code>if</code> العادية أوضح.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>جرّب</p><p>غيّر القيم في أعلى <code>kiosk.js</code> حتى يدخل الزائر مجاناً. ثم ابحث عن قيم تجعل التذكرة بثلاثة بالضبط. هل يوجد أكثر من حل؟</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ماذا يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td><code>if (age = 18)</code></td><td>يُسند 18 بدل أن يقارن، فيصح الشرط دائماً</td><td>استخدم <code>===</code></td></tr>
+<tr><td>مقارنة <code>"5"</code> بـ <code>5</code></td><td><code>===</code> تعطي <code>false</code></td><td>تأكد أن القيمتين من النوع نفسه</td></tr>
+<tr><td>ترتيب خاطئ في <code>else if</code></td><td>شرط أوسع في الأعلى يلتقط حالات تخص شرطاً بعده</td><td>ضع أضيق الشروط أولاً</td></tr>
+<tr><td>نسيان <code>break</code></td><td>تُنفَّذ الحالة <code>case</code> التالية أيضاً</td><td>أنهِ كل <code>case</code> بـ <code>break</code></td></tr>
+<tr><td>تغيير <code>const</code></td><td><code>TypeError: Assignment to constant variable</code></td><td>استخدم <code>let</code> إن كانت القيمة ستتغير</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>القيمة</strong> قطعة واحدة من البيانات، وأنواعها الأساسية <code>number</code> و<code>string</code> و<code>boolean</code>.</li>
+<li><strong>المتغير</strong> اسم لقيمة. استخدم <code>const</code> دائماً، و<code>let</code> حين يجب أن تتغير القيمة.</li>
+<li>علامة <code>=</code> الواحدة تحفظ قيمة، ولا تقارن.</li>
+<li><strong>العوامل</strong> تحسب (<code>+ - * / %</code>) وتصل النصوص وتقارن. وقارن دائماً بـ <code>===</code>.</li>
+<li><code>if</code> و<code>else if</code> و<code>else</code> تختار بين مجموعات من الأسطر. وأول شرط صحيح هو الذي يُنفَّذ، فالترتيب مهم.</li>
+<li><code>&amp;&amp;</code> و<code>||</code> و<code>!</code> تجمع بين الشروط. وست قيم falsy، وكل ما عداها truthy.</li>
+<li><code>switch</code> تطابق قيمة واحدة بحالات ثابتة، وتنتهي كل حالة بـ <code>break</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>"string"</code>، لأن علامات التنصيص تجعلها نصاً. 2. <code>2</code>، لأن 5 تدخل في 17 ثلاث مرات ويبقى 2. 3. <code>false</code>، لأن الرقم لا يساوي النص أبداً.</p>
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب برنامجاً فيه <code>const</code> اسمه <code>temperature</code>. اطبع «بارد» تحت 15، و«دافئ» من 15 إلى 29، و«حار» من 30 فأكثر.</li>
+<li><span class="level">سهل</span> توقّع نتيجة كل سطر، ثم تحقق بـ Node: <code>7 % 3</code> و<code>"7" + 3</code> و<code>7 === "7"</code> و<code>!true</code>.</li>
+<li><span class="level medium">متوسط</span> يكون العدد زوجياً حين <code>n % 2 === 0</code>. اطبع هل العدد زوجي أم فردي، وهل هو موجب أم سالب أم صفر.</li>
+<li><span class="level medium">متوسط</span> أعد كتابة <code>switch.js</code> بـ <code>if</code> و<code>else if</code>. أي النسختين أسهل عليك في القراءة، ولماذا؟</li>
+<li><span class="level hard">تحدٍّ</span> أضف قاعدة خامسة إلى شبّاك التذاكر: يوم الجمعة يدفع الجميع 2 زيادة، لكن السعر لا يتجاوز 10 أبداً. واختبر البرنامج بأربعة زوار مختلفين على الأقل.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 9</p>
+<p>شبّاك التذاكر الآن يخدم زائراً واحداً فقط. وفي الفصل القادم ستتعلم أن تحفظ قوائم كاملة من القيم في المصفوفات، وأن تكرر العمل بالحلقات، فيخدم الشبّاك طابوراً من مئة زائر بالأسطر القليلة نفسها.</p>
+</div>
+</section>
+</body></html>

@@ -13,12 +13,14 @@ const path = require('path');
   const browser = await chromium.launch();
   const page = await browser.newPage();
   for (const f of fs.readdirSync(out).filter((f) => f.endsWith('.html'))) {
-    if (only && !f.startsWith(only)) continue;
+    if (only && !f.includes(only)) continue;
     const name = f.replace(/\.html$/, '');
     await page.goto('file://' + path.join(out, f));
     await page.evaluate(() => document.fonts.ready);
     const pdf = path.join(out, name + '.pdf');
-    await page.pdf({ path: pdf, preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false });
+    // The colour edition is read on screens, so it gets bookmarks from the headings and tags.
+    const screen = name.endsWith('-color');
+    await page.pdf({ path: pdf, preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false, outline: screen, tagged: screen });
     execFileSync('pdftoppm', ['-r', '60', '-png', pdf, path.join(prev, name)]);
     const pages = execFileSync('pdfinfo', [pdf]).toString().match(/Pages:\s+(\d+)/)[1];
     console.log(`${name}.pdf: ${pages} pages`);

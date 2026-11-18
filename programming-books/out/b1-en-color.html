@@ -1,0 +1,616 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<title>Code from Zero</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "Code from Zero"; font: 700 8pt 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch08 { @top-center { content: "Chapter 8: Values, Variables and Decisions"; } }
+@page ch08:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">From Zero to Senior · Book 1</p>
+  <h1 class="cv-title">Code from Zero</h1>
+  <p class="cv-sub">Programming and Web Foundations with HTML, CSS and JavaScript</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
+<span class="k">let</span> price;
+
+<span class="k">if</span> (age &lt; <span class="n">13</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Git</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">Beginner → Junior</span><span class="cv-author">Soliman Maged Saeed Salah</span></div>
+</div></section><section class="front half-title"><p class="ht">Code from Zero</p></section><section class="front title-page">
+          <p class="tp-series">From Zero to Senior · Book 1</p>
+          <h1 class="tp-title">Code from Zero</h1>
+          <p class="tp-sub">Programming and Web Foundations with HTML, CSS and JavaScript</p>
+          <p class="tp-level">Beginner → Junior</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">Soliman Maged Saeed Salah</p>
+        </section><section class="front copyright">
+          <p><strong>Code from Zero</strong><br>Programming and Web Foundations with HTML, CSS and JavaScript</p>
+          <p>© 2026 Soliman Maged Saeed Salah. All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.</p>
+          <p>First edition, 2026</p>
+          <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
+          <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: Thinking Like a Programmer</li><li class="toc-ch"><span class="toc-n">1</span>How Computers Run Programs</li><li class="toc-ch"><span class="toc-n">2</span>Thinking in Steps: Algorithms</li><li class="toc-ch"><span class="toc-n">3</span>Your Developer Toolkit</li><li class="toc-part">Part 2: Building for the Web</li><li class="toc-ch"><span class="toc-n">4</span>How the Web Works</li><li class="toc-ch"><span class="toc-n">5</span>HTML: The Structure of a Page</li><li class="toc-ch"><span class="toc-n">6</span>CSS: Styling a Page</li><li class="toc-ch"><span class="toc-n">7</span>Layout with Flexbox and Grid</li><li class="toc-part">Part 3: JavaScript</li><li class="toc-ch"><span class="toc-n">8</span>Values, Variables and Decisions <span class="toc-sample">(sample chapter)</span></li><li class="toc-ch"><span class="toc-n">9</span>Loops and Arrays</li><li class="toc-ch"><span class="toc-n">10</span>Functions</li><li class="toc-ch"><span class="toc-n">11</span>Objects and JSON</li><li class="toc-ch"><span class="toc-n">12</span>The DOM and Events</li><li class="toc-ch"><span class="toc-n">13</span>Asynchronous JavaScript and fetch</li><li class="toc-ch"><span class="toc-n">14</span>Reading Errors and Debugging</li><li class="toc-part">Part 4: Working Like a Professional</li><li class="toc-ch"><span class="toc-n">15</span>Git and GitHub</li><li class="toc-ch"><span class="toc-n">16</span>Accessible Pages for Everyone</li><li class="toc-ch"><span class="toc-n">17</span>Project: Build and Publish a Web App</li><li class="toc-ch"><span class="toc-n">18</span>Choosing Your Path</li></ol></section><section class="chapter" style="page: ch08" data-chapter="8" data-code="b1/ch08/en">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">Chapter 8</p><h1>Values, Variables and Decisions</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>recognise the basic kinds of values JavaScript works with</li>
+<li>store values in variables with <code>let</code> and <code>const</code></li>
+<li>calculate and compare with operators</li>
+<li>make a program choose what to do with <code>if</code>, <code>else</code> and <code>switch</code></li>
+<li>build a small ticket kiosk that decides a price by itself</li>
+</ul>
+</div>
+
+<p class="lead">Every useful program does two things again and again: it remembers information, and it makes decisions based on that information. A cinema kiosk remembers your age and the day of the week, then decides what you should pay. A game remembers your score, then decides whether you have won. In this chapter you will teach JavaScript to do both.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Hi again! Today you will teach the computer to make choices. By the end of this chapter you will have built a ticket machine that thinks for itself. Let’s go!</p></div></div>
+
+<p>Open your editor and the terminal you set up in Chapter 3. Every example in this chapter is a small file you can run with Node.js. Type the examples yourself instead of copying them: your fingers learn the shape of the language faster than your eyes do.</p>
+
+<h2><span class="sec">8.1</span><span>Values: the raw material of a program</span></h2>
+
+<p>A <dfn>value</dfn> is a single piece of data: a number, a piece of text, or a yes-or-no answer. Values are the raw material that a program works with, in the same way that flour and water are the raw material of bread.</p>
+
+<p>Create a file called <code>values.js</code> and type this program:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">values.js</div><pre class="code">console.log(<span class="n">42</span>);
+console.log(<span class="n">3.5</span>);
+console.log(<span class="s">&quot;Hello&quot;</span>);
+console.log(<span class="k">true</span>);
+
+console.log(<span class="k">typeof</span> <span class="n">42</span>);
+console.log(<span class="k">typeof</span> <span class="s">&quot;Hello&quot;</span>);
+console.log(<span class="k">typeof</span> <span class="k">true</span>);</pre></div>
+
+<p>Run it from the terminal with <code>node values.js</code>. You should see:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>42
+3.5
+Hello
+true
+number
+string
+boolean</pre></div>
+
+<p>The command <code>console.log</code> prints a value to the terminal. It is the simplest way to see what your program is doing, and you will use it in every chapter of this book.</p>
+
+<p>The program shows three of the most common kinds of value, which programmers call <dfn>types</dfn>:</p>
+
+<table>
+<thead><tr><th>Type</th><th>What it holds</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td><code>number</code></td><td>Whole numbers and decimals</td><td><code>42</code>, <code>3.5</code>, <code>-7</code></td></tr>
+<tr><td><code>string</code></td><td>Text, written between quotes</td><td><code>"Hello"</code>, <code>'Cairo'</code></td></tr>
+<tr><td><code>boolean</code></td><td>Exactly one of two answers</td><td><code>true</code>, <code>false</code></td></tr>
+</tbody>
+</table>
+
+<p>The word <code>typeof</code> asks JavaScript for the type of a value. You will rarely need it in real programs, but it is a good way to check your understanding while you learn.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>JavaScript was created in just ten days, in May 1995, by Brendan Eich at Netscape. Today it runs in every web browser and on almost every website in the world.</p></aside>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip</p><p>Quotes turn anything into text. <code>42</code> is a number, but <code>"42"</code> is a string that happens to contain the characters 4 and 2. This difference causes many beginner bugs, and we will meet it again in Section 8.3.</p></aside>
+
+<h2><span class="sec">8.2</span><span>Variables: giving a value a name</span></h2>
+
+<p>Values on their own disappear as soon as they are used. To keep a value so that you can use it later, you store it in a <dfn>variable</dfn>. A variable is a name that points to a value.</p>
+
+<figure>
+<svg viewBox="0 0 520 150" role="img" aria-label="Two labelled boxes: score holds 10, name holds Sara">
+<g font-family="JetBrains Mono" font-size="15" fill="#111">
+<rect x="20" y="40" width="200" height="70" rx="10" fill="#fff" stroke="#111" stroke-width="2.5"/>
+<rect x="20" y="20" width="90" height="30" rx="6" fill="#111"/>
+<text x="65" y="40" fill="#fff" text-anchor="middle">score</text>
+<text x="120" y="88" font-size="26" text-anchor="middle">10</text>
+<rect x="290" y="40" width="210" height="70" rx="10" fill="#fff" stroke="#111" stroke-width="2.5"/>
+<rect x="290" y="20" width="80" height="30" rx="6" fill="#111"/>
+<text x="330" y="40" fill="#fff" text-anchor="middle">name</text>
+<text x="395" y="88" font-size="24" text-anchor="middle">"Sara"</text>
+<text x="120" y="138" font-size="13" fill="#555" text-anchor="middle">let: can change</text>
+<text x="395" y="138" font-size="13" fill="#555" text-anchor="middle">const: stays the same</text>
+</g>
+</svg>
+<figcaption>Figure 8.1: A variable is a labelled box. The label is the name; the contents are the value.</figcaption>
+</figure>
+
+<p>JavaScript gives you two words for creating a variable: <code>let</code> and <code>const</code>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">variables.js</div><pre class="code"><span class="k">let</span> score = <span class="n">0</span>;
+console.log(score);
+
+score = score + <span class="n">10</span>;
+console.log(score);
+
+<span class="k">const</span> name = <span class="s">&quot;Sara&quot;</span>;
+console.log(<span class="s">&quot;Player:&quot;</span>, name);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>0
+10
+Player: Sara</pre></div>
+
+<p>Read the line <code>score = score + 10;</code> from right to left. JavaScript first works out <code>score + 10</code>, which is <code>0 + 10</code>, and then puts the result back into <code>score</code>. The single equals sign does not mean "is equal to" as it does in mathematics. It means "store the value on the right in the name on the left". Programmers call it the <dfn>assignment operator</dfn>.</p>
+
+<h3>let or const?</h3>
+
+<p>Use <code>let</code> for a value that will change, such as a score, a counter or a total. Use <code>const</code> for a value that will not change once it is set, such as a player's name or the maximum number of players. If you try to change a <code>const</code>, JavaScript stops your program with an error:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">const-error.js</div><pre class="code"><span class="k">const</span> maxPlayers = <span class="n">4</span>;
+maxPlayers = <span class="n">5</span>;</pre></div>
+<div class="output error" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>maxPlayers = 5;
+           ^
+TypeError: Assignment to constant variable.</pre></div>
+
+<p>This error is a gift, not a punishment. It tells you exactly which line broke a rule you set yourself. Professional developers use <code>const</code> by default and switch to <code>let</code> only when they know a value must change. You should do the same: the fewer things that can change, the fewer things can go wrong.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>You may see the older word <code>var</code> in tutorials and old code. It behaves in surprising ways that we will explain in Book 2. In new code, always use <code>let</code> or <code>const</code>.</p></aside>
+
+<h3>Choosing good names</h3>
+
+<p>A variable name may contain letters, digits, <code>_</code> and <code>$</code>, but it cannot start with a digit, and it cannot be a word that JavaScript already uses, such as <code>if</code> or <code>let</code>. When a name has several words, JavaScript developers join them in <dfn>camelCase</dfn>: the first word in lower case and each following word starting with a capital letter.</p>
+
+<table>
+<thead><tr><th>Good</th><th>Poor</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td><code>ticketPrice</code></td><td><code>tp</code></td><td>Says what it holds</td></tr>
+<tr><td><code>isMember</code></td><td><code>member1</code></td><td><code>is</code> tells you it is a boolean</td></tr>
+<tr><td><code>maxPlayers</code></td><td><code>max_players_number</code></td><td>Short, and follows the camelCase style</td></tr>
+</tbody>
+</table>
+
+<p>Write names for the person who will read your code in six months. Very often, that person is you.</p>
+
+<h2><span class="sec">8.3</span><span>Operators: calculating and comparing</span></h2>
+
+<p>An <dfn>operator</dfn> is a symbol that takes values and produces a new value. You already know most of the arithmetic operators from school.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">operators.js</div><pre class="code"><span class="k">const</span> price = <span class="n">12</span>;
+<span class="k">const</span> count = <span class="n">3</span>;
+
+console.log(price * count);
+console.log(<span class="n">10</span> / <span class="n">4</span>);
+console.log(<span class="n">10</span> % <span class="n">4</span>);
+
+<span class="k">const</span> first = <span class="s">&quot;Sara&quot;</span>;
+<span class="k">const</span> last = <span class="s">&quot;Khan&quot;</span>;
+console.log(first + <span class="s">&quot; &quot;</span> + last);
+console.log(<span class="s">`Total: ${price * count} dollars`</span>);
+
+console.log(<span class="n">5</span> === <span class="n">5</span>);
+console.log(<span class="n">5</span> === <span class="s">&quot;5&quot;</span>);
+console.log(<span class="n">5</span> == <span class="s">&quot;5&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>36
+2.5
+2
+Sara Khan
+Total: 36 dollars
+true
+false
+true</pre></div>
+
+<p>Let us go through the program in three groups.</p>
+
+<h3>Arithmetic</h3>
+
+<p>The operators <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code> add, subtract, multiply and divide. The one that may be new to you is <code>%</code>, the <dfn>remainder</dfn> operator. <code>10 % 4</code> is <code>2</code> because 4 goes into 10 twice with 2 left over. It is more useful than it looks: <code>n % 2</code> is <code>0</code> exactly when <code>n</code> is even.</p>
+
+<h3>Joining text</h3>
+
+<p>When <code>+</code> is used with strings, it joins them together. A cleaner way to build text is a <dfn>template literal</dfn>: a string written between backticks (<code>`</code>) in which anything inside <code>${ }</code> is calculated and inserted. Compare the two styles in the program; most modern code uses template literals because they are easier to read.</p>
+
+<h3>Comparison</h3>
+
+<p>Comparison operators always produce a boolean:</p>
+
+<table>
+<thead><tr><th>Operator</th><th>Meaning</th><th>Example</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td><code>===</code></td><td>is equal to</td><td><code>3 === 3</code></td><td><code>true</code></td></tr>
+<tr><td><code>!==</code></td><td>is not equal to</td><td><code>3 !== 4</code></td><td><code>true</code></td></tr>
+<tr><td><code>&lt;</code> and <code>&gt;</code></td><td>less than, greater than</td><td><code>2 &lt; 1</code></td><td><code>false</code></td></tr>
+<tr><td><code>&lt;=</code> and <code>&gt;=</code></td><td>less or equal, greater or equal</td><td><code>5 &gt;= 5</code></td><td><code>true</code></td></tr>
+</tbody>
+</table>
+
+<p>Look carefully at the last two lines of the output. <code>5 === "5"</code> is <code>false</code>, because a number is not a string. But <code>5 == "5"</code> is <code>true</code>: the double equals quietly converts one value to the other type before comparing. That silent conversion hides bugs.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit</p><p>Always compare with <code>===</code> and <code>!==</code>. Never use <code>==</code> or <code>!=</code>. Most teams enforce this rule automatically with a tool called a linter, which you will set up in Book 2.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What does <code>typeof "10"</code> give?</li><li>What is <code>17 % 5</code>?</li><li>Is <code>4 === "4"</code> true or false?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">8.4</span><span>Decisions with if and else</span></h2>
+
+<p>Now that you can compare values, you can make your program choose. The <code>if</code> statement runs a block of code only when a condition is <code>true</code>. A cinema charges different prices for different ages; here is how a program decides:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ticket.js</div><pre class="code"><span class="k">const</span> age = <span class="n">9</span>;
+<span class="k">let</span> price;
+
+<span class="k">if</span> (age &lt; <span class="n">4</span>) {
+  price = <span class="n">0</span>;
+} <span class="k">else</span> <span class="k">if</span> (age &lt; <span class="n">13</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> <span class="k">if</span> (age &gt;= <span class="n">65</span>) {
+  price = <span class="n">7</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+console.log(<span class="s">`Age ${age}: $${price}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Age 9: $6</pre></div>
+
+<p>JavaScript checks the conditions from top to bottom and stops at the first one that is <code>true</code>:</p>
+
+<figure>
+<svg viewBox="0 0 520 250" role="img" aria-label="Flow chart: age under 4 is free, under 13 is 6, 65 or over is 7, otherwise 10">
+<g font-family="Inter" font-size="14" fill="#111" stroke-linejoin="round">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#111"/></marker></defs>
+<g stroke="#111" stroke-width="2" fill="#fff">
+<rect x="20" y="15" width="150" height="40" rx="20"/>
+<rect x="20" y="75" width="150" height="40" rx="20"/>
+<rect x="20" y="135" width="150" height="40" rx="20"/>
+<rect x="20" y="195" width="150" height="40" rx="8"/>
+<rect x="290" y="15" width="110" height="40" rx="8"/>
+<rect x="290" y="75" width="110" height="40" rx="8"/>
+<rect x="290" y="135" width="110" height="40" rx="8"/>
+</g>
+<g stroke="#111" stroke-width="2" marker-end="url(#a)">
+<line x1="170" y1="35" x2="286" y2="35"/><line x1="170" y1="95" x2="286" y2="95"/><line x1="170" y1="155" x2="286" y2="155"/>
+<line x1="95" y1="55" x2="95" y2="72"/><line x1="95" y1="115" x2="95" y2="132"/><line x1="95" y1="175" x2="95" y2="192"/>
+</g>
+<text x="95" y="40" text-anchor="middle" font-family="JetBrains Mono">age &lt; 4 ?</text>
+<text x="95" y="100" text-anchor="middle" font-family="JetBrains Mono">age &lt; 13 ?</text>
+<text x="95" y="160" text-anchor="middle" font-family="JetBrains Mono">age &gt;= 65 ?</text>
+<text x="95" y="220" text-anchor="middle">price = 10</text>
+<text x="345" y="40" text-anchor="middle">price = 0</text>
+<text x="345" y="100" text-anchor="middle">price = 6</text>
+<text x="345" y="160" text-anchor="middle">price = 7</text>
+<g font-size="12" fill="#555"><text x="228" y="28" text-anchor="middle">yes</text><text x="228" y="88" text-anchor="middle">yes</text><text x="228" y="148" text-anchor="middle">yes</text>
+<text x="108" y="68">no</text><text x="108" y="128">no</text><text x="108" y="188">no</text></g>
+</g>
+</svg>
+<figcaption>Figure 8.2: The conditions are checked in order. The first one that is true wins.</figcaption>
+</figure>
+
+<p>Because the order matters, a 9-year-old is caught by <code>age &lt; 13</code> and never reaches the later checks. If you swapped the first two conditions, a 2-year-old would be charged 6 instead of nothing. When you write a chain of <code>else if</code>, always ask yourself: "which case should win if two are true?"</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>My trick for long chains: put the narrowest condition first, and leave the “everyone else” case for the final <code>else</code>.</p></div></div>
+
+<p>The parts of the statement are:</p>
+<ul>
+<li><code>if (condition) { ... }</code>: the block runs only when the condition is <code>true</code>.</li>
+<li><code>else if (condition) { ... }</code>: checked only when every earlier condition was <code>false</code>. You can have as many as you need.</li>
+<li><code>else { ... }</code>: runs when nothing above was <code>true</code>. It is optional, and there can be only one.</li>
+</ul>
+
+<p>Notice also that <code>price</code> is declared with <code>let</code> and no value. It starts out as the special value <code>undefined</code>, meaning "nothing yet", and each branch gives it a real value.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>Change <code>age</code> to 2, 13, 40 and 70, and run the program after each change. Predict the output before you press Enter. Being able to predict what code will do is the most important skill in this book.</p></aside>
+
+<h2><span class="sec">8.5</span><span>Combining conditions</span></h2>
+
+<p>Real decisions often depend on more than one thing. Three <dfn>logical operators</dfn> let you combine booleans:</p>
+
+<table>
+<thead><tr><th>Operator</th><th>Name</th><th>True when</th></tr></thead>
+<tbody>
+<tr><td><code>&amp;&amp;</code></td><td>and</td><td>both sides are true</td></tr>
+<tr><td><code>||</code></td><td>or</td><td>at least one side is true</td></tr>
+<tr><td><code>!</code></td><td>not</td><td>the value is false (it flips true and false)</td></tr>
+</tbody>
+</table>
+
+<div class="listing" dir="ltr"><div class="listing-title">logic.js</div><pre class="code"><span class="k">const</span> isMember = <span class="k">true</span>;
+<span class="k">const</span> day = <span class="s">&quot;Tuesday&quot;</span>;
+
+<span class="k">if</span> (isMember &amp;&amp; day === <span class="s">&quot;Tuesday&quot;</span>) {
+  console.log(<span class="s">&quot;Half price today!&quot;</span>);
+}
+
+<span class="k">const</span> hasTicket = <span class="k">false</span>;
+<span class="k">if</span> (!hasTicket) {
+  console.log(<span class="s">&quot;Please buy a ticket.&quot;</span>);
+}
+
+<span class="k">const</span> nickname = <span class="s">&quot;&quot;</span>;
+<span class="k">const</span> shown = nickname || <span class="s">&quot;Guest&quot;</span>;
+console.log(shown);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Half price today!
+Please buy a ticket.
+Guest</pre></div>
+
+<p>The first <code>if</code> gives half price only to members, and only on Tuesdays. The second reads naturally as "if not has ticket". The last two lines use a common trick that needs a little more explanation.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Did you know?</p><p>The <code>boolean</code> type is named after George Boole, an English mathematician who showed in 1854 that logic can be written as algebra with only two values: true and false. Every computer chip is built on his idea.</p></aside>
+
+<h3>Truthy and falsy</h3>
+
+<p>In a condition, JavaScript accepts any value, not only <code>true</code> and <code>false</code>. Six values count as false, and programmers call them <dfn>falsy</dfn>: <code>false</code>, <code>0</code>, <code>""</code> (an empty string), <code>null</code>, <code>undefined</code> and <code>NaN</code>. Every other value is <dfn>truthy</dfn>.</p>
+
+<p>The <code>||</code> operator returns the first truthy value it finds. Because <code>nickname</code> is an empty string, which is falsy, <code>nickname || "Guest"</code> gives <code>"Guest"</code>. This is a quick way to provide a default value.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out</p><p>The default trick also replaces <code>0</code>, because <code>0</code> is falsy. If a score of zero is a real score, <code>score || 100</code> will wrongly give 100. Book 2 introduces the <code>??</code> operator, which only replaces <code>null</code> and <code>undefined</code>.</p></aside>
+
+<h2><span class="sec">8.6</span><span>Choosing between many fixed values with switch</span></h2>
+
+<p>When you compare one value against a list of exact possibilities, a <code>switch</code> statement can be easier to read than a long chain of <code>else if</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">switch.js</div><pre class="code"><span class="k">const</span> size = <span class="s">&quot;M&quot;</span>;
+<span class="k">let</span> drink;
+
+<span class="k">switch</span> (size) {
+  <span class="k">case</span> <span class="s">&quot;S&quot;</span>:
+    drink = <span class="n">2</span>;
+    <span class="k">break</span>;
+  <span class="k">case</span> <span class="s">&quot;M&quot;</span>:
+    drink = <span class="n">3</span>;
+    <span class="k">break</span>;
+  <span class="k">case</span> <span class="s">&quot;L&quot;</span>:
+    drink = <span class="n">4</span>;
+    <span class="k">break</span>;
+  <span class="k">default</span>:
+    drink = <span class="n">0</span>;
+}
+
+console.log(<span class="s">`Drink: $${drink}`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Drink: $3</pre></div>
+
+<p>JavaScript jumps to the <code>case</code> that matches <code>size</code> using <code>===</code>, and runs the code from there. The <code>break</code> statement ends the <code>switch</code>. If you forget it, JavaScript carries on into the next case, which is almost never what you want. The <code>default</code> case runs when nothing matches.</p>
+
+<p>Use <code>switch</code> for exact matches on one value, such as sizes, menu choices or days. Use <code>if</code> for ranges such as ages, or for conditions that involve several variables.</p>
+
+<h2><span class="sec">8.7</span><span>Project: a ticket kiosk</span></h2>
+
+<p>Let us put everything together. The kiosk below decides the price of a cinema ticket with four rules:</p>
+
+<ol>
+<li>Children under 4 enter free.</li>
+<li>Children under 13 and adults aged 65 or over pay 6; everyone else pays 10.</li>
+<li>Members pay half price on Tuesdays.</li>
+<li>Shows that start at 22:00 or later are 1 cheaper, unless the ticket is already free.</li>
+</ol>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="74" cy="55" r="8.5" fill="#1e1b4b"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#1e1b4b"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>This is your first program that makes real decisions on its own. Read it once, run it, then change the values and play!</p></div></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c">// Ticket kiosk: change these values and run again.</span>
+<span class="k">const</span> age = <span class="n">34</span>;
+<span class="k">const</span> isMember = <span class="k">true</span>;
+<span class="k">const</span> day = <span class="s">&quot;Tuesday&quot;</span>;
+<span class="k">const</span> showTime = <span class="n">22</span>; <span class="c">// 24-hour clock</span>
+
+<span class="k">let</span> price;
+<span class="k">if</span> (age &lt; <span class="n">4</span>) {
+  price = <span class="n">0</span>;
+} <span class="k">else</span> <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+<span class="k">if</span> (isMember &amp;&amp; day === <span class="s">&quot;Tuesday&quot;</span>) {
+  price = price / <span class="n">2</span>;
+}
+
+<span class="k">if</span> (showTime &gt;= <span class="n">22</span> &amp;&amp; price &gt; <span class="n">0</span>) {
+  price = price - <span class="n">1</span>;
+}
+
+<span class="k">const</span> message = price === <span class="n">0</span> ? <span class="s">&quot;Free entry&quot;</span> : <span class="s">`Please pay $${price}`</span>;
+console.log(message);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Please pay $4</pre></div>
+
+<p>Follow the program as the computer does. The visitor is 34, so the first decision sets <code>price</code> to 10. They are a member and it is Tuesday, so the price is halved to 5. The show starts at 22:00, so one more is taken off, and the visitor pays 4.</p>
+
+<p>The last line uses one new piece of syntax, the <dfn>conditional operator</dfn>, often called the <em>ternary</em>:</p>
+
+<pre class="plain">condition ? valueIfTrue : valueIfFalse</pre>
+
+<p>It is a compact <code>if</code>/<code>else</code> that produces a value. Use it only for short, simple choices like this one; when either side grows long, a normal <code>if</code> is clearer.</p>
+
+<aside class="box try"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h1M9.5 10h1M13 10h1M16.5 10h1M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Try it</p><p>Change the values at the top of <code>kiosk.js</code> so that the visitor gets in free. Then find a combination that costs exactly 3. Is there more than one?</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>if (age = 18)</code></td><td>Assigns 18 instead of comparing, so the condition is always true</td><td>Use <code>===</code></td></tr>
+<tr><td>Comparing <code>"5"</code> with <code>5</code></td><td><code>===</code> gives <code>false</code></td><td>Make sure both values have the same type</td></tr>
+<tr><td>Wrong order in <code>else if</code></td><td>An earlier, wider condition catches cases meant for a later one</td><td>Put the narrowest conditions first</td></tr>
+<tr><td>Forgetting <code>break</code></td><td>The next <code>case</code> runs too</td><td>End every <code>case</code> with <code>break</code></td></tr>
+<tr><td>Changing a <code>const</code></td><td><code>TypeError: Assignment to constant variable</code></td><td>Use <code>let</code> if the value must change</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A <strong>value</strong> is one piece of data. The basic types are <code>number</code>, <code>string</code> and <code>boolean</code>.</li>
+<li>A <strong>variable</strong> is a name for a value. Use <code>const</code> by default and <code>let</code> when the value must change.</li>
+<li>The single <code>=</code> stores a value; it does not compare.</li>
+<li><strong>Operators</strong> calculate (<code>+ - * / %</code>), join text, and compare. Always compare with <code>===</code>.</li>
+<li><code>if</code>, <code>else if</code> and <code>else</code> choose between blocks of code. The first true condition wins, so order matters.</li>
+<li><code>&amp;&amp;</code>, <code>||</code> and <code>!</code> combine conditions. Six values are falsy; every other value is truthy.</li>
+<li><code>switch</code> matches one value against fixed cases. End each case with <code>break</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>"string"</code>, because the quotes make it text. 2. <code>2</code>, because 5 goes into 17 three times with 2 left over. 3. <code>false</code>, because a number is never the same as a string.</p>
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a program with a <code>const</code> called <code>temperature</code>. Print <code>"Cold"</code> below 15, <code>"Warm"</code> from 15 to 29, and <code>"Hot"</code> from 30 up.</li>
+<li><span class="level">Easy</span> Predict the output of each line, then check with Node: <code>7 % 3</code>, <code>"7" + 3</code>, <code>7 === "7"</code>, <code>!true</code>.</li>
+<li><span class="level medium">Medium</span> A number is even when <code>n % 2 === 0</code>. Print whether a number is even or odd, and whether it is positive, negative or zero.</li>
+<li><span class="level medium">Medium</span> Rewrite <code>switch.js</code> using <code>if</code> and <code>else if</code>. Which version do you find easier to read, and why?</li>
+<li><span class="level hard">Challenge</span> Add a fifth rule to the kiosk: on Fridays everyone pays 2 extra, but the price can never be more than 10. Test at least four different visitors.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book's code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 9</p>
+<p>Your kiosk can serve only one visitor at a time. In the next chapter you will learn to store whole lists of values in arrays, and to repeat work with loops, so the kiosk can serve a queue of a hundred visitors with the same few lines of code.</p>
+</div>
+</section>
+</body></html>

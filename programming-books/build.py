@@ -14,6 +14,7 @@ import re
 import subprocess
 from pathlib import Path
 
+from cover import STYLE as COVER_STYLE, decor_layer, front_html
 from decor import bit, decorate
 from page_css import page_css
 
@@ -135,7 +136,15 @@ def front_matter(book, lang):
     return "".join(pages)
 
 
-def build(book, lang):
+# Bit in greys for the black-and-white edition.
+GREYS = {"#6366f1": "#a3a3a3", "#e0e7ff": "#f2f2f2", "#312e81": "#1a1a1a", "#818cf8": "#c8c8c8",
+         "#fbbf24": "#e0e0e0", "#f472b6": "#8c8c8c", "#f9a8d4": "#d4d4d4", "#1e1b4b": "#111111"}
+EDITIONS = ("color", "print")
+
+
+def build(book, lang, edition):
+    """edition "color": full colour, cover first, equal margins, for reading as a PDF on a screen.
+    edition "print": black and white, mirrored margins, the interior file for KDP (the cover is separate)."""
     chapters, titles = [], []
     k = 0
     for part in book["parts"]:
@@ -153,11 +162,22 @@ def build(book, lang):
     if not chapters:
         return None
     rtl = lang == "ar"
+    sheets = '<link rel="stylesheet" href="../style/book.css">'
+    cover = ""
+    if edition == "print":
+        sheets += '<link rel="stylesheet" href="../style/print-bw.css">'
+    else:
+        cover = (f'<section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page">'
+                 f'{decor_layer()}{front_html(book, lang)}</section>')
+    body = cover + front_matter(book, lang) + "".join(chapters)
+    if edition == "print":
+        for c, g in GREYS.items():
+            body = body.replace(c, g)
     doc = f"""<!doctype html><html lang="{lang}" dir="{'rtl' if rtl else 'ltr'}"><head><meta charset="utf-8">
-<title>{book["title"][lang]}</title><link rel="stylesheet" href="../style/book.css"><style>{page_css(lang, book, titles)}</style></head>
-<body>{front_matter(book, lang)}{"".join(chapters)}</body></html>"""
+<title>{book["title"][lang]}</title>{sheets}<style>{page_css(lang, book, titles, edition)}{COVER_STYLE if cover else ""}</style></head>
+<body>{body}</body></html>"""
     OUT.mkdir(exist_ok=True)
-    path = OUT / f"{book['id']}-{lang}.html"
+    path = OUT / f"{book['id']}-{lang}-{edition}.html"
     path.write_text(doc)
     return path
 
@@ -165,6 +185,7 @@ def build(book, lang):
 if __name__ == "__main__":
     for book in SERIES["books"]:
         for lang in ("en", "ar"):
-            p = build(book, lang)
-            if p:
-                print("built", p.relative_to(ROOT))
+            for edition in EDITIONS:
+                p = build(book, lang, edition)
+                if p:
+                    print("built", p.relative_to(ROOT))
