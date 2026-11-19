@@ -190,4 +190,5 @@ figure.browser img { display: block; width: 100%; height: auto; max-height: 6.4i
 .hint { background: var(--tip-soft); border-radius: 8pt; padding: 5pt 10pt; font-size: 0.93em; }
 .solution { font-size: 0.88em; color: var(--muted); }
 pre.code.md { unicode-bidi: plaintext; }
+.code .line-bidi { unicode-bidi: plaintext; }
 .project p:has(+ .output), .project p:has(+ .listing), .project p:has(+ figure) { break-after: avoid; }

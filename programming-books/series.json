@@ -510,15 +510,18 @@
           "chapters": [
             {
               "en": "How Servers Work: HTTP in Depth",
-              "ar": "كيف تعمل الخوادم: HTTP بعمق"
+              "ar": "كيف تعمل الخوادم: HTTP بعمق",
+              "src": "b3/http"
             },
             {
               "en": "Node.js and TypeScript on the Server",
-              "ar": "Node.js وTypeScript على الخادم"
+              "ar": "Node.js وTypeScript على الخادم",
+              "src": "b3-node/node-and-typescript"
             },
             {
               "en": "Designing REST APIs",
-              "ar": "تصميم واجهات REST"
+              "ar": "تصميم واجهات REST",
+              "src": "b3-node/rest-apis"
             }
           ]
         },
@@ -530,19 +533,23 @@
           "chapters": [
             {
               "en": "SQL and PostgreSQL",
-              "ar": "SQL وPostgreSQL"
+              "ar": "SQL وPostgreSQL",
+              "src": "b3/sql"
             },
             {
               "en": "Data Modelling and Migrations",
-              "ar": "نمذجة البيانات والترحيلات"
+              "ar": "نمذجة البيانات والترحيلات",
+              "src": "b3-node/data-modelling"
             },
             {
               "en": "Transactions, Locks and Consistency",
-              "ar": "المعاملات والأقفال والاتساق"
+              "ar": "المعاملات والأقفال والاتساق",
+              "src": "b3/transactions"
             },
             {
               "en": "Caching with Redis",
-              "ar": "التخزين المؤقت بـ Redis"
+              "ar": "التخزين المؤقت بـ Redis",
+              "src": "b3/redis"
             }
           ]
         },
@@ -554,27 +561,33 @@
           "chapters": [
             {
               "en": "Authentication and Authorisation",
-              "ar": "التحقق من الهوية والصلاحيات"
+              "ar": "التحقق من الهوية والصلاحيات",
+              "src": "b3-node/auth"
             },
             {
               "en": "Security: The OWASP Top 10",
-              "ar": "الأمان: أخطر عشر ثغرات (OWASP)"
+              "ar": "الأمان: أخطر عشر ثغرات (OWASP)",
+              "src": "b3-node/security"
             },
             {
               "en": "Background Jobs and Queues",
-              "ar": "المهام الخلفية والطوابير"
+              "ar": "المهام الخلفية والطوابير",
+              "src": "b3-node/jobs-and-queues"
             },
             {
               "en": "Real-Time with WebSockets",
-              "ar": "الزمن الحقيقي بـ WebSockets"
+              "ar": "الزمن الحقيقي بـ WebSockets",
+              "src": "b3-node/real-time"
             },
             {
               "en": "Testing the Backend",
-              "ar": "اختبار الخادم"
+              "ar": "اختبار الخادم",
+              "src": "b3-node/testing"
             },
             {
               "en": "Logging, Metrics and Tracing",
-              "ar": "السجلات والمقاييس والتتبع"
+              "ar": "السجلات والمقاييس والتتبع",
+              "src": "b3/observability"
             }
           ]
         },
@@ -586,19 +599,23 @@
           "chapters": [
             {
               "en": "Performance and Scaling",
-              "ar": "الأداء والتوسع"
+              "ar": "الأداء والتوسع",
+              "src": "b3/performance"
             },
             {
               "en": "Architecture: Monolith, Modules and Services",
-              "ar": "المعمارية: الكتلة الواحدة والوحدات والخدمات"
+              "ar": "المعمارية: الكتلة الواحدة والوحدات والخدمات",
+              "src": "b3-node/architecture"
             },
             {
               "en": "Docker and Deployment",
-              "ar": "Docker والنشر"
+              "ar": "Docker والنشر",
+              "src": "b3/docker"
             },
             {
               "en": "Capstone: A Production API",
-              "ar": "المشروع الختامي: واجهة برمجية للإنتاج"
+              "ar": "المشروع الختامي: واجهة برمجية للإنتاج",
+              "src": "b3-node/capstone"
             }
           ]
         }
@@ -615,7 +632,8 @@
       ],
       "number": 3,
       "status": "approved",
-      "track": "backend"
+      "track": "backend",
+      "shared": "b3"
     },
     {
       "id": "b3-laravel",
@@ -645,19 +663,23 @@
           "chapters": [
             {
               "en": "How Servers Work: HTTP in Depth",
-              "ar": "كيف تعمل الخوادم: HTTP بعمق"
+              "ar": "كيف تعمل الخوادم: HTTP بعمق",
+              "src": "b3/http"
             },
             {
               "en": "Modern PHP for JavaScript Developers",
-              "ar": "PHP الحديثة لمطوري JavaScript"
+              "ar": "PHP الحديثة لمطوري JavaScript",
+              "src": "b3-laravel/modern-php"
             },
             {
               "en": "Laravel Essentials: Routes, Controllers and Requests",
-              "ar": "أساسيات Laravel: المسارات والمتحكمات والطلبات"
+              "ar": "أساسيات Laravel: المسارات والمتحكمات والطلبات",
+              "src": "b3-laravel/laravel-essentials"
             },
             {
               "en": "Designing REST APIs with API Resources",
-              "ar": "تصميم واجهات REST بـ API Resources"
+              "ar": "تصميم واجهات REST بـ API Resources",
+              "src": "b3-laravel/rest-apis"
             }
           ]
         },
@@ -669,19 +691,23 @@
           "chapters": [
             {
               "en": "SQL and PostgreSQL",
-              "ar": "SQL وPostgreSQL"
+              "ar": "SQL وPostgreSQL",
+              "src": "b3/sql"
             },
             {
               "en": "Eloquent, Relationships and Migrations",
-              "ar": "Eloquent والعلاقات والترحيلات"
+              "ar": "Eloquent والعلاقات والترحيلات",
+              "src": "b3-laravel/eloquent"
             },
             {
               "en": "Transactions, Locks and Consistency",
-              "ar": "المعاملات والأقفال والاتساق"
+              "ar": "المعاملات والأقفال والاتساق",
+              "src": "b3/transactions"
             },
             {
               "en": "Caching with Redis",
-              "ar": "التخزين المؤقت بـ Redis"
+              "ar": "التخزين المؤقت بـ Redis",
+              "src": "b3/redis"
             }
           ]
         },
@@ -693,27 +719,33 @@
           "chapters": [
             {
               "en": "Authentication with Sanctum and Policies",
-              "ar": "الهوية بـ Sanctum والصلاحيات بـ Policies"
+              "ar": "الهوية بـ Sanctum والصلاحيات بـ Policies",
+              "src": "b3-laravel/auth"
             },
             {
               "en": "Security: The OWASP Top 10 in Laravel",
-              "ar": "الأمان: أخطر عشر ثغرات (OWASP) في Laravel"
+              "ar": "الأمان: أخطر عشر ثغرات (OWASP) في Laravel",
+              "src": "b3-laravel/security"
             },
             {
               "en": "Queues, Jobs and the Scheduler",
-              "ar": "الطوابير والمهام والمجدول"
+              "ar": "الطوابير والمهام والمجدول",
+              "src": "b3-laravel/queues"
             },
             {
               "en": "Real-Time with Laravel Reverb",
-              "ar": "الزمن الحقيقي بـ Laravel Reverb"
+              "ar": "الزمن الحقيقي بـ Laravel Reverb",
+              "src": "b3-laravel/real-time"
             },
             {
               "en": "Testing with Pest",
-              "ar": "الاختبار بـ Pest"
+              "ar": "الاختبار بـ Pest",
+              "src": "b3-laravel/testing"
             },
             {
               "en": "Logging, Metrics and Tracing",
-              "ar": "السجلات والمقاييس والتتبع"
+              "ar": "السجلات والمقاييس والتتبع",
+              "src": "b3/observability"
             }
           ]
         },
@@ -725,19 +757,23 @@
           "chapters": [
             {
               "en": "Performance and Scaling",
-              "ar": "الأداء والتوسع"
+              "ar": "الأداء والتوسع",
+              "src": "b3/performance"
             },
             {
               "en": "Architecture: Modules, Actions and Domains",
-              "ar": "المعمارية: الوحدات والأفعال والمجالات"
+              "ar": "المعمارية: الوحدات والأفعال والمجالات",
+              "src": "b3-laravel/architecture"
             },
             {
               "en": "Docker and Deployment",
-              "ar": "Docker والنشر"
+              "ar": "Docker والنشر",
+              "src": "b3/docker"
             },
             {
               "en": "Capstone: A Production API",
-              "ar": "المشروع الختامي: واجهة برمجية للإنتاج"
+              "ar": "المشروع الختامي: واجهة برمجية للإنتاج",
+              "src": "b3-laravel/capstone"
             }
           ]
         }
@@ -754,7 +790,8 @@
       ],
       "number": 3,
       "status": "approved",
-      "track": "backend"
+      "track": "backend",
+      "shared": "b3"
     },
     {
       "id": "b4",

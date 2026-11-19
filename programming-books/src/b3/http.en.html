@@ -1,0 +1,402 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/http/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>How Servers Work: HTTP in Depth</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>follow a request from a URL to a response: name lookup, connection, request, answer</li>
+<li>read and write HTTP by hand, because it is plain text</li>
+<li>choose the right method and status code, and know which requests are safe to repeat</li>
+<li>use the headers that matter: content type and length, caching with ETags, CORS</li>
+<li>inspect any API with <code>curl</code>, the backend developer’s most used tool</li>
+<li>build a small JSON API with no framework, so that you know what every framework does for you</li>
+</ul>
+</div>
+
+<p class="lead">Every backend you will ever build, whatever the language or framework, does the same job: it waits for a message, works out what was asked, and sends a message back. The messages follow a protocol called HTTP. Frameworks hide it behind routes and controllers, which is useful until something goes wrong: a request that works in <code>curl</code> but not in the browser, a cache that never updates, a client that retries and charges a customer twice. Then you need to know what is really on the wire. This chapter shows it to you, byte by byte, with a small server we write ourselves.</p>
+
+<aside class="bit" data-mood="think"><p>The first API I wrote worked perfectly, as long as I was the only one calling it. Then a browser called it from another address, and nothing worked. I lost a day to a problem that two headers solved. Since then I read the raw request first, and guess second.</p></aside>
+
+<h2>{{n}}.1 From a URL to an answer</h2>
+
+<p>When a web app in Bit’s shop asks for <code>http://localhost:3000/products/2</code>, four things happen, in this order:</p>
+<ol>
+<li><strong>Name lookup.</strong> Computers talk to addresses, not names. The client asks the <dfn>Domain Name System</dfn> (DNS) for the address of the <dfn>host</dfn> (here <code>localhost</code>, which always means “this same computer”, at <code>127.0.0.1</code>). For a real site such as <code>shop.example</code>, a DNS server somewhere on the internet answers.</li>
+<li><strong>Connection.</strong> The client opens a <dfn>TCP connection</dfn> to that address and a <dfn>port</dfn>, a number that picks one program on the machine. Our server listens on port <code>3000</code>. TCP makes sure that bytes arrive complete and in order.</li>
+<li><strong>Security, for HTTPS.</strong> With <code>https://</code>, the two sides first agree on encryption keys (the <dfn>TLS handshake</dfn>), and the server proves who it is with a certificate. Everything after that is encrypted. The HTTP inside is the same.</li>
+<li><strong>Request and response.</strong> The client sends an HTTP <dfn>request</dfn> as text; the server sends back a <dfn>response</dfn>. The connection may then stay open for the next request.</li>
+</ol>
+
+<p>Everything in this chapter happens on your own computer, so you can see every step without a network in the way. We need a server to talk to. The book’s code folder has one for this chapter, a small API for Bit’s shop, with no framework at all. Start it in a terminal and leave that terminal open:</p>
+
+<!-- node -->
+<pre data-code="node/start.sh" data-title="Terminal 1"></pre>
+
+<p>Node 22.18 and later run TypeScript files directly: they remove the types and run what is left. We will read the whole server in Section {{n}}.9. First, we look at it from the outside, the way every client does.</p>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/start.sh" data-title="Terminal 1"></pre>
+
+<p>PHP comes with a small web server for development: <code>php -S</code> listens on an address and sends every request to the script you name. The script is plain PHP; it reads like JavaScript with a <code>$</code> before every variable, and Chapter {{n+1}} explains the language properly. We will read the whole script in Section {{n}}.9. First, we look at the server from the outside, the way every client does.</p>
+<!-- /laravel -->
+
+<h2>{{n}}.2 HTTP is text</h2>
+
+<p>HTTP/1.1, the version every server understands, is plain text sent over the TCP connection. You can type a request yourself. The <code>nc</code> (netcat) tool opens a TCP connection and passes through whatever you give it; <code>printf</code> writes the request, with <code>\r\n</code> at the end of each line, as the protocol requires. Open a second terminal:</p>
+
+<!-- node -->
+<pre data-code="node/raw.sh" data-title="Terminal 2"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/raw.sh" data-title="Terminal 2"></pre>
+<!-- /laravel -->
+
+<p>That is all an HTTP exchange is. Both messages have the same shape:</p>
+<ol>
+<li><strong>A first line.</strong> In the request, the <dfn>request line</dfn>: the <dfn>method</dfn> (<code>GET</code>), the <dfn>target</dfn> (<code>/products/1</code>) and the version. In the response, the <dfn>status line</dfn>: the version, a <dfn>status code</dfn> (<code>200</code>) and a short reason (<code>OK</code>).</li>
+<li><strong>Headers</strong>, one per line, <code>Name: value</code>. Names are not case sensitive: <code>content-type</code> and <code>Content-Type</code> are the same header.</li>
+<li><strong>An empty line.</strong> It says “the headers end here”. Forget it, and the server waits for more headers forever.</li>
+<li><strong>The body</strong>, if there is one. The receiver knows where it ends from <code>Content-Length</code>: here, 41 bytes.</li>
+</ol>
+
+<p>Our request had two headers. <code>Host</code> is required in HTTP/1.1, because one machine with one address often serves many sites, and the server needs to know which one you mean. <code>Connection: close</code> asks the server to close the connection after answering, so that <code>nc</code> stops; we will come back to connections in Section {{n}}.7.</p>
+
+<!-- laravel -->
+<p>The PHP development server adds a header you would not expect, <code>Host</code>, to its responses. It is a quirk of this tool, not part of HTTP, and one of several reasons it is for development only. In production, PHP runs behind a real web server, as you will see in Chapter {{n+16}}.</p>
+<!-- /laravel -->
+
+<h3>Let curl show you both sides</h3>
+
+<p>Typing requests by hand teaches the format, but every day you will use <code>curl</code>. It comes with macOS, Linux and Windows 10 and later. With <code>-v</code> (verbose) it shows everything it does; <code>-s</code> (silent) hides its progress bar:</p>
+
+<!-- node -->
+<pre data-code="node/verbose.sh" data-title="Terminal 2"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/verbose.sh" data-title="Terminal 2"></pre>
+<!-- /laravel -->
+
+<p>Read it from the top, and you see the four steps of {{n}}.1. The lines with <code>*</code> are curl telling you what it does: it looked up <code>localhost</code>, found an IPv6 and an IPv4 address, and connected to port <!-- node -->3000<!-- /node --><!-- laravel -->8000<!-- /laravel -->. The lines with <code>&gt;</code> are the request it sent, including two headers we did not write: <code>User-Agent</code>, which names the client, and <code>Accept: */*</code>, which says that any type of answer is fine. The lines with <code>&lt;</code> are the response headers, and the last line is the body.</p>
+
+<aside class="box tip"><p class="box-title">Tip: the browser has the same view</p><p>In the browser’s developer tools, the Network panel shows the same thing for every request a page makes: method, address, status, request and response headers, and body. When a front end and a back end disagree, open it, find the request, and read it as you just read curl’s output. Most bugs are visible right there.</p></aside>
+
+<h2>{{n}}.3 Addresses: path and query string</h2>
+
+<p>The target of a request has two parts. The <dfn>path</dfn>, such as <code>/products</code>, names a <dfn>resource</dfn>: a thing the API knows about. The <dfn>query string</dfn>, after a <code>?</code>, holds <code>name=value</code> pairs joined with <code>&amp;</code>, usually to filter, sort or page through a list. Our server understands one, <code>max_price</code>:</p>
+
+<!-- node -->
+<pre data-code="node/read.sh" data-title="Terminal 2"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/read.sh" data-title="Terminal 2"></pre>
+<!-- /laravel -->
+
+<p>The quotes around the first address matter: without them, the shell would treat <code>?</code> and <code>&amp;</code> as its own special characters. The second command uses <code>-I</code>, which sends <code>HEAD</code>: the same request as <code>GET</code>, but the server answers with the headers only. A client can learn the size or the version of a big resource without downloading it.</p>
+
+<p>Prices are whole numbers of piastres (45000 is 450.00), never fractions. Floating-point numbers cannot hold most decimal fractions exactly, and money that is off by a fraction of a piastre is still wrong money. This rule follows us through the whole book.</p>
+
+<h2>{{n}}.4 Methods, and which requests can be repeated</h2>
+
+<p>The method says what the client wants to do with the resource. Two of its properties matter more than its name:</p>
+<ul>
+<li>A method is <dfn>safe</dfn> if it only reads: it changes nothing on the server. Anyone can send it, any number of times: browsers prefetch links, search engines crawl them.</li>
+<li>A method is <dfn>idempotent</dfn> if sending it twice has the same effect as sending it once. This matters because networks fail. When a request times out, the client cannot know whether the server received it. It can safely send an idempotent request again; a non-idempotent one might do the work twice.</li>
+</ul>
+
+<table>
+<thead><tr><th>Method</th><th>Meaning</th><th>Safe</th><th>Idempotent</th></tr></thead>
+<tbody>
+<tr><td><code>GET</code></td><td>Read a resource</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>HEAD</code></td><td>Like GET, headers only</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>OPTIONS</code></td><td>Ask what is allowed (used by CORS, {{n}}.8)</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>POST</code></td><td>Create something, or run an action</td><td>No</td><td><strong>No</strong></td></tr>
+<tr><td><code>PUT</code></td><td>Replace a resource with the one sent</td><td>No</td><td>Yes</td></tr>
+<tr><td><code>PATCH</code></td><td>Change part of a resource</td><td>No</td><td>Not guaranteed</td></tr>
+<tr><td><code>DELETE</code></td><td>Remove a resource</td><td>No</td><td>Yes</td></tr>
+</tbody>
+</table>
+
+<p><code>PUT</code> is idempotent because it says “make it this”: doing it twice leaves the same result. <code>POST</code> says “add one”: doing it twice adds two. Here is a <code>POST</code> that creates a product. With <code>-d</code>, curl sends a body (and switches to <code>POST</code> by itself); <code>-H</code> adds a header, and <code>-i</code> shows the response headers:</p>
+
+<!-- node -->
+<pre data-code="node/create.sh" data-title="Terminal 2"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/create.sh" data-title="Terminal 2"></pre>
+<!-- /laravel -->
+
+<p>The answer is <code>201 Created</code>, not just <code>200 OK</code>, and the <code>Location</code> header gives the address of the new product. A client does not need to guess how addresses are built: the server tells it.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: a retried POST can charge twice</p><p>A phone on a weak network sends “pay 450.00”, the answer is lost, and the app tries again. With a plain <code>POST</code>, the customer pays twice. Serious APIs make such requests safe to repeat with an <dfn>idempotency key</dfn>: the client sends a unique value in a header, and the server remembers which keys it has already handled. We build this with a database in Chapter <!-- node -->{{n+5}}<!-- /node --><!-- laravel -->{{n+6}}<!-- /laravel -->.</p></aside>
+
+<h2>{{n}}.5 Status codes: the first thing a client reads</h2>
+
+<p>The status code is a three-digit number, and its first digit is its class:</p>
+<ul>
+<li><code>2xx</code>: it worked.</li>
+<li><code>3xx</code>: look somewhere else, or use what you already have.</li>
+<li><code>4xx</code>: the <em>client</em> made a mistake. Sending the same request again will fail again.</li>
+<li><code>5xx</code>: the <em>server</em> failed. The same request might work later.</li>
+</ul>
+
+<p>That difference between 4xx and 5xx is what clients, retry logic and monitoring tools rely on: a spike of 5xx wakes someone up at night, a spike of 4xx usually means a broken client. So each mistake gets the code that describes it. Here are the ones our server returns, with curl’s <code>-w</code> option printing the status after the body:</p>
+
+<!-- node -->
+<pre data-code="node/errors.sh" data-title="Terminal 2"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/errors.sh" data-title="Terminal 2"></pre>
+<!-- /laravel -->
+
+<table>
+<thead><tr><th>Code</th><th>Meaning</th><th>When to use it</th></tr></thead>
+<tbody>
+<tr><td><code>200 OK</code></td><td>Here is what you asked for</td><td>Successful reads, and changes that return a body</td></tr>
+<tr><td><code>201 Created</code></td><td>A new resource exists</td><td>After a POST that creates; add <code>Location</code></td></tr>
+<tr><td><code>204 No Content</code></td><td>Done, nothing to send</td><td>A DELETE, or a change with no body to return</td></tr>
+<tr><td><code>301</code> / <code>308</code></td><td>Moved for good</td><td>Old addresses; 308 keeps the method and body</td></tr>
+<tr><td><code>304 Not Modified</code></td><td>Your copy is still good</td><td>Conditional requests ({{n}}.6)</td></tr>
+<tr><td><code>400 Bad Request</code></td><td>I cannot read this</td><td>Broken JSON, a malformed request</td></tr>
+<tr><td><code>401 Unauthorized</code></td><td>Who are you?</td><td>No login, or an expired one</td></tr>
+<tr><td><code>403 Forbidden</code></td><td>I know you, and no</td><td>Logged in, but not allowed</td></tr>
+<tr><td><code>404 Not Found</code></td><td>No such resource</td><td>Also to hide resources a user may not know exist</td></tr>
+<tr><td><code>405 Method Not Allowed</code></td><td>Not with this method</td><td>Always with an <code>Allow</code> header</td></tr>
+<tr><td><code>409 Conflict</code></td><td>That clashes with the current state</td><td>A duplicate, or an edit to an old version</td></tr>
+<tr><td><code>413 Content Too Large</code></td><td>The body is too big</td><td>Above your limit</td></tr>
+<tr><td><code>415 Unsupported Media Type</code></td><td>I do not read that format</td><td>A body that is not JSON</td></tr>
+<tr><td><code>422 Unprocessable Content</code></td><td>I read it, and it is wrong</td><td>Validation errors, field by field</td></tr>
+<tr><td><code>429 Too Many Requests</code></td><td>Slow down</td><td>Rate limits; add <code>Retry-After</code></td></tr>
+<tr><td><code>500 Internal Server Error</code></td><td>Our bug</td><td>Anything unexpected; never leak the details</td></tr>
+<tr><td><code>503 Service Unavailable</code></td><td>Not now</td><td>Overload or maintenance; add <code>Retry-After</code></td></tr>
+</tbody>
+</table>
+
+<p>Look at the bodies, too. Every error has the same shape: <code>{"error": {"code", "message"}}</code>, plus <code>fields</code> for validation. The <code>code</code> is for programs: it never changes, so a client can write <code>if (error.code === "invalid")</code>. The <code>message</code> is for people, and it can be reworded or translated without breaking any client. And the 422 answer lists <em>every</em> wrong field at once, so a form can show all its mistakes in one go instead of one per attempt.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Where does an HTTP request’s list of headers end, and how does the receiver know where the body ends?</li><li>A client sends <code>DELETE /products/3</code> and the connection drops before the answer. Can it simply send the request again? And a <code>POST /orders</code>?</li><li>Which status code fits “the email field is empty”: 400 or 422?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.6 Headers that do real work</h2>
+
+<p>Dozens of headers exist; a handful do most of the work in an API.</p>
+
+<h3>Content-Type and Content-Length</h3>
+
+<p><code>Content-Type</code> says what the body is: <code>application/json; charset=utf-8</code> for our answers. The client must send it too: our server answered <code>415</code> to <code>-d 'name=Cable'</code>, because curl labels such a body <code>application/x-www-form-urlencoded</code>, the format of an HTML form. <code>Content-Length</code> is the size of the body in <strong>bytes</strong>, not in characters. In UTF-8, an English letter takes one byte, but an Arabic letter takes two, and many emoji take four. A server that counts characters cuts Arabic text short.</p>
+
+<h3>Caching: ETag and 304</h3>
+
+<p>Most requests ask for something the client has already seen. The server can label each version of a resource with an <dfn>ETag</dfn>, a short fingerprint of its content. Our server makes one from a hash of the list. The client sends it back in <code>If-None-Match</code>, and if the list has not changed the server answers <code>304 Not Modified</code> with no body:</p>
+
+<!-- node -->
+<pre data-code="node/etag.sh" data-title="Terminal 2"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/etag.sh" data-title="Terminal 2"></pre>
+<!-- /laravel -->
+
+<p>Browsers do this by themselves: they store the ETag and send it back on the next visit. <code>Cache-Control: no-cache</code> tells them to always ask first (it does not mean “do not store”; that is <code>no-store</code>). Other values let a client reuse a copy without asking at all, for a time: <code>max-age=60</code> means one minute, which is right for a product list that may change, and <code>max-age=31536000, immutable</code> means one year, which is right for files whose name changes with their content, such as the bundles from Book 2.</p>
+
+<h3>Authorization and cookies</h3>
+
+<p>A client proves who it is in one of two ways. Programs and mobile apps usually send a token in <code>Authorization: Bearer &lt;token&gt;</code>. Browsers usually rely on a <dfn>cookie</dfn>: the server sends <code>Set-Cookie: session=…; HttpOnly; Secure; SameSite=Lax</code>, and the browser sends <code>Cookie: session=…</code> with every later request to that site. <code>HttpOnly</code> hides the cookie from JavaScript, so an injected script cannot steal it; <code>Secure</code> sends it over HTTPS only; <code>SameSite</code> limits when other sites can make the browser send it. Chapter <!-- node -->{{n+7}}<!-- /node --><!-- laravel -->{{n+8}}<!-- /laravel --> builds both, properly.</p>
+
+<h2>{{n}}.7 Connections, and the versions of HTTP</h2>
+
+<p>Opening a TCP connection costs a round trip to the server, and the TLS handshake costs one or two more. To a server on another continent, that is a few hundred milliseconds before the first byte of the answer. So HTTP/1.1 keeps connections open by default, and sends the next request on the same one. curl can show whether it was reused:</p>
+
+<!-- node -->
+<pre data-code="node/keepalive.sh" data-title="Terminal 2"></pre>
+
+<p>For the second request, curl says <code>Re-using existing connection</code>. Node keeps an idle connection for five seconds (the <code>Keep-Alive: timeout=5</code> header you saw in every answer), and one Node process can hold thousands of them at once, because it never waits: while one request waits for a file or a database, the same thread works on the others. Chapter {{n+1}} looks at this <dfn>event loop</dfn> closely.</p>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/keepalive.sh" data-title="Terminal 2"></pre>
+
+<p>The PHP development server closes the connection after every answer (the <code>Connection: close</code> you saw in each response), and it handles one request at a time. That is fine on your laptop and far too slow for real users. In production, a web server such as Nginx or Caddy holds the connections, keeps them open, and hands each request to one of many PHP worker processes. PHP itself works the same way in both cases: each request starts with nothing in memory and ends by forgetting everything. This model is called <dfn>shared-nothing</dfn>, and it is why our script keeps its products in a file, as you will see in {{n}}.9.</p>
+<!-- /laravel -->
+
+<p>HTTP/2 and HTTP/3 change how the messages travel, not what they mean. HTTP/2 sends them in a compact binary form and runs many requests at the same time over one connection. HTTP/3 does the same over QUIC, a newer transport that recovers faster from lost packets, which helps on mobile networks. Methods, headers, status codes and bodies are exactly what you have learned. In practice, the web server or load balancer in front of your application speaks HTTP/2 and HTTP/3 to browsers, and plain HTTP/1.1 to your application.</p>
+
+<aside class="box fact"><p class="box-title">Good to know: HTTPS everywhere</p><p>Without TLS, anyone on the path (the café’s Wi-Fi, a provider) can read and change every request, passwords and tokens included. Every public API must use HTTPS, and certificates are free from Let’s Encrypt. You rarely write TLS code yourself: the web server or the hosting platform does it, which is how we set it up in Chapter <!-- node -->{{n+15}}<!-- /node --><!-- laravel -->{{n+16}}<!-- /laravel -->.</p></aside>
+
+<h2>{{n}}.8 CORS: when a browser calls your API</h2>
+
+<p>A browser protects its users with the <dfn>same-origin policy</dfn>. An <dfn>origin</dfn> is a scheme, a host and a port together: <code>http://localhost:5173</code>, where a Vite app runs, and <code>http://localhost:<!-- node -->3000<!-- /node --><!-- laravel -->8000<!-- /laravel --></code>, where our API runs, are different origins. By default, JavaScript on one origin may send a request to another, but may not read the answer. Otherwise any site you visit could read your bank’s pages with your cookies.</p>
+
+<p><dfn>CORS</dfn> (Cross-Origin Resource Sharing) lets a server say which other origins may read its answers. For a request that could change something, such as a POST with a JSON body, the browser first sends a <dfn>preflight</dfn>: an <code>OPTIONS</code> request asking whether the real one is allowed. We can play the browser with curl:</p>
+
+<!-- node -->
+<pre data-code="node/cors.sh" data-title="Terminal 2"></pre>
+<!-- /node -->
+<!-- laravel -->
+<pre data-code="php/cors.sh" data-title="Terminal 2"></pre>
+<!-- /laravel -->
+
+<p>For the web app’s origin, the server answers the preflight with what is allowed, and the browser remembers it for ten minutes (<code>Max-Age: 600</code>). For any other origin there is no <code>Access-Control-Allow-Origin</code> header, and the browser refuses to give the answer to the page’s JavaScript. The <code>Vary: Origin</code> header tells caches that the answer depends on the <code>Origin</code> header, so that one site is never served a copy made for another.</p>
+
+<aside class="box warn"><p class="box-title">Watch out: CORS is not access control</p><p>Look again at the second command: the server still answered <code>200</code> with the product. CORS is enforced by the <em>browser</em>, to protect the browser’s user. curl, a script or an attacker’s server ignores it completely. Anything that must be private needs authentication and authorisation on the server. And never answer <code>Access-Control-Allow-Origin: *</code> together with cookies: list the origins you trust, as our server does.</p></aside>
+
+<h2>{{n}}.9 Inside the server</h2>
+
+<p>Now that you know what goes over the wire, the server holds no surprises. We read it in five parts, from the top of the file.</p>
+
+<!-- node -->
+<p><strong>The data and the settings.</strong> The products live in an array, with prices in piastres. <code>ORIGINS</code> lists the only web app allowed to read our answers from a browser ({{n}}.8), and <code>MAX_BODY</code> is the largest body we accept:</p>
+
+<pre data-code="node/server.ts" data-from="import {" data-to="const MAX_BODY" data-title="server.ts (1 of 5)"></pre>
+
+<p><strong>One place sends answers.</strong> Every response in the file goes through <code>send</code>, which sets the type and the length, counted in bytes with <code>Buffer.byteLength</code>. An empty body gets no type at all. <code>fail</code> gives every error the same shape. Because of these two functions, no route can forget a header or invent its own error format:</p>
+
+<pre data-code="node/server.ts" data-from="function send" data-to="^}#2" data-title="server.ts (2 of 5)"></pre>
+
+<p><strong>Routing.</strong> <code>handle</code> looks at the method and the path and decides what to do: the CORS headers first, for any request, then the preflight, then the list, then one product. Everything else is a 404. Notice that the 405 answer names the allowed methods, and that a <code>HEAD</code> is answered like a <code>GET</code>: Node itself drops the body of an answer to <code>HEAD</code>.</p>
+
+<pre data-code="node/server.ts" data-from="async function handle" data-to="^}" data-title="server.ts (3 of 5)"></pre>
+
+<p><strong>Distrust the body.</strong> Creating a product checks everything a client could get wrong, in order: the type before reading, the size while reading (<code>readBody</code> stops at 1 KB, so a huge body never reaches memory), the JSON in a <code>try</code>, and then each field for its type and range, collecting every error before answering. Real APIs allow more than 1 KB, but they always have a limit; without one, a single client can fill the server’s memory.</p>
+
+<pre data-code="node/server.ts" data-from="async function readBody" data-to="^}#2" data-title="server.ts (4 of 5)"></pre>
+
+<p><strong>The server itself.</strong> <code>createServer</code> calls our function for every request. When the response is finished, one line goes to the log with the method, the address, the status and the time it took. Any unexpected error is caught here, once: the real error goes to the log, and the client gets a plain 500 without stack traces or file paths that would help an attacker. <code>requestTimeout</code> cuts off a client that sends too slowly, so a few slow clients cannot hold every connection:</p>
+
+<pre data-code="node/server.ts" data-from="const server = createServer" data-title="server.ts (5 of 5)"></pre>
+
+<p>One thing is deliberately missing: the products live in an array, so a restart loses everything we created. A real API keeps them in a database, which is where Part 2 starts. And this is the terminal where the server was running, after all of this chapter’s requests:</p>
+
+<pre data-code="node/log.sh" data-title="Terminal 1"></pre>
+<!-- /node -->
+<!-- laravel -->
+<p><strong>The settings, and a log line for every request.</strong> <code>ORIGINS</code> lists the only web app allowed to read our answers from a browser ({{n}}.8), <code>MAX_BODY</code> is the largest body we accept, and the products live in a file next to the script. <code>header_remove('X-Powered-By')</code> stops PHP from announcing its exact version to anyone who asks, which saves attackers a step. <code>register_shutdown_function</code> runs a function when the request ends, however it ends; ours writes one line to the server’s log with the method, the address, the status and the time it took:</p>
+
+<pre data-code="php/server.php" data-from="&lt;?php" data-to="^});" data-title="server.php (1 of 5)"></pre>
+
+<p><strong>One place sends answers.</strong> Every response in the file goes through <code>send</code>, which sets the type and the length. <code>strlen</code> counts bytes, which is what <code>Content-Length</code> needs, and <code>JSON_UNESCAPED_UNICODE</code> keeps Arabic text readable instead of turning every letter into <code>\u0639</code>. An empty body gets no type at all. <code>fail</code> gives every error the same shape. Because of these two functions, no route can forget a header or invent its own error format:</p>
+
+<pre data-code="php/server.php" data-from="function send" data-to="^}#2" data-title="server.php (2 of 5)"></pre>
+
+<p><strong>Routing.</strong> <code>handle</code> looks at the method and the path and decides what to do: the CORS headers first, for any request, then the preflight, then the list, then one product. Everything else is a 404. Notice that the 405 answer names the allowed methods, and that a <code>HEAD</code> is answered like a <code>GET</code>: PHP itself drops the body of an answer to <code>HEAD</code>. <code>products()</code> reads the file again for every request, because PHP keeps nothing in memory between requests.</p>
+
+<pre data-code="php/server.php" data-from="function products" data-to="^}#2" data-title="server.php (3 of 5)"></pre>
+
+<p><strong>Distrust the body.</strong> Creating a product checks everything a client could get wrong, in order: the type, the size (before reading a single byte of the body), the JSON, and then each field for its type and range, collecting every error before answering. Real APIs allow more than 1 KB, but they always have a limit. Then the new product is written to the file under a lock: <code>flock</code> makes a second request wait until the first has finished writing, so that two new products cannot overwrite each other. This is exactly the problem databases solve properly, with transactions, in Part 2.</p>
+
+<pre data-code="php/server.php" data-from="function create" data-to="^}" data-title="server.php (4 of 5)"></pre>
+
+<p><strong>Unexpected errors are caught once.</strong> Everything runs inside one <code>try</code>. The real error goes to the server’s log with <code>error_log</code>, and the client gets a plain 500 without stack traces or file paths that would help an attacker:</p>
+
+<pre data-code="php/server.php" data-from="try {" data-title="server.php (5 of 5)"></pre>
+
+<p>And this is the terminal where the server was running, after all of this chapter’s requests. Each request opens a connection (<code>Accepted</code>), runs the script once, and closes it (<code>Closing</code>):</p>
+
+<pre data-code="php/log.sh" data-title="Terminal 1"></pre>
+<!-- /laravel -->
+
+<p>Every framework in this book does what this one file does, and much more, and names the parts: a <dfn>router</dfn> matches the method and path, <dfn>middleware</dfn> runs for every request (logging, CORS, limits), <dfn>validation</dfn> checks the input, and an <dfn>error handler</dfn> turns exceptions into answers. When the framework surprises you, you now know what it is doing underneath.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: look at the wire first</p><p>When an API “does not work”, do not change code at random. Reproduce the request with <code>curl -v</code>, or copy it from the browser’s Network panel (“Copy as cURL”), and read the request and the answer line by line: the method, the address, the <code>Content-Type</code>, the status, the error body. Nine times out of ten the problem is in plain sight there. Keep the working curl command in the bug report or the pull request, so the next person can check it in one line.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Every answer is <code>200</code>, with <code>{"ok": false}</code> inside</td><td>Clients, caches and monitoring think everything worked</td><td>The status code that describes the result</td></tr>
+<tr><td>Validation errors as <code>500</code></td><td>Alarms ring for a user’s typo</td><td>4xx for the client’s mistakes, 5xx only for yours</td></tr>
+<tr><td>A <code>GET</code> that changes data</td><td>Prefetching and crawlers change it by themselves</td><td>Only safe actions with GET and HEAD</td></tr>
+<tr><td>Blind retries of <code>POST</code></td><td>Double orders and double payments</td><td>Idempotency keys</td></tr>
+<tr><td><code>Content-Length</code> counted in characters</td><td>Arabic and emoji bodies cut short</td><td>Count bytes</td></tr>
+<tr><td>No limit on body size or time</td><td>One client fills memory or holds every connection</td><td>A size cap (413) and timeouts</td></tr>
+<tr><td>Stack traces in error answers</td><td>Attackers learn paths and versions</td><td>Details in the log, a plain message to the client</td></tr>
+<tr><td>Fixing CORS errors with <code>*</code></td><td>Any site can read the answers</td><td>A list of trusted origins, and real authorisation</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A request goes through a <strong>name lookup</strong>, a <strong>TCP connection</strong>, <strong>TLS</strong> for HTTPS, and then the HTTP <strong>request and response</strong>.</li>
+<li>HTTP/1.1 is <strong>text</strong>: a first line, headers, an empty line, and a body whose size is in <code>Content-Length</code>, in bytes.</li>
+<li>The <strong>path</strong> names a resource; the <strong>query string</strong> filters and pages.</li>
+<li><strong>Safe</strong> methods only read; <strong>idempotent</strong> ones can be repeated. <code>POST</code> is neither, so retries need idempotency keys.</li>
+<li><strong>2xx</strong> worked, <strong>3xx</strong> look elsewhere, <strong>4xx</strong> the client’s mistake, <strong>5xx</strong> the server’s. Errors have one shape, with a stable <code>code</code> and a readable <code>message</code>.</li>
+<li><strong>ETag</strong> and <code>If-None-Match</code> turn repeated reads into empty <code>304</code> answers; <code>Cache-Control</code> says how long a copy may be reused.</li>
+<li>Connections are <strong>kept alive</strong> and reused; HTTP/2 and HTTP/3 change the transport, not the meaning.</li>
+<li><strong>CORS</strong> lets a browser page read answers from another origin. It protects browser users; it does not protect your server.</li>
+<li>Every server, with or without a framework, needs: one way to answer, distrust of input, limits, caught errors and a log line per request.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. At the first empty line; the body is exactly <code>Content-Length</code> bytes long. 2. Yes for <code>DELETE</code>: it is idempotent, so a second one leaves the same state (even though its answer may be <code>404</code>). No for <code>POST /orders</code>: it might create a second order, unless the API supports an idempotency key. 3. 422: the request was well-formed JSON that the server could read; its content failed validation.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project builds a small server with no framework, in the language of your edition. Test every one with curl, and keep the commands in a <code>requests.sh</code> file next to the code: it is your first test suite.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>An echo server</h3>
+<p class="project-goal">Build a server that answers any request with a JSON description of the request itself: method, path, query, headers and body.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading every part of a request, query strings, headers, and setting the content type and length.</p>
+<ol class="steps">
+<li>Answer every method and every path with <code>200</code> and a JSON body.</li>
+<li>Put the query string in an object (<code>?a=1&amp;b=2</code> becomes <code>{"a": "1", "b": "2"}</code>) and the headers in another.</li>
+<li>Include the body as text, and its size in bytes.</li>
+<li>Call it with curl using <code>GET</code>, <code>POST</code> with <code>-d</code>, and <code>-H</code> with a header of your own. Then open it in a browser and compare the headers the browser sends with curl’s.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is a real tool. When you wonder what a front end, a webhook or a mobile app is actually sending, point it at your echo server for a minute.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A careful file server</h3>
+<p class="project-goal">Serve the files of a <code>public/</code> folder, with the right types, ETags and errors, and without ever leaving the folder.</p>
+<p class="project-skills"><strong>You will practise:</strong> content types, conditional requests and 304, HEAD, 404 and 405, and path traversal protection.</p>
+<ol class="steps">
+<li>Map the path to a file inside <code>public/</code>, and <code>/</code> to <code>index.html</code>. Answer <code>404</code> when there is no such file.</li>
+<li>Set <code>Content-Type</code> from the extension, for at least <code>.html</code>, <code>.css</code>, <code>.js</code>, <code>.png</code>, <code>.svg</code> and <code>.json</code>.</li>
+<li>Send an ETag built from the file’s size and modification time, and answer <code>304</code> when <code>If-None-Match</code> matches.</li>
+<li>Answer <code>HEAD</code> without a body, and <code>405</code> with an <code>Allow</code> header for any other method.</li>
+<li>Try <code>curl --path-as-is localhost:<!-- node -->3000<!-- /node --><!-- laravel -->8000<!-- /laravel -->/../server.<!-- node -->ts<!-- /node --><!-- laravel -->php<!-- /laravel --></code>. If you get your own source code back, fix it: resolve the full path and check that it is still inside <code>public/</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> checking the path before resolving it is not enough: <code>%2e%2e%2f</code> is <code>../</code> in disguise. Decode and resolve the path first, and only then compare it with the folder.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>HTTP over a bare socket</h3>
+<p class="project-goal">Write a tiny HTTP/1.1 server directly on a TCP socket, without the language’s HTTP library: read requests, parse them yourself, and answer.</p>
+<p class="project-skills"><strong>You will practise:</strong> the message format byte by byte, <code>Content-Length</code>, keep-alive, and what HTTP libraries protect you from.</p>
+<ol class="steps">
+<li><!-- node -->Listen with <code>net.createServer</code> from <code>node:net</code>.<!-- /node --><!-- laravel -->Listen with <code>stream_socket_server("tcp://127.0.0.1:8001")</code> and accept connections in a loop with <code>stream_socket_accept</code>, running the script with <code>php</code>, not <code>php -S</code>.<!-- /laravel --> Collect bytes until you see the empty line (<code>\r\n\r\n</code>).</li>
+<li>Parse the request line and the headers. Answer <code>400</code> to anything that does not look like HTTP.</li>
+<li>If there is a <code>Content-Length</code>, read exactly that many bytes of body; refuse more than 1 KB with <code>413</code>.</li>
+<li>Answer with a correct status line, headers and body. Keep the connection open for the next request unless the client sent <code>Connection: close</code>, and check it with the two-request curl command from {{n}}.7.</li>
+<li>Test the edge cases: a request that arrives in two pieces (send it with <code>nc</code>, typing slowly), and two requests in one piece.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> TCP delivers a stream of bytes, not messages. One read may hold half a request, or a request and a half. Keep a buffer, and only take a request out of it when it is complete. This is exactly the kind of work you should never do in production, and doing it once shows you why.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In the raw response of {{n}}.2, name the status line, each header, the empty line and the body. Then send the same request with <code>nc</code> but without the <code>Host</code> header. What does the server answer, and why?</li>
+<li><span class="level">Easy</span> For each request, say whether it is safe and whether it is idempotent: <code>GET /products?max_price=100</code>, <code>PUT /products/2</code> with a full product, <code>POST /products/2/reviews</code>, <code>DELETE /cart/items/7</code>, <code>PATCH /products/2</code> with <code>{"stock_change": -1}</code>.</li>
+<li><span class="level">Medium</span> Add <code>DELETE /products/:id</code> to the server: <code>204</code> when it removes a product, <code>404</code> when there is none. Delete product 3 twice, then create a new product. What id does it get, and is that a problem?</li>
+<li><span class="level">Medium</span> The request from <code>https://evil.example</code> in {{n}}.8 got a <code>200</code> with the product. Explain why that is not a security hole for this endpoint, and describe an endpoint where the same behaviour would be one, and what protects it.</li>
+<li><span class="level">Challenge</span> Make the server compress bodies of 100 bytes or more with gzip when the client sends <code>Accept-Encoding: gzip</code>. Which headers must the answer carry? Compare the sizes with and without compression using curl.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<!-- node -->
+<p>We move from one file to a real Node.js project in TypeScript: the event loop that let one process hold all those connections, streams, configuration and errors, and the tools that make a server pleasant to work on.</p>
+<!-- /node -->
+<!-- laravel -->
+<p>Before Laravel, the language under it. PHP has changed a great deal: types, enums, readonly classes, match, arrow functions. We learn modern PHP by comparing it with the JavaScript you already know.</p>
+<!-- /laravel -->
+</div>
+</section>

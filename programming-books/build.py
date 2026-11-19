@@ -26,6 +26,15 @@ OUT = ROOT / "out"
 KEYWORDS = ("const let var if else switch case break default return function for while do of in new "
             "typeof true false null undefined class import export from async await try catch throw "
             "static extends super this yield instanceof finally type interface readonly satisfies keyof").split()
+# PHP's own words (its variables start with $ and are left plain), and SQL's, which are written in capitals.
+PHP_KEYWORDS = set(KEYWORDS) | set(("function fn foreach as elseif match enum public private protected abstract final "
+                                    "namespace use declare require require_once include echo print array mixed int "
+                                    "string bool float void never self parent clone implements trait list").split())
+SQL_KEYWORDS = set(("SELECT FROM WHERE AND OR NOT NULL IS IN AS ON JOIN LEFT RIGHT INNER OUTER FULL GROUP BY ORDER "
+                    "HAVING LIMIT OFFSET INSERT INTO VALUES UPDATE SET DELETE CREATE TABLE INDEX UNIQUE PRIMARY KEY "
+                    "FOREIGN REFERENCES DEFAULT CHECK CONSTRAINT ALTER ADD DROP COLUMN BEGIN COMMIT ROLLBACK "
+                    "RETURNING DISTINCT COUNT SUM AVG MIN MAX CASE WHEN THEN ELSE END EXISTS LIKE ILIKE BETWEEN "
+                    "ASC DESC WITH OVER PARTITION FOR SHARE EXPLAIN ANALYZE TRUE FALSE CASCADE IF").split())
 
 TEXT = {
     "en": {
@@ -44,23 +53,26 @@ TEXT = {
     },
 }
 
-ORDINAL_AR = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس"]
+ORDINAL_AR = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع", "العاشر",
+              "الحادي عشر", "الثاني عشر", "الثالث عشر", "الرابع عشر", "الخامس عشر", "السادس عشر"]
 
 
-def highlight_js(src):
-    """Very small JavaScript highlighter: enough for a black-and-white book."""
-    token = re.compile(r"(//[^\n]*)|(`(?:\\.|[^`])*`|\"(?:\\.|[^\"\n])*\"|'(?:\\.|[^'\n])*')|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_$][\w$]*)\b")
+def highlight_js(src, words=KEYWORDS, comment=r"//[^\n]*"):
+    """Very small JavaScript highlighter: enough for a black-and-white book. PHP and SQL use it too, with
+    their own keywords and comments."""
+    token = re.compile(rf"({comment})|(`(?:\\.|[^`])*`|\"(?:\\.|[^\"\n])*\"|'(?:\\.|[^'\n])*')|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_$][\w$]*)\b")
     out, pos = [], 0
     for m in token.finditer(src):
         out.append(html.escape(src[pos:m.start()]))
         text = html.escape(m.group(0))
         if m.group(1):
-            out.append(f'<span class="c">{text}</span>')
+            # Comments take their own direction, so an Arabic comment reads right to left.
+            out.append(f'<span class="c line-bidi">{text}</span>')
         elif m.group(2):
             out.append(f'<span class="s">{text}</span>')
         elif m.group(3):
             out.append(f'<span class="n">{text}</span>')
-        elif m.group(4) in KEYWORDS:
+        elif m.group(4) in words:
             out.append(f'<span class="k">{text}</span>')
         else:
             out.append(text)
@@ -80,7 +92,8 @@ def highlight_markup(src, kind):
         out.append(html.escape(src[pos:m.start()]))
         text = html.escape(m.group(0))
         if m.group(1):
-            out.append(f'<span class="c">{text}</span>')
+            # Comments take their own direction, so an Arabic comment reads right to left.
+            out.append(f'<span class="c line-bidi">{text}</span>')
         elif m.group(2):
             out.append(f'<span class="k">{text}</span>')
         elif m.group(3):
@@ -99,7 +112,8 @@ def highlight_shell(src):
         if line.startswith("$ ") or line.startswith("> "):
             lines.append(f'<span class="c">{html.escape(line[:2])}</span><span class="k">{html.escape(line[2:])}</span>')
         elif line.startswith("#"):
-            lines.append(f'<span class="c">{html.escape(line)}</span>')
+            # A comment line takes its own direction, so an Arabic comment reads right to left.
+            lines.append(f'<span class="c line-bidi">{html.escape(line)}</span>')
         else:
             lines.append(html.escape(line))
     return "\n".join(lines)
@@ -111,6 +125,10 @@ def highlight(src, name):
         return highlight_js(src)
     if ext in ("html", "css"):
         return highlight_markup(src, ext)
+    if ext == "php":
+        return highlight_js(src, PHP_KEYWORDS, r"//[^\n]*|#(?!\[)[^\n]*")
+    if ext == "sql":
+        return highlight_js(src, SQL_KEYWORDS, r"--[^\n]*")
     if ext in ("sh", "txt"):
         return highlight_shell(src)
     if ext == "md":
@@ -167,6 +185,22 @@ def fill_code(chapter, lang):
             a = next(i for i, l in enumerate(lines) if l.strip().startswith("<body"))
             b = next(i for i, l in enumerate(lines) if l.strip() == "</body>")
             src = "\n".join(["  ..."] + lines[a:b + 1] + ["  ..."])
+        part = re.search(r'data-from="([^"]+)"', attrs)
+        if part:
+            # Part of a long file, from the first line containing data-from to the first line after it
+            # containing data-to (or, for data-to="^}#2", the second line that is exactly "}"); without
+            # data-to, to the end of the file.
+            lines = src.split("\n")
+            start = next(i for i, l in enumerate(lines) if html.unescape(part.group(1)) in l)
+            end = len(lines) - 1
+            to = re.search(r'data-to="([^"]+)"', attrs)
+            if to:
+                want, _, nth = html.unescape(to.group(1)).partition("#")
+                exact = want.startswith("^")
+                hits = [i for i in range(start, len(lines))
+                        if (lines[i] == want[1:] if exact else want in lines[i])]
+                end = hits[int(nth or 1) - 1]
+            src = "\n".join(lines[start:end + 1])
         cls = "code md" if f.endswith(".md") else "code"
         return f'<div class="listing" dir="ltr">{head}<pre class="{cls}">{highlight(src, f)}</pre></div>'
 
@@ -316,10 +350,10 @@ EDITIONS = ("color", "print")
 
 
 def only_edition(text, book):
-    """Shared chapters hold framework-specific parts between <!-- react --> and <!-- /react -->, or
-    <!-- vue --> and <!-- /vue -->. Each edition keeps its own parts and drops the others."""
-    keep = "react" if book["id"].endswith("react") else "vue" if book["id"].endswith("vue") else None
-    for fw in ("react", "vue"):
+    """Shared chapters hold edition-specific parts between <!-- react --> and <!-- /react --> (or vue, node,
+    laravel). Each edition keeps its own parts and drops the others'. The edition is the end of the book's id."""
+    keep = book["id"].rsplit("-", 1)[-1]
+    for fw in ("react", "vue", "node", "laravel"):
         block = re.compile(rf"<!-- {fw} -->(.*?)<!-- /{fw} -->\n?", re.S)
         text = block.sub((lambda m: m.group(1)) if fw == keep else "", text)
     return text
