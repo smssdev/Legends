@@ -1,0 +1,9 @@
+{
+  "name": "book-2-vue-type-check",
+  "private": true,
+  "description": "vue-tsc still needs the JavaScript API of TypeScript 6 (TypeScript 7 is a native program without it), so the Vue examples are type-checked from here.",
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "vue-tsc": "3.3.14"
+  }
+}
