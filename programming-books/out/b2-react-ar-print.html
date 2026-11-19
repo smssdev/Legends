@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: الوصول (WCAG) عملياً"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "الفصل 11: الاختبار: الوحدات والمكونات ومن الطرف للطرف"; } }
+@page ch11:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -4656,6 +4658,537 @@ export function RouteFocus({ appName }: { appName: string }) {
 <p>فحصت الصفحات حتى الآن بتشغيلها والنظر إليها. وفي الفصل التالي ستدع الحاسوب يفحص: اختبارات وحدات للمنطق، واختبارات مكونات تستخدم الصفحة كما يستخدمها الناس، واختبارات من الطرف إلى الطرف تقود متصفحاً حقيقياً، وكلها تعمل مع كل تغيير.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b2/testing/ar">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">الفصل 11</p><h1>الاختبار: الوحدات والمكونات ومن الطرف للطرف</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح لماذا تكتب الفرق المحترفة الاختبارات، وأي أنواعها تكتب</li>
+<li>تكتب اختبارات وحدات بـ Vitest، ومنها اختبارات الجداول والأخطاء والمؤقتات الوهمية</li>
+<li>تختبر المكونات كما يستخدمها الناس، بـ Testing Library</li>
+<li>تستبدل الشبكة وغيرها من الأشياء البطيئة ببدائل وهمية</li>
+<li>تقود متصفحاً حقيقياً عبر مسار كامل بـ Playwright</li>
+<li>تفحص سهولة الوصول آلياً في اختبارات الطرف إلى الطرف</li>
+</ul>
+</div>
+
+<p class="lead">كلما غيّرت الكود قد تكسر شيئاً كان يعمل. ودون اختبارات، الطريقة الوحيدة للمعرفة أن تمر على التطبيق كله باليد في كل مرة، ولا يفعل ذلك أحد. فتتسلل الأخطاء، ويخاف المطورون من تحسين الكود القديم. و<strong>الاختبارات الآلية</strong> برامج صغيرة تفحص برنامجك. تعمل في ثوانٍ، مع كل تغيير، على حاسوبك وفي CI، وتحوّل «أرجو أن يكون ما زال يعمل» إلى «أعرف أنه يعمل».</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>الاختبار أيضاً توثيق لا يكذب. فحين أريد معرفة ما يجب أن تفعله دالة بسلة فارغة أو رقم سالب، أقرأ اختباراتها. وإن تغيّر الكود ولم تتغير الاختبارات، فشلت وأخبرتني.</p></div></div>
+
+<h2><span class="sec">11.1</span> <span>ثلاثة أنواع من الاختبارات</span></h2>
+
+<table>
+<thead><tr><th>النوع</th><th>يفحص</th><th>السرعة</th><th>الأداة في هذا الكتاب</th></tr></thead>
+<tbody>
+<tr><td><dfn>الوحدة</dfn> (unit)</td><td>دالة أو وحدة واحدة، وحدها</td><td>ملي ثوانٍ</td><td>Vitest</td></tr>
+<tr><td><dfn>المكوّن</dfn> (التكامل)</td><td>مكوّناً مع أبنائه، في متصفح وهمي</td><td>عشرات الملي ثواني</td><td>Vitest وTesting Library</td></tr>
+<tr><td><dfn>من الطرف إلى الطرف</dfn> (E2E)</td><td>مساراً كاملاً في متصفح حقيقي، كمستخدم</td><td>ثوانٍ</td><td>Playwright</td></tr>
+</tbody>
+</table>
+
+<p>كل نوع يلتقط أخطاء مختلفة. فاختبارات الوحدات سريعة وتحدد بالضبط ما انكسر، لكنها لا ترى هل تتلاءم القطع معاً. واختبارات الطرف إلى الطرف تثبت أن التطبيق يعمل حقاً للمستخدم، لكنها أبطأ، وحين تفشل يأخذ تشخيصها وقتاً أطول. والمشروع السليم فيه اختبارات وحدات ومكونات كثيرة، وعدد أقل من اختبارات الطرف إلى الطرف لأهم المسارات: تسجيل الدخول، وإتمام الشراء، وما يجلب المال.</p>
+
+<h2><span class="sec">11.2</span> <span>اختبارات الوحدات بـ Vitest</span></h2>
+
+<p><strong>Vitest</strong> مشغّل اختبارات مبني لمشاريع Vite: يفهم TypeScript والإعدادات نفسها دون ضبط. ويقع ملف الاختبار بجانب الكود الذي يختبره وينتهي بـ <code>.test.ts</code>. وهذه وحدة صغيرة من منطق المتجر، واختباراتها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">price.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Line = { price: number; quantity: number };
+
+<span class="k">const</span> COUPONS: Record&lt;string, number&gt; = { WELCOME10: <span class="n">10</span>, SPRING25: <span class="n">25</span> };
+
+<span class="k">export</span> <span class="k">function</span> formatPrice(value: number): string {
+  <span class="k">return</span> <span class="s">`${value.toFixed(2)} جنيهاً`</span>;
+}
+
+<span class="k">export</span> <span class="k">function</span> cartTotal(lines: Line[], coupon?: string): number {
+  <span class="k">if</span> (lines.some((l) =&gt; l.quantity &lt; <span class="n">0</span>)) <span class="k">throw</span> <span class="k">new</span> RangeError(<span class="s">&quot;quantity must not be negative&quot;</span>);
+  <span class="k">const</span> sum = lines.reduce((total, l) =&gt; total + l.price * l.quantity, <span class="n">0</span>);
+  <span class="k">const</span> percent = coupon ? (COUPONS[coupon] ?? <span class="n">0</span>) : <span class="n">0</span>;
+  <span class="k">return</span> Math.round(sum * (<span class="n">100</span> - percent)) / <span class="n">100</span>;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">price.test.ts</div><pre class="code"><span class="k">import</span> { describe, expect, it } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { cartTotal, formatPrice } <span class="k">from</span> <span class="s">&quot;./price&quot;</span>;
+
+describe(<span class="s">&quot;formatPrice&quot;</span>, () =&gt; {
+  it(<span class="s">&quot;ينسّق السعر بمنزلتين عشريتين والعملة&quot;</span>, () =&gt; {
+    expect(formatPrice(<span class="n">8</span>)).toBe(<span class="s">&quot;8.00 جنيهاً&quot;</span>);
+    expect(formatPrice(<span class="n">19.5</span>)).toBe(<span class="s">&quot;19.50 جنيهاً&quot;</span>);
+  });
+});
+
+describe(<span class="s">&quot;cartTotal&quot;</span>, () =&gt; {
+  <span class="k">const</span> lines = [
+    { price: <span class="n">25</span>, quantity: <span class="n">1</span> },
+    { price: <span class="n">8</span>, quantity: <span class="n">2</span> },
+  ];
+
+  it(<span class="s">&quot;يجمع أسطر السلة&quot;</span>, () =&gt; {
+    expect(cartTotal(lines)).toBe(<span class="n">41</span>);
+  });
+
+  it(<span class="s">&quot;يُرجع 0 للسلة الفارغة&quot;</span>, () =&gt; {
+    expect(cartTotal([])).toBe(<span class="n">0</span>);
+  });
+
+  it.each([
+    [<span class="s">&quot;WELCOME10&quot;</span>, <span class="n">41</span>, <span class="n">36.9</span>],
+    [<span class="s">&quot;SPRING25&quot;</span>, <span class="n">41</span>, <span class="n">30.75</span>],
+  ])(<span class="s">&quot;يطبّق الكوبون %s على مجموع %s: %s&quot;</span>, (coupon, _total, expected) =&gt; {
+    expect(cartTotal(lines, coupon)).toBe(expected);
+  });
+
+  it(<span class="s">&quot;يتجاهل الكوبون المجهول&quot;</span>, () =&gt; {
+    expect(cartTotal(lines, <span class="s">&quot;FREE100&quot;</span>)).toBe(<span class="n">41</span>);
+  });
+
+  it(<span class="s">&quot;يرفض الكمية السالبة&quot;</span>, () =&gt; {
+    expect(() =&gt; cartTotal([{ price: <span class="n">8</span>, quantity: -<span class="n">1</span> }])).toThrow(RangeError);
+  });
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose price.test.ts
+ RUN  v5.1.1 .
+ ✓ price.test.ts &gt; formatPrice &gt; ينسّق السعر بمنزلتين عشريتين والعملة 2ms
+ ✓ price.test.ts &gt; cartTotal &gt; يجمع أسطر السلة 1ms
+ ✓ price.test.ts &gt; cartTotal &gt; يُرجع 0 للسلة الفارغة 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون WELCOME10 على مجموع 41: 36.9 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون SPRING25 على مجموع 41: 30.75 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; يتجاهل الكوبون المجهول 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; يرفض الكمية السالبة 0ms
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Duration  936ms (environment 77%, setup 15%, import 3%, tests 2%, transform 2%, worker 1%)</pre></div>
+
+<ul>
+<li><code>describe</code> تجمع الاختبارات، و<code>it</code> (أو <code>test</code>) اختبار واحد، مع جملة تقول ما يجب أن يحدث. واقرأ المخرجات بصوت عالٍ: إنها مواصفات الوحدة.</li>
+<li><code>expect(value).toBe(expected)</code> <dfn>تأكيد</dfn> (assertion): إن لم يصدق فشل الاختبار وعرض القيمتين.</li>
+<li><code>it.each</code> تشغّل الاختبار نفسه لعدة صفوف من البيانات، أي <dfn>اختبار جدول</dfn>. فإضافة حالة تعني إضافة سطر.</li>
+<li><code>expect(() =&gt; …).toThrow(RangeError)</code> تفحص أن المدخلات الخاطئة تُرفض. واختبار المسارات الحزينة بأهمية المسار السعيد.</li>
+</ul>
+
+<p>واختبار الوحدة الجيد يتبع ثلاث خطوات تُسمى كثيراً <dfn>رتّب، نفّذ، تأكد</dfn> (Arrange, Act, Assert): جهّز البيانات، وشغّل الكود، وافحص النتيجة. وكل اختبار يفحص سلوكاً واحداً، ولا يعتمد على أي اختبار آخر.</p>
+
+<h3>البدائل الوهمية: التحكم في الوقت والدوال</h3>
+
+<p>بعض الكود ينتظر، أو يستدعي كوداً آخر. والاختبارات يجب أن تكون سريعة وتعطي النتيجة نفسها كل مرة، فتستبدل تلك الأشياء بـ <dfn>بدائل وهمية</dfn> (fakes). وهنا تقدّم مؤقتات Vitest الوهمية الساعة فوراً، و<code>vi.fn()</code> تنشئ دالة تسجل كيف استُدعيت:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">debounce.test.ts</div><pre class="code"><span class="k">import</span> { expect, it, vi } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { debounce } <span class="k">from</span> <span class="s">&quot;./debounce&quot;</span>;
+
+it(<span class="s">&quot;يستدعي الدالة مرة واحدة، بعد أن يتوقف المستخدم عن الكتابة&quot;</span>, () =&gt; {
+  vi.useFakeTimers(); <span class="c">// the test controls the clock: no real waiting</span>
+  <span class="k">const</span> search = vi.fn(); <span class="c">// a fake function that records its calls</span>
+  <span class="k">const</span> debounced = debounce(search, <span class="n">300</span>);
+
+  debounced(<span class="s">&quot;b&quot;</span>);
+  debounced(<span class="s">&quot;bi&quot;</span>);
+  debounced(<span class="s">&quot;bit&quot;</span>);
+  expect(search).not.toHaveBeenCalled();
+
+  vi.advanceTimersByTime(<span class="n">300</span>);
+  expect(search).toHaveBeenCalledTimes(<span class="n">1</span>);
+  expect(search).toHaveBeenCalledWith(<span class="s">&quot;bit&quot;</span>);
+  vi.useRealTimers();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose debounce.test.ts
+ RUN  v5.1.1 .
+ ✓ debounce.test.ts &gt; يستدعي الدالة مرة واحدة، بعد أن يتوقف المستخدم عن الكتابة 6ms
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Duration  853ms (environment 80%, setup 16%, transform 2%, tests 1%, worker 1%, import 1%)</pre></div>
+
+<p>ثلاثمئة ملي ثانية من الانتظار لم تأخذ وقتاً أصلاً، والاختبار يثبت أن شيئاً لم يحدث أثناء الكتابة، وأن استدعاءً واحداً بالضبط حدث بعدها، بآخر قيمة.</p>
+
+<h2><span class="sec">11.3</span> <span>اختبارات المكونات</span></h2>
+
+<p>يرسم اختبار المكوّن المكوّن داخل <dfn>jsdom</dfn>، وهو متصفح وهمي يعمل داخل Node، ثم يستخدمه. والفكرة الأساسية في <strong>Testing Library</strong> في شعارها: <em>كلما شابهت اختباراتك طريقة استخدام برنامجك، زادت الثقة التي تعطيك إياها</em>. فتجد الاختبارات العناصر كما يجدها المستخدمون، بدورها واسمها الظاهر، وتتصرف كما يتصرفون، بالكتابة والضغط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">vitest.config.ts</div><pre class="code"><span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">&quot;vitest/config&quot;</span>;
+
+<span class="k">export</span> <span class="k">default</span> defineConfig({
+  test: {
+    environment: <span class="s">&quot;jsdom&quot;</span>, <span class="c">// a pretend browser, so components can render</span>
+    setupFiles: [<span class="s">&quot;./vitest.setup.ts&quot;</span>],
+    include: [<span class="s">&quot;**/*.test.{ts,tsx}&quot;</span>],
+  },
+});</pre></div>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">LoginForm.tsx</div><pre class="code">import { useState, type FormEvent } from &quot;react&quot;;
+import { signIn as defaultSignIn } from &quot;./api&quot;;
+
+type Props = { signIn?: typeof defaultSignIn };
+
+export function LoginForm({ signIn = defaultSignIn }: Props) {
+  const [error, setError] = useState(&quot;&quot;);
+  const [user, setUser] = useState&lt;string | null&gt;(null);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(event: FormEvent&lt;HTMLFormElement&gt;) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const email = String(data.get(&quot;email&quot;) ?? &quot;&quot;).trim();
+    if (!email) return setError(&quot;اكتب بريدك الإلكتروني.&quot;);
+    setBusy(true);
+    try {
+      const result = await signIn(email, String(data.get(&quot;password&quot;) ?? &quot;&quot;));
+      setUser(result.name);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (user) return &lt;h2&gt;أهلاً بعودتك يا {user}!&lt;/h2&gt;;
+
+  return (
+    &lt;form onSubmit={submit} noValidate aria-describedby={error ? &quot;login-error&quot; : undefined}&gt;
+      &lt;label htmlFor=&quot;email&quot;&gt;البريد الإلكتروني&lt;/label&gt;
+      &lt;input id=&quot;email&quot; name=&quot;email&quot; type=&quot;email&quot; autoComplete=&quot;email&quot; dir=&quot;ltr&quot; /&gt;
+      &lt;label htmlFor=&quot;password&quot;&gt;كلمة المرور&lt;/label&gt;
+      &lt;input id=&quot;password&quot; name=&quot;password&quot; type=&quot;password&quot; autoComplete=&quot;current-password&quot; dir=&quot;ltr&quot; /&gt;
+      {error &amp;&amp; (
+        &lt;p id=&quot;login-error&quot; role=&quot;alert&quot;&gt;
+          {error}
+        &lt;/p&gt;
+      )}
+      &lt;button type=&quot;submit&quot; disabled={busy}&gt;
+        {busy ? &quot;جارٍ الدخول…&quot; : &quot;سجّل الدخول&quot;}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">LoginForm.test.tsx</div><pre class="code">import { describe, expect, it, vi } from &quot;vitest&quot;;
+import { render, screen } from &quot;@testing-library/react&quot;;
+import userEvent from &quot;@testing-library/user-event&quot;;
+import { LoginForm } from &quot;./LoginForm&quot;;
+
+describe(&quot;LoginForm&quot;, () =&gt; {
+  it(&quot;يعرض خطأً حين يكون البريد فارغاً&quot;, async () =&gt; {
+    const user = userEvent.setup();
+    render(&lt;LoginForm /&gt;);
+    // جِد الأشياء كما يجدها المستخدمون: بالدور وبالاسم
+    await user.click(screen.getByRole(&quot;button&quot;, { name: &quot;سجّل الدخول&quot; }));
+    expect(screen.getByRole(&quot;alert&quot;)).toHaveTextContent(&quot;اكتب بريدك الإلكتروني.&quot;);
+  });
+
+  it(&quot;يسجّل الدخول ويرحّب بالمستخدم&quot;, async () =&gt; {
+    const user = userEvent.setup();
+    const signIn = vi.fn().mockResolvedValue({ name: &quot;سارة&quot; });
+    render(&lt;LoginForm signIn={signIn} /&gt;);
+
+    await user.type(screen.getByLabelText(&quot;البريد الإلكتروني&quot;), &quot;sara@example.com&quot;);
+    await user.type(screen.getByLabelText(&quot;كلمة المرور&quot;), &quot;bit2026code&quot;);
+    await user.click(screen.getByRole(&quot;button&quot;, { name: &quot;سجّل الدخول&quot; }));
+
+    expect(await screen.findByRole(&quot;heading&quot;, { name: &quot;أهلاً بعودتك يا سارة!&quot; })).toBeInTheDocument();
+    expect(signIn).toHaveBeenCalledWith(&quot;sara@example.com&quot;, &quot;bit2026code&quot;);
+  });
+
+  it(&quot;يعرض خطأ الخادم لكلمة مرور خاطئة&quot;, async () =&gt; {
+    const user = userEvent.setup();
+    render(&lt;LoginForm /&gt;);
+    await user.type(screen.getByLabelText(&quot;البريد الإلكتروني&quot;), &quot;sara@example.com&quot;);
+    await user.type(screen.getByLabelText(&quot;كلمة المرور&quot;), &quot;wrong&quot;);
+    await user.click(screen.getByRole(&quot;button&quot;, { name: &quot;سجّل الدخول&quot; }));
+    expect(await screen.findByRole(&quot;alert&quot;)).toHaveTextContent(&quot;البريد أو كلمة المرور غير صحيحة.&quot;);
+  });
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose react/LoginForm.test.tsx
+ RUN  v5.1.1 .
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; يعرض خطأً حين يكون البريد فارغاً 134ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; يسجّل الدخول ويرحّب بالمستخدم 109ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; يعرض خطأ الخادم لكلمة مرور خاطئة 128ms
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Duration  1.41s (environment 53%, tests 29%, setup 11%, import 4%, transform 2%)</pre></div>
+
+<ul>
+<li><code>getByRole("button", { name: "سجّل الدخول" })</code> تفشل إن لم يوجد زر كهذا، أو إن لم يكن له اسم متاح. فاختبارات مكوناتك تفحص سهولة الوصول مجاناً: زر الأيقونة بلا تسمية لا يمكن إيجاده.</li>
+<li><code>userEvent</code> تكتب وتضغط كالإنسان: تركيز، وضغطات مفاتيح، وأحداث إدخال، بالترتيب.</li>
+<li><code>findByRole</code> تنتظر ظهور شيء، وبهذا تعالج الاختبارات التحديثات غير المتزامنة. ولا تنتظر أبداً عدداً ثابتاً من الملي ثواني.</li>
+<li>يقبل المكوّن دالة <code>signIn</code> خاصيةً، والحقيقية افتراضياً. فيمرر الاختبار بديلاً مصنوعاً بـ <code>vi.fn()</code>، فيتحكم في الرد ويفحص الاستدعاء. ويسمى هذا <dfn>حقن الاعتماديات</dfn> (dependency injection)، وهو يجعل الكود سهل الاختبار.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: أي استعلام تستخدم</p><p>فضّل بهذا الترتيب: <code>getByRole</code> (مع الاسم)، و<code>getByLabelText</code> لحقول النماذج، و<code>getByText</code> للمحتوى العادي. واستخدم <code>getByTestId</code> فقط حين لا يميّز العنصر شيء يراه المستخدم. ولا تختر بصنف CSS أبداً: فالأصناف تتغير لأسباب التنسيق، فينكسر الاختبار بلا سبب.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي نوع من الاختبارات يلتقط رابطاً مكسوراً بين صفحة إتمام الشراء وصفحة الدفع؟</li><li>لماذا يستخدم الاختبار المؤقتات الوهمية بدل الانتظار 300 ملي ثانية حقاً؟</li><li>لا يجد اختبار مكوّن زر أيقونة بـ <code>getByRole("button", { name: "احذف" })</code>. ما الخطأ المحتمل في المكوّن؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">11.4</span> <span>اختبارات الطرف إلى الطرف بـ Playwright</span></h2>
+
+<p>تقود <strong>Playwright</strong> متصفحات حقيقية: Chromium وFirefox وWebKit، محرك Safari. وتبدأ اختباراتها الموقع، وتفتح الصفحات، وتستخدمها كما يفعل الإنسان تماماً. وتخبرها الإعدادات أين الاختبارات وكيف يبدأ الموقع:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">playwright.config.ts</div><pre class="code"><span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
+
+<span class="k">export</span> <span class="k">default</span> defineConfig({
+  testDir: <span class="s">&quot;./e2e&quot;</span>,
+  reporter: <span class="s">&quot;list&quot;</span>,
+  <span class="c">// Start the site before the tests, and stop it after. In a Vite project: &quot;npm run build &amp;&amp; npm run preview&quot;.</span>
+  webServer: { command: <span class="s">&quot;node ../../serve.mjs 4173&quot;</span>, url: <span class="s">&quot;http://localhost:4173/vendor/react.js&quot;</span>, reuseExistingServer: <span class="k">true</span> },
+  use: { baseURL: <span class="s">&quot;http://localhost:4173/testing/ar/&quot;</span>, browserName: <span class="s">&quot;chromium&quot;</span> },
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">e2e/login.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
+
+<span class="k">const</span> page_url = <span class="s">&quot;react/login.html&quot;</span>; <span class="c">// relative to baseURL in playwright.config.ts</span>
+
+test(<span class="s">&quot;يستطيع المستخدم تسجيل الدخول&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(page_url);
+  <span class="k">await</span> page.getByLabel(<span class="s">&quot;البريد الإلكتروني&quot;</span>).fill(<span class="s">&quot;sara@example.com&quot;</span>);
+  <span class="k">await</span> page.getByLabel(<span class="s">&quot;كلمة المرور&quot;</span>).fill(<span class="s">&quot;bit2026code&quot;</span>);
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;سجّل الدخول&quot;</span> }).click();
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;heading&quot;</span>, { name: <span class="s">&quot;أهلاً بعودتك يا سارة!&quot;</span> })).toBeVisible();
+});
+
+test(<span class="s">&quot;كلمة المرور الخاطئة تُبقي المستخدم في النموذج&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(page_url);
+  <span class="k">await</span> page.getByLabel(<span class="s">&quot;البريد الإلكتروني&quot;</span>).fill(<span class="s">&quot;sara@example.com&quot;</span>);
+  <span class="k">await</span> page.getByLabel(<span class="s">&quot;كلمة المرور&quot;</span>).fill(<span class="s">&quot;nope&quot;</span>);
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;سجّل الدخول&quot;</span> }).click();
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;alert&quot;</span>)).toHaveText(<span class="s">&quot;البريد أو كلمة المرور غير صحيحة.&quot;</span>);
+  <span class="k">await</span> expect(page.getByLabel(<span class="s">&quot;البريد الإلكتروني&quot;</span>)).toHaveValue(<span class="s">&quot;sara@example.com&quot;</span>);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx playwright test e2e/login.spec.ts
+Running 2 tests using 1 worker
+  ✓  1 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (424ms)
+  ✓  2 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (351ms)
+  2 passed (1.7s)
+(node:5143) Warning: The &#x27;NO_COLOR&#x27; env is ignored due to the &#x27;FORCE_COLOR&#x27; env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)</pre></div>
+
+<p>المحددات تشبه محددات Testing Library عمداً: <code>getByLabel</code> و<code>getByRole</code>. والتأكيدات مثل <code>toBeVisible()</code> و<code>toHaveText()</code> تعيد المحاولة تلقائياً لمدة قصيرة، فتنتظر الاختبارات الصفحة بدل تخمين كم تأخذ.</p>
+
+<p>وحين يفشل اختبار طرف إلى طرف تستطيع Playwright تسجيل <dfn>أثر</dfn> (trace): فيلماً خطوة بخطوة للاختبار، فيه الصفحة والشبكة وConsole في كل لحظة. شغّل <code>npx playwright test --trace on</code>، ثم افتح الأثر بـ <code>npx playwright show-trace</code>. وهي أسرع طريقة لفهم فشل لا يحدث إلا في CI.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: الاختبارات المتقلبة</p><p>الاختبار <dfn>المتقلب</dfn> (flaky) ينجح ويفشل دون أي تغيير في الكود، غالباً لأنه يعتمد على التوقيت، أو على بيانات تركها اختبار آخر، أو على خدمة خارجية حقيقية. والاختبارات المتقلبة أسوأ من غيابها: فيتعلم الناس تجاهل الفشل. فلا تستخدم انتظاراً ثابتاً أبداً، وأعطِ كل اختبار بياناته، واستبدل الخدمات التي لا تتحكم فيها.</p></aside>
+
+<h2><span class="sec">11.5</span> <span>ماذا تختبر</span></h2>
+
+<p>لا تستطيع اختبار كل شيء، ولا ينبغي أن تحاول. اختبر <strong>السلوك</strong>، ما يستطيع المستخدم أو المستدعي ملاحظته، لا تفاصيل التنفيذ كاسم متغير حالة. فاختبارات السلوك تصمد مع إعادة الهيكلة، واختبارات التفاصيل تنكسر كلما حسّنت الكود، وتعلّم الفريق كره الاختبارات. وضع أكثر جهدك حيث يؤلم الخطأ أكثر: المال، والبيانات، وتسجيل الدخول، والمنطق الذي يسهل الخطأ فيه.</p>
+
+<p>وتستطيع الأدوات قياس <dfn>التغطية</dfn> (coverage)، أي نسبة الأسطر التي تشغّلها الاختبارات. وهي تحذير مفيد («لا شيء يختبر كود الكوبونات»)، لكنها هدف سيئ: فالاختبار الذي يشغّل سطراً دون فحص نتيجته يغطيه ولا يثبت شيئاً.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: بلاغ العلّة يبدأ باختبار فاشل</p><p>حين يُبلَّغ عن علّة، اكتب أولاً اختباراً يكررها، وراقبه يفشل. ثم أصلح الكود وراقب الاختبار ينجح. فلا يمكن أن تعود العلّة دون أن تُلاحظ، ويشرح الاختبار للقرّاء القادمين سبب وجود ذلك السطر الغريب.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>اختبار تفاصيل التنفيذ</td><td>تنكسر الاختبارات مع كل إعادة هيكلة</td><td>اختبر ما يلاحظه المستخدمون والمستدعون</td></tr>
+<tr><td>اختيار العناصر بصنف CSS</td><td>تغييرات التنسيق تكسر الاختبارات</td><td>الاستعلام بالدور والتسمية والنص</td></tr>
+<tr><td>انتظار ثابت: <code>setTimeout(…, 1000)</code></td><td>اختبارات بطيئة ومتقلبة</td><td><code>findBy…</code>، والتأكيدات التي تعيد المحاولة، والمؤقتات الوهمية</td></tr>
+<tr><td>اختبارات يعتمد بعضها على بعض</td><td>فشل واحد يسبب كثيراً، والترتيب يهم</td><td>كل اختبار يجهز بياناته</td></tr>
+<tr><td>استدعاء خدمات حقيقية في الاختبارات</td><td>بطء وتقلب، وكلفة أحياناً</td><td>البدائل الوهمية وحقن الاعتماديات</td></tr>
+<tr><td>اختبارات المسار السعيد وحده</td><td>تنكسر الأخطاء والحالات الحدية في الإنتاج</td><td>اختبر الفارغ وغير الصالح والفاشل أيضاً</td></tr>
+<tr><td>مطاردة تغطية 100%</td><td>اختبارات كثيرة لا تفحص شيئاً</td><td>اختبر السلوك حيث تؤلم الأخطاء</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>الاختبارات الآلية</strong> تفحص كودك مع كل تغيير، وتجعل تحسينه آمناً.</li>
+<li>اختبارات <strong>الوحدات</strong> تفحص الدوال وحدها، واختبارات <strong>المكونات</strong> تفحص المكونات في jsdom، واختبارات <strong>الطرف إلى الطرف</strong> تفحص المسارات كاملة في متصفحات حقيقية. أكثِر من الأوليين، وقلّل من الأخيرة.</li>
+<li>يشغّل <strong>Vitest</strong> الاختبارات بـ <code>describe</code> و<code>it</code> و<code>expect</code> و<code>it.each</code>. واتبع «رتّب، نفّذ، تأكد»، واختبر الأخطاء كما تختبر النجاح.</li>
+<li><strong>البدائل الوهمية</strong>، مثل <code>vi.fn()</code> والمؤقتات الوهمية، تجعل الاختبارات سريعة ومتكررة النتيجة. واحقن الاعتماديات لتستبدلها الاختبارات.</li>
+<li><strong>Testing Library</strong> تجد العناصر بالدور والتسمية والنص وتتصرف بـ <code>userEvent</code>، فتشبه الاختبارات الاستخدام الحقيقي وتفحص سهولة الوصول في الطريق.</li>
+<li>تشغّل <strong>Playwright</strong> متصفحات حقيقية على الموقع الحقيقي، بتأكيدات تنتظر تلقائياً، وآثار للتصحيح.</li>
+<li>اختبر السلوك لا التفاصيل، وتجنب التقلب، وابدأ كل إصلاح علّة باختبار فاشل.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. اختبار الطرف إلى الطرف: فهو وحده يتنقل بين الصفحات الحقيقية كالمستخدم. 2. الانتظار الحقيقي يبطئ الاختبار وقد يجعله متقلباً، والمؤقتات الوهمية تحرك الساعة فوراً وبدقة. 3. ليس للزر اسم متاح، غالباً أيقونة بلا <code>aria-label</code>: فقد وجد الاختبار علّة في سهولة الوصول.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">في كل مشروع اكتب الاختبارات <em>قبل</em> أن تنظر إلى الكود الذي تختبره، من وصف ما يجب أن يفعله. شغّلها، وراقبها تفشل إن كان الكود ناقصاً، ثم اجعلها تنجح. وهذا الترتيب، المسمى <dfn>التطوير المقاد بالاختبارات</dfn> (TDD)، عادة مفيدة حتى إن لم تتبعها كل يوم.</p>
+
+<div class="project">
+<p class="project-label">مشروع 11.1 · سهل</p>
+<h3>اختبارات جدول لفاحص كلمة المرور</h3>
+<p class="project-goal">خذ فاحص قوة كلمة المرور من الكتاب الأول، مكتوباً بـ TypeScript، وثبّت سلوكه بجدول أمثلة واحد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>it.each</code>، و<code>as const</code> لصفوف ذات أنواع، واختيار الحالات المثيرة.</p>
+<ol class="steps">
+<li>اكتب صفاً لكل حالة مثيرة: فارغة، وقصيرة جداً، وطويلة لكنها بسيطة، وفيها رقم، وفيها حرف كبير، وجملة طويلة بلا أرقام.</li>
+<li>استخدم <code>it.each([...] as const)</code>، فتعرف TypeScript أن كل صف كلمة مرور وواحدة من النتائج الثلاث.</li>
+<li>ضع القيم في اسم الاختبار بـ <code>%s</code>، فتُقرأ المخرجات قائمة قواعد.</li>
+<li>غيّر قاعدة في <code>strength</code> (مثلاً 10 أحرف بدل 8) وانظر أي الصفوف تفشل.</li>
+<li>قرّر هل الفشل أخطاء في الكود أم توقعات قديمة، وأصلح الصحيح منهما.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> انظر إلى الصف الأخير. فالجملة الطويلة سهلة التذكر كلمة مرور قوية في الحياة الحقيقية، لكن هذا الفاحص يسميها «مقبولة» فقط. فالاختبارات لا تلتقط الأخطاء فحسب، بل كتابتها تجعلك تسأل هل القواعد صحيحة أصلاً.</p>
+<div class="listing" dir="ltr"><div class="listing-title">password.test.ts</div><pre class="code"><span class="k">import</span> { expect, it } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { strength } <span class="k">from</span> <span class="s">&quot;./password&quot;</span>;
+
+it.each([
+  [<span class="s">&quot;&quot;</span>, <span class="s">&quot;weak&quot;</span>],
+  [<span class="s">&quot;cat&quot;</span>, <span class="s">&quot;weak&quot;</span>],
+  [<span class="s">&quot;sunshine&quot;</span>, <span class="s">&quot;weak&quot;</span>],
+  [<span class="s">&quot;sunshine2026&quot;</span>, <span class="s">&quot;okay&quot;</span>],
+  [<span class="s">&quot;Sunshine2026&quot;</span>, <span class="s">&quot;strong&quot;</span>],
+  [<span class="s">&quot;correct horse battery staple&quot;</span>, <span class="s">&quot;okay&quot;</span>],
+] as <span class="k">const</span>)(<span class="s">&quot;يقيّم %s بأنها %s&quot;</span>, (password, expected) =&gt; {
+  expect(strength(password)).toBe(expected);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose projects/password.test.ts
+ RUN  v5.1.1 .
+ ✓ projects/password.test.ts &gt; يقيّم  بأنها weak 2ms
+ ✓ projects/password.test.ts &gt; يقيّم cat بأنها weak 0ms
+ ✓ projects/password.test.ts &gt; يقيّم sunshine بأنها weak 0ms
+ ✓ projects/password.test.ts &gt; يقيّم sunshine2026 بأنها okay 0ms
+ ✓ projects/password.test.ts &gt; يقيّم Sunshine2026 بأنها strong 0ms
+ ✓ projects/password.test.ts &gt; يقيّم correct horse battery staple بأنها okay 0ms
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Duration  775ms (environment 77%, setup 18%, transform 3%, import 1%, tests 1%, worker 1%)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 11.2 · متوسط</p>
+<h3>اختبارات مكوّن لقائمة مهام</h3>
+<p class="project-goal">اختبر قائمة مهام كما يستخدمها المستخدم: أضف مهمة من النموذج، وعلّمها منجزة، وتأكد أن المهام الفارغة تُرفض.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الرسم ببيانات أولية، والكتابة بـ <code>userEvent</code> مع مفاتيح خاصة، والاستعلام بالدور والاسم، والمناطق الحية في الاختبارات.</p>
+<ol class="steps">
+<li>اجعل المكوّن يقبل المهام الأولية <code>initial</code> خاصيةً، فيبدأ كل اختبار من الحالة التي يحتاجها.</li>
+<li>أضف مهمة بالكتابة في مربع النص المسمى «مهمة جديدة» وضغط Enter بـ <code>{Enter}</code> داخل <code>user.type</code>.</li>
+<li>جِد المهمة الجديدة مربع اختيار اسمه المتاح نص المهمة. وتحقق أنه غير محدد وأن الحقل فارغ من جديد.</li>
+<li>علّم مهمة منجزة، وافحص العدد في منطقة <code>role="status"</code>.</li>
+<li>اكتب مسافات فقط واضغط Enter: يجب أن تبقى <code>queryAllByRole("checkbox")</code> فارغة. (و<code>queryBy…</code> لا تُرجع شيئاً بدل أن تفشل.)</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لأن التسمية تحيط بمربع الاختيار صار اسمه المتاح نص المهمة. فإن وجده الاختبار بهذا الاسم وجده قارئ الشاشة أيضاً. فالاختبارات وسهولة الوصول تشدّان في الاتجاه نفسه.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Tasks.test.tsx</div><pre class="code">import { expect, it } from &quot;vitest&quot;;
+import { render, screen } from &quot;@testing-library/react&quot;;
+import userEvent from &quot;@testing-library/user-event&quot;;
+import { Tasks } from &quot;./Tasks&quot;;
+
+it(&quot;يضيف مهمة من النموذج&quot;, async () =&gt; {
+  const user = userEvent.setup();
+  render(&lt;Tasks /&gt;);
+  await user.type(screen.getByRole(&quot;textbox&quot;, { name: &quot;مهمة جديدة&quot; }), &quot;اقرأ الفصل 11{Enter}&quot;);
+  expect(screen.getByRole(&quot;checkbox&quot;, { name: &quot;اقرأ الفصل 11&quot; })).not.toBeChecked();
+  expect(screen.getByRole(&quot;status&quot;)).toHaveTextContent(&quot;1 متبقية&quot;);
+  expect(screen.getByRole(&quot;textbox&quot;, { name: &quot;مهمة جديدة&quot; })).toHaveValue(&quot;&quot;);
+});
+
+it(&quot;يعلّم المهمة منجزة ويحدّث العدد&quot;, async () =&gt; {
+  const user = userEvent.setup();
+  render(&lt;Tasks initial={[{ id: 1, text: &quot;اقرأ الفصل 11&quot;, done: false }, { id: 2, text: &quot;اكتب اختباراً&quot;, done: false }]} /&gt;);
+  await user.click(screen.getByRole(&quot;checkbox&quot;, { name: &quot;اقرأ الفصل 11&quot; }));
+  expect(screen.getByRole(&quot;checkbox&quot;, { name: &quot;اقرأ الفصل 11&quot; })).toBeChecked();
+  expect(screen.getByRole(&quot;status&quot;)).toHaveTextContent(&quot;1 متبقية&quot;);
+});
+
+it(&quot;لا يضيف مهمة فارغة&quot;, async () =&gt; {
+  const user = userEvent.setup();
+  render(&lt;Tasks /&gt;);
+  await user.type(screen.getByRole(&quot;textbox&quot;, { name: &quot;مهمة جديدة&quot; }), &quot;   {Enter}&quot;);
+  expect(screen.queryAllByRole(&quot;checkbox&quot;)).toHaveLength(0);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose react/projects/Tasks.test.tsx
+ RUN  v5.1.1 .
+ ✓ react/projects/Tasks.test.tsx &gt; يضيف مهمة من النموذج 144ms
+ ✓ react/projects/Tasks.test.tsx &gt; يعلّم المهمة منجزة ويحدّث العدد 18ms
+ ✓ react/projects/Tasks.test.tsx &gt; لا يضيف مهمة فارغة 22ms
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Duration  932ms (environment 57%, tests 23%, setup 13%, import 4%, transform 3%)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 11.3 · تحدٍّ</p>
+<h3>فحوص إتاحة في اختبارات الطرف إلى الطرف</h3>
+<p class="project-goal">أضف اختباري طرف إلى طرف يحميان سهولة الوصول: لا مخالفات axe في صفحة الدخول، وتسجيل دخول كامل بلوحة المفاتيح وحدها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حقن سكربت في صفحة، و<code>page.evaluate</code>، وواجهة لوحة المفاتيح، وقراءة فشل يشير إلى مشكلة حقيقية.</p>
+<ol class="steps">
+<li>في ملف اختبار جديد افتح صفحة الدخول، وأضف axe بـ <code>page.addScriptTag</code>، وشغّلها بـ <code>page.evaluate</code>، وتوقع أن تكون قائمة معرّفات المخالفات فارغة.</li>
+<li>اكتب اختباراً ثانياً يسجّل الدخول بـ <code>page.keyboard</code> وحدها: Tab، ثم كتابة، ثم Tab، ثم كتابة، ثم Enter.</li>
+<li>شغّل الاختبارات. فحين صُنع هذا الكتاب فشل الاختبار الأول على صفحة الكتاب نفسه بـ <code>landmark-one-main</code> و<code>page-has-heading-one</code> و<code>region</code>: لم يكن في النموذج <code>main</code> ولا <code>h1</code>.</li>
+<li>أصلح الصفحة لا الاختبار: غلّفها بـ <code>&lt;main&gt;</code> مع <code>&lt;h1&gt;</code>، واجعل رسالة الترحيب <code>&lt;h2&gt;</code>.</li>
+<li>شغّل الاختبارات كلها من جديد، الوحدات والمكونات والطرف إلى الطرف، وانظرها تنجح كلها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اختبار لوحة المفاتيح يثبت ما لا تستطيعه axe: أن ترتيب محطات Tab منطقي، وأن Enter ترسل النموذج. ومعاً يغطي الاختباران جزءاً كبيراً من مبدأ «قابل للتشغيل» في WCAG.</p>
+<div class="listing" dir="ltr"><div class="listing-title">e2e/a11y.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
+<span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
+
+<span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
+<span class="k">const</span> page_url = <span class="s">&quot;react/login.html&quot;</span>;
+
+test(<span class="s">&quot;صفحة الدخول بلا مخالفات إتاحة&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(page_url);
+  <span class="k">await</span> page.addScriptTag({ path: require.resolve(<span class="s">&quot;axe-core/axe.min.js&quot;</span>) });
+  <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+  <span class="k">const</span> violations = <span class="k">await</span> page.evaluate(() =&gt; axe.run().then((r) =&gt; r.violations.map((v) =&gt; v.id)));
+  expect(violations).toEqual([]);
+});
+
+test(<span class="s">&quot;الدخول كله يعمل بلوحة المفاتيح وحدها&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(page_url);
+  <span class="k">await</span> page.keyboard.press(<span class="s">&quot;Tab&quot;</span>);
+  <span class="k">await</span> page.keyboard.<span class="k">type</span>(<span class="s">&quot;sara@example.com&quot;</span>);
+  <span class="k">await</span> page.keyboard.press(<span class="s">&quot;Tab&quot;</span>);
+  <span class="k">await</span> page.keyboard.<span class="k">type</span>(<span class="s">&quot;bit2026code&quot;</span>);
+  <span class="k">await</span> page.keyboard.press(<span class="s">&quot;Enter&quot;</span>);
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;heading&quot;</span>, { name: <span class="s">&quot;أهلاً بعودتك يا سارة!&quot;</span> })).toBeVisible();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx playwright test
+Running 4 tests using 2 workers
+  ✓  1 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (420ms)
+  ✓  2 e2e/a11y.spec.ts:7:1 › صفحة الدخول بلا مخالفات إتاحة (493ms)
+  ✓  3 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (347ms)
+  ✓  4 e2e/a11y.spec.ts:15:1 › الدخول كله يعمل بلوحة المفاتيح وحدها (307ms)
+  4 passed (1.7s)
+(node:5358) Warning: The &#x27;NO_COLOR&#x27; env is ignored due to the &#x27;FORCE_COLOR&#x27; env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5357) Warning: The &#x27;NO_COLOR&#x27; env is ignored due to the &#x27;FORCE_COLOR&#x27; env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف إلى <code>price.test.ts</code> اختباراً لسلة فيها كمية 0، وقرّر الجواب الصحيح قبل أن تشغّله.</li>
+<li><span class="level">سهل</span> اكسر <code>cartTotal</code> عمداً (مثلاً انسَ الكوبون) واقرأ رسالة الفشل. أي اختبار فشل، وماذا عرض؟</li>
+<li><span class="level medium">متوسط</span> أضف إلى نموذج الدخول اختباراً يفحص أن الزر معطّل ويقول «جارٍ الدخول…» أثناء الطلب. استخدم <code>signIn</code> وهمية لا تتحقق أبداً.</li>
+<li><span class="level medium">متوسط</span> اكتب اختبارات وحدات لـ <code>tasksReducer</code> من فصل الحالة: واحداً لكل فعل، وآخر يفحص أن المصفوفة الأصلية لا تتغير أبداً.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب اختبار طرف إلى طرف لإتمام الشراء من فصل النماذج: املأ كل خطوة، وافحص شاشة المراجعة، وأكّد الطلب. ثم شغّله بـ <code>--trace on</code> وافتح الأثر.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 12</p>
+<p>صار تطبيقك يعمل، وسهل الوصول، ومختبراً. والسؤال التالي الذي يسأله المستخدمون دون كلمات: هل هو سريع؟ يقيس الفصل التالي السرعة كما تقيسها Google، بـ Core Web Vitals، ويُريك كيف تجعل الصفحات تُحمَّل وتستجيب بسرعة.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -4772,6 +5305,16 @@ export function RouteFocus({ appName }: { appName: string }) {
 <li>في <code>package.json</code>: <code>"check": "tsc &amp;&amp; eslint src &amp;&amp; prettier --check src &amp;&amp; vite build &amp;&amp; node scripts/audit-all.mjs"</code>. ويعمل الفحص على الصفحات المبنية، وهي ما يصل إلى المستخدمين.</li>
 <li>أضف مكوّن <code>RouteFocus</code> من المشروع 10.3 إلى تخطيط تطبيق فصل التوجيه، داخل الموجّه. ولكل صفحة أصلاً <code>h1</code> واحد داخل <code>main</code>، وهذا كل ما يحتاجه المكوّن.</li>
 <li>من الاكتشافات الشائعة: صور توصف بأسماء ملفاتها، وأزرار أيقونات تُقرأ «زر»، ورابط «اقرأ المزيد» نفسه عشر مرات، وأخطاء تظهر ولا تُقرأ أبداً، وصفحات تتغير بصمت. وكل منها إصلاح صغير، ولكل منها الآن اسم تعرفه من هذا الفصل.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 11</h2>
+<ol class="exercises">
+<li><code>it("يعامل الكمية 0 كأنها لا شيء", () =&gt; { expect(cartTotal([{ price: 25, quantity: 0 }])).toBe(0); });</code>. فالصفر مسموح (الكميات السالبة وحدها ترمي خطأً)، ولا يضيف شيئاً. وقرار الجواب أولاً هو الغاية: فالاختبار يسجل قراراً.</li>
+<li>إن أُهمل الكوبون فشل صفّا <code>it.each</code>. ويعرض Vitest اسم كل اختبار فاشل، وسطر التأكيد، و<code>expected 41 to be 36.9</code>: فالاسم يقول أي قاعدة انكسرت، والقيم تقول كيف.</li>
+<li>مرّر <code>signIn={() =&gt; new Promise(() =&gt; {})}</code>، التي لا تتحقق أبداً، واكتب بريداً واضغط الزر، ثم <code>expect(screen.getByRole("button", { name: "جارٍ الدخول…" })).toBeDisabled()</code>. فينتهي الاختبار والطلب ما زال «جارياً».</li>
+<li>اختبار لكل فعل: <code>added</code> تضيف مهمة بـ <code>done: false</code>، و<code>toggled</code> تقلب مهمة واحدة وتترك الباقي، و<code>cleared</code> تحذف المنجزة فقط. ولعدم التغيير جمّد المدخل بـ <code>Object.freeze</code> وجمّد مهامه أيضاً، ثم استدعِ الدالة: فأي محاولة لتغييرها ترمي خطأً في الوضع الصارم، و<code>expect(next).not.toBe(before)</code> تفحص أن مصفوفة جديدة رجعت.</li>
+<li>اخدم صفحة إتمام الشراء كما في هذا الفصل، ثم: اختر المدينة، واملأ الشارع والهاتف، واضغط «التالي»، واختر البطاقة، واضغط «التالي»، وافحص نص الملخص بـ <code>toContainText</code>، واضغط «أكّد الطلب»، وتوقع حالة «تم الطلب!». وشغّل بـ <code>--trace on</code> وافتح الأثر من <code>test-results</code> بـ <code>npx playwright show-trace</code>.</li>
 </ol>
 
 </section>

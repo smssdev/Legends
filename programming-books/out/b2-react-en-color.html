@@ -27,6 +27,8 @@
 @page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Accessibility (WCAG) in Practice"; } }
 @page ch10:first { @top-center { content: none; } }
+@page ch11 { @top-center { content: "Chapter 11: Testing: Unit, Component and End-to-End"; } }
+@page ch11:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -4760,6 +4762,537 @@ export function RouteFocus({ appName }: { appName: string }) {
 <p>You have now checked pages by running them and looking. In the next chapter you will let the computer do the checking: unit tests for logic, component tests that use the page the way users do, and end-to-end tests that drive a real browser, all running on every change.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch11" data-chapter="11" data-code="b2/testing/en">
+<div class="opener"><span class="opener-num">11</span><p class="chapter-kicker">Chapter 11</p><h1>Testing: Unit, Component and End-to-End</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain why professional teams write tests, and which kinds to write</li>
+<li>write unit tests with Vitest, including table tests, errors and fake timers</li>
+<li>test components the way users use them, with Testing Library</li>
+<li>replace the network and other slow things with fakes</li>
+<li>drive a real browser through a whole flow with Playwright</li>
+<li>check accessibility automatically in end-to-end tests</li>
+</ul>
+</div>
+
+<p class="lead">Every time you change code, you might break something that used to work. Without tests, the only way to know is to click through the whole app by hand, every time, and nobody does. So bugs slip out, and developers become afraid to improve old code. <strong>Automated tests</strong> are small programs that check your program. They run in seconds, on every change, on your computer and in CI, and they turn “I hope this still works” into “I know it does”.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>A test is also documentation that cannot lie. When I want to know what a function is supposed to do with an empty cart or a negative number, I read its tests. If the code changes and the tests do not, they fail and tell me.</p></div></div>
+
+<h2><span class="sec">11.1</span> <span>Three kinds of tests</span></h2>
+
+<table>
+<thead><tr><th>Kind</th><th>Checks</th><th>Speed</th><th>Tool in this book</th></tr></thead>
+<tbody>
+<tr><td><dfn>Unit</dfn></td><td>One function or module, alone</td><td>Milliseconds</td><td>Vitest</td></tr>
+<tr><td><dfn>Component</dfn> (integration)</td><td>A component with its children, in a pretend browser</td><td>Tens of milliseconds</td><td>Vitest and Testing Library</td></tr>
+<tr><td><dfn>End-to-end</dfn> (E2E)</td><td>A whole flow in a real browser, as a user</td><td>Seconds</td><td>Playwright</td></tr>
+</tbody>
+</table>
+
+<p>Each kind catches different bugs. Unit tests are fast and pinpoint exactly what broke, but cannot see whether the pieces fit together. End-to-end tests prove that the app really works for a user, but are slower and, when they fail, take longer to diagnose. A healthy project has many unit and component tests and a smaller number of end-to-end tests for the most important flows: sign-in, checkout, the things that make money.</p>
+
+<h2><span class="sec">11.2</span> <span>Unit tests with Vitest</span></h2>
+
+<p><strong>Vitest</strong> is a test runner built for Vite projects: it understands TypeScript and the same configuration out of the box. A test file sits next to the code it tests and ends in <code>.test.ts</code>. Here is a small module of shop logic, and its tests:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">price.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Line = { price: number; quantity: number };
+
+<span class="k">const</span> COUPONS: Record&lt;string, number&gt; = { WELCOME10: <span class="n">10</span>, SPRING25: <span class="n">25</span> };
+
+<span class="k">export</span> <span class="k">function</span> formatPrice(value: number): string {
+  <span class="k">return</span> <span class="s">`${value.toFixed(2)} EGP`</span>;
+}
+
+<span class="k">export</span> <span class="k">function</span> cartTotal(lines: Line[], coupon?: string): number {
+  <span class="k">if</span> (lines.some((l) =&gt; l.quantity &lt; <span class="n">0</span>)) <span class="k">throw</span> <span class="k">new</span> RangeError(<span class="s">&quot;quantity must not be negative&quot;</span>);
+  <span class="k">const</span> sum = lines.reduce((total, l) =&gt; total + l.price * l.quantity, <span class="n">0</span>);
+  <span class="k">const</span> percent = coupon ? (COUPONS[coupon] ?? <span class="n">0</span>) : <span class="n">0</span>;
+  <span class="k">return</span> Math.round(sum * (<span class="n">100</span> - percent)) / <span class="n">100</span>;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">price.test.ts</div><pre class="code"><span class="k">import</span> { describe, expect, it } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { cartTotal, formatPrice } <span class="k">from</span> <span class="s">&quot;./price&quot;</span>;
+
+describe(<span class="s">&quot;formatPrice&quot;</span>, () =&gt; {
+  it(<span class="s">&quot;formats a price with two decimals and the currency&quot;</span>, () =&gt; {
+    expect(formatPrice(<span class="n">8</span>)).toBe(<span class="s">&quot;8.00 EGP&quot;</span>);
+    expect(formatPrice(<span class="n">19.5</span>)).toBe(<span class="s">&quot;19.50 EGP&quot;</span>);
+  });
+});
+
+describe(<span class="s">&quot;cartTotal&quot;</span>, () =&gt; {
+  <span class="k">const</span> lines = [
+    { price: <span class="n">25</span>, quantity: <span class="n">1</span> },
+    { price: <span class="n">8</span>, quantity: <span class="n">2</span> },
+  ];
+
+  it(<span class="s">&quot;adds the lines of a cart&quot;</span>, () =&gt; {
+    expect(cartTotal(lines)).toBe(<span class="n">41</span>);
+  });
+
+  it(<span class="s">&quot;returns 0 for an empty cart&quot;</span>, () =&gt; {
+    expect(cartTotal([])).toBe(<span class="n">0</span>);
+  });
+
+  it.each([
+    [<span class="s">&quot;WELCOME10&quot;</span>, <span class="n">41</span>, <span class="n">36.9</span>],
+    [<span class="s">&quot;SPRING25&quot;</span>, <span class="n">41</span>, <span class="n">30.75</span>],
+  ])(<span class="s">&quot;applies the coupon %s to a total of %s: %s&quot;</span>, (coupon, _total, expected) =&gt; {
+    expect(cartTotal(lines, coupon)).toBe(expected);
+  });
+
+  it(<span class="s">&quot;ignores an unknown coupon&quot;</span>, () =&gt; {
+    expect(cartTotal(lines, <span class="s">&quot;FREE100&quot;</span>)).toBe(<span class="n">41</span>);
+  });
+
+  it(<span class="s">&quot;refuses a negative quantity&quot;</span>, () =&gt; {
+    expect(() =&gt; cartTotal([{ price: <span class="n">8</span>, quantity: -<span class="n">1</span> }])).toThrow(RangeError);
+  });
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose price.test.ts
+ RUN  v5.1.1 .
+ ✓ price.test.ts &gt; formatPrice &gt; formats a price with two decimals and the currency 3ms
+ ✓ price.test.ts &gt; cartTotal &gt; adds the lines of a cart 1ms
+ ✓ price.test.ts &gt; cartTotal &gt; returns 0 for an empty cart 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; applies the coupon WELCOME10 to a total of 41: 36.9 1ms
+ ✓ price.test.ts &gt; cartTotal &gt; applies the coupon SPRING25 to a total of 41: 30.75 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; ignores an unknown coupon 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; refuses a negative quantity 1ms
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Duration  868ms (environment 74%, setup 21%, transform 3%, tests 1%, import 1%, worker 1%)</pre></div>
+
+<ul>
+<li><code>describe</code> groups tests; <code>it</code> (or <code>test</code>) is one test, with a sentence that says what should happen. Read the output aloud: it is a specification of the module.</li>
+<li><code>expect(value).toBe(expected)</code> is an <dfn>assertion</dfn>: if it is not true, the test fails and shows both values.</li>
+<li><code>it.each</code> runs the same test for several rows of data, a <dfn>table test</dfn>. Adding a case is adding one line.</li>
+<li><code>expect(() =&gt; …).toThrow(RangeError)</code> checks that bad input is refused. Testing the sad paths is as important as the happy one.</li>
+</ul>
+
+<p>A good unit test follows three steps, often called <dfn>Arrange, Act, Assert</dfn>: prepare the data, run the code, check the result. Each test checks one behaviour and does not depend on any other test.</p>
+
+<h3>Fakes: controlling time and functions</h3>
+
+<p>Some code waits, or calls other code. Tests must be fast and give the same result every time, so they replace those things with <dfn>fakes</dfn>. Here, Vitest’s fake timers move the clock forward instantly, and <code>vi.fn()</code> creates a function that records how it was called:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">debounce.test.ts</div><pre class="code"><span class="k">import</span> { expect, it, vi } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { debounce } <span class="k">from</span> <span class="s">&quot;./debounce&quot;</span>;
+
+it(<span class="s">&quot;calls the function once, after the user stops typing&quot;</span>, () =&gt; {
+  vi.useFakeTimers(); <span class="c">// the test controls the clock: no real waiting</span>
+  <span class="k">const</span> search = vi.fn(); <span class="c">// a fake function that records its calls</span>
+  <span class="k">const</span> debounced = debounce(search, <span class="n">300</span>);
+
+  debounced(<span class="s">&quot;b&quot;</span>);
+  debounced(<span class="s">&quot;bi&quot;</span>);
+  debounced(<span class="s">&quot;bit&quot;</span>);
+  expect(search).not.toHaveBeenCalled();
+
+  vi.advanceTimersByTime(<span class="n">300</span>);
+  expect(search).toHaveBeenCalledTimes(<span class="n">1</span>);
+  expect(search).toHaveBeenCalledWith(<span class="s">&quot;bit&quot;</span>);
+  vi.useRealTimers();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose debounce.test.ts
+ RUN  v5.1.1 .
+ ✓ debounce.test.ts &gt; calls the function once, after the user stops typing 6ms
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Duration  968ms (environment 82%, setup 13%, transform 2%, tests 1%, import 1%, worker 1%)</pre></div>
+
+<p>Three hundred milliseconds of waiting took no time at all, and the test proves both that nothing happened during typing and that exactly one call happened afterwards, with the last value.</p>
+
+<h2><span class="sec">11.3</span> <span>Component tests</span></h2>
+
+<p>A component test renders a component into <dfn>jsdom</dfn>, a pretend browser that runs inside Node, and then uses it. The key idea of <strong>Testing Library</strong> is in its motto: <em>the more your tests resemble the way your software is used, the more confidence they can give you</em>. So tests find elements the way users do, by their role and their visible name, and act the way users do, by typing and clicking:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">vitest.config.ts</div><pre class="code"><span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">&quot;vitest/config&quot;</span>;
+
+<span class="k">export</span> <span class="k">default</span> defineConfig({
+  test: {
+    environment: <span class="s">&quot;jsdom&quot;</span>, <span class="c">// a pretend browser, so components can render</span>
+    setupFiles: [<span class="s">&quot;./vitest.setup.ts&quot;</span>],
+    include: [<span class="s">&quot;**/*.test.{ts,tsx}&quot;</span>],
+  },
+});</pre></div>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">LoginForm.tsx</div><pre class="code">import { useState, type FormEvent } from &quot;react&quot;;
+import { signIn as defaultSignIn } from &quot;./api&quot;;
+
+type Props = { signIn?: typeof defaultSignIn };
+
+export function LoginForm({ signIn = defaultSignIn }: Props) {
+  const [error, setError] = useState(&quot;&quot;);
+  const [user, setUser] = useState&lt;string | null&gt;(null);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(event: FormEvent&lt;HTMLFormElement&gt;) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const email = String(data.get(&quot;email&quot;) ?? &quot;&quot;).trim();
+    if (!email) return setError(&quot;Please enter your email.&quot;);
+    setBusy(true);
+    try {
+      const result = await signIn(email, String(data.get(&quot;password&quot;) ?? &quot;&quot;));
+      setUser(result.name);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (user) return &lt;h2&gt;Welcome back, {user}!&lt;/h2&gt;;
+
+  return (
+    &lt;form onSubmit={submit} noValidate aria-describedby={error ? &quot;login-error&quot; : undefined}&gt;
+      &lt;label htmlFor=&quot;email&quot;&gt;Email&lt;/label&gt;
+      &lt;input id=&quot;email&quot; name=&quot;email&quot; type=&quot;email&quot; autoComplete=&quot;email&quot; dir=&quot;ltr&quot; /&gt;
+      &lt;label htmlFor=&quot;password&quot;&gt;Password&lt;/label&gt;
+      &lt;input id=&quot;password&quot; name=&quot;password&quot; type=&quot;password&quot; autoComplete=&quot;current-password&quot; dir=&quot;ltr&quot; /&gt;
+      {error &amp;&amp; (
+        &lt;p id=&quot;login-error&quot; role=&quot;alert&quot;&gt;
+          {error}
+        &lt;/p&gt;
+      )}
+      &lt;button type=&quot;submit&quot; disabled={busy}&gt;
+        {busy ? &quot;Signing in…&quot; : &quot;Sign in&quot;}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">LoginForm.test.tsx</div><pre class="code">import { describe, expect, it, vi } from &quot;vitest&quot;;
+import { render, screen } from &quot;@testing-library/react&quot;;
+import userEvent from &quot;@testing-library/user-event&quot;;
+import { LoginForm } from &quot;./LoginForm&quot;;
+
+describe(&quot;LoginForm&quot;, () =&gt; {
+  it(&quot;shows an error when the email is empty&quot;, async () =&gt; {
+    const user = userEvent.setup();
+    render(&lt;LoginForm /&gt;);
+    // Find things the way users do: by role and by name
+    await user.click(screen.getByRole(&quot;button&quot;, { name: &quot;Sign in&quot; }));
+    expect(screen.getByRole(&quot;alert&quot;)).toHaveTextContent(&quot;Please enter your email.&quot;);
+  });
+
+  it(&quot;signs in and greets the user&quot;, async () =&gt; {
+    const user = userEvent.setup();
+    const signIn = vi.fn().mockResolvedValue({ name: &quot;Sara&quot; });
+    render(&lt;LoginForm signIn={signIn} /&gt;);
+
+    await user.type(screen.getByLabelText(&quot;Email&quot;), &quot;sara@example.com&quot;);
+    await user.type(screen.getByLabelText(&quot;Password&quot;), &quot;bit2026code&quot;);
+    await user.click(screen.getByRole(&quot;button&quot;, { name: &quot;Sign in&quot; }));
+
+    expect(await screen.findByRole(&quot;heading&quot;, { name: &quot;Welcome back, Sara!&quot; })).toBeInTheDocument();
+    expect(signIn).toHaveBeenCalledWith(&quot;sara@example.com&quot;, &quot;bit2026code&quot;);
+  });
+
+  it(&quot;shows the server&#x27;s error for a wrong password&quot;, async () =&gt; {
+    const user = userEvent.setup();
+    render(&lt;LoginForm /&gt;);
+    await user.type(screen.getByLabelText(&quot;Email&quot;), &quot;sara@example.com&quot;);
+    await user.type(screen.getByLabelText(&quot;Password&quot;), &quot;wrong&quot;);
+    await user.click(screen.getByRole(&quot;button&quot;, { name: &quot;Sign in&quot; }));
+    expect(await screen.findByRole(&quot;alert&quot;)).toHaveTextContent(&quot;Wrong email or password.&quot;);
+  });
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose react/LoginForm.test.tsx
+ RUN  v5.1.1 .
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; shows an error when the email is empty 119ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; signs in and greets the user 107ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; shows the server&#x27;s error for a wrong password 140ms
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Duration  1.34s (environment 52%, tests 32%, setup 9%, import 3%, transform 3%)</pre></div>
+
+<ul>
+<li><code>getByRole("button", { name: "Sign in" })</code> fails if there is no such button, or if it has no accessible name. Your component tests check accessibility for free: an icon button without a label cannot be found.</li>
+<li><code>userEvent</code> types and clicks like a person: focus, key presses, input events, in order.</li>
+<li><code>findByRole</code> waits for something to appear, which is how tests handle asynchronous updates. Never wait a fixed number of milliseconds.</li>
+<li>The component accepts its <code>signIn</code> function as a prop, with the real one as default. The test passes a fake made with <code>vi.fn()</code>, so it controls the answer and checks the call. This is called <dfn>dependency injection</dfn>, and it makes code easy to test.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: which query to use</p><p>Prefer, in this order: <code>getByRole</code> (with a name), <code>getByLabelText</code> for form fields, <code>getByText</code> for plain content. Use <code>getByTestId</code> only when nothing a user can see identifies the element. Never select by CSS class: classes change for styling reasons, and the test breaks for nothing.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which kind of test would catch a broken link between the checkout page and the payment page?</li><li>Why should a test use fake timers instead of really waiting 300 ms?</li><li>A component test cannot find an icon button with <code>getByRole("button", { name: "Delete" })</code>. What is probably wrong with the component?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">11.4</span> <span>End-to-end tests with Playwright</span></h2>
+
+<p><strong>Playwright</strong> drives real browsers: Chromium, Firefox and WebKit, the engine of Safari. Its tests start the site, open pages, and use them exactly as a person would. The configuration tells it where the tests are and how to start the site:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">playwright.config.ts</div><pre class="code"><span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
+
+<span class="k">export</span> <span class="k">default</span> defineConfig({
+  testDir: <span class="s">&quot;./e2e&quot;</span>,
+  reporter: <span class="s">&quot;list&quot;</span>,
+  <span class="c">// Start the site before the tests, and stop it after. In a Vite project: &quot;npm run build &amp;&amp; npm run preview&quot;.</span>
+  webServer: { command: <span class="s">&quot;node ../../serve.mjs 4173&quot;</span>, url: <span class="s">&quot;http://localhost:4173/vendor/react.js&quot;</span>, reuseExistingServer: <span class="k">true</span> },
+  use: { baseURL: <span class="s">&quot;http://localhost:4173/testing/en/&quot;</span>, browserName: <span class="s">&quot;chromium&quot;</span> },
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">e2e/login.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
+
+<span class="k">const</span> page_url = <span class="s">&quot;react/login.html&quot;</span>; <span class="c">// relative to baseURL in playwright.config.ts</span>
+
+test(<span class="s">&quot;a user can sign in&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(page_url);
+  <span class="k">await</span> page.getByLabel(<span class="s">&quot;Email&quot;</span>).fill(<span class="s">&quot;sara@example.com&quot;</span>);
+  <span class="k">await</span> page.getByLabel(<span class="s">&quot;Password&quot;</span>).fill(<span class="s">&quot;bit2026code&quot;</span>);
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;Sign in&quot;</span> }).click();
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;heading&quot;</span>, { name: <span class="s">&quot;Welcome back, Sara!&quot;</span> })).toBeVisible();
+});
+
+test(<span class="s">&quot;a wrong password keeps the user on the form&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(page_url);
+  <span class="k">await</span> page.getByLabel(<span class="s">&quot;Email&quot;</span>).fill(<span class="s">&quot;sara@example.com&quot;</span>);
+  <span class="k">await</span> page.getByLabel(<span class="s">&quot;Password&quot;</span>).fill(<span class="s">&quot;nope&quot;</span>);
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;Sign in&quot;</span> }).click();
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;alert&quot;</span>)).toHaveText(<span class="s">&quot;Wrong email or password.&quot;</span>);
+  <span class="k">await</span> expect(page.getByLabel(<span class="s">&quot;Email&quot;</span>)).toHaveValue(<span class="s">&quot;sara@example.com&quot;</span>);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx playwright test e2e/login.spec.ts
+Running 2 tests using 1 worker
+  ✓  1 e2e/login.spec.ts:5:1 › a user can sign in (343ms)
+  ✓  2 e2e/login.spec.ts:13:1 › a wrong password keeps the user on the form (307ms)
+  2 passed (1.5s)
+(node:4004) Warning: The &#x27;NO_COLOR&#x27; env is ignored due to the &#x27;FORCE_COLOR&#x27; env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)</pre></div>
+
+<p>The locators look like Testing Library’s on purpose: <code>getByLabel</code>, <code>getByRole</code>. Assertions such as <code>toBeVisible()</code> and <code>toHaveText()</code> retry automatically for a short time, so tests wait for the page instead of guessing how long it takes.</p>
+
+<p>When an end-to-end test fails, Playwright can record a <dfn>trace</dfn>: a step-by-step film of the test with the page, the network and the console at every moment. Run <code>npx playwright test --trace on</code>, then open the trace with <code>npx playwright show-trace</code>. It is the fastest way to understand a failure that only happens in CI.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: flaky tests</p><p>A <dfn>flaky</dfn> test passes and fails without any change to the code, usually because it depends on timing, on data left by another test, or on a real external service. Flaky tests are worse than no tests: people learn to ignore failures. Never use fixed waits, give each test its own data, and fake the services you do not control.</p></aside>
+
+<h2><span class="sec">11.5</span> <span>What to test</span></h2>
+
+<p>You cannot test everything, and you should not try. Test <strong>behaviour</strong>, what a user or a caller can observe, not implementation details such as the name of a state variable. Tests of behaviour survive refactoring; tests of details break every time you improve the code, and teach the team to hate tests. Spend the most effort where a bug would hurt most: money, data, sign-in, and the logic that is easy to get wrong.</p>
+
+<p>Tools can measure <dfn>coverage</dfn>, the share of lines that tests run. It is a useful warning (“nothing tests the coupon code”), but a poor goal: a test that runs a line without checking its result covers it and proves nothing.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: a bug report starts with a failing test</p><p>When a bug is reported, first write a test that reproduces it, and watch it fail. Then fix the code and watch the test pass. The bug can never come back unnoticed, and the test explains to future readers why that odd line exists.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Testing implementation details</td><td>Tests break on every refactoring</td><td>Test what users and callers can observe</td></tr>
+<tr><td>Selecting elements by CSS class</td><td>Style changes break tests</td><td>Queries by role, label and text</td></tr>
+<tr><td>Fixed waits: <code>setTimeout(…, 1000)</code></td><td>Slow and flaky tests</td><td><code>findBy…</code>, auto-retrying assertions, fake timers</td></tr>
+<tr><td>Tests that depend on each other</td><td>One failure causes many; order matters</td><td>Each test prepares its own data</td></tr>
+<tr><td>Calling real services in tests</td><td>Slow, flaky, and sometimes costly</td><td>Fakes and dependency injection</td></tr>
+<tr><td>Only happy-path tests</td><td>Errors and edge cases break in production</td><td>Test empty, invalid and failing cases too</td></tr>
+<tr><td>Chasing 100% coverage</td><td>Many tests that check nothing</td><td>Test behaviour where bugs would hurt</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Automated tests</strong> check your code on every change, and make it safe to improve.</li>
+<li><strong>Unit</strong> tests check functions alone, <strong>component</strong> tests check components in jsdom, and <strong>end-to-end</strong> tests check whole flows in real browsers. Have many of the first two and a few of the last.</li>
+<li><strong>Vitest</strong> runs tests with <code>describe</code>, <code>it</code>, <code>expect</code> and <code>it.each</code>. Follow Arrange, Act, Assert, and test errors as well as successes.</li>
+<li><strong>Fakes</strong>, such as <code>vi.fn()</code> and fake timers, make tests fast and repeatable. Inject dependencies so tests can replace them.</li>
+<li><strong>Testing Library</strong> finds elements by role, label and text and acts with <code>userEvent</code>, so tests resemble real use and check accessibility on the way.</li>
+<li><strong>Playwright</strong> runs real browsers against the real site, with auto-waiting assertions and traces for debugging.</li>
+<li>Test behaviour, not details; avoid flakiness; start every bug fix with a failing test.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. An end-to-end test: only it moves between real pages like a user. 2. Real waiting makes the test slow and can make it flaky; fake timers move the clock instantly and exactly. 3. The button has no accessible name, probably an icon without an <code>aria-label</code>: the test found an accessibility bug.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">For each project, write the tests <em>before</em> you look at the code they test, from the description of what it should do. Run them, watch them fail if the code is missing, then make them pass. This order, called <dfn>test-driven development</dfn>, is a useful habit even when you do not follow it every day.</p>
+
+<div class="project">
+<p class="project-label">Project 11.1 · Easy</p>
+<h3>Table tests for the password checker</h3>
+<p class="project-goal">Take the password strength checker from Book 1, rewritten in TypeScript, and pin its behaviour down with one table of examples.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>it.each</code>, <code>as const</code> for typed rows, and choosing interesting cases.</p>
+<ol class="steps">
+<li>Write one row per interesting case: empty, very short, long but simple, with a digit, with a capital, and a long sentence without digits.</li>
+<li>Use <code>it.each([...] as const)</code>, so TypeScript knows each row is a password and one of the three results.</li>
+<li>Put the values in the test name with <code>%s</code>, so the output reads as a list of rules.</li>
+<li>Change one rule in <code>strength</code> (for example, 10 characters instead of 8) and see which rows fail.</li>
+<li>Decide whether the failures are bugs in the code or outdated expectations, and fix the right one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look at the last row. A long, memorable sentence is a strong password in real life, but this checker calls it only “okay”. Tests do not just catch bugs; writing them makes you question whether the rules are right.</p>
+<div class="listing" dir="ltr"><div class="listing-title">password.test.ts</div><pre class="code"><span class="k">import</span> { expect, it } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { strength } <span class="k">from</span> <span class="s">&quot;./password&quot;</span>;
+
+it.each([
+  [<span class="s">&quot;&quot;</span>, <span class="s">&quot;weak&quot;</span>],
+  [<span class="s">&quot;cat&quot;</span>, <span class="s">&quot;weak&quot;</span>],
+  [<span class="s">&quot;sunshine&quot;</span>, <span class="s">&quot;weak&quot;</span>],
+  [<span class="s">&quot;sunshine2026&quot;</span>, <span class="s">&quot;okay&quot;</span>],
+  [<span class="s">&quot;Sunshine2026&quot;</span>, <span class="s">&quot;strong&quot;</span>],
+  [<span class="s">&quot;correct horse battery staple&quot;</span>, <span class="s">&quot;okay&quot;</span>],
+] as <span class="k">const</span>)(<span class="s">&quot;rates %s as %s&quot;</span>, (password, expected) =&gt; {
+  expect(strength(password)).toBe(expected);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose projects/password.test.ts
+ RUN  v5.1.1 .
+ ✓ projects/password.test.ts &gt; rates  as weak 2ms
+ ✓ projects/password.test.ts &gt; rates cat as weak 0ms
+ ✓ projects/password.test.ts &gt; rates sunshine as weak 0ms
+ ✓ projects/password.test.ts &gt; rates sunshine2026 as okay 0ms
+ ✓ projects/password.test.ts &gt; rates Sunshine2026 as strong 0ms
+ ✓ projects/password.test.ts &gt; rates correct horse battery staple as okay 0ms
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Duration  790ms (environment 78%, setup 17%, transform 2%, import 1%, tests 1%, worker 1%)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 11.2 · Medium</p>
+<h3>Component tests for a task list</h3>
+<p class="project-goal">Test a task list the way a user uses it: add a task from the form, tick it off, and make sure blank tasks are refused.</p>
+<p class="project-skills"><strong>You will practise:</strong> rendering with initial data, <code>userEvent</code> typing with special keys, queries by role and name, and live regions in tests.</p>
+<ol class="steps">
+<li>Let the component accept <code>initial</code> tasks as a prop, so each test can start from the state it needs.</li>
+<li>Add a task by typing into the textbox named “New task” and pressing Enter with <code>{Enter}</code> inside <code>user.type</code>.</li>
+<li>Find the new task as a checkbox whose accessible name is the task text. Check that it is not ticked and that the input is empty again.</li>
+<li>Tick a task off, and check the count in the <code>role="status"</code> region.</li>
+<li>Type only spaces and press Enter: <code>queryAllByRole("checkbox")</code> must still be empty. (<code>queryBy…</code> returns nothing instead of failing.)</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because the label wraps the checkbox, the checkbox’s accessible name is the task text. If a test can find it by that name, so can a screen reader. Tests and accessibility pull in the same direction.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Tasks.test.tsx</div><pre class="code">import { expect, it } from &quot;vitest&quot;;
+import { render, screen } from &quot;@testing-library/react&quot;;
+import userEvent from &quot;@testing-library/user-event&quot;;
+import { Tasks } from &quot;./Tasks&quot;;
+
+it(&quot;adds a task from the form&quot;, async () =&gt; {
+  const user = userEvent.setup();
+  render(&lt;Tasks /&gt;);
+  await user.type(screen.getByRole(&quot;textbox&quot;, { name: &quot;New task&quot; }), &quot;Read chapter 11{Enter}&quot;);
+  expect(screen.getByRole(&quot;checkbox&quot;, { name: &quot;Read chapter 11&quot; })).not.toBeChecked();
+  expect(screen.getByRole(&quot;status&quot;)).toHaveTextContent(&quot;1 left&quot;);
+  expect(screen.getByRole(&quot;textbox&quot;, { name: &quot;New task&quot; })).toHaveValue(&quot;&quot;);
+});
+
+it(&quot;ticks a task off and updates the count&quot;, async () =&gt; {
+  const user = userEvent.setup();
+  render(&lt;Tasks initial={[{ id: 1, text: &quot;Read chapter 11&quot;, done: false }, { id: 2, text: &quot;Write a test&quot;, done: false }]} /&gt;);
+  await user.click(screen.getByRole(&quot;checkbox&quot;, { name: &quot;Read chapter 11&quot; }));
+  expect(screen.getByRole(&quot;checkbox&quot;, { name: &quot;Read chapter 11&quot; })).toBeChecked();
+  expect(screen.getByRole(&quot;status&quot;)).toHaveTextContent(&quot;1 left&quot;);
+});
+
+it(&quot;does not add an empty task&quot;, async () =&gt; {
+  const user = userEvent.setup();
+  render(&lt;Tasks /&gt;);
+  await user.type(screen.getByRole(&quot;textbox&quot;, { name: &quot;New task&quot; }), &quot;   {Enter}&quot;);
+  expect(screen.queryAllByRole(&quot;checkbox&quot;)).toHaveLength(0);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose react/projects/Tasks.test.tsx
+ RUN  v5.1.1 .
+ ✓ react/projects/Tasks.test.tsx &gt; adds a task from the form 153ms
+ ✓ react/projects/Tasks.test.tsx &gt; ticks a task off and updates the count 20ms
+ ✓ react/projects/Tasks.test.tsx &gt; does not add an empty task 25ms
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Duration  1.07s (environment 61%, tests 21%, setup 11%, import 3%, transform 2%)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 11.3 · Challenge</p>
+<h3>Accessibility checks in the end-to-end suite</h3>
+<p class="project-goal">Add two end-to-end tests that protect accessibility: no axe violations on the sign-in page, and a complete sign-in with the keyboard only.</p>
+<p class="project-skills"><strong>You will practise:</strong> injecting a script into a page, <code>page.evaluate</code>, the keyboard API, and reading a failure that points at a real problem.</p>
+<ol class="steps">
+<li>In a new spec, open the sign-in page, add axe with <code>page.addScriptTag</code>, run it with <code>page.evaluate</code>, and expect the list of violation ids to be empty.</li>
+<li>Write a second test that signs in using only <code>page.keyboard</code>: Tab, type, Tab, type, Enter.</li>
+<li>Run the suite. When this book was made, the first test failed on the book’s own page, with <code>landmark-one-main</code>, <code>page-has-heading-one</code> and <code>region</code>: the form had no <code>main</code> and no <code>h1</code>.</li>
+<li>Fix the page, not the test: wrap it in <code>&lt;main&gt;</code> with an <code>&lt;h1&gt;</code>, and make the welcome message an <code>&lt;h2&gt;</code>.</li>
+<li>Run the whole suite again, unit, component and end-to-end, and see everything pass.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the keyboard test proves something axe cannot: that the order of Tab stops makes sense and that Enter submits the form. Together, the two tests cover a large part of the “operable” principle of WCAG.</p>
+<div class="listing" dir="ltr"><div class="listing-title">e2e/a11y.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
+<span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
+
+<span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
+<span class="k">const</span> page_url = <span class="s">&quot;react/login.html&quot;</span>;
+
+test(<span class="s">&quot;the sign-in page has no accessibility violations&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(page_url);
+  <span class="k">await</span> page.addScriptTag({ path: require.resolve(<span class="s">&quot;axe-core/axe.min.js&quot;</span>) });
+  <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+  <span class="k">const</span> violations = <span class="k">await</span> page.evaluate(() =&gt; axe.run().then((r) =&gt; r.violations.map((v) =&gt; v.id)));
+  expect(violations).toEqual([]);
+});
+
+test(<span class="s">&quot;the whole sign-in works with the keyboard only&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(page_url);
+  <span class="k">await</span> page.keyboard.press(<span class="s">&quot;Tab&quot;</span>);
+  <span class="k">await</span> page.keyboard.<span class="k">type</span>(<span class="s">&quot;sara@example.com&quot;</span>);
+  <span class="k">await</span> page.keyboard.press(<span class="s">&quot;Tab&quot;</span>);
+  <span class="k">await</span> page.keyboard.<span class="k">type</span>(<span class="s">&quot;bit2026code&quot;</span>);
+  <span class="k">await</span> page.keyboard.press(<span class="s">&quot;Enter&quot;</span>);
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;heading&quot;</span>, { name: <span class="s">&quot;Welcome back, Sara!&quot;</span> })).toBeVisible();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx playwright test
+Running 4 tests using 2 workers
+  ✓  2 e2e/login.spec.ts:5:1 › a user can sign in (383ms)
+  ✓  1 e2e/a11y.spec.ts:7:1 › the sign-in page has no accessibility violations (509ms)
+  ✓  3 e2e/login.spec.ts:13:1 › a wrong password keeps the user on the form (344ms)
+  ✓  4 e2e/a11y.spec.ts:15:1 › the whole sign-in works with the keyboard only (299ms)
+  4 passed (1.6s)
+(node:4216) Warning: The &#x27;NO_COLOR&#x27; env is ignored due to the &#x27;FORCE_COLOR&#x27; env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:4217) Warning: The &#x27;NO_COLOR&#x27; env is ignored due to the &#x27;FORCE_COLOR&#x27; env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a test to <code>price.test.ts</code> for a cart with a quantity of 0, and decide what the right answer is before you run it.</li>
+<li><span class="level">Easy</span> Break <code>cartTotal</code> on purpose (for example, forget the coupon) and read the failure message. Which test failed, and what did it show?</li>
+<li><span class="level medium">Medium</span> Add a test to the login form that checks the button is disabled and says “Signing in…” while the request is running. Use a fake <code>signIn</code> that never resolves.</li>
+<li><span class="level medium">Medium</span> Write unit tests for the <code>tasksReducer</code> from the state chapter: one per action, plus one that checks the original array is never changed.</li>
+<li><span class="level hard">Challenge</span> Write an end-to-end test for the checkout of the forms chapter: fill in every step, check the review screen, and place the order. Then run it with <code>--trace on</code> and open the trace.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 12</p>
+<p>Your app now works, is accessible, and is tested. The next question users ask, without words, is: is it fast? The next chapter measures speed the way Google does, with Core Web Vitals, and shows how to make pages load and respond quickly.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -4876,6 +5409,16 @@ export function RouteFocus({ appName }: { appName: string }) {
 <li>In <code>package.json</code>: <code>"check": "tsc &amp;&amp; eslint src &amp;&amp; prettier --check src &amp;&amp; vite build &amp;&amp; node scripts/audit-all.mjs"</code>. The audit runs on the built pages, which are what users receive.</li>
 <li>Add the <code>RouteFocus</code> component from Project 10.3 to the layout of the routing chapter’s app, inside the router. Each page already has one <code>h1</code> inside <code>main</code>, which is all the component needs.</li>
 <li>Common discoveries: images described by their file names; icon buttons read as “button”; the same “Read more” link ten times; errors that appear but are never read; and pages that change silently. Each one is a small fix, and each one now has a name you know from this chapter.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 11</h2>
+<ol class="exercises">
+<li><code>it("treats a quantity of 0 as no item", () =&gt; { expect(cartTotal([{ price: 25, quantity: 0 }])).toBe(0); });</code>. Zero is allowed (only negative quantities throw), and adds nothing. Deciding the answer first is the point: the test records a decision.</li>
+<li>If the coupon is ignored, the two <code>it.each</code> rows fail. Vitest shows each failing test’s name, the line of the assertion, and <code>expected 41 to be 36.9</code>: the name says which rule broke, and the values say how.</li>
+<li>Pass <code>signIn={() =&gt; new Promise(() =&gt; {})}</code>, which never resolves; type an email and click the button; then <code>expect(screen.getByRole("button", { name: "Signing in…" })).toBeDisabled()</code>. The test finishes while the request is still “running”.</li>
+<li>One test per action: <code>added</code> appends a task with <code>done: false</code>; <code>toggled</code> flips one task and leaves the others alone; <code>cleared</code> removes only finished tasks. For immutability, freeze the input with <code>Object.freeze</code> and deep-freeze its tasks, then call the reducer: any attempt to change them throws in strict mode, and <code>expect(next).not.toBe(before)</code> checks a new array came back.</li>
+<li>Serve the checkout page as in this chapter; then: select the city, fill the street and phone, click “Next”, choose card, click “Next”, check the summary text with <code>toContainText</code>, click “Place order”, and expect the “Order placed!” status. Run with <code>--trace on</code> and open the trace from <code>test-results</code> with <code>npx playwright show-trace</code>.</li>
 </ol>
 
 </section>

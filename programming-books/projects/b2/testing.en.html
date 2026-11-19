@@ -1,0 +1,56 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">For each project, write the tests <em>before</em> you look at the code they test, from the description of what it should do. Run them, watch them fail if the code is missing, then make them pass. This order, called <dfn>test-driven development</dfn>, is a useful habit even when you do not follow it every day.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Table tests for the password checker</h3>
+<p class="project-goal">Take the password strength checker from Book 1, rewritten in TypeScript, and pin its behaviour down with one table of examples.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>it.each</code>, <code>as const</code> for typed rows, and choosing interesting cases.</p>
+<ol class="steps">
+<li>Write one row per interesting case: empty, very short, long but simple, with a digit, with a capital, and a long sentence without digits.</li>
+<li>Use <code>it.each([...] as const)</code>, so TypeScript knows each row is a password and one of the three results.</li>
+<li>Put the values in the test name with <code>%s</code>, so the output reads as a list of rules.</li>
+<li>Change one rule in <code>strength</code> (for example, 10 characters instead of 8) and see which rows fail.</li>
+<li>Decide whether the failures are bugs in the code or outdated expectations, and fix the right one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look at the last row. A long, memorable sentence is a strong password in real life, but this checker calls it only “okay”. Tests do not just catch bugs; writing them makes you question whether the rules are right.</p>
+<pre data-code="projects/password.test.ts" data-title="password.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose projects/password.test.ts"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Component tests for a task list</h3>
+<p class="project-goal">Test a task list the way a user uses it: add a task from the form, tick it off, and make sure blank tasks are refused.</p>
+<p class="project-skills"><strong>You will practise:</strong> rendering with initial data, <code>userEvent</code> typing with special keys, queries by role and name, and live regions in tests.</p>
+<ol class="steps">
+<li>Let the component accept <code>initial</code> tasks as a prop, so each test can start from the state it needs.</li>
+<li>Add a task by typing into the textbox named “New task” and pressing Enter with <code>{Enter}</code> inside <code>user.type</code>.</li>
+<li>Find the new task as a checkbox whose accessible name is the task text. Check that it is not ticked and that the input is empty again.</li>
+<li>Tick a task off, and check the count in the <code>role="status"</code> region.</li>
+<li>Type only spaces and press Enter: <code>queryAllByRole("checkbox")</code> must still be empty. (<code>queryBy…</code> returns nothing instead of failing.)</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because the label wraps the checkbox, the checkbox’s accessible name is the task text. If a test can find it by that name, so can a screen reader. Tests and accessibility pull in the same direction.</p>
+<!-- react -->
+<pre data-code="react/projects/Tasks.test.tsx" data-title="Tasks.test.tsx"></pre>
+<pre data-sh="npx vitest run --reporter=verbose react/projects/Tasks.test.tsx"></pre>
+<!-- /react -->
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Accessibility checks in the end-to-end suite</h3>
+<p class="project-goal">Add two end-to-end tests that protect accessibility: no axe violations on the sign-in page, and a complete sign-in with the keyboard only.</p>
+<p class="project-skills"><strong>You will practise:</strong> injecting a script into a page, <code>page.evaluate</code>, the keyboard API, and reading a failure that points at a real problem.</p>
+<ol class="steps">
+<li>In a new spec, open the sign-in page, add axe with <code>page.addScriptTag</code>, run it with <code>page.evaluate</code>, and expect the list of violation ids to be empty.</li>
+<li>Write a second test that signs in using only <code>page.keyboard</code>: Tab, type, Tab, type, Enter.</li>
+<li>Run the suite. When this book was made, the first test failed on the book’s own page, with <code>landmark-one-main</code>, <code>page-has-heading-one</code> and <code>region</code>: the form had no <code>main</code> and no <code>h1</code>.</li>
+<li>Fix the page, not the test: wrap it in <code>&lt;main&gt;</code> with an <code>&lt;h1&gt;</code>, and make the welcome message an <code>&lt;h2&gt;</code>.</li>
+<li>Run the whole suite again, unit, component and end-to-end, and see everything pass.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the keyboard test proves something axe cannot: that the order of Tab stops makes sense and that Enter submits the form. Together, the two tests cover a large part of the “operable” principle of WCAG.</p>
+<pre data-code="e2e/a11y.spec.ts" data-title="e2e/a11y.spec.ts"></pre>
+<pre data-sh="npx playwright test"></pre>
+</div>

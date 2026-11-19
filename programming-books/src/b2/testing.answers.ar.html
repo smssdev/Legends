@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>it("يعامل الكمية 0 كأنها لا شيء", () =&gt; { expect(cartTotal([{ price: 25, quantity: 0 }])).toBe(0); });</code>. فالصفر مسموح (الكميات السالبة وحدها ترمي خطأً)، ولا يضيف شيئاً. وقرار الجواب أولاً هو الغاية: فالاختبار يسجل قراراً.</li>
+<li>إن أُهمل الكوبون فشل صفّا <code>it.each</code>. ويعرض Vitest اسم كل اختبار فاشل، وسطر التأكيد، و<code>expected 41 to be 36.9</code>: فالاسم يقول أي قاعدة انكسرت، والقيم تقول كيف.</li>
+<li>مرّر <code>signIn={() =&gt; new Promise(() =&gt; {})}</code>، التي لا تتحقق أبداً، واكتب بريداً واضغط الزر، ثم <code>expect(screen.getByRole("button", { name: "جارٍ الدخول…" })).toBeDisabled()</code>. فينتهي الاختبار والطلب ما زال «جارياً».</li>
+<li>اختبار لكل فعل: <code>added</code> تضيف مهمة بـ <code>done: false</code>، و<code>toggled</code> تقلب مهمة واحدة وتترك الباقي، و<code>cleared</code> تحذف المنجزة فقط. ولعدم التغيير جمّد المدخل بـ <code>Object.freeze</code> وجمّد مهامه أيضاً، ثم استدعِ الدالة: فأي محاولة لتغييرها ترمي خطأً في الوضع الصارم، و<code>expect(next).not.toBe(before)</code> تفحص أن مصفوفة جديدة رجعت.</li>
+<li>اخدم صفحة إتمام الشراء كما في هذا الفصل، ثم: اختر المدينة، واملأ الشارع والهاتف، واضغط «التالي»، واختر البطاقة، واضغط «التالي»، وافحص نص الملخص بـ <code>toContainText</code>، واضغط «أكّد الطلب»، وتوقع حالة «تم الطلب!». وشغّل بـ <code>--trace on</code> وافتح الأثر من <code>test-results</code> بـ <code>npx playwright show-trace</code>.</li>
+</ol>

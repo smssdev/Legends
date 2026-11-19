@@ -192,6 +192,23 @@ def fill_code(chapter, lang):
         return (f'<div class="{cls}" dir="ltr"><div class="output-bar"><i></i><i></i><i></i>'
                 f'<span class="output-title">{label}</span></div><pre>{html.escape(chr(10).join(lines))}</pre></div>')
 
+    def shell(m):
+        # <pre data-sh="npx vitest run sum.test.ts" data-in="dir"></pre>: runs a command (a test runner, say)
+        # in the example folder and shows "$ command" with its real output. data-in picks a subfolder.
+        attrs = html.unescape(m.group(1))
+        cmd = re.search(r'data-sh="([^"]+)"', attrs).group(1)
+        sub = re.search(r'data-in="([^"]+)"', attrs)
+        folder = code_dir / (sub.group(1) if sub else ".")
+        env_path = str(ROOT / "code" / "b2" / "node_modules" / ".bin")
+        r = run_cached(["bash", "-c", f'PATH="{env_path}:$PATH" NO_COLOR=1 FORCE_COLOR=0 CI=1 {cmd}'], folder / "_")
+        out = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", r["out"]).replace(str(folder) + "/", "").replace(str(folder), ".")
+        noise = ("Start at", "Environment ", "create it once", "learn more", "Error Context:")
+        lines = [l.rstrip() for l in out.splitlines() if l.strip() and not l.strip().startswith(noise)]
+        text = "\n".join([f"$ {cmd}"] + lines)
+        cls = "output error" if r["code"] else "output"
+        return (f'<div class="{cls}" dir="ltr"><div class="output-bar"><i></i><i></i><i></i>'
+                f'<span class="output-title">{label}</span></div><pre>{html.escape(text)}</pre></div>')
+
     def page(m):
         attrs = m.group(1)
         f = re.search(r'data-render="([^"]+)"', attrs).group(1)
@@ -215,6 +232,7 @@ def fill_code(chapter, lang):
     chapter = re.sub(r'<pre (data-code="[^"]+"[^>]*)></pre>', code, chapter)
     chapter = re.sub(r'<pre (data-out="[^"]+"[^>]*)></pre>', out, chapter)
     chapter = re.sub(r'<pre (data-check="[^"]+"[^>]*)></pre>', check, chapter)
+    chapter = re.sub(r'<pre (data-sh="[^"]+"[^>]*)></pre>', shell, chapter)
     return chapter
 
 
