@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>دون <code>defer</code> يزيد LCP بقدر زمن تشغيل السكربت على المعالج المبطّأ تقريباً، لأن شيئاً لا يُرسم حتى ينتهي. ودون <code>width</code> و<code>height</code> قد يزيد CLS إن عُرف حجم الصورة بعد الرسم الأول فقط، ومع هذه الصورة الصغيرة السريعة قد يبقى قريباً من الصفر، ولهذا بالضبط الأبعاد قاعدة لا قرار حالة بحالة.</li>
+<li>من النصائح المعتادة: «قلّل JavaScript غير المستخدمة»، و«قدّم الصور بصيغ الجيل التالي»، و«أزل الموارد المعطِّلة للرسم»، و«تجنب DOM ضخمة جداً»، و«قلّل أثر كود الطرف الثالث». وكل منها يقابل سطراً في جدول القسم {{n}}.3.</li>
+<li><code>import { onCLS, onINP, onLCP } from "web-vitals"; onLCP(console.log); onINP(console.log); onCLS(console.log);</code>. وفي الإنتاج استبدل <code>console.log</code> بدالة ترسل المؤشر بـ <code>navigator.sendBeacon("/vitals", JSON.stringify(metric))</code>، التي تصمد حتى لو أُغلقت الصفحة.</li>
+<li>اجمع ثلاث نتائج في مصفوفة، ورتّبها حسب LCP، وخذ الوسطى: <code>const runs = []; for (let i = 0; i &lt; 3; i++) runs.push(await measure(page)); runs.sort((a, b) =&gt; a.lcp - b.lcp); const median = runs[1]!;</code>.</li>
+<li>بعد طباعة كل صفحة: <code>if (lcp &gt; 2500 || cls &gt; 0.1) failed = true;</code>، وفي النهاية <code>process.exitCode = failed ? 1 : 0;</code>. ومع صفحات هذا الفصل تفشل <code>slow.html</code> في LCP وتنجح <code>fast.html</code>.</li>
+</ol>

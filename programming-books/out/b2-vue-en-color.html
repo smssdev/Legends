@@ -19,6 +19,8 @@
 @page ch11:first { @top-center { content: none; } }
 @page ch12 { @top-center { content: "Chapter 12: Testing: Unit, Component and End-to-End"; } }
 @page ch12:first { @top-center { content: none; } }
+@page ch13 { @top-center { content: "Chapter 13: Performance and Core Web Vitals"; } }
+@page ch13:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -2847,6 +2849,404 @@ Running 4 tests using 2 workers
 <p>Your app now works, is accessible, and is tested. The next question users ask, without words, is: is it fast? The next chapter measures speed the way Google does, with Core Web Vitals, and shows how to make pages load and respond quickly.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch13" data-chapter="13" data-code="b2/perf/en">
+<div class="opener"><span class="opener-num">13</span><p class="chapter-kicker">Chapter 13</p><h1>Performance and Core Web Vitals</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>describe speed the way users feel it, with the three Core Web Vitals</li>
+<li>measure a page in a lab, with a slowed network and CPU, and know why field data matters more</li>
+<li>make the main content appear sooner: images, fonts, scripts and code splitting</li>
+<li>stop the layout from jumping</li>
+<li>keep the page responsive while it does heavy work</li>
+<li>protect performance with budgets that fail the build</li>
+</ul>
+</div>
+
+<p class="lead">Your computer is fast and your network is good, so your site feels fast to you. Most of your users have a mid-range phone, a crowded mobile network, and twenty other tabs open. Every extra second of loading loses visitors, and search engines rank slow pages lower. Performance is not something to fix at the end; it is a feature that is designed, measured and protected, like accessibility. This chapter shows how to measure it honestly and how to fix the causes that matter most.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The most common performance mistake is guessing. Developers optimise the code they find interesting, not the code that is slow. Measure first, fix the biggest problem, and measure again.</p></div></div>
+
+<h2><span class="sec">13.1</span> <span>Core Web Vitals</span></h2>
+
+<p>“Fast” means different things at different moments, so Google defined three numbers, the <dfn>Core Web Vitals</dfn>, that describe what users actually experience:</p>
+
+<table>
+<thead><tr><th>Metric</th><th>Question it answers</th><th>Good</th><th>Poor</th></tr></thead>
+<tbody>
+<tr><td><dfn>LCP</dfn>, Largest Contentful Paint</td><td>When does the main content appear?</td><td>≤ 2.5 s</td><td>&gt; 4 s</td></tr>
+<tr><td><dfn>INP</dfn>, Interaction to Next Paint</td><td>How quickly does the page react to taps and keys?</td><td>≤ 200 ms</td><td>&gt; 500 ms</td></tr>
+<tr><td><dfn>CLS</dfn>, Cumulative Layout Shift</td><td>Does the layout jump while I read?</td><td>≤ 0.1</td><td>&gt; 0.25</td></tr>
+</tbody>
+</table>
+
+<p>A page passes when 75% of real visits are “good” on all three. The thresholds are about people: under about a tenth of a second a reaction feels instant, and after a few seconds of a blank screen people start to leave.</p>
+
+<h2><span class="sec">13.2</span> <span>Measuring like a professional</span></h2>
+
+<p>There are two kinds of measurement. <dfn>Lab data</dfn> comes from a test you run yourself, under fixed conditions: perfect for finding and fixing problems. <dfn>Field data</dfn>, or real user monitoring, comes from real visitors on their real devices, collected in the page with the small <code>web-vitals</code> library or seen in Google’s Chrome UX Report. Field data is the truth; lab data explains it.</p>
+
+<p>The browser itself reports the vitals through <code>PerformanceObserver</code>. This script opens a page in Chromium, slows the network and the processor to imitate an average phone, and reads LCP and CLS:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">measure-lib.ts</div><pre class="code"><span class="k">import</span> { createReadStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
+<span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
+<span class="k">import</span> { extname, join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
+
+<span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
+<span class="k">type</span> CDP = { send(method: string, params?: object): Promise&lt;unknown&gt; };
+<span class="k">type</span> Page = {
+  context(): { newCDPSession(page: Page): Promise&lt;CDP&gt; };
+  goto(url: string): Promise&lt;unknown&gt;;
+  waitForTimeout(ms: number): Promise&lt;void&gt;;
+  evaluate&lt;T&gt;(fn: () =&gt; T | Promise&lt;T&gt;): Promise&lt;T&gt;;
+};
+<span class="k">type</span> Browser = { newPage(): Promise&lt;Page&gt;; close(): Promise&lt;void&gt; };
+<span class="k">const</span> { chromium } = require(<span class="s">&quot;playwright&quot;</span>) as { chromium: { launch(): Promise&lt;Browser&gt; } };
+
+<span class="k">export</span> <span class="k">type</span> Vitals = { lcp: number; cls: number };
+
+<span class="c">// Throttling only works over HTTP, so the pages are served like a real site</span>
+<span class="k">function</span> serve(): Promise&lt;{ url: string; close: () =&gt; void }&gt; {
+  <span class="k">const</span> types: Record&lt;string, string&gt; = { <span class="s">&quot;.html&quot;</span>: <span class="s">&quot;text/html&quot;</span>, <span class="s">&quot;.js&quot;</span>: <span class="s">&quot;text/javascript&quot;</span>, <span class="s">&quot;.png&quot;</span>: <span class="s">&quot;image/png&quot;</span> };
+  <span class="k">const</span> server = createServer((req, res) =&gt; {
+    <span class="k">const</span> path = join(process.cwd(), <span class="k">new</span> URL(req.url ?? <span class="s">&quot;/&quot;</span>, <span class="s">&quot;http://x&quot;</span>).pathname);
+    res.setHeader(<span class="s">&quot;Content-Type&quot;</span>, types[extname(path)] ?? <span class="s">&quot;application/octet-stream&quot;</span>);
+    createReadStream(path).on(<span class="s">&quot;error&quot;</span>, () =&gt; res.writeHead(<span class="n">404</span>).end()).pipe(res);
+  });
+  <span class="k">return</span> <span class="k">new</span> Promise((ready) =&gt;
+    server.listen(<span class="n">0</span>, () =&gt; ready({ url: <span class="s">`http://localhost:${(server.address() as AddressInfo).port}/`</span>, close: () =&gt; server.close() })),
+  );
+}
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> measure(page: string): Promise&lt;Vitals&gt; {
+  <span class="k">const</span> site = <span class="k">await</span> serve();
+  <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
+  <span class="k">const</span> tab = <span class="k">await</span> browser.newPage();
+  <span class="c">// Slow down the network and the CPU, like a mid-range phone on a 4G connection</span>
+  <span class="k">const</span> cdp = <span class="k">await</span> tab.context().newCDPSession(tab);
+  <span class="k">await</span> cdp.send(<span class="s">&quot;Network.enable&quot;</span>);
+  <span class="k">await</span> cdp.send(<span class="s">&quot;Network.emulateNetworkConditions&quot;</span>, {
+    offline: <span class="k">false</span>, latency: <span class="n">150</span>, downloadThroughput: (<span class="n">1.6</span> * <span class="n">1024</span> * <span class="n">1024</span>) / <span class="n">8</span>, uploadThroughput: (<span class="n">750</span> * <span class="n">1024</span>) / <span class="n">8</span>,
+  });
+  <span class="k">await</span> cdp.send(<span class="s">&quot;Emulation.setCPUThrottlingRate&quot;</span>, { rate: <span class="n">4</span> });
+
+  <span class="k">await</span> tab.goto(site.url + page); <span class="c">// waits for the load event, pictures included</span>
+  <span class="k">await</span> tab.waitForTimeout(<span class="n">1000</span>);
+  <span class="k">const</span> vitals = <span class="k">await</span> tab.evaluate(
+    () =&gt;
+      <span class="k">new</span> Promise&lt;{ lcp: number; cls: number }&gt;((done) =&gt; {
+        <span class="k">let</span> lcp = <span class="n">0</span>;
+        <span class="k">let</span> cls = <span class="n">0</span>;
+        <span class="k">new</span> PerformanceObserver((list) =&gt; {
+          <span class="k">for</span> (<span class="k">const</span> e <span class="k">of</span> list.getEntries()) lcp = e.startTime;
+        }).observe({ <span class="k">type</span>: <span class="s">&quot;largest-contentful-paint&quot;</span>, buffered: <span class="k">true</span> });
+        <span class="k">new</span> PerformanceObserver((list) =&gt; {
+          <span class="k">for</span> (<span class="k">const</span> e <span class="k">of</span> list.getEntries() as (PerformanceEntry &amp; { value: number; hadRecentInput: boolean })[]) {
+            <span class="k">if</span> (!e.hadRecentInput) cls += e.value;
+          }
+        }).observe({ <span class="k">type</span>: <span class="s">&quot;layout-shift&quot;</span>, buffered: <span class="k">true</span> });
+        setTimeout(() =&gt; done({ lcp, cls }), <span class="n">100</span>);
+      }),
+  );
+  <span class="k">await</span> browser.close();
+  site.close();
+  <span class="k">return</span> vitals;
+}
+
+<span class="k">export</span> <span class="k">function</span> rate(value: number, good: number, poor: number): string {
+  <span class="k">return</span> value &lt;= good ? <span class="s">&quot;good&quot;</span> : value &lt;= poor ? <span class="s">&quot;needs work&quot;</span> : <span class="s">&quot;poor&quot;</span>;
+}</pre></div>
+
+<p>Here are two versions of the same page. The first has four common problems; the second fixes them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">slow.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;en&quot;</span> <span class="n">dir</span>=<span class="s">&quot;ltr&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>Bit&#x27;s shop<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;heavy.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, <span class="s">&quot;Segoe UI&quot;</span>, Tahoma, sans-serif; margin: 0; background: #f5f5fb; color: #1e1b2e; }
+      header { background: white; padding: 10px 16px; font-weight: 800; color: #4338ca; }
+      main { padding: 16px; max-width: 640px; margin: auto; }
+      img { width: 100%; height: auto; border-radius: 12px; display: block; }
+      h1 { color: #4338ca; }
+      .banner { background: #fef3c7; color: #92400e; padding: 24px 16px; min-height: 140px; font-weight: 700; font-size: 1.2rem; }
+      button { font: inherit; border: 0; border-radius: 999px; padding: 8px 18px; background: #4338ca; color: white; }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>Bit&#x27;s shop<span class="k">&lt;/header</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;hero-big.png&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>The Bit mug is back<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>Big enough for long coding nights, and now in three colours. Order before Friday for free delivery.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span><span class="k">&gt;</span>Order now<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span><span class="k">&gt;</span>
+      // A banner added after load pushes everything down
+      setTimeout(() =<span class="k">&gt;</span> document.body.insertAdjacentHTML(<span class="s">&quot;afterbegin&quot;</span>, &#x27;<span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;banner&quot;</span><span class="k">&gt;</span>Free delivery this week!<span class="k">&lt;/div</span><span class="k">&gt;</span>&#x27;), 600);
+    <span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">fast.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;en&quot;</span> <span class="n">dir</span>=<span class="s">&quot;ltr&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>Bit&#x27;s shop<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;link</span> <span class="n">rel</span>=<span class="s">&quot;preload&quot;</span> <span class="n">as</span>=<span class="s">&quot;image&quot;</span> <span class="n">href</span>=<span class="s">&quot;hero-small.png&quot;</span> <span class="n">fetchpriority</span>=<span class="s">&quot;high&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;heavy.js&quot;</span> defer<span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, <span class="s">&quot;Segoe UI&quot;</span>, Tahoma, sans-serif; margin: 0; background: #f5f5fb; color: #1e1b2e; }
+      header { background: white; padding: 10px 16px; font-weight: 800; color: #4338ca; }
+      main { padding: 16px; max-width: 640px; margin: auto; }
+      img { width: 100%; height: auto; border-radius: 12px; display: block; }
+      h1 { color: #4338ca; }
+      .banner { background: #fef3c7; color: #92400e; padding: 24px 16px; min-height: 140px; font-weight: 700; font-size: 1.2rem; }
+      button { font: inherit; border: 0; border-radius: 999px; padding: 8px 18px; background: #4338ca; color: white; }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;banner&quot;</span><span class="k">&gt;</span>Free delivery this week!<span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>Bit&#x27;s shop<span class="k">&lt;/header</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;hero-small.png&quot;</span> <span class="n">width</span>=<span class="s">&quot;640&quot;</span> <span class="n">height</span>=<span class="s">&quot;360&quot;</span> <span class="n">alt</span>=<span class="s">&quot;The Bit mug in purple, white and pink&quot;</span> <span class="n">fetchpriority</span>=<span class="s">&quot;high&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>The Bit mug is back<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>Big enough for long coding nights, and now in three colours. Order before Friday for free delivery.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span><span class="k">&gt;</span>Order now<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">measure.ts</div><pre class="code"><span class="k">import</span> { measure, rate } <span class="k">from</span> <span class="s">&quot;./measure-lib&quot;</span>;
+
+<span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> [<span class="s">&quot;slow.html&quot;</span>, <span class="s">&quot;fast.html&quot;</span>]) {
+  <span class="k">const</span> { lcp, cls } = <span class="k">await</span> measure(page);
+  <span class="c">// Rounded, because each run differs by a few milliseconds</span>
+  <span class="k">const</span> seconds = (Math.round(lcp / <span class="n">100</span>) / <span class="n">10</span>).toFixed(<span class="n">1</span>);
+  console.log(<span class="s">`${page.padEnd(10)} LCP ${seconds} s (${rate(lcp, 2500, 4000)})   CLS ${cls.toFixed(2)} (${rate(cls, 0.1, 0.25)})`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>slow.html  LCP 4.7 s (poor)   CLS 0.08 (good)
+fast.html  LCP 0.7 s (good)   CLS 0.00 (good)</pre></div>
+
+<p>The same content appears four seconds earlier. Here is what changed, in order of impact:</p>
+<ol>
+<li><strong>The picture is far smaller</strong> (here 3 KB instead of 900 KB): the right size for its slot, and a format and content that compress well. The hero image is usually the LCP element, and on a slow network its size decides everything.</li>
+<li><strong>The browser hears about the picture early</strong>: <code>&lt;link rel="preload"&gt;</code> and <code>fetchpriority="high"</code> start the download before the browser even reaches the <code>&lt;img&gt;</code> tag.</li>
+<li><strong>The script no longer blocks the page</strong>: a plain <code>&lt;script&gt;</code> in the head stops all drawing until it has downloaded and run. <code>defer</code> lets the page appear first and runs the script afterwards.</li>
+<li><strong>Space is reserved</strong>: the banner is part of the page from the start, and the image has <code>width</code> and <code>height</code>, so the browser knows how much room to leave before the picture arrives.</li>
+</ol>
+
+<p>Look at CLS too. The slow page scores 0.08, still “good”, yet that is one late banner using up most of the 0.1 budget. Add an advertisement that loads late, or a picture without dimensions, and the page fails. Layout shifts add up.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: the browser’s own tools</p><p>Chrome’s DevTools have a <strong>Performance</strong> panel that records exactly what the page did, frame by frame, and a <strong>Lighthouse</strong> panel that runs a full lab audit with advice. Both can throttle the network and CPU, just like the script above.</p></aside>
+
+<h2><span class="sec">13.3</span> <span>Loading less, and sooner</span></h2>
+
+<p>Most slow pages are slow because they send too much, in the wrong order. The fixes are well known:</p>
+
+<table>
+<thead><tr><th>Resource</th><th>Problem</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Images</td><td>Huge files, one size for all screens</td><td>Modern formats (WebP, AVIF), <code>srcset</code> and <code>sizes</code>, <code>loading="lazy"</code> below the fold, always <code>width</code> and <code>height</code></td></tr>
+<tr><td>JavaScript</td><td>One huge bundle; blocking scripts</td><td>Code splitting by route (Chapter 3), <code>defer</code>, remove unused libraries, load third-party widgets late</td></tr>
+<tr><td>Fonts</td><td>Invisible text while the font loads</td><td>Few weights, <code>font-display: swap</code>, self-hosted files, preload the main one</td></tr>
+<tr><td>Everything</td><td>Downloaded again on every visit</td><td>Hashed file names with long cache times (Chapter 3), a CDN close to users</td></tr>
+</tbody>
+</table>
+
+<p>Project 13.1 shows <code>srcset</code> in action: the browser picks the smallest image that is sharp enough for each screen, and does not download a lazy image at all until the user scrolls near it.</p>
+
+<h2><span class="sec">13.4</span> <span>Staying responsive</span></h2>
+
+<p>INP measures the time from a tap or key press until the screen shows the result. The enemy is the <dfn>long task</dfn>: any piece of JavaScript that keeps the main thread busy for more than 50 ms. While it runs, the browser cannot react to anything (Chapter 1’s event loop). The usual causes are rendering huge lists, heavy calculations in event handlers, and third-party scripts.</p>
+
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-en-react-transition.html-560-502c2f.png" alt=""><figcaption><b>Figure 13.1:</b> Filtering 5,000 slow rows. The text field never freezes; while the list catches up it fades and says “Updating…”.</figcaption></figure>
+
+<p>Two more techniques solve most remaining problems. <dfn>Virtualisation</dfn> renders only the rows that are visible, so a list of 10,000 items costs the same as a list of 20. And heavy work that does not touch the page, such as parsing a big file, can move to a <dfn>Web Worker</dfn>, a second thread with no access to the DOM.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which metric gets worse when a cookie banner pushes the page down after it has appeared?</li><li>Why does <code>&lt;script src="widget.js"&gt;</code> in the head make LCP worse?</li><li>Which matters more when lab and field data disagree?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">13.5</span> <span>Budgets: keep it fast</span></h2>
+
+<p>Pages rarely become slow in one big step. They become slow one small library, one big image, one extra font at a time, each change too small for anyone to notice. A <dfn>performance budget</dfn> is a limit, such as “60 KB of compressed JavaScript” or “LCP under 2.5 s in the lab”, that the build checks automatically, exactly like a failing test. Project 13.3 builds one.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: test on a real, cheap phone</p><p>Keep a three-year-old, mid-range Android phone on your desk, and use it on mobile data. Throttling in DevTools helps, but nothing shows the truth like using your app on the device most of your users actually have.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Testing only on a fast computer and network</td><td>Slow pages go unnoticed</td><td>Throttle, and test on a real mid-range phone</td></tr>
+<tr><td>Images without <code>width</code> and <code>height</code></td><td>The layout jumps when they load (CLS)</td><td>Always set both, and use CSS <code>height: auto</code></td></tr>
+<tr><td>Lazy-loading the hero image</td><td>The main content appears later (LCP)</td><td><code>fetchpriority="high"</code> for the hero; lazy only below the fold</td></tr>
+<tr><td>Blocking scripts in the head</td><td>Nothing is drawn until they finish</td><td><code>defer</code>, or load them later</td></tr>
+<tr><td>Inserting banners above existing content</td><td>Everything shifts</td><td>Reserve the space from the start</td></tr>
+<tr><td>Rendering thousands of rows</td><td>Slow typing and scrolling (INP)</td><td>Virtualise, defer, memoise</td></tr>
+<tr><td>Optimising without measuring</td><td>Effort spent on the wrong thing</td><td>Measure, fix the biggest cause, measure again</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>The <strong>Core Web Vitals</strong> describe experience: <strong>LCP</strong> (main content, ≤ 2.5 s), <strong>INP</strong> (reaction, ≤ 200 ms) and <strong>CLS</strong> (stability, ≤ 0.1).</li>
+<li><strong>Lab data</strong> finds and explains problems; <strong>field data</strong> from real users is the truth.</li>
+<li>Load less and sooner: right-sized, modern images with <code>srcset</code>; <code>preload</code> and <code>fetchpriority</code> for the hero; <code>defer</code> for scripts; code splitting; long caching.</li>
+<li>Prevent layout shifts by reserving space for images, banners and ads.</li>
+<li>Avoid long tasks: defer expensive updates, memoise, virtualise long lists, and move heavy work to workers.</li>
+<li>Protect speed with <strong>performance budgets</strong> checked by the build.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. CLS, Cumulative Layout Shift. 2. A plain script in the head blocks drawing: the browser waits to download and run it before it shows anything. 3. Field data, because it measures real users on real devices; lab data is a tool to understand and fix what the field shows.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Measure before and after every change in these projects, and write the numbers down. A performance change that you cannot measure is a guess.</p>
+
+<div class="project">
+<p class="project-label">Project 13.1 · Easy</p>
+<h3>Images that fit every screen</h3>
+<p class="project-goal">Give the hero image two sizes and let the browser choose, and stop the browser from downloading a picture nobody has scrolled to yet. Then prove both with a script.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>srcset</code> with width descriptors, <code>sizes</code>, <code>loading="lazy"</code>, and checking downloads with the Resource Timing API.</p>
+<ol class="steps">
+<li>List both files in <code>srcset</code> with their real widths: <code>hero-small.png 640w, hero-big.png 1000w</code>.</li>
+<li>Tell the browser how wide the image will be shown with <code>sizes</code>: the full screen on phones, 640 px on wider screens.</li>
+<li>Keep <code>width</code>, <code>height</code> and <code>alt</code> on the image, as always.</li>
+<li>Add a second picture far down the page with <code>loading="lazy"</code>.</li>
+<li>Write a Playwright script that opens the page as a phone, as a high-density phone and as a desktop, and prints which hero file was used and whether the lower picture was downloaded.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look at the second line of the result. A phone with a high-density screen needs twice the pixels to look sharp, so the browser correctly picks the bigger file. You describe the facts; the browser makes the choice.</p>
+<div class="listing" dir="ltr"><div class="listing-title">images.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span> <span class="n">style</span>=<span class="s">&quot;margin: 0&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;img</span>
+      <span class="n">src</span>=<span class="s">&quot;../hero-small.png&quot;</span>
+      <span class="n">srcset</span>=<span class="s">&quot;../hero-small.png 640w, ../hero-big.png 1000w&quot;</span>
+      <span class="n">sizes</span>=<span class="s">&quot;(min-width: 700px) 640px, 100vw&quot;</span>
+      <span class="n">width</span>=<span class="s">&quot;640&quot;</span> <span class="n">height</span>=<span class="s">&quot;360&quot;</span> <span class="n">alt</span>=<span class="s">&quot;The Bit mug in purple, white and pink&quot;</span>
+      <span class="n">style</span>=<span class="s">&quot;width: 100%; max-width: 640px; height: auto&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">style</span>=<span class="s">&quot;height: 1500px&quot;</span><span class="k">&gt;</span><span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;../below.png&quot;</span> <span class="n">loading</span>=<span class="s">&quot;lazy&quot;</span> <span class="n">width</span>=<span class="s">&quot;1000&quot;</span> <span class="n">height</span>=<span class="s">&quot;560&quot;</span> <span class="n">alt</span>=<span class="s">&quot;&quot;</span> <span class="n">style</span>=<span class="s">&quot;width: 100%; height: auto&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>phone     hero image: hero-small.png   picture far below loaded? no (lazy)
+phone 2x  hero image: hero-big.png   picture far below loaded? no (lazy)
+desktop   hero image: hero-small.png   picture far below loaded? no (lazy)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 13.2 · Medium</p>
+<h3>A filter that never freezes</h3>
+<p class="project-goal">Filter thousands of slow rows while the text field stays perfectly responsive, and show that the list is catching up.</p>
+<p class="project-skills"><strong>You will practise:</strong> finding a long task in the Performance panel, deferring an update, memoising a component, and showing a pending state.</p>
+<ol class="steps">
+<li>Build the slow version first: filter and render directly from the input’s value. Type quickly and feel the input lag.</li>
+<li>Record it in the Performance panel of DevTools with the CPU slowed 4×. Find the long tasks after each key press.</li>
+
+<li>Keep a second, delayed copy of the text for the list (debounced, as in the state chapter), and compute the filtered items from it.</li>
+<li>While the list is behind the input, fade it and say “Updating…” in a polite live region.</li>
+<li>Record again and compare: typing should no longer wait for the list.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> deferring does not make the work smaller; it changes its priority. If the list is still too slow when it finally renders, the next step is virtualisation: render only the 20 rows that fit on the screen.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-en-react-transition.html-560-502c2f.png" alt=""><figcaption><b>Project 13.2:</b> the filtered list, once it has caught up.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 13.3 · Challenge</p>
+<h3>A bundle budget that fails the build</h3>
+<p class="project-goal">Measure how much compressed JavaScript and CSS the app sends to users, compare it with a budget, and stop the build when it is over.</p>
+<p class="project-skills"><strong>You will practise:</strong> walking a folder recursively, compressing with <code>node:zlib</code>, and exit codes.</p>
+<ol class="steps">
+<li>Collect every file under the built folder (<code>dist</code> in a real project; here, the book’s shared <code>vendor</code> folder), recursively.</li>
+<li>For each <code>.js</code> and <code>.css</code> file, add its <em>gzip</em> size: that is what travels over the network.</li>
+<li>Compare the totals with a budget, and print each line with ✓ or ✗.</li>
+<li>Set the exit code to 1 when any budget is exceeded, and add the script after <code>vite build</code> in <code>npm run check</code>.</li>
+<li>Read the result honestly: the shared React bundle alone is far over a 60 KB budget. Decide whether to raise the budget on purpose, or to load less.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a budget that fails is a conversation, not a disaster. The point is that growth becomes a decision someone makes knowingly, instead of something that happens by accident.</p>
+<div class="listing" dir="ltr"><div class="listing-title">budget.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
+<span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
+
+<span class="c">// Fails the build when the JavaScript or CSS sent to users grows past the budget</span>
+<span class="k">const</span> BUDGET = { js: <span class="n">60</span> * <span class="n">1024</span>, css: <span class="n">15</span> * <span class="n">1024</span> };
+
+<span class="k">function</span> files(dir: string): string[] {
+  <span class="k">return</span> readdirSync(dir).flatMap((name) =&gt; {
+    <span class="k">const</span> path = join(dir, name);
+    <span class="k">return</span> statSync(path).isDirectory() ? files(path) : [path];
+  });
+}
+
+<span class="k">const</span> sizes = { js: <span class="n">0</span>, css: <span class="n">0</span> };
+<span class="k">for</span> (<span class="k">const</span> file <span class="k">of</span> files(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;../../../vendor&quot;</span>)) {
+  <span class="k">const</span> kind = file.endsWith(<span class="s">&quot;.js&quot;</span>) ? <span class="s">&quot;js&quot;</span> : file.endsWith(<span class="s">&quot;.css&quot;</span>) ? <span class="s">&quot;css&quot;</span> : <span class="k">null</span>;
+  <span class="k">if</span> (kind) sizes[kind] += gzipSync(readFileSync(file)).length;
+}
+
+<span class="k">let</span> failed = <span class="k">false</span>;
+<span class="k">for</span> (<span class="k">const</span> kind <span class="k">of</span> [<span class="s">&quot;js&quot;</span>, <span class="s">&quot;css&quot;</span>] as <span class="k">const</span>) {
+  <span class="k">const</span> over = sizes[kind] &gt; BUDGET[kind];
+  failed ||= over;
+  <span class="k">const</span> kb = (n: number) =&gt; <span class="s">`${(n / 1024).toFixed(1)} KB`</span>;
+  console.log(<span class="s">`${kind.toUpperCase().padEnd(4)} ${kb(sizes[kind]).padStart(9)}  Budget ${kb(BUDGET[kind]).padStart(8)}  ${over ? &quot;✗ over budget&quot; : &quot;✓ within budget&quot;}`</span>);
+}
+process.exitCode = failed ? <span class="n">1</span> : <span class="n">0</span>;</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>JS    270.4 KB  Budget  60.0 KB  ✗ over budget
+CSS     0.0 KB  Budget  15.0 KB  ✓ within budget</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Remove <code>defer</code> from <code>fast.html</code> and measure again. Then remove the image’s <code>width</code> and <code>height</code>. Which number changed each time?</li>
+<li><span class="level">Easy</span> Open a big news site with DevTools, run Lighthouse in mobile mode, and write down its three biggest suggestions.</li>
+<li><span class="level medium">Medium</span> Add the <code>web-vitals</code> library to a project and log LCP, INP and CLS to the console. In a real app, you would send these numbers to your server.</li>
+<li><span class="level medium">Medium</span> Change <code>measure.ts</code> to measure each page three times and print the median, which is more reliable than one run.</li>
+<li><span class="level hard">Challenge</span> Add a check to <code>measure.ts</code> that sets a failing exit code when a page’s LCP is over 2.5 s or its CLS is over 0.1, and add it to the <code>check</code> script after the build.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 14</p>
+<p>A fast, accessible, tested app must also be safe. In the next chapter you will meet the attacks that target frontends, such as XSS, CSRF and clickjacking, and the defences that stop them, from escaping and Content Security Policy to safe authentication.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2923,6 +3323,16 @@ Running 4 tests using 2 workers
 <li>Pass <code>signIn={() =&gt; new Promise(() =&gt; {})}</code>, which never resolves; type an email and click the button; then <code>expect(screen.getByRole("button", { name: "Signing in…" })).toBeDisabled()</code>. The test finishes while the request is still “running”.</li>
 <li>One test per action: <code>added</code> appends a task with <code>done: false</code>; <code>toggled</code> flips one task and leaves the others alone; <code>cleared</code> removes only finished tasks. For immutability, freeze the input with <code>Object.freeze</code> and deep-freeze its tasks, then call the reducer: any attempt to change them throws in strict mode, and <code>expect(next).not.toBe(before)</code> checks a new array came back.</li>
 <li>Serve the checkout page as in this chapter; then: select the city, fill the street and phone, click “Next”, choose card, click “Next”, check the summary text with <code>toContainText</code>, click “Place order”, and expect the “Order placed!” status. Run with <code>--trace on</code> and open the trace from <code>test-results</code> with <code>npx playwright show-trace</code>.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 13</h2>
+<ol class="exercises">
+<li>Without <code>defer</code>, LCP grows by about the time the script takes to run on the slowed CPU, because nothing is drawn until it finishes. Without <code>width</code> and <code>height</code>, CLS can grow if the picture’s size becomes known only after the first paint; with this small, quick image it may stay near zero, which is exactly why dimensions are a rule, not a case-by-case decision.</li>
+<li>Typical suggestions: “Reduce unused JavaScript”, “Serve images in next-gen formats”, “Eliminate render-blocking resources”, “Avoid an excessive DOM size” and “Reduce the impact of third-party code”. Each one maps to a row of the table in section 13.3.</li>
+<li><code>import { onCLS, onINP, onLCP } from "web-vitals"; onLCP(console.log); onINP(console.log); onCLS(console.log);</code>. In production, replace <code>console.log</code> with a function that sends the metric with <code>navigator.sendBeacon("/vitals", JSON.stringify(metric))</code>, which survives the page being closed.</li>
+<li>Collect three results in an array, sort them by LCP, and take the middle one: <code>const runs = []; for (let i = 0; i &lt; 3; i++) runs.push(await measure(page)); runs.sort((a, b) =&gt; a.lcp - b.lcp); const median = runs[1]!;</code>.</li>
+<li>After printing each page, <code>if (lcp &gt; 2500 || cls &gt; 0.1) failed = true;</code>, and at the end <code>process.exitCode = failed ? 1 : 0;</code>. With the pages of this chapter, <code>slow.html</code> fails on LCP and <code>fast.html</code> passes.</li>
 </ol>
 
 </section>

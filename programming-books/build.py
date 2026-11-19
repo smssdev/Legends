@@ -164,7 +164,7 @@ def fill_code(chapter, lang):
         if 'data-show="body"' in attrs:
             # Long pages: show only the body; the head is the same skeleton as before.
             lines = src.split("\n")
-            a = next(i for i, l in enumerate(lines) if l.strip() == "<body>")
+            a = next(i for i, l in enumerate(lines) if l.strip().startswith("<body"))
             b = next(i for i, l in enumerate(lines) if l.strip() == "</body>")
             src = "\n".join(["  ..."] + lines[a:b + 1] + ["  ..."])
         cls = "code md" if f.endswith(".md") else "code"

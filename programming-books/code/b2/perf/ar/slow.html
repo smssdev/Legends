@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>متجر بِت</title>
+    <script src="heavy.js"></script>
+    <style>
+      body { font-family: system-ui, "Segoe UI", Tahoma, sans-serif; margin: 0; background: #f5f5fb; color: #1e1b2e; }
+      header { background: white; padding: 10px 16px; font-weight: 800; color: #4338ca; }
+      main { padding: 16px; max-width: 640px; margin: auto; }
+      img { width: 100%; height: auto; border-radius: 12px; display: block; }
+      h1 { color: #4338ca; }
+      .banner { background: #fef3c7; color: #92400e; padding: 24px 16px; min-height: 140px; font-weight: 700; font-size: 1.2rem; }
+      button { font: inherit; border: 0; border-radius: 999px; padding: 8px 18px; background: #4338ca; color: white; }
+    </style>
+  </head>
+  <body>
+    <header>متجر بِت</header>
+    <main>
+      <img src="hero-big.png">
+      <h1>عاد كوب بِت</h1>
+      <p>كبير بما يكفي لليالي البرمجة الطويلة، والآن بثلاثة ألوان. اطلب قبل الجمعة لتحصل على توصيل مجاني.</p>
+      <button>اطلب الآن</button>
+    </main>
+    <script>
+      // A banner added after load pushes everything down
+      setTimeout(() => document.body.insertAdjacentHTML("afterbegin", '<div class="banner">توصيل مجاني هذا الأسبوع!</div>'), 600);
+    </script>
+  </body>
+</html>

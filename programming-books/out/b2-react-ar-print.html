@@ -29,6 +29,8 @@
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "الفصل 11: الاختبار: الوحدات والمكونات ومن الطرف للطرف"; } }
 @page ch11:first { @top-center { content: none; } }
+@page ch12 { @top-center { content: "الفصل 12: الأداء وCore Web Vitals"; } }
+@page ch12:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -5189,6 +5191,456 @@ Running 4 tests using 2 workers
 <p>صار تطبيقك يعمل، وسهل الوصول، ومختبراً. والسؤال التالي الذي يسأله المستخدمون دون كلمات: هل هو سريع؟ يقيس الفصل التالي السرعة كما تقيسها Google، بـ Core Web Vitals، ويُريك كيف تجعل الصفحات تُحمَّل وتستجيب بسرعة.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch12" data-chapter="12" data-code="b2/perf/ar">
+<div class="opener"><span class="opener-num">12</span><p class="chapter-kicker">الفصل 12</p><h1>الأداء وCore Web Vitals</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تصف السرعة كما يشعر بها المستخدمون، بمؤشرات Core Web Vitals الثلاثة</li>
+<li>تقيس الصفحة في المختبر، بشبكة ومعالج مبطّأين، وتعرف لماذا بيانات الميدان أهم</li>
+<li>تجعل المحتوى الأساسي يظهر أبكر: الصور والخطوط والسكربتات وتقسيم الكود</li>
+<li>تمنع التخطيط من القفز</li>
+<li>تبقي الصفحة مستجيبة وهي تؤدي عملاً ثقيلاً</li>
+<li>تحمي الأداء بميزانيات تُفشل البناء</li>
+</ul>
+</div>
+
+<p class="lead">حاسوبك سريع وشبكتك جيدة، فيبدو موقعك سريعاً لك. أما معظم مستخدميك فمعهم جوال متوسط، وشبكة جوال مزدحمة، وعشرون تبويباً آخر مفتوحاً. وكل ثانية تحميل إضافية تخسر زواراً، ومحركات البحث ترتّب الصفحات البطيئة أدنى. والأداء ليس شيئاً يُصلح في النهاية، بل ميزة تُصمَّم وتُقاس وتُحمى، مثل سهولة الوصول. ويُريك هذا الفصل كيف تقيسه بصدق، وكيف تصلح الأسباب الأهم.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أشهر أخطاء الأداء التخمين. فالمطورون يحسّنون الكود الذي يجدونه ممتعاً، لا الكود البطيء. قِس أولاً، وأصلح أكبر مشكلة، ثم قِس من جديد.</p></div></div>
+
+<h2><span class="sec">12.1</span> <span>Core Web Vitals</span></h2>
+
+<p>«سريع» يعني أشياء مختلفة في لحظات مختلفة، فعرّفت Google ثلاثة أرقام، <dfn>مؤشرات الويب الأساسية</dfn> (Core Web Vitals)، تصف ما يعيشه المستخدمون فعلاً:</p>
+
+<table>
+<thead><tr><th>المؤشر</th><th>السؤال الذي يجيب عنه</th><th>جيد</th><th>ضعيف</th></tr></thead>
+<tbody>
+<tr><td><dfn>LCP</dfn>، أكبر رسم للمحتوى</td><td>متى يظهر المحتوى الأساسي؟</td><td>≤ 2.5 ثانية</td><td>&gt; 4 ثوانٍ</td></tr>
+<tr><td><dfn>INP</dfn>، من التفاعل إلى الرسم التالي</td><td>كم تتفاعل الصفحة بسرعة مع اللمسات والمفاتيح؟</td><td>≤ 200 ملي ثانية</td><td>&gt; 500 ملي ثانية</td></tr>
+<tr><td><dfn>CLS</dfn>، الإزاحة التراكمية للتخطيط</td><td>هل يقفز التخطيط وأنا أقرأ؟</td><td>≤ 0.1</td><td>&gt; 0.25</td></tr>
+</tbody>
+</table>
+
+<p>وتنجح الصفحة حين تكون 75% من الزيارات الحقيقية «جيدة» في الثلاثة. والحدود تخص البشر: فدون عُشر ثانية تقريباً يبدو التفاعل فورياً، وبعد ثوانٍ قليلة من شاشة فارغة يبدأ الناس بالمغادرة.</p>
+
+<h2><span class="sec">12.2</span> <span>القياس كالمحترفين</span></h2>
+
+<p>للقياس نوعان. <dfn>بيانات المختبر</dfn> تأتي من اختبار تشغّله بنفسك في ظروف ثابتة: مثالية لإيجاد المشكلات وإصلاحها. و<dfn>بيانات الميدان</dfn>، أو مراقبة المستخدمين الحقيقيين، تأتي من زوار حقيقيين على أجهزتهم الحقيقية، وتُجمع في الصفحة بمكتبة <code>web-vitals</code> الصغيرة، أو تُرى في تقرير Chrome UX من Google. فبيانات الميدان هي الحقيقة، وبيانات المختبر تفسرها.</p>
+
+<p>والمتصفح نفسه يبلّغ عن المؤشرات عبر <code>PerformanceObserver</code>. وهذا السكربت يفتح صفحة في Chromium، ويبطّئ الشبكة والمعالج ليقلد جوالاً متوسطاً، ويقرأ LCP وCLS:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">measure-lib.ts</div><pre class="code"><span class="k">import</span> { createReadStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
+<span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
+<span class="k">import</span> { extname, join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
+
+<span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
+<span class="k">type</span> CDP = { send(method: string, params?: object): Promise&lt;unknown&gt; };
+<span class="k">type</span> Page = {
+  context(): { newCDPSession(page: Page): Promise&lt;CDP&gt; };
+  goto(url: string): Promise&lt;unknown&gt;;
+  waitForTimeout(ms: number): Promise&lt;void&gt;;
+  evaluate&lt;T&gt;(fn: () =&gt; T | Promise&lt;T&gt;): Promise&lt;T&gt;;
+};
+<span class="k">type</span> Browser = { newPage(): Promise&lt;Page&gt;; close(): Promise&lt;void&gt; };
+<span class="k">const</span> { chromium } = require(<span class="s">&quot;playwright&quot;</span>) as { chromium: { launch(): Promise&lt;Browser&gt; } };
+
+<span class="k">export</span> <span class="k">type</span> Vitals = { lcp: number; cls: number };
+
+<span class="c">// Throttling only works over HTTP, so the pages are served like a real site</span>
+<span class="k">function</span> serve(): Promise&lt;{ url: string; close: () =&gt; void }&gt; {
+  <span class="k">const</span> types: Record&lt;string, string&gt; = { <span class="s">&quot;.html&quot;</span>: <span class="s">&quot;text/html&quot;</span>, <span class="s">&quot;.js&quot;</span>: <span class="s">&quot;text/javascript&quot;</span>, <span class="s">&quot;.png&quot;</span>: <span class="s">&quot;image/png&quot;</span> };
+  <span class="k">const</span> server = createServer((req, res) =&gt; {
+    <span class="k">const</span> path = join(process.cwd(), <span class="k">new</span> URL(req.url ?? <span class="s">&quot;/&quot;</span>, <span class="s">&quot;http://x&quot;</span>).pathname);
+    res.setHeader(<span class="s">&quot;Content-Type&quot;</span>, types[extname(path)] ?? <span class="s">&quot;application/octet-stream&quot;</span>);
+    createReadStream(path).on(<span class="s">&quot;error&quot;</span>, () =&gt; res.writeHead(<span class="n">404</span>).end()).pipe(res);
+  });
+  <span class="k">return</span> <span class="k">new</span> Promise((ready) =&gt;
+    server.listen(<span class="n">0</span>, () =&gt; ready({ url: <span class="s">`http://localhost:${(server.address() as AddressInfo).port}/`</span>, close: () =&gt; server.close() })),
+  );
+}
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> measure(page: string): Promise&lt;Vitals&gt; {
+  <span class="k">const</span> site = <span class="k">await</span> serve();
+  <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
+  <span class="k">const</span> tab = <span class="k">await</span> browser.newPage();
+  <span class="c">// أبطئ الشبكة والمعالج، كجوال متوسط على اتصال 4G</span>
+  <span class="k">const</span> cdp = <span class="k">await</span> tab.context().newCDPSession(tab);
+  <span class="k">await</span> cdp.send(<span class="s">&quot;Network.enable&quot;</span>);
+  <span class="k">await</span> cdp.send(<span class="s">&quot;Network.emulateNetworkConditions&quot;</span>, {
+    offline: <span class="k">false</span>, latency: <span class="n">150</span>, downloadThroughput: (<span class="n">1.6</span> * <span class="n">1024</span> * <span class="n">1024</span>) / <span class="n">8</span>, uploadThroughput: (<span class="n">750</span> * <span class="n">1024</span>) / <span class="n">8</span>,
+  });
+  <span class="k">await</span> cdp.send(<span class="s">&quot;Emulation.setCPUThrottlingRate&quot;</span>, { rate: <span class="n">4</span> });
+
+  <span class="k">await</span> tab.goto(site.url + page); <span class="c">// waits for the load event, pictures included</span>
+  <span class="k">await</span> tab.waitForTimeout(<span class="n">1000</span>);
+  <span class="k">const</span> vitals = <span class="k">await</span> tab.evaluate(
+    () =&gt;
+      <span class="k">new</span> Promise&lt;{ lcp: number; cls: number }&gt;((done) =&gt; {
+        <span class="k">let</span> lcp = <span class="n">0</span>;
+        <span class="k">let</span> cls = <span class="n">0</span>;
+        <span class="k">new</span> PerformanceObserver((list) =&gt; {
+          <span class="k">for</span> (<span class="k">const</span> e <span class="k">of</span> list.getEntries()) lcp = e.startTime;
+        }).observe({ <span class="k">type</span>: <span class="s">&quot;largest-contentful-paint&quot;</span>, buffered: <span class="k">true</span> });
+        <span class="k">new</span> PerformanceObserver((list) =&gt; {
+          <span class="k">for</span> (<span class="k">const</span> e <span class="k">of</span> list.getEntries() as (PerformanceEntry &amp; { value: number; hadRecentInput: boolean })[]) {
+            <span class="k">if</span> (!e.hadRecentInput) cls += e.value;
+          }
+        }).observe({ <span class="k">type</span>: <span class="s">&quot;layout-shift&quot;</span>, buffered: <span class="k">true</span> });
+        setTimeout(() =&gt; done({ lcp, cls }), <span class="n">100</span>);
+      }),
+  );
+  <span class="k">await</span> browser.close();
+  site.close();
+  <span class="k">return</span> vitals;
+}
+
+<span class="k">export</span> <span class="k">function</span> rate(value: number, good: number, poor: number): string {
+  <span class="k">return</span> value &lt;= good ? <span class="s">&quot;جيد&quot;</span> : value &lt;= poor ? <span class="s">&quot;يحتاج تحسيناً&quot;</span> : <span class="s">&quot;ضعيف&quot;</span>;
+}</pre></div>
+
+<p>وهاتان نسختان من الصفحة نفسها. في الأولى أربع مشكلات شائعة، والثانية تصلحها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">slow.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;ar&quot;</span> <span class="n">dir</span>=<span class="s">&quot;rtl&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>متجر بِت<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;heavy.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, <span class="s">&quot;Segoe UI&quot;</span>, Tahoma, sans-serif; margin: 0; background: #f5f5fb; color: #1e1b2e; }
+      header { background: white; padding: 10px 16px; font-weight: 800; color: #2b2b2b; }
+      main { padding: 16px; max-width: 640px; margin: auto; }
+      img { width: 100%; height: auto; border-radius: 12px; display: block; }
+      h1 { color: #2b2b2b; }
+      .banner { background: #fef3c7; color: #92400e; padding: 24px 16px; min-height: 140px; font-weight: 700; font-size: 1.2rem; }
+      button { font: inherit; border: 0; border-radius: 999px; padding: 8px 18px; background: #2b2b2b; color: white; }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>متجر بِت<span class="k">&lt;/header</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;hero-big.png&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>عاد كوب بِت<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>كبير بما يكفي لليالي البرمجة الطويلة، والآن بثلاثة ألوان. اطلب قبل الجمعة لتحصل على توصيل مجاني.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span><span class="k">&gt;</span>اطلب الآن<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span><span class="k">&gt;</span>
+      // A banner added after load pushes everything down
+      setTimeout(() =<span class="k">&gt;</span> document.body.insertAdjacentHTML(<span class="s">&quot;afterbegin&quot;</span>, &#x27;<span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;banner&quot;</span><span class="k">&gt;</span>توصيل مجاني هذا الأسبوع!<span class="k">&lt;/div</span><span class="k">&gt;</span>&#x27;), 600);
+    <span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">fast.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;ar&quot;</span> <span class="n">dir</span>=<span class="s">&quot;rtl&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;meta</span> <span class="n">name</span>=<span class="s">&quot;viewport&quot;</span> <span class="n">content</span>=<span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;title</span><span class="k">&gt;</span>متجر بِت<span class="k">&lt;/title</span><span class="k">&gt;</span>
+    <span class="k">&lt;link</span> <span class="n">rel</span>=<span class="s">&quot;preload&quot;</span> <span class="n">as</span>=<span class="s">&quot;image&quot;</span> <span class="n">href</span>=<span class="s">&quot;hero-small.png&quot;</span> <span class="n">fetchpriority</span>=<span class="s">&quot;high&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;heavy.js&quot;</span> defer<span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+    <span class="k">&lt;style</span><span class="k">&gt;</span>
+      body { font-family: system-ui, <span class="s">&quot;Segoe UI&quot;</span>, Tahoma, sans-serif; margin: 0; background: #f5f5fb; color: #1e1b2e; }
+      header { background: white; padding: 10px 16px; font-weight: 800; color: #2b2b2b; }
+      main { padding: 16px; max-width: 640px; margin: auto; }
+      img { width: 100%; height: auto; border-radius: 12px; display: block; }
+      h1 { color: #2b2b2b; }
+      .banner { background: #fef3c7; color: #92400e; padding: 24px 16px; min-height: 140px; font-weight: 700; font-size: 1.2rem; }
+      button { font: inherit; border: 0; border-radius: 999px; padding: 8px 18px; background: #2b2b2b; color: white; }
+    <span class="k">&lt;/style</span><span class="k">&gt;</span>
+  <span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;banner&quot;</span><span class="k">&gt;</span>توصيل مجاني هذا الأسبوع!<span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="k">&lt;header</span><span class="k">&gt;</span>متجر بِت<span class="k">&lt;/header</span><span class="k">&gt;</span>
+    <span class="k">&lt;main</span><span class="k">&gt;</span>
+      <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;hero-small.png&quot;</span> <span class="n">width</span>=<span class="s">&quot;640&quot;</span> <span class="n">height</span>=<span class="s">&quot;360&quot;</span> <span class="n">alt</span>=<span class="s">&quot;كوب بِت بالبنفسجي والأبيض والوردي&quot;</span> <span class="n">fetchpriority</span>=<span class="s">&quot;high&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;h1</span><span class="k">&gt;</span>عاد كوب بِت<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+      <span class="k">&lt;p</span><span class="k">&gt;</span>كبير بما يكفي لليالي البرمجة الطويلة، والآن بثلاثة ألوان. اطلب قبل الجمعة لتحصل على توصيل مجاني.<span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span><span class="k">&gt;</span>اطلب الآن<span class="k">&lt;/button</span><span class="k">&gt;</span>
+    <span class="k">&lt;/main</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">measure.ts</div><pre class="code"><span class="k">import</span> { measure, rate } <span class="k">from</span> <span class="s">&quot;./measure-lib&quot;</span>;
+
+<span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> [<span class="s">&quot;slow.html&quot;</span>, <span class="s">&quot;fast.html&quot;</span>]) {
+  <span class="k">const</span> { lcp, cls } = <span class="k">await</span> measure(page);
+  <span class="c">// Rounded, because each run differs by a few milliseconds</span>
+  <span class="k">const</span> seconds = (Math.round(lcp / <span class="n">100</span>) / <span class="n">10</span>).toFixed(<span class="n">1</span>);
+  console.log(<span class="s">`${page.padEnd(10)} LCP ${seconds} s (${rate(lcp, 2500, 4000)})   CLS ${cls.toFixed(2)} (${rate(cls, 0.1, 0.25)})`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>slow.html  LCP 4.7 s (ضعيف)   CLS 0.08 (جيد)
+fast.html  LCP 0.7 s (جيد)   CLS 0.00 (جيد)</pre></div>
+
+<p>المحتوى نفسه يظهر أبكر بأربع ثوانٍ. وهذا ما تغيّر، بترتيب الأثر:</p>
+<ol>
+<li><strong>الصورة أصغر بكثير</strong> (هنا 3 كيلوبايت بدل 900): بالحجم المناسب لمكانها، وبصيغة ومحتوى ينضغطان جيداً. والصورة الرئيسية عادة عنصر LCP، وعلى شبكة بطيئة يقرر حجمها كل شيء.</li>
+<li><strong>يسمع المتصفح عن الصورة مبكراً</strong>: <code>&lt;link rel="preload"&gt;</code> و<code>fetchpriority="high"</code> تبدآن التنزيل قبل أن يصل المتصفح إلى وسم <code>&lt;img&gt;</code> أصلاً.</li>
+<li><strong>لم يعد السكربت يعطّل الصفحة</strong>: فـ <code>&lt;script&gt;</code> العادي في الترويسة يوقف كل رسم حتى يُنزَّل ويعمل. و<code>defer</code> تدع الصفحة تظهر أولاً وتشغّل السكربت بعدها.</li>
+<li><strong>المساحة محجوزة</strong>: الشريط جزء من الصفحة من البداية، وللصورة <code>width</code> و<code>height</code>، فيعرف المتصفح كم يترك من المكان قبل وصول الصورة.</li>
+</ol>
+
+<p>وانظر إلى CLS أيضاً. فالصفحة البطيئة تسجل 0.08، وما زالت «جيدة»، لكن هذا شريط متأخر واحد استهلك معظم ميزانية 0.1. فأضف إعلاناً يُحمَّل متأخراً، أو صورة بلا أبعاد، فتفشل الصفحة. فإزاحات التخطيط تتراكم.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: أدوات المتصفح نفسه</p><p>في أدوات المطور في Chrome لوحة <strong>Performance</strong> تسجل بالضبط ما فعلته الصفحة، إطاراً إطاراً، ولوحة <strong>Lighthouse</strong> تشغّل فحصاً مختبرياً كاملاً مع نصائح. وكلتاهما تبطّئ الشبكة والمعالج، تماماً كالسكربت أعلاه.</p></aside>
+
+<h2><span class="sec">12.3</span> <span>حمّل أقل، وأبكر</span></h2>
+
+<p>معظم الصفحات البطيئة بطيئة لأنها ترسل الكثير، بالترتيب الخطأ. والإصلاحات معروفة:</p>
+
+<table>
+<thead><tr><th>المورد</th><th>المشكلة</th><th>الإصلاح</th></tr></thead>
+<tbody>
+<tr><td>الصور</td><td>ملفات ضخمة، وحجم واحد لكل الشاشات</td><td>صيغ حديثة (WebP وAVIF)، و<code>srcset</code> و<code>sizes</code>، و<code>loading="lazy"</code> تحت الجزء الظاهر، و<code>width</code> و<code>height</code> دائماً</td></tr>
+<tr><td>JavaScript</td><td>حزمة واحدة ضخمة، وسكربتات معطِّلة</td><td>تقسيم الكود حسب المسارات (الفصل 3)، و<code>defer</code>، وحذف المكتبات غير المستخدمة، وتحميل عناصر الطرف الثالث متأخراً</td></tr>
+<tr><td>الخطوط</td><td>نص خفي أثناء تحميل الخط</td><td>أوزان قليلة، و<code>font-display: swap</code>، وملفات مستضافة عندك، وتحميل الرئيسي مسبقاً</td></tr>
+<tr><td>كل شيء</td><td>يُنزَّل من جديد في كل زيارة</td><td>أسماء ملفات ببصمات مع ذاكرة مؤقتة طويلة (الفصل 3)، وشبكة توزيع قريبة من المستخدمين</td></tr>
+</tbody>
+</table>
+
+<p>ويُري المشروع 12.1 <code>srcset</code> وهي تعمل: يختار المتصفح أصغر صورة واضحة بما يكفي لكل شاشة، ولا ينزّل الصورة الكسولة أصلاً حتى يقترب المستخدم منها بالتمرير.</p>
+
+<h2><span class="sec">12.4</span> <span>البقاء مستجيباً</span></h2>
+
+<p>يقيس INP الزمن من اللمسة أو ضغطة المفتاح حتى تعرض الشاشة النتيجة. والعدو هو <dfn>المهمة الطويلة</dfn> (long task): أي قطعة JavaScript تُبقي الخيط الرئيسي مشغولاً أكثر من 50 ملي ثانية. فأثناء عملها لا يستطيع المتصفح التفاعل مع أي شيء (حلقة الأحداث في الفصل 1). والأسباب المعتادة رسم قوائم ضخمة، والحسابات الثقيلة في معالجات الأحداث، وسكربتات الطرف الثالث.</p>
+
+
+<p>تقدم React أدوات تبقي الكتابة عاجلة بينما تنتظر التحديثات الكبيرة. فـ <code>useDeferredValue</code> تعطيك نسخة من قيمة «تتأخر» في اللحظات المزدحمة: يتحدث الحقل فوراً، وتعيد القائمة المكلفة رسمها بالقيمة المؤجلة حين يجد المتصفح وقتاً. و<code>memo</code> تتخطى إعادة رسم مكوّن لم تتغير خصائصه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">SlowList.tsx</div><pre class="code">import { memo } from &quot;react&quot;;
+
+// A deliberately slow row: in a real app, a rich card with images, prices and badges
+function SlowRow({ name }: { name: string }) {
+  const start = performance.now();
+  while (performance.now() - start &lt; 0.2) {
+    // 0.2 ms of work per row
+  }
+  return &lt;li&gt;{name}&lt;/li&gt;;
+}
+
+// memo: re-render the list only when its props change
+export const SlowList = memo(function SlowList({ items }: { items: string[] }) {
+  return (
+    &lt;ul&gt;
+      {items.slice(0, 2000).map((name) =&gt; (
+        &lt;SlowRow key={name} name={name} /&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">transition.tsx</div><pre class="code">import { useDeferredValue, useMemo, useState } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+import { SlowList } from &quot;./SlowList&quot;;
+
+const ALL = Array.from({ length: 5000 }, (_, i) =&gt; `منتج بِت ${i + 1}`);
+
+function Filter() {
+  const [text, setText] = useState(&quot;&quot;);
+  // أبقِ الكتابة عاجلة، وتحديث القائمة الكبيرة يستطيع الانتظار
+  const deferred = useDeferredValue(text);
+  const items = useMemo(() =&gt; ALL.filter((name) =&gt; name.includes(deferred)), [deferred]);
+  const stale = text !== deferred;
+
+  return (
+    &lt;div className=&quot;card&quot;&gt;
+      &lt;label htmlFor=&quot;q&quot;&gt;صفِّ المنتجات&lt;/label&gt;
+      &lt;input id=&quot;q&quot; value={text} onChange={(e) =&gt; setText(e.target.value)} /&gt;
+      &lt;p className=&quot;muted&quot; aria-live=&quot;polite&quot;&gt;
+        {stale ? &quot;جارٍ التحديث…&quot; : `يظهر ${items.length} من ${ALL.length}`}
+      &lt;/p&gt;
+      &lt;div className={stale ? &quot;stale&quot; : undefined}&gt;
+        &lt;SlowList items={items} /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Filter /&gt;);</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-ar-react-transition.html-560-39ee31.png" alt=""><figcaption><b>شكل 12.1:</b> تصفية 5000 سطر بطيء. لا يتجمد حقل النص أبداً، وبينما تلحق القائمة يبهت لونها وتقول «جارٍ التحديث…».</figcaption></figure>
+
+<p>وتقنيتان أخريان تحلان معظم ما يبقى من مشكلات. <dfn>العرض الافتراضي</dfn> (virtualisation) يرسم الأسطر الظاهرة فقط، فتكلّف قائمة من 10000 عنصر ما تكلّفه قائمة من 20. والعمل الثقيل الذي لا يلمس الصفحة، كتحليل ملف كبير، يمكن نقله إلى <dfn>Web Worker</dfn>، خيط ثانٍ لا يصل إلى DOM.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي مؤشر يسوء حين يدفع شريط ملفات تعريف الارتباط الصفحة إلى الأسفل بعد ظهورها؟</li><li>لماذا تجعل <code>&lt;script src="widget.js"&gt;</code> في الترويسة LCP أسوأ؟</li><li>أيهما أهم حين تختلف بيانات المختبر والميدان؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">12.5</span> <span>الميزانيات: أبقِها سريعة</span></h2>
+
+<p>نادراً ما تصير الصفحات بطيئة بخطوة كبيرة واحدة. بل تصير بطيئة مكتبة صغيرة بعد أخرى، وصورة كبيرة بعد أخرى، وخطاً إضافياً بعد آخر، وكل تغيير أصغر من أن يلاحظه أحد. و<dfn>ميزانية الأداء</dfn> (performance budget) حدّ، مثل «60 كيلوبايت من JavaScript المضغوطة» أو «LCP أقل من 2.5 ثانية في المختبر»، يفحصه البناء آلياً، تماماً كاختبار فاشل. ويبني المشروع 12.3 واحدة.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: اختبر على جوال حقيقي رخيص</p><p>احتفظ على مكتبك بجوال أندرويد متوسط عمره ثلاث سنوات، واستخدمه على بيانات الجوال. فالإبطاء في أدوات المطور يساعد، لكن لا شيء يُظهر الحقيقة مثل استخدام تطبيقك على الجهاز الذي يملكه معظم مستخدميك فعلاً.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>الاختبار على حاسوب وشبكة سريعين فقط</td><td>تمر الصفحات البطيئة دون أن تُلاحظ</td><td>أبطئ، واختبر على جوال متوسط حقيقي</td></tr>
+<tr><td>صور بلا <code>width</code> و<code>height</code></td><td>يقفز التخطيط حين تُحمَّل (CLS)</td><td>اضبط الاثنين دائماً، واستخدم <code>height: auto</code> في CSS</td></tr>
+<tr><td>التحميل الكسول للصورة الرئيسية</td><td>يظهر المحتوى الأساسي متأخراً (LCP)</td><td><code>fetchpriority="high"</code> للرئيسية، والكسول تحت الجزء الظاهر فقط</td></tr>
+<tr><td>سكربتات معطِّلة في الترويسة</td><td>لا يُرسم شيء حتى تنتهي</td><td><code>defer</code>، أو حمّلها لاحقاً</td></tr>
+<tr><td>إدراج أشرطة فوق محتوى موجود</td><td>ينزاح كل شيء</td><td>احجز المساحة من البداية</td></tr>
+<tr><td>رسم آلاف الأسطر</td><td>كتابة وتمرير بطيئان (INP)</td><td>العرض الافتراضي، والتأجيل، والتذكّر (memo)</td></tr>
+<tr><td>التحسين دون قياس</td><td>جهد على الشيء الخطأ</td><td>قِس، وأصلح أكبر سبب، وقِس من جديد</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>Core Web Vitals</strong> تصف التجربة: <strong>LCP</strong> (المحتوى الأساسي، ≤ 2.5 ثانية)، و<strong>INP</strong> (التفاعل، ≤ 200 ملي ثانية)، و<strong>CLS</strong> (الثبات، ≤ 0.1).</li>
+<li><strong>بيانات المختبر</strong> تجد المشكلات وتفسرها، و<strong>بيانات الميدان</strong> من المستخدمين الحقيقيين هي الحقيقة.</li>
+<li>حمّل أقل وأبكر: صور بالحجم المناسب وصيغ حديثة مع <code>srcset</code>، و<code>preload</code> و<code>fetchpriority</code> للرئيسية، و<code>defer</code> للسكربتات، وتقسيم الكود، وذاكرة مؤقتة طويلة.</li>
+<li>امنع إزاحات التخطيط بحجز المساحة للصور والأشرطة والإعلانات.</li>
+<li>تجنّب المهام الطويلة: أجّل التحديثات المكلفة، وتذكّر النتائج، واعرض القوائم الطويلة افتراضياً، وانقل العمل الثقيل إلى Workers.</li>
+<li>احمِ السرعة بـ<strong>ميزانيات أداء</strong> يفحصها البناء.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. CLS، الإزاحة التراكمية للتخطيط. 2. السكربت العادي في الترويسة يعطّل الرسم: ينتظر المتصفح تنزيله وتشغيله قبل أن يعرض أي شيء. 3. بيانات الميدان، لأنها تقيس مستخدمين حقيقيين على أجهزة حقيقية، وبيانات المختبر أداة لفهم ما يُظهره الميدان وإصلاحه.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قِس قبل كل تغيير في هذه المشاريع وبعده، واكتب الأرقام. فتغيير الأداء الذي لا تستطيع قياسه تخمين.</p>
+
+<div class="project">
+<p class="project-label">مشروع 12.1 · سهل</p>
+<h3>صور تناسب كل شاشة</h3>
+<p class="project-goal">أعطِ الصورة الرئيسية حجمين ودع المتصفح يختار، وامنع المتصفح من تنزيل صورة لم يصل إليها أحد بالتمرير بعد. ثم أثبت الأمرين بسكربت.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>srcset</code> بواصفات العرض، و<code>sizes</code>، و<code>loading="lazy"</code>، وفحص التنزيلات بواجهة Resource Timing.</p>
+<ol class="steps">
+<li>اسرد الملفين في <code>srcset</code> بعرضيهما الحقيقيين: <code>hero-small.png 640w, hero-big.png 1000w</code>.</li>
+<li>أخبر المتصفح بعرض الصورة المعروضة بـ <code>sizes</code>: الشاشة كلها على الجوال، و640 بكسل على الشاشات الأعرض.</li>
+<li>أبقِ <code>width</code> و<code>height</code> و<code>alt</code> على الصورة، كالعادة.</li>
+<li>أضف صورة ثانية بعيدة في أسفل الصفحة بـ <code>loading="lazy"</code>.</li>
+<li>اكتب سكربت Playwright يفتح الصفحة كجوال، وكجوال عالي الكثافة، وكحاسوب، ويطبع أي ملف استُخدم للصورة الرئيسية، وهل نُزّلت الصورة السفلى.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> انظر إلى السطر الثاني من النتيجة. فالجوال ذو الشاشة عالية الكثافة يحتاج ضعف البكسلات ليبدو واضحاً، فيختار المتصفح الملف الأكبر عن حق. أنت تصف الحقائق، والمتصفح يختار.</p>
+<div class="listing" dir="ltr"><div class="listing-title">images.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span> <span class="n">style</span>=<span class="s">&quot;margin: 0&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;img</span>
+      <span class="n">src</span>=<span class="s">&quot;../hero-small.png&quot;</span>
+      <span class="n">srcset</span>=<span class="s">&quot;../hero-small.png 640w, ../hero-big.png 1000w&quot;</span>
+      <span class="n">sizes</span>=<span class="s">&quot;(min-width: 700px) 640px, 100vw&quot;</span>
+      <span class="n">width</span>=<span class="s">&quot;640&quot;</span> <span class="n">height</span>=<span class="s">&quot;360&quot;</span> <span class="n">alt</span>=<span class="s">&quot;كوب بِت بالبنفسجي والأبيض والوردي&quot;</span>
+      <span class="n">style</span>=<span class="s">&quot;width: 100%; max-width: 640px; height: auto&quot;</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">style</span>=<span class="s">&quot;height: 1500px&quot;</span><span class="k">&gt;</span><span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="k">&lt;img</span> <span class="n">src</span>=<span class="s">&quot;../below.png&quot;</span> <span class="n">loading</span>=<span class="s">&quot;lazy&quot;</span> <span class="n">width</span>=<span class="s">&quot;1000&quot;</span> <span class="n">height</span>=<span class="s">&quot;560&quot;</span> <span class="n">alt</span>=<span class="s">&quot;&quot;</span> <span class="n">style</span>=<span class="s">&quot;width: 100%; height: auto&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>phone     الصورة الرئيسية: hero-small.png   هل حُمّلت الصورة البعيدة؟ لا (كسولة)
+phone 2x  الصورة الرئيسية: hero-big.png   هل حُمّلت الصورة البعيدة؟ لا (كسولة)
+desktop   الصورة الرئيسية: hero-small.png   هل حُمّلت الصورة البعيدة؟ لا (كسولة)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 12.2 · متوسط</p>
+<h3>تصفية لا تتجمد أبداً</h3>
+<p class="project-goal">صفِّ آلاف الأسطر البطيئة بينما يبقى حقل النص مستجيباً تماماً، واعرض أن القائمة تلحق به.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> إيجاد مهمة طويلة في لوحة Performance، وتأجيل تحديث، وتذكّر مكوّن، وعرض حالة الانتظار.</p>
+<ol class="steps">
+<li>ابنِ النسخة البطيئة أولاً: صفِّ وارسم مباشرة من قيمة الحقل. واكتب بسرعة واشعر بتأخر الحقل.</li>
+<li>سجّلها في لوحة Performance في أدوات المطور مع إبطاء المعالج 4 مرات. وجِد المهام الطويلة بعد كل ضغطة مفتاح.</li>
+
+<li>استخدم <code>useDeferredValue(text)</code> للقائمة، وغلّف القائمة بـ <code>memo</code> فلا يعاد رسمها إلا حين تتغير عناصرها.</li>
+<li>ما دامت القائمة متأخرة عن الحقل، أبهت لونها وقل «جارٍ التحديث…» في منطقة حية مهذبة.</li>
+<li>سجّل من جديد وقارن: يجب ألا تنتظر الكتابة القائمة بعد الآن.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التأجيل لا يصغّر العمل، بل يغيّر أولويته. فإن بقيت القائمة بطيئة حين تُرسم أخيراً، فالخطوة التالية العرض الافتراضي: ارسم العشرين سطراً التي تتسع لها الشاشة فقط.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-ar-react-transition.html-560-39ee31.png" alt=""><figcaption><b>مشروع 12.2:</b> القائمة المصفاة بعد أن لحقت.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 12.3 · تحدٍّ</p>
+<h3>ميزانية حزمة تُفشل البناء</h3>
+<p class="project-goal">قِس كم من JavaScript وCSS المضغوطة يرسل التطبيق إلى المستخدمين، وقارنها بميزانية، وأوقف البناء حين تتجاوزها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المرور على مجلد تعاودياً، والضغط بـ <code>node:zlib</code>، ورموز الخروج.</p>
+<ol class="steps">
+<li>اجمع كل ملف تحت المجلد المبني (<code>dist</code> في المشروع الحقيقي، وهنا مجلد <code>vendor</code> المشترك في الكتاب)، تعاودياً.</li>
+<li>لكل ملف <code>.js</code> و<code>.css</code> أضف حجمه بعد <em>gzip</em>: فهذا ما يسافر عبر الشبكة.</li>
+<li>قارن المجموعين بالميزانية، واطبع كل سطر مع ✓ أو ✗.</li>
+<li>اضبط رمز الخروج 1 حين تُتجاوز أي ميزانية، وأضف السكربت بعد <code>vite build</code> في <code>npm run check</code>.</li>
+<li>اقرأ النتيجة بصدق: حزمة React المشتركة وحدها أكبر كثيراً من ميزانية 60 كيلوبايت. فقرّر هل ترفع الميزانية عمداً، أم تحمّل أقل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الميزانية التي تفشل بداية حوار لا كارثة. فالغاية أن يصير النمو قراراً يتخذه أحد عن علم، لا شيئاً يحدث صدفة.</p>
+<div class="listing" dir="ltr"><div class="listing-title">budget.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
+<span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
+
+<span class="c">// يُفشل البناء حين تكبر JavaScript أو CSS المرسلة للمستخدمين فوق الميزانية</span>
+<span class="k">const</span> BUDGET = { js: <span class="n">60</span> * <span class="n">1024</span>, css: <span class="n">15</span> * <span class="n">1024</span> };
+
+<span class="k">function</span> files(dir: string): string[] {
+  <span class="k">return</span> readdirSync(dir).flatMap((name) =&gt; {
+    <span class="k">const</span> path = join(dir, name);
+    <span class="k">return</span> statSync(path).isDirectory() ? files(path) : [path];
+  });
+}
+
+<span class="k">const</span> sizes = { js: <span class="n">0</span>, css: <span class="n">0</span> };
+<span class="k">for</span> (<span class="k">const</span> file <span class="k">of</span> files(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;../../../vendor&quot;</span>)) {
+  <span class="k">const</span> kind = file.endsWith(<span class="s">&quot;.js&quot;</span>) ? <span class="s">&quot;js&quot;</span> : file.endsWith(<span class="s">&quot;.css&quot;</span>) ? <span class="s">&quot;css&quot;</span> : <span class="k">null</span>;
+  <span class="k">if</span> (kind) sizes[kind] += gzipSync(readFileSync(file)).length;
+}
+
+<span class="k">let</span> failed = <span class="k">false</span>;
+<span class="k">for</span> (<span class="k">const</span> kind <span class="k">of</span> [<span class="s">&quot;js&quot;</span>, <span class="s">&quot;css&quot;</span>] as <span class="k">const</span>) {
+  <span class="k">const</span> over = sizes[kind] &gt; BUDGET[kind];
+  failed ||= over;
+  <span class="k">const</span> kb = (n: number) =&gt; <span class="s">`${(n / 1024).toFixed(1)} KB`</span>;
+  console.log(<span class="s">`${kind.toUpperCase().padEnd(4)} ${kb(sizes[kind]).padStart(9)}  الميزانية ${kb(BUDGET[kind]).padStart(8)}  ${over ? &quot;✗ تجاوز الميزانية&quot; : &quot;✓ ضمن الميزانية&quot;}`</span>);
+}
+process.exitCode = failed ? <span class="n">1</span> : <span class="n">0</span>;</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>JS    270.4 KB  الميزانية  60.0 KB  ✗ تجاوز الميزانية
+CSS     0.0 KB  الميزانية  15.0 KB  ✓ ضمن الميزانية</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> احذف <code>defer</code> من <code>fast.html</code> وقِس من جديد. ثم احذف <code>width</code> و<code>height</code> من الصورة. أي رقم تغيّر في كل مرة؟</li>
+<li><span class="level">سهل</span> افتح موقع أخبار كبيراً بأدوات المطور، وشغّل Lighthouse في وضع الجوال، واكتب أكبر ثلاث نصائح منه.</li>
+<li><span class="level medium">متوسط</span> أضف مكتبة <code>web-vitals</code> إلى مشروع واطبع LCP وINP وCLS في Console. وفي تطبيق حقيقي سترسل هذه الأرقام إلى خادمك.</li>
+<li><span class="level medium">متوسط</span> غيّر <code>measure.ts</code> لتقيس كل صفحة ثلاث مرات وتطبع الوسيط، وهو أوثق من قياس واحد.</li>
+<li><span class="level hard">تحدٍّ</span> أضف إلى <code>measure.ts</code> فحصاً يضبط رمز خروج فاشلاً حين يتجاوز LCP صفحةٍ 2.5 ثانية أو يتجاوز CLS قيمة 0.1، وأضفه إلى سكربت <code>check</code> بعد البناء.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 13</p>
+<p>التطبيق السريع سهل الوصول المختبر يجب أن يكون آمناً أيضاً. وفي الفصل التالي ستقابل الهجمات التي تستهدف الواجهات، مثل XSS وCSRF وclickjacking، والدفاعات التي توقفها، من التهريب وسياسة أمان المحتوى إلى المصادقة الآمنة.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -5315,6 +5767,16 @@ Running 4 tests using 2 workers
 <li>مرّر <code>signIn={() =&gt; new Promise(() =&gt; {})}</code>، التي لا تتحقق أبداً، واكتب بريداً واضغط الزر، ثم <code>expect(screen.getByRole("button", { name: "جارٍ الدخول…" })).toBeDisabled()</code>. فينتهي الاختبار والطلب ما زال «جارياً».</li>
 <li>اختبار لكل فعل: <code>added</code> تضيف مهمة بـ <code>done: false</code>، و<code>toggled</code> تقلب مهمة واحدة وتترك الباقي، و<code>cleared</code> تحذف المنجزة فقط. ولعدم التغيير جمّد المدخل بـ <code>Object.freeze</code> وجمّد مهامه أيضاً، ثم استدعِ الدالة: فأي محاولة لتغييرها ترمي خطأً في الوضع الصارم، و<code>expect(next).not.toBe(before)</code> تفحص أن مصفوفة جديدة رجعت.</li>
 <li>اخدم صفحة إتمام الشراء كما في هذا الفصل، ثم: اختر المدينة، واملأ الشارع والهاتف، واضغط «التالي»، واختر البطاقة، واضغط «التالي»، وافحص نص الملخص بـ <code>toContainText</code>، واضغط «أكّد الطلب»، وتوقع حالة «تم الطلب!». وشغّل بـ <code>--trace on</code> وافتح الأثر من <code>test-results</code> بـ <code>npx playwright show-trace</code>.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 12</h2>
+<ol class="exercises">
+<li>دون <code>defer</code> يزيد LCP بقدر زمن تشغيل السكربت على المعالج المبطّأ تقريباً، لأن شيئاً لا يُرسم حتى ينتهي. ودون <code>width</code> و<code>height</code> قد يزيد CLS إن عُرف حجم الصورة بعد الرسم الأول فقط، ومع هذه الصورة الصغيرة السريعة قد يبقى قريباً من الصفر، ولهذا بالضبط الأبعاد قاعدة لا قرار حالة بحالة.</li>
+<li>من النصائح المعتادة: «قلّل JavaScript غير المستخدمة»، و«قدّم الصور بصيغ الجيل التالي»، و«أزل الموارد المعطِّلة للرسم»، و«تجنب DOM ضخمة جداً»، و«قلّل أثر كود الطرف الثالث». وكل منها يقابل سطراً في جدول القسم 12.3.</li>
+<li><code>import { onCLS, onINP, onLCP } from "web-vitals"; onLCP(console.log); onINP(console.log); onCLS(console.log);</code>. وفي الإنتاج استبدل <code>console.log</code> بدالة ترسل المؤشر بـ <code>navigator.sendBeacon("/vitals", JSON.stringify(metric))</code>، التي تصمد حتى لو أُغلقت الصفحة.</li>
+<li>اجمع ثلاث نتائج في مصفوفة، ورتّبها حسب LCP، وخذ الوسطى: <code>const runs = []; for (let i = 0; i &lt; 3; i++) runs.push(await measure(page)); runs.sort((a, b) =&gt; a.lcp - b.lcp); const median = runs[1]!;</code>.</li>
+<li>بعد طباعة كل صفحة: <code>if (lcp &gt; 2500 || cls &gt; 0.1) failed = true;</code>، وفي النهاية <code>process.exitCode = failed ? 1 : 0;</code>. ومع صفحات هذا الفصل تفشل <code>slow.html</code> في LCP وتنجح <code>fast.html</code>.</li>
 </ol>
 
 </section>
