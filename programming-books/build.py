@@ -111,6 +111,10 @@ def highlight_shell(src):
     for line in src.split("\n"):
         if line.startswith("$ ") or line.startswith("> "):
             lines.append(f'<span class="c">{html.escape(line[:2])}</span><span class="k">{html.escape(line[2:])}</span>')
+        elif re.match(r"\w+[=-]# ", line):
+            # A psql prompt (shop=# or shop-# on continued lines), then the SQL that was typed.
+            cut = line.index("# ") + 2
+            lines.append(f'<span class="c">{html.escape(line[:cut])}</span><span class="k">{html.escape(line[cut:])}</span>')
         elif line.startswith("#"):
             # A comment line takes its own direction, so an Arabic comment reads right to left.
             lines.append(f'<span class="c line-bidi">{html.escape(line)}</span>')

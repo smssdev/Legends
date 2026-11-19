@@ -1,0 +1,3 @@
+#!/bin/sh
+# psql as if it were installed here, talking to the PostgreSQL that pg-start runs.
+exec docker exec -i -w "$PWD" -e PGPASSWORD=secret -e PGUSER=bit -e PGHOST=localhost b3-pg psql -X "$@"

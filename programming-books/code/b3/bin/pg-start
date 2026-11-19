@@ -1,0 +1,13 @@
+#!/bin/sh
+# Starts PostgreSQL 18 for the book's examples (in Docker, data in memory, gone when it stops), and waits
+# until it accepts connections. The database "shop" belongs to the user "bit". A fresh start each time:
+#   pg-start --fresh
+code="$(cd "$(dirname "$0")/../.." && pwd)"
+if [ "$1" = "--fresh" ]; then docker rm -f b3-pg >/dev/null 2>&1; fi
+if ! docker ps --format '{{.Names}}' | grep -qx b3-pg; then
+  docker rm -f b3-pg >/dev/null 2>&1
+  docker run -d --name b3-pg --network host --tmpfs /var/lib/postgresql \
+    -e POSTGRES_USER=bit -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=shop \
+    -v "$code":"$code" postgres:18 >/dev/null
+fi
+until docker exec b3-pg pg_isready -q -h localhost -U bit -d shop; do sleep 0.5; done
