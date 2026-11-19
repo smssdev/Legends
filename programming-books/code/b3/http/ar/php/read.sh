@@ -5,7 +5,7 @@ $ curl -s 'localhost:8000/products?max_price=15000'
 $ curl -sI localhost:8000/products
 HTTP/1.1 200 OK
 Host: localhost:8000
-Date: Thu, 19 Nov 2026 14:47:29 GMT
+Date: Thu, 19 Nov 2026 18:42:42 GMT
 Connection: close
 Content-Type: application/json; charset=utf-8
 Content-Length: 168

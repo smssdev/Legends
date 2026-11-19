@@ -1,0 +1,13 @@
+#!/bin/sh
+# Runs PHP 8.5 (the image built from ../php/Dockerfile) as if it were installed here: same folder,
+# same network, so `php -S localhost:8000` and `curl localhost:8000` meet as on a reader's machine.
+# Proxy settings and certificates are passed on when the machine has them (a build server may).
+here="$(cd "$(dirname "$0")/.." && pwd)"
+docker image inspect b3-php >/dev/null 2>&1 || docker build -q -t b3-php "$here/php" >/dev/null
+exec docker run --rm -i --init --network host -v "$PWD":"$PWD" -w "$PWD" \
+  -v "${HOME}/.cache/b3-composer":/tmp/composer \
+  ${B3_PROXY:+-e HTTPS_PROXY="$B3_PROXY" -e https_proxy="$B3_PROXY" -e HTTP_PROXY="$B3_PROXY"} \
+  ${B3_PROXY:+-e NO_PROXY=localhost,127.0.0.1 -e no_proxy=localhost,127.0.0.1} \
+  ${B3_CERTS:+-v "$B3_CERTS":/etc/ssl/certs/ca-certificates.crt:ro} \
+  ${B3_ENV:+--env-file "$B3_ENV"} \
+  b3-php "$(basename "$0")" "$@"

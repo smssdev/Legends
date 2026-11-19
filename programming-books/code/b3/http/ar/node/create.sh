@@ -4,7 +4,7 @@ HTTP/1.1 201 Created
 Content-Type: application/json; charset=utf-8
 Content-Length: 43
 Location: /products/4
-Date: Thu, 19 Nov 2026 14:47:28 GMT
+Date: Thu, 19 Nov 2026 18:42:41 GMT
 Connection: keep-alive
 Keep-Alive: timeout=5
 

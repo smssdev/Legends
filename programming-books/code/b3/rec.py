@@ -14,7 +14,13 @@ from pathlib import Path
 
 
 # The commands run as on a reader's machine: without this container's proxy settings (curl -v would print them).
+# The PHP wrappers in bin/ (PHP runs in Docker) still need the network for Composer: they get the proxy and
+# certificates under names that curl and Node ignore.
 CLEAN = {k: v for k, v in os.environ.items() if "proxy" not in k.lower()}
+CLEAN["PATH"] = str(Path(__file__).parent / "bin") + ":" + CLEAN["PATH"]
+if os.environ.get("HTTPS_PROXY"):
+    CLEAN["B3_PROXY"] = os.environ["HTTPS_PROXY"]
+    CLEAN["B3_CERTS"] = os.environ.get("SSL_CERT_FILE", "")
 
 
 def fill(text, words):

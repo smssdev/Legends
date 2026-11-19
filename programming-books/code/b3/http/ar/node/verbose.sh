@@ -13,7 +13,7 @@ $ curl -sv localhost:3000/products/2
 < HTTP/1.1 200 OK
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 58
-< Date: Thu, 19 Nov 2026 14:47:28 GMT
+< Date: Thu, 19 Nov 2026 18:42:41 GMT
 < Connection: keep-alive
 < Keep-Alive: timeout=5
 < 

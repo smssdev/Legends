@@ -3,7 +3,7 @@ $ printf 'GET /products/1 HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
 Content-Length: 41
-Date: Thu, 19 Nov 2026 14:47:25 GMT
+Date: Thu, 19 Nov 2026 18:42:39 GMT
 Connection: close
 
 {"id":1,"name":"Robot kit","price":45000}

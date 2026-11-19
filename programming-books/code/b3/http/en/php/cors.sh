@@ -2,7 +2,7 @@
 $ curl -si -X OPTIONS localhost:8000/products -H 'Origin: http://localhost:5173' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type'
 HTTP/1.1 204 No Content
 Host: localhost:8000
-Date: Thu, 19 Nov 2026 14:47:26 GMT
+Date: Thu, 19 Nov 2026 18:42:40 GMT
 Connection: close
 Access-Control-Allow-Origin: http://localhost:5173
 Vary: Origin
@@ -15,7 +15,7 @@ Access-Control-Max-Age: 600
 $ curl -si localhost:8000/products/1 -H 'Origin: https://evil.example'
 HTTP/1.1 200 OK
 Host: localhost:8000
-Date: Thu, 19 Nov 2026 14:47:26 GMT
+Date: Thu, 19 Nov 2026 18:42:40 GMT
 Connection: close
 Content-Type: application/json; charset=utf-8
 Content-Length: 41

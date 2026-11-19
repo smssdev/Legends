@@ -1,7 +1,7 @@
 $ curl -s -D - -o /dev/null localhost:8000/products -H 'Accept-Encoding: gzip'
 HTTP/1.1 200 OK
 Host: localhost:8000
-Date: Thu, 19 Nov 2026 14:47:31 GMT
+Date: Thu, 19 Nov 2026 18:42:44 GMT
 Connection: close
 Vary: Accept-Encoding
 Content-Encoding: gzip
@@ -12,7 +12,7 @@ Cache-Control: no-cache
 $ curl -s -D - -o /dev/null localhost:8000/products
 HTTP/1.1 200 OK
 Host: localhost:8000
-Date: Thu, 19 Nov 2026 14:47:31 GMT
+Date: Thu, 19 Nov 2026 18:42:44 GMT
 Connection: close
 Vary: Accept-Encoding
 Content-Type: application/json; charset=utf-8

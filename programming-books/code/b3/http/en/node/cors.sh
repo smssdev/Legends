@@ -7,7 +7,7 @@ Content-Length: 0
 Access-Control-Allow-Methods: GET, POST
 Access-Control-Allow-Headers: Content-Type
 Access-Control-Max-Age: 600
-Date: Thu, 19 Nov 2026 14:47:26 GMT
+Date: Thu, 19 Nov 2026 18:42:39 GMT
 Connection: keep-alive
 Keep-Alive: timeout=5
 # Another site is not on the list: no Access-Control header, so the browser blocks it
@@ -15,7 +15,7 @@ $ curl -si localhost:3000/products/1 -H 'Origin: https://evil.example'
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
 Content-Length: 41
-Date: Thu, 19 Nov 2026 14:47:26 GMT
+Date: Thu, 19 Nov 2026 18:42:39 GMT
 Connection: keep-alive
 Keep-Alive: timeout=5
 
