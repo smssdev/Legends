@@ -1,0 +1,276 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/essentials/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Laravel Essentials: Routes, Controllers and Requests</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>create a Laravel project and find your way around its folders</li>
+<li>follow a request through Laravel, from the front door to your controller and back</li>
+<li>write routes and resource controllers, and see them with Artisan</li>
+<li>validate input with form requests, with messages written for your users</li>
+<li>use the service container to give classes what they need, and swap it in tests</li>
+<li>write middleware, limit request rates, keep configuration in one place, and test the API</li>
+</ul>
+</div>
+
+<p class="lead">In Chapter {{n-2}} we built the shop’s API in one PHP file, and every line was ours: reading the method and path, checking the body, sending the status and headers, catching errors. Laravel does all of that, and does it consistently for every route you will ever add. This chapter rebuilds the same API in Laravel, so you can see exactly which of our hand-written parts each Laravel feature replaces, and where your own code now lives.</p>
+
+<aside class="bit" data-mood="think"><p>My first Laravel project felt like magic: a controller method returned an array, and JSON came out. Magic is pleasant until it breaks. The day I followed one request through the framework, from <code>public/index.php</code> to my controller, Laravel stopped being magic and started being a tool I understood.</p></aside>
+
+<h2>{{n}}.1 A new project</h2>
+
+<p>Composer creates a Laravel project from the official starter, downloads the framework and its packages into <code>vendor/</code>, writes a <code>.env</code> file with a fresh secret key, and prepares a small SQLite database:</p>
+
+<pre data-code="create.sh" data-title="Terminal"></pre>
+
+<p>The folders you will work in:</p>
+<ul>
+<li><code>app/</code>: your code. Controllers, models, middleware and your own classes, under the namespace <code>App\</code>.</li>
+<li><code>routes/</code>: which URL goes to which code. <code>web.php</code> for pages, <code>api.php</code> for the API.</li>
+<li><code>config/</code>: one PHP file per subject (database, cache, mail…), each returning an array of settings.</li>
+<li><code>bootstrap/app.php</code>: how the application is put together: routes, middleware, error handling.</li>
+<li><code>public/</code>: the only folder a web server shows. Its <code>index.php</code> is the front door for every request.</li>
+<li><code>database/</code>, <code>resources/</code>, <code>storage/</code>, <code>tests/</code>: migrations, views and translations, files the app writes, and tests.</li>
+</ul>
+
+<p>A new project has no API routes yet. One Artisan command adds <code>routes/api.php</code>, and also installs Sanctum, the token authentication we use in Chapter {{n+6}}:</p>
+
+<pre data-code="install-api.sh" data-title="Terminal"></pre>
+
+<p><dfn>Artisan</dfn> is Laravel’s command line, the <code>php artisan</code> you will type all day: it creates files, runs migrations and tests, and shows what the app knows about itself.</p>
+
+<h2>{{n}}.2 The life of a request</h2>
+
+<p>Every request enters through <code>public/index.php</code>, which loads Composer’s autoloader and the application defined in <code>bootstrap/app.php</code>:</p>
+
+<pre data-code="shop/bootstrap/app.php" data-title="bootstrap/app.php"></pre>
+
+<p>Read it as a description, not as code that does work: the app has web and API routes, a health check at <code>/up</code>, two pieces of middleware we added for the API, and a rule that API errors are answered as JSON. From there, a request goes through a <dfn>pipeline</dfn> of middleware, then the router finds the route, then the controller runs, and the response travels back out through the same middleware.</p>
+
+<p>You can see that pipeline for real. When debugging is on, Laravel’s error answers include a stack trace, the list of functions that were running. Read from the bottom, it is the path of the request. This little <code>jq</code> filter keeps only the middleware and controllers:</p>
+
+<pre data-code="pipeline.sh" data-title="Terminal"></pre>
+
+<p>Every class on that list is something our Chapter {{n-2}} server did by hand, or did not do at all: proxies and CORS, maintenance mode, a body size limit, trimming spaces from input and turning empty strings into <code>null</code>, the rate limit, route parameters, our own timing middleware, and finally our controller. Each is a small class with one job, and you can add, remove or reorder them in <code>bootstrap/app.php</code>.</p>
+
+<h2>{{n}}.3 Routes and controllers</h2>
+
+<p>The routes file says which code answers which method and path:</p>
+
+<pre data-code="shop/routes/api.php" data-title="routes/api.php"></pre>
+
+<p>Everything in <code>api.php</code> gets the prefix <code>/api</code> and the API middleware group. <code>Route::apiResource</code> registers the five standard routes of a resource at once, following the conventions of Chapter {{n-2}}, and <code>where</code> limits <code>{product}</code> to digits. Artisan shows what Laravel made of it:</p>
+
+<pre data-code="routes.sh" data-title="Terminal"></pre>
+
+<p>Artisan also writes the empty classes, in the right folders and namespaces:</p>
+
+<pre data-code="make.sh" data-title="Terminal"></pre>
+
+<p>The controller holds one method per route. It stays thin: it reads the request, asks someone else to do the work, and builds the response.</p>
+
+<pre data-code="shop/app/Http/Controllers/ProductController.php" data-title="app/Http/Controllers/ProductController.php"></pre>
+
+<ul>
+<li>The route parameter <code>{product}</code> arrives as the argument <code>$product</code>, by name.</li>
+<li><code>$request-&gt;integer('max_price', PHP_INT_MAX)</code> reads a query value as an int, with a default: no <code>$_GET</code>, no casting by hand.</li>
+<li><code>abort(404, …)</code> stops the request with that status from anywhere, and the exception handler turns it into a JSON answer.</li>
+<li><code>route('products.show', 4)</code> builds the URL from the route’s name, so URLs are never written twice.</li>
+<li><code>$this-&gt;json</code> is a small helper of ours. By default, Laravel writes JSON with every non-English letter escaped as <code>ك</code>: valid, but unreadable for people. The flag <code>JSON_UNESCAPED_UNICODE</code> keeps Arabic as Arabic, as in Chapter {{n-2}}.</li>
+</ul>
+
+<h2>{{n}}.4 The service container</h2>
+
+<p>The controller’s constructor asks for a <code>ProductCatalog</code>, and nobody calls <code>new ProductController</code>. Laravel’s <dfn>service container</dfn> builds the controller: it reads the constructor’s types, builds what each parameter needs (and what those need, all the way down), and passes them in. This is <dfn>dependency injection</dfn>: a class says what it needs, and does not go looking for it.</p>
+
+<p><code>ProductCatalog</code> is an interface, a contract that says what a catalog can do, not how:</p>
+
+<pre data-code="shop/app/Catalog/ProductCatalog.php" data-title="app/Catalog/ProductCatalog.php"></pre>
+
+<p>The container cannot build an interface, so we tell it which class to use, in a <dfn>service provider</dfn>, a class Laravel runs at start-up to register things:</p>
+
+<pre data-code="shop/app/Providers/AppServiceProvider.php" data-title="app/Providers/AppServiceProvider.php"></pre>
+
+<p>The real catalog keeps products in a JSON file, under a lock, exactly like Chapter {{n-2}}’s server. Because PHP forgets everything between requests, storage must live outside the process:</p>
+
+<pre data-code="shop/app/Catalog/JsonProductCatalog.php" data-from="    private function change" data-to="^    }" data-title="app/Catalog/JsonProductCatalog.php"></pre>
+
+<p>Every change goes through this one method: it opens the file, waits for the lock, lets the caller edit the data, and writes it back. <code>create</code>, <code>update</code> and <code>delete</code> only describe the edit.</p>
+
+<p>Why the interface? Because the controller does not care where products are kept. In Chapter {{n+3}} we write a catalog backed by the database and change one line in the provider; no controller changes. And in tests, we can give the controller a different catalog, as you will see in {{n}}.8.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>In the pipeline, which middleware could answer a request before the controller ever runs? Name two.</li><li>Why can <code>/api/products/abc</code> never reach <code>show(int $product)</code>?</li><li>What would you change to keep products in a database instead of a JSON file, and what would stay the same?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Requests and validation</h2>
+
+<p>Start the server in its own terminal. <code>php artisan serve</code> runs PHP’s development server from Chapter {{n-2}}, pointed at <code>public/index.php</code>:</p>
+
+<pre data-code="serve.sh" data-title="Terminal 1"></pre>
+
+<p>Reading works as before:</p>
+
+<pre data-code="read.sh" data-title="Terminal 2"></pre>
+
+<p>Input is checked by a <dfn>form request</dfn>, a class that holds the rules for one kind of request. When a controller method asks for it, Laravel validates the request <em>before</em> the method runs; if anything is wrong, the method never runs, and the client gets a <code>422</code> with every error:</p>
+
+<pre data-code="shop/app/Http/Requests/StoreProductRequest.php" data-title="app/Http/Requests/StoreProductRequest.php"></pre>
+
+<p>The rules read almost like English: required, a string, at most 80 characters; an integer of at least 1. <code>sometimes</code> means “check it only if it was sent”. <code>authorize</code> answers whether this user may make this request; Chapter {{n+6}} fills it in. And <code>messages</code> replaces Laravel’s generic texts with ones written for your users:</p>
+
+<pre data-code="store.sh" data-title="Terminal 2"></pre>
+
+<p>In the controller, <code>$request-&gt;validated()</code> returns only the fields that have rules. If a client sends <code>"id": 1</code> or <code>"is_admin": true</code> as well, it is simply not there. Never pass <code>$request-&gt;all()</code> to storage: that is how attackers set fields you never meant to accept.</p>
+
+<p>The update request allows every field to be missing, but not all of them at once. An <code>after</code> hook runs once the rules have passed, for checks that involve the whole request:</p>
+
+<pre data-code="shop/app/Http/Requests/UpdateProductRequest.php" data-from="    public function rules" data-to="^    }#2" data-title="app/Http/Requests/UpdateProductRequest.php"></pre>
+
+<pre data-code="change.sh" data-title="Terminal 2"></pre>
+
+<p>And because of the <code>where</code> on the route, a product id that is not a number does not even match the route, so the controller’s <code>int</code> parameter is always safe:</p>
+
+<pre data-code="bad-id.sh" data-title="Terminal 2"></pre>
+
+<h2>{{n}}.6 Middleware and rate limits</h2>
+
+<p>A <dfn>middleware</dfn> wraps every request in a group. It can look at the request, refuse it, change it, and look at the response on the way back. Ours measures how long the application took and reports it in a <code>Server-Timing</code> header, which browsers’ developer tools display:</p>
+
+<pre data-code="shop/app/Http/Middleware/AddServerTiming.php" data-title="app/Http/Middleware/AddServerTiming.php"></pre>
+
+<p>Everything before <code>$next($request)</code> runs on the way in; everything after it runs on the way out. <code>bootstrap/app.php</code> appends it to the API group, and <code>throttleApi()</code> adds Laravel’s rate limiter, using the <code>api</code> limiter defined in the service provider:</p>
+
+<pre data-code="timing.sh" data-title="Terminal 2"></pre>
+
+<p>Started with a limit of three requests a minute, the fourth is refused, with the same headers as in Chapter {{n-2}}:</p>
+
+<pre data-code="rate-limit.sh" data-title="Terminal 2"></pre>
+
+<h2>{{n}}.7 Configuration and the environment</h2>
+
+<p>Settings that change between machines live in <code>.env</code>. But application code never reads <code>.env</code> directly: it reads <code>config/</code> files, and only those read the environment, once:</p>
+
+<pre data-code="shop/config/shop.php" data-title="config/shop.php"></pre>
+
+<pre data-code="config.sh" data-title="Terminal"></pre>
+
+<p>The reason is speed. In production, <code>php artisan config:cache</code> combines every config file into one cached array, and from then on <code>.env</code> is not even loaded: an <code>env()</code> call in a controller would quietly return <code>null</code>. Code that reads <code>config('shop.requests_per_minute')</code> works the same with and without the cache.</p>
+
+<p>One setting deserves special care. With <code>APP_DEBUG=true</code>, as on your machine, every error answer includes the exception class, the file, the line and the whole stack trace:</p>
+
+<pre data-code="debug.sh" data-title="Terminal 2"></pre>
+
+<p>That is a gift to an attacker: file paths, versions and the internal structure of your code. With <code>APP_DEBUG=false</code>, as production must have, the same request answers only this:</p>
+
+<pre data-code="nodebug.sh" data-title="Terminal 2"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out: APP_DEBUG in production</p><p>A production server with <code>APP_DEBUG=true</code> shows its stack traces to everyone, and on error pages can even show environment values such as database passwords. Make it part of your deployment checklist, and check it from outside after every deployment: request an address that does not exist and read the answer.</p></aside>
+
+<h2>{{n}}.8 Testing the API</h2>
+
+<p>Laravel’s feature tests send requests through the whole application, middleware and all, without starting a server. Each test gets a fresh application, and our <code>setUp</code> uses the container to give every test its own empty catalog file, so tests never share data:</p>
+
+<pre data-code="shop/tests/Feature/ProductApiTest.php" data-title="tests/Feature/ProductApiTest.php"></pre>
+
+<pre data-code="test.sh" data-title="Terminal"></pre>
+
+<p><code>$this-&gt;app-&gt;instance(...)</code> replaces what the container gives for <code>ProductCatalog</code>, for this test only. That is the second reason for the interface: the controller under test does not know, and does not care, which catalog it got. Chapter {{n+10}} covers testing in depth, with Pest.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: thin controllers</p><p>A controller method should fit on a screen: read the validated input, call one service, return a response. Rules about products (stock, prices, who may do what) belong in classes the controller calls, where every route, job and command can use them and tests can reach them directly. When a controller method grows past twenty lines, the extra lines are usually a service waiting to be extracted. Chapter {{n+12}} turns this habit into an architecture.</p></aside>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>$request-&gt;all()</code> passed to storage</td><td>Clients set fields you never meant to accept</td><td><code>$request-&gt;validated()</code></td></tr>
+<tr><td>Validation inside the controller method</td><td>Long methods, rules repeated between create and update</td><td>Form requests</td></tr>
+<tr><td><code>env()</code> outside <code>config/</code></td><td>Returns <code>null</code> once config is cached</td><td><code>config('…')</code></td></tr>
+<tr><td><code>APP_DEBUG=true</code> in production</td><td>Stack traces and secrets shown to strangers</td><td><code>false</code>, checked after every deployment</td></tr>
+<tr><td><code>new</code> for services inside controllers</td><td>Code that cannot be swapped or tested</td><td>Ask for them in the constructor</td></tr>
+<tr><td>Route parameters without constraints</td><td>Type errors (500) for <code>/products/abc</code></td><td><code>where</code> or <code>whereNumber</code></td></tr>
+<tr><td>Default JSON escaping for Arabic</td><td><code>ك</code> instead of letters</td><td><code>JSON_UNESCAPED_UNICODE</code></td></tr>
+<tr><td>Business rules in controllers</td><td>Rules copied between routes, jobs and commands</td><td>Services the controllers call</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><code>composer create-project laravel/laravel</code> makes a project; <strong>Artisan</strong> creates files and shows routes, config and more.</li>
+<li>A request enters <code>public/index.php</code>, passes through a <strong>pipeline of middleware</strong>, reaches the <strong>router</strong> and the <strong>controller</strong>, and returns the same way. <code>bootstrap/app.php</code> describes it all.</li>
+<li><strong>Routes</strong> map method and path to code; <code>apiResource</code> registers a resource’s five routes; <code>where</code> constrains parameters.</li>
+<li><strong>Controllers</strong> stay thin. <strong>Form requests</strong> validate before the controller runs, with your own messages; <code>validated()</code> returns only checked fields.</li>
+<li>The <strong>service container</strong> builds classes from their constructors; <strong>providers</strong> bind interfaces to classes; tests swap them with <code>instance</code>.</li>
+<li><strong>Middleware</strong> wraps requests; <code>throttleApi</code> limits rates with a limiter defined in a provider.</li>
+<li>Code reads <strong>config</strong>, config reads <strong>.env</strong>. <code>APP_DEBUG</code> is false in production.</li>
+<li><strong>Feature tests</strong> send requests through the whole app without a server.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Any of them can: <code>ThrottleRequests</code> answers <code>429</code>, <code>ValidatePostSize</code> answers <code>413</code> for a body over PHP’s limit, <code>PreventRequestsDuringMaintenance</code> answers <code>503</code> during maintenance, and <code>HandleCors</code> answers browsers’ preflight requests itself. 2. The route only matches when <code>{product}</code> is digits, because of <code>where(['product' =&gt; '[0-9]+'])</code>; any other value finds no route and gets a <code>404</code> before a controller is chosen. 3. Write a second class that implements <code>ProductCatalog</code> with the database, and bind it in <code>AppServiceProvider</code> instead of <code>JsonProductCatalog</code>. The routes, controller, form requests, middleware and tests stay as they are.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project grows this chapter’s Laravel app. Create files with Artisan, keep controllers thin, and add a feature test for every rule.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Categories</h3>
+<p class="project-goal">Add product categories as a second resource, with their own controller, form requests and catalog.</p>
+<p class="project-skills"><strong>You will practise:</strong> Artisan generators, resource routes, form requests with custom messages, and container bindings.</p>
+<ol class="steps">
+<li>Create <code>CategoryController</code> with <code>--api</code>, and register <code>Route::apiResource('categories', …)</code>.</li>
+<li>A category has a name (2 to 40 characters, unique among categories) and a slug made of lower-case letters, digits and hyphens. Write the rules, with messages for your users.</li>
+<li>Write a <code>CategoryCatalog</code> interface and a JSON implementation, and bind it in the provider.</li>
+<li>Add an optional <code>category_id</code> to products, checked against the existing categories with a closure rule or a custom rule class.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the uniqueness check runs in the form request, but two requests can pass it at the same moment. Only the storage, under its lock (or the database, with a unique index in Chapter {{n+3}}), can really guarantee it.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A request ID on every log line</h3>
+<p class="project-goal">Give every request an ID, return it to the client, and attach it to everything the app logs while handling that request.</p>
+<p class="project-skills"><strong>You will practise:</strong> middleware, request and response headers, Laravel’s <code>Context</code>, and logs.</p>
+<ol class="steps">
+<li>Write a middleware that takes <code>X-Request-Id</code> from the request if a proxy sent one, or makes a new UUID with <code>Str::uuid()</code>, and adds it to the response.</li>
+<li>Store it with <code>Context::add('request_id', $id)</code>, so that Laravel adds it to every log entry written during the request.</li>
+<li>Log one line per request, with the method, path, status and duration, after <code>$next</code> returns.</li>
+<li>Add the ID to the JSON of error answers in <code>bootstrap/app.php</code>, so a user can quote it to support, and check it in <code>storage/logs/laravel.log</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> with the ID in both the user’s error message and the log, support can go from “it didn’t work” to the exact log lines in seconds. Chapter {{n+11}} builds on this.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Rebuild a slice of Laravel</h3>
+<p class="project-goal">Write a tiny framework in plain PHP with a router, a middleware pipeline and a container, and run Chapter {{n-2}}’s API on it.</p>
+<p class="project-skills"><strong>You will practise:</strong> how routers match, how pipelines wrap closures, and how containers build objects.</p>
+<ol class="steps">
+<li>A <code>Router</code> with <code>get</code>, <code>post</code> and friends that stores patterns such as <code>/products/{id}</code>, turns them into regular expressions, and passes the matched values to the handler.</li>
+<li>A <code>Pipeline</code> that wraps a final handler in a list of middleware, each written as <code>fn (Request $request, Closure $next)</code>, using <code>array_reduce</code> over the reversed list.</li>
+<li>The container from Chapter {{n-1}}’s challenge, to build controllers from their constructors.</li>
+<li>Run the shop’s product routes on it with <code>php -S</code>, and compare the size and the behaviour with the Laravel version.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> Laravel’s own <code>Illuminate\Pipeline\Pipeline</code> is about two hundred lines, and you saw its name in the trace. Reading it after writing yours is the best way to understand it.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Using the pipeline in {{n}}.2, name the middleware that would answer each of these requests without reaching the controller, and the status it would return: the fifth request in a minute with a limit of four; a 50 MB body; any request while <code>php artisan down</code> is active.</li>
+<li><span class="level">Easy</span> Add <code>GET /api/products/{product}/stock</code>, answered by a new controller method <code>stock</code>, returning the id, the stock and <code>in_stock</code> (true or false). Name the route <code>products.stock</code>.</li>
+<li><span class="level">Medium</span> Let the list accept <code>min_price</code> as well as <code>max_price</code>. Validate both (integers, not negative, and the maximum not below the minimum when both are sent), and answer <code>422</code> otherwise.</li>
+<li><span class="level">Medium</span> The tests in this chapter still write a file. Write an <code>ArrayProductCatalog</code> that keeps products in memory, use it in a test, and explain why the controller needed no change.</li>
+<li><span class="level">Challenge</span> Write a <code>RequireJson</code> middleware for the API group: it answers <code>415</code> to <code>POST</code>, <code>PUT</code> and <code>PATCH</code> requests whose body is not JSON, and makes every API answer JSON even when the client forgot <code>Accept: application/json</code>.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Our API returns arrays straight from storage, and its errors use Laravel’s default shape. Next we design it properly: API Resources for the representation, cursor pagination, Problem Details, idempotency keys and optimistic concurrency, and documentation generated from the code.</p>
+</div>
+</section>
