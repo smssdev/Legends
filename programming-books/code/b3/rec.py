@@ -83,6 +83,7 @@ class Session:
         """Runs cmd; the transcript shows `shown` (the same command as the reader types it) if given."""
         r = subprocess.run(["bash", "-c", cmd], cwd=self.cwd, capture_output=True, text=True, timeout=60, env=CLEAN)
         out = (r.stdout + r.stderr).replace("\r", "").rstrip("\n")
+        out = out.replace(str(self.cwd) + "/", "")  # paths as the reader sees them, from the project folder
         if check and r.returncode:
             raise RuntimeError(f"{cmd} failed ({r.returncode}):\n{out}")
         self.lines.append("$ " + (shown or cmd))

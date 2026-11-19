@@ -1,0 +1,289 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/php/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Modern PHP for JavaScript Developers</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>read and write PHP 8.5 by comparing it with the JavaScript you know</li>
+<li>use types strictly, and know exactly when PHP converts values on its own</li>
+<li>work with PHP’s arrays, closures and named arguments, and avoid their traps</li>
+<li>model a domain with readonly classes, enums, property hooks and exceptions</li>
+<li>organise code in namespaces, loaded automatically by Composer</li>
+<li>check types before running anything, with PHPStan</li>
+</ul>
+</div>
+
+<p class="lead">Many developers still picture the PHP of 2005: untyped, inconsistent, mixed into HTML. The language Laravel runs on today is a different one. It has types that are checked when your code runs, enums, readonly objects, first-class functions, and a static analyser as strict as TypeScript’s compiler. You already know most of the ideas from JavaScript and TypeScript. This chapter maps them onto PHP, and spends its time on the places where PHP behaves differently, because those are where bugs come from.</p>
+
+<aside class="bit" data-mood="think"><p>The first PHP bug I wrote was a closure that added to a total, and the total stayed zero. In JavaScript the same code worked. Nothing was wrong with PHP: it simply copies where JavaScript shares. Once I learned the handful of rules like that one, PHP stopped surprising me.</p></aside>
+
+<h2>{{n}}.1 A first script</h2>
+
+<p>Every PHP file starts with <code>&lt;?php</code>. (The tag exists because PHP began as a language mixed into HTML; in a file that holds only code, it appears once at the top and is never closed.) The <code>php</code> command runs a file, just as <code>node</code> does:</p>
+
+<pre data-code="demos/hello.php" data-title="demos/hello.php"></pre>
+
+<pre data-code="hello.sh" data-title="Terminal"></pre>
+
+<p>The first differences are already visible:</p>
+<ul>
+<li>Every variable starts with <code>$</code>, and there is no <code>let</code> or <code>const</code> for local variables: the first assignment creates the variable.</li>
+<li>Strings are joined with a dot (<code>.</code>), not <code>+</code>. In PHP, <code>+</code> is only for numbers.</li>
+<li>Double quotes replace variables inside the string, like a JavaScript template literal: <code>"Hello, $name!"</code>, or <code>{$items}</code> with braces when the expression is more than a plain name. Single quotes take the text exactly as written.</li>
+<li><code>echo</code> prints, and statements end with a semicolon, always.</li>
+</ul>
+
+<p>All of this book’s PHP runs on PHP 8.5, the current version. Laravel 13 needs 8.3 or later; a few features in this chapter are marked with the version that introduced them.</p>
+
+<h2>{{n}}.2 Types, and the strict mode</h2>
+
+<p>PHP checks types when the code runs. A function declares the types of its parameters and of its result, much as in TypeScript. But by default, PHP tries to <em>convert</em> a value of the wrong type before it gives up:</p>
+
+<pre data-code="demos/loose.php" data-title="demos/loose.php"></pre>
+
+<p>A string <code>"45000"</code>, as it would arrive from an HTML form, became the number 45000; even <code>true</code> became 1. Both calls ran without a word. One line at the top of a file switches this off for every call made <em>from that file</em>:</p>
+
+<pre data-code="demos/strict.php" data-title="demos/strict.php"></pre>
+
+<pre data-code="strict.sh" data-title="Terminal"></pre>
+
+<p>Now the wrong call is a <code>TypeError</code> that names the function, the argument, the expected type and the line. Start every PHP file with <code>declare(strict_types=1);</code>: you want to hear about a string where a number belongs, not have it guessed for you. (Laravel converts input from requests deliberately, in its validation layer, which is the right place for it.)</p>
+
+<p>The types you will write most often:</p>
+
+<table>
+<thead><tr><th>PHP</th><th>TypeScript</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>int</code>, <code>float</code></td><td><code>number</code></td><td>Two separate types; use <code>int</code> for money in minor units</td></tr>
+<tr><td><code>string</code>, <code>bool</code></td><td><code>string</code>, <code>boolean</code></td><td></td></tr>
+<tr><td><code>array</code></td><td>arrays and plain objects</td><td>One type for both; see {{n}}.4</td></tr>
+<tr><td><code>?int</code></td><td><code>number | null</code></td><td>The <code>?</code> means “or null”</td></tr>
+<tr><td><code>int|string</code></td><td><code>number | string</code></td><td>Union types</td></tr>
+<tr><td><code>mixed</code></td><td><code>unknown</code></td><td>Anything; avoid it where you can</td></tr>
+<tr><td><code>void</code>, <code>never</code></td><td><code>void</code>, <code>never</code></td><td><code>never</code>: the function always throws or exits</td></tr>
+<tr><td><code>static</code></td><td><code>this</code></td><td>Returns an object of the class it was called on</td></tr>
+</tbody>
+</table>
+
+<h2>{{n}}.3 Comparison: always three equals signs</h2>
+
+<p>PHP has the same two comparisons as JavaScript. <code>===</code> compares the type and the value; <code>==</code> converts first. PHP’s conversion rules differ from JavaScript’s, and some of them are surprising:</p>
+
+<pre data-code="demos/equality.php" data-title="demos/equality.php"></pre>
+
+<pre data-code="equality.sh" data-title="Terminal"></pre>
+
+<p>Two strings that both look like numbers are compared <em>as numbers</em>: <code>"10" == "1e1"</code> is true, because <code>1e1</code> is 10 in scientific notation. That has caused real security holes, in code that compared password hashes with <code>==</code>. And <code>null</code>, <code>false</code> and an empty array are all loosely equal. The rule is the same as in JavaScript, and even more important: use <code>===</code> and <code>!==</code>, and pass <code>true</code> as the last argument to functions such as <code>in_array</code>, which compare loosely unless you ask them not to.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>What does <code>"Total: " + $total</code> do in PHP, and what should you write?</li><li>A file without <code>declare(strict_types=1)</code> calls <code>total("3 kits", 2)</code>. What happens?</li><li>Why is <code>"10" == "1e1"</code> true?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Arrays: lists and maps in one</h2>
+
+<p>PHP has one <code>array</code> type for what JavaScript splits into arrays and plain objects. Its keys are integers or strings, and it keeps them in the order you add them:</p>
+
+<pre data-code="demos/arrays.php" data-title="demos/arrays.php"></pre>
+
+<pre data-code="arrays.sh" data-title="Terminal"></pre>
+
+<p>Line by line, the points that catch JavaScript developers:</p>
+<ul>
+<li><code>$prices[] = 2500</code> appends, like <code>push</code>. <code>??</code> gives a default when a key is missing (or null), exactly as in JavaScript.</li>
+<li><strong>Arrays are values.</strong> <code>$copy = $prices</code> makes a copy; adding to the copy left the original with 4 items. In JavaScript, both names would point to the same array. Objects, on the other hand, are shared in PHP as in JavaScript.</li>
+<li>Destructuring uses square brackets for both kinds: <code>[$first, $second]</code> by position, <code>['name' =&gt; $name]</code> by key.</li>
+<li>The array functions take their arguments in different orders: <code>array_map(callback, array)</code> but <code>array_filter(array, callback)</code>. Your editor will remind you; there is no logic to remember.</li>
+<li><code>array_filter</code> <strong>keeps the keys</strong>: the cheap prices are at keys 1 and 3. Encoded as JSON, an array with gaps in its keys becomes an <em>object</em>, not a list. Pass the result through <code>array_values</code>, as the next line does, whenever you need a list again.</li>
+<li>PHP 8.4 added <code>array_find</code>, <code>array_any</code> and <code>array_all</code>, the equivalents of <code>find</code>, <code>some</code> and <code>every</code>.</li>
+<li>PHP 8.5 added the <dfn>pipe operator</dfn> <code>|&gt;</code>: it passes the value on its left to the function on its right, so a chain of steps reads from left to right instead of from the inside out. <code>trim(...)</code> with three dots is a <dfn>first-class callable</dfn>: the function itself, like writing <code>trim</code> without calling it in JavaScript.</li>
+</ul>
+
+<h2>{{n}}.5 Functions and closures</h2>
+
+<p>A function written inside another piece of code can use the variables around it. JavaScript simply shares them. PHP is more careful, and this is the rule from Bit’s story:</p>
+
+<pre data-code="demos/closures.php" data-title="demos/closures.php"></pre>
+
+<pre data-code="closures.sh" data-title="Terminal"></pre>
+
+<ul>
+<li>An <dfn>arrow function</dfn>, <code>fn (...) =&gt; expression</code>, captures the variables it uses automatically, <strong>by value</strong>, when it is created. Changing <code>$discount</code> afterwards changes nothing: the price is 40500, 10% off.</li>
+<li>A full <code>function () { ... }</code> captures nothing unless you list the variables in <code>use</code>, again by value. That is why <code>$count</code> stayed 0: each call increased the closure’s own copy.</li>
+<li>To share a variable the JavaScript way, capture it <strong>by reference</strong> with <code>&amp;</code>. Use this rarely; a function that returns a new value is easier to follow.</li>
+<li><dfn>Named arguments</dfn> let you pass arguments by name, in any order, skipping the optional ones you do not need. Laravel uses them often, and they make long calls readable.</li>
+</ul>
+
+<h2>{{n}}.6 Classes for a real domain</h2>
+
+<p>Larger PHP code is organised in classes, one class per file, grouped by <dfn>namespaces</dfn>: the PHP version of folders for names. A class <code>Money</code> in the namespace <code>Shop</code> is <code>Shop\Money</code> in full, and other files bring it in with <code>use Shop\Money;</code>, like an <code>import</code>. Nobody writes <code>require</code> for every class file: <dfn>Composer</dfn>, PHP’s package manager (its npm), generates an <dfn>autoloader</dfn> that finds the file the first time a class is used. One rule in <code>composer.json</code> says that classes in the namespace <code>Shop</code> live in the folder <code>src/</code>; this convention is called <dfn>PSR-4</dfn>:</p>
+
+<pre data-code="composer.json" data-title="composer.json"></pre>
+
+<pre data-code="autoload.sh" data-title="Terminal"></pre>
+
+<p>Now the classes. Bit’s shop needs money that never loses a piastre, and currencies that cannot be mistyped. A currency is a fixed set of values, which is exactly what an <dfn>enum</dfn> is:</p>
+
+<pre data-code="src/Currency.php" data-title="src/Currency.php"></pre>
+
+<p>A <dfn>backed enum</dfn> has a value for each case (here the ISO code), so it can be stored in a database and read back. Enums can have methods. <code>match</code> is a stricter <code>switch</code>: it compares with <code>===</code>, returns a value, has no fall-through, and throws an error if no case matches, so a new currency cannot be forgotten silently.</p>
+
+<pre data-code="src/Money.php" data-title="src/Money.php"></pre>
+
+<ul>
+<li><dfn>Constructor promotion</dfn>: parameters marked <code>public</code> in the constructor become properties. Six lines of boilerplate disappear.</li>
+<li><code>readonly class</code>: every property can be set once, in the constructor, and never again. A <code>Money</code> value never changes: <code>plus</code> and <code>times</code> return new objects. This is the same immutability you used in React and Vue state, and it removes a whole family of bugs.</li>
+<li><code>final</code>: nobody can extend the class. Make classes final unless they are designed to be extended.</li>
+<li>The constructor refuses a negative amount, and <code>plus</code> refuses to add different currencies. An object that checks its own rules can never exist in a broken state.</li>
+</ul>
+
+<p>The currency error is a class of its own, so that code can catch exactly this error and nothing else:</p>
+
+<pre data-code="src/CurrencyMismatch.php" data-title="src/CurrencyMismatch.php"></pre>
+
+<p>An order’s status is another enum, with a label for people and a rule of the business:</p>
+
+<pre data-code="src/OrderStatus.php" data-title="src/OrderStatus.php"></pre>
+
+<p>The cart uses two features from PHP 8.4:</p>
+
+<pre data-code="src/Cart.php" data-title="src/Cart.php"></pre>
+
+<ul>
+<li><code>public private(set)</code> is <dfn>asymmetric visibility</dfn>: anyone may read <code>$lines</code>, only the class may change it. Before PHP 8.4 this needed a private property and a getter method.</li>
+<li><code>$total</code> and <code>$count</code> have <dfn>property hooks</dfn>: they are read like properties (<code>$cart-&gt;total</code>) but computed by the <code>get</code> code every time, like a getter in a JavaScript class. The total is always correct, because it is never stored.</li>
+<li><code>add</code> returns <code>static</code>, the cart itself, so calls can be chained.</li>
+</ul>
+
+<p>Finally, a product, with one more PHP 8.5 feature:</p>
+
+<pre data-code="src/Product.php" data-title="src/Product.php"></pre>
+
+<p>A product is readonly, so a sale cannot change it. <code>clone($this, [...])</code> makes a copy with some properties changed, the PHP version of <code>{ ...product, price }</code>. Here is everything at work:</p>
+
+<pre data-code="demos/shop.php" data-title="demos/shop.php"></pre>
+
+<pre data-code="shop.sh" data-title="Terminal"></pre>
+
+<p>Read the output against the code. The cart counts 3 items worth 570.00 (450 + 2 × 60). <code>from</code> turns a stored value into an enum case, and <code>tryFrom</code> returns <code>null</code> instead of throwing for an unknown one, which is what you want for input from outside. Then the three errors show the rules being enforced <em>by the language</em>: the cart’s lines cannot be replaced from outside, a money amount cannot be changed, and even <code>clone</code> with new values is refused from outside the class, because a readonly property may only be set from inside it. That is why <code>onSale</code> is a method of <code>Product</code>: the class decides how its copies are made.</p>
+
+<aside class="box tip"><p class="box-title">Tip: Exception and Error</p><p>Everything that can be thrown implements <code>Throwable</code>. <code>Exception</code> and its subclasses are for problems your program expects and can handle: an invalid argument, a missing record, a currency mismatch. <code>Error</code> and its subclasses (<code>TypeError</code>, <code>ValueError</code>, and the visibility errors above) mean the code itself is wrong. Catch exceptions where you can do something useful about them; let errors reach the framework, which logs them and answers 500, as our server did in Chapter {{n-1}}.</p></aside>
+
+<h2>{{n}}.7 Checking before running: PHPStan</h2>
+
+<p>PHP checks types when a line runs, so a bug in a branch that rarely runs stays hidden until the day it runs in production. <dfn>PHPStan</dfn> reads the code without running it and reports type errors, as <code>tsc</code> does for TypeScript. It was installed with the project, as a development dependency, and its configuration asks for the strictest level:</p>
+
+<pre data-code="phpstan.neon" data-title="phpstan.neon"></pre>
+
+<p>This function has two bugs, neither of which would show up in a quick manual test:</p>
+
+<pre data-code="demos/bug.php" data-title="demos/bug.php"></pre>
+
+<pre data-code="phpstan.sh" data-title="Terminal"></pre>
+
+<p><code>php -l</code> checks only that the file is valid PHP, which it is. PHPStan found both bugs: <code>$status</code> may be <code>null</code>, so calling a method on it would crash, and <code>'0'</code> is a string where the constructor needs an <code>int</code>. Notice the PHPDoc comment in <code>Cart.php</code>, <code>@var array&lt;int, array{product: Product, quantity: int}&gt;</code>: PHP’s own types cannot describe what is inside an array, but PHPStan reads these comments and checks them too. For Laravel projects, the Larastan extension teaches PHPStan about the framework’s conventions.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: strict from the first line</p><p>Every file starts with <code>declare(strict_types=1);</code>. PHPStan runs at the highest level your project can pass, in CI, on every pull request, and the level only goes up. A formatter (Laravel Pint, which follows the community’s PER coding style) settles every question of layout automatically. With these three in place, reviews are about design, not about types and spaces.</p></aside>
+
+<h2>{{n}}.8 How PHP runs on a server</h2>
+
+<p>You saw in Chapter {{n-1}} that PHP starts each request with an empty memory and forgets everything when it ends. Two details complete the picture. First, PHP does not parse your files again for every request: <dfn>OPcache</dfn> keeps the compiled code in shared memory, so only your code’s work is repeated, not the parsing. Second, servers such as FrankenPHP (with Laravel Octane) can run in <dfn>worker mode</dfn>, keeping the application in memory between requests for speed, like a Node server. Then static properties and singletons survive from one request to the next, and code that was safe under shared-nothing may leak one user’s data into another’s request. We return to this when we measure performance in Chapter {{n+13}}.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>No <code>strict_types</code></td><td>Wrong types are converted silently</td><td><code>declare(strict_types=1);</code> in every file</td></tr>
+<tr><td><code>==</code> and loose <code>in_array</code></td><td><code>"10" == "1e1"</code>, <code>null == false</code></td><td><code>===</code>, and <code>true</code> as the last argument</td></tr>
+<tr><td><code>+</code> to join strings</td><td>A <code>TypeError</code>, or a number</td><td>The dot operator, or interpolation</td></tr>
+<tr><td>Expecting arrays to be shared</td><td>Changes to a copy are lost</td><td>Return the new array; objects for shared state</td></tr>
+<tr><td>Expecting closures to share variables</td><td>Totals that stay zero</td><td>Return values; <code>&amp;</code> only when needed</td></tr>
+<tr><td>Forgetting that <code>array_filter</code> keeps keys</td><td>JSON objects where lists were expected</td><td><code>array_values</code></td></tr>
+<tr><td>Strings for fixed sets of values</td><td>Typos stored in the database</td><td>Backed enums with <code>from</code> and <code>tryFrom</code></td></tr>
+<tr><td>Floats for money</td><td>Amounts off by fractions</td><td>Integers in minor units, in a value object</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Variables start with <code>$</code>; strings join with <strong><code>.</code></strong>; double quotes interpolate.</li>
+<li>Types are checked at run time. <strong><code>declare(strict_types=1)</code></strong> stops silent conversions in a file.</li>
+<li>Always compare with <strong><code>===</code></strong>; PHP’s loose rules differ from JavaScript’s.</li>
+<li>One <strong>array</strong> type for lists and maps. Arrays are <strong>copied</strong> on assignment; <code>array_filter</code> keeps keys. PHP 8.4 adds <code>array_find</code>, <code>array_any</code>, <code>array_all</code>; PHP 8.5 adds the pipe operator <strong><code>|&gt;</code></strong>.</li>
+<li><strong>Closures capture by value</strong>: <code>fn</code> automatically, <code>function</code> with <code>use</code>. Named arguments make long calls readable.</li>
+<li><strong>Namespaces</strong> and <strong>Composer</strong>’s PSR-4 autoloader replace <code>require</code>.</li>
+<li><strong>Readonly classes</strong>, <strong>constructor promotion</strong>, <strong>backed enums</strong> with <code>match</code>, <strong>asymmetric visibility</strong>, <strong>property hooks</strong> and <strong><code>clone</code> with</strong> model a domain that cannot get into a broken state.</li>
+<li><strong>Exceptions</strong> for expected problems, <strong>errors</strong> for broken code.</li>
+<li><strong>PHPStan</strong> checks types without running the code; run it in CI at the highest level.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>+</code> is arithmetic only: with a string that is not a number it throws a <code>TypeError</code>, strict types or not (a string such as <code>"5"</code> would be added as a number). Write <code>"Total: " . $total</code>, or <code>"Total: $total"</code>. 2. PHP tries to convert <code>"3 kits"</code> to an int; because the string is not a whole number, it throws a <code>TypeError</code> anyway (a string such as <code>"3"</code> would have been converted silently). 3. Both strings look like numbers, so <code>==</code> compares them as numbers, and <code>1e1</code> is 10.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project is a small Composer project with PSR-4 autoloading, <code>strict_types</code> in every file, and PHPStan at level <code>max</code> with no errors. Run your code with <code>php</code>; Laravel comes in the next chapter.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A typed price list</h3>
+<p class="project-goal">Read products from a JSON file, turn them into <code>Product</code> objects with checked values, and print a sorted price list.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>json_decode</code>, arrays and their functions, value objects, exceptions, and the pipe operator.</p>
+<ol class="steps">
+<li>Write <code>products.json</code> with at least six products, including one with a negative price and one with an unknown currency.</li>
+<li>Decode it with <code>json_decode($text, true, flags: JSON_THROW_ON_ERROR)</code>, and turn each item into a <code>Product</code>, using <code>Currency::tryFrom</code>.</li>
+<li>Collect the invalid items with the reason each was refused, instead of stopping at the first one.</li>
+<li>Sort the valid products by price with <code>usort</code> and the spaceship operator <code>&lt;=&gt;</code>, and print them as aligned columns with <code>printf</code>.</li>
+<li>Write the final steps as a pipe: decode, validate, sort, format.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>usort</code> changes the array you pass it, and returns <code>true</code>, not the sorted array. In a pipe, wrap it in an arrow function that sorts a copy and returns it.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>An order that follows the rules</h3>
+<p class="project-goal">Model an order whose status can only move along allowed paths, with a history of every change.</p>
+<p class="project-skills"><strong>You will practise:</strong> enums with methods, <code>match</code>, asymmetric visibility, custom exceptions, and PHPStan.</p>
+<ol class="steps">
+<li>Give <code>OrderStatus</code> a method <code>canMoveTo(OrderStatus $next): bool</code>, written with <code>match</code>: pending to paid or cancelled, paid to shipped or cancelled, nothing after shipped or cancelled.</li>
+<li>Write an <code>Order</code> class with <code>public private(set) OrderStatus $status</code> and a history array of status changes with their times (<code>new DateTimeImmutable()</code>).</li>
+<li>Add <code>moveTo(OrderStatus $next)</code>, which throws your own <code>InvalidTransition</code> exception, naming both statuses, when the move is not allowed.</li>
+<li>Write a script that walks an order through a valid path and then tries an invalid move, catching the exception.</li>
+<li>Add a property hook <code>$isFinished</code> that is true for shipped and cancelled orders.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> put the rule in the enum, not in the order. Then a status page, an API and a background job all ask the same method, and the rule lives in one place.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Build a tiny service container</h3>
+<p class="project-goal">Write a small version of the container at the heart of Laravel: it builds objects and their dependencies automatically from constructor types.</p>
+<p class="project-skills"><strong>You will practise:</strong> reflection, closures, interfaces, recursion, and the idea behind dependency injection.</p>
+<ol class="steps">
+<li>Write a <code>Container</code> class with <code>bind(string $id, Closure $factory)</code> and <code>make(string $id): object</code>.</li>
+<li>When <code>make</code> is asked for a class with no binding, read its constructor with <code>new ReflectionClass($id)</code>, make each parameter’s class recursively, and create the object.</li>
+<li>Add <code>singleton</code>, which builds the object once and returns the same one every time after.</li>
+<li>Bind an interface (for example <code>PaymentGateway</code>) to a class, and check that a service whose constructor asks for the interface receives that class.</li>
+<li>Throw a clear exception for a parameter that cannot be built (a scalar with no default value), and detect a loop where A needs B and B needs A.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> to find a loop, keep a list of the classes being built right now. If <code>make</code> is asked for one that is already in the list, the chain has come back to where it started.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Predict the result of each loose comparison, then check it: <code>'abc' == 0</code>, <code>'1' == '1.0'</code>, <code>null == 0</code>, <code>'' == null</code>, <code>'0' == false</code>, <code>' 1' == 1</code>.</li>
+<li><span class="level">Easy</span> This code is meant to add up the prices. What does it print, why, and how would you fix it in two different ways?<br><code>$total = 0; array_walk($prices, function (int $p) use ($total): void { $total += $p; }); echo $total;</code></li>
+<li><span class="level">Medium</span> Add the Kuwaiti dinar to <code>Currency</code>. It has 1000 fils, not 100, so <code>Money::format</code> must show three decimals for it. Change the code so that each currency says how many decimals it has.</li>
+<li><span class="level">Medium</span> In <code>shop.sh</code>, three lines report errors. For each one, name the PHP feature that caused it, and explain why <code>$kit-&gt;onSale(10)</code> works when <code>clone($kit, [...])</code> in the script does not.</li>
+<li><span class="level">Challenge</span> Give <code>Cart</code> a <code>$discountPercent</code> property, from 0 to 100, whose <code>set</code> hook throws a <code>ValueError</code> for anything else, and a <code>$payable</code> property hook that applies the discount to the total.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>With modern PHP in hand, we create a Laravel project and rebuild the shop API with routes, controllers, requests and validation, and see how much of Chapter {{n-1}}’s hand-written server the framework does for us.</p>
+</div>
+</section>
