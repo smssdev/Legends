@@ -43,6 +43,8 @@
 @page ch17:first { @top-center { content: none; } }
 @page ch18 { @top-center { content: "Chapter 18: Code Review, Mentoring and Technical Decisions"; } }
 @page ch18:first { @top-center { content: none; } }
+@page ch19 { @top-center { content: "Chapter 19: Capstone: A Production Dashboard"; } }
+@page ch19:first { @top-center { content: none; } }
 @page preface { @top-center { content: "How to Use This Book"; } }
 @page preface:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
@@ -177,7 +179,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
           <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: The Language</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Modern JavaScript in Depth</span><span class="toc-p">10</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">TypeScript for Real Projects</span><span class="toc-p">30</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Modules, Tooling and Build Systems</span><span class="toc-p">47</span></li><li class="toc-part">Part 2: Vue</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Components and Templates</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reactivity and the Composition API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Composables: Reusing Logic</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Vue Router and Server Data</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Forms and Validation</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Global State with Pinia</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Quality</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Design Systems and Component Libraries</span><span class="toc-p">63</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility (WCAG) in Practice</span><span class="toc-p">79</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Testing: Unit, Component and End-to-End</span><span class="toc-p">94</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Performance and Core Web Vitals</span><span class="toc-p">108</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Frontend Security</span><span class="toc-p">123</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Internationalisation and RTL</span><span class="toc-p">135</span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Frontend Architecture at Scale</span><span class="toc-p">150</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Server Rendering with Nuxt</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">Code Review, Mentoring and Technical Decisions</span><span class="toc-p">165</span></li><li class="toc-ch"><span class="toc-n">19</span><span class="toc-t">Capstone: A Production Dashboard</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">184</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b2/preface/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">How to Use This Book</span><span class="toc-p">7</span></li><li class="toc-part">Part 1: The Language</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Modern JavaScript in Depth</span><span class="toc-p">11</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">TypeScript for Real Projects</span><span class="toc-p">31</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Modules, Tooling and Build Systems</span><span class="toc-p">48</span></li><li class="toc-part">Part 2: Vue</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Components and Templates</span><span class="toc-p">64</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Reactivity and the Composition API</span><span class="toc-p">85</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Composables: Reusing Logic</span><span class="toc-p">103</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Vue Router and Server Data</span><span class="toc-p">122</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Forms and Validation</span><span class="toc-p">140</span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Global State with Pinia</span><span class="toc-p">157</span></li><li class="toc-part">Part 3: Quality</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Design Systems and Component Libraries</span><span class="toc-p">174</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Accessibility (WCAG) in Practice</span><span class="toc-p">193</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Testing: Unit, Component and End-to-End</span><span class="toc-p">213</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Performance and Core Web Vitals</span><span class="toc-p">232</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Frontend Security</span><span class="toc-p">249</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Internationalisation and RTL</span><span class="toc-p">262</span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Frontend Architecture at Scale</span><span class="toc-p">279</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Server Rendering with Nuxt</span><span class="toc-p">294</span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">Code Review, Mentoring and Technical Decisions</span><span class="toc-p">315</span></li><li class="toc-ch"><span class="toc-n">19</span><span class="toc-t">Capstone: A Production Dashboard</span><span class="toc-p">334</span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">368</span></li></ol></section><section style="page: preface" class="chapter preface" data-chapter="0" data-code="b2/preface/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Before you begin</p><h1>How to Use This Book</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -211,13 +213,19 @@ You are reading the <strong>Vue edition</strong>.If your team uses the other fra
 <p>The projects matter more than anything else in the book. Reading about a skill is not having it. Do at least one project per chapter, preferably the medium one, before moving on.</p>
 
 <h2 class="plain-h">Real code, real output</h2>
-<p>Every listing in this book is a real file, and every output, test run and screenshot was produced by running it while the book was being made. When a chapter says a bundle shrank from 221.7 KB to 142.6 KB, those are the numbers the tools printed. You will see the same results if you use the same versions:</p>
+<p>Every listing in this book is a real file, and every output, test run and screenshot was produced by running it while the book was being made. When a chapter says the dashboard’s first load is 77.3 KB, those are the numbers the tools printed. You will see the same results if you use the same versions:</p>
 <table>
 <thead><tr><th>Tool</th><th>Version</th></tr></thead>
 <tbody>
 <tr><td>Node.js</td><td>22</td></tr>
 <tr><td>TypeScript</td><td>7.0</td></tr>
-<tr><td>zod</td><td>4.6</td></tr>
+<tr><td>Vue</td><td>3.5</td></tr>
+<tr><td>Vue Router</td><td>5.5</td></tr>
+<tr><td>Pinia</td><td>4.1</td></tr>
+<tr><td>TanStack Query</td><td>5</td></tr>
+<tr><td>VueUse</td><td>15</td></tr>
+<tr><td>Nuxt</td><td>4.6</td></tr>
+<tr><td>vue-tsc (on TypeScript 6.0)</td><td>3.3</td></tr><tr><td>zod</td><td>4.6</td></tr>
 <tr><td>Vitest</td><td>5.1</td></tr>
 <tr><td>Playwright</td><td>1.63</td></tr>
 <tr><td>axe-core</td><td>4.14</td></tr>
@@ -8509,6 +8517,972 @@ on the team will pair with the others on the first tests.
 <p>Everything in this book comes together in one last project: a production dashboard, built, tested, reviewed and shipped the way a professional team would do it.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch19" data-chapter="19" data-code="b2/vue/capstone/en">
+<div class="opener"><span class="opener-num">19</span><p class="chapter-kicker">Chapter 19</p><h1>Capstone: A Production Dashboard</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will</p>
+<ul>
+<li>turn a short brief into user stories and the quality goals a release must meet</li>
+<li>organise a real codebase in layers, with one place that talks to the server</li>
+<li>build five screens with routing, server data, URL state, an optimistic update and a validated form</li>
+<li>support two languages, right to left, and a dark theme from the first line</li>
+<li>prove the app works with unit tests, end-to-end tests and an accessibility audit</li>
+<li>measure the app against a size budget, and learn which advice applies to your own setup</li>
+</ul>
+</div>
+
+<p class="lead">Every chapter of this book taught one skill on a small example. Real work is different: all the skills are needed at once, they pull in different directions, and nobody tells you which chapter applies. In this last chapter we build one complete app, the admin dashboard of Bit’s shop, from a brief to a release. Every file is shown, every test is run, and every number is measured.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Read this chapter twice: once for the app, and once for the decisions. Each section says which chapter a decision comes from, so you can go back whenever something feels new.</p></div></div>
+
+<h2><span class="sec">19.1</span> <span>The brief</span></h2>
+
+<p>The shop owner writes: <em>“I want to see how the shop is doing, find orders and mark them as shipped, and fix product prices, from my laptop or my phone, in Arabic or English.”</em> A brief like this is not yet something you can build. The first job is to turn it into <dfn>user stories</dfn>, each with a test for “done”:</p>
+
+<table>
+<thead><tr><th>As the owner, I want to…</th><th>Done when…</th></tr></thead>
+<tbody>
+<tr><td>see revenue, orders and what is waiting to ship</td><td>The overview shows four numbers and the last seven days of revenue</td></tr>
+<tr><td>find an order by status or by customer</td><td>The list filters and pages, and a filtered list can be bookmarked</td></tr>
+<tr><td>mark an order as shipped</td><td>The change shows at once, and is undone clearly if the server refuses</td></tr>
+<tr><td>fix a product’s name, price and stock</td><td>Wrong values are explained under each field; the server’s own errors too</td></tr>
+<tr><td>use it in Arabic or English, in light or dark</td><td>Every text is translated, the layout mirrors, and the choice is remembered</td></tr>
+</tbody>
+</table>
+
+<p>And the qualities that every story must also meet, which a team writes down before the first line of code:</p>
+<ul>
+<li><strong>Accessible:</strong> no violations in an automatic audit, and everything works with the keyboard (Chapter 11).</li>
+<li><strong>Tested:</strong> the logic by unit tests, the main journeys by end-to-end tests (Chapter 12).</li>
+<li><strong>Fast:</strong> the first load under 150 KB of compressed JavaScript (Chapter 13).</li>
+<li><strong>Safe:</strong> every answer from the server is checked before use (Chapter 14).</li>
+</ul>
+
+<h2><span class="sec">19.2</span> <span>The plan</span></h2>
+
+<p>The folders follow the layers of Chapter 16. Each layer may import only from the layers before it in this list:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ find src -type f | sort
+src/api/client.ts
+src/api/fake-server.ts
+src/api/queries.ts
+src/api/schemas.ts
+src/app/App.vue
+src/app/routes.ts
+src/features/orders/OrderPage.vue
+src/features/orders/OrdersPage.vue
+src/features/overview/OverviewPage.vue
+src/features/products/ProductForm.test.ts
+src/features/products/ProductForm.vue
+src/features/products/ProductPage.vue
+src/features/products/ProductsPage.vue
+src/i18n/format.ts
+src/i18n/messages.ts
+src/lib/orders.test.ts
+src/lib/orders.ts
+src/lib/useForm.ts
+src/main.ts
+src/settings.ts
+src/ui/BaseCard.vue
+src/ui/LoadError.vue
+src/ui/LoadingSkeleton.vue
+src/ui/StatusBadge.vue</pre></div>
+
+<table>
+<thead><tr><th>Folder</th><th>Holds</th><th>From chapter</th></tr></thead>
+<tbody>
+<tr><td><code>api/</code></td><td>Schemas, the client, the query composables: the only code that talks to the server</td><td>7, 8</td></tr>
+<tr><td><code>lib/</code></td><td>Pure logic, and the form composable</td><td>12, 8</td></tr>
+<tr><td><code>i18n/</code>, <code>settings.ts</code></td><td>Both languages, Intl formats, the settings store</td><td>15, 9</td></tr>
+<tr><td><code>ui/</code></td><td>Small shared components</td><td>10</td></tr>
+<tr><td><code>features/</code></td><td>One folder per area of the app, one file per screen</td><td>4, 5</td></tr>
+<tr><td><code>app/</code></td><td>Routes and the layout that holds the screens</td><td>7</td></tr>
+</tbody>
+</table>
+
+<p>The React edition of this book builds the same dashboard. The files without a framework in them, the schemas, the client, the pretend server, the pure logic, the two languages and the end-to-end test, are <em>exactly</em> the same in both editions. That is the layers paying off: only the screens and the glue around them depend on Vue.</p>
+
+<h2><span class="sec">19.3</span> <span>Talking to the server</span></h2>
+
+<p>First, what the server sends, as zod schemas. Each schema is also a TypeScript type, so the rest of the app never writes these shapes twice. Money is a whole number of piastres:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/api/schemas.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> OrderStatus = z.enum([<span class="s">&quot;new&quot;</span>, <span class="s">&quot;paid&quot;</span>, <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;cancelled&quot;</span>]);
+<span class="k">export</span> <span class="k">type</span> OrderStatus = z.infer&lt;<span class="k">typeof</span> OrderStatus&gt;;
+
+<span class="k">export</span> <span class="k">const</span> Order = z.object({
+  id: z.number().int(),
+  customer: z.string(),
+  city: z.string(),
+  total: z.number().int().nonnegative(), <span class="c">// piastres</span>
+  status: OrderStatus,
+  createdAt: z.iso.datetime(),
+});
+<span class="k">export</span> <span class="k">type</span> Order = z.infer&lt;<span class="k">typeof</span> Order&gt;;
+
+<span class="k">export</span> <span class="k">const</span> Product = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  price: z.number().int().positive(), <span class="c">// piastres</span>
+  stock: z.number().int().nonnegative(),
+});
+<span class="k">export</span> <span class="k">type</span> Product = z.infer&lt;<span class="k">typeof</span> Product&gt;;</pre></div>
+
+<p>Then the client, the only file in the app that calls <code>fetch</code>. It parses every answer with its schema, so a server that changes a field breaks here, loudly, instead of in a random screen, and it turns failures into an <code>ApiError</code> that the screens can understand:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/api/client.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+<span class="k">import</span> { Order, Product, <span class="k">type</span> OrderStatus } <span class="k">from</span> <span class="s">&quot;./schemas&quot;</span>;
+
+<span class="c">// The only place that calls fetch: every answer is checked against its schema</span>
+<span class="k">export</span> <span class="k">class</span> ApiError <span class="k">extends</span> Error {
+  constructor(
+    <span class="k">readonly</span> status: number,
+    <span class="k">readonly</span> errors: Record&lt;string, string&gt; = {},
+  ) {
+    <span class="k">super</span>(<span class="s">`HTTP ${status}`</span>);
+  }
+}
+
+<span class="k">async</span> <span class="k">function</span> request&lt;T&gt;(path: string, schema: z.ZodType&lt;T&gt;, init?: RequestInit): Promise&lt;T&gt; {
+  <span class="k">const</span> response = <span class="k">await</span> fetch(path, { ...init, headers: { <span class="s">&quot;Content-Type&quot;</span>: <span class="s">&quot;application/json&quot;</span> } });
+  <span class="k">const</span> body: unknown = <span class="k">await</span> response.json().<span class="k">catch</span>(() =&gt; ({}));
+  <span class="k">if</span> (!response.ok) {
+    <span class="k">const</span> errors = (body as { errors?: Record&lt;string, string&gt; }).errors;
+    <span class="k">throw</span> <span class="k">new</span> ApiError(response.status, errors);
+  }
+  <span class="k">return</span> schema.parse(body);
+}
+
+<span class="k">const</span> send = (method: string, data: unknown): RequestInit =&gt; ({ method, body: JSON.stringify(data) });
+
+<span class="k">export</span> <span class="k">const</span> api = {
+  orders: () =&gt; request(<span class="s">&quot;/api/orders&quot;</span>, z.array(Order)),
+  order: (id: number) =&gt; request(<span class="s">`/api/orders/${id}`</span>, Order),
+  setStatus: (id: number, status: OrderStatus) =&gt; request(<span class="s">`/api/orders/${id}`</span>, Order, send(<span class="s">&quot;PATCH&quot;</span>, { status })),
+  products: () =&gt; request(<span class="s">&quot;/api/products&quot;</span>, z.array(Product)),
+  product: (id: number) =&gt; request(<span class="s">`/api/products/${id}`</span>, Product),
+  saveProduct: (product: Product) =&gt; request(<span class="s">`/api/products/${product.id}`</span>, Product, send(<span class="s">&quot;PUT&quot;</span>, product)),
+};</pre></div>
+
+<p>And the TanStack Query composables that the screens use. Their ids accept a getter, as in Chapter 6, so a page passes <code>() =&gt; props.id</code> and refetches when the id changes. Changing a status is <dfn>optimistic</dfn>, as in Chapter 7: the screen shows the new status before the server answers, and puts the old one back if it fails.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/api/queries.ts</div><pre class="code"><span class="k">import</span> { useMutation, useQuery, useQueryClient } <span class="k">from</span> <span class="s">&quot;@tanstack/vue-query&quot;</span>;
+<span class="k">import</span> { toValue, <span class="k">type</span> MaybeRefOrGetter } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { api } <span class="k">from</span> <span class="s">&quot;./client&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { Order, OrderStatus, Product } <span class="k">from</span> <span class="s">&quot;./schemas&quot;</span>;
+
+<span class="c">// One place for query keys, so reading and invalidating always use the same names</span>
+<span class="k">export</span> <span class="k">const</span> keys = {
+  orders: [<span class="s">&quot;orders&quot;</span>] as <span class="k">const</span>,
+  order: (id: number) =&gt; [<span class="s">&quot;orders&quot;</span>, id] as <span class="k">const</span>,
+  products: [<span class="s">&quot;products&quot;</span>] as <span class="k">const</span>,
+  product: (id: number) =&gt; [<span class="s">&quot;products&quot;</span>, id] as <span class="k">const</span>,
+};
+
+<span class="k">export</span> <span class="k">const</span> useOrders = () =&gt; useQuery({ queryKey: keys.orders, queryFn: api.orders });
+<span class="k">export</span> <span class="k">const</span> useProducts = () =&gt; useQuery({ queryKey: keys.products, queryFn: api.products });
+
+<span class="k">export</span> <span class="k">function</span> useOrder(id: MaybeRefOrGetter&lt;number&gt;) {
+  <span class="k">return</span> useQuery({ queryKey: [<span class="s">&quot;orders&quot;</span>, id], queryFn: () =&gt; api.order(toValue(id)) });
+}
+
+<span class="k">export</span> <span class="k">function</span> useProduct(id: MaybeRefOrGetter&lt;number&gt;) {
+  <span class="k">return</span> useQuery({ queryKey: [<span class="s">&quot;products&quot;</span>, id], queryFn: () =&gt; api.product(toValue(id)) });
+}
+
+<span class="k">export</span> <span class="k">function</span> useSetStatus(id: MaybeRefOrGetter&lt;number&gt;) {
+  <span class="k">const</span> client = useQueryClient();
+  <span class="k">return</span> useMutation({
+    mutationFn: (status: OrderStatus) =&gt; api.setStatus(toValue(id), status),
+    <span class="c">// Show the new status at once; put the old one back if the server refuses</span>
+    onMutate: <span class="k">async</span> (status) =&gt; {
+      <span class="k">const</span> key = keys.order(toValue(id));
+      <span class="k">await</span> client.cancelQueries({ queryKey: key });
+      <span class="k">const</span> before = client.getQueryData&lt;Order&gt;(key);
+      <span class="k">if</span> (before) client.setQueryData&lt;Order&gt;(key, { ...before, status });
+      <span class="k">return</span> { before };
+    },
+    onError: (_error, _status, context) =&gt; {
+      <span class="k">if</span> (context?.before) client.setQueryData(keys.order(toValue(id)), context.before);
+    },
+    onSettled: () =&gt; client.invalidateQueries({ queryKey: keys.orders }),
+  });
+}
+
+<span class="k">export</span> <span class="k">function</span> useSaveProduct() {
+  <span class="k">const</span> client = useQueryClient();
+  <span class="k">return</span> useMutation({
+    mutationFn: (product: Product) =&gt; api.saveProduct(product),
+    onSuccess: (saved) =&gt; {
+      client.setQueryData(keys.product(saved.id), saved);
+      void client.invalidateQueries({ queryKey: keys.products, exact: <span class="k">true</span> });
+    },
+  });
+}</pre></div>
+
+<p>During development, and for this book’s screenshots and end-to-end tests, a small pretend server answers the same addresses with the same shapes. A test page puts it in place of <code>fetch</code>, and nothing else in the app knows. Real projects do the same with the library Mock Service Worker.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">page.ts</div><pre class="code"><span class="c">// For the screenshots and end-to-end tests only</span>
+<span class="k">import</span> { createApp } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { createPinia } <span class="k">from</span> <span class="s">&quot;pinia&quot;</span>;
+<span class="k">import</span> { createMemoryHistory, createRouter } <span class="k">from</span> <span class="s">&quot;vue-router&quot;</span>;
+<span class="k">import</span> { VueQueryPlugin } <span class="k">from</span> <span class="s">&quot;@tanstack/vue-query&quot;</span>;
+<span class="k">import</span> { fakeFetch, server } <span class="k">from</span> <span class="s">&quot;./src/api/fake-server&quot;</span>;
+<span class="k">import</span> App <span class="k">from</span> <span class="s">&quot;./src/app/App.vue&quot;</span>;
+<span class="k">import</span> { routes } <span class="k">from</span> <span class="s">&quot;./src/app/routes&quot;</span>;
+
+window.fetch = fakeFetch;
+Object.assign(window, { server }); <span class="c">// so a test can say: server.failNextChange = true</span>
+localStorage.clear(); <span class="c">// start from the page&#x27;s own language and the light theme</span>
+
+<span class="k">const</span> router = createRouter({ history: createMemoryHistory(), routes });
+<span class="k">await</span> router.push(<span class="s">&quot;/&quot;</span>);
+createApp(App)
+  .use(createPinia())
+  .use(router)
+  .use(VueQueryPlugin, { queryClientConfig: { defaultOptions: { queries: { staleTime: 30_000, retry: <span class="k">false</span> } } } })
+  .mount(<span class="s">&quot;#app&quot;</span>);</pre></div>
+
+<h2><span class="sec">19.4</span> <span>Two languages from the first line</span></h2>
+
+<p>All texts live in <code>src/i18n/messages.ts</code>, as an English object and an Arabic one typed <code>Record&lt;Key, string&gt;</code>: if a key is missing in Arabic, the build fails. Money, dates and weekdays come from <code>Intl</code>, which writes “EGP 250” in English and “‏٢٥٠ ج.م.‏” in Arabic without a single rule of ours (Chapter 15):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/i18n/format.ts</div><pre class="code"><span class="k">import</span> { messages, <span class="k">type</span> Key, <span class="k">type</span> Lang } <span class="k">from</span> <span class="s">&quot;./messages&quot;</span>;
+
+<span class="k">const</span> locales: Record&lt;Lang, string&gt; = { en: <span class="s">&quot;en-EG&quot;</span>, ar: <span class="s">&quot;ar-EG&quot;</span> };
+
+<span class="k">export</span> <span class="k">function</span> makeT(lang: Lang) {
+  <span class="k">const</span> money = <span class="k">new</span> Intl.NumberFormat(locales[lang], { style: <span class="s">&quot;currency&quot;</span>, currency: <span class="s">&quot;EGP&quot;</span>, maximumFractionDigits: <span class="n">0</span> });
+  <span class="k">const</span> date = <span class="k">new</span> Intl.DateTimeFormat(locales[lang], { day: <span class="s">&quot;numeric&quot;</span>, month: <span class="s">&quot;short&quot;</span>, hour: <span class="s">&quot;numeric&quot;</span>, minute: <span class="s">&quot;2-digit&quot;</span> });
+  <span class="k">const</span> weekday = <span class="k">new</span> Intl.DateTimeFormat(locales[lang], { weekday: <span class="s">&quot;short&quot;</span>, timeZone: <span class="s">&quot;UTC&quot;</span> });
+  <span class="k">const</span> number = <span class="k">new</span> Intl.NumberFormat(locales[lang]);
+  <span class="k">const</span> t = (key: Key, values: Record&lt;string, string | number&gt; = {}) =&gt;
+    messages[lang][key].replace(/\{(\w+)\}/g, (_, name: string) =&gt; {
+      <span class="k">const</span> value = values[name];
+      <span class="k">return</span> <span class="k">typeof</span> value === <span class="s">&quot;number&quot;</span> ? number.format(value) : String(value);
+    });
+  <span class="k">return</span> Object.assign(t, {
+    lang,
+    money: (piastres: number) =&gt; money.format(piastres / <span class="n">100</span>),
+    date: (iso: string) =&gt; date.format(<span class="k">new</span> Date(iso)),
+    weekday: (day: string) =&gt; weekday.format(<span class="k">new</span> Date(day)),
+  });
+}
+<span class="k">export</span> <span class="k">type</span> T = ReturnType&lt;<span class="k">typeof</span> makeT&gt;;</pre></div>
+
+<p>The language and the theme are app-wide settings that many components read and that should survive a reload, so they live in a Pinia store (Chapter 9), saved with <code>useLocalStorage</code>. The translation function is a <code>computed</code>: when the language changes, every text on the screen follows:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/settings.ts</div><pre class="code"><span class="k">import</span> { computed } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { defineStore } <span class="k">from</span> <span class="s">&quot;pinia&quot;</span>;
+<span class="k">import</span> { useLocalStorage } <span class="k">from</span> <span class="s">&quot;@vueuse/core&quot;</span>;
+<span class="k">import</span> { makeT } <span class="k">from</span> <span class="s">&quot;./i18n/format&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { Lang } <span class="k">from</span> <span class="s">&quot;./i18n/messages&quot;</span>;
+
+<span class="c">// App-wide settings in a Pinia store; useLocalStorage remembers them</span>
+<span class="k">export</span> <span class="k">const</span> useSettings = defineStore(<span class="s">&quot;settings&quot;</span>, () =&gt; {
+  <span class="k">const</span> lang = useLocalStorage&lt;Lang&gt;(<span class="s">&quot;admin-lang&quot;</span>, globalThis.document?.documentElement.lang === <span class="s">&quot;ar&quot;</span> ? <span class="s">&quot;ar&quot;</span> : <span class="s">&quot;en&quot;</span>);
+  <span class="k">const</span> dark = useLocalStorage(<span class="s">&quot;admin-dark&quot;</span>, <span class="k">false</span>);
+  <span class="k">const</span> t = computed(() =&gt; makeT(lang.value));
+
+  <span class="k">return</span> {
+    lang,
+    dark,
+    t,
+    toggleLanguage: () =&gt; (lang.value = lang.value === <span class="s">&quot;en&quot;</span> ? <span class="s">&quot;ar&quot;</span> : <span class="s">&quot;en&quot;</span>),
+    toggleDark: () =&gt; (dark.value = !dark.value),
+  };
+});</pre></div>
+
+<h2><span class="sec">19.5</span> <span>The frame: routes and layout</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app/routes.ts</div><pre class="code"><span class="k">import</span> { h } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { RouteRecordRaw } <span class="k">from</span> <span class="s">&quot;vue-router&quot;</span>;
+<span class="k">import</span> OverviewPage <span class="k">from</span> <span class="s">&quot;../features/overview/OverviewPage.vue&quot;</span>;
+<span class="k">import</span> OrdersPage <span class="k">from</span> <span class="s">&quot;../features/orders/OrdersPage.vue&quot;</span>;
+<span class="k">import</span> OrderPage <span class="k">from</span> <span class="s">&quot;../features/orders/OrderPage.vue&quot;</span>;
+
+<span class="k">const</span> id = (route: { params: Record&lt;string, unknown&gt; }) =&gt; ({ id: Number(route.params.id) });
+
+<span class="k">export</span> <span class="k">const</span> routes: RouteRecordRaw[] = [
+  { path: <span class="s">&quot;/&quot;</span>, component: OverviewPage },
+  {
+    path: <span class="s">&quot;/orders&quot;</span>,
+    children: [
+      { path: <span class="s">&quot;&quot;</span>, component: OrdersPage },
+      { path: <span class="s">&quot;:id(\\d+)&quot;</span>, component: OrderPage, props: id },
+    ],
+  },
+  {
+    path: <span class="s">&quot;/products&quot;</span>,
+    <span class="c">// Loaded only when opened: the form code is not part of the first download</span>
+    children: [
+      { path: <span class="s">&quot;&quot;</span>, component: () =&gt; <span class="k">import</span>(<span class="s">&quot;../features/products/ProductsPage.vue&quot;</span>) },
+      { path: <span class="s">&quot;:id(\\d+)&quot;</span>, component: () =&gt; <span class="k">import</span>(<span class="s">&quot;../features/products/ProductPage.vue&quot;</span>), props: id },
+    ],
+  },
+  { path: <span class="s">&quot;/:path(.*)*&quot;</span>, component: { render: () =&gt; h(<span class="s">&quot;p&quot;</span>, { role: <span class="s">&quot;alert&quot;</span> }, <span class="s">&quot;404&quot;</span>) } },
+];</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">src/app/App.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { watchEffect } from &quot;vue&quot;;
+import { storeToRefs } from &quot;pinia&quot;;
+import { useSettings } from &quot;../settings&quot;;
+
+const settings = useSettings();
+const { t, lang, dark } = storeToRefs(settings);
+
+watchEffect(() =&gt; {
+  const html = document.documentElement;
+  html.lang = lang.value;
+  html.dir = lang.value === &quot;ar&quot; ? &quot;rtl&quot; : &quot;ltr&quot;;
+  html.classList.toggle(&quot;dark&quot;, dark.value);
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div class=&quot;app&quot;&gt;
+    &lt;a class=&quot;skip&quot; href=&quot;#main&quot;&gt;{{ t(&quot;skip&quot;) }}&lt;/a&gt;
+    &lt;nav class=&quot;side&quot; :aria-label=&quot;t(&#x27;brand&#x27;)&quot;&gt;
+      &lt;span class=&quot;brand&quot;&gt;{{ t(&quot;brand&quot;) }}&lt;/span&gt;
+      &lt;RouterLink to=&quot;/&quot; exact-active-class=&quot;active&quot; active-class=&quot;&quot;&gt;{{ t(&quot;overview&quot;) }}&lt;/RouterLink&gt;
+      &lt;RouterLink to=&quot;/orders&quot; active-class=&quot;active&quot;&gt;{{ t(&quot;orders&quot;) }}&lt;/RouterLink&gt;
+      &lt;RouterLink to=&quot;/products&quot; active-class=&quot;active&quot;&gt;{{ t(&quot;products&quot;) }}&lt;/RouterLink&gt;
+    &lt;/nav&gt;
+    &lt;div&gt;
+      &lt;header class=&quot;top&quot;&gt;
+        &lt;button type=&quot;button&quot; class=&quot;secondary&quot; :lang=&quot;lang === &#x27;en&#x27; ? &#x27;ar&#x27; : &#x27;en&#x27;&quot; @click=&quot;settings.toggleLanguage()&quot;&gt;
+          {{ t(&quot;switchLanguage&quot;) }}
+        &lt;/button&gt;
+        &lt;button type=&quot;button&quot; class=&quot;secondary&quot; :aria-pressed=&quot;dark&quot; @click=&quot;settings.toggleDark()&quot;&gt;{{ t(&quot;dark&quot;) }}&lt;/button&gt;
+      &lt;/header&gt;
+      &lt;main id=&quot;main&quot;&gt;&lt;RouterView /&gt;&lt;/main&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+
+<p>A few details come straight from earlier chapters. The order and product pages are children of their lists, so the side menu stays highlighted on them (Chapter 7), and the ids are digits only, passed as typed props. The layout sets <code>lang</code>, <code>dir</code> and the <code>dark</code> class on <code>&lt;html&gt;</code> in a <code>watchEffect</code>, so the whole page mirrors and changes colour together. A “skip to content” link is the first thing a keyboard user reaches, and the language button is marked with the language it switches <em>to</em>, so screen readers pronounce it correctly. And the product routes are lazy: section 19.10 measures what that is worth.</p>
+
+<h2><span class="sec">19.6</span> <span>The overview</span></h2>
+
+<p>The numbers on the overview are pure functions of the orders, in <code>lib/</code>, away from Vue and <code>fetch</code>, so they are tested in milliseconds and the screen stays short:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/lib/orders.ts</div><pre class="code"><span class="k">import</span> <span class="k">type</span> { Order, OrderStatus } <span class="k">from</span> <span class="s">&quot;../api/schemas&quot;</span>;
+
+<span class="c">// Pure functions: no React, no fetch, so they are tested in milliseconds</span>
+<span class="k">export</span> <span class="k">const</span> PAGE_SIZE = <span class="n">8</span>;
+<span class="k">export</span> <span class="k">const</span> STATUSES: OrderStatus[] = [<span class="s">&quot;new&quot;</span>, <span class="s">&quot;paid&quot;</span>, <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;cancelled&quot;</span>];
+
+<span class="k">export</span> <span class="k">type</span> Filters = { status: OrderStatus | <span class="s">&quot;all&quot;</span>; q: string; page: number };
+
+<span class="k">export</span> <span class="k">function</span> readFilters(params: URLSearchParams): Filters {
+  <span class="k">const</span> status = params.get(<span class="s">&quot;status&quot;</span>);
+  <span class="k">return</span> {
+    status: STATUSES.includes(status as OrderStatus) ? (status as OrderStatus) : <span class="s">&quot;all&quot;</span>,
+    q: params.get(<span class="s">&quot;q&quot;</span>) ?? <span class="s">&quot;&quot;</span>,
+    page: Math.max(<span class="n">1</span>, Number(params.get(<span class="s">&quot;page&quot;</span>)) || <span class="n">1</span>),
+  };
+}
+
+<span class="k">export</span> <span class="k">function</span> filterOrders(orders: <span class="k">readonly</span> Order[], { status, q, page }: Filters) {
+  <span class="k">const</span> query = q.trim().toLocaleLowerCase();
+  <span class="k">const</span> matching = orders
+    .filter((o) =&gt; status === <span class="s">&quot;all&quot;</span> || o.status === status)
+    .filter((o) =&gt; !query || o.customer.toLocaleLowerCase().includes(query))
+    .toSorted((a, b) =&gt; b.createdAt.localeCompare(a.createdAt));
+  <span class="k">const</span> pages = Math.max(<span class="n">1</span>, Math.ceil(matching.length / PAGE_SIZE));
+  <span class="k">const</span> current = Math.min(page, pages);
+  <span class="k">return</span> { rows: matching.slice((current - <span class="n">1</span>) * PAGE_SIZE, current * PAGE_SIZE), page: current, pages, count: matching.length };
+}
+
+<span class="k">export</span> <span class="k">function</span> overview(orders: <span class="k">readonly</span> Order[], now: Date) {
+  <span class="k">const</span> earning = orders.filter((o) =&gt; o.status === <span class="s">&quot;paid&quot;</span> || o.status === <span class="s">&quot;shipped&quot;</span>);
+  <span class="k">const</span> revenue = earning.reduce((sum, o) =&gt; sum + o.total, <span class="n">0</span>);
+  <span class="k">const</span> days = Array.<span class="k">from</span>({ length: <span class="n">7</span> }, (_, i) =&gt; {
+    <span class="k">const</span> date = <span class="k">new</span> Date(now);
+    date.setUTCDate(date.getUTCDate() - (<span class="n">6</span> - i));
+    <span class="k">const</span> key = date.toISOString().slice(<span class="n">0</span>, <span class="n">10</span>);
+    <span class="k">const</span> total = earning.filter((o) =&gt; o.createdAt.startsWith(key)).reduce((sum, o) =&gt; sum + o.total, <span class="n">0</span>);
+    <span class="k">return</span> { day: key, total };
+  });
+  <span class="k">return</span> {
+    revenue,
+    orders: orders.filter((o) =&gt; o.status !== <span class="s">&quot;cancelled&quot;</span>).length,
+    average: earning.length ? Math.round(revenue / earning.length) : <span class="n">0</span>,
+    toShip: orders.filter((o) =&gt; o.status === <span class="s">&quot;paid&quot;</span>).length,
+    days,
+  };
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">src/features/overview/OverviewPage.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed } from &quot;vue&quot;;
+import { storeToRefs } from &quot;pinia&quot;;
+import { useOrders } from &quot;../../api/queries&quot;;
+import { overview } from &quot;../../lib/orders&quot;;
+import { useSettings } from &quot;../../settings&quot;;
+import BaseCard from &quot;../../ui/BaseCard.vue&quot;;
+import LoadError from &quot;../../ui/LoadError.vue&quot;;
+import LoadingSkeleton from &quot;../../ui/LoadingSkeleton.vue&quot;;
+
+const { t } = storeToRefs(useSettings());
+const { data, isPending, isError, refetch } = useOrders();
+
+const o = computed(() =&gt; (data.value ? overview(data.value, new Date()) : null));
+const highest = computed(() =&gt; Math.max(1, ...(o.value?.days.map((d) =&gt; d.total) ?? [])));
+const kpis = computed(() =&gt;
+  o.value
+    ? [
+        [t.value(&quot;revenue&quot;), t.value.money(o.value.revenue)],
+        [t.value(&quot;ordersCount&quot;), String(o.value.orders)],
+        [t.value(&quot;average&quot;), t.value.money(o.value.average)],
+        [t.value(&quot;toShip&quot;), String(o.value.toShip)],
+      ]
+    : [],
+);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LoadingSkeleton v-if=&quot;isPending&quot; /&gt;
+  &lt;LoadError v-else-if=&quot;isError&quot; @retry=&quot;refetch()&quot; /&gt;
+  &lt;template v-else-if=&quot;o&quot;&gt;
+    &lt;h1&gt;{{ t(&quot;overview&quot;) }}&lt;/h1&gt;
+    &lt;div class=&quot;kpis&quot;&gt;
+      &lt;figure v-for=&quot;[label, value] in kpis&quot; :key=&quot;label&quot; class=&quot;card kpi&quot;&gt;
+        &lt;p&gt;{{ label }}&lt;/p&gt;
+        &lt;strong&gt;{{ value }}&lt;/strong&gt;
+      &lt;/figure&gt;
+    &lt;/div&gt;
+    &lt;BaseCard :title=&quot;t(&#x27;lastWeek&#x27;)&quot;&gt;
+      &lt;ol class=&quot;bars&quot;&gt;
+        &lt;li v-for=&quot;d in o.days&quot; :key=&quot;d.day&quot;&gt;
+          &lt;span class=&quot;bar&quot; :style=&quot;{ blockSize: `${(d.total / highest) * 100}%` }&quot; /&gt;
+          &lt;span aria-hidden=&quot;true&quot;&gt;{{ t.weekday(d.day) }}&lt;/span&gt;
+          &lt;span class=&quot;sr-only&quot;&gt;{{ `${t.weekday(d.day)}: ${t.money(d.total)}` }}&lt;/span&gt;
+        &lt;/li&gt;
+      &lt;/ol&gt;
+    &lt;/BaseCard&gt;
+  &lt;/template&gt;
+&lt;/template&gt;</pre></div>
+
+<p>The chart is plain HTML: a list of seven bars whose height is a percentage. Each bar carries its value as visually hidden text, so a screen reader reads “Tue: EGP 1,350” instead of nothing.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/vue-capstone-en-page.html-600-9c7451.png" alt=""><figcaption><b>Figure 19.1:</b> The overview. The numbers and the bars come from the same 36 orders.</figcaption></figure>
+
+<h2><span class="sec">19.7</span> <span>The orders</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/orders/OrdersPage.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed } from &quot;vue&quot;;
+import { useRoute, useRouter, type LocationQueryRaw } from &quot;vue-router&quot;;
+import { storeToRefs } from &quot;pinia&quot;;
+import { useOrders } from &quot;../../api/queries&quot;;
+import { filterOrders, readFilters, STATUSES } from &quot;../../lib/orders&quot;;
+import { useSettings } from &quot;../../settings&quot;;
+import LoadError from &quot;../../ui/LoadError.vue&quot;;
+import LoadingSkeleton from &quot;../../ui/LoadingSkeleton.vue&quot;;
+import StatusBadge from &quot;../../ui/StatusBadge.vue&quot;;
+
+const { t } = storeToRefs(useSettings());
+const route = useRoute();
+const router = useRouter();
+const { data, isPending, isError, refetch } = useOrders();
+
+// The filters live in the address, so a filtered list can be bookmarked and shared
+const filters = computed(() =&gt; {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(route.query)) if (typeof value === &quot;string&quot;) params.set(key, value);
+  return readFilters(params);
+});
+const result = computed(() =&gt; (data.value ? filterOrders(data.value, filters.value) : null));
+
+const link = (changes: LocationQueryRaw) =&gt; ({ query: { ...route.query, ...changes } });
+const search = computed({
+  get: () =&gt; filters.value.q,
+  set: (q: string) =&gt; router.replace(link({ q: q || undefined, page: undefined })),
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;h1&gt;{{ t(&quot;orders&quot;) }}&lt;/h1&gt;
+  &lt;nav class=&quot;filters&quot; :aria-label=&quot;t(&#x27;status&#x27;)&quot;&gt;
+    &lt;RouterLink
+      v-for=&quot;s in [&#x27;all&#x27;, ...STATUSES] as const&quot;
+      :key=&quot;s&quot;
+      :to=&quot;link({ status: s === &#x27;all&#x27; ? undefined : s, page: undefined })&quot;
+      :aria-current=&quot;filters.status === s ? &#x27;page&#x27; : undefined&quot;
+    &gt;
+      {{ t(s) }}
+    &lt;/RouterLink&gt;
+  &lt;/nav&gt;
+  &lt;label for=&quot;q&quot; class=&quot;sr-only&quot;&gt;{{ t(&quot;search&quot;) }}&lt;/label&gt;
+  &lt;input id=&quot;q&quot; v-model=&quot;search&quot; type=&quot;search&quot; :placeholder=&quot;t(&#x27;search&#x27;)&quot; /&gt;
+  &lt;LoadingSkeleton v-if=&quot;isPending&quot; /&gt;
+  &lt;LoadError v-else-if=&quot;isError&quot; @retry=&quot;refetch()&quot; /&gt;
+  &lt;p v-else-if=&quot;result &amp;&amp; result.count === 0&quot; role=&quot;status&quot;&gt;{{ t(&quot;none&quot;) }}&lt;/p&gt;
+  &lt;section v-else-if=&quot;result&quot; class=&quot;card&quot;&gt;
+    &lt;table&gt;
+      &lt;caption class=&quot;sr-only&quot;&gt;{{ t(&quot;found&quot;, { count: result.count }) }}&lt;/caption&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th scope=&quot;col&quot;&gt;{{ t(&quot;order&quot;) }}&lt;/th&gt;
+          &lt;th scope=&quot;col&quot;&gt;{{ t(&quot;customer&quot;) }}&lt;/th&gt;
+          &lt;th scope=&quot;col&quot;&gt;{{ t(&quot;total&quot;) }}&lt;/th&gt;
+          &lt;th scope=&quot;col&quot;&gt;{{ t(&quot;status&quot;) }}&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr v-for=&quot;o in result.rows&quot; :key=&quot;o.id&quot;&gt;
+          &lt;td&gt;&lt;RouterLink :to=&quot;`/orders/${o.id}`&quot;&gt;#{{ o.id }}&lt;/RouterLink&gt;&lt;/td&gt;
+          &lt;td&gt;{{ o.customer }}&lt;/td&gt;
+          &lt;td&gt;{{ t.money(o.total) }}&lt;/td&gt;
+          &lt;td&gt;&lt;StatusBadge :status=&quot;o.status&quot; /&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+    &lt;div class=&quot;pager&quot;&gt;
+      &lt;RouterLink v-if=&quot;result.page &gt; 1&quot; :to=&quot;link({ page: String(result.page - 1) })&quot;&gt;{{ t(&quot;previous&quot;) }}&lt;/RouterLink&gt;
+      &lt;span v-else /&gt;
+      &lt;span&gt;{{ t(&quot;page&quot;, { page: result.page, pages: result.pages }) }}&lt;/span&gt;
+      &lt;RouterLink v-if=&quot;result.page &lt; result.pages&quot; :to=&quot;link({ page: String(result.page + 1) })&quot;&gt;{{ t(&quot;next&quot;) }}&lt;/RouterLink&gt;
+      &lt;span v-else /&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+
+<p>The status, the search text and the page number all live in the address. <code>readFilters</code>, the same pure function as in the React edition, protects against nonsense such as <code>?page=-4</code>. The status links are real links, marked with <code>aria-current</code>. The search box is bound to a writable <code>computed</code> whose setter calls <code>router.replace</code>, so typing updates the address without filling the back button’s history.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/vue-capstone-en-page.html-600-5d1d13.png" alt=""><figcaption><b>Figure 19.2:</b> The paid orders, newest first. The address is now <code>/orders?status=paid</code>.</figcaption></figure>
+
+<h2><span class="sec">19.8</span> <span>One order</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/orders/OrderPage.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { storeToRefs } from &quot;pinia&quot;;
+import { useOrder, useSetStatus } from &quot;../../api/queries&quot;;
+import { STATUSES } from &quot;../../lib/orders&quot;;
+import { useSettings } from &quot;../../settings&quot;;
+import BaseCard from &quot;../../ui/BaseCard.vue&quot;;
+import LoadError from &quot;../../ui/LoadError.vue&quot;;
+import LoadingSkeleton from &quot;../../ui/LoadingSkeleton.vue&quot;;
+import StatusBadge from &quot;../../ui/StatusBadge.vue&quot;;
+
+const props = defineProps&lt;{ id: number }&gt;();
+const { t } = storeToRefs(useSettings());
+const { data: order, isPending, isError, refetch } = useOrder(() =&gt; props.id);
+const setStatus = useSetStatus(() =&gt; props.id);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LoadingSkeleton v-if=&quot;isPending&quot; /&gt;
+  &lt;LoadError v-else-if=&quot;isError&quot; @retry=&quot;refetch()&quot; /&gt;
+  &lt;template v-else-if=&quot;order&quot;&gt;
+    &lt;h1&gt;{{ t(&quot;orderTitle&quot;, { id: String(order.id) }) }}&lt;/h1&gt;
+    &lt;BaseCard&gt;
+      &lt;dl&gt;
+        &lt;dt&gt;{{ t(&quot;customer&quot;) }}&lt;/dt&gt;
+        &lt;dd&gt;{{ order.customer }}&lt;/dd&gt;
+        &lt;dt&gt;{{ t(&quot;city&quot;) }}&lt;/dt&gt;
+        &lt;dd&gt;{{ order.city }}&lt;/dd&gt;
+        &lt;dt&gt;{{ t(&quot;date&quot;) }}&lt;/dt&gt;
+        &lt;dd&gt;{{ t.date(order.createdAt) }}&lt;/dd&gt;
+        &lt;dt&gt;{{ t(&quot;total&quot;) }}&lt;/dt&gt;
+        &lt;dd&gt;{{ t.money(order.total) }}&lt;/dd&gt;
+        &lt;dt&gt;{{ t(&quot;status&quot;) }}&lt;/dt&gt;
+        &lt;dd aria-live=&quot;polite&quot;&gt;&lt;StatusBadge :status=&quot;order.status&quot; /&gt;&lt;/dd&gt;
+      &lt;/dl&gt;
+      &lt;p&gt;{{ t(&quot;markAs&quot;) }}&lt;/p&gt;
+      &lt;div class=&quot;actions&quot;&gt;
+        &lt;button
+          v-for=&quot;s in STATUSES.filter((s) =&gt; s !== order!.status)&quot;
+          :key=&quot;s&quot;
+          type=&quot;button&quot;
+          class=&quot;secondary&quot;
+          :disabled=&quot;setStatus.isPending.value&quot;
+          @click=&quot;setStatus.mutate(s)&quot;
+        &gt;
+          {{ t(s) }}
+        &lt;/button&gt;
+      &lt;/div&gt;
+      &lt;p v-if=&quot;setStatus.isError.value&quot; role=&quot;alert&quot; class=&quot;error&quot;&gt;{{ t(&quot;failed&quot;) }}&lt;/p&gt;
+    &lt;/BaseCard&gt;
+    &lt;RouterLink to=&quot;/orders&quot;&gt;{{ t(&quot;allOrders&quot;) }}&lt;/RouterLink&gt;
+  &lt;/template&gt;
+&lt;/template&gt;</pre></div>
+
+<p>The buttons offer every status except the current one, and are disabled while a change is on its way. The status sits in an <code>aria-live</code> region, so a screen reader announces the change. If the server refuses, the optimistic status is put back and an alert says so.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/vue-capstone-en-page.html-600-fe3c4f.png" alt=""><figcaption><b>Figure 19.3:</b> A paid order, just marked as shipped. “Orders” stays highlighted in the side menu.</figcaption></figure>
+
+<h2><span class="sec">19.9</span> <span>The product editor</span></h2>
+
+<p>The form uses the <code>useForm</code> composable from Chapter 8, copied into <code>lib/</code>. The schema is built with the current language, so its messages are translated, and <code>z.coerce.number</code> with <code>.int()</code> refuses “85.5” instead of quietly saving it. The form takes the product and an <code>onSave</code> function, and knows nothing about the server:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/products/ProductForm.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+import { storeToRefs } from &quot;pinia&quot;;
+import * as z from &quot;zod&quot;;
+import type { Product } from &quot;../../api/schemas&quot;;
+import { useForm } from &quot;../../lib/useForm&quot;;
+import { useSettings } from &quot;../../settings&quot;;
+
+type Fields = &quot;name&quot; | &quot;price&quot; | &quot;stock&quot;;
+const props = defineProps&lt;{
+  product: Product;
+  onSave: (product: Product) =&gt; Promise&lt;Partial&lt;Record&lt;Fields, string&gt;&gt; | void&gt;;
+}&gt;();
+const { t } = storeToRefs(useSettings());
+
+// The schema is built with the current language, so its messages are translated
+const schema = computed(() =&gt;
+  z.object({
+    name: z.string().trim().min(2, t.value(&quot;nameError&quot;)).max(40, t.value(&quot;nameError&quot;)),
+    price: z.coerce.number&lt;string&gt;().int(t.value(&quot;priceError&quot;)).positive(t.value(&quot;priceError&quot;)),
+    stock: z.coerce.number&lt;string&gt;().int(t.value(&quot;stockError&quot;)).min(0, t.value(&quot;stockError&quot;)),
+  }),
+);
+const { values, errors, submitting, blur, handleSubmit } = useForm(schema.value, {
+  name: props.product.name,
+  price: String(props.product.price),
+  stock: String(props.product.stock),
+});
+const saved = ref(false);
+
+const submit = handleSubmit(async (data) =&gt; {
+  saved.value = false;
+  const fromServer = await props.onSave({ ...props.product, ...data });
+  if (!fromServer) saved.value = true;
+  return fromServer;
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;form novalidate @submit.prevent=&quot;submit&quot;&gt;
+    &lt;template v-for=&quot;field in ([&#x27;name&#x27;, &#x27;price&#x27;, &#x27;stock&#x27;] as const)&quot; :key=&quot;field&quot;&gt;
+      &lt;label :for=&quot;field&quot;&gt;{{ t(field) }}&lt;/label&gt;
+      &lt;input
+        :id=&quot;field&quot;
+        v-model=&quot;values[field]&quot;
+        :inputmode=&quot;field === &#x27;name&#x27; ? undefined : &#x27;numeric&#x27;&quot;
+        :aria-invalid=&quot;!!errors[field]&quot;
+        :aria-describedby=&quot;`${field}-error`&quot;
+        @blur=&quot;blur(field)&quot;
+      /&gt;
+      &lt;p v-if=&quot;errors[field]&quot; :id=&quot;`${field}-error`&quot; class=&quot;error&quot;&gt;{{ errors[field] }}&lt;/p&gt;
+    &lt;/template&gt;
+    &lt;p&gt;
+      &lt;button type=&quot;submit&quot; :disabled=&quot;submitting&quot;&gt;{{ submitting ? t(&quot;saving&quot;) : t(&quot;save&quot;) }}&lt;/button&gt;
+    &lt;/p&gt;
+    &lt;p v-if=&quot;saved&quot; role=&quot;status&quot; class=&quot;done&quot;&gt;{{ t(&quot;saved&quot;) }}&lt;/p&gt;
+  &lt;/form&gt;
+&lt;/template&gt;</pre></div>
+
+<p>The page connects it to the server. When another product already uses the name, the server answers <code>422</code> with the field and the message; the page returns them to the form, which shows them under the right input:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/products/ProductPage.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { storeToRefs } from &quot;pinia&quot;;
+import { ApiError } from &quot;../../api/client&quot;;
+import { useProduct, useSaveProduct } from &quot;../../api/queries&quot;;
+import type { Product } from &quot;../../api/schemas&quot;;
+import { useSettings } from &quot;../../settings&quot;;
+import BaseCard from &quot;../../ui/BaseCard.vue&quot;;
+import LoadError from &quot;../../ui/LoadError.vue&quot;;
+import LoadingSkeleton from &quot;../../ui/LoadingSkeleton.vue&quot;;
+import ProductForm from &quot;./ProductForm.vue&quot;;
+
+const props = defineProps&lt;{ id: number }&gt;();
+const { t } = storeToRefs(useSettings());
+const { data: product, isPending, isError, refetch } = useProduct(() =&gt; props.id);
+const save = useSaveProduct();
+
+async function onSave(changed: Product) {
+  try {
+    await save.mutateAsync(changed);
+  } catch (error) {
+    if (error instanceof ApiError &amp;&amp; error.status === 422) return error.errors;
+    throw error;
+  }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LoadingSkeleton v-if=&quot;isPending&quot; /&gt;
+  &lt;LoadError v-else-if=&quot;isError&quot; @retry=&quot;refetch()&quot; /&gt;
+  &lt;template v-else-if=&quot;product&quot;&gt;
+    &lt;h1&gt;{{ product.name }}&lt;/h1&gt;
+    &lt;BaseCard&gt;
+      &lt;ProductForm :key=&quot;product.id&quot; :product=&quot;product&quot; :on-save=&quot;onSave&quot; /&gt;
+    &lt;/BaseCard&gt;
+    &lt;RouterLink to=&quot;/products&quot;&gt;{{ t(&quot;products&quot;) }}&lt;/RouterLink&gt;
+  &lt;/template&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/vue-capstone-en-page.html-600-05dfd8.png" alt=""><figcaption><b>Figure 19.4:</b> Saving an empty name and a price with a fraction: the form explains both, and nothing is sent.</figcaption></figure>
+
+<h2><span class="sec">19.10</span> <span>Proving that it works</span></h2>
+
+<h3>Unit tests</h3>
+
+<p>The pure logic and the form are tested with Vitest and Testing Library, as in Chapter 12. The form uses the settings store, so its test installs a fresh Pinia:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/features/products/ProductForm.test.ts</div><pre class="code"><span class="k">import</span> { render, screen } <span class="k">from</span> <span class="s">&quot;@testing-library/vue&quot;</span>;
+<span class="k">import</span> userEvent <span class="k">from</span> <span class="s">&quot;@testing-library/user-event&quot;</span>;
+<span class="k">import</span> { createPinia } <span class="k">from</span> <span class="s">&quot;pinia&quot;</span>;
+<span class="k">import</span> { describe, expect, it, vi } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> ProductForm <span class="k">from</span> <span class="s">&quot;./ProductForm.vue&quot;</span>;
+
+<span class="k">const</span> mug = { id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8500</span>, stock: <span class="n">40</span> };
+<span class="k">const</span> show = (onSave: (p: <span class="k">typeof</span> mug) =&gt; Promise&lt;Record&lt;string, string&gt; | void&gt;) =&gt;
+  render(ProductForm, { props: { product: mug, onSave }, global: { plugins: [createPinia()] } });
+
+describe(<span class="s">&quot;ProductForm&quot;</span>, () =&gt; {
+  it(<span class="s">&quot;shows an error under each wrong field, and does not save&quot;</span>, <span class="k">async</span> () =&gt; {
+    <span class="k">const</span> onSave = vi.fn();
+    show(onSave);
+    <span class="k">await</span> userEvent.clear(screen.getByLabelText(<span class="s">&quot;Name&quot;</span>));
+    <span class="k">await</span> userEvent.clear(screen.getByLabelText(<span class="s">&quot;Price in piastres&quot;</span>));
+    <span class="k">await</span> userEvent.<span class="k">type</span>(screen.getByLabelText(<span class="s">&quot;Price in piastres&quot;</span>), <span class="s">&quot;85.5&quot;</span>);
+    <span class="k">await</span> userEvent.click(screen.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;Save&quot;</span> }));
+    expect(<span class="k">await</span> screen.findByText(<span class="s">&quot;Write a name of 2 to 40 characters.&quot;</span>)).toBeInTheDocument();
+    expect(screen.getByText(<span class="s">&quot;The price must be a whole number above zero.&quot;</span>)).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it(<span class="s">&quot;saves whole numbers, not the text typed&quot;</span>, <span class="k">async</span> () =&gt; {
+    <span class="k">const</span> onSave = vi.fn().mockResolvedValue(<span class="k">undefined</span>);
+    show(onSave);
+    <span class="k">await</span> userEvent.clear(screen.getByLabelText(<span class="s">&quot;Stock&quot;</span>));
+    <span class="k">await</span> userEvent.<span class="k">type</span>(screen.getByLabelText(<span class="s">&quot;Stock&quot;</span>), <span class="s">&quot;39&quot;</span>);
+    <span class="k">await</span> userEvent.click(screen.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;Save&quot;</span> }));
+    expect(<span class="k">await</span> screen.findByRole(<span class="s">&quot;status&quot;</span>)).toHaveTextContent(<span class="s">&quot;Saved.&quot;</span>);
+    expect(onSave).toHaveBeenCalledWith({ id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8500</span>, stock: <span class="n">39</span> });
+  });
+
+  it(<span class="s">&quot;shows the server&#x27;s errors under the right field&quot;</span>, <span class="k">async</span> () =&gt; {
+    show(<span class="k">async</span> () =&gt; ({ name: <span class="s">&quot;Another product already has this name.&quot;</span> }));
+    <span class="k">await</span> userEvent.click(screen.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;Save&quot;</span> }));
+    expect(<span class="k">await</span> screen.findByText(<span class="s">&quot;Another product already has this name.&quot;</span>)).toBeInTheDocument();
+    expect(screen.getByLabelText(<span class="s">&quot;Name&quot;</span>)).toHaveAttribute(<span class="s">&quot;aria-invalid&quot;</span>, <span class="s">&quot;true&quot;</span>);
+  });
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose
+ RUN  v5.1.1 .
+ ✓ src/lib/orders.test.ts &gt; filterOrders &gt; filters by status and by customer name 4ms
+ ✓ src/lib/orders.test.ts &gt; filterOrders &gt; splits the result into pages of eight 16ms
+ ✓ src/lib/orders.test.ts &gt; overview &gt; counts revenue only from paid and shipped orders 1ms
+ ✓ src/lib/orders.test.ts &gt; overview &gt; gives one bar for each of the last seven days 1ms
+ ✓ src/features/products/ProductForm.test.ts &gt; ProductForm &gt; shows an error under each wrong field, and does not save 244ms
+ ✓ src/features/products/ProductForm.test.ts &gt; ProductForm &gt; saves whole numbers, not the text typed 45ms
+ ✓ src/features/products/ProductForm.test.ts &gt; ProductForm &gt; shows the server&#x27;s errors under the right field 21ms
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Duration  1.80s (environment 56%, setup 24%, tests 12%, import 6%, transform 2%)</pre></div>
+
+<h3>End-to-end tests and the accessibility audit</h3>
+
+<p>The Playwright tests are the very same file as in the React edition: they speak to the page through roles and names, as users do, so they do not care which framework drew it. One ships an order through the whole interface, one runs axe on the overview and the orders list, and one switches the language:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">e2e/admin.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test, <span class="k">type</span> Page } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
+<span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
+
+<span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
+<span class="k">const</span> words = { orders: <span class="s">&quot;Orders&quot;</span>, paid: <span class="s">&quot;Paid&quot;</span>, shipped: <span class="s">&quot;Shipped&quot;</span>, overview: <span class="s">&quot;Overview&quot;</span> };
+
+<span class="k">async</span> <span class="k">function</span> noViolations(page: Page) {
+  <span class="k">await</span> page.addScriptTag({ path: require.resolve(<span class="s">&quot;axe-core/axe.min.js&quot;</span>) });
+  <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+  <span class="k">const</span> found: string[] = <span class="k">await</span> page.evaluate(() =&gt; axe.run().then((r) =&gt; r.violations.map((v) =&gt; v.id)));
+  expect(found).toEqual([]);
+}
+
+test.beforeEach(<span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.goto(<span class="s">&quot;page.html&quot;</span>);
+});
+
+test(<span class="s">&quot;an order can be marked as shipped&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;link&quot;</span>, { name: words.orders }).click();
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;link&quot;</span>, { name: words.paid, exact: <span class="k">true</span> }).click();
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;row&quot;</span>).nth(<span class="n">1</span>).getByRole(<span class="s">&quot;link&quot;</span>).click();
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;button&quot;</span>, { name: words.shipped }).click();
+  <span class="k">await</span> expect(page.locator(<span class="s">&quot;dd .badge&quot;</span>)).toHaveText(words.shipped);
+});
+
+test(<span class="s">&quot;the overview and the orders have no accessibility violations&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;heading&quot;</span>, { name: words.overview })).toBeVisible();
+  <span class="k">await</span> noViolations(page);
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;link&quot;</span>, { name: words.orders }).click();
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;table&quot;</span>)).toBeVisible();
+  <span class="k">await</span> noViolations(page);
+});
+
+test(<span class="s">&quot;the whole app switches to Arabic, right to left&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">await</span> page.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;العربية&quot;</span> }).click();
+  <span class="k">await</span> expect(page.locator(<span class="s">&quot;html&quot;</span>)).toHaveAttribute(<span class="s">&quot;dir&quot;</span>, <span class="s">&quot;rtl&quot;</span>);
+  <span class="k">await</span> expect(page.getByRole(<span class="s">&quot;heading&quot;</span>, { name: <span class="s">&quot;نظرة عامة&quot;</span> })).toBeVisible();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx playwright test
+Running 3 tests using 1 worker
+  ✓  1 e2e/admin.spec.ts:18:1 › an order can be marked as shipped (963ms)
+  ✓  2 e2e/admin.spec.ts:26:1 › the overview and the orders have no accessibility violations (1.2s)
+  ✓  3 e2e/admin.spec.ts:34:1 › the whole app switches to Arabic, right to left (508ms)
+  3 passed (3.6s)</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>page.html</span><b>600px</b></div><img src="img/vue-capstone-en-page.html-600-06a11a.png" alt=""><figcaption><b>Figure 19.5:</b> The same overview after pressing “العربية” and “Dark theme”: the layout mirrors, the numbers are written the Arabic way, and the colours change together.</figcaption></figure>
+
+<h3>The size budget</h3>
+
+<p>The last quality goal was a first load under 150 KB of compressed JavaScript. A Vue project measures what its own build tool produces, so this script runs <code>vite build</code> in memory and checks the result:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">size.ts</div><pre class="code"><span class="k">import</span> { build, <span class="k">type</span> Rollup } <span class="k">from</span> <span class="s">&quot;vite&quot;</span>;
+<span class="k">import</span> vue <span class="k">from</span> <span class="s">&quot;@vitejs/plugin-vue&quot;</span>;
+<span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
+
+<span class="c">// Bundles the app as production would, and checks it against the budget</span>
+<span class="k">const</span> BUDGET_KB = <span class="n">150</span>;
+
+<span class="k">const</span> output = (<span class="k">await</span> build({
+  logLevel: <span class="s">&quot;silent&quot;</span>,
+  plugins: [vue()],
+  build: { write: <span class="k">false</span>, rollupOptions: { input: <span class="s">&quot;src/main.ts&quot;</span> } },
+})) as Rollup.RolldownOutput;
+
+<span class="k">const</span> chunks = output.output.filter((file) =&gt; file.<span class="k">type</span> === <span class="s">&quot;chunk&quot;</span>);
+<span class="k">const</span> gzipKB = (code: string) =&gt; gzipSync(code).length / <span class="n">1024</span>;
+<span class="k">const</span> packageOf = (id: string) =&gt; /node_modules\/((?:@[^/]+\/)?[^/]+)/.exec(id)?.[<span class="n">1</span>] ?? <span class="s">&quot;our code&quot;</span>;
+
+<span class="c">// The first load: the entry and every chunk it imports directly</span>
+<span class="k">const</span> first = <span class="k">new</span> Set&lt;string&gt;();
+<span class="k">const</span> visit = (fileName: string) =&gt; {
+  <span class="k">if</span> (first.has(fileName)) <span class="k">return</span>;
+  first.add(fileName);
+  <span class="k">for</span> (<span class="k">const</span> imported <span class="k">of</span> chunks.find((c) =&gt; c.fileName === fileName)?.imports ?? []) visit(imported);
+};
+visit(chunks.find((c) =&gt; c.isEntry)!.fileName);
+
+<span class="k">let</span> firstKB = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> chunk <span class="k">of</span> chunks) {
+  <span class="k">const</span> kb = gzipKB(chunk.code);
+  <span class="k">if</span> (first.has(chunk.fileName)) firstKB += kb;
+  <span class="k">else</span> console.log(<span class="s">`loaded later: ${kb.toFixed(1)} KB gzip (${[...new Set(chunk.moduleIds.map(packageOf))].join(&quot; + &quot;)})`</span>);
+}
+console.log(<span class="s">`first load: ${firstKB.toFixed(1)} KB gzip`</span>);
+console.log(firstKB &lt;= BUDGET_KB ? <span class="s">`✓ under the budget of ${BUDGET_KB} KB`</span> : <span class="s">`✗ over the budget of ${BUDGET_KB} KB`</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>loaded later: 1.5 KB gzip (zod + our code)
+loaded later: 0.5 KB gzip (our code)
+first load: 77.3 KB gzip
+✓ under the budget of 150 KB</pre></div>
+
+<p>77 KB, about half of the React version of the same app. The React edition of this chapter tells how its bundle shrank from 222 KB with two fixes: importing zod with <code>import * as z</code>, and loading the product pages lazily. We measured both mistakes here too, on purpose: with <code>import { z }</code> the Vue build stays at 77.3 KB, because Vite’s bundler can remove the unused parts of zod anyway; and without the lazy routes it grows by only 0.2 KB, because this form is our own small composable, not a library. Neither fix matters in this setup.</p>
+
+<p>That is the real lesson of budgets: <strong>measure your own app, with your own tools.</strong> Advice from another project, even a correct one, may cost you work for nothing, or miss what is actually heavy in yours. And keep the script in CI, so the next 70 KB cannot arrive unnoticed.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: a release checklist</p><p>Before every release, a short list that anyone on the team can run: all checks green in CI; the main journeys clicked by hand in both languages and both themes, on a phone and with the keyboard; the size budget met; no errors in the browser console; and a plan to undo the release if something goes wrong. Five minutes of checking is cheaper than one evening of fixing in production.</p></aside>
+
+<h2><span class="sec">19.11</span> <span>What you built</span></h2>
+
+<p>In about 900 lines of TypeScript and Vue: a typed, validated data layer with caching and optimistic updates; five screens with URL state, loading and error states; a validated form that merges the server’s errors; two languages with mirrored layout and real number and date formats; a dark theme; and tests, an accessibility audit and a size budget that prove it. With a real server behind <code>/api</code>, it is a product.</p>
+
+<p>And more important than the app is the order in which it was made: the brief and the quality goals first, the layers next, the pure logic tested on its own, the screens kept thin, and measurement before any optimisation. That order works for apps a hundred times bigger.</p>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Turn a brief into <strong>user stories</strong> with a test for “done”, and write the <strong>quality goals</strong> before the code.</li>
+<li>Organise the code in <strong>layers</strong>: one place talks to the server, pure logic is separate, screens stay thin. Framework-free layers can be shared even between a React and a Vue app.</li>
+<li><strong>Validate</strong> every answer from the server with a schema, and give the screens errors they understand.</li>
+<li>Keep server data in <strong>TanStack Query</strong>, filters in the <strong>address</strong>, and app-wide settings in a <strong>Pinia store</strong>.</li>
+<li>Start with <strong>two languages</strong> and <strong>Intl</strong>, and define colours as variables, so a theme is a few lines.</li>
+<li>Prove it with <strong>unit tests</strong>, <strong>end-to-end tests</strong> and an <strong>accessibility audit</strong>, all automatic.</li>
+<li><strong>Measure</strong> the bundle with your own build against a <strong>budget</strong>; apply advice only when your numbers say it helps.</li>
+</ul>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">These projects grow the dashboard the way a real one grows: one feature at a time, each meeting the same quality goals. For every project, write the user story first, put the logic in <code>lib/</code> with a test, keep the screen thin, and run the three checks (unit tests, end-to-end tests, size) before you call it done.</p>
+
+<div class="project">
+<p class="project-label">Project 19.1 · Easy</p>
+<h3>A customers page</h3>
+<p class="project-goal">A page listing every customer with their number of orders, their total spent and their last order date, sorted by total, with a link to their orders.</p>
+<p class="project-skills"><strong>You will practise:</strong> deriving data with pure functions, a new route and a nav link, Intl formats, and URL state.</p>
+<ol class="steps">
+<li>Write <code>customers(orders)</code> in <code>lib/</code>: group by customer, ignore cancelled orders in the total, and sort. Test it with four orders from two customers.</li>
+<li>Add <code>/customers</code> to the routes and to the side navigation, with texts in both languages in <code>messages.ts</code>.</li>
+<li>Make each customer’s name a link to <code>/orders?q=&lt;name&gt;</code>, so the existing search does the rest.</li>
+<li>Add the page to the axe test in <code>e2e/admin.spec.ts</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> there is no new request here. The orders are already in the query cache, so <code>useOrders()</code> returns them at once, and the new page costs the server nothing.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 19.2 · Medium</p>
+<h3>Date ranges and a CSV export</h3>
+<p class="project-goal">Filter the orders by a date range kept in the address, and download exactly the filtered orders as a CSV file that opens correctly in Excel, in Arabic too.</p>
+<p class="project-skills"><strong>You will practise:</strong> extending <code>readFilters</code> safely, date inputs, building files in the browser, and testing pure output.</p>
+<ol class="steps">
+<li>Add <code>from</code> and <code>to</code> (as <code>YYYY-MM-DD</code>) to <code>Filters</code>. Ignore values that are not valid dates, and test that.</li>
+<li>Add two <code>&lt;input type="date"&gt;</code> fields with labels, updating the address with <code>replace</code>.</li>
+<li>Write <code>toCsv(orders)</code> in <code>lib/</code>: a header row, one row per order, values with commas or quotes wrapped in quotes and inner quotes doubled. Test it with a customer name that contains a comma.</li>
+<li>Download it with a <code>Blob</code> and a temporary link. Start the file with the byte order mark <code>"﻿"</code>, or Excel will show Arabic names as nonsense.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> export what the user is looking at, all pages of it, not only the current page. Users expect “export” to mean “these results”.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 19.3 · Challenge</p>
+<h3>From laptop to production</h3>
+<p class="project-goal">Turn the dashboard into a Vite project with a real CI pipeline, and serve it from a container, ready for a real <code>/api</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> Vite, GitHub Actions, required checks, Docker, Nginx, and single-page app routing on a server.</p>
+<ol class="steps">
+<li>Create a Vite Vue project (Chapter 3) and move <code>src/</code> into it. In development, run the pretend server only when <code>import.meta.env.DEV</code> is true.</li>
+<li>Write a workflow that, on every pull request, installs with <code>npm ci</code>, then runs the type checker, the unit tests, the end-to-end tests and the size script, and make all four required.</li>
+<li>Write a two-stage <code>Dockerfile</code>: the first stage builds with Node, the second copies <code>dist/</code> into an Nginx image.</li>
+<li>Configure Nginx to send every unknown path to <code>index.html</code>, so <code>/orders/1036</code> works after a reload, and to forward <code>/api/</code> to the real server.</li>
+<li>Add long cache headers for the hashed files in <code>assets/</code>, and none for <code>index.html</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the cache rule in the last step is what makes releases safe. Hashed files never change, so they can be cached for a year; <code>index.html</code> must always be fresh, because it is the file that points to the new hashes.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a fifth number to the overview: the number of cancelled orders. Add it to <code>overview()</code> first, with a test, and only then to the screen.</li>
+<li><span class="level">Easy</span> Add a <code>?sort=total</code> option to the orders list, read by <code>readFilters</code>, with a link in the table’s “Total” heading.</li>
+<li><span class="level medium">Medium</span> In the browser console of <code>page.html</code>, run <code>server.failNextChange = true</code>, then change an order’s status. Describe exactly what the user sees, and in which order. Then write a Playwright test for it.</li>
+<li><span class="level medium">Medium</span> In <code>settings.ts</code>, replace the import with <code>import * as all from "@vueuse/core"</code>. First call <code>all.useLocalStorage(…)</code> and run the size script; then write <code>const { useLocalStorage } = all;</code> instead and run it again. Compare the two numbers and explain the difference.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Where to go from here</p>
+<p>You started this book able to write JavaScript, and you finish it able to build, test, secure, ship and review a professional front end, and to help others do the same. The next book in the series moves to the other side of <code>/api</code>: the servers, databases and APIs that apps like this one talk to.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -8705,6 +9679,15 @@ on the team will pair with the others on the first tests.
 <li>For each changed file that is code, build its test name with <code>f.replace(/\.ts$/, ".test.ts")</code>, and report “code changed, but its test did not” for each one whose test name is not in <code>changedFiles</code>. Now a change to <code>cart.test.ts</code> no longer excuses an untested <code>discount.ts</code>.</li>
 <li>Playwright 79, Cypress 77, manual 41: the winner is unchanged. The sensitivity check still shows Cypress winning if learning counts twice (88 against 92), and doubling “Community and docs” now gives a tie (87 each), which the sort leaves to Playwright, the first option in the list. A tie is a sign to look for another criterion, not to trust the order of the list.</li>
 <li>A good record has a context a newcomer understands without asking (the problem, the date, the constraints), at least two real alternatives with why each lost, the decision in one sentence, and honest consequences, including what would make the team look again.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 19</h2>
+<ol class="exercises">
+<li>In <code>overview()</code> add <code>cancelled: orders.filter((o) =&gt; o.status === "cancelled").length</code>; in the test, <code>expect(result.cancelled).toBe(1)</code> for the four sample orders. Then add <code>[t("cancelled"), String(o.cancelled)]</code> to the <code>kpis</code> list; the key already exists in both languages.</li>
+<li>Add <code>sort: params.get("sort") === "total" ? "total" : "date"</code> to <code>readFilters</code>, and in <code>filterOrders</code> sort by <code>b.total - a.total</code> when it is <code>"total"</code>. The heading becomes <code>&lt;RouterLink :to="link({ sort: 'total', page: undefined })"&gt;</code>, with <code>aria-sort="descending"</code> on the <code>th</code> while it is active. A test checks that <code>?sort=nonsense</code> falls back to dates.</li>
+<li>The new status appears at once, and the buttons are disabled; about 250 ms later the old status comes back and the alert “Could not save, so the change was undone” appears, read aloud by screen readers. The test: <code>await page.evaluate(() =&gt; { (window as any).server.failNextChange = true; })</code>, click a status, then expect the alert to be visible and the badge to show the original status.</li>
+<li>With <code>all.useLocalStorage(…)</code> the first load stays at 77.3 KB; with <code>const { useLocalStorage } = all;</code> it grows to 124.0 KB. Calling a property of the namespace tells the bundler exactly which export is used, so it can drop the rest. Destructuring the whole namespace into a variable makes it keep the namespace object, and with it every function of VueUse. Measured, not guessed: that is the habit this chapter is about.</li>
 </ol>
 
 </section>
