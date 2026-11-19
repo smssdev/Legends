@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "Chapter 7: Vue Router and Server Data"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "Chapter 8: Forms and Validation"; } }
+@page ch08:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Design Systems and Component Libraries"; } }
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "Chapter 11: Accessibility (WCAG) in Practice"; } }
@@ -3570,6 +3572,402 @@ const mutation = useMutation({
 <p>Users do not only read data; they send it, through forms. In the next chapter you will build forms that validate as the user types, show helpful errors, describe their rules once in a schema shared with TypeScript, and send the result to the server safely.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b2/vue/forms/en">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">Chapter 8</p><h1>Forms and Validation</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>bind every kind of input with <code>v-model</code> and its modifiers</li>
+<li>describe a form’s rules once, in a zod schema that also gives you the TypeScript type</li>
+<li>build a small form composable: values, errors, touched fields and submitting</li>
+<li>show errors at the right moment, accessibly, and move the focus to them</li>
+<li>show errors that only the server can find, under the right field</li>
+<li>split long forms into steps that check only their own fields</li>
+</ul>
+</div>
+
+<p class="lead">Forms are where users give your app their data: a name, an address, a password, money. They are also where most frustration on the web happens: rules that are not explained, errors that appear too early or too late, typed text that vanishes after a failed submit. A good form is mostly a list of small decisions made well. This chapter makes them once, in a schema and a composable that every form can reuse.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The browser checks nothing that matters on its own, and the server must check everything again anyway. So why validate in the form at all? Because it is the only place where you can help the user fix the mistake while they are still typing.</p></div></div>
+
+<h2><span class="sec">8.1</span> <span><code>v-model</code> on every kind of input</span></h2>
+
+<p>In Vue, the value of a field lives in your state, and <code>v-model</code> keeps the two in step. It adapts to the kind of input:</p>
+
+<ul>
+<li>A text input or <code>&lt;textarea&gt;</code> binds a string. <code>v-model.trim</code> removes spaces at the ends, <code>v-model.number</code> converts to a number, and <code>v-model.lazy</code> updates only when the field is left.</li>
+<li>A checkbox binds a boolean, or, with an array, the list of checked values.</li>
+<li>Radio buttons with the same <code>v-model</code> bind the <code>value</code> of the chosen one.</li>
+<li>A <code>&lt;select&gt;</code> binds the <code>value</code> of the chosen option.</li>
+</ul>
+
+<p>Because the values are in state, everything else is ordinary Vue: a <code>computed</code> can check them, a watcher can save a draft, and the template can show anything derived from them.</p>
+
+<h2><span class="sec">8.2</span> <span>One schema for the rules</span></h2>
+
+<p>Every form has rules: required fields, formats, limits. Written by hand, they end up in three places: the form, the TypeScript type, and the server. zod, which you met in Chapter 2, describes them once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">contact-schema.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c">// One schema: the rules, the error messages, and (with z.infer) the TypeScript type</span>
+<span class="k">export</span> <span class="k">const</span> contactSchema = z.object({
+  name: z.string().trim().min(<span class="n">3</span>, <span class="s">&quot;Please write your full name (at least 3 letters).&quot;</span>),
+  email: z.email(<span class="s">&quot;Please enter an email like name@example.com.&quot;</span>),
+  age: z.coerce.number&lt;string&gt;().int(<span class="s">&quot;Age must be a whole number.&quot;</span>).min(<span class="n">13</span>, <span class="s">&quot;You must be 13 or older.&quot;</span>),
+  message: z.string().trim().min(<span class="n">20</span>, <span class="s">&quot;Please write at least 20 characters.&quot;</span>),
+});
+
+<span class="k">export</span> <span class="k">type</span> Contact = z.infer&lt;<span class="k">typeof</span> contactSchema&gt;;</pre></div>
+
+<ul>
+<li>Each field has its rules and its own message, written for the user: what is wrong and how to fix it.</li>
+<li><code>z.coerce.number()</code> turns the text of the age field into a number before checking it. Inputs always give text; the schema decides what it becomes.</li>
+<li><code>z.infer</code> gives the type of the <em>result</em>, with <code>age</code> as a number and the name trimmed, so the code after validation is fully typed.</li>
+</ul>
+
+<p>The same schema runs anywhere, including on the server, where it must run again, because anyone can send data without your form:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">validate.ts</div><pre class="code"><span class="k">import</span> { contactSchema } <span class="k">from</span> <span class="s">&quot;./contact-schema&quot;</span>;
+
+<span class="c">// The same schema checks data that arrives at the server</span>
+<span class="k">const</span> good = contactSchema.safeParse({
+  name: <span class="s">&quot;  Sara Khan &quot;</span>,
+  email: <span class="s">&quot;sara@example.com&quot;</span>,
+  age: <span class="s">&quot;27&quot;</span>,
+  message: <span class="s">&quot;I would like to order twenty copies for my class.&quot;</span>,
+});
+console.log(<span class="s">&quot;Valid:&quot;</span>, good.success, good.data);
+
+<span class="k">const</span> bad = contactSchema.safeParse({ name: <span class="s">&quot;S&quot;</span>, email: <span class="s">&quot;sara@&quot;</span>, age: <span class="s">&quot;9&quot;</span>, message: <span class="s">&quot;Hi&quot;</span> });
+console.log(<span class="s">&quot;Invalid:&quot;</span>, bad.success);
+<span class="k">for</span> (<span class="k">const</span> issue <span class="k">of</span> bad.error?.issues ?? []) {
+  console.log(<span class="s">`  ${issue.path.join(&quot;.&quot;)}: ${issue.message}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Valid: true {
+  name: &#x27;Sara Khan&#x27;,
+  email: &#x27;sara@example.com&#x27;,
+  age: 27,
+  message: &#x27;I would like to order twenty copies for my class.&#x27;
+}
+Invalid: false
+  name: Please write your full name (at least 3 letters).
+  email: Please enter an email like name@example.com.
+  age: You must be 13 or older.
+  message: Please write at least 20 characters.</pre></div>
+
+<h2><span class="sec">8.3</span> <span>A form composable</span></h2>
+
+<p>A real form needs more than a schema: it must know which fields the user has visited, whether a submit was tried, whether it is sending, and where to put errors that come back from the server. This is the same work for every form, so it belongs in a composable, as in Chapter 6:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">useForm.ts</div><pre class="code"><span class="k">import</span> { computed, nextTick, reactive, ref, watch } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">type</span> Errors&lt;K <span class="k">extends</span> PropertyKey&gt; = Partial&lt;Record&lt;K, string&gt;&gt;;
+
+<span class="c">// A small form composable: values, errors, touched fields and submitting, around one schema</span>
+<span class="k">export</span> <span class="k">function</span> useForm&lt;S <span class="k">extends</span> z.ZodObject&gt;(schema: S, initial: z.input&lt;S&gt;) {
+  <span class="k">type</span> Key = <span class="k">keyof</span> z.input&lt;S&gt; &amp; string;
+  <span class="k">const</span> values = reactive({ ...initial }) as z.input&lt;S&gt;;
+  <span class="k">const</span> allErrors = ref&lt;Errors&lt;Key&gt;&gt;({});
+  <span class="k">const</span> touched = reactive(<span class="k">new</span> Set&lt;string&gt;());
+  <span class="k">const</span> submitted = ref(<span class="k">false</span>);
+  <span class="k">const</span> submitting = ref(<span class="k">false</span>);
+
+  <span class="k">function</span> check(): z.output&lt;S&gt; | <span class="k">undefined</span> {
+    <span class="k">const</span> result = schema.safeParse(values);
+    <span class="k">const</span> next: Errors&lt;Key&gt; = {};
+    <span class="k">for</span> (<span class="k">const</span> issue <span class="k">of</span> result.success ? [] : result.error.issues) next[issue.path[<span class="n">0</span>] as Key] ??= issue.message;
+    allErrors.value = next;
+    <span class="k">return</span> result.success ? result.data : <span class="k">undefined</span>;
+  }
+  watch(values, check, { deep: <span class="k">true</span> });
+
+  <span class="c">// Show a field&#x27;s error only after the user has left it once, or tried to submit</span>
+  <span class="k">const</span> errors = computed(() =&gt; {
+    <span class="k">const</span> shown: Errors&lt;Key&gt; = {};
+    <span class="k">for</span> (<span class="k">const</span> [key, message] <span class="k">of</span> Object.entries(allErrors.value) as [Key, string][]) {
+      <span class="k">if</span> (submitted.value || touched.has(key)) shown[key] = message;
+    }
+    <span class="k">return</span> shown;
+  });
+
+  <span class="k">async</span> <span class="k">function</span> focusFirstError() {
+    <span class="k">await</span> nextTick();
+    document.querySelector&lt;HTMLElement&gt;(<span class="s">&quot;[aria-invalid=&#x27;true&#x27;]&quot;</span>)?.focus();
+  }
+
+  /** Checks some fields only (one step <span class="k">of</span> a longer form), and shows their errors. */
+  <span class="k">function</span> checkFields(fields: <span class="k">readonly</span> Key[]) {
+    fields.forEach((f) =&gt; touched.add(f));
+    check();
+    <span class="k">const</span> ok = fields.every((f) =&gt; !allErrors.value[f]);
+    <span class="k">if</span> (!ok) void focusFirstError();
+    <span class="k">return</span> ok;
+  }
+
+  <span class="k">function</span> handleSubmit(send: (data: z.output&lt;S&gt;) =&gt; Promise&lt;Errors&lt;Key&gt; | void&gt;) {
+    <span class="k">return</span> <span class="k">async</span> () =&gt; {
+      submitted.value = <span class="k">true</span>;
+      <span class="k">const</span> data = check();
+      <span class="k">if</span> (!data) <span class="k">return</span> focusFirstError();
+      submitting.value = <span class="k">true</span>;
+      <span class="k">try</span> {
+        <span class="k">const</span> fromServer = <span class="k">await</span> send(data);
+        <span class="c">// Errors only the server knows go under the right field, like any other</span>
+        <span class="k">if</span> (fromServer) {
+          allErrors.value = fromServer;
+          void focusFirstError();
+        }
+      } <span class="k">finally</span> {
+        submitting.value = <span class="k">false</span>;
+      }
+    };
+  }
+
+  <span class="k">return</span> { values, errors, submitting, checkFields, handleSubmit, blur: (field: Key) =&gt; touched.add(field) };
+}</pre></div>
+
+<p>The composable keeps the values in a <code>reactive</code> object, checks them with the schema whenever they change, and exposes only the errors the user should see now. <code>handleSubmit</code> wraps the code that sends the data: it marks the form as submitted, stops and moves the focus if anything is wrong, and passes the <em>parsed</em> data, typed and converted, to your function.</p>
+
+<p>Each field also needs the same markup around it: a label, the input, and an error linked to the input. A component with a scoped slot writes it once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">FormField.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+defineProps&lt;{ id: string; label: string; error?: string | undefined }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div class=&quot;field&quot;&gt;
+    &lt;label :for=&quot;id&quot;&gt;{{ label }}&lt;/label&gt;
+    &lt;!-- The slot receives the attributes that link the input to its label and its error --&gt;
+    &lt;slot :id=&quot;id&quot; :aria-invalid=&quot;!!error&quot; :aria-describedby=&quot;error ? `${id}-error` : undefined&quot; /&gt;
+    &lt;p v-if=&quot;error&quot; :id=&quot;`${id}-error`&quot; class=&quot;error&quot;&gt;{{ error }}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+
+<p>The slot hands its attributes to the input, so the label’s <code>for</code>, the input’s <code>aria-invalid</code> and <code>aria-describedby</code>, and the error’s <code>id</code> always match. A screen reader reading the field also reads its error. And the form itself becomes a short list of fields:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ContactForm.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import { contactSchema } from &quot;./contact-schema&quot;;
+import FormField from &quot;./FormField.vue&quot;;
+import { useForm } from &quot;./useForm&quot;;
+
+const { values, errors, submitting, blur, handleSubmit } = useForm(contactSchema, {
+  name: &quot;&quot;,
+  email: &quot;&quot;,
+  age: &quot;&quot;,
+  message: &quot;&quot;,
+});
+const sent = ref(false);
+
+const submit = handleSubmit(async (contact) =&gt; {
+  // contact.age is a number here, not text: the schema converted it
+  await new Promise((resolve) =&gt; setTimeout(resolve, 600)); // send it to the server
+  sent.value = true;
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p v-if=&quot;sent&quot; class=&quot;card done&quot; role=&quot;status&quot;&gt;Thank you! We will reply within two days.&lt;/p&gt;
+  &lt;form v-else novalidate @submit.prevent=&quot;submit&quot;&gt;
+    &lt;FormField id=&quot;name&quot; v-slot=&quot;attrs&quot; label=&quot;Full name&quot; :error=&quot;errors.name&quot;&gt;
+      &lt;input v-bind=&quot;attrs&quot; v-model=&quot;values.name&quot; autocomplete=&quot;name&quot; @blur=&quot;blur(&#x27;name&#x27;)&quot; /&gt;
+    &lt;/FormField&gt;
+    &lt;FormField id=&quot;email&quot; v-slot=&quot;attrs&quot; label=&quot;Email&quot; :error=&quot;errors.email&quot;&gt;
+      &lt;input v-bind=&quot;attrs&quot; v-model=&quot;values.email&quot; type=&quot;email&quot; autocomplete=&quot;email&quot; dir=&quot;ltr&quot; @blur=&quot;blur(&#x27;email&#x27;)&quot; /&gt;
+    &lt;/FormField&gt;
+    &lt;FormField id=&quot;age&quot; v-slot=&quot;attrs&quot; label=&quot;Age&quot; :error=&quot;errors.age&quot;&gt;
+      &lt;input v-bind=&quot;attrs&quot; v-model=&quot;values.age&quot; inputmode=&quot;numeric&quot; @blur=&quot;blur(&#x27;age&#x27;)&quot; /&gt;
+    &lt;/FormField&gt;
+    &lt;FormField id=&quot;message&quot; v-slot=&quot;attrs&quot; label=&quot;Message&quot; :error=&quot;errors.message&quot;&gt;
+      &lt;textarea v-bind=&quot;attrs&quot; v-model=&quot;values.message&quot; rows=&quot;3&quot; @blur=&quot;blur(&#x27;message&#x27;)&quot; /&gt;
+    &lt;/FormField&gt;
+    &lt;button type=&quot;submit&quot; :disabled=&quot;submitting&quot;&gt;{{ submitting ? &quot;Sending…&quot; : &quot;Send&quot; }}&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>contact.html</span><b>560px</b></div><img src="img/vue-forms-en-contact.html-560-7b9163.png" alt=""><figcaption><b>Figure 8.1:</b> After pressing “Send” with a short name and a broken email: every error is shown under its field, and the focus has moved to the first one.</figcaption></figure>
+
+<h3>When to show errors</h3>
+
+<p>Errors shown while the user is still typing the first letters are noise: “invalid email” after one letter is not helpful, it is rude. Errors shown only after submit are too late. The composable follows the rule that most good forms use: a field’s error appears when the user <em>leaves</em> the field (<code>@blur</code>), or tries to submit. After that, it updates as the user types, so it disappears the moment the value is fixed.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: help the browser help the user</p><p>The right <code>type</code>, <code>inputmode</code> and <code>autocomplete</code> cost nothing and save users a lot of typing: <code>type="email"</code> shows the @ key on phones, <code>inputmode="numeric"</code> shows digits, and <code>autocomplete="email"</code> lets the browser fill in a saved address. Emails, phone numbers and passwords also get <code>dir="ltr"</code>, so they read correctly in Arabic pages.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why must the server validate the data again, even if the form already did?</li><li>What does <code>z.infer</code> give you?</li><li>Why does the composable wait until a field is left before showing its error?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">8.4</span> <span>Errors only the server knows</span></h2>
+
+<p>Some rules cannot be checked in the browser: is this email already registered? Is this coupon still valid? The server answers with errors per field, and they should appear exactly like the form’s own errors, under the field, with the focus moved there. In <code>useForm</code>, the function passed to <code>handleSubmit</code> can return such errors; Project 8.2 uses it for an email that already has an account.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: never lose what the user typed</p><p>After a failed submit, keep every value in the form. The only exceptions are passwords and card numbers, which many sites clear on purpose. Nothing makes users leave faster than retyping a long form because one field was wrong.</p></aside>
+
+<h2><span class="sec">8.5</span> <span>Forms in several steps</span></h2>
+
+<p>A long form, such as a checkout, is easier in steps. The data is still one object with one schema; each step lists the fields it is responsible for, and “Next” checks only those, with <code>checkFields</code>. The last step shows a summary and submits the whole form, checked against the whole schema. Project 8.3 builds one.</p>
+
+<h2><span class="sec">8.6</span> <span>Form libraries</span></h2>
+
+<p>The composable in this chapter is about seventy lines, and it is enough for many apps. Large apps with many complex forms often use a library, which adds features such as field arrays, async rules and fine-grained performance:</p>
+<ul>
+<li><strong>VeeValidate</strong> is the most used in Vue. At the time of writing, its stable version 4.15 accepts zod 3 schemas through <code>@vee-validate/zod</code>, and version 5, still in beta, adds support for zod 4 and other schema libraries directly.</li>
+<li><strong>TanStack Form</strong>, from the authors of TanStack Query, accepts zod 4 schemas directly.</li>
+</ul>
+<p>All of them do what you just built: values, errors, touched fields, submitting and server errors, around a schema. Knowing how it works inside lets you choose one with open eyes, or decide you do not need one.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: write the error messages with the design</p><p>Every rule needs a message that says what is wrong <em>and</em> how to fix it, in the user’s language: not “Invalid input” but “Please enter an 11-digit Egyptian mobile number.” Write the messages when the form is designed, review them like any other text, and keep them next to the rules, in the schema.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Rules only in the browser</td><td>Anyone can send bad data straight to the server</td><td>Check the same schema on the server</td></tr>
+<tr><td>Rules written in three places</td><td>The form, the type and the server disagree</td><td>One schema, with <code>z.infer</code> for the type</td></tr>
+<tr><td>Errors shown on the first keystroke</td><td>A form that scolds the user</td><td>Show them after the field is left, or after submit</td></tr>
+<tr><td>Errors not linked to their input</td><td>Screen readers never read them</td><td><code>aria-invalid</code> and <code>aria-describedby</code></td></tr>
+<tr><td>Placeholders instead of labels</td><td>The hint disappears when typing starts</td><td>A real <code>&lt;label&gt;</code> for every field</td></tr>
+<tr><td>Clearing the form after a server error</td><td>Users retype everything</td><td>Keep the values; show the error under the field</td></tr>
+<tr><td>Using the text of a number field as a number</td><td><code>"27" + 1</code> is <code>"271"</code></td><td>Let the schema convert, with <code>z.coerce</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><code>v-model</code> binds every kind of input to state; <code>.trim</code>, <code>.number</code> and <code>.lazy</code> adjust it.</li>
+<li>A <strong>zod schema</strong> holds the rules and the messages once, converts the values, and gives the type with <code>z.infer</code>. The server checks it again.</li>
+<li>A <strong>form composable</strong> keeps values, errors, touched fields and the submitting state, and passes parsed data to your submit function.</li>
+<li>Show errors <strong>after a field is left</strong> or a submit is tried, linked with <code>aria-describedby</code>, and move the focus to the first one.</li>
+<li><strong>Server errors</strong> go under the right field; never clear what the user typed.</li>
+<li><strong>Steps</strong> check only their own fields; the last step checks the whole schema.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because anyone can send data to the server without the form, for example with a script, so the form’s checks protect nothing. 2. The TypeScript type of the data <em>after</em> validation, with conversions applied, such as <code>age</code> as a number. 3. Because errors on the first letters only scold the user for an answer they have not finished writing.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">For each form, write the schema first, with every error message, and test it with <code>safeParse</code> in Node before you build any screen. When the rules are right, the form is mostly wiring.</p>
+
+<div class="project">
+<p class="project-label">Project 8.1 · Easy</p>
+<h3>An accessible contact form</h3>
+<p class="project-goal">Finish the contact form from this chapter, and make sure every field is labelled, linked to its error, and receives the focus when it is wrong.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useForm</code>, a field component with a scoped slot, <code>@blur</code>, and accessibility attributes.</p>
+<ol class="steps">
+<li>Write the schema and infer the type. Give every rule a message that explains the fix.</li>
+<li>Write <code>FormField</code>: a label, a scoped slot for the input, and the error paragraph with an id. Pass <code>id</code>, <code>aria-invalid</code> and <code>aria-describedby</code> through the slot.</li>
+<li>Bind each input with <code>v-model</code> and <code>v-bind="attrs"</code>, and call <code>blur("name")</code> on <code>@blur</code>.</li>
+<li>Try every mistake: leave fields empty, type a short name, a broken email, an age of 9. Check that errors appear only after leaving a field, and disappear as soon as the value is fixed.</li>
+<li>Test with a screen reader (VoiceOver, NVDA or TalkBack): submit an empty form and listen. The focus should land on the first field, and its error should be read with its label.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the focus moves to the first <code>[aria-invalid='true']</code> element after <code>nextTick</code>, because the attribute only appears once Vue has updated the page. Without the <code>await nextTick()</code>, there would be nothing to focus yet.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 8.2 · Medium</p>
+<h3>Sign up, with an answer from the server</h3>
+<p class="project-goal">A sign-up form with a password, its confirmation and a terms box, which also shows the server’s “email already used” message on the email field.</p>
+<p class="project-skills"><strong>You will practise:</strong> rules that compare two fields with <code>refine</code>, <code>z.literal(true)</code> for a required checkbox, server errors returned from the submit function, and the submitting state.</p>
+<ol class="steps">
+<li>Write the schema: an email, a password of at least 8 characters with a digit, a confirmation, and <code>terms: z.literal(true, "…")</code>.</li>
+<li>Compare the passwords with <code>.refine(…, { path: ["confirm"] })</code>, so the error appears under the confirmation field.</li>
+<li>In the submit function, check the full schema, then call a pretend server that answers <code>{ email: "…" }</code> for one particular email. Return that object, and <code>useForm</code> shows it under the email field.</li>
+<li>Disable the button while <code>submitting</code> is true, so a double click cannot create two accounts.</li>
+<li>Give each password input <code>autocomplete="new-password"</code>, so password managers offer to create a strong one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> design your API so that its errors name the field they belong to, as the pretend server does here. Then the frontend can put every server error in the right place with one line of code.</p>
+<div class="listing" dir="ltr"><div class="listing-title">signup-schema.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> signupSchema = z
+  .object({
+    email: z.email(<span class="s">&quot;Please enter an email like name@example.com.&quot;</span>),
+    password: z.string().min(<span class="n">8</span>, <span class="s">&quot;At least 8 characters, with a number.&quot;</span>).regex(/\d/, <span class="s">&quot;At least 8 characters, with a number.&quot;</span>),
+    confirm: z.string(),
+    terms: z.literal(<span class="k">true</span>, <span class="s">&quot;Please accept the terms to continue.&quot;</span>),
+  })
+  .refine((data) =&gt; data.password === data.confirm, { message: <span class="s">&quot;The passwords do not match.&quot;</span>, path: [<span class="s">&quot;confirm&quot;</span>] });</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>signup.html</span><b>560px</b></div><img src="img/vue-forms-en-projects-signup.html-560-50f5b0.png" alt=""><figcaption><b>Project 8.2:</b> every rule passed in the browser, but the server knows this email already, and the form shows it on the email field.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 8.3 · Challenge</p>
+<h3>A checkout in three steps</h3>
+<p class="project-goal">Delivery, payment and review as three steps of one form, checked step by step, with a review screen before the order is placed.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>z.enum</code>, checking some fields only, <code>&lt;select&gt;</code> and radio buttons with <code>v-model</code>, <code>aria-current="step"</code>, and keyed buttons.</p>
+<ol class="steps">
+<li>Write one schema for the whole order, and a <code>STEPS</code> list with each step’s title and fields.</li>
+<li>Show only the current step’s inputs. “Next” calls <code>checkFields(STEPS[step].fields)</code> and moves on only if it returns <code>true</code>.</li>
+<li>On the last step, show a summary from <code>values</code> and a “Place order” submit button.</li>
+<li>Show the progress as a list, with <code>aria-current="step"</code> on the current one.</li>
+<li>Give “Next” and “Place order” different <code>key</code>s. Without them, Vue may reuse the same <code>&lt;button&gt;</code> and only change its <code>type</code>, and a click on “Next” could end as a submit of the new type, placing the order one step early.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because all steps are one form, “Back” is free: the values are still there. Never create a separate form per step unless the steps are saved separately on the server.</p>
+<div class="listing" dir="ltr"><div class="listing-title">checkout-schema.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> checkoutSchema = z.object({
+  city: z.enum([<span class="s">&quot;cairo&quot;</span>, <span class="s">&quot;alexandria&quot;</span>, <span class="s">&quot;giza&quot;</span>], <span class="s">&quot;Please choose a city.&quot;</span>),
+  street: z.string().trim().min(<span class="n">5</span>, <span class="s">&quot;Please write the street and building number.&quot;</span>),
+  phone: z.string().regex(/^<span class="n">01</span>[<span class="n">0125</span>]\d{<span class="n">8</span>}$/, <span class="s">&quot;Please enter an 11-digit Egyptian mobile number.&quot;</span>),
+  method: z.enum([<span class="s">&quot;card&quot;</span>, <span class="s">&quot;cash&quot;</span>]),
+});
+
+<span class="c">// Each step lists the fields it is responsible for</span>
+<span class="k">export</span> <span class="k">const</span> STEPS = [
+  { title: <span class="s">&quot;Delivery&quot;</span>, fields: [<span class="s">&quot;city&quot;</span>, <span class="s">&quot;street&quot;</span>, <span class="s">&quot;phone&quot;</span>] },
+  { title: <span class="s">&quot;Payment&quot;</span>, fields: [<span class="s">&quot;method&quot;</span>] },
+  { title: <span class="s">&quot;Review&quot;</span>, fields: [] },
+] as <span class="k">const</span>;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>checkout.html</span><b>560px</b></div><img src="img/vue-forms-en-projects-checkout.html-560-b6e26d.png" alt=""><figcaption><b>Project 8.3:</b> “Next” on an empty first step: only this step’s fields are checked.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>checkout.html</span><b>560px</b></div><img src="img/vue-forms-en-projects-checkout.html-560-e4ced7.png" alt=""><figcaption>The review step, after filling the delivery and choosing to pay by card.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add an optional “Phone” field to the contact form, which is checked only when something is typed in it.</li>
+<li><span class="level">Easy</span> Show a counter under the message, “12 of at least 20 characters”, computed from <code>values.message</code>.</li>
+<li><span class="level medium">Medium</span> Add a <code>dirty</code> computed to <code>useForm</code> that is true when any value differs from the initial values, and ask for confirmation before leaving the page while it is true, with the <code>beforeunload</code> event.</li>
+<li><span class="level medium">Medium</span> Save a draft of the contact form in <code>localStorage</code> while the user types, and restore it when the form opens.</li>
+<li><span class="level hard">Challenge</span> Make the email field of the sign-up form check, after the user leaves it, whether the email is already taken, with a debounced request, and show the answer under the field before the user even submits.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 9</p>
+<p>Some data is needed by many distant parts of the app: who is signed in, the chosen language, the cart. The next chapter gives it a home with Pinia, Vue’s official store, and shows how to keep that home small.</p>
+</div>
+</section>
 <section class="chapter" style="page: ch10" data-chapter="10" data-code="b2/design/en">
 <div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">Chapter 10</p><h1>Design Systems and Component Libraries</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -6762,6 +7160,16 @@ on the team will pair with the others on the first tests.
 <li><code>const q = computed(() =&gt; (typeof route.query.q === "string" ? route.query.q : ""))</code>, add <code>q</code> to the key, and filter with <code>p.name.toLowerCase().includes(q.value.toLowerCase())</code>. Update it as in Project 7.2, with <code>router.replace</code> and the other parameters spread.</li>
 <li>Add <code>meta: { title: "Products" }</code> to each route, and <code>router.afterEach((to) =&gt; { document.title = `${to.meta.title ?? "Bit's shop"} · Bit's shop`; })</code>. To make <code>to.meta.title</code> typed, extend the <code>RouteMeta</code> interface in a <code>.d.ts</code> file.</li>
 <li><code>const client = useQueryClient(); watchEffect(() =&gt; client.prefetchQuery({ queryKey: ["product", props.id + 1], queryFn: () =&gt; getProduct(props.id + 1) }));</code> and <code>&lt;RouterLink :to="`/products/${id + 1}`"&gt;</code>. When the user clicks, the query finds the product in the cache and shows it without a skeleton.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 8</h2>
+<ol class="exercises">
+<li>In the schema: <code>phone: z.union([z.literal(""), z.string().regex(/^\d{11}$/, "Please enter 11 digits.")])</code>, with <code>phone: ""</code> in the initial values and a <code>FormField</code> like the others. The empty string is allowed explicitly; anything else must be 11 digits.</li>
+<li><code>&lt;p class="muted"&gt;{{ values.message.trim().length }} of at least 20 characters&lt;/p&gt;</code>. Because <code>values</code> is reactive, the counter follows every keystroke without any extra code.</li>
+<li>Keep a copy of <code>initial</code>, and <code>const dirty = computed(() =&gt; JSON.stringify(values) !== JSON.stringify(initial))</code>. In the component: <code>useEventListener(window, "beforeunload", (e) =&gt; { if (dirty.value) e.preventDefault(); })</code>. The browser then asks the user before leaving.</li>
+<li>Start with <code>useForm(contactSchema, loadDraft() ?? empty)</code>, where <code>loadDraft</code> parses <code>localStorage</code> inside <code>try</code>, and save with <code>watch(values, (v) =&gt; localStorage.setItem("contact-draft", JSON.stringify(v)), { deep: true })</code>. Remove the draft after a successful send.</li>
+<li>Watch the email together with a “touched” flag: when the field has been left and the email is valid, debounce it (Chapter 6), call a pretend <code>isTaken(email, signal)</code>, cancel stale calls in the cleanup, and put the answer in a separate <code>emailTaken</code> ref shown under the field. The submit function still asks the server again, because the answer may have changed.</li>
 </ol>
 
 

@@ -1,0 +1,53 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">For each form, write the schema first, with every error message, and test it with <code>safeParse</code> in Node before you build any screen. When the rules are right, the form is mostly wiring.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>An accessible contact form</h3>
+<p class="project-goal">Finish the contact form from this chapter, and make sure every field is labelled, linked to its error, and receives the focus when it is wrong.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>useForm</code>, a field component with a scoped slot, <code>@blur</code>, and accessibility attributes.</p>
+<ol class="steps">
+<li>Write the schema and infer the type. Give every rule a message that explains the fix.</li>
+<li>Write <code>FormField</code>: a label, a scoped slot for the input, and the error paragraph with an id. Pass <code>id</code>, <code>aria-invalid</code> and <code>aria-describedby</code> through the slot.</li>
+<li>Bind each input with <code>v-model</code> and <code>v-bind="attrs"</code>, and call <code>blur("name")</code> on <code>@blur</code>.</li>
+<li>Try every mistake: leave fields empty, type a short name, a broken email, an age of 9. Check that errors appear only after leaving a field, and disappear as soon as the value is fixed.</li>
+<li>Test with a screen reader (VoiceOver, NVDA or TalkBack): submit an empty form and listen. The focus should land on the first field, and its error should be read with its label.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the focus moves to the first <code>[aria-invalid='true']</code> element after <code>nextTick</code>, because the attribute only appears once Vue has updated the page. Without the <code>await nextTick()</code>, there would be nothing to focus yet.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Sign up, with an answer from the server</h3>
+<p class="project-goal">A sign-up form with a password, its confirmation and a terms box, which also shows the server’s “email already used” message on the email field.</p>
+<p class="project-skills"><strong>You will practise:</strong> rules that compare two fields with <code>refine</code>, <code>z.literal(true)</code> for a required checkbox, server errors returned from the submit function, and the submitting state.</p>
+<ol class="steps">
+<li>Write the schema: an email, a password of at least 8 characters with a digit, a confirmation, and <code>terms: z.literal(true, "…")</code>.</li>
+<li>Compare the passwords with <code>.refine(…, { path: ["confirm"] })</code>, so the error appears under the confirmation field.</li>
+<li>In the submit function, check the full schema, then call a pretend server that answers <code>{ email: "…" }</code> for one particular email. Return that object, and <code>useForm</code> shows it under the email field.</li>
+<li>Disable the button while <code>submitting</code> is true, so a double click cannot create two accounts.</li>
+<li>Give each password input <code>autocomplete="new-password"</code>, so password managers offer to create a strong one.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> design your API so that its errors name the field they belong to, as the pretend server does here. Then the frontend can put every server error in the right place with one line of code.</p>
+<pre data-code="projects/signup-schema.ts" data-title="signup-schema.ts"></pre>
+<figure data-render="projects/signup.html" data-width="560" data-actions="fill:#email|sara@example.com;fill:#password|bit2026code;fill:#confirm|bit2026code;click:input[type=checkbox];click:button;wait:700"><figcaption><b>Project {{n}}.2:</b> every rule passed in the browser, but the server knows this email already, and the form shows it on the email field.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A checkout in three steps</h3>
+<p class="project-goal">Delivery, payment and review as three steps of one form, checked step by step, with a review screen before the order is placed.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>z.enum</code>, checking some fields only, <code>&lt;select&gt;</code> and radio buttons with <code>v-model</code>, <code>aria-current="step"</code>, and keyed buttons.</p>
+<ol class="steps">
+<li>Write one schema for the whole order, and a <code>STEPS</code> list with each step’s title and fields.</li>
+<li>Show only the current step’s inputs. “Next” calls <code>checkFields(STEPS[step].fields)</code> and moves on only if it returns <code>true</code>.</li>
+<li>On the last step, show a summary from <code>values</code> and a “Place order” submit button.</li>
+<li>Show the progress as a list, with <code>aria-current="step"</code> on the current one.</li>
+<li>Give “Next” and “Place order” different <code>key</code>s. Without them, Vue may reuse the same <code>&lt;button&gt;</code> and only change its <code>type</code>, and a click on “Next” could end as a submit of the new type, placing the order one step early.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because all steps are one form, “Back” is free: the values are still there. Never create a separate form per step unless the steps are saved separately on the server.</p>
+<pre data-code="projects/checkout-schema.ts" data-title="checkout-schema.ts"></pre>
+<figure data-render="projects/checkout.html" data-width="560" data-actions="click:.row button:nth-child(2);wait:200"><figcaption><b>Project {{n}}.3:</b> “Next” on an empty first step: only this step’s fields are checked.</figcaption></figure>
+<figure data-render="projects/checkout.html" data-width="560" data-actions="fill:#street|12 Corniche Street;fill:#phone|01012345678;press:#city|ArrowDown;click:.row button:nth-child(2);wait:200;click:input[value=card];click:.row button:nth-child(2);wait:200"><figcaption>The review step, after filling the delivery and choosing to pay by card.</figcaption></figure>
+</div>

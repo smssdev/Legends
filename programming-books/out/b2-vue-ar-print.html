@@ -21,6 +21,8 @@
 @page ch06:first { @top-center { content: none; } }
 @page ch07 { @top-center { content: "الفصل 7: Vue Router وبيانات الخادم"; } }
 @page ch07:first { @top-center { content: none; } }
+@page ch08 { @top-center { content: "الفصل 8: النماذج والتحقق"; } }
+@page ch08:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: أنظمة التصميم ومكتبات المكونات"; } }
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "الفصل 11: الوصول (WCAG) عملياً"; } }
@@ -3570,6 +3572,402 @@ const mutation = useMutation({
 <p>المستخدمون لا يقرؤون البيانات فقط، بل يرسلونها عبر النماذج. وفي الفصل التالي ستبني نماذج تتحقق أثناء الكتابة، وتعرض أخطاء مفيدة، وتصف قواعدها مرة واحدة في مخطط يتشاركه TypeScript، وترسل النتيجة إلى الخادم بأمان.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch08" data-chapter="8" data-code="b2/vue/forms/ar">
+<div class="opener"><span class="opener-num">8</span><p class="chapter-kicker">الفصل 8</p><h1>النماذج والتحقق</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تربط كل أنواع الحقول بـ <code>v-model</code> ومعدِّلاته</li>
+<li>تصف قواعد النموذج مرة واحدة، في مخطط zod يعطيك نوع TypeScript أيضاً</li>
+<li>تبني composable صغيراً للنماذج: القيم والأخطاء والحقول الملموسة والإرسال</li>
+<li>تعرض الأخطاء في اللحظة المناسبة، بطريقة سهلة الوصول، وتنقل التركيز إليها</li>
+<li>تعرض الأخطاء التي لا يجدها إلا الخادم تحت الحقل الصحيح</li>
+<li>تقسم النماذج الطويلة إلى خطوات تتحقق كل منها من حقولها وحدها</li>
+</ul>
+</div>
+
+<p class="lead">النماذج هي حيث يعطي المستخدمون تطبيقك بياناتهم: اسماً وعنواناً وكلمة مرور ومالاً. وهي أيضاً حيث يقع معظم الإحباط على الويب: قواعد لا تُشرح، وأخطاء تظهر مبكراً جداً أو متأخراً جداً، ونص مكتوب يختفي بعد إرسال فاشل. والنموذج الجيد في معظمه قائمة من القرارات الصغيرة المتخذة جيداً. وهذا الفصل يتخذها مرة واحدة، في مخطط وcomposable يعيد استخدامهما كل نموذج.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>المتصفح لا يتحقق وحده من شيء مهم، والخادم يجب أن يتحقق من كل شيء مرة أخرى على أي حال. فلماذا نتحقق في النموذج أصلاً؟ لأنه المكان الوحيد الذي تستطيع فيه مساعدة المستخدم على إصلاح خطئه وهو ما زال يكتب.</p></div></div>
+
+<h2><span class="sec">8.1</span> <span><code>v-model</code> على كل أنواع الحقول</span></h2>
+
+<p>في Vue تعيش قيمة الحقل في حالتك، و<code>v-model</code> يُبقيهما متوافقين، ويتكيف مع نوع الحقل:</p>
+
+<ul>
+<li>حقل النص و<code>&lt;textarea&gt;</code> يربطان نصاً. و<code>v-model.trim</code> تحذف المسافات من الطرفين، و<code>v-model.number</code> تحوّل إلى عدد، و<code>v-model.lazy</code> تحدّث حين يُغادر الحقل فقط.</li>
+<li>مربع الاختيار يربط قيمة منطقية، أو قائمة القيم المختارة مع مصفوفة.</li>
+<li>أزرار الاختيار ذات <code>v-model</code> الواحد تربط <code>value</code> المختار منها.</li>
+<li>و<code>&lt;select&gt;</code> يربط <code>value</code> الخيار المختار.</li>
+</ul>
+
+<p>ولأن القيم في الحالة، فكل ما عدا ذلك Vue عادي: قيمة <code>computed</code> تتحقق منها، ومراقب يحفظ مسودة، والقالب يعرض أي شيء مشتق منها.</p>
+
+<h2><span class="sec">8.2</span> <span>مخطط واحد للقواعد</span></h2>
+
+<p>لكل نموذج قواعد: حقول مطلوبة، وصيغ، وحدود. ومكتوبةً باليد تنتهي في ثلاثة أماكن: النموذج، ونوع TypeScript، والخادم. وzod، التي التقيتها في الفصل 2، تصفها مرة واحدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">contact-schema.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c">// مخطط واحد: القواعد، ورسائل الخطأ، ونوع TypeScript (مع z.infer)</span>
+<span class="k">export</span> <span class="k">const</span> contactSchema = z.object({
+  name: z.string().trim().min(<span class="n">3</span>, <span class="s">&quot;اكتب اسمك الكامل (3 أحرف على الأقل).&quot;</span>),
+  email: z.email(<span class="s">&quot;اكتب بريداً مثل name@example.com&quot;</span>),
+  age: z.coerce.number&lt;string&gt;().int(<span class="s">&quot;يجب أن يكون العمر رقماً صحيحاً.&quot;</span>).min(<span class="n">13</span>, <span class="s">&quot;يجب أن يكون عمرك 13 سنة أو أكثر.&quot;</span>),
+  message: z.string().trim().min(<span class="n">20</span>, <span class="s">&quot;اكتب 20 حرفاً على الأقل.&quot;</span>),
+});
+
+<span class="k">export</span> <span class="k">type</span> Contact = z.infer&lt;<span class="k">typeof</span> contactSchema&gt;;</pre></div>
+
+<ul>
+<li>لكل حقل قواعده ورسالته، مكتوبة للمستخدم: ما الخطأ وكيف يُصلح.</li>
+<li><code>z.coerce.number()</code> تحوّل نص حقل العمر إلى عدد قبل فحصه. فالحقول تعطي نصاً دائماً، والمخطط يقرر ماذا يصير.</li>
+<li><code>z.infer</code> تعطي نوع <em>النتيجة</em>، والعمر فيها عدد والاسم مقصوص الأطراف، فيكون الكود بعد التحقق بأنواعه كاملة.</li>
+</ul>
+
+<p>والمخطط نفسه يعمل في أي مكان، ومنه الخادم، حيث يجب أن يعمل من جديد، لأن أي أحد يستطيع إرسال بيانات دون نموذجك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">validate.ts</div><pre class="code"><span class="k">import</span> { contactSchema } <span class="k">from</span> <span class="s">&quot;./contact-schema&quot;</span>;
+
+<span class="c">// والمخطط نفسه يفحص البيانات التي تصل إلى الخادم</span>
+<span class="k">const</span> good = contactSchema.safeParse({
+  name: <span class="s">&quot;  سارة خان &quot;</span>,
+  email: <span class="s">&quot;sara@example.com&quot;</span>,
+  age: <span class="s">&quot;27&quot;</span>,
+  message: <span class="s">&quot;أريد أن أطلب عشرين نسخة لطلاب فصلي.&quot;</span>,
+});
+console.log(<span class="s">&quot;سليم:&quot;</span>, good.success, good.data);
+
+<span class="k">const</span> bad = contactSchema.safeParse({ name: <span class="s">&quot;S&quot;</span>, email: <span class="s">&quot;sara@&quot;</span>, age: <span class="s">&quot;9&quot;</span>, message: <span class="s">&quot;Hi&quot;</span> });
+console.log(<span class="s">&quot;غير سليم:&quot;</span>, bad.success);
+<span class="k">for</span> (<span class="k">const</span> issue <span class="k">of</span> bad.error?.issues ?? []) {
+  console.log(<span class="s">`  ${issue.path.join(&quot;.&quot;)}: ${issue.message}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>سليم: true {
+  name: &#x27;سارة خان&#x27;,
+  email: &#x27;sara@example.com&#x27;,
+  age: 27,
+  message: &#x27;أريد أن أطلب عشرين نسخة لطلاب فصلي.&#x27;
+}
+غير سليم: false
+  name: اكتب اسمك الكامل (3 أحرف على الأقل).
+  email: اكتب بريداً مثل name@example.com
+  age: يجب أن يكون عمرك 13 سنة أو أكثر.
+  message: اكتب 20 حرفاً على الأقل.</pre></div>
+
+<h2><span class="sec">8.3</span> <span>composable للنماذج</span></h2>
+
+<p>النموذج الحقيقي يحتاج أكثر من مخطط: يجب أن يعرف أي الحقول زارها المستخدم، وهل حاول الإرسال، وهل يرسل الآن، وأين يضع الأخطاء العائدة من الخادم. وهذا العمل نفسه لكل نموذج، فمكانه composable، كما في الفصل 6:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">useForm.ts</div><pre class="code"><span class="k">import</span> { computed, nextTick, reactive, ref, watch } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">type</span> Errors&lt;K <span class="k">extends</span> PropertyKey&gt; = Partial&lt;Record&lt;K, string&gt;&gt;;
+
+<span class="c">// composable صغير للنماذج: القيم والأخطاء والحقول الملموسة والإرسال، حول مخطط واحد</span>
+<span class="k">export</span> <span class="k">function</span> useForm&lt;S <span class="k">extends</span> z.ZodObject&gt;(schema: S, initial: z.input&lt;S&gt;) {
+  <span class="k">type</span> Key = <span class="k">keyof</span> z.input&lt;S&gt; &amp; string;
+  <span class="k">const</span> values = reactive({ ...initial }) as z.input&lt;S&gt;;
+  <span class="k">const</span> allErrors = ref&lt;Errors&lt;Key&gt;&gt;({});
+  <span class="k">const</span> touched = reactive(<span class="k">new</span> Set&lt;string&gt;());
+  <span class="k">const</span> submitted = ref(<span class="k">false</span>);
+  <span class="k">const</span> submitting = ref(<span class="k">false</span>);
+
+  <span class="k">function</span> check(): z.output&lt;S&gt; | <span class="k">undefined</span> {
+    <span class="k">const</span> result = schema.safeParse(values);
+    <span class="k">const</span> next: Errors&lt;Key&gt; = {};
+    <span class="k">for</span> (<span class="k">const</span> issue <span class="k">of</span> result.success ? [] : result.error.issues) next[issue.path[<span class="n">0</span>] as Key] ??= issue.message;
+    allErrors.value = next;
+    <span class="k">return</span> result.success ? result.data : <span class="k">undefined</span>;
+  }
+  watch(values, check, { deep: <span class="k">true</span> });
+
+  <span class="c">// اعرض خطأ الحقل فقط بعد أن يغادره المستخدم مرة، أو يحاول الإرسال</span>
+  <span class="k">const</span> errors = computed(() =&gt; {
+    <span class="k">const</span> shown: Errors&lt;Key&gt; = {};
+    <span class="k">for</span> (<span class="k">const</span> [key, message] <span class="k">of</span> Object.entries(allErrors.value) as [Key, string][]) {
+      <span class="k">if</span> (submitted.value || touched.has(key)) shown[key] = message;
+    }
+    <span class="k">return</span> shown;
+  });
+
+  <span class="k">async</span> <span class="k">function</span> focusFirstError() {
+    <span class="k">await</span> nextTick();
+    document.querySelector&lt;HTMLElement&gt;(<span class="s">&quot;[aria-invalid=&#x27;true&#x27;]&quot;</span>)?.focus();
+  }
+
+  /** Checks some fields only (one step <span class="k">of</span> a longer form), and shows their errors. */
+  <span class="k">function</span> checkFields(fields: <span class="k">readonly</span> Key[]) {
+    fields.forEach((f) =&gt; touched.add(f));
+    check();
+    <span class="k">const</span> ok = fields.every((f) =&gt; !allErrors.value[f]);
+    <span class="k">if</span> (!ok) void focusFirstError();
+    <span class="k">return</span> ok;
+  }
+
+  <span class="k">function</span> handleSubmit(send: (data: z.output&lt;S&gt;) =&gt; Promise&lt;Errors&lt;Key&gt; | void&gt;) {
+    <span class="k">return</span> <span class="k">async</span> () =&gt; {
+      submitted.value = <span class="k">true</span>;
+      <span class="k">const</span> data = check();
+      <span class="k">if</span> (!data) <span class="k">return</span> focusFirstError();
+      submitting.value = <span class="k">true</span>;
+      <span class="k">try</span> {
+        <span class="k">const</span> fromServer = <span class="k">await</span> send(data);
+        <span class="c">// الأخطاء التي لا يعرفها إلا الخادم تذهب تحت الحقل الصحيح، كغيرها</span>
+        <span class="k">if</span> (fromServer) {
+          allErrors.value = fromServer;
+          void focusFirstError();
+        }
+      } <span class="k">finally</span> {
+        submitting.value = <span class="k">false</span>;
+      }
+    };
+  }
+
+  <span class="k">return</span> { values, errors, submitting, checkFields, handleSubmit, blur: (field: Key) =&gt; touched.add(field) };
+}</pre></div>
+
+<p>يحفظ الـ composable القيم في كائن <code>reactive</code>، ويفحصها بالمخطط كلما تغيرت، ولا يكشف إلا الأخطاء التي يجب أن يراها المستخدم الآن. وتغلّف <code>handleSubmit</code> الكود الذي يرسل البيانات: تعلّم النموذج مُرسَلاً، وتتوقف وتنقل التركيز إن كان فيه خطأ، وتمرر البيانات <em>المحللة</em>، بأنواعها ومحوَّلة، إلى دالتك.</p>
+
+<p>ويحتاج كل حقل الوسوم نفسها حوله أيضاً: عنواناً، والحقل، وخطأً مربوطاً به. ومكوّن بفتحة ذات نطاق يكتبها مرة واحدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">FormField.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+defineProps&lt;{ id: string; label: string; error?: string | undefined }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div class=&quot;field&quot;&gt;
+    &lt;label :for=&quot;id&quot;&gt;{{ label }}&lt;/label&gt;
+    &lt;!-- تستلم الفتحة السمات التي تربط الحقل بعنوانه وخطئه --&gt;
+    &lt;slot :id=&quot;id&quot; :aria-invalid=&quot;!!error&quot; :aria-describedby=&quot;error ? `${id}-error` : undefined&quot; /&gt;
+    &lt;p v-if=&quot;error&quot; :id=&quot;`${id}-error`&quot; class=&quot;error&quot;&gt;{{ error }}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+
+<p>تسلّم الفتحة سماتها إلى الحقل، فتتطابق دائماً <code>for</code> في العنوان، و<code>aria-invalid</code> و<code>aria-describedby</code> في الحقل، و<code>id</code> الخطأ. فقارئ الشاشة الذي يقرأ الحقل يقرأ خطأه أيضاً. ويصير النموذج نفسه قائمة قصيرة من الحقول:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ContactForm.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import { contactSchema } from &quot;./contact-schema&quot;;
+import FormField from &quot;./FormField.vue&quot;;
+import { useForm } from &quot;./useForm&quot;;
+
+const { values, errors, submitting, blur, handleSubmit } = useForm(contactSchema, {
+  name: &quot;&quot;,
+  email: &quot;&quot;,
+  age: &quot;&quot;,
+  message: &quot;&quot;,
+});
+const sent = ref(false);
+
+const submit = handleSubmit(async (contact) =&gt; {
+  // contact.age is a number here, not text: the schema converted it
+  await new Promise((resolve) =&gt; setTimeout(resolve, 600)); // send it to the server
+  sent.value = true;
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p v-if=&quot;sent&quot; class=&quot;card done&quot; role=&quot;status&quot;&gt;شكراً لك! سنرد خلال يومين.&lt;/p&gt;
+  &lt;form v-else novalidate @submit.prevent=&quot;submit&quot;&gt;
+    &lt;FormField id=&quot;name&quot; v-slot=&quot;attrs&quot; label=&quot;الاسم الكامل&quot; :error=&quot;errors.name&quot;&gt;
+      &lt;input v-bind=&quot;attrs&quot; v-model=&quot;values.name&quot; autocomplete=&quot;name&quot; @blur=&quot;blur(&#x27;name&#x27;)&quot; /&gt;
+    &lt;/FormField&gt;
+    &lt;FormField id=&quot;email&quot; v-slot=&quot;attrs&quot; label=&quot;البريد الإلكتروني&quot; :error=&quot;errors.email&quot;&gt;
+      &lt;input v-bind=&quot;attrs&quot; v-model=&quot;values.email&quot; type=&quot;email&quot; autocomplete=&quot;email&quot; dir=&quot;ltr&quot; @blur=&quot;blur(&#x27;email&#x27;)&quot; /&gt;
+    &lt;/FormField&gt;
+    &lt;FormField id=&quot;age&quot; v-slot=&quot;attrs&quot; label=&quot;العمر&quot; :error=&quot;errors.age&quot;&gt;
+      &lt;input v-bind=&quot;attrs&quot; v-model=&quot;values.age&quot; inputmode=&quot;numeric&quot; @blur=&quot;blur(&#x27;age&#x27;)&quot; /&gt;
+    &lt;/FormField&gt;
+    &lt;FormField id=&quot;message&quot; v-slot=&quot;attrs&quot; label=&quot;الرسالة&quot; :error=&quot;errors.message&quot;&gt;
+      &lt;textarea v-bind=&quot;attrs&quot; v-model=&quot;values.message&quot; rows=&quot;3&quot; @blur=&quot;blur(&#x27;message&#x27;)&quot; /&gt;
+    &lt;/FormField&gt;
+    &lt;button type=&quot;submit&quot; :disabled=&quot;submitting&quot;&gt;{{ submitting ? &quot;جارٍ الإرسال…&quot; : &quot;أرسل&quot; }}&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>contact.html</span><b>560px</b></div><img src="img/vue-forms-ar-contact.html-560-2e304d.png" alt=""><figcaption><b>الشكل 8.1:</b> بعد الضغط على «أرسل» باسم قصير وبريد ناقص: كل خطأ تحت حقله، وانتقل التركيز إلى أولها.</figcaption></figure>
+
+<h3>متى تُعرض الأخطاء</h3>
+
+<p>الأخطاء التي تظهر والمستخدم ما زال يكتب الحروف الأولى ضجيج: «بريد غير صالح» بعد حرف واحد ليست مساعدة بل فظاظة. والأخطاء التي لا تظهر إلا بعد الإرسال متأخرة جداً. ويتبع الـ composable القاعدة التي تتبعها معظم النماذج الجيدة: يظهر خطأ الحقل حين <em>يغادره</em> المستخدم (<code>@blur</code>)، أو يحاول الإرسال. وبعدها يتحدث أثناء الكتابة، فيختفي لحظة إصلاح القيمة.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: ساعد المتصفح ليساعد المستخدم</p><p><code>type</code> و<code>inputmode</code> و<code>autocomplete</code> الصحيحة لا تكلف شيئاً وتوفر على المستخدمين كتابة كثيرة: ‏<code>type="email"</code> تُظهر مفتاح @ في الجوالات، و<code>inputmode="numeric"</code> تُظهر الأرقام، و<code>autocomplete="email"</code> تتيح للمتصفح ملء عنوان محفوظ. وتأخذ البريد وأرقام الهواتف وكلمات المرور أيضاً <code>dir="ltr"</code>، فتُقرأ صحيحة في الصفحات العربية.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا يجب أن يتحقق الخادم من البيانات مرة أخرى، حتى لو تحقق النموذج؟</li><li>ماذا تعطيك <code>z.infer</code>؟</li><li>لماذا ينتظر الـ composable مغادرة الحقل قبل عرض خطئه؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">8.4</span> <span>أخطاء لا يعرفها إلا الخادم</span></h2>
+
+<p>بعض القواعد لا يمكن فحصها في المتصفح: هل هذا البريد مسجل بالفعل؟ هل هذا الكوبون ما زال صالحاً؟ يجيب الخادم بأخطاء لكل حقل، ويجب أن تظهر تماماً كأخطاء النموذج نفسه: تحت الحقل، مع نقل التركيز إليه. وفي <code>useForm</code> تستطيع الدالة الممررة إلى <code>handleSubmit</code> أن تُرجع أخطاء كهذه، ويستخدمها المشروع 8.2 لبريد له حساب بالفعل.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا تضيّع أبداً ما كتبه المستخدم</p><p>بعد الإرسال الفاشل أبقِ كل القيم في النموذج. والاستثناء الوحيد كلمات المرور وأرقام البطاقات، التي تمسحها مواقع كثيرة عمداً. فلا شيء يجعل المستخدمين يغادرون أسرع من إعادة كتابة نموذج طويل لأن حقلاً واحداً كان خطأً.</p></aside>
+
+<h2><span class="sec">8.5</span> <span>نماذج على خطوات</span></h2>
+
+<p>النموذج الطويل، كصفحة الدفع، أسهل على خطوات. والبيانات ما زالت كائناً واحداً بمخطط واحد، وكل خطوة تسرد الحقول التي هي مسؤولة عنها، ويتحقق «التالي» منها وحدها بـ <code>checkFields</code>. والخطوة الأخيرة تعرض ملخصاً وترسل النموذج كله، مفحوصاً بالمخطط كله. ويبني المشروع 8.3 واحداً.</p>
+
+<h2><span class="sec">8.6</span> <span>مكتبات النماذج</span></h2>
+
+<p>الـ composable في هذا الفصل نحو سبعين سطراً، ويكفي تطبيقات كثيرة. أما التطبيقات الكبيرة ذات النماذج الكثيرة المعقدة فكثيراً ما تستخدم مكتبة، تضيف مزايا مثل مصفوفات الحقول والقواعد غير المتزامنة والأداء الدقيق:</p>
+<ul>
+<li><strong>VeeValidate</strong> الأكثر استخداماً في Vue. ووقت كتابة هذا الكتاب يقبل إصداره المستقر 4.15 مخططات zod 3 عبر <code>@vee-validate/zod</code>، والإصدار 5، ما زال تجريبياً، يضيف دعم zod 4 ومكتبات المخططات الأخرى مباشرة.</li>
+<li><strong>TanStack Form</strong>، من مؤلفي TanStack Query، يقبل مخططات zod 4 مباشرة.</li>
+</ul>
+<p>وكلها تفعل ما بنيته للتو: القيم والأخطاء والحقول الملموسة والإرسال وأخطاء الخادم، حول مخطط. ومعرفة كيف يعمل ذلك في الداخل تتيح لك أن تختار واحدة وعيناك مفتوحتان، أو أن تقرر أنك لا تحتاج إليها.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: اكتب رسائل الخطأ مع التصميم</p><p>كل قاعدة تحتاج رسالة تقول ما الخطأ <em>و</em>كيف يُصلح، بلغة المستخدم: لا «مدخل غير صالح» بل «اكتب رقم جوال مصرياً من 11 رقماً». اكتب الرسائل حين يُصمَّم النموذج، وراجعها كأي نص آخر، واحفظها بجانب القواعد، في المخطط.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>القواعد في المتصفح فقط</td><td>يستطيع أي أحد إرسال بيانات سيئة مباشرة إلى الخادم</td><td>افحص المخطط نفسه على الخادم</td></tr>
+<tr><td>قواعد مكتوبة في ثلاثة أماكن</td><td>يختلف النموذج والنوع والخادم</td><td>مخطط واحد، و<code>z.infer</code> للنوع</td></tr>
+<tr><td>أخطاء تظهر مع أول ضغطة مفتاح</td><td>نموذج يوبّخ المستخدم</td><td>اعرضها بعد مغادرة الحقل أو بعد الإرسال</td></tr>
+<tr><td>أخطاء غير مربوطة بحقلها</td><td>لا يقرؤها قارئ الشاشة أبداً</td><td><code>aria-invalid</code> و<code>aria-describedby</code></td></tr>
+<tr><td>نص تلميح بدل العناوين</td><td>يختفي التلميح حين تبدأ الكتابة</td><td><code>&lt;label&gt;</code> حقيقي لكل حقل</td></tr>
+<tr><td>مسح النموذج بعد خطأ من الخادم</td><td>يعيد المستخدمون كتابة كل شيء</td><td>أبقِ القيم، واعرض الخطأ تحت الحقل</td></tr>
+<tr><td>استخدام نص حقل رقمي عدداً</td><td><code>"27" + 1</code> تساوي <code>"271"</code></td><td>دع المخطط يحوّل، بـ <code>z.coerce</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><code>v-model</code> يربط كل أنواع الحقول بالحالة، و<code>.trim</code> و<code>.number</code> و<code>.lazy</code> تعدّله.</li>
+<li><strong>مخطط zod</strong> يحمل القواعد والرسائل مرة واحدة، ويحوّل القيم، ويعطي النوع بـ <code>z.infer</code>. ويتحقق منه الخادم من جديد.</li>
+<li><strong>composable النماذج</strong> يحفظ القيم والأخطاء والحقول الملموسة وحالة الإرسال، ويمرر البيانات المحللة إلى دالة الإرسال.</li>
+<li>اعرض الأخطاء <strong>بعد مغادرة الحقل</strong> أو محاولة الإرسال، مربوطة بـ <code>aria-describedby</code>، وانقل التركيز إلى أولها.</li>
+<li><strong>أخطاء الخادم</strong> تذهب تحت الحقل الصحيح، ولا تمسح أبداً ما كتبه المستخدم.</li>
+<li><strong>الخطوات</strong> تتحقق من حقولها وحدها، والخطوة الأخيرة تتحقق من المخطط كله.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن أي أحد يستطيع إرسال بيانات إلى الخادم دون النموذج، بسكربت مثلاً، ففحوص النموذج لا تحمي شيئاً. 2. نوع TypeScript للبيانات <em>بعد</em> التحقق، مع التحويلات، كالعمر عدداً. 3. لأن الأخطاء على الحروف الأولى توبّخ المستخدم على جواب لم ينته من كتابته.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">لكل نموذج اكتب المخطط أولاً بكل رسائل الخطأ، واختبره بـ <code>safeParse</code> في Node قبل أن تبني أي شاشة. فحين تصح القواعد، يصير النموذج توصيلاً في معظمه.</p>
+
+<div class="project">
+<p class="project-label">المشروع 8.1 · سهل</p>
+<h3>نموذج تواصل سهل الوصول</h3>
+<p class="project-goal">أكمل نموذج التواصل من هذا الفصل، وتأكد أن لكل حقل عنواناً، وأنه مربوط بخطئه، ويأخذ التركيز حين يكون خطأً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>useForm</code>، ومكوّن حقل بفتحة ذات نطاق، و<code>@blur</code>، وسمات الإتاحة.</p>
+<ol class="steps">
+<li>اكتب المخطط واستنتج النوع. وأعطِ كل قاعدة رسالة تشرح الإصلاح.</li>
+<li>اكتب <code>FormField</code>: عنوان، وفتحة ذات نطاق للحقل، وفقرة الخطأ بمعرّف. ومرّر <code>id</code> و<code>aria-invalid</code> و<code>aria-describedby</code> عبر الفتحة.</li>
+<li>اربط كل حقل بـ <code>v-model</code> و<code>v-bind="attrs"</code>، واستدعِ <code>blur("name")</code> عند <code>@blur</code>.</li>
+<li>جرّب كل خطأ: اترك الحقول فارغة، واكتب اسماً قصيراً، وبريداً ناقصاً، وعمراً 9. وتأكد أن الأخطاء لا تظهر إلا بعد مغادرة الحقل، وتختفي حين تُصلح القيمة.</li>
+<li>اختبر بقارئ شاشة (VoiceOver أو NVDA أو TalkBack): أرسل نموذجاً فارغاً واستمع. يجب أن ينتقل التركيز إلى الحقل الأول، ويُقرأ خطؤه مع عنوانه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ينتقل التركيز إلى أول عنصر <code>[aria-invalid='true']</code> بعد <code>nextTick</code>، لأن السمة لا تظهر إلا بعد أن يحدّث Vue الصفحة. فبدون <code>await nextTick()</code> لن يوجد بعدُ شيء يأخذ التركيز.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 8.2 · متوسط</p>
+<h3>التسجيل، مع جواب من الخادم</h3>
+<p class="project-goal">نموذج تسجيل فيه كلمة مرور وتأكيدها ومربع الشروط، ويعرض أيضاً رسالة الخادم «البريد مستخدم» على حقل البريد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> القواعد التي تقارن حقلين بـ <code>refine</code>، و<code>z.literal(true)</code> لمربع اختيار مطلوب، وأخطاء الخادم المُرجعة من دالة الإرسال، وحالة الإرسال.</p>
+<ol class="steps">
+<li>اكتب المخطط: بريد، وكلمة مرور من 8 أحرف على الأقل فيها رقم، وتأكيدها، و<code>terms: z.literal(true, "…")</code>.</li>
+<li>قارن كلمتي المرور بـ <code>.refine(…, { path: ["confirm"] })</code>، فيظهر الخطأ تحت حقل التأكيد.</li>
+<li>في دالة الإرسال افحص المخطط كله، ثم استدعِ خادماً وهمياً يجيب <code>{ email: "…" }</code> لبريد معيّن. أرجع ذلك الكائن، فيعرضه <code>useForm</code> تحت حقل البريد.</li>
+<li>عطّل الزر ما دامت <code>submitting</code> صحيحة، فلا تنشئ النقرة المزدوجة حسابين.</li>
+<li>أعطِ كل حقل كلمة مرور <code>autocomplete="new-password"</code>، فتعرض مديرات كلمات المرور إنشاء واحدة قوية.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> صمّم واجهتك البرمجية لتسمّي أخطاؤها الحقل الذي تخصه، كما يفعل الخادم الوهمي هنا. فتستطيع الواجهة وضع كل خطأ من الخادم في مكانه بسطر واحد.</p>
+<div class="listing" dir="ltr"><div class="listing-title">signup-schema.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> signupSchema = z
+  .object({
+    email: z.email(<span class="s">&quot;اكتب بريداً مثل name@example.com&quot;</span>),
+    password: z.string().min(<span class="n">8</span>, <span class="s">&quot;8 أحرف على الأقل، وفيها رقم.&quot;</span>).regex(/\d/, <span class="s">&quot;8 أحرف على الأقل، وفيها رقم.&quot;</span>),
+    confirm: z.string(),
+    terms: z.literal(<span class="k">true</span>, <span class="s">&quot;وافق على الشروط لتتابع.&quot;</span>),
+  })
+  .refine((data) =&gt; data.password === data.confirm, { message: <span class="s">&quot;كلمتا المرور غير متطابقتين.&quot;</span>, path: [<span class="s">&quot;confirm&quot;</span>] });</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>signup.html</span><b>560px</b></div><img src="img/vue-forms-ar-projects-signup.html-560-50f5b0.png" alt=""><figcaption><b>المشروع 8.2:</b> نجحت كل القواعد في المتصفح، لكن الخادم يعرف هذا البريد، فيعرضه النموذج على حقل البريد.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 8.3 · تحدٍّ</p>
+<h3>دفع على ثلاث خطوات</h3>
+<p class="project-goal">التوصيل والدفع والمراجعة ثلاث خطوات في نموذج واحد، تُفحص خطوة خطوة، مع شاشة مراجعة قبل تأكيد الطلب.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>z.enum</code>، وفحص بعض الحقول فقط، و<code>&lt;select&gt;</code> وأزرار الاختيار بـ <code>v-model</code>، و<code>aria-current="step"</code>، والأزرار ذات المفاتيح.</p>
+<ol class="steps">
+<li>اكتب مخططاً واحداً للطلب كله، وقائمة <code>STEPS</code> بعنوان كل خطوة وحقولها.</li>
+<li>اعرض حقول الخطوة الحالية فقط. ويستدعي «التالي» ‏<code>checkFields(STEPS[step].fields)</code> ولا ينتقل إلا إن أرجعت <code>true</code>.</li>
+<li>في الخطوة الأخيرة اعرض ملخصاً من <code>values</code> وزر إرسال «أكّد الطلب».</li>
+<li>اعرض التقدم قائمةً، مع <code>aria-current="step"</code> على الحالية.</li>
+<li>أعطِ «التالي» و«أكّد الطلب» مفتاحين <code>key</code> مختلفين. فبدونهما قد يعيد Vue استخدام <code>&lt;button&gt;</code> نفسه ويغيّر <code>type</code> فقط، فتنتهي ضغطة «التالي» إرسالاً بالنوع الجديد، فيُؤكَّد الطلب قبل خطوة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لأن كل الخطوات نموذج واحد، فـ «رجوع» مجاني: القيم ما زالت هناك. فلا تنشئ نموذجاً لكل خطوة أبداً إلا إن كانت الخطوات تُحفظ منفصلة على الخادم.</p>
+<div class="listing" dir="ltr"><div class="listing-title">checkout-schema.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">export</span> <span class="k">const</span> checkoutSchema = z.object({
+  city: z.enum([<span class="s">&quot;cairo&quot;</span>, <span class="s">&quot;alexandria&quot;</span>, <span class="s">&quot;giza&quot;</span>], <span class="s">&quot;اختر مدينة.&quot;</span>),
+  street: z.string().trim().min(<span class="n">5</span>, <span class="s">&quot;اكتب الشارع ورقم المبنى.&quot;</span>),
+  phone: z.string().regex(/^<span class="n">01</span>[<span class="n">0125</span>]\d{<span class="n">8</span>}$/, <span class="s">&quot;اكتب رقم جوال مصرياً من 11 رقماً.&quot;</span>),
+  method: z.enum([<span class="s">&quot;card&quot;</span>, <span class="s">&quot;cash&quot;</span>]),
+});
+
+<span class="c">// Each step lists the fields it is responsible for</span>
+<span class="k">export</span> <span class="k">const</span> STEPS = [
+  { title: <span class="s">&quot;التوصيل&quot;</span>, fields: [<span class="s">&quot;city&quot;</span>, <span class="s">&quot;street&quot;</span>, <span class="s">&quot;phone&quot;</span>] },
+  { title: <span class="s">&quot;الدفع&quot;</span>, fields: [<span class="s">&quot;method&quot;</span>] },
+  { title: <span class="s">&quot;المراجعة&quot;</span>, fields: [] },
+] as <span class="k">const</span>;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>checkout.html</span><b>560px</b></div><img src="img/vue-forms-ar-projects-checkout.html-560-b6e26d.png" alt=""><figcaption><b>المشروع 8.3:</b> «التالي» على خطوة أولى فارغة: تُفحص حقول هذه الخطوة وحدها.</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>checkout.html</span><b>560px</b></div><img src="img/vue-forms-ar-projects-checkout.html-560-7b7448.png" alt=""><figcaption>خطوة المراجعة، بعد ملء التوصيل واختيار الدفع بالبطاقة.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف إلى نموذج التواصل حقل «الهاتف» اختيارياً، لا يُفحص إلا حين يُكتب فيه شيء.</li>
+<li><span class="level">سهل</span> اعرض تحت الرسالة عدّاداً «12 من 20 حرفاً على الأقل»، محسوباً من <code>values.message</code>.</li>
+<li><span class="level medium">متوسط</span> أضف إلى <code>useForm</code> قيمة محسوبة <code>dirty</code> تكون صحيحة حين تختلف أي قيمة عن القيم الأولى، واطلب التأكيد قبل مغادرة الصفحة ما دامت صحيحة، بحدث <code>beforeunload</code>.</li>
+<li><span class="level medium">متوسط</span> احفظ مسودة نموذج التواصل في <code>localStorage</code> أثناء الكتابة، واستعدها حين يُفتح النموذج.</li>
+<li><span class="level hard">تحدٍّ</span> اجعل حقل البريد في نموذج التسجيل يتحقق، بعد مغادرته، هل البريد مستخدم بالفعل، بطلب مؤجَّل، واعرض الجواب تحت الحقل قبل أن يرسل المستخدم.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 9</p>
+<p>بعض البيانات تحتاجها أجزاء كثيرة متباعدة من التطبيق: من سجّل الدخول، واللغة المختارة، والسلة. والفصل التالي يعطيها بيتاً بـ Pinia، المخزن الرسمي لـ Vue، ويريك كيف تُبقي ذلك البيت صغيراً.</p>
+</div>
+</section>
 <section class="chapter" style="page: ch10" data-chapter="10" data-code="b2/design/ar">
 <div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">الفصل 10</p><h1>أنظمة التصميم ومكتبات المكونات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -6760,6 +7158,16 @@ Cypress               62
 <li><code>const q = computed(() =&gt; (typeof route.query.q === "string" ? route.query.q : ""))</code>، وأضف <code>q</code> إلى المفتاح، ورشّح بـ <code>p.name.toLowerCase().includes(q.value.toLowerCase())</code>. وحدّثه كما في المشروع 7.2، بـ <code>router.replace</code> مع نشر المعاملات الأخرى.</li>
 <li>أضف <code>meta: { title: "المنتجات" }</code> إلى كل مسار، و<code>router.afterEach((to) =&gt; { document.title = `${to.meta.title ?? "متجر بِت"} · متجر بِت`; })</code>. ولتكون <code>to.meta.title</code> بنوعها، وسّع الواجهة <code>RouteMeta</code> في ملف <code>.d.ts</code>.</li>
 <li><code>const client = useQueryClient(); watchEffect(() =&gt; client.prefetchQuery({ queryKey: ["product", props.id + 1], queryFn: () =&gt; getProduct(props.id + 1) }));</code> و<code>&lt;RouterLink :to="`/products/${id + 1}`"&gt;</code>. وحين يضغط المستخدم يجد الاستعلام المنتج في الذاكرة فيعرضه دون هيكل تحميل.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 8</h2>
+<ol class="exercises">
+<li>في المخطط: <code>phone: z.union([z.literal(""), z.string().regex(/^\d{11}$/, "اكتب 11 رقماً.")])</code>، مع <code>phone: ""</code> في القيم الأولى، و<code>FormField</code> كالباقية. فالنص الفارغ مسموح صراحة، وما عداه يجب أن يكون 11 رقماً.</li>
+<li><code>&lt;p class="muted"&gt;{{ values.message.trim().length }} من 20 حرفاً على الأقل&lt;/p&gt;</code>. ولأن <code>values</code> تفاعلية، يتبع العدّاد كل ضغطة دون أي كود إضافي.</li>
+<li>احفظ نسخة من <code>initial</code>، و<code>const dirty = computed(() =&gt; JSON.stringify(values) !== JSON.stringify(initial))</code>. وفي المكوّن: <code>useEventListener(window, "beforeunload", (e) =&gt; { if (dirty.value) e.preventDefault(); })</code>، فيسأل المتصفح المستخدم قبل المغادرة.</li>
+<li>ابدأ بـ <code>useForm(contactSchema, loadDraft() ?? empty)</code>، حيث تحلل <code>loadDraft</code> ما في <code>localStorage</code> داخل <code>try</code>، واحفظ بـ <code>watch(values, (v) =&gt; localStorage.setItem("contact-draft", JSON.stringify(v)), { deep: true })</code>. واحذف المسودة بعد الإرسال الناجح.</li>
+<li>راقب البريد مع علامة «ملموس»: حين يُغادر الحقل ويكون البريد صالحاً، أجّله (الفصل 6)، واستدعِ <code>isTaken(email, signal)</code> وهمية، وألغِ الاستدعاءات القديمة في التنظيف، وضع الجواب في مرجع مستقل <code>emailTaken</code> يُعرض تحت الحقل. وما زالت دالة الإرسال تسأل الخادم من جديد، لأن الجواب قد يتغير.</li>
 </ol>
 
 
