@@ -1,0 +1,202 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/vue/composables/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>الـ composables: إعادة استخدام المنطق</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تنقل المنطق ذا الحالة من المكونات إلى composables، وتعطيه اسماً</li>
+<li>تقرر هل يحصل كل مستدعٍ على حالته أم يتشارك الجميع حالة واحدة</li>
+<li>تقبل القيم والمراجع ودوال القراءة مدخلاتٍ، بـ <code>toValue</code></li>
+<li>تكتب composables غير متزامنة تلغي العمل القديم، وأخرى تنظّف بعد نفسها</li>
+<li>تستخدم VueUse بدل كتابة الـ composables الشائعة بنفسك</li>
+<li>تختبر الـ composables دون أي مكوّن</li>
+</ul>
+</div>
+
+<p class="lead">المكونات بارعة في إعادة استخدام قطع الشاشة. لكن كثيراً من كود المكوّن ليس عن الشاشة: مؤقت، وبحث يلغي الطلبات القديمة، وحالة الشبكة، وقيمة محفوظة في المتصفح. وحين يحتاج مكونان السلوك نفسه، فنسخه يعني إصلاح كل خطأ مرتين. وجواب Vue هو الـ <dfn>composable</dfn>: دالة عادية تستخدم واجهة التركيب، وتحتفظ بحالتها التفاعلية، وتُرجعها. وهي الطريقة الأساسية التي تتشارك بها تطبيقات Vue المنطق، والفكرة التي يقوم عليها معظم عالم Vue.</p>
+
+<aside class="bit" data-mood="happy"><p>القاعدة العملية التي أستخدمها: حين يحتاج <code>&lt;script setup&gt;</code> تعليقاً ليشرح ما تفعله مجموعة من المراجع والمراقبين معاً، فتلك المجموعة تريد أن تكون composable له اسم.</p></aside>
+
+<h2>{{n}}.1 أول composable</h2>
+
+<p>هذا مؤقت الفصل {{n-1}}، منقولاً من مكوّنه ومعطى قدرات أكثر. وبالعرف يبدأ اسم الـ composable بـ <code>use</code>:</p>
+
+<pre data-code="composables/useStopwatch.ts" data-title="composables/useStopwatch.ts"></pre>
+<pre data-code="Stopwatch.vue" data-title="Stopwatch.vue"></pre>
+
+<p>صار المكوّن وصفاً قصيراً للشاشة. وكل ما يخص الوقت يعيش في دالة واحدة مُختبَرة، وأي مكوّن آخر يحصل على ساعة إيقاف بسطر واحد. وتفصيلان مهمان:</p>
+<ul>
+<li><strong><code>readonly</code></strong> على المراجع المُرجعة تعني أن المستدعين يقرؤون <code>seconds</code> ولا يضبطونها. فالطريقة الوحيدة لتغيير الساعة دوالها هي، فلا تنتهي أبداً في حالة غريبة.</li>
+<li><strong><code>onScopeDispose(stop)</code></strong> تسجل التنظيف لدى ما يشغّل الـ composable. فداخل المكوّن يحدث ذلك حين يُزال المكوّن، فلا تظل ساعة تدق على شاشة ذهبت.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">انتبه: القيمة المحسوبة لا ترى إلا القراءات التفاعلية</p><p>كانت النسخة الأولى من هذا الـ composable فيها <code>const running = computed(() =&gt; timer !== undefined &amp;&amp; …)</code>، و<code>timer</code> متغير <code>let</code> عادي. ولا يستطيع Vue تتبع متغير عادي، فكانت القيمة المحسوبة تحتفظ أحياناً بجواب قديم، وتعرض الشاشة «ابدأ» على ساعة تعمل. فكل ما تعتمد عليه قيمة محسوبة أو قالب يجب أن يكون تفاعلياً. والمتغير <code>let</code> العادي مقبول فقط لقيم لا تعرضها الشاشة أبداً، كمعرّف المؤقت هنا.</p></aside>
+
+<h2>{{n}}.2 حالة خاصة أم حالة مشتركة؟</h2>
+
+<p>لأن الـ composable مجرد دالة، فمكان إنشاء المراجع يقرر من يتشاركها:</p>
+
+<pre data-code="composables/counters.ts" data-title="composables/counters.ts"></pre>
+<pre data-code="state.ts" data-title="state.ts"></pre>
+<pre data-out="state.mjs"></pre>
+
+<figure data-render="stopwatch.html" data-width="560" data-actions="click:p:nth-child(1) button;wait:2300"><figcaption><b>الشكل {{n}}.1:</b> مكوّنا <code>Stopwatch</code>، والأول بدأ قبل ثانيتين. كل استدعاء لـ <code>useStopwatch</code> صنع حالته.</figcaption></figure>
+
+<p>المراجع المنشأة <em>داخل</em> الدالة جديدة مع كل استدعاء، وهذه الحالة المعتادة. أما المنشأة <em>خارجها</em>، في أعلى الوحدة، فتوجد مرة واحدة، فيتشاركها كل المستدعين. وهذه طريقة سريعة لمشاركة الحالة، لكن استخدمها بحذر: فهي مشتركة في التطبيق كله، ويصعب تصفيرها في الاختبارات، وفي الرسم على الخادم (الفصل {{n+11}}) ستكون مشتركة حتى بين طلبات مستخدمين مختلفين. أما الحالة الحقيقية على مستوى التطبيق فيقدم لها الفصل {{n+3}} مكتبة Pinia.</p>
+
+<h2>{{n}}.3 المدخلات: قيم أو مراجع أو دوال قراءة</h2>
+
+<p>الـ composable المفيد يقبل مدخلاته بأي شكل يملكه المستدعي. فـ <code>MaybeRefOrGetter&lt;T&gt;</code> تعني «قيمة عادية، أو مرجعاً، أو دالة تُرجع القيمة»، و<code>toValue</code> تقرأ أياً منها. ومراقبة <code>() =&gt; toValue(source)</code> تستجيب للتغييرات أياً كان الشكل الممرَّر:</p>
+
+<pre data-code="composables/useDebounced.ts" data-title="composables/useDebounced.ts"></pre>
+
+<p>تُرجع <code>useDebounced</code> نسخة من قيمة لا تتغير إلا بعد أن تتوقف الأصلية عن التغير مدةً. وهذا ما تريده بين مربع البحث والخادم: يكتب المستخدم «bit»، فيُسأل الخادم مرة واحدة لا ثلاث مرات. والتنظيف يلغي المؤقت المنتظر كلما وصل حرف جديد.</p>
+
+<h2>{{n}}.4 composable غير متزامن</h2>
+
+<p>تتألق الـ composables في العمل غير المتزامن، لأن كل أجزائه الصعبة تُحل مرة واحدة: حالات التحميل والخطأ، وفوق كل شيء تجاهل أجوبة أسئلة لم يعد أحد يسألها:</p>
+
+<pre data-code="products.ts" data-title="products.ts"></pre>
+<pre data-code="composables/useSearch.ts" data-title="composables/useSearch.ts"></pre>
+
+<p>المعامل الثالث لدالة <code>watch</code>، <code>onCleanup</code>، يعمل مثل <code>onWatcherCleanup</code>: قبل أن يعمل المراقب لاستعلام جديد يُلغى الطلب القديم. والطلب الملغى ليس خطأً، فتتحقق <code>catch</code> من ذلك وتسكت. والـ composables تتركب أيضاً: تمرر الصفحة الاستعلام <em>المؤجَّل</em> إلى البحث، ولا يعرف أي منهما عن الآخر.</p>
+
+<pre data-code="Search.vue" data-title="Search.vue"></pre>
+
+<figure data-render="search.html" data-width="560" data-actions="fill:#q|بِت;wait:1200"><figcaption><b>الشكل {{n}}.2:</b> نتائج «بِت»: طلب واحد، أُرسل بعد توقف الكتابة.</figcaption></figure>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>مكونان يستدعيان <code>useStopwatch()</code>. هل يتشاركان الثواني؟ ولماذا؟</li><li>ما الأنواع الثلاثة من المدخلات التي تقبلها <code>MaybeRefOrGetter&lt;string&gt;</code>؟</li><li>لماذا لا يُعرض الطلب الملغى خطأً؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.5 composables تنظّف بعد نفسها</h2>
+
+<p>الاستماع إلى المتصفح مصدر كلاسيكي للتسرب: مستمع يُضاف في مكوّن ولا يُحذف أبداً يظل يعمل، ويُبقي المكوّن في الذاكرة، بعد أن يغادر المستخدم الشاشة بزمن. وcomposable صغير يجعل هذا الخطأ مستحيلاً:</p>
+
+<pre data-code="composables/useEventListener.ts" data-title="composables/useEventListener.ts"></pre>
+<pre data-code="composables/useOnline.ts" data-title="composables/useOnline.ts"></pre>
+<pre data-code="Status.vue" data-title="Status.vue"></pre>
+
+<figure data-render="status.html" data-width="560" data-actions="wait:200"><figcaption><b>الشكل {{n}}.3:</b> مباشرة بعد أن أبلغ المتصفح بانقطاع الشبكة.</figcaption></figure>
+
+<p>ولاحظ أن <code>useOnline</code> مبنية على <code>useEventListener</code>. فالـ composables الصغيرة تصير لبنات للأكبر منها، كما تفعل المكونات الصغيرة.</p>
+
+<aside class="box warn"><p class="box-title">انتبه: استدعِ الـ composables في أعلى <code>&lt;script setup&gt;</code></p><p>يسجل الـ composable مراقبيه وتنظيفه لدى المكوّن الذي يُجهَّز <em>في هذه اللحظة</em>. فإن استُدعي لاحقاً، داخل معالج ضغطة أو بعد <code>await</code>، فلا مكوّن كهذا: لا يتوقف المراقبون أبداً، وتحذّر <code>onScopeDispose</code>. فاستدعِ الـ composables في المستوى الأعلى وبشكل متزامن، واستخدم الدوال التي تُرجعها لاحقاً.</p></aside>
+
+<h2>{{n}}.6 VueUse</h2>
+
+<p>كثير من الـ composables يحتاجها كل تطبيق تقريباً: قراءة <code>localStorage</code> والحفظ فيها، واستعلامات الوسائط، وحجم عنصر، والحافظة، وظهور الصفحة. و<strong>VueUse</strong> مكتبة مجانية فيها أكثر من مئتين منها، مختبرة، بالأنواع، وتنظيفها منجز. هذا مفتاح مظهر داكن يُحفظ في المتصفح ويبقى متوافقاً بين الألسنة المفتوحة:</p>
+
+<pre data-code="Theme.vue" data-title="Theme.vue"></pre>
+
+<figure data-render="theme.html" data-width="560" data-actions="click:button"><figcaption><b>الشكل {{n}}.4:</b> بعد الضغط على الزر: حُفظ الاختيار، وسيبقى بعد إعادة التحميل.</figcaption></figure>
+
+<p>قبل أن تكتب composable لشيء عام ابحث في VueUse. واكتب composables لما يخص تطبيقك: بياناته وقواعده وخادمه.</p>
+
+<h2>{{n}}.7 اختبار الـ composables</h2>
+
+<p>لأن الـ composables دوال، تُختبر دون رسم أي شيء. وأداتان تسهّلان ذلك: المؤقتات المزيفة في Vitest، التي تقدّم الوقت فوراً، و<code>effectScope</code>، التي تلعب دور المكوّن، فيعمل التنظيف حين يستدعي الاختبار <code>scope.stop()</code>:</p>
+
+<pre data-code="composables/useStopwatch.test.ts" data-title="composables/useStopwatch.test.ts"></pre>
+<pre data-code="composables/useDebounced.test.ts" data-title="composables/useDebounced.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose"></pre>
+
+<p>خمس ثوانٍ من ساعة الإيقاف وثلث ثانية من الكتابة، مختبرة في أجزاء قليلة من الثانية. فالمنطق الذي كان يعيش في مكوّن لا يُختبر إلا برسم المكوّن والضغط عليه، أما وهو composable فيُختبر مباشرة.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: للـ composable عمل واحد</p><p>سمِّ كل composable باسم الشيء الواحد الذي يفعله: <code>useStopwatch</code> و<code>useSearch</code> و<code>useOnline</code>. وحين يحتاج الاسم «و» فقسّمه. وأرجع ما يحتاجه المستدعون فقط، <code>readonly</code> حيث يجب ألا يكتبوا، ووثّق ما ينظّفه.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>مراجع على مستوى الوحدة دون قصد</td><td>كل المكونات تتشارك حالة واحدة</td><td>أنشئ المراجع داخل الدالة</td></tr>
+<tr><td>قيمة محسوبة تقرأ متغيراً عادياً</td><td>قيمة لا تتحدث</td><td>اجعل المتغير <code>ref</code></td></tr>
+<tr><td>استدعاء composable في معالج أو بعد <code>await</code></td><td>مراقبون لا يتوقفون، وتحذير</td><td>استدعِه في أعلى <code>&lt;script setup&gt;</code></td></tr>
+<tr><td>مستمعون ومؤقتات بلا تنظيف</td><td>تسرب، وكود يعمل لشاشات أُزيلت</td><td><code>onScopeDispose</code>، أو VueUse</td></tr>
+<tr><td>تفكيك كائن <code>reactive</code> مُرجَع</td><td>قيم تتوقف عن التحديث</td><td>أرجع كائناً من المراجع</td></tr>
+<tr><td>قبول القيم العادية فقط</td><td>يضطر المستدعون لفتح المراجع، فتضيع التفاعلية</td><td><code>MaybeRefOrGetter</code> و<code>toValue</code></td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>الـ <strong>composable</strong> دالة <code>use…</code> تستخدم واجهة التركيب وتُرجع حالة تفاعلية ودوالاً.</li>
+<li>المراجع المنشأة داخلها <strong>لكل استدعاء</strong>، والمنشأة على مستوى الوحدة <strong>مشتركة</strong> في التطبيق كله.</li>
+<li>اقبل المدخلات <code>MaybeRefOrGetter</code> واقرأها بـ <code>toValue</code>، وأرجع مراجع <code>readonly</code> حيث يجب ألا يكتب المستدعون.</li>
+<li>الـ composables غير المتزامنة تعالج التحميل والأخطاء و<strong>تلغي العمل القديم</strong> في تنظيفها.</li>
+<li>سجّل التنظيف بـ <code>onScopeDispose</code>، واستدعِ الـ composables متزامنة في <code>&lt;script setup&gt;</code>.</li>
+<li>استخدم <strong>VueUse</strong> للحاجات العامة، واختبر الـ composables مباشرة بالمؤقتات المزيفة و<code>effectScope</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لا: <code>seconds</code> تُنشأ داخل الدالة، فكل استدعاء يصنع مرجعه. 2. نصاً عادياً، ومرجعاً فيه نص، ودالة تُرجع نصاً. 3. لأن المستخدم لم يخطئ: أُلغي الطلب عمداً لأن طلباً أحدث حل محله.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">لكل composable اكتب توقيعه واختباراً قبل جسمه: ماذا يأخذ، وماذا يُرجع، وماذا ينظّف. فإن صعبت كتابة الاختبار، فالتصميم خاطئ في الغالب.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3><code>useStoredRef</code> خاصتك</h3>
+<p class="project-goal">اكتب بنفسك الـ composable الذي وراء <code>useLocalStorage</code> في VueUse: مرجع تُحفظ قيمته في المتصفح، ويبقى بعد إعادة التحميل، ولا ينهار أبداً مع بيانات تالفة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> composable عام الأنواع، و<code>watch</code> مع <code>deep</code>، والتحليل الحذر، وحدث <code>storage</code>.</p>
+<ol class="steps">
+<li>اكتب <code>useStoredRef&lt;T&gt;(key: string, initial: T)</code>. اقرأ JSON المحفوظ داخل <code>try</code>، وعُد إلى <code>initial</code> إن كان مفقوداً أو تالفاً.</li>
+<li>احفظ مع كل تغيير بـ <code>watch(value, save, { deep: true })</code>.</li>
+<li>استمع إلى حدث <code>storage</code> في النافذة، الذي يقع حين <em>يغيّر لسان آخر</em> المفتاح نفسه، وحدّث المرجع، مستخدماً <code>useEventListener</code> خاصتك ليُنظَّف.</li>
+<li>استخدمه لمهام الفصل {{n-1}}، وتأكد في لسانين أن تعليم مهمة في أحدهما يحدّث الآخر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> بعد كتابته قارنه بكود VueUse المصدري. فقراءة كيف تحل مكتبة معتنى بها المشكلة نفسها، وأي الحالات تعالجها مما فاتك، من أسرع طرق التحسن.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3><code>usePagination</code> مُختبَرة</h3>
+<p class="project-goal">composable يقسم أي قائمة إلى صفحات، ويتبع القائمة حين تتغير، ولا يعرض صفحة فارغة أبداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأنواع العامة، و<code>MaybeRefOrGetter</code>، والقيم المحسوبة المعتمد بعضها على بعض، والاختبارات المكتوبة أولاً.</p>
+<ol class="steps">
+<li>اكتب الاختبارات أولاً: سبعة عناصر في صفحات من ثلاثة تعطي ثلاث صفحات، و<code>next()</code> تعرض العناصر من 4 إلى 6.</li>
+<li>اكتب اختباراً أصعب: اذهب إلى الصفحة 3، ثم قلّص القائمة إلى عنصرين. يجب أن تصير الصفحة الحالية 1، لا أن تبقى على صفحة 3 فارغة.</li>
+<li>احفظ الصفحة المطلوبة وحدها في مرجع، واجعل عدد الصفحات والصفحة الحالية (المطلوبة مقيدة) والصفوف <code>computed</code>.</li>
+<li>استخدمها في كتالوج الفصل {{n-2}} بزري «السابق» و«التالي» المعطَّلين عند الطرفين، و«صفحة 2 من 3» بينهما.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التقييد في قيمة محسوبة، بدل تصحيح المرجع في مراقب، يعني أن الصفحة لا يمكن أن تكون خاطئة أبداً، ولا للحظة.</p>
+<pre data-code="projects/usePagination.ts" data-title="usePagination.ts"></pre>
+<pre data-code="projects/usePagination.test.ts" data-title="usePagination.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose projects"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>قائمة لا تنتهي</h3>
+<p class="project-goal">قائمة منتجات تحمّل الصفحة التالية وحدها حين يقترب المستخدم من نهايتها، مع زر بديل، ودون تحميل الصفحة نفسها مرتين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>IntersectionObserver</code>، وتمرير مراجع القالب إلى الـ composables، والحالة غير المتزامنة، والتحميل سهل الوصول.</p>
+<ol class="steps">
+<li>اكتب <code>useIntersection(target, callback)</code>، و<code>target</code> مرجع قالب. أنشئ المراقب حين يوجد العنصر، وافصله في التنظيف.</li>
+<li>اكتب <code>useInfiniteList(loadPage)</code> تُرجع <code>items</code> و<code>loading</code> و<code>done</code> و<code>loadMore()</code>. ولا تفعل <code>loadMore</code> شيئاً أثناء تحميل صفحة أو بعد وصول الصفحة الأخيرة.</li>
+<li>ضع عنصراً فارغاً بعد القائمة بـ <code>ref="end"</code>، واستدعِ <code>loadMore</code> حين يصير مرئياً.</li>
+<li>واعرض أيضاً زر «حمّل المزيد»: فمستخدمو لوحة المفاتيح وقارئ الشاشة قد لا يُطلقون المراقب أبداً.</li>
+<li>أعلن «حُمّلت 10 منتجات أخرى» في عنصر <code>role="status"</code> بعد كل صفحة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أشهر خطأ هنا تحميل صفحتين معاً، لأن علامة النهاية تبقى مرئية أثناء الطلب الأول. وفحص <code>loading</code> في أول <code>loadMore</code> هو الإصلاح كله، فاكتب له اختباراً.</p>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف إلى <code>useStopwatch</code> قائمة <code>laps</code> ودالة <code>lap()</code> تسجل الثواني الحالية، وأرجع القائمة <code>readonly</code>.</li>
+<li><span class="level">سهل</span> اكتب <code>useToggle(initial = false)</code> تُرجع مرجعاً ودالة <code>toggle</code>، واستخدمها لزر المظهر.</li>
+<li><span class="level">متوسط</span> اكتب <code>useMediaQuery(query)</code> بـ <code>matchMedia</code> وتنظيف على طريقة <code>useEventListener</code>، واعرض «عريض» أو «ضيق» مع <code>"(min-width: 600px)"</code>.</li>
+<li><span class="level">متوسط</span> اكتب اختباراً لـ <code>useSearch</code> بالمؤقتات المزيفة: اكتب «b» ثم «bit» بعد 100 ملي ثانية، وتأكد أن نتائج «bit» وحدها تصل.</li>
+<li><span class="level">تحدٍّ</span> حوّل <code>useSearch</code> إلى <code>useAsync(fn, input)</code> عامة تشغّل أي دالة قابلة للإلغاء حين يتغير المدخل، وأعد كتابة <code>useSearch</code> بها في ثلاثة أسطر.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>للتطبيقات الحقيقية شاشات كثيرة، وتتحدث إلى خوادم حقيقية. والفصل التالي يضيف Vue Router للعناوين والتنقل، وTanStack Query، مكتبة composables تعالج بيانات الخادم والتخزين المؤقت وإعادة الجلب أفضل من أي شيء نكتبه باليد.</p>
+</div>
+</section>

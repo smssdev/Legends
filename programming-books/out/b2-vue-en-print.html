@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "Chapter 5: Reactivity and the Composition API"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "Chapter 6: Composables: Reusing Logic"; } }
+@page ch06:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Design Systems and Component Libraries"; } }
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "Chapter 11: Accessibility (WCAG) in Practice"; } }
@@ -2646,6 +2648,518 @@ watch(query, async (q) =&gt; {
 <div class="next">
 <p class="next-title">Coming up in Chapter 6</p>
 <p>The timer, the saved tasks and the search all mix several refs, a watcher and a cleanup. The next chapter moves logic like that out of components into <strong>composables</strong>: plain functions that any component can reuse, and that you can test on their own.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b2/vue/composables/en">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">Chapter 6</p><h1>Composables: Reusing Logic</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>move stateful logic out of components into composables, and give it a name</li>
+<li>decide whether each caller gets its own state or everyone shares one</li>
+<li>accept values, refs and getters as inputs, with <code>toValue</code></li>
+<li>write async composables that cancel stale work, and composables that clean up after themselves</li>
+<li>use VueUse instead of writing common composables yourself</li>
+<li>test composables without any component</li>
+</ul>
+</div>
+
+<p class="lead">Components are good at reusing pieces of the screen. But much of the code in a component is not about the screen: a timer, a search that cancels old requests, the state of the network, a value saved in the browser. When two components need the same behaviour, copying it means fixing every bug twice. Vue’s answer is the <dfn>composable</dfn>: a plain function that uses the Composition API, keeps its own reactive state, and returns it. It is the main way Vue apps share logic, and the idea behind most of the Vue ecosystem.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The rule of thumb I use: when a <code>&lt;script setup&gt;</code> needs a comment to explain what a group of refs and watchers are doing together, that group wants to be a composable with a name.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>A first composable</span></h2>
+
+<p>Here is the timer of Chapter 5, moved out of its component and given more abilities. By convention, a composable’s name starts with <code>use</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/useStopwatch.ts</div><pre class="code"><span class="k">import</span> { onScopeDispose, <span class="k">readonly</span>, ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="c">// A composable: a function that uses the Composition API and returns reactive state</span>
+<span class="k">export</span> <span class="k">function</span> useStopwatch() {
+  <span class="c">// Each call makes new refs: two components never share a stopwatch by accident</span>
+  <span class="k">const</span> seconds = ref(<span class="n">0</span>);
+  <span class="k">const</span> running = ref(<span class="k">false</span>);
+  <span class="k">let</span> timer: ReturnType&lt;<span class="k">typeof</span> setInterval&gt; | <span class="k">undefined</span>;
+
+  <span class="k">function</span> start() {
+    <span class="k">if</span> (running.value) <span class="k">return</span>;
+    running.value = <span class="k">true</span>;
+    timer = setInterval(() =&gt; seconds.value++, <span class="n">1000</span>);
+  }
+  <span class="k">function</span> stop() {
+    clearInterval(timer);
+    running.value = <span class="k">false</span>;
+  }
+  <span class="k">function</span> reset() {
+    stop();
+    seconds.value = <span class="n">0</span>;
+  }
+
+  onScopeDispose(stop);
+  <span class="k">return</span> { seconds: <span class="k">readonly</span>(seconds), running: <span class="k">readonly</span>(running), start, stop, reset };
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Stopwatch.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useStopwatch } from &quot;./composables/useStopwatch&quot;;
+
+const { seconds, running, start, stop, reset } = useStopwatch();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p&gt;
+    &lt;strong&gt;{{ seconds }}&lt;/strong&gt; seconds
+    &lt;button v-if=&quot;!running&quot; type=&quot;button&quot; @click=&quot;start&quot;&gt;Start&lt;/button&gt;
+    &lt;button v-else type=&quot;button&quot; @click=&quot;stop&quot;&gt;Stop&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;reset&quot;&gt;Reset&lt;/button&gt;
+  &lt;/p&gt;
+&lt;/template&gt;</pre></div>
+
+<p>The component is now a short description of the screen. Everything about time lives in one tested function, and any other component can have a stopwatch with one line. Two details matter:</p>
+<ul>
+<li><strong><code>readonly</code></strong> on the returned refs means callers can read <code>seconds</code> but not set it. The only ways to change the stopwatch are its own functions, so it can never end up in a strange state.</li>
+<li><strong><code>onScopeDispose(stop)</code></strong> registers cleanup with whatever is running the composable. Inside a component, that happens when the component is removed, so a stopwatch never keeps ticking on a screen that is gone.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: a computed sees only reactive reads</p><p>The first version of this composable had <code>const running = computed(() =&gt; timer !== undefined &amp;&amp; …)</code>, where <code>timer</code> was a plain <code>let</code>. Vue cannot track a plain variable, so the computed sometimes kept an old answer, and the screen showed “Start” on a running stopwatch. Anything a computed or a template depends on must be reactive. A plain <code>let</code> is fine only for values the screen never shows, like the interval’s id here.</p></aside>
+
+<h2><span class="sec">6.2</span> <span>Own state or shared state?</span></h2>
+
+<p>Because a composable is just a function, where you create the refs decides who shares them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/counters.ts</div><pre class="code"><span class="k">import</span> { ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> useCounter() {
+  <span class="k">const</span> count = ref(<span class="n">0</span>); <span class="c">// Each call makes new refs: two components never share a stopwatch by accident</span>
+  <span class="k">return</span> { count, add: () =&gt; count.value++ };
+}
+
+<span class="k">const</span> visitors = ref(<span class="n">0</span>); <span class="c">// Created once, outside the function: everyone who calls it shares the same value</span>
+<span class="k">export</span> <span class="k">function</span> useVisitors() {
+  <span class="k">return</span> { visitors, arrive: () =&gt; visitors.value++ };
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">state.ts</div><pre class="code"><span class="k">import</span> { useCounter, useVisitors } <span class="k">from</span> <span class="s">&quot;./composables/counters&quot;</span>;
+
+<span class="k">const</span> a = useCounter();
+<span class="k">const</span> b = useCounter();
+a.add();
+a.add();
+b.add();
+console.log(<span class="s">&quot;First call:&quot;</span>, a.count.value, <span class="s">&quot;Second call:&quot;</span>, b.count.value);
+
+useVisitors().arrive();
+useVisitors().arrive();
+console.log(<span class="s">&quot;Shared by every call:&quot;</span>, useVisitors().visitors.value);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>First call: 2 Second call: 1
+Shared by every call: 2</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>stopwatch.html</span><b>560px</b></div><img src="img/vue-composables-en-stopwatch.html-560-39b894.png" alt=""><figcaption><b>Figure 6.1:</b> Two <code>Stopwatch</code> components, the first started two seconds ago. Each call to <code>useStopwatch</code> made its own state.</figcaption></figure>
+
+<p>Refs created <em>inside</em> the function are new for every call: the usual case. Refs created <em>outside</em>, at the top of the module, exist once, so every caller shares them. That is a quick way to share state, but use it with care: it is shared by the whole app, it is hard to reset in tests, and in server rendering (Chapter 17) it would even be shared between different users’ requests. For real app-wide state, Chapter 9 introduces Pinia.</p>
+
+<h2><span class="sec">6.3</span> <span>Inputs: values, refs or getters</span></h2>
+
+<p>A useful composable accepts its inputs in whatever form the caller has them. <code>MaybeRefOrGetter&lt;T&gt;</code> means “a plain value, a ref, or a function that returns the value”, and <code>toValue</code> reads any of them. Watching <code>() =&gt; toValue(source)</code> then reacts to changes, whichever form was passed:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/useDebounced.ts</div><pre class="code"><span class="k">import</span> { ref, toValue, watch, <span class="k">type</span> MaybeRefOrGetter, <span class="k">type</span> Ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="c">// Accepts a value, a ref or a getter, so callers can pass whatever they have</span>
+<span class="k">export</span> <span class="k">function</span> useDebounced&lt;T&gt;(source: MaybeRefOrGetter&lt;T&gt;, ms = <span class="n">300</span>): Readonly&lt;Ref&lt;T&gt;&gt; {
+  <span class="k">const</span> value = ref(toValue(source)) as Ref&lt;T&gt;;
+  watch(
+    () =&gt; toValue(source),
+    (now, _before, onCleanup) =&gt; {
+      <span class="k">const</span> id = setTimeout(() =&gt; (value.value = now), ms);
+      onCleanup(() =&gt; clearTimeout(id));
+    },
+  );
+  <span class="k">return</span> value;
+}</pre></div>
+
+<p><code>useDebounced</code> returns a copy of a value that changes only after the original has stopped changing for a while. It is what you want between a search box and a server: the user types “bit”, and the server is asked once, not three times. The cleanup cancels the waiting timer each time a new letter arrives.</p>
+
+<h2><span class="sec">6.4</span> <span>An async composable</span></h2>
+
+<p>Composables shine for asynchronous work, because all the hard parts can be solved once: loading and error states, and above all, ignoring answers to questions nobody is asking any more:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">products.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; price: number };
+
+<span class="k">const</span> catalogue: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;Code from Zero&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;Bit cap&quot;</span>, price: <span class="n">12</span> },
+  { id: <span class="n">4</span>, name: <span class="s">&quot;Bit sticker&quot;</span>, price: <span class="n">3</span> },
+];
+
+<span class="c">// A pretend server: answers after a delay, and can be cancelled like fetch</span>
+<span class="k">export</span> <span class="k">function</span> searchProducts(query: string, signal: AbortSignal): Promise&lt;Product[]&gt; {
+  <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
+    <span class="k">const</span> timer = setTimeout(() =&gt; {
+      <span class="k">const</span> q = query.trim().toLowerCase();
+      resolve(catalogue.filter((p) =&gt; p.name.toLowerCase().includes(q)));
+    }, <span class="n">400</span>);
+    signal.addEventListener(<span class="s">&quot;abort&quot;</span>, () =&gt; {
+      clearTimeout(timer);
+      reject(signal.reason);
+    });
+  });
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">composables/useSearch.ts</div><pre class="code"><span class="k">import</span> { ref, toValue, watch, <span class="k">type</span> MaybeRefOrGetter } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { searchProducts, <span class="k">type</span> Product } <span class="k">from</span> <span class="s">&quot;../products&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> useSearch(query: MaybeRefOrGetter&lt;string&gt;) {
+  <span class="k">const</span> results = ref&lt;Product[]&gt;([]);
+  <span class="k">const</span> loading = ref(<span class="k">false</span>);
+  <span class="k">const</span> error = ref&lt;string | <span class="k">null</span>&gt;(<span class="k">null</span>);
+
+  watch(
+    () =&gt; toValue(query).trim(),
+    <span class="k">async</span> (q, _before, onCleanup) =&gt; {
+      error.value = <span class="k">null</span>;
+      <span class="k">if</span> (!q) {
+        results.value = [];
+        <span class="k">return</span>;
+      }
+      <span class="c">// A new query cancels the request for the old one</span>
+      <span class="k">const</span> controller = <span class="k">new</span> AbortController();
+      onCleanup(() =&gt; controller.abort());
+      loading.value = <span class="k">true</span>;
+      <span class="k">try</span> {
+        results.value = <span class="k">await</span> searchProducts(q, controller.signal);
+      } <span class="k">catch</span> (e) {
+        <span class="k">if</span> (controller.signal.aborted) <span class="k">return</span>;
+        error.value = (e as Error).message;
+      }
+      loading.value = <span class="k">false</span>;
+    },
+    { immediate: <span class="k">true</span> },
+  );
+
+  <span class="k">return</span> { results, loading, error };
+}</pre></div>
+
+<p>The third argument of a <code>watch</code> callback, <code>onCleanup</code>, works like <code>onWatcherCleanup</code>: before the watcher runs for a new query, the old request is aborted. An aborted request is not an error, so the <code>catch</code> checks for that and stays quiet. Composables also compose: the page passes the <em>debounced</em> query to the search, and neither composable knows about the other.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Search.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import { useDebounced } from &quot;./composables/useDebounced&quot;;
+import { useSearch } from &quot;./composables/useSearch&quot;;
+
+const query = ref(&quot;&quot;);
+const { results, loading, error } = useSearch(useDebounced(query, 250));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;label for=&quot;q&quot;&gt;Search products&lt;/label&gt;
+  &lt;input id=&quot;q&quot; v-model=&quot;query&quot; type=&quot;search&quot; autocomplete=&quot;off&quot; /&gt;
+  &lt;p v-if=&quot;loading&quot; role=&quot;status&quot; class=&quot;muted&quot;&gt;Searching…&lt;/p&gt;
+  &lt;p v-else-if=&quot;error&quot; role=&quot;alert&quot;&gt;Could not search: {{ error }}&lt;/p&gt;
+  &lt;template v-else-if=&quot;query&quot;&gt;
+    &lt;p role=&quot;status&quot;&gt;{{ results.length }} results&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li v-for=&quot;p in results&quot; :key=&quot;p.id&quot;&gt;{{ p.name }}&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/template&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>search.html</span><b>560px</b></div><img src="img/vue-composables-en-search.html-560-0e8140.png" alt=""><figcaption><b>Figure 6.2:</b> The results for “bit”: one request, sent after the typing stopped.</figcaption></figure>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Two components call <code>useStopwatch()</code>. Do they share the seconds? Why?</li><li>What three kinds of input does <code>MaybeRefOrGetter&lt;string&gt;</code> accept?</li><li>Why is an aborted request not shown as an error?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">6.5</span> <span>Composables that clean up after themselves</span></h2>
+
+<p>Listening to the browser is a classic source of leaks: a listener added in a component and never removed keeps running, and keeps the component in memory, long after the user has left the screen. A small composable makes the mistake impossible:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/useEventListener.ts</div><pre class="code"><span class="k">import</span> { onScopeDispose } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="c">// Removed when the component (or any effect scope) that called it goes away</span>
+<span class="k">export</span> <span class="k">function</span> useEventListener&lt;K <span class="k">extends</span> <span class="k">keyof</span> WindowEventMap&gt;(
+  target: Window,
+  event: K,
+  handler: (e: WindowEventMap[K]) =&gt; void,
+) {
+  target.addEventListener(event, handler);
+  onScopeDispose(() =&gt; target.removeEventListener(event, handler));
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">composables/useOnline.ts</div><pre class="code"><span class="k">import</span> { ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { useEventListener } <span class="k">from</span> <span class="s">&quot;./useEventListener&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> useOnline() {
+  <span class="k">const</span> online = ref(navigator.onLine);
+  useEventListener(window, <span class="s">&quot;online&quot;</span>, () =&gt; (online.value = <span class="k">true</span>));
+  useEventListener(window, <span class="s">&quot;offline&quot;</span>, () =&gt; (online.value = <span class="k">false</span>));
+  <span class="k">return</span> online;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Status.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import { useEventListener } from &quot;./composables/useEventListener&quot;;
+import { useOnline } from &quot;./composables/useOnline&quot;;
+
+const online = useOnline();
+const width = ref(window.innerWidth);
+useEventListener(window, &quot;resize&quot;, () =&gt; (width.value = window.innerWidth));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p :class=&quot;online ? &#x27;ok&#x27; : &#x27;warn&#x27;&quot; role=&quot;status&quot;&gt;{{ online ? &quot;Online&quot; : &quot;Offline: changes will be saved when you are back&quot; }}&lt;/p&gt;
+  &lt;p&gt;Window width: {{ width }}px&lt;/p&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>status.html</span><b>560px</b></div><img src="img/vue-composables-en-status.html-560-a6a722.png" alt=""><figcaption><b>Figure 6.3:</b> Right after the browser reported that the network dropped.</figcaption></figure>
+
+<p>Notice that <code>useOnline</code> is built on <code>useEventListener</code>. Small composables become the building blocks of bigger ones, the same way small components do.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: call composables at the top of <code>&lt;script setup&gt;</code></p><p>A composable registers its watchers and cleanup with the component that is being set up <em>right now</em>. Called later, inside a click handler or after an <code>await</code>, there is no such component: the watchers are never stopped and <code>onScopeDispose</code> warns. Call composables at the top level, synchronously, and use the functions they return later.</p></aside>
+
+<h2><span class="sec">6.6</span> <span>VueUse</span></h2>
+
+<p>Many composables are needed by almost every app: reading and saving <code>localStorage</code>, media queries, the size of an element, the clipboard, the page’s visibility. <strong>VueUse</strong> is a free library of more than two hundred of them, well tested, typed, and with the cleanup already done. Here is a dark-theme switch that is saved in the browser and stays in step across open tabs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Theme.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useLocalStorage } from &quot;@vueuse/core&quot;;
+import { watchEffect } from &quot;vue&quot;;
+
+// The same idea from VueUse: saved in localStorage, kept in step across tabs
+const dark = useLocalStorage(&quot;dark&quot;, false);
+watchEffect(() =&gt; document.documentElement.classList.toggle(&quot;dark&quot;, dark.value));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;button type=&quot;button&quot; :aria-pressed=&quot;dark&quot; @click=&quot;dark = !dark&quot;&gt;Dark theme&lt;/button&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>theme.html</span><b>560px</b></div><img src="img/vue-composables-en-theme.html-560-c117d3.png" alt=""><figcaption><b>Figure 6.4:</b> After pressing the button: the choice is saved, and will be there after a reload.</figcaption></figure>
+
+<p>Before writing a composable for something general, look in VueUse. Write your own for what is specific to your app: its data, its rules, its server.</p>
+
+<h2><span class="sec">6.7</span> <span>Testing composables</span></h2>
+
+<p>Because composables are functions, they can be tested without rendering anything. Two tools make it easy: Vitest’s fake timers, which move time forward instantly, and <code>effectScope</code>, which plays the role of a component, so cleanup runs when the test calls <code>scope.stop()</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/useStopwatch.test.ts</div><pre class="code"><span class="k">import</span> { effectScope } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { afterEach, describe, expect, it, vi } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { useStopwatch } <span class="k">from</span> <span class="s">&quot;./useStopwatch&quot;</span>;
+
+afterEach(() =&gt; vi.useRealTimers());
+
+describe(<span class="s">&quot;useStopwatch&quot;</span>, () =&gt; {
+  it(<span class="s">&quot;counts seconds only while running&quot;</span>, () =&gt; {
+    vi.useFakeTimers();
+    <span class="k">const</span> scope = effectScope();
+    <span class="k">const</span> watch = scope.run(() =&gt; useStopwatch())!;
+    watch.start();
+    vi.advanceTimersByTime(<span class="n">3000</span>);
+    watch.stop();
+    vi.advanceTimersByTime(<span class="n">5000</span>);
+    expect(watch.seconds.value).toBe(<span class="n">3</span>);
+    scope.stop();
+  });
+
+  it(<span class="s">&quot;reset stops and returns to zero&quot;</span>, () =&gt; {
+    vi.useFakeTimers();
+    <span class="k">const</span> scope = effectScope();
+    <span class="k">const</span> watch = scope.run(() =&gt; useStopwatch())!;
+    watch.start();
+    vi.advanceTimersByTime(<span class="n">2000</span>);
+    watch.reset();
+    expect(watch.seconds.value).toBe(<span class="n">0</span>);
+    expect(watch.running.value).toBe(<span class="k">false</span>);
+    scope.stop();
+  });
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">composables/useDebounced.test.ts</div><pre class="code"><span class="k">import</span> { nextTick, ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { expect, it, vi } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { useDebounced } <span class="k">from</span> <span class="s">&quot;./useDebounced&quot;</span>;
+
+it(<span class="s">&quot;waits until the value has stopped changing&quot;</span>, <span class="k">async</span> () =&gt; {
+  vi.useFakeTimers();
+  <span class="k">const</span> text = ref(<span class="s">&quot;b&quot;</span>);
+  <span class="k">const</span> slow = useDebounced(text, <span class="n">300</span>);
+  <span class="k">for</span> (<span class="k">const</span> next <span class="k">of</span> [<span class="s">&quot;bi&quot;</span>, <span class="s">&quot;bit&quot;</span>]) {
+    text.value = next;
+    <span class="k">await</span> nextTick();
+    vi.advanceTimersByTime(<span class="n">100</span>);
+  }
+  expect(slow.value).toBe(<span class="s">&quot;b&quot;</span>);
+  vi.advanceTimersByTime(<span class="n">300</span>);
+  expect(slow.value).toBe(<span class="s">&quot;bit&quot;</span>);
+  vi.useRealTimers();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose
+ RUN  v5.1.1 .
+ ✓ composables/useStopwatch.test.ts &gt; useStopwatch &gt; counts seconds only while running 5ms
+ ✓ composables/useStopwatch.test.ts &gt; useStopwatch &gt; reset stops and returns to zero 1ms
+ ✓ projects/usePagination.test.ts &gt; splits a list into pages 3ms
+ ✓ projects/usePagination.test.ts &gt; never goes past the last page 1ms
+ ✓ composables/useDebounced.test.ts &gt; waits until the value has stopped changing 6ms
+ Test Files  3 passed (3)
+      Tests  5 passed (5)
+   Duration  1.09s (environment 84%, import 14%, tests 1%, transform 1%, worker 1%)</pre></div>
+
+<p>Five seconds of stopwatch and a third of a second of typing, tested in a few milliseconds. Logic that lived in a component could only be tested by rendering the component and clicking it; as a composable, it is tested directly.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: a composable has one job</p><p>Name each composable after the one thing it does: <code>useStopwatch</code>, <code>useSearch</code>, <code>useOnline</code>. When a name needs “and”, split it. Return only what callers need, as <code>readonly</code> where they should not write, and document what it cleans up.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Refs at module level by accident</td><td>Every component shares one state</td><td>Create refs inside the function</td></tr>
+<tr><td>A computed that reads a plain variable</td><td>A value that does not update</td><td>Make the variable a <code>ref</code></td></tr>
+<tr><td>Calling a composable in a handler or after <code>await</code></td><td>Watchers that never stop; a warning</td><td>Call it at the top of <code>&lt;script setup&gt;</code></td></tr>
+<tr><td>Listeners and timers without cleanup</td><td>Leaks and code running for removed screens</td><td><code>onScopeDispose</code>, or VueUse</td></tr>
+<tr><td>Destructuring a returned <code>reactive</code> object</td><td>Values that stop updating</td><td>Return an object of refs</td></tr>
+<tr><td>Accepting only plain values</td><td>Callers must unwrap refs, and lose reactivity</td><td><code>MaybeRefOrGetter</code> and <code>toValue</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A <strong>composable</strong> is a <code>use…</code> function that uses the Composition API and returns reactive state and functions.</li>
+<li>Refs created inside are <strong>per call</strong>; refs at module level are <strong>shared</strong> by the whole app.</li>
+<li>Accept inputs as <code>MaybeRefOrGetter</code> and read them with <code>toValue</code>. Return <code>readonly</code> refs where callers should not write.</li>
+<li>Async composables handle loading, errors and <strong>cancel stale work</strong> in their cleanup.</li>
+<li>Register cleanup with <code>onScopeDispose</code>, and call composables synchronously in <code>&lt;script setup&gt;</code>.</li>
+<li>Use <strong>VueUse</strong> for general needs, and test composables directly, with fake timers and <code>effectScope</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. No: <code>seconds</code> is created inside the function, so each call makes its own ref. 2. A plain string, a ref containing a string, and a function that returns a string. 3. Because the user did nothing wrong: the request was cancelled on purpose, because a newer one replaced it.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">For each composable, write its signature and a test before its body: what it takes, what it returns, and what it cleans up. If the test is hard to write, the design is usually wrong.</p>
+
+<div class="project">
+<p class="project-label">Project 6.1 · Easy</p>
+<h3>Your own <code>useStoredRef</code></h3>
+<p class="project-goal">Write the composable behind VueUse’s <code>useLocalStorage</code> yourself: a ref whose value is saved in the browser, survives reloads, and never crashes on bad data.</p>
+<p class="project-skills"><strong>You will practise:</strong> a generic composable, <code>watch</code> with <code>deep</code>, defensive parsing, and the <code>storage</code> event.</p>
+<ol class="steps">
+<li>Write <code>useStoredRef&lt;T&gt;(key: string, initial: T)</code>. Read the saved JSON inside <code>try</code>, and fall back to <code>initial</code> if it is missing or broken.</li>
+<li>Save on every change with <code>watch(value, save, { deep: true })</code>.</li>
+<li>Listen to the window’s <code>storage</code> event, which fires when <em>another tab</em> changes the same key, and update the ref, using your <code>useEventListener</code> so it is cleaned up.</li>
+<li>Use it for the tasks of Chapter 5, and check in two tabs that ticking a task in one updates the other.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> after writing it, compare with VueUse’s source code. Reading how a well-maintained library solves the same problem, and which cases it handles that you missed, is one of the fastest ways to improve.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 6.2 · Medium</p>
+<h3>A tested <code>usePagination</code></h3>
+<p class="project-goal">A composable that splits any list into pages, follows the list when it changes, and never shows an empty page.</p>
+<p class="project-skills"><strong>You will practise:</strong> generic types, <code>MaybeRefOrGetter</code>, computed values that depend on each other, and tests written first.</p>
+<ol class="steps">
+<li>Write the tests first: seven items in pages of three give three pages, and <code>next()</code> shows items 4 to 6.</li>
+<li>Write a harder test: go to page 3, then shrink the list to two items. The current page must become 1, not stay on an empty page 3.</li>
+<li>Keep only the requested page in a ref. Make the number of pages, the current page (the requested one, clamped) and the rows <code>computed</code>.</li>
+<li>Use it in the catalogue of Chapter 4 with “Previous” and “Next” buttons, disabled at the ends, and “Page 2 of 3” between them.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> clamping in a computed, instead of correcting the ref in a watcher, means the page can never be wrong, not even for a moment.</p>
+<div class="listing" dir="ltr"><div class="listing-title">usePagination.ts</div><pre class="code"><span class="k">import</span> { computed, ref, toValue, <span class="k">type</span> MaybeRefOrGetter } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> usePagination&lt;T&gt;(items: MaybeRefOrGetter&lt;<span class="k">readonly</span> T[]&gt;, size = <span class="n">3</span>) {
+  <span class="k">const</span> page = ref(<span class="n">1</span>);
+  <span class="k">const</span> pages = computed(() =&gt; Math.max(<span class="n">1</span>, Math.ceil(toValue(items).length / size)));
+  <span class="k">const</span> current = computed(() =&gt; Math.min(page.value, pages.value));
+  <span class="k">const</span> rows = computed(() =&gt; toValue(items).slice((current.value - <span class="n">1</span>) * size, current.value * size));
+  <span class="k">return</span> {
+    page: current,
+    pages,
+    rows,
+    next: () =&gt; (page.value = Math.min(current.value + <span class="n">1</span>, pages.value)),
+    previous: () =&gt; (page.value = Math.max(current.value - <span class="n">1</span>, <span class="n">1</span>)),
+  };
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">usePagination.test.ts</div><pre class="code"><span class="k">import</span> { ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { expect, it } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { usePagination } <span class="k">from</span> <span class="s">&quot;./usePagination&quot;</span>;
+
+it(<span class="s">&quot;splits a list into pages&quot;</span>, () =&gt; {
+  <span class="k">const</span> p = usePagination([<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>], <span class="n">3</span>);
+  expect(p.pages.value).toBe(<span class="n">3</span>);
+  p.next();
+  expect(p.rows.value).toEqual([<span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>]);
+});
+
+it(<span class="s">&quot;never goes past the last page&quot;</span>, () =&gt; {
+  <span class="k">const</span> list = ref([<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>]);
+  <span class="k">const</span> p = usePagination(list, <span class="n">3</span>);
+  p.next();
+  p.next();
+  p.next();
+  expect(p.page.value).toBe(<span class="n">3</span>);
+  list.value = [<span class="n">1</span>, <span class="n">2</span>];
+  expect(p.page.value).toBe(<span class="n">1</span>);
+  expect(p.rows.value).toEqual([<span class="n">1</span>, <span class="n">2</span>]);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose projects
+ RUN  v5.1.1 .
+ ✓ projects/usePagination.test.ts &gt; splits a list into pages 4ms
+ ✓ projects/usePagination.test.ts &gt; never goes past the last page 1ms
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Duration  846ms (environment 81%, import 15%, transform 2%, tests 1%, worker 1%)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 6.3 · Challenge</p>
+<h3>An endless list</h3>
+<p class="project-goal">A product list that loads the next page by itself when the user scrolls near the end, with a button as a fallback, and without loading the same page twice.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>IntersectionObserver</code>, template refs passed to composables, async state, and accessible loading.</p>
+<ol class="steps">
+<li>Write <code>useIntersection(target, callback)</code>, where <code>target</code> is a template ref. Create the observer when the element exists, and disconnect it in the cleanup.</li>
+<li>Write <code>useInfiniteList(loadPage)</code>, returning <code>items</code>, <code>loading</code>, <code>done</code> and <code>loadMore()</code>. <code>loadMore</code> does nothing while a page is loading or when the last page has arrived.</li>
+<li>Put an empty element after the list with <code>ref="end"</code>, and call <code>loadMore</code> when it becomes visible.</li>
+<li>Also show a “Load more” button: keyboard users and screen readers may never trigger the observer.</li>
+<li>Announce “Loaded 10 more products” in a <code>role="status"</code> element after each page.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the most common bug is two pages loading at once, because the end marker stays visible while the first request is running. The <code>loading</code> check at the top of <code>loadMore</code> is the whole fix; write a test for it.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add a <code>laps</code> list and a <code>lap()</code> function to <code>useStopwatch</code>, which records the current seconds. Return the list as <code>readonly</code>.</li>
+<li><span class="level">Easy</span> Write <code>useToggle(initial = false)</code>, returning a ref and a <code>toggle</code> function, and use it for the theme button.</li>
+<li><span class="level medium">Medium</span> Write <code>useMediaQuery(query)</code> with <code>matchMedia</code> and <code>useEventListener</code>-style cleanup, and show “wide” or “narrow” with <code>"(min-width: 600px)"</code>.</li>
+<li><span class="level medium">Medium</span> Write a test for <code>useSearch</code> with fake timers: type “b”, then “bit” 100 ms later, and check that only the results for “bit” arrive.</li>
+<li><span class="level hard">Challenge</span> Turn <code>useSearch</code> into a general <code>useAsync(fn, input)</code> that runs any cancellable function when the input changes, and rewrite <code>useSearch</code> with it in three lines.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 7</p>
+<p>Real apps have many screens and talk to real servers. The next chapter adds Vue Router for addresses and navigation, and TanStack Query, a library of composables that handles server data, caching and refetching better than anything we could write by hand.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch10" data-chapter="10" data-code="b2/design/en">
@@ -5820,6 +6334,16 @@ on the team will pair with the others on the first tests.
 <li>Reset: <code>@click="seconds = 0"</code>. The title: <code>watchEffect(() =&gt; { document.title = running.value ? `${seconds.value} s` : "Timer"; })</code>. Stopped, it should go back to the page’s normal title, so the tab does not keep showing an old number.</li>
 <li>In <code>QuantityInput.vue</code>: <code>const note = defineModel&lt;string&gt;("note", { default: "" })</code> and an input with <code>v-model="note"</code>. In the parent: <code>&lt;QuantityInput v-model="mugs" v-model:note="giftNote" … /&gt;</code>.</li>
 <li><code>watch(lines, (now) =&gt; localStorage.setItem("cart", JSON.stringify(now)), { deep: true })</code>, and start with <code>ref&lt;Line[]&gt;(load())</code>. Old or broken data would crash the screen, so <code>load</code> parses inside <code>try</code>, checks the shape (for example with a zod schema, Chapter 2), and falls back to <code>[]</code>. Saving a version number with the data lets a later release convert old carts instead of throwing them away.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 6</h2>
+<ol class="exercises">
+<li><code>const laps = ref&lt;number[]&gt;([]); const lap = () =&gt; laps.value.push(seconds.value);</code>, cleared in <code>reset</code>, and returned as <code>laps: readonly(laps)</code>. A caller who tries <code>laps.value.push(9)</code> gets a warning, and TypeScript refuses it.</li>
+<li><code>export function useToggle(initial: Ref&lt;boolean&gt; | boolean = false) { const value = isRef(initial) ? initial : ref(initial); return { value, toggle: () =&gt; (value.value = !value.value) }; }</code>. Accepting a ref matters for the theme: <code>const dark = useLocalStorage("dark", false); const { toggle } = useToggle(dark);</code> toggles the saved ref itself. Passing <code>dark.value</code> instead would copy the boolean, and the choice would no longer be saved.</li>
+<li><code>const list = matchMedia(query); const matches = ref(list.matches); const update = (e: MediaQueryListEvent) =&gt; (matches.value = e.matches); list.addEventListener("change", update); onScopeDispose(() =&gt; list.removeEventListener("change", update)); return matches;</code>. In the template: <code>{{ wide ? "wide" : "narrow" }}</code>.</li>
+<li>Inside <code>effectScope</code> and with fake timers: set the query to “b”, <code>await nextTick()</code>, advance 100 ms, set it to “bit”, <code>await nextTick()</code>, then advance 500 ms and <code>await</code> the promises (<code>await vi.runAllTimersAsync()</code>). Expect <code>results.value</code> to hold only names containing “bit”. The test fails if you remove <code>onCleanup(() =&gt; controller.abort())</code> and make the first search slower.</li>
+<li><code>useAsync&lt;I, O&gt;(fn: (input: I, signal: AbortSignal) =&gt; Promise&lt;O&gt;, input: MaybeRefOrGetter&lt;I&gt;)</code> holds the watcher, the controller, <code>data</code>, <code>loading</code> and <code>error</code>. Then <code>useSearch = (q) =&gt; useAsync((text, signal) =&gt; (text ? searchProducts(text, signal) : Promise.resolve([])), () =&gt; toValue(q).trim())</code>. This is the idea that TanStack Query, in the next chapter, takes much further.</li>
 </ol>
 
 

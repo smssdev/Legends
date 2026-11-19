@@ -1,0 +1,49 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">For each composable, write its signature and a test before its body: what it takes, what it returns, and what it cleans up. If the test is hard to write, the design is usually wrong.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Your own <code>useStoredRef</code></h3>
+<p class="project-goal">Write the composable behind VueUse’s <code>useLocalStorage</code> yourself: a ref whose value is saved in the browser, survives reloads, and never crashes on bad data.</p>
+<p class="project-skills"><strong>You will practise:</strong> a generic composable, <code>watch</code> with <code>deep</code>, defensive parsing, and the <code>storage</code> event.</p>
+<ol class="steps">
+<li>Write <code>useStoredRef&lt;T&gt;(key: string, initial: T)</code>. Read the saved JSON inside <code>try</code>, and fall back to <code>initial</code> if it is missing or broken.</li>
+<li>Save on every change with <code>watch(value, save, { deep: true })</code>.</li>
+<li>Listen to the window’s <code>storage</code> event, which fires when <em>another tab</em> changes the same key, and update the ref, using your <code>useEventListener</code> so it is cleaned up.</li>
+<li>Use it for the tasks of Chapter {{n-1}}, and check in two tabs that ticking a task in one updates the other.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> after writing it, compare with VueUse’s source code. Reading how a well-maintained library solves the same problem, and which cases it handles that you missed, is one of the fastest ways to improve.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A tested <code>usePagination</code></h3>
+<p class="project-goal">A composable that splits any list into pages, follows the list when it changes, and never shows an empty page.</p>
+<p class="project-skills"><strong>You will practise:</strong> generic types, <code>MaybeRefOrGetter</code>, computed values that depend on each other, and tests written first.</p>
+<ol class="steps">
+<li>Write the tests first: seven items in pages of three give three pages, and <code>next()</code> shows items 4 to 6.</li>
+<li>Write a harder test: go to page 3, then shrink the list to two items. The current page must become 1, not stay on an empty page 3.</li>
+<li>Keep only the requested page in a ref. Make the number of pages, the current page (the requested one, clamped) and the rows <code>computed</code>.</li>
+<li>Use it in the catalogue of Chapter {{n-2}} with “Previous” and “Next” buttons, disabled at the ends, and “Page 2 of 3” between them.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> clamping in a computed, instead of correcting the ref in a watcher, means the page can never be wrong, not even for a moment.</p>
+<pre data-code="projects/usePagination.ts" data-title="usePagination.ts"></pre>
+<pre data-code="projects/usePagination.test.ts" data-title="usePagination.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose projects"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>An endless list</h3>
+<p class="project-goal">A product list that loads the next page by itself when the user scrolls near the end, with a button as a fallback, and without loading the same page twice.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>IntersectionObserver</code>, template refs passed to composables, async state, and accessible loading.</p>
+<ol class="steps">
+<li>Write <code>useIntersection(target, callback)</code>, where <code>target</code> is a template ref. Create the observer when the element exists, and disconnect it in the cleanup.</li>
+<li>Write <code>useInfiniteList(loadPage)</code>, returning <code>items</code>, <code>loading</code>, <code>done</code> and <code>loadMore()</code>. <code>loadMore</code> does nothing while a page is loading or when the last page has arrived.</li>
+<li>Put an empty element after the list with <code>ref="end"</code>, and call <code>loadMore</code> when it becomes visible.</li>
+<li>Also show a “Load more” button: keyboard users and screen readers may never trigger the observer.</li>
+<li>Announce “Loaded 10 more products” in a <code>role="status"</code> element after each page.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the most common bug is two pages loading at once, because the end marker stays visible while the first request is running. The <code>loading</code> check at the top of <code>loadMore</code> is the whole fix; write a test for it.</p>
+</div>

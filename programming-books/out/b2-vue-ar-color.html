@@ -17,6 +17,8 @@
 @page ch04:first { @top-center { content: none; } }
 @page ch05 { @top-center { content: "الفصل 5: التفاعلية وComposition API"; } }
 @page ch05:first { @top-center { content: none; } }
+@page ch06 { @top-center { content: "الفصل 6: Composables: إعادة استخدام المنطق"; } }
+@page ch06:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: أنظمة التصميم ومكتبات المكونات"; } }
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "الفصل 11: الوصول (WCAG) عملياً"; } }
@@ -2748,6 +2750,518 @@ watch(query, async (q) =&gt; {
 <div class="next">
 <p class="next-title">في الفصل 6</p>
 <p>المؤقت والمهام المحفوظة والبحث كلها تمزج عدة مراجع ومراقباً وتنظيفاً. والفصل التالي ينقل منطقاً كهذا من المكونات إلى <strong>composables</strong>: دوال عادية يعيد استخدامها أي مكوّن، وتختبرها وحدها.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch06" data-chapter="6" data-code="b2/vue/composables/ar">
+<div class="opener"><span class="opener-num">6</span><p class="chapter-kicker">الفصل 6</p><h1>الـ composables: إعادة استخدام المنطق</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تنقل المنطق ذا الحالة من المكونات إلى composables، وتعطيه اسماً</li>
+<li>تقرر هل يحصل كل مستدعٍ على حالته أم يتشارك الجميع حالة واحدة</li>
+<li>تقبل القيم والمراجع ودوال القراءة مدخلاتٍ، بـ <code>toValue</code></li>
+<li>تكتب composables غير متزامنة تلغي العمل القديم، وأخرى تنظّف بعد نفسها</li>
+<li>تستخدم VueUse بدل كتابة الـ composables الشائعة بنفسك</li>
+<li>تختبر الـ composables دون أي مكوّن</li>
+</ul>
+</div>
+
+<p class="lead">المكونات بارعة في إعادة استخدام قطع الشاشة. لكن كثيراً من كود المكوّن ليس عن الشاشة: مؤقت، وبحث يلغي الطلبات القديمة، وحالة الشبكة، وقيمة محفوظة في المتصفح. وحين يحتاج مكونان السلوك نفسه، فنسخه يعني إصلاح كل خطأ مرتين. وجواب Vue هو الـ <dfn>composable</dfn>: دالة عادية تستخدم واجهة التركيب، وتحتفظ بحالتها التفاعلية، وتُرجعها. وهي الطريقة الأساسية التي تتشارك بها تطبيقات Vue المنطق، والفكرة التي يقوم عليها معظم عالم Vue.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>القاعدة العملية التي أستخدمها: حين يحتاج <code>&lt;script setup&gt;</code> تعليقاً ليشرح ما تفعله مجموعة من المراجع والمراقبين معاً، فتلك المجموعة تريد أن تكون composable له اسم.</p></div></div>
+
+<h2><span class="sec">6.1</span> <span>أول composable</span></h2>
+
+<p>هذا مؤقت الفصل 5، منقولاً من مكوّنه ومعطى قدرات أكثر. وبالعرف يبدأ اسم الـ composable بـ <code>use</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/useStopwatch.ts</div><pre class="code"><span class="k">import</span> { onScopeDispose, <span class="k">readonly</span>, ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="c">// composable: دالة تستخدم واجهة التركيب وتُرجع حالة تفاعلية</span>
+<span class="k">export</span> <span class="k">function</span> useStopwatch() {
+  <span class="c">// كل استدعاء يصنع مراجع جديدة: فلا يتشارك مكونان مؤقتاً بالصدفة أبداً</span>
+  <span class="k">const</span> seconds = ref(<span class="n">0</span>);
+  <span class="k">const</span> running = ref(<span class="k">false</span>);
+  <span class="k">let</span> timer: ReturnType&lt;<span class="k">typeof</span> setInterval&gt; | <span class="k">undefined</span>;
+
+  <span class="k">function</span> start() {
+    <span class="k">if</span> (running.value) <span class="k">return</span>;
+    running.value = <span class="k">true</span>;
+    timer = setInterval(() =&gt; seconds.value++, <span class="n">1000</span>);
+  }
+  <span class="k">function</span> stop() {
+    clearInterval(timer);
+    running.value = <span class="k">false</span>;
+  }
+  <span class="k">function</span> reset() {
+    stop();
+    seconds.value = <span class="n">0</span>;
+  }
+
+  onScopeDispose(stop);
+  <span class="k">return</span> { seconds: <span class="k">readonly</span>(seconds), running: <span class="k">readonly</span>(running), start, stop, reset };
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Stopwatch.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useStopwatch } from &quot;./composables/useStopwatch&quot;;
+
+const { seconds, running, start, stop, reset } = useStopwatch();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p&gt;
+    &lt;strong&gt;{{ seconds }}&lt;/strong&gt; ثانية
+    &lt;button v-if=&quot;!running&quot; type=&quot;button&quot; @click=&quot;start&quot;&gt;ابدأ&lt;/button&gt;
+    &lt;button v-else type=&quot;button&quot; @click=&quot;stop&quot;&gt;أوقف&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;reset&quot;&gt;صفّر&lt;/button&gt;
+  &lt;/p&gt;
+&lt;/template&gt;</pre></div>
+
+<p>صار المكوّن وصفاً قصيراً للشاشة. وكل ما يخص الوقت يعيش في دالة واحدة مُختبَرة، وأي مكوّن آخر يحصل على ساعة إيقاف بسطر واحد. وتفصيلان مهمان:</p>
+<ul>
+<li><strong><code>readonly</code></strong> على المراجع المُرجعة تعني أن المستدعين يقرؤون <code>seconds</code> ولا يضبطونها. فالطريقة الوحيدة لتغيير الساعة دوالها هي، فلا تنتهي أبداً في حالة غريبة.</li>
+<li><strong><code>onScopeDispose(stop)</code></strong> تسجل التنظيف لدى ما يشغّل الـ composable. فداخل المكوّن يحدث ذلك حين يُزال المكوّن، فلا تظل ساعة تدق على شاشة ذهبت.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: القيمة المحسوبة لا ترى إلا القراءات التفاعلية</p><p>كانت النسخة الأولى من هذا الـ composable فيها <code>const running = computed(() =&gt; timer !== undefined &amp;&amp; …)</code>، و<code>timer</code> متغير <code>let</code> عادي. ولا يستطيع Vue تتبع متغير عادي، فكانت القيمة المحسوبة تحتفظ أحياناً بجواب قديم، وتعرض الشاشة «ابدأ» على ساعة تعمل. فكل ما تعتمد عليه قيمة محسوبة أو قالب يجب أن يكون تفاعلياً. والمتغير <code>let</code> العادي مقبول فقط لقيم لا تعرضها الشاشة أبداً، كمعرّف المؤقت هنا.</p></aside>
+
+<h2><span class="sec">6.2</span> <span>حالة خاصة أم حالة مشتركة؟</span></h2>
+
+<p>لأن الـ composable مجرد دالة، فمكان إنشاء المراجع يقرر من يتشاركها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/counters.ts</div><pre class="code"><span class="k">import</span> { ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> useCounter() {
+  <span class="k">const</span> count = ref(<span class="n">0</span>); <span class="c">// كل استدعاء يصنع مراجع جديدة: فلا يتشارك مكونان مؤقتاً بالصدفة أبداً</span>
+  <span class="k">return</span> { count, add: () =&gt; count.value++ };
+}
+
+<span class="k">const</span> visitors = ref(<span class="n">0</span>); <span class="c">// يُنشأ مرة واحدة خارج الدالة: فكل من يستدعيها يتشارك القيمة نفسها</span>
+<span class="k">export</span> <span class="k">function</span> useVisitors() {
+  <span class="k">return</span> { visitors, arrive: () =&gt; visitors.value++ };
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">state.ts</div><pre class="code"><span class="k">import</span> { useCounter, useVisitors } <span class="k">from</span> <span class="s">&quot;./composables/counters&quot;</span>;
+
+<span class="k">const</span> a = useCounter();
+<span class="k">const</span> b = useCounter();
+a.add();
+a.add();
+b.add();
+console.log(<span class="s">&quot;الاستدعاء الأول:&quot;</span>, a.count.value, <span class="s">&quot;الاستدعاء الثاني:&quot;</span>, b.count.value);
+
+useVisitors().arrive();
+useVisitors().arrive();
+console.log(<span class="s">&quot;مشترك بين كل الاستدعاءات:&quot;</span>, useVisitors().visitors.value);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>الاستدعاء الأول: 2 الاستدعاء الثاني: 1
+مشترك بين كل الاستدعاءات: 2</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>stopwatch.html</span><b>560px</b></div><img src="img/vue-composables-ar-stopwatch.html-560-39b894.png" alt=""><figcaption><b>الشكل 6.1:</b> مكوّنا <code>Stopwatch</code>، والأول بدأ قبل ثانيتين. كل استدعاء لـ <code>useStopwatch</code> صنع حالته.</figcaption></figure>
+
+<p>المراجع المنشأة <em>داخل</em> الدالة جديدة مع كل استدعاء، وهذه الحالة المعتادة. أما المنشأة <em>خارجها</em>، في أعلى الوحدة، فتوجد مرة واحدة، فيتشاركها كل المستدعين. وهذه طريقة سريعة لمشاركة الحالة، لكن استخدمها بحذر: فهي مشتركة في التطبيق كله، ويصعب تصفيرها في الاختبارات، وفي الرسم على الخادم (الفصل 17) ستكون مشتركة حتى بين طلبات مستخدمين مختلفين. أما الحالة الحقيقية على مستوى التطبيق فيقدم لها الفصل 9 مكتبة Pinia.</p>
+
+<h2><span class="sec">6.3</span> <span>المدخلات: قيم أو مراجع أو دوال قراءة</span></h2>
+
+<p>الـ composable المفيد يقبل مدخلاته بأي شكل يملكه المستدعي. فـ <code>MaybeRefOrGetter&lt;T&gt;</code> تعني «قيمة عادية، أو مرجعاً، أو دالة تُرجع القيمة»، و<code>toValue</code> تقرأ أياً منها. ومراقبة <code>() =&gt; toValue(source)</code> تستجيب للتغييرات أياً كان الشكل الممرَّر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/useDebounced.ts</div><pre class="code"><span class="k">import</span> { ref, toValue, watch, <span class="k">type</span> MaybeRefOrGetter, <span class="k">type</span> Ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="c">// تقبل قيمة أو مرجعاً أو دالة قراءة، فيمرر المستدعي ما لديه</span>
+<span class="k">export</span> <span class="k">function</span> useDebounced&lt;T&gt;(source: MaybeRefOrGetter&lt;T&gt;, ms = <span class="n">300</span>): Readonly&lt;Ref&lt;T&gt;&gt; {
+  <span class="k">const</span> value = ref(toValue(source)) as Ref&lt;T&gt;;
+  watch(
+    () =&gt; toValue(source),
+    (now, _before, onCleanup) =&gt; {
+      <span class="k">const</span> id = setTimeout(() =&gt; (value.value = now), ms);
+      onCleanup(() =&gt; clearTimeout(id));
+    },
+  );
+  <span class="k">return</span> value;
+}</pre></div>
+
+<p>تُرجع <code>useDebounced</code> نسخة من قيمة لا تتغير إلا بعد أن تتوقف الأصلية عن التغير مدةً. وهذا ما تريده بين مربع البحث والخادم: يكتب المستخدم «bit»، فيُسأل الخادم مرة واحدة لا ثلاث مرات. والتنظيف يلغي المؤقت المنتظر كلما وصل حرف جديد.</p>
+
+<h2><span class="sec">6.4</span> <span>composable غير متزامن</span></h2>
+
+<p>تتألق الـ composables في العمل غير المتزامن، لأن كل أجزائه الصعبة تُحل مرة واحدة: حالات التحميل والخطأ، وفوق كل شيء تجاهل أجوبة أسئلة لم يعد أحد يسألها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">products.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; price: number };
+
+<span class="k">const</span> catalogue: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;قبعة بِت&quot;</span>, price: <span class="n">12</span> },
+  { id: <span class="n">4</span>, name: <span class="s">&quot;ملصق بِت&quot;</span>, price: <span class="n">3</span> },
+];
+
+<span class="c">// A pretend server: answers after a delay, and can be cancelled like fetch</span>
+<span class="k">export</span> <span class="k">function</span> searchProducts(query: string, signal: AbortSignal): Promise&lt;Product[]&gt; {
+  <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
+    <span class="k">const</span> timer = setTimeout(() =&gt; {
+      <span class="k">const</span> q = query.trim().toLowerCase();
+      resolve(catalogue.filter((p) =&gt; p.name.toLowerCase().includes(q)));
+    }, <span class="n">400</span>);
+    signal.addEventListener(<span class="s">&quot;abort&quot;</span>, () =&gt; {
+      clearTimeout(timer);
+      reject(signal.reason);
+    });
+  });
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">composables/useSearch.ts</div><pre class="code"><span class="k">import</span> { ref, toValue, watch, <span class="k">type</span> MaybeRefOrGetter } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { searchProducts, <span class="k">type</span> Product } <span class="k">from</span> <span class="s">&quot;../products&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> useSearch(query: MaybeRefOrGetter&lt;string&gt;) {
+  <span class="k">const</span> results = ref&lt;Product[]&gt;([]);
+  <span class="k">const</span> loading = ref(<span class="k">false</span>);
+  <span class="k">const</span> error = ref&lt;string | <span class="k">null</span>&gt;(<span class="k">null</span>);
+
+  watch(
+    () =&gt; toValue(query).trim(),
+    <span class="k">async</span> (q, _before, onCleanup) =&gt; {
+      error.value = <span class="k">null</span>;
+      <span class="k">if</span> (!q) {
+        results.value = [];
+        <span class="k">return</span>;
+      }
+      <span class="c">// الاستعلام الجديد يلغي طلب القديم</span>
+      <span class="k">const</span> controller = <span class="k">new</span> AbortController();
+      onCleanup(() =&gt; controller.abort());
+      loading.value = <span class="k">true</span>;
+      <span class="k">try</span> {
+        results.value = <span class="k">await</span> searchProducts(q, controller.signal);
+      } <span class="k">catch</span> (e) {
+        <span class="k">if</span> (controller.signal.aborted) <span class="k">return</span>;
+        error.value = (e as Error).message;
+      }
+      loading.value = <span class="k">false</span>;
+    },
+    { immediate: <span class="k">true</span> },
+  );
+
+  <span class="k">return</span> { results, loading, error };
+}</pre></div>
+
+<p>المعامل الثالث لدالة <code>watch</code>، <code>onCleanup</code>، يعمل مثل <code>onWatcherCleanup</code>: قبل أن يعمل المراقب لاستعلام جديد يُلغى الطلب القديم. والطلب الملغى ليس خطأً، فتتحقق <code>catch</code> من ذلك وتسكت. والـ composables تتركب أيضاً: تمرر الصفحة الاستعلام <em>المؤجَّل</em> إلى البحث، ولا يعرف أي منهما عن الآخر.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Search.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import { useDebounced } from &quot;./composables/useDebounced&quot;;
+import { useSearch } from &quot;./composables/useSearch&quot;;
+
+const query = ref(&quot;&quot;);
+const { results, loading, error } = useSearch(useDebounced(query, 250));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;label for=&quot;q&quot;&gt;ابحث في المنتجات&lt;/label&gt;
+  &lt;input id=&quot;q&quot; v-model=&quot;query&quot; type=&quot;search&quot; autocomplete=&quot;off&quot; /&gt;
+  &lt;p v-if=&quot;loading&quot; role=&quot;status&quot; class=&quot;muted&quot;&gt;جارٍ البحث…&lt;/p&gt;
+  &lt;p v-else-if=&quot;error&quot; role=&quot;alert&quot;&gt;تعذّر البحث: {{ error }}&lt;/p&gt;
+  &lt;template v-else-if=&quot;query&quot;&gt;
+    &lt;p role=&quot;status&quot;&gt;{{ results.length }} نتائج&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li v-for=&quot;p in results&quot; :key=&quot;p.id&quot;&gt;{{ p.name }}&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/template&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>search.html</span><b>560px</b></div><img src="img/vue-composables-ar-search.html-560-da42e6.png" alt=""><figcaption><b>الشكل 6.2:</b> نتائج «بِت»: طلب واحد، أُرسل بعد توقف الكتابة.</figcaption></figure>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>مكونان يستدعيان <code>useStopwatch()</code>. هل يتشاركان الثواني؟ ولماذا؟</li><li>ما الأنواع الثلاثة من المدخلات التي تقبلها <code>MaybeRefOrGetter&lt;string&gt;</code>؟</li><li>لماذا لا يُعرض الطلب الملغى خطأً؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">6.5</span> <span>composables تنظّف بعد نفسها</span></h2>
+
+<p>الاستماع إلى المتصفح مصدر كلاسيكي للتسرب: مستمع يُضاف في مكوّن ولا يُحذف أبداً يظل يعمل، ويُبقي المكوّن في الذاكرة، بعد أن يغادر المستخدم الشاشة بزمن. وcomposable صغير يجعل هذا الخطأ مستحيلاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/useEventListener.ts</div><pre class="code"><span class="k">import</span> { onScopeDispose } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="c">// يُزال حين يذهب المكوّن (أو أي نطاق آثار) الذي استدعاه</span>
+<span class="k">export</span> <span class="k">function</span> useEventListener&lt;K <span class="k">extends</span> <span class="k">keyof</span> WindowEventMap&gt;(
+  target: Window,
+  event: K,
+  handler: (e: WindowEventMap[K]) =&gt; void,
+) {
+  target.addEventListener(event, handler);
+  onScopeDispose(() =&gt; target.removeEventListener(event, handler));
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">composables/useOnline.ts</div><pre class="code"><span class="k">import</span> { ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { useEventListener } <span class="k">from</span> <span class="s">&quot;./useEventListener&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> useOnline() {
+  <span class="k">const</span> online = ref(navigator.onLine);
+  useEventListener(window, <span class="s">&quot;online&quot;</span>, () =&gt; (online.value = <span class="k">true</span>));
+  useEventListener(window, <span class="s">&quot;offline&quot;</span>, () =&gt; (online.value = <span class="k">false</span>));
+  <span class="k">return</span> online;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Status.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import { useEventListener } from &quot;./composables/useEventListener&quot;;
+import { useOnline } from &quot;./composables/useOnline&quot;;
+
+const online = useOnline();
+const width = ref(window.innerWidth);
+useEventListener(window, &quot;resize&quot;, () =&gt; (width.value = window.innerWidth));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p :class=&quot;online ? &#x27;ok&#x27; : &#x27;warn&#x27;&quot; role=&quot;status&quot;&gt;{{ online ? &quot;متصل&quot; : &quot;غير متصل: ستُحفظ التغييرات حين تعود&quot; }}&lt;/p&gt;
+  &lt;p&gt;عرض النافذة: {{ width }}px&lt;/p&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>status.html</span><b>560px</b></div><img src="img/vue-composables-ar-status.html-560-a6a722.png" alt=""><figcaption><b>الشكل 6.3:</b> مباشرة بعد أن أبلغ المتصفح بانقطاع الشبكة.</figcaption></figure>
+
+<p>ولاحظ أن <code>useOnline</code> مبنية على <code>useEventListener</code>. فالـ composables الصغيرة تصير لبنات للأكبر منها، كما تفعل المكونات الصغيرة.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: استدعِ الـ composables في أعلى <code>&lt;script setup&gt;</code></p><p>يسجل الـ composable مراقبيه وتنظيفه لدى المكوّن الذي يُجهَّز <em>في هذه اللحظة</em>. فإن استُدعي لاحقاً، داخل معالج ضغطة أو بعد <code>await</code>، فلا مكوّن كهذا: لا يتوقف المراقبون أبداً، وتحذّر <code>onScopeDispose</code>. فاستدعِ الـ composables في المستوى الأعلى وبشكل متزامن، واستخدم الدوال التي تُرجعها لاحقاً.</p></aside>
+
+<h2><span class="sec">6.6</span> <span>VueUse</span></h2>
+
+<p>كثير من الـ composables يحتاجها كل تطبيق تقريباً: قراءة <code>localStorage</code> والحفظ فيها، واستعلامات الوسائط، وحجم عنصر، والحافظة، وظهور الصفحة. و<strong>VueUse</strong> مكتبة مجانية فيها أكثر من مئتين منها، مختبرة، بالأنواع، وتنظيفها منجز. هذا مفتاح مظهر داكن يُحفظ في المتصفح ويبقى متوافقاً بين الألسنة المفتوحة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Theme.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useLocalStorage } from &quot;@vueuse/core&quot;;
+import { watchEffect } from &quot;vue&quot;;
+
+// الفكرة نفسها من VueUse: محفوظ في localStorage ومتوافق بين الألسنة
+const dark = useLocalStorage(&quot;dark&quot;, false);
+watchEffect(() =&gt; document.documentElement.classList.toggle(&quot;dark&quot;, dark.value));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;button type=&quot;button&quot; :aria-pressed=&quot;dark&quot; @click=&quot;dark = !dark&quot;&gt;المظهر الداكن&lt;/button&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>theme.html</span><b>560px</b></div><img src="img/vue-composables-ar-theme.html-560-c117d3.png" alt=""><figcaption><b>الشكل 6.4:</b> بعد الضغط على الزر: حُفظ الاختيار، وسيبقى بعد إعادة التحميل.</figcaption></figure>
+
+<p>قبل أن تكتب composable لشيء عام ابحث في VueUse. واكتب composables لما يخص تطبيقك: بياناته وقواعده وخادمه.</p>
+
+<h2><span class="sec">6.7</span> <span>اختبار الـ composables</span></h2>
+
+<p>لأن الـ composables دوال، تُختبر دون رسم أي شيء. وأداتان تسهّلان ذلك: المؤقتات المزيفة في Vitest، التي تقدّم الوقت فوراً، و<code>effectScope</code>، التي تلعب دور المكوّن، فيعمل التنظيف حين يستدعي الاختبار <code>scope.stop()</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composables/useStopwatch.test.ts</div><pre class="code"><span class="k">import</span> { effectScope } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { afterEach, describe, expect, it, vi } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { useStopwatch } <span class="k">from</span> <span class="s">&quot;./useStopwatch&quot;</span>;
+
+afterEach(() =&gt; vi.useRealTimers());
+
+describe(<span class="s">&quot;useStopwatch&quot;</span>, () =&gt; {
+  it(<span class="s">&quot;يعدّ الثواني أثناء العمل فقط&quot;</span>, () =&gt; {
+    vi.useFakeTimers();
+    <span class="k">const</span> scope = effectScope();
+    <span class="k">const</span> watch = scope.run(() =&gt; useStopwatch())!;
+    watch.start();
+    vi.advanceTimersByTime(<span class="n">3000</span>);
+    watch.stop();
+    vi.advanceTimersByTime(<span class="n">5000</span>);
+    expect(watch.seconds.value).toBe(<span class="n">3</span>);
+    scope.stop();
+  });
+
+  it(<span class="s">&quot;التصفير يوقف ويعود إلى الصفر&quot;</span>, () =&gt; {
+    vi.useFakeTimers();
+    <span class="k">const</span> scope = effectScope();
+    <span class="k">const</span> watch = scope.run(() =&gt; useStopwatch())!;
+    watch.start();
+    vi.advanceTimersByTime(<span class="n">2000</span>);
+    watch.reset();
+    expect(watch.seconds.value).toBe(<span class="n">0</span>);
+    expect(watch.running.value).toBe(<span class="k">false</span>);
+    scope.stop();
+  });
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">composables/useDebounced.test.ts</div><pre class="code"><span class="k">import</span> { nextTick, ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { expect, it, vi } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { useDebounced } <span class="k">from</span> <span class="s">&quot;./useDebounced&quot;</span>;
+
+it(<span class="s">&quot;ينتظر حتى تتوقف القيمة عن التغير&quot;</span>, <span class="k">async</span> () =&gt; {
+  vi.useFakeTimers();
+  <span class="k">const</span> text = ref(<span class="s">&quot;b&quot;</span>);
+  <span class="k">const</span> slow = useDebounced(text, <span class="n">300</span>);
+  <span class="k">for</span> (<span class="k">const</span> next <span class="k">of</span> [<span class="s">&quot;bi&quot;</span>, <span class="s">&quot;bit&quot;</span>]) {
+    text.value = next;
+    <span class="k">await</span> nextTick();
+    vi.advanceTimersByTime(<span class="n">100</span>);
+  }
+  expect(slow.value).toBe(<span class="s">&quot;b&quot;</span>);
+  vi.advanceTimersByTime(<span class="n">300</span>);
+  expect(slow.value).toBe(<span class="s">&quot;bit&quot;</span>);
+  vi.useRealTimers();
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose
+ RUN  v5.1.1 .
+ ✓ projects/usePagination.test.ts &gt; يقسم القائمة إلى صفحات 5ms
+ ✓ projects/usePagination.test.ts &gt; لا يتجاوز الصفحة الأخيرة أبداً 2ms
+ ✓ composables/useStopwatch.test.ts &gt; useStopwatch &gt; يعدّ الثواني أثناء العمل فقط 8ms
+ ✓ composables/useStopwatch.test.ts &gt; useStopwatch &gt; التصفير يوقف ويعود إلى الصفر 2ms
+ ✓ composables/useDebounced.test.ts &gt; ينتظر حتى تتوقف القيمة عن التغير 19ms
+ Test Files  3 passed (3)
+      Tests  5 passed (5)
+   Duration  1.13s (environment 80%, import 14%, transform 4%, tests 2%, worker 1%)</pre></div>
+
+<p>خمس ثوانٍ من ساعة الإيقاف وثلث ثانية من الكتابة، مختبرة في أجزاء قليلة من الثانية. فالمنطق الذي كان يعيش في مكوّن لا يُختبر إلا برسم المكوّن والضغط عليه، أما وهو composable فيُختبر مباشرة.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: للـ composable عمل واحد</p><p>سمِّ كل composable باسم الشيء الواحد الذي يفعله: <code>useStopwatch</code> و<code>useSearch</code> و<code>useOnline</code>. وحين يحتاج الاسم «و» فقسّمه. وأرجع ما يحتاجه المستدعون فقط، <code>readonly</code> حيث يجب ألا يكتبوا، ووثّق ما ينظّفه.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>مراجع على مستوى الوحدة دون قصد</td><td>كل المكونات تتشارك حالة واحدة</td><td>أنشئ المراجع داخل الدالة</td></tr>
+<tr><td>قيمة محسوبة تقرأ متغيراً عادياً</td><td>قيمة لا تتحدث</td><td>اجعل المتغير <code>ref</code></td></tr>
+<tr><td>استدعاء composable في معالج أو بعد <code>await</code></td><td>مراقبون لا يتوقفون، وتحذير</td><td>استدعِه في أعلى <code>&lt;script setup&gt;</code></td></tr>
+<tr><td>مستمعون ومؤقتات بلا تنظيف</td><td>تسرب، وكود يعمل لشاشات أُزيلت</td><td><code>onScopeDispose</code>، أو VueUse</td></tr>
+<tr><td>تفكيك كائن <code>reactive</code> مُرجَع</td><td>قيم تتوقف عن التحديث</td><td>أرجع كائناً من المراجع</td></tr>
+<tr><td>قبول القيم العادية فقط</td><td>يضطر المستدعون لفتح المراجع، فتضيع التفاعلية</td><td><code>MaybeRefOrGetter</code> و<code>toValue</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>الـ <strong>composable</strong> دالة <code>use…</code> تستخدم واجهة التركيب وتُرجع حالة تفاعلية ودوالاً.</li>
+<li>المراجع المنشأة داخلها <strong>لكل استدعاء</strong>، والمنشأة على مستوى الوحدة <strong>مشتركة</strong> في التطبيق كله.</li>
+<li>اقبل المدخلات <code>MaybeRefOrGetter</code> واقرأها بـ <code>toValue</code>، وأرجع مراجع <code>readonly</code> حيث يجب ألا يكتب المستدعون.</li>
+<li>الـ composables غير المتزامنة تعالج التحميل والأخطاء و<strong>تلغي العمل القديم</strong> في تنظيفها.</li>
+<li>سجّل التنظيف بـ <code>onScopeDispose</code>، واستدعِ الـ composables متزامنة في <code>&lt;script setup&gt;</code>.</li>
+<li>استخدم <strong>VueUse</strong> للحاجات العامة، واختبر الـ composables مباشرة بالمؤقتات المزيفة و<code>effectScope</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لا: <code>seconds</code> تُنشأ داخل الدالة، فكل استدعاء يصنع مرجعه. 2. نصاً عادياً، ومرجعاً فيه نص، ودالة تُرجع نصاً. 3. لأن المستخدم لم يخطئ: أُلغي الطلب عمداً لأن طلباً أحدث حل محله.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">لكل composable اكتب توقيعه واختباراً قبل جسمه: ماذا يأخذ، وماذا يُرجع، وماذا ينظّف. فإن صعبت كتابة الاختبار، فالتصميم خاطئ في الغالب.</p>
+
+<div class="project">
+<p class="project-label">المشروع 6.1 · سهل</p>
+<h3><code>useStoredRef</code> خاصتك</h3>
+<p class="project-goal">اكتب بنفسك الـ composable الذي وراء <code>useLocalStorage</code> في VueUse: مرجع تُحفظ قيمته في المتصفح، ويبقى بعد إعادة التحميل، ولا ينهار أبداً مع بيانات تالفة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> composable عام الأنواع، و<code>watch</code> مع <code>deep</code>، والتحليل الحذر، وحدث <code>storage</code>.</p>
+<ol class="steps">
+<li>اكتب <code>useStoredRef&lt;T&gt;(key: string, initial: T)</code>. اقرأ JSON المحفوظ داخل <code>try</code>، وعُد إلى <code>initial</code> إن كان مفقوداً أو تالفاً.</li>
+<li>احفظ مع كل تغيير بـ <code>watch(value, save, { deep: true })</code>.</li>
+<li>استمع إلى حدث <code>storage</code> في النافذة، الذي يقع حين <em>يغيّر لسان آخر</em> المفتاح نفسه، وحدّث المرجع، مستخدماً <code>useEventListener</code> خاصتك ليُنظَّف.</li>
+<li>استخدمه لمهام الفصل 5، وتأكد في لسانين أن تعليم مهمة في أحدهما يحدّث الآخر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> بعد كتابته قارنه بكود VueUse المصدري. فقراءة كيف تحل مكتبة معتنى بها المشكلة نفسها، وأي الحالات تعالجها مما فاتك، من أسرع طرق التحسن.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 6.2 · متوسط</p>
+<h3><code>usePagination</code> مُختبَرة</h3>
+<p class="project-goal">composable يقسم أي قائمة إلى صفحات، ويتبع القائمة حين تتغير، ولا يعرض صفحة فارغة أبداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأنواع العامة، و<code>MaybeRefOrGetter</code>، والقيم المحسوبة المعتمد بعضها على بعض، والاختبارات المكتوبة أولاً.</p>
+<ol class="steps">
+<li>اكتب الاختبارات أولاً: سبعة عناصر في صفحات من ثلاثة تعطي ثلاث صفحات، و<code>next()</code> تعرض العناصر من 4 إلى 6.</li>
+<li>اكتب اختباراً أصعب: اذهب إلى الصفحة 3، ثم قلّص القائمة إلى عنصرين. يجب أن تصير الصفحة الحالية 1، لا أن تبقى على صفحة 3 فارغة.</li>
+<li>احفظ الصفحة المطلوبة وحدها في مرجع، واجعل عدد الصفحات والصفحة الحالية (المطلوبة مقيدة) والصفوف <code>computed</code>.</li>
+<li>استخدمها في كتالوج الفصل 4 بزري «السابق» و«التالي» المعطَّلين عند الطرفين، و«صفحة 2 من 3» بينهما.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التقييد في قيمة محسوبة، بدل تصحيح المرجع في مراقب، يعني أن الصفحة لا يمكن أن تكون خاطئة أبداً، ولا للحظة.</p>
+<div class="listing" dir="ltr"><div class="listing-title">usePagination.ts</div><pre class="code"><span class="k">import</span> { computed, ref, toValue, <span class="k">type</span> MaybeRefOrGetter } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">export</span> <span class="k">function</span> usePagination&lt;T&gt;(items: MaybeRefOrGetter&lt;<span class="k">readonly</span> T[]&gt;, size = <span class="n">3</span>) {
+  <span class="k">const</span> page = ref(<span class="n">1</span>);
+  <span class="k">const</span> pages = computed(() =&gt; Math.max(<span class="n">1</span>, Math.ceil(toValue(items).length / size)));
+  <span class="k">const</span> current = computed(() =&gt; Math.min(page.value, pages.value));
+  <span class="k">const</span> rows = computed(() =&gt; toValue(items).slice((current.value - <span class="n">1</span>) * size, current.value * size));
+  <span class="k">return</span> {
+    page: current,
+    pages,
+    rows,
+    next: () =&gt; (page.value = Math.min(current.value + <span class="n">1</span>, pages.value)),
+    previous: () =&gt; (page.value = Math.max(current.value - <span class="n">1</span>, <span class="n">1</span>)),
+  };
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">usePagination.test.ts</div><pre class="code"><span class="k">import</span> { ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { expect, it } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { usePagination } <span class="k">from</span> <span class="s">&quot;./usePagination&quot;</span>;
+
+it(<span class="s">&quot;يقسم القائمة إلى صفحات&quot;</span>, () =&gt; {
+  <span class="k">const</span> p = usePagination([<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>], <span class="n">3</span>);
+  expect(p.pages.value).toBe(<span class="n">3</span>);
+  p.next();
+  expect(p.rows.value).toEqual([<span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>]);
+});
+
+it(<span class="s">&quot;لا يتجاوز الصفحة الأخيرة أبداً&quot;</span>, () =&gt; {
+  <span class="k">const</span> list = ref([<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>]);
+  <span class="k">const</span> p = usePagination(list, <span class="n">3</span>);
+  p.next();
+  p.next();
+  p.next();
+  expect(p.page.value).toBe(<span class="n">3</span>);
+  list.value = [<span class="n">1</span>, <span class="n">2</span>];
+  expect(p.page.value).toBe(<span class="n">1</span>);
+  expect(p.rows.value).toEqual([<span class="n">1</span>, <span class="n">2</span>]);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose projects
+ RUN  v5.1.1 .
+ ✓ projects/usePagination.test.ts &gt; يقسم القائمة إلى صفحات 5ms
+ ✓ projects/usePagination.test.ts &gt; لا يتجاوز الصفحة الأخيرة أبداً 1ms
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Duration  1.01s (environment 85%, import 12%, transform 1%, tests 1%, worker 1%)</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 6.3 · تحدٍّ</p>
+<h3>قائمة لا تنتهي</h3>
+<p class="project-goal">قائمة منتجات تحمّل الصفحة التالية وحدها حين يقترب المستخدم من نهايتها، مع زر بديل، ودون تحميل الصفحة نفسها مرتين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>IntersectionObserver</code>، وتمرير مراجع القالب إلى الـ composables، والحالة غير المتزامنة، والتحميل سهل الوصول.</p>
+<ol class="steps">
+<li>اكتب <code>useIntersection(target, callback)</code>، و<code>target</code> مرجع قالب. أنشئ المراقب حين يوجد العنصر، وافصله في التنظيف.</li>
+<li>اكتب <code>useInfiniteList(loadPage)</code> تُرجع <code>items</code> و<code>loading</code> و<code>done</code> و<code>loadMore()</code>. ولا تفعل <code>loadMore</code> شيئاً أثناء تحميل صفحة أو بعد وصول الصفحة الأخيرة.</li>
+<li>ضع عنصراً فارغاً بعد القائمة بـ <code>ref="end"</code>، واستدعِ <code>loadMore</code> حين يصير مرئياً.</li>
+<li>واعرض أيضاً زر «حمّل المزيد»: فمستخدمو لوحة المفاتيح وقارئ الشاشة قد لا يُطلقون المراقب أبداً.</li>
+<li>أعلن «حُمّلت 10 منتجات أخرى» في عنصر <code>role="status"</code> بعد كل صفحة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أشهر خطأ هنا تحميل صفحتين معاً، لأن علامة النهاية تبقى مرئية أثناء الطلب الأول. وفحص <code>loading</code> في أول <code>loadMore</code> هو الإصلاح كله، فاكتب له اختباراً.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف إلى <code>useStopwatch</code> قائمة <code>laps</code> ودالة <code>lap()</code> تسجل الثواني الحالية، وأرجع القائمة <code>readonly</code>.</li>
+<li><span class="level">سهل</span> اكتب <code>useToggle(initial = false)</code> تُرجع مرجعاً ودالة <code>toggle</code>، واستخدمها لزر المظهر.</li>
+<li><span class="level medium">متوسط</span> اكتب <code>useMediaQuery(query)</code> بـ <code>matchMedia</code> وتنظيف على طريقة <code>useEventListener</code>، واعرض «عريض» أو «ضيق» مع <code>"(min-width: 600px)"</code>.</li>
+<li><span class="level medium">متوسط</span> اكتب اختباراً لـ <code>useSearch</code> بالمؤقتات المزيفة: اكتب «b» ثم «bit» بعد 100 ملي ثانية، وتأكد أن نتائج «bit» وحدها تصل.</li>
+<li><span class="level hard">تحدٍّ</span> حوّل <code>useSearch</code> إلى <code>useAsync(fn, input)</code> عامة تشغّل أي دالة قابلة للإلغاء حين يتغير المدخل، وأعد كتابة <code>useSearch</code> بها في ثلاثة أسطر.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 7</p>
+<p>للتطبيقات الحقيقية شاشات كثيرة، وتتحدث إلى خوادم حقيقية. والفصل التالي يضيف Vue Router للعناوين والتنقل، وTanStack Query، مكتبة composables تعالج بيانات الخادم والتخزين المؤقت وإعادة الجلب أفضل من أي شيء نكتبه باليد.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch10" data-chapter="10" data-code="b2/design/ar">
@@ -5920,6 +6434,16 @@ Cypress               62
 <li>التصفير: <code>@click="seconds = 0"</code>. والعنوان: <code>watchEffect(() =&gt; { document.title = running.value ? `${seconds.value} ث` : "المؤقت"; })</code>. وحين يتوقف يجب أن يعود عنوان الصفحة العادي، فلا يظل اللسان يعرض عدداً قديماً.</li>
 <li>في <code>QuantityInput.vue</code>: ‏<code>const note = defineModel&lt;string&gt;("note", { default: "" })</code> وحقل بـ <code>v-model="note"</code>. وفي الأب: ‏<code>&lt;QuantityInput v-model="mugs" v-model:note="giftNote" … /&gt;</code>.</li>
 <li><code>watch(lines, (now) =&gt; localStorage.setItem("cart", JSON.stringify(now)), { deep: true })</code>، وابدأ بـ <code>ref&lt;Line[]&gt;(load())</code>. والبيانات القديمة أو التالفة تُسقط الشاشة، فتحلل <code>load</code> داخل <code>try</code>، وتتحقق من الشكل (بمخطط zod مثلاً، الفصل 2)، وتعود إلى <code>[]</code>. وحفظ رقم إصدار مع البيانات يسمح لإصدار لاحق أن يحوّل السلال القديمة بدل رميها.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 6</h2>
+<ol class="exercises">
+<li><code>const laps = ref&lt;number[]&gt;([]); const lap = () =&gt; laps.value.push(seconds.value);</code>، وتُفرَّغ في <code>reset</code>، وتُرجع <code>laps: readonly(laps)</code>. والمستدعي الذي يحاول <code>laps.value.push(9)</code> يتلقى تحذيراً، ويرفضه TypeScript.</li>
+<li><code>export function useToggle(initial: Ref&lt;boolean&gt; | boolean = false) { const value = isRef(initial) ? initial : ref(initial); return { value, toggle: () =&gt; (value.value = !value.value) }; }</code>. وقبول المرجع مهم للمظهر: <code>const dark = useLocalStorage("dark", false); const { toggle } = useToggle(dark);</code> يبدّل المرجع المحفوظ نفسه. أما تمرير <code>dark.value</code> فينسخ القيمة المنطقية، فلا يعود الاختيار يُحفظ.</li>
+<li><code>const list = matchMedia(query); const matches = ref(list.matches); const update = (e: MediaQueryListEvent) =&gt; (matches.value = e.matches); list.addEventListener("change", update); onScopeDispose(() =&gt; list.removeEventListener("change", update)); return matches;</code>. وفي القالب: <code>{{ wide ? "عريض" : "ضيق" }}</code>.</li>
+<li>داخل <code>effectScope</code> ومع المؤقتات المزيفة: اضبط الاستعلام على «b»، و<code>await nextTick()</code>، وقدّم 100 ملي ثانية، واضبطه على «bit»، و<code>await nextTick()</code>، ثم قدّم 500 ملي ثانية وانتظر الوعود (<code>await vi.runAllTimersAsync()</code>). وتوقّع ألا تحمل <code>results.value</code> إلا أسماء فيها «bit». ويفشل الاختبار إن حذفت <code>onCleanup(() =&gt; controller.abort())</code> وجعلت البحث الأول أبطأ.</li>
+<li><code>useAsync&lt;I, O&gt;(fn: (input: I, signal: AbortSignal) =&gt; Promise&lt;O&gt;, input: MaybeRefOrGetter&lt;I&gt;)</code> تحمل المراقب والمتحكم و<code>data</code> و<code>loading</code> و<code>error</code>. ثم <code>useSearch = (q) =&gt; useAsync((text, signal) =&gt; (text ? searchProducts(text, signal) : Promise.resolve([])), () =&gt; toValue(q).trim())</code>. وهذه الفكرة التي تذهب بها TanStack Query، في الفصل التالي، أبعد بكثير.</li>
 </ol>
 
 

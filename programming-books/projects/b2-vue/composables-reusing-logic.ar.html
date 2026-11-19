@@ -1,0 +1,49 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">لكل composable اكتب توقيعه واختباراً قبل جسمه: ماذا يأخذ، وماذا يُرجع، وماذا ينظّف. فإن صعبت كتابة الاختبار، فالتصميم خاطئ في الغالب.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3><code>useStoredRef</code> خاصتك</h3>
+<p class="project-goal">اكتب بنفسك الـ composable الذي وراء <code>useLocalStorage</code> في VueUse: مرجع تُحفظ قيمته في المتصفح، ويبقى بعد إعادة التحميل، ولا ينهار أبداً مع بيانات تالفة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> composable عام الأنواع، و<code>watch</code> مع <code>deep</code>، والتحليل الحذر، وحدث <code>storage</code>.</p>
+<ol class="steps">
+<li>اكتب <code>useStoredRef&lt;T&gt;(key: string, initial: T)</code>. اقرأ JSON المحفوظ داخل <code>try</code>، وعُد إلى <code>initial</code> إن كان مفقوداً أو تالفاً.</li>
+<li>احفظ مع كل تغيير بـ <code>watch(value, save, { deep: true })</code>.</li>
+<li>استمع إلى حدث <code>storage</code> في النافذة، الذي يقع حين <em>يغيّر لسان آخر</em> المفتاح نفسه، وحدّث المرجع، مستخدماً <code>useEventListener</code> خاصتك ليُنظَّف.</li>
+<li>استخدمه لمهام الفصل {{n-1}}، وتأكد في لسانين أن تعليم مهمة في أحدهما يحدّث الآخر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> بعد كتابته قارنه بكود VueUse المصدري. فقراءة كيف تحل مكتبة معتنى بها المشكلة نفسها، وأي الحالات تعالجها مما فاتك، من أسرع طرق التحسن.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3><code>usePagination</code> مُختبَرة</h3>
+<p class="project-goal">composable يقسم أي قائمة إلى صفحات، ويتبع القائمة حين تتغير، ولا يعرض صفحة فارغة أبداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الأنواع العامة، و<code>MaybeRefOrGetter</code>، والقيم المحسوبة المعتمد بعضها على بعض، والاختبارات المكتوبة أولاً.</p>
+<ol class="steps">
+<li>اكتب الاختبارات أولاً: سبعة عناصر في صفحات من ثلاثة تعطي ثلاث صفحات، و<code>next()</code> تعرض العناصر من 4 إلى 6.</li>
+<li>اكتب اختباراً أصعب: اذهب إلى الصفحة 3، ثم قلّص القائمة إلى عنصرين. يجب أن تصير الصفحة الحالية 1، لا أن تبقى على صفحة 3 فارغة.</li>
+<li>احفظ الصفحة المطلوبة وحدها في مرجع، واجعل عدد الصفحات والصفحة الحالية (المطلوبة مقيدة) والصفوف <code>computed</code>.</li>
+<li>استخدمها في كتالوج الفصل {{n-2}} بزري «السابق» و«التالي» المعطَّلين عند الطرفين، و«صفحة 2 من 3» بينهما.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التقييد في قيمة محسوبة، بدل تصحيح المرجع في مراقب، يعني أن الصفحة لا يمكن أن تكون خاطئة أبداً، ولا للحظة.</p>
+<pre data-code="projects/usePagination.ts" data-title="usePagination.ts"></pre>
+<pre data-code="projects/usePagination.test.ts" data-title="usePagination.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose projects"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>قائمة لا تنتهي</h3>
+<p class="project-goal">قائمة منتجات تحمّل الصفحة التالية وحدها حين يقترب المستخدم من نهايتها، مع زر بديل، ودون تحميل الصفحة نفسها مرتين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>IntersectionObserver</code>، وتمرير مراجع القالب إلى الـ composables، والحالة غير المتزامنة، والتحميل سهل الوصول.</p>
+<ol class="steps">
+<li>اكتب <code>useIntersection(target, callback)</code>، و<code>target</code> مرجع قالب. أنشئ المراقب حين يوجد العنصر، وافصله في التنظيف.</li>
+<li>اكتب <code>useInfiniteList(loadPage)</code> تُرجع <code>items</code> و<code>loading</code> و<code>done</code> و<code>loadMore()</code>. ولا تفعل <code>loadMore</code> شيئاً أثناء تحميل صفحة أو بعد وصول الصفحة الأخيرة.</li>
+<li>ضع عنصراً فارغاً بعد القائمة بـ <code>ref="end"</code>، واستدعِ <code>loadMore</code> حين يصير مرئياً.</li>
+<li>واعرض أيضاً زر «حمّل المزيد»: فمستخدمو لوحة المفاتيح وقارئ الشاشة قد لا يُطلقون المراقب أبداً.</li>
+<li>أعلن «حُمّلت 10 منتجات أخرى» في عنصر <code>role="status"</code> بعد كل صفحة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أشهر خطأ هنا تحميل صفحتين معاً، لأن علامة النهاية تبقى مرئية أثناء الطلب الأول. وفحص <code>loading</code> في أول <code>loadMore</code> هو الإصلاح كله، فاكتب له اختباراً.</p>
+</div>
