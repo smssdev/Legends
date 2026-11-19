@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "الفصل 3: أساسيات Laravel: المسارات والمتحكمات والطلبات"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "الفصل 4: تصميم واجهات REST بـ API Resources"; } }
+@page ch04:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -2164,6 +2166,722 @@ X-RateLimit-Reset: 1795119443
 <p>ما زالت واجهتنا تُرجع المصفوفات كما خرجت من التخزين، وأخطاؤها بشكل Laravel الافتراضي. ونصممها تالياً كما ينبغي: API Resources للتمثيل، والصفحات بالمؤشر، وProblem Details، ومفاتيح عدم التكرار، والتزامن المتفائل، والتوثيق المولَّد من الكود.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b3/laravel/rest/ar">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">الفصل 4</p><h1>تصميم واجهات REST بـ API Resources</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تسمّي الموارد والعناوين بحيث تُخمَّن الواجهة بدل أن تُحفظ</li>
+<li>تتحكم في JSON الذي ترسله واجهتك بـ API Resources، منفصلاً عن طريقة تخزين البيانات</li>
+<li>تتنقل في القوائم بمؤشرات لا تكرر صفاً ولا تقفز عنه أبداً</li>
+<li>ترد كل خطأ بصيغة قياسية واحدة، هي Problem Details</li>
+<li>تجعل إعادة المحاولة آمنة بمفاتيح عدم التكرار، وتمنع ضياع التحديثات بـ <code>If-Match</code></li>
+<li>تولّد توثيق الواجهة من كودها، وتختبر ذلك كله</li>
+</ul>
+</div>
+
+<p class="lead">الواجهة البرمجية منتج، ومستخدموها مطورون. وهم يحكمون عليها كما تحكم أنت على مكتبة: هل أستطيع أن أخمّن كيف تعمل، وهل تخبرني بوضوح بما أخطأت فيه، وهل ستكسر تطبيقي في الشهر القادم؟ علّمك الفصل 1 البروتوكول، والفصل 3 إطار العمل. أما هذا الفصل فعن القرارات التي فوقهما، تلك التي يرخص ضبطها في البداية ويغلو تغييرها جداً حين تعتمد عليها فرق أخرى. ونبني الإصدار الأول من واجهة متجر Bit كما ينبغي، والمنتجات والطلبات في قاعدة بيانات حقيقية.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أول واجهة عامة صممتها كان فيها <code>/getProducts</code> و<code>/product_list</code> و<code>/Products/All</code>، كتبها ثلاثة أشخاص في ثلاثة أسابيع. واحتاج كل عميل مساعدتنا ليستخدمها، ولم نستطع أن نحذف منها شيئاً أبداً. فالاتساق ليس ذوقاً: إنه ما يجعل الغرباء يستخدمون عملك دون أن يسألوك.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>الموارد والعناوين</span></h2>
+
+<p>تنظّم REST الواجهة حول <dfn>الموارد</dfn>: أسماء مجال عملك، مثل المنتجات والطلبات. والعناوين تسمّي الموارد، والطرق تقول ماذا تفعل بها. وقواعد الواجهة التي تُخمَّن قليلة:</p>
+<ul>
+<li><strong>أسماء، بالجمع، بحروف صغيرة:</strong> <code>/products</code> و<code>/orders</code>. والطريقة هي الفعل: <code>GET /products</code> لا <code>/getProducts</code>.</li>
+<li><strong>المورد الواحد:</strong> المجموعة ومعها الرقم، <code>/products/2</code>.</li>
+<li><strong>التداخل للملكية، بمستوى واحد:</strong> <code>/orders/7/items</code> مقبول، و<code>/customers/3/orders/7/items/2</code> ليس كذلك.</li>
+<li><strong>الأفعال التي ليست إنشاءً ولا قراءة ولا تحديثاً ولا حذفاً</strong> تصير مورداً فرعياً بـ <code>POST</code>: <code>POST /orders/7/cancel</code>. ولا تخفها في <code>PATCH</code> يضبط <code>status</code>: فللإلغاء قواعد (إرجاع المخزون، وردّ المبلغ) سيتخطاها التحديث العام.</li>
+<li><strong>الإصدار في المسار:</strong> <code>/api/v1/...</code>. واجعل كل تغيير إضافياً إن استطعت، وحين لا مفر من تغيير كاسر انشر <code>/v2</code> بجوار <code>/v1</code>، وأعلن نهاية <code>/v1</code> بترويستي <code>Deprecation</code> و<code>Sunset</code>.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">&lt;?php
+
+<span class="k">use</span> App\Http\Controllers\OrderController;
+<span class="k">use</span> App\Http\Controllers\ProductController;
+<span class="k">use</span> App\Http\Middleware\Idempotent;
+<span class="k">use</span> Illuminate\Support\Facades\Route;
+
+Route::prefix(<span class="s">&#x27;v1&#x27;</span>)-&gt;group(<span class="k">function</span> () {
+    Route::apiResource(<span class="s">&#x27;products&#x27;</span>, ProductController::<span class="k">class</span>)
+        -&gt;only([<span class="s">&#x27;index&#x27;</span>, <span class="s">&#x27;show&#x27;</span>, <span class="s">&#x27;update&#x27;</span>]);
+
+    Route::controller(OrderController::<span class="k">class</span>)-&gt;group(<span class="k">function</span> () {
+        Route::post(<span class="s">&#x27;orders&#x27;</span>, <span class="s">&#x27;store&#x27;</span>)-&gt;middleware(Idempotent::<span class="k">class</span>)-&gt;name(<span class="s">&#x27;orders.store&#x27;</span>);
+        Route::get(<span class="s">&#x27;orders/{order}&#x27;</span>, <span class="s">&#x27;show&#x27;</span>)-&gt;name(<span class="s">&#x27;orders.show&#x27;</span>);
+        Route::post(<span class="s">&#x27;orders/{order}/cancel&#x27;</span>, <span class="s">&#x27;cancel&#x27;</span>)-&gt;name(<span class="s">&#x27;orders.cancel&#x27;</span>);
+    });
+});</pre></div>
+
+<p>تُقرأ المنتجات وتُحدَّث عبر متحكم موارد. وللطلبات متحكمها الخاص، و<code>Route::controller</code> تجمع مساراته، وفعل الإلغاء مورد فرعي. ويمر إنشاء الطلب بوسيط إضافي، <code>Idempotent</code>، نكتبه في القسم 4.6.</p>
+
+<h2><span class="sec">4.2</span> <span>البيانات في قاعدة بيانات</span></h2>
+
+<p>حفظ الفصل 3 المنتجات في ملف JSON. أما الواجهة الحقيقية فتحفظها في قاعدة بيانات، وقاعدة Laravel الافتراضية SQLite لا تحتاج خادماً: إنها ملف واحد. ويعلّم الفصلان 5 و6 لغة SQL وEloquent كما ينبغي على PostgreSQL، أما هنا فنحتاج ما يكفي لأن تكون لنا جداول نقرؤها فقط. ويكتب Artisan الأصناف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># يكتب Artisan النموذج وترحيله ومصنعه وبذرته، ومورداً</span>
+<span class="c">$ </span><span class="k">php artisan make:model Product --migration --factory --seed --no-ansi</span>
+
+   INFO  Model [app/Models/Product.php] created successfully.  
+
+   INFO  Factory [database/factories/ProductFactory.php] created successfully.  
+
+   INFO  Migration [database/migrations/2026_11_19_203117_create_products_table.php] created successfully.  
+
+   INFO  Seeder [database/seeders/ProductSeeder.php] created successfully.  
+<span class="c">$ </span><span class="k">php artisan make:resource ProductResource --no-ansi</span>
+
+   INFO  Resource [app/Http/Resources/ProductResource.php] created successfully.  </pre></div>
+
+<p><dfn>الترحيل</dfn> (migration) يصف الجدول بـ PHP، فيكون لكل نسخة من التطبيق على كل جهاز الجداول نفسها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">database/migrations/…_create_products_table.php</div><pre class="code">        Schema::create(<span class="s">&#x27;products&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;id();
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;name&#x27;</span>, <span class="n">80</span>);
+            $table-&gt;unsignedInteger(<span class="s">&#x27;price&#x27;</span>); <span class="c line-bidi">// piastres</span>
+            $table-&gt;unsignedInteger(<span class="s">&#x27;stock&#x27;</span>)-&gt;<span class="k">default</span>(<span class="n">0</span>);
+            $table-&gt;unsignedInteger(<span class="s">&#x27;version&#x27;</span>)-&gt;<span class="k">default</span>(<span class="n">1</span>);
+            $table-&gt;timestamps();
+            <span class="c line-bidi">// القائمة مرتبة بالسعر ثم بالرقم: والفهرس يخدم الاثنين</span>
+            $table-&gt;index([<span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;id&#x27;</span>]);
+        });</pre></div>
+
+<p>الأسعار قروش صحيحة، لا كسور عشرية أبداً. و<code>version</code> يعدّ تغييرات المنتج، للقسم 4.7. والفهرس على <code>price</code> و<code>id</code> يخدم القائمة المرتبة المقسّمة إلى صفحات في القسم 4.4. و<dfn>النموذج</dfn> (model) هو الصنف الذي يقرأ الجدول ويكتبه، و<dfn>البذرة</dfn> (seeder) تملؤه بمنتجات المتجر الاثني عشر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Models/Product.php</div><pre class="code">&lt;?php
+
+<span class="k">namespace</span> App\Models;
+
+<span class="k">use</span> Database\Factories\ProductFactory;
+<span class="k">use</span> Illuminate\Database\Eloquent\Factories\HasFactory;
+<span class="k">use</span> Illuminate\Database\Eloquent\Model;
+
+<span class="k">class</span> Product <span class="k">extends</span> Model
+{
+    /** @<span class="k">use</span> HasFactory&lt;ProductFactory&gt; */
+    <span class="k">use</span> HasFactory;
+
+    <span class="k">protected</span> $fillable = [<span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;stock&#x27;</span>];
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أنشئ الجداول واملأها</span>
+<span class="c">$ </span><span class="k">php artisan migrate:fresh --seed --no-ansi</span>
+
+  Dropping all tables ............................................ 4.96ms DONE
+
+   INFO  Preparing database.  
+
+  Creating migration table ....................................... 3.86ms DONE
+
+   INFO  Running migrations.  
+
+  0001_01_01_000000_create_users_table ........................... 7.24ms DONE
+  0001_01_01_000001_create_cache_table ........................... 4.53ms DONE
+  0001_01_01_000002_create_jobs_table ............................ 6.61ms DONE
+  2026_11_01_000001_create_products_table ........................ 2.36ms DONE
+  2026_11_01_000002_create_orders_table .......................... 3.82ms DONE
+  2026_11_19_203125_create_personal_access_tokens_table .......... 4.68ms DONE
+
+
+   INFO  Seeding database.  
+
+  Database\Seeders\ProductSeeder ..................................... RUNNING  
+  Database\Seeders\ProductSeeder .................................. 20 ms DONE  </pre></div>
+
+<p><code>$fillable</code> تذكر الأعمدة التي يجوز ضبطها من مصفوفة. أما غيرها، مثل <code>version</code>، فلا يُضبط إلا عن قصد، واحداً واحداً، وهذا يحميها من طلب يرسل حقولاً أكثر مما ينبغي.</p>
+
+<h2><span class="sec">4.3</span> <span>API Resources: التمثيل</span></h2>
+
+<p>صف قاعدة البيانات وJSON الذي يستلمه العميل شيئان مختلفان، ويجب أن يتغيرا لأسباب مختلفة. فقد يكسب الجدول أعمدة داخلية، أما JSON فوعد لمطورين آخرين. و<dfn>API Resource</dfn> هو الصنف الذي يحوّل الأول إلى الثاني:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Resources/ProductResource.php</div><pre class="code">&lt;?php
+
+<span class="k">namespace</span> App\Http\Resources;
+
+<span class="k">use</span> App\Models\Product;
+<span class="k">use</span> Illuminate\Http\Request;
+<span class="k">use</span> Illuminate\Http\Resources\Json\JsonResource;
+
+/** @mixin Product */
+<span class="k">class</span> ProductResource <span class="k">extends</span> JsonResource
+{
+    <span class="k">public</span> <span class="k">function</span> toArray(Request $request): <span class="k">array</span>
+    {
+        <span class="c line-bidi">// version داخلي: لا يراه العميل إلا وسماً ETag</span>
+        <span class="k">return</span> [
+            <span class="s">&#x27;id&#x27;</span> =&gt; $<span class="k">this</span>-&gt;id,
+            <span class="s">&#x27;name&#x27;</span> =&gt; $<span class="k">this</span>-&gt;name,
+            <span class="s">&#x27;price&#x27;</span> =&gt; Money::<span class="k">of</span>($<span class="k">this</span>-&gt;price),
+            <span class="s">&#x27;stock&#x27;</span> =&gt; $<span class="k">this</span>-&gt;stock,
+            <span class="s">&#x27;created_at&#x27;</span> =&gt; $<span class="k">this</span>-&gt;created_at-&gt;toIso8601ZuluString(),
+        ];
+    }
+}</pre></div>
+
+<p>ثبّت أعراف التمثيل مرة واحدة، والتزم بها في كل مكان:</p>
+<ul>
+<li><strong>أسلوب تسمية واحد.</strong> نستخدم <code>snake_case</code>، كما يفعل Laravel.</li>
+<li><strong>الأوقات بصيغة ISO 8601 وبتوقيت UTC:</strong> <code>2026-11-01T09:00:00Z</code>. والعملاء يحوّلونها إلى منطقة المستخدم الزمنية.</li>
+<li><strong>المال كائناً</strong>، والمبلغ بالوحدات الصغرى مع عملته. ودالة مساعدة واحدة تجعله متماثلاً في كل مورد:</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Resources/Money.php</div><pre class="code">&lt;?php
+
+<span class="k">namespace</span> App\Http\Resources;
+
+<span class="k">final</span> <span class="k">class</span> Money
+{
+    /** @<span class="k">return</span> <span class="k">array</span>{amount: <span class="k">int</span>, currency: <span class="k">string</span>} */
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="k">of</span>(<span class="k">int</span> $amount): <span class="k">array</span>
+    {
+        <span class="k">return</span> [<span class="s">&#x27;amount&#x27;</span> =&gt; $amount, <span class="s">&#x27;currency&#x27;</span> =&gt; config(<span class="s">&#x27;shop.currency&#x27;</span>)];
+    }
+}</pre></div>
+
+<ul>
+<li><strong>الأعمدة الداخلية تبقى في الداخل.</strong> <code>version</code> و<code>updated_at</code> ليسا في المورد، فإضافة عمود إلى الجدول لا تغيّر شيئاً للعملاء.</li>
+<li><strong>القوائم داخل كائن</strong>، لا مصفوفة مجردة أبداً، كي يكون لمعلومات الصفحات مكان: ويضيف Laravel <code>data</code> و<code>links</code> و<code>meta</code> نيابة عنك.</li>
+</ul>
+
+<p>وعُرف آخر يحتاج سطراً من الكود: فـLaravel يكتب افتراضياً كل حرف غير إنجليزي بالشكل <code>ك</code>. ووسيط صغير يضيف <code>JSON_UNESCAPED_UNICODE</code> إلى كل جواب JSON في الواجهة، مرة واحدة، بدل أن يُضاف في كل متحكم:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Middleware/UnescapedJson.php</div><pre class="code"><span class="k">final</span> <span class="k">class</span> UnescapedJson
+{
+    <span class="k">public</span> <span class="k">function</span> handle(Request $request, Closure $next): Response
+    {
+        $response = $next($request);
+        <span class="k">if</span> ($response <span class="k">instanceof</span> JsonResponse) {
+            $options = $response-&gt;getEncodingOptions();
+            $options |= JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+            $response-&gt;setEncodingOptions($options);
+        }
+
+        <span class="k">return</span> $response;
+    }
+}</pre></div>
+
+<h2><span class="sec">4.4</span> <span>القوائم: التصفية والترتيب وصفحات المؤشر</span></h2>
+
+<p>كل ما يجوز للعميل أن يرسله إلى القائمة في طلب نموذج، ولكل قيمة حدود:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Requests/ListProductsRequest.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> rules(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [
+            <span class="s">&#x27;limit&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;between:1,50&#x27;</span>],
+            <span class="s">&#x27;sort&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;in:id,price,-price,name&#x27;</span>],
+            <span class="s">&#x27;min_price&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:0&#x27;</span>],
+            <span class="s">&#x27;max_price&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:0&#x27;</span>],
+            <span class="s">&#x27;cursor&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;string&#x27;</span>],
+        ];
+    }</pre></div>
+
+<p>لا يوجد إلا أربعة أنواع ترتيب. فالواجهة التي ترتّب بأي حقل يسمّيه العميل يمكن أن يُطلب منها الترتيب بعمود بلا فهرس، فتصنع استعلاماً بطيئاً يستطيع مهاجم واحد أن يكرره ألف مرة في الدقيقة.</p>
+
+<p>الطريقة البديهية للصفحات هي <dfn>الإزاحة</dfn> (offset)، <code>?page=2</code>، أي «تخطَّ أول 20». ولها مشكلتان: قاعدة البيانات ما زالت تمر على كل صف متخطى، فتكون الصفحات العميقة بطيئة، والصفحات تنزلق حين تُضاف صفوف أو تُحذف بين طلبين، فيرى المستخدم منتجاً مرتين، أو لا يراه أبداً. أما <dfn>المؤشر</dfn> (cursor) فيقول «تابع بعد <em>هذا</em> الصف»، فالصفوف الجديدة قبله لا تغيّر شيئاً. ويبني Laravel المؤشرات بـ <code>cursorPaginate</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/ProductController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> index(ListProductsRequest $request): AnonymousResourceCollection
+    {
+        $sort = $request-&gt;validated(<span class="s">&#x27;sort&#x27;</span>, <span class="s">&#x27;id&#x27;</span>);
+        $direction = str_starts_with($sort, <span class="s">&#x27;-&#x27;</span>) ? <span class="s">&#x27;desc&#x27;</span> : <span class="s">&#x27;asc&#x27;</span>;
+        $min = $request-&gt;validated(<span class="s">&#x27;min_price&#x27;</span>);
+        $max = $request-&gt;validated(<span class="s">&#x27;max_price&#x27;</span>);
+
+        $products = Product::query()
+            -&gt;when($min !== <span class="k">null</span>, <span class="k">fn</span> ($query) =&gt; $query-&gt;where(<span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;&gt;=&#x27;</span>, $min))
+            -&gt;when($max !== <span class="k">null</span>, <span class="k">fn</span> ($query) =&gt; $query-&gt;where(<span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;&lt;=&#x27;</span>, $max))
+            -&gt;orderBy(ltrim($sort, <span class="s">&#x27;-&#x27;</span>), $direction)
+            <span class="c line-bidi">// ترتيب كامل: السعر المتساوي يحسمه الرقم</span>
+            -&gt;orderBy(<span class="s">&#x27;id&#x27;</span>, $direction)
+            -&gt;cursorPaginate((<span class="k">int</span>) $request-&gt;validated(<span class="s">&#x27;limit&#x27;</span>, <span class="n">5</span>))
+            -&gt;withQueryString();
+
+        <span class="k">return</span> ProductResource::collection($products);
+    }</pre></div>
+
+<p>الاستدعاء الثاني لـ <code>orderBy</code> مهم. فالمؤشر يحتاج ترتيباً <em>كاملاً</em>: يجب أن يكون لمنتجين بالسعر نفسه مكان ثابت، وإلا انتقل صف من صفحة إلى التالية بين الطلبات. والترتيب بالسعر ثم بالرقم يجعل كل موضع فريداً، وفهرس الترحيل على <code>(price, id)</code> يسمح لقاعدة البيانات أن تجده مباشرة. وهذا جانب العميل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الصفحة الأولى: data وlinks وmeta</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8000/api/v1/products?limit=3&#x27; | jq -c &#x27;(.data[] | [.id, .name, .price.amount]), .links, .meta&#x27;</span>
+[1,&quot;عدة الروبوت&quot;,45000]
+[2,&quot;عجلات احتياطية&quot;,6000]
+[3,&quot;حزمة بطارية&quot;,12500]
+{&quot;first&quot;:null,&quot;last&quot;:null,&quot;prev&quot;:null,&quot;next&quot;:&quot;http://localhost:8000/api/v1/products?limit=3&amp;cursor=eyJpZCI6MywiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ&quot;}
+{&quot;path&quot;:&quot;http://localhost:8000/api/v1/products&quot;,&quot;per_page&quot;:3,&quot;next_cursor&quot;:&quot;eyJpZCI6MywiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ&quot;,&quot;prev_cursor&quot;:null}
+<span class="c line-bidi"># الصفحة التالية: اتبع next_cursor</span>
+<span class="c">$ </span><span class="k">curl -s &quot;$(curl -s &#x27;localhost:8000/api/v1/products?limit=3&#x27; | jq -r .links.next)&quot; | jq -c &#x27;(.data[] | [.id, .name, .price.amount]), .meta.next_cursor&#x27;</span>
+[4,&quot;كابل USB&quot;,2500]
+[5,&quot;محرك سيرفو&quot;,9000]
+[6,&quot;طقم حساسات&quot;,15000]
+&quot;eyJpZCI6NiwiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ&quot;
+<span class="c line-bidi"># التصفية والترتيب: المؤشر يتذكر الاثنين</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8000/api/v1/products?limit=2&amp;sort=-price&amp;max_price=20000&#x27; | jq -c &#x27;(.data[] | [.id, .price.amount]), .links.next&#x27;</span>
+[6,15000]
+[3,12500]
+&quot;http://localhost:8000/api/v1/products?limit=2&amp;sort=-price&amp;max_price=20000&amp;cursor=eyJwcmljZSI6MTI1MDAsImlkIjozLCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9&quot;</pre></div>
+
+<p>تحمل الصفحة الأولى رابط التالية، فلا يبني العملاء العناوين بأنفسهم أبداً، بل يتبعون <code>links.next</code> حتى يصير <code>null</code>. ومع التصفية والترتيب يحمل المؤشر السعر مع الرقم، وتُبقي <code>withQueryString</code> التصفية في الرابط. والمؤشر JSON مرمّز بـ base64: يستطيع أي أحد أن يفكّه، فليس سراً. فوثّقه رمزاً غامضاً يجب على العملاء أن يعيدوه كما هو، كي يبقى الخادم حراً في تغيير ما بداخله.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر فهمك</p><ol><li>أي عنوان أفضل لإلغاء الطلب 7: <code>PATCH /orders/7</code> مع <code>{"status": "cancelled"}</code>، أم <code>POST /orders/7/cancel</code>؟ ولماذا؟</li><li>لماذا ترتّب القائمة بالسعر <em>والرقم</em>، لا بالسعر وحده؟</li><li>لماذا <code>version</code> عمود في الجدول لكنه ليس حقلاً في المورد؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">4.5</span> <span>الأخطاء: Problem Details</span></h2>
+
+<p>لأجوبة الخطأ الافتراضية في Laravel، التي رأيتها في الفصل 3، شكل خاص بها. وكل واجهة بشكل خاص تُجبر كل عميل على تعلّمه. أما <dfn>Problem Details</dfn> (RFC 9457) فهو الشكل القياسي لأخطاء واجهات HTTP، ويُرسل بنوع المحتوى <code>application/problem+json</code>: عنوان <code>type</code> يحدد نوع المشكلة ويقود إلى توثيقها، و<code>title</code> قصير، و<code>status</code>، و<code>detail</code> لهذه الحالة، و<code>instance</code> أي الطلب الذي فشل. ويُسمح بأعضاء إضافيين، مثل قائمة <code>errors</code>.</p>
+
+<p>المشكلة استثناء يعرف كيف يرسم نفسه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Problem.php</div><pre class="code"><span class="k">final</span> <span class="k">class</span> Problem <span class="k">extends</span> HttpException
+{
+    <span class="k">public</span> <span class="k">function</span> __construct(
+        <span class="k">int</span> $status,
+        <span class="k">public</span> <span class="k">readonly</span> <span class="k">string</span> $slug,
+        <span class="k">public</span> <span class="k">readonly</span> <span class="k">string</span> $title,
+        <span class="k">public</span> <span class="k">readonly</span> ?<span class="k">string</span> $detail = <span class="k">null</span>,
+        <span class="k">public</span> <span class="k">readonly</span> <span class="k">array</span> $extra = [],
+        <span class="k">array</span> $headers = [],
+    ) {
+        <span class="k">parent</span>::__construct($status, $detail ?? $title, <span class="k">null</span>, $headers);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> render(Request $request): JsonResponse
+    {
+        $body = [
+            <span class="s">&#x27;type&#x27;</span> =&gt; <span class="s">&quot;https://bit-shop.example/problems/{$this-&gt;slug}&quot;</span>,
+            <span class="s">&#x27;title&#x27;</span> =&gt; $<span class="k">this</span>-&gt;title,
+            <span class="s">&#x27;status&#x27;</span> =&gt; $<span class="k">this</span>-&gt;getStatusCode(),
+            <span class="s">&#x27;detail&#x27;</span> =&gt; $<span class="k">this</span>-&gt;detail,
+            <span class="s">&#x27;instance&#x27;</span> =&gt; $request-&gt;getRequestUri(),
+            ...$<span class="k">this</span>-&gt;extra,
+        ];
+        $body = array_filter($body, <span class="k">fn</span> ($value) =&gt; $value !== <span class="k">null</span>);
+        $headers = [<span class="s">&#x27;Content-Type&#x27;</span> =&gt; <span class="s">&#x27;application/problem+json&#x27;</span>, ...$<span class="k">this</span>-&gt;getHeaders()];
+        $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+
+        <span class="k">return</span> response()-&gt;json($body, $<span class="k">this</span>-&gt;getStatusCode(), $headers, $flags);
+    }
+}</pre></div>
+
+<p>وصنف واحد يقرر كيف يصير كل استثناء آخر مشكلة: أخطاء التحقق، والنماذج غير الموجودة، وحدود المعدل، وأخطاء HTTP الأخرى، وكل ما هو غير متوقع 500 بسيطة. وهو أيضاً يصنع المشكلات التي ترميها الواجهة عن قصد، فلا يخترع متحكم رمز حالة جديداً أو شكلاً جديداً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Problems.php</div><pre class="code">    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="k">from</span>(Throwable $e): Problem
+    {
+        <span class="k">return</span> <span class="k">match</span> (<span class="k">true</span>) {
+            $e <span class="k">instanceof</span> Problem =&gt; $e,
+            $e <span class="k">instanceof</span> ValidationException =&gt; <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&#x27;invalid-request&#x27;</span>,
+                __(<span class="s">&#x27;problems.invalid&#x27;</span>), <span class="k">null</span>, [<span class="s">&#x27;errors&#x27;</span> =&gt; <span class="k">self</span>::errors($e)]),
+            $e <span class="k">instanceof</span> NotFoundHttpException =&gt; <span class="k">self</span>::notFound($e-&gt;getPrevious()),
+            $e <span class="k">instanceof</span> ThrottleRequestsException =&gt; <span class="k">new</span> Problem(
+                <span class="n">429</span>, <span class="s">&#x27;too-many-requests&#x27;</span>, __(<span class="s">&#x27;problems.limit&#x27;</span>), <span class="k">null</span>, [], $e-&gt;getHeaders()),
+            $e <span class="k">instanceof</span> HttpExceptionInterface =&gt; <span class="k">new</span> Problem(
+                $e-&gt;getStatusCode(), <span class="s">&#x27;http-error&#x27;</span>, $e-&gt;getMessage() ?: __(<span class="s">&#x27;problems.server&#x27;</span>)),
+            <span class="k">default</span> =&gt; <span class="k">new</span> Problem(<span class="n">500</span>, <span class="s">&#x27;server-error&#x27;</span>, __(<span class="s">&#x27;problems.server&#x27;</span>)),
+        };
+    }</pre></div>
+
+<p><code>match (true)</code> تأخذ أول ذراع يصدق شرطه، وهي طريقة شائعة في PHP لقائمة من فحوص الأنواع. والنصوص تأتي من ملف لغة، <code>lang/ar/problems.php</code>، تقرؤه <code>__('problems.stale')</code> بلغة التطبيق، وقد ضبطنا <code>APP_LOCALE=ar</code> في <code>.env</code>. وسطر واحد في <code>bootstrap/app.php</code> يمرر كل استثناء في الواجهة عبره:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">bootstrap/app.php</div><pre class="code">    -&gt;withExceptions(<span class="k">function</span> (Exceptions $exceptions): <span class="k">void</span> {
+        <span class="c line-bidi">// Every error in the API becomes Problem Details;</span>
+        <span class="c line-bidi">// صفحات الويب تحتفظ بصفحات الخطأ المعتادة في Laravel.</span>
+        $exceptions-&gt;render(<span class="k">function</span> (Throwable $e, Request $request) {
+            <span class="k">if</span> ($request-&gt;is(<span class="s">&#x27;api/*&#x27;</span>)) {
+                <span class="k">return</span> Problems::<span class="k">from</span>($e)-&gt;render($request);
+            }
+        });
+    })-&gt;create();</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># قيم خارج القواعد</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8000/api/v1/products?limit=500&amp;sort=stock&#x27; | jq</span>
+{
+  &quot;type&quot;: &quot;https://bit-shop.example/problems/invalid-request&quot;,
+  &quot;title&quot;: &quot;طلب غير صالح&quot;,
+  &quot;status&quot;: 422,
+  &quot;instance&quot;: &quot;/api/v1/products?limit=500&amp;sort=stock&quot;,
+  &quot;errors&quot;: [
+    {
+      &quot;field&quot;: &quot;limit&quot;,
+      &quot;message&quot;: &quot;الصفحة من 1 إلى 50 عنصراً.&quot;
+    },
+    {
+      &quot;field&quot;: &quot;sort&quot;,
+      &quot;message&quot;: &quot;رتّب بـ id أو price أو -price أو name.&quot;
+    }
+  ]
+}
+<span class="c line-bidi"># منتج غير موجود</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/v1/products/99 | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/not-found&quot;,&quot;title&quot;:&quot;غير موجود&quot;,&quot;status&quot;:404,&quot;detail&quot;:&quot;لا يوجد منتج رقمه 99.&quot;,&quot;instance&quot;:&quot;/api/v1/products/99&quot;}</pre></div>
+
+<p>صار لكل خطأ، من التحقق إلى النموذج المفقود، الشكل نفسه. ويرد Laravel بـ <code>422</code> لكل فشل في التحقق، للاستعلام أو للمحتوى، وبعض الواجهات تفضّل <code>400</code> للاستعلام المشوّه، لكن الأهم أن تفعل واجهتك الشيء نفسه دائماً.</p>
+
+<h2><span class="sec">4.6</span> <span>إعادة محاولة آمنة: مفاتيح عدم التكرار</span></h2>
+
+<p>حذّر الفصل 1 من أن إعادة <code>POST</code> قد تُنشئ الطلب مرتين. والجواب القياسي، الذي تستخدمه مزودات الدفع مثل Stripe، هو <dfn>مفتاح عدم التكرار</dfn>: يصنع العميل قيمة فريدة (UUID) لكل عملية <em>مقصودة</em> ويرسلها في الترويسة <code>Idempotency-Key</code>. فإن وصل المفتاح نفسه مرة أخرى لا يعيد الخادم العمل، بل يعيد الجواب الذي أعطاه في المرة الأولى. وهذا عمل للوسيط، لأنه يلف المتحكم دون أن يعرف المتحكم:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Middleware/Idempotent.php</div><pre class="code"><span class="k">final</span> <span class="k">class</span> Idempotent
+{
+    <span class="k">public</span> <span class="k">function</span> handle(Request $request, Closure $next): Response
+    {
+        $key = (<span class="k">string</span>) $request-&gt;header(<span class="s">&#x27;Idempotency-Key&#x27;</span>);
+        <span class="k">if</span> (strlen($key) &lt; <span class="n">8</span> || strlen($key) &gt; <span class="n">100</span>) {
+            <span class="k">throw</span> <span class="k">new</span> Problem(<span class="n">400</span>, <span class="s">&#x27;invalid-request&#x27;</span>, __(<span class="s">&#x27;problems.invalid&#x27;</span>),
+                __(<span class="s">&#x27;problems.key&#x27;</span>));
+        }
+        $id = <span class="s">&#x27;idempotency:&#x27;</span>.$key;
+        $fingerprint = hash(<span class="s">&#x27;sha256&#x27;</span>, $request-&gt;getContent());
+
+        $lock = Cache::lock($id.<span class="s">&#x27;:lock&#x27;</span>, <span class="n">30</span>); <span class="c line-bidi">// طلب واحد لكل مفتاح في كل لحظة</span>
+        <span class="k">if</span> (! $lock-&gt;get()) {
+            <span class="k">throw</span> <span class="k">new</span> Problem(<span class="n">409</span>, <span class="s">&#x27;in-progress&#x27;</span>, __(<span class="s">&#x27;problems.in_progress&#x27;</span>),
+                __(<span class="s">&#x27;problems.in_progress_detail&#x27;</span>));
+        }
+        <span class="k">try</span> {
+            $saved = Cache::get($id);
+            <span class="k">if</span> ($saved !== <span class="k">null</span>) {
+                <span class="k">if</span> ($saved[<span class="s">&#x27;fingerprint&#x27;</span>] !== $fingerprint) {
+                    <span class="k">throw</span> <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&#x27;idempotency-key-reused&#x27;</span>,
+                        __(<span class="s">&#x27;problems.reused&#x27;</span>), __(<span class="s">&#x27;problems.reused_detail&#x27;</span>));
+                }
+                $headers = array_filter($saved[<span class="s">&#x27;headers&#x27;</span>]);
+                $headers[<span class="s">&#x27;Idempotent-Replayed&#x27;</span>] = <span class="s">&#x27;true&#x27;</span>;
+
+                <span class="k">return</span> response($saved[<span class="s">&#x27;body&#x27;</span>], $saved[<span class="s">&#x27;status&#x27;</span>], $headers);
+            }
+            $response = $next($request);
+            <span class="k">if</span> ($response-&gt;isSuccessful()) {
+                <span class="c line-bidi">// يُحفظ يوماً، والطلب الفاشل لا يُحفظ، فيجوز تكراره</span>
+                Cache::put($id, [
+                    <span class="s">&#x27;fingerprint&#x27;</span> =&gt; $fingerprint,
+                    <span class="s">&#x27;status&#x27;</span> =&gt; $response-&gt;getStatusCode(),
+                    <span class="s">&#x27;body&#x27;</span> =&gt; $response-&gt;getContent(),
+                    <span class="s">&#x27;headers&#x27;</span> =&gt; [
+                        <span class="s">&#x27;Content-Type&#x27;</span> =&gt; $response-&gt;headers-&gt;get(<span class="s">&#x27;Content-Type&#x27;</span>),
+                        <span class="s">&#x27;Location&#x27;</span> =&gt; $response-&gt;headers-&gt;get(<span class="s">&#x27;Location&#x27;</span>),
+                    ],
+                ], now()-&gt;addDay());
+            }
+
+            <span class="k">return</span> $response;
+        } <span class="k">finally</span> {
+            $lock-&gt;release();
+        }
+    }
+}</pre></div>
+
+<ul>
+<li><strong>قفل</strong> على المفتاح يجعل الطلب الثاني الذي يصل والأول ما زال يعمل يأخذ <code>409</code>، بدل أن يؤدي العمل مرتين. و<code>Cache::lock</code> يعمل عبر كل عمليات PHP على الخادم، لأن القفل يعيش في مخزن الذاكرة المؤقتة (هنا قاعدة البيانات، وRedis في الفصل 8).</li>
+<li><strong>بصمة</strong> المحتوى تُحفظ مع الجواب. فالمفتاح نفسه مع محتوى مختلف خطأ في العميل، ويأخذ <code>422</code>، لا إعادة صامتة لطلب مختلف أبداً.</li>
+<li>لا تُحفظ إلا الأجوبة <strong>الناجحة</strong>، ليوم واحد. فالطلب الذي فشل يجوز تكراره بالمفتاح نفسه.</li>
+</ul>
+
+<p>ويُنشئ المتحكم الطلب داخل <dfn>معاملة</dfn> (transaction) في قاعدة البيانات: إما أن تحدث كل التغييرات، وإما ألا يحدث شيء منها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/OrderController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> store(StoreOrderRequest $request): JsonResponse
+    {
+        <span class="c line-bidi">// أي شيء يُرمى هنا يتراجع عن المعاملة كلها، والمخزون معها</span>
+        $order = DB::transaction(<span class="k">function</span> () <span class="k">use</span> ($request) {
+            $items = [];
+            <span class="k">foreach</span> ($request-&gt;validated(<span class="s">&#x27;items&#x27;</span>) <span class="k">as</span> $line) {
+                [<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity] = $line;
+                <span class="c line-bidi">// خذ من المخزون فقط إن كان يكفي: لا يأخذ طلبان آخر قطعة معاً</span>
+                $taken = Product::whereKey($id)
+                    -&gt;where(<span class="s">&#x27;stock&#x27;</span>, <span class="s">&#x27;&gt;=&#x27;</span>, $quantity)
+                    -&gt;decrement(<span class="s">&#x27;stock&#x27;</span>, $quantity, [
+                        <span class="s">&#x27;version&#x27;</span> =&gt; DB::raw(<span class="s">&#x27;version + 1&#x27;</span>),
+                    ]);
+                $product = Product::findOrFail($id);
+                <span class="k">if</span> ($taken === <span class="n">0</span>) {
+                    <span class="k">throw</span> Problems::outOfStock($id, $product-&gt;stock);
+                }
+                <span class="c line-bidi">// السعر من قاعدة البيانات، لا من العميل أبداً</span>
+                $items[] = [
+                    <span class="s">&#x27;product_id&#x27;</span> =&gt; $id,
+                    <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity,
+                    <span class="s">&#x27;price&#x27;</span> =&gt; $product-&gt;price,
+                ];
+            }
+            $total = array_sum(array_map(
+                <span class="k">fn</span> ($item) =&gt; $item[<span class="s">&#x27;price&#x27;</span>] * $item[<span class="s">&#x27;quantity&#x27;</span>],
+                $items,
+            ));
+            $order = Order::create([<span class="s">&#x27;status&#x27;</span> =&gt; <span class="s">&#x27;pending&#x27;</span>, <span class="s">&#x27;total&#x27;</span> =&gt; $total]);
+            $order-&gt;items()-&gt;createMany($items);
+
+            <span class="k">return</span> $order;
+        });
+
+        <span class="k">return</span> OrderResource::make($order-&gt;load(<span class="s">&#x27;items&#x27;</span>))
+            -&gt;response()
+            -&gt;setStatusCode(<span class="n">201</span>)
+            -&gt;header(<span class="s">&#x27;Location&#x27;</span>, route(<span class="s">&#x27;orders.show&#x27;</span>, $order));
+    }</pre></div>
+
+<p>يُؤخذ المخزون بجملة شرطية واحدة، «أنقص المخزون 2 <em>حيث</em> المخزون 2 على الأقل»، وعدد الصفوف المتغيرة يقول هل نجحت. أما قراءة المخزون أولاً ثم كتابته فتسمح لطلبين أن يريا آخر عدّة وأن يأخذاها معاً، ويشرح الفصل 7 لماذا، والأدوات الأخرى لذلك. فإن رُمي أي شيء تراجعت المعاملة، فالطلب الذي يفشل في عنصره الثالث يعيد مخزون الأولين. والأسعار تأتي من قاعدة البيانات: فالعميل لا يخبر الخادم بثمن شيء أبداً.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أنشئ طلباً، مع مفتاح عدم التكرار</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:8000/api/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 2}]}&#x27; | grep -iE &#x27;^(HTTP|location|idempotent)|^\{&#x27;</span>
+HTTP/1.1 201 Created
+Location: http://localhost:8000/api/v1/orders/1
+{&quot;data&quot;:{&quot;id&quot;:1,&quot;status&quot;:&quot;pending&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:{&quot;amount&quot;:45000,&quot;currency&quot;:&quot;EGP&quot;}}],&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;},&quot;created_at&quot;:&quot;2026-11-19T20:31:30Z&quot;}}
+<span class="c line-bidi"># فشلت الشبكة، فأرسل العميل الطلب نفسه بالضبط مرة أخرى</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:8000/api/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 2}]}&#x27; | grep -iE &#x27;^(HTTP|location|idempotent)|^\{&#x27;</span>
+HTTP/1.1 201 Created
+Location: http://localhost:8000/api/v1/orders/1
+Idempotent-Replayed: true
+{&quot;data&quot;:{&quot;id&quot;:1,&quot;status&quot;:&quot;pending&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:{&quot;amount&quot;:45000,&quot;currency&quot;:&quot;EGP&quot;}}],&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;},&quot;created_at&quot;:&quot;2026-11-19T20:31:30Z&quot;}}
+<span class="c line-bidi"># المفتاح نفسه مع محتوى مختلف</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8000/api/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 3}]}&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/idempotency-key-reused&quot;,&quot;title&quot;:&quot;مفتاح عدم التكرار مستخدم&quot;,&quot;status&quot;:422,&quot;detail&quot;:&quot;استُخدم هذا المفتاح مع محتوى مختلف.&quot;,&quot;instance&quot;:&quot;/api/v1/orders&quot;}
+<span class="c line-bidi"># نقص المخزون مرة واحدة</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/v1/products/1 | jq -c &#x27;.data | {id, stock}&#x27;</span>
+{&quot;id&quot;:1,&quot;stock&quot;:8}</pre></div>
+
+<p>أخذ الطلب الثاني الطلب نفسه، بالرقم والوقت نفسيهما، ومعه ترويسة تقول إنه أُعيد. ونقص المخزون 2 لا 4. وقواعد العمل الأخرى ترد مشكلات أيضاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أكثر من المخزون</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8000/api/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0002&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 50}]}&#x27; | jq</span>
+{
+  &quot;type&quot;: &quot;https://bit-shop.example/problems/out-of-stock&quot;,
+  &quot;title&quot;: &quot;المخزون لا يكفي&quot;,
+  &quot;status&quot;: 409,
+  &quot;detail&quot;: &quot;بقي 8 فقط من المنتج 1.&quot;,
+  &quot;instance&quot;: &quot;/api/v1/orders&quot;
+}
+<span class="c line-bidi"># ألغِ، ثم ألغِ مرة أخرى</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8000/api/v1/orders/1/cancel | jq -c &#x27;.data | {id, status, total}&#x27;</span>
+{&quot;id&quot;:1,&quot;status&quot;:&quot;cancelled&quot;,&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;}}
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8000/api/v1/orders/1/cancel | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/invalid-state&quot;,&quot;title&quot;:&quot;لا يمكن إلغاء الطلب&quot;,&quot;status&quot;:409,&quot;detail&quot;:&quot;الطلب 1 حالته cancelled من قبل.&quot;,&quot;instance&quot;:&quot;/api/v1/orders/1/cancel&quot;}</pre></div>
+
+<h2><span class="sec">4.7</span> <span>التحديثات الضائعة: ETag وIf-Match</span></h2>
+
+<p>مديران يفتحان المنتج 2 في الوقت نفسه. تغيّر سارة السعر إلى 65.00 وتحفظ، وبعد دقيقة يغيّره عمر، الذي ما زالت شاشته تعرض المنتج القديم، إلى 70.00 ويحفظ. فيضيع تغيير سارة ولا يُخبَر أحد. هذه مشكلة <dfn>التحديث الضائع</dfn>. ويحلها HTTP بوسم ETag من الفصل 1: إصدار المنتج هو وسمه، والتغيير يجب أن يعيد في <code>If-Match</code> الإصدار الذي بُني عليه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/ProductController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> show(Request $request, Product $product): JsonResponse
+    {
+        $response = ProductResource::make($product)-&gt;response();
+        $response-&gt;setEtag((<span class="k">string</span>) $product-&gt;version);
+        <span class="c line-bidi">// 304 and no body when If-None-Match matches</span>
+        $response-&gt;isNotModified($request);
+
+        <span class="k">return</span> $response;
+    }
+
+    <span class="k">public</span> <span class="k">function</span> update(
+        UpdateProductRequest $request,
+        Product $product,
+    ): JsonResponse {
+        $ifMatch = $request-&gt;header(<span class="s">&#x27;If-Match&#x27;</span>);
+        <span class="k">if</span> ($ifMatch === <span class="k">null</span>) {
+            <span class="k">throw</span> Problems::needIfMatch();
+        }
+        <span class="c line-bidi">// جملة واحدة: غيّره فقط إن كان الإصدار ما زال الذي قرأه العميل</span>
+        $changed = Product::whereKey($product-&gt;id)
+            -&gt;where(<span class="s">&#x27;version&#x27;</span>, (<span class="k">int</span>) trim($ifMatch, <span class="s">&#x27;&quot;&#x27;</span>))
+            -&gt;update([...$request-&gt;validated(), <span class="s">&#x27;version&#x27;</span> =&gt; DB::raw(<span class="s">&#x27;version + 1&#x27;</span>)]);
+        <span class="k">if</span> ($changed === <span class="n">0</span>) {
+            <span class="k">throw</span> Problems::stale();
+        }
+
+        <span class="k">return</span> $<span class="k">this</span>-&gt;show($request, $product-&gt;refresh());
+    }</pre></div>
+
+<p>تضبط <code>show</code> الوسم، وتحوّل <code>isNotModified</code> من Symfony الجواب إلى <code>304</code> فارغة حين يملك العميل هذا الإصدار من قبل. وترفض <code>update</code> الطلب الذي بلا <code>If-Match</code>، ثم تغيّر الصف <em>فقط إن</em> كان إصداره ما زال الذي قرأه العميل، وترفعه واحداً في الجملة نفسها. فإن لم يتغير أي صف فقد سبقه غيره:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># اقرأ منتجاً: الوسم ETag هو إصداره</span>
+<span class="c">$ </span><span class="k">curl -si localhost:8000/api/v1/products/2 | grep -iE &#x27;^(HTTP|etag)|^\{&#x27;</span>
+HTTP/1.1 200 OK
+ETag: &quot;1&quot;
+{&quot;data&quot;:{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:{&quot;amount&quot;:6000,&quot;currency&quot;:&quot;EGP&quot;},&quot;stock&quot;:10,&quot;created_at&quot;:&quot;2026-11-01T10:00:00Z&quot;}}
+<span class="c line-bidi"># غيّره دون If-Match</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:8000/api/v1/products/2 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 6500}&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/precondition-required&quot;,&quot;title&quot;:&quot;شرط مسبق مطلوب&quot;,&quot;status&quot;:428,&quot;detail&quot;:&quot;أرسل If-Match مع آخر ETag قرأته.&quot;,&quot;instance&quot;:&quot;/api/v1/products/2&quot;}
+<span class="c line-bidi"># غيّره مع الوسم الذي قرأته للتو</span>
+<span class="c">$ </span><span class="k">curl -si -X PATCH localhost:8000/api/v1/products/2 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 6500}&#x27; -H &#x27;If-Match: &quot;1&quot;&#x27; | grep -iE &#x27;^(HTTP|etag)|^\{&#x27;</span>
+HTTP/1.1 200 OK
+ETag: &quot;2&quot;
+{&quot;data&quot;:{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:{&quot;amount&quot;:6500,&quot;currency&quot;:&quot;EGP&quot;},&quot;stock&quot;:10,&quot;created_at&quot;:&quot;2026-11-01T10:00:00Z&quot;}}
+<span class="c line-bidi"># شخص آخر ما زال يحمل الوسم القديم</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:8000/api/v1/products/2 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 7000}&#x27; -H &#x27;If-Match: &quot;1&quot;&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/stale&quot;,&quot;title&quot;:&quot;تغيّر المنتج&quot;,&quot;status&quot;:412,&quot;detail&quot;:&quot;غيّره أحد بعد أن قرأته. اقرأه من جديد.&quot;,&quot;instance&quot;:&quot;/api/v1/products/2&quot;}</pre></div>
+
+<p>هذا هو <dfn>التزامن المتفائل</dfn>: لا شيء يُقفل بينما ينظر الناس إلى شاشة، والتعارضات النادرة تُكتشف حين تحدث. والعميل الذي يأخذ <code>412</code> يعيد تحميل المنتج ويُري المستخدم ما تغيّر.</p>
+
+<h2><span class="sec">4.8</span> <span>التوثيق من الكود</span></h2>
+
+<p>التوثيق المكتوب باليد يبتعد عن الكود في أسابيع. أما <dfn>Scramble</dfn> فيقرأ المسارات وطلبات النماذج والموارد، ويكتب منها وثيقة <dfn>OpenAPI</dfn>، أي وصفاً قياسياً للواجهة تقرؤه الآلات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># يقرأ Scramble المسارات والطلبات والموارد، ويكتب OpenAPI</span>
+<span class="c">$ </span><span class="k">composer require dedoc/scramble --no-interaction --no-ansi 2&gt;&amp;1 | grep -E &#x27;Using version|Installing dedoc&#x27;</span>
+  - Installing dedoc/scramble (v0.13.55): Extracting archive
+Using version ^0.13.55 for dedoc/scramble</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># مسارات الواجهة، من الوثيقة المولَّدة</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/docs/api.json | jq -r &#x27;.paths | to_entries[] | .key as $p | .value | keys[] | ascii_upcase + &quot; &quot; + $p&#x27;</span>
+POST /v1/orders
+GET /v1/orders/{order}
+POST /v1/orders/{order}/cancel
+GET /v1/products
+GET /v1/products/{product}
+PUT /v1/products/{product}</pre></div>
+
+<p>وعلى جهاز المطور يقدّم Scramble أيضاً صفحة توثيق على <code>/docs/api</code>. ومن الوثيقة نفسها تستطيع الأدوات أن تولّد عملاء بأنواعهم بلغات كثيرة، ويستطيع فحص في CI أن يرفض طلب دمج يحذف شيئاً يعتمد عليه العملاء. (يذكر Scramble مسار التحديث بـ <code>PUT</code>، ويقبل Laravel <code>PATCH</code> على المسار نفسه.)</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: صمّم الواجهة قبل أن تبنيها</p><p>اكتب أمثلة الطلب والجواب للمسار الجديد أولاً، في طلب الدمج، واطلب مراجعة من شخص <em>سيستخدم</em> المسار، مثل مطور واجهة أمامية أو تطبيق جوال. فتغيير المثال يستغرق دقائق، وتغيير واجهة منشورة يستغرق شهوراً من الإصدارات ورسائل الإيقاف.</p></aside>
+
+<h2><span class="sec">4.9</span> <span>اختبار الواجهة</span></h2>
+
+<p>مع <code>RefreshDatabase</code> يبدأ كل اختبار بجداول جديدة، تملؤها البذرة المذكورة في <code>$seeder</code>. وأثمن اختبار يمر على كل الصفحات ويتحقق أن كل منتج يظهر مرة واحدة بالضبط:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/ShopApiTest.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> test_it_walks_every_page_without_repeats_or_gaps(): <span class="k">void</span>
+    {
+        $seen = [];
+        $url = <span class="s">&#x27;/api/v1/products?limit=5&#x27;</span>;
+        <span class="k">while</span> ($url !== <span class="k">null</span>) {
+            $page = $<span class="k">this</span>-&gt;getJson($url)-&gt;assertOk();
+            $seen = [...$seen, ...array_column($page-&gt;json(<span class="s">&#x27;data&#x27;</span>), <span class="s">&#x27;id&#x27;</span>)];
+            $url = $page-&gt;json(<span class="s">&#x27;links.next&#x27;</span>);
+        }
+        $<span class="k">this</span>-&gt;assertSame(range(<span class="n">1</span>, <span class="n">12</span>), $seen);
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># اختبارات الميزات بقاعدة بيانات جديدة لكل اختبار</span>
+<span class="c">$ </span><span class="k">php artisan test --no-ansi tests/Feature/ShopApiTest.php</span>
+
+   PASS  Tests\Feature\ShopApiTest
+  ✓ it walks every page without repeats or gaps                          0.18s  
+  ✓ it sorts by price highest first                                      0.01s  
+  ✓ it replays an order instead of creating it twice                     0.02s  
+  ✓ it refuses a stale update                                            0.02s  
+  ✓ it answers 422 problems with every invalid field                     0.01s  
+
+  Tests:    5 passed (18 assertions)
+  Duration: 0.32s</pre></div>
+
+<p>والاختبارات الأخرى تثبّت ما يعتمد عليه العملاء: الترتيب، والإعادة، والتحديث القديم، وشكل الخطأ. ويذهب الفصل 13 أبعد بكثير.</p>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>إرجاع النماذج JSON مباشرة</td><td>يُنشر كل عمود جديد، وإعادة تسمية عمود تكسر العملاء</td><td>API Resources</td></tr>
+<tr><td>أفعال في العناوين، وتسمية مختلطة</td><td>يجب البحث عن كل مسار</td><td>أسماء بالجمع، وأسلوب تسمية واحد، والطرق أفعال</td></tr>
+<tr><td>صفحات بالإزاحة على بيانات متغيرة</td><td>صفوف مكررة وناقصة، وصفحات عميقة بطيئة</td><td><code>cursorPaginate</code> على ترتيب كامل مفهرس</td></tr>
+<tr><td>الترتيب بأي حقل يسمّيه العميل</td><td>استعلامات بطيئة عند الطلب</td><td>قائمة بأنواع الترتيب المسموحة</td></tr>
+<tr><td>شكل خطأ مختلف لكل مسار</td><td>لا يعالج العملاء الأخطاء بطريقة عامة</td><td>Problem Details لكل استثناء</td></tr>
+<tr><td>إعادة POST بلا مفاتيح</td><td>طلبات ومدفوعات مكررة</td><td>وسيط عدم تكرار مع البصمات</td></tr>
+<tr><td>قراءة المخزون ثم كتابته</td><td>يأخذ طلبان آخر قطعة</td><td>جملة شرطية واحدة داخل معاملة</td></tr>
+<tr><td>تحديثات بلا فحص للإصدار</td><td>تحديثات تضيع بصمت</td><td>ETag و<code>If-Match</code> إلزامية</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>الموارد</strong> أسماء بالجمع، و<strong>الطرق</strong> هي الأفعال، والأفعال الخاصة موارد فرعية بـ <code>POST</code>. والإصدار في المسار، وفضّل التغييرات الإضافية.</li>
+<li><strong>الترحيلات</strong> تصف الجداول، و<strong>النماذج</strong> تقرؤها وتكتبها، و<strong>البذور</strong> تملؤها.</li>
+<li><strong>API Resources</strong> تفصل التمثيل عن التخزين: أوقات UTC، والمال مبلغاً وعملة، والأعمدة الداخلية مخفية.</li>
+<li><strong>المؤشرات</strong> تتنقل بلا انزلاق على ترتيب كامل (حقل الترتيب والرقم)، مع روابط يتبعها العملاء.</li>
+<li>كل خطأ <strong>Problem Details</strong>، من راسم واحد ومجموعة واحدة من دوال الصنع.</li>
+<li><strong>وسيط عدم التكرار</strong> بقفل وبصمة يجعل الإعادة آمنة، و<strong>المعاملات</strong> والتحديثات الشرطية تُبقي المخزون صحيحاً.</li>
+<li><strong>ETag مع <code>If-Match</code></strong> وفحص ذري للإصدار يمنعان التحديثات الضائعة.</li>
+<li><strong>Scramble</strong> يولّد OpenAPI من الكود، و<strong>اختبارات الميزات</strong> مع <code>RefreshDatabase</code> تثبّت السلوك.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. <code>POST /orders/7/cancel</code>: فالإلغاء فعل له قواعده (إرجاع المخزون، والرد، والتحقق أن الطلب ما زال قابلاً للإلغاء)، والمسار المخصص يستطيع أن يفرضها، وأن يوثَّق وتُمنح صلاحيته وحده، أما <code>PATCH</code> العام فيسمح للعميل أن يضع أي حالة. 2. لأن المنتجات بالسعر نفسه لن يكون لها بغير ذلك ترتيب ثابت، فقد ينتقل صف بين الصفحات ولا يستطيع المؤشر أن يقول بالضبط أين يتابع. 3. الإصدار تفصيل داخلي لطريقة الخادم في اكتشاف التعارضات، ولا يراه العملاء إلا وسماً ETag، فيستطيع الخادم أن يغيّر طريقة عمل الإصدارات دون أن يتغير JSON.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يوسّع واجهة هذا الفصل. فالتزم بالأعراف: طلب نموذج لكل مدخل، ومورد لكل مخرج، وProblem Details لكل خطأ، واختبار ميزة لكل قاعدة.</p>
+
+<div class="project">
+<p class="project-label">المشروع 4.1 · سهل</p>
+<h3>مراجعات المنتجات</h3>
+<p class="project-goal">أضف المراجعات إلى المنتجات: اعرضها بصفحات المؤشر، وأنشئها مع التحقق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الترحيلات والنماذج، والموارد المتداخلة، وصفحات المؤشر، والموارد، و<code>201</code> مع <code>Location</code>.</p>
+<ol class="steps">
+<li>صمّم المسارات أولاً: <code>GET /api/v1/products/{product}/reviews</code> و<code>POST</code> على المسار نفسه، واكتب مثال طلب وجواب لكل منهما.</li>
+<li>أنشئ نموذج <code>Review</code> بترحيله: منتج، وتقييم من 1 إلى 5، ونص من 10 إلى 1000 حرف، وطوابع زمنية.</li>
+<li>اعرض المراجعات الأحدث أولاً، مرتبة بـ <code>created_at</code> ثم <code>id</code>، بـ <code>cursorPaginate</code>، عبر <code>ReviewResource</code>.</li>
+<li>أضف <code>average_rating</code> و<code>review_count</code> إلى <code>ProductResource</code> باستخدام <code>withAvg</code> و<code>withCount</code> في الاستعلام. هل هذا تغيير إضافي؟</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> قد تُنشأ مراجعتان في الثانية نفسها، ودقة <code>created_at</code> ثانية واحدة. ولهذا بالضبط يحتاج الترتيب الرقم أيضاً.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 4.2 · متوسط</p>
+<h3>عميل يعيد المحاولة كما ينبغي</h3>
+<p class="project-goal">اكتب عميلاً صغيراً بـ PHP لمسار الطلبات بعميل HTTP في Laravel، يعيد المحاولة بأمان، واختبره على خادم يفشل عمداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مفاتيح عدم التكرار من جهة العميل، و<code>Http::retry</code>، والتراجع، و<code>Http::fake</code> في الاختبارات.</p>
+<ol class="steps">
+<li>اكتب <code>OrdersClient::create(array $items)</code>: تصنع مفتاحاً واحداً بـ <code>Str::uuid()</code> وترسل المفتاح <em>نفسه</em> في كل محاولة.</li>
+<li>استخدم <code>Http::retry([200, 400, 800], when: ...)</code> لتعيد المحاولة مع أخطاء الاتصال و<code>409</code> و<code>429</code> و<code>5xx</code>، ولا تعيدها مع باقي <code>4xx</code> أبداً، مع مهلة لكل محاولة (<code>timeout(5)</code>).</li>
+<li>احترم <code>Retry-After</code> حين يرسلها الخادم.</li>
+<li>في اختبار استخدم <code>Http::fake</code> مع سلسلة: خطأ اتصال، ثم <code>503</code>، ثم <code>201</code>. وتحقق بـ <code>Http::assertSent</code> أن الطلبات الثلاثة حملت المفتاح نفسه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> أضف جزءاً عشوائياً إلى الانتظار (jitter). فبدونه يعيد ألف عميل فشلوا في اللحظة نفسها المحاولة في اللحظة نفسها أيضاً، فيُسقطون الخادم مرة أخرى.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 4.3 · تحدٍّ</p>
+<h3>الإصدار 2 بجوار الأول</h3>
+<p class="project-goal">أدخل تغييراً كاسراً بالإصدار <code>/api/v2</code>، وأبقِ <code>/api/v1</code> يعمل من النماذج نفسها، وأعلن نهايته.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الإصدارات بالموارد، ومجموعات المسارات، وترويسات الإيقاف، واختبارات العقد.</p>
+<ol class="steps">
+<li>في الإصدار 2 تصير الأسعار <code>{"amount": "450.00", "currency": "EGP"}</code> بنص عشري، ويُسمى <code>created_at</code> باسم <code>created</code>. واشرح لماذا يكسر كل تغيير منهما العملاء.</li>
+<li>ضع موارد الإصدار 2 في <code>App\Http\Resources\V2</code> ومساراته في مجموعة <code>prefix('v2')</code> ثانية. وتبقى النماذج وقواعد العمل مشتركة.</li>
+<li>اكتب وسيطاً لمجموعة الإصدار 1 يضيف <code>Deprecation</code> و<code>Sunset</code> (بعد ستة أشهر) و<code>Link</code> إلى دليل الانتقال، إلى كل جواب.</li>
+<li>احفظ أجوبة الإصدار 1 اليوم نماذج JSON ثابتة، واكتب اختبارات تفشل إن تغيّر الإصدار 1 أبداً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> يجب أن تكون الإصدارات طبقات رقيقة على حافة الواجهة. فإن احتاج الإصدار 2 جداول خاصة أو قواعد عمل خاصة، فالإصدار في المكان الخطأ.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> صمّم الطريقة والعنوان لكل من: عرض طلبات عميل واحد، وإضافة عنصر إلى سلة، ومزوّد دفع يخبرك أن دفعة نجحت، والبحث عن المنتجات بالاسم، وردّ مبلغ طلب.</li>
+<li><span class="level">سهل</span> اختر رمز حالة لكل مما يلي، وقل لماذا: بريد مسجل من قبل، وتحديث بلا <code>If-Match</code>، وتحديث بوسم ETag قديم، وJSON تنقصه علامة تنصيص، وكمية 0.</li>
+<li><span class="level medium">متوسط</span> أضف معاملاً <code>q</code> إلى قائمة المنتجات يجد المنتجات التي يحوي اسمها النص، بحرفين على الأقل. هل يبقى المؤشر يعمل معه؟</li>
+<li><span class="level medium">متوسط</span> إلغاء الطلب مرتين يرد بـ <code>409</code>. وتطبيق جوال يعيد طلب الإلغاء بعد انتهاء المهلة، فيُري خطأً لمستخدم أُلغي طلبه فعلاً. اقترح طريقتين لإصلاح ذلك، واختر إحداهما.</li>
+<li><span class="level hard">تحدٍّ</span> عميلان مختلفان يرسلان مفتاح عدم التكرار نفسه مصادفةً سيتشاركان جواباً واحداً. اجعل المفاتيح خاصة بكل عميل (وحتى يعطينا الفصل 9 مستخدمين حقيقيين، تسمّي الترويسة <code>X-Client-Id</code> العميل)، واختبر أن المفاتيح منفصلة لكل عميل، وأنها تنتهي بعد يوم.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 5</p>
+<p>يبدأ الجزء الثاني. استخدمنا قاعدة بيانات في هذا الفصل دون أن ننظر داخلها. ونتعلم تالياً SQL كما ينبغي على PostgreSQL: الجداول، والربط، والتجميع، والفهارس، وكيف نقرأ خطة الاستعلام.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2209,6 +2927,16 @@ X-RateLimit-Reset: 1795119443
 <li>تحقق من الاستعلام في أول <code>index</code>: <code>$request-&gt;validate(['min_price' =&gt; ['sometimes', 'integer', 'min:0'], 'max_price' =&gt; ['sometimes', 'integer', 'min:0', Rule::when($request-&gt;has('min_price'), 'gte:min_price')]])</code>. و<code>Rule::when</code> تضيف المقارنة فقط حين يوجد ما يُقارن به. ثم صفِّ بالحدين، مستخدماً <code>$request-&gt;integer('min_price', 0)</code>. ويفحص اختبار الحل مدى فيه منتج واحد، وحداً أعلى وحده، و<code>min_price=9000&amp;max_price=100</code> الذي يأخذ <code>422</code> يسمّي <code>max_price</code>. و<code>validate</code> على الطلب مناسبة لقيم قليلة في الاستعلام، أما حين تكبر القواعد فطلب النموذج أفضل.</li>
 <li>يحقق <code>tests/Fakes/ArrayProductCatalog.php</code> الواجهة نفسها بمصفوفة عادية. ويربطه الاختبار بـ <code>$this-&gt;app-&gt;instance(ProductCatalog::class, new ArrayProductCatalog([...]))</code> ويملؤه بالمنتجات التي يحتاجها الاختبار بالضبط. ولم يحتج المتحكم أي تغيير لأنه لا يسمّي أي صنف أبداً: يطلب من الحاوية <code>ProductCatalog</code>، والحاوية تقرر أيها. والبديل في الذاكرة يجعل الاختبارات أسرع، ويجعل كل اختبار يعلن بياناته في كوده هو، حيث يراها القارئ.</li>
 <li>يضبط الوسيط <code>Accept: application/json</code> على الطلب، فتجيب معالجة الأخطاء والتحقق في Laravel بـ JSON، ثم يرفض المحتوى الذي ليس JSON بـ <code>abort_if($sendsBody &amp;&amp; ! $request-&gt;isJson(), 415, 'Send JSON.')</code>. وسجّله أولاً في المجموعة بـ <code>$middleware-&gt;api(prepend: [RequireJson::class], …)</code>، كي يعمل قبل أن يقرأ أي شيء المحتوى. ويرسل اختبار الحل محتوى نموذج (<code>415</code>)، ومحتوى JSON فارغاً بلا ترويسة <code>Accept</code>، فيأخذ <code>422</code> مع <code>Content-Type: application/json</code>. وتنجح الاختبارات السبعة كلها معاً، اختبارات الفصل والحلول.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 4</h2>
+<ol class="exercises">
+<li><code>GET /api/v1/customers/3/orders</code> (أو <code>GET /api/v1/orders?customer_id=3</code>)، و<code>POST /api/v1/carts/5/items</code>، و<code>POST /api/v1/webhooks/payments</code>، وهو مسار يستدعيه المزوّد ويجب أن يتحقق من توقيعه وأن يكون متساوي الأثر، لأن المزوّدين يعيدون إرسال هذه الإشعارات، و<code>GET /api/v1/products?q=kit</code>، وهي تصفية على المجموعة لا مورد جديد، و<code>POST /api/v1/orders/7/refunds</code>، التي تُنشئ مورد ردّ يمكن عرضه وقراءته لاحقاً.</li>
+<li><code>409 Conflict</code> للبريد، فالطلب صالح لكنه يتعارض مع بيانات موجودة (وبعض الواجهات ترد بـ <code>422</code> كي لا تكشف أي البريد موجود، ويناقش الفصل 10 هذا الاختيار)، و<code>428 Precondition Required</code>، و<code>412 Precondition Failed</code>، و<code>400 Bad Request</code> لأن المحتوى لا يمكن حتى قراءته، و<code>422</code> لأن المحتوى مقروء وقيمة فيه تخالف قاعدة.</li>
+<li>أضف <code>'q' =&gt; ['sometimes', 'string', 'min:2', 'max:50']</code> إلى <code>ListProductsRequest</code>، وشرطاً آخر إلى الاستعلام: <code>-&gt;when($request-&gt;validated('q'), fn ($query, $q) =&gt; $query-&gt;whereLike('name', "%$q%"))</code>. و<code>whereLike</code> لا تعتبر حالة الحروف، وتكتب SQL الصحيحة لكل قاعدة بيانات. ويبقى المؤشر يعمل: فهو يسجل موضعاً في الترتيب، و<code>withQueryString</code> تُبقي <code>q</code> في الرابط التالي، فتتابع الصفحة التالية بين المنتجات المطابقة. ويفحص اختبار الحل بحثاً يطابق منتجين مع <code>limit=1</code>، ويتبع <code>links.next</code> إلى الثاني، ويتحقق أن البحث بحرف واحد يُرفض بـ <code>422</code>. وفي جدول كبير يحتاج بحث كهذا فهرساً مناسباً، يتناوله الفصل 5.</li>
+<li>طريقة: اجعل الإلغاء متساوي الأثر في نتيجته. فإن كان الطلب ملغى من قبل فرد بـ <code>200</code> مع الطلب، لأن هدف العميل (طلب ملغى) تحقق. وطريقة أخرى: ضع الوسيط <code>Idempotent</code> على مسار الإلغاء أيضاً، فتعيد المحاولةُ الجوابَ الأول. والأولى أبسط وأصح هنا، لأن الإلغاء الثاني لا يغيّر شيئاً، وأبقِ <code>409</code> للطلبات التي لم يعد إلغاؤها ممكناً لأنها شُحنت. والدرس العام: صمّم الأفعال بحيث لا يضر تكرارها، كلما سمح مجال العمل بذلك.</li>
+<li>في الوسيط اقرأ <code>$client = (string) $request-&gt;header('X-Client-Id', 'anonymous')</code> وابنِ مفتاح الذاكرة المؤقتة من الاثنين: <code>'idempotency:'.$client.':'.$key</code>. أما الانتهاء فموجود أصلاً: <code>Cache::put(..., now()-&gt;addDay())</code>. ويرسل اختبار الحل المفتاح والمحتوى نفسيهما للعميلين <code>a</code> و<code>b</code> فيأخذ طلبين مختلفين، ثم يقدّم الوقت بـ <code>$this-&gt;travel(25)-&gt;hours()</code> ويتحقق أن مفتاح العميل <code>a</code> يُنشئ طلباً جديداً بدل الإعادة. فالسفر في الزمن في Laravel يحرّك الساعة التي تقرؤها الذاكرة المؤقتة، فيفحص الاختبار انتهاء يوم كامل في أجزاء من الثانية. وفي الفصل 9 يصير العميل هو المستخدم الذي تحققنا من هويته، وتختفي الترويسة.</li>
 </ol>
 
 </section>

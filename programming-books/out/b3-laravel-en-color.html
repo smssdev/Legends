@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "Chapter 3: Laravel Essentials: Routes, Controllers and Requests"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "Chapter 4: Designing REST APIs with API Resources"; } }
+@page ch04:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -2262,6 +2264,722 @@ X-RateLimit-Reset: 1795119416
 <p>Our API returns arrays straight from storage, and its errors use Laravel’s default shape. Next we design it properly: API Resources for the representation, cursor pagination, Problem Details, idempotency keys and optimistic concurrency, and documentation generated from the code.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b3/laravel/rest/en">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">Chapter 4</p><h1>Designing REST APIs with API Resources</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>name resources and URLs so that an API can be guessed instead of memorised</li>
+<li>control the JSON your API sends with API Resources, separate from how data is stored</li>
+<li>page through lists with cursors that never repeat or skip a row</li>
+<li>return every error in one standard format, Problem Details</li>
+<li>make retries safe with idempotency keys, and stop lost updates with <code>If-Match</code></li>
+<li>generate the API’s documentation from its code, and test it all</li>
+</ul>
+</div>
+
+<p class="lead">An API is a product, and its users are developers. They judge it the way you judge a library: can I guess how it works, does it tell me clearly what I did wrong, and will it break my app next month? Chapter 1 taught you the protocol, and Chapter 3 the framework. This chapter is about the decisions on top of them, which are cheap to get right at the start and very expensive to change once other teams depend on them. We build version 1 of Bit’s shop API properly, with products and orders in a real database.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The first public API I designed had <code>/getProducts</code>, <code>/product_list</code> and <code>/Products/All</code>, written by three people in three weeks. Every client needed our help to use it, and we could never remove anything. Consistency is not about taste: it is what lets strangers use your work without asking you.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>Resources and URLs</span></h2>
+
+<p>REST organises an API around <dfn>resources</dfn>: the nouns of your domain, such as products and orders. URLs name the resources; methods say what to do with them. The rules that make an API guessable are few:</p>
+<ul>
+<li><strong>Nouns, plural, lower case:</strong> <code>/products</code>, <code>/orders</code>. The method is the verb: <code>GET /products</code>, not <code>/getProducts</code>.</li>
+<li><strong>One resource:</strong> the collection plus an id, <code>/products/2</code>.</li>
+<li><strong>Nesting for ownership, one level deep:</strong> <code>/orders/7/items</code> is fine; <code>/customers/3/orders/7/items/2</code> is not.</li>
+<li><strong>Actions that are not create, read, update or delete</strong> become a sub-resource with <code>POST</code>: <code>POST /orders/7/cancel</code>. Do not hide them in a <code>PATCH</code> that sets <code>status</code>: cancelling has rules (restore the stock, refund the payment) that a generic update would skip.</li>
+<li><strong>A version in the path:</strong> <code>/api/v1/...</code>. Make every change additive if you can; when a breaking change cannot be avoided, publish <code>/v2</code> beside <code>/v1</code> and announce the end of <code>/v1</code> with the <code>Deprecation</code> and <code>Sunset</code> headers.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">routes/api.php</div><pre class="code">&lt;?php
+
+<span class="k">use</span> App\Http\Controllers\OrderController;
+<span class="k">use</span> App\Http\Controllers\ProductController;
+<span class="k">use</span> App\Http\Middleware\Idempotent;
+<span class="k">use</span> Illuminate\Support\Facades\Route;
+
+Route::prefix(<span class="s">&#x27;v1&#x27;</span>)-&gt;group(<span class="k">function</span> () {
+    Route::apiResource(<span class="s">&#x27;products&#x27;</span>, ProductController::<span class="k">class</span>)
+        -&gt;only([<span class="s">&#x27;index&#x27;</span>, <span class="s">&#x27;show&#x27;</span>, <span class="s">&#x27;update&#x27;</span>]);
+
+    Route::controller(OrderController::<span class="k">class</span>)-&gt;group(<span class="k">function</span> () {
+        Route::post(<span class="s">&#x27;orders&#x27;</span>, <span class="s">&#x27;store&#x27;</span>)-&gt;middleware(Idempotent::<span class="k">class</span>)-&gt;name(<span class="s">&#x27;orders.store&#x27;</span>);
+        Route::get(<span class="s">&#x27;orders/{order}&#x27;</span>, <span class="s">&#x27;show&#x27;</span>)-&gt;name(<span class="s">&#x27;orders.show&#x27;</span>);
+        Route::post(<span class="s">&#x27;orders/{order}/cancel&#x27;</span>, <span class="s">&#x27;cancel&#x27;</span>)-&gt;name(<span class="s">&#x27;orders.cancel&#x27;</span>);
+    });
+});</pre></div>
+
+<p>Products are read and updated through a resource controller. Orders have their own controller; <code>Route::controller</code> groups its routes, and the cancel action is a sub-resource. Creating an order goes through an extra middleware, <code>Idempotent</code>, which we write in 4.5.</p>
+
+<h2><span class="sec">4.2</span> <span>Data in a database</span></h2>
+
+<p>Chapter 3 kept products in a JSON file. A real API keeps them in a database, and Laravel’s default database, SQLite, needs no server: it is one file. Chapters 5 and 6 teach SQL and Eloquent properly, with PostgreSQL; here we need just enough to have tables to read. Artisan writes the classes:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Artisan writes the model, its migration, factory and seeder, and a resource</span>
+<span class="c">$ </span><span class="k">php artisan make:model Product --migration --factory --seed --no-ansi</span>
+
+   INFO  Model [app/Models/Product.php] created successfully.  
+
+   INFO  Factory [database/factories/ProductFactory.php] created successfully.  
+
+   INFO  Migration [database/migrations/2026_11_19_203047_create_products_table.php] created successfully.  
+
+   INFO  Seeder [database/seeders/ProductSeeder.php] created successfully.  
+<span class="c">$ </span><span class="k">php artisan make:resource ProductResource --no-ansi</span>
+
+   INFO  Resource [app/Http/Resources/ProductResource.php] created successfully.  </pre></div>
+
+<p>A <dfn>migration</dfn> describes a table in PHP, so that every copy of the app, on every machine, has the same tables:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">database/migrations/…_create_products_table.php</div><pre class="code">        Schema::create(<span class="s">&#x27;products&#x27;</span>, <span class="k">function</span> (Blueprint $table) {
+            $table-&gt;id();
+            $table-&gt;<span class="k">string</span>(<span class="s">&#x27;name&#x27;</span>, <span class="n">80</span>);
+            $table-&gt;unsignedInteger(<span class="s">&#x27;price&#x27;</span>); <span class="c line-bidi">// piastres</span>
+            $table-&gt;unsignedInteger(<span class="s">&#x27;stock&#x27;</span>)-&gt;<span class="k">default</span>(<span class="n">0</span>);
+            $table-&gt;unsignedInteger(<span class="s">&#x27;version&#x27;</span>)-&gt;<span class="k">default</span>(<span class="n">1</span>);
+            $table-&gt;timestamps();
+            <span class="c line-bidi">// the list is sorted by price, then id: the index serves both</span>
+            $table-&gt;index([<span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;id&#x27;</span>]);
+        });</pre></div>
+
+<p>Prices are whole piastres, never decimals. <code>version</code> counts the changes to a product, for 4.6. The index on <code>price</code> and <code>id</code> serves the sorted, paged list of 4.4. A <dfn>model</dfn> is the class that reads and writes the table, and a <dfn>seeder</dfn> fills it with the shop’s twelve products:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Models/Product.php</div><pre class="code">&lt;?php
+
+<span class="k">namespace</span> App\Models;
+
+<span class="k">use</span> Database\Factories\ProductFactory;
+<span class="k">use</span> Illuminate\Database\Eloquent\Factories\HasFactory;
+<span class="k">use</span> Illuminate\Database\Eloquent\Model;
+
+<span class="k">class</span> Product <span class="k">extends</span> Model
+{
+    /** @<span class="k">use</span> HasFactory&lt;ProductFactory&gt; */
+    <span class="k">use</span> HasFactory;
+
+    <span class="k">protected</span> $fillable = [<span class="s">&#x27;name&#x27;</span>, <span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;stock&#x27;</span>];
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Create the tables and fill them</span>
+<span class="c">$ </span><span class="k">php artisan migrate:fresh --seed --no-ansi</span>
+
+  Dropping all tables ............................................ 5.03ms DONE
+
+   INFO  Preparing database.  
+
+  Creating migration table ....................................... 3.84ms DONE
+
+   INFO  Running migrations.  
+
+  0001_01_01_000000_create_users_table ........................... 8.58ms DONE
+  0001_01_01_000001_create_cache_table ........................... 4.60ms DONE
+  0001_01_01_000002_create_jobs_table ............................ 8.16ms DONE
+  2026_11_01_000001_create_products_table ........................ 3.22ms DONE
+  2026_11_01_000002_create_orders_table .......................... 3.92ms DONE
+  2026_11_19_203056_create_personal_access_tokens_table .......... 4.87ms DONE
+
+
+   INFO  Seeding database.  
+
+  Database\Seeders\ProductSeeder ..................................... RUNNING  
+  Database\Seeders\ProductSeeder .................................. 22 ms DONE  </pre></div>
+
+<p><code>$fillable</code> lists the columns that may be set from an array. The others, such as <code>version</code>, can only be set on purpose, one by one, which protects them from a request that sends more fields than it should.</p>
+
+<h2><span class="sec">4.3</span> <span>API Resources: the representation</span></h2>
+
+<p>A database row and the JSON a client receives are two different things, and they should change for different reasons. The table may gain internal columns; the JSON is a promise to other developers. An <dfn>API Resource</dfn> is the class that turns one into the other:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Resources/ProductResource.php</div><pre class="code">&lt;?php
+
+<span class="k">namespace</span> App\Http\Resources;
+
+<span class="k">use</span> App\Models\Product;
+<span class="k">use</span> Illuminate\Http\Request;
+<span class="k">use</span> Illuminate\Http\Resources\Json\JsonResource;
+
+/** @mixin Product */
+<span class="k">class</span> ProductResource <span class="k">extends</span> JsonResource
+{
+    <span class="k">public</span> <span class="k">function</span> toArray(Request $request): <span class="k">array</span>
+    {
+        <span class="c line-bidi">// version is internal: the client sees it only as the ETag</span>
+        <span class="k">return</span> [
+            <span class="s">&#x27;id&#x27;</span> =&gt; $<span class="k">this</span>-&gt;id,
+            <span class="s">&#x27;name&#x27;</span> =&gt; $<span class="k">this</span>-&gt;name,
+            <span class="s">&#x27;price&#x27;</span> =&gt; Money::<span class="k">of</span>($<span class="k">this</span>-&gt;price),
+            <span class="s">&#x27;stock&#x27;</span> =&gt; $<span class="k">this</span>-&gt;stock,
+            <span class="s">&#x27;created_at&#x27;</span> =&gt; $<span class="k">this</span>-&gt;created_at-&gt;toIso8601ZuluString(),
+        ];
+    }
+}</pre></div>
+
+<p>Fix the conventions of the representation once, and keep them everywhere:</p>
+<ul>
+<li><strong>One naming style.</strong> We use <code>snake_case</code>, as Laravel does.</li>
+<li><strong>Times in ISO 8601, in UTC:</strong> <code>2026-11-01T09:00:00Z</code>. Clients convert to the user’s time zone.</li>
+<li><strong>Money as an object</strong>, the amount in minor units with its currency. One helper makes it the same in every resource:</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Resources/Money.php</div><pre class="code">&lt;?php
+
+<span class="k">namespace</span> App\Http\Resources;
+
+<span class="k">final</span> <span class="k">class</span> Money
+{
+    /** @<span class="k">return</span> <span class="k">array</span>{amount: <span class="k">int</span>, currency: <span class="k">string</span>} */
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="k">of</span>(<span class="k">int</span> $amount): <span class="k">array</span>
+    {
+        <span class="k">return</span> [<span class="s">&#x27;amount&#x27;</span> =&gt; $amount, <span class="s">&#x27;currency&#x27;</span> =&gt; config(<span class="s">&#x27;shop.currency&#x27;</span>)];
+    }
+}</pre></div>
+
+<ul>
+<li><strong>Internal columns stay inside.</strong> <code>version</code> and <code>updated_at</code> are not in the resource; adding a column to the table changes nothing for clients.</li>
+<li><strong>Lists in an object</strong>, never a bare array, so that page information has a place: Laravel adds <code>data</code>, <code>links</code> and <code>meta</code> for you.</li>
+</ul>
+
+<p>One more convention needs a line of code: by default Laravel writes every non-English letter as <code>ك</code>. A small middleware adds <code>JSON_UNESCAPED_UNICODE</code> to every JSON answer of the API, once, instead of in every controller:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Middleware/UnescapedJson.php</div><pre class="code"><span class="k">final</span> <span class="k">class</span> UnescapedJson
+{
+    <span class="k">public</span> <span class="k">function</span> handle(Request $request, Closure $next): Response
+    {
+        $response = $next($request);
+        <span class="k">if</span> ($response <span class="k">instanceof</span> JsonResponse) {
+            $options = $response-&gt;getEncodingOptions();
+            $options |= JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+            $response-&gt;setEncodingOptions($options);
+        }
+
+        <span class="k">return</span> $response;
+    }
+}</pre></div>
+
+<h2><span class="sec">4.4</span> <span>Lists: filters, sorting and cursor pages</span></h2>
+
+<p>Everything a client may send to the list is in a form request, with limits on every value:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Requests/ListProductsRequest.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> rules(): <span class="k">array</span>
+    {
+        <span class="k">return</span> [
+            <span class="s">&#x27;limit&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;between:1,50&#x27;</span>],
+            <span class="s">&#x27;sort&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;in:id,price,-price,name&#x27;</span>],
+            <span class="s">&#x27;min_price&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:0&#x27;</span>],
+            <span class="s">&#x27;max_price&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;integer&#x27;</span>, <span class="s">&#x27;min:0&#x27;</span>],
+            <span class="s">&#x27;cursor&#x27;</span> =&gt; [<span class="s">&#x27;sometimes&#x27;</span>, <span class="s">&#x27;string&#x27;</span>],
+        ];
+    }</pre></div>
+
+<p>Only four sort orders exist. An API that sorts by any field the client names can be asked to sort by a column without an index, which makes a slow query one attacker can repeat a thousand times a minute.</p>
+
+<p>The obvious way to page is an <dfn>offset</dfn>, <code>?page=2</code>, meaning “skip the first 20”. It has two problems: the database must still walk past every skipped row, so deep pages are slow; and the pages drift when rows are added or removed between two requests, so a user sees one product twice, or never. A <dfn>cursor</dfn> says “continue after <em>this</em> row” instead, so new rows before it change nothing. Laravel builds cursors with <code>cursorPaginate</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/ProductController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> index(ListProductsRequest $request): AnonymousResourceCollection
+    {
+        $sort = $request-&gt;validated(<span class="s">&#x27;sort&#x27;</span>, <span class="s">&#x27;id&#x27;</span>);
+        $direction = str_starts_with($sort, <span class="s">&#x27;-&#x27;</span>) ? <span class="s">&#x27;desc&#x27;</span> : <span class="s">&#x27;asc&#x27;</span>;
+        $min = $request-&gt;validated(<span class="s">&#x27;min_price&#x27;</span>);
+        $max = $request-&gt;validated(<span class="s">&#x27;max_price&#x27;</span>);
+
+        $products = Product::query()
+            -&gt;when($min !== <span class="k">null</span>, <span class="k">fn</span> ($query) =&gt; $query-&gt;where(<span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;&gt;=&#x27;</span>, $min))
+            -&gt;when($max !== <span class="k">null</span>, <span class="k">fn</span> ($query) =&gt; $query-&gt;where(<span class="s">&#x27;price&#x27;</span>, <span class="s">&#x27;&lt;=&#x27;</span>, $max))
+            -&gt;orderBy(ltrim($sort, <span class="s">&#x27;-&#x27;</span>), $direction)
+            <span class="c line-bidi">// a complete order: the same price is decided by id</span>
+            -&gt;orderBy(<span class="s">&#x27;id&#x27;</span>, $direction)
+            -&gt;cursorPaginate((<span class="k">int</span>) $request-&gt;validated(<span class="s">&#x27;limit&#x27;</span>, <span class="n">5</span>))
+            -&gt;withQueryString();
+
+        <span class="k">return</span> ProductResource::collection($products);
+    }</pre></div>
+
+<p>The second <code>orderBy</code> matters. A cursor needs a <em>complete</em> order: two products with the same price must still have a fixed place, or a row could move from one page to the next between requests. Ordering by price and then by id makes every position unique, and the migration’s index on <code>(price, id)</code> lets the database find it directly. Here is the client’s side:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The first page: data, links and meta</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8000/api/v1/products?limit=3&#x27; | jq -c &#x27;(.data[] | [.id, .name, .price.amount]), .links, .meta&#x27;</span>
+[1,&quot;Robot kit&quot;,45000]
+[2,&quot;Spare wheels&quot;,6000]
+[3,&quot;Battery pack&quot;,12500]
+{&quot;first&quot;:null,&quot;last&quot;:null,&quot;prev&quot;:null,&quot;next&quot;:&quot;http://localhost:8000/api/v1/products?limit=3&amp;cursor=eyJpZCI6MywiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ&quot;}
+{&quot;path&quot;:&quot;http://localhost:8000/api/v1/products&quot;,&quot;per_page&quot;:3,&quot;next_cursor&quot;:&quot;eyJpZCI6MywiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ&quot;,&quot;prev_cursor&quot;:null}
+<span class="c line-bidi"># The next page: follow next_cursor</span>
+<span class="c">$ </span><span class="k">curl -s &quot;$(curl -s &#x27;localhost:8000/api/v1/products?limit=3&#x27; | jq -r .links.next)&quot; | jq -c &#x27;(.data[] | [.id, .name, .price.amount]), .meta.next_cursor&#x27;</span>
+[4,&quot;USB cable&quot;,2500]
+[5,&quot;Servo motor&quot;,9000]
+[6,&quot;Sensor set&quot;,15000]
+&quot;eyJpZCI6NiwiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ&quot;
+<span class="c line-bidi"># Filter and sort: the cursor remembers both</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8000/api/v1/products?limit=2&amp;sort=-price&amp;max_price=20000&#x27; | jq -c &#x27;(.data[] | [.id, .price.amount]), .links.next&#x27;</span>
+[6,15000]
+[3,12500]
+&quot;http://localhost:8000/api/v1/products?limit=2&amp;sort=-price&amp;max_price=20000&amp;cursor=eyJwcmljZSI6MTI1MDAsImlkIjozLCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9&quot;</pre></div>
+
+<p>The first page carries the link to the next one, so clients never build URLs themselves; they follow <code>links.next</code> until it is <code>null</code>. With a filter and a sort, the cursor carries the price as well as the id, and <code>withQueryString</code> keeps the filter in the link. The cursor is base64-encoded JSON: anyone can decode it, so it is not a secret. Document it as an opaque token that clients must send back unchanged, so that the server stays free to change what is inside.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which URL is better for cancelling order 7: <code>PATCH /orders/7</code> with <code>{"status": "cancelled"}</code>, or <code>POST /orders/7/cancel</code>? Why?</li><li>Why does the list order by price <em>and</em> id, not only by price?</li><li>Why is <code>version</code> a column of the table but not a field of the resource?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">4.5</span> <span>Errors: Problem Details</span></h2>
+
+<p>Laravel’s default error answers, which you saw in Chapter 3, have a shape of their own. Every API with its own shape forces every client to learn it. <dfn>Problem Details</dfn> (RFC 9457) is the standard shape for HTTP API errors, sent with the content type <code>application/problem+json</code>: a <code>type</code> URL that identifies the kind of problem and leads to its documentation, a short <code>title</code>, the <code>status</code>, a <code>detail</code> for this case, and the <code>instance</code>, the request that failed. Extra members are allowed, such as a list of <code>errors</code>.</p>
+
+<p>A problem is an exception that knows how to render itself:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Problem.php</div><pre class="code"><span class="k">final</span> <span class="k">class</span> Problem <span class="k">extends</span> HttpException
+{
+    <span class="k">public</span> <span class="k">function</span> __construct(
+        <span class="k">int</span> $status,
+        <span class="k">public</span> <span class="k">readonly</span> <span class="k">string</span> $slug,
+        <span class="k">public</span> <span class="k">readonly</span> <span class="k">string</span> $title,
+        <span class="k">public</span> <span class="k">readonly</span> ?<span class="k">string</span> $detail = <span class="k">null</span>,
+        <span class="k">public</span> <span class="k">readonly</span> <span class="k">array</span> $extra = [],
+        <span class="k">array</span> $headers = [],
+    ) {
+        <span class="k">parent</span>::__construct($status, $detail ?? $title, <span class="k">null</span>, $headers);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> render(Request $request): JsonResponse
+    {
+        $body = [
+            <span class="s">&#x27;type&#x27;</span> =&gt; <span class="s">&quot;https://bit-shop.example/problems/{$this-&gt;slug}&quot;</span>,
+            <span class="s">&#x27;title&#x27;</span> =&gt; $<span class="k">this</span>-&gt;title,
+            <span class="s">&#x27;status&#x27;</span> =&gt; $<span class="k">this</span>-&gt;getStatusCode(),
+            <span class="s">&#x27;detail&#x27;</span> =&gt; $<span class="k">this</span>-&gt;detail,
+            <span class="s">&#x27;instance&#x27;</span> =&gt; $request-&gt;getRequestUri(),
+            ...$<span class="k">this</span>-&gt;extra,
+        ];
+        $body = array_filter($body, <span class="k">fn</span> ($value) =&gt; $value !== <span class="k">null</span>);
+        $headers = [<span class="s">&#x27;Content-Type&#x27;</span> =&gt; <span class="s">&#x27;application/problem+json&#x27;</span>, ...$<span class="k">this</span>-&gt;getHeaders()];
+        $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+
+        <span class="k">return</span> response()-&gt;json($body, $<span class="k">this</span>-&gt;getStatusCode(), $headers, $flags);
+    }
+}</pre></div>
+
+<p>One class decides how every other exception becomes a problem: validation errors, models that were not found, rate limits, other HTTP errors, and anything unexpected as a plain 500. It also makes the problems the API throws on purpose, so no controller invents a new status code or a new shape:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Problems.php</div><pre class="code">    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="k">from</span>(Throwable $e): Problem
+    {
+        <span class="k">return</span> <span class="k">match</span> (<span class="k">true</span>) {
+            $e <span class="k">instanceof</span> Problem =&gt; $e,
+            $e <span class="k">instanceof</span> ValidationException =&gt; <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&#x27;invalid-request&#x27;</span>,
+                __(<span class="s">&#x27;problems.invalid&#x27;</span>), <span class="k">null</span>, [<span class="s">&#x27;errors&#x27;</span> =&gt; <span class="k">self</span>::errors($e)]),
+            $e <span class="k">instanceof</span> NotFoundHttpException =&gt; <span class="k">self</span>::notFound($e-&gt;getPrevious()),
+            $e <span class="k">instanceof</span> ThrottleRequestsException =&gt; <span class="k">new</span> Problem(
+                <span class="n">429</span>, <span class="s">&#x27;too-many-requests&#x27;</span>, __(<span class="s">&#x27;problems.limit&#x27;</span>), <span class="k">null</span>, [], $e-&gt;getHeaders()),
+            $e <span class="k">instanceof</span> HttpExceptionInterface =&gt; <span class="k">new</span> Problem(
+                $e-&gt;getStatusCode(), <span class="s">&#x27;http-error&#x27;</span>, $e-&gt;getMessage() ?: __(<span class="s">&#x27;problems.server&#x27;</span>)),
+            <span class="k">default</span> =&gt; <span class="k">new</span> Problem(<span class="n">500</span>, <span class="s">&#x27;server-error&#x27;</span>, __(<span class="s">&#x27;problems.server&#x27;</span>)),
+        };
+    }</pre></div>
+
+<p><code>match (true)</code> takes the first arm whose condition holds, a common PHP idiom for a list of type checks. The texts come from a language file, <code>lang/en/problems.php</code>, read by <code>__('problems.stale')</code> in the app’s language. And one line in <code>bootstrap/app.php</code> sends every exception in the API through it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">bootstrap/app.php</div><pre class="code">    -&gt;withExceptions(<span class="k">function</span> (Exceptions $exceptions): <span class="k">void</span> {
+        <span class="c line-bidi">// Every error in the API becomes Problem Details;</span>
+        <span class="c line-bidi">// the web pages keep Laravel&#x27;s usual error pages.</span>
+        $exceptions-&gt;render(<span class="k">function</span> (Throwable $e, Request $request) {
+            <span class="k">if</span> ($request-&gt;is(<span class="s">&#x27;api/*&#x27;</span>)) {
+                <span class="k">return</span> Problems::<span class="k">from</span>($e)-&gt;render($request);
+            }
+        });
+    })-&gt;create();</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Values outside the rules</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8000/api/v1/products?limit=500&amp;sort=stock&#x27; | jq</span>
+{
+  &quot;type&quot;: &quot;https://bit-shop.example/problems/invalid-request&quot;,
+  &quot;title&quot;: &quot;Invalid request&quot;,
+  &quot;status&quot;: 422,
+  &quot;instance&quot;: &quot;/api/v1/products?limit=500&amp;sort=stock&quot;,
+  &quot;errors&quot;: [
+    {
+      &quot;field&quot;: &quot;limit&quot;,
+      &quot;message&quot;: &quot;A page has 1 to 50 items.&quot;
+    },
+    {
+      &quot;field&quot;: &quot;sort&quot;,
+      &quot;message&quot;: &quot;Sort by id, price, -price or name.&quot;
+    }
+  ]
+}
+<span class="c line-bidi"># A product that does not exist</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/v1/products/99 | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/not-found&quot;,&quot;title&quot;:&quot;Not found&quot;,&quot;status&quot;:404,&quot;detail&quot;:&quot;There is no product 99.&quot;,&quot;instance&quot;:&quot;/api/v1/products/99&quot;}</pre></div>
+
+<p>Every error, from validation to a missing model, now has the same shape. Laravel answers <code>422</code> for every validation failure, of the query or of the body; some APIs prefer <code>400</code> for a malformed query, but what matters most is that your API always does the same thing.</p>
+
+<h2><span class="sec">4.6</span> <span>Safe retries: idempotency keys</span></h2>
+
+<p>Chapter 1 warned that a retried <code>POST</code> can create an order twice. The standard answer, used by payment providers such as Stripe, is an <dfn>idempotency key</dfn>: the client creates a unique value (a UUID) for each <em>intended</em> operation and sends it in an <code>Idempotency-Key</code> header. If the same key arrives again, the server does not do the work again; it replays the answer it gave the first time. This is a job for middleware, because it wraps the controller without the controller knowing:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Middleware/Idempotent.php</div><pre class="code"><span class="k">final</span> <span class="k">class</span> Idempotent
+{
+    <span class="k">public</span> <span class="k">function</span> handle(Request $request, Closure $next): Response
+    {
+        $key = (<span class="k">string</span>) $request-&gt;header(<span class="s">&#x27;Idempotency-Key&#x27;</span>);
+        <span class="k">if</span> (strlen($key) &lt; <span class="n">8</span> || strlen($key) &gt; <span class="n">100</span>) {
+            <span class="k">throw</span> <span class="k">new</span> Problem(<span class="n">400</span>, <span class="s">&#x27;invalid-request&#x27;</span>, __(<span class="s">&#x27;problems.invalid&#x27;</span>),
+                __(<span class="s">&#x27;problems.key&#x27;</span>));
+        }
+        $id = <span class="s">&#x27;idempotency:&#x27;</span>.$key;
+        $fingerprint = hash(<span class="s">&#x27;sha256&#x27;</span>, $request-&gt;getContent());
+
+        $lock = Cache::lock($id.<span class="s">&#x27;:lock&#x27;</span>, <span class="n">30</span>); <span class="c line-bidi">// one request per key at a time</span>
+        <span class="k">if</span> (! $lock-&gt;get()) {
+            <span class="k">throw</span> <span class="k">new</span> Problem(<span class="n">409</span>, <span class="s">&#x27;in-progress&#x27;</span>, __(<span class="s">&#x27;problems.in_progress&#x27;</span>),
+                __(<span class="s">&#x27;problems.in_progress_detail&#x27;</span>));
+        }
+        <span class="k">try</span> {
+            $saved = Cache::get($id);
+            <span class="k">if</span> ($saved !== <span class="k">null</span>) {
+                <span class="k">if</span> ($saved[<span class="s">&#x27;fingerprint&#x27;</span>] !== $fingerprint) {
+                    <span class="k">throw</span> <span class="k">new</span> Problem(<span class="n">422</span>, <span class="s">&#x27;idempotency-key-reused&#x27;</span>,
+                        __(<span class="s">&#x27;problems.reused&#x27;</span>), __(<span class="s">&#x27;problems.reused_detail&#x27;</span>));
+                }
+                $headers = array_filter($saved[<span class="s">&#x27;headers&#x27;</span>]);
+                $headers[<span class="s">&#x27;Idempotent-Replayed&#x27;</span>] = <span class="s">&#x27;true&#x27;</span>;
+
+                <span class="k">return</span> response($saved[<span class="s">&#x27;body&#x27;</span>], $saved[<span class="s">&#x27;status&#x27;</span>], $headers);
+            }
+            $response = $next($request);
+            <span class="k">if</span> ($response-&gt;isSuccessful()) {
+                <span class="c line-bidi">// kept a day; a failed request is not kept, so it may be retried</span>
+                Cache::put($id, [
+                    <span class="s">&#x27;fingerprint&#x27;</span> =&gt; $fingerprint,
+                    <span class="s">&#x27;status&#x27;</span> =&gt; $response-&gt;getStatusCode(),
+                    <span class="s">&#x27;body&#x27;</span> =&gt; $response-&gt;getContent(),
+                    <span class="s">&#x27;headers&#x27;</span> =&gt; [
+                        <span class="s">&#x27;Content-Type&#x27;</span> =&gt; $response-&gt;headers-&gt;get(<span class="s">&#x27;Content-Type&#x27;</span>),
+                        <span class="s">&#x27;Location&#x27;</span> =&gt; $response-&gt;headers-&gt;get(<span class="s">&#x27;Location&#x27;</span>),
+                    ],
+                ], now()-&gt;addDay());
+            }
+
+            <span class="k">return</span> $response;
+        } <span class="k">finally</span> {
+            $lock-&gt;release();
+        }
+    }
+}</pre></div>
+
+<ul>
+<li>A <strong>lock</strong> on the key makes a second request that arrives while the first is still running get a <code>409</code>, instead of doing the work twice. <code>Cache::lock</code> works across all the PHP processes of a server, because the lock lives in the cache store (here the database; Redis in Chapter 8).</li>
+<li>A <strong>fingerprint</strong> of the body is kept with the answer. The same key with a different body is a bug in the client, and gets a <code>422</code>, never a silent replay of a different order.</li>
+<li>Only <strong>successful</strong> answers are kept, for a day. A request that failed may be tried again with the same key.</li>
+</ul>
+
+<p>The controller creates the order inside a database <dfn>transaction</dfn>: either every change happens, or none does:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/OrderController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> store(StoreOrderRequest $request): JsonResponse
+    {
+        <span class="c line-bidi">// anything thrown here undoes the whole transaction, stock included</span>
+        $order = DB::transaction(<span class="k">function</span> () <span class="k">use</span> ($request) {
+            $items = [];
+            <span class="k">foreach</span> ($request-&gt;validated(<span class="s">&#x27;items&#x27;</span>) <span class="k">as</span> $line) {
+                [<span class="s">&#x27;product_id&#x27;</span> =&gt; $id, <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity] = $line;
+                <span class="c line-bidi">// take stock only if there is enough: two orders never get the last one</span>
+                $taken = Product::whereKey($id)
+                    -&gt;where(<span class="s">&#x27;stock&#x27;</span>, <span class="s">&#x27;&gt;=&#x27;</span>, $quantity)
+                    -&gt;decrement(<span class="s">&#x27;stock&#x27;</span>, $quantity, [
+                        <span class="s">&#x27;version&#x27;</span> =&gt; DB::raw(<span class="s">&#x27;version + 1&#x27;</span>),
+                    ]);
+                $product = Product::findOrFail($id);
+                <span class="k">if</span> ($taken === <span class="n">0</span>) {
+                    <span class="k">throw</span> Problems::outOfStock($id, $product-&gt;stock);
+                }
+                <span class="c line-bidi">// the price comes from the database, never from the client</span>
+                $items[] = [
+                    <span class="s">&#x27;product_id&#x27;</span> =&gt; $id,
+                    <span class="s">&#x27;quantity&#x27;</span> =&gt; $quantity,
+                    <span class="s">&#x27;price&#x27;</span> =&gt; $product-&gt;price,
+                ];
+            }
+            $total = array_sum(array_map(
+                <span class="k">fn</span> ($item) =&gt; $item[<span class="s">&#x27;price&#x27;</span>] * $item[<span class="s">&#x27;quantity&#x27;</span>],
+                $items,
+            ));
+            $order = Order::create([<span class="s">&#x27;status&#x27;</span> =&gt; <span class="s">&#x27;pending&#x27;</span>, <span class="s">&#x27;total&#x27;</span> =&gt; $total]);
+            $order-&gt;items()-&gt;createMany($items);
+
+            <span class="k">return</span> $order;
+        });
+
+        <span class="k">return</span> OrderResource::make($order-&gt;load(<span class="s">&#x27;items&#x27;</span>))
+            -&gt;response()
+            -&gt;setStatusCode(<span class="n">201</span>)
+            -&gt;header(<span class="s">&#x27;Location&#x27;</span>, route(<span class="s">&#x27;orders.show&#x27;</span>, $order));
+    }</pre></div>
+
+<p>The stock is taken with one conditional statement, “decrease the stock by 2 <em>where</em> the stock is at least 2”, and the number of changed rows says whether it worked. Reading the stock first and writing it afterwards would let two orders both see the last kit and both take it; Chapter 7 explains why, and the other tools for it. If anything throws, the transaction is rolled back, so an order that fails on its third item gives back the stock of the first two. And the prices come from the database: a client never tells the server what something costs.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Create an order, with an idempotency key</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:8000/api/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 2}]}&#x27; | grep -iE &#x27;^(HTTP|location|idempotent)|^\{&#x27;</span>
+HTTP/1.1 201 Created
+Location: http://localhost:8000/api/v1/orders/1
+{&quot;data&quot;:{&quot;id&quot;:1,&quot;status&quot;:&quot;pending&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:{&quot;amount&quot;:45000,&quot;currency&quot;:&quot;EGP&quot;}}],&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;},&quot;created_at&quot;:&quot;2026-11-19T20:31:01Z&quot;}}
+<span class="c line-bidi"># The network failed, so the client sends exactly the same request again</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:8000/api/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 2}]}&#x27; | grep -iE &#x27;^(HTTP|location|idempotent)|^\{&#x27;</span>
+HTTP/1.1 201 Created
+Location: http://localhost:8000/api/v1/orders/1
+Idempotent-Replayed: true
+{&quot;data&quot;:{&quot;id&quot;:1,&quot;status&quot;:&quot;pending&quot;,&quot;items&quot;:[{&quot;product_id&quot;:1,&quot;quantity&quot;:2,&quot;price&quot;:{&quot;amount&quot;:45000,&quot;currency&quot;:&quot;EGP&quot;}}],&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;},&quot;created_at&quot;:&quot;2026-11-19T20:31:01Z&quot;}}
+<span class="c line-bidi"># The same key with a different body</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8000/api/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0001&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 3}]}&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/idempotency-key-reused&quot;,&quot;title&quot;:&quot;Idempotency key reused&quot;,&quot;status&quot;:422,&quot;detail&quot;:&quot;This key was used with a different body.&quot;,&quot;instance&quot;:&quot;/api/v1/orders&quot;}
+<span class="c line-bidi"># The stock went down once</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/api/v1/products/1 | jq -c &#x27;.data | {id, stock}&#x27;</span>
+{&quot;id&quot;:1,&quot;stock&quot;:8}</pre></div>
+
+<p>The second request got the same order, with the same id and time, and a header saying it was replayed. The stock went down by 2, not by 4. The other business rules return problems too:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># More than the stock</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8000/api/v1/orders -H &#x27;Content-Type: application/json&#x27; -H &#x27;Idempotency-Key: 4f1c2a9e-order-0002&#x27; -d &#x27;{&quot;items&quot;: [{&quot;product_id&quot;: 1, &quot;quantity&quot;: 50}]}&#x27; | jq</span>
+{
+  &quot;type&quot;: &quot;https://bit-shop.example/problems/out-of-stock&quot;,
+  &quot;title&quot;: &quot;Not enough stock&quot;,
+  &quot;status&quot;: 409,
+  &quot;detail&quot;: &quot;Only 8 left of product 1.&quot;,
+  &quot;instance&quot;: &quot;/api/v1/orders&quot;
+}
+<span class="c line-bidi"># Cancel, then cancel again</span>
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8000/api/v1/orders/1/cancel | jq -c &#x27;.data | {id, status, total}&#x27;</span>
+{&quot;id&quot;:1,&quot;status&quot;:&quot;cancelled&quot;,&quot;total&quot;:{&quot;amount&quot;:90000,&quot;currency&quot;:&quot;EGP&quot;}}
+<span class="c">$ </span><span class="k">curl -s -X POST localhost:8000/api/v1/orders/1/cancel | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/invalid-state&quot;,&quot;title&quot;:&quot;Order cannot be cancelled&quot;,&quot;status&quot;:409,&quot;detail&quot;:&quot;Order 1 is already cancelled.&quot;,&quot;instance&quot;:&quot;/api/v1/orders/1/cancel&quot;}</pre></div>
+
+<h2><span class="sec">4.7</span> <span>Lost updates: ETag and If-Match</span></h2>
+
+<p>Two administrators open product 2 at the same time. Sara changes the price to 65.00 and saves; a minute later Omar, whose screen still shows the old product, changes it to 70.00 and saves. Sara’s change is gone, and nobody was told. This is the <dfn>lost update</dfn> problem. HTTP solves it with the ETag from Chapter 1: the product’s version is its ETag, and a change must send back, in <code>If-Match</code>, the version it was based on:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/Http/Controllers/ProductController.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> show(Request $request, Product $product): JsonResponse
+    {
+        $response = ProductResource::make($product)-&gt;response();
+        $response-&gt;setEtag((<span class="k">string</span>) $product-&gt;version);
+        <span class="c line-bidi">// 304 and no body when If-None-Match matches</span>
+        $response-&gt;isNotModified($request);
+
+        <span class="k">return</span> $response;
+    }
+
+    <span class="k">public</span> <span class="k">function</span> update(
+        UpdateProductRequest $request,
+        Product $product,
+    ): JsonResponse {
+        $ifMatch = $request-&gt;header(<span class="s">&#x27;If-Match&#x27;</span>);
+        <span class="k">if</span> ($ifMatch === <span class="k">null</span>) {
+            <span class="k">throw</span> Problems::needIfMatch();
+        }
+        <span class="c line-bidi">// one statement: change it only if the version is the one the client read</span>
+        $changed = Product::whereKey($product-&gt;id)
+            -&gt;where(<span class="s">&#x27;version&#x27;</span>, (<span class="k">int</span>) trim($ifMatch, <span class="s">&#x27;&quot;&#x27;</span>))
+            -&gt;update([...$request-&gt;validated(), <span class="s">&#x27;version&#x27;</span> =&gt; DB::raw(<span class="s">&#x27;version + 1&#x27;</span>)]);
+        <span class="k">if</span> ($changed === <span class="n">0</span>) {
+            <span class="k">throw</span> Problems::stale();
+        }
+
+        <span class="k">return</span> $<span class="k">this</span>-&gt;show($request, $product-&gt;refresh());
+    }</pre></div>
+
+<p><code>show</code> sets the ETag, and Symfony’s <code>isNotModified</code> turns the answer into an empty <code>304</code> when the client already has this version. <code>update</code> refuses a request without <code>If-Match</code>, and then changes the row <em>only if</em> its version is still the one the client read, raising it by one in the same statement. If no row changed, someone else got there first:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Read a product: the ETag is its version</span>
+<span class="c">$ </span><span class="k">curl -si localhost:8000/api/v1/products/2 | grep -iE &#x27;^(HTTP|etag)|^\{&#x27;</span>
+HTTP/1.1 200 OK
+ETag: &quot;1&quot;
+{&quot;data&quot;:{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:{&quot;amount&quot;:6000,&quot;currency&quot;:&quot;EGP&quot;},&quot;stock&quot;:10,&quot;created_at&quot;:&quot;2026-11-01T10:00:00Z&quot;}}
+<span class="c line-bidi"># Change it without If-Match</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:8000/api/v1/products/2 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 6500}&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/precondition-required&quot;,&quot;title&quot;:&quot;Precondition required&quot;,&quot;status&quot;:428,&quot;detail&quot;:&quot;Send If-Match with the ETag you last read.&quot;,&quot;instance&quot;:&quot;/api/v1/products/2&quot;}
+<span class="c line-bidi"># Change it with the ETag just read</span>
+<span class="c">$ </span><span class="k">curl -si -X PATCH localhost:8000/api/v1/products/2 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 6500}&#x27; -H &#x27;If-Match: &quot;1&quot;&#x27; | grep -iE &#x27;^(HTTP|etag)|^\{&#x27;</span>
+HTTP/1.1 200 OK
+ETag: &quot;2&quot;
+{&quot;data&quot;:{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:{&quot;amount&quot;:6500,&quot;currency&quot;:&quot;EGP&quot;},&quot;stock&quot;:10,&quot;created_at&quot;:&quot;2026-11-01T10:00:00Z&quot;}}
+<span class="c line-bidi"># Someone else, still holding the old ETag</span>
+<span class="c">$ </span><span class="k">curl -s -X PATCH localhost:8000/api/v1/products/2 -H &#x27;Accept: application/json&#x27; -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 7000}&#x27; -H &#x27;If-Match: &quot;1&quot;&#x27; | jq -c</span>
+{&quot;type&quot;:&quot;https://bit-shop.example/problems/stale&quot;,&quot;title&quot;:&quot;The product has changed&quot;,&quot;status&quot;:412,&quot;detail&quot;:&quot;Someone changed it after you read it. Read it again.&quot;,&quot;instance&quot;:&quot;/api/v1/products/2&quot;}</pre></div>
+
+<p>This is <dfn>optimistic concurrency</dfn>: nothing is locked while people look at a screen, and the rare conflicts are detected when they happen. The client that gets <code>412</code> reloads the product and shows the user what changed.</p>
+
+<h2><span class="sec">4.8</span> <span>Documentation from the code</span></h2>
+
+<p>Documentation written by hand drifts away from the code within weeks. <dfn>Scramble</dfn> reads the routes, the form requests and the resources, and writes an <dfn>OpenAPI</dfn> document from them, a standard, machine-readable description of the API:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Scramble reads the routes, requests and resources, and writes OpenAPI</span>
+<span class="c">$ </span><span class="k">composer require dedoc/scramble --no-interaction --no-ansi 2&gt;&amp;1 | grep -E &#x27;Using version|Installing dedoc&#x27;</span>
+  - Installing dedoc/scramble (v0.13.55): Extracting archive
+Using version ^0.13.55 for dedoc/scramble</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The API&#x27;s paths, from the generated document</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/docs/api.json | jq -r &#x27;.paths | to_entries[] | .key as $p | .value | keys[] | ascii_upcase + &quot; &quot; + $p&#x27;</span>
+POST /v1/orders
+GET /v1/orders/{order}
+POST /v1/orders/{order}/cancel
+GET /v1/products
+GET /v1/products/{product}
+PUT /v1/products/{product}</pre></div>
+
+<p>On a developer’s machine, Scramble also serves a documentation page at <code>/docs/api</code>. From the same document, tools can generate typed clients in many languages, and a check in CI can refuse a pull request that removes something clients depend on. (Scramble lists the update route as <code>PUT</code>; Laravel accepts <code>PATCH</code> on the same route.)</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: design the API before you build it</p><p>Write the request and response examples for a new endpoint first, in the pull request, and get a review from someone who will <em>use</em> the endpoint, such as a front-end or mobile developer. Changing an example takes minutes; changing a published API takes months of versions and deprecation emails.</p></aside>
+
+<h2><span class="sec">4.9</span> <span>Testing the API</span></h2>
+
+<p>With <code>RefreshDatabase</code>, every test starts with fresh tables, filled by the seeder named in <code>$seeder</code>. The most valuable test walks every page and checks that each product appears exactly once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tests/Feature/ShopApiTest.php</div><pre class="code">    <span class="k">public</span> <span class="k">function</span> test_it_walks_every_page_without_repeats_or_gaps(): <span class="k">void</span>
+    {
+        $seen = [];
+        $url = <span class="s">&#x27;/api/v1/products?limit=5&#x27;</span>;
+        <span class="k">while</span> ($url !== <span class="k">null</span>) {
+            $page = $<span class="k">this</span>-&gt;getJson($url)-&gt;assertOk();
+            $seen = [...$seen, ...array_column($page-&gt;json(<span class="s">&#x27;data&#x27;</span>), <span class="s">&#x27;id&#x27;</span>)];
+            $url = $page-&gt;json(<span class="s">&#x27;links.next&#x27;</span>);
+        }
+        $<span class="k">this</span>-&gt;assertSame(range(<span class="n">1</span>, <span class="n">12</span>), $seen);
+    }</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Feature tests with a fresh database for every test</span>
+<span class="c">$ </span><span class="k">php artisan test --no-ansi tests/Feature/ShopApiTest.php</span>
+
+   PASS  Tests\Feature\ShopApiTest
+  ✓ it walks every page without repeats or gaps                          0.16s  
+  ✓ it sorts by price highest first                                      0.01s  
+  ✓ it replays an order instead of creating it twice                     0.02s  
+  ✓ it refuses a stale update                                            0.01s  
+  ✓ it answers 422 problems with every invalid field                     0.01s  
+
+  Tests:    5 passed (18 assertions)
+  Duration: 0.28s</pre></div>
+
+<p>The other tests pin what clients depend on: the sort, the replay, the stale update and the error format. Chapter 13 goes much further.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Models returned as JSON directly</td><td>Every new column is published; renaming one breaks clients</td><td>API Resources</td></tr>
+<tr><td>Verbs in URLs, mixed naming</td><td>Every endpoint must be looked up</td><td>Plural nouns, one naming style, methods as verbs</td></tr>
+<tr><td>Offset paging on changing data</td><td>Repeated and missing rows; slow deep pages</td><td><code>cursorPaginate</code> over a complete, indexed order</td></tr>
+<tr><td>Sorting by any field the client names</td><td>Slow queries on demand</td><td>A list of allowed sorts</td></tr>
+<tr><td>A different error shape per endpoint</td><td>Clients cannot handle errors generically</td><td>Problem Details for every exception</td></tr>
+<tr><td>Retried POSTs without keys</td><td>Double orders and payments</td><td>An idempotency middleware with fingerprints</td></tr>
+<tr><td>Read the stock, then write it</td><td>Two orders take the last item</td><td>One conditional statement, in a transaction</td></tr>
+<tr><td>Updates without a version check</td><td>Silent lost updates</td><td>ETag and required <code>If-Match</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Resources</strong> are plural nouns, <strong>methods</strong> the verbs, special actions sub-resources with <code>POST</code>. Version in the path; prefer additive changes.</li>
+<li><strong>Migrations</strong> describe tables, <strong>models</strong> read and write them, <strong>seeders</strong> fill them.</li>
+<li><strong>API Resources</strong> separate the representation from storage: UTC times, money as amount and currency, internal columns hidden.</li>
+<li><strong>Cursors</strong> page without drift over a complete order (sort field plus id), with links clients follow.</li>
+<li>Every error is <strong>Problem Details</strong>, from one renderer and one set of factory methods.</li>
+<li>An <strong>idempotency middleware</strong> with a lock and a fingerprint makes retries safe; <strong>transactions</strong> and conditional updates keep stock correct.</li>
+<li><strong>ETag and <code>If-Match</code></strong> with an atomic version check prevent lost updates.</li>
+<li><strong>Scramble</strong> generates OpenAPI from the code; <strong>feature tests</strong> with <code>RefreshDatabase</code> pin the behaviour.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>POST /orders/7/cancel</code>: cancelling is an action with its own rules (restore the stock, refund, check that the order can still be cancelled), and a dedicated endpoint can enforce them and be documented and permitted separately; a generic <code>PATCH</code> would let a client set any status. 2. Products with the same price would otherwise have no fixed order, so a row could move between pages and the cursor could not say exactly where to continue. 3. The version is an internal detail of how the server detects conflicts; clients see it only as the ETag, so the server can change how versions work without changing the JSON.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project extends this chapter’s API. Keep the conventions: a form request for every input, a resource for every output, Problem Details for every error, and a feature test for every rule.</p>
+
+<div class="project">
+<p class="project-label">Project 4.1 · Easy</p>
+<h3>Product reviews</h3>
+<p class="project-goal">Add reviews to products: list them with cursor pages, and create them with validation.</p>
+<p class="project-skills"><strong>You will practise:</strong> migrations and models, nested resources, cursor pagination, resources and <code>201</code> with <code>Location</code>.</p>
+<ol class="steps">
+<li>Design the routes first: <code>GET /api/v1/products/{product}/reviews</code> and <code>POST</code> on the same path. Write an example request and response for each.</li>
+<li>Create a <code>Review</code> model with a migration: a product, a rating from 1 to 5, a text of 10 to 1000 characters, and timestamps.</li>
+<li>List reviews newest first, ordered by <code>created_at</code> and then <code>id</code>, with <code>cursorPaginate</code>, through a <code>ReviewResource</code>.</li>
+<li>Add <code>average_rating</code> and <code>review_count</code> to <code>ProductResource</code>, using <code>withAvg</code> and <code>withCount</code> in the query. Is that an additive change?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> two reviews can be created in the same second, and <code>created_at</code> has one-second precision. That is exactly why the order needs the id as well.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 4.2 · Medium</p>
+<h3>A client that retries correctly</h3>
+<p class="project-goal">Write a small PHP client for the orders endpoint with Laravel’s HTTP client, which retries safely, and test it against a server that fails on purpose.</p>
+<p class="project-skills"><strong>You will practise:</strong> idempotency keys from the client’s side, <code>Http::retry</code>, backoff, and <code>Http::fake</code> in tests.</p>
+<ol class="steps">
+<li>Write <code>OrdersClient::create(array $items)</code>: it makes one key with <code>Str::uuid()</code> and sends the <em>same</em> key with every attempt.</li>
+<li>Use <code>Http::retry([200, 400, 800], when: ...)</code> to retry on connection errors, <code>409</code>, <code>429</code> and <code>5xx</code>, never on other <code>4xx</code>, with a time limit on every attempt (<code>timeout(5)</code>).</li>
+<li>Respect <code>Retry-After</code> when the server sends it.</li>
+<li>In a test, use <code>Http::fake</code> with a sequence: a connection error, a <code>503</code>, then a <code>201</code>. Assert with <code>Http::assertSent</code> that all three requests carried the same key.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> add a random part to the waits (jitter). Without it, a thousand clients that failed at the same moment retry at the same moment too, and knock the server over again.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 4.3 · Challenge</p>
+<h3>Version 2, side by side</h3>
+<p class="project-goal">Introduce a breaking change as <code>/api/v2</code>, keep <code>/api/v1</code> working from the same models, and announce its end.</p>
+<p class="project-skills"><strong>You will practise:</strong> versioning with resources, route groups, deprecation headers, and contract tests.</p>
+<ol class="steps">
+<li>In v2, prices become <code>{"amount": "450.00", "currency": "EGP"}</code> with a decimal string, and <code>created_at</code> is renamed <code>created</code>. Explain why each change breaks clients.</li>
+<li>Put v2’s resources in <code>App\Http\Resources\V2</code> and its routes in a second <code>prefix('v2')</code> group. The models and business rules stay shared.</li>
+<li>Write a middleware for the v1 group that adds <code>Deprecation</code>, <code>Sunset</code> (six months ahead) and a <code>Link</code> to the migration guide to every answer.</li>
+<li>Save today’s v1 answers as JSON fixtures, and write tests that fail if v1 ever changes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> versions should be thin layers at the edge of the API. If v2 needs its own tables or its own business rules, the versioning is in the wrong place.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Design the method and URL for each: list one customer’s orders; add an item to a cart; a payment provider tells you a payment succeeded; search products by name; refund an order.</li>
+<li><span class="level">Easy</span> Choose a status code for each, and say why: an email already registered; an update without <code>If-Match</code>; an update with an old ETag; JSON with a missing quote; a quantity of 0.</li>
+<li><span class="level medium">Medium</span> Add a <code>q</code> parameter to the product list that finds products whose name contains the text, with at least 2 characters. Does the cursor still work with it?</li>
+<li><span class="level medium">Medium</span> Cancelling an order twice answers <code>409</code>. A mobile app retries the cancel request after a timeout and shows an error to a user whose order was in fact cancelled. Propose two ways to fix this, and choose one.</li>
+<li><span class="level hard">Challenge</span> Two different clients that happen to send the same idempotency key would share one answer. Scope the keys by client (until Chapter 9 gives us real users, an <code>X-Client-Id</code> header names the client), and test both that keys are separate per client and that they expire after a day.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 5</p>
+<p>Part 2 begins. We used a database in this chapter without looking inside it. Next we learn SQL properly, on PostgreSQL: tables, joins, grouping, indexes, and how to read a query plan.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -2307,6 +3025,16 @@ X-RateLimit-Reset: 1795119416
 <li>Validate the query at the top of <code>index</code>: <code>$request-&gt;validate(['min_price' =&gt; ['sometimes', 'integer', 'min:0'], 'max_price' =&gt; ['sometimes', 'integer', 'min:0', Rule::when($request-&gt;has('min_price'), 'gte:min_price')]])</code>. <code>Rule::when</code> adds the comparison only when there is something to compare with. Then filter with both bounds, using <code>$request-&gt;integer('min_price', 0)</code>. The answer test checks a range with one product, a maximum alone, and <code>min_price=9000&amp;max_price=100</code>, which gets a <code>422</code> naming <code>max_price</code>. <code>validate</code> on the request is fine for a few query values; a form request is better once the rules grow.</li>
 <li><code>tests/Fakes/ArrayProductCatalog.php</code> implements the same interface with a plain array. The test binds it with <code>$this-&gt;app-&gt;instance(ProductCatalog::class, new ArrayProductCatalog([...]))</code> and fills it with exactly the products the test needs. The controller needed no change because it never names a class: it asks the container for a <code>ProductCatalog</code>, and the container decides which one. A fake in memory makes tests faster and lets each test state its data in its own code, where the reader can see it.</li>
 <li>The middleware sets <code>Accept: application/json</code> on the request, so Laravel’s error handling and validation answer in JSON, and then refuses a body that is not JSON with <code>abort_if($sendsBody &amp;&amp; ! $request-&gt;isJson(), 415, 'Send JSON.')</code>. Register it first in the group with <code>$middleware-&gt;api(prepend: [RequireJson::class], …)</code>, so it runs before anything reads the body. The answer test sends a form body (<code>415</code>), and an empty JSON body without an <code>Accept</code> header, which gets a <code>422</code> with <code>Content-Type: application/json</code>. All seven tests, the chapter’s and the answers’, pass together.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 4</h2>
+<ol class="exercises">
+<li><code>GET /api/v1/customers/3/orders</code> (or <code>GET /api/v1/orders?customer_id=3</code>); <code>POST /api/v1/carts/5/items</code>; <code>POST /api/v1/webhooks/payments</code>, an endpoint the provider calls, which must check the provider’s signature and be idempotent, because providers resend webhooks; <code>GET /api/v1/products?q=kit</code>, a filter on the collection, not a new resource; <code>POST /api/v1/orders/7/refunds</code>, which creates a refund resource that can be listed and read later.</li>
+<li><code>409 Conflict</code> for the email, since the request is valid but clashes with existing data (some APIs answer <code>422</code> to avoid revealing which emails exist; Chapter 10 discusses the choice); <code>428 Precondition Required</code>; <code>412 Precondition Failed</code>; <code>400 Bad Request</code>, because the body cannot even be read; <code>422</code>, because the body is readable and one value breaks a rule.</li>
+<li>Add <code>'q' =&gt; ['sometimes', 'string', 'min:2', 'max:50']</code> to <code>ListProductsRequest</code>, and one more condition to the query: <code>-&gt;when($request-&gt;validated('q'), fn ($query, $q) =&gt; $query-&gt;whereLike('name', "%$q%"))</code>. <code>whereLike</code> ignores case and writes the right SQL for each database. The cursor still works: it records a position in the sorted order, and <code>withQueryString</code> keeps <code>q</code> in the next link, so the next page continues among the matching products. The answer test checks a search that matches two products with <code>limit=1</code>, follows <code>links.next</code> to the second one, and checks that a one-letter search is refused with <code>422</code>. On a large table, a search like this needs a suitable index, which Chapter 5 covers.</li>
+<li>One way: make cancel idempotent in its result. If the order is already cancelled, answer <code>200</code> with the order, because the client’s goal (a cancelled order) is reached. Another way: put the <code>Idempotent</code> middleware on the cancel route too, so a retry replays the first answer. The first is simpler and right here, because a second cancel changes nothing; keep <code>409</code> for orders that can no longer be cancelled because they were shipped. The general lesson: design actions so that repeating them is harmless, whenever the domain allows it.</li>
+<li>In the middleware, read <code>$client = (string) $request-&gt;header('X-Client-Id', 'anonymous')</code> and build the cache key from both: <code>'idempotency:'.$client.':'.$key</code>. The expiry is already there: <code>Cache::put(..., now()-&gt;addDay())</code>. The answer test sends the same key and body for clients <code>a</code> and <code>b</code> and gets two different orders, then moves time forward with <code>$this-&gt;travel(25)-&gt;hours()</code> and checks that client <code>a</code>’s key creates a new order instead of a replay. Laravel’s time travel moves the clock the cache reads, so a test checks a day of expiry in milliseconds. In Chapter 9, the client becomes the authenticated user, and the header goes away.</li>
 </ol>
 
 </section>
