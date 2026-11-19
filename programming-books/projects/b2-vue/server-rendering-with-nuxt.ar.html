@@ -1,0 +1,47 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">شغّل <code>npm run build</code> في نهاية كل مشروع واقرأ أسطر الرسم المسبق. وقبل البناء اكتب كيف تتوقع أن يُصنع كل عنوان، فكل مفاجأة شيء تتعلم منه.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>متجر يتعثر بلطف</h3>
+<p class="project-goal">أعطِ متجر بِت أخطاء لطيفة، وشريط تحميل، وجزءاً بطيئاً لا يؤخر الصفحة كلها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>error.vue</code> و<code>createError</code> و<code>clearError</code> و<code>&lt;NuxtLoadingIndicator&gt;</code>، و<code>useFetch</code> مع <code>lazy</code>.</p>
+<ol class="steps">
+<li>اجعل <code>error.vue</code> تعرض رسالة مختلفة لـ 404 ولغيره، وتقدم طريقاً إلى الرئيسية بـ <code>clearError({ redirect: "/" })</code>.</li>
+<li>اجعل واجهة المنتجات ترمي 500 لمعرّف واحد، وتحقق مما يراه المستخدمون، وأي رمز حالة يبلّغ عنه <code>curl -I</code>.</li>
+<li>أضف واجهة «مراجعات» بطيئة (1.5 ثانية) وحمّلها في صفحة المنتج بـ <code>useFetch(…, { lazy: true })</code>، فلا تنتظرها الصفحة. واعرض هيكلاً صغيراً ما دامت <code>status</code> تساوي <code>"pending"</code>.</li>
+<li>تأكد بشبكة بطيئة في أدوات المطور أن شريط <code>&lt;NuxtLoadingIndicator&gt;</code> يظهر بين الصفحات.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الجلب الكسول يرسم الصفحة على الخادم دون تلك البيانات، ويحمّلها في المتصفح. استخدمه للأجزاء أسفل الشاشة أو الأقل أهمية، ولا تستخدمه أبداً للمحتوى الأساسي الذي تحتاجه محركات البحث في HTML.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>مدونة ثابتة تحبها محركات البحث</h3>
+<p class="project-goal">مدونة مقالاتها ملفات Markdown داخل المشروع، تُرسم مسبقاً وقت البناء، ولكل مقال عنوانه ووصفه، ومعها خريطة للموقع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة الملفات في مسارات الخادم، والصفحات المتغيرة، و<code>useSeoMeta</code>، والرسم المسبق، ومسار خادم يُرجع XML.</p>
+<ol class="steps">
+<li>ضع ثلاث مقالات في <code>server/content/</code>، يبدأ كل منها بعنوان وتاريخ. واكتب <code>server/utils/posts.ts</code> يقرؤها بـ <code>node:fs/promises</code>.</li>
+<li>أضف <code>server/api/posts.get.ts</code> و<code>server/api/posts/[slug].get.ts</code>، يحوّلان Markdown إلى HTML على الخادم بمكتبة مثل <code>marked</code>.</li>
+<li>اكتب <code>pages/blog/index.vue</code> و<code>pages/blog/[slug].vue</code> بـ <code>useFetch</code> و<code>useSeoMeta</code>، و404 للأسماء المجهولة.</li>
+<li>أضف القاعدة <code>"/blog/**": { prerender: true }</code>. فيتبع Nitro الروابط من القائمة ويرسم مسبقاً كل مقال يجده.</li>
+<li>أضف <code>server/routes/sitemap.xml.ts</code> الذي يُرجع عنوان كل مقال بـ <code>content-type</code> الصحيح.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مكتبة Markdown تعمل على الخادم فقط، فلا تضيف شيئاً إلى JavaScript المتصفح. فالعمل الثقيل مكانه <code>server/</code>، والمتصفح يجب أن يستلم النتائج لا الأدوات.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>أسعار يغيّرها المدير</h3>
+<p class="project-goal">صفحة إدارة محمية يغيّر فيها صاحب المتجر سعر منتج، فتعرض صفحات المنتجات المخزنة السعر الجديد بعد قليل، ولا يستطيع أحد غيره تغيير شيء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> ملفات تعريف الارتباط على الخادم، وبرمجيات المسار الوسيطة، ومسارات الخادم مع فحص الصلاحيات، و<code>runtimeConfig</code>، وقواعد المسارات.</p>
+<ol class="steps">
+<li>احفظ الأسعار في <code>Map</code> على الخادم تستطيع دالة <code>updatePrice(id, price)</code> تغييرها.</li>
+<li>اكتب <code>server/api/admin/sign-in.post.ts</code> يقارن كلمة مرور بـ <code>useRuntimeConfig().adminPassword</code>، وعند النجاح يضع ملف تعريف ارتباط <code>httpOnly</code> و<code>secure</code> و<code>sameSite</code> بـ <code>setCookie</code>.</li>
+<li>احمِ الصفحة ببرمجية وسيطة في <code>app/middleware/admin.ts</code> تعيد التوجيه إلى صفحة الدخول حين يغيب ملف تعريف الارتباط، وأعطِ صفحات الإدارة <code>ssr: false</code> في قواعد المسارات.</li>
+<li>اكتب <code>server/api/admin/price.post.ts</code>. يفحص ملف تعريف الارتباط <em>مرة أخرى</em> (فبرمجية الصفحة لا تحمي المسار)، ويتحقق بـ zod أن السعر عدد صحيح موجب، ويستدعي <code>updatePrice</code>.</li>
+<li>غيّر سعراً، ثم افتح صفحة المنتج. واشرح لماذا قد يظهر السعر القديم حتى مدة <code>swr</code>، وكيف يغيّر ذلك وقتٌ أقصر، أو إلغاء التخزين لهذه الصفحة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> فحص الصلاحية يعيش داخل كل مسار خادم، لا في الصفحة التي تعرض النموذج وحدها. فالبرمجية الوسيطة تقرر ما تعرضه <em>الشاشة</em>، والخادم وحده يقرر ما <em>يحدث</em>.</p>
+</div>

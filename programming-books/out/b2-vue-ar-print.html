@@ -39,6 +39,8 @@
 @page ch15:first { @top-center { content: none; } }
 @page ch16 { @top-center { content: "الفصل 16: معمارية الواجهات على نطاق واسع"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "الفصل 17: الرسم على الخادم بـ Nuxt"; } }
+@page ch17:first { @top-center { content: none; } }
 @page ch18 { @top-center { content: "الفصل 18: مراجعة الكود والتوجيه والقرارات التقنية"; } }
 @page ch18:first { @top-center { content: none; } }
 @page preface { @top-center { content: "كيف تستخدم هذا الكتاب"; } }
@@ -7388,6 +7390,476 @@ process.exitCode = problems.length ? <span class="n">1</span> : <span class="n">
 <p>كل تطبيق في هذا الكتاب حتى الآن رُسم كاملاً في المتصفح. وفي الفصل التالي ينضم الخادم: صفحات تُرسم قبل أن تصل إلى المستخدم، للسرعة ولمحركات البحث، بإطار عمل مبني على كل ما تعلمته.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b2/vue/nuxt/ar">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">الفصل 17</p><h1>الرسم على الخادم بـ Nuxt</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تميّز الطرق التي تُصنع بها الصفحة: في المتصفح، أو على الخادم مع كل طلب، أو مسبقاً وقت البناء</li>
+<li>تنشئ تطبيق Nuxt وتبني صفحاته وإطاراته ومسارات خادمه من المجلدات والملفات</li>
+<li>تحمّل البيانات على الخادم بـ <code>useFetch</code>، وتنقلها إلى المتصفح دون أن تسأل مرتين</li>
+<li>تختار لكل عنوان هل تُرسم صفحته مسبقاً، أو تُخزَّن، أو تُصنع مع كل طلب</li>
+<li>تعالج النماذج والأخطاء على الخادم، وتعرض 404 حقيقياً</li>
+<li>تقرأ مخرجات البناء وتشغّل التطبيق في الإنتاج</li>
+</ul>
+</div>
+
+<p class="lead">كل تطبيق Vue في هذا الكتاب حتى الآن بدأ صفحةَ HTML شبه فارغة: ينزّل المتصفح JavaScript، ويشغّلها، ويجلب البيانات، وعندها فقط يرسم شيئاً. هذا يناسب التطبيقات التي خلف تسجيل الدخول، لكن المستخدم ينتظر أمام صفحة بيضاء، والجوالات البطيئة تنتظر أطول، وقد لا يرى محرك البحث أو معاينة الرابط شيئاً على الإطلاق. و<strong>Nuxt</strong> إطار العمل حول Vue الذي يستطيع أن يصنع HTML على الخادم، فيرسل صفحة كاملة قبل أن تعمل أي JavaScript. ويعطي تطبيقك أيضاً خادماً خاصاً به، فتعيش الصفحات والواجهة البرمجية التي تغذيها في مشروع واحد.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>Nuxt لا يلغي شيئاً مما تعلمته: المكونات والخصائص والمراجع والـ composables والنماذج كلها كما هي. الذي يتغير هو <em>أين</em> تعمل كل قطعة، وهذا السؤال وحده هو الفصل كله.</p></div></div>
+
+<h2><span class="sec">17.1</span> <span>أربع طرق لصنع الصفحة</span></h2>
+
+<table>
+<thead><tr><th>الطريقة</th><th>متى يُصنع HTML</th><th>تناسب</th><th>ثمنها</th></tr></thead>
+<tbody>
+<tr><td><dfn>الرسم في المتصفح</dfn> (CSR)</td><td>في المتصفح، بعد أن تعمل JavaScript</td><td>لوحات التحكم والتطبيقات خلف تسجيل الدخول</td><td>صفحة بيضاء أولاً، وضعف أمام محركات البحث</td></tr>
+<tr><td><dfn>الرسم على الخادم</dfn> (SSR)</td><td>على الخادم، مع كل طلب</td><td>صفحات تختلف لكل مستخدم أو كل دقيقة</td><td>عمل على الخادم في كل زيارة</td></tr>
+<tr><td><dfn>التوليد الثابت</dfn> (SSG)</td><td>مرة واحدة، عند بناء التطبيق</td><td>صفحات واحدة للجميع: مقالات، وتوثيق، وصفحات تعريفية</td><td>تبقى قديمة حتى البناء التالي</td></tr>
+<tr><td><dfn>القديم أثناء إعادة التحقق</dfn> (SWR، ويسمى ISR أيضاً)</td><td>في الطلب الأول، ثم من جديد في الخلفية بعد مدة محددة</td><td>صفحات ثابتة غالباً تتغير بياناتها أحياناً</td><td>قد يرى الزائر بيانات قديمة قليلاً</td></tr>
+</tbody>
+</table>
+
+<p>وفي طرق الخادم الثلاث يظل المتصفح ينزّل كود Vue بعدها، فيربط Vue معالجات الأحداث بـ HTML الموجود أصلاً. تسمى هذه الخطوة <dfn>الإحياء</dfn> (hydration): تظهر الصفحة أولاً، وتصير تفاعلية بعد لحظة. ويتيح لك Nuxt أن تختار الطريقة <em>لكل عنوان</em>، ولذلك يناسب المواقع الحقيقية التي تحتاج فيها الصفحة الرئيسية وصفحات المنتجات وصفحة الحساب أشياء مختلفة.</p>
+
+<h2><span class="sec">17.2</span> <span>إنشاء التطبيق</span></h2>
+
+<p>سنبني متجر بِت الصغير نفسه الذي في إصدار React: صفحة رئيسية، وقائمة منتجات، وصفحة لكل منتج، ونموذج تواصل، وواجهة برمجية صغيرة. وتنشئ أداة البدء الرسمية المشروع:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># أنشئ المشروع</span>
+<span class="c">$ </span><span class="k">npm create nuxt@latest bit-shop -- --template minimal</span>
+Creating project in bit-shop
+Created your project from the minimal template
+<span class="c">$ </span><span class="k">cd bit-shop</span>
+<span class="c">$ </span><span class="k">npm install zod</span>
+<span class="c"># ابنِ للإنتاج</span>
+<span class="c">$ </span><span class="k">npm run build</span>
+Prerendering 2 routes
+  ├─ /contact
+  ├─ /
+  ├─ /contact/_payload.json
+  ├─ /_payload.json
+Prerendered 4 routes in 2.233 seconds
+* Build complete in 12.3s!</pre></div>
+
+<p>سُجّلت هذه الجلسة أثناء بناء مثال هذا الفصل. تجاهل أسطر الرسم المسبق الآن، فالقسم 17.6 يشرحها. وأثناء التطوير تشغّل <code>npm run dev</code> وتفتح <code>http://localhost:3000</code>، وكل حفظ يحدّث الصفحة.</p>
+
+<h3>المجلدات هي التطبيق</h3>
+
+<p>لا قائمة مسارات في Nuxt مثل التي كتبتها لـ Vue Router في الفصل 7، ولا <code>main.ts</code>. فالمجلدات <em>هي</em> التطبيق، ولبعض الأسماء معنى:</p>
+
+<table>
+<thead><tr><th>الملف أو المجلد</th><th>عمله</th><th>في متجرنا</th></tr></thead>
+<tbody>
+<tr><td><code>app/pages/</code></td><td>ملف لكل عنوان</td><td><code>pages/products/index.vue</code> ← <code>/products</code></td></tr>
+<tr><td><code>app/pages/…/[id].vue</code></td><td>جزء متغير من العنوان</td><td><code>pages/products/[id].vue</code> ← <code>/products/2</code></td></tr>
+<tr><td><code>app/layouts/default.vue</code></td><td>الإطار حول كل صفحة</td><td>شريط التنقل</td></tr>
+<tr><td><code>app/components/</code></td><td>مكونات تُستخدم في أي مكان دون استيرادها</td><td><code>AddToCart.vue</code></td></tr>
+<tr><td><code>app/error.vue</code></td><td>يظهر عند الأخطاء، ومنها 404</td><td>صفحة «غير موجود»</td></tr>
+<tr><td><code>server/api/</code></td><td>واجهة التطبيق البرمجية، تعمل على الخادم فقط</td><td><code>GET /api/products</code> و<code>POST /api/contact</code></td></tr>
+<tr><td><code>server/utils/</code></td><td>كود خادم تتشاركه مسارات الواجهة</td><td>قاعدة البيانات الوهمية</td></tr>
+<tr><td><code>nuxt.config.ts</code></td><td>الإعدادات، ومنها كيف يُرسم كل عنوان</td><td>قواعد المسارات</td></tr>
+</tbody>
+</table>
+
+<p>ويقوم Nuxt أيضاً <dfn>بالاستيراد التلقائي</dfn>: ‏<code>ref</code> و<code>computed</code> و<code>useFetch</code> والمكونات في <code>components/</code> والدوال في <code>server/utils/</code> متاحة دون سطر <code>import</code>، وبأنواعها كاملة. وهذا يقصّر الملفات، وثمنه أن تعرف من أين تأتي الأسماء، وهو ما يُظهره المحرر حين تمر عليها.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/app.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+// يضبط &lt;html lang dir&gt; وعنوان كل صفحة، على الخادم وفي المتصفح
+useHead({
+  htmlAttrs: { lang: &quot;ar&quot;, dir: &quot;rtl&quot; },
+  titleTemplate: (title) =&gt; (title ? `${title} · متجر بِت` : &quot;متجر بِت&quot;),
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;NuxtLoadingIndicator /&gt;
+  &lt;NuxtLayout&gt;
+    &lt;NuxtPage /&gt;
+  &lt;/NuxtLayout&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">app/layouts/default.vue</div><pre class="code">&lt;template&gt;
+  &lt;nav&gt;
+    &lt;NuxtLink to=&quot;/&quot; class=&quot;brand&quot;&gt;متجر بِت&lt;/NuxtLink&gt;
+    &lt;NuxtLink to=&quot;/products&quot;&gt;المنتجات&lt;/NuxtLink&gt;
+    &lt;NuxtLink to=&quot;/contact&quot;&gt;تواصل معنا&lt;/NuxtLink&gt;
+  &lt;/nav&gt;
+  &lt;main&gt;&lt;slot /&gt;&lt;/main&gt;
+&lt;/template&gt;</pre></div>
+
+<p><code>app.vue</code> هو الجذر. تضبط <code>useHead</code> ‏<code>lang</code> و<code>dir</code> على <code>&lt;html&gt;</code> (الفصل 15) وقالباً للعنوان، وتعمل على الخادم أيضاً، فيحملهما أول HTML أصلاً. و<code>&lt;NuxtLink&gt;</code> هو <code>RouterLink</code> الخاص بـ Nuxt: يغيّر الصفحة دون إعادة تحميل، ويجلب الصفحة الهدف مسبقاً حين يظهر الرابط، فتبدو النقرات فورية.</p>
+
+<h2><span class="sec">17.3</span> <span>البيانات على الخادم</span></h2>
+
+<p>لـ Nuxt نصفان يعملان في مكانين مختلفين. مجلد <code>server/</code> خادم صغير اسمه <dfn>Nitro</dfn> يعمل على الخادم فقط: يستطيع قراءة قاعدة بيانات أو استخدام أسرار. ومجلد <code>app/</code> تطبيق Vue الخاص بك، يعمل على الخادم في الزيارة الأولى وفي المتصفح بعدها. أولاً قاعدة بيانات وهمية ومسار واجهة يقدمها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server/utils/products.ts</div><pre class="code"><span class="c">// قاعدة بيانات وهمية: في تطبيق حقيقي، استعلام إلى PostgreSQL أو استدعاء خدمة أخرى</span>
+<span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; description: string; price: number };
+
+<span class="k">const</span> products: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, description: <span class="s">&quot;الكتاب الأول الودود في السلسلة.&quot;</span>, price: <span class="n">250</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;كوب بِت&quot;</span>, description: <span class="s">&quot;كوب كبير لليالي البرمجة الطويلة.&quot;</span>, price: <span class="n">85</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;قبعة بِت&quot;</span>, description: <span class="s">&quot;تحمي عينيك من الشمس.&quot;</span>, price: <span class="n">120</span> },
+];
+
+<span class="k">const</span> wait = (ms: number) =&gt; <span class="k">new</span> Promise((resolve) =&gt; setTimeout(resolve, ms));
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> getProducts(): Promise&lt;Product[]&gt; {
+  <span class="k">await</span> wait(<span class="n">300</span>);
+  <span class="k">return</span> products;
+}
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> getProduct(id: number): Promise&lt;Product | <span class="k">undefined</span>&gt; {
+  <span class="k">await</span> wait(<span class="n">300</span>);
+  <span class="k">return</span> products.find((p) =&gt; p.id === id);
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">server/api/products.get.ts</div><pre class="code"><span class="c">// مسار خادم: هذا الكود يعمل على الخادم فقط، ويجيب /api/products</span>
+<span class="k">export</span> <span class="k">default</span> defineEventHandler(() =&gt; getProducts());</pre></div>
+
+<p>اسم الملف يقول الطريقة والعنوان: <code>products.get.ts</code> يجيب <code>GET /api/products</code>. ثم الصفحة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/pages/products/index.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+// يعمل على الخادم في الزيارة الأولى، ويستلم المتصفح البيانات مع الصفحة فلا يسأل مرة أخرى
+const { data: products } = await useFetch(&quot;/api/products&quot;);
+// useState تحمل قيمة الخادم إلى المتصفح، فيرسم الاثنان الوقت نفسه
+const rendered = useState(&quot;rendered&quot;, () =&gt; new Date().toISOString().slice(11, 19));
+
+useSeoMeta({ title: &quot;المنتجات&quot;, description: &quot;كتب وأكواب وملصقات لمن يحبون البرمجة.&quot; });
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section class=&quot;card&quot;&gt;
+    &lt;h1&gt;المنتجات&lt;/h1&gt;
+    &lt;ul class=&quot;list&quot;&gt;
+      &lt;li v-for=&quot;p in products&quot; :key=&quot;p.id&quot;&gt;
+        &lt;NuxtLink :to=&quot;`/products/${p.id}`&quot;&gt;{{ p.name }}&lt;/NuxtLink&gt;
+        &lt;span class=&quot;price&quot;&gt;{{ p.price }} جنيهاً&lt;/span&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;p class=&quot;muted&quot;&gt;رُسمت على الخادم الساعة {{ rendered }} UTC&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+
+<p>المفتاح <code>useFetch</code>. فأثناء الرسم على الخادم تستدعي مسار الواجهة مباشرة، دون طلب عبر الشبكة، وتنتظر البيانات، وتضعها في HTML. وتكتب البيانات أيضاً في الصفحة <dfn>حمولةً</dfn> (payload)، فحين يحيي المتصفح الصفحة يعيد استخدام البيانات نفسها بدل أن يطلبها من جديد. أما التنقلات اللاحقة في المتصفح فتستدعي الواجهة كأي طلب. ولأن الإعداد <code>async</code>، لا تُرسل الصفحة حتى تجهز بياناتها.</p>
+
+<p>فماذا يستلم المتصفح؟ <code>curl</code> ينزّل الصفحة دون تشغيل أي JavaScript:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># ماذا يرسل الخادم؟ (دون أي JavaScript)</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products | grep -oE &#x27;&lt;a href=&quot;/products/[0-9]+&quot;[^&gt;]*&gt;[^&lt;]+&#x27;</span>
+&lt;a href=&quot;/products/1&quot; class=&quot;&quot;&gt;البرمجة من الصفر
+&lt;a href=&quot;/products/2&quot; class=&quot;&quot;&gt;كوب بِت
+&lt;a href=&quot;/products/3&quot; class=&quot;&quot;&gt;قبعة بِت
+<span class="c"># قائمة المنتجات مخزنة دقيقة</span>
+<span class="c">$ </span><span class="k">curl -sI localhost:3000/products | grep -i cache-control</span>
+cache-control: s-maxage=60, stale-while-revalidate
+<span class="c"># مسار الخادم يُرجع JSON</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/api/products</span>
+[{&quot;id&quot;:1,&quot;name&quot;:&quot;البرمجة من الصفر&quot;,&quot;description&quot;:&quot;الكتاب الأول الودود في السلسلة.&quot;,&quot;price&quot;:250},{&quot;id&quot;:2,&quot;name&quot;:&quot;كوب بِت&quot;,&quot;description&quot;:&quot;كوب كبير لليالي البرمجة الطويلة.&quot;,&quot;price&quot;:85},{&quot;id&quot;:3,&quot;name&quot;:&quot;قبعة بِت&quot;,&quot;description&quot;:&quot;تحمي عينيك من الشمس.&quot;,&quot;price&quot;:120}]</pre></div>
+
+<p>أسماء المنتجات داخل HTML أصلاً. فمحرك البحث، ومعاينة الرابط في الجوال، والمستخدم على شبكة بطيئة، كلهم يحصلون على المحتوى فوراً.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>localhost:3000/products</span><b>560px</b></div><img src="img/vue-nuxt-ar-shots-products.png" alt=""><figcaption><b>الشكل 17.1:</b> قائمة المنتجات، مصنوعة على الخادم. والوقت في الأسفل يقول متى صنعها الخادم.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: قيمة واحدة في مكانين</p><p>تعمل الصفحة مرتين: مرة على الخادم، ومرة في المتصفح لتُحيا. فـ <code>new Date()</code> في الإعداد ستعطي وقتين مختلفين، ويحذّر Vue من <dfn>عدم تطابق الإحياء</dfn>. وتحل <code>useState</code> ذلك: يحسب الخادم القيمة ويضعها في الحمولة، ويقرؤها المتصفح بدل أن يحسب قيمته. استخدمها لكل قيمة يجب أن تكون واحدة في الجهتين، واقرأ أشياء مثل <code>window.innerWidth</code> في <code>onMounted</code> فقط.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أين يعمل الكود في <code>server/api/</code>، وأين تعمل صفحة في <code>app/pages/</code>؟</li><li>لماذا يرى <code>curl</code> أسماء المنتجات مع أنه لا يشغّل JavaScript أبداً؟</li><li>لماذا لا يطلب المتصفح <code>/api/products</code> من جديد حين يحيي الصفحة؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">17.4</span> <span>مكونات في الجهتين</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/components/AddToCart.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+// يُرسم على الخادم، ثم يُحيا في المتصفح حيث يتفاعل مع الضغطات
+defineProps&lt;{ name: string }&gt;();
+const added = ref(false);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;button type=&quot;button&quot; :class=&quot;{ secondary: added }&quot; :aria-pressed=&quot;added&quot; :aria-label=&quot;`أضف إلى السلة: ${name}`&quot; @click=&quot;added = !added&quot;&gt;
+    {{ added ? &quot;✓ في سلتك&quot; : &quot;أضف إلى السلة&quot; }}
+  &lt;/button&gt;
+&lt;/template&gt;</pre></div>
+
+<p>بخلاف مكونات الخادم في React، يعمل كل مكوّن في Nuxt في المكانين افتراضياً: يُرسم HTML على الخادم فيظهر الزر فوراً، ثم يُحيا في المتصفح حيث يتفاعل مع النقرات. فلا تعلّم المكونات «عميلاً» أو «خادماً». وحين لا يستطيع شيء أن يعمل على الخادم حقاً، كمكتبة خرائط تحتاج <code>window</code>، غلّفه بـ <code>&lt;ClientOnly&gt;</code> فيُرسم في المتصفح وحده.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>localhost:3000/products/2</span><b>560px</b></div><img src="img/vue-nuxt-ar-shots-product.png" alt=""><figcaption><b>الشكل 17.2:</b> صفحة المنتج بعد الضغط على الزر. صُنعت الصفحة على الخادم، وصار الزر تفاعلياً حين أُحييت الصفحة.</figcaption></figure>
+
+<h2><span class="sec">17.5</span> <span>المسارات المتغيرة والأخطاء</span></h2>
+
+<div class="listing" dir="ltr"><div class="listing-title">server/api/products/[id].get.ts</div><pre class="code"><span class="k">export</span> <span class="k">default</span> defineEventHandler(<span class="k">async</span> (event) =&gt; {
+  <span class="k">const</span> product = <span class="k">await</span> getProduct(Number(getRouterParam(event, <span class="s">&quot;id&quot;</span>)));
+  <span class="k">if</span> (!product) <span class="k">throw</span> createError({ statusCode: <span class="n">404</span>, statusMessage: <span class="s">&quot;Not found&quot;</span> });
+  <span class="k">return</span> product;
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">app/pages/products/[id].vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+const route = useRoute();
+const { data: product, error } = await useFetch(`/api/products/${route.params.id}`);
+
+// المنتج المفقود يصير 404 حقيقياً، يعرضه error.vue
+if (error.value) throw createError({ statusCode: 404, statusMessage: &quot;لم نجد هذه الصفحة.&quot;, fatal: true });
+
+useSeoMeta({ title: () =&gt; product.value?.name, description: () =&gt; product.value?.description });
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;article v-if=&quot;product&quot; class=&quot;card&quot;&gt;
+    &lt;h1&gt;{{ product.name }}&lt;/h1&gt;
+    &lt;p&gt;{{ product.description }}&lt;/p&gt;
+    &lt;p class=&quot;price&quot;&gt;{{ product.price }} جنيهاً&lt;/p&gt;
+    &lt;AddToCart :name=&quot;product.name&quot; /&gt;
+    &lt;p&gt;&lt;NuxtLink to=&quot;/products&quot;&gt;كل المنتجات&lt;/NuxtLink&gt;&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/template&gt;</pre></div>
+
+<ul>
+<li>الأقواس في <code>[id]</code> تصنع معاملاً، في الصفحات (<code>useRoute().params.id</code>) وفي مسارات الخادم (<code>getRouterParam</code>).</li>
+<li>تجيب الواجهة عن المنتج المفقود بـ 404 حقيقي مصنوع بـ <code>createError</code>. وتحوّله الصفحة إلى خطأ قاتل، فيعرض Nuxt ‏<code>error.vue</code> <em>ويرسل</em> رمز الحالة 404 الذي تفهمه محركات البحث وأدوات المراقبة.</li>
+<li>تعطي <code>useSeoMeta</code> كل منتج عنوانه ووصفه من البيانات المحمّلة، وتمرير دوال يُبقيها تفاعلية.</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">app/error.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import type { NuxtError } from &quot;#app&quot;;
+
+defineProps&lt;{ error: NuxtError }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;NuxtLayout&gt;
+    &lt;section class=&quot;card&quot;&gt;
+      &lt;h1&gt;{{ error.statusCode }}&lt;/h1&gt;
+      &lt;p&gt;{{ error.statusCode === 404 ? &quot;لم نجد هذه الصفحة.&quot; : error.statusMessage }}&lt;/p&gt;
+      &lt;button type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;clearError({ redirect: &#x27;/&#x27; })&quot;&gt;الرئيسية&lt;/button&gt;
+    &lt;/section&gt;
+  &lt;/NuxtLayout&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>localhost:3000/products/99</span><b>560px</b></div><img src="img/vue-nuxt-ar-shots-missing.png" alt=""><figcaption><b>الشكل 17.3:</b> منتج غير موجود: 404 حقيقي يعرضه <code>error.vue</code> داخل الإطار المعتاد.</figcaption></figure>
+
+<h2><span class="sec">17.6</span> <span>اختيار كيف تُصنع كل صفحة</span></h2>
+
+<p>افتراضياً يرسم Nuxt كل صفحة على الخادم مع كل طلب. و<dfn>قواعد المسارات</dfn> في <code>nuxt.config.ts</code> تغيّر ذلك لكل عنوان، وهذا ما يسمى <dfn>الرسم الهجين</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">nuxt.config.ts</div><pre class="code"><span class="k">export</span> <span class="k">default</span> defineNuxtConfig({
+  compatibilityDate: <span class="s">&quot;2025-07-15&quot;</span>,
+  devtools: { enabled: <span class="k">false</span> },
+  css: [<span class="s">&quot;~/assets/main.css&quot;</span>],
+  <span class="c">// كيف يُصنع كل عنوان: يُرسم مسبقاً وقت البناء، أو يُخزَّن ويُحدَّث في الخلفية</span>
+  routeRules: {
+    <span class="s">&quot;/&quot;</span>: { prerender: <span class="k">true</span> },
+    <span class="s">&quot;/contact&quot;</span>: { prerender: <span class="k">true</span> },
+    <span class="s">&quot;/products&quot;</span>: { swr: <span class="n">60</span> },
+    <span class="s">&quot;/products/**&quot;</span>: { swr: <span class="n">3600</span> },
+  },
+});</pre></div>
+
+<ul>
+<li><strong><code>prerender: true</code></strong>: تُصنع الصفحة مرة واحدة وقت البناء وتُقدَّم ملفاً. وقد أظهرت جلسة البناء في القسم 17.2 ذلك: رُسمت <code>/</code> و<code>/contact</code> مسبقاً، ومع كل منهما <code>_payload.json</code>.</li>
+<li><strong><code>swr: 60</code></strong>: تُصنع الصفحة في الطلب الأول، ثم تُقدَّم من الذاكرة، وبعد 60 ثانية يحصل الزائر التالي على الصفحة المخزنة فوراً بينما تُصنع جديدة في الخلفية. وأظهرت جلسة <code>curl</code> الترويسة التي ترسلها: <code>cache-control: s-maxage=60, stale-while-revalidate</code>، وتفهمها شبكات توزيع المحتوى أيضاً.</li>
+<li><strong>بلا قاعدة</strong>: تُرسم على الخادم مع كل طلب. ومن القواعد الأخرى <code>ssr: false</code>، التي تحوّل قسماً إلى تطبيق متصفح تقليدي، وهي مثالية لقسم الإدارة.</li>
+</ul>
+
+<p>والاختيار لكل عنوان هو المهارة كلها: ثابت لما هو واحد للجميع، ومخزَّن لما يتغير ببطء، ومع كل طلب لما هو شخصي أو حي فقط.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: قرّر الرسم لكل مسار عن قصد</p><p>اكتب قواعد المسارات حين تضيف صفحة، وراجعها كالكود. فالصفحة الشخصية المخزنة خطأً بـ <code>swr</code> قد تعرض بيانات مستخدم لآخر، والصفحة الثابتة المرسومة مع كل طلب خطأً تكلف وقت الخادم في كل زيارة. وكلاهما سطر واحد في <code>nuxt.config.ts</code>، فيستحق ذلك السطر الانتباه.</p></aside>
+
+<h2><span class="sec">17.7</span> <span>النماذج ومسارات الخادم</span></h2>
+
+<p>يرسل نموذج التواصل إلى مسار خادم يتحقق من الحقول بمخطط zod كالذي في الفصل 8، ويجيب بـ 422 مع خطأ لكل حقل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server/api/contact.post.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="k">const</span> schema = z.object({
+  name: z.string().trim().min(<span class="n">1</span>, <span class="s">&quot;اكتب اسمك.&quot;</span>),
+  message: z.string().trim().min(<span class="n">10</span>, <span class="s">&quot;اكتب 10 أحرف على الأقل.&quot;</span>),
+});
+
+<span class="k">export</span> <span class="k">default</span> defineEventHandler(<span class="k">async</span> (event) =&gt; {
+  <span class="c">// الخادم يتحقق من كل حقل: ففحوص المتصفح يستطيع أي أحد إطفاءها</span>
+  <span class="k">const</span> result = schema.safeParse(<span class="k">await</span> readBody(event));
+  <span class="k">if</span> (!result.success) {
+    <span class="k">const</span> errors: Record&lt;string, string&gt; = {};
+    <span class="k">for</span> (<span class="k">const</span> issue <span class="k">of</span> result.error.issues) errors[String(issue.path[<span class="n">0</span>])] ??= issue.message;
+    <span class="k">throw</span> createError({ statusCode: <span class="n">422</span>, data: { errors } });
+  }
+  <span class="c">// احفظ الرسالة، وأرسل بريداً… على الخادم، بأسرار لا تصل إلى المتصفح أبداً</span>
+  <span class="k">return</span> { message: <span class="s">&quot;شكراً يا {name}! سنرد قريباً.&quot;</span>.replace(<span class="s">&quot;{name}&quot;</span>, result.data.name) };
+});</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">app/pages/contact.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+useSeoMeta({ title: &quot;تواصل معنا&quot; });
+
+const form = reactive({ name: &quot;&quot;, message: &quot;&quot; });
+const errors = ref&lt;Record&lt;string, string&gt;&gt;({});
+const done = ref(&quot;&quot;);
+const sending = ref(false);
+
+async function send() {
+  sending.value = true;
+  try {
+    const answer = await $fetch(&quot;/api/contact&quot;, { method: &quot;POST&quot;, body: form });
+    done.value = answer.message;
+  } catch (e) {
+    errors.value = (e as { data?: { data?: { errors?: Record&lt;string, string&gt; } } }).data?.data?.errors ?? {};
+  } finally {
+    sending.value = false;
+  }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section class=&quot;card&quot;&gt;
+    &lt;h1&gt;تواصل معنا&lt;/h1&gt;
+    &lt;p v-if=&quot;done&quot; class=&quot;done&quot; role=&quot;status&quot;&gt;{{ done }}&lt;/p&gt;
+    &lt;form v-else novalidate @submit.prevent=&quot;send&quot;&gt;
+      &lt;label for=&quot;name&quot;&gt;الاسم&lt;/label&gt;
+      &lt;input id=&quot;name&quot; v-model=&quot;form.name&quot; autocomplete=&quot;name&quot; :aria-invalid=&quot;!!errors.name&quot; aria-describedby=&quot;name-error&quot; /&gt;
+      &lt;p v-if=&quot;errors.name&quot; id=&quot;name-error&quot; class=&quot;error&quot;&gt;{{ errors.name }}&lt;/p&gt;
+      &lt;label for=&quot;message&quot;&gt;الرسالة&lt;/label&gt;
+      &lt;textarea id=&quot;message&quot; v-model=&quot;form.message&quot; rows=&quot;3&quot; :aria-invalid=&quot;!!errors.message&quot; aria-describedby=&quot;message-error&quot; /&gt;
+      &lt;p v-if=&quot;errors.message&quot; id=&quot;message-error&quot; class=&quot;error&quot;&gt;{{ errors.message }}&lt;/p&gt;
+      &lt;p&gt;
+        &lt;button type=&quot;submit&quot; :disabled=&quot;sending&quot;&gt;{{ sending ? &quot;جارٍ الإرسال…&quot; : &quot;أرسل&quot; }}&lt;/button&gt;
+      &lt;/p&gt;
+    &lt;/form&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+
+<p><code>$fetch</code> هي fetch الخاصة بـ Nuxt: تستدعي المسار، وتحلل JSON، وترمي خطأً عند رموز الأخطاء، ولأن المسار في المشروع نفسه تعرف حتى نوع الجواب. استخدم <code>useFetch</code> <em>لتحميل</em> بيانات الصفحة، و<code>$fetch</code> في معالجات الأحداث <em>لإرسال</em> البيانات.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>localhost:3000/contact</span><b>560px</b></div><img src="img/vue-nuxt-ar-shots-contact.png" alt=""><figcaption><b>الشكل 17.4:</b> أُرسل برسالة أقصر من اللازم: تحقق الخادم من الحقول وأرجع الأخطاء، فعرضها النموذج تحت كل حقل.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: كل مسار خادم نقطة عامة</p><p>يبدو المسار في <code>server/api/</code> جزءاً من تطبيقك، لكن أي أحد يستطيع استدعاءه بأي بيانات دون صفحاتك. تحقق من كل حقل على الخادم، وتأكد أن المستخدم مسجّل الدخول ومسموح له بهذا، ولا تثق أبداً بقيمة من المتصفح لسعر أو لمعرّف مستخدم. وكل ما في الفصل 14 ينطبق هنا.</p></aside>
+
+<h2><span class="sec">17.8</span> <span>التشغيل في الإنتاج</span></h2>
+
+<p>يصنع <code>npm run build</code> مجلد <code>.output/</code> المكتفي بذاته: ‏<code>node .output/server/index.mjs</code> يشغّل الخادم على المنفذ 3000، دون <code>node_modules</code> لنسخها، فتصغر صور الحاويات. وتكمل الصورة حقيقتان:</p>
+<ul>
+<li><strong>الإعدادات والأسرار</strong> مكانها <code>runtimeConfig</code> في <code>nuxt.config.ts</code>، وتُقرأ بـ <code>useRuntimeConfig()</code>. والقيم خاصة بالخادم إلا ما كان تحت <code>runtimeConfig.public</code> فيُرسل إلى المتصفح. وتُضبط وقت التشغيل بمتغيرات بيئة مثل <code>NUXT_API_SECRET</code> أو <code>NUXT_PUBLIC_SITE_URL</code>.</li>
+<li><strong>الإعدادات المسبقة</strong> (presets): يستطيع Nitro بناء التطبيق نفسه لأهداف أخرى، كالمنصات بلا خوادم أو موقع ثابت كامل بـ <code>nuxt generate</code>، بتغيير إعداد واحد.</li>
+</ul>
+
+<p>ضع أمام خادم Node وكيلاً عكسياً مثل Nginx من أجل HTTPS والضغط، فيصير المتجر جاهزاً للزوار.</p>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>جلب البيانات في <code>onMounted</code></td><td>يرسل الخادم صفحة فارغة، وتصل البيانات لاحقاً</td><td><code>await useFetch</code> في الإعداد</td></tr>
+<tr><td><code>$fetch</code> في الإعداد لتحميل البيانات</td><td>تُجلب البيانات مرتين: على الخادم ثم في المتصفح</td><td><code>useFetch</code> التي تمرر الحمولة</td></tr>
+<tr><td>قيم مختلفة بين الخادم والمتصفح</td><td>تحذيرات عدم تطابق الإحياء</td><td><code>useState</code>، أو القراءة في <code>onMounted</code></td></tr>
+<tr><td><code>window</code> أو <code>localStorage</code> في الإعداد</td><td>خطأ أثناء الرسم على الخادم</td><td><code>onMounted</code> أو <code>&lt;ClientOnly&gt;</code></td></tr>
+<tr><td>سر في <code>runtimeConfig.public</code></td><td>يقرؤه أي أحد في الصفحة</td><td>أبقِ الأسرار في الجزء الخاص</td></tr>
+<tr><td>تخزين صفحة شخصية بـ <code>swr</code></td><td>يرى مستخدم بيانات آخر</td><td>خزّن الصفحات الواحدة للجميع فقط</td></tr>
+<tr><td>الثقة بمدخلات مسار الخادم</td><td>يستطيع أي أحد استدعاءه ببيانات مزوّرة</td><td>تحقق من المدخلات والصلاحيات داخل المسار</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>تُصنع الصفحة في <strong>المتصفح</strong>، أو على <strong>الخادم مع كل طلب</strong>، أو <strong>وقت البناء</strong>، أو تُخزَّن و<strong>يعاد التحقق</strong> منها. و<strong>الإحياء</strong> يجعل HTML الخادم تفاعلياً.</li>
+<li>في Nuxt <strong>المجلدات هي التطبيق</strong>: <code>pages</code> و<code>layouts</code> و<code>components</code> و<code>error.vue</code>، و<code>server/api</code> لواجهة التطبيق البرمجية. والأسماء الشائعة <strong>تُستورد تلقائياً</strong>.</li>
+<li><code>useFetch</code> تحمّل البيانات على الخادم وتمررها إلى المتصفح في <strong>الحمولة</strong>، و<code>$fetch</code> ترسل البيانات من معالجات الأحداث. و<code>useState</code> تُبقي القيم متساوية في الجهتين.</li>
+<li>كل مكوّن يُرسم على الخادم ويُحيا في المتصفح، و<code>&lt;ClientOnly&gt;</code> للكود الذي لا يعمل على الخادم.</li>
+<li><code>createError</code> تصنع رموز أخطاء حقيقية، و<code>error.vue</code> تعرضها. و<code>useHead</code> و<code>useSeoMeta</code> تضبطان الرأس على الخادم.</li>
+<li><strong>قواعد المسارات</strong> تختار لكل عنوان: <code>prerender</code> أو <code>swr</code> أو مع كل طلب. ومسارات الخادم نقاط عامة يجب التحقق منها وحمايتها.</li>
+<li>الإنتاج هو <code>.output/server/index.mjs</code>، والأسرار تعيش في الجزء الخاص من <code>runtimeConfig</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. ‏<code>server/api/</code> يعمل على الخادم فقط، والصفحة تعمل على الخادم في الزيارة الأولى وفي المتصفح بعدها. 2. لأن الخادم رسم الصفحة إلى HTML والبيانات بداخلها قبل إرسالها. 3. لأن <code>useFetch</code> كتبت البيانات في حمولة الصفحة أثناء الرسم على الخادم، فيعيد المتصفح استخدامها.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">شغّل <code>npm run build</code> في نهاية كل مشروع واقرأ أسطر الرسم المسبق. وقبل البناء اكتب كيف تتوقع أن يُصنع كل عنوان، فكل مفاجأة شيء تتعلم منه.</p>
+
+<div class="project">
+<p class="project-label">المشروع 17.1 · سهل</p>
+<h3>متجر يتعثر بلطف</h3>
+<p class="project-goal">أعطِ متجر بِت أخطاء لطيفة، وشريط تحميل، وجزءاً بطيئاً لا يؤخر الصفحة كلها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>error.vue</code> و<code>createError</code> و<code>clearError</code> و<code>&lt;NuxtLoadingIndicator&gt;</code>، و<code>useFetch</code> مع <code>lazy</code>.</p>
+<ol class="steps">
+<li>اجعل <code>error.vue</code> تعرض رسالة مختلفة لـ 404 ولغيره، وتقدم طريقاً إلى الرئيسية بـ <code>clearError({ redirect: "/" })</code>.</li>
+<li>اجعل واجهة المنتجات ترمي 500 لمعرّف واحد، وتحقق مما يراه المستخدمون، وأي رمز حالة يبلّغ عنه <code>curl -I</code>.</li>
+<li>أضف واجهة «مراجعات» بطيئة (1.5 ثانية) وحمّلها في صفحة المنتج بـ <code>useFetch(…, { lazy: true })</code>، فلا تنتظرها الصفحة. واعرض هيكلاً صغيراً ما دامت <code>status</code> تساوي <code>"pending"</code>.</li>
+<li>تأكد بشبكة بطيئة في أدوات المطور أن شريط <code>&lt;NuxtLoadingIndicator&gt;</code> يظهر بين الصفحات.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> الجلب الكسول يرسم الصفحة على الخادم دون تلك البيانات، ويحمّلها في المتصفح. استخدمه للأجزاء أسفل الشاشة أو الأقل أهمية، ولا تستخدمه أبداً للمحتوى الأساسي الذي تحتاجه محركات البحث في HTML.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 17.2 · متوسط</p>
+<h3>مدونة ثابتة تحبها محركات البحث</h3>
+<p class="project-goal">مدونة مقالاتها ملفات Markdown داخل المشروع، تُرسم مسبقاً وقت البناء، ولكل مقال عنوانه ووصفه، ومعها خريطة للموقع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة الملفات في مسارات الخادم، والصفحات المتغيرة، و<code>useSeoMeta</code>، والرسم المسبق، ومسار خادم يُرجع XML.</p>
+<ol class="steps">
+<li>ضع ثلاث مقالات في <code>server/content/</code>، يبدأ كل منها بعنوان وتاريخ. واكتب <code>server/utils/posts.ts</code> يقرؤها بـ <code>node:fs/promises</code>.</li>
+<li>أضف <code>server/api/posts.get.ts</code> و<code>server/api/posts/[slug].get.ts</code>، يحوّلان Markdown إلى HTML على الخادم بمكتبة مثل <code>marked</code>.</li>
+<li>اكتب <code>pages/blog/index.vue</code> و<code>pages/blog/[slug].vue</code> بـ <code>useFetch</code> و<code>useSeoMeta</code>، و404 للأسماء المجهولة.</li>
+<li>أضف القاعدة <code>"/blog/**": { prerender: true }</code>. فيتبع Nitro الروابط من القائمة ويرسم مسبقاً كل مقال يجده.</li>
+<li>أضف <code>server/routes/sitemap.xml.ts</code> الذي يُرجع عنوان كل مقال بـ <code>content-type</code> الصحيح.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مكتبة Markdown تعمل على الخادم فقط، فلا تضيف شيئاً إلى JavaScript المتصفح. فالعمل الثقيل مكانه <code>server/</code>، والمتصفح يجب أن يستلم النتائج لا الأدوات.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 17.3 · تحدٍّ</p>
+<h3>أسعار يغيّرها المدير</h3>
+<p class="project-goal">صفحة إدارة محمية يغيّر فيها صاحب المتجر سعر منتج، فتعرض صفحات المنتجات المخزنة السعر الجديد بعد قليل، ولا يستطيع أحد غيره تغيير شيء.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> ملفات تعريف الارتباط على الخادم، وبرمجيات المسار الوسيطة، ومسارات الخادم مع فحص الصلاحيات، و<code>runtimeConfig</code>، وقواعد المسارات.</p>
+<ol class="steps">
+<li>احفظ الأسعار في <code>Map</code> على الخادم تستطيع دالة <code>updatePrice(id, price)</code> تغييرها.</li>
+<li>اكتب <code>server/api/admin/sign-in.post.ts</code> يقارن كلمة مرور بـ <code>useRuntimeConfig().adminPassword</code>، وعند النجاح يضع ملف تعريف ارتباط <code>httpOnly</code> و<code>secure</code> و<code>sameSite</code> بـ <code>setCookie</code>.</li>
+<li>احمِ الصفحة ببرمجية وسيطة في <code>app/middleware/admin.ts</code> تعيد التوجيه إلى صفحة الدخول حين يغيب ملف تعريف الارتباط، وأعطِ صفحات الإدارة <code>ssr: false</code> في قواعد المسارات.</li>
+<li>اكتب <code>server/api/admin/price.post.ts</code>. يفحص ملف تعريف الارتباط <em>مرة أخرى</em> (فبرمجية الصفحة لا تحمي المسار)، ويتحقق بـ zod أن السعر عدد صحيح موجب، ويستدعي <code>updatePrice</code>.</li>
+<li>غيّر سعراً، ثم افتح صفحة المنتج. واشرح لماذا قد يظهر السعر القديم حتى مدة <code>swr</code>، وكيف يغيّر ذلك وقتٌ أقصر، أو إلغاء التخزين لهذه الصفحة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> فحص الصلاحية يعيش داخل كل مسار خادم، لا في الصفحة التي تعرض النموذج وحدها. فالبرمجية الوسيطة تقرر ما تعرضه <em>الشاشة</em>، والخادم وحده يقرر ما <em>يحدث</em>.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف صفحة <code>/about</code> بعنوانها، ورابطاً إليها في الإطار. هل يجب أن تُرسم مسبقاً؟ أضف القاعدة، وابنِ، وتحقق من الجلسة.</li>
+<li><span class="level">سهل</span> انقل <code>new Date()</code> من <code>useState</code> إلى <code>const</code> عادية في صفحة المنتجات، وشغّل <code>npm run dev</code>، واقرأ التحذير في وحدة تحكم المتصفح. ثم أعدها.</li>
+<li><span class="level medium">متوسط</span> أضف خيار <code>?sort=price</code> إلى <code>/products</code>. مرّره إلى الواجهة بـ <code>useFetch("/api/products", { query: { sort } })</code>، و<code>sort</code> محسوبة من المسار، ورتّب على الخادم.</li>
+<li><span class="level medium">متوسط</span> أضف <code>runtimeConfig: { shopEmail: "" }</code> إلى الإعدادات، واقرأها في <code>contact.post.ts</code> بـ <code>useRuntimeConfig(event)</code>، واضبطها بمتغير البيئة <code>NUXT_SHOP_EMAIL</code> حين تشغّل الخادم. وتأكد بـ <code>curl</code> أنها لا تظهر في الصفحة أبداً.</li>
+<li><span class="level hard">تحدٍّ</span> اجعل <code>contact.post.ts</code> ترفض أكثر من ثلاث رسائل في الدقيقة من العنوان نفسه، مستخدماً <code>getRequestIP(event)</code>، وأجب بـ 429 ورسالة يعرضها النموذج.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 18</p>
+<p>تستطيع الآن أن تبني تطبيق Vue كاملاً وتختبره وتؤمّنه وتطلقه. والفصل التالي عن العمل حول الكود الذي يجعل المرء خبيراً: مراجعة تغييرات الآخرين، ومساعدة المبتدئين على النمو، واتخاذ قرارات تقنية يستطيع الفريق أن يعيش معها.</p>
+</div>
+</section>
 <section class="chapter" style="page: ch18" data-chapter="18" data-code="b2/review/ar">
 <div class="opener"><span class="opener-num">18</span><p class="chapter-kicker">الفصل 18</p><h1>مراجعة الكود والتوجيه والقرارات التقنية</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -8109,6 +8581,16 @@ Cypress               62
 <li>أضف <code>if (from.layer === "features" &amp;&amp; to.layer === "app")</code> (وهي مغطاة أصلاً بقاعدة «لا شيء يستورد من app»، فيثبت الاختبار ذلك)، و<code>if (relative(root, file).startsWith("shared/ui") &amp;&amp; relative(root, resolve(dirname(file), target)).startsWith("shared/api"))</code> برسالتها الخاصة.</li>
 <li>سجل ADR الجيد قصير: فقرة للسياق (المشكلة والضغوط)، وأخرى للقرار (ما اخترته)، وأسطر قليلة للعواقب، الحسنة والسيئة. رقّمه ولا تعدّل سجلاً مقبولاً أبداً: اكتب سجلاً جديداً يحل محله.</li>
 <li>في <code>eslint.config.js</code> أضف لملفات <code>src/shared/**</code>: <code>"no-restricted-imports": ["error", { patterns: ["**/features/**"] }]</code>، ولملفات <code>src/features/**</code> نمطاً مثل <code>"../*/!(index)"</code> أو <code>group</code> للمسارات الداخلية لكل ميزة أخرى. فيبلّغ ESLint عن الاستيرادين نفسيهما في المحرر، وأنت تكتب.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 17</h2>
+<ol class="exercises">
+<li>تستدعي <code>app/pages/about.vue</code> ‏<code>useSeoMeta({ title: "من نحن" })</code> وتعرض نصاً، ويُضاف إلى الإطار <code>&lt;NuxtLink to="/about"&gt;</code>. ولا تقرأ بيانات ولا شيئاً من الطلب، فيجب أن تُرسم مسبقاً: أضف <code>"/about": { prerender: true }</code>، فيسرد البناء <code>/about</code> و<code>_payload.json</code> الخاص بها.</li>
+<li>يحذّر Vue من عدم تطابق الإحياء: فالنص الذي رسمه الخادم (وقته) يختلف عما رسمه المتصفح بعد لحظة. ومع <code>useState</code> يقرأ المتصفح قيمة الخادم من الحمولة، فيتفقان.</li>
+<li>في الصفحة: <code>const route = useRoute(); const sort = computed(() =&gt; route.query.sort === "price" ? "price" : undefined); const { data } = await useFetch("/api/products", { query: { sort } });</code>. ولأن <code>query</code> تحمل قيمة محسوبة، يعيد تغيير العنوان الجلب. وفي المسار: <code>const { sort } = getQuery(event)</code>، و<code>products.toSorted((a, b) =&gt; a.price - b.price)</code> حين تكون <code>"price"</code>.</li>
+<li><code>runtimeConfig: { shopEmail: "" }</code> في <code>nuxt.config.ts</code>، وفي المسار <code>const { shopEmail } = useRuntimeConfig(event)</code>، وشغّل بـ <code>NUXT_SHOP_EMAIL=shop@example.com node .output/server/index.mjs</code>. ولا يجد <code>curl -s localhost:3000/contact | grep shop@</code> شيئاً، لأن القيم الخاصة لا تدخل الحمولة أبداً.</li>
+<li>احفظ <code>Map</code> من <code>getRequestIP(event, { xForwardedFor: true })</code> إلى مصفوفة أوقات، واحذف الأوقات الأقدم من 60 ثانية، وحين يبقى ثلاثة: <code>throw createError({ statusCode: 429, data: { errors: { message: "رسائل كثيرة. انتظر دقيقة من فضلك." } } })</code>. والنموذج يعرض <code>errors.message</code> أصلاً. وفي الإنتاج مع عدة نسخ من الخادم احفظ الأعداد في مخزن مشترك مثل Redis.</li>
 </ol>
 
 

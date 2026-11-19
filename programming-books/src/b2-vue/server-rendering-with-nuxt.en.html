@@ -1,0 +1,250 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/vue/nuxt/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Server Rendering with Nuxt</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>tell apart the ways a page can be made: in the browser, on the server per request, or ahead of time at build</li>
+<li>create a Nuxt app and build its pages, layouts and server routes from folders and files</li>
+<li>load data on the server with <code>useFetch</code>, and carry it to the browser without asking twice</li>
+<li>choose, per address, whether a page is prerendered, cached or made on every request</li>
+<li>handle forms and errors on the server, and show a real 404</li>
+<li>read the build’s output and run the app in production</li>
+</ul>
+</div>
+
+<p class="lead">Every Vue app in this book so far started as an almost empty HTML page. The browser downloaded JavaScript, ran it, fetched the data, and only then drew something. That works well for apps behind a login, but the user waits for a blank page, slow phones wait longest, and a search engine or a link preview may see nothing at all. <strong>Nuxt</strong> is the framework around Vue that can make the HTML on the server instead, and send a page that is complete before any JavaScript runs. It also gives your app a server of its own, so pages and the API that feeds them live in one project.</p>
+
+<aside class="bit" data-mood="think"><p>Nuxt does not replace what you learned. Components, props, refs, composables and forms all work the same. What changes is <em>where</em> each piece runs, and that one question is the whole chapter.</p></aside>
+
+<h2>{{n}}.1 Four ways to make a page</h2>
+
+<table>
+<thead><tr><th>Way</th><th>When the HTML is made</th><th>Good for</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td><dfn>Client-side rendering</dfn> (CSR)</td><td>In the browser, after the JavaScript runs</td><td>Dashboards and apps behind a login</td><td>A blank page at first, weak for search engines</td></tr>
+<tr><td><dfn>Server-side rendering</dfn> (SSR)</td><td>On the server, for every request</td><td>Pages that differ per user or per minute</td><td>Server work on every visit</td></tr>
+<tr><td><dfn>Static generation</dfn> (SSG)</td><td>Once, when the app is built</td><td>Pages that are the same for everyone: articles, docs, landing pages</td><td>Stale until the next build</td></tr>
+<tr><td><dfn>Stale-while-revalidate</dfn> (SWR, also called ISR)</td><td>On the first request, then again in the background after a set time</td><td>Mostly-static pages whose data changes sometimes</td><td>Visitors may see data a little old</td></tr>
+</tbody>
+</table>
+
+<p>In all three server ways, the browser still downloads the Vue code afterwards, and Vue attaches event handlers to the HTML that is already there. This step is called <dfn>hydration</dfn>: the page appears first and becomes interactive a moment later. Nuxt lets you choose the way <em>per address</em>, which is why it suits real sites where the home page, the product pages and the account page need different things.</p>
+
+<h2>{{n}}.2 Creating the app</h2>
+
+<p>We will build the same small shop for Bit as in the React edition: a home page, a product list, a page per product, a contact form and a tiny API. The official starter creates the project:</p>
+
+<pre data-code="build.sh" data-title="Terminal"></pre>
+
+<p>That transcript was recorded while this chapter’s example was built. Ignore the prerendering lines for now: section {{n}}.6 explains them. During development you run <code>npm run dev</code> and open <code>http://localhost:3000</code>; every save updates the page.</p>
+
+<h3>Folders are the app</h3>
+
+<p>Nuxt has no route list like the one you wrote for Vue Router in Chapter {{n-10}}, and no <code>main.ts</code>. The folders <em>are</em> the app, and a few names have a meaning:</p>
+
+<table>
+<thead><tr><th>File or folder</th><th>Its job</th><th>In our shop</th></tr></thead>
+<tbody>
+<tr><td><code>app/pages/</code></td><td>One file per address</td><td><code>pages/products/index.vue</code> → <code>/products</code></td></tr>
+<tr><td><code>app/pages/…/[id].vue</code></td><td>A part of the address that varies</td><td><code>pages/products/[id].vue</code> → <code>/products/2</code></td></tr>
+<tr><td><code>app/layouts/default.vue</code></td><td>The frame around every page</td><td>The navigation bar</td></tr>
+<tr><td><code>app/components/</code></td><td>Components, usable anywhere without importing them</td><td><code>AddToCart.vue</code></td></tr>
+<tr><td><code>app/error.vue</code></td><td>Shown for errors, including a 404</td><td>Our “not found” page</td></tr>
+<tr><td><code>server/api/</code></td><td>The app’s own API, run only on the server</td><td><code>GET /api/products</code>, <code>POST /api/contact</code></td></tr>
+<tr><td><code>server/utils/</code></td><td>Server code shared by the API routes</td><td>The pretend database</td></tr>
+<tr><td><code>nuxt.config.ts</code></td><td>Settings, including how each address is rendered</td><td>Route rules</td></tr>
+</tbody>
+</table>
+
+<p>Nuxt also <dfn>auto-imports</dfn>: <code>ref</code>, <code>computed</code>, <code>useFetch</code>, the components in <code>components/</code> and the functions in <code>server/utils/</code> are available without an <code>import</code> line, fully typed. It keeps files short; the price is that you must know where names come from, which the editor shows on hover.</p>
+
+<pre data-code="app/app.vue" data-title="app/app.vue"></pre>
+<pre data-code="app/layouts/default.vue" data-title="app/layouts/default.vue"></pre>
+
+<p><code>app.vue</code> is the root. <code>useHead</code> sets <code>lang</code> and <code>dir</code> on <code>&lt;html&gt;</code> (Chapter {{n-2}}) and a title template, and it works on the server too, so the very first HTML already carries them. <code>&lt;NuxtLink&gt;</code> is Nuxt’s <code>RouterLink</code>: it changes the page without a reload, and prefetches the target page when the link comes into view, so clicks feel instant.</p>
+
+<h2>{{n}}.3 Data on the server</h2>
+
+<p>Nuxt has two halves that run in different places. The <code>server/</code> folder is a small server, called <dfn>Nitro</dfn>, that runs only on the server: it can read a database or use secrets. The <code>app/</code> folder is your Vue app, which runs on the server for the first visit and in the browser after that. First, a pretend database and an API route that serves it:</p>
+
+<pre data-code="server/utils/products.ts" data-title="server/utils/products.ts"></pre>
+<pre data-code="server/api/products.get.ts" data-title="server/api/products.get.ts"></pre>
+
+<p>The file name says the method and the address: <code>products.get.ts</code> answers <code>GET /api/products</code>. Now the page:</p>
+
+<pre data-code="app/pages/products/index.vue" data-title="app/pages/products/index.vue"></pre>
+
+<p><code>useFetch</code> is the key. During server rendering, it calls the API route directly, without a network request, waits for the data, and puts it into the HTML. It also writes the data into the page as a <dfn>payload</dfn>, so when the browser hydrates, it reuses the same data instead of asking for it again. Later navigations in the browser call the API like any request. And because the setup is <code>async</code>, the page is not sent until its data is ready.</p>
+
+<p>What does the browser receive? <code>curl</code> downloads a page without running any JavaScript:</p>
+
+<pre data-code="curl.sh" data-title="Terminal"></pre>
+
+<p>The product names are already inside the HTML. A search engine, a link preview on a phone, or a user on a slow network gets the content immediately.</p>
+
+<figure data-img="shots/products.png" data-url="localhost:3000/products"><figcaption><b>Figure {{n}}.1:</b> The product list, made on the server. The time at the bottom shows when the server made it.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title">Watch out: one value, two places</p><p>The page runs twice: once on the server, once in the browser to hydrate. <code>new Date()</code> in the setup would give two different times, and Vue would warn about a <dfn>hydration mismatch</dfn>. <code>useState</code> solves it: the server computes the value, puts it in the payload, and the browser reads it instead of computing its own. Use it for any value that must be the same on both sides; read things like <code>window.innerWidth</code> only in <code>onMounted</code>.</p></aside>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Where does the code in <code>server/api/</code> run, and where does a page in <code>app/pages/</code> run?</li><li>Why does <code>curl</code> see the product names, although it never runs JavaScript?</li><li>Why does the browser not request <code>/api/products</code> again when it hydrates the page?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Components on both sides</h2>
+
+<pre data-code="app/components/AddToCart.vue" data-title="app/components/AddToCart.vue"></pre>
+
+<p>Unlike React Server Components, every Nuxt component runs in both places by default: it is rendered to HTML on the server, so the button appears at once, and hydrated in the browser, where it reacts to clicks. You do not mark components as “client” or “server”. When something truly cannot run on the server, such as a map library that needs <code>window</code>, wrap it in <code>&lt;ClientOnly&gt;</code>, which renders it only in the browser.</p>
+
+<figure data-img="shots/product.png" data-url="localhost:3000/products/2"><figcaption><b>Figure {{n}}.2:</b> The product page after clicking the button. The page was made on the server; the button became interactive when the page hydrated.</figcaption></figure>
+
+<h2>{{n}}.5 Dynamic routes and errors</h2>
+
+<pre data-code="server/api/products/[id].get.ts" data-title="server/api/products/[id].get.ts"></pre>
+<pre data-code="app/pages/products/[id].vue" data-title="app/pages/products/[id].vue"></pre>
+
+<ul>
+<li>The brackets in <code>[id]</code> make a parameter, both for pages (<code>useRoute().params.id</code>) and for server routes (<code>getRouterParam</code>).</li>
+<li>The API answers a missing product with a real 404, made with <code>createError</code>. The page turns that into a fatal error, so Nuxt shows <code>error.vue</code> <em>and</em> sends the status code 404, which search engines and monitoring understand.</li>
+<li><code>useSeoMeta</code> gives each product its own title and description, from the loaded data. Passing functions keeps them reactive.</li>
+</ul>
+
+<pre data-code="app/error.vue" data-title="app/error.vue"></pre>
+
+<figure data-img="shots/missing.png" data-url="localhost:3000/products/99"><figcaption><b>Figure {{n}}.3:</b> A product that does not exist: a real 404, shown by <code>error.vue</code> inside the usual layout.</figcaption></figure>
+
+<h2>{{n}}.6 Choosing how each page is made</h2>
+
+<p>By default, Nuxt renders every page on the server for every request. <dfn>Route rules</dfn> in <code>nuxt.config.ts</code> change that per address, which is called <dfn>hybrid rendering</dfn>:</p>
+
+<pre data-code="nuxt.config.ts" data-title="nuxt.config.ts"></pre>
+
+<ul>
+<li><strong><code>prerender: true</code></strong>: the page is made once, at build time, and served as a file. The build transcript in section {{n}}.2 showed it: <code>/</code> and <code>/contact</code> were prerendered, each with its <code>_payload.json</code>.</li>
+<li><strong><code>swr: 60</code></strong>: the page is made on the first request, then served from a cache; after 60 seconds, the next visitor still gets the cached page at once while a fresh one is made in the background. The <code>curl</code> transcript showed the header it sends: <code>cache-control: s-maxage=60, stale-while-revalidate</code>, which CDNs understand too.</li>
+<li><strong>No rule</strong>: rendered on the server for every request. Other rules include <code>ssr: false</code>, which turns a section into a classic browser-only app, ideal for an admin area.</li>
+</ul>
+
+<p>Choosing per address is the whole skill: static for what is the same for everyone, cached for what changes slowly, and per request only for what is personal or live.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: decide rendering per route, on purpose</p><p>Write the route rules when you add a page, and review them like code. A personal page accidentally cached with <code>swr</code> can show one user’s data to another; a static page accidentally rendered per request costs server time on every visit. Both are one line in <code>nuxt.config.ts</code>, so that line deserves attention.</p></aside>
+
+<h2>{{n}}.7 Forms and server routes</h2>
+
+<p>The contact form posts to a server route, which validates the fields with the same kind of zod schema as in Chapter {{n-9}}, and answers 422 with an error per field:</p>
+
+<pre data-code="server/api/contact.post.ts" data-title="server/api/contact.post.ts"></pre>
+<pre data-code="app/pages/contact.vue" data-title="app/pages/contact.vue"></pre>
+
+<p><code>$fetch</code> is Nuxt’s fetch: it calls the route, parses JSON, throws on error statuses, and, because the route lives in the same project, it even knows the type of the answer. Use <code>useFetch</code> to <em>load</em> data for a page, and <code>$fetch</code> in event handlers to <em>send</em> data.</p>
+
+<figure data-img="shots/contact.png" data-url="localhost:3000/contact"><figcaption><b>Figure {{n}}.4:</b> Sent with a message that is too short: the server checked the fields and returned the errors, which the form shows under each field.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title">Watch out: every server route is public</p><p>A route in <code>server/api/</code> feels like part of your app, but anyone can call it with any data, without your pages. Validate every field on the server, check that the user is signed in and allowed to do this, and never trust a value from the browser for a price or a user id. Everything from Chapter {{n-3}} applies here.</p></aside>
+
+<h2>{{n}}.8 Running in production</h2>
+
+<p><code>npm run build</code> makes <code>.output/</code>, a self-contained folder: <code>node .output/server/index.mjs</code> starts the server on port 3000, with no <code>node_modules</code> to copy, which makes small container images. Two more facts complete the picture:</p>
+<ul>
+<li><strong>Configuration and secrets</strong> go in <code>runtimeConfig</code> in <code>nuxt.config.ts</code>, and are read with <code>useRuntimeConfig()</code>. Values are private, server-only, unless they are under <code>runtimeConfig.public</code>, which is sent to the browser. They can be set at start time with environment variables such as <code>NUXT_API_SECRET</code> or <code>NUXT_PUBLIC_SITE_URL</code>.</li>
+<li><strong>Presets</strong>: Nitro can build the same app for other targets, such as serverless platforms or a fully static site with <code>nuxt generate</code>, by changing one setting.</li>
+</ul>
+
+<p>Put a reverse proxy such as Nginx in front of the Node server for HTTPS and compression, and the shop is ready for visitors.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Fetching data in <code>onMounted</code></td><td>The server sends an empty page; data arrives later</td><td><code>await useFetch</code> in the setup</td></tr>
+<tr><td><code>$fetch</code> in the setup to load data</td><td>The data is fetched twice: on the server and again in the browser</td><td><code>useFetch</code>, which passes the payload</td></tr>
+<tr><td>Different values on server and browser</td><td>Hydration mismatch warnings</td><td><code>useState</code>, or read in <code>onMounted</code></td></tr>
+<tr><td><code>window</code> or <code>localStorage</code> in the setup</td><td>An error during server rendering</td><td><code>onMounted</code> or <code>&lt;ClientOnly&gt;</code></td></tr>
+<tr><td>A secret in <code>runtimeConfig.public</code></td><td>Anyone can read it in the page</td><td>Keep secrets in the private part</td></tr>
+<tr><td>Caching a personal page with <code>swr</code></td><td>One user sees another’s data</td><td>Cache only pages that are the same for everyone</td></tr>
+<tr><td>Trusting a server route’s input</td><td>Anyone can call it with forged data</td><td>Validate and check permissions in the route</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>A page can be made in the <strong>browser</strong>, on the <strong>server per request</strong>, <strong>at build time</strong>, or cached and <strong>revalidated</strong>. <strong>Hydration</strong> makes server HTML interactive.</li>
+<li>In Nuxt, <strong>folders are the app</strong>: <code>pages</code>, <code>layouts</code>, <code>components</code>, <code>error.vue</code>, and <code>server/api</code> for the app’s own API. Common names are <strong>auto-imported</strong>.</li>
+<li><code>useFetch</code> loads data on the server and passes it to the browser in the <strong>payload</strong>; <code>$fetch</code> sends data from event handlers. <code>useState</code> keeps values equal on both sides.</li>
+<li>Every component renders on the server and hydrates in the browser; <code>&lt;ClientOnly&gt;</code> is for code that cannot run on the server.</li>
+<li><code>createError</code> makes real error statuses; <code>error.vue</code> shows them. <code>useHead</code> and <code>useSeoMeta</code> set the head on the server.</li>
+<li><strong>Route rules</strong> choose per address: <code>prerender</code>, <code>swr</code>, or per request. Server routes are public endpoints to validate and protect.</li>
+<li>Production is <code>.output/server/index.mjs</code>; secrets live in the private <code>runtimeConfig</code>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>server/api/</code> runs only on the server; a page runs on the server for the first visit, and in the browser after that. 2. Because the server already rendered the page to HTML, with the data inside, before sending it. 3. Because <code>useFetch</code> wrote the data into the page’s payload during server rendering, and the browser reuses it.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Run <code>npm run build</code> at the end of every project and read the prerendering lines. Before you build, write down how you expect each address to be made; every surprise is something you can learn from.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A shop that fails gracefully</h3>
+<p class="project-goal">Give Bit’s shop friendly errors, a loading bar, and a slow part that does not hold the whole page back.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>error.vue</code>, <code>createError</code>, <code>clearError</code>, <code>&lt;NuxtLoadingIndicator&gt;</code>, and <code>useFetch</code> with <code>lazy</code>.</p>
+<ol class="steps">
+<li>Make <code>error.vue</code> show a different message for 404 and for everything else, and offer a way home with <code>clearError({ redirect: "/" })</code>.</li>
+<li>Make the product API throw a 500 for one id, and check what users see, and which status code <code>curl -I</code> reports.</li>
+<li>Add a slow “Reviews” API (1.5 s) and load it on the product page with <code>useFetch(…, { lazy: true })</code>, so the page does not wait for it. Show a small skeleton while <code>status</code> is <code>"pending"</code>.</li>
+<li>Check with a slow network in the DevTools that the loading bar of <code>&lt;NuxtLoadingIndicator&gt;</code> appears between pages.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a lazy fetch renders the page on the server without that data, and loads it in the browser. Use it for parts below the fold or that matter less; never for the main content, which search engines need in the HTML.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A static blog that search engines love</h3>
+<p class="project-goal">A blog whose articles are Markdown files in the project, prerendered at build time, with a title and description per article and a sitemap.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading files in server routes, dynamic pages, <code>useSeoMeta</code>, prerendering, and a server route that returns XML.</p>
+<ol class="steps">
+<li>Put three articles in <code>server/content/</code>, each starting with a title and a date. Write <code>server/utils/posts.ts</code> that reads them with <code>node:fs/promises</code>.</li>
+<li>Add <code>server/api/posts.get.ts</code> and <code>server/api/posts/[slug].get.ts</code>, turning Markdown into HTML on the server with a library such as <code>marked</code>.</li>
+<li>Write <code>pages/blog/index.vue</code> and <code>pages/blog/[slug].vue</code> with <code>useFetch</code>, <code>useSeoMeta</code>, and a 404 for unknown slugs.</li>
+<li>Add the rule <code>"/blog/**": { prerender: true }</code>. Nitro follows the links from the list and prerenders every article it finds.</li>
+<li>Add <code>server/routes/sitemap.xml.ts</code>, which returns the address of every article with the right <code>content-type</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the Markdown library runs only on the server, so it adds nothing to the browser’s JavaScript. Heavy work belongs in <code>server/</code>; the browser should receive results, not tools.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Prices an admin can change</h3>
+<p class="project-goal">A protected admin page where the shop owner changes a product’s price. The cached product pages show the new price soon after, and nobody else can change anything.</p>
+<p class="project-skills"><strong>You will practise:</strong> cookies on the server, route middleware, server routes with permission checks, <code>runtimeConfig</code>, and route rules.</p>
+<ol class="steps">
+<li>Keep the prices in a server-side <code>Map</code> that a <code>updatePrice(id, price)</code> function can change.</li>
+<li>Write <code>server/api/admin/sign-in.post.ts</code>, which compares a password with <code>useRuntimeConfig().adminPassword</code> and, on success, sets an <code>httpOnly</code>, <code>secure</code>, <code>sameSite</code> cookie with <code>setCookie</code>.</li>
+<li>Protect the page with a route middleware in <code>app/middleware/admin.ts</code> that redirects to the sign-in page when the cookie is missing, and give the admin pages <code>ssr: false</code> in the route rules.</li>
+<li>Write <code>server/api/admin/price.post.ts</code>. It checks the cookie <em>again</em> (the page middleware does not protect the route), validates the price with zod as a positive whole number, and calls <code>updatePrice</code>.</li>
+<li>Change a price, then open the product page. Explain why the old price can appear for up to the <code>swr</code> time, and how a shorter time, or no cache for this page, changes that.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the permission check lives inside every server route, never only in the page that shows the form. A middleware decides what the <em>screen</em> shows; only the server decides what <em>happens</em>.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add an <code>/about</code> page with its own title, and a link to it in the layout. Should it be prerendered? Add the rule, build, and check the transcript.</li>
+<li><span class="level">Easy</span> Move <code>new Date()</code> out of <code>useState</code> into a plain <code>const</code> in the products page, run <code>npm run dev</code>, and read the warning in the browser console. Then put it back.</li>
+<li><span class="level">Medium</span> Add a <code>?sort=price</code> option to <code>/products</code>. Pass it to the API with <code>useFetch("/api/products", { query: { sort } })</code>, where <code>sort</code> is computed from the route, and sort on the server.</li>
+<li><span class="level">Medium</span> Add <code>runtimeConfig: { shopEmail: "" }</code> to the config, read it in <code>contact.post.ts</code> with <code>useRuntimeConfig(event)</code>, and set it with the environment variable <code>NUXT_SHOP_EMAIL</code> when starting the server. Check with <code>curl</code> that it never appears in the page.</li>
+<li><span class="level">Challenge</span> Make <code>contact.post.ts</code> refuse more than three messages per minute from the same address, using <code>getRequestIP(event)</code>, and answer 429 with a message the form shows.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>You can now build, test, secure and ship a complete Vue application. The next chapter is about the work around the code that makes someone senior: reviewing other people’s changes, helping juniors grow, and making technical decisions that a team can live with.</p>
+</div>
+</section>
