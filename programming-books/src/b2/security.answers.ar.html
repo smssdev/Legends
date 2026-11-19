@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>مع <code>innerHTML</code> يعمل <code>&lt;svg onload="window.hacked=true"&gt;</code>، ويعمل <code>&lt;iframe src="javascript:…"&gt;</code> في متصفحات كثيرة: فكل عنصر بخاصية معالج حدث باب. ومع <code>textContent</code> لا يعمل أي منها. والدرس: الحيل أكثر بكثير من أن تُمنع واحدة واحدة.</li>
+<li>ملفات جلسات المواقع جيدة الإدارة تكون عادة <code>HttpOnly</code> و<code>Secure</code> و<code>SameSite=Lax</code> أو <code>Strict</code>. أما ملفات التحليلات والتفضيلات فكثيراً ما تقرؤها JavaScript، ولا بأس بذلك ما دامت لا تحمل أسراراً.</li>
+<li>في وضع التبليغ فقط ما زال Console يبلّغ عن المخالفة، لكن السكربت المضمّن <em>يعمل</em>: فتصير «عمل السكربت؟» نعم. ولهذا وُجد هذا الوضع: ترى كل ما كانت السياسة ستمنعه في موقع حي، فتصلحه، ثم تفرضها.</li>
+<li><code>function safeUrl(input: string): string { try { const url = new URL(input); return url.protocol === "https:" || url.protocol === "http:" ? url.href : "#"; } catch { return "#"; } }</code>. واختبر رابط https عادياً، ورابط http، و<code>javascript:alert(1)</code>، و<code>JavaScript:alert(1)</code> (بحروف كبيرة)، ونصاً ليس رابطاً أصلاً.</li>
+<li>يسمّي التنبيه الحزمة، والإصدارات المصابة والمصلحة، ودرجة الخطورة، وكيف تُستغل العلّة. وكثيراً ما تكون الدالة المصابة في أداة بناء لا تصل إلى المستخدمين، أو في كود لا تستدعيه أبداً، فيكون الرد الصحيح ترقية، أو ملاحظة تشرح لماذا لا ينطبق.</li>
+</ol>

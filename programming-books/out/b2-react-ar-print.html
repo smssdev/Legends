@@ -31,6 +31,8 @@
 @page ch11:first { @top-center { content: none; } }
 @page ch12 { @top-center { content: "الفصل 12: الأداء وCore Web Vitals"; } }
 @page ch12:first { @top-center { content: none; } }
+@page ch13 { @top-center { content: "الفصل 13: أمان الواجهات"; } }
+@page ch13:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -5641,6 +5643,372 @@ CSS     0.0 KB  الميزانية  15.0 KB  ✓ ضمن الميزانية</pre>
 <p>التطبيق السريع سهل الوصول المختبر يجب أن يكون آمناً أيضاً. وفي الفصل التالي ستقابل الهجمات التي تستهدف الواجهات، مثل XSS وCSRF وclickjacking، والدفاعات التي توقفها، من التهريب وسياسة أمان المحتوى إلى المصادقة الآمنة.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch13" data-chapter="13" data-code="b2/security/ar">
+<div class="opener"><span class="opener-num">13</span><p class="chapter-kicker">الفصل 13</p><h1>أمان الواجهات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تفكر كمهاجم: ما تستطيع الواجهة حمايته وما لا تستطيع</li>
+<li>تمنع البرمجة عبر المواقع (XSS) بالتهريب والتنظيف وتجنب الواجهات الخطرة</li>
+<li>تضيف سياسة أمان المحتوى خط دفاع ثانياً</li>
+<li>تحفظ الجلسات بأمان، وتوقف تزوير الطلبات عبر المواقع (CSRF) وخداع النقر</li>
+<li>تبقي اعتمادياتك وسلسلة بنائك جديرة بالثقة</li>
+<li>تفحص ترويسات الأمان التي يرسلها الموقع</li>
+</ul>
+</div>
+
+<p class="lead">كل مدخل في تطبيقك باب، وبعض الزوار سيجرّبون كل باب. وفي هذا الفصل ستشغّل هجمات حقيقية على صفحات صغيرة في حاسوبك، وتراها تنجح، ثم ترى الدفاعات التي توقفها. والغاية ليست الخوف بل العادات: حفنة قواعد تُطبَّق كل يوم تمنع الأغلبية الكبيرة من أخطاء أمان الواجهات.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أهم جملة في هذا الفصل: <strong>المتصفح ملك المستخدم</strong>. فأي أحد يستطيع فتح أدوات المطور، وتغيير JavaScript الخاصة بك، وتخطي تحققك، وإرسال أي طلب يريده. فالواجهة تحمي المستخدمين من <em>الآخرين</em>، والخادم وحده يحمي البيانات.</p></div></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا تهاجم إلا ما تملك</p><p>كل هجوم في هذا الفصل يعمل على صفحة يقدمها حاسوبك أنت. وتجربة الشيء نفسه على موقع لا تملكه، دون إذن مكتوب، غير قانونية في معظم الدول، حتى لو كانت «لمجرد المعرفة».</p></aside>
+
+<h2><span class="sec">13.1</span> <span>البرمجة عبر المواقع (XSS)</span></h2>
+
+<p><dfn>البرمجة عبر المواقع</dfn> (Cross-site scripting) تحدث حين يُعامل نص من مستخدم ككود في متصفح شخص آخر. فيعمل سكربت المهاجم بهوية الضحية: يقرأ الصفحة، ويرسل طلبات باسم الضحية، أو يعرض نموذج دخول مزيفاً. حذّر الكتاب الأول من <code>innerHTML</code>، وهذا الهجوم حقيقياً. يقدّم مختبر صغير الصفحات ويفتحها في Chromium:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lab.ts</div><pre class="code"><span class="c">// A small lab: serves pages from this folder with chosen headers, and opens them in Chromium.</span>
+<span class="k">import</span> { createReadStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { createServer, <span class="k">type</span> IncomingMessage, <span class="k">type</span> ServerResponse } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
+<span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
+<span class="k">import</span> { extname, join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
+
+<span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
+<span class="k">export</span> <span class="k">type</span> Page = {
+  goto(url: string): Promise&lt;unknown&gt;;
+  on(event: <span class="s">&quot;console&quot;</span>, fn: (m: { text(): string }) =&gt; void): void;
+  evaluate&lt;T, A&gt;(fn: (arg: A) =&gt; T | Promise&lt;T&gt;, arg: A): Promise&lt;T&gt;;
+  waitForTimeout(ms: number): Promise&lt;void&gt;;
+};
+<span class="k">type</span> Browser = { newPage(): Promise&lt;Page&gt;; close(): Promise&lt;void&gt; };
+<span class="k">const</span> { chromium } = require(<span class="s">&quot;playwright&quot;</span>) as { chromium: { launch(): Promise&lt;Browser&gt; } };
+
+<span class="k">const</span> TYPES: Record&lt;string, string&gt; = { <span class="s">&quot;.html&quot;</span>: <span class="s">&quot;text/html&quot;</span>, <span class="s">&quot;.js&quot;</span>: <span class="s">&quot;text/javascript&quot;</span>, <span class="s">&quot;.mjs&quot;</span>: <span class="s">&quot;text/javascript&quot;</span> };
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> withLab(headers: Record&lt;string, string&gt;, run: (page: Page, base: string) =&gt; Promise&lt;void&gt;) {
+  <span class="k">const</span> server = createServer((req: IncomingMessage, res: ServerResponse) =&gt; {
+    <span class="k">const</span> path = join(process.cwd(), <span class="k">new</span> URL(req.url ?? <span class="s">&quot;/&quot;</span>, <span class="s">&quot;http://x&quot;</span>).pathname);
+    res.setHeader(<span class="s">&quot;Content-Type&quot;</span>, TYPES[extname(path)] ?? <span class="s">&quot;application/octet-stream&quot;</span>);
+    <span class="k">for</span> (<span class="k">const</span> [k, v] <span class="k">of</span> Object.entries(headers)) res.setHeader(k, v);
+    createReadStream(path).on(<span class="s">&quot;error&quot;</span>, () =&gt; res.writeHead(<span class="n">404</span>).end()).pipe(res);
+  });
+  <span class="k">await</span> <span class="k">new</span> Promise&lt;void&gt;((ready) =&gt; server.listen(<span class="n">0</span>, ready));
+  <span class="k">const</span> base = <span class="s">`http://localhost:${(server.address() as AddressInfo).port}/`</span>;
+  <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
+  <span class="k">try</span> {
+    <span class="k">await</span> run(<span class="k">await</span> browser.newPage(), base);
+  } <span class="k">finally</span> {
+    <span class="k">await</span> browser.close();
+    server.close();
+  }
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">xss.ts</div><pre class="code"><span class="k">import</span> { withLab } <span class="k">from</span> <span class="s">&quot;./lab&quot;</span>;
+
+<span class="c">// What an attacker types into the comment box</span>
+<span class="k">const</span> comment = <span class="s">`&lt;img src=&quot;x&quot; onerror=&quot;window.hacked = true&quot;&gt; كتاب جميل!`</span>;
+
+<span class="k">await</span> withLab({}, <span class="k">async</span> (page, base) =&gt; {
+  <span class="k">for</span> (<span class="k">const</span> way <span class="k">of</span> [<span class="s">&quot;innerHTML&quot;</span>, <span class="s">&quot;textContent&quot;</span>] as <span class="k">const</span>) {
+    <span class="k">await</span> page.goto(base + <span class="s">&quot;comments.html&quot;</span>);
+    <span class="k">const</span> result = <span class="k">await</span> page.evaluate(
+      <span class="k">async</span> ({ way, comment }) =&gt; {
+        <span class="k">const</span> li = document.createElement(<span class="s">&quot;li&quot;</span>);
+        <span class="k">if</span> (way === <span class="s">&quot;innerHTML&quot;</span>) li.innerHTML = comment; <span class="c">// dangerous</span>
+        <span class="k">else</span> li.textContent = comment; <span class="c">// safe</span>
+        document.querySelector(<span class="s">&quot;#list&quot;</span>)!.append(li);
+        <span class="k">await</span> <span class="k">new</span> Promise((r) =&gt; setTimeout(r, <span class="n">100</span>)); <span class="c">// give the broken image time to fire onerror</span>
+        <span class="k">return</span> { ran: (window as { hacked?: boolean }).hacked === <span class="k">true</span>, html: li.innerHTML };
+      },
+      { way, comment },
+    );
+    console.log(<span class="s">`${way.padEnd(12)} عمل السكربت؟ ${result.ran ? &quot;نعم&quot; : &quot;لا&quot;}`</span>);
+  }
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>innerHTML    عمل السكربت؟ نعم
+textContent  عمل السكربت؟ لا</pre></div>
+
+<p>في «التعليق» صورة عنوانها غير موجود، ومعالج <code>onerror</code>. فمع <code>innerHTML</code> يبني المتصفح تلك الصورة، ويفشل التحميل، فيعمل كود المهاجم. ولم يحتج الأمر وسم <code>&lt;script&gt;</code> أصلاً. أما مع <code>textContent</code> فتُعرض الحروف نفسها فقط.</p>
+
+
+<p>تهرّب React كل ما تضعه بين الأقواس، فـ JSX العادية آمنة افتراضياً. والخطر في المخارج من هذا الأمان:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">escape.tsx</div><pre class="code">import { renderToStaticMarkup } from &quot;react-dom/server&quot;;
+
+const comment = `&lt;img src=&quot;x&quot; onerror=&quot;alert(&#x27;hacked&#x27;)&quot;&gt;`;
+
+// Text in braces is escaped: it is shown, never run
+console.log(renderToStaticMarkup(&lt;p&gt;{comment}&lt;/p&gt;));
+
+// The name is a warning: this puts raw HTML into the page
+console.log(renderToStaticMarkup(&lt;p dangerouslySetInnerHTML={{ __html: comment }} /&gt;));
+
+// URLs from users can run code too: React warns, but checking the scheme is your job
+const link = &quot;javascript:alert(&#x27;hacked&#x27;)&quot;;
+const safe = /^https?:\/\//.test(link) ? link : &quot;#&quot;;
+console.log(renderToStaticMarkup(&lt;a href={safe}&gt;الملف الشخصي&lt;/a&gt;));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>&lt;p&gt;&amp;lt;img src=&amp;quot;x&amp;quot; onerror=&amp;quot;alert(&amp;#x27;hacked&amp;#x27;)&amp;quot;&amp;gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;x&quot; onerror=&quot;alert(&#x27;hacked&#x27;)&quot;&gt;&lt;/p&gt;
+&lt;a href=&quot;#&quot;&gt;الملف الشخصي&lt;/a&gt;</pre></div>
+
+<ul>
+<li>صار النص داخل الأقواس رموزاً غير مؤذية: <code>&amp;lt;img…</code>.</li>
+<li><code>dangerouslySetInnerHTML</code> وضعت HTML الخام في الصفحة. واسمها الطويل المخيف مقصود. فاستخدمها فقط مع HTML تتحكم فيها، أو بعد تنظيفها.</li>
+<li>والعناوين كود أيضاً: رابط إلى <code>javascript:…</code> يعمل عند الضغط. فحين يأتي الرابط من المستخدمين اسمح بـ <code>https:</code> و<code>http:</code> فقط.</li>
+</ul>
+
+<p>وحين يجب حقاً أن تعرض HTML من المستخدمين، كنص تعليق منسّق، فـ<dfn>نظّفه</dfn> أولاً بمكتبة مثل DOMPurify، تُبقي الوسوم التي تسمح بها وتحذف كل ما عداها. ويفعل المشروع 13.1 هذا.</p>
+
+<h2><span class="sec">13.2</span> <span>سياسة أمان المحتوى</span></h2>
+
+<p>التهريب خط الدفاع الأول. و<dfn>سياسة أمان المحتوى</dfn> (CSP) الثاني: ترويسة تخبر المتصفح أي السكربتات والأنماط والصور والاتصالات مسموح للصفحة استخدامها. فإن نجح مهاجم في حقن سكربت رغم كل شيء، رفض المتصفح تشغيله:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">csp.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;ar&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span><span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span><span class="k">&lt;title</span><span class="k">&gt;</span>CSP<span class="k">&lt;/title</span><span class="k">&gt;</span><span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span> <span class="n">id</span>=<span class="s">&quot;title&quot;</span><span class="k">&gt;</span>…<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="c">&lt;!-- An inline script, as an attacker might manage to inject --&gt;</span>
+    <span class="k">&lt;script</span><span class="k">&gt;</span>document.title = <span class="s">&quot;pwned&quot;</span>; window.hacked = true;<span class="k">&lt;/script</span><span class="k">&gt;</span>
+    <span class="c">&lt;!-- The app&#x27;s own script, from a file on the same site --&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;app.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">csp.ts</div><pre class="code"><span class="k">import</span> { withLab } <span class="k">from</span> <span class="s">&quot;./lab&quot;</span>;
+
+<span class="c">// تُقدَّم بسياسة أمان محتوى صارمة</span>
+<span class="k">const</span> policy = <span class="s">&quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; frame-ancestors &#x27;none&#x27;&quot;</span>;
+
+<span class="k">await</span> withLab({ <span class="s">&quot;Content-Security-Policy&quot;</span>: policy }, <span class="k">async</span> (page, base) =&gt; {
+  <span class="k">const</span> blocked: string[] = [];
+  page.on(<span class="s">&quot;console&quot;</span>, (m) =&gt; {
+    <span class="k">if</span> (m.text().includes(<span class="s">&quot;Content Security Policy&quot;</span>)) blocked.push(m.text().slice(<span class="n">0</span>, <span class="n">70</span>) + <span class="s">&quot;…&quot;</span>);
+  });
+  <span class="k">await</span> page.goto(base + <span class="s">&quot;csp.html&quot;</span>);
+  <span class="k">await</span> page.waitForTimeout(<span class="n">200</span>);
+  <span class="k">const</span> state = <span class="k">await</span> page.evaluate(
+    () =&gt; ({ hacked: (window as { hacked?: boolean }).hacked === <span class="k">true</span>, title: document.querySelector(<span class="s">&quot;#title&quot;</span>)!.textContent }),
+    <span class="k">null</span>,
+  );
+  <span class="k">for</span> (<span class="k">const</span> line <span class="k">of</span> blocked) console.log(<span class="s">&quot;منعته CSP:&quot;</span>, line);
+  console.log(<span class="s">&quot;عمل السكربت؟&quot;</span>, state.hacked ? <span class="s">&quot;نعم&quot;</span> : <span class="s">&quot;لا&quot;</span>);
+  console.log(<span class="s">&quot;التطبيق ما زال يعمل:&quot;</span>, state.title);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>منعته CSP: Executing inline script violates the following Content Security Policy…
+عمل السكربت؟ لا
+التطبيق ما زال يعمل: OK</pre></div>
+
+<p>مُنع السكربت المضمّن، وعمل سكربت التطبيق نفسه، وهو ملف من الموقع نفسه. والسياسة الصارمة تعني ألا تكتب أنت سكربتات مضمّنة ولا خصائص <code>onclick</code>، وأدوات البناء الحديثة تجعل هذا سهلاً. ابدأ المشاريع الجديدة بـ CSP صارمة، فإضافتها إلى مشروع قديم لاحقاً أصعب بكثير. وتستطيع أيضاً تشغيل السياسة بوضع «التبليغ فقط» أولاً، لترى ما كانت ستمنعه دون أن تكسر شيئاً.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لم يكن في تعليق XSS وسم <code>&lt;script&gt;</code>. فكيف عمل كوده؟</li><li>لماذا لا يُعد التحقق من النموذج في المتصفح إجراء أمان؟</li><li>سياسة CSP تسمح بـ <code>script-src 'self'</code>. هل يعمل سكربت مضمّن محقون؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">13.3</span> <span>الجلسات وملفات تعريف الارتباط والطلبات المزوّرة</span></h2>
+
+<p>بعد تسجيل الدخول يجب أن يثبت المتصفح من المستخدم في كل طلب. ومكان هذا الإثبات مهم:</p>
+
+<table>
+<thead><tr><th>التخزين</th><th>هل تقرؤه JavaScript؟</th><th>الخطر</th></tr></thead>
+<tbody>
+<tr><td><code>localStorage</code></td><td>نعم</td><td>أي XSS تسرق الرمز وتستخدمه من أي مكان</td></tr>
+<tr><td>ملف تعريف ارتباط بـ <code>HttpOnly</code></td><td>لا</td><td>لا تقرؤه XSS، ويجب منع CSRF (أدناه)</td></tr>
+</tbody>
+</table>
+
+<p>ولمعظم تطبيقات الويب الخيار الأأمن ملف تعريف ارتباط للجلسة يضبطه الخادم بالحمايات الثلاث:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">HTTP response header</div><pre class="code">Set-Cookie: session=…; HttpOnly; Secure; SameSite=Lax; Path=/</pre></div>
+
+<ul>
+<li><code>HttpOnly</code>: لا تقرأ JavaScript الملف، فلا تسرقه علّة XSS.</li>
+<li><code>Secure</code>: لا يُرسل إلا عبر HTTPS.</li>
+<li><code>SameSite=Lax</code>: لا يُرسل مع الطلبات التي تبدؤها مواقع أخرى، كنموذج في صفحة شريرة يرسل إلى خادمك. ويسمى هذا الهجوم <dfn>تزوير الطلبات عبر المواقع</dfn> (CSRF). ولمزيد من الأمان تفحص الخوادم أيضاً رمز CSRF أو ترويسة <code>Origin</code> للطلب مع كل تغيير.</li>
+</ul>
+
+<p>وهجوم قريب، <dfn>خداع النقر</dfn> (clickjacking)، يحمّل موقعك مخفياً داخل إطار في موقع آخر ويخدع المستخدمين ليضغطوا أزرارك. وتوجيه CSP <code>frame-ancestors 'none'</code>، الموجود أصلاً في السياسة أعلاه، يمنع المواقع الأخرى من وضع موقعك في إطار.</p>
+
+<h2><span class="sec">13.4</span> <span>سلسلة الإمداد</span></h2>
+
+<p>الواجهة المعتادة تثبّت مئات الحزم كتبها آلاف الغرباء، وكل منها يعمل على حاسوبك حين تثبّته، وفي متصفحات مستخدميك حين يزورون. ويعرف المهاجمون هذا، فينشرون أحياناً حزماً تختلف أسماؤها بحرف واحد عن حزم مشهورة، أو يستولون على حساب مطوّر حقيقي. فاحمِ مشروعك:</p>
+<ul>
+<li>احفظ ملف القفل وثبّت بـ <code>npm ci</code>، فتأخذ بالضبط ما راجعته (الفصل 3).</li>
+<li>شغّل <code>npm audit</code> في CI، ودع روبوتاً مثل Dependabot أو Renovate يقترح التحديثات.</li>
+<li>قبل إضافة حزمة افحص من ينشرها، وكم شخصاً يستخدمها، وهل تحتاجها حقاً. فعشرة أسطر من كودك خير من اعتمادية لا تثق بها.</li>
+<li>حمّل سكربتات الطرف الثالث من خادمك حين تستطيع، وإن اضطررت إلى شبكة توزيع فأضف <dfn>سلامة الموارد الفرعية</dfn> (Subresource Integrity، <code>integrity="sha384-…"</code>)، فيرفض المتصفح ملفاً تغيّر.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: لا تثق بالعميل أبداً، ولا تضع فيه الأسرار</p><p>تحقق من كل شيء وافحص الصلاحيات من جديد على الخادم، مع كل طلب. وتذكّر الفصل 3: كل ما في حزمة الواجهة، بما فيه المفاتيح، علني. فإن احتجت سراً احتفظ به الخادم وتصرف نيابة عن المستخدم.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نص المستخدم في <code>innerHTML</code> أو <code>dangerouslySetInnerHTML</code></td><td>XSS</td><td><code>textContent</code> أو JSX العادية، ونظّف إن احتجت HTML</td></tr>
+<tr><td>روابط مبنية من مدخلات المستخدم</td><td>عناوين <code>javascript:</code> تشغّل الكود</td><td>اسمح بـ <code>https:</code> و<code>http:</code> فقط</td></tr>
+<tr><td>الرموز في <code>localStorage</code></td><td>أي XSS تسرق الجلسات</td><td>ملفات تعريف ارتباط بـ <code>HttpOnly</code> و<code>Secure</code> و<code>SameSite</code></td></tr>
+<tr><td>فحوص الأمان في المتصفح وحده</td><td>يتخطاها المهاجمون</td><td>افحص كل شيء على الخادم</td></tr>
+<tr><td>غياب CSP</td><td>علّة XSS واحدة تكفي</td><td>سياسة صارمة من أول يوم</td></tr>
+<tr><td>تثبيت الحزم دون تفكير</td><td>كود خبيث أو مهجور في تطبيقك</td><td>ملفات القفل، والفحص، واعتماديات أقل</td></tr>
+<tr><td>أسرار في كود الواجهة</td><td>يقرؤها أي أحد</td><td>أبقِها على الخادم</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>المتصفح ملك المستخدم: الواجهة تحمي المستخدمين من الآخرين، والخادم وحده يحمي البيانات.</li>
+<li><strong>XSS</strong> تحوّل نص المستخدم إلى كود. امنعها بالتهريب (<code>textContent</code> وJSX العادية)، والتنظيف حين تحتاج HTML، والروابط الآمنة.</li>
+<li><strong>سياسة أمان المحتوى</strong> الصارمة توقف السكربتات المحقونة حتى مع وجود علّة XSS.</li>
+<li>احفظ الجلسات في ملفات تعريف ارتباط بـ <strong>HttpOnly وSecure وSameSite</strong>، وامنع <strong>CSRF</strong> بـ SameSite وفحوص الخادم، و<strong>خداع النقر</strong> بـ <code>frame-ancestors</code>.</li>
+<li>احمِ <strong>سلسلة الإمداد</strong> بملفات القفل والفحص والاختيار الحذر وسلامة الموارد الفرعية.</li>
+<li>لا تثق بالعميل أبداً، ولا تضع فيه الأسرار.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. عبر معالج حدث: خاصية <code>onerror</code> في الصورة المكسورة شغّلت الكود حين فشل تحميل الصورة. 2. لأن أي أحد يستطيع تخطي المتصفح وإرسال أي طلب مباشرة إلى الخادم. 3. لا: السكربت المضمّن ليس من <code>'self'</code>، فيمنعه المتصفح.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">في كل مشروع اكتب الهجوم أولاً وراقبه ينجح، ثم أضف الدفاع وراقبه يفشل. فالدفاع الذي لم ترَه يعمل دفاع ترجو فقط أنه يعمل.</p>
+
+<div class="project">
+<p class="project-label">مشروع 13.1 · سهل</p>
+<h3>تعليقات بتنسيق آمن</h3>
+<p class="project-goal">دع المستخدمين ينسّقون التعليقات بالعريض والمائل والروابط، دون أن تدعهم يشغّلون كوداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التنظيف بقائمة سماح، والفرق بين الوسوم والخصائص والعناوين الخطرة، والاختبار بالهجمات.</p>
+<ol class="steps">
+<li>اجمع قائمة مدخلات: تنسيقاً غير مؤذٍ، وصورة بـ <code>onerror</code>، ورابط <code>javascript:</code>، ووسم <code>&lt;script&gt;</code> يتبعه نص حقيقي.</li>
+<li>حمّل DOMPurify في الصفحة ونظّف كل مدخل بـ<dfn>قائمة سماح</dfn>: الوسوم <code>b</code> و<code>i</code> و<code>em</code> و<code>strong</code> و<code>a</code> و<code>p</code> فقط، والخاصية <code>href</code> فقط.</li>
+<li>اطبع كل مدخل ونتيجته جنباً إلى جنب.</li>
+<li>افحص النتائج: يبقى التنسيق، وتختفي الصورة، ويفقد الرابط عنوانه الخطر ويبقى نصه، وتصمد الفقرة دون السكربت.</li>
+<li>وبعدها فقط ضع HTML المنظّفة في الصفحة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اسرد دائماً المسموح، لا الممنوع أبداً. فقائمة المنع يجب أن تتوقع كل حيلة سيخترعها المهاجمون يوماً، أما قائمة السماح فيكفيها أن تعرف ما تحتاجه.</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>&lt;b&gt;عريض&lt;/b&gt; &lt;i&gt;مائل&lt;/i&gt;
+  → &lt;b&gt;عريض&lt;/b&gt; &lt;i&gt;مائل&lt;/i&gt;
+&lt;img src=x onerror=&quot;window.hacked=true&quot;&gt;
+  → 
+&lt;a href=&quot;javascript:alert(1)&quot;&gt;هدية مجانية&lt;/a&gt;
+  → &lt;a&gt;هدية مجانية&lt;/a&gt;
+&lt;script&gt;window.hacked=true&lt;/script&gt;&lt;p&gt;بعض النص&lt;/p&gt;
+  → &lt;p&gt;بعض النص&lt;/p&gt;</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 13.2 · متوسط</p>
+<h3>سياسة صارمة لتطبيقك</h3>
+<p class="project-goal">أضف سياسة أمان محتوى صارمة إلى أحد مشاريعك، وأثبت أنها تمنع السكربتات المحقونة، وأبقِ كل ميزة عاملة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> توجيهات CSP، ووضع التبليغ فقط، وإيجاد ما تكسره السياسة، ونقل الكود المضمّن إلى ملفات.</p>
+<ol class="steps">
+<li>ابدأ بوضع التبليغ فقط: أرسل <code>Content-Security-Policy-Report-Only</code> بسياسة القسم 13.2، وافتح كل صفحة، واقرأ Console.</li>
+<li>لكل تبليغ أصلح السبب: انقل السكربتات المضمّنة إلى ملفات، واستبدل خصائص <code>onclick</code> بمستمعي أحداث، وأضف المضيفين الخارجيين الذين تحتاجهم فعلاً بالضبط، كواجهتك البرمجية، إلى <code>connect-src</code>.</li>
+<li>حين يصير Console نظيفاً انتقل إلى الترويسة الفارضة.</li>
+<li>أثبت ذلك بالمختبر: احقن سكربتاً مضمّناً وتحقق أنه لا يعمل، بينما تعمل سكربتات التطبيق.</li>
+<li>أضف <code>frame-ancestors 'none'</code> إلا إن كان موقع آخر يجب أن يضمّن موقعك.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في الإنتاج يضبط الترويسة الخادمُ أو منصة الاستضافة، لا التطبيق. وفي خادم تطوير Vite أضفها بإضافة صغيرة أو في <code>server.headers</code>، فتقابل المشكلات مبكراً.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 13.3 · تحدٍّ</p>
+<h3>فاحص ترويسات الأمان</h3>
+<p class="project-goal">اكتب أداة تجلب رابطاً وتبلّغ أي ترويسات الأمان الموصى بها موجودة، وأيها غائب، ولماذا يهم كل منها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>fetch</code> في Node، وقراءة ترويسات الرد، وكتابة خادم محلي صغير للاختبار عليه.</p>
+<ol class="steps">
+<li>اسرد الترويسات الموصى بها مع جملة لكل منها عما تحميه.</li>
+<li>اجلب الرابط وافحص كل ترويسة، وأسماء الترويسات لا تفرق بين الحروف الكبيرة والصغيرة، و<code>headers.get</code> تعالج ذلك.</li>
+<li>اطبع ✓ أو ✗ لكل منها، ونتيجة في النهاية.</li>
+<li>اختبرها على خادم محلي يرسل بعضها فقط، لترى النتيجتين.</li>
+<li>وسّعها: حذّر حين تحتوي CSP على <code>'unsafe-inline'</code>، أو حين يكون <code>max-age</code> في <code>Strict-Transport-Security</code> أقل من ستة أشهر.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> فاحص الترويسات مجرد بداية. شغّله في CI على موقع الاختبار، فيُلاحظ تغيير الإعدادات الذي يُسقط ترويسة في يوم حدوثه.</p>
+<div class="listing" dir="ltr"><div class="listing-title">headers.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
+
+<span class="c">// يفحص ترويسات الأمان التي يرسلها الخادم، كالأدوات التي تستخدمها فرق الأمان</span>
+<span class="k">const</span> RECOMMENDED: Record&lt;string, string&gt; = {
+  <span class="s">&quot;content-security-policy&quot;</span>: <span class="s">&quot;توقف السكربتات المحقونة&quot;</span>,
+  <span class="s">&quot;strict-transport-security&quot;</span>: <span class="s">&quot;تفرض HTTPS&quot;</span>,
+  <span class="s">&quot;x-content-type-options&quot;</span>: <span class="s">&quot;توقف تخمين نوع الملف&quot;</span>,
+  <span class="s">&quot;referrer-policy&quot;</span>: <span class="s">&quot;تحدّ مما يتسرب في الروابط&quot;</span>,
+  <span class="s">&quot;permissions-policy&quot;</span>: <span class="s">&quot;تطفئ المزايا القوية غير المستخدمة&quot;</span>,
+};
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> check(url: string): Promise&lt;number&gt; {
+  <span class="k">const</span> response = <span class="k">await</span> fetch(url);
+  <span class="k">let</span> score = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> [name, why] <span class="k">of</span> Object.entries(RECOMMENDED)) {
+    <span class="k">const</span> value = response.headers.get(name);
+    <span class="k">if</span> (value) score++;
+    console.log(<span class="s">`${value ? &quot;✓&quot; : &quot;✗&quot;} ${name.padEnd(26)} ${value ? &quot;موجودة&quot; : `</span>غائبة (${why})<span class="s">`}`</span>);
+  }
+  console.log(<span class="s">`النتيجة: ${score}/${Object.keys(RECOMMENDED).length}`</span>);
+  <span class="k">return</span> score;
+}
+
+<span class="c">// A local server that sends only some of the headers, to check against</span>
+<span class="k">const</span> server = createServer((_req, res) =&gt; {
+  res.setHeader(<span class="s">&quot;Content-Security-Policy&quot;</span>, <span class="s">&quot;default-src &#x27;self&#x27;&quot;</span>);
+  res.setHeader(<span class="s">&quot;X-Content-Type-Options&quot;</span>, <span class="s">&quot;nosniff&quot;</span>);
+  res.setHeader(<span class="s">&quot;Referrer-Policy&quot;</span>, <span class="s">&quot;strict-origin-when-cross-origin&quot;</span>);
+  res.end(<span class="s">&quot;ok&quot;</span>);
+});
+<span class="k">await</span> <span class="k">new</span> Promise&lt;void&gt;((ready) =&gt; server.listen(<span class="n">0</span>, ready));
+<span class="k">await</span> check(<span class="s">`http://localhost:${(server.address() as AddressInfo).port}/`</span>);
+server.close();</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>✓ content-security-policy    موجودة
+✗ strict-transport-security  غائبة (تفرض HTTPS)
+✓ x-content-type-options     موجودة
+✓ referrer-policy            موجودة
+✗ permissions-policy         غائبة (تطفئ المزايا القوية غير المستخدمة)
+النتيجة: 3/5</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> جرّب ثلاثة هجمات أخرى في <code>xss.ts</code>، مثل <code>&lt;svg onload=…&gt;</code> و<code>&lt;iframe&gt;</code>، بالطريقتين. أيها يعمل مع <code>innerHTML</code>؟</li>
+<li><span class="level">سهل</span> افتح ملفات تعريف الارتباط لموقع تستخدمه (أدوات المطور، ثم Application، ثم Cookies). أيها <code>HttpOnly</code> و<code>Secure</code> و<code>SameSite</code>؟</li>
+<li><span class="level medium">متوسط</span> شغّل <code>csp.ts</code> والسياسة في ترويسة <code>Content-Security-Policy-Report-Only</code> بدلاً منها. ماذا يتغير في المخرجات، ولماذا هذا الوضع مفيد؟</li>
+<li><span class="level medium">متوسط</span> اكتب دالة <code>safeUrl(input: string): string</code> تُرجع الرابط فقط إن كان بروتوكوله <code>https:</code> أو <code>http:</code> (استخدم <code>new URL</code>)، و<code>"#"</code> غير ذلك، مع اختبارات وحدات لخمسة مدخلات.</li>
+<li><span class="level hard">تحدٍّ</span> شغّل <code>npm audit</code> في أحد مشاريعك. فإن بلّغ عن مشكلات فاقرأ تنبيهاً واحداً كاملاً: أي حزمة، وأي إصدارات، وكيف تُستغل، وهل يستخدم تطبيقك الجزء المصاب.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 14</p>
+<p>الفصل الأخير من هذا الجزء قريب من قلب كل مطور عربي: بناء واجهات بأكثر من لغة، بتخطيطات من اليمين إلى اليسار، وأرقام وتواريخ وصيغ جمع صحيحة بالعربية والإنجليزية.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -5777,6 +6145,16 @@ CSS     0.0 KB  الميزانية  15.0 KB  ✓ ضمن الميزانية</pre>
 <li><code>import { onCLS, onINP, onLCP } from "web-vitals"; onLCP(console.log); onINP(console.log); onCLS(console.log);</code>. وفي الإنتاج استبدل <code>console.log</code> بدالة ترسل المؤشر بـ <code>navigator.sendBeacon("/vitals", JSON.stringify(metric))</code>، التي تصمد حتى لو أُغلقت الصفحة.</li>
 <li>اجمع ثلاث نتائج في مصفوفة، ورتّبها حسب LCP، وخذ الوسطى: <code>const runs = []; for (let i = 0; i &lt; 3; i++) runs.push(await measure(page)); runs.sort((a, b) =&gt; a.lcp - b.lcp); const median = runs[1]!;</code>.</li>
 <li>بعد طباعة كل صفحة: <code>if (lcp &gt; 2500 || cls &gt; 0.1) failed = true;</code>، وفي النهاية <code>process.exitCode = failed ? 1 : 0;</code>. ومع صفحات هذا الفصل تفشل <code>slow.html</code> في LCP وتنجح <code>fast.html</code>.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 13</h2>
+<ol class="exercises">
+<li>مع <code>innerHTML</code> يعمل <code>&lt;svg onload="window.hacked=true"&gt;</code>، ويعمل <code>&lt;iframe src="javascript:…"&gt;</code> في متصفحات كثيرة: فكل عنصر بخاصية معالج حدث باب. ومع <code>textContent</code> لا يعمل أي منها. والدرس: الحيل أكثر بكثير من أن تُمنع واحدة واحدة.</li>
+<li>ملفات جلسات المواقع جيدة الإدارة تكون عادة <code>HttpOnly</code> و<code>Secure</code> و<code>SameSite=Lax</code> أو <code>Strict</code>. أما ملفات التحليلات والتفضيلات فكثيراً ما تقرؤها JavaScript، ولا بأس بذلك ما دامت لا تحمل أسراراً.</li>
+<li>في وضع التبليغ فقط ما زال Console يبلّغ عن المخالفة، لكن السكربت المضمّن <em>يعمل</em>: فتصير «عمل السكربت؟» نعم. ولهذا وُجد هذا الوضع: ترى كل ما كانت السياسة ستمنعه في موقع حي، فتصلحه، ثم تفرضها.</li>
+<li><code>function safeUrl(input: string): string { try { const url = new URL(input); return url.protocol === "https:" || url.protocol === "http:" ? url.href : "#"; } catch { return "#"; } }</code>. واختبر رابط https عادياً، ورابط http، و<code>javascript:alert(1)</code>، و<code>JavaScript:alert(1)</code> (بحروف كبيرة)، ونصاً ليس رابطاً أصلاً.</li>
+<li>يسمّي التنبيه الحزمة، والإصدارات المصابة والمصلحة، ودرجة الخطورة، وكيف تُستغل العلّة. وكثيراً ما تكون الدالة المصابة في أداة بناء لا تصل إلى المستخدمين، أو في كود لا تستدعيه أبداً، فيكون الرد الصحيح ترقية، أو ملاحظة تشرح لماذا لا ينطبق.</li>
 </ol>
 
 </section>

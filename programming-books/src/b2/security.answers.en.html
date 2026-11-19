@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li>With <code>innerHTML</code>, <code>&lt;svg onload="window.hacked=true"&gt;</code> runs, and so does <code>&lt;iframe src="javascript:…"&gt;</code> in many browsers; any element with an event-handler attribute is a door. With <code>textContent</code>, none of them runs. The lesson: there are far too many tricks to block one by one.</li>
+<li>Session cookies of well-run sites are usually <code>HttpOnly</code>, <code>Secure</code> and <code>SameSite=Lax</code> or <code>Strict</code>. Analytics and preference cookies are often readable by JavaScript, which is fine as long as they carry no secrets.</li>
+<li>In report-only mode, the console still reports the violation, but the inline script <em>runs</em>: “script ran?” becomes yes. That is why the mode exists: you can see everything a policy would block on a live site, fix it, and only then enforce it.</li>
+<li><code>function safeUrl(input: string): string { try { const url = new URL(input); return url.protocol === "https:" || url.protocol === "http:" ? url.href : "#"; } catch { return "#"; } }</code>. Test a normal https link, an http link, <code>javascript:alert(1)</code>, <code>JavaScript:alert(1)</code> (upper case), and a string that is not a URL at all.</li>
+<li>An advisory names the package, the affected and fixed versions, a severity, and how the bug can be exploited. Often the vulnerable function is in a build tool that never reaches users, or in code you never call; the right response may be an upgrade, or a note explaining why it does not apply.</li>
+</ol>

@@ -21,6 +21,8 @@
 @page ch12:first { @top-center { content: none; } }
 @page ch13 { @top-center { content: "Chapter 13: Performance and Core Web Vitals"; } }
 @page ch13:first { @top-center { content: none; } }
+@page ch14 { @top-center { content: "Chapter 14: Frontend Security"; } }
+@page ch14:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -3145,6 +3147,346 @@ CSS     0.0 KB  Budget  15.0 KB  ✓ within budget</pre></div>
 <p>A fast, accessible, tested app must also be safe. In the next chapter you will meet the attacks that target frontends, such as XSS, CSRF and clickjacking, and the defences that stop them, from escaping and Content Security Policy to safe authentication.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch14" data-chapter="14" data-code="b2/security/en">
+<div class="opener"><span class="opener-num">14</span><p class="chapter-kicker">Chapter 14</p><h1>Frontend Security</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>think like an attacker: what a frontend can and cannot protect</li>
+<li>prevent cross-site scripting (XSS) by escaping, sanitising and avoiding dangerous APIs</li>
+<li>add a Content Security Policy as a second line of defence</li>
+<li>store sessions safely, and stop cross-site request forgery (CSRF) and clickjacking</li>
+<li>keep your dependencies and build pipeline trustworthy</li>
+<li>check the security headers a site sends</li>
+</ul>
+</div>
+
+<p class="lead">Every input in your app is a door, and some visitors will try every door. In this chapter you will run real attacks against small pages on your own computer, see them succeed, and then see the defences that stop them. The goal is not fear but habits: a handful of rules, applied every day, prevent the large majority of frontend security bugs.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The most important sentence of this chapter: <strong>the browser belongs to the user</strong>. Anyone can open DevTools, change your JavaScript, skip your validation and send any request they like. So the frontend protects users from <em>other people</em>; only the server can protect the data.</p></div></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: only attack what is yours</p><p>Every attack in this chapter runs against a page served by your own computer. Trying the same against a site you do not own, without written permission, is illegal in most countries, even “just to see”.</p></aside>
+
+<h2><span class="sec">14.1</span> <span>Cross-site scripting (XSS)</span></h2>
+
+<p><dfn>Cross-site scripting</dfn> happens when text from a user is treated as code in someone else’s browser. The attacker’s script then runs with the victim’s identity: it can read the page, send requests as the victim, or show a fake sign-in form. Book 1 warned about <code>innerHTML</code>; here is the attack, for real. A small lab serves pages and opens them in Chromium:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lab.ts</div><pre class="code"><span class="c">// A small lab: serves pages from this folder with chosen headers, and opens them in Chromium.</span>
+<span class="k">import</span> { createReadStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { createServer, <span class="k">type</span> IncomingMessage, <span class="k">type</span> ServerResponse } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
+<span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
+<span class="k">import</span> { extname, join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
+
+<span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
+<span class="k">export</span> <span class="k">type</span> Page = {
+  goto(url: string): Promise&lt;unknown&gt;;
+  on(event: <span class="s">&quot;console&quot;</span>, fn: (m: { text(): string }) =&gt; void): void;
+  evaluate&lt;T, A&gt;(fn: (arg: A) =&gt; T | Promise&lt;T&gt;, arg: A): Promise&lt;T&gt;;
+  waitForTimeout(ms: number): Promise&lt;void&gt;;
+};
+<span class="k">type</span> Browser = { newPage(): Promise&lt;Page&gt;; close(): Promise&lt;void&gt; };
+<span class="k">const</span> { chromium } = require(<span class="s">&quot;playwright&quot;</span>) as { chromium: { launch(): Promise&lt;Browser&gt; } };
+
+<span class="k">const</span> TYPES: Record&lt;string, string&gt; = { <span class="s">&quot;.html&quot;</span>: <span class="s">&quot;text/html&quot;</span>, <span class="s">&quot;.js&quot;</span>: <span class="s">&quot;text/javascript&quot;</span>, <span class="s">&quot;.mjs&quot;</span>: <span class="s">&quot;text/javascript&quot;</span> };
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> withLab(headers: Record&lt;string, string&gt;, run: (page: Page, base: string) =&gt; Promise&lt;void&gt;) {
+  <span class="k">const</span> server = createServer((req: IncomingMessage, res: ServerResponse) =&gt; {
+    <span class="k">const</span> path = join(process.cwd(), <span class="k">new</span> URL(req.url ?? <span class="s">&quot;/&quot;</span>, <span class="s">&quot;http://x&quot;</span>).pathname);
+    res.setHeader(<span class="s">&quot;Content-Type&quot;</span>, TYPES[extname(path)] ?? <span class="s">&quot;application/octet-stream&quot;</span>);
+    <span class="k">for</span> (<span class="k">const</span> [k, v] <span class="k">of</span> Object.entries(headers)) res.setHeader(k, v);
+    createReadStream(path).on(<span class="s">&quot;error&quot;</span>, () =&gt; res.writeHead(<span class="n">404</span>).end()).pipe(res);
+  });
+  <span class="k">await</span> <span class="k">new</span> Promise&lt;void&gt;((ready) =&gt; server.listen(<span class="n">0</span>, ready));
+  <span class="k">const</span> base = <span class="s">`http://localhost:${(server.address() as AddressInfo).port}/`</span>;
+  <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
+  <span class="k">try</span> {
+    <span class="k">await</span> run(<span class="k">await</span> browser.newPage(), base);
+  } <span class="k">finally</span> {
+    <span class="k">await</span> browser.close();
+    server.close();
+  }
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">xss.ts</div><pre class="code"><span class="k">import</span> { withLab } <span class="k">from</span> <span class="s">&quot;./lab&quot;</span>;
+
+<span class="c">// What an attacker types into the comment box</span>
+<span class="k">const</span> comment = <span class="s">`&lt;img src=&quot;x&quot; onerror=&quot;window.hacked = true&quot;&gt; Nice book!`</span>;
+
+<span class="k">await</span> withLab({}, <span class="k">async</span> (page, base) =&gt; {
+  <span class="k">for</span> (<span class="k">const</span> way <span class="k">of</span> [<span class="s">&quot;innerHTML&quot;</span>, <span class="s">&quot;textContent&quot;</span>] as <span class="k">const</span>) {
+    <span class="k">await</span> page.goto(base + <span class="s">&quot;comments.html&quot;</span>);
+    <span class="k">const</span> result = <span class="k">await</span> page.evaluate(
+      <span class="k">async</span> ({ way, comment }) =&gt; {
+        <span class="k">const</span> li = document.createElement(<span class="s">&quot;li&quot;</span>);
+        <span class="k">if</span> (way === <span class="s">&quot;innerHTML&quot;</span>) li.innerHTML = comment; <span class="c">// dangerous</span>
+        <span class="k">else</span> li.textContent = comment; <span class="c">// safe</span>
+        document.querySelector(<span class="s">&quot;#list&quot;</span>)!.append(li);
+        <span class="k">await</span> <span class="k">new</span> Promise((r) =&gt; setTimeout(r, <span class="n">100</span>)); <span class="c">// give the broken image time to fire onerror</span>
+        <span class="k">return</span> { ran: (window as { hacked?: boolean }).hacked === <span class="k">true</span>, html: li.innerHTML };
+      },
+      { way, comment },
+    );
+    console.log(<span class="s">`${way.padEnd(12)} script ran? ${result.ran ? &quot;YES&quot; : &quot;no&quot;}`</span>);
+  }
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>innerHTML    script ran? YES
+textContent  script ran? no</pre></div>
+
+<p>The “comment” contains a picture whose address does not exist, and an <code>onerror</code> handler. With <code>innerHTML</code>, the browser builds that picture, the load fails, and the attacker’s code runs. No <code>&lt;script&gt;</code> tag was needed. With <code>textContent</code>, the same characters are only shown.</p>
+
+
+<p>When you really must show HTML from users, such as the formatted text of a comment, <dfn>sanitise</dfn> it first with a library like DOMPurify, which keeps the tags you allow and removes everything else. Project 14.1 does this.</p>
+
+<h2><span class="sec">14.2</span> <span>Content Security Policy</span></h2>
+
+<p>Escaping is the first line of defence. A <dfn>Content Security Policy</dfn> (CSP) is the second: a header that tells the browser which scripts, styles, images and connections the page is allowed to use. If an attacker manages to inject a script anyway, the browser refuses to run it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">csp.html</div><pre class="code">&lt;!doctype html<span class="k">&gt;</span>
+<span class="k">&lt;html</span> <span class="n">lang</span>=<span class="s">&quot;en&quot;</span><span class="k">&gt;</span>
+  <span class="k">&lt;head</span><span class="k">&gt;</span><span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span><span class="k">&lt;title</span><span class="k">&gt;</span>CSP<span class="k">&lt;/title</span><span class="k">&gt;</span><span class="k">&lt;/head</span><span class="k">&gt;</span>
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;h1</span> <span class="n">id</span>=<span class="s">&quot;title&quot;</span><span class="k">&gt;</span>…<span class="k">&lt;/h1</span><span class="k">&gt;</span>
+    <span class="c">&lt;!-- An inline script, as an attacker might manage to inject --&gt;</span>
+    <span class="k">&lt;script</span><span class="k">&gt;</span>document.title = <span class="s">&quot;pwned&quot;</span>; window.hacked = true;<span class="k">&lt;/script</span><span class="k">&gt;</span>
+    <span class="c">&lt;!-- The app&#x27;s own script, from a file on the same site --&gt;</span>
+    <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;app.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+<span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">csp.ts</div><pre class="code"><span class="k">import</span> { withLab } <span class="k">from</span> <span class="s">&quot;./lab&quot;</span>;
+
+<span class="c">// Served with a strict Content Security Policy</span>
+<span class="k">const</span> policy = <span class="s">&quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; frame-ancestors &#x27;none&#x27;&quot;</span>;
+
+<span class="k">await</span> withLab({ <span class="s">&quot;Content-Security-Policy&quot;</span>: policy }, <span class="k">async</span> (page, base) =&gt; {
+  <span class="k">const</span> blocked: string[] = [];
+  page.on(<span class="s">&quot;console&quot;</span>, (m) =&gt; {
+    <span class="k">if</span> (m.text().includes(<span class="s">&quot;Content Security Policy&quot;</span>)) blocked.push(m.text().slice(<span class="n">0</span>, <span class="n">70</span>) + <span class="s">&quot;…&quot;</span>);
+  });
+  <span class="k">await</span> page.goto(base + <span class="s">&quot;csp.html&quot;</span>);
+  <span class="k">await</span> page.waitForTimeout(<span class="n">200</span>);
+  <span class="k">const</span> state = <span class="k">await</span> page.evaluate(
+    () =&gt; ({ hacked: (window as { hacked?: boolean }).hacked === <span class="k">true</span>, title: document.querySelector(<span class="s">&quot;#title&quot;</span>)!.textContent }),
+    <span class="k">null</span>,
+  );
+  <span class="k">for</span> (<span class="k">const</span> line <span class="k">of</span> blocked) console.log(<span class="s">&quot;Blocked by CSP:&quot;</span>, line);
+  console.log(<span class="s">&quot;script ran?&quot;</span>, state.hacked ? <span class="s">&quot;YES&quot;</span> : <span class="s">&quot;no&quot;</span>);
+  console.log(<span class="s">&quot;The app still works:&quot;</span>, state.title);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Blocked by CSP: Executing inline script violates the following Content Security Policy…
+script ran? no
+The app still works: OK</pre></div>
+
+<p>The inline script was blocked, and the app’s own script, a file from the same site, still ran. A strict policy means writing no inline scripts or <code>onclick</code> attributes yourself, which modern build tools make easy. Start new projects with a strict CSP; adding one to an old project later is much harder. You can also run a policy in “report-only” mode first, to see what it would block without breaking anything.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>The XSS comment contained no <code>&lt;script&gt;</code> tag. How did its code run?</li><li>Why is validating a form in the browser not a security measure?</li><li>A CSP allows <code>script-src 'self'</code>. Does an injected inline script run?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">14.3</span> <span>Sessions, cookies and forged requests</span></h2>
+
+<p>After sign-in, the browser must prove who the user is on every request. Where that proof lives matters:</p>
+
+<table>
+<thead><tr><th>Storage</th><th>Readable by JavaScript?</th><th>Risk</th></tr></thead>
+<tbody>
+<tr><td><code>localStorage</code></td><td>Yes</td><td>Any XSS can steal the token and use it from anywhere</td></tr>
+<tr><td>Cookie with <code>HttpOnly</code></td><td>No</td><td>XSS cannot read it; CSRF must be prevented (below)</td></tr>
+</tbody>
+</table>
+
+<p>For most web apps the safer choice is a session cookie set by the server with all three protections:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">HTTP response header</div><pre class="code">Set-Cookie: session=…; HttpOnly; Secure; SameSite=Lax; Path=/</pre></div>
+
+<ul>
+<li><code>HttpOnly</code>: JavaScript cannot read the cookie, so an XSS bug cannot steal it.</li>
+<li><code>Secure</code>: it is only sent over HTTPS.</li>
+<li><code>SameSite=Lax</code>: it is not sent with requests that other sites start, such as a form on an evil page that posts to your server. That attack is called <dfn>cross-site request forgery</dfn> (CSRF). For extra safety, servers also check a CSRF token or the request’s <code>Origin</code> header on every change.</li>
+</ul>
+
+<p>A related attack, <dfn>clickjacking</dfn>, loads your site invisibly inside a frame on another site and tricks users into clicking your buttons. The CSP directive <code>frame-ancestors 'none'</code>, already in the policy above, forbids other sites from framing yours.</p>
+
+<h2><span class="sec">14.4</span> <span>The supply chain</span></h2>
+
+<p>A typical frontend installs hundreds of packages, written by thousands of strangers, and each one runs on your computer when you install it and in your users’ browsers when they visit. Attackers know this, and sometimes publish packages with names one letter away from popular ones, or take over the account of a real maintainer. Protect your project:</p>
+<ul>
+<li>Commit the lockfile and install with <code>npm ci</code>, so you get exactly what you reviewed (Chapter 3).</li>
+<li>Run <code>npm audit</code> in CI, and let a bot such as Dependabot or Renovate propose updates.</li>
+<li>Before adding a package, check who publishes it, how many people use it, and whether you really need it. Ten lines of your own code beat a dependency you cannot trust.</li>
+<li>Load third-party scripts from your own server when you can; if you must use a CDN, add <dfn>Subresource Integrity</dfn> (<code>integrity="sha384-…"</code>), so the browser refuses a file that has been changed.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: never trust the client, never put secrets in it</p><p>Validate and authorise everything again on the server, for every request. And remember Chapter 3: anything in the frontend bundle, keys included, is public. If a secret is needed, the server keeps it and acts on the user’s behalf.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>User text in <code>innerHTML</code> or <code>dangerouslySetInnerHTML</code></td><td>XSS</td><td><code>textContent</code> or plain JSX; sanitise if HTML is required</td></tr>
+<tr><td>Links built from user input</td><td><code>javascript:</code> URLs run code</td><td>Allow only <code>https:</code> and <code>http:</code></td></tr>
+<tr><td>Tokens in <code>localStorage</code></td><td>Any XSS can steal sessions</td><td><code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code> cookies</td></tr>
+<tr><td>Security checks only in the browser</td><td>Attackers skip them</td><td>Check everything on the server</td></tr>
+<tr><td>No CSP</td><td>One XSS bug is enough</td><td>A strict policy from day one</td></tr>
+<tr><td>Installing packages without thinking</td><td>Malicious or abandoned code in your app</td><td>Lockfiles, audits, fewer dependencies</td></tr>
+<tr><td>Secrets in frontend code</td><td>Anyone can read them</td><td>Keep them on the server</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>The browser belongs to the user: the frontend protects users from others, and only the server protects data.</li>
+<li><strong>XSS</strong> turns user text into code. Prevent it with escaping (<code>textContent</code>, plain JSX), sanitising when HTML is needed, and safe URLs.</li>
+<li>A strict <strong>Content Security Policy</strong> stops injected scripts even when an XSS bug exists.</li>
+<li>Keep sessions in <strong>HttpOnly, Secure, SameSite</strong> cookies; block <strong>CSRF</strong> with SameSite and server checks, and <strong>clickjacking</strong> with <code>frame-ancestors</code>.</li>
+<li>Protect the <strong>supply chain</strong> with lockfiles, audits, careful choices and Subresource Integrity.</li>
+<li>Never trust the client, and never put secrets in it.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Through an event handler: the broken image’s <code>onerror</code> attribute ran the code when the picture failed to load. 2. Because anyone can skip the browser and send any request directly to the server. 3. No: an inline script is not from <code>'self'</code>, so the browser blocks it.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">In each project, write the attack first and watch it succeed, then add the defence and watch it fail. A defence you have never seen working is a defence you only hope works.</p>
+
+<div class="project">
+<p class="project-label">Project 14.1 · Easy</p>
+<h3>Comments with safe formatting</h3>
+<p class="project-goal">Let users format comments with bold, italics and links, without letting them run code.</p>
+<p class="project-skills"><strong>You will practise:</strong> sanitising with an allow-list, the difference between dangerous tags, attributes and URLs, and testing with attacks.</p>
+<ol class="steps">
+<li>Collect a list of inputs: harmless formatting, an image with <code>onerror</code>, a <code>javascript:</code> link, and a <code>&lt;script&gt;</code> tag followed by real text.</li>
+<li>Load DOMPurify into the page and sanitise each input with an <dfn>allow-list</dfn>: only <code>b</code>, <code>i</code>, <code>em</code>, <code>strong</code>, <code>a</code> and <code>p</code>, and only the <code>href</code> attribute.</li>
+<li>Print each input and its result side by side.</li>
+<li>Check the results: the formatting stays, the image disappears, the link loses its dangerous address but keeps its text, and the paragraph survives without the script.</li>
+<li>Only then put the sanitised HTML into the page.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> always list what is <em>allowed</em>, never what is forbidden. A deny-list must predict every trick attackers will ever invent; an allow-list only has to know what you need.</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>&lt;b&gt;Bold&lt;/b&gt; &lt;i&gt;italic&lt;/i&gt;
+  → &lt;b&gt;Bold&lt;/b&gt; &lt;i&gt;italic&lt;/i&gt;
+&lt;img src=x onerror=&quot;window.hacked=true&quot;&gt;
+  → 
+&lt;a href=&quot;javascript:alert(1)&quot;&gt;Free gift&lt;/a&gt;
+  → &lt;a&gt;Free gift&lt;/a&gt;
+&lt;script&gt;window.hacked=true&lt;/script&gt;&lt;p&gt;Some text&lt;/p&gt;
+  → &lt;p&gt;Some text&lt;/p&gt;</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 14.2 · Medium</p>
+<h3>A strict policy for your own app</h3>
+<p class="project-goal">Add a strict Content Security Policy to one of your projects, prove that it blocks injected scripts, and keep every feature working.</p>
+<p class="project-skills"><strong>You will practise:</strong> CSP directives, report-only mode, finding what a policy breaks, and moving inline code into files.</p>
+<ol class="steps">
+<li>Start in report-only mode: send <code>Content-Security-Policy-Report-Only</code> with the policy from section 14.2, open every page, and read the console.</li>
+<li>For each report, fix the cause: move inline scripts into files, replace <code>onclick</code> attributes with event listeners, and add the exact external hosts you really need, such as your API, to <code>connect-src</code>.</li>
+<li>When the console is clean, switch to the enforcing header.</li>
+<li>Prove it with the lab: inject an inline script and check that it does not run, while the app’s own scripts do.</li>
+<li>Add <code>frame-ancestors 'none'</code> unless another site must embed yours.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in production, the header is set by the server or the hosting platform, not by the app. In Vite’s development server, add it with a small plugin or in <code>server.headers</code> so that you meet problems early.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 14.3 · Challenge</p>
+<h3>A security header checker</h3>
+<p class="project-goal">Write a tool that fetches a URL and reports which recommended security headers are present, which are missing, and why each one matters.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>fetch</code> in Node, reading response headers, and writing a small local server to test against.</p>
+<ol class="steps">
+<li>List the recommended headers with one sentence each on what they protect.</li>
+<li>Fetch the URL and check each header; header names are case-insensitive, and <code>headers.get</code> handles that.</li>
+<li>Print ✓ or ✗ for each, and a score at the end.</li>
+<li>Test it against a local server that sends only some of them, so you can see both results.</li>
+<li>Extend it: warn when the CSP contains <code>'unsafe-inline'</code>, or when <code>Strict-Transport-Security</code> has a <code>max-age</code> shorter than six months.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a header checker is only a start. Run it in CI against your staging site, so a configuration change that drops a header is noticed the day it happens.</p>
+<div class="listing" dir="ltr"><div class="listing-title">headers.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
+
+<span class="c">// Checks the security headers a server sends, like the tools security teams use</span>
+<span class="k">const</span> RECOMMENDED: Record&lt;string, string&gt; = {
+  <span class="s">&quot;content-security-policy&quot;</span>: <span class="s">&quot;stops injected scripts&quot;</span>,
+  <span class="s">&quot;strict-transport-security&quot;</span>: <span class="s">&quot;forces HTTPS&quot;</span>,
+  <span class="s">&quot;x-content-type-options&quot;</span>: <span class="s">&quot;stops MIME sniffing&quot;</span>,
+  <span class="s">&quot;referrer-policy&quot;</span>: <span class="s">&quot;limits what leaks in links&quot;</span>,
+  <span class="s">&quot;permissions-policy&quot;</span>: <span class="s">&quot;turns off unused powerful features&quot;</span>,
+};
+
+<span class="k">export</span> <span class="k">async</span> <span class="k">function</span> check(url: string): Promise&lt;number&gt; {
+  <span class="k">const</span> response = <span class="k">await</span> fetch(url);
+  <span class="k">let</span> score = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> [name, why] <span class="k">of</span> Object.entries(RECOMMENDED)) {
+    <span class="k">const</span> value = response.headers.get(name);
+    <span class="k">if</span> (value) score++;
+    console.log(<span class="s">`${value ? &quot;✓&quot; : &quot;✗&quot;} ${name.padEnd(26)} ${value ? &quot;present&quot; : `</span>missing (${why})<span class="s">`}`</span>);
+  }
+  console.log(<span class="s">`Score: ${score}/${Object.keys(RECOMMENDED).length}`</span>);
+  <span class="k">return</span> score;
+}
+
+<span class="c">// A local server that sends only some of the headers, to check against</span>
+<span class="k">const</span> server = createServer((_req, res) =&gt; {
+  res.setHeader(<span class="s">&quot;Content-Security-Policy&quot;</span>, <span class="s">&quot;default-src &#x27;self&#x27;&quot;</span>);
+  res.setHeader(<span class="s">&quot;X-Content-Type-Options&quot;</span>, <span class="s">&quot;nosniff&quot;</span>);
+  res.setHeader(<span class="s">&quot;Referrer-Policy&quot;</span>, <span class="s">&quot;strict-origin-when-cross-origin&quot;</span>);
+  res.end(<span class="s">&quot;ok&quot;</span>);
+});
+<span class="k">await</span> <span class="k">new</span> Promise&lt;void&gt;((ready) =&gt; server.listen(<span class="n">0</span>, ready));
+<span class="k">await</span> check(<span class="s">`http://localhost:${(server.address() as AddressInfo).port}/`</span>);
+server.close();</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>✓ content-security-policy    present
+✗ strict-transport-security  missing (forces HTTPS)
+✓ x-content-type-options     present
+✓ referrer-policy            present
+✗ permissions-policy         missing (turns off unused powerful features)
+Score: 3/5</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Try three more attacks in <code>xss.ts</code>, such as <code>&lt;svg onload=…&gt;</code> and an <code>&lt;iframe&gt;</code>, against both ways. Which ones run with <code>innerHTML</code>?</li>
+<li><span class="level">Easy</span> Open the cookies of a site you use (DevTools, Application, Cookies). Which ones are <code>HttpOnly</code>, <code>Secure</code> and <code>SameSite</code>?</li>
+<li><span class="level medium">Medium</span> Run <code>csp.ts</code> with the policy in a <code>Content-Security-Policy-Report-Only</code> header instead. What changes in the output, and why is this mode useful?</li>
+<li><span class="level medium">Medium</span> Write a function <code>safeUrl(input: string): string</code> that returns the URL only if its protocol is <code>https:</code> or <code>http:</code> (use <code>new URL</code>), and <code>"#"</code> otherwise, with unit tests for five inputs.</li>
+<li><span class="level hard">Challenge</span> Run <code>npm audit</code> in one of your projects. If it reports problems, read one advisory fully: which package, which versions, how it can be exploited, and whether your app uses the vulnerable part.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 15</p>
+<p>The last chapter of this part is close to every Arabic developer’s heart: building interfaces in more than one language, with right-to-left layouts, numbers, dates and plurals that are correct in Arabic and in English.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3231,6 +3573,16 @@ CSS     0.0 KB  Budget  15.0 KB  ✓ within budget</pre></div>
 <li><code>import { onCLS, onINP, onLCP } from "web-vitals"; onLCP(console.log); onINP(console.log); onCLS(console.log);</code>. In production, replace <code>console.log</code> with a function that sends the metric with <code>navigator.sendBeacon("/vitals", JSON.stringify(metric))</code>, which survives the page being closed.</li>
 <li>Collect three results in an array, sort them by LCP, and take the middle one: <code>const runs = []; for (let i = 0; i &lt; 3; i++) runs.push(await measure(page)); runs.sort((a, b) =&gt; a.lcp - b.lcp); const median = runs[1]!;</code>.</li>
 <li>After printing each page, <code>if (lcp &gt; 2500 || cls &gt; 0.1) failed = true;</code>, and at the end <code>process.exitCode = failed ? 1 : 0;</code>. With the pages of this chapter, <code>slow.html</code> fails on LCP and <code>fast.html</code> passes.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 14</h2>
+<ol class="exercises">
+<li>With <code>innerHTML</code>, <code>&lt;svg onload="window.hacked=true"&gt;</code> runs, and so does <code>&lt;iframe src="javascript:…"&gt;</code> in many browsers; any element with an event-handler attribute is a door. With <code>textContent</code>, none of them runs. The lesson: there are far too many tricks to block one by one.</li>
+<li>Session cookies of well-run sites are usually <code>HttpOnly</code>, <code>Secure</code> and <code>SameSite=Lax</code> or <code>Strict</code>. Analytics and preference cookies are often readable by JavaScript, which is fine as long as they carry no secrets.</li>
+<li>In report-only mode, the console still reports the violation, but the inline script <em>runs</em>: “script ran?” becomes yes. That is why the mode exists: you can see everything a policy would block on a live site, fix it, and only then enforce it.</li>
+<li><code>function safeUrl(input: string): string { try { const url = new URL(input); return url.protocol === "https:" || url.protocol === "http:" ? url.href : "#"; } catch { return "#"; } }</code>. Test a normal https link, an http link, <code>javascript:alert(1)</code>, <code>JavaScript:alert(1)</code> (upper case), and a string that is not a URL at all.</li>
+<li>An advisory names the package, the affected and fixed versions, a severity, and how the bug can be exploited. Often the vulnerable function is in a build tool that never reaches users, or in code you never call; the right response may be an upgrade, or a note explaining why it does not apply.</li>
 </ol>
 
 </section>
