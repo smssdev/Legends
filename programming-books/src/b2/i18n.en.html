@@ -78,9 +78,21 @@
 <pre data-code="react/I18n.tsx" data-title="I18n.tsx"></pre>
 <pre data-code="react/cart.tsx" data-title="cart.tsx"></pre>
 <!-- /react -->
+<!-- vue -->
+<p>In Vue, the current language is app-wide state that changes rarely: exactly the job of <code>provide</code> and <code>inject</code> (the global state chapter). <code>provideI18n</code> sets <code>lang</code> and <code>dir</code> on the page, and gives every component a <code>t</code> function and a money formatter. Both are <code>computed</code>, so every text on the screen follows the language when it changes:</p>
 
+<pre data-code="vue/i18n.ts" data-title="i18n.ts"></pre>
+<pre data-code="vue/Cart.vue" data-title="Cart.vue"></pre>
+<!-- /vue -->
+
+<!-- react -->
 <figure data-render="react/cart.html" data-width="560"><figcaption><b>Figure {{n}}.1:</b> The cart in English…</figcaption></figure>
 <figure data-render="react/cart.html" data-width="560" data-actions="click:button"><figcaption>…and after one click, in Arabic: the layout mirrored, the plural is the dual form “عنصران”, prices use the Egyptian Arabic format, and the arrow turned round. Not one component knows which language it is showing.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<figure data-render="vue/cart.html" data-width="560"><figcaption><b>Figure {{n}}.1:</b> The cart in English…</figcaption></figure>
+<figure data-render="vue/cart.html" data-width="560" data-actions="click:button"><figcaption>…and after one click, in Arabic: the layout mirrored, the plural is the dual form “عنصران”, prices use the Egyptian Arabic format, and the arrow turned round. Not one component knows which language it is showing.</figcaption></figure>
+<!-- /vue -->
 
 <h2>{{n}}.4 Bidirectional text</h2>
 
@@ -159,7 +171,12 @@
 <li>Switch languages back and forth, and check every line: text, plural, prices, alignment, arrow.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> save the chosen language (in <code>localStorage</code> or the address, such as <code>/ar/cart</code>) and start from <code>navigator.languages</code> on the first visit. An address per language is also what search engines need.</p>
+<!-- react -->
 <figure data-render="react/cart.html" data-width="560" data-actions="click:button"><figcaption><b>Project {{n}}.2:</b> the cart after switching language.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<figure data-render="vue/cart.html" data-width="560" data-actions="click:button"><figcaption><b>Project {{n}}.2:</b> the cart after switching language.</figcaption></figure>
+<!-- /vue -->
 </div>
 
 <div class="project">

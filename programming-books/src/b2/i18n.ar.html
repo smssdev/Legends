@@ -78,9 +78,21 @@
 <pre data-code="react/I18n.tsx" data-title="I18n.tsx"></pre>
 <pre data-code="react/cart.tsx" data-title="cart.tsx"></pre>
 <!-- /react -->
+<!-- vue -->
+<p>في Vue اللغة الحالية حالة على مستوى التطبيق نادراً ما تتغير: وهذا بالضبط عمل <code>provide</code> و<code>inject</code> (فصل الحالة العامة). تضبط <code>provideI18n</code> ‏<code>lang</code> و<code>dir</code> على الصفحة، وتعطي كل مكوّن دالة <code>t</code> ومنسّقاً للأموال. وكلاهما <code>computed</code>، فيتبع كل نص على الشاشة اللغة حين تتغير:</p>
 
+<pre data-code="vue/i18n.ts" data-title="i18n.ts"></pre>
+<pre data-code="vue/Cart.vue" data-title="Cart.vue"></pre>
+<!-- /vue -->
+
+<!-- react -->
 <figure data-render="react/cart.html" data-width="560"><figcaption><b>شكل {{n}}.1:</b> السلة بالعربية: «عنصران» بصيغة المثنى، والأسعار بالصيغة المصرية العربية…</figcaption></figure>
 <figure data-render="react/cart.html" data-width="560" data-actions="click:button"><figcaption>…وبعد ضغطة واحدة بالإنجليزية: انعكس التخطيط، وتغيّرت صيغة الجمع والأرقام، واستدار السهم. ولا يعرف أي مكوّن أي لغة يعرض.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<figure data-render="vue/cart.html" data-width="560"><figcaption><b>شكل {{n}}.1:</b> السلة بالعربية: «عنصران» بصيغة المثنى، والأسعار بالصيغة المصرية العربية…</figcaption></figure>
+<figure data-render="vue/cart.html" data-width="560" data-actions="click:button"><figcaption>…وبعد ضغطة واحدة بالإنجليزية: انعكس التخطيط، وتغيّرت صيغة الجمع والأرقام، واستدار السهم. ولا يعرف أي مكوّن أي لغة يعرض.</figcaption></figure>
+<!-- /vue -->
 
 <h2>{{n}}.4 النص ثنائي الاتجاه</h2>
 
@@ -159,7 +171,12 @@
 <li>بدّل اللغة ذهاباً وإياباً، وافحص كل سطر: النص، والجمع، والأسعار، والمحاذاة، والسهم.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> احفظ اللغة المختارة (في <code>localStorage</code> أو في العنوان، مثل <code>/ar/cart</code>) وابدأ من <code>navigator.languages</code> في الزيارة الأولى. والعنوان الخاص بكل لغة هو أيضاً ما تحتاجه محركات البحث.</p>
+<!-- react -->
 <figure data-render="react/cart.html" data-width="560" data-actions="click:button"><figcaption><b>مشروع {{n}}.2:</b> السلة بعد تبديل اللغة.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<figure data-render="vue/cart.html" data-width="560" data-actions="click:button"><figcaption><b>مشروع {{n}}.2:</b> السلة بعد تبديل اللغة.</figcaption></figure>
+<!-- /vue -->
 </div>
 
 <div class="project">

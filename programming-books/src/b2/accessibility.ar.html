@@ -85,15 +85,20 @@
 
 <!-- react -->
 <pre data-code="react/ConfirmDialog.tsx" data-title="ConfirmDialog.tsx"></pre>
-<!-- /react -->
 
 <figure data-render="react/dialog.html" data-width="560" data-actions="click:.card button;wait:200"><figcaption><b>شكل {{n}}.1:</b> نافذة تأكيد. التركيز على «ألغِ»، فلا يحذف ضغط Enter بلا تفكير الحسابَ.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/ConfirmDialog.vue" data-title="ConfirmDialog.vue"></pre>
+
+<figure data-render="vue/dialog.html" data-width="560" data-actions="click:.card button;wait:200"><figcaption><b>شكل {{n}}.1:</b> نافذة تأكيد. التركيز على «ألغِ»، فلا يحذف ضغط Enter بلا تفكير الحسابَ.</figcaption></figure>
+<!-- /vue -->
 
 <p>لاحظ اختيارين. تُسمّى النافذة بعنوانها (<code>aria-labelledby</code>) وتُوصف بنصها (<code>aria-describedby</code>)، فيقرأ قارئ الشاشة الاثنين حين تُفتح. ومع الفعل المدمّر يأخذ الزر الآمن التركيز الأول.</p>
 
 <h3>تغيّر الصفحات</h3>
 
-<p>حين يعرض الموجّه صفحة جديدة لا يسمع مستخدم قارئ الشاشة شيئاً: فلم تُحمَّل صفحة. فبعد كل انتقال انقل التركيز إلى <code>h1</code> الصفحة الجديدة (أعطه <code>tabIndex={-1}</code> ليقبل التركيز)، وحدّث <code>document.title</code>. فكلاهما يخبر المستخدم أين هو.</p>
+<p>حين يعرض الموجّه صفحة جديدة لا يسمع مستخدم قارئ الشاشة شيئاً: فلم تُحمَّل صفحة. فبعد كل انتقال انقل التركيز إلى <code>h1</code> الصفحة الجديدة (أعطه <code>tabindex="-1"</code> ليقبل التركيز)، وحدّث <code>document.title</code>. فكلاهما يخبر المستخدم أين هو.</p>
 
 <h3>ما يختفي</h3>
 
@@ -126,7 +131,7 @@
 <table>
 <thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
 <tbody>
-<tr><td><code>div</code> بـ <code>onClick</code></td><td>بلا لوحة مفاتيح وبلا دور</td><td><code>&lt;button&gt;</code></td></tr>
+<tr><td><code>div</code> بـ <code><!-- react -->onClick<!-- /react --><!-- vue -->@click<!-- /vue --></code></td><td>بلا لوحة مفاتيح وبلا دور</td><td><code>&lt;button&gt;</code></td></tr>
 <tr><td>أزرار أيقونات بلا اسم</td><td>يقول قارئ الشاشة «زر»</td><td><code>aria-label</code>، و<code>aria-hidden</code> على الأيقونة</td></tr>
 <tr><td>نص إرشادي بدل التسمية</td><td>يختفي التلميح، وتباينه ضعيف</td><td><code>&lt;label&gt;</code> ظاهرة</td></tr>
 <tr><td><code>outline: none</code> دون بديل</td><td>يضيع مستخدمو لوحة المفاتيح</td><td>نمط <code>:focus-visible</code> واضح</td></tr>
@@ -179,26 +184,32 @@
 <p class="project-skills"><strong>ستتدرب على:</strong> <code>aria-haspopup</code> و<code>aria-expanded</code>، و<code>role="menu"</code> و<code>menuitem</code>، والتركيز المتجول، وإعادة التركيز.</p>
 <ol class="steps">
 <li>للزر <code>aria-haspopup="menu"</code> و<code>aria-expanded</code> و<code>aria-controls</code>. والسهم لأسفل يفتح القائمة على العنصر الأول، والسهم لأعلى على الأخير.</li>
-<li>القائمة لائحة بـ <code>role="menu"</code>، وكل عنصر زر بـ <code>role="menuitem"</code> و<code>tabIndex={-1}</code>، داخل <code>li</code> بـ <code>role="none"</code>.</li>
-<li>احفظ رقم العنصر الفعّال في الحالة، وانقل التركيز الحقيقي إليه في تأثير. والسهمان لأعلى ولأسفل يلتفّان، وHome وEnd يقفزان.</li>
+<li>القائمة لائحة بـ <code>role="menu"</code>، وكل عنصر زر بـ <code>role="menuitem"</code> و<code>tabindex="-1"</code>، داخل <code>li</code> بـ <code>role="none"</code>.</li>
+<li>احفظ رقم العنصر الفعّال في الحالة، وانقل التركيز الحقيقي إليه <!-- react -->في تأثير<!-- /react --><!-- vue -->في مراقب، بعد <code>nextTick</code><!-- /vue -->. والسهمان لأعلى ولأسفل يلتفّان، وHome وEnd يقفزان.</li>
 <li>Escape وTab يغلقان القائمة ويعيدان التركيز إلى الزر. واختيار عنصر ينفذه ويعيد التركيز أيضاً.</li>
 <li>علّم العنصر المدمّر بالأحمر <em>وضعه</em> في الأخير، بعيداً عن الباقي.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> «القائمة» في ARIA تعني لائحة <em>إجراءات</em>، مثل قائمة تطبيق سطح المكتب. أما لائحة الروابط للتنقل فليست قائمة: هي <code>&lt;nav&gt;</code> فيها روابط، ولا تحتاج شيئاً من هذا.</p>
 <!-- react -->
 <pre data-code="react/projects/MenuButton.tsx" data-title="MenuButton.tsx"></pre>
-<!-- /react -->
+
 <figure data-render="react/projects/menu.html" data-width="560" data-actions="click:.menu-wrap > button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>مشروع {{n}}.2:</b> القائمة مفتوحة، بعد ضغط السهم لأسفل مرتين.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/MenuButton.vue" data-title="MenuButton.vue"></pre>
+
+<figure data-render="vue/projects/menu.html" data-width="560" data-actions="click:.menu-wrap > button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>مشروع {{n}}.2:</b> القائمة مفتوحة، بعد ضغط السهم لأسفل مرتين.</figcaption></figure>
+<!-- /vue -->
 </div>
 
 <div class="project">
 <p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
 <h3>تنقّل يلاحظه قارئ الشاشة</h3>
 <p class="project-goal">مكوّن صغير يحدّث، بعد كل تغيّر في المسار، عنوان الصفحة، وينقل التركيز إلى عنوان الصفحة الجديدة، ويعلنه.</p>
-<p class="project-skills"><strong>ستتدرب على:</strong> التفاعل مع تغيّر المسار في تأثير، وإدارة التركيز على عناصر غير تفاعلية، ومنطقة حية موجودة قبل رسالتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التفاعل مع تغيّر المسار <!-- react -->في تأثير<!-- /react --><!-- vue -->بـ <code>router.afterEach</code><!-- /vue -->، وإدارة التركيز على عناصر غير تفاعلية، ومنطقة حية موجودة قبل رسالتها.</p>
 <ol class="steps">
-<li>اقرأ الموقع الحالي من الموجّه، وشغّل تأثيراً حين يتغير مساره.</li>
-<li>تخطَّ الرسم الأول تماماً: ففي التحميل الأول يعلن المتصفح الصفحة بنفسه.</li>
+<li><!-- react -->اقرأ الموقع الحالي من الموجّه، وشغّل تأثيراً حين يتغير مساره.<!-- /react --><!-- vue -->سجّل <code>router.afterEach</code>، وانتظر <code>nextTick</code> لتكون الصفحة الجديدة على الشاشة.<!-- /vue --></li>
+<li>تخطَّ <!-- react -->الرسم الأول<!-- /react --><!-- vue -->الانتقال الأول (حين تكون <code>from.matched</code> فارغة)<!-- /vue --> تماماً: ففي التحميل الأول يعلن المتصفح الصفحة بنفسه.</li>
 <li>جِد <code>main h1</code>، واضبط <code>document.title</code> من نصه، وأعطه <code>tabIndex = -1</code>، وركّز عليه.</li>
 <li>ضع نص العنوان في فقرة <code>role="status"</code> مخفية بصرياً، موجودة دائماً في الصفحة.</li>
 <li>اختبر بقارئ شاشة: اتبع رابطاً، وتحقق أنك تسمع اسم الصفحة الجديدة، وأن Tab يكمل من العنوان.</li>
@@ -206,8 +217,14 @@
 <p class="hint"><strong>تلميح:</strong> أعطِ العنوان الذي عليه التركيز إطاراً ظاهراً أيضاً. فمستخدمو لوحة المفاتيح المبصرون يحتاجون أن يروا أين ذهب التركيز.</p>
 <!-- react -->
 <pre data-code="react/projects/RouteFocus.tsx" data-title="RouteFocus.tsx"></pre>
-<!-- /react -->
+
 <figure data-render="react/projects/route-focus.html" data-width="560" data-actions="click:nav a:nth-child(2);wait:200"><figcaption><b>مشروع {{n}}.3:</b> بعد اتباع الرابط، صار التركيز على العنوان الجديد.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/routeFocus.ts" data-title="routeFocus.ts"></pre>
+
+<figure data-render="vue/projects/route-focus.html" data-width="560" data-actions="click:nav a:nth-child(2);wait:200"><figcaption><b>مشروع {{n}}.3:</b> بعد اتباع الرابط، صار التركيز على العنوان الجديد.</figcaption></figure>
+<!-- /vue -->
 </div>
 <!-- /projects -->
 

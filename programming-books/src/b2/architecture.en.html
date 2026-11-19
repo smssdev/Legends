@@ -23,7 +23,7 @@
 
 <p>Beginners often group files by <em>type</em>: all components in one folder, all hooks in another, all API calls in a third. That works until the app grows; then every feature is spread across five folders, and nothing tells you which files belong together. Mature codebases group by <dfn>feature</dfn>: everything about the cart lives in <code>features/cart</code>.</p>
 
-<pre data-out="tree.mjs"></pre>
+<!-- react --><pre data-out="tree.mjs"></pre><!-- /react --><!-- vue --><pre data-out="vue/tree.mjs"></pre><!-- /vue -->
 
 <p>Three layers, each with one job:</p>
 <ul>
@@ -45,9 +45,9 @@
 
 <h2>{{n}}.2 A functional core, an imperative shell</h2>
 
-<p>Inside a feature, the most useful line to draw is between <em>deciding</em> and <em>doing</em>. The <dfn>functional core</dfn> is pure logic: given data, it returns data, with no network, no storage and no React. The cart’s totals, the discount rules, the reducer of the state chapter. The <dfn>imperative shell</dfn> is everything that touches the world: components, effects, API calls, storage.</p>
+<p>Inside a feature, the most useful line to draw is between <em>deciding</em> and <em>doing</em>. The <dfn>functional core</dfn> is pure logic: given data, it returns data, with no network, no storage and no <!-- react -->React<!-- /react --><!-- vue -->Vue<!-- /vue -->. The cart’s totals, the discount rules, the reducer of the state chapter. The <dfn>imperative shell</dfn> is everything that touches the world: components, effects, API calls, storage.</p>
 
-<p>Keep the core as large and the shell as thin as you can. The core is where the bugs that cost money live, and it is trivial to test with plain unit tests (Chapter {{n-4}}); the shell then mostly passes data in and out. This is why the reducers and stores in this book were tested in Node before React ever saw them.</p>
+<p>Keep the core as large and the shell as thin as you can. The core is where the bugs that cost money live, and it is trivial to test with plain unit tests (Chapter {{n-4}}); the shell then mostly passes data in and out. This is why the <!-- react -->reducers and stores<!-- /react --><!-- vue -->composables and stores<!-- /vue --> in this book were tested in Node before <!-- react -->React<!-- /react --><!-- vue -->Vue<!-- /vue --> ever saw them.</p>
 
 <h2>{{n}}.3 One door to the server</h2>
 
@@ -77,7 +77,7 @@
 
 <h2>{{n}}.5 Record your decisions</h2>
 
-<p>Six months from now, someone will ask why the app uses Zustand and not Redux, or why dates are stored in UTC. If the answer is only in someone’s head, they may undo a good decision. An <dfn>Architecture Decision Record</dfn> (ADR) is a short file in the repository, written when a significant decision is made:</p>
+<p>Six months from now, someone will ask why the app uses <!-- react -->Zustand and not Redux<!-- /react --><!-- vue -->Pinia and not Vuex<!-- /vue -->, or why dates are stored in UTC. If the answer is only in someone’s head, they may undo a good decision. An <dfn>Architecture Decision Record</dfn> (ADR) is a short file in the repository, written when a significant decision is made:</p>
 
 <div class="listing" dir="ltr"><div class="listing-title">docs/adr/0007-server-state-with-tanstack-query.md</div><pre class="code md"># 7. Server state with TanStack Query
 
@@ -125,7 +125,7 @@ functions of shared/api. Effects no longer call fetch.
 <li>Record significant decisions in short <strong>ADRs</strong>.</li>
 </ul>
 
-<p class="answers-note"><strong>Quick check answers:</strong> 1. From <code>features/cart/index.ts</code>, the cart’s public entry point, not from <code>features/cart/CartBadge.tsx</code>. 2. Because it would tie the “shared” code to one feature, so it could no longer be reused or moved, and changes to the feature would break unrelated screens. 3. In the functional core: it is pure logic that should be tested on its own.</p>
+<p class="answers-note"><strong>Quick check answers:</strong> 1. From <code>features/cart/index.ts</code>, the cart’s public entry point, not from <code>features/cart/CartBadge.<!-- react -->tsx<!-- /react --><!-- vue -->vue<!-- /vue --></code>. 2. Because it would tie the “shared” code to one feature, so it could no longer be reused or moved, and changes to the feature would break unrelated screens. 3. In the functional core: it is pure logic that should be tested on its own.</p>
 
 <!-- projects -->
 <h2>Practice projects</h2>
@@ -145,7 +145,7 @@ functions of shared/api. Effects no longer call fetch.
 <li>Run <code>npm run check</code> and the tests: a reorganisation must not change behaviour.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> when you cannot decide whether something is shared, keep it in the feature. Moving code up to <code>shared</code> later, when a second feature needs it, is easy; untangling a “shared” folder full of business logic is not.</p>
-<pre data-out="tree.mjs"></pre>
+<!-- react --><pre data-out="tree.mjs"></pre><!-- /react --><!-- vue --><pre data-out="vue/tree.mjs"></pre><!-- /vue -->
 </div>
 
 <div class="project">
@@ -171,15 +171,21 @@ functions of shared/api. Effects no longer call fetch.
 <p class="project-goal">Write a script that reads every import in the codebase, works out which layer and feature each file belongs to, and reports imports that break the dependency rules.</p>
 <p class="project-skills"><strong>You will practise:</strong> walking folders, regular expressions on source code, resolving relative paths, and turning rules into checks with exit codes.</p>
 <ol class="steps">
-<li>Walk <code>src</code> and collect every <code>.ts</code> and <code>.tsx</code> file.</li>
+<li>Walk <code>src</code> and collect every <code>.ts</code> and <!-- react --><code>.tsx</code><!-- /react --><!-- vue --><code>.vue</code><!-- /vue --> file.</li>
 <li>Write <code>where(path)</code>, which splits a path into its layer (<code>app</code>, <code>features</code>, <code>shared</code>), its feature, and the rest.</li>
 <li>For every relative import, resolve the target with <code>path.resolve</code> and compare the two locations against the three rules.</li>
 <li>Print each violation with the file, the import and the rule it breaks; exit with 1 if there are any.</li>
 <li>Run it on the sample: it finds the header that reaches into the cart store, and the account page that bypasses the cart’s <code>index.ts</code>.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> a regular expression is enough for a checker like this, but real tools use the TypeScript compiler to read imports exactly, including aliases such as <code>@/features/cart</code>. Start simple, and switch when the simple version stops being right.</p>
+<!-- react -->
 <pre data-code="boundaries.ts" data-title="boundaries.ts"></pre>
 <pre data-out="boundaries.mjs"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/boundaries.ts" data-title="boundaries.ts"></pre>
+<pre data-out="vue/boundaries.mjs"></pre>
+<!-- /vue -->
 </div>
 <!-- /projects -->
 

@@ -85,15 +85,20 @@
 
 <!-- react -->
 <pre data-code="react/ConfirmDialog.tsx" data-title="ConfirmDialog.tsx"></pre>
-<!-- /react -->
 
 <figure data-render="react/dialog.html" data-width="560" data-actions="click:.card button;wait:200"><figcaption><b>Figure {{n}}.1:</b> A confirmation dialog. “Cancel” has the focus, so pressing Enter by reflex does not delete the account.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/ConfirmDialog.vue" data-title="ConfirmDialog.vue"></pre>
+
+<figure data-render="vue/dialog.html" data-width="560" data-actions="click:.card button;wait:200"><figcaption><b>Figure {{n}}.1:</b> A confirmation dialog. “Cancel” has the focus, so pressing Enter by reflex does not delete the account.</figcaption></figure>
+<!-- /vue -->
 
 <p>Notice two choices. The dialog is named by its title (<code>aria-labelledby</code>) and described by its text (<code>aria-describedby</code>), so a screen reader reads both when it opens. And for a destructive action, the safe button gets the first focus.</p>
 
 <h3>Route changes</h3>
 
-<p>When the router shows a new page, a screen reader user hears nothing: no page loaded. After each navigation, move the focus to the new page’s <code>h1</code> (give it <code>tabIndex={-1}</code> so it can receive focus), and update <code>document.title</code>. Both tell the user where they are.</p>
+<p>When the router shows a new page, a screen reader user hears nothing: no page loaded. After each navigation, move the focus to the new page’s <code>h1</code> (give it <code>tabindex="-1"</code> so it can receive focus), and update <code>document.title</code>. Both tell the user where they are.</p>
 
 <h3>Things that disappear</h3>
 
@@ -126,7 +131,7 @@
 <table>
 <thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
 <tbody>
-<tr><td>A <code>div</code> with <code>onClick</code></td><td>No keyboard, no role</td><td><code>&lt;button&gt;</code></td></tr>
+<tr><td>A <code>div</code> with <code><!-- react -->onClick<!-- /react --><!-- vue -->@click<!-- /vue --></code></td><td>No keyboard, no role</td><td><code>&lt;button&gt;</code></td></tr>
 <tr><td>Icon buttons without a name</td><td>Screen readers say “button”</td><td><code>aria-label</code>, and <code>aria-hidden</code> on the icon</td></tr>
 <tr><td>Placeholder instead of a label</td><td>The hint disappears; low contrast</td><td>A visible <code>&lt;label&gt;</code></td></tr>
 <tr><td><code>outline: none</code> with nothing instead</td><td>Keyboard users are lost</td><td>A clear <code>:focus-visible</code> style</td></tr>
@@ -179,26 +184,32 @@
 <p class="project-skills"><strong>You will practise:</strong> <code>aria-haspopup</code> and <code>aria-expanded</code>, <code>role="menu"</code> and <code>menuitem</code>, roving focus, and returning the focus.</p>
 <ol class="steps">
 <li>The button has <code>aria-haspopup="menu"</code>, <code>aria-expanded</code> and <code>aria-controls</code>. Down Arrow opens the menu on the first item, and Up Arrow on the last.</li>
-<li>The menu is a list with <code>role="menu"</code>; each item is a button with <code>role="menuitem"</code> and <code>tabIndex={-1}</code>, inside an <code>li</code> with <code>role="none"</code>.</li>
-<li>Keep the index of the active item in state, and move the real focus to it in an effect. Up and Down wrap around; Home and End jump.</li>
+<li>The menu is a list with <code>role="menu"</code>; each item is a button with <code>role="menuitem"</code> and <code>tabindex="-1"</code>, inside an <code>li</code> with <code>role="none"</code>.</li>
+<li>Keep the index of the active item in state, and move the real focus to it <!-- react -->in an effect<!-- /react --><!-- vue -->in a watcher, after <code>nextTick</code><!-- /vue -->. Up and Down wrap around; Home and End jump.</li>
 <li>Escape and Tab close the menu and return the focus to the button. Choosing an item runs it and also returns the focus.</li>
 <li>Mark the destructive item in red <em>and</em> put it last, away from the others.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> a “menu” in ARIA means a list of <em>actions</em>, like a desktop app’s menu. A list of links for navigation is not a menu: it is a <code>&lt;nav&gt;</code> with links, and needs none of this.</p>
 <!-- react -->
 <pre data-code="react/projects/MenuButton.tsx" data-title="MenuButton.tsx"></pre>
-<!-- /react -->
+
 <figure data-render="react/projects/menu.html" data-width="560" data-actions="click:.menu-wrap > button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>Project {{n}}.2:</b> the menu open, after pressing Down Arrow twice.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/MenuButton.vue" data-title="MenuButton.vue"></pre>
+
+<figure data-render="vue/projects/menu.html" data-width="560" data-actions="click:.menu-wrap > button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>Project {{n}}.2:</b> the menu open, after pressing Down Arrow twice.</figcaption></figure>
+<!-- /vue -->
 </div>
 
 <div class="project">
 <p class="project-label hard">Project {{n}}.3 · Challenge</p>
 <h3>Navigation that screen readers notice</h3>
 <p class="project-goal">A small component that, after every route change, updates the page title, moves the focus to the new page’s heading, and announces it.</p>
-<p class="project-skills"><strong>You will practise:</strong> reacting to route changes in an effect, managing focus on non-interactive elements, and a live region that exists before its message.</p>
+<p class="project-skills"><strong>You will practise:</strong> reacting to route changes <!-- react -->in an effect<!-- /react --><!-- vue -->with <code>router.afterEach</code><!-- /vue -->, managing focus on non-interactive elements, and a live region that exists before its message.</p>
 <ol class="steps">
-<li>Read the current location from the router, and run an effect when its path changes.</li>
-<li>Skip the very first render: on the first load, the browser already announces the page.</li>
+<li><!-- react -->Read the current location from the router, and run an effect when its path changes.<!-- /react --><!-- vue -->Register <code>router.afterEach</code>, and wait for <code>nextTick</code>, so the new page is on screen.<!-- /vue --></li>
+<li>Skip the very first <!-- react -->render<!-- /react --><!-- vue -->navigation (when <code>from.matched</code> is empty)<!-- /vue -->: on the first load, the browser already announces the page.</li>
 <li>Find <code>main h1</code>, set <code>document.title</code> from its text, give it <code>tabIndex = -1</code>, and focus it.</li>
 <li>Put the heading’s text in a visually hidden <code>role="status"</code> paragraph that is always on the page.</li>
 <li>Test with a screen reader: follow a link, and check that you hear the new page’s name and that Tab continues from the heading.</li>
@@ -206,8 +217,14 @@
 <p class="hint"><strong>Hint:</strong> give the focused heading a visible outline too. Sighted keyboard users also need to see where the focus went.</p>
 <!-- react -->
 <pre data-code="react/projects/RouteFocus.tsx" data-title="RouteFocus.tsx"></pre>
-<!-- /react -->
+
 <figure data-render="react/projects/route-focus.html" data-width="560" data-actions="click:nav a:nth-child(2);wait:200"><figcaption><b>Project {{n}}.3:</b> after following the link, the focus is on the new heading.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/routeFocus.ts" data-title="routeFocus.ts"></pre>
+
+<figure data-render="vue/projects/route-focus.html" data-width="560" data-actions="click:nav a:nth-child(2);wait:200"><figcaption><b>Project {{n}}.3:</b> after following the link, the focus is on the new heading.</figcaption></figure>
+<!-- /vue -->
 </div>
 <!-- /projects -->
 

@@ -352,3 +352,171 @@ createRoot(document.getElementById("root")!).render(<Settings />);
 ''', TOKENS_CSS + PLAIN["components.css"])
 
 kit.generate(HERE, T, plain=PLAIN, node_files=NODE, browser_files=BROWSER)
+
+
+# ---------------------------------------------------------------- the same components in Vue (Vue edition)
+import subprocess  # noqa: E402
+import vue_kit  # noqa: E402
+
+VUE_CSS = TOKENS_CSS + PLAIN["components.css"]
+VPLAIN, VBROWSER = {}, {}
+VPLAIN["vue/tsconfig.json"] = """{
+  "compilerOptions": {
+    "strict": true, "noUncheckedIndexedAccess": true, "target": "es2024", "module": "esnext",
+    "moduleResolution": "bundler", "lib": ["es2024", "dom", "dom.iterable"], "types": ["node"], "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts", "**/*.vue"]
+}
+"""
+VPLAIN["vue/Button.vue"] = """<script setup lang="ts">
+type Variant = "primary" | "secondary" | "danger" | "ghost";
+type Size = "sm" | "md" | "lg";
+
+const { variant = "primary", size = "md", loading = false, type = "button" } = defineProps<{
+  variant?: Variant;
+  size?: Size;
+  loading?: boolean;
+  disabled?: boolean;
+  type?: "button" | "submit" | "reset";
+}>();
+</script>
+
+<!-- {w_c4} -->
+<template>
+  <button :type="type" :class="['btn', `btn-${variant}`, `btn-${size}`]" :disabled="disabled || loading" :aria-busy="loading || undefined">
+    <span v-if="loading" class="spinner" aria-hidden="true" />
+    <slot />
+  </button>
+</template>
+"""
+VPLAIN["vue/Gallery.vue"] = """<script setup lang="ts">
+import Button from "./Button.vue";
+</script>
+
+<template>
+  <div class="gallery">
+    <div class="row">
+      <Button>{w_primary}</Button>
+      <Button variant="secondary">{w_secondary}</Button>
+      <Button variant="danger">{w_danger}</Button>
+      <Button variant="ghost">{w_ghost}</Button>
+    </div>
+    <div class="row">
+      <Button size="sm">{w_small}</Button>
+      <Button size="lg">{w_large}</Button>
+      <Button loading>{w_saving}</Button>
+      <Button disabled>{w_cancel}</Button>
+    </div>
+  </div>
+</template>
+"""
+VPLAIN["vue/Buttons.vue"] = """<script setup lang="ts">
+import Gallery from "./Gallery.vue";
+</script>
+
+<template>
+  <Gallery />
+  <div data-theme="dark" style="margin-top: 12px"><Gallery /></div>
+</template>
+"""
+VBROWSER["vue/buttons.ts"] = ("""import { createApp } from "vue";
+import Buttons from "./Buttons.vue";
+
+createApp(Buttons).mount("#app");
+""", VUE_CSS)
+
+VPLAIN["vue/projects/Badge.vue"] = """<script setup lang="ts">
+export type Tone = "neutral" | "success" | "warning" | "danger";
+const { tone = "neutral" } = defineProps<{ tone?: Tone }>();
+</script>
+
+<template>
+  <span :class="['badge', `badge-${tone}`]"><slot /></span>
+</template>
+"""
+VPLAIN["vue/projects/Alert.vue"] = """<script setup lang="ts">
+type Tone = "info" | "success" | "warning" | "danger";
+const ICONS: Record<Tone, string> = { info: "ℹ", success: "✓", warning: "!", danger: "✕" };
+
+const { tone = "info" } = defineProps<{ tone?: Tone }>();
+</script>
+
+<template>
+  <!-- Errors interrupt (alert); everything else waits for a pause (status) -->
+  <div :class="['alert', `alert-${tone}`]" :role="tone === 'danger' ? 'alert' : 'status'">
+    <span aria-hidden="true">{{ ICONS[tone] }}</span>
+    <span><slot /></span>
+  </div>
+</template>
+"""
+VPLAIN["vue/projects/Feedback.vue"] = """<script setup lang="ts">
+import Alert from "./Alert.vue";
+import Badge from "./Badge.vue";
+</script>
+
+<template>
+  <div class="gallery">
+    <div class="row">
+      <b>{w_order}</b>
+      <Badge tone="success">{w_paid}</Badge>
+      <Badge tone="warning">{w_pending}</Badge>
+      <Badge tone="danger">{w_refunded}</Badge>
+      <Badge>{w_new}</Badge>
+    </div>
+    <div>
+      <Alert>{w_info}</Alert>
+      <Alert tone="success">{w_success}</Alert>
+      <Alert tone="warning">{w_warning}</Alert>
+      <Alert tone="danger">{w_error}</Alert>
+    </div>
+  </div>
+</template>
+"""
+VBROWSER["vue/projects/feedback.ts"] = ("""import { createApp } from "vue";
+import Feedback from "./Feedback.vue";
+
+createApp(Feedback).mount("#app");
+""", VUE_CSS)
+
+VPLAIN["vue/projects/Switch.vue"] = """<script setup lang="ts">
+// With v-model the parent owns the value; without it, defineModel keeps a local one
+const on = defineModel<boolean>({ default: false });
+defineProps<{ label: string }>();
+</script>
+
+<template>
+  <button type="button" role="switch" :aria-checked="on" class="switch" @click="on = !on">
+    <span class="track" aria-hidden="true"><span class="thumb" /></span>
+    {{ label }}
+  </button>
+</template>
+"""
+VPLAIN["vue/projects/Settings.vue"] = """<script setup lang="ts">
+import { ref } from "vue";
+import Switch from "./Switch.vue";
+
+const dark = ref(false);
+</script>
+
+<template>
+  <div class="gallery" :data-theme="dark ? 'dark' : undefined">
+    <Switch label="{w_notify}" />
+    <Switch label="{w_wifi}" />
+    <Switch v-model="dark" label="{w_dark}" />
+  </div>
+</template>
+"""
+VBROWSER["vue/projects/switches.ts"] = ("""import { createApp } from "vue";
+import Settings from "./Settings.vue";
+
+createApp(Settings).mount("#app");
+""", VUE_CSS)
+
+vue_kit.generate(HERE, T, plain=VPLAIN, browser_files=VBROWSER, title_key="title")
+check = HERE.parent / "vue-check" / "node_modules" / ".bin" / "vue-tsc"
+for lang in T:
+    r = subprocess.run([str(check), "-p", str(HERE / lang / "vue" / "tsconfig.json")], capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit(f"vue-tsc ({lang}):\n{r.stdout}{r.stderr}")
+print("vue types ok")

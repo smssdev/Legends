@@ -57,6 +57,18 @@
 <li><strong>An escape hatch.</strong> <code>className</code> is merged, not replaced, for the rare screen that needs a margin.</li>
 </ul>
 <!-- /react -->
+<!-- vue -->
+<pre data-code="vue/Button.vue" data-title="Button.vue"></pre>
+
+<figure data-render="vue/buttons.html" data-width="560"><figcaption><b>Figure {{n}}.1:</b> One <code>Button</code>, four variants and three sizes, with the loading and disabled states, in the light and dark themes. Not one line of the component changed between the themes.</figcaption></figure>
+
+<ul>
+<li><strong>Variants as one prop with a union type</strong>, <code>variant="danger"</code>, not separate booleans like <code>primary</code>, <code>danger</code>, <code>ghost</code>. With booleans, nothing stops someone from writing <code>&lt;Button primary danger&gt;</code>, and nobody knows what that means.</li>
+<li><strong>Build on the platform.</strong> Vue passes every attribute the component does not declare as a prop, such as <code>aria-label</code>, <code>form</code> or a <code>@click</code> listener, straight to the root <code>&lt;button&gt;</code>. This <dfn>attribute fallthrough</dfn> means the design system does not have to list them one by one.</li>
+<li><strong>Safe defaults.</strong> <code>type="button"</code> by default, because a plain <code>&lt;button&gt;</code> inside a form submits it, a classic surprise. A loading button is also disabled, and tells assistive technology with <code>aria-busy</code>.</li>
+<li><strong>An escape hatch.</strong> A <code>class</code> passed by the parent is merged with the component’s own classes, not replaced, for the rare screen that needs a margin.</li>
+</ul>
+<!-- /vue -->
 
 <aside class="box tip"><p class="box-title">Tip: name things by purpose, never by appearance</p><p>A variant called <code>blue</code> becomes a lie the day the brand turns green. <code>primary</code>, <code>danger</code> and <code>subtle</code> stay true. The same rule applies to tokens: <code>color-action</code>, not <code>color-indigo</code>.</p></aside>
 
@@ -68,7 +80,7 @@
 
 <h3>Controlled and uncontrolled</h3>
 
-<p>Inputs in a design system should work the way native inputs do: <dfn>uncontrolled</dfn> when the user just wants a default and does not care about every change, and <dfn>controlled</dfn> when the page owns the value. By convention, <code>defaultChecked</code> or <code>defaultValue</code> means uncontrolled, and <code>checked</code> or <code>value</code> with a change handler means controlled. Project {{n}}.3 builds a switch that supports both.</p>
+<p>Inputs in a design system should work the way native inputs do: <dfn>uncontrolled</dfn> when the user just wants a default and does not care about every change, and <dfn>controlled</dfn> when the page owns the value. <!-- react -->By convention, <code>defaultChecked</code> or <code>defaultValue</code> means uncontrolled, and <code>checked</code> or <code>value</code> with a change handler means controlled. Project {{n}}.2 builds a switch that supports both.<!-- /react --><!-- vue -->In Vue, both cases are covered by one line, <code>defineModel</code>: when the parent binds <code>v-model</code> the parent owns the value, and when it does not, the component keeps its own. Project {{n}}.2 builds a switch that works both ways.<!-- /vue --></p>
 
 <aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Should a button component use the token <code>indigo-600</code> or <code>color-action</code>?</li><li>What is wrong with props like <code>primary</code>, <code>secondary</code> and <code>danger</code> as three booleans?</li><li>Why should a button component default to <code>type="button"</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
 
@@ -141,6 +153,10 @@
 <pre data-code="react/projects/Alert.tsx" data-title="Alert.tsx"></pre>
 <figure data-render="react/projects/feedback.html" data-width="560"><figcaption><b>Project {{n}}.1:</b> badges and alerts in their four tones.</figcaption></figure>
 <!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/Alert.vue" data-title="Alert.vue"></pre>
+<figure data-render="vue/projects/feedback.html" data-width="560"><figcaption><b>Project {{n}}.1:</b> badges and alerts in their four tones.</figcaption></figure>
+<!-- /vue -->
 </div>
 
 <div class="project">
@@ -149,17 +165,21 @@
 <p class="project-goal">An on/off switch that can be used controlled or uncontrolled, works with the keyboard and screen readers, and is clear in every theme.</p>
 <p class="project-skills"><strong>You will practise:</strong> the controlled/uncontrolled pattern, <code>role="switch"</code> with <code>aria-checked</code>, logical CSS properties, and checking states in every theme.</p>
 <ol class="steps">
-<li>Accept <code>checked</code>, <code>defaultChecked</code> and <code>onChange</code>. If <code>checked</code> is given, the parent owns the value; otherwise the component keeps its own.</li>
+<!-- react --><li>Accept <code>checked</code>, <code>defaultChecked</code> and <code>onChange</code>. If <code>checked</code> is given, the parent owns the value; otherwise the component keeps its own.</li><!-- /react --><!-- vue --><li>Make the value a model with <code>defineModel&lt;boolean&gt;({ default: false })</code>. When the parent binds <code>v-model</code>, the parent owns the value; when it does not, the ref is local and the switch keeps its own.</li><!-- /vue -->
 <li>Render a real <code>&lt;button type="button"&gt;</code> with <code>role="switch"</code> and <code>aria-checked</code>. Enter and Space work for free.</li>
 <li>Draw the track and thumb with tokens, and move the thumb with <code>inset-inline-start</code>, so it slides the right way in Arabic too.</li>
 <li>Give the off state an outline and the on state a fill. Check both in the dark theme: when this book was written, the first version looked the same on and off in dark mode, until the screenshot showed it.</li>
-<li>Use it three ways: uncontrolled with <code>defaultChecked</code>, uncontrolled off, and controlled, where it switches the theme of its own panel.</li>
+<!-- react --><li>Use it three ways: uncontrolled with <code>defaultChecked</code>, uncontrolled off, and controlled, where it switches the theme of its own panel.</li><!-- /react --><!-- vue --><li>Use it both ways: two switches without <code>v-model</code>, which remember their own state, and one with <code>v-model</code>, where it switches the theme of its own panel.</li><!-- /vue -->
 </ol>
-<p class="hint"><strong>Hint:</strong> never change from uncontrolled to controlled during a component’s life (from <code>checked={undefined}</code> to <code>checked={true}</code>). React warns about it, because it is almost always a bug: decide once, in the parent.</p>
+<!-- react --><p class="hint"><strong>Hint:</strong> never change from uncontrolled to controlled during a component’s life (from <code>checked={undefined}</code> to <code>checked={true}</code>). React warns about it, because it is almost always a bug: decide once, in the parent.</p><!-- /react --><!-- vue --><p class="hint"><strong>Hint:</strong> decide once, in the parent, whether it owns the value. Adding or removing <code>v-model</code> on the same switch while it is on screen makes it jump between two values: its own, and the parent’s.</p><!-- /vue -->
 <!-- react -->
 <pre data-code="react/projects/Switch.tsx" data-title="Switch.tsx"></pre>
 <figure data-render="react/projects/switches.html" data-width="560" data-actions="click:.switch:nth-child(3)"><figcaption><b>Project {{n}}.2:</b> after turning on the dark theme with the controlled switch.</figcaption></figure>
 <!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/Switch.vue" data-title="Switch.vue"></pre>
+<figure data-render="vue/projects/switches.html" data-width="560" data-actions="click:.switch:nth-child(3)"><figcaption><b>Project {{n}}.2:</b> after turning on the dark theme with the switch bound by <code>v-model</code>.</figcaption></figure>
+<!-- /vue -->
 </div>
 
 <div class="project">

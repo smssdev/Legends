@@ -61,13 +61,19 @@
 
 <p>A component test renders a component into <dfn>jsdom</dfn>, a pretend browser that runs inside Node, and then uses it. The key idea of <strong>Testing Library</strong> is in its motto: <em>the more your tests resemble the way your software is used, the more confidence they can give you</em>. So tests find elements the way users do, by their role and their visible name, and act the way users do, by typing and clicking:</p>
 
-<pre data-code="vitest.config.ts" data-title="vitest.config.ts"></pre>
+<!-- react --><pre data-code="vitest.config.ts" data-title="vitest.config.ts"></pre><!-- /react --><!-- vue --><pre data-code="vue/vitest.config.ts" data-title="vitest.config.ts"></pre>
+<pre data-code="vue/vitest.setup.ts" data-title="vitest.setup.ts"></pre><!-- /vue -->
 
 <!-- react -->
 <pre data-code="react/LoginForm.tsx" data-title="LoginForm.tsx"></pre>
 <pre data-code="react/LoginForm.test.tsx" data-title="LoginForm.test.tsx"></pre>
 <pre data-sh="npx vitest run --reporter=verbose react/LoginForm.test.tsx"></pre>
 <!-- /react -->
+<!-- vue -->
+<pre data-code="vue/LoginForm.vue" data-title="LoginForm.vue"></pre>
+<pre data-code="vue/LoginForm.test.ts" data-title="LoginForm.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose LoginForm.test.ts" data-in="vue"></pre>
+<!-- /vue -->
 
 <ul>
 <li><code>getByRole("button", { name: "Sign in" })</code> fails if there is no such button, or if it has no accessible name. Your component tests check accessibility for free: an icon button without a label cannot be found.</li>
@@ -84,9 +90,16 @@
 
 <p><strong>Playwright</strong> drives real browsers: Chromium, Firefox and WebKit, the engine of Safari. Its tests start the site, open pages, and use them exactly as a person would. The configuration tells it where the tests are and how to start the site:</p>
 
+<!-- react -->
 <pre data-code="playwright.config.ts" data-title="playwright.config.ts"></pre>
 <pre data-code="e2e/login.spec.ts" data-title="e2e/login.spec.ts"></pre>
 <pre data-sh="npx playwright test e2e/login.spec.ts"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/playwright.config.ts" data-title="playwright.config.ts"></pre>
+<pre data-code="vue/e2e/login.spec.ts" data-title="e2e/login.spec.ts"></pre>
+<pre data-sh="npx playwright test e2e/login.spec.ts" data-in="vue"></pre>
+<!-- /vue -->
 
 <p>The locators look like Testing Library’s on purpose: <code>getByLabel</code>, <code>getByRole</code>. Assertions such as <code>toBeVisible()</code> and <code>toHaveText()</code> retry automatically for a short time, so tests wait for the page instead of guessing how long it takes.</p>
 
@@ -170,6 +183,10 @@
 <pre data-code="react/projects/Tasks.test.tsx" data-title="Tasks.test.tsx"></pre>
 <pre data-sh="npx vitest run --reporter=verbose react/projects/Tasks.test.tsx"></pre>
 <!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/Tasks.test.ts" data-title="Tasks.test.ts"></pre>
+<pre data-sh="npx vitest run --reporter=verbose projects/Tasks.test.ts" data-in="vue"></pre>
+<!-- /vue -->
 </div>
 
 <div class="project">
@@ -185,8 +202,14 @@
 <li>Run the whole suite again, unit, component and end-to-end, and see everything pass.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> the keyboard test proves something axe cannot: that the order of Tab stops makes sense and that Enter submits the form. Together, the two tests cover a large part of the “operable” principle of WCAG.</p>
+<!-- react -->
 <pre data-code="e2e/a11y.spec.ts" data-title="e2e/a11y.spec.ts"></pre>
 <pre data-sh="npx playwright test"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/e2e/a11y.spec.ts" data-title="e2e/a11y.spec.ts"></pre>
+<pre data-sh="npx playwright test" data-in="vue"></pre>
+<!-- /vue -->
 </div>
 <!-- /projects -->
 

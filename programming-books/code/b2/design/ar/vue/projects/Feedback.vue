@@ -1,0 +1,22 @@
+<script setup lang="ts">
+import Alert from "./Alert.vue";
+import Badge from "./Badge.vue";
+</script>
+
+<template>
+  <div class="gallery">
+    <div class="row">
+      <b>الطلب #1042</b>
+      <Badge tone="success">مدفوع</Badge>
+      <Badge tone="warning">قيد الانتظار</Badge>
+      <Badge tone="danger">مسترد</Badge>
+      <Badge>جديد</Badge>
+    </div>
+    <div>
+      <Alert>يُشحن طلبك غداً.</Alert>
+      <Alert tone="success">وصل الدفع. شكراً لك!</Alert>
+      <Alert tone="warning">بقيت قطعتان فقط في المخزون.</Alert>
+      <Alert tone="danger">رُفضت البطاقة. جرّب بطاقة أخرى من فضلك.</Alert>
+    </div>
+  </div>
+</template>

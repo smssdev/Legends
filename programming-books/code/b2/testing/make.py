@@ -432,3 +432,215 @@ test("{w_t_keyboard}", async ({ page }) => {
 '''
 
 kit.generate(HERE, T, plain=PLAIN, browser_files=BROWSER, title_key="w_title")
+
+
+# ---------------------------------------------------------------- the same tests in Vue (Vue edition), under vue/
+import subprocess  # noqa: E402
+import vue_kit  # noqa: E402
+
+VPLAIN, VBROWSER = {}, {}
+VPLAIN["vue/tsconfig.json"] = """{
+  "compilerOptions": {
+    "strict": true, "noUncheckedIndexedAccess": true, "target": "es2024", "module": "esnext",
+    "moduleResolution": "bundler", "lib": ["es2024", "dom", "dom.iterable"], "types": ["node"], "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.vue", "*.ts", "projects/*.ts"]
+}
+"""
+VPLAIN["vue/vitest.config.ts"] = """import { defineConfig } from "vitest/config";
+import vue from "@vitejs/plugin-vue";
+
+export default defineConfig({
+  plugins: [vue()], // compiles .vue files, as in the app
+  test: {
+    environment: "jsdom", // a pretend browser, so components can render
+    setupFiles: ["./vitest.setup.ts"],
+    include: ["**/*.test.ts"],
+  },
+});
+"""
+VPLAIN["vue/vitest.setup.ts"] = """import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/vue";
+import { afterEach } from "vitest";
+
+afterEach(cleanup); // remove what each test rendered, so the next test starts empty
+"""
+VPLAIN["vue/api.ts"] = PLAIN["react/api.ts"]
+VPLAIN["vue/LoginForm.vue"] = """<script setup lang="ts">
+import { ref } from "vue";
+import { signIn as defaultSignIn } from "./api";
+
+const { signIn = defaultSignIn } = defineProps<{ signIn?: typeof defaultSignIn }>();
+const error = ref("");
+const user = ref<string | null>(null);
+const busy = ref(false);
+
+async function submit(event: SubmitEvent) {
+  const data = new FormData(event.target as HTMLFormElement);
+  const email = String(data.get("email") ?? "").trim();
+  if (!email) return (error.value = "{w_e_email}");
+  busy.value = true;
+  try {
+    user.value = (await signIn(email, String(data.get("password") ?? ""))).name;
+  } catch (e) {
+    error.value = (e as Error).message;
+  } finally {
+    busy.value = false;
+  }
+}
+</script>
+
+<template>
+  <h2 v-if="user">{w_welcome} {{ user }}!</h2>
+  <form v-else novalidate :aria-describedby="error ? 'login-error' : undefined" @submit.prevent="submit">
+    <label for="email">{w_email}</label>
+    <input id="email" name="email" type="email" autocomplete="email" dir="ltr" />
+    <label for="password">{w_password}</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" dir="ltr" />
+    <p v-if="error" id="login-error" role="alert">{{ error }}</p>
+    <button type="submit" :disabled="busy">{{ busy ? "{w_signing}" : "{w_signin}" }}</button>
+  </form>
+</template>
+"""
+VPLAIN["vue/LoginForm.test.ts"] = """import { describe, expect, it, vi } from "vitest";
+import { render, screen } from "@testing-library/vue";
+import userEvent from "@testing-library/user-event";
+import LoginForm from "./LoginForm.vue";
+
+describe("LoginForm", () => {
+  it("{w_t_errors}", async () => {
+    const user = userEvent.setup();
+    render(LoginForm);
+    // {w_c_role}
+    await user.click(screen.getByRole("button", { name: "{w_signin}" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("{w_e_email}");
+  });
+
+  it("{w_t_success}", async () => {
+    const user = userEvent.setup();
+    const signIn = vi.fn().mockResolvedValue({ name: "{w_name}" });
+    render(LoginForm, { props: { signIn } });
+
+    await user.type(screen.getByLabelText("{w_email}"), "sara@example.com");
+    await user.type(screen.getByLabelText("{w_password}"), "bit2026code");
+    await user.click(screen.getByRole("button", { name: "{w_signin}" }));
+
+    expect(await screen.findByRole("heading", { name: "{w_welcome} {w_name}!" })).toBeInTheDocument();
+    expect(signIn).toHaveBeenCalledWith("sara@example.com", "bit2026code");
+  });
+
+  it("{w_t_wrong}", async () => {
+    const user = userEvent.setup();
+    render(LoginForm);
+    await user.type(screen.getByLabelText("{w_email}"), "sara@example.com");
+    await user.type(screen.getByLabelText("{w_password}"), "wrong");
+    await user.click(screen.getByRole("button", { name: "{w_signin}" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("{w_e_wrong}");
+  });
+});
+"""
+VPLAIN["vue/LoginPage.vue"] = """<script setup lang="ts">
+import LoginForm from "./LoginForm.vue";
+</script>
+
+<template>
+  <main>
+    <h1>{w_shop}</h1>
+    <LoginForm />
+  </main>
+</template>
+"""
+VBROWSER["vue/login.ts"] = ("""import { createApp } from "vue";
+import LoginPage from "./LoginPage.vue";
+
+createApp(LoginPage).mount("#app");
+""", FORM_CSS)
+
+VPLAIN["vue/playwright.config.ts"] = """import { defineConfig } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./e2e",
+  reporter: "list",
+  // Start the site before the tests, and stop it after. In a Vite project: "npm run build && npm run preview".
+  webServer: { command: "node ../../../serve.mjs 4174", url: "http://localhost:4174/vendor-vue/vue.js", reuseExistingServer: true },
+  use: { baseURL: "http://localhost:4174/testing/{lang}/vue/", browserName: "chromium" },
+});
+"""
+VPLAIN["vue/e2e/login.spec.ts"] = PLAIN["e2e/login.spec.ts"].replace('"react/login.html"', '"login.html"')
+VPLAIN["vue/e2e/a11y.spec.ts"] = PLAIN["e2e/a11y.spec.ts"].replace('"react/login.html"', '"login.html"')
+
+VPLAIN["vue/projects/Tasks.vue"] = """<script setup lang="ts">
+import { computed, ref } from "vue";
+
+type Task = { id: number; text: string; done: boolean };
+
+const { initial = [] } = defineProps<{ initial?: Task[] }>();
+const tasks = ref<Task[]>(structuredClone(initial));
+const text = ref("");
+const left = computed(() => tasks.value.filter((t) => !t.done).length);
+
+function add() {
+  if (!text.value.trim()) return;
+  tasks.value.push({ id: tasks.value.length + 1, text: text.value.trim(), done: false });
+  text.value = "";
+}
+</script>
+
+<template>
+  <section aria-labelledby="tasks-title">
+    <h2 id="tasks-title">{w_tasks}</h2>
+    <form @submit.prevent="add">
+      <input v-model="text" aria-label="{w_task}" />
+      <button type="submit">{w_add}</button>
+    </form>
+    <ul>
+      <li v-for="t in tasks" :key="t.id">
+        <label><input v-model="t.done" type="checkbox" /> {{ t.text }}</label>
+      </li>
+    </ul>
+    <p role="status">{{ left }} {w_left}</p>
+  </section>
+</template>
+"""
+VPLAIN["vue/projects/Tasks.test.ts"] = """import { expect, it } from "vitest";
+import { render, screen } from "@testing-library/vue";
+import userEvent from "@testing-library/user-event";
+import Tasks from "./Tasks.vue";
+
+it("{w_t_add}", async () => {
+  const user = userEvent.setup();
+  render(Tasks);
+  await user.type(screen.getByRole("textbox", { name: "{w_task}" }), "{w_read}{Enter}");
+  expect(screen.getByRole("checkbox", { name: "{w_read}" })).not.toBeChecked();
+  expect(screen.getByRole("status")).toHaveTextContent("1 {w_left}");
+  expect(screen.getByRole("textbox", { name: "{w_task}" })).toHaveValue("");
+});
+
+it("{w_t_toggle}", async () => {
+  const user = userEvent.setup();
+  const initial = [
+    { id: 1, text: "{w_read}", done: false },
+    { id: 2, text: "{w_write}", done: false },
+  ];
+  render(Tasks, { props: { initial } });
+  await user.click(screen.getByRole("checkbox", { name: "{w_read}" }));
+  expect(screen.getByRole("checkbox", { name: "{w_read}" })).toBeChecked();
+  expect(screen.getByRole("status")).toHaveTextContent("1 {w_left}");
+});
+
+it("{w_t_blank}", async () => {
+  const user = userEvent.setup();
+  render(Tasks);
+  await user.type(screen.getByRole("textbox", { name: "{w_task}" }), "   {Enter}");
+  expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+});
+"""
+
+vue_kit.generate(HERE, T, plain=VPLAIN, browser_files=VBROWSER)
+check = HERE.parent / "vue-check" / "node_modules" / ".bin" / "vue-tsc"
+for lang in T:
+    r = subprocess.run([str(check), "-p", str(HERE / lang / "vue" / "tsconfig.json")], capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit(f"vue-tsc ({lang}):\n{r.stdout}{r.stderr}")
+print("vue types ok")

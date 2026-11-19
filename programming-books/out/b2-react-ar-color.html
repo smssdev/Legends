@@ -4116,7 +4116,7 @@ export function Button({ variant = &quot;primary&quot;, size = &quot;md&quot;, l
 
 <h3>المُتحكَّم فيه وغير المُتحكَّم فيه</h3>
 
-<p>يجب أن تعمل حقول نظام التصميم كما تعمل الحقول الأصلية: <dfn>غير مُتحكَّم فيها</dfn> حين يريد المستخدم قيمة افتراضية ولا يهمه كل تغيير، و<dfn>مُتحكَّماً فيها</dfn> حين تملك الصفحة القيمة. وبالعرف تعني <code>defaultChecked</code> أو <code>defaultValue</code> عدم التحكم، وتعني <code>checked</code> أو <code>value</code> مع معالج تغيير التحكم. ويبني المشروع 9.3 مفتاحاً يدعم الاثنين.</p>
+<p>يجب أن تعمل حقول نظام التصميم كما تعمل الحقول الأصلية: <dfn>غير مُتحكَّم فيها</dfn> حين يريد المستخدم قيمة افتراضية ولا يهمه كل تغيير، و<dfn>مُتحكَّماً فيها</dfn> حين تملك الصفحة القيمة. وبالعرف تعني <code>defaultChecked</code> أو <code>defaultValue</code> عدم التحكم، وتعني <code>checked</code> أو <code>value</code> مع معالج تغيير التحكم. ويبني المشروع 9.2 مفتاحاً يدعم الاثنين.</p>
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>هل يستخدم مكوّن الزر الرمز <code>indigo-600</code> أم <code>color-action</code>؟</li><li>ما المشكلة في خصائص مثل <code>primary</code> و<code>secondary</code> و<code>danger</code> ثلاث قيم منطقية؟</li><li>لماذا يجب أن يكون <code>type="button"</code> افتراضياً في مكوّن الزر؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
@@ -4211,14 +4211,11 @@ export function Alert({ tone = &quot;info&quot;, children }: { tone?: Tone; chil
 <p class="project-goal">مفتاح تشغيل وإيقاف يُستخدم مُتحكَّماً فيه أو غير مُتحكَّم فيه، ويعمل بلوحة المفاتيح وقارئ الشاشة، وواضح في كل مظهر.</p>
 <p class="project-skills"><strong>ستتدرب على:</strong> نمط المُتحكَّم فيه وغير المُتحكَّم فيه، و<code>role="switch"</code> مع <code>aria-checked</code>، وخصائص CSS المنطقية، وفحص الحالات في كل مظهر.</p>
 <ol class="steps">
-<li>اقبل <code>checked</code> و<code>defaultChecked</code> و<code>onChange</code>. فإن مُرّرت <code>checked</code> ملك الأب القيمة، وإلا حفظها المكوّن بنفسه.</li>
-<li>ارسم <code>&lt;button type="button"&gt;</code> حقيقياً بـ <code>role="switch"</code> و<code>aria-checked</code>. فيعمل Enter والمسافة مجاناً.</li>
+<li>اقبل <code>checked</code> و<code>defaultChecked</code> و<code>onChange</code>. فإن مُرّرت <code>checked</code> ملك الأب القيمة، وإلا حفظها المكوّن بنفسه.</li><li>ارسم <code>&lt;button type="button"&gt;</code> حقيقياً بـ <code>role="switch"</code> و<code>aria-checked</code>. فيعمل Enter والمسافة مجاناً.</li>
 <li>ارسم المسار والمقبض بالرموز، وحرّك المقبض بـ <code>inset-inline-start</code>، فينزلق في الاتجاه الصحيح بالعربية أيضاً.</li>
 <li>أعطِ حالة الإيقاف إطاراً وحالة التشغيل تعبئة. وافحص الاثنتين في المظهر الداكن: فحين كُتب هذا الكتاب بدت النسخة الأولى متطابقة في الحالتين في الوضع الداكن، حتى كشفتها اللقطة.</li>
-<li>استخدمه بثلاث طرق: غير مُتحكَّم فيه بـ <code>defaultChecked</code>، وغير مُتحكَّم فيه مطفأً، ومُتحكَّماً فيه يبدّل مظهر لوحته.</li>
-</ol>
+<li>استخدمه بثلاث طرق: غير مُتحكَّم فيه بـ <code>defaultChecked</code>، وغير مُتحكَّم فيه مطفأً، ومُتحكَّماً فيه يبدّل مظهر لوحته.</li></ol>
 <p class="hint"><strong>تلميح:</strong> لا تنتقل أبداً من غير المُتحكَّم فيه إلى المُتحكَّم فيه خلال حياة المكوّن (من <code>checked={undefined}</code> إلى <code>checked={true}</code>). فـ React تحذّر منه لأنه علّة في الغالب دائماً: قرّر مرة واحدة، في الأب.</p>
-
 <div class="listing" dir="ltr"><div class="listing-title">Switch.tsx</div><pre class="code">import { useState } from &quot;react&quot;;
 
 type SwitchProps = {
@@ -4586,7 +4583,7 @@ export function ConfirmDialog({ open, title, children, confirmLabel, cancelLabel
 
 <h3>تغيّر الصفحات</h3>
 
-<p>حين يعرض الموجّه صفحة جديدة لا يسمع مستخدم قارئ الشاشة شيئاً: فلم تُحمَّل صفحة. فبعد كل انتقال انقل التركيز إلى <code>h1</code> الصفحة الجديدة (أعطه <code>tabIndex={-1}</code> ليقبل التركيز)، وحدّث <code>document.title</code>. فكلاهما يخبر المستخدم أين هو.</p>
+<p>حين يعرض الموجّه صفحة جديدة لا يسمع مستخدم قارئ الشاشة شيئاً: فلم تُحمَّل صفحة. فبعد كل انتقال انقل التركيز إلى <code>h1</code> الصفحة الجديدة (أعطه <code>tabindex="-1"</code> ليقبل التركيز)، وحدّث <code>document.title</code>. فكلاهما يخبر المستخدم أين هو.</p>
 
 <h3>ما يختفي</h3>
 
@@ -4694,7 +4691,7 @@ process.exitCode = total === <span class="n">0</span> ? <span class="n">0</span>
 <p class="project-skills"><strong>ستتدرب على:</strong> <code>aria-haspopup</code> و<code>aria-expanded</code>، و<code>role="menu"</code> و<code>menuitem</code>، والتركيز المتجول، وإعادة التركيز.</p>
 <ol class="steps">
 <li>للزر <code>aria-haspopup="menu"</code> و<code>aria-expanded</code> و<code>aria-controls</code>. والسهم لأسفل يفتح القائمة على العنصر الأول، والسهم لأعلى على الأخير.</li>
-<li>القائمة لائحة بـ <code>role="menu"</code>، وكل عنصر زر بـ <code>role="menuitem"</code> و<code>tabIndex={-1}</code>، داخل <code>li</code> بـ <code>role="none"</code>.</li>
+<li>القائمة لائحة بـ <code>role="menu"</code>، وكل عنصر زر بـ <code>role="menuitem"</code> و<code>tabindex="-1"</code>، داخل <code>li</code> بـ <code>role="none"</code>.</li>
 <li>احفظ رقم العنصر الفعّال في الحالة، وانقل التركيز الحقيقي إليه في تأثير. والسهمان لأعلى ولأسفل يلتفّان، وHome وEnd يقفزان.</li>
 <li>Escape وTab يغلقان القائمة ويعيدان التركيز إلى الزر. واختيار عنصر ينفذه ويعيد التركيز أيضاً.</li>
 <li>علّم العنصر المدمّر بالأحمر <em>وضعه</em> في الأخير، بعيداً عن الباقي.</li>
@@ -4782,6 +4779,7 @@ export function MenuButton({ label, items }: { label: string; items: Item[] }) {
     &lt;/div&gt;
   );
 }</pre></div>
+
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>menu.html</span><b>560px</b></div><img src="img/b2-a11y-ar-react-projects-menu.html-560.png" alt=""> button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>مشروع 10.2:</b> القائمة مفتوحة، بعد ضغط السهم لأسفل مرتين.</figcaption></figure>
 </div>
 
@@ -4827,6 +4825,7 @@ export function RouteFocus({ appName }: { appName: string }) {
     &lt;/p&gt;
   );
 }</pre></div>
+
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>route-focus.html</span><b>560px</b></div><img src="img/b2-a11y-ar-react-projects-route-focus.html-560-774f30.png" alt=""><figcaption><b>مشروع 10.3:</b> بعد اتباع الرابط، صار التركيز على العنوان الجديد.</figcaption></figure>
 </div>
 <!-- /projects -->
@@ -4966,15 +4965,15 @@ describe(<span class="s">&quot;cartTotal&quot;</span>, () =&gt; {
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose price.test.ts
  RUN  v5.1.1 .
  ✓ price.test.ts &gt; formatPrice &gt; ينسّق السعر بمنزلتين عشريتين والعملة 2ms
- ✓ price.test.ts &gt; cartTotal &gt; يجمع أسطر السلة 1ms
- ✓ price.test.ts &gt; cartTotal &gt; يُرجع 0 للسلة الفارغة 0ms
- ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون WELCOME10 على مجموع 41: 36.9 0ms
- ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون SPRING25 على مجموع 41: 30.75 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; يجمع أسطر السلة 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; يُرجع 0 للسلة الفارغة 1ms
+ ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون WELCOME10 على مجموع 41: 36.9 1ms
+ ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون SPRING25 على مجموع 41: 30.75 1ms
  ✓ price.test.ts &gt; cartTotal &gt; يتجاهل الكوبون المجهول 0ms
  ✓ price.test.ts &gt; cartTotal &gt; يرفض الكمية السالبة 0ms
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Duration  936ms (environment 77%, setup 15%, import 3%, tests 2%, transform 2%, worker 1%)</pre></div>
+   Duration  1.03s (environment 76%, setup 15%, transform 6%, tests 1%, worker 1%, import 1%)</pre></div>
 
 <ul>
 <li><code>describe</code> تجمع الاختبارات، و<code>it</code> (أو <code>test</code>) اختبار واحد، مع جملة تقول ما يجب أن يحدث. واقرأ المخرجات بصوت عالٍ: إنها مواصفات الوحدة.</li>
@@ -5009,10 +5008,10 @@ it(<span class="s">&quot;يستدعي الدالة مرة واحدة، بعد أ
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose debounce.test.ts
  RUN  v5.1.1 .
- ✓ debounce.test.ts &gt; يستدعي الدالة مرة واحدة، بعد أن يتوقف المستخدم عن الكتابة 6ms
+ ✓ debounce.test.ts &gt; يستدعي الدالة مرة واحدة، بعد أن يتوقف المستخدم عن الكتابة 9ms
  Test Files  1 passed (1)
       Tests  1 passed (1)
-   Duration  853ms (environment 80%, setup 16%, transform 2%, tests 1%, worker 1%, import 1%)</pre></div>
+   Duration  1.02s (environment 74%, setup 17%, transform 7%, tests 1%, import 1%, worker 1%)</pre></div>
 
 <p>ثلاثمئة ملي ثانية من الانتظار لم تأخذ وقتاً أصلاً، والاختبار يثبت أن شيئاً لم يحدث أثناء الكتابة، وأن استدعاءً واحداً بالضبط حدث بعدها، بآخر قيمة.</p>
 
@@ -5029,7 +5028,6 @@ it(<span class="s">&quot;يستدعي الدالة مرة واحدة، بعد أ
     include: [<span class="s">&quot;**/*.test.{ts,tsx}&quot;</span>],
   },
 });</pre></div>
-
 
 <div class="listing" dir="ltr"><div class="listing-title">LoginForm.tsx</div><pre class="code">import { useState, type FormEvent } from &quot;react&quot;;
 import { signIn as defaultSignIn } from &quot;./api&quot;;
@@ -5114,12 +5112,12 @@ describe(&quot;LoginForm&quot;, () =&gt; {
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose react/LoginForm.test.tsx
  RUN  v5.1.1 .
- ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; يعرض خطأً حين يكون البريد فارغاً 134ms
- ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; يسجّل الدخول ويرحّب بالمستخدم 109ms
- ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; يعرض خطأ الخادم لكلمة مرور خاطئة 128ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; يعرض خطأً حين يكون البريد فارغاً 122ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; يسجّل الدخول ويرحّب بالمستخدم 132ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; يعرض خطأ الخادم لكلمة مرور خاطئة 135ms
  Test Files  1 passed (1)
       Tests  3 passed (3)
-   Duration  1.41s (environment 53%, tests 29%, setup 11%, import 4%, transform 2%)</pre></div>
+   Duration  1.48s (environment 50%, tests 30%, setup 12%, transform 5%, import 3%)</pre></div>
 
 <ul>
 <li><code>getByRole("button", { name: "سجّل الدخول" })</code> تفشل إن لم يوجد زر كهذا، أو إن لم يكن له اسم متاح. فاختبارات مكوناتك تفحص سهولة الوصول مجاناً: زر الأيقونة بلا تسمية لا يمكن إيجاده.</li>
@@ -5135,6 +5133,7 @@ describe(&quot;LoginForm&quot;, () =&gt; {
 <h2><span class="sec">11.4</span> <span>اختبارات الطرف إلى الطرف بـ Playwright</span></h2>
 
 <p>تقود <strong>Playwright</strong> متصفحات حقيقية: Chromium وFirefox وWebKit، محرك Safari. وتبدأ اختباراتها الموقع، وتفتح الصفحات، وتستخدمها كما يفعل الإنسان تماماً. وتخبرها الإعدادات أين الاختبارات وكيف يبدأ الموقع:</p>
+
 
 <div class="listing" dir="ltr"><div class="listing-title">playwright.config.ts</div><pre class="code"><span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
 
@@ -5167,9 +5166,9 @@ test(<span class="s">&quot;كلمة المرور الخاطئة تُبقي ال�
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx playwright test e2e/login.spec.ts
 Running 2 tests using 1 worker
-  ✓  1 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (424ms)
-  ✓  2 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (351ms)
-  2 passed (1.7s)</pre></div>
+  ✓  1 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (423ms)
+  ✓  2 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (397ms)
+  2 passed (1.8s)</pre></div>
 
 <p>المحددات تشبه محددات Testing Library عمداً: <code>getByLabel</code> و<code>getByRole</code>. والتأكيدات مثل <code>toBeVisible()</code> و<code>toHaveText()</code> تعيد المحاولة تلقائياً لمدة قصيرة، فتنتظر الاختبارات الصفحة بدل تخمين كم تأخذ.</p>
 
@@ -5247,15 +5246,15 @@ it.each([
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose projects/password.test.ts
  RUN  v5.1.1 .
- ✓ projects/password.test.ts &gt; يقيّم  بأنها weak 2ms
+ ✓ projects/password.test.ts &gt; يقيّم  بأنها weak 3ms
  ✓ projects/password.test.ts &gt; يقيّم cat بأنها weak 0ms
  ✓ projects/password.test.ts &gt; يقيّم sunshine بأنها weak 0ms
- ✓ projects/password.test.ts &gt; يقيّم sunshine2026 بأنها okay 0ms
+ ✓ projects/password.test.ts &gt; يقيّم sunshine2026 بأنها okay 1ms
  ✓ projects/password.test.ts &gt; يقيّم Sunshine2026 بأنها strong 0ms
  ✓ projects/password.test.ts &gt; يقيّم correct horse battery staple بأنها okay 0ms
  Test Files  1 passed (1)
       Tests  6 passed (6)
-   Duration  775ms (environment 77%, setup 18%, transform 3%, import 1%, tests 1%, worker 1%)</pre></div>
+   Duration  1.07s (environment 74%, setup 15%, transform 8%, tests 1%, worker 1%, import 1%)</pre></div>
 </div>
 
 <div class="project">
@@ -5302,12 +5301,12 @@ it(&quot;لا يضيف مهمة فارغة&quot;, async () =&gt; {
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose react/projects/Tasks.test.tsx
  RUN  v5.1.1 .
- ✓ react/projects/Tasks.test.tsx &gt; يضيف مهمة من النموذج 144ms
- ✓ react/projects/Tasks.test.tsx &gt; يعلّم المهمة منجزة ويحدّث العدد 18ms
- ✓ react/projects/Tasks.test.tsx &gt; لا يضيف مهمة فارغة 22ms
+ ✓ react/projects/Tasks.test.tsx &gt; يضيف مهمة من النموذج 240ms
+ ✓ react/projects/Tasks.test.tsx &gt; يعلّم المهمة منجزة ويحدّث العدد 28ms
+ ✓ react/projects/Tasks.test.tsx &gt; لا يضيف مهمة فارغة 31ms
  Test Files  1 passed (1)
       Tests  3 passed (3)
-   Duration  932ms (environment 57%, tests 23%, setup 13%, import 4%, transform 3%)</pre></div>
+   Duration  1.44s (environment 55%, tests 23%, setup 13%, transform 5%, import 3%)</pre></div>
 </div>
 
 <div class="project">
@@ -5323,6 +5322,7 @@ it(&quot;لا يضيف مهمة فارغة&quot;, async () =&gt; {
 <li>شغّل الاختبارات كلها من جديد، الوحدات والمكونات والطرف إلى الطرف، وانظرها تنجح كلها.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> اختبار لوحة المفاتيح يثبت ما لا تستطيعه axe: أن ترتيب محطات Tab منطقي، وأن Enter ترسل النموذج. ومعاً يغطي الاختباران جزءاً كبيراً من مبدأ «قابل للتشغيل» في WCAG.</p>
+
 <div class="listing" dir="ltr"><div class="listing-title">e2e/a11y.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
 <span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
 
@@ -5348,11 +5348,11 @@ test(<span class="s">&quot;الدخول كله يعمل بلوحة المفات�
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx playwright test
 Running 4 tests using 2 workers
-  ✓  1 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (420ms)
-  ✓  2 e2e/a11y.spec.ts:7:1 › صفحة الدخول بلا مخالفات إتاحة (493ms)
-  ✓  3 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (347ms)
-  ✓  4 e2e/a11y.spec.ts:15:1 › الدخول كله يعمل بلوحة المفاتيح وحدها (307ms)
-  4 passed (1.7s)</pre></div>
+  ✓  2 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (537ms)
+  ✓  1 e2e/a11y.spec.ts:7:1 › صفحة الدخول بلا مخالفات إتاحة (676ms)
+  ✓  4 e2e/a11y.spec.ts:15:1 › الدخول كله يعمل بلوحة المفاتيح وحدها (362ms)
+  ✓  3 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (408ms)
+  4 passed (2.0s)</pre></div>
 </div>
 <!-- /projects -->
 
@@ -5757,8 +5757,7 @@ desktop   الصورة الرئيسية: hero-small.png   هل حُمّلت ال
 <li>سجّل من جديد وقارن: يجب ألا تنتظر الكتابة القائمة بعد الآن.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> التأجيل لا يصغّر العمل، بل يغيّر أولويته. فإن بقيت القائمة بطيئة حين تُرسم أخيراً، فالخطوة التالية العرض الافتراضي: ارسم العشرين سطراً التي تتسع لها الشاشة فقط.</p>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-ar-react-transition.html-560-39ee31.png" alt=""><figcaption><b>مشروع 12.2:</b> القائمة المصفاة بعد أن لحقت.</figcaption></figure>
-</div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-ar-react-transition.html-560-39ee31.png" alt=""><figcaption><b>مشروع 12.2:</b> القائمة المصفاة بعد أن لحقت.</figcaption></figure></div>
 
 <div class="project">
 <p class="project-label hard">مشروع 12.3 · تحدٍّ</p>
@@ -5773,6 +5772,7 @@ desktop   الصورة الرئيسية: hero-small.png   هل حُمّلت ال
 <li>اقرأ النتيجة بصدق: حزمة React المشتركة وحدها أكبر كثيراً من ميزانية 60 كيلوبايت. فقرّر هل ترفع الميزانية عمداً، أم تحمّل أقل.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> الميزانية التي تفشل بداية حوار لا كارثة. فالغاية أن يصير النمو قراراً يتخذه أحد عن علم، لا شيئاً يحدث صدفة.</p>
+
 <div class="listing" dir="ltr"><div class="listing-title">budget.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 <span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
@@ -6462,6 +6462,7 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(
   &lt;/I18nProvider&gt;,
 );</pre></div>
 
+
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-react-cart.html-560.png" alt=""><figcaption><b>شكل 14.1:</b> السلة بالعربية: «عنصران» بصيغة المثنى، والأسعار بالصيغة المصرية العربية…</figcaption></figure>
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-react-cart.html-560-c117d3.png" alt=""><figcaption>…وبعد ضغطة واحدة بالإنجليزية: انعكس التخطيط، وتغيّرت صيغة الجمع والأرقام، واستدار السهم. ولا يعرف أي مكوّن أي لغة يعرض.</figcaption></figure>
 
@@ -6562,6 +6563,7 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(
 <li>بدّل اللغة ذهاباً وإياباً، وافحص كل سطر: النص، والجمع، والأسعار، والمحاذاة، والسهم.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> احفظ اللغة المختارة (في <code>localStorage</code> أو في العنوان، مثل <code>/ar/cart</code>) وابدأ من <code>navigator.languages</code> في الزيارة الأولى. والعنوان الخاص بكل لغة هو أيضاً ما تحتاجه محركات البحث.</p>
+
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-react-cart.html-560-c117d3.png" alt=""><figcaption><b>مشروع 14.2:</b> السلة بعد تبديل اللغة.</figcaption></figure>
 </div>
 
@@ -6703,7 +6705,6 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
         ├── Button.tsx
         ├── Header.tsx
         └── Layout.tsx</pre></div>
-
 <p>ثلاث طبقات، لكل منها وظيفة واحدة:</p>
 <ul>
 <li><code>shared/</code>: كود لا يعرف شيئاً عن العمل، يُستخدم في أي مكان: مكونات نظام التصميم، وعميل HTTP، وأدوات التنسيق.</li>
@@ -6848,8 +6849,7 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
     └── ui/
         ├── Button.tsx
         ├── Header.tsx
-        └── Layout.tsx</pre></div>
-</div>
+        └── Layout.tsx</pre></div></div>
 
 <div class="project">
 <p class="project-label medium">مشروع 15.2 · متوسط</p>
@@ -6919,6 +6919,7 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <li>شغّله على النموذج: يجد الترويسة التي تمد يدها إلى مخزن السلة، وصفحة الحساب التي تتجاوز <code>index.ts</code> الخاص بالسلة.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> التعبير النمطي يكفي لفاحص كهذا، لكن الأدوات الحقيقية تستخدم مترجم TypeScript لقراءة الاستيرادات بدقة، بما فيها الأسماء المستعارة مثل <code>@/features/cart</code>. ابدأ بسيطاً، وانتقل حين يتوقف البسيط عن الصواب.</p>
+
 <div class="listing" dir="ltr"><div class="listing-title">boundaries.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { dirname, join, relative, resolve } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 

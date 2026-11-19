@@ -85,9 +85,17 @@
 
 <pre data-code="react/SlowList.tsx" data-title="SlowList.tsx"></pre>
 <pre data-code="react/transition.tsx" data-title="transition.tsx"></pre>
-<!-- /react -->
 
 <figure data-render="react/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Figure {{n}}.1:</b> Filtering 5,000 slow rows. The text field never freezes; while the list catches up it fades and says “Updating…”.</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<p>Vue does part of this work for you. A child component re-renders only when its props change, so a list never re-renders because the page around it did, and <code>computed</code> values cache their result. To keep typing urgent, give the expensive list a <em>delayed copy</em> of the text, with <code>refDebounced</code> from VueUse: the input updates at once, and the list only when the typing pauses. For big data that never changes inside, <code>shallowRef</code> stops Vue from watching every item:</p>
+
+<pre data-code="vue/SlowList.vue" data-title="SlowList.vue"></pre>
+<pre data-code="vue/Filter.vue" data-title="Filter.vue"></pre>
+
+<figure data-render="vue/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Figure {{n}}.1:</b> Filtering 5,000 slow rows. The text field never freezes; while the list catches up it fades and says “Updating…”.</figcaption></figure>
+<!-- /vue -->
 
 <p>Two more techniques solve most remaining problems. <dfn>Virtualisation</dfn> renders only the rows that are visible, so a list of 10,000 items costs the same as a list of 20. And heavy work that does not touch the page, such as parsing a big file, can move to a <dfn>Web Worker</dfn>, a second thread with no access to the DOM.</p>
 
@@ -161,13 +169,13 @@
 <li>Use <code>useDeferredValue(text)</code> for the list, and wrap the list in <code>memo</code> so it only re-renders when its items change.</li>
 <!-- /react -->
 <!-- vue -->
-<li>Keep a second, delayed copy of the text for the list (debounced, as in the state chapter), and compute the filtered items from it.</li>
+<li>Keep a second, delayed copy of the text for the list with <code>refDebounced</code>, and compute the filtered items from it. Mark the big, unchanging list with <code>shallowRef</code>.</li>
 <!-- /vue -->
 <li>While the list is behind the input, fade it and say “Updating…” in a polite live region.</li>
 <li>Record again and compare: typing should no longer wait for the list.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> deferring does not make the work smaller; it changes its priority. If the list is still too slow when it finally renders, the next step is virtualisation: render only the 20 rows that fit on the screen.</p>
-<figure data-render="react/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Project {{n}}.2:</b> the filtered list, once it has caught up.</figcaption></figure>
+<!-- react --><figure data-render="react/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Project {{n}}.2:</b> the filtered list, once it has caught up.</figcaption></figure><!-- /react --><!-- vue --><figure data-render="vue/transition.html" data-width="560" data-actions="fill:#q|item 12;wait:1500"><figcaption><b>Project {{n}}.2:</b> the filtered list, once it has caught up.</figcaption></figure><!-- /vue -->
 </div>
 
 <div class="project">
@@ -180,11 +188,17 @@
 <li>For each <code>.js</code> and <code>.css</code> file, add its <em>gzip</em> size: that is what travels over the network.</li>
 <li>Compare the totals with a budget, and print each line with ✓ or ✗.</li>
 <li>Set the exit code to 1 when any budget is exceeded, and add the script after <code>vite build</code> in <code>npm run check</code>.</li>
-<li>Read the result honestly: the shared React bundle alone is far over a 60 KB budget. Decide whether to raise the budget on purpose, or to load less.</li>
+<li>Read the result honestly: the shared <!-- react -->React<!-- /react --><!-- vue -->Vue<!-- /vue --> bundle alone is far over a 60 KB budget. Decide whether to raise the budget on purpose, or to load less.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> a budget that fails is a conversation, not a disaster. The point is that growth becomes a decision someone makes knowingly, instead of something that happens by accident.</p>
+<!-- react -->
 <pre data-code="projects/budget.ts" data-title="budget.ts"></pre>
 <pre data-out="projects/budget.mjs"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/budget.ts" data-title="budget.ts"></pre>
+<pre data-out="vue/projects/budget.mjs"></pre>
+<!-- /vue -->
 </div>
 <!-- /projects -->
 

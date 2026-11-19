@@ -172,3 +172,33 @@ server.close();
 '''
 
 kit.generate(HERE, T, plain=PLAIN, node_files=NODE, title_key="w_title")
+
+
+# ---------------------------------------------------------------- the same codebase in Vue (Vue edition), under vue/
+import vue_kit  # noqa: E402
+
+VPLAIN, VNODE = {}, {}
+VSAMPLE = {
+    "vue/sample/src/app/App.vue": '<script setup lang="ts">\nimport { CatalogPage } from "../features/catalog";\nimport { CartBadge } from "../features/cart";\nimport AppLayout from "../shared/ui/AppLayout.vue";\n</script>\n\n<template>\n  <AppLayout>\n    <template #header><CartBadge /></template>\n    <CatalogPage />\n  </AppLayout>\n</template>\n',
+    "vue/sample/src/app/routes.ts": 'import { CatalogPage } from "../features/catalog";\nimport { AccountPage } from "../features/account";\n\nexport const routes = [\n  { path: "/", component: CatalogPage },\n  { path: "/account", component: AccountPage },\n];\n',
+    "vue/sample/src/shared/ui/AppLayout.vue": '<template>\n  <header><slot name="header" /></header>\n  <main><slot /></main>\n</template>\n',
+    "vue/sample/src/shared/ui/BaseButton.vue": '<template>\n  <button type="button" class="btn"><slot /></button>\n</template>\n',
+    "vue/sample/src/shared/api/client.ts": SAMPLE["sample/src/shared/api/client.ts"],
+    "vue/sample/src/shared/lib/money.ts": SAMPLE["sample/src/shared/lib/money.ts"],
+    # A violation: shared code reaching into a feature
+    "vue/sample/src/shared/ui/AppHeader.vue": '<script setup lang="ts">\nimport { useCart } from "../../features/cart/store";\n\nconst cart = useCart();\n</script>\n\n<template>\n  <p>{{ cart.count }}</p>\n</template>\n',
+    "vue/sample/src/features/catalog/index.ts": 'export { default as CatalogPage } from "./CatalogPage.vue";\n',
+    "vue/sample/src/features/catalog/CatalogPage.vue": '<script setup lang="ts">\nimport BaseButton from "../../shared/ui/BaseButton.vue";\nimport { formatMoney } from "../../shared/lib/money";\nimport { useCart } from "../cart";\nimport { useProducts } from "./useProducts";\n\nconst products = useProducts();\nconst cart = useCart();\n</script>\n\n<template>\n  <ul>\n    <li v-for="p in products" :key="p.id">\n      {{ p.name }} {{ formatMoney(p.price) }} <BaseButton @click="cart.add(p)">+</BaseButton>\n    </li>\n  </ul>\n</template>\n',
+    "vue/sample/src/features/catalog/useProducts.ts": SAMPLE["sample/src/features/catalog/useProducts.ts"],
+    "vue/sample/src/features/cart/index.ts": 'export { default as CartBadge } from "./CartBadge.vue";\nexport { useCart } from "./store";\n',
+    "vue/sample/src/features/cart/store.ts": 'import { defineStore } from "pinia";\nimport { computed, ref } from "vue";\n\ntype Item = { id: number; price: number };\nexport const useCart = defineStore("cart", () => {\n  const items = ref<Item[]>([]);\n  const count = computed(() => items.value.length);\n  const add = (item: Item) => items.value.push(item);\n  return { items, count, add };\n});\n',
+    "vue/sample/src/features/cart/CartBadge.vue": '<script setup lang="ts">\nimport { useCart } from "./store";\n\nconst cart = useCart();\n</script>\n\n<template>\n  <span>{{ cart.count }}</span>\n</template>\n',
+    "vue/sample/src/features/account/index.ts": 'export { default as AccountPage } from "./AccountPage.vue";\n',
+    # A violation: one feature reaching into another feature's internals
+    "vue/sample/src/features/account/AccountPage.vue": '<script setup lang="ts">\nimport CartBadge from "../cart/CartBadge.vue";\nimport BaseButton from "../../shared/ui/BaseButton.vue";\n</script>\n\n<template>\n  <section>\n    <CartBadge />\n    <BaseButton>Sign out</BaseButton>\n  </section>\n</template>\n',
+}
+VPLAIN.update(VSAMPLE)
+VNODE["vue/boundaries.ts"] = NODE["boundaries.ts"].replace("/\\.(ts|tsx)$/", "/\\.(ts|vue)$/")
+VNODE["vue/tree.ts"] = NODE["tree.ts"]
+
+vue_kit.generate(HERE, T, plain=VPLAIN, node_files=VNODE)

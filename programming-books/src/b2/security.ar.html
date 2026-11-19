@@ -42,6 +42,18 @@
 <li>والعناوين كود أيضاً: رابط إلى <code>javascript:…</code> يعمل عند الضغط. فحين يأتي الرابط من المستخدمين اسمح بـ <code>https:</code> و<code>http:</code> فقط.</li>
 </ul>
 <!-- /react -->
+<!-- vue -->
+<p>يهرّب Vue كل ما تضعه بين الأقواس المزدوجة، فالقوالب العادية آمنة افتراضياً. والأخطار هي مخارج هذا الأمان:</p>
+
+<pre data-code="vue/Comment.vue" data-title="Comment.vue"></pre>
+<pre data-out="vue/escape.mjs"></pre>
+
+<ul>
+<li>النص بين الأقواس المزدوجة صار كيانات غير ضارة: <code>&amp;lt;img…</code>.</li>
+<li><code>v-html</code> وضعت HTML الخام في الصفحة. استخدمها فقط مع HTML تتحكم فيه، أو بعد تعقيمه. وقواعد المدقق الرسمية لـ Vue تحذّر من كل <code>v-html</code>، فيكون كل واحد قراراً اتخذه أحد عن قصد.</li>
+<li>العناوين كود أيضاً: الرابط إلى <code>javascript:…</code> يعمل عند الضغط، ولا يمنعه Vue. فحين يأتي العنوان من المستخدمين، اسمح بـ <code>https:</code> و<code>http:</code> فقط.</li>
+</ul>
+<!-- /vue -->
 
 <p>وحين يجب حقاً أن تعرض HTML من المستخدمين، كنص تعليق منسّق، فـ<dfn>نظّفه</dfn> أولاً بمكتبة مثل DOMPurify، تُبقي الوسوم التي تسمح بها وتحذف كل ما عداها. ويفعل المشروع {{n}}.1 هذا.</p>
 
@@ -98,7 +110,7 @@
 <table>
 <thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
 <tbody>
-<tr><td>نص المستخدم في <code>innerHTML</code> أو <code>dangerouslySetInnerHTML</code></td><td>XSS</td><td><code>textContent</code> أو JSX العادية، ونظّف إن احتجت HTML</td></tr>
+<tr><td>نص المستخدم في <code>innerHTML</code> أو <!-- react --><code>dangerouslySetInnerHTML</code><!-- /react --><!-- vue --><code>v-html</code><!-- /vue --></td><td>XSS</td><td><code>textContent</code> أو <!-- react -->JSX العادية<!-- /react --><!-- vue -->الأقواس المزدوجة<!-- /vue -->، ونظّف إن احتجت HTML</td></tr>
 <tr><td>روابط مبنية من مدخلات المستخدم</td><td>عناوين <code>javascript:</code> تشغّل الكود</td><td>اسمح بـ <code>https:</code> و<code>http:</code> فقط</td></tr>
 <tr><td>الرموز في <code>localStorage</code></td><td>أي XSS تسرق الجلسات</td><td>ملفات تعريف ارتباط بـ <code>HttpOnly</code> و<code>Secure</code> و<code>SameSite</code></td></tr>
 <tr><td>فحوص الأمان في المتصفح وحده</td><td>يتخطاها المهاجمون</td><td>افحص كل شيء على الخادم</td></tr>
@@ -112,7 +124,7 @@
 
 <ul class="summary">
 <li>المتصفح ملك المستخدم: الواجهة تحمي المستخدمين من الآخرين، والخادم وحده يحمي البيانات.</li>
-<li><strong>XSS</strong> تحوّل نص المستخدم إلى كود. امنعها بالتهريب (<code>textContent</code> وJSX العادية)، والتنظيف حين تحتاج HTML، والروابط الآمنة.</li>
+<li><strong>XSS</strong> تحوّل نص المستخدم إلى كود. امنعها بالتهريب (<code>textContent</code> و<!-- react -->JSX العادية<!-- /react --><!-- vue -->الأقواس المزدوجة<!-- /vue -->)، والتنظيف حين تحتاج HTML، والروابط الآمنة.</li>
 <li><strong>سياسة أمان المحتوى</strong> الصارمة توقف السكربتات المحقونة حتى مع وجود علّة XSS.</li>
 <li>احفظ الجلسات في ملفات تعريف ارتباط بـ <strong>HttpOnly وSecure وSameSite</strong>، وامنع <strong>CSRF</strong> بـ SameSite وفحوص الخادم، و<strong>خداع النقر</strong> بـ <code>frame-ancestors</code>.</li>
 <li>احمِ <strong>سلسلة الإمداد</strong> بملفات القفل والفحص والاختيار الحذر وسلامة الموارد الفرعية.</li>

@@ -57,6 +57,18 @@
 <li><strong>باب للخروج.</strong> <code>className</code> تُدمج لا تُستبدل، للشاشة النادرة التي تحتاج هامشاً.</li>
 </ul>
 <!-- /react -->
+<!-- vue -->
+<pre data-code="vue/Button.vue" data-title="Button.vue"></pre>
+
+<figure data-render="vue/buttons.html" data-width="560"><figcaption><b>شكل {{n}}.1:</b> مكوّن <code>Button</code> واحد، بأربعة أشكال وثلاثة أحجام، مع حالتي التحميل والتعطيل، في المظهرين الفاتح والداكن. ولم يتغير سطر واحد في المكوّن بين المظهرين.</figcaption></figure>
+
+<ul>
+<li><strong>الأشكال خاصية واحدة بنوع اتحادي</strong>، <code>variant="danger"</code>، لا خصائص منطقية منفصلة مثل <code>primary</code> و<code>danger</code> و<code>ghost</code>. فمع الخصائص المنطقية لا يمنع شيء أحداً من كتابة <code>&lt;Button primary danger&gt;</code>، ولا يعرف أحد ماذا يعني ذلك.</li>
+<li><strong>ابنِ على المنصة.</strong> يمرر Vue كل سمة لم يعرّفها المكوّن خاصيةً، مثل <code>aria-label</code> و<code>form</code> ومستمع <code>@click</code>، مباشرة إلى <code>&lt;button&gt;</code> الجذري. وهذا <dfn>تمرير السمات</dfn> (attribute fallthrough)، فلا يحتاج نظام التصميم أن يسردها واحدة واحدة.</li>
+<li><strong>قيم افتراضية آمنة.</strong> <code>type="button"</code> افتراضياً، لأن <code>&lt;button&gt;</code> العادي داخل نموذج يرسله، وهذه مفاجأة كلاسيكية. والزر الذي يحمّل معطّل أيضاً، ويخبر التقنيات المساعدة بـ <code>aria-busy</code>.</li>
+<li><strong>باب للخروج.</strong> <code>class</code> التي يمررها الأب تُدمج مع أصناف المكوّن لا تستبدلها، للشاشة النادرة التي تحتاج هامشاً.</li>
+</ul>
+<!-- /vue -->
 
 <aside class="box tip"><p class="box-title">نصيحة: سمِّ الأشياء بغرضها، لا بشكلها أبداً</p><p>الشكل المسمى <code>blue</code> يصير كذبة يوم تتحول العلامة التجارية إلى الأخضر. أما <code>primary</code> و<code>danger</code> و<code>subtle</code> فتبقى صادقة. والقاعدة نفسها للرموز: <code>color-action</code> لا <code>color-indigo</code>.</p></aside>
 
@@ -68,7 +80,7 @@
 
 <h3>المُتحكَّم فيه وغير المُتحكَّم فيه</h3>
 
-<p>يجب أن تعمل حقول نظام التصميم كما تعمل الحقول الأصلية: <dfn>غير مُتحكَّم فيها</dfn> حين يريد المستخدم قيمة افتراضية ولا يهمه كل تغيير، و<dfn>مُتحكَّماً فيها</dfn> حين تملك الصفحة القيمة. وبالعرف تعني <code>defaultChecked</code> أو <code>defaultValue</code> عدم التحكم، وتعني <code>checked</code> أو <code>value</code> مع معالج تغيير التحكم. ويبني المشروع {{n}}.3 مفتاحاً يدعم الاثنين.</p>
+<p>يجب أن تعمل حقول نظام التصميم كما تعمل الحقول الأصلية: <dfn>غير مُتحكَّم فيها</dfn> حين يريد المستخدم قيمة افتراضية ولا يهمه كل تغيير، و<dfn>مُتحكَّماً فيها</dfn> حين تملك الصفحة القيمة. <!-- react -->وبالعرف تعني <code>defaultChecked</code> أو <code>defaultValue</code> عدم التحكم، وتعني <code>checked</code> أو <code>value</code> مع معالج تغيير التحكم. ويبني المشروع {{n}}.2 مفتاحاً يدعم الاثنين.<!-- /react --><!-- vue -->وفي Vue يغطي سطر واحد الحالتين، <code>defineModel</code>: فحين يربط الأب <code>v-model</code> يملك الأب القيمة، وحين لا يربطه يحفظ المكوّن قيمته. ويبني المشروع {{n}}.2 مفتاحاً يعمل بالطريقتين.<!-- /vue --></p>
 
 <aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>هل يستخدم مكوّن الزر الرمز <code>indigo-600</code> أم <code>color-action</code>؟</li><li>ما المشكلة في خصائص مثل <code>primary</code> و<code>secondary</code> و<code>danger</code> ثلاث قيم منطقية؟</li><li>لماذا يجب أن يكون <code>type="button"</code> افتراضياً في مكوّن الزر؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
@@ -141,6 +153,10 @@
 <pre data-code="react/projects/Alert.tsx" data-title="Alert.tsx"></pre>
 <figure data-render="react/projects/feedback.html" data-width="560"><figcaption><b>مشروع {{n}}.1:</b> الشارات والتنبيهات بنبراتها الأربع.</figcaption></figure>
 <!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/Alert.vue" data-title="Alert.vue"></pre>
+<figure data-render="vue/projects/feedback.html" data-width="560"><figcaption><b>مشروع {{n}}.1:</b> الشارات والتنبيهات بنبراتها الأربع.</figcaption></figure>
+<!-- /vue -->
 </div>
 
 <div class="project">
@@ -149,17 +165,21 @@
 <p class="project-goal">مفتاح تشغيل وإيقاف يُستخدم مُتحكَّماً فيه أو غير مُتحكَّم فيه، ويعمل بلوحة المفاتيح وقارئ الشاشة، وواضح في كل مظهر.</p>
 <p class="project-skills"><strong>ستتدرب على:</strong> نمط المُتحكَّم فيه وغير المُتحكَّم فيه، و<code>role="switch"</code> مع <code>aria-checked</code>، وخصائص CSS المنطقية، وفحص الحالات في كل مظهر.</p>
 <ol class="steps">
-<li>اقبل <code>checked</code> و<code>defaultChecked</code> و<code>onChange</code>. فإن مُرّرت <code>checked</code> ملك الأب القيمة، وإلا حفظها المكوّن بنفسه.</li>
+<!-- react --><li>اقبل <code>checked</code> و<code>defaultChecked</code> و<code>onChange</code>. فإن مُرّرت <code>checked</code> ملك الأب القيمة، وإلا حفظها المكوّن بنفسه.</li><!-- /react --><!-- vue --><li>اجعل القيمة نموذجاً بـ <code>defineModel&lt;boolean&gt;({ default: false })</code>. فحين يربط الأب <code>v-model</code> يملك الأب القيمة، وحين لا يربطه يكون المرجع محلياً ويحفظ المفتاح قيمته.</li><!-- /vue -->
 <li>ارسم <code>&lt;button type="button"&gt;</code> حقيقياً بـ <code>role="switch"</code> و<code>aria-checked</code>. فيعمل Enter والمسافة مجاناً.</li>
 <li>ارسم المسار والمقبض بالرموز، وحرّك المقبض بـ <code>inset-inline-start</code>، فينزلق في الاتجاه الصحيح بالعربية أيضاً.</li>
 <li>أعطِ حالة الإيقاف إطاراً وحالة التشغيل تعبئة. وافحص الاثنتين في المظهر الداكن: فحين كُتب هذا الكتاب بدت النسخة الأولى متطابقة في الحالتين في الوضع الداكن، حتى كشفتها اللقطة.</li>
-<li>استخدمه بثلاث طرق: غير مُتحكَّم فيه بـ <code>defaultChecked</code>، وغير مُتحكَّم فيه مطفأً، ومُتحكَّماً فيه يبدّل مظهر لوحته.</li>
+<!-- react --><li>استخدمه بثلاث طرق: غير مُتحكَّم فيه بـ <code>defaultChecked</code>، وغير مُتحكَّم فيه مطفأً، ومُتحكَّماً فيه يبدّل مظهر لوحته.</li><!-- /react --><!-- vue --><li>استخدمه بالطريقتين: مفتاحان دون <code>v-model</code> يتذكران حالتهما، وواحد بـ <code>v-model</code> يبدّل مظهر لوحته.</li><!-- /vue -->
 </ol>
-<p class="hint"><strong>تلميح:</strong> لا تنتقل أبداً من غير المُتحكَّم فيه إلى المُتحكَّم فيه خلال حياة المكوّن (من <code>checked={undefined}</code> إلى <code>checked={true}</code>). فـ React تحذّر منه لأنه علّة في الغالب دائماً: قرّر مرة واحدة، في الأب.</p>
+<!-- react --><p class="hint"><strong>تلميح:</strong> لا تنتقل أبداً من غير المُتحكَّم فيه إلى المُتحكَّم فيه خلال حياة المكوّن (من <code>checked={undefined}</code> إلى <code>checked={true}</code>). فـ React تحذّر منه لأنه علّة في الغالب دائماً: قرّر مرة واحدة، في الأب.</p><!-- /react --><!-- vue --><p class="hint"><strong>تلميح:</strong> قرّر مرة واحدة، في الأب، هل يملك القيمة. فإضافة <code>v-model</code> أو حذفه من المفتاح نفسه وهو على الشاشة تجعله يقفز بين قيمتين: قيمته، وقيمة الأب.</p><!-- /vue -->
 <!-- react -->
 <pre data-code="react/projects/Switch.tsx" data-title="Switch.tsx"></pre>
 <figure data-render="react/projects/switches.html" data-width="560" data-actions="click:.switch:nth-child(3)"><figcaption><b>مشروع {{n}}.2:</b> بعد تشغيل المظهر الداكن بالمفتاح المُتحكَّم فيه.</figcaption></figure>
 <!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/Switch.vue" data-title="Switch.vue"></pre>
+<figure data-render="vue/projects/switches.html" data-width="560" data-actions="click:.switch:nth-child(3)"><figcaption><b>مشروع {{n}}.2:</b> بعد تشغيل المظهر الداكن بالمفتاح المربوط بـ <code>v-model</code>.</figcaption></figure>
+<!-- /vue -->
 </div>
 
 <div class="project">

@@ -440,3 +440,222 @@ createRoot(document.getElementById("root")!).render(<RouterProvider router={rout
 ''', CSS + ".sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }\nh1:focus { outline: 3px solid #db2777; outline-offset: 4px; }\n")
 
 kit.generate(HERE, T, plain=PLAIN, node_files=NODE, browser_files=BROWSER, title_key="w_title")
+
+
+# ---------------------------------------------------------------- the same components in Vue (Vue edition)
+import subprocess  # noqa: E402
+import vue_kit  # noqa: E402
+
+VPLAIN, VBROWSER = {}, {}
+VPLAIN["vue/tsconfig.json"] = """{
+  "compilerOptions": {
+    "strict": true, "noUncheckedIndexedAccess": true, "target": "es2024", "module": "esnext",
+    "moduleResolution": "bundler", "lib": ["es2024", "dom", "dom.iterable"], "types": ["node"], "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts", "**/*.vue"]
+}
+"""
+VPLAIN["vue/ConfirmDialog.vue"] = """<script setup lang="ts">
+import { useTemplateRef, watchEffect } from "vue";
+
+const open = defineModel<boolean>({ required: true });
+defineProps<{ title: string; confirmLabel: string; cancelLabel: string }>();
+const emit = defineEmits<{ confirm: [] }>();
+const dialog = useTemplateRef<HTMLDialogElement>("dialog");
+
+watchEffect(() => {
+  const el = dialog.value;
+  if (!el) return;
+  if (open.value && !el.open) el.showModal(); // modal: traps focus, Esc closes, the page behind is inert
+  if (!open.value && el.open) el.close(); // the browser returns the focus to the button that opened it
+});
+</script>
+
+<template>
+  <dialog ref="dialog" aria-labelledby="dlg-title" aria-describedby="dlg-text" @close="open = false">
+    <h2 id="dlg-title">{{ title }}</h2>
+    <p id="dlg-text"><slot /></p>
+    <div class="row">
+      <button type="button" class="secondary" autofocus @click="open = false">{{ cancelLabel }}</button>
+      <button type="button" class="danger" @click="emit('confirm'), (open = false)">{{ confirmLabel }}</button>
+    </div>
+  </dialog>
+</template>
+"""
+VPLAIN["vue/Settings.vue"] = """<script setup lang="ts">
+import { ref } from "vue";
+import ConfirmDialog from "./ConfirmDialog.vue";
+
+const open = ref(false);
+</script>
+
+<template>
+  <div class="card">
+    <button type="button" class="danger" @click="open = true">{w_open}</button>
+    <ConfirmDialog v-model="open" title="{w_dlg_title}" confirm-label="{w_delete}" cancel-label="{w_cancel}">
+      {w_dlg_text}
+    </ConfirmDialog>
+  </div>
+</template>
+"""
+VBROWSER["vue/dialog.ts"] = ("""import { createApp } from "vue";
+import Settings from "./Settings.vue";
+
+createApp(Settings).mount("#app");
+""", CSS)
+
+VPLAIN["vue/projects/MenuButton.vue"] = """<script setup lang="ts">
+import { nextTick, ref, useId, useTemplateRef, watch } from "vue";
+
+type Item = { label: string; danger?: boolean; onSelect: () => void };
+const props = defineProps<{ label: string; items: Item[] }>();
+
+const open = ref(false);
+const active = ref(0);
+const id = useId();
+const button = useTemplateRef<HTMLButtonElement>("button");
+const itemEls = useTemplateRef<HTMLButtonElement[]>("item");
+
+// Move the real focus to the active item whenever it changes
+watch([open, active], async () => {
+  await nextTick();
+  if (open.value) itemEls.value?.[active.value]?.focus();
+});
+
+function openAt(index: number) {
+  active.value = index;
+  open.value = true;
+}
+
+function close() {
+  open.value = false;
+  button.value?.focus(); // focus goes back where it came from
+}
+
+function onMenuKey(event: KeyboardEvent) {
+  const last = props.items.length - 1;
+  if (event.key === "ArrowDown") active.value = active.value === last ? 0 : active.value + 1;
+  else if (event.key === "ArrowUp") active.value = active.value === 0 ? last : active.value - 1;
+  else if (event.key === "Home") active.value = 0;
+  else if (event.key === "End") active.value = last;
+  else if (event.key === "Escape" || event.key === "Tab") close();
+  else return;
+  event.preventDefault();
+}
+</script>
+
+<template>
+  <div class="menu-wrap">
+    <button
+      :id="`${id}-button`"
+      ref="button"
+      type="button"
+      aria-haspopup="menu"
+      :aria-expanded="open"
+      :aria-controls="`${id}-menu`"
+      @click="open ? close() : openAt(0)"
+      @keydown.down.prevent="openAt(0)"
+      @keydown.up.prevent="openAt(items.length - 1)"
+    >
+      {{ label }} ▾
+    </button>
+    <ul v-if="open" :id="`${id}-menu`" role="menu" :aria-labelledby="`${id}-button`" @keydown="onMenuKey">
+      <li v-for="item in items" :key="item.label" role="none">
+        <button
+          ref="item"
+          type="button"
+          role="menuitem"
+          tabindex="-1"
+          :class="{ 'danger-text': item.danger }"
+          @click="item.onSelect(), close()"
+        >
+          {{ item.label }}
+        </button>
+      </li>
+    </ul>
+  </div>
+</template>
+"""
+VPLAIN["vue/projects/Menu.vue"] = """<script setup lang="ts">
+import MenuButton from "./MenuButton.vue";
+
+const noop = () => {};
+</script>
+
+<template>
+  <div class="card">
+    <MenuButton
+      label="{w_actions}"
+      :items="[
+        { label: '{w_track}', onSelect: noop },
+        { label: '{w_invoice}', onSelect: noop },
+        { label: '{w_return}', onSelect: noop },
+        { label: '{w_cancel_order}', danger: true, onSelect: noop },
+      ]"
+    />
+  </div>
+</template>
+"""
+VBROWSER["vue/projects/menu.ts"] = ("""import { createApp } from "vue";
+import Menu from "./Menu.vue";
+
+createApp(Menu).mount("#app");
+""", CSS)
+
+VPLAIN["vue/projects/routeFocus.ts"] = """import { nextTick, ref } from "vue";
+import type { Router } from "vue-router";
+
+// After every navigation: update the title, move the focus to the new h1, and announce the page
+export const announcement = ref("");
+
+export function routeFocus(router: Router, appName: string) {
+  router.afterEach(async (_to, from) => {
+    if (from.matched.length === 0) return; // the first page load is announced by the browser itself
+    await nextTick(); // wait for the new page to be drawn
+    const heading = document.querySelector<HTMLElement>("main h1");
+    if (!heading) return;
+    document.title = `${heading.textContent} · ${appName}`;
+    heading.tabIndex = -1;
+    heading.focus();
+    announcement.value = heading.textContent ?? "";
+  });
+}
+"""
+VPLAIN["vue/projects/FocusApp.vue"] = """<script setup lang="ts">
+import { announcement } from "./routeFocus";
+</script>
+
+<template>
+  <nav class="card" style="display: flex; gap: 12px">
+    <RouterLink to="/">{w_home}</RouterLink>
+    <RouterLink to="/orders">{w_orders}</RouterLink>
+  </nav>
+  <main><RouterView /></main>
+  <p role="status" class="sr-only">{{ announcement }}</p>
+</template>
+"""
+VBROWSER["vue/projects/route-focus.ts"] = ("""import { createApp, h } from "vue";
+import { createMemoryHistory, createRouter } from "vue-router";
+import FocusApp from "./FocusApp.vue";
+import { routeFocus } from "./routeFocus";
+
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    { path: "/", component: { render: () => h("h1", "{w_home}") } },
+    { path: "/orders", component: { render: () => h("h1", "{w_orders}") } },
+  ],
+});
+routeFocus(router, "{w_shop}");
+await router.push("/");
+createApp(FocusApp).use(router).mount("#app");
+""", CSS + ".sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }\nh1:focus { outline: 3px solid #db2777; outline-offset: 4px; }\n")
+
+vue_kit.generate(HERE, T, plain=VPLAIN, browser_files=VBROWSER)
+check = HERE.parent / "vue-check" / "node_modules" / ".bin" / "vue-tsc"
+for lang in T:
+    r = subprocess.run([str(check), "-p", str(HERE / lang / "vue" / "tsconfig.json")], capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit(f"vue-tsc ({lang}):\n{r.stdout}{r.stderr}")
+print("vue types ok")

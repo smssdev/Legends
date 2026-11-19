@@ -1,7 +1,7 @@
 """Helpers for the Vue chapters of Book 2 (the twin of react_kit.py).
 
   page(dir, name, lang, title, css)   writes name.html, which loads name.js with the shared Vue
-                                     from /vendor through an import map (see vendor/make-vue.mjs)
+                                     from /vendor-vue through an import map (see vendor-vue/make.mjs)
   browser(ts, js)                    bundles one example for the browser, compiling its .vue files
   node(ts, mjs)                      bundles one example for Node, so the book can run it and show what
                                      it prints (for example the HTML that renderToString makes)
@@ -20,13 +20,12 @@ BUNDLE = ROOT / "vue" / "bundle.mjs"
 IMPORT_MAP = """    <script type="importmap">
       {
         "imports": {
-          "vue": "/vendor/vue.js",
-          "vue-router": "/vendor/vue-router.js",
-          "pinia": "/vendor/pinia.js",
-          "@tanstack/vue-query": "/vendor/vue-query.js",
-          "vee-validate": "/vendor/vee-validate.js",
-          "@vueuse/core": "/vendor/vueuse.js",
-          "zod": "/vendor/zod.js"
+          "vue": "/vendor-vue/vue.js",
+          "vue-router": "/vendor-vue/vue-router.js",
+          "pinia": "/vendor-vue/pinia.js",
+          "@tanstack/vue-query": "/vendor-vue/vue-query.js",
+          "@vueuse/core": "/vendor-vue/vueuse.js",
+          "zod": "/vendor-vue/zod.js"
         }
       }
     </script>"""

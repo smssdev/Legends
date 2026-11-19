@@ -4014,7 +4014,7 @@ export function Button({ variant = &quot;primary&quot;, size = &quot;md&quot;, l
 
 <h3>Controlled and uncontrolled</h3>
 
-<p>Inputs in a design system should work the way native inputs do: <dfn>uncontrolled</dfn> when the user just wants a default and does not care about every change, and <dfn>controlled</dfn> when the page owns the value. By convention, <code>defaultChecked</code> or <code>defaultValue</code> means uncontrolled, and <code>checked</code> or <code>value</code> with a change handler means controlled. Project 9.3 builds a switch that supports both.</p>
+<p>Inputs in a design system should work the way native inputs do: <dfn>uncontrolled</dfn> when the user just wants a default and does not care about every change, and <dfn>controlled</dfn> when the page owns the value. By convention, <code>defaultChecked</code> or <code>defaultValue</code> means uncontrolled, and <code>checked</code> or <code>value</code> with a change handler means controlled. Project 9.2 builds a switch that supports both.</p>
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Should a button component use the token <code>indigo-600</code> or <code>color-action</code>?</li><li>What is wrong with props like <code>primary</code>, <code>secondary</code> and <code>danger</code> as three booleans?</li><li>Why should a button component default to <code>type="button"</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
 
@@ -4109,14 +4109,11 @@ export function Alert({ tone = &quot;info&quot;, children }: { tone?: Tone; chil
 <p class="project-goal">An on/off switch that can be used controlled or uncontrolled, works with the keyboard and screen readers, and is clear in every theme.</p>
 <p class="project-skills"><strong>You will practise:</strong> the controlled/uncontrolled pattern, <code>role="switch"</code> with <code>aria-checked</code>, logical CSS properties, and checking states in every theme.</p>
 <ol class="steps">
-<li>Accept <code>checked</code>, <code>defaultChecked</code> and <code>onChange</code>. If <code>checked</code> is given, the parent owns the value; otherwise the component keeps its own.</li>
-<li>Render a real <code>&lt;button type="button"&gt;</code> with <code>role="switch"</code> and <code>aria-checked</code>. Enter and Space work for free.</li>
+<li>Accept <code>checked</code>, <code>defaultChecked</code> and <code>onChange</code>. If <code>checked</code> is given, the parent owns the value; otherwise the component keeps its own.</li><li>Render a real <code>&lt;button type="button"&gt;</code> with <code>role="switch"</code> and <code>aria-checked</code>. Enter and Space work for free.</li>
 <li>Draw the track and thumb with tokens, and move the thumb with <code>inset-inline-start</code>, so it slides the right way in Arabic too.</li>
 <li>Give the off state an outline and the on state a fill. Check both in the dark theme: when this book was written, the first version looked the same on and off in dark mode, until the screenshot showed it.</li>
-<li>Use it three ways: uncontrolled with <code>defaultChecked</code>, uncontrolled off, and controlled, where it switches the theme of its own panel.</li>
-</ol>
+<li>Use it three ways: uncontrolled with <code>defaultChecked</code>, uncontrolled off, and controlled, where it switches the theme of its own panel.</li></ol>
 <p class="hint"><strong>Hint:</strong> never change from uncontrolled to controlled during a component’s life (from <code>checked={undefined}</code> to <code>checked={true}</code>). React warns about it, because it is almost always a bug: decide once, in the parent.</p>
-
 <div class="listing" dir="ltr"><div class="listing-title">Switch.tsx</div><pre class="code">import { useState } from &quot;react&quot;;
 
 type SwitchProps = {
@@ -4485,7 +4482,7 @@ export function ConfirmDialog({ open, title, children, confirmLabel, cancelLabel
 
 <h3>Route changes</h3>
 
-<p>When the router shows a new page, a screen reader user hears nothing: no page loaded. After each navigation, move the focus to the new page’s <code>h1</code> (give it <code>tabIndex={-1}</code> so it can receive focus), and update <code>document.title</code>. Both tell the user where they are.</p>
+<p>When the router shows a new page, a screen reader user hears nothing: no page loaded. After each navigation, move the focus to the new page’s <code>h1</code> (give it <code>tabindex="-1"</code> so it can receive focus), and update <code>document.title</code>. Both tell the user where they are.</p>
 
 <h3>Things that disappear</h3>
 
@@ -4594,7 +4591,7 @@ Total violations: 8</pre></div>
 <p class="project-skills"><strong>You will practise:</strong> <code>aria-haspopup</code> and <code>aria-expanded</code>, <code>role="menu"</code> and <code>menuitem</code>, roving focus, and returning the focus.</p>
 <ol class="steps">
 <li>The button has <code>aria-haspopup="menu"</code>, <code>aria-expanded</code> and <code>aria-controls</code>. Down Arrow opens the menu on the first item, and Up Arrow on the last.</li>
-<li>The menu is a list with <code>role="menu"</code>; each item is a button with <code>role="menuitem"</code> and <code>tabIndex={-1}</code>, inside an <code>li</code> with <code>role="none"</code>.</li>
+<li>The menu is a list with <code>role="menu"</code>; each item is a button with <code>role="menuitem"</code> and <code>tabindex="-1"</code>, inside an <code>li</code> with <code>role="none"</code>.</li>
 <li>Keep the index of the active item in state, and move the real focus to it in an effect. Up and Down wrap around; Home and End jump.</li>
 <li>Escape and Tab close the menu and return the focus to the button. Choosing an item runs it and also returns the focus.</li>
 <li>Mark the destructive item in red <em>and</em> put it last, away from the others.</li>
@@ -4682,6 +4679,7 @@ export function MenuButton({ label, items }: { label: string; items: Item[] }) {
     &lt;/div&gt;
   );
 }</pre></div>
+
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>menu.html</span><b>560px</b></div><img src="img/b2-a11y-en-react-projects-menu.html-560.png" alt=""> button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>Project 10.2:</b> the menu open, after pressing Down Arrow twice.</figcaption></figure>
 </div>
 
@@ -4727,6 +4725,7 @@ export function RouteFocus({ appName }: { appName: string }) {
     &lt;/p&gt;
   );
 }</pre></div>
+
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>route-focus.html</span><b>560px</b></div><img src="img/b2-a11y-en-react-projects-route-focus.html-560-774f30.png" alt=""><figcaption><b>Project 10.3:</b> after following the link, the focus is on the new heading.</figcaption></figure>
 </div>
 <!-- /projects -->
@@ -4865,16 +4864,16 @@ describe(<span class="s">&quot;cartTotal&quot;</span>, () =&gt; {
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose price.test.ts
  RUN  v5.1.1 .
- ✓ price.test.ts &gt; formatPrice &gt; formats a price with two decimals and the currency 3ms
+ ✓ price.test.ts &gt; formatPrice &gt; formats a price with two decimals and the currency 2ms
  ✓ price.test.ts &gt; cartTotal &gt; adds the lines of a cart 1ms
  ✓ price.test.ts &gt; cartTotal &gt; returns 0 for an empty cart 0ms
  ✓ price.test.ts &gt; cartTotal &gt; applies the coupon WELCOME10 to a total of 41: 36.9 1ms
  ✓ price.test.ts &gt; cartTotal &gt; applies the coupon SPRING25 to a total of 41: 30.75 0ms
  ✓ price.test.ts &gt; cartTotal &gt; ignores an unknown coupon 0ms
- ✓ price.test.ts &gt; cartTotal &gt; refuses a negative quantity 1ms
+ ✓ price.test.ts &gt; cartTotal &gt; refuses a negative quantity 0ms
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Duration  868ms (environment 74%, setup 21%, transform 3%, tests 1%, import 1%, worker 1%)</pre></div>
+   Duration  1.13s (environment 76%, setup 16%, transform 6%, worker 1%, tests 1%, import 1%)</pre></div>
 
 <ul>
 <li><code>describe</code> groups tests; <code>it</code> (or <code>test</code>) is one test, with a sentence that says what should happen. Read the output aloud: it is a specification of the module.</li>
@@ -4909,10 +4908,10 @@ it(<span class="s">&quot;calls the function once, after the user stops typing&qu
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose debounce.test.ts
  RUN  v5.1.1 .
- ✓ debounce.test.ts &gt; calls the function once, after the user stops typing 6ms
+ ✓ debounce.test.ts &gt; calls the function once, after the user stops typing 13ms
  Test Files  1 passed (1)
       Tests  1 passed (1)
-   Duration  968ms (environment 82%, setup 13%, transform 2%, tests 1%, import 1%, worker 1%)</pre></div>
+   Duration  1.13s (environment 72%, setup 19%, transform 6%, tests 2%, import 1%, worker 1%)</pre></div>
 
 <p>Three hundred milliseconds of waiting took no time at all, and the test proves both that nothing happened during typing and that exactly one call happened afterwards, with the last value.</p>
 
@@ -4929,7 +4928,6 @@ it(<span class="s">&quot;calls the function once, after the user stops typing&qu
     include: [<span class="s">&quot;**/*.test.{ts,tsx}&quot;</span>],
   },
 });</pre></div>
-
 
 <div class="listing" dir="ltr"><div class="listing-title">LoginForm.tsx</div><pre class="code">import { useState, type FormEvent } from &quot;react&quot;;
 import { signIn as defaultSignIn } from &quot;./api&quot;;
@@ -5014,12 +5012,12 @@ describe(&quot;LoginForm&quot;, () =&gt; {
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose react/LoginForm.test.tsx
  RUN  v5.1.1 .
- ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; shows an error when the email is empty 119ms
- ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; signs in and greets the user 107ms
- ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; shows the server&#x27;s error for a wrong password 140ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; shows an error when the email is empty 145ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; signs in and greets the user 128ms
+ ✓ react/LoginForm.test.tsx &gt; LoginForm &gt; shows the server&#x27;s error for a wrong password 141ms
  Test Files  1 passed (1)
       Tests  3 passed (3)
-   Duration  1.34s (environment 52%, tests 32%, setup 9%, import 3%, transform 3%)</pre></div>
+   Duration  1.53s (environment 53%, tests 30%, setup 9%, transform 5%, import 3%)</pre></div>
 
 <ul>
 <li><code>getByRole("button", { name: "Sign in" })</code> fails if there is no such button, or if it has no accessible name. Your component tests check accessibility for free: an icon button without a label cannot be found.</li>
@@ -5035,6 +5033,7 @@ describe(&quot;LoginForm&quot;, () =&gt; {
 <h2><span class="sec">11.4</span> <span>End-to-end tests with Playwright</span></h2>
 
 <p><strong>Playwright</strong> drives real browsers: Chromium, Firefox and WebKit, the engine of Safari. Its tests start the site, open pages, and use them exactly as a person would. The configuration tells it where the tests are and how to start the site:</p>
+
 
 <div class="listing" dir="ltr"><div class="listing-title">playwright.config.ts</div><pre class="code"><span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
 
@@ -5067,9 +5066,9 @@ test(<span class="s">&quot;a wrong password keeps the user on the form&quot;</sp
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx playwright test e2e/login.spec.ts
 Running 2 tests using 1 worker
-  ✓  1 e2e/login.spec.ts:5:1 › a user can sign in (343ms)
-  ✓  2 e2e/login.spec.ts:13:1 › a wrong password keeps the user on the form (307ms)
-  2 passed (1.5s)</pre></div>
+  ✓  1 e2e/login.spec.ts:5:1 › a user can sign in (447ms)
+  ✓  2 e2e/login.spec.ts:13:1 › a wrong password keeps the user on the form (369ms)
+  2 passed (1.8s)</pre></div>
 
 <p>The locators look like Testing Library’s on purpose: <code>getByLabel</code>, <code>getByRole</code>. Assertions such as <code>toBeVisible()</code> and <code>toHaveText()</code> retry automatically for a short time, so tests wait for the page instead of guessing how long it takes.</p>
 
@@ -5147,15 +5146,15 @@ it.each([
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose projects/password.test.ts
  RUN  v5.1.1 .
- ✓ projects/password.test.ts &gt; rates  as weak 2ms
- ✓ projects/password.test.ts &gt; rates cat as weak 0ms
+ ✓ projects/password.test.ts &gt; rates  as weak 3ms
+ ✓ projects/password.test.ts &gt; rates cat as weak 1ms
  ✓ projects/password.test.ts &gt; rates sunshine as weak 0ms
- ✓ projects/password.test.ts &gt; rates sunshine2026 as okay 0ms
+ ✓ projects/password.test.ts &gt; rates sunshine2026 as okay 1ms
  ✓ projects/password.test.ts &gt; rates Sunshine2026 as strong 0ms
  ✓ projects/password.test.ts &gt; rates correct horse battery staple as okay 0ms
  Test Files  1 passed (1)
       Tests  6 passed (6)
-   Duration  790ms (environment 78%, setup 17%, transform 2%, import 1%, tests 1%, worker 1%)</pre></div>
+   Duration  1.25s (environment 77%, setup 16%, transform 5%, tests 1%, import 1%, worker 1%)</pre></div>
 </div>
 
 <div class="project">
@@ -5202,12 +5201,12 @@ it(&quot;does not add an empty task&quot;, async () =&gt; {
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx vitest run --reporter=verbose react/projects/Tasks.test.tsx
  RUN  v5.1.1 .
- ✓ react/projects/Tasks.test.tsx &gt; adds a task from the form 153ms
- ✓ react/projects/Tasks.test.tsx &gt; ticks a task off and updates the count 20ms
- ✓ react/projects/Tasks.test.tsx &gt; does not add an empty task 25ms
+ ✓ react/projects/Tasks.test.tsx &gt; adds a task from the form 234ms
+ ✓ react/projects/Tasks.test.tsx &gt; ticks a task off and updates the count 36ms
+ ✓ react/projects/Tasks.test.tsx &gt; does not add an empty task 34ms
  Test Files  1 passed (1)
       Tests  3 passed (3)
-   Duration  1.07s (environment 61%, tests 21%, setup 11%, import 3%, transform 2%)</pre></div>
+   Duration  1.38s (environment 50%, tests 25%, setup 15%, transform 5%, import 4%)</pre></div>
 </div>
 
 <div class="project">
@@ -5223,6 +5222,7 @@ it(&quot;does not add an empty task&quot;, async () =&gt; {
 <li>Run the whole suite again, unit, component and end-to-end, and see everything pass.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> the keyboard test proves something axe cannot: that the order of Tab stops makes sense and that Enter submits the form. Together, the two tests cover a large part of the “operable” principle of WCAG.</p>
+
 <div class="listing" dir="ltr"><div class="listing-title">e2e/a11y.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
 <span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
 
@@ -5248,11 +5248,11 @@ test(<span class="s">&quot;the whole sign-in works with the keyboard only&quot;<
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>$ npx playwright test
 Running 4 tests using 2 workers
-  ✓  2 e2e/login.spec.ts:5:1 › a user can sign in (383ms)
-  ✓  1 e2e/a11y.spec.ts:7:1 › the sign-in page has no accessibility violations (509ms)
-  ✓  3 e2e/login.spec.ts:13:1 › a wrong password keeps the user on the form (344ms)
-  ✓  4 e2e/a11y.spec.ts:15:1 › the whole sign-in works with the keyboard only (299ms)
-  4 passed (1.6s)</pre></div>
+  ✓  2 e2e/login.spec.ts:5:1 › a user can sign in (463ms)
+  ✓  1 e2e/a11y.spec.ts:7:1 › the sign-in page has no accessibility violations (593ms)
+  ✓  4 e2e/a11y.spec.ts:15:1 › the whole sign-in works with the keyboard only (343ms)
+  ✓  3 e2e/login.spec.ts:13:1 › a wrong password keeps the user on the form (438ms)
+  4 passed (2.0s)</pre></div>
 </div>
 <!-- /projects -->
 
@@ -5657,8 +5657,7 @@ desktop   hero image: hero-small.png   picture far below loaded? no (lazy)</pre>
 <li>Record again and compare: typing should no longer wait for the list.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> deferring does not make the work smaller; it changes its priority. If the list is still too slow when it finally renders, the next step is virtualisation: render only the 20 rows that fit on the screen.</p>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-en-react-transition.html-560-502c2f.png" alt=""><figcaption><b>Project 12.2:</b> the filtered list, once it has caught up.</figcaption></figure>
-</div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-en-react-transition.html-560-502c2f.png" alt=""><figcaption><b>Project 12.2:</b> the filtered list, once it has caught up.</figcaption></figure></div>
 
 <div class="project">
 <p class="project-label hard">Project 12.3 · Challenge</p>
@@ -5673,6 +5672,7 @@ desktop   hero image: hero-small.png   picture far below loaded? no (lazy)</pre>
 <li>Read the result honestly: the shared React bundle alone is far over a 60 KB budget. Decide whether to raise the budget on purpose, or to load less.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> a budget that fails is a conversation, not a disaster. The point is that growth becomes a decision someone makes knowingly, instead of something that happens by accident.</p>
+
 <div class="listing" dir="ltr"><div class="listing-title">budget.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 <span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
@@ -6362,6 +6362,7 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(
   &lt;/I18nProvider&gt;,
 );</pre></div>
 
+
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-en-react-cart.html-560.png" alt=""><figcaption><b>Figure 14.1:</b> The cart in English…</figcaption></figure>
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-en-react-cart.html-560-c117d3.png" alt=""><figcaption>…and after one click, in Arabic: the layout mirrored, the plural is the dual form “عنصران”, prices use the Egyptian Arabic format, and the arrow turned round. Not one component knows which language it is showing.</figcaption></figure>
 
@@ -6462,6 +6463,7 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(
 <li>Switch languages back and forth, and check every line: text, plural, prices, alignment, arrow.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> save the chosen language (in <code>localStorage</code> or the address, such as <code>/ar/cart</code>) and start from <code>navigator.languages</code> on the first visit. An address per language is also what search engines need.</p>
+
 <figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-en-react-cart.html-560-c117d3.png" alt=""><figcaption><b>Project 14.2:</b> the cart after switching language.</figcaption></figure>
 </div>
 
@@ -6603,7 +6605,6 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
         ├── Button.tsx
         ├── Header.tsx
         └── Layout.tsx</pre></div>
-
 <p>Three layers, each with one job:</p>
 <ul>
 <li><code>shared/</code>: code with no knowledge of the business, usable anywhere: the design system components, the HTTP client, formatting helpers.</li>
@@ -6748,8 +6749,7 @@ functions of shared/api. Effects no longer call fetch.
     └── ui/
         ├── Button.tsx
         ├── Header.tsx
-        └── Layout.tsx</pre></div>
-</div>
+        └── Layout.tsx</pre></div></div>
 
 <div class="project">
 <p class="project-label medium">Project 15.2 · Medium</p>
@@ -6819,6 +6819,7 @@ functions of shared/api. Effects no longer call fetch.
 <li>Run it on the sample: it finds the header that reaches into the cart store, and the account page that bypasses the cart’s <code>index.ts</code>.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> a regular expression is enough for a checker like this, but real tools use the TypeScript compiler to read imports exactly, including aliases such as <code>@/features/cart</code>. Start simple, and switch when the simple version stops being right.</p>
+
 <div class="listing" dir="ltr"><div class="listing-title">boundaries.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { dirname, join, relative, resolve } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 

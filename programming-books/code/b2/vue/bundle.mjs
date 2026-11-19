@@ -7,7 +7,7 @@ import { dirname } from "node:path";
 import { parse, compileScript, compileTemplate, compileStyle } from "vue/compiler-sfc";
 
 const [entry, outfile, target = "browser"] = process.argv.slice(2);
-const external = ["vue", "vue-router", "pinia", "@tanstack/vue-query", "vee-validate", "@vueuse/core", "zod"];
+const external = ["vue", "vue-router", "pinia", "@tanstack/vue-query", "@vueuse/core", "zod"];
 
 const vue = {
   name: "vue",

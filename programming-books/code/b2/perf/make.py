@@ -362,3 +362,79 @@ for lang, words in T.items():
     (out / "below.png").write_bytes(picture("below.png", "small"))
 
 kit.generate(HERE, T, plain=PLAIN, node_files=NODE, browser_files=BROWSER, title_key="w_title")
+
+
+# ---------------------------------------------------------------- the same example in Vue (Vue edition), under vue/
+import subprocess  # noqa: E402
+import vue_kit  # noqa: E402
+
+VPLAIN, VBROWSER = {}, {}
+VPLAIN["vue/tsconfig.json"] = """{
+  "compilerOptions": {
+    "strict": true, "noUncheckedIndexedAccess": true, "target": "es2024", "module": "esnext",
+    "moduleResolution": "bundler", "lib": ["es2024", "dom", "dom.iterable"], "types": ["node"], "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts", "**/*.vue"]
+}
+"""
+VPLAIN["vue/SlowList.vue"] = """<script setup lang="ts">
+// A child component re-renders only when its props change: Vue needs no memo()
+defineProps<{ items: string[] }>();
+
+// A deliberately slow row: in a real app, a rich card with images, prices and badges
+function slow(name: string) {
+  const start = performance.now();
+  while (performance.now() - start < 0.2) {
+    // 0.2 ms of work per row
+  }
+  return name;
+}
+</script>
+
+<template>
+  <ul>
+    <li v-for="name in items.slice(0, 2000)" :key="name">{{ slow(name) }}</li>
+  </ul>
+</template>
+"""
+VPLAIN["vue/Filter.vue"] = """<script setup lang="ts">
+import { computed, ref, shallowRef } from "vue";
+import { refDebounced } from "@vueuse/core";
+import SlowList from "./SlowList.vue";
+
+// shallowRef: Vue does not need to watch inside 5,000 strings that never change
+const ALL = shallowRef(Array.from({ length: 5000 }, (_, i) => `{w_item} ${i + 1}`));
+
+const text = ref("");
+// {w_c2}
+const deferred = refDebounced(text, 250);
+const items = computed(() => ALL.value.filter((name) => name.includes(deferred.value)));
+const stale = computed(() => text.value !== deferred.value);
+</script>
+
+<template>
+  <div class="card">
+    <label for="q">{w_search}</label>
+    <input id="q" v-model="text" />
+    <p class="muted" aria-live="polite">{{ stale ? "{w_pending}" : `{w_showing} ${items.length} {w_of} ${ALL.length}` }}</p>
+    <div :class="{ stale }">
+      <SlowList :items="items" />
+    </div>
+  </div>
+</template>
+"""
+VBROWSER["vue/transition.ts"] = ("""import { createApp } from "vue";
+import Filter from "./Filter.vue";
+
+createApp(Filter).mount("#app");
+""", CSS)
+
+VNODE = {"vue/projects/budget.ts": NODE["projects/budget.ts"].replace('"../../../vendor"', '"../../../../vendor-vue"')}
+vue_kit.generate(HERE, T, plain=VPLAIN, node_files=VNODE, browser_files=VBROWSER)
+check = HERE.parent / "vue-check" / "node_modules" / ".bin" / "vue-tsc"
+for lang in T:
+    r = subprocess.run([str(check), "-p", str(HERE / lang / "vue" / "tsconfig.json")], capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit(f"vue-tsc ({lang}):\n{r.stdout}{r.stderr}")
+print("vue types ok")

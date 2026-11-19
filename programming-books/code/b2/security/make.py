@@ -246,3 +246,50 @@ kit.generate(HERE, T, plain=PLAIN, node_files=NODE, title_key="w_title")
 purify = (HERE.parent / "node_modules" / "dompurify" / "dist" / "purify.js").read_text()
 for lang in T:
     (HERE / lang / "projects" / "purify.js").write_text(purify)
+
+
+# ---------------------------------------------------------------- the same example in Vue (Vue edition), under vue/
+import subprocess  # noqa: E402
+import vue_kit  # noqa: E402
+
+VPLAIN, VNODE = {}, {}
+VPLAIN["vue/tsconfig.json"] = """{
+  "compilerOptions": {
+    "strict": true, "noUncheckedIndexedAccess": true, "target": "es2024", "module": "esnext",
+    "moduleResolution": "bundler", "lib": ["es2024", "dom", "dom.iterable"], "types": ["node"], "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts", "**/*.vue"]
+}
+"""
+VPLAIN["vue/Comment.vue"] = """<script setup lang="ts">
+const comment = `<img src="x" onerror="alert('hacked')">`;
+
+// URLs from users can run code too: Vue does not block them, so checking the scheme is your job
+const link = "javascript:alert('hacked')";
+const safe = /^https?:\\/\\//.test(link) ? link : "#";
+</script>
+
+<template>
+  <!-- Text in double braces is escaped: it is shown, never run -->
+  <p>{{ comment }}</p>
+  <!-- v-html puts raw HTML into the page -->
+  <p v-html="comment" />
+  <a :href="safe">{w_profile}</a>
+</template>
+"""
+VNODE["vue/escape.ts"] = """import { createSSRApp } from "vue";
+import { renderToString } from "vue/server-renderer";
+import Comment from "./Comment.vue";
+
+const html = await renderToString(createSSRApp(Comment));
+console.log(html.replace(/<!--\\[-->|<!--\\]-->/g, "").replaceAll("><", ">\\n<"));
+"""
+
+vue_kit.generate(HERE, T, plain=VPLAIN, node_files=VNODE)
+check = HERE.parent / "vue-check" / "node_modules" / ".bin" / "vue-tsc"
+for lang in T:
+    r = subprocess.run([str(check), "-p", str(HERE / lang / "vue" / "tsconfig.json")], capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit(f"vue-tsc ({lang}):\n{r.stdout}{r.stderr}")
+print("vue types ok")

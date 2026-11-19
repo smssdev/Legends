@@ -282,3 +282,107 @@ for lang in T:
     T[lang]["start"] = lang
 
 kit.generate(HERE, T, plain=PLAIN, node_files=NODE, browser_files=BROWSER, title_key="w_title")
+
+
+# ---------------------------------------------------------------- the same example in Vue (Vue edition), under vue/
+import subprocess  # noqa: E402
+import vue_kit  # noqa: E402
+
+VPLAIN, VBROWSER = {}, {}
+VPLAIN["vue/tsconfig.json"] = """{
+  "compilerOptions": {
+    "strict": true, "noUncheckedIndexedAccess": true, "target": "es2024", "module": "esnext",
+    "moduleResolution": "bundler", "lib": ["es2024", "dom", "dom.iterable"], "types": ["node"], "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts", "**/*.vue"]
+}
+"""
+VPLAIN["vue/i18n.ts"] = """import { computed, inject, provide, ref, watchEffect, type ComputedRef, type InjectionKey, type Ref } from "vue";
+import { translate, type Locale } from "../messages";
+
+type I18n = {
+  locale: Ref<Locale>;
+  t: ComputedRef<(key: Parameters<typeof translate>[1], values?: Record<string, string | number>) => string>;
+  money: ComputedRef<(value: number) => string>;
+};
+
+const I18nKey: InjectionKey<I18n> = Symbol("i18n");
+
+export function provideI18n(initial: Locale) {
+  const locale = ref<Locale>(initial);
+
+  watchEffect(() => {
+    document.documentElement.lang = locale.value;
+    document.documentElement.dir = locale.value === "ar" ? "rtl" : "ltr";
+  });
+
+  const t = computed(() => (key: Parameters<typeof translate>[1], values?: Record<string, string | number>) =>
+    translate(locale.value, key, values),
+  );
+  const money = computed(() => {
+    const currency = new Intl.NumberFormat(locale.value === "ar" ? "ar-EG" : "en-EG", { style: "currency", currency: "EGP" });
+    return (v: number) => currency.format(v);
+  });
+
+  provide(I18nKey, { locale, t, money });
+}
+
+export function useI18n(): I18n {
+  const value = inject(I18nKey);
+  if (!value) throw new Error("useI18n() must be used inside a component that called provideI18n()");
+  return value;
+}
+"""
+VPLAIN["vue/Cart.vue"] = """<script setup lang="ts">
+import { useI18n } from "./i18n";
+
+const LINES = [
+  { name: "Code from Zero", price: 250 },
+  { name: "Bit mug", price: 85 },
+];
+const { t, money, locale } = useI18n();
+const total = LINES.reduce((sum, l) => sum + l.price, 0);
+</script>
+
+<template>
+  <section class="card">
+    <h2>
+      {{ t("cart.title") }}
+      <span class="badge">{{ t("cart.items", { count: LINES.length }) }}</span>
+    </h2>
+    <div v-for="l in LINES" :key="l.name" class="row">
+      <bdi>{{ l.name }}</bdi>
+      <span>{{ money(l.price) }}</span>
+    </div>
+    <p><b>{{ t("cart.total", { total: money(total) }) }}</b></p>
+    <button type="button" class="next" @click="locale = locale === 'ar' ? 'en' : 'ar'">
+      {{ locale === "ar" ? "English" : "العربية" }}
+    </button>
+  </section>
+</template>
+"""
+VPLAIN["vue/CartApp.vue"] = """<script setup lang="ts">
+import Cart from "./Cart.vue";
+import { provideI18n } from "./i18n";
+
+provideI18n("{start}");
+</script>
+
+<template>
+  <Cart />
+</template>
+"""
+VBROWSER["vue/cart.ts"] = ("""import { createApp } from "vue";
+import CartApp from "./CartApp.vue";
+
+createApp(CartApp).mount("#app");
+""", CSS)
+
+vue_kit.generate(HERE, T, plain=VPLAIN, browser_files=VBROWSER)
+check = HERE.parent / "vue-check" / "node_modules" / ".bin" / "vue-tsc"
+for lang in T:
+    r = subprocess.run([str(check), "-p", str(HERE / lang / "vue" / "tsconfig.json")], capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit(f"vue-tsc ({lang}):\n{r.stdout}{r.stderr}")
+print("vue types ok")

@@ -42,6 +42,18 @@
 <li>Addresses are code too: a link to <code>javascript:…</code> runs when clicked. When a URL comes from users, allow only <code>https:</code> and <code>http:</code>.</li>
 </ul>
 <!-- /react -->
+<!-- vue -->
+<p>Vue escapes everything you put in double braces, so ordinary templates are safe by default. The dangers are the exits from that safety:</p>
+
+<pre data-code="vue/Comment.vue" data-title="Comment.vue"></pre>
+<pre data-out="vue/escape.mjs"></pre>
+
+<ul>
+<li>Text in double braces became harmless entities: <code>&amp;lt;img…</code>.</li>
+<li><code>v-html</code> put the raw HTML in the page. Use it only with HTML you control, or after sanitising it. The official Vue linter rules warn about every <code>v-html</code>, so each one is a decision someone made on purpose.</li>
+<li>Addresses are code too: a link to <code>javascript:…</code> runs when clicked, and Vue does not block it. When a URL comes from users, allow only <code>https:</code> and <code>http:</code>.</li>
+</ul>
+<!-- /vue -->
 
 <p>When you really must show HTML from users, such as the formatted text of a comment, <dfn>sanitise</dfn> it first with a library like DOMPurify, which keeps the tags you allow and removes everything else. Project {{n}}.1 does this.</p>
 
@@ -98,7 +110,7 @@
 <table>
 <thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
 <tbody>
-<tr><td>User text in <code>innerHTML</code> or <code>dangerouslySetInnerHTML</code></td><td>XSS</td><td><code>textContent</code> or plain JSX; sanitise if HTML is required</td></tr>
+<tr><td>User text in <code>innerHTML</code> or <!-- react --><code>dangerouslySetInnerHTML</code><!-- /react --><!-- vue --><code>v-html</code><!-- /vue --></td><td>XSS</td><td><code>textContent</code> or <!-- react -->plain JSX<!-- /react --><!-- vue -->double braces<!-- /vue -->; sanitise if HTML is required</td></tr>
 <tr><td>Links built from user input</td><td><code>javascript:</code> URLs run code</td><td>Allow only <code>https:</code> and <code>http:</code></td></tr>
 <tr><td>Tokens in <code>localStorage</code></td><td>Any XSS can steal sessions</td><td><code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code> cookies</td></tr>
 <tr><td>Security checks only in the browser</td><td>Attackers skip them</td><td>Check everything on the server</td></tr>
@@ -112,7 +124,7 @@
 
 <ul class="summary">
 <li>The browser belongs to the user: the frontend protects users from others, and only the server protects data.</li>
-<li><strong>XSS</strong> turns user text into code. Prevent it with escaping (<code>textContent</code>, plain JSX), sanitising when HTML is needed, and safe URLs.</li>
+<li><strong>XSS</strong> turns user text into code. Prevent it with escaping (<code>textContent</code>, <!-- react -->plain JSX<!-- /react --><!-- vue -->double braces<!-- /vue -->), sanitising when HTML is needed, and safe URLs.</li>
 <li>A strict <strong>Content Security Policy</strong> stops injected scripts even when an XSS bug exists.</li>
 <li>Keep sessions in <strong>HttpOnly, Secure, SameSite</strong> cookies; block <strong>CSRF</strong> with SameSite and server checks, and <strong>clickjacking</strong> with <code>frame-ancestors</code>.</li>
 <li>Protect the <strong>supply chain</strong> with lockfiles, audits, careful choices and Subresource Integrity.</li>

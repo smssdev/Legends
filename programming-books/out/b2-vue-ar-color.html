@@ -3121,13 +3121,13 @@ it(<span class="s">&quot;ينتظر حتى تتوقف القيمة عن التغ
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose
  RUN  v5.1.1 .
  ✓ projects/usePagination.test.ts &gt; يقسم القائمة إلى صفحات 5ms
- ✓ projects/usePagination.test.ts &gt; لا يتجاوز الصفحة الأخيرة أبداً 2ms
- ✓ composables/useStopwatch.test.ts &gt; useStopwatch &gt; يعدّ الثواني أثناء العمل فقط 8ms
- ✓ composables/useStopwatch.test.ts &gt; useStopwatch &gt; التصفير يوقف ويعود إلى الصفر 2ms
- ✓ composables/useDebounced.test.ts &gt; ينتظر حتى تتوقف القيمة عن التغير 19ms
+ ✓ projects/usePagination.test.ts &gt; لا يتجاوز الصفحة الأخيرة أبداً 1ms
+ ✓ composables/useStopwatch.test.ts &gt; useStopwatch &gt; يعدّ الثواني أثناء العمل فقط 6ms
+ ✓ composables/useStopwatch.test.ts &gt; useStopwatch &gt; التصفير يوقف ويعود إلى الصفر 1ms
+ ✓ composables/useDebounced.test.ts &gt; ينتظر حتى تتوقف القيمة عن التغير 8ms
  Test Files  3 passed (3)
       Tests  5 passed (5)
-   Duration  1.13s (environment 80%, import 14%, transform 4%, tests 2%, worker 1%)</pre></div>
+   Duration  1.23s (environment 81%, import 14%, transform 4%, tests 1%, worker 1%)</pre></div>
 
 <p>خمس ثوانٍ من ساعة الإيقاف وثلث ثانية من الكتابة، مختبرة في أجزاء قليلة من الثانية. فالمنطق الذي كان يعيش في مكوّن لا يُختبر إلا برسم المكوّن والضغط عليه، أما وهو composable فيُختبر مباشرة.</p>
 
@@ -3230,11 +3230,11 @@ it(<span class="s">&quot;لا يتجاوز الصفحة الأخيرة أبدا�
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose projects
  RUN  v5.1.1 .
- ✓ projects/usePagination.test.ts &gt; يقسم القائمة إلى صفحات 5ms
+ ✓ projects/usePagination.test.ts &gt; يقسم القائمة إلى صفحات 4ms
  ✓ projects/usePagination.test.ts &gt; لا يتجاوز الصفحة الأخيرة أبداً 1ms
  Test Files  1 passed (1)
       Tests  2 passed (2)
-   Duration  1.01s (environment 85%, import 12%, transform 1%, tests 1%, worker 1%)</pre></div>
+   Duration  1.03s (environment 83%, import 14%, transform 2%, tests 1%, worker 1%)</pre></div>
 </div>
 
 <div class="project">
@@ -4647,6 +4647,36 @@ console.log(<span class="s">`(${Object.keys(light).length} colours × 2 themes, 
 <span class="k">.row</span> { <span class="n">display</span><span class="s">: flex</span>; <span class="n">gap</span><span class="s">: var(--space-2)</span>; <span class="n">flex-wrap</span><span class="s">: wrap</span>; <span class="n">align-items</span><span class="s">: center</span>; }</pre></div>
 
 
+<div class="listing" dir="ltr"><div class="listing-title">Button.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+type Variant = &quot;primary&quot; | &quot;secondary&quot; | &quot;danger&quot; | &quot;ghost&quot;;
+type Size = &quot;sm&quot; | &quot;md&quot; | &quot;lg&quot;;
+
+const { variant = &quot;primary&quot;, size = &quot;md&quot;, loading = false, type = &quot;button&quot; } = defineProps&lt;{
+  variant?: Variant;
+  size?: Size;
+  loading?: boolean;
+  disabled?: boolean;
+  type?: &quot;button&quot; | &quot;submit&quot; | &quot;reset&quot;;
+}&gt;();
+&lt;/script&gt;
+
+&lt;!-- كل خصائص الزر الأصلية (type وdisabled وonClick وaria-…) تبقى عاملة --&gt;
+&lt;template&gt;
+  &lt;button :type=&quot;type&quot; :class=&quot;[&#x27;btn&#x27;, `btn-${variant}`, `btn-${size}`]&quot; :disabled=&quot;disabled || loading&quot; :aria-busy=&quot;loading || undefined&quot;&gt;
+    &lt;span v-if=&quot;loading&quot; class=&quot;spinner&quot; aria-hidden=&quot;true&quot; /&gt;
+    &lt;slot /&gt;
+  &lt;/button&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>buttons.html</span><b>560px</b></div><img src="img/b2-design-ar-vue-buttons.html-560.png" alt=""><figcaption><b>شكل 10.1:</b> مكوّن <code>Button</code> واحد، بأربعة أشكال وثلاثة أحجام، مع حالتي التحميل والتعطيل، في المظهرين الفاتح والداكن. ولم يتغير سطر واحد في المكوّن بين المظهرين.</figcaption></figure>
+
+<ul>
+<li><strong>الأشكال خاصية واحدة بنوع اتحادي</strong>، <code>variant="danger"</code>، لا خصائص منطقية منفصلة مثل <code>primary</code> و<code>danger</code> و<code>ghost</code>. فمع الخصائص المنطقية لا يمنع شيء أحداً من كتابة <code>&lt;Button primary danger&gt;</code>، ولا يعرف أحد ماذا يعني ذلك.</li>
+<li><strong>ابنِ على المنصة.</strong> يمرر Vue كل سمة لم يعرّفها المكوّن خاصيةً، مثل <code>aria-label</code> و<code>form</code> ومستمع <code>@click</code>، مباشرة إلى <code>&lt;button&gt;</code> الجذري. وهذا <dfn>تمرير السمات</dfn> (attribute fallthrough)، فلا يحتاج نظام التصميم أن يسردها واحدة واحدة.</li>
+<li><strong>قيم افتراضية آمنة.</strong> <code>type="button"</code> افتراضياً، لأن <code>&lt;button&gt;</code> العادي داخل نموذج يرسله، وهذه مفاجأة كلاسيكية. والزر الذي يحمّل معطّل أيضاً، ويخبر التقنيات المساعدة بـ <code>aria-busy</code>.</li>
+<li><strong>باب للخروج.</strong> <code>class</code> التي يمررها الأب تُدمج مع أصناف المكوّن لا تستبدلها، للشاشة النادرة التي تحتاج هامشاً.</li>
+</ul>
+
 <aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: سمِّ الأشياء بغرضها، لا بشكلها أبداً</p><p>الشكل المسمى <code>blue</code> يصير كذبة يوم تتحول العلامة التجارية إلى الأخضر. أما <code>primary</code> و<code>danger</code> و<code>subtle</code> فتبقى صادقة. والقاعدة نفسها للرموز: <code>color-action</code> لا <code>color-indigo</code>.</p></aside>
 
 <h2><span class="sec">10.3</span> <span>التركيب بدل الإعدادات</span></h2>
@@ -4657,7 +4687,7 @@ console.log(<span class="s">`(${Object.keys(light).length} colours × 2 themes, 
 
 <h3>المُتحكَّم فيه وغير المُتحكَّم فيه</h3>
 
-<p>يجب أن تعمل حقول نظام التصميم كما تعمل الحقول الأصلية: <dfn>غير مُتحكَّم فيها</dfn> حين يريد المستخدم قيمة افتراضية ولا يهمه كل تغيير، و<dfn>مُتحكَّماً فيها</dfn> حين تملك الصفحة القيمة. وبالعرف تعني <code>defaultChecked</code> أو <code>defaultValue</code> عدم التحكم، وتعني <code>checked</code> أو <code>value</code> مع معالج تغيير التحكم. ويبني المشروع 10.3 مفتاحاً يدعم الاثنين.</p>
+<p>يجب أن تعمل حقول نظام التصميم كما تعمل الحقول الأصلية: <dfn>غير مُتحكَّم فيها</dfn> حين يريد المستخدم قيمة افتراضية ولا يهمه كل تغيير، و<dfn>مُتحكَّماً فيها</dfn> حين تملك الصفحة القيمة. وفي Vue يغطي سطر واحد الحالتين، <code>defineModel</code>: فحين يربط الأب <code>v-model</code> يملك الأب القيمة، وحين لا يربطه يحفظ المكوّن قيمته. ويبني المشروع 10.2 مفتاحاً يعمل بالطريقتين.</p>
 
 <aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>هل يستخدم مكوّن الزر الرمز <code>indigo-600</code> أم <code>color-action</code>؟</li><li>ما المشكلة في خصائص مثل <code>primary</code> و<code>secondary</code> و<code>danger</code> ثلاث قيم منطقية؟</li><li>لماذا يجب أن يكون <code>type="button"</code> افتراضياً في مكوّن الزر؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
 
@@ -4726,6 +4756,22 @@ console.log(<span class="s">`(${Object.keys(light).length} colours × 2 themes, 
 <li>لا تجعل اللون يحمل المعنى وحده: كلمتا «مدفوع» و«قيد الانتظار»، والأيقونات، تقولانه أيضاً.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> استخدام <code>role="alert"</code> لكل شيء يبدو آمناً، لكنه يقاطع المستخدم مع كل إشعار صغير. فاحفظ المقاطعة لما يحتاج الانتباه الآن حقاً.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Alert.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+type Tone = &quot;info&quot; | &quot;success&quot; | &quot;warning&quot; | &quot;danger&quot;;
+const ICONS: Record&lt;Tone, string&gt; = { info: &quot;ℹ&quot;, success: &quot;✓&quot;, warning: &quot;!&quot;, danger: &quot;✕&quot; };
+
+const { tone = &quot;info&quot; } = defineProps&lt;{ tone?: Tone }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- Errors interrupt (alert); everything else waits for a pause (status) --&gt;
+  &lt;div :class=&quot;[&#x27;alert&#x27;, `alert-${tone}`]&quot; :role=&quot;tone === &#x27;danger&#x27; ? &#x27;alert&#x27; : &#x27;status&#x27;&quot;&gt;
+    &lt;span aria-hidden=&quot;true&quot;&gt;{{ ICONS[tone] }}&lt;/span&gt;
+    &lt;span&gt;&lt;slot /&gt;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>feedback.html</span><b>560px</b></div><img src="img/b2-design-ar-vue-projects-feedback.html-560.png" alt=""><figcaption><b>مشروع 10.1:</b> الشارات والتنبيهات بنبراتها الأربع.</figcaption></figure>
 </div>
 
 <div class="project">
@@ -4734,13 +4780,24 @@ console.log(<span class="s">`(${Object.keys(light).length} colours × 2 themes, 
 <p class="project-goal">مفتاح تشغيل وإيقاف يُستخدم مُتحكَّماً فيه أو غير مُتحكَّم فيه، ويعمل بلوحة المفاتيح وقارئ الشاشة، وواضح في كل مظهر.</p>
 <p class="project-skills"><strong>ستتدرب على:</strong> نمط المُتحكَّم فيه وغير المُتحكَّم فيه، و<code>role="switch"</code> مع <code>aria-checked</code>، وخصائص CSS المنطقية، وفحص الحالات في كل مظهر.</p>
 <ol class="steps">
-<li>اقبل <code>checked</code> و<code>defaultChecked</code> و<code>onChange</code>. فإن مُرّرت <code>checked</code> ملك الأب القيمة، وإلا حفظها المكوّن بنفسه.</li>
-<li>ارسم <code>&lt;button type="button"&gt;</code> حقيقياً بـ <code>role="switch"</code> و<code>aria-checked</code>. فيعمل Enter والمسافة مجاناً.</li>
+<li>اجعل القيمة نموذجاً بـ <code>defineModel&lt;boolean&gt;({ default: false })</code>. فحين يربط الأب <code>v-model</code> يملك الأب القيمة، وحين لا يربطه يكون المرجع محلياً ويحفظ المفتاح قيمته.</li><li>ارسم <code>&lt;button type="button"&gt;</code> حقيقياً بـ <code>role="switch"</code> و<code>aria-checked</code>. فيعمل Enter والمسافة مجاناً.</li>
 <li>ارسم المسار والمقبض بالرموز، وحرّك المقبض بـ <code>inset-inline-start</code>، فينزلق في الاتجاه الصحيح بالعربية أيضاً.</li>
 <li>أعطِ حالة الإيقاف إطاراً وحالة التشغيل تعبئة. وافحص الاثنتين في المظهر الداكن: فحين كُتب هذا الكتاب بدت النسخة الأولى متطابقة في الحالتين في الوضع الداكن، حتى كشفتها اللقطة.</li>
-<li>استخدمه بثلاث طرق: غير مُتحكَّم فيه بـ <code>defaultChecked</code>، وغير مُتحكَّم فيه مطفأً، ومُتحكَّماً فيه يبدّل مظهر لوحته.</li>
-</ol>
-<p class="hint"><strong>تلميح:</strong> لا تنتقل أبداً من غير المُتحكَّم فيه إلى المُتحكَّم فيه خلال حياة المكوّن (من <code>checked={undefined}</code> إلى <code>checked={true}</code>). فـ React تحذّر منه لأنه علّة في الغالب دائماً: قرّر مرة واحدة، في الأب.</p>
+<li>استخدمه بالطريقتين: مفتاحان دون <code>v-model</code> يتذكران حالتهما، وواحد بـ <code>v-model</code> يبدّل مظهر لوحته.</li></ol>
+<p class="hint"><strong>تلميح:</strong> قرّر مرة واحدة، في الأب، هل يملك القيمة. فإضافة <code>v-model</code> أو حذفه من المفتاح نفسه وهو على الشاشة تجعله يقفز بين قيمتين: قيمته، وقيمة الأب.</p>
+<div class="listing" dir="ltr"><div class="listing-title">Switch.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+// With v-model the parent owns the value; without it, defineModel keeps a local one
+const on = defineModel&lt;boolean&gt;({ default: false });
+defineProps&lt;{ label: string }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;button type=&quot;button&quot; role=&quot;switch&quot; :aria-checked=&quot;on&quot; class=&quot;switch&quot; @click=&quot;on = !on&quot;&gt;
+    &lt;span class=&quot;track&quot; aria-hidden=&quot;true&quot;&gt;&lt;span class=&quot;thumb&quot; /&gt;&lt;/span&gt;
+    {{ label }}
+  &lt;/button&gt;
+&lt;/template&gt;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>switches.html</span><b>560px</b></div><img src="img/b2-design-ar-vue-projects-switches.html-560-9a64f6.png" alt=""><figcaption><b>مشروع 10.2:</b> بعد تشغيل المظهر الداكن بالمفتاح المربوط بـ <code>v-model</code>.</figcaption></figure>
 </div>
 
 <div class="project">
@@ -5035,13 +5092,40 @@ dark  warning / warning-soft            6.84 ✓
 <p>حين تُفتح نافذة حوارية يجب أن ينتقل التركيز إليها، ويبقى داخلها ما دامت مفتوحة، وتُغلق بـ Escape، ويعود التركيز إلى الزر الذي فتحها. والعنصر الأصلي <code>&lt;dialog&gt;</code>، حين يُفتح بـ <code>showModal()</code>، يفعل هذا كله، ويجعل الصفحة خلفه <em>خاملة</em> (inert) أيضاً: لا تصلها لوحة المفاتيح ولا يراها قارئ الشاشة.</p>
 
 
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>dialog.html</span><b>560px</b></div><img src="img/b2-a11y-ar-react-dialog.html-560-b42286.png" alt=""><figcaption><b>شكل 11.1:</b> نافذة تأكيد. التركيز على «ألغِ»، فلا يحذف ضغط Enter بلا تفكير الحسابَ.</figcaption></figure>
+<div class="listing" dir="ltr"><div class="listing-title">ConfirmDialog.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useTemplateRef, watchEffect } from &quot;vue&quot;;
+
+const open = defineModel&lt;boolean&gt;({ required: true });
+defineProps&lt;{ title: string; confirmLabel: string; cancelLabel: string }&gt;();
+const emit = defineEmits&lt;{ confirm: [] }&gt;();
+const dialog = useTemplateRef&lt;HTMLDialogElement&gt;(&quot;dialog&quot;);
+
+watchEffect(() =&gt; {
+  const el = dialog.value;
+  if (!el) return;
+  if (open.value &amp;&amp; !el.open) el.showModal(); // modal: traps focus, Esc closes, the page behind is inert
+  if (!open.value &amp;&amp; el.open) el.close(); // the browser returns the focus to the button that opened it
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;dialog ref=&quot;dialog&quot; aria-labelledby=&quot;dlg-title&quot; aria-describedby=&quot;dlg-text&quot; @close=&quot;open = false&quot;&gt;
+    &lt;h2 id=&quot;dlg-title&quot;&gt;{{ title }}&lt;/h2&gt;
+    &lt;p id=&quot;dlg-text&quot;&gt;&lt;slot /&gt;&lt;/p&gt;
+    &lt;div class=&quot;row&quot;&gt;
+      &lt;button type=&quot;button&quot; class=&quot;secondary&quot; autofocus @click=&quot;open = false&quot;&gt;{{ cancelLabel }}&lt;/button&gt;
+      &lt;button type=&quot;button&quot; class=&quot;danger&quot; @click=&quot;emit(&#x27;confirm&#x27;), (open = false)&quot;&gt;{{ confirmLabel }}&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/dialog&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>dialog.html</span><b>560px</b></div><img src="img/b2-a11y-ar-vue-dialog.html-560-b42286.png" alt=""><figcaption><b>شكل 11.1:</b> نافذة تأكيد. التركيز على «ألغِ»، فلا يحذف ضغط Enter بلا تفكير الحسابَ.</figcaption></figure>
 
 <p>لاحظ اختيارين. تُسمّى النافذة بعنوانها (<code>aria-labelledby</code>) وتُوصف بنصها (<code>aria-describedby</code>)، فيقرأ قارئ الشاشة الاثنين حين تُفتح. ومع الفعل المدمّر يأخذ الزر الآمن التركيز الأول.</p>
 
 <h3>تغيّر الصفحات</h3>
 
-<p>حين يعرض الموجّه صفحة جديدة لا يسمع مستخدم قارئ الشاشة شيئاً: فلم تُحمَّل صفحة. فبعد كل انتقال انقل التركيز إلى <code>h1</code> الصفحة الجديدة (أعطه <code>tabIndex={-1}</code> ليقبل التركيز)، وحدّث <code>document.title</code>. فكلاهما يخبر المستخدم أين هو.</p>
+<p>حين يعرض الموجّه صفحة جديدة لا يسمع مستخدم قارئ الشاشة شيئاً: فلم تُحمَّل صفحة. فبعد كل انتقال انقل التركيز إلى <code>h1</code> الصفحة الجديدة (أعطه <code>tabindex="-1"</code> ليقبل التركيز)، وحدّث <code>document.title</code>. فكلاهما يخبر المستخدم أين هو.</p>
 
 <h3>ما يختفي</h3>
 
@@ -5074,7 +5158,7 @@ dark  warning / warning-soft            6.84 ✓
 <table>
 <thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
 <tbody>
-<tr><td><code>div</code> بـ <code>onClick</code></td><td>بلا لوحة مفاتيح وبلا دور</td><td><code>&lt;button&gt;</code></td></tr>
+<tr><td><code>div</code> بـ <code>@click</code></td><td>بلا لوحة مفاتيح وبلا دور</td><td><code>&lt;button&gt;</code></td></tr>
 <tr><td>أزرار أيقونات بلا اسم</td><td>يقول قارئ الشاشة «زر»</td><td><code>aria-label</code>، و<code>aria-hidden</code> على الأيقونة</td></tr>
 <tr><td>نص إرشادي بدل التسمية</td><td>يختفي التلميح، وتباينه ضعيف</td><td><code>&lt;label&gt;</code> ظاهرة</td></tr>
 <tr><td><code>outline: none</code> دون بديل</td><td>يضيع مستخدمو لوحة المفاتيح</td><td>نمط <code>:focus-visible</code> واضح</td></tr>
@@ -5149,29 +5233,122 @@ process.exitCode = total === <span class="n">0</span> ? <span class="n">0</span>
 <p class="project-skills"><strong>ستتدرب على:</strong> <code>aria-haspopup</code> و<code>aria-expanded</code>، و<code>role="menu"</code> و<code>menuitem</code>، والتركيز المتجول، وإعادة التركيز.</p>
 <ol class="steps">
 <li>للزر <code>aria-haspopup="menu"</code> و<code>aria-expanded</code> و<code>aria-controls</code>. والسهم لأسفل يفتح القائمة على العنصر الأول، والسهم لأعلى على الأخير.</li>
-<li>القائمة لائحة بـ <code>role="menu"</code>، وكل عنصر زر بـ <code>role="menuitem"</code> و<code>tabIndex={-1}</code>، داخل <code>li</code> بـ <code>role="none"</code>.</li>
-<li>احفظ رقم العنصر الفعّال في الحالة، وانقل التركيز الحقيقي إليه في تأثير. والسهمان لأعلى ولأسفل يلتفّان، وHome وEnd يقفزان.</li>
+<li>القائمة لائحة بـ <code>role="menu"</code>، وكل عنصر زر بـ <code>role="menuitem"</code> و<code>tabindex="-1"</code>، داخل <code>li</code> بـ <code>role="none"</code>.</li>
+<li>احفظ رقم العنصر الفعّال في الحالة، وانقل التركيز الحقيقي إليه في مراقب، بعد <code>nextTick</code>. والسهمان لأعلى ولأسفل يلتفّان، وHome وEnd يقفزان.</li>
 <li>Escape وTab يغلقان القائمة ويعيدان التركيز إلى الزر. واختيار عنصر ينفذه ويعيد التركيز أيضاً.</li>
 <li>علّم العنصر المدمّر بالأحمر <em>وضعه</em> في الأخير، بعيداً عن الباقي.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> «القائمة» في ARIA تعني لائحة <em>إجراءات</em>، مثل قائمة تطبيق سطح المكتب. أما لائحة الروابط للتنقل فليست قائمة: هي <code>&lt;nav&gt;</code> فيها روابط، ولا تحتاج شيئاً من هذا.</p>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>menu.html</span><b>560px</b></div><img src="img/b2-a11y-ar-react-projects-menu.html-560.png" alt=""> button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>مشروع 11.2:</b> القائمة مفتوحة، بعد ضغط السهم لأسفل مرتين.</figcaption></figure>
+
+<div class="listing" dir="ltr"><div class="listing-title">MenuButton.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { nextTick, ref, useId, useTemplateRef, watch } from &quot;vue&quot;;
+
+type Item = { label: string; danger?: boolean; onSelect: () =&gt; void };
+const props = defineProps&lt;{ label: string; items: Item[] }&gt;();
+
+const open = ref(false);
+const active = ref(0);
+const id = useId();
+const button = useTemplateRef&lt;HTMLButtonElement&gt;(&quot;button&quot;);
+const itemEls = useTemplateRef&lt;HTMLButtonElement[]&gt;(&quot;item&quot;);
+
+// Move the real focus to the active item whenever it changes
+watch([open, active], async () =&gt; {
+  await nextTick();
+  if (open.value) itemEls.value?.[active.value]?.focus();
+});
+
+function openAt(index: number) {
+  active.value = index;
+  open.value = true;
+}
+
+function close() {
+  open.value = false;
+  button.value?.focus(); // focus goes back where it came from
+}
+
+function onMenuKey(event: KeyboardEvent) {
+  const last = props.items.length - 1;
+  if (event.key === &quot;ArrowDown&quot;) active.value = active.value === last ? 0 : active.value + 1;
+  else if (event.key === &quot;ArrowUp&quot;) active.value = active.value === 0 ? last : active.value - 1;
+  else if (event.key === &quot;Home&quot;) active.value = 0;
+  else if (event.key === &quot;End&quot;) active.value = last;
+  else if (event.key === &quot;Escape&quot; || event.key === &quot;Tab&quot;) close();
+  else return;
+  event.preventDefault();
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div class=&quot;menu-wrap&quot;&gt;
+    &lt;button
+      :id=&quot;`${id}-button`&quot;
+      ref=&quot;button&quot;
+      type=&quot;button&quot;
+      aria-haspopup=&quot;menu&quot;
+      :aria-expanded=&quot;open&quot;
+      :aria-controls=&quot;`${id}-menu`&quot;
+      @click=&quot;open ? close() : openAt(0)&quot;
+      @keydown.down.prevent=&quot;openAt(0)&quot;
+      @keydown.up.prevent=&quot;openAt(items.length - 1)&quot;
+    &gt;
+      {{ label }} ▾
+    &lt;/button&gt;
+    &lt;ul v-if=&quot;open&quot; :id=&quot;`${id}-menu`&quot; role=&quot;menu&quot; :aria-labelledby=&quot;`${id}-button`&quot; @keydown=&quot;onMenuKey&quot;&gt;
+      &lt;li v-for=&quot;item in items&quot; :key=&quot;item.label&quot; role=&quot;none&quot;&gt;
+        &lt;button
+          ref=&quot;item&quot;
+          type=&quot;button&quot;
+          role=&quot;menuitem&quot;
+          tabindex=&quot;-1&quot;
+          :class=&quot;{ &#x27;danger-text&#x27;: item.danger }&quot;
+          @click=&quot;item.onSelect(), close()&quot;
+        &gt;
+          {{ item.label }}
+        &lt;/button&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>menu.html</span><b>560px</b></div><img src="img/b2-a11y-ar-vue-projects-menu.html-560.png" alt=""> button;press:[role=menu]|ArrowDown;press:[role=menu]|ArrowDown"><figcaption><b>مشروع 11.2:</b> القائمة مفتوحة، بعد ضغط السهم لأسفل مرتين.</figcaption></figure>
 </div>
 
 <div class="project">
 <p class="project-label hard">مشروع 11.3 · تحدٍّ</p>
 <h3>تنقّل يلاحظه قارئ الشاشة</h3>
 <p class="project-goal">مكوّن صغير يحدّث، بعد كل تغيّر في المسار، عنوان الصفحة، وينقل التركيز إلى عنوان الصفحة الجديدة، ويعلنه.</p>
-<p class="project-skills"><strong>ستتدرب على:</strong> التفاعل مع تغيّر المسار في تأثير، وإدارة التركيز على عناصر غير تفاعلية، ومنطقة حية موجودة قبل رسالتها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التفاعل مع تغيّر المسار بـ <code>router.afterEach</code>، وإدارة التركيز على عناصر غير تفاعلية، ومنطقة حية موجودة قبل رسالتها.</p>
 <ol class="steps">
-<li>اقرأ الموقع الحالي من الموجّه، وشغّل تأثيراً حين يتغير مساره.</li>
-<li>تخطَّ الرسم الأول تماماً: ففي التحميل الأول يعلن المتصفح الصفحة بنفسه.</li>
+<li>سجّل <code>router.afterEach</code>، وانتظر <code>nextTick</code> لتكون الصفحة الجديدة على الشاشة.</li>
+<li>تخطَّ الانتقال الأول (حين تكون <code>from.matched</code> فارغة) تماماً: ففي التحميل الأول يعلن المتصفح الصفحة بنفسه.</li>
 <li>جِد <code>main h1</code>، واضبط <code>document.title</code> من نصه، وأعطه <code>tabIndex = -1</code>، وركّز عليه.</li>
 <li>ضع نص العنوان في فقرة <code>role="status"</code> مخفية بصرياً، موجودة دائماً في الصفحة.</li>
 <li>اختبر بقارئ شاشة: اتبع رابطاً، وتحقق أنك تسمع اسم الصفحة الجديدة، وأن Tab يكمل من العنوان.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> أعطِ العنوان الذي عليه التركيز إطاراً ظاهراً أيضاً. فمستخدمو لوحة المفاتيح المبصرون يحتاجون أن يروا أين ذهب التركيز.</p>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>route-focus.html</span><b>560px</b></div><img src="img/b2-a11y-ar-react-projects-route-focus.html-560-774f30.png" alt=""><figcaption><b>مشروع 11.3:</b> بعد اتباع الرابط، صار التركيز على العنوان الجديد.</figcaption></figure>
+
+<div class="listing" dir="ltr"><div class="listing-title">routeFocus.ts</div><pre class="code"><span class="k">import</span> { nextTick, ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { Router } <span class="k">from</span> <span class="s">&quot;vue-router&quot;</span>;
+
+<span class="c">// After every navigation: update the title, move the focus to the new h1, and announce the page</span>
+<span class="k">export</span> <span class="k">const</span> announcement = ref(<span class="s">&quot;&quot;</span>);
+
+<span class="k">export</span> <span class="k">function</span> routeFocus(router: Router, appName: string) {
+  router.afterEach(<span class="k">async</span> (_to, <span class="k">from</span>) =&gt; {
+    <span class="k">if</span> (<span class="k">from</span>.matched.length === <span class="n">0</span>) <span class="k">return</span>; <span class="c">// the first page load is announced by the browser itself</span>
+    <span class="k">await</span> nextTick(); <span class="c">// wait for the new page to be drawn</span>
+    <span class="k">const</span> heading = document.querySelector&lt;HTMLElement&gt;(<span class="s">&quot;main h1&quot;</span>);
+    <span class="k">if</span> (!heading) <span class="k">return</span>;
+    document.title = <span class="s">`${heading.textContent} · ${appName}`</span>;
+    heading.tabIndex = -<span class="n">1</span>;
+    heading.focus();
+    announcement.value = heading.textContent ?? <span class="s">&quot;&quot;</span>;
+  });
+}</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>route-focus.html</span><b>560px</b></div><img src="img/b2-a11y-ar-vue-projects-route-focus.html-560-774f30.png" alt=""><figcaption><b>مشروع 11.3:</b> بعد اتباع الرابط، صار التركيز على العنوان الجديد.</figcaption></figure>
 </div>
 <!-- /projects -->
 
@@ -5310,15 +5487,15 @@ describe(<span class="s">&quot;cartTotal&quot;</span>, () =&gt; {
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose price.test.ts
  RUN  v5.1.1 .
  ✓ price.test.ts &gt; formatPrice &gt; ينسّق السعر بمنزلتين عشريتين والعملة 2ms
- ✓ price.test.ts &gt; cartTotal &gt; يجمع أسطر السلة 1ms
- ✓ price.test.ts &gt; cartTotal &gt; يُرجع 0 للسلة الفارغة 0ms
- ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون WELCOME10 على مجموع 41: 36.9 0ms
- ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون SPRING25 على مجموع 41: 30.75 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; يجمع أسطر السلة 0ms
+ ✓ price.test.ts &gt; cartTotal &gt; يُرجع 0 للسلة الفارغة 1ms
+ ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون WELCOME10 على مجموع 41: 36.9 1ms
+ ✓ price.test.ts &gt; cartTotal &gt; يطبّق الكوبون SPRING25 على مجموع 41: 30.75 1ms
  ✓ price.test.ts &gt; cartTotal &gt; يتجاهل الكوبون المجهول 0ms
  ✓ price.test.ts &gt; cartTotal &gt; يرفض الكمية السالبة 0ms
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Duration  936ms (environment 77%, setup 15%, import 3%, tests 2%, transform 2%, worker 1%)</pre></div>
+   Duration  1.03s (environment 76%, setup 15%, transform 6%, tests 1%, worker 1%, import 1%)</pre></div>
 
 <ul>
 <li><code>describe</code> تجمع الاختبارات، و<code>it</code> (أو <code>test</code>) اختبار واحد، مع جملة تقول ما يجب أن يحدث. واقرأ المخرجات بصوت عالٍ: إنها مواصفات الوحدة.</li>
@@ -5353,10 +5530,10 @@ it(<span class="s">&quot;يستدعي الدالة مرة واحدة، بعد أ
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose debounce.test.ts
  RUN  v5.1.1 .
- ✓ debounce.test.ts &gt; يستدعي الدالة مرة واحدة، بعد أن يتوقف المستخدم عن الكتابة 6ms
+ ✓ debounce.test.ts &gt; يستدعي الدالة مرة واحدة، بعد أن يتوقف المستخدم عن الكتابة 9ms
  Test Files  1 passed (1)
       Tests  1 passed (1)
-   Duration  853ms (environment 80%, setup 16%, transform 2%, tests 1%, worker 1%, import 1%)</pre></div>
+   Duration  1.02s (environment 74%, setup 17%, transform 7%, tests 1%, import 1%, worker 1%)</pre></div>
 
 <p>ثلاثمئة ملي ثانية من الانتظار لم تأخذ وقتاً أصلاً، والاختبار يثبت أن شيئاً لم يحدث أثناء الكتابة، وأن استدعاءً واحداً بالضبط حدث بعدها، بآخر قيمة.</p>
 
@@ -5365,15 +5542,101 @@ it(<span class="s">&quot;يستدعي الدالة مرة واحدة، بعد أ
 <p>يرسم اختبار المكوّن المكوّن داخل <dfn>jsdom</dfn>، وهو متصفح وهمي يعمل داخل Node، ثم يستخدمه. والفكرة الأساسية في <strong>Testing Library</strong> في شعارها: <em>كلما شابهت اختباراتك طريقة استخدام برنامجك، زادت الثقة التي تعطيك إياها</em>. فتجد الاختبارات العناصر كما يجدها المستخدمون، بدورها واسمها الظاهر، وتتصرف كما يتصرفون، بالكتابة والضغط:</p>
 
 <div class="listing" dir="ltr"><div class="listing-title">vitest.config.ts</div><pre class="code"><span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">&quot;vitest/config&quot;</span>;
+<span class="k">import</span> vue <span class="k">from</span> <span class="s">&quot;@vitejs/plugin-vue&quot;</span>;
 
 <span class="k">export</span> <span class="k">default</span> defineConfig({
+  plugins: [vue()], <span class="c">// compiles .vue files, as in the app</span>
   test: {
     environment: <span class="s">&quot;jsdom&quot;</span>, <span class="c">// a pretend browser, so components can render</span>
     setupFiles: [<span class="s">&quot;./vitest.setup.ts&quot;</span>],
-    include: [<span class="s">&quot;**/*.test.{ts,tsx}&quot;</span>],
+    include: [<span class="s">&quot;**/*.test.ts&quot;</span>],
   },
 });</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">vitest.setup.ts</div><pre class="code"><span class="k">import</span> <span class="s">&quot;@testing-library/jest-dom/vitest&quot;</span>;
+<span class="k">import</span> { cleanup } <span class="k">from</span> <span class="s">&quot;@testing-library/vue&quot;</span>;
+<span class="k">import</span> { afterEach } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
 
+afterEach(cleanup); <span class="c">// remove what each test rendered, so the next test starts empty</span></pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">LoginForm.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import { signIn as defaultSignIn } from &quot;./api&quot;;
+
+const { signIn = defaultSignIn } = defineProps&lt;{ signIn?: typeof defaultSignIn }&gt;();
+const error = ref(&quot;&quot;);
+const user = ref&lt;string | null&gt;(null);
+const busy = ref(false);
+
+async function submit(event: SubmitEvent) {
+  const data = new FormData(event.target as HTMLFormElement);
+  const email = String(data.get(&quot;email&quot;) ?? &quot;&quot;).trim();
+  if (!email) return (error.value = &quot;اكتب بريدك الإلكتروني.&quot;);
+  busy.value = true;
+  try {
+    user.value = (await signIn(email, String(data.get(&quot;password&quot;) ?? &quot;&quot;))).name;
+  } catch (e) {
+    error.value = (e as Error).message;
+  } finally {
+    busy.value = false;
+  }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;h2 v-if=&quot;user&quot;&gt;أهلاً بعودتك يا {{ user }}!&lt;/h2&gt;
+  &lt;form v-else novalidate :aria-describedby=&quot;error ? &#x27;login-error&#x27; : undefined&quot; @submit.prevent=&quot;submit&quot;&gt;
+    &lt;label for=&quot;email&quot;&gt;البريد الإلكتروني&lt;/label&gt;
+    &lt;input id=&quot;email&quot; name=&quot;email&quot; type=&quot;email&quot; autocomplete=&quot;email&quot; dir=&quot;ltr&quot; /&gt;
+    &lt;label for=&quot;password&quot;&gt;كلمة المرور&lt;/label&gt;
+    &lt;input id=&quot;password&quot; name=&quot;password&quot; type=&quot;password&quot; autocomplete=&quot;current-password&quot; dir=&quot;ltr&quot; /&gt;
+    &lt;p v-if=&quot;error&quot; id=&quot;login-error&quot; role=&quot;alert&quot;&gt;{{ error }}&lt;/p&gt;
+    &lt;button type=&quot;submit&quot; :disabled=&quot;busy&quot;&gt;{{ busy ? &quot;جارٍ الدخول…&quot; : &quot;سجّل الدخول&quot; }}&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">LoginForm.test.ts</div><pre class="code"><span class="k">import</span> { describe, expect, it, vi } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { render, screen } <span class="k">from</span> <span class="s">&quot;@testing-library/vue&quot;</span>;
+<span class="k">import</span> userEvent <span class="k">from</span> <span class="s">&quot;@testing-library/user-event&quot;</span>;
+<span class="k">import</span> LoginForm <span class="k">from</span> <span class="s">&quot;./LoginForm.vue&quot;</span>;
+
+describe(<span class="s">&quot;LoginForm&quot;</span>, () =&gt; {
+  it(<span class="s">&quot;يعرض خطأً حين يكون البريد فارغاً&quot;</span>, <span class="k">async</span> () =&gt; {
+    <span class="k">const</span> user = userEvent.setup();
+    render(LoginForm);
+    <span class="c">// جِد الأشياء كما يجدها المستخدمون: بالدور وبالاسم</span>
+    <span class="k">await</span> user.click(screen.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;سجّل الدخول&quot;</span> }));
+    expect(screen.getByRole(<span class="s">&quot;alert&quot;</span>)).toHaveTextContent(<span class="s">&quot;اكتب بريدك الإلكتروني.&quot;</span>);
+  });
+
+  it(<span class="s">&quot;يسجّل الدخول ويرحّب بالمستخدم&quot;</span>, <span class="k">async</span> () =&gt; {
+    <span class="k">const</span> user = userEvent.setup();
+    <span class="k">const</span> signIn = vi.fn().mockResolvedValue({ name: <span class="s">&quot;سارة&quot;</span> });
+    render(LoginForm, { props: { signIn } });
+
+    <span class="k">await</span> user.<span class="k">type</span>(screen.getByLabelText(<span class="s">&quot;البريد الإلكتروني&quot;</span>), <span class="s">&quot;sara@example.com&quot;</span>);
+    <span class="k">await</span> user.<span class="k">type</span>(screen.getByLabelText(<span class="s">&quot;كلمة المرور&quot;</span>), <span class="s">&quot;bit2026code&quot;</span>);
+    <span class="k">await</span> user.click(screen.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;سجّل الدخول&quot;</span> }));
+
+    expect(<span class="k">await</span> screen.findByRole(<span class="s">&quot;heading&quot;</span>, { name: <span class="s">&quot;أهلاً بعودتك يا سارة!&quot;</span> })).toBeInTheDocument();
+    expect(signIn).toHaveBeenCalledWith(<span class="s">&quot;sara@example.com&quot;</span>, <span class="s">&quot;bit2026code&quot;</span>);
+  });
+
+  it(<span class="s">&quot;يعرض خطأ الخادم لكلمة مرور خاطئة&quot;</span>, <span class="k">async</span> () =&gt; {
+    <span class="k">const</span> user = userEvent.setup();
+    render(LoginForm);
+    <span class="k">await</span> user.<span class="k">type</span>(screen.getByLabelText(<span class="s">&quot;البريد الإلكتروني&quot;</span>), <span class="s">&quot;sara@example.com&quot;</span>);
+    <span class="k">await</span> user.<span class="k">type</span>(screen.getByLabelText(<span class="s">&quot;كلمة المرور&quot;</span>), <span class="s">&quot;wrong&quot;</span>);
+    <span class="k">await</span> user.click(screen.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;سجّل الدخول&quot;</span> }));
+    expect(<span class="k">await</span> screen.findByRole(<span class="s">&quot;alert&quot;</span>)).toHaveTextContent(<span class="s">&quot;البريد أو كلمة المرور غير صحيحة.&quot;</span>);
+  });
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose LoginForm.test.ts
+ RUN  v5.1.1 .
+ ✓ LoginForm.test.ts &gt; LoginForm &gt; يعرض خطأً حين يكون البريد فارغاً 140ms
+ ✓ LoginForm.test.ts &gt; LoginForm &gt; يسجّل الدخول ويرحّب بالمستخدم 111ms
+ ✓ LoginForm.test.ts &gt; LoginForm &gt; يعرض خطأ الخادم لكلمة مرور خاطئة 128ms
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Duration  1.67s (environment 44%, tests 25%, setup 15%, transform 10%, import 5%, worker 1%)</pre></div>
 
 <ul>
 <li><code>getByRole("button", { name: "سجّل الدخول" })</code> تفشل إن لم يوجد زر كهذا، أو إن لم يكن له اسم متاح. فاختبارات مكوناتك تفحص سهولة الوصول مجاناً: زر الأيقونة بلا تسمية لا يمكن إيجاده.</li>
@@ -5390,18 +5653,19 @@ it(<span class="s">&quot;يستدعي الدالة مرة واحدة، بعد أ
 
 <p>تقود <strong>Playwright</strong> متصفحات حقيقية: Chromium وFirefox وWebKit، محرك Safari. وتبدأ اختباراتها الموقع، وتفتح الصفحات، وتستخدمها كما يفعل الإنسان تماماً. وتخبرها الإعدادات أين الاختبارات وكيف يبدأ الموقع:</p>
 
+
 <div class="listing" dir="ltr"><div class="listing-title">playwright.config.ts</div><pre class="code"><span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
 
 <span class="k">export</span> <span class="k">default</span> defineConfig({
   testDir: <span class="s">&quot;./e2e&quot;</span>,
   reporter: <span class="s">&quot;list&quot;</span>,
   <span class="c">// Start the site before the tests, and stop it after. In a Vite project: &quot;npm run build &amp;&amp; npm run preview&quot;.</span>
-  webServer: { command: <span class="s">&quot;node ../../serve.mjs 4173&quot;</span>, url: <span class="s">&quot;http://localhost:4173/vendor/react.js&quot;</span>, reuseExistingServer: <span class="k">true</span> },
-  use: { baseURL: <span class="s">&quot;http://localhost:4173/testing/ar/&quot;</span>, browserName: <span class="s">&quot;chromium&quot;</span> },
+  webServer: { command: <span class="s">&quot;node ../../../serve.mjs 4174&quot;</span>, url: <span class="s">&quot;http://localhost:4174/vendor-vue/vue.js&quot;</span>, reuseExistingServer: <span class="k">true</span> },
+  use: { baseURL: <span class="s">&quot;http://localhost:4174/testing/ar/vue/&quot;</span>, browserName: <span class="s">&quot;chromium&quot;</span> },
 });</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">e2e/login.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
 
-<span class="k">const</span> page_url = <span class="s">&quot;react/login.html&quot;</span>; <span class="c">// relative to baseURL in playwright.config.ts</span>
+<span class="k">const</span> page_url = <span class="s">&quot;login.html&quot;</span>; <span class="c">// relative to baseURL in playwright.config.ts</span>
 
 test(<span class="s">&quot;يستطيع المستخدم تسجيل الدخول&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
   <span class="k">await</span> page.goto(page_url);
@@ -5421,8 +5685,8 @@ test(<span class="s">&quot;كلمة المرور الخاطئة تُبقي ال�
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx playwright test e2e/login.spec.ts
 Running 2 tests using 1 worker
-  ✓  1 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (424ms)
-  ✓  2 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (351ms)
+  ✓  1 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (442ms)
+  ✓  2 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (316ms)
   2 passed (1.7s)</pre></div>
 
 <p>المحددات تشبه محددات Testing Library عمداً: <code>getByLabel</code> و<code>getByRole</code>. والتأكيدات مثل <code>toBeVisible()</code> و<code>toHaveText()</code> تعيد المحاولة تلقائياً لمدة قصيرة، فتنتظر الاختبارات الصفحة بدل تخمين كم تأخذ.</p>
@@ -5501,15 +5765,15 @@ it.each([
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose projects/password.test.ts
  RUN  v5.1.1 .
- ✓ projects/password.test.ts &gt; يقيّم  بأنها weak 2ms
+ ✓ projects/password.test.ts &gt; يقيّم  بأنها weak 3ms
  ✓ projects/password.test.ts &gt; يقيّم cat بأنها weak 0ms
  ✓ projects/password.test.ts &gt; يقيّم sunshine بأنها weak 0ms
- ✓ projects/password.test.ts &gt; يقيّم sunshine2026 بأنها okay 0ms
+ ✓ projects/password.test.ts &gt; يقيّم sunshine2026 بأنها okay 1ms
  ✓ projects/password.test.ts &gt; يقيّم Sunshine2026 بأنها strong 0ms
  ✓ projects/password.test.ts &gt; يقيّم correct horse battery staple بأنها okay 0ms
  Test Files  1 passed (1)
       Tests  6 passed (6)
-   Duration  775ms (environment 77%, setup 18%, transform 3%, import 1%, tests 1%, worker 1%)</pre></div>
+   Duration  1.07s (environment 74%, setup 15%, transform 8%, tests 1%, worker 1%, import 1%)</pre></div>
 </div>
 
 <div class="project">
@@ -5525,6 +5789,47 @@ it.each([
 <li>اكتب مسافات فقط واضغط Enter: يجب أن تبقى <code>queryAllByRole("checkbox")</code> فارغة. (و<code>queryBy…</code> لا تُرجع شيئاً بدل أن تفشل.)</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> لأن التسمية تحيط بمربع الاختيار صار اسمه المتاح نص المهمة. فإن وجده الاختبار بهذا الاسم وجده قارئ الشاشة أيضاً. فالاختبارات وسهولة الوصول تشدّان في الاتجاه نفسه.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Tasks.test.ts</div><pre class="code"><span class="k">import</span> { expect, it } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
+<span class="k">import</span> { render, screen } <span class="k">from</span> <span class="s">&quot;@testing-library/vue&quot;</span>;
+<span class="k">import</span> userEvent <span class="k">from</span> <span class="s">&quot;@testing-library/user-event&quot;</span>;
+<span class="k">import</span> Tasks <span class="k">from</span> <span class="s">&quot;./Tasks.vue&quot;</span>;
+
+it(<span class="s">&quot;يضيف مهمة من النموذج&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> user = userEvent.setup();
+  render(Tasks);
+  <span class="k">await</span> user.<span class="k">type</span>(screen.getByRole(<span class="s">&quot;textbox&quot;</span>, { name: <span class="s">&quot;مهمة جديدة&quot;</span> }), <span class="s">&quot;اقرأ الفصل 11{Enter}&quot;</span>);
+  expect(screen.getByRole(<span class="s">&quot;checkbox&quot;</span>, { name: <span class="s">&quot;اقرأ الفصل 11&quot;</span> })).not.toBeChecked();
+  expect(screen.getByRole(<span class="s">&quot;status&quot;</span>)).toHaveTextContent(<span class="s">&quot;1 متبقية&quot;</span>);
+  expect(screen.getByRole(<span class="s">&quot;textbox&quot;</span>, { name: <span class="s">&quot;مهمة جديدة&quot;</span> })).toHaveValue(<span class="s">&quot;&quot;</span>);
+});
+
+it(<span class="s">&quot;يعلّم المهمة منجزة ويحدّث العدد&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> user = userEvent.setup();
+  <span class="k">const</span> initial = [
+    { id: <span class="n">1</span>, text: <span class="s">&quot;اقرأ الفصل 11&quot;</span>, done: <span class="k">false</span> },
+    { id: <span class="n">2</span>, text: <span class="s">&quot;اكتب اختباراً&quot;</span>, done: <span class="k">false</span> },
+  ];
+  render(Tasks, { props: { initial } });
+  <span class="k">await</span> user.click(screen.getByRole(<span class="s">&quot;checkbox&quot;</span>, { name: <span class="s">&quot;اقرأ الفصل 11&quot;</span> }));
+  expect(screen.getByRole(<span class="s">&quot;checkbox&quot;</span>, { name: <span class="s">&quot;اقرأ الفصل 11&quot;</span> })).toBeChecked();
+  expect(screen.getByRole(<span class="s">&quot;status&quot;</span>)).toHaveTextContent(<span class="s">&quot;1 متبقية&quot;</span>);
+});
+
+it(<span class="s">&quot;لا يضيف مهمة فارغة&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> user = userEvent.setup();
+  render(Tasks);
+  <span class="k">await</span> user.<span class="k">type</span>(screen.getByRole(<span class="s">&quot;textbox&quot;</span>, { name: <span class="s">&quot;مهمة جديدة&quot;</span> }), <span class="s">&quot;   {Enter}&quot;</span>);
+  expect(screen.queryAllByRole(<span class="s">&quot;checkbox&quot;</span>)).toHaveLength(<span class="n">0</span>);
+});</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx vitest run --reporter=verbose projects/Tasks.test.ts
+ RUN  v5.1.1 .
+ ✓ projects/Tasks.test.ts &gt; يضيف مهمة من النموذج 192ms
+ ✓ projects/Tasks.test.ts &gt; يعلّم المهمة منجزة ويحدّث العدد 23ms
+ ✓ projects/Tasks.test.ts &gt; لا يضيف مهمة فارغة 23ms
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Duration  1.49s (environment 43%, setup 22%, tests 18%, transform 10%, import 6%)</pre></div>
 </div>
 
 <div class="project">
@@ -5540,11 +5845,12 @@ it.each([
 <li>شغّل الاختبارات كلها من جديد، الوحدات والمكونات والطرف إلى الطرف، وانظرها تنجح كلها.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> اختبار لوحة المفاتيح يثبت ما لا تستطيعه axe: أن ترتيب محطات Tab منطقي، وأن Enter ترسل النموذج. ومعاً يغطي الاختباران جزءاً كبيراً من مبدأ «قابل للتشغيل» في WCAG.</p>
+
 <div class="listing" dir="ltr"><div class="listing-title">e2e/a11y.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
 <span class="k">import</span> { createRequire } <span class="k">from</span> <span class="s">&quot;node:module&quot;</span>;
 
 <span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
-<span class="k">const</span> page_url = <span class="s">&quot;react/login.html&quot;</span>;
+<span class="k">const</span> page_url = <span class="s">&quot;login.html&quot;</span>;
 
 test(<span class="s">&quot;صفحة الدخول بلا مخالفات إتاحة&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
   <span class="k">await</span> page.goto(page_url);
@@ -5565,11 +5871,11 @@ test(<span class="s">&quot;الدخول كله يعمل بلوحة المفات�
 });</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>$ npx playwright test
 Running 4 tests using 2 workers
-  ✓  1 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (420ms)
-  ✓  2 e2e/a11y.spec.ts:7:1 › صفحة الدخول بلا مخالفات إتاحة (493ms)
-  ✓  3 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (347ms)
-  ✓  4 e2e/a11y.spec.ts:15:1 › الدخول كله يعمل بلوحة المفاتيح وحدها (307ms)
-  4 passed (1.7s)</pre></div>
+  ✓  2 e2e/login.spec.ts:5:1 › يستطيع المستخدم تسجيل الدخول (481ms)
+  ✓  1 e2e/a11y.spec.ts:7:1 › صفحة الدخول بلا مخالفات إتاحة (618ms)
+  ✓  3 e2e/login.spec.ts:13:1 › كلمة المرور الخاطئة تُبقي المستخدم في النموذج (336ms)
+  ✓  4 e2e/a11y.spec.ts:15:1 › الدخول كله يعمل بلوحة المفاتيح وحدها (296ms)
+  4 passed (1.9s)</pre></div>
 </div>
 <!-- /projects -->
 
@@ -5833,7 +6139,54 @@ fast.html  LCP 0.7 s (جيد)   CLS 0.00 (جيد)</pre></div>
 <p>يقيس INP الزمن من اللمسة أو ضغطة المفتاح حتى تعرض الشاشة النتيجة. والعدو هو <dfn>المهمة الطويلة</dfn> (long task): أي قطعة JavaScript تُبقي الخيط الرئيسي مشغولاً أكثر من 50 ملي ثانية. فأثناء عملها لا يستطيع المتصفح التفاعل مع أي شيء (حلقة الأحداث في الفصل 1). والأسباب المعتادة رسم قوائم ضخمة، والحسابات الثقيلة في معالجات الأحداث، وسكربتات الطرف الثالث.</p>
 
 
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-ar-react-transition.html-560-39ee31.png" alt=""><figcaption><b>شكل 13.1:</b> تصفية 5000 سطر بطيء. لا يتجمد حقل النص أبداً، وبينما تلحق القائمة يبهت لونها وتقول «جارٍ التحديث…».</figcaption></figure>
+<p>يقوم Vue بجزء من هذا العمل عنك. فالمكوّن الابن لا يُعاد رسمه إلا حين تتغير خصائصه، فلا تُعاد القائمة لأن الصفحة حولها تغيرت، والقيم <code>computed</code> تحفظ نتيجتها. ولتبقى الكتابة عاجلة، أعطِ القائمة الثقيلة <em>نسخة متأخرة</em> من النص بـ <code>refDebounced</code> من VueUse: يتحدث الحقل فوراً، والقائمة حين تتوقف الكتابة فقط. وللبيانات الكبيرة التي لا تتغير من الداخل، تمنع <code>shallowRef</code> ‏Vue من مراقبة كل عنصر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">SlowList.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+// A child component re-renders only when its props change: Vue needs no memo()
+defineProps&lt;{ items: string[] }&gt;();
+
+// A deliberately slow row: in a real app, a rich card with images, prices and badges
+function slow(name: string) {
+  const start = performance.now();
+  while (performance.now() - start &lt; 0.2) {
+    // 0.2 ms of work per row
+  }
+  return name;
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;ul&gt;
+    &lt;li v-for=&quot;name in items.slice(0, 2000)&quot; :key=&quot;name&quot;&gt;{{ slow(name) }}&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Filter.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref, shallowRef } from &quot;vue&quot;;
+import { refDebounced } from &quot;@vueuse/core&quot;;
+import SlowList from &quot;./SlowList.vue&quot;;
+
+// shallowRef: Vue does not need to watch inside 5,000 strings that never change
+const ALL = shallowRef(Array.from({ length: 5000 }, (_, i) =&gt; `منتج بِت ${i + 1}`));
+
+const text = ref(&quot;&quot;);
+// أبقِ الكتابة عاجلة، وتحديث القائمة الكبيرة يستطيع الانتظار
+const deferred = refDebounced(text, 250);
+const items = computed(() =&gt; ALL.value.filter((name) =&gt; name.includes(deferred.value)));
+const stale = computed(() =&gt; text.value !== deferred.value);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div class=&quot;card&quot;&gt;
+    &lt;label for=&quot;q&quot;&gt;صفِّ المنتجات&lt;/label&gt;
+    &lt;input id=&quot;q&quot; v-model=&quot;text&quot; /&gt;
+    &lt;p class=&quot;muted&quot; aria-live=&quot;polite&quot;&gt;{{ stale ? &quot;جارٍ التحديث…&quot; : `يظهر ${items.length} من ${ALL.length}` }}&lt;/p&gt;
+    &lt;div :class=&quot;{ stale }&quot;&gt;
+      &lt;SlowList :items=&quot;items&quot; /&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-ar-vue-transition.html-560-39ee31.png" alt=""><figcaption><b>شكل 13.1:</b> تصفية 5000 سطر بطيء. لا يتجمد حقل النص أبداً، وبينما تلحق القائمة يبهت لونها وتقول «جارٍ التحديث…».</figcaption></figure>
 
 <p>وتقنيتان أخريان تحلان معظم ما يبقى من مشكلات. <dfn>العرض الافتراضي</dfn> (virtualisation) يرسم الأسطر الظاهرة فقط، فتكلّف قائمة من 10000 عنصر ما تكلّفه قائمة من 20. والعمل الثقيل الذي لا يلمس الصفحة، كتحليل ملف كبير، يمكن نقله إلى <dfn>Web Worker</dfn>، خيط ثانٍ لا يصل إلى DOM.</p>
 
@@ -5917,13 +6270,12 @@ desktop   الصورة الرئيسية: hero-small.png   هل حُمّلت ال
 <li>ابنِ النسخة البطيئة أولاً: صفِّ وارسم مباشرة من قيمة الحقل. واكتب بسرعة واشعر بتأخر الحقل.</li>
 <li>سجّلها في لوحة Performance في أدوات المطور مع إبطاء المعالج 4 مرات. وجِد المهام الطويلة بعد كل ضغطة مفتاح.</li>
 
-<li>احتفظ بنسخة ثانية متأخرة من النص للقائمة (مؤجلة، كما في فصل الحالة)، واحسب العناصر المصفاة منها.</li>
+<li>احتفظ بنسخة ثانية متأخرة من النص للقائمة بـ <code>refDebounced</code>، واحسب العناصر المصفاة منها. وعلّم القائمة الكبيرة الثابتة بـ <code>shallowRef</code>.</li>
 <li>ما دامت القائمة متأخرة عن الحقل، أبهت لونها وقل «جارٍ التحديث…» في منطقة حية مهذبة.</li>
 <li>سجّل من جديد وقارن: يجب ألا تنتظر الكتابة القائمة بعد الآن.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> التأجيل لا يصغّر العمل، بل يغيّر أولويته. فإن بقيت القائمة بطيئة حين تُرسم أخيراً، فالخطوة التالية العرض الافتراضي: ارسم العشرين سطراً التي تتسع لها الشاشة فقط.</p>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-ar-react-transition.html-560-39ee31.png" alt=""><figcaption><b>مشروع 13.2:</b> القائمة المصفاة بعد أن لحقت.</figcaption></figure>
-</div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>transition.html</span><b>560px</b></div><img src="img/b2-perf-ar-vue-transition.html-560-39ee31.png" alt=""><figcaption><b>مشروع 13.2:</b> القائمة المصفاة بعد أن لحقت.</figcaption></figure></div>
 
 <div class="project">
 <p class="project-label hard">مشروع 13.3 · تحدٍّ</p>
@@ -5935,9 +6287,10 @@ desktop   الصورة الرئيسية: hero-small.png   هل حُمّلت ال
 <li>لكل ملف <code>.js</code> و<code>.css</code> أضف حجمه بعد <em>gzip</em>: فهذا ما يسافر عبر الشبكة.</li>
 <li>قارن المجموعين بالميزانية، واطبع كل سطر مع ✓ أو ✗.</li>
 <li>اضبط رمز الخروج 1 حين تُتجاوز أي ميزانية، وأضف السكربت بعد <code>vite build</code> في <code>npm run check</code>.</li>
-<li>اقرأ النتيجة بصدق: حزمة React المشتركة وحدها أكبر كثيراً من ميزانية 60 كيلوبايت. فقرّر هل ترفع الميزانية عمداً، أم تحمّل أقل.</li>
+<li>اقرأ النتيجة بصدق: حزمة Vue المشتركة وحدها أكبر كثيراً من ميزانية 60 كيلوبايت. فقرّر هل ترفع الميزانية عمداً، أم تحمّل أقل.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> الميزانية التي تفشل بداية حوار لا كارثة. فالغاية أن يصير النمو قراراً يتخذه أحد عن علم، لا شيئاً يحدث صدفة.</p>
+
 <div class="listing" dir="ltr"><div class="listing-title">budget.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 <span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
@@ -5953,7 +6306,7 @@ desktop   الصورة الرئيسية: hero-small.png   هل حُمّلت ال
 }
 
 <span class="k">const</span> sizes = { js: <span class="n">0</span>, css: <span class="n">0</span> };
-<span class="k">for</span> (<span class="k">const</span> file <span class="k">of</span> files(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;../../../vendor&quot;</span>)) {
+<span class="k">for</span> (<span class="k">const</span> file <span class="k">of</span> files(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;../../../../vendor-vue&quot;</span>)) {
   <span class="k">const</span> kind = file.endsWith(<span class="s">&quot;.js&quot;</span>) ? <span class="s">&quot;js&quot;</span> : file.endsWith(<span class="s">&quot;.css&quot;</span>) ? <span class="s">&quot;css&quot;</span> : <span class="k">null</span>;
   <span class="k">if</span> (kind) sizes[kind] += gzipSync(readFileSync(file)).length;
 }
@@ -5966,7 +6319,7 @@ desktop   الصورة الرئيسية: hero-small.png   هل حُمّلت ال
   console.log(<span class="s">`${kind.toUpperCase().padEnd(4)} ${kb(sizes[kind]).padStart(9)}  الميزانية ${kb(BUDGET[kind]).padStart(8)}  ${over ? &quot;✗ تجاوز الميزانية&quot; : &quot;✓ ضمن الميزانية&quot;}`</span>);
 }
 process.exitCode = failed ? <span class="n">1</span> : <span class="n">0</span>;</pre></div>
-<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>JS    270.4 KB  الميزانية  60.0 KB  ✗ تجاوز الميزانية
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>JS    218.8 KB  الميزانية  60.0 KB  ✗ تجاوز الميزانية
 CSS     0.0 KB  الميزانية  15.0 KB  ✓ ضمن الميزانية</pre></div>
 </div>
 <!-- /projects -->
@@ -6103,6 +6456,37 @@ textContent  عمل السكربت؟ لا</pre></div>
 <p>في «التعليق» صورة عنوانها غير موجود، ومعالج <code>onerror</code>. فمع <code>innerHTML</code> يبني المتصفح تلك الصورة، ويفشل التحميل، فيعمل كود المهاجم. ولم يحتج الأمر وسم <code>&lt;script&gt;</code> أصلاً. أما مع <code>textContent</code> فتُعرض الحروف نفسها فقط.</p>
 
 
+<p>يهرّب Vue كل ما تضعه بين الأقواس المزدوجة، فالقوالب العادية آمنة افتراضياً. والأخطار هي مخارج هذا الأمان:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Comment.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+const comment = `&lt;img src=&quot;x&quot; onerror=&quot;alert(&#x27;hacked&#x27;)&quot;&gt;`;
+
+// URLs from users can run code too: Vue does not block them, so checking the scheme is your job
+const link = &quot;javascript:alert(&#x27;hacked&#x27;)&quot;;
+const safe = /^https?:\/\//.test(link) ? link : &quot;#&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- Text in double braces is escaped: it is shown, never run --&gt;
+  &lt;p&gt;{{ comment }}&lt;/p&gt;
+  &lt;!-- v-html puts raw HTML into the page --&gt;
+  &lt;p v-html=&quot;comment&quot; /&gt;
+  &lt;a :href=&quot;safe&quot;&gt;الملف الشخصي&lt;/a&gt;
+&lt;/template&gt;</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>&lt;!-- Text in double braces is escaped: it is shown, never run --&gt;
+&lt;p&gt;&amp;lt;img src=&amp;quot;x&amp;quot; onerror=&amp;quot;alert(&amp;#39;hacked&amp;#39;)&amp;quot;&amp;gt;&lt;/p&gt;
+&lt;!-- v-html puts raw HTML into the page --&gt;
+&lt;p&gt;
+&lt;img src=&quot;x&quot; onerror=&quot;alert(&#x27;hacked&#x27;)&quot;&gt;
+&lt;/p&gt;
+&lt;a href=&quot;#&quot;&gt;الملف الشخصي&lt;/a&gt;</pre></div>
+
+<ul>
+<li>النص بين الأقواس المزدوجة صار كيانات غير ضارة: <code>&amp;lt;img…</code>.</li>
+<li><code>v-html</code> وضعت HTML الخام في الصفحة. استخدمها فقط مع HTML تتحكم فيه، أو بعد تعقيمه. وقواعد المدقق الرسمية لـ Vue تحذّر من كل <code>v-html</code>، فيكون كل واحد قراراً اتخذه أحد عن قصد.</li>
+<li>العناوين كود أيضاً: الرابط إلى <code>javascript:…</code> يعمل عند الضغط، ولا يمنعه Vue. فحين يأتي العنوان من المستخدمين، اسمح بـ <code>https:</code> و<code>http:</code> فقط.</li>
+</ul>
+
 <p>وحين يجب حقاً أن تعرض HTML من المستخدمين، كنص تعليق منسّق، فـ<dfn>نظّفه</dfn> أولاً بمكتبة مثل DOMPurify، تُبقي الوسوم التي تسمح بها وتحذف كل ما عداها. ويفعل المشروع 14.1 هذا.</p>
 
 <h2><span class="sec">14.2</span> <span>سياسة أمان المحتوى</span></h2>
@@ -6189,7 +6573,7 @@ textContent  عمل السكربت؟ لا</pre></div>
 <table>
 <thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
 <tbody>
-<tr><td>نص المستخدم في <code>innerHTML</code> أو <code>dangerouslySetInnerHTML</code></td><td>XSS</td><td><code>textContent</code> أو JSX العادية، ونظّف إن احتجت HTML</td></tr>
+<tr><td>نص المستخدم في <code>innerHTML</code> أو <code>v-html</code></td><td>XSS</td><td><code>textContent</code> أو الأقواس المزدوجة، ونظّف إن احتجت HTML</td></tr>
 <tr><td>روابط مبنية من مدخلات المستخدم</td><td>عناوين <code>javascript:</code> تشغّل الكود</td><td>اسمح بـ <code>https:</code> و<code>http:</code> فقط</td></tr>
 <tr><td>الرموز في <code>localStorage</code></td><td>أي XSS تسرق الجلسات</td><td>ملفات تعريف ارتباط بـ <code>HttpOnly</code> و<code>Secure</code> و<code>SameSite</code></td></tr>
 <tr><td>فحوص الأمان في المتصفح وحده</td><td>يتخطاها المهاجمون</td><td>افحص كل شيء على الخادم</td></tr>
@@ -6203,7 +6587,7 @@ textContent  عمل السكربت؟ لا</pre></div>
 
 <ul class="summary">
 <li>المتصفح ملك المستخدم: الواجهة تحمي المستخدمين من الآخرين، والخادم وحده يحمي البيانات.</li>
-<li><strong>XSS</strong> تحوّل نص المستخدم إلى كود. امنعها بالتهريب (<code>textContent</code> وJSX العادية)، والتنظيف حين تحتاج HTML، والروابط الآمنة.</li>
+<li><strong>XSS</strong> تحوّل نص المستخدم إلى كود. امنعها بالتهريب (<code>textContent</code> والأقواس المزدوجة)، والتنظيف حين تحتاج HTML، والروابط الآمنة.</li>
 <li><strong>سياسة أمان المحتوى</strong> الصارمة توقف السكربتات المحقونة حتى مع وجود علّة XSS.</li>
 <li>احفظ الجلسات في ملفات تعريف ارتباط بـ <strong>HttpOnly وSecure وSameSite</strong>، وامنع <strong>CSRF</strong> بـ SameSite وفحوص الخادم، و<strong>خداع النقر</strong> بـ <code>frame-ancestors</code>.</li>
 <li>احمِ <strong>سلسلة الإمداد</strong> بملفات القفل والفحص والاختيار الحذر وسلامة الموارد الفرعية.</li>
@@ -6522,8 +6906,74 @@ ar categories: few, many, one, two, zero, other</pre></div>
 <p>وflexbox وgrid تتبعان الاتجاه أصلاً. ولا يحتاج عناية صريحة إلا أشياء قليلة: الأيقونات التي تدل على اتجاه، كالأسهم و«التالي» و«رجوع»، فتُقلب بـ <code>transform: scaleX(-1)</code> تحت <code>[dir="rtl"]</code>، والأشياء التي يجب <em>ألا</em> تنقلب، كزر التشغيل والساعة والشعار ومحور الزمن في الرسم البياني.</p>
 
 
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-react-cart.html-560.png" alt=""><figcaption><b>شكل 15.1:</b> السلة بالعربية: «عنصران» بصيغة المثنى، والأسعار بالصيغة المصرية العربية…</figcaption></figure>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-react-cart.html-560-c117d3.png" alt=""><figcaption>…وبعد ضغطة واحدة بالإنجليزية: انعكس التخطيط، وتغيّرت صيغة الجمع والأرقام، واستدار السهم. ولا يعرف أي مكوّن أي لغة يعرض.</figcaption></figure>
+<p>في Vue اللغة الحالية حالة على مستوى التطبيق نادراً ما تتغير: وهذا بالضبط عمل <code>provide</code> و<code>inject</code> (فصل الحالة العامة). تضبط <code>provideI18n</code> ‏<code>lang</code> و<code>dir</code> على الصفحة، وتعطي كل مكوّن دالة <code>t</code> ومنسّقاً للأموال. وكلاهما <code>computed</code>، فيتبع كل نص على الشاشة اللغة حين تتغير:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">i18n.ts</div><pre class="code"><span class="k">import</span> { computed, inject, provide, ref, watchEffect, <span class="k">type</span> ComputedRef, <span class="k">type</span> InjectionKey, <span class="k">type</span> Ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { translate, <span class="k">type</span> Locale } <span class="k">from</span> <span class="s">&quot;../messages&quot;</span>;
+
+<span class="k">type</span> I18n = {
+  locale: Ref&lt;Locale&gt;;
+  t: ComputedRef&lt;(key: Parameters&lt;<span class="k">typeof</span> translate&gt;[<span class="n">1</span>], values?: Record&lt;string, string | number&gt;) =&gt; string&gt;;
+  money: ComputedRef&lt;(value: number) =&gt; string&gt;;
+};
+
+<span class="k">const</span> I18nKey: InjectionKey&lt;I18n&gt; = Symbol(<span class="s">&quot;i18n&quot;</span>);
+
+<span class="k">export</span> <span class="k">function</span> provideI18n(initial: Locale) {
+  <span class="k">const</span> locale = ref&lt;Locale&gt;(initial);
+
+  watchEffect(() =&gt; {
+    document.documentElement.lang = locale.value;
+    document.documentElement.dir = locale.value === <span class="s">&quot;ar&quot;</span> ? <span class="s">&quot;rtl&quot;</span> : <span class="s">&quot;ltr&quot;</span>;
+  });
+
+  <span class="k">const</span> t = computed(() =&gt; (key: Parameters&lt;<span class="k">typeof</span> translate&gt;[<span class="n">1</span>], values?: Record&lt;string, string | number&gt;) =&gt;
+    translate(locale.value, key, values),
+  );
+  <span class="k">const</span> money = computed(() =&gt; {
+    <span class="k">const</span> currency = <span class="k">new</span> Intl.NumberFormat(locale.value === <span class="s">&quot;ar&quot;</span> ? <span class="s">&quot;ar-EG&quot;</span> : <span class="s">&quot;en-EG&quot;</span>, { style: <span class="s">&quot;currency&quot;</span>, currency: <span class="s">&quot;EGP&quot;</span> });
+    <span class="k">return</span> (v: number) =&gt; currency.format(v);
+  });
+
+  provide(I18nKey, { locale, t, money });
+}
+
+<span class="k">export</span> <span class="k">function</span> useI18n(): I18n {
+  <span class="k">const</span> value = inject(I18nKey);
+  <span class="k">if</span> (!value) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;useI18n() must be used inside a component that called provideI18n()&quot;</span>);
+  <span class="k">return</span> value;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Cart.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useI18n } from &quot;./i18n&quot;;
+
+const LINES = [
+  { name: &quot;Code from Zero&quot;, price: 250 },
+  { name: &quot;Bit mug&quot;, price: 85 },
+];
+const { t, money, locale } = useI18n();
+const total = LINES.reduce((sum, l) =&gt; sum + l.price, 0);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section class=&quot;card&quot;&gt;
+    &lt;h2&gt;
+      {{ t(&quot;cart.title&quot;) }}
+      &lt;span class=&quot;badge&quot;&gt;{{ t(&quot;cart.items&quot;, { count: LINES.length }) }}&lt;/span&gt;
+    &lt;/h2&gt;
+    &lt;div v-for=&quot;l in LINES&quot; :key=&quot;l.name&quot; class=&quot;row&quot;&gt;
+      &lt;bdi&gt;{{ l.name }}&lt;/bdi&gt;
+      &lt;span&gt;{{ money(l.price) }}&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;p&gt;&lt;b&gt;{{ t(&quot;cart.total&quot;, { total: money(total) }) }}&lt;/b&gt;&lt;/p&gt;
+    &lt;button type=&quot;button&quot; class=&quot;next&quot; @click=&quot;locale = locale === &#x27;ar&#x27; ? &#x27;en&#x27; : &#x27;ar&#x27;&quot;&gt;
+      {{ locale === &quot;ar&quot; ? &quot;English&quot; : &quot;العربية&quot; }}
+    &lt;/button&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-vue-cart.html-560.png" alt=""><figcaption><b>شكل 15.1:</b> السلة بالعربية: «عنصران» بصيغة المثنى، والأسعار بالصيغة المصرية العربية…</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-vue-cart.html-560-c117d3.png" alt=""><figcaption>…وبعد ضغطة واحدة بالإنجليزية: انعكس التخطيط، وتغيّرت صيغة الجمع والأرقام، واستدار السهم. ولا يعرف أي مكوّن أي لغة يعرض.</figcaption></figure>
 
 <h2><span class="sec">15.4</span> <span>النص ثنائي الاتجاه</span></h2>
 
@@ -6622,7 +7072,8 @@ ar categories: few, many, one, two, zero, other</pre></div>
 <li>بدّل اللغة ذهاباً وإياباً، وافحص كل سطر: النص، والجمع، والأسعار، والمحاذاة، والسهم.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> احفظ اللغة المختارة (في <code>localStorage</code> أو في العنوان، مثل <code>/ar/cart</code>) وابدأ من <code>navigator.languages</code> في الزيارة الأولى. والعنوان الخاص بكل لغة هو أيضاً ما تحتاجه محركات البحث.</p>
-<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-react-cart.html-560-c117d3.png" alt=""><figcaption><b>مشروع 15.2:</b> السلة بعد تبديل اللغة.</figcaption></figure>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-vue-cart.html-560-c117d3.png" alt=""><figcaption><b>مشروع 15.2:</b> السلة بعد تبديل اللغة.</figcaption></figure>
 </div>
 
 <div class="project">
@@ -6740,18 +7191,18 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>src/
 ├── app/
-│   ├── App.tsx
-│   └── routes.tsx
+│   ├── App.vue
+│   └── routes.ts
 ├── features/
 │   ├── account/
-│   │   ├── AccountPage.tsx
+│   │   ├── AccountPage.vue
 │   │   └── index.ts
 │   ├── cart/
-│   │   ├── CartBadge.tsx
+│   │   ├── CartBadge.vue
 │   │   ├── index.ts
 │   │   └── store.ts
 │   └── catalog/
-│       ├── CatalogPage.tsx
+│       ├── CatalogPage.vue
 │       ├── index.ts
 │       └── useProducts.ts
 └── shared/
@@ -6760,10 +7211,9 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
     ├── lib/
     │   └── money.ts
     └── ui/
-        ├── Button.tsx
-        ├── Header.tsx
-        └── Layout.tsx</pre></div>
-
+        ├── AppHeader.vue
+        ├── AppLayout.vue
+        └── BaseButton.vue</pre></div>
 <p>ثلاث طبقات، لكل منها وظيفة واحدة:</p>
 <ul>
 <li><code>shared/</code>: كود لا يعرف شيئاً عن العمل، يُستخدم في أي مكان: مكونات نظام التصميم، وعميل HTTP، وأدوات التنسيق.</li>
@@ -6784,9 +7234,9 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 
 <h2><span class="sec">16.2</span> <span>لبّ وظيفي وقشرة أمرية</span></h2>
 
-<p>داخل الميزة، أنفع خط يُرسم هو بين <em>التقرير</em> و<em>التنفيذ</em>. فـ<dfn>اللبّ الوظيفي</dfn> (functional core) منطق نقي: يأخذ بيانات ويُرجع بيانات، بلا شبكة ولا تخزين ولا React. مجاميع السلة، وقواعد الخصم، ودالة الاختزال من فصل الحالة. و<dfn>القشرة الأمرية</dfn> (imperative shell) كل ما يلمس العالم: المكونات، والتأثيرات، واستدعاءات الواجهة البرمجية، والتخزين.</p>
+<p>داخل الميزة، أنفع خط يُرسم هو بين <em>التقرير</em> و<em>التنفيذ</em>. فـ<dfn>اللبّ الوظيفي</dfn> (functional core) منطق نقي: يأخذ بيانات ويُرجع بيانات، بلا شبكة ولا تخزين ولا Vue. مجاميع السلة، وقواعد الخصم، ودالة الاختزال من فصل الحالة. و<dfn>القشرة الأمرية</dfn> (imperative shell) كل ما يلمس العالم: المكونات، والتأثيرات، واستدعاءات الواجهة البرمجية، والتخزين.</p>
 
-<p>اجعل اللبّ أكبر ما يمكن والقشرة أرقّ ما يمكن. فاللبّ هو المكان الذي تعيش فيه الأخطاء التي تكلّف مالاً، واختباره سهل جداً باختبارات وحدات عادية (الفصل 12)، والقشرة بعدها تمرر البيانات دخولاً وخروجاً في الغالب. ولهذا اختُبرت دوال الاختزال والمخازن في هذا الكتاب في Node قبل أن تراها React.</p>
+<p>اجعل اللبّ أكبر ما يمكن والقشرة أرقّ ما يمكن. فاللبّ هو المكان الذي تعيش فيه الأخطاء التي تكلّف مالاً، واختباره سهل جداً باختبارات وحدات عادية (الفصل 12)، والقشرة بعدها تمرر البيانات دخولاً وخروجاً في الغالب. ولهذا اختُبرت الـ composables والمخازن في هذا الكتاب في Node قبل أن يراها Vue.</p>
 
 <h2><span class="sec">16.3</span> <span>باب واحد إلى الخادم</span></h2>
 
@@ -6816,7 +7266,7 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 
 <h2><span class="sec">16.5</span> <span>سجّل قراراتك</span></h2>
 
-<p>بعد ستة أشهر سيسأل أحد لماذا يستخدم التطبيق Zustand لا Redux، أو لماذا تُحفظ التواريخ بتوقيت UTC. فإن كان الجواب في رأس أحدهم فقط فقد يلغي قراراً جيداً. و<dfn>سجل القرار المعماري</dfn> (ADR) ملف قصير في المستودع يُكتب حين يُتخذ قرار مهم:</p>
+<p>بعد ستة أشهر سيسأل أحد لماذا يستخدم التطبيق Pinia لا Vuex، أو لماذا تُحفظ التواريخ بتوقيت UTC. فإن كان الجواب في رأس أحدهم فقط فقد يلغي قراراً جيداً. و<dfn>سجل القرار المعماري</dfn> (ADR) ملف قصير في المستودع يُكتب حين يُتخذ قرار مهم:</p>
 
 <div class="listing" dir="ltr"><div class="listing-title">docs/adr/0007-server-state-with-tanstack-query.md</div><pre class="code md"># 7. حالة الخادم بـ TanStack Query
 
@@ -6864,7 +7314,7 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <li>سجّل القرارات المهمة في <strong>ADR</strong> قصيرة.</li>
 </ul>
 
-<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. من <code>features/cart/index.ts</code>، المدخل العام للسلة، لا من <code>features/cart/CartBadge.tsx</code>. 2. لأنه يربط الكود «المشترك» بميزة واحدة، فلا يُعاد استخدامه ولا يُنقل، وتكسر تغييرات الميزة شاشات لا علاقة لها بها. 3. في اللبّ الوظيفي: فهو منطق نقي يجب أن يُختبر وحده.</p>
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. من <code>features/cart/index.ts</code>، المدخل العام للسلة، لا من <code>features/cart/CartBadge.vue</code>. 2. لأنه يربط الكود «المشترك» بميزة واحدة، فلا يُعاد استخدامه ولا يُنقل، وتكسر تغييرات الميزة شاشات لا علاقة لها بها. 3. في اللبّ الوظيفي: فهو منطق نقي يجب أن يُختبر وحده.</p>
 
 <!-- projects -->
 <h2 class="plain-h">مشاريع تطبيقية</h2>
@@ -6886,18 +7336,18 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <p class="hint"><strong>تلميح:</strong> حين لا تستطيع أن تقرر هل الشيء مشترك، أبقِه في الميزة. فنقل الكود إلى <code>shared</code> لاحقاً، حين تحتاجه ميزة ثانية، سهل، أما فك مجلد «مشترك» مليء بمنطق العمل فليس كذلك.</p>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>src/
 ├── app/
-│   ├── App.tsx
-│   └── routes.tsx
+│   ├── App.vue
+│   └── routes.ts
 ├── features/
 │   ├── account/
-│   │   ├── AccountPage.tsx
+│   │   ├── AccountPage.vue
 │   │   └── index.ts
 │   ├── cart/
-│   │   ├── CartBadge.tsx
+│   │   ├── CartBadge.vue
 │   │   ├── index.ts
 │   │   └── store.ts
 │   └── catalog/
-│       ├── CatalogPage.tsx
+│       ├── CatalogPage.vue
 │       ├── index.ts
 │       └── useProducts.ts
 └── shared/
@@ -6906,10 +7356,9 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
     ├── lib/
     │   └── money.ts
     └── ui/
-        ├── Button.tsx
-        ├── Header.tsx
-        └── Layout.tsx</pre></div>
-</div>
+        ├── AppHeader.vue
+        ├── AppLayout.vue
+        └── BaseButton.vue</pre></div></div>
 
 <div class="project">
 <p class="project-label medium">مشروع 16.2 · متوسط</p>
@@ -6972,13 +7421,14 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <p class="project-goal">اكتب سكربتاً يقرأ كل استيراد في قاعدة الكود، ويحدد الطبقة والميزة لكل ملف، ويبلّغ عن الاستيرادات التي تكسر قواعد الاعتماد.</p>
 <p class="project-skills"><strong>ستتدرب على:</strong> المرور على المجلدات، والتعابير النمطية على كود المصدر، وحل المسارات النسبية، وتحويل القواعد إلى فحوص برموز خروج.</p>
 <ol class="steps">
-<li>مرّ على <code>src</code> واجمع كل ملف <code>.ts</code> و<code>.tsx</code>.</li>
+<li>مرّ على <code>src</code> واجمع كل ملف <code>.ts</code> و<code>.vue</code>.</li>
 <li>اكتب <code>where(path)</code>، التي تقسم المسار إلى طبقته (<code>app</code> و<code>features</code> و<code>shared</code>)، وميزته، والباقي.</li>
 <li>لكل استيراد نسبي حلّ الهدف بـ <code>path.resolve</code> وقارن الموضعين بالقواعد الثلاث.</li>
 <li>اطبع كل مخالفة مع الملف والاستيراد والقاعدة التي يكسرها، واخرج بـ 1 إن وُجدت أي مخالفة.</li>
 <li>شغّله على النموذج: يجد الترويسة التي تمد يدها إلى مخزن السلة، وصفحة الحساب التي تتجاوز <code>index.ts</code> الخاص بالسلة.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> التعبير النمطي يكفي لفاحص كهذا، لكن الأدوات الحقيقية تستخدم مترجم TypeScript لقراءة الاستيرادات بدقة، بما فيها الأسماء المستعارة مثل <code>@/features/cart</code>. ابدأ بسيطاً، وانتقل حين يتوقف البسيط عن الصواب.</p>
+
 <div class="listing" dir="ltr"><div class="listing-title">boundaries.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { dirname, join, relative, resolve } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 
@@ -6988,7 +7438,7 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <span class="k">function</span> files(dir: string): string[] {
   <span class="k">return</span> readdirSync(dir).flatMap((name) =&gt; {
     <span class="k">const</span> path = join(dir, name);
-    <span class="k">return</span> statSync(path).isDirectory() ? files(path) : /\.(ts|tsx)$/.test(name) ? [path] : [];
+    <span class="k">return</span> statSync(path).isDirectory() ? files(path) : /\.(ts|vue)$/.test(name) ? [path] : [];
   });
 }
 
@@ -7015,9 +7465,9 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <span class="k">for</span> (<span class="k">const</span> p <span class="k">of</span> problems) console.log(<span class="s">&quot;✗ &quot;</span> + p);
 console.log(problems.length === <span class="n">0</span> ? <span class="s">&quot;لا مخالفات للحدود.&quot;</span> : <span class="s">`${problems.length} مخالفات`</span>);
 process.exitCode = problems.length ? <span class="n">1</span> : <span class="n">0</span>;</pre></div>
-<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>✗ features/account/AccountPage.tsx → ../cart/CartBadge
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>✗ features/account/AccountPage.vue → ../cart/CartBadge.vue
     استورد ميزة أخرى عبر index.ts الخاص بها فقط
-✗ shared/ui/Header.tsx → ../../features/cart/store
+✗ shared/ui/AppHeader.vue → ../../features/cart/store
     الكود المشترك لا يستورد ميزة
 2 مخالفات</pre></div>
 </div>
@@ -7757,7 +8207,7 @@ Cypress               62
 <h2 class="plain-h">الفصل 16</h2>
 <ol class="exercises">
 <li>في الشجرة حسب النوع مجلدات مثل <code>components/</code> و<code>hooks/</code> و<code>services/</code>، وفي نسخة الميزات <code>features/cart</code> و<code>features/catalog</code> وهكذا، في كل منها مكوناتها وخطافاتها واستدعاءاتها، ومعها <code>shared/</code> صغير للكود العام حقاً.</li>
-<li>في <code>AccountPage.tsx</code> استورد <code>CartBadge</code> من <code>"../cart"</code>. أما <code>Header.tsx</code> فإصلاحها الحقيقي قرار تصميم: إما أن تتوقف الترويسة عن معرفة السلة وتأخذ الشارة خاصيةً أو ابناً من <code>app/</code>، وإما أن تنتقل إلى ميزة. فالكود المشترك لا يمد يده إلى ميزة أصلاً.</li>
+<li>في <code>AccountPage.vue</code> استورد <code>CartBadge</code> من <code>"../cart"</code>. أما <code>AppHeader.vue</code> فإصلاحها الحقيقي قرار تصميم: إما أن تتوقف الترويسة عن معرفة السلة وتأخذ الشارة خاصيةً أو ابناً من <code>app/</code>، وإما أن تنتقل إلى ميزة. فالكود المشترك لا يمد يده إلى ميزة أصلاً.</li>
 <li>أضف <code>if (from.layer === "features" &amp;&amp; to.layer === "app")</code> (وهي مغطاة أصلاً بقاعدة «لا شيء يستورد من app»، فيثبت الاختبار ذلك)، و<code>if (relative(root, file).startsWith("shared/ui") &amp;&amp; relative(root, resolve(dirname(file), target)).startsWith("shared/api"))</code> برسالتها الخاصة.</li>
 <li>سجل ADR الجيد قصير: فقرة للسياق (المشكلة والضغوط)، وأخرى للقرار (ما اخترته)، وأسطر قليلة للعواقب، الحسنة والسيئة. رقّمه ولا تعدّل سجلاً مقبولاً أبداً: اكتب سجلاً جديداً يحل محله.</li>
 <li>في <code>eslint.config.js</code> أضف لملفات <code>src/shared/**</code>: <code>"no-restricted-imports": ["error", { patterns: ["**/features/**"] }]</code>، ولملفات <code>src/features/**</code> نمطاً مثل <code>"../*/!(index)"</code> أو <code>group</code> للمسارات الداخلية لكل ميزة أخرى. فيبلّغ ESLint عن الاستيرادين نفسيهما في المحرر، وأنت تكتب.</li>

@@ -85,9 +85,17 @@
 
 <pre data-code="react/SlowList.tsx" data-title="SlowList.tsx"></pre>
 <pre data-code="react/transition.tsx" data-title="transition.tsx"></pre>
-<!-- /react -->
 
 <figure data-render="react/transition.html" data-width="560" data-actions="fill:#q|منتج بِت 12;wait:1500"><figcaption><b>شكل {{n}}.1:</b> تصفية 5000 سطر بطيء. لا يتجمد حقل النص أبداً، وبينما تلحق القائمة يبهت لونها وتقول «جارٍ التحديث…».</figcaption></figure>
+<!-- /react -->
+<!-- vue -->
+<p>يقوم Vue بجزء من هذا العمل عنك. فالمكوّن الابن لا يُعاد رسمه إلا حين تتغير خصائصه، فلا تُعاد القائمة لأن الصفحة حولها تغيرت، والقيم <code>computed</code> تحفظ نتيجتها. ولتبقى الكتابة عاجلة، أعطِ القائمة الثقيلة <em>نسخة متأخرة</em> من النص بـ <code>refDebounced</code> من VueUse: يتحدث الحقل فوراً، والقائمة حين تتوقف الكتابة فقط. وللبيانات الكبيرة التي لا تتغير من الداخل، تمنع <code>shallowRef</code> ‏Vue من مراقبة كل عنصر:</p>
+
+<pre data-code="vue/SlowList.vue" data-title="SlowList.vue"></pre>
+<pre data-code="vue/Filter.vue" data-title="Filter.vue"></pre>
+
+<figure data-render="vue/transition.html" data-width="560" data-actions="fill:#q|منتج بِت 12;wait:1500"><figcaption><b>شكل {{n}}.1:</b> تصفية 5000 سطر بطيء. لا يتجمد حقل النص أبداً، وبينما تلحق القائمة يبهت لونها وتقول «جارٍ التحديث…».</figcaption></figure>
+<!-- /vue -->
 
 <p>وتقنيتان أخريان تحلان معظم ما يبقى من مشكلات. <dfn>العرض الافتراضي</dfn> (virtualisation) يرسم الأسطر الظاهرة فقط، فتكلّف قائمة من 10000 عنصر ما تكلّفه قائمة من 20. والعمل الثقيل الذي لا يلمس الصفحة، كتحليل ملف كبير، يمكن نقله إلى <dfn>Web Worker</dfn>، خيط ثانٍ لا يصل إلى DOM.</p>
 
@@ -161,13 +169,13 @@
 <li>استخدم <code>useDeferredValue(text)</code> للقائمة، وغلّف القائمة بـ <code>memo</code> فلا يعاد رسمها إلا حين تتغير عناصرها.</li>
 <!-- /react -->
 <!-- vue -->
-<li>احتفظ بنسخة ثانية متأخرة من النص للقائمة (مؤجلة، كما في فصل الحالة)، واحسب العناصر المصفاة منها.</li>
+<li>احتفظ بنسخة ثانية متأخرة من النص للقائمة بـ <code>refDebounced</code>، واحسب العناصر المصفاة منها. وعلّم القائمة الكبيرة الثابتة بـ <code>shallowRef</code>.</li>
 <!-- /vue -->
 <li>ما دامت القائمة متأخرة عن الحقل، أبهت لونها وقل «جارٍ التحديث…» في منطقة حية مهذبة.</li>
 <li>سجّل من جديد وقارن: يجب ألا تنتظر الكتابة القائمة بعد الآن.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> التأجيل لا يصغّر العمل، بل يغيّر أولويته. فإن بقيت القائمة بطيئة حين تُرسم أخيراً، فالخطوة التالية العرض الافتراضي: ارسم العشرين سطراً التي تتسع لها الشاشة فقط.</p>
-<figure data-render="react/transition.html" data-width="560" data-actions="fill:#q|منتج بِت 12;wait:1500"><figcaption><b>مشروع {{n}}.2:</b> القائمة المصفاة بعد أن لحقت.</figcaption></figure>
+<!-- react --><figure data-render="react/transition.html" data-width="560" data-actions="fill:#q|منتج بِت 12;wait:1500"><figcaption><b>مشروع {{n}}.2:</b> القائمة المصفاة بعد أن لحقت.</figcaption></figure><!-- /react --><!-- vue --><figure data-render="vue/transition.html" data-width="560" data-actions="fill:#q|منتج بِت 12;wait:1500"><figcaption><b>مشروع {{n}}.2:</b> القائمة المصفاة بعد أن لحقت.</figcaption></figure><!-- /vue -->
 </div>
 
 <div class="project">
@@ -180,11 +188,17 @@
 <li>لكل ملف <code>.js</code> و<code>.css</code> أضف حجمه بعد <em>gzip</em>: فهذا ما يسافر عبر الشبكة.</li>
 <li>قارن المجموعين بالميزانية، واطبع كل سطر مع ✓ أو ✗.</li>
 <li>اضبط رمز الخروج 1 حين تُتجاوز أي ميزانية، وأضف السكربت بعد <code>vite build</code> في <code>npm run check</code>.</li>
-<li>اقرأ النتيجة بصدق: حزمة React المشتركة وحدها أكبر كثيراً من ميزانية 60 كيلوبايت. فقرّر هل ترفع الميزانية عمداً، أم تحمّل أقل.</li>
+<li>اقرأ النتيجة بصدق: حزمة <!-- react -->React<!-- /react --><!-- vue -->Vue<!-- /vue --> المشتركة وحدها أكبر كثيراً من ميزانية 60 كيلوبايت. فقرّر هل ترفع الميزانية عمداً، أم تحمّل أقل.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> الميزانية التي تفشل بداية حوار لا كارثة. فالغاية أن يصير النمو قراراً يتخذه أحد عن علم، لا شيئاً يحدث صدفة.</p>
+<!-- react -->
 <pre data-code="projects/budget.ts" data-title="budget.ts"></pre>
 <pre data-out="projects/budget.mjs"></pre>
+<!-- /react -->
+<!-- vue -->
+<pre data-code="vue/projects/budget.ts" data-title="budget.ts"></pre>
+<pre data-out="vue/projects/budget.mjs"></pre>
+<!-- /vue -->
 </div>
 <!-- /projects -->
 
