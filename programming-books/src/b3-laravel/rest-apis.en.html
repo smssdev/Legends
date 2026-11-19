@@ -1,0 +1,271 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/laravel/rest/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Designing REST APIs with API Resources</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>name resources and URLs so that an API can be guessed instead of memorised</li>
+<li>control the JSON your API sends with API Resources, separate from how data is stored</li>
+<li>page through lists with cursors that never repeat or skip a row</li>
+<li>return every error in one standard format, Problem Details</li>
+<li>make retries safe with idempotency keys, and stop lost updates with <code>If-Match</code></li>
+<li>generate the API’s documentation from its code, and test it all</li>
+</ul>
+</div>
+
+<p class="lead">An API is a product, and its users are developers. They judge it the way you judge a library: can I guess how it works, does it tell me clearly what I did wrong, and will it break my app next month? Chapter {{n-3}} taught you the protocol, and Chapter {{n-1}} the framework. This chapter is about the decisions on top of them, which are cheap to get right at the start and very expensive to change once other teams depend on them. We build version 1 of Bit’s shop API properly, with products and orders in a real database.</p>
+
+<aside class="bit" data-mood="think"><p>The first public API I designed had <code>/getProducts</code>, <code>/product_list</code> and <code>/Products/All</code>, written by three people in three weeks. Every client needed our help to use it, and we could never remove anything. Consistency is not about taste: it is what lets strangers use your work without asking you.</p></aside>
+
+<h2>{{n}}.1 Resources and URLs</h2>
+
+<p>REST organises an API around <dfn>resources</dfn>: the nouns of your domain, such as products and orders. URLs name the resources; methods say what to do with them. The rules that make an API guessable are few:</p>
+<ul>
+<li><strong>Nouns, plural, lower case:</strong> <code>/products</code>, <code>/orders</code>. The method is the verb: <code>GET /products</code>, not <code>/getProducts</code>.</li>
+<li><strong>One resource:</strong> the collection plus an id, <code>/products/2</code>.</li>
+<li><strong>Nesting for ownership, one level deep:</strong> <code>/orders/7/items</code> is fine; <code>/customers/3/orders/7/items/2</code> is not.</li>
+<li><strong>Actions that are not create, read, update or delete</strong> become a sub-resource with <code>POST</code>: <code>POST /orders/7/cancel</code>. Do not hide them in a <code>PATCH</code> that sets <code>status</code>: cancelling has rules (restore the stock, refund the payment) that a generic update would skip.</li>
+<li><strong>A version in the path:</strong> <code>/api/v1/...</code>. Make every change additive if you can; when a breaking change cannot be avoided, publish <code>/v2</code> beside <code>/v1</code> and announce the end of <code>/v1</code> with the <code>Deprecation</code> and <code>Sunset</code> headers.</li>
+</ul>
+
+<pre data-code="shop/routes/api.php" data-title="routes/api.php"></pre>
+
+<p>Products are read and updated through a resource controller. Orders have their own controller; <code>Route::controller</code> groups its routes, and the cancel action is a sub-resource. Creating an order goes through an extra middleware, <code>Idempotent</code>, which we write in {{n}}.5.</p>
+
+<h2>{{n}}.2 Data in a database</h2>
+
+<p>Chapter {{n-1}} kept products in a JSON file. A real API keeps them in a database, and Laravel’s default database, SQLite, needs no server: it is one file. Chapters {{n+1}} and {{n+2}} teach SQL and Eloquent properly, with PostgreSQL; here we need just enough to have tables to read. Artisan writes the classes:</p>
+
+<pre data-code="make.sh" data-title="Terminal"></pre>
+
+<p>A <dfn>migration</dfn> describes a table in PHP, so that every copy of the app, on every machine, has the same tables:</p>
+
+<pre data-code="shop/database/migrations/2026_11_01_000001_create_products_table.php" data-from="        Schema::create" data-to="^        });" data-title="database/migrations/…_create_products_table.php"></pre>
+
+<p>Prices are whole piastres, never decimals. <code>version</code> counts the changes to a product, for {{n}}.6. The index on <code>price</code> and <code>id</code> serves the sorted, paged list of {{n}}.4. A <dfn>model</dfn> is the class that reads and writes the table, and a <dfn>seeder</dfn> fills it with the shop’s twelve products:</p>
+
+<pre data-code="shop/app/Models/Product.php" data-title="app/Models/Product.php"></pre>
+
+<pre data-code="migrate.sh" data-title="Terminal"></pre>
+
+<p><code>$fillable</code> lists the columns that may be set from an array. The others, such as <code>version</code>, can only be set on purpose, one by one, which protects them from a request that sends more fields than it should.</p>
+
+<h2>{{n}}.3 API Resources: the representation</h2>
+
+<p>A database row and the JSON a client receives are two different things, and they should change for different reasons. The table may gain internal columns; the JSON is a promise to other developers. An <dfn>API Resource</dfn> is the class that turns one into the other:</p>
+
+<pre data-code="shop/app/Http/Resources/ProductResource.php" data-title="app/Http/Resources/ProductResource.php"></pre>
+
+<p>Fix the conventions of the representation once, and keep them everywhere:</p>
+<ul>
+<li><strong>One naming style.</strong> We use <code>snake_case</code>, as Laravel does.</li>
+<li><strong>Times in ISO 8601, in UTC:</strong> <code>2026-11-01T09:00:00Z</code>. Clients convert to the user’s time zone.</li>
+<li><strong>Money as an object</strong>, the amount in minor units with its currency. One helper makes it the same in every resource:</li>
+</ul>
+
+<pre data-code="shop/app/Http/Resources/Money.php" data-title="app/Http/Resources/Money.php"></pre>
+
+<ul>
+<li><strong>Internal columns stay inside.</strong> <code>version</code> and <code>updated_at</code> are not in the resource; adding a column to the table changes nothing for clients.</li>
+<li><strong>Lists in an object</strong>, never a bare array, so that page information has a place: Laravel adds <code>data</code>, <code>links</code> and <code>meta</code> for you.</li>
+</ul>
+
+<p>One more convention needs a line of code: by default Laravel writes every non-English letter as <code>ك</code>. A small middleware adds <code>JSON_UNESCAPED_UNICODE</code> to every JSON answer of the API, once, instead of in every controller:</p>
+
+<pre data-code="shop/app/Http/Middleware/UnescapedJson.php" data-from="final class" data-title="app/Http/Middleware/UnescapedJson.php"></pre>
+
+<h2>{{n}}.4 Lists: filters, sorting and cursor pages</h2>
+
+<p>Everything a client may send to the list is in a form request, with limits on every value:</p>
+
+<pre data-code="shop/app/Http/Requests/ListProductsRequest.php" data-from="    public function rules" data-to="^    }" data-title="app/Http/Requests/ListProductsRequest.php"></pre>
+
+<p>Only four sort orders exist. An API that sorts by any field the client names can be asked to sort by a column without an index, which makes a slow query one attacker can repeat a thousand times a minute.</p>
+
+<p>The obvious way to page is an <dfn>offset</dfn>, <code>?page=2</code>, meaning “skip the first 20”. It has two problems: the database must still walk past every skipped row, so deep pages are slow; and the pages drift when rows are added or removed between two requests, so a user sees one product twice, or never. A <dfn>cursor</dfn> says “continue after <em>this</em> row” instead, so new rows before it change nothing. Laravel builds cursors with <code>cursorPaginate</code>:</p>
+
+<pre data-code="shop/app/Http/Controllers/ProductController.php" data-from="    public function index" data-to="^    }" data-title="app/Http/Controllers/ProductController.php"></pre>
+
+<p>The second <code>orderBy</code> matters. A cursor needs a <em>complete</em> order: two products with the same price must still have a fixed place, or a row could move from one page to the next between requests. Ordering by price and then by id makes every position unique, and the migration’s index on <code>(price, id)</code> lets the database find it directly. Here is the client’s side:</p>
+
+<pre data-code="pages.sh" data-title="Terminal"></pre>
+
+<p>The first page carries the link to the next one, so clients never build URLs themselves; they follow <code>links.next</code> until it is <code>null</code>. With a filter and a sort, the cursor carries the price as well as the id, and <code>withQueryString</code> keeps the filter in the link. The cursor is base64-encoded JSON: anyone can decode it, so it is not a secret. Document it as an opaque token that clients must send back unchanged, so that the server stays free to change what is inside.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which URL is better for cancelling order 7: <code>PATCH /orders/7</code> with <code>{"status": "cancelled"}</code>, or <code>POST /orders/7/cancel</code>? Why?</li><li>Why does the list order by price <em>and</em> id, not only by price?</li><li>Why is <code>version</code> a column of the table but not a field of the resource?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.5 Errors: Problem Details</h2>
+
+<p>Laravel’s default error answers, which you saw in Chapter {{n-1}}, have a shape of their own. Every API with its own shape forces every client to learn it. <dfn>Problem Details</dfn> (RFC 9457) is the standard shape for HTTP API errors, sent with the content type <code>application/problem+json</code>: a <code>type</code> URL that identifies the kind of problem and leads to its documentation, a short <code>title</code>, the <code>status</code>, a <code>detail</code> for this case, and the <code>instance</code>, the request that failed. Extra members are allowed, such as a list of <code>errors</code>.</p>
+
+<p>A problem is an exception that knows how to render itself:</p>
+
+<pre data-code="shop/app/Http/Problem.php" data-from="final class" data-title="app/Http/Problem.php"></pre>
+
+<p>One class decides how every other exception becomes a problem: validation errors, models that were not found, rate limits, other HTTP errors, and anything unexpected as a plain 500. It also makes the problems the API throws on purpose, so no controller invents a new status code or a new shape:</p>
+
+<pre data-code="shop/app/Http/Problems.php" data-from="    public static function from" data-to="^    }" data-title="app/Http/Problems.php"></pre>
+
+<p><code>match (true)</code> takes the first arm whose condition holds, a common PHP idiom for a list of type checks. The texts come from a language file, <code>lang/en/problems.php</code>, read by <code>__('problems.stale')</code> in the app’s language. And one line in <code>bootstrap/app.php</code> sends every exception in the API through it:</p>
+
+<pre data-code="shop/bootstrap/app.php" data-from="    -&gt;withExceptions" data-title="bootstrap/app.php"></pre>
+
+<pre data-code="problems.sh" data-title="Terminal"></pre>
+
+<p>Every error, from validation to a missing model, now has the same shape. Laravel answers <code>422</code> for every validation failure, of the query or of the body; some APIs prefer <code>400</code> for a malformed query, but what matters most is that your API always does the same thing.</p>
+
+<h2>{{n}}.6 Safe retries: idempotency keys</h2>
+
+<p>Chapter {{n-3}} warned that a retried <code>POST</code> can create an order twice. The standard answer, used by payment providers such as Stripe, is an <dfn>idempotency key</dfn>: the client creates a unique value (a UUID) for each <em>intended</em> operation and sends it in an <code>Idempotency-Key</code> header. If the same key arrives again, the server does not do the work again; it replays the answer it gave the first time. This is a job for middleware, because it wraps the controller without the controller knowing:</p>
+
+<pre data-code="shop/app/Http/Middleware/Idempotent.php" data-from="final class" data-title="app/Http/Middleware/Idempotent.php"></pre>
+
+<ul>
+<li>A <strong>lock</strong> on the key makes a second request that arrives while the first is still running get a <code>409</code>, instead of doing the work twice. <code>Cache::lock</code> works across all the PHP processes of a server, because the lock lives in the cache store (here the database; Redis in Chapter {{n+4}}).</li>
+<li>A <strong>fingerprint</strong> of the body is kept with the answer. The same key with a different body is a bug in the client, and gets a <code>422</code>, never a silent replay of a different order.</li>
+<li>Only <strong>successful</strong> answers are kept, for a day. A request that failed may be tried again with the same key.</li>
+</ul>
+
+<p>The controller creates the order inside a database <dfn>transaction</dfn>: either every change happens, or none does:</p>
+
+<pre data-code="shop/app/Http/Controllers/OrderController.php" data-from="    public function store" data-to="^    }" data-title="app/Http/Controllers/OrderController.php"></pre>
+
+<p>The stock is taken with one conditional statement, “decrease the stock by 2 <em>where</em> the stock is at least 2”, and the number of changed rows says whether it worked. Reading the stock first and writing it afterwards would let two orders both see the last kit and both take it; Chapter {{n+3}} explains why, and the other tools for it. If anything throws, the transaction is rolled back, so an order that fails on its third item gives back the stock of the first two. And the prices come from the database: a client never tells the server what something costs.</p>
+
+<pre data-code="idempotency.sh" data-title="Terminal"></pre>
+
+<p>The second request got the same order, with the same id and time, and a header saying it was replayed. The stock went down by 2, not by 4. The other business rules return problems too:</p>
+
+<pre data-code="orders.sh" data-title="Terminal"></pre>
+
+<h2>{{n}}.7 Lost updates: ETag and If-Match</h2>
+
+<p>Two administrators open product 2 at the same time. Sara changes the price to 65.00 and saves; a minute later Omar, whose screen still shows the old product, changes it to 70.00 and saves. Sara’s change is gone, and nobody was told. This is the <dfn>lost update</dfn> problem. HTTP solves it with the ETag from Chapter {{n-3}}: the product’s version is its ETag, and a change must send back, in <code>If-Match</code>, the version it was based on:</p>
+
+<pre data-code="shop/app/Http/Controllers/ProductController.php" data-from="    public function show" data-to="^    }#2" data-title="app/Http/Controllers/ProductController.php"></pre>
+
+<p><code>show</code> sets the ETag, and Symfony’s <code>isNotModified</code> turns the answer into an empty <code>304</code> when the client already has this version. <code>update</code> refuses a request without <code>If-Match</code>, and then changes the row <em>only if</em> its version is still the one the client read, raising it by one in the same statement. If no row changed, someone else got there first:</p>
+
+<pre data-code="if-match.sh" data-title="Terminal"></pre>
+
+<p>This is <dfn>optimistic concurrency</dfn>: nothing is locked while people look at a screen, and the rare conflicts are detected when they happen. The client that gets <code>412</code> reloads the product and shows the user what changed.</p>
+
+<h2>{{n}}.8 Documentation from the code</h2>
+
+<p>Documentation written by hand drifts away from the code within weeks. <dfn>Scramble</dfn> reads the routes, the form requests and the resources, and writes an <dfn>OpenAPI</dfn> document from them, a standard, machine-readable description of the API:</p>
+
+<pre data-code="scramble.sh" data-title="Terminal"></pre>
+
+<pre data-code="routes.sh" data-title="Terminal"></pre>
+
+<p>On a developer’s machine, Scramble also serves a documentation page at <code>/docs/api</code>. From the same document, tools can generate typed clients in many languages, and a check in CI can refuse a pull request that removes something clients depend on. (Scramble lists the update route as <code>PUT</code>; Laravel accepts <code>PATCH</code> on the same route.)</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: design the API before you build it</p><p>Write the request and response examples for a new endpoint first, in the pull request, and get a review from someone who will <em>use</em> the endpoint, such as a front-end or mobile developer. Changing an example takes minutes; changing a published API takes months of versions and deprecation emails.</p></aside>
+
+<h2>{{n}}.9 Testing the API</h2>
+
+<p>With <code>RefreshDatabase</code>, every test starts with fresh tables, filled by the seeder named in <code>$seeder</code>. The most valuable test walks every page and checks that each product appears exactly once:</p>
+
+<pre data-code="shop/tests/Feature/ShopApiTest.php" data-from="    public function test_it_walks" data-to="^    }" data-title="tests/Feature/ShopApiTest.php"></pre>
+
+<pre data-code="test.sh" data-title="Terminal"></pre>
+
+<p>The other tests pin what clients depend on: the sort, the replay, the stale update and the error format. Chapter {{n+9}} goes much further.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Models returned as JSON directly</td><td>Every new column is published; renaming one breaks clients</td><td>API Resources</td></tr>
+<tr><td>Verbs in URLs, mixed naming</td><td>Every endpoint must be looked up</td><td>Plural nouns, one naming style, methods as verbs</td></tr>
+<tr><td>Offset paging on changing data</td><td>Repeated and missing rows; slow deep pages</td><td><code>cursorPaginate</code> over a complete, indexed order</td></tr>
+<tr><td>Sorting by any field the client names</td><td>Slow queries on demand</td><td>A list of allowed sorts</td></tr>
+<tr><td>A different error shape per endpoint</td><td>Clients cannot handle errors generically</td><td>Problem Details for every exception</td></tr>
+<tr><td>Retried POSTs without keys</td><td>Double orders and payments</td><td>An idempotency middleware with fingerprints</td></tr>
+<tr><td>Read the stock, then write it</td><td>Two orders take the last item</td><td>One conditional statement, in a transaction</td></tr>
+<tr><td>Updates without a version check</td><td>Silent lost updates</td><td>ETag and required <code>If-Match</code></td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Resources</strong> are plural nouns, <strong>methods</strong> the verbs, special actions sub-resources with <code>POST</code>. Version in the path; prefer additive changes.</li>
+<li><strong>Migrations</strong> describe tables, <strong>models</strong> read and write them, <strong>seeders</strong> fill them.</li>
+<li><strong>API Resources</strong> separate the representation from storage: UTC times, money as amount and currency, internal columns hidden.</li>
+<li><strong>Cursors</strong> page without drift over a complete order (sort field plus id), with links clients follow.</li>
+<li>Every error is <strong>Problem Details</strong>, from one renderer and one set of factory methods.</li>
+<li>An <strong>idempotency middleware</strong> with a lock and a fingerprint makes retries safe; <strong>transactions</strong> and conditional updates keep stock correct.</li>
+<li><strong>ETag and <code>If-Match</code></strong> with an atomic version check prevent lost updates.</li>
+<li><strong>Scramble</strong> generates OpenAPI from the code; <strong>feature tests</strong> with <code>RefreshDatabase</code> pin the behaviour.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>POST /orders/7/cancel</code>: cancelling is an action with its own rules (restore the stock, refund, check that the order can still be cancelled), and a dedicated endpoint can enforce them and be documented and permitted separately; a generic <code>PATCH</code> would let a client set any status. 2. Products with the same price would otherwise have no fixed order, so a row could move between pages and the cursor could not say exactly where to continue. 3. The version is an internal detail of how the server detects conflicts; clients see it only as the ETag, so the server can change how versions work without changing the JSON.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project extends this chapter’s API. Keep the conventions: a form request for every input, a resource for every output, Problem Details for every error, and a feature test for every rule.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Product reviews</h3>
+<p class="project-goal">Add reviews to products: list them with cursor pages, and create them with validation.</p>
+<p class="project-skills"><strong>You will practise:</strong> migrations and models, nested resources, cursor pagination, resources and <code>201</code> with <code>Location</code>.</p>
+<ol class="steps">
+<li>Design the routes first: <code>GET /api/v1/products/{product}/reviews</code> and <code>POST</code> on the same path. Write an example request and response for each.</li>
+<li>Create a <code>Review</code> model with a migration: a product, a rating from 1 to 5, a text of 10 to 1000 characters, and timestamps.</li>
+<li>List reviews newest first, ordered by <code>created_at</code> and then <code>id</code>, with <code>cursorPaginate</code>, through a <code>ReviewResource</code>.</li>
+<li>Add <code>average_rating</code> and <code>review_count</code> to <code>ProductResource</code>, using <code>withAvg</code> and <code>withCount</code> in the query. Is that an additive change?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> two reviews can be created in the same second, and <code>created_at</code> has one-second precision. That is exactly why the order needs the id as well.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A client that retries correctly</h3>
+<p class="project-goal">Write a small PHP client for the orders endpoint with Laravel’s HTTP client, which retries safely, and test it against a server that fails on purpose.</p>
+<p class="project-skills"><strong>You will practise:</strong> idempotency keys from the client’s side, <code>Http::retry</code>, backoff, and <code>Http::fake</code> in tests.</p>
+<ol class="steps">
+<li>Write <code>OrdersClient::create(array $items)</code>: it makes one key with <code>Str::uuid()</code> and sends the <em>same</em> key with every attempt.</li>
+<li>Use <code>Http::retry([200, 400, 800], when: ...)</code> to retry on connection errors, <code>409</code>, <code>429</code> and <code>5xx</code>, never on other <code>4xx</code>, with a time limit on every attempt (<code>timeout(5)</code>).</li>
+<li>Respect <code>Retry-After</code> when the server sends it.</li>
+<li>In a test, use <code>Http::fake</code> with a sequence: a connection error, a <code>503</code>, then a <code>201</code>. Assert with <code>Http::assertSent</code> that all three requests carried the same key.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> add a random part to the waits (jitter). Without it, a thousand clients that failed at the same moment retry at the same moment too, and knock the server over again.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Version 2, side by side</h3>
+<p class="project-goal">Introduce a breaking change as <code>/api/v2</code>, keep <code>/api/v1</code> working from the same models, and announce its end.</p>
+<p class="project-skills"><strong>You will practise:</strong> versioning with resources, route groups, deprecation headers, and contract tests.</p>
+<ol class="steps">
+<li>In v2, prices become <code>{"amount": "450.00", "currency": "EGP"}</code> with a decimal string, and <code>created_at</code> is renamed <code>created</code>. Explain why each change breaks clients.</li>
+<li>Put v2’s resources in <code>App\Http\Resources\V2</code> and its routes in a second <code>prefix('v2')</code> group. The models and business rules stay shared.</li>
+<li>Write a middleware for the v1 group that adds <code>Deprecation</code>, <code>Sunset</code> (six months ahead) and a <code>Link</code> to the migration guide to every answer.</li>
+<li>Save today’s v1 answers as JSON fixtures, and write tests that fail if v1 ever changes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> versions should be thin layers at the edge of the API. If v2 needs its own tables or its own business rules, the versioning is in the wrong place.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Design the method and URL for each: list one customer’s orders; add an item to a cart; a payment provider tells you a payment succeeded; search products by name; refund an order.</li>
+<li><span class="level">Easy</span> Choose a status code for each, and say why: an email already registered; an update without <code>If-Match</code>; an update with an old ETag; JSON with a missing quote; a quantity of 0.</li>
+<li><span class="level">Medium</span> Add a <code>q</code> parameter to the product list that finds products whose name contains the text, with at least 2 characters. Does the cursor still work with it?</li>
+<li><span class="level">Medium</span> Cancelling an order twice answers <code>409</code>. A mobile app retries the cancel request after a timeout and shows an error to a user whose order was in fact cancelled. Propose two ways to fix this, and choose one.</li>
+<li><span class="level">Challenge</span> Two different clients that happen to send the same idempotency key would share one answer. Scope the keys by client (until Chapter {{n+5}} gives us real users, an <code>X-Client-Id</code> header names the client), and test both that keys are separate per client and that they expire after a day.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Part 2 begins. We used a database in this chapter without looking inside it. Next we learn SQL properly, on PostgreSQL: tables, joins, grouping, indexes, and how to read a query plan.</p>
+</div>
+</section>
