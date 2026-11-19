@@ -4,7 +4,13 @@
   "description": "The code of Book 3. Run `npm ci` once; each chapter's make.py runs its examples.",
   "type": "module",
   "devDependencies": {
+    "@fastify/rate-limit": "11.2.2",
+    "@fastify/swagger": "9.9.5",
     "@types/node": "22.20.5",
+    "fastify": "5.12.8",
+    "fastify-type-provider-zod": "7.0.0",
+    "openapi-types": "12.1.3",
+    "prettier": "^3.10.1",
     "typescript": "7.0.2",
     "zod": "4.6.7"
   }

@@ -32,6 +32,7 @@ class Server:
         """url is only used to check that the server is up; its request is left out of log()."""
         self.cmd, self.cwd, self.url, self.env = cmd, Path(cwd), url, env or CLEAN
         self.out = self.cwd / ".server.log"
+        self.head, self.skip = "", 0
 
     def __enter__(self):
         self.file = open(self.out, "w")

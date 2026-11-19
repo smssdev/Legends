@@ -1,0 +1,22 @@
+{
+  "name": "bit-shop-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.ts",
+    "check": "tsc",
+    "test": "node --test --test-reporter=spec"
+  },
+  "dependencies": {
+    "@fastify/rate-limit": "^11.2.2",
+    "@fastify/swagger": "^9.9.5",
+    "fastify": "^5.12.8",
+    "fastify-type-provider-zod": "^7.0.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^7.0.2"
+  }
+}

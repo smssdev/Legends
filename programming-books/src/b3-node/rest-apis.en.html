@@ -1,0 +1,265 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/node/rest/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Designing REST APIs</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>name resources and URLs so that an API can be guessed instead of memorised</li>
+<li>build a versioned API on Fastify, with every input checked by a schema</li>
+<li>page through lists with cursors that never repeat or skip a row</li>
+<li>return every error in one standard format, Problem Details</li>
+<li>make retries safe with idempotency keys, and stop lost updates with <code>If-Match</code></li>
+<li>limit request rates, and generate the API’s documentation from its code</li>
+</ul>
+</div>
+
+<p class="lead">An API is a product, and its users are developers. They judge it the way you judge a library: can I guess how it works, does it tell me clearly what I did wrong, and will it break my app next month? Chapter {{n-2}} taught you the protocol. This chapter is about the decisions on top of it, the ones that are cheap to get right at the start and very expensive to change once other teams depend on them. We rebuild Bit’s shop API properly, as version 1 of a public API.</p>
+
+<aside class="bit" data-mood="think"><p>The first public API I designed had <code>/getProducts</code>, <code>/product_list</code> and <code>/Products/All</code>, written by three people in three weeks. Every client needed our help to use it, and we could never remove anything. Consistency is not about taste: it is what lets strangers use your work without asking you.</p></aside>
+
+<h2>{{n}}.1 Resources and URLs</h2>
+
+<p>REST organises an API around <dfn>resources</dfn>: the nouns of your domain, such as products and orders. URLs name the resources; methods say what to do with them. The rules that make an API guessable are few:</p>
+<ul>
+<li><strong>Nouns, plural, lower case:</strong> <code>/products</code>, <code>/orders</code>. The method is the verb: <code>GET /products</code>, not <code>/getProducts</code>.</li>
+<li><strong>One resource:</strong> the collection plus an id, <code>/products/2</code>.</li>
+<li><strong>Nesting for ownership, one level deep:</strong> <code>/orders/7/items</code> is fine; <code>/customers/3/orders/7/items/2</code> is not. Once a resource has its own id, give it its own top-level URL.</li>
+<li><strong>Actions that are not create, read, update or delete</strong> become a sub-resource with <code>POST</code>: <code>POST /orders/7/cancel</code>. Do not hide them in a <code>PATCH</code> that sets <code>status</code>: cancelling has rules (restore the stock, refund the payment) that a generic update would skip.</li>
+<li><strong>A version in the path:</strong> <code>/v1/...</code>. We come back to versions in {{n}}.8.</li>
+</ul>
+
+<p>Here are the routes of this chapter’s API, read from the API’s own documentation, which Fastify generates from the code (Section {{n}}.9):</p>
+
+<pre data-code="routes.sh" data-title="Terminal"></pre>
+
+<h3>Representations</h3>
+
+<p>The JSON an API sends is called a <dfn>representation</dfn> of the resource. Choose its conventions once, write them down, and never mix them:</p>
+<ul>
+<li><strong>One naming style.</strong> We use <code>snake_case</code>, like most public APIs; <code>camelCase</code> is just as good. Mixing them is not.</li>
+<li><strong>Times in ISO 8601, in UTC:</strong> <code>2026-11-01T09:00:00.000Z</code>. Clients convert to the user’s time zone; the server never guesses it.</li>
+<li><strong>Money as an object:</strong> <code>{"amount": 45000, "currency": "EGP"}</code>, the amount in minor units. A bare number is ambiguous the day you sell in a second currency.</li>
+<li><strong>Lists in an object:</strong> <code>{"data": [...], "next_cursor": ...}</code>, never a bare array, so that page information can be added without breaking anyone.</li>
+</ul>
+
+<h2>{{n}}.2 A framework with schemas: Fastify</h2>
+
+<p>Chapter {{n-2}}’s server checked every input by hand. A framework does that work from a <dfn>schema</dfn>, a description of what a request may contain. We use <dfn>Fastify</dfn>, a fast Node framework built around schemas, with <code>zod</code> from the previous chapter to write them. A route declares its query, path parameters, headers, body and responses; Fastify refuses anything that does not match before the handler runs, and gives the handler fully typed values.</p>
+
+<p>The application is built by a function, so that tests can build a fresh one for each test without a network:</p>
+
+<pre data-code="src/app.ts" data-from="export async function buildApp" data-to="setSerializerCompiler" data-title="src/app.ts"></pre>
+
+<p>The rest of <code>buildApp</code> registers the plugins and the routes, under the prefix <code>/v1</code>. We will read each part as we reach the feature it serves.</p>
+
+<h2>{{n}}.3 Lists: filtering, sorting, pages</h2>
+
+<p>A list endpoint needs three things: a way to filter, a way to sort, and pages, because no client wants ten thousand products at once. Everything a client may send is in the query schema:</p>
+
+<pre data-code="src/routes/products.ts" data-from="const SORTS" data-to="^});" data-title="src/routes/products.ts"></pre>
+
+<p>Every value has limits: a page has between 1 and 50 items, prices are not negative, and only four sort orders exist. <code>z.coerce.number()</code> turns the text of the query string into a number. Anything else is refused with a list of every problem, before any code runs:</p>
+
+<pre data-code="bad-query.sh" data-title="Terminal"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out: never sort or filter by any field the client names</p><p>An API that sorts by whatever field arrives in <code>?sort=</code> can be asked to sort by a field without an index, which makes a slow query that one attacker can repeat a thousand times a minute. It may also reveal fields that should stay private, through the order of results. List the allowed fields, as <code>SORTS</code> does, and add an index for each one when the data moves to a database.</p></aside>
+
+<h3>Offset pages and cursor pages</h3>
+
+<p>The obvious way to page is an <dfn>offset</dfn>: <code>?page=2</code> means “skip the first 20”. It has two problems. A database must still walk past every skipped row, so page 5000 is slow. Worse, the pages drift when data changes between two requests. This small demo pages through a “newest first” list, three at a time, while a new product arrives between page 1 and page 2:</p>
+
+<pre data-code="demos/drift.ts" data-title="demos/drift.ts"></pre>
+
+<pre data-code="drift.sh" data-title="Terminal"></pre>
+
+<p>With an offset, product 4 appears on both pages, because everything moved down by one. (A product deleted in between would make one disappear instead.) A <dfn>cursor</dfn> says “continue after <em>this</em> row”, so new rows before it change nothing. This is also called <dfn>keyset pagination</dfn>, because it continues from the key of the last row. Our API builds its cursors like this:</p>
+
+<pre data-code="src/routes/products.ts" data-from="function compare" data-to="^}#2" data-title="src/routes/products.ts"></pre>
+
+<p>The rows are ordered by the sort field and then by id, so that two products with the same price still have a fixed order: without that tiebreak, rows with equal values could move between pages. The cursor holds the last row’s sort value and id, encoded with base64url. Encoding is not secrecy, and the cursor can be decoded; the point is that clients treat it as an opaque token and send it back unchanged, so the server is free to change what is inside. Here is the client’s side:</p>
+
+<pre data-code="pages.sh" data-title="Terminal"></pre>
+
+<p>The second request sent back the cursor from the first, and continued at product 4. With <code>sort=-price</code> and a price filter, the cursor carries the price as well, and the second page continues below 12,500. When <code>next_cursor</code> is <code>null</code>, the list is finished. Cursors cannot jump to page 37, but almost no user does that; they scroll, or press “load more”, which is exactly what cursors do well.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Which URL is better for cancelling order 7: <code>PATCH /orders/7</code> with <code>{"status": "cancelled"}</code>, or <code>POST /orders/7/cancel</code>? Why?</li><li>Why are the products ordered by price <em>and</em> id, not only by price?</li><li>A client builds its own cursor by encoding <code>[0, 100]</code>. Why should the API documentation say that cursors are opaque?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Errors: Problem Details</h2>
+
+<p>In Chapter {{n-2}} our errors had a shape we invented. Every API that invents its own shape forces every client to learn it. <dfn>Problem Details</dfn> (RFC 9457) is the standard shape for HTTP API errors, sent with the content type <code>application/problem+json</code>: a <code>type</code> URL that identifies the kind of problem and leads to its documentation, a short <code>title</code>, the <code>status</code>, a <code>detail</code> for this particular case, and the <code>instance</code>, the request that failed. Extra members are allowed, such as our <code>errors</code> list.</p>
+
+<p>Every text a person reads lives in one file, so it can be reviewed and translated in one place:</p>
+
+<pre data-code="src/messages.ts" data-title="src/messages.ts"></pre>
+
+<p>And every problem the API can return is made by one factory, so no route can invent a new status code or a new shape:</p>
+
+<pre data-code="src/problem.ts" data-from="export const problems" data-to="^};" data-title="src/problem.ts"></pre>
+
+<p>One error handler turns everything into a problem: our own problems as they are, validation errors as <code>422</code> for a body and <code>400</code> for the rest of the request, the rate limiter’s errors as <code>429</code>, and anything unexpected as a plain <code>500</code>, with the details in the log:</p>
+
+<pre data-code="src/app.ts" data-from="  app.setErrorHandler" data-to="^  });" data-title="src/app.ts"></pre>
+
+<h2>{{n}}.5 Safe retries: idempotency keys</h2>
+
+<p>Chapter {{n-2}} warned that a retried <code>POST</code> can create an order twice. The standard answer, used by payment providers such as Stripe, is an <dfn>idempotency key</dfn>: the client creates a unique value (a UUID) for each <em>intended</em> operation and sends it in an <code>Idempotency-Key</code> header. If the same key arrives again, the server does not do the work again; it replays the answer it gave the first time.</p>
+
+<pre data-code="src/routes/orders.ts" data-from="    app.post(" data-to="^    );" data-title="src/routes/orders.ts"></pre>
+
+<p>The details matter more than the idea:</p>
+<ul>
+<li>The server keeps a <strong>fingerprint</strong> of the body. The same key with a different body is a bug in the client, and gets a <code>422</code>, never a silent replay of a different order.</li>
+<li>The key is marked <strong>in progress</strong> before the work starts. A second request that arrives while the first is still running gets a <code>409</code> instead of starting the work twice.</li>
+<li>If the work fails, the key is <strong>forgotten</strong>, so the client may try again with it.</li>
+<li>The total is computed from the server’s prices. A client never tells the server what something costs.</li>
+</ul>
+
+<pre data-code="idempotency.sh" data-title="Terminal"></pre>
+
+<p>The second request got the same order, with the same id and time, and a header that says it was replayed. The stock went down by 2, not by 4. Here the keys live in a <code>Map</code>; in production they are kept in the database, in the same transaction as the order (Chapter {{n+3}}), or in Redis (Chapter {{n+4}}), for about a day.</p>
+
+<p>The other business rules return problems too: an order for more than the stock is a <code>409 Conflict</code> with the current situation, and so is cancelling an order twice:</p>
+
+<pre data-code="orders.sh" data-title="Terminal"></pre>
+
+<h2>{{n}}.6 Lost updates: ETag and If-Match</h2>
+
+<p>Two administrators open product 2 at the same time. Sara changes the price to 65.00 and saves; a minute later Omar, whose screen still shows the old product, changes it to 70.00 and saves. Sara’s change is gone, and nobody was told. This is the <dfn>lost update</dfn> problem. HTTP solves it with the ETag you met in Chapter {{n-2}}: the product’s version is its ETag, and a change must send back the version it was based on in <code>If-Match</code>:</p>
+
+<pre data-code="src/routes/products.ts" data-from="    app.patch(" data-to="^    );" data-title="src/routes/products.ts"></pre>
+
+<pre data-code="if-match.sh" data-title="Terminal"></pre>
+
+<p>A change without <code>If-Match</code> is refused with <code>428 Precondition Required</code>: requiring it is how the API makes sure no client forgets. The change based on version 1 succeeds and creates version 2. The second change, still based on version 1, gets <code>412 Precondition Failed</code>, and the client knows to reload and show the user what changed. This is <dfn>optimistic concurrency</dfn>: nothing is locked while people look at a screen, and conflicts, which are rare, are detected when they happen. Chapter {{n+3}} does the same inside the database.</p>
+
+<h2>{{n}}.7 Rate limits</h2>
+
+<p>Every public API limits how fast one client may call it: to keep one buggy script from hurting everybody, and to make guessing passwords or scraping slow. The <code>@fastify/rate-limit</code> plugin counts requests per client address. Started with a limit of three a minute, the fourth request is refused:</p>
+
+<pre data-code="rate-limit.sh" data-title="Terminal"></pre>
+
+<p>The <code>x-ratelimit-*</code> headers tell well-behaved clients how much they have left on every answer, and <code>retry-after</code> tells them when to try again. A client that respects them never sees a 429. With several servers, the counts must be shared between them, which is another job for Redis (Chapter {{n+4}}).</p>
+
+<h2>{{n}}.8 Versions and change</h2>
+
+<p>Once other people use your API, every change is either <dfn>additive</dfn> or <dfn>breaking</dfn>. Adding an endpoint, an optional parameter or a new field to a response is additive: correct clients ignore what they do not know. Removing or renaming a field, changing its type or meaning, or adding a required parameter breaks clients. The rules:</p>
+<ul>
+<li>Make every change additive if you possibly can. Most APIs live for years on version 1.</li>
+<li>When a breaking change is unavoidable, publish <code>/v2</code> next to <code>/v1</code>, and keep <code>/v1</code> running for a stated period.</li>
+<li>Announce the end in the answers themselves, with the <code>Deprecation</code> and <code>Sunset</code> headers, in the documentation, and by email to the clients you know. Watch your logs to see who still calls the old version before you turn it off.</li>
+</ul>
+
+<h2>{{n}}.9 Documentation from the code</h2>
+
+<p>Documentation written by hand drifts away from the code within weeks. Because every route here has a schema, the <code>@fastify/swagger</code> plugin generates an <dfn>OpenAPI</dfn> document from them: a standard, machine-readable description of every path, parameter, body and response. The API serves it at <code>/openapi.json</code>, and the routes listing in {{n}}.1 was read from it. From the same document, tools can render documentation pages, generate typed client libraries in many languages, and check in CI that a change does not remove anything clients depend on.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: design the API before you build it</p><p>Write the request and response examples for a new endpoint first, in the pull request or in the OpenAPI document, and get a review from someone who will <em>use</em> the endpoint, such as a front-end or mobile developer. Changing an example takes minutes; changing a published API takes months of versions and deprecation emails.</p></aside>
+
+<h2>{{n}}.10 Testing an API without a network</h2>
+
+<p>Fastify’s <code>inject</code> sends a request straight into the application, without a port or a socket, and returns the response. Tests are fast and independent, because each one builds a fresh app with its own data:</p>
+
+<pre data-code="src/app.test.ts" data-from="test(" data-to="^});" data-title="src/app.test.ts"></pre>
+
+<pre data-code="test.sh" data-title="Terminal"></pre>
+
+<p>The first test is the most valuable one in the file: it walks every page with the cursor and checks that each product appears exactly once. The others pin the behaviours a client depends on: sorting, replays, stale updates, and the error format.</p>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Verbs in URLs, mixed naming</td><td>Every endpoint must be looked up</td><td>Plural nouns, one naming style, methods as verbs</td></tr>
+<tr><td>Bare arrays as list responses</td><td>Paging cannot be added without breaking clients</td><td><code>{"data": [...], "next_cursor": ...}</code></td></tr>
+<tr><td>Offset paging on changing data</td><td>Repeated and missing rows; slow deep pages</td><td>Cursors over a complete, indexed order</td></tr>
+<tr><td>Sorting by any field the client names</td><td>Slow queries on demand, leaked fields</td><td>A list of allowed sort fields</td></tr>
+<tr><td>A different error shape per endpoint</td><td>Clients cannot handle errors generically</td><td>Problem Details, from one factory</td></tr>
+<tr><td>Retried POSTs without keys</td><td>Double orders and payments</td><td>Idempotency keys with fingerprints</td></tr>
+<tr><td>Updates without a version check</td><td>Silent lost updates</td><td>ETag and required <code>If-Match</code></td></tr>
+<tr><td>Breaking changes in place</td><td>Apps break overnight</td><td>Additive changes; a new version with a sunset date</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li><strong>Resources</strong> are plural nouns; <strong>methods</strong> are the verbs; special actions are sub-resources with <code>POST</code>. Nest one level at most.</li>
+<li>Fix the <strong>representation</strong> rules once: one naming style, UTC times, money as amount and currency, lists in an object.</li>
+<li><strong>Schemas</strong> describe every input and output; the framework refuses bad input and types the good.</li>
+<li><strong>Cursors</strong> page without drift over a complete order (sort field plus id); allowed sort fields are listed.</li>
+<li>Errors are <strong>Problem Details</strong>: <code>type</code>, <code>title</code>, <code>status</code>, <code>detail</code>, <code>instance</code>, from one factory and one handler.</li>
+<li><strong>Idempotency keys</strong> with fingerprints make retries safe; <strong>ETag and <code>If-Match</code></strong> prevent lost updates.</li>
+<li><strong>Rate limits</strong> protect everybody; their headers let good clients avoid them.</li>
+<li>Prefer <strong>additive</strong> changes; version and announce the rest. Generate <strong>OpenAPI</strong> documentation from the code.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>POST /orders/7/cancel</code>: cancelling is an action with its own rules (stock, refunds, a check that the order can still be cancelled), and a dedicated endpoint can enforce them and be documented and permitted separately; a generic <code>PATCH</code> would let a client set any status. 2. Products with the same price would otherwise have no fixed order, so a row could move from one page to another between requests, and the cursor could not say exactly where to continue. 3. So that the server can change the cursor’s contents (another sort, a signature, an encryption) without breaking clients, and so that clients do not build cursors that skip the server’s rules.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project extends this chapter’s API. Keep the conventions: schemas for every input and output, Problem Details for every error, and a test with <code>inject</code> for every rule.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>Product reviews</h3>
+<p class="project-goal">Add reviews to products: list them with cursor pages, and create them with validation.</p>
+<p class="project-skills"><strong>You will practise:</strong> nested resources, cursor pagination, validation, and <code>201</code> with <code>Location</code>.</p>
+<ol class="steps">
+<li>Design the routes first: <code>GET /v1/products/:id/reviews</code> and <code>POST /v1/products/:id/reviews</code>. Write an example request and response for each.</li>
+<li>A review has a rating from 1 to 5, a text of 10 to 1000 characters, and a creation time. Answer <code>404</code> as a problem for an unknown product.</li>
+<li>List reviews newest first, with cursors made from the creation time and the id.</li>
+<li>Add <code>average_rating</code> and <code>review_count</code> to the product’s representation. Is that an additive change?</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> two reviews can be created in the same millisecond. That is exactly why the cursor needs the id as well as the time.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A client that retries correctly</h3>
+<p class="project-goal">Write a small TypeScript client for the orders endpoint that retries safely, with backoff, and test it against a server that fails on purpose.</p>
+<p class="project-skills"><strong>You will practise:</strong> idempotency keys from the client’s side, timeouts, exponential backoff, and reading <code>Retry-After</code>.</p>
+<ol class="steps">
+<li>Write <code>createOrder(items)</code>: it makes one UUID with <code>crypto.randomUUID()</code> and uses the <em>same</em> key for every attempt.</li>
+<li>Retry on network errors, timeouts (use <code>AbortSignal.timeout</code>), <code>409 in-progress</code>, <code>429</code> and <code>5xx</code>; never on other <code>4xx</code>.</li>
+<li>Wait 200 ms, 400 ms, 800 ms between attempts, plus a random part (jitter), and use <code>Retry-After</code> when the server sends it. Give up after five attempts.</li>
+<li>Add a test option to the server that drops the response of every second request after doing the work, and show with a test that the client still creates exactly one order.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the jitter matters. Without it, a thousand clients that failed at the same moment retry at the same moment too, and knock the server over again.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Version 2, side by side</h3>
+<p class="project-goal">Introduce a breaking change as <code>/v2</code>, keep <code>/v1</code> working from the same code, and announce its end.</p>
+<p class="project-skills"><strong>You will practise:</strong> versioning, mapping representations, deprecation headers, and contract tests.</p>
+<ol class="steps">
+<li>In v2, prices become <code>{"amount": "450.00", "currency": "EGP"}</code> with a decimal string, and <code>created_at</code> is renamed <code>created</code>. Decide why each change is breaking.</li>
+<li>Keep one internal model, and write one mapping function per version from the model to its representation.</li>
+<li>Add <code>Deprecation</code> and <code>Sunset</code> headers to every v1 answer, with a date six months ahead, and a <code>Link</code> header to the migration guide.</li>
+<li>Write tests that save today’s v1 responses as fixtures and fail if v1 ever changes, so that v2 work cannot break v1 by accident.</li>
+<li>Generate the OpenAPI document for each version, and compare them with a tool such as <code>oasdiff</code>, which lists the breaking changes.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> versions should be thin layers at the edge of the API. If v2 needs its own database tables or its own business rules, the versioning is in the wrong place.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Design the method and URL for each: list one customer’s orders; add an item to a cart; a payment provider tells you a payment succeeded; search products by name; refund an order.</li>
+<li><span class="level">Easy</span> Choose a status code for each, and say why: an email already registered; an update without <code>If-Match</code>; an update with an old ETag; JSON with a missing quote; a quantity of 0.</li>
+<li><span class="level">Medium</span> Add a <code>q</code> parameter to <code>GET /v1/products</code> that finds products whose name contains the text, ignoring case, with at least 2 characters. Does the cursor still work with it?</li>
+<li><span class="level">Medium</span> Cancelling an order twice answers <code>409</code>. A mobile app retries the cancel request after a timeout and shows an error to a user whose order was in fact cancelled. Propose two ways to fix this, and choose one.</li>
+<li><span class="level">Challenge</span> The idempotency keys in this chapter never expire, and two different clients that happen to choose the same key would see each other’s orders. Write an <code>IdempotencyStore</code> class that scopes keys by client and expires them after 24 hours, with a clock that tests can control, and test both rules.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>Part 2 begins. Our products and orders still live in memory; next they move into PostgreSQL. We learn SQL properly: tables, joins, grouping, indexes, and how to read a query plan.</p>
+</div>
+</section>
