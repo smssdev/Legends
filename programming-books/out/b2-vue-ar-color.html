@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "الفصل 4: المكونات والقوالب"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "الفصل 5: التفاعلية وComposition API"; } }
+@page ch05:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: أنظمة التصميم ومكتبات المكونات"; } }
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "الفصل 11: الوصول (WCAG) عملياً"; } }
@@ -2298,6 +2300,454 @@ function onKeydown(event: KeyboardEvent) {
 <div class="next">
 <p class="next-title">في الفصل 5</p>
 <p>استخدمت <code>ref</code> و<code>computed</code>. وفي الفصل التالي سترى كيف تعمل تفاعلية Vue حقاً، وتتعلم واجهة التركيب (Composition API) كلها: الكائنات التفاعلية، والمراقبين، وحياة المكوّن، والربط في الاتجاهين بـ <code>v-model</code>.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b2/vue/reactivity/ar">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">الفصل 5</p><h1>التفاعلية وواجهة التركيب</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح كيف يعرف Vue ما يحدّثه: بتتبع ما يقرؤه الكود، وإعادة تشغيل ما يعتمد عليه</li>
+<li>تختار بين <code>ref</code> و<code>reactive</code>، وتتجنب الطرق التي تضيع بها التفاعلية</li>
+<li>تُبقي الحالة في حدها الأدنى، وتحسب كل ما عداها</li>
+<li>تستجيب للتغييرات بالمراقبين، وتنظّف بعدهم</li>
+<li>تستخدم مراحل حياة المكوّن، والربط في الاتجاهين بـ <code>v-model</code> على مكوناتك</li>
+</ul>
+</div>
+
+<p class="lead">غيّرت في الفصل الماضي <code>likes.value</code> فتحدّث الزر، كأنه سحر. وليس سحراً، ومعرفة كيف يعمل هي الفرق بين مطور يستخدم Vue ومطور يستطيع أن يشرح لماذا لم تتحدث شاشة. هذا الفصل يفتح الصندوق: كيف يتتبع Vue البيانات، والقواعد القليلة التي تنتج عن ذلك، وأدوات <dfn>واجهة التركيب</dfn> (Composition API)، أي الدوال مثل <code>ref</code> و<code>computed</code> و<code>watch</code> التي تستدعيها داخل <code>&lt;script setup&gt;</code>.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>معظم أخطاء «لم يتحدث Vue» تأتي من قاعدتين أو ثلاث. تعلّم قواعد القسم 5.2 مرة واحدة، فتختفي تلك الأخطاء من حياتك.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>التتبع والإطلاق</span></h2>
+
+<p>تعمل تفاعلية Vue على خطوتين. حين <em>يقرأ</em> كود قيمة تفاعلية يسجل Vue من قرأها، وهذا <dfn>التتبع</dfn>. وحين <em>تتغير</em> القيمة يعيد Vue تشغيل كل ما قرأها، وهذا <dfn>الإطلاق</dfn>. وقالب المكوّن كود من هذا النوع: يُتتبَّع أثناء رسمه، ويُعاد تشغيله حين يتغير أي شيء قرأه. ويمكنك رؤية الآلية دون أي مكوّن:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">reactivity.ts</div><pre class="code"><span class="k">import</span> { computed, effect, reactive } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">const</span> cart = reactive({
+  lines: [] as { name: string; price: number; quantity: number }[],
+  coupon: <span class="s">&quot;&quot;</span>,
+});
+<span class="k">const</span> total = computed(() =&gt; cart.lines.reduce((sum, l) =&gt; sum + l.price * l.quantity, <span class="n">0</span>));
+
+<span class="c">// تعمل الآن، ومن جديد كلما تغير شيء قرأته</span>
+effect(() =&gt; console.log(<span class="s">`المجموع: ${total.value}`</span>));
+
+cart.lines.push({ name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span>, quantity: <span class="n">1</span> });
+cart.lines.push({ name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span>, quantity: <span class="n">1</span> });
+cart.lines[<span class="n">0</span>]!.quantity = <span class="n">3</span>;
+cart.coupon = <span class="s">&quot;BIT10&quot;</span>; <span class="c">// لا شيء يُطبع: المجموع لم يقرأ الكوبون أبداً</span></pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>المجموع: 0
+المجموع: 8
+المجموع: 33
+المجموع: 49</pre></div>
+
+<p>طُبعت أربعة أسطر: ثلاثة تغييرات والتشغيل الأول. والتغيير الأخير لم يطبع شيئاً: فـ <code>total</code> لم يقرأ <code>coupon</code> أبداً، فلا يمكن أن يغيّر الكوبونُ المجموعَ، ولا يضيّع Vue وقتاً في إعادة حسابه. ولهذا يحدّث Vue بهذه الدقة: كل قطعة من الشاشة تعتمد على البيانات التي قرأتها بالضبط.</p>
+
+<p>فكيف يرى Vue القراءة؟ <code>reactive()</code> تغلّف الكائن بـ <code>Proxy</code> من JavaScript، يستطيع أن يعترض كل قراءة وكتابة لخصائصه. و<code>ref()</code> تفعل الشيء نفسه مع كائن صغير خاصيته الوحيدة <code>value</code>. ولهذا تحتاج المراجع <code>.value</code> في السكربت: فهي الخاصية التي يراقبها Vue.</p>
+
+<h2><span class="sec">5.2</span> <span><code>ref</code> و<code>reactive</code>، وضياع التفاعلية</span></h2>
+
+<table>
+<thead><tr><th></th><th><code>ref(value)</code></th><th><code>reactive(object)</code></th></tr></thead>
+<tbody>
+<tr><td>تحمل</td><td>أي قيمة: عدداً أو نصاً أو كائناً أو مصفوفة</td><td>الكائنات والمصفوفات فقط</td></tr>
+<tr><td>القراءة والكتابة</td><td><code>count.value</code> في السكربت، و<code>count</code> في القالب</td><td><code>cart.lines</code> في كل مكان</td></tr>
+<tr><td>يمكن استبدالها</td><td>نعم: <code>list.value = []</code></td><td>لا: إسناد كائن جديد إلى المتغير يقطع الرابط</td></tr>
+</tbody>
+</table>
+
+<p>والتوصية الرسمية، التي يتبعها هذا الكتاب، بسيطة: <strong>استخدم <code>ref</code> لكل الحالة</strong>. فهي تصلح لكل أنواع القيم، ويمكن استبدالها، و<code>.value</code> تذكّرك أن القيمة تفاعلية. والقاعدة الثانية عن فخ يبدو بريئاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lost.ts</div><pre class="code"><span class="k">import</span> { reactive, toRefs } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">const</span> product = reactive({ name: <span class="s">&quot;كوب بِت&quot;</span>, stock: <span class="n">3</span> });
+
+<span class="c">// التفكيك ينسخ العدد مرة واحدة، وtoRefs تحفظ رابطاً بالكائن</span>
+<span class="k">const</span> { stock } = product;
+<span class="k">const</span> { stock: stockRef } = toRefs(product);
+
+product.stock = <span class="n">2</span>;
+console.log(<span class="s">&quot;القيمة المنسوخة:&quot;</span>, stock);
+console.log(<span class="s">&quot;المرجع المرتبط:&quot;</span>, stockRef.value);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>القيمة المنسوخة: 3
+المرجع المرتبط: 2</pre></div>
+
+<p>التفكيك يقرأ <code>product.stock</code> مرة واحدة وينسخ العدد إلى متغير عادي لا يعرف شيئاً عن التغييرات اللاحقة. والأمر نفسه يحدث حين تمرر <code>product.stock</code> إلى دالة تحتفظ به. وحين تحتاج متغيراً منفصلاً يبقى مرتبطاً، تحوّل <code>toRefs</code> كل خاصية إلى مرجع متصل بالكائن.</p>
+
+<h3>التحديثات تُجمَّع</h3>
+
+<p>تغيير البيانات التفاعلية لا يحدّث الشاشة فوراً. فـ Vue يجمع كل التغييرات التي حدثت في اللحظة نفسها ويطبقها معاً، مرة واحدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">batching.ts</div><pre class="code"><span class="k">import</span> { nextTick, ref, watch } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">const</span> count = ref(<span class="n">0</span>);
+<span class="c">// ثلاثة تغييرات، ومرة واحدة للمراقب، بالقيمتين الأولى والأخيرة</span>
+watch(count, (now, before) =&gt; console.log(<span class="s">`watch: ${before} → ${now}`</span>));
+
+count.value++;
+count.value++;
+count.value++;
+console.log(<span class="s">&quot;بعد التغييرات مباشرة:&quot;</span>, count.value);
+<span class="k">await</span> nextTick();
+console.log(<span class="s">&quot;بعد nextTick&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>بعد التغييرات مباشرة: 3
+watch: 0 → 3
+بعد nextTick</pre></div>
+
+<p>ثلاثة تغييرات، ومرة واحدة للمراقب، بالقيمتين الأولى والأخيرة. والصفحة تعمل بالطريقة نفسها: بعد تغيير البيانات يُحدَّث DOM بعد لحظة، دفعة واحدة. فإن احتاج كود أن يرى الصفحة المحدَّثة، كأن يقيس عنصراً أو ينقل التركيز إلى حقل ظهر للتو، فانتظر <code>await nextTick()</code> أولاً.</p>
+
+<h2><span class="sec">5.3</span> <span>حالة في حدها الأدنى، وقيم محسوبة</span></h2>
+
+<p>أهم مهارة في تصميم الحالة أن تُبقي منها أقل ما يمكن. فكل ما يمكن حسابه من حالة أخرى يجب أن يكون <code>computed</code>، لا نسخة ثانية تُبقيها متوافقة باليد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cart-model.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; price: number };
+<span class="k">export</span> <span class="k">type</span> Line = { product: Product; quantity: number };
+
+<span class="k">export</span> <span class="k">const</span> catalogue: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;قبعة بِت&quot;</span>, price: <span class="n">12</span> },
+];
+
+<span class="k">export</span> <span class="k">const</span> FREE_DELIVERY = <span class="n">50</span>;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Cart.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+import { catalogue, FREE_DELIVERY, type Line, type Product } from &quot;./cart-model&quot;;
+
+// السطور وحدها حالة، وكل ما عداها محسوب منها
+const lines = ref&lt;Line[]&gt;([]);
+
+const count = computed(() =&gt; lines.value.reduce((n, l) =&gt; n + l.quantity, 0));
+const total = computed(() =&gt; lines.value.reduce((sum, l) =&gt; sum + l.product.price * l.quantity, 0));
+const missing = computed(() =&gt; Math.max(0, FREE_DELIVERY - total.value));
+
+function add(product: Product) {
+  const line = lines.value.find((l) =&gt; l.product.id === product.id);
+  if (line) line.quantity++;
+  else lines.value.push({ product, quantity: 1 });
+}
+
+function remove(id: number) {
+  lines.value = lines.value.filter((l) =&gt; l.product.id !== id);
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section class=&quot;cart&quot;&gt;
+    &lt;div class=&quot;row&quot;&gt;
+      &lt;button v-for=&quot;p in catalogue&quot; :key=&quot;p.id&quot; type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;add(p)&quot;&gt;
+        أضف {{ p.name }}
+      &lt;/button&gt;
+    &lt;/div&gt;
+    &lt;p v-if=&quot;lines.length === 0&quot; class=&quot;muted&quot;&gt;سلتك فارغة.&lt;/p&gt;
+    &lt;ul v-else&gt;
+      &lt;li v-for=&quot;line in lines&quot; :key=&quot;line.product.id&quot;&gt;
+        &lt;span&gt;{{ line.product.name }} × {{ line.quantity }}&lt;/span&gt;
+        &lt;button type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;remove(line.product.id)&quot;&gt;احذف&lt;/button&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;p&gt;العناصر: {{ count }} · &lt;span class=&quot;total&quot;&gt;المجموع: {{ total }} جنيهاً&lt;/span&gt;&lt;/p&gt;
+    &lt;div class=&quot;bar&quot; aria-hidden=&quot;true&quot;&gt;&lt;span :style=&quot;{ width: `${Math.min(100, (total / 50) * 100)}%` }&quot; /&gt;&lt;/div&gt;
+    &lt;p v-if=&quot;missing === 0&quot; class=&quot;free&quot;&gt;توصيل مجاني!&lt;/p&gt;
+    &lt;p v-else class=&quot;muted&quot;&gt;{{ missing }} جنيهاً أخرى للتوصيل المجاني&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/vue-reactivity-ar-cart.html-560-a9e453.png" alt=""><figcaption><b>الشكل 5.1:</b> بعد إضافة كتاب وكوبين. عدد العناصر والمجموع والشريط والرسالة كلها من قائمة السطور الواحدة.</figcaption></figure>
+
+<p>الحالة الوحيدة هي <code>lines</code>. فلو حُفظ العدد منفصلاً، لكان على كل دالة تغيّر السطور أن تتذكر تحديث العدد أيضاً، وفي يوم ما ستنسى إحداها. أما القيم المحسوبة فلا تُنسى: تُحسب دائماً من الحقيقة.</p>
+
+<p>ولاحظ أيضاً <code>line.quantity++</code> في <code>add</code>. فبخلاف بعض أطر العمل، يسمح لك Vue بتغيير الكائنات والمصفوفات في مكانها: يرى الوسيط الكتابة، فيتحدث كل ما قرأ <code>quantity</code>. واستبدال مصفوفة كاملة، كما تفعل <code>remove</code> بـ <code>filter</code>، يعمل أيضاً لأن <code>lines</code> مرجع.</p>
+
+<h2><span class="sec">5.4</span> <span>أين تعيش الحالة؟</span></h2>
+
+<p>تعيش كل قطعة حالة في أدنى مكوّن يحتوي كل المكونات التي تحتاجها. فإن كانت السلة وحدها تستخدم السطور فهي تعيش في السلة. وإن احتاجت الترويسة عدد العناصر أيضاً، صعدت السطور إلى المكوّن الذي يحتوي الاثنين، ونزلت خصائص، وصعدت الأحداث. وإن احتاجتها أجزاء كثيرة متباعدة في التطبيق، فالفصل 9 يعطيها مخزناً خاصاً بها.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا لم يطبع تغيير الكوبون شيئاً في <code>reactivity.ts</code>؟</li><li>ما الخطأ في <code>const { stock } = product</code> إن كان <code>product</code> تفاعلياً؟</li><li>لماذا عدد عناصر السلة <code>computed</code> لا <code>ref</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">5.5</span> <span>المراقبون: الاستجابة للتغييرات</span></h2>
+
+<p>تحسب <code>computed</code> قيمة. أما أحياناً فيجب أن <em>يفعل</em> التغيير شيئاً خارج عالم Vue: أن يبدأ مؤقتاً، أو يحفظ في التخزين، أو يستدعي خادماً، أو يغيّر عنوان الصفحة. وهذا عمل <dfn>المراقب</dfn> (watcher):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Timer.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { onWatcherCleanup, ref, watch } from &quot;vue&quot;;
+
+const running = ref(false);
+const seconds = ref(0);
+
+watch(running, (on) =&gt; {
+  if (!on) return;
+  const id = setInterval(() =&gt; seconds.value++, 1000);
+  // تعمل قبل المرة التالية للمراقب، وحين يُزال المكوّن
+  onWatcherCleanup(() =&gt; clearInterval(id));
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p&gt;
+    &lt;strong&gt;{{ seconds }}&lt;/strong&gt; ثانية
+    &lt;button type=&quot;button&quot; :aria-pressed=&quot;running&quot; @click=&quot;running = !running&quot;&gt;
+      {{ running ? &quot;أوقف&quot; : &quot;ابدأ&quot; }}
+    &lt;/button&gt;
+  &lt;/p&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>timer.html</span><b>560px</b></div><img src="img/vue-reactivity-ar-timer.html-560-f4f5f8.png" alt=""><figcaption><b>الشكل 5.2:</b> المؤقت بعد نحو ثانيتين من الضغط على «ابدأ».</figcaption></figure>
+
+<p>تستدعي <code>watch(running, callback)</code> الدالة في كل مرة يتغير فيها <code>running</code>. والسطر المهم <code>onWatcherCleanup</code>: يسجل دالة يستدعيها Vue قبل المرة التالية للمراقب، وحين يُزال المكوّن من الصفحة. فبدونه يترك الضغط على «أوقف» المؤقت يعمل إلى الأبد، ويبدأ الضغط على «ابدأ» مرة أخرى مؤقتاً ثانياً، فتُعدّ الثواني بضعف السرعة.</p>
+
+<p>وفي Vue نوعان من المراقبين:</p>
+<ul>
+<li><code>watch(source, callback)</code> تراقب ما تسميه، وتعطيك القيمتين الجديدة والقديمة. ولا تعمل في البداية إلا إن مررت <code>{ immediate: true }</code>. ولملاحظة التغييرات العميقة داخل الكائنات والمصفوفات مرّر <code>{ deep: true }</code>.</li>
+<li><code>watchEffect(fn)</code> تشغّل <code>fn</code> فوراً، وتتتبع كل ما تقرؤه، وتعمل من جديد حين يتغير أي منه، مثل <code>effect</code> في القسم 5.1.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: قد لا تحتاج مراقباً</p><p>المراقب الذي ينسخ بيانات إلى مرجع آخر، مثل <code>watch(lines, () =&gt; { count.value = … })</code>، قيمة محسوبة مكتوبة بالطريقة الصعبة، وهي خاطئة لحظةً بين التغيير والمراقب. فإن كنت تحسب فاستخدم <code>computed</code>. واستخدم المراقب فقط حين يجب أن يسبب التغيير شيئاً خارج البيانات.</p></aside>
+
+<h3>حياة المكوّن</h3>
+
+<p>يُنشأ المكوّن، ثم يوضع في الصفحة (<dfn>يُركَّب</dfn>)، ويتحدث مع تغيّر بياناته، ثم يُزال أخيراً (<dfn>يُفَك</dfn>). ودوال مثل <code>onMounted</code> و<code>onUnmounted</code> تشغّل كوداً في تلك اللحظات: <code>onMounted</code> أول لحظة تكون فيها عناصر المكوّن موجودة في الصفحة، فهي مكان قياسها، أو وضع التركيز في حقل، أو تشغيل مكتبة تحتاج عنصراً حقيقياً. ونظّف في <code>onUnmounted</code> كل ما بدأته في <code>onMounted</code>. وللوصول إلى العنصر نفسه أعطه <code>ref="name"</code> في القالب واقرأه بـ <code>useTemplateRef("name")</code>، كما فعل مشروع الألسنة في الفصل 4.</p>
+
+<h2><span class="sec">5.6</span> <span><code>v-model</code> على مكوناتك</span></h2>
+
+<p>على حقل الإدخال، تُبقي <code>v-model="text"</code> المرجعَ والحقل متوافقين في الاتجاهين. ومكوناتك أيضاً تستطيع دعم <code>v-model</code>: تنشئ <code>defineModel</code> مرجعاً يقرأ الخاصية التي مررها الأب، وحين تغيّره يطلق الحدث الذي يحدّث الأب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">QuantityInput.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+// defineModel: خاصية وحدث في مرجع واحد، من أجل v-model
+const quantity = defineModel&lt;number&gt;({ required: true });
+const props = defineProps&lt;{ max: number; label: string }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div class=&quot;quantity&quot; role=&quot;group&quot; :aria-label=&quot;label&quot;&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; :disabled=&quot;quantity &lt;= 1&quot; aria-label=&quot;−1&quot; @click=&quot;quantity--&quot;&gt;−&lt;/button&gt;
+    &lt;output&gt;{{ quantity }}&lt;/output&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; :disabled=&quot;quantity &gt;= props.max&quot; aria-label=&quot;+1&quot; @click=&quot;quantity++&quot;&gt;+&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Order.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import QuantityInput from &quot;./QuantityInput.vue&quot;;
+
+const mugs = ref(1);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p&gt;كوب بِت&lt;/p&gt;
+  &lt;QuantityInput v-model=&quot;mugs&quot; :max=&quot;5&quot; label=&quot;الكمية&quot; /&gt;
+  &lt;p&gt;طلبت: {{ mugs }} · المجموع: {{ mugs * 8 }} جنيهاً&lt;/p&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>order.html</span><b>560px</b></div><img src="img/vue-reactivity-ar-order.html-560-4b85a5.png" alt=""><figcaption><b>الشكل 5.3:</b> بعد الضغط على «+» مرتين: تغيّر <code>mugs</code> في الأب عبر <code>v-model</code>.</figcaption></figure>
+
+<p>وهذا لا يكسر قاعدة «البيانات تنزل والأحداث تصعد»: فـ <code>v-model="mugs"</code> اختصار لـ <code>:modelValue="mugs" @update:modelValue="mugs = $event"</code>. فالأب ما زال يملك العدد، وإنما يسمح للابن أن يطلب التغيير بسمة واحدة قصيرة.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: سمِّ غرض كل مراقب</p><p>كل مراقب قطعة صغيرة من السلوك تعمل في أوقات لا تراها. أبقِ كل واحد قصيراً، وضع فوقه تعليقاً يقول لماذا يوجد، ونظّف كل ما يبدؤه. وحين يكون في المكوّن أكثر من اثنين أو ثلاثة، يريك الفصل التالي كيف تنقلها إلى composables لها أسماء.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>تفكيك كائن تفاعلي أو خاصية</td><td>نسخة لا تتحدث أبداً</td><td>اقرأ <code>obj.prop</code> حيث تحتاجها، أو استخدم <code>toRefs</code></td></tr>
+<tr><td><code>let state = reactive({…})</code> ثم <code>state = {…}</code></td><td>تظل الشاشة تعرض الكائن القديم</td><td>استخدم <code>ref</code> وأسند إلى <code>.value</code></td></tr>
+<tr><td>حفظ قيم يمكن حسابها</td><td>نسخ تتباعد</td><td><code>computed</code></td></tr>
+<tr><td>مراقب لا يفعل إلا ضبط مرجع آخر</td><td>قيمة خاطئة لحظةً، وكود أكثر</td><td><code>computed</code></td></tr>
+<tr><td>بدء مؤقت أو طلب دون تنظيف</td><td>مؤقتات مضاعفة، وردود تصل متأخرة</td><td><code>onWatcherCleanup</code> أو <code>onUnmounted</code></td></tr>
+<tr><td>قراءة DOM مباشرة بعد تغيير البيانات</td><td>تُقاس الصفحة القديمة</td><td><code>await nextTick()</code> أولاً</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>يتتبع</strong> Vue أي كود يقرأ أي بيانات، و<strong>يُطلق</strong> ذلك الكود بالضبط حين تتغير البيانات.</li>
+<li><code>reactive</code> تغلّف الكائنات بوسيط، و<code>ref</code> تغلّف أي قيمة بكائن فيه <code>.value</code>. فضّل <code>ref</code>.</li>
+<li>التفكيك ينسخ القيم فتضيع التفاعلية، و<code>toRefs</code> تحفظ الرابط. والتحديثات <strong>تُجمَّع</strong>، و<code>nextTick</code> تنتظر الصفحة.</li>
+<li>أبقِ الحالة في <strong>حدها الأدنى</strong>، واحسب الباقي بـ <code>computed</code>. وضع الحالة في أدنى مكوّن يحتوي كل من يستخدمها.</li>
+<li><strong>المراقبون</strong> للآثار خارج البيانات. نظّف بـ <code>onWatcherCleanup</code>، واستخدم <code>onMounted</code> و<code>onUnmounted</code> لحياة المكوّن.</li>
+<li><code>defineModel</code> تعطي مكوناتك <code>v-model</code>، دون أن تكسر اتجاه البيانات الواحد.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن <code>total</code> لم يقرأ <code>coupon</code> أبداً، فلم يتتبع Vue أي صلة بينهما. 2. تنسخ العدد الحالي إلى متغير عادي لا يتغير حين يتغير المنتج. 3. لأنه يُحسب من السطور، وحفظه يصنع نسخة ثانية يجب تحديثها باليد.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قبل كل مشروع اكتب كل قطعة حالة تنوي حفظها، ثم اشطب كل واحدة يمكن حسابها من غيرها. فما يبقى يذهب إلى <code>ref</code>، والباقي يصير <code>computed</code>.</p>
+
+<div class="project">
+<p class="project-label">المشروع 5.1 · سهل</p>
+<h3>عدّاد بخطوات وتراجع</h3>
+<p class="project-goal">عدّاد يضيف خطوة مختارة أو يطرحها، ويعرض سجله، ويستطيع التراجع عن أي عدد من التغييرات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الحالة في حدها الأدنى، و<code>computed</code>، وتغيير المصفوفات في مكانها، و<code>v-model.number</code>.</p>
+<ol class="steps">
+<li>احفظ مرجعين فقط: الخطوة، وسجل القيم مبتدئاً بـ <code>[0]</code>.</li>
+<li>اجعل القيمة الحالية <code>computed</code>: آخر عنصر في السجل.</li>
+<li>كل زر يدفع قيمة جديدة إلى السجل، و«تراجع» يحذف واحدة، ويُعطَّل حين لا يبقى إلا القيمة الأولى.</li>
+<li>اربط الخطوة بـ <code>v-model.number</code>، فتكون عدداً لا نصاً.</li>
+<li>أعطِ القيمة <code>aria-live="polite"</code>، ليعلن قارئ الشاشة العدد الجديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> لأن السجل هو الحالة، صار التراجع سطراً واحداً. ولو حفظت القيمة وغيرتها بـ <code>+=</code>، لاحتاج التراجع قائمة ثانية تُبقيها متوافقة مع الأولى باليد.</p>
+<div class="listing" dir="ltr"><div class="listing-title">History.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+
+const step = ref(1);
+const history = ref&lt;number[]&gt;([0]);
+const value = computed(() =&gt; history.value.at(-1) ?? 0);
+
+function change(by: number) {
+  history.value.push(value.value + by);
+}
+
+function undo() {
+  if (history.value.length &gt; 1) history.value.pop();
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p class=&quot;value&quot; aria-live=&quot;polite&quot;&gt;{{ value }}&lt;/p&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;change(-step)&quot;&gt;−{{ step }}&lt;/button&gt;
+    &lt;button type=&quot;button&quot; @click=&quot;change(step)&quot;&gt;+{{ step }}&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; :disabled=&quot;history.length === 1&quot; @click=&quot;undo&quot;&gt;تراجع&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;label&gt;الخطوة &lt;input id=&quot;step&quot; v-model.number=&quot;step&quot; type=&quot;number&quot; min=&quot;1&quot; max=&quot;10&quot; /&gt;&lt;/label&gt;
+  &lt;p class=&quot;muted&quot;&gt;السجل: {{ history.join(&quot; → &quot;) }}&lt;/p&gt;
+&lt;/template&gt;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>history.html</span><b>560px</b></div><img src="img/vue-reactivity-ar-projects-history.html-560-de11b3.png" alt=""><figcaption><b>المشروع 5.1:</b> بعد ‎+1 و‎+1، وتغيير الخطوة إلى 5، و‎+5، ثم «تراجع».</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 5.2 · متوسط</p>
+<h3>قائمة مهام تتذكر</h3>
+<p class="project-goal">قائمة مهام تحفظ نفسها في المتصفح، وتعود بعد إعادة التحميل بأمان.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>v-model</code> على النصوص ومربعات الاختيار، والمراقب العميق، و<code>localStorage</code>، والتحميل الحذر.</p>
+<ol class="steps">
+<li>حمّل المهام مرة واحدة حين يبدأ المكوّن، داخل <code>try</code>: فالبيانات المحفوظة قد تكون مفقودة أو تالفة أو من إصدار أقدم.</li>
+<li>اربط نص المهمة الجديدة بـ <code>v-model</code>، وأضفها عند <code>@submit.prevent</code>، فيعمل Enter ولا تُعاد الصفحة.</li>
+<li>اربط كل مربع اختيار مباشرة بـ <code>task.done</code> بـ <code>v-model</code>: يغيّر Vue الكائن في مكانه.</li>
+<li>احفظ بـ <code>watch(tasks, save, { deep: true })</code>. فبدون <code>deep</code> لن يُلاحَظ تعليم المربع، لأن المصفوفة نفسها لم تتغير.</li>
+<li>اعرض عدد المهام المتبقية بـ <code>computed</code>، وأضف زراً يحذف المنجزة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> <code>deep: true</code> تمر على البنية كلها مع كل تغيير. وهذا مقبول لقائمة مهام، أما لآلاف العناصر فاحفظ أقل، أو راقب جزءاً أصغر.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>tasks.html</span><b>560px</b></div><img src="img/vue-reactivity-ar-projects-tasks.html-560-623809.png" alt=""><figcaption><b>المشروع 5.2:</b> مهمة جديدة أُضيفت بـ Enter، والأولى، المحمَّلة في البداية، منجزة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 5.3 · تحدٍّ</p>
+<h3>البحث أثناء الكتابة دون سباقات</h3>
+<p class="project-goal">ابحث في المنتجات أثناء كتابة المستخدم، ولا تعرض أبداً نتائج بحث قديم، حتى حين يصل رد بطيء بعد رد سريع.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المراقبين مع العمل غير المتزامن، و<code>onWatcherCleanup</code>، و<code>AbortController</code>، وحالات التحميل المعلنة لقارئ الشاشة.</p>
+<ol class="steps">
+<li>استخدم الواجهة الوهمية أدناه. فهي، كالبحث الحقيقي، تجيب عن الاستعلامات القصيرة أبطأ، فقد يصل «ب» بعد «بِت».</li>
+<li>راقب الاستعلام. وللاستعلام الفارغ امسح النتائج وتوقف.</li>
+<li>أنشئ لكل بحث <code>AbortController</code>، وسجّل <code>controller.abort()</code> بـ <code>onWatcherCleanup</code>، فتلغي الضغطة التالية الطلب السابق.</li>
+<li>انتظر النتائج داخل <code>try</code>، فالطلب الملغى يُرفض، و<code>catch</code> تتجاهله ببساطة.</li>
+<li>اعرض «جارٍ البحث عن…» وعدد النتائج بـ <code>role="status"</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اكتب «بِت» بسرعة مع سطر التنظيف ودونه. فبدونه سترى أحياناً نتائج «ب» تحل محل نتائج «بِت»: <dfn>حالة سباق</dfn> (race condition)، من أشهر الأخطاء في التطبيقات الحقيقية.</p>
+<div class="listing" dir="ltr"><div class="listing-title">fake-api.ts</div><pre class="code"><span class="k">import</span> { catalogue, <span class="k">type</span> Product } <span class="k">from</span> <span class="s">&quot;./cart-model&quot;</span>;
+
+<span class="c">// A pretend server: answers after a delay, slower for short queries, like a real search.</span>
+<span class="k">export</span> <span class="k">function</span> searchProducts(query: string, signal: AbortSignal): Promise&lt;Product[]&gt; {
+  <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
+    <span class="k">const</span> timer = setTimeout(() =&gt; {
+      <span class="k">const</span> q = query.trim().toLowerCase();
+      resolve(catalogue.filter((p) =&gt; p.name.toLowerCase().includes(q)));
+    }, <span class="n">600</span> - query.length * <span class="n">100</span>);
+    signal.addEventListener(<span class="s">&quot;abort&quot;</span>, () =&gt; {
+      clearTimeout(timer);
+      reject(signal.reason);
+    });
+  });
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Search.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { onWatcherCleanup, ref, watch } from &quot;vue&quot;;
+import { searchProducts } from &quot;../fake-api&quot;;
+import type { Product } from &quot;../cart-model&quot;;
+
+const query = ref(&quot;&quot;);
+const results = ref&lt;Product[]&gt;([]);
+const loading = ref(false);
+
+watch(query, async (q) =&gt; {
+  if (!q.trim()) {
+    results.value = [];
+    return;
+  }
+  // إن كتب المستخدم من جديد، فألغِ الطلب القديم
+  const controller = new AbortController();
+  onWatcherCleanup(() =&gt; controller.abort());
+  loading.value = true;
+  try {
+    results.value = await searchProducts(q, controller.signal);
+    loading.value = false;
+  } catch {
+    // aborted: a newer search is already running
+  }
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;label for=&quot;q&quot;&gt;ابحث في المنتجات&lt;/label&gt;
+  &lt;input id=&quot;q&quot; v-model=&quot;query&quot; type=&quot;search&quot; autocomplete=&quot;off&quot; /&gt;
+  &lt;p v-if=&quot;loading&quot; class=&quot;muted&quot; role=&quot;status&quot;&gt;جارٍ البحث عن “{{ query }}”…&lt;/p&gt;
+  &lt;template v-else-if=&quot;query&quot;&gt;
+    &lt;p role=&quot;status&quot;&gt;{{ results.length }} نتائج&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li v-for=&quot;p in results&quot; :key=&quot;p.id&quot;&gt;{{ p.name }}&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/template&gt;
+&lt;/template&gt;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>search.html</span><b>560px</b></div><img src="img/vue-reactivity-ar-projects-search.html-560-da42e6.png" alt=""><figcaption><b>المشروع 5.3:</b> نتائج «بِت».</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف إلى <code>Cart.vue</code> زر «أفرغ» يفرّغ السلة. أي القيم المحسوبة تحتاج إلى تغييرها؟</li>
+<li><span class="level">سهل</span> توقّع، ثم تحقق، ماذا يطبع <code>reactivity.ts</code> إن أضفت <code>cart.lines.pop()</code> في آخره.</li>
+<li><span class="level medium">متوسط</span> أعطِ <code>Timer.vue</code> زر «صفّر»، واجعل عنوان الصفحة يعرض الثواني أثناء عمل المؤقت بـ <code>watchEffect</code>. ماذا يكون العنوان حين يتوقف؟</li>
+<li><span class="level medium">متوسط</span> أعطِ <code>QuantityInput</code> نموذجاً ثانياً <code>v-model:note</code> لرسالة الهدية، بـ <code>defineModel("note")</code>.</li>
+<li><span class="level hard">تحدٍّ</span> اكتب <code>watch</code> يحفظ سطور السلة في <code>localStorage</code>، وحمّلها حين يبدأ المكوّن. ماذا يحدث إن كانت البيانات المحفوظة من إصدار أقدم بشكل مختلف، وكيف تحمي منه؟</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 6</p>
+<p>المؤقت والمهام المحفوظة والبحث كلها تمزج عدة مراجع ومراقباً وتنظيفاً. والفصل التالي ينقل منطقاً كهذا من المكونات إلى <strong>composables</strong>: دوال عادية يعيد استخدامها أي مكوّن، وتختبرها وحدها.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch10" data-chapter="10" data-code="b2/design/ar">
@@ -5460,6 +5910,16 @@ Cypress               62
 <li>في <code>Shop.vue</code>: ‏<code>const count = ref(0)</code>، وعلى كل بطاقة <code>@add="count++"</code>، وفوق الشبكة <code>&lt;p&gt;{{ count }} عناصر في سلتك&lt;/p&gt;</code>. والحالة في <code>Shop</code> لأن البطاقات تبلغ عن الضغطة فقط، والمتجر يملك السلة.</li>
 <li>أضف <code>| { status: "offline" }</code> إلى النوع، وفرعاً <code>&lt;p v-else-if="state.status === 'offline'" class="muted"&gt;أنت غير متصل.&lt;/p&gt;</code> قبل الأخير. ويساعدك <code>vue-tsc</code>: فحتى تضيف الفرع تكون <code>state.orders</code> في الفرع الأخير خطأً، لأن <code>state</code> قد تكون غير متصلة هناك. لكنه لا يستطيع أن يخبرك أن الحالة الجديدة تحتاج <em>رسالة لطيفة</em>، فهذا عملك أنت.</li>
 <li>في <code>ShopSection.vue</code>: ‏<code>&lt;header&gt;&lt;h2&gt;{{ title }}&lt;/h2&gt;&lt;slot name="actions" /&gt;&lt;/header&gt;</code>. والفتحة المسماة الفارغة لا ترسم شيئاً، فهي اختيارية أصلاً. وفي <code>Shop.vue</code>: ‏<code>&lt;template #actions&gt;&lt;a href="/products"&gt;عرض الكل&lt;/a&gt;&lt;/template&gt;</code>. ولتجنب غلاف فارغ حين تغيب، استخدم <code>v-if="$slots.actions"</code>.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 5</h2>
+<ol class="exercises">
+<li><code>&lt;button type="button" @click="lines = []"&gt;أفرغ&lt;/button&gt;</code>. ولا تتغير أي قيمة محسوبة: فالعدد والمجموع والمبلغ الناقص كلها محسوبة من <code>lines</code>، فتتبعها وحدها. وهذه مكافأة الحالة في حدها الأدنى.</li>
+<li>سطر إضافي واحد: <code>المجموع: 24</code>، فحذف الكتاب يترك ثلاثة أكواب بـ 8. و<code>pop()</code> تغيّر المصفوفة التي قرأها <code>total</code>، فيعمل الأثر من جديد.</li>
+<li>التصفير: <code>@click="seconds = 0"</code>. والعنوان: <code>watchEffect(() =&gt; { document.title = running.value ? `${seconds.value} ث` : "المؤقت"; })</code>. وحين يتوقف يجب أن يعود عنوان الصفحة العادي، فلا يظل اللسان يعرض عدداً قديماً.</li>
+<li>في <code>QuantityInput.vue</code>: ‏<code>const note = defineModel&lt;string&gt;("note", { default: "" })</code> وحقل بـ <code>v-model="note"</code>. وفي الأب: ‏<code>&lt;QuantityInput v-model="mugs" v-model:note="giftNote" … /&gt;</code>.</li>
+<li><code>watch(lines, (now) =&gt; localStorage.setItem("cart", JSON.stringify(now)), { deep: true })</code>، وابدأ بـ <code>ref&lt;Line[]&gt;(load())</code>. والبيانات القديمة أو التالفة تُسقط الشاشة، فتحلل <code>load</code> داخل <code>try</code>، وتتحقق من الشكل (بمخطط zod مثلاً، الفصل 2)، وتعود إلى <code>[]</code>. وحفظ رقم إصدار مع البيانات يسمح لإصدار لاحق أن يحوّل السلال القديمة بدل رميها.</li>
 </ol>
 
 

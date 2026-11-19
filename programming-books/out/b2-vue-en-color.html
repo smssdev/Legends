@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "Chapter 4: Components and Templates"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "Chapter 5: Reactivity and the Composition API"; } }
+@page ch05:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Design Systems and Component Libraries"; } }
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "Chapter 11: Accessibility (WCAG) in Practice"; } }
@@ -2298,6 +2300,454 @@ function onKeydown(event: KeyboardEvent) {
 <div class="next">
 <p class="next-title">Coming up in Chapter 5</p>
 <p>You have used <code>ref</code> and <code>computed</code>. In the next chapter you will see how Vue’s reactivity really works, and learn the whole Composition API: reactive objects, watchers, the life of a component, and two-way binding with <code>v-model</code>.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b2/vue/reactivity/en">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">Chapter 5</p><h1>Reactivity and the Composition API</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain how Vue knows what to update: tracking what code reads, and triggering what depends on it</li>
+<li>choose between <code>ref</code> and <code>reactive</code>, and avoid the ways reactivity is lost</li>
+<li>keep state minimal and compute everything else</li>
+<li>react to changes with watchers, and clean up after them</li>
+<li>use the life of a component, and two-way binding with <code>v-model</code> on your own components</li>
+</ul>
+</div>
+
+<p class="lead">In the last chapter you changed <code>likes.value</code> and the button updated, as if by magic. It is not magic, and knowing how it works is the difference between a developer who uses Vue and one who can explain why a screen did not update. This chapter opens the box: how Vue tracks data, the few rules that follow from it, and the tools of the <dfn>Composition API</dfn>, the functions such as <code>ref</code>, <code>computed</code> and <code>watch</code> that you call inside <code>&lt;script setup&gt;</code>.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Most bugs about “Vue did not update” come from two or three rules. Learn the rules in section 5.2 once, and those bugs disappear from your life.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>Track and trigger</span></h2>
+
+<p>Vue’s reactivity works in two steps. When code <em>reads</em> a reactive value, Vue notes who read it: this is <dfn>tracking</dfn>. When the value is <em>changed</em>, Vue reruns everything that read it: this is <dfn>triggering</dfn>. A component’s template is such code: it is tracked while it renders, and rerun when anything it read changes. You can see the mechanism without any component:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">reactivity.ts</div><pre class="code"><span class="k">import</span> { computed, effect, reactive } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">const</span> cart = reactive({
+  lines: [] as { name: string; price: number; quantity: number }[],
+  coupon: <span class="s">&quot;&quot;</span>,
+});
+<span class="k">const</span> total = computed(() =&gt; cart.lines.reduce((sum, l) =&gt; sum + l.price * l.quantity, <span class="n">0</span>));
+
+<span class="c">// Runs now, and again whenever something it read changes</span>
+effect(() =&gt; console.log(<span class="s">`Total: ${total.value}`</span>));
+
+cart.lines.push({ name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8</span>, quantity: <span class="n">1</span> });
+cart.lines.push({ name: <span class="s">&quot;Code from Zero&quot;</span>, price: <span class="n">25</span>, quantity: <span class="n">1</span> });
+cart.lines[<span class="n">0</span>]!.quantity = <span class="n">3</span>;
+cart.coupon = <span class="s">&quot;BIT10&quot;</span>; <span class="c">// Nothing printed: the total never read the coupon</span></pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Total: 0
+Total: 8
+Total: 33
+Total: 49</pre></div>
+
+<p>Four lines printed, for three changes plus the first run. The last change printed nothing: <code>total</code> never read <code>coupon</code>, so changing the coupon cannot change the total, and Vue does not waste time recomputing it. This is why Vue updates so precisely: every piece of the screen depends on exactly the data it read.</p>
+
+<p>How does Vue see a read? <code>reactive()</code> wraps an object in a JavaScript <code>Proxy</code>, which can intercept every property read and write. <code>ref()</code> does the same with a small object whose only property is <code>value</code>. That is why refs need <code>.value</code> in the script: it is the property Vue watches.</p>
+
+<h2><span class="sec">5.2</span> <span><code>ref</code>, <code>reactive</code>, and losing reactivity</span></h2>
+
+<table>
+<thead><tr><th></th><th><code>ref(value)</code></th><th><code>reactive(object)</code></th></tr></thead>
+<tbody>
+<tr><td>Holds</td><td>Any value: a number, a string, an object, an array</td><td>Objects and arrays only</td></tr>
+<tr><td>Read and write</td><td><code>count.value</code> in the script, <code>count</code> in the template</td><td><code>cart.lines</code> everywhere</td></tr>
+<tr><td>Can be replaced</td><td>Yes: <code>list.value = []</code></td><td>No: assigning a new object to the variable loses the link</td></tr>
+</tbody>
+</table>
+
+<p>The official recommendation, which this book follows, is simple: <strong>use <code>ref</code> for all state</strong>. It works for every kind of value, it can be replaced, and the <code>.value</code> reminds you that the value is reactive. The second rule is about a trap that looks innocent:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">lost.ts</div><pre class="code"><span class="k">import</span> { reactive, toRefs } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">const</span> product = reactive({ name: <span class="s">&quot;Bit mug&quot;</span>, stock: <span class="n">3</span> });
+
+<span class="c">// Destructuring copies the number once; toRefs keeps a link to the object</span>
+<span class="k">const</span> { stock } = product;
+<span class="k">const</span> { stock: stockRef } = toRefs(product);
+
+product.stock = <span class="n">2</span>;
+console.log(<span class="s">&quot;Copied value:&quot;</span>, stock);
+console.log(<span class="s">&quot;Linked ref:&quot;</span>, stockRef.value);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Copied value: 3
+Linked ref: 2</pre></div>
+
+<p>Destructuring reads <code>product.stock</code> once and copies the number into a plain variable, which knows nothing about later changes. The same happens when you pass <code>product.stock</code> to a function that keeps it. When you need a separate variable that stays linked, <code>toRefs</code> turns each property into a ref connected to the object.</p>
+
+<h3>Updates are batched</h3>
+
+<p>Changing reactive data does not update the screen immediately. Vue collects all the changes made in the same moment and applies them together, once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">batching.ts</div><pre class="code"><span class="k">import</span> { nextTick, ref, watch } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">const</span> count = ref(<span class="n">0</span>);
+<span class="c">// Three changes, one run of the watcher, with the first and last values</span>
+watch(count, (now, before) =&gt; console.log(<span class="s">`watch: ${before} → ${now}`</span>));
+
+count.value++;
+count.value++;
+count.value++;
+console.log(<span class="s">&quot;Right after the changes:&quot;</span>, count.value);
+<span class="k">await</span> nextTick();
+console.log(<span class="s">&quot;After nextTick&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Right after the changes: 3
+watch: 0 → 3
+After nextTick</pre></div>
+
+<p>Three changes, one run of the watcher, with the first and last values. The page works the same way: after you change data, the DOM is updated a moment later, all at once. If code must see the updated page, for example to measure an element or to move the focus into a field that just appeared, <code>await nextTick()</code> first.</p>
+
+<h2><span class="sec">5.3</span> <span>Minimal state, computed values</span></h2>
+
+<p>The most important design skill for state is to keep as little of it as possible. Everything that can be calculated from other state should be a <code>computed</code>, never a second copy that must be kept in step by hand:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">cart-model.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; price: number };
+<span class="k">export</span> <span class="k">type</span> Line = { product: Product; quantity: number };
+
+<span class="k">export</span> <span class="k">const</span> catalogue: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;Code from Zero&quot;</span>, price: <span class="n">25</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;Bit cap&quot;</span>, price: <span class="n">12</span> },
+];
+
+<span class="k">export</span> <span class="k">const</span> FREE_DELIVERY = <span class="n">50</span>;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Cart.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+import { catalogue, FREE_DELIVERY, type Line, type Product } from &quot;./cart-model&quot;;
+
+// Only the lines are state; everything else is computed from them
+const lines = ref&lt;Line[]&gt;([]);
+
+const count = computed(() =&gt; lines.value.reduce((n, l) =&gt; n + l.quantity, 0));
+const total = computed(() =&gt; lines.value.reduce((sum, l) =&gt; sum + l.product.price * l.quantity, 0));
+const missing = computed(() =&gt; Math.max(0, FREE_DELIVERY - total.value));
+
+function add(product: Product) {
+  const line = lines.value.find((l) =&gt; l.product.id === product.id);
+  if (line) line.quantity++;
+  else lines.value.push({ product, quantity: 1 });
+}
+
+function remove(id: number) {
+  lines.value = lines.value.filter((l) =&gt; l.product.id !== id);
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section class=&quot;cart&quot;&gt;
+    &lt;div class=&quot;row&quot;&gt;
+      &lt;button v-for=&quot;p in catalogue&quot; :key=&quot;p.id&quot; type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;add(p)&quot;&gt;
+        Add {{ p.name }}
+      &lt;/button&gt;
+    &lt;/div&gt;
+    &lt;p v-if=&quot;lines.length === 0&quot; class=&quot;muted&quot;&gt;Your cart is empty.&lt;/p&gt;
+    &lt;ul v-else&gt;
+      &lt;li v-for=&quot;line in lines&quot; :key=&quot;line.product.id&quot;&gt;
+        &lt;span&gt;{{ line.product.name }} × {{ line.quantity }}&lt;/span&gt;
+        &lt;button type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;remove(line.product.id)&quot;&gt;Remove&lt;/button&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;p&gt;Items: {{ count }} · &lt;span class=&quot;total&quot;&gt;Total: {{ total }} EGP&lt;/span&gt;&lt;/p&gt;
+    &lt;div class=&quot;bar&quot; aria-hidden=&quot;true&quot;&gt;&lt;span :style=&quot;{ width: `${Math.min(100, (total / 50) * 100)}%` }&quot; /&gt;&lt;/div&gt;
+    &lt;p v-if=&quot;missing === 0&quot; class=&quot;free&quot;&gt;Free delivery!&lt;/p&gt;
+    &lt;p v-else class=&quot;muted&quot;&gt;{{ missing }} EGP more for free delivery&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/vue-reactivity-en-cart.html-560-a9e453.png" alt=""><figcaption><b>Figure 5.1:</b> After adding a book and two mugs. The number of items, the total, the bar and the message all come from the one list of lines.</figcaption></figure>
+
+<p>The only state is <code>lines</code>. If the count were stored separately, every function that changes the lines would also have to remember to update the count, and one day one would forget. Computed values cannot be forgotten: they are always calculated from the truth.</p>
+
+<p>Notice also <code>line.quantity++</code> in <code>add</code>. Unlike some frameworks, Vue lets you change objects and arrays in place: the proxy sees the write, and everything that read <code>quantity</code> updates. Replacing a whole array, as <code>remove</code> does with <code>filter</code>, works too, because <code>lines</code> is a ref.</p>
+
+<h2><span class="sec">5.4</span> <span>Where should state live?</span></h2>
+
+<p>Each piece of state should live in the lowest component that contains every component that needs it. If only the cart uses the lines, they live in the cart. If the header also needs the number of items, the lines move up to the component that contains both, and travel down as props, with events coming back up. If many distant parts of the app need it, Chapter 9 gives it a store of its own.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why did changing the coupon print nothing in <code>reactivity.ts</code>?</li><li>What is wrong with <code>const { stock } = product</code> if <code>product</code> is reactive?</li><li>Why is the number of items in the cart a <code>computed</code>, not a <code>ref</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">5.5</span> <span>Watchers: reacting to changes</span></h2>
+
+<p>A <code>computed</code> calculates a value. Sometimes a change must instead <em>do</em> something outside Vue’s world: start a timer, save to storage, call a server, change the page’s title. That is the job of a <dfn>watcher</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Timer.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { onWatcherCleanup, ref, watch } from &quot;vue&quot;;
+
+const running = ref(false);
+const seconds = ref(0);
+
+watch(running, (on) =&gt; {
+  if (!on) return;
+  const id = setInterval(() =&gt; seconds.value++, 1000);
+  // Runs before the next run of the watcher, and when the component is removed
+  onWatcherCleanup(() =&gt; clearInterval(id));
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p&gt;
+    &lt;strong&gt;{{ seconds }}&lt;/strong&gt; seconds
+    &lt;button type=&quot;button&quot; :aria-pressed=&quot;running&quot; @click=&quot;running = !running&quot;&gt;
+      {{ running ? &quot;Stop&quot; : &quot;Start&quot; }}
+    &lt;/button&gt;
+  &lt;/p&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>timer.html</span><b>560px</b></div><img src="img/vue-reactivity-en-timer.html-560-f4f5f8.png" alt=""><figcaption><b>Figure 5.2:</b> The timer, about two seconds after pressing “Start”.</figcaption></figure>
+
+<p><code>watch(running, callback)</code> calls the callback every time <code>running</code> changes. The important line is <code>onWatcherCleanup</code>. It registers a function that Vue calls before the next run of the watcher, and when the component is removed from the page. Without it, pressing “Stop” would leave the interval running forever, and pressing “Start” again would start a second one, so the seconds would count twice as fast.</p>
+
+<p>Vue has two kinds of watcher:</p>
+<ul>
+<li><code>watch(source, callback)</code> watches what you name, and gives you the new and old values. It does not run at first unless you pass <code>{ immediate: true }</code>. To notice changes deep inside objects and arrays, pass <code>{ deep: true }</code>.</li>
+<li><code>watchEffect(fn)</code> runs <code>fn</code> at once, tracks everything it reads, and runs again when any of it changes, like the <code>effect</code> of section 5.1.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: you might not need a watcher</p><p>A watcher that copies data into another ref, such as <code>watch(lines, () =&gt; { count.value = … })</code>, is a computed value written the hard way, and it is briefly wrong between the change and the watcher. If you are calculating, use <code>computed</code>. Use a watcher only when a change must cause something outside the data.</p></aside>
+
+<h3>The life of a component</h3>
+
+<p>A component is created, put into the page (<dfn>mounted</dfn>), updated as its data changes, and finally removed (<dfn>unmounted</dfn>). Functions such as <code>onMounted</code> and <code>onUnmounted</code> run code at those moments: <code>onMounted</code> is the first moment the component’s elements exist in the page, so it is where you measure them, focus a field, or start a library that needs a real element. Clean up in <code>onUnmounted</code> anything you started in <code>onMounted</code>. And to reach an element itself, give it <code>ref="name"</code> in the template and read it with <code>useTemplateRef("name")</code>, as the tabs project of Chapter 4 did.</p>
+
+<h2><span class="sec">5.6</span> <span><code>v-model</code> on your own components</span></h2>
+
+<p>On an input, <code>v-model="text"</code> keeps a ref and the field in step, in both directions. Your own components can support <code>v-model</code> too. <code>defineModel</code> creates a ref that reads the prop the parent passed and, when you change it, emits the event that updates the parent:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">QuantityInput.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+// defineModel: a prop and an event in one ref, for v-model
+const quantity = defineModel&lt;number&gt;({ required: true });
+const props = defineProps&lt;{ max: number; label: string }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div class=&quot;quantity&quot; role=&quot;group&quot; :aria-label=&quot;label&quot;&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; :disabled=&quot;quantity &lt;= 1&quot; aria-label=&quot;−1&quot; @click=&quot;quantity--&quot;&gt;−&lt;/button&gt;
+    &lt;output&gt;{{ quantity }}&lt;/output&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; :disabled=&quot;quantity &gt;= props.max&quot; aria-label=&quot;+1&quot; @click=&quot;quantity++&quot;&gt;+&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Order.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import QuantityInput from &quot;./QuantityInput.vue&quot;;
+
+const mugs = ref(1);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p&gt;Bit mug&lt;/p&gt;
+  &lt;QuantityInput v-model=&quot;mugs&quot; :max=&quot;5&quot; label=&quot;Quantity&quot; /&gt;
+  &lt;p&gt;You ordered: {{ mugs }} · Total: {{ mugs * 8 }} EGP&lt;/p&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>order.html</span><b>560px</b></div><img src="img/vue-reactivity-en-order.html-560-4b85a5.png" alt=""><figcaption><b>Figure 5.3:</b> After pressing “+” twice: the parent’s <code>mugs</code> changed through <code>v-model</code>.</figcaption></figure>
+
+<p>This does not break the rule “data flows down, events flow up”: <code>v-model="mugs"</code> is short for <code>:modelValue="mugs" @update:modelValue="mugs = $event"</code>. The parent still owns the number; it just lets the child ask for changes with one short attribute.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: name what a watcher is for</p><p>Every watcher is a small piece of behaviour that runs at times you do not see. Keep each one short, put a comment above it that says why it exists, and clean up whatever it starts. When a component has more than two or three, the next chapter shows how to move them into composables with names.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Destructuring a reactive object or a prop</td><td>A copy that never updates</td><td>Read <code>obj.prop</code> where needed, or use <code>toRefs</code></td></tr>
+<tr><td><code>let state = reactive({…})</code>, then <code>state = {…}</code></td><td>The screen keeps showing the old object</td><td>Use a <code>ref</code> and assign <code>.value</code></td></tr>
+<tr><td>Storing values that can be calculated</td><td>Copies that drift apart</td><td><code>computed</code></td></tr>
+<tr><td>A watcher that only sets another ref</td><td>A value that is briefly wrong, and more code</td><td><code>computed</code></td></tr>
+<tr><td>Starting a timer or request without cleaning up</td><td>Doubled timers, answers arriving late</td><td><code>onWatcherCleanup</code> or <code>onUnmounted</code></td></tr>
+<tr><td>Reading the DOM right after changing data</td><td>The old page is measured</td><td><code>await nextTick()</code> first</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Vue <strong>tracks</strong> which code reads which data, and <strong>triggers</strong> exactly that code when the data changes.</li>
+<li><code>reactive</code> wraps objects in a proxy; <code>ref</code> wraps any value in an object with <code>.value</code>. Prefer <code>ref</code>.</li>
+<li>Destructuring copies values and loses reactivity; <code>toRefs</code> keeps the link. Updates are <strong>batched</strong>; <code>nextTick</code> waits for the page.</li>
+<li>Keep state <strong>minimal</strong>; calculate the rest with <code>computed</code>. Put state in the lowest component that contains all its users.</li>
+<li><strong>Watchers</strong> are for effects outside the data. Clean up with <code>onWatcherCleanup</code>; use <code>onMounted</code> and <code>onUnmounted</code> for the life of the component.</li>
+<li><code>defineModel</code> gives your components <code>v-model</code>, without breaking one-way data flow.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because <code>total</code> never read <code>coupon</code>, so Vue tracked no link between them. 2. It copies the current number into a plain variable, which does not change when the product does. 3. Because it can be calculated from the lines; storing it would create a second copy that must be updated by hand.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Before each project, write down every piece of state you plan to keep, then cross out each one that can be calculated from the others. What remains goes in <code>ref</code>s; the rest becomes <code>computed</code>.</p>
+
+<div class="project">
+<p class="project-label">Project 5.1 · Easy</p>
+<h3>A counter with steps and undo</h3>
+<p class="project-goal">A counter that adds or subtracts a chosen step, shows its history, and can undo any number of changes.</p>
+<p class="project-skills"><strong>You will practise:</strong> minimal state, <code>computed</code>, changing arrays in place, and <code>v-model.number</code>.</p>
+<ol class="steps">
+<li>Keep only two refs: the step, and the history of values, starting with <code>[0]</code>.</li>
+<li>Make the current value a <code>computed</code>: the last item of the history.</li>
+<li>Each button pushes a new value onto the history; “Undo” pops one, and is disabled when only the first value is left.</li>
+<li>Bind the step with <code>v-model.number</code>, so it is a number, not text.</li>
+<li>Give the value <code>aria-live="polite"</code>, so screen readers announce the new number.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> because the history is the state, undo is one line. Had you stored the value and changed it with <code>+=</code>, undo would need a second list, kept in step with the first by hand.</p>
+<div class="listing" dir="ltr"><div class="listing-title">History.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+
+const step = ref(1);
+const history = ref&lt;number[]&gt;([0]);
+const value = computed(() =&gt; history.value.at(-1) ?? 0);
+
+function change(by: number) {
+  history.value.push(value.value + by);
+}
+
+function undo() {
+  if (history.value.length &gt; 1) history.value.pop();
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p class=&quot;value&quot; aria-live=&quot;polite&quot;&gt;{{ value }}&lt;/p&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;change(-step)&quot;&gt;−{{ step }}&lt;/button&gt;
+    &lt;button type=&quot;button&quot; @click=&quot;change(step)&quot;&gt;+{{ step }}&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; :disabled=&quot;history.length === 1&quot; @click=&quot;undo&quot;&gt;Undo&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;label&gt;Step &lt;input id=&quot;step&quot; v-model.number=&quot;step&quot; type=&quot;number&quot; min=&quot;1&quot; max=&quot;10&quot; /&gt;&lt;/label&gt;
+  &lt;p class=&quot;muted&quot;&gt;History: {{ history.join(&quot; → &quot;) }}&lt;/p&gt;
+&lt;/template&gt;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>history.html</span><b>560px</b></div><img src="img/vue-reactivity-en-projects-history.html-560-de11b3.png" alt=""><figcaption><b>Project 5.1:</b> after +1, +1, changing the step to 5, +5, and Undo.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 5.2 · Medium</p>
+<h3>A task list that remembers</h3>
+<p class="project-goal">A task list that saves itself in the browser, and comes back after a reload, safely.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>v-model</code> on text and checkboxes, a deep watcher, <code>localStorage</code>, and defensive loading.</p>
+<ol class="steps">
+<li>Load the tasks once, when the component starts, inside a <code>try</code>: saved data can be missing, broken or from an older version.</li>
+<li>Bind the new task’s text with <code>v-model</code>, and add it on <code>@submit.prevent</code>, so Enter works and the page does not reload.</li>
+<li>Bind each checkbox straight to <code>task.done</code> with <code>v-model</code>: Vue changes the object in place.</li>
+<li>Save with <code>watch(tasks, save, { deep: true })</code>. Without <code>deep</code>, ticking a box would not be noticed, because the array itself did not change.</li>
+<li>Show how many tasks are left with a <code>computed</code>, and add a button that removes the done ones.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>deep: true</code> walks the whole structure on every change. That is fine for a task list; for thousands of items, save less often, or watch a smaller part.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>tasks.html</span><b>560px</b></div><img src="img/vue-reactivity-en-projects-tasks.html-560-180cb5.png" alt=""><figcaption><b>Project 5.2:</b> a new task added with Enter; the first one, loaded at the start, is done.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 5.3 · Challenge</p>
+<h3>Search as you type, without races</h3>
+<p class="project-goal">Search products while the user types, and never show the results of an old query, even when a slow answer arrives after a fast one.</p>
+<p class="project-skills"><strong>You will practise:</strong> watchers with async work, <code>onWatcherCleanup</code>, <code>AbortController</code>, and loading states announced to screen readers.</p>
+<ol class="steps">
+<li>Use the pretend API below. Like a real search, it answers short queries more slowly, so “b” can arrive after “bit”.</li>
+<li>Watch the query. For an empty query, clear the results and stop.</li>
+<li>For each search, create an <code>AbortController</code>, and register <code>controller.abort()</code> with <code>onWatcherCleanup</code>. The next keystroke cancels the previous request.</li>
+<li>Await the results inside <code>try</code>; an aborted request rejects, and the <code>catch</code> simply ignores it.</li>
+<li>Show “Searching for…” and the number of results with <code>role="status"</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> type “bit” quickly with and without the cleanup line. Without it, you will sometimes see the results for “b” replace the results for “bit”: a <dfn>race condition</dfn>, one of the most common bugs in real apps.</p>
+<div class="listing" dir="ltr"><div class="listing-title">fake-api.ts</div><pre class="code"><span class="k">import</span> { catalogue, <span class="k">type</span> Product } <span class="k">from</span> <span class="s">&quot;./cart-model&quot;</span>;
+
+<span class="c">// A pretend server: answers after a delay, slower for short queries, like a real search.</span>
+<span class="k">export</span> <span class="k">function</span> searchProducts(query: string, signal: AbortSignal): Promise&lt;Product[]&gt; {
+  <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
+    <span class="k">const</span> timer = setTimeout(() =&gt; {
+      <span class="k">const</span> q = query.trim().toLowerCase();
+      resolve(catalogue.filter((p) =&gt; p.name.toLowerCase().includes(q)));
+    }, <span class="n">600</span> - query.length * <span class="n">100</span>);
+    signal.addEventListener(<span class="s">&quot;abort&quot;</span>, () =&gt; {
+      clearTimeout(timer);
+      reject(signal.reason);
+    });
+  });
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Search.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { onWatcherCleanup, ref, watch } from &quot;vue&quot;;
+import { searchProducts } from &quot;../fake-api&quot;;
+import type { Product } from &quot;../cart-model&quot;;
+
+const query = ref(&quot;&quot;);
+const results = ref&lt;Product[]&gt;([]);
+const loading = ref(false);
+
+watch(query, async (q) =&gt; {
+  if (!q.trim()) {
+    results.value = [];
+    return;
+  }
+  // If the user types again, cancel the old request
+  const controller = new AbortController();
+  onWatcherCleanup(() =&gt; controller.abort());
+  loading.value = true;
+  try {
+    results.value = await searchProducts(q, controller.signal);
+    loading.value = false;
+  } catch {
+    // aborted: a newer search is already running
+  }
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;label for=&quot;q&quot;&gt;Search products&lt;/label&gt;
+  &lt;input id=&quot;q&quot; v-model=&quot;query&quot; type=&quot;search&quot; autocomplete=&quot;off&quot; /&gt;
+  &lt;p v-if=&quot;loading&quot; class=&quot;muted&quot; role=&quot;status&quot;&gt;Searching for “{{ query }}”…&lt;/p&gt;
+  &lt;template v-else-if=&quot;query&quot;&gt;
+    &lt;p role=&quot;status&quot;&gt;{{ results.length }} results&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li v-for=&quot;p in results&quot; :key=&quot;p.id&quot;&gt;{{ p.name }}&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/template&gt;
+&lt;/template&gt;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>search.html</span><b>560px</b></div><img src="img/vue-reactivity-en-projects-search.html-560-0e8140.png" alt=""><figcaption><b>Project 5.3:</b> the results for “bit”.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In <code>Cart.vue</code>, add a “Clear” button that empties the cart. Which of the computed values do you need to change?</li>
+<li><span class="level">Easy</span> Predict, then check, what <code>reactivity.ts</code> prints if you add <code>cart.lines.pop()</code> at the end.</li>
+<li><span class="level medium">Medium</span> Give <code>Timer.vue</code> a “Reset” button, and make the page title show the seconds while the timer runs, with <code>watchEffect</code>. What should the title be when it stops?</li>
+<li><span class="level medium">Medium</span> Give <code>QuantityInput</code> a second model, <code>v-model:note</code>, for a gift note, with <code>defineModel("note")</code>.</li>
+<li><span class="level hard">Challenge</span> Write a <code>watch</code> that saves the cart’s lines to <code>localStorage</code>, and load them when the component starts. What happens if the saved data is from an older version with a different shape, and how do you protect against it?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 6</p>
+<p>The timer, the saved tasks and the search all mix several refs, a watcher and a cleanup. The next chapter moves logic like that out of components into <strong>composables</strong>: plain functions that any component can reuse, and that you can test on their own.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch10" data-chapter="10" data-code="b2/design/en">
@@ -5462,6 +5912,16 @@ on the team will pair with the others on the first tests.
 <li>In <code>Shop.vue</code>: <code>const count = ref(0)</code>; on each card <code>@add="count++"</code>; and above the grid <code>&lt;p&gt;{{ count }} items in your cart&lt;/p&gt;</code>. The state lives in <code>Shop</code> because the cards only report the click; the shop owns the cart.</li>
 <li>Add <code>| { status: "offline" }</code> to the type, and a branch <code>&lt;p v-else-if="state.status === 'offline'" class="muted"&gt;You are offline.&lt;/p&gt;</code> before the last one. <code>vue-tsc</code> helps: until you add the branch, <code>state.orders</code> in the last branch is an error, because <code>state</code> might be offline there. It cannot tell you that the new state needs a <em>nice message</em>; that is still your job.</li>
 <li>In <code>ShopSection.vue</code>: <code>&lt;header&gt;&lt;h2&gt;{{ title }}&lt;/h2&gt;&lt;slot name="actions" /&gt;&lt;/header&gt;</code>. An empty named slot draws nothing, so the slot is optional already. In <code>Shop.vue</code>: <code>&lt;template #actions&gt;&lt;a href="/products"&gt;See all&lt;/a&gt;&lt;/template&gt;</code>. To avoid an empty wrapper when it is missing, use <code>v-if="$slots.actions"</code>.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 5</h2>
+<ol class="exercises">
+<li><code>&lt;button type="button" @click="lines = []"&gt;Clear&lt;/button&gt;</code>. None of the computed values change: the count, the total and the missing amount are all calculated from <code>lines</code>, so they follow it by themselves. That is the reward for minimal state.</li>
+<li>One more line, <code>Total: 24</code>: removing the book leaves three mugs at 8. <code>pop()</code> changes the array, the array was read by <code>total</code>, so the effect runs again.</li>
+<li>Reset: <code>@click="seconds = 0"</code>. The title: <code>watchEffect(() =&gt; { document.title = running.value ? `${seconds.value} s` : "Timer"; })</code>. Stopped, it should go back to the page’s normal title, so the tab does not keep showing an old number.</li>
+<li>In <code>QuantityInput.vue</code>: <code>const note = defineModel&lt;string&gt;("note", { default: "" })</code> and an input with <code>v-model="note"</code>. In the parent: <code>&lt;QuantityInput v-model="mugs" v-model:note="giftNote" … /&gt;</code>.</li>
+<li><code>watch(lines, (now) =&gt; localStorage.setItem("cart", JSON.stringify(now)), { deep: true })</code>, and start with <code>ref&lt;Line[]&gt;(load())</code>. Old or broken data would crash the screen, so <code>load</code> parses inside <code>try</code>, checks the shape (for example with a zod schema, Chapter 2), and falls back to <code>[]</code>. Saving a version number with the data lets a later release convert old carts instead of throwing them away.</li>
 </ol>
 
 

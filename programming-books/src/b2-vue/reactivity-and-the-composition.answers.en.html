@@ -1,0 +1,7 @@
+<ol class="exercises">
+<li><code>&lt;button type="button" @click="lines = []"&gt;Clear&lt;/button&gt;</code>. None of the computed values change: the count, the total and the missing amount are all calculated from <code>lines</code>, so they follow it by themselves. That is the reward for minimal state.</li>
+<li>One more line, <code>Total: 24</code>: removing the book leaves three mugs at 8. <code>pop()</code> changes the array, the array was read by <code>total</code>, so the effect runs again.</li>
+<li>Reset: <code>@click="seconds = 0"</code>. The title: <code>watchEffect(() =&gt; { document.title = running.value ? `${seconds.value} s` : "Timer"; })</code>. Stopped, it should go back to the page’s normal title, so the tab does not keep showing an old number.</li>
+<li>In <code>QuantityInput.vue</code>: <code>const note = defineModel&lt;string&gt;("note", { default: "" })</code> and an input with <code>v-model="note"</code>. In the parent: <code>&lt;QuantityInput v-model="mugs" v-model:note="giftNote" … /&gt;</code>.</li>
+<li><code>watch(lines, (now) =&gt; localStorage.setItem("cart", JSON.stringify(now)), { deep: true })</code>, and start with <code>ref&lt;Line[]&gt;(load())</code>. Old or broken data would crash the screen, so <code>load</code> parses inside <code>try</code>, checks the shape (for example with a zod schema, Chapter 2), and falls back to <code>[]</code>. Saving a version number with the data lets a later release convert old carts instead of throwing them away.</li>
+</ol>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reactivity</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "/vendor/vue.js",
+          "vue-router": "/vendor/vue-router.js",
+          "pinia": "/vendor/pinia.js",
+          "@tanstack/vue-query": "/vendor/vue-query.js",
+          "vee-validate": "/vendor/vee-validate.js",
+          "@vueuse/core": "/vendor/vueuse.js",
+          "zod": "/vendor/zod.js"
+        }
+      }
+    </script>
+    <style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: 20px; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; color: #1e1b2e; background: #f5f5fb; line-height: 1.5; }
+h1, h2, h3 { color: #4338ca; margin: 0 0 8px; }
+button { font: inherit; cursor: pointer; border: 0; border-radius: 999px; padding: 6px 16px; background: #4338ca; color: white; }
+button.secondary { background: #e0e7ff; color: #312e81; }
+:focus-visible { outline: 3px solid #db2777; outline-offset: 2px; }
+.value { font-size: 2.4rem; font-weight: 800; color: #4338ca; margin: 0; }
+.row { display: flex; gap: 6px; margin: 6px 0 10px; }
+input { width: 4em; font: inherit; padding: 2px 6px; }
+.muted { color: #5b5873; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./history.js"></script>
+  </body>
+</html>
