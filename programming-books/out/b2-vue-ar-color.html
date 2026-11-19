@@ -23,6 +23,8 @@
 @page ch07:first { @top-center { content: none; } }
 @page ch08 { @top-center { content: "الفصل 8: النماذج والتحقق"; } }
 @page ch08:first { @top-center { content: none; } }
+@page ch09 { @top-center { content: "الفصل 9: الحالة العامة بـ Pinia"; } }
+@page ch09:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "الفصل 10: أنظمة التصميم ومكتبات المكونات"; } }
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "الفصل 11: الوصول (WCAG) عملياً"; } }
@@ -4070,6 +4072,414 @@ const submit = handleSubmit(async (contact) =&gt; {
 <p>بعض البيانات تحتاجها أجزاء كثيرة متباعدة من التطبيق: من سجّل الدخول، واللغة المختارة، والسلة. والفصل التالي يعطيها بيتاً بـ Pinia، المخزن الرسمي لـ Vue، ويريك كيف تُبقي ذلك البيت صغيراً.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch09" data-chapter="9" data-code="b2/vue/global/ar">
+<div class="opener"><span class="opener-num">9</span><p class="chapter-kicker">الفصل 9</p><h1>الحالة العامة بـ Pinia</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تضع كل قطعة حالة في بيتها الصحيح: المكوّن، أو العنوان، أو ذاكرة الخادم، أو المخزن العام</li>
+<li>تشارك القيم مع المكونات البعيدة عبر <code>provide</code> و<code>inject</code>، بمفاتيح لها أنواع</li>
+<li>تبني مخزناً عاماً بـ Pinia، وتقرؤه دون أن تضيع التفاعلية</li>
+<li>تحفظ المخزن بين الزيارات</li>
+<li>تستخدم المخزن خارج المكونات، وتراقب أفعاله، وتختبره دون أي شاشة</li>
+</ul>
+</div>
+
+<p class="lead">بعض البيانات يحتاجها كل مكان: من سجّل الدخول، واللغة والمظهر المختاران، وعدد عناصر السلة. وتمريرها خصائصَ من أعلى التطبيق عبر كل مكوّن بينهما يسمى <dfn>حفر الخصائص</dfn> (prop drilling)، ويجعل كل مكوّن في الطريق معتمداً على بيانات لا يستخدمها أبداً. ويقدم Vue جوابين: <code>provide</code> و<code>inject</code> المدمجتين فيه، و<strong>Pinia</strong>، المخزن الرسمي لـ Vue. لكن أولاً أهم مهارة في هذا الفصل: أن تعرف أن معظم الحالة <em>ليست</em> عامة.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>في تطبيقات كثيرة مخزن عام عملاق مليء ببيانات تستخدمها شاشة واحدة، أو تخص الخادم حقاً. فكلما أغراني أن أجعل شيئاً عاماً أسأل أولاً: من يقرأ هذا فعلاً؟</p></div></div>
+
+<h2><span class="sec">9.1</span> <span>أربعة بيوت للحالة</span></h2>
+
+<table>
+<thead><tr><th>نوع الحالة</th><th>أمثلة</th><th>بيتها</th></tr></thead>
+<tbody>
+<tr><td>تخص جزءاً واحداً من الشاشة</td><td>قائمة مفتوحة، وقيم نموذج، واللسان الحالي</td><td><code>ref</code> في أدنى مكوّن مشترك (الفصل 5)</td></tr>
+<tr><td>يجب أن تبقى بعد إعادة التحميل أو تُشارك</td><td>المرشحات، ونص البحث، ورقم الصفحة</td><td>العنوان (الفصل 7)</td></tr>
+<tr><td>نسخة من بيانات الخادم</td><td>المنتجات، والطلبات، وملف المستخدم</td><td>ذاكرة الاستعلامات (الفصل 7)</td></tr>
+<tr><td>يملكها التطبيق وتُقرأ في أماكن كثيرة</td><td>المستخدم المسجّل، والمظهر، واللغة، والسلة، والإشعارات</td><td><code>provide</code>/<code>inject</code> أو مخزن Pinia (هذا الفصل)</td></tr>
+</tbody>
+</table>
+
+<p>انزل في الجدول بالترتيب وتوقف عند أول بيت مناسب. وفي التطبيق المعتاد لا يصل إلى الصف الأخير إلا قيم قليلة.</p>
+
+<h2><span class="sec">9.2</span> <span><code>provide</code> و<code>inject</code></span></h2>
+
+<p>يستطيع المكوّن أن <dfn>يقدّم</dfn> (provide) قيمة لكل ما تحته في الشجرة، على أي عمق، ويستطيع أي من تلك المكونات أن <dfn>يحقنها</dfn> (inject)، دون خصائص بينهما. وملفوفتين في دالتين صغيرتين، تبدوان هكذا:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">auth.ts</div><pre class="code"><span class="k">import</span> { inject, provide, <span class="k">readonly</span>, ref, <span class="k">type</span> InjectionKey, <span class="k">type</span> Ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">type</span> User = { name: string };
+<span class="k">type</span> Auth = { user: Readonly&lt;Ref&lt;User | <span class="k">null</span>&gt;&gt;; signIn: (name: string) =&gt; void; signOut: () =&gt; void };
+
+<span class="c">// مفتاح بنوعه: تعرف inject() نوع ما قُدِّم</span>
+<span class="k">const</span> AuthKey: InjectionKey&lt;Auth&gt; = Symbol(<span class="s">&quot;auth&quot;</span>);
+
+<span class="k">export</span> <span class="k">function</span> provideAuth() {
+  <span class="k">const</span> user = ref&lt;User | <span class="k">null</span>&gt;(<span class="k">null</span>);
+  provide(AuthKey, {
+    user: <span class="k">readonly</span>(user),
+    signIn: (name) =&gt; (user.value = { name }),
+    signOut: () =&gt; (user.value = <span class="k">null</span>),
+  });
+}
+
+<span class="c">// composable يخفي inject()، ويفشل بوضوح إن غاب المزوِّد</span>
+<span class="k">export</span> <span class="k">function</span> useAuth(): Auth {
+  <span class="k">const</span> auth = inject(AuthKey);
+  <span class="k">if</span> (!auth) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;useAuth() must be used inside a component that called provideAuth()&quot;</span>);
+  <span class="k">return</span> auth;
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">AuthApp.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { provideAuth } from &quot;./auth&quot;;
+import Profile from &quot;./Profile.vue&quot;;
+import UserMenu from &quot;./UserMenu.vue&quot;;
+
+provideAuth();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;header&gt;
+    &lt;span class=&quot;brand&quot;&gt;متجر بِت&lt;/span&gt;
+    &lt;UserMenu /&gt;
+  &lt;/header&gt;
+  &lt;main&gt;
+    &lt;Profile /&gt;
+  &lt;/main&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">UserMenu.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useAuth } from &quot;./auth&quot;;
+
+// أي مكوّن تحت المزوِّد يقرأ المستخدم، مهما كان عمقه
+const { user, signIn, signOut } = useAuth();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;button v-if=&quot;!user&quot; type=&quot;button&quot; @click=&quot;signIn(&#x27;سارة&#x27;)&quot;&gt;سجّل الدخول&lt;/button&gt;
+  &lt;span v-else class=&quot;row&quot;&gt;
+    أهلاً، {{ user.name }}
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;signOut&quot;&gt;سجّل الخروج&lt;/button&gt;
+  &lt;/span&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>context.html</span><b>560px</b></div><img src="img/vue-global-ar-context.html-560-ceed71.png" alt=""><figcaption><b>الشكل 9.1:</b> بعد تسجيل الدخول: القائمة والملف الشخصي يقرآن المستخدم نفسه، مع أن أياً منهما لم يستلمه خاصيةً.</figcaption></figure>
+
+<p>وثلاث عادات تجعل <code>provide</code> و<code>inject</code> سهلتي الاستخدام:</p>
+<ul>
+<li><strong>استخدم <code>InjectionKey</code> بنوعه</strong>، أي <code>Symbol</code> يحمل النوع. فتعرف <code>inject(AuthKey)</code> بالضبط ما تُرجعه، ولا تتصادم مكتبتان على اسم أبداً.</li>
+<li><strong>أخفِ المفتاح خلف composables.</strong> تستدعي المكونات <code>provideAuth()</code> و<code>useAuth()</code>، لا <code>inject</code> مباشرة، وترمي <code>useAuth</code> خطأً واضحاً إن نسي أحد المزوِّد، بدل <code>undefined</code> غامضة لاحقاً.</li>
+<li><strong>قدّم البيانات للقراءة فقط، مع الدوال التي تغيّرها.</strong> ‏<code>readonly(user)</code> تعني أن المكونات لا تستطيع الإسناد إليها، والطريقة الوحيدة لتغيير المستخدم <code>signIn</code> و<code>signOut</code>، فيكون واضحاً دائماً من غيّر ماذا.</li>
+</ul>
+
+<p>وتصلح <code>provide</code> أكثر ما تصلح لقيم تخص جزءاً من الشجرة: مظهر لمنطقة، وسياق نموذج لحقوله، وإعدادات مكوّن من مكتبة. أما الحالة التي يتشاركها التطبيق كله، فالمخزن أوضح لها.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أين يعيش نص مربع البحث إن أراد المستخدمون مشاركة النتائج؟</li><li>ماذا يحدث حين يستدعي مكوّن <code>useAuth()</code> دون مزوِّد فوقه؟</li><li>لماذا يُقدَّم المستخدم <code>readonly</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">9.3</span> <span>مخزن بـ Pinia</span></h2>
+
+<p><dfn>المخزن</dfn> (store) يحمل حالة تعيش خارج أي مكوّن بعينه، مع القيم المشتقة منها والدوال التي تغيّرها. وفي Pinia يُعرَّف المخزن بـ <code>defineStore</code>، وبأسلوب <dfn>مخزن الإعداد</dfn> (setup store) يُكتب تماماً كالـ composable: المراجع هي الحالة، والقيم <code>computed</code> هي <dfn>القيم المشتقة</dfn> (getters)، والدوال هي <dfn>الأفعال</dfn> (actions):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">stores/cart.ts</div><pre class="code"><span class="k">import</span> { computed } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { defineStore } <span class="k">from</span> <span class="s">&quot;pinia&quot;</span>;
+<span class="k">import</span> { useLocalStorage } <span class="k">from</span> <span class="s">&quot;@vueuse/core&quot;</span>;
+
+<span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; price: number };
+<span class="k">type</span> Line = { product: Product; quantity: number };
+
+<span class="c">// مخزن إعداد: المراجع حالة، والمحسوبة قيم مشتقة، والدوال أفعال</span>
+<span class="k">export</span> <span class="k">const</span> useCart = defineStore(<span class="s">&quot;cart&quot;</span>, () =&gt; {
+  <span class="c">// useLocalStorage تحفظ السطور في المتصفح وتحمّلها في الزيارة التالية</span>
+  <span class="k">const</span> lines = useLocalStorage&lt;Record&lt;number, Line&gt;&gt;(<span class="s">&quot;cart&quot;</span>, {});
+
+  <span class="k">const</span> count = computed(() =&gt; Object.values(lines.value).reduce((n, l) =&gt; n + l.quantity, <span class="n">0</span>));
+  <span class="k">const</span> total = computed(() =&gt; Object.values(lines.value).reduce((n, l) =&gt; n + l.quantity * l.product.price, <span class="n">0</span>));
+
+  <span class="k">function</span> add(product: Product) {
+    <span class="k">const</span> line = lines.value[product.id];
+    <span class="k">if</span> (line) line.quantity++;
+    <span class="k">else</span> lines.value[product.id] = { product, quantity: <span class="n">1</span> };
+  }
+
+  <span class="k">function</span> clear() {
+    lines.value = {};
+  }
+
+  <span class="k">return</span> { lines, count, total, add, clear };
+});</pre></div>
+
+<p>والفرق عن composable بمراجع على مستوى الوحدة (الفصل 6) ما تضيفه Pinia حوله: نسخة واحدة لكل تطبيق، وهذا مهم للرسم على الخادم وللاختبارات، وأدوات مطوري Vue التي تعرض كل مخزن وحالته وكل تغيير، والخطافات التي ستلقاها في القسم 9.5. ثبّتها مرة واحدة في <code>main.ts</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">main.ts</div><pre class="code"><span class="k">import</span> { createApp } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { createPinia } <span class="k">from</span> <span class="s">&quot;pinia&quot;</span>;
+<span class="k">import</span> ShopApp <span class="k">from</span> <span class="s">&quot;./ShopApp.vue&quot;</span>;
+
+createApp(ShopApp).use(createPinia()).mount(<span class="s">&quot;#app&quot;</span>);</pre></div>
+
+<p>ثم يستطيع أي مكوّن استخدام المخزن. وهنا ثلاثة مكونات تتشارك سلة واحدة، دون خصائص ودون مزوِّد بينها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">CartBadge.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { storeToRefs } from &quot;pinia&quot;;
+import { useCart } from &quot;./stores/cart&quot;;
+
+// storeToRefs تُبقي الحالة والقيم المشتقة تفاعلية بعد التفكيك، والأفعال دوال عادية
+const { count } = storeToRefs(useCart());
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;span class=&quot;row&quot;&gt;السلة &lt;span class=&quot;badge&quot;&gt;{{ count }}&lt;/span&gt;&lt;/span&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">ProductList.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { useCart, type Product } from &quot;./stores/cart&quot;;
+
+const products: Product[] = [
+  { id: 1, name: &quot;البرمجة من الصفر&quot;, price: 25 },
+  { id: 2, name: &quot;كوب بِت&quot;, price: 8 },
+  { id: 3, name: &quot;قبعة بِت&quot;, price: 12 },
+];
+const { add } = useCart();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section class=&quot;card&quot;&gt;
+    &lt;div v-for=&quot;p in products&quot; :key=&quot;p.id&quot; class=&quot;row spread&quot;&gt;
+      &lt;span&gt;{{ p.name }}&lt;/span&gt;
+      &lt;button type=&quot;button&quot; @click=&quot;add(p)&quot;&gt;أضف&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">CartSummary.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { storeToRefs } from &quot;pinia&quot;;
+import { useCart } from &quot;./stores/cart&quot;;
+
+const cart = useCart();
+const { lines, total } = storeToRefs(cart);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p v-if=&quot;Object.keys(lines).length === 0&quot; class=&quot;card muted&quot;&gt;السلة فارغة.&lt;/p&gt;
+  &lt;section v-else class=&quot;card&quot;&gt;
+    &lt;ul&gt;
+      &lt;li v-for=&quot;l in lines&quot; :key=&quot;l.product.id&quot;&gt;
+        &lt;span&gt;{{ l.quantity }} × {{ l.product.name }}&lt;/span&gt;
+        &lt;span&gt;{{ l.quantity * l.product.price }} جنيهاً&lt;/span&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;p&gt;&lt;b&gt;المجموع: {{ total }} جنيهاً&lt;/b&gt;&lt;/p&gt;
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot; @click=&quot;cart.clear()&quot;&gt;أفرغ السلة&lt;/button&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>store.html</span><b>560px</b></div><img src="img/vue-global-ar-store.html-560-0403c1.png" alt=""><figcaption><b>الشكل 9.2:</b> ثلاثة مكونات تتشارك سلة واحدة: الشارة والقائمة والملخص تتحدث معاً.</figcaption></figure>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: تفكيك المخزن</p><p>المخزن كائن تفاعلي، فـ <code>const { count } = useCart()</code> تنسخ العدد الحالي ولا تتحدث أبداً، وهو فخ الفصل 5 نفسه. استخدم <code>storeToRefs(store)</code> للحالة والقيم المشتقة، فتعطيك مراجع مرتبطة بالمخزن. أما الأفعال فدوال عادية تُفكَّك مباشرة، كما يفعل <code>ProductList</code> مع <code>add</code>.</p></aside>
+
+<h2><span class="sec">9.4</span> <span>حفظ المخزن بين الزيارات</span></h2>
+
+<p>تحفظ السلة أعلاه سطورها في <code>useLocalStorage</code> من VueUse (الفصل 6)، فتُحفظ في المتصفح مع كل تغيير وتُحمَّل في الزيارة التالية، بل تبقى متوافقة بين الألسنة المفتوحة. ولأن مخزن الإعداد مجرد دالة، يعمل بداخله أي composable. وتستخدم التطبيقات الأكبر أحياناً إضافة لـ Pinia مثل <code>pinia-plugin-persistedstate</code> لحفظ عدة مخازن بالطريقة نفسها بسطر لكل منها.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: احفظ ما يلزم فقط</p><p>احفظ السلة والمظهر والمسودة. ولا تحفظ أبداً بيانات الخادم، فهي تصير قديمة، ولا أي سر: فـ <code>localStorage</code> يقرؤها أي سكربت في الصفحة (الفصل 14). وإن غيرت شكل البيانات المحفوظة لاحقاً، فما زال لدى الزوار القدامى الشكل القديم، فاقرأها بحذر.</p></aside>
+
+<h2><span class="sec">9.5</span> <span>المخازن خارج المكونات</span></h2>
+
+<p>لا يحتاج المخزن شاشة. فمع Pinia فعالة يعمل في أي مكان، وهكذا تختبره، وهكذا يقرؤه حارس موجّه أو وحدة عادية. وتسمح Pinia أيضاً بمراقبة المخزن من الخارج: ‏<code>$onAction</code> ترى كل استدعاء فعل، و<code>$subscribe</code> ترى كل تغيير في الحالة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">store-node.ts</div><pre class="code"><span class="k">import</span> { computed, ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { createPinia, defineStore, setActivePinia } <span class="k">from</span> <span class="s">&quot;pinia&quot;</span>;
+
+<span class="c">// المخزن يعمل دون أي مكوّن: الكود نفسه يعمل في Node وفي الاختبارات</span>
+<span class="k">const</span> useCounter = defineStore(<span class="s">&quot;counter&quot;</span>, () =&gt; {
+  <span class="k">const</span> count = ref(<span class="n">0</span>);
+  <span class="k">const</span> double = computed(() =&gt; count.value * <span class="n">2</span>);
+  <span class="k">const</span> increase = (by = <span class="n">1</span>) =&gt; (count.value += by);
+  <span class="k">return</span> { count, double, increase };
+});
+
+setActivePinia(createPinia());
+<span class="k">const</span> counter = useCounter();
+
+counter.$onAction(({ name, args }) =&gt; console.log(<span class="s">&quot;فعل:&quot;</span>, name, <span class="s">&quot;بـ&quot;</span>, args));
+counter.$subscribe(() =&gt; console.log(<span class="s">&quot;تغيّر:&quot;</span>, counter.count, <span class="s">&quot;→ double&quot;</span>, counter.double), { flush: <span class="s">&quot;sync&quot;</span> });
+
+counter.increase();
+counter.increase(<span class="n">5</span>);
+counter.$dispose();
+counter.increase();
+console.log(<span class="s">&quot;بعد ‎$dispose:&quot;</span>, counter.count);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>فعل: increase بـ []
+تغيّر: 1 → double 2
+فعل: increase بـ [ 5 ]
+تغيّر: 6 → double 12
+بعد ‎$dispose: 7</pre></div>
+
+<p>هذه الآلية نفسها التي تستخدمها أدوات المطورين لعرض سجل التغييرات، والتي ستستخدمها إضافة للسجلات أو التحليلات: مكان واحد يرى كل تغيير، دون لمس المكونات. وبعد <code>$dispose()</code> تذهب الخطافات: فالاستدعاء الأخير غيّر العدد لكنه لم يطبع شيئاً.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: أبعد بيانات الخادم عن المخازن العامة</p><p>نسخ المنتجات أو الطلبات إلى مخزن يعني كتابة ذاكرتك المؤقتة بنفسك، باليد، بلا إعادة جلب ولا منع للتكرار ولا إبطال. دع TanStack Query تملك بيانات الخادم، وأبقِ المخازن لما يملكه التطبيق نفسه. ومعظم مشكلات «الحالة العامة» تختفي بهذه القاعدة الواحدة.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>جعل كل شيء عاماً</td><td>تغييرات يصعب تتبعها من أي مكان</td><td>استخدم جدول القسم 9.1 من أعلاه إلى أسفله</td></tr>
+<tr><td><code>inject("auth")</code> بنص</td><td>لا أنواع، وأسماء قد تتصادم</td><td><code>InjectionKey</code> بنوعه، خلف composable</td></tr>
+<tr><td>تقديم مرجع قابل للكتابة</td><td>أي مكوّن يغيّر الحالة المشتركة</td><td>قدّم حالة <code>readonly</code> ودوالاً تغيّرها</td></tr>
+<tr><td>تفكيك المخزن</td><td>قيم لا تتحدث أبداً</td><td><code>storeToRefs</code> للحالة والقيم المشتقة</td></tr>
+<tr><td>استدعاء <code>useCart()</code> في أعلى وحدة</td><td>خطأ: لا Pinia فعالة بعد</td><td>استدعِه داخل المكونات أو الـ composables أو الدوال</td></tr>
+<tr><td>نسخ بيانات الخادم إلى مخزن</td><td>بيانات قديمة وأخطاء ذاكرة مصنوعة باليد</td><td>TanStack Query</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>للحالة أربعة بيوت: <strong>المكوّن</strong>، و<strong>العنوان</strong>، و<strong>ذاكرة الاستعلامات</strong>، وللقيم القليلة التي يملكها التطبيق وتُقرأ في أماكن كثيرة <strong>provide/inject أو مخزن</strong>.</li>
+<li><code>provide</code> و<code>inject</code> تمرران القيم إلى أي عمق. استخدم <code>InjectionKey</code> بنوعه، وcomposables حوله، وحالة <code>readonly</code>.</li>
+<li><strong>مخزن الإعداد في Pinia</strong> يُكتب كالـ composable: المراجع حالة، والمحسوبة قيم مشتقة، والدوال أفعال.</li>
+<li>اقرأ المخازن بـ <code>storeToRefs</code>، وفكك الأفعال مباشرة.</li>
+<li>الـ composables مثل <code>useLocalStorage</code> تعمل داخل المخازن، لـ<strong>حفظها</strong> مثلاً.</li>
+<li>المخازن تعمل دون مكونات، و<code>$onAction</code> و<code>$subscribe</code> تراقبانها من الخارج، والاختبارات تستخدمها مباشرة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. في العنوان، معاملَ استعلام. 2. ترمي الخطأ «useAuth() must be used inside a component that called provideAuth()» الذي يشير إلى المشكلة مباشرة. 3. حتى لا يُسند أي مكوّن مستخدماً جديداً خطأً، فالطريقة الوحيدة لتغييره عبر <code>signIn</code> و<code>signOut</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قبل كل مشروع املأ جدول القسم 9.1 للحالة التي تنوي حفظها. فكل ما لا يقع في الصف الأخير يبقى خارج الكود العام.</p>
+
+<div class="project">
+<p class="project-label">المشروع 9.1 · سهل</p>
+<h3>مظهر يتبع المستخدم</h3>
+<p class="project-goal">مظهر فاتح وآخر داكن، يبدأ من إعداد النظام، ويُبدَّل من أي مكان، ويُتذكَّر في الزيارة التالية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>provide</code> و<code>inject</code> بمفتاح له نوع، و<code>usePreferredDark</code> و<code>useLocalStorage</code> من VueUse، واختياراً محسوباً، و<code>watchEffect</code>.</p>
+<ol class="steps">
+<li>اكتب الألوان خصائصَ CSS مخصصة على <code>:root</code>، والداكنة على <code>html.dark</code>. فلا تذكر المكونات الألوان بأسمائها أبداً.</li>
+<li>في <code>provideTheme</code> احفظ اختيار المستخدم، أو <code>null</code> إن لم يختر قط، وعُد إلى إعداد النظام بـ <code>usePreferredDark()</code>.</li>
+<li>في <code>watchEffect</code> بدّل الصنف <code>dark</code> على <code>&lt;html&gt;</code>.</li>
+<li>قدّم <code>{ dark, toggle }</code> بمفتاح له نوع، واقرأه بـ <code>useTheme()</code> التي ترمي خطأً واضحاً خارج المزوِّد.</li>
+<li>اجعل المفتاح زراً بـ <code>aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> حفظ <code>null</code> حتى يختار المستخدم يعني أن التطبيق يظل يتبع إعداد النظام، ولا يتبع المستخدم إلا حين يعبّر عن رغبة. وهذا التفصيل الصغير هو ما يلاحظه المستخدمون حين يحوّلون جوالاتهم إلى الوضع الداكن ليلاً.</p>
+<div class="listing" dir="ltr"><div class="listing-title">theme.ts</div><pre class="code"><span class="k">import</span> { computed, inject, provide, watchEffect, <span class="k">type</span> InjectionKey, <span class="k">type</span> Ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { useLocalStorage, usePreferredDark } <span class="k">from</span> <span class="s">&quot;@vueuse/core&quot;</span>;
+
+<span class="k">type</span> Theme = { dark: Readonly&lt;Ref&lt;boolean&gt;&gt;; toggle: () =&gt; void };
+<span class="k">const</span> ThemeKey: InjectionKey&lt;Theme&gt; = Symbol(<span class="s">&quot;theme&quot;</span>);
+
+<span class="k">export</span> <span class="k">function</span> provideTheme() {
+  <span class="k">const</span> system = usePreferredDark();
+  <span class="k">const</span> saved = useLocalStorage&lt;boolean | <span class="k">null</span>&gt;(<span class="s">&quot;dark&quot;</span>, <span class="k">null</span>);
+  <span class="k">const</span> dark = computed(() =&gt; saved.value ?? system.value);
+  watchEffect(() =&gt; document.documentElement.classList.toggle(<span class="s">&quot;dark&quot;</span>, dark.value));
+  provide(ThemeKey, { dark, toggle: () =&gt; (saved.value = !dark.value) });
+}
+
+<span class="k">export</span> <span class="k">function</span> useTheme(): Theme {
+  <span class="k">const</span> theme = inject(ThemeKey);
+  <span class="k">if</span> (!theme) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;useTheme() must be used inside a component that called provideTheme()&quot;</span>);
+  <span class="k">return</span> theme;
+}</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>theme-page.html</span><b>560px</b></div><img src="img/vue-global-ar-projects-theme-page.html-560-ceed71.png" alt=""><figcaption><b>المشروع 9.1:</b> بعد التحويل إلى المظهر الداكن.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 9.2 · متوسط</p>
+<h3>سلة تبقى بعد إعادة التحميل</h3>
+<p class="project-goal">ابنِ مخزن السلة في هذا الفصل بنفسك، بالإضافة والإنقاص والحذف والتفريغ، وشارة في الترويسة، وحفظ بين الزيارات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مخزن الإعداد، والقيم المشتقة، والأفعال التي تغيّر الحالة في مكانها، و<code>storeToRefs</code>، واختبار المخزن في Node.</p>
+<ol class="steps">
+<li>اكتب المخزن بالأفعال الأربعة. واحفظ السطور في كائن مفتاحه معرّف المنتج، فلا يحتاج إيجاد سطر إلى بحث.</li>
+<li>اجعل <code>count</code> و<code>total</code> قيماً مشتقة بـ <code>computed</code>.</li>
+<li>ابنِ ثلاثة مكونات: <code>CartBadge</code> (العدد فقط)، و<code>ProductList</code> (<code>add</code> فقط)، و<code>CartSummary</code> (السطور والمجموع والأفعال الأخرى).</li>
+<li>احفظ السطور في <code>useLocalStorage</code>، وأضف منتجات، وأعد تحميل الصفحة وتأكد أنها ما زالت هناك.</li>
+<li>اكتب سكربت Node ينشئ Pinia، ويشغّل الأفعال الأربعة، ويطبع العدد بعد كل منها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن غيرت شكل البيانات المحفوظة لاحقاً، فسيحمّل الزوار القدامى الشكل القديم. احفظ رقم إصدار مع السطور، وحوّل البيانات القديمة أو تخلص منها حين تحمّلها.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 9.3 · تحدٍّ</p>
+<h3>إشعارات مع تراجع</h3>
+<p class="project-goal">نظام إشعارات يستخدمه أي مكوّن باستدعاء واحد، ولا يعرض أكثر من ثلاث رسائل، وتختفي وحدها، ويمكن أن يقدم زر «تراجع»، ويعلنه قارئ الشاشة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مخزن تستخدمه مكونات كثيرة، و<code>Teleport</code>، والمؤقتات، والمناطق الحية.</p>
+<ol class="steps">
+<li>اكتب مخزن <code>useToasts</code> فيه قائمة الرسائل وفعلان: <code>notify(text, action?)</code> و<code>dismiss(id)</code>.</li>
+<li>أضف الرسائل الجديدة بـ <code>[...toasts.slice(-2), next]</code>، فلا يبقى على الشاشة أكثر من ثلاث.</li>
+<li>احذف كل رسالة بعد خمس ثوانٍ بـ <code>setTimeout</code>، وأيضاً بزر إغلاق له عنوان لقارئ الشاشة.</li>
+<li>اعرض القائمة بـ <code>&lt;Teleport to="body"&gt;</code>، فلا يخفيها أو يقصّها المكوّن الذي وضعها أبداً.</li>
+<li>أعطِ القائمة <code>role="status"</code> و<code>aria-live="polite"</code>، ليعلن قارئ الشاشة الرسائل الجديدة دون مقاطعة المستخدم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> «تراجع» ألطف من «هل أنت متأكد؟». نفّذ الفعل فوراً، واعرض عكسه بضع ثوانٍ. فيقل خطأ المستخدمين، ولا يتباطؤون في باقي الوقت.</p>
+<div class="listing" dir="ltr"><div class="listing-title">toasts.ts</div><pre class="code"><span class="k">import</span> { defineStore } <span class="k">from</span> <span class="s">&quot;pinia&quot;</span>;
+<span class="k">import</span> { ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+
+<span class="k">type</span> Action = { label: string; run: () =&gt; void };
+<span class="k">type</span> Toast = { id: number; text: string; action?: Action | <span class="k">undefined</span> };
+
+<span class="k">export</span> <span class="k">const</span> useToasts = defineStore(<span class="s">&quot;toasts&quot;</span>, () =&gt; {
+  <span class="k">const</span> toasts = ref&lt;Toast[]&gt;([]);
+  <span class="k">let</span> next = <span class="n">1</span>;
+
+  <span class="k">function</span> dismiss(id: number) {
+    toasts.value = toasts.value.filter((t) =&gt; t.id !== id);
+  }
+
+  <span class="k">function</span> notify(text: string, action?: Action) {
+    <span class="k">const</span> id = next++;
+    toasts.value = [...toasts.value.slice(-<span class="n">2</span>), { id, text, action }];
+    setTimeout(() =&gt; dismiss(id), <span class="n">5000</span>);
+  }
+
+  <span class="k">return</span> { toasts, notify, dismiss };
+});</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>toasts-page.html</span><b>560px</b></div><img src="img/vue-global-ar-projects-toasts-page.html-560-1c8096.png" alt=""><figcaption><b>المشروع 9.3:</b> إشعاران، والثاني يعرض التراجع عن الحذف.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف فعل <code>remove(id)</code> إلى مخزن السلة، وزر «×» بجانب كل سطر في <code>CartSummary</code>.</li>
+<li><span class="level">سهل</span> اكتب مخزن <code>useLanguage</code> يحفظ <code>"en"</code> أو <code>"ar"</code>، ويضبط <code>lang</code> و<code>dir</code> على <code>document.documentElement</code> في <code>watchEffect</code>.</li>
+<li><span class="level medium">متوسط</span> اكتب سكربت Node، مثل <code>store-node.ts</code>، يختبر <code>add</code> و<code>clear</code> في السلة، ويطبع <code>count</code> بعد كل خطوة. ماذا تفعل <code>useLocalStorage</code> في Node حيث لا <code>localStorage</code>؟</li>
+<li><span class="level medium">متوسط</span> استخدم <code>$subscribe</code> لترسل كل تغيير في السلة إلى وحدة التحكم مع الوقت، في التطوير فقط (<code>import.meta.env.DEV</code>).</li>
+<li><span class="level hard">تحدٍّ</span> اجعل تسجيل الدخول في <code>auth.ts</code> حقيقياً: تستدعي <code>signIn</code> واجهة وهمية تأخذ 500 ملي ثانية، وتصير الحالة اتحاداً مميَّزاً (<code>"signed-out" | "signing-in" | "signed-in"</code>)، وتعرض القائمة الشيء الصحيح لكل حالة. ثم انقله إلى مخزن Pinia وقارن النسختين.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 10</p>
+<p>تستطيع الآن أن تبني أي شاشة. والجزء التالي من الكتاب عن بنائها <em>جيداً</em>، فريقاً. ويبدأ بأنظمة التصميم: مكونات مشتركة ورموز وتوثيق تجعل مئة شاشة تبدو وتعمل كمنتج واحد.</p>
+</div>
+</section>
 <section class="chapter" style="page: ch10" data-chapter="10" data-code="b2/design/ar">
 <div class="opener"><span class="opener-num">10</span><p class="chapter-kicker">الفصل 10</p><h1>أنظمة التصميم ومكتبات المكونات</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -7270,6 +7680,16 @@ Cypress               62
 <li>احفظ نسخة من <code>initial</code>، و<code>const dirty = computed(() =&gt; JSON.stringify(values) !== JSON.stringify(initial))</code>. وفي المكوّن: <code>useEventListener(window, "beforeunload", (e) =&gt; { if (dirty.value) e.preventDefault(); })</code>، فيسأل المتصفح المستخدم قبل المغادرة.</li>
 <li>ابدأ بـ <code>useForm(contactSchema, loadDraft() ?? empty)</code>، حيث تحلل <code>loadDraft</code> ما في <code>localStorage</code> داخل <code>try</code>، واحفظ بـ <code>watch(values, (v) =&gt; localStorage.setItem("contact-draft", JSON.stringify(v)), { deep: true })</code>. واحذف المسودة بعد الإرسال الناجح.</li>
 <li>راقب البريد مع علامة «ملموس»: حين يُغادر الحقل ويكون البريد صالحاً، أجّله (الفصل 6)، واستدعِ <code>isTaken(email, signal)</code> وهمية، وألغِ الاستدعاءات القديمة في التنظيف، وضع الجواب في مرجع مستقل <code>emailTaken</code> يُعرض تحت الحقل. وما زالت دالة الإرسال تسأل الخادم من جديد، لأن الجواب قد يتغير.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 9</h2>
+<ol class="exercises">
+<li>في المخزن: <code>function remove(id: number) { delete lines.value[id]; }</code>، تُرجع مع الباقية. وحذف خاصية من كائن تفاعلي يراه Vue، فتتحدث الشارة والمجموع. وفي <code>CartSummary</code>: ‏<code>&lt;button type="button" @click="cart.remove(l.product.id)"&gt;×&lt;/button&gt;</code>.</li>
+<li><code>export const useLanguage = defineStore("language", () =&gt; { const lang = ref&lt;"en" | "ar"&gt;("en"); watchEffect(() =&gt; { document.documentElement.lang = lang.value; document.documentElement.dir = lang.value === "ar" ? "rtl" : "ltr"; }); return { lang }; });</code>. ويعيش المراقب ما عاش المخزن، أي طوال حياة التطبيق.</li>
+<li><code>setActivePinia(createPinia()); const cart = useCart(); cart.add(book); cart.add(mug); cart.add(mug); cart.clear();</code> مع طباعة <code>cart.count</code> بعد كل منها: 1، 2، 3، 0. ولا <code>window</code> في Node، فتعمل <code>useLocalStorage</code> بهدوء كمرجع عادي: يعمل المخزن ولا يُحفظ شيء، وهذا يسهّل اختباره.</li>
+<li><code>if (import.meta.env.DEV) cart.$subscribe(() =&gt; console.log(new Date().toISOString(), JSON.stringify(cart.lines)));</code> في <code>main.ts</code> بعد تثبيت Pinia. ويحذف البناء الفرع كله في الإنتاج، لأن <code>import.meta.env.DEV</code> تصير <code>false</code>.</li>
+<li><code>type Auth = { status: "signed-out" } | { status: "signing-in" } | { status: "signed-in"; user: User }</code> في مرجع، وتضبط <code>signIn</code> الحالة <code>signing-in</code>، وتنتظر الواجهة الوهمية، ثم تضبط <code>signed-in</code>. ويستخدم القالب <code>v-if</code> على <code>state.status</code>. والكود مخزنَ Pinia يكاد يكون نفسه، بلا المفتاح والـ composableين، ويظهر في أدوات المطورين، أما مع <code>provide</code> فيمكن حصره في جزء من التطبيق، كمنطقة عرض بمستخدم وهمي.</li>
 </ol>
 
 

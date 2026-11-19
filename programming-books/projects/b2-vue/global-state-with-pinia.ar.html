@@ -1,0 +1,52 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">قبل كل مشروع املأ جدول القسم {{n}}.1 للحالة التي تنوي حفظها. فكل ما لا يقع في الصف الأخير يبقى خارج الكود العام.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>مظهر يتبع المستخدم</h3>
+<p class="project-goal">مظهر فاتح وآخر داكن، يبدأ من إعداد النظام، ويُبدَّل من أي مكان، ويُتذكَّر في الزيارة التالية.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> <code>provide</code> و<code>inject</code> بمفتاح له نوع، و<code>usePreferredDark</code> و<code>useLocalStorage</code> من VueUse، واختياراً محسوباً، و<code>watchEffect</code>.</p>
+<ol class="steps">
+<li>اكتب الألوان خصائصَ CSS مخصصة على <code>:root</code>، والداكنة على <code>html.dark</code>. فلا تذكر المكونات الألوان بأسمائها أبداً.</li>
+<li>في <code>provideTheme</code> احفظ اختيار المستخدم، أو <code>null</code> إن لم يختر قط، وعُد إلى إعداد النظام بـ <code>usePreferredDark()</code>.</li>
+<li>في <code>watchEffect</code> بدّل الصنف <code>dark</code> على <code>&lt;html&gt;</code>.</li>
+<li>قدّم <code>{ dark, toggle }</code> بمفتاح له نوع، واقرأه بـ <code>useTheme()</code> التي ترمي خطأً واضحاً خارج المزوِّد.</li>
+<li>اجعل المفتاح زراً بـ <code>aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> حفظ <code>null</code> حتى يختار المستخدم يعني أن التطبيق يظل يتبع إعداد النظام، ولا يتبع المستخدم إلا حين يعبّر عن رغبة. وهذا التفصيل الصغير هو ما يلاحظه المستخدمون حين يحوّلون جوالاتهم إلى الوضع الداكن ليلاً.</p>
+<pre data-code="projects/theme.ts" data-title="theme.ts"></pre>
+<figure data-render="projects/theme-page.html" data-width="560" data-actions="click:header button"><figcaption><b>المشروع {{n}}.1:</b> بعد التحويل إلى المظهر الداكن.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>سلة تبقى بعد إعادة التحميل</h3>
+<p class="project-goal">ابنِ مخزن السلة في هذا الفصل بنفسك، بالإضافة والإنقاص والحذف والتفريغ، وشارة في الترويسة، وحفظ بين الزيارات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مخزن الإعداد، والقيم المشتقة، والأفعال التي تغيّر الحالة في مكانها، و<code>storeToRefs</code>، واختبار المخزن في Node.</p>
+<ol class="steps">
+<li>اكتب المخزن بالأفعال الأربعة. واحفظ السطور في كائن مفتاحه معرّف المنتج، فلا يحتاج إيجاد سطر إلى بحث.</li>
+<li>اجعل <code>count</code> و<code>total</code> قيماً مشتقة بـ <code>computed</code>.</li>
+<li>ابنِ ثلاثة مكونات: <code>CartBadge</code> (العدد فقط)، و<code>ProductList</code> (<code>add</code> فقط)، و<code>CartSummary</code> (السطور والمجموع والأفعال الأخرى).</li>
+<li>احفظ السطور في <code>useLocalStorage</code>، وأضف منتجات، وأعد تحميل الصفحة وتأكد أنها ما زالت هناك.</li>
+<li>اكتب سكربت Node ينشئ Pinia، ويشغّل الأفعال الأربعة، ويطبع العدد بعد كل منها.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن غيرت شكل البيانات المحفوظة لاحقاً، فسيحمّل الزوار القدامى الشكل القديم. احفظ رقم إصدار مع السطور، وحوّل البيانات القديمة أو تخلص منها حين تحمّلها.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>إشعارات مع تراجع</h3>
+<p class="project-goal">نظام إشعارات يستخدمه أي مكوّن باستدعاء واحد، ولا يعرض أكثر من ثلاث رسائل، وتختفي وحدها، ويمكن أن يقدم زر «تراجع»، ويعلنه قارئ الشاشة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مخزن تستخدمه مكونات كثيرة، و<code>Teleport</code>، والمؤقتات، والمناطق الحية.</p>
+<ol class="steps">
+<li>اكتب مخزن <code>useToasts</code> فيه قائمة الرسائل وفعلان: <code>notify(text, action?)</code> و<code>dismiss(id)</code>.</li>
+<li>أضف الرسائل الجديدة بـ <code>[...toasts.slice(-2), next]</code>، فلا يبقى على الشاشة أكثر من ثلاث.</li>
+<li>احذف كل رسالة بعد خمس ثوانٍ بـ <code>setTimeout</code>، وأيضاً بزر إغلاق له عنوان لقارئ الشاشة.</li>
+<li>اعرض القائمة بـ <code>&lt;Teleport to="body"&gt;</code>، فلا يخفيها أو يقصّها المكوّن الذي وضعها أبداً.</li>
+<li>أعطِ القائمة <code>role="status"</code> و<code>aria-live="polite"</code>، ليعلن قارئ الشاشة الرسائل الجديدة دون مقاطعة المستخدم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> «تراجع» ألطف من «هل أنت متأكد؟». نفّذ الفعل فوراً، واعرض عكسه بضع ثوانٍ. فيقل خطأ المستخدمين، ولا يتباطؤون في باقي الوقت.</p>
+<pre data-code="projects/toasts.ts" data-title="toasts.ts"></pre>
+<figure data-render="projects/toasts-page.html" data-width="560" data-actions="click:.card .row:nth-child(2) button;click:.card .row:nth-child(3) .secondary;wait:200"><figcaption><b>المشروع {{n}}.3:</b> إشعاران، والثاني يعرض التراجع عن الحذف.</figcaption></figure>
+</div>
