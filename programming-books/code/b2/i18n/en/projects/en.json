@@ -1,0 +1,7 @@
+{
+  "nav.home": "Home",
+  "nav.cart": "Cart",
+  "cart.total": "Total: {total}",
+  "order.placed": "Order #{id} placed on {date}",
+  "profile.greeting": "Hello, {name}!"
+}

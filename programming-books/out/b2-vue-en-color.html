@@ -23,6 +23,8 @@
 @page ch13:first { @top-center { content: none; } }
 @page ch14 { @top-center { content: "Chapter 14: Frontend Security"; } }
 @page ch14:first { @top-center { content: none; } }
+@page ch15 { @top-center { content: "Chapter 15: Internationalisation and RTL"; } }
+@page ch15:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -3589,6 +3591,366 @@ Score: 3/5</pre></div>
 <p>The last chapter of this part is close to every Arabic developer’s heart: building interfaces in more than one language, with right-to-left layouts, numbers, dates and plurals that are correct in Arabic and in English.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch15" data-chapter="15" data-code="b2/i18n/en">
+<div class="opener"><span class="opener-num">15</span><p class="chapter-kicker">Chapter 15</p><h1>Internationalisation and RTL</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>separate every user-visible text from the code, in message catalogues</li>
+<li>format numbers, money, dates and lists correctly for each language with <code>Intl</code></li>
+<li>handle Arabic’s six plural forms</li>
+<li>build layouts that mirror for right-to-left languages with logical CSS</li>
+<li>fix the bidirectional text problems of mixed Arabic and English</li>
+<li>check translation catalogues automatically</li>
+</ul>
+</div>
+
+<p class="lead">More than 400 million people read Arabic, and hundreds of millions more read Hebrew, Persian and Urdu, all from right to left. Yet many apps treat “Arabic support” as translating the words at the end. Real <dfn>internationalisation</dfn> (often written <strong>i18n</strong>: an i, 18 letters, an n) is an architecture decision: no text in the code, every number and date formatted by rules, every layout able to mirror. Done from the start, it is cheap; added later, it is one of the most expensive rewrites a team can face.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>This is my favourite chapter, because it is about people like you and me. A good Arabic interface does not just have Arabic words: the numbers, dates, plurals and arrows all feel natural. Users notice immediately when they do not.</p></div></div>
+
+<h2><span class="sec">15.1</span> <span>Numbers, money and dates with <code>Intl</code></span></h2>
+
+<p>The JavaScript <code>Intl</code> API knows the formatting rules of hundreds of <dfn>locales</dfn>: a language plus a region, written like <code>ar-EG</code> (Arabic, Egypt) or <code>en-GB</code> (English, United Kingdom). Never build these formats by hand:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">numbers.ts</div><pre class="code"><span class="c">// One number, many correct ways to write it</span>
+<span class="k">const</span> price = <span class="n">1234567.5</span>;
+<span class="k">const</span> show = (locale: string, options: Intl.NumberFormatOptions = {}) =&gt;
+  console.log(locale.padEnd(<span class="n">18</span>), <span class="k">new</span> Intl.NumberFormat(locale, options).format(price));
+
+show(<span class="s">&quot;en-US&quot;</span>);
+show(<span class="s">&quot;de-DE&quot;</span>);
+show(<span class="s">&quot;ar-EG&quot;</span>);
+show(<span class="s">&quot;ar-EG-u-nu-latn&quot;</span>);
+show(<span class="s">&quot;ar-SA&quot;</span>, { style: <span class="s">&quot;currency&quot;</span>, currency: <span class="s">&quot;SAR&quot;</span> });
+show(<span class="s">&quot;en-EG&quot;</span>, { style: <span class="s">&quot;currency&quot;</span>, currency: <span class="s">&quot;EGP&quot;</span> });
+show(<span class="s">&quot;ar-EG&quot;</span>, { notation: <span class="s">&quot;compact&quot;</span> });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>en-US              1,234,567.5
+de-DE              1.234.567,5
+ar-EG              ١٬٢٣٤٬٥٦٧٫٥
+ar-EG-u-nu-latn    1,234,567.5
+ar-SA              ‏١٬٢٣٤٬٥٦٧٫٥٠ ر.س.‏
+en-EG              EGP 1,234,567.50
+ar-EG              ١٫٢ مليون</pre></div>
+
+<p>The same number has many correct forms: commas or dots, Arabic-Indic digits (١٢٣) or Latin digits (123), the currency before or after. The extension <code>-u-nu-latn</code> keeps Arabic text but Latin digits, which many Arab countries prefer. Ask your users, or follow their region; do not decide by guessing.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">dates.ts</div><pre class="code"><span class="k">const</span> date = <span class="k">new</span> Date(Date.UTC(<span class="n">2026</span>, <span class="n">2</span>, <span class="n">20</span>, <span class="n">14</span>, <span class="n">30</span>));
+<span class="k">const</span> fmt = (locale: string, options: Intl.DateTimeFormatOptions) =&gt;
+  console.log(locale.padEnd(<span class="n">26</span>), <span class="k">new</span> Intl.DateTimeFormat(locale, { timeZone: <span class="s">&quot;Africa/Cairo&quot;</span>, ...options }).format(date));
+
+fmt(<span class="s">&quot;en-GB&quot;</span>, { dateStyle: <span class="s">&quot;full&quot;</span>, timeStyle: <span class="s">&quot;short&quot;</span> });
+fmt(<span class="s">&quot;en-US&quot;</span>, { dateStyle: <span class="s">&quot;full&quot;</span>, timeStyle: <span class="s">&quot;short&quot;</span> });
+fmt(<span class="s">&quot;ar-EG&quot;</span>, { dateStyle: <span class="s">&quot;full&quot;</span>, timeStyle: <span class="s">&quot;short&quot;</span> });
+fmt(<span class="s">&quot;ar-SA-u-ca-islamic-umalqura&quot;</span>, { dateStyle: <span class="s">&quot;long&quot;</span> });
+
+<span class="k">const</span> rtf = <span class="k">new</span> Intl.RelativeTimeFormat(<span class="s">&quot;ar&quot;</span>, { numeric: <span class="s">&quot;auto&quot;</span> });
+console.log([-<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">11</span>].map((d) =&gt; rtf.format(d, <span class="s">&quot;day&quot;</span>)).join(<span class="s">&quot; | &quot;</span>));
+console.log(<span class="k">new</span> Intl.ListFormat(<span class="s">&quot;ar&quot;</span>, { <span class="k">type</span>: <span class="s">&quot;conjunction&quot;</span> }).format([<span class="s">&quot;HTML&quot;</span>, <span class="s">&quot;CSS&quot;</span>, <span class="s">&quot;JavaScript&quot;</span>]));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>en-GB                      Friday, 20 March 2026 at 16:30
+en-US                      Friday, March 20, 2026 at 4:30 PM
+ar-EG                      الجمعة، ٢٠ مارس ٢٠٢٦ في ٤:٣٠ م
+ar-SA-u-ca-islamic-umalqura ١ شوال ١٤٤٧ هـ
+أمس | اليوم | غدًا | بعد الغد | خلال 3 أيام | خلال 11 يومًا
+HTML وCSS وJavaScript</pre></div>
+
+<p>Dates follow the same idea, including the order of day and month, the names of days, and whole calendars: the extension <code>-u-ca-islamic-umalqura</code> shows that this day, 20 March 2026, is 1 Shawwal 1447, the first day of Eid al-Fitr. <code>RelativeTimeFormat</code> writes “yesterday” and “in 3 days” with the correct grammar, and <code>ListFormat</code> joins words with the right “and”. Store dates in UTC, and format them in the user’s time zone only when you show them.</p>
+
+<h2><span class="sec">15.2</span> <span>Plurals</span></h2>
+
+<p>English needs two forms: “1 item”, “2 items”. Arabic needs six, and the rules depend on the number in ways that are easy to get wrong. <code>Intl.PluralRules</code> knows them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">plurals.ts</div><pre class="code"><span class="c">// Arabic has six plural categories; English has two</span>
+<span class="k">const</span> ar = <span class="k">new</span> Intl.PluralRules(<span class="s">&quot;ar&quot;</span>);
+<span class="k">const</span> en = <span class="k">new</span> Intl.PluralRules(<span class="s">&quot;en&quot;</span>);
+
+<span class="k">for</span> (<span class="k">const</span> n <span class="k">of</span> [<span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">10</span>, <span class="n">11</span>, <span class="n">100</span>, <span class="n">101</span>]) {
+  console.log(String(n).padStart(<span class="n">3</span>), <span class="s">&quot;ar:&quot;</span>, ar.select(n).padEnd(<span class="n">5</span>), <span class="s">&quot; en:&quot;</span>, en.select(n));
+}
+console.log(<span class="s">&quot;ar categories:&quot;</span>, ar.resolvedOptions().pluralCategories.join(<span class="s">&quot;, &quot;</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>  0 ar: zero   en: other
+  1 ar: one    en: one
+  2 ar: two    en: other
+  3 ar: few    en: other
+ 10 ar: few    en: other
+ 11 ar: many   en: other
+100 ar: other  en: other
+101 ar: other  en: other
+ar categories: few, many, one, two, zero, other</pre></div>
+
+<p>A message catalogue therefore stores a plural message as one text per category, and the code picks the right one. Here is a small catalogue and translation function, the core of what libraries such as i18next, FormatJS and vue-i18n do:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">messages.ts</div><pre class="code"><span class="c">// Every message has a key, and placeholders in braces</span>
+<span class="k">export</span> <span class="k">const</span> messages = {
+  en: {
+    <span class="s">&quot;cart.title&quot;</span>: <span class="s">&quot;Your cart&quot;</span>,
+    <span class="s">&quot;cart.items&quot;</span>: { one: <span class="s">&quot;{count} item&quot;</span>, other: <span class="s">&quot;{count} items&quot;</span> },
+    <span class="s">&quot;cart.total&quot;</span>: <span class="s">&quot;Total: {total}&quot;</span>,
+    <span class="s">&quot;cart.empty&quot;</span>: <span class="s">&quot;Your cart is empty.&quot;</span>,
+  },
+  ar: {
+    <span class="s">&quot;cart.title&quot;</span>: <span class="s">&quot;سلتك&quot;</span>,
+    <span class="s">&quot;cart.items&quot;</span>: {
+      zero: <span class="s">&quot;لا عناصر&quot;</span>,
+      one: <span class="s">&quot;عنصر واحد&quot;</span>,
+      two: <span class="s">&quot;عنصران&quot;</span>,
+      few: <span class="s">&quot;{count} عناصر&quot;</span>,
+      many: <span class="s">&quot;{count} عنصراً&quot;</span>,
+      other: <span class="s">&quot;{count} عنصر&quot;</span>,
+    },
+    <span class="s">&quot;cart.total&quot;</span>: <span class="s">&quot;المجموع: {total}&quot;</span>,
+    <span class="s">&quot;cart.empty&quot;</span>: <span class="s">&quot;سلتك فارغة.&quot;</span>,
+  },
+} as <span class="k">const</span>;
+
+<span class="k">export</span> <span class="k">type</span> Locale = <span class="k">keyof</span> <span class="k">typeof</span> messages;
+<span class="k">type</span> Plural = Partial&lt;Record&lt;Intl.LDMLPluralRule, string&gt;&gt;;
+
+<span class="k">export</span> <span class="k">function</span> translate(locale: Locale, key: <span class="k">keyof</span> (<span class="k">typeof</span> messages)[<span class="s">&quot;en&quot;</span>], values: Record&lt;string, string | number&gt; = {}) {
+  <span class="k">const</span> entry = messages[locale][key] as string | Plural;
+  <span class="k">const</span> text =
+    <span class="k">typeof</span> entry === <span class="s">&quot;string&quot;</span>
+      ? entry
+      : (entry[<span class="k">new</span> Intl.PluralRules(locale).select(Number(values.count ?? <span class="n">0</span>))] ?? entry.other ?? <span class="s">&quot;&quot;</span>);
+  <span class="k">const</span> format = <span class="k">new</span> Intl.NumberFormat(locale);
+  <span class="k">return</span> text.replace(/\{(\w+)\}/g, (_, name: string) =&gt; {
+    <span class="k">const</span> value = values[name];
+    <span class="k">return</span> <span class="k">typeof</span> value === <span class="s">&quot;number&quot;</span> ? format.format(value) : String(value ?? <span class="s">&quot;&quot;</span>);
+  });
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">translate.ts</div><pre class="code"><span class="k">import</span> { translate } <span class="k">from</span> <span class="s">&quot;./messages&quot;</span>;
+
+<span class="k">for</span> (<span class="k">const</span> n <span class="k">of</span> [<span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">5</span>, <span class="n">11</span>, <span class="n">100</span>]) {
+  console.log(String(n).padStart(<span class="n">3</span>), <span class="s">&quot;|&quot;</span>, translate(<span class="s">&quot;ar&quot;</span>, <span class="s">&quot;cart.items&quot;</span>, { count: n }).padEnd(<span class="n">12</span>), <span class="s">&quot;|&quot;</span>, translate(<span class="s">&quot;en&quot;</span>, <span class="s">&quot;cart.items&quot;</span>, { count: n }));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>  0 | لا عناصر     | 0 items
+  1 | عنصر واحد    | 1 item
+  2 | عنصران       | 2 items
+  5 | 5 عناصر      | 5 items
+ 11 | 11 عنصراً    | 11 items
+100 | 100 عنصر     | 100 items</pre></div>
+
+<ul>
+<li>Every text has a <dfn>key</dfn> such as <code>cart.items</code>. Code never contains user-visible words, so translators can work without touching it.</li>
+<li>Values are passed into placeholders, never glued together with <code>+</code>. Word order differs between languages: “Total: 335” may become “335 :المجموع” in another, and only the translator knows.</li>
+<li>Numbers inside messages are formatted with the locale’s rules, too.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: never build sentences from pieces</p><p><code>"You have " + n + " " + (n === 1 ? "item" : "items")</code> cannot be translated: Arabic needs six forms, other languages change the word order or the gender. Give the translator the whole sentence with a placeholder, and let plural rules choose.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Which locale shows Arabic text with Latin digits in Egypt?</li><li>Which Arabic plural category does the number 11 belong to?</li><li>Why should translations use placeholders instead of joining strings with <code>+</code>?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">15.3</span> <span>Layouts that mirror</span></h2>
+
+<p>In a right-to-left page, almost the whole layout mirrors: the menu moves to the right, text aligns right, the “back” arrow points right. If your CSS says <code>left</code> and <code>right</code>, you must write every rule twice. <dfn>Logical properties</dfn> describe positions relative to the text direction instead, and you write each rule once:</p>
+
+<table>
+<thead><tr><th>Physical (avoid)</th><th>Logical (use)</th></tr></thead>
+<tbody>
+<tr><td><code>margin-left</code>, <code>padding-right</code></td><td><code>margin-inline-start</code>, <code>padding-inline-end</code></td></tr>
+<tr><td><code>left: 0</code>, <code>right: 0</code></td><td><code>inset-inline-start: 0</code>, <code>inset-inline-end: 0</code></td></tr>
+<tr><td><code>text-align: left</code></td><td><code>text-align: start</code></td></tr>
+<tr><td><code>border-left</code></td><td><code>border-inline-start</code></td></tr>
+<tr><td><code>width</code>, <code>height</code></td><td><code>inline-size</code>, <code>block-size</code> (optional)</td></tr>
+</tbody>
+</table>
+
+<p>Flexbox and grid already follow the direction. Only a few things need explicit care: icons that show a direction, such as arrows, “next” and “back”, which are flipped with <code>transform: scaleX(-1)</code> under <code>[dir="rtl"]</code>; and things that must <em>not</em> flip, such as a play button, a clock, a logo, or a graph’s time axis.</p>
+
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-en-react-cart.html-560.png" alt=""><figcaption><b>Figure 15.1:</b> The cart in English…</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-en-react-cart.html-560-c117d3.png" alt=""><figcaption>…and after one click, in Arabic: the layout mirrored, the plural is the dual form “عنصران”, prices use the Egyptian Arabic format, and the arrow turned round. Not one component knows which language it is showing.</figcaption></figure>
+
+<h2><span class="sec">15.4</span> <span>Bidirectional text</span></h2>
+
+<p>When Arabic and English mix in one line, the browser uses the Unicode <dfn>bidirectional algorithm</dfn> to decide the order. It usually works, but numbers, punctuation and English words next to the edges of a sentence often land in surprising places:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">bidi.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;cards&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;card bad&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>طلب <span class="k">&lt;span</span><span class="k">&gt;</span>#1042<span class="k">&lt;/span</span><span class="k">&gt;</span> من <span class="k">&lt;span</span><span class="k">&gt;</span>Sara Khan<span class="k">&lt;/span</span><span class="k">&gt;</span> (3 items)<span class="k">&lt;/p</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>الهاتف: <span class="k">&lt;span</span><span class="k">&gt;</span>+20 100 123 4567<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>البريد: <span class="k">&lt;span</span><span class="k">&gt;</span>sara@example.com<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;card good&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>طلب <span class="k">&lt;bdi</span><span class="k">&gt;</span>#1042<span class="k">&lt;/bdi</span><span class="k">&gt;</span> من <span class="k">&lt;bdi</span><span class="k">&gt;</span>Sara Khan<span class="k">&lt;/bdi</span><span class="k">&gt;</span> (<span class="k">&lt;bdi</span><span class="k">&gt;</span>3 items<span class="k">&lt;/bdi</span><span class="k">&gt;</span>)<span class="k">&lt;/p</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>الهاتف: <span class="k">&lt;span</span> <span class="n">dir</span>=<span class="s">&quot;ltr&quot;</span><span class="k">&gt;</span>+20 100 123 4567<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>البريد: <span class="k">&lt;span</span> <span class="n">dir</span>=<span class="s">&quot;ltr&quot;</span><span class="k">&gt;</span>sara@example.com<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>bidi.html</span><b>560px</b></div><img src="img/b2-i18n-en-bidi.html-560.png" alt=""><figcaption><b>Figure 15.2:</b> The same content twice. In the first card, the order number and name are jumbled and the phone number reads backwards. In the second, each inserted value is isolated.</figcaption></figure>
+
+<ul>
+<li><code>&lt;bdi&gt;</code> (bidirectional isolation) wraps any value inserted into a sentence, such as a name, a number, or text from the user, so its direction cannot disturb the rest of the line. In React and Vue, wrap interpolated values in it whenever the language of the value is unknown.</li>
+<li><code>dir="ltr"</code> forces left-to-right for things that are always written that way: phone numbers, email addresses, code, URLs.</li>
+<li><code>dir="auto"</code> on an input or a comment lets the browser pick the direction from the first strong letter typed.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: test with real Arabic, from the first screen</p><p>Lorem ipsum hides every RTL bug. Build each screen with real Arabic text, long Arabic words, mixed Arabic and English, and numbers, and look at it in both directions before you call it finished. Arabic text is also often longer or taller than English, so give layouts room.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Text written in components</td><td>Translation means editing code</td><td>Message catalogues with keys</td></tr>
+<tr><td>Sentences joined with <code>+</code></td><td>Wrong word order and grammar in other languages</td><td>Whole messages with placeholders</td></tr>
+<tr><td><code>n === 1 ? "item" : "items"</code></td><td>Wrong Arabic plurals</td><td><code>Intl.PluralRules</code></td></tr>
+<tr><td>Formatting numbers and dates by hand</td><td>Wrong separators, digits and order</td><td><code>Intl.NumberFormat</code>, <code>Intl.DateTimeFormat</code></td></tr>
+<tr><td><code>margin-left</code>, <code>left: 0</code></td><td>Layouts that do not mirror</td><td>Logical properties</td></tr>
+<tr><td>Inserted values without isolation</td><td>Jumbled lines, backwards phone numbers</td><td><code>&lt;bdi&gt;</code> and <code>dir="ltr"</code></td></tr>
+<tr><td>Flipping everything</td><td>Clocks and play buttons point the wrong way</td><td>Flip only icons that show a direction</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Internationalisation</strong> is an architecture decision: no text in code, every format by rules, every layout able to mirror.</li>
+<li><code>Intl</code> formats numbers, money, dates, relative times and lists per <strong>locale</strong>; choose digits and calendars with extensions such as <code>-u-nu-latn</code> and <code>-u-ca-islamic-umalqura</code>.</li>
+<li>Arabic has <strong>six plural categories</strong>; let <code>Intl.PluralRules</code> choose the right text.</li>
+<li>Keep texts in <strong>catalogues</strong> with keys and placeholders, never in code or glued pieces.</li>
+<li><strong>Logical CSS properties</strong> mirror layouts automatically; flip only directional icons.</li>
+<li>Isolate inserted values with <code>&lt;bdi&gt;</code>, and force <code>dir="ltr"</code> for phone numbers, emails and code.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>ar-EG-u-nu-latn</code>. 2. <code>many</code>. 3. Because word order and grammar differ between languages; only the translator, seeing the whole sentence, can place the value correctly.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Test every project in both languages, with real Arabic text, and with numbers that hit every plural category: 0, 1, 2, 3, 11 and 100.</p>
+
+<div class="project">
+<p class="project-label">Project 15.1 · Easy</p>
+<h3>A catalogue with real Arabic plurals</h3>
+<p class="project-goal">Build a small message catalogue and a <code>translate</code> function that picks the right plural form and formats numbers for each language.</p>
+<p class="project-skills"><strong>You will practise:</strong> keys, placeholders, <code>Intl.PluralRules</code>, <code>Intl.NumberFormat</code>, and types derived from the catalogue.</p>
+<ol class="steps">
+<li>Write the catalogue as one object per language. Plural messages are objects with one text per category.</li>
+<li>Give Arabic all six categories (<code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, <code>other</code>), and English two.</li>
+<li>In <code>translate</code>, pick the category with <code>new Intl.PluralRules(locale).select(count)</code>, falling back to <code>other</code>.</li>
+<li>Replace <code>{name}</code> placeholders with values, formatting numbers with <code>Intl.NumberFormat(locale)</code>.</li>
+<li>Derive the type of the keys from the English catalogue, so a misspelled key is a compile error.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> “zero” and “one” in Arabic are often whole phrases without a number at all (“لا عناصر”, “عنصر واحد”), which is why each category gets its own full text.</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>  0 | لا عناصر     | 0 items
+  1 | عنصر واحد    | 1 item
+  2 | عنصران       | 2 items
+  5 | 5 عناصر      | 5 items
+ 11 | 11 عنصراً    | 11 items
+100 | 100 عنصر     | 100 items</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 15.2 · Medium</p>
+<h3>One app, two directions</h3>
+<p class="project-goal">A cart that switches between English and Arabic at runtime, mirrors its layout, and formats money and plurals correctly in both.</p>
+<p class="project-skills"><strong>You will practise:</strong> a language context, setting <code>lang</code> and <code>dir</code>, logical CSS, flipping directional icons, and <code>&lt;bdi&gt;</code>.</p>
+<ol class="steps">
+<li>Write a provider that keeps the locale, sets <code>document.documentElement.lang</code> and <code>dir</code> in an effect, and provides <code>t</code> and a money formatter.</li>
+<li>Write all spacing and borders with logical properties, and check that nothing needs a special RTL rule.</li>
+<li>Flip the arrow icon only, with <code>[dir="rtl"] .next::after { transform: scaleX(-1); }</code>.</li>
+<li>Wrap product names, which may be in either language, in <code>&lt;bdi&gt;</code>.</li>
+<li>Switch languages back and forth, and check every line: text, plural, prices, alignment, arrow.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> save the chosen language (in <code>localStorage</code> or the address, such as <code>/ar/cart</code>) and start from <code>navigator.languages</code> on the first visit. An address per language is also what search engines need.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-en-react-cart.html-560-c117d3.png" alt=""><figcaption><b>Project 15.2:</b> the cart after switching language.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 15.3 · Challenge</p>
+<h3>A translation checker</h3>
+<p class="project-goal">Compare two message catalogues and report keys that are missing, keys that are extra, and messages whose placeholders do not match, so broken translations cannot reach users.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading JSON, regular expressions with <code>matchAll</code>, set-like comparisons, and failing the build.</p>
+<ol class="steps">
+<li>Load <code>en.json</code> (the source of truth) and <code>ar.json</code>.</li>
+<li>For each English key, report it if Arabic lacks it.</li>
+<li>Extract the placeholders of both texts with <code>/\{(\w+)\}/g</code>, sort them, and compare. A translator who renamed <code>{total}</code> to <code>{sum}</code> would show an empty value to users.</li>
+<li>Report Arabic keys that English no longer has: old texts that should be deleted.</li>
+<li>Set a failing exit code when there is any problem, and add the script to <code>npm run check</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> real projects also check plural messages (every category the language needs is present) and keys used in the code but missing from the catalogue. Libraries such as i18next have tools for both.</p>
+<div class="listing" dir="ltr"><div class="listing-title">check-messages.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+
+<span class="c">// Compare the two catalogues: missing keys, extra keys, and placeholders that do not match</span>
+<span class="k">const</span> load = (file: string) =&gt; JSON.parse(readFileSync(<span class="k">new</span> URL(file, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Record&lt;string, string&gt;;
+<span class="k">const</span> en = load(<span class="s">&quot;./en.json&quot;</span>);
+<span class="k">const</span> ar = load(<span class="s">&quot;./ar.json&quot;</span>);
+<span class="k">const</span> placeholders = (text: string) =&gt; [...text.matchAll(/\{(\w+)\}/g)].map((m) =&gt; m[<span class="n">1</span>]).sort().join(<span class="s">&quot;,&quot;</span>);
+
+<span class="k">let</span> problems = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> key <span class="k">of</span> Object.keys(en)) {
+  <span class="k">if</span> (!(key <span class="k">in</span> ar)) {
+    console.log(<span class="s">`✗ ${key}: missing in ar`</span>);
+    problems++;
+  } <span class="k">else</span> <span class="k">if</span> (placeholders(en[key]!) !== placeholders(ar[key]!)) {
+    console.log(<span class="s">`✗ ${key}: placeholders differ: en {${placeholders(en[key]!)}} ar {${placeholders(ar[key]!)}}`</span>);
+    problems++;
+  }
+}
+<span class="k">for</span> (<span class="k">const</span> key <span class="k">of</span> Object.keys(ar)) {
+  <span class="k">if</span> (!(key <span class="k">in</span> en)) {
+    console.log(<span class="s">`✗ ${key}: not in en`</span>);
+    problems++;
+  }
+}
+console.log(problems === <span class="n">0</span> ? <span class="s">&quot;All keys match.&quot;</span> : <span class="s">`${problems} problems`</span>);
+process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span>;</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>✗ nav.cart: missing in ar
+✗ cart.total: placeholders differ: en {total} ar {sum}
+✗ profile.old: not in en
+3 problems</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Add <code>fr-FR</code>, <code>hi-IN</code> and <code>fa-IR</code> to <code>numbers.ts</code>. What is special about each?</li>
+<li><span class="level">Easy</span> Print today’s date in the Gregorian and the Umm al-Qura calendars, in <code>ar-SA</code> and in <code>en-US</code>.</li>
+<li><span class="level medium">Medium</span> Add a <code>"cart.days"</code> plural message (“arrives in 3 days”) to both languages with all the categories each needs, and print it for 0, 1, 2, 3, 11 and 100.</li>
+<li><span class="level medium">Medium</span> Find every physical property (<code>left</code>, <code>right</code>, <code>margin-left</code>…) in the CSS of one of your projects, replace it with its logical equivalent, and check the page in both directions.</li>
+<li><span class="level hard">Challenge</span> Add <code>dir="auto"</code> to a comment input and to each displayed comment. Type an English comment, an Arabic one, and one that starts with a number. Which direction does each get, and why?</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 16</p>
+<p>You now know how to build each part of a professional frontend. The last part of the book is about the work of a senior: organising a large codebase so that many people can change it safely, rendering on the server, reviewing code and making technical decisions, and finally a capstone project that brings it all together.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3685,6 +4047,16 @@ Score: 3/5</pre></div>
 <li>In report-only mode, the console still reports the violation, but the inline script <em>runs</em>: “script ran?” becomes yes. That is why the mode exists: you can see everything a policy would block on a live site, fix it, and only then enforce it.</li>
 <li><code>function safeUrl(input: string): string { try { const url = new URL(input); return url.protocol === "https:" || url.protocol === "http:" ? url.href : "#"; } catch { return "#"; } }</code>. Test a normal https link, an http link, <code>javascript:alert(1)</code>, <code>JavaScript:alert(1)</code> (upper case), and a string that is not a URL at all.</li>
 <li>An advisory names the package, the affected and fixed versions, a severity, and how the bug can be exploited. Often the vulnerable function is in a build tool that never reaches users, or in code you never call; the right response may be an upgrade, or a note explaining why it does not apply.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 15</h2>
+<ol class="exercises">
+<li><code>fr-FR</code> groups digits with a narrow space and uses a comma for decimals; <code>hi-IN</code> groups the Indian way, in lakhs and crores (12,34,567.5); <code>fa-IR</code> uses Persian digits, which look slightly different from Arabic-Indic ones.</li>
+<li><code>new Intl.DateTimeFormat("ar-SA-u-ca-gregory", { dateStyle: "full" })</code> and <code>new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura", { dateStyle: "full" })</code>, then the same with <code>en-US</code>. The calendar extension changes the calendar; the language part only changes the words.</li>
+<li>English: <code>{ one: "Arrives in {count} day", other: "Arrives in {count} days" }</code>. Arabic: <code>{ zero: "يصل اليوم", one: "يصل خلال يوم", two: "يصل خلال يومين", few: "يصل خلال {count} أيام", many: "يصل خلال {count} يوماً", other: "يصل خلال {count} يوم" }</code>. Decide with your team what “zero days” should say; that is a product decision, not a grammar rule.</li>
+<li>Typical replacements: <code>margin-left</code> → <code>margin-inline-start</code>, <code>padding-right</code> → <code>padding-inline-end</code>, <code>left: 0</code> → <code>inset-inline-start: 0</code>, <code>text-align: left</code> → <code>text-align: start</code>, <code>border-left</code> → <code>border-inline-start</code>. Leave genuinely physical things, such as a shadow’s offset, as they are.</li>
+<li>The English comment is left-to-right, the Arabic one right-to-left, and the one starting with a number takes the direction of the first <em>strong</em> letter after it, because digits are “weak” in the bidirectional algorithm and do not decide the direction.</li>
 </ol>
 
 </section>

@@ -1,0 +1,52 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Test every project in both languages, with real Arabic text, and with numbers that hit every plural category: 0, 1, 2, 3, 11 and 100.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A catalogue with real Arabic plurals</h3>
+<p class="project-goal">Build a small message catalogue and a <code>translate</code> function that picks the right plural form and formats numbers for each language.</p>
+<p class="project-skills"><strong>You will practise:</strong> keys, placeholders, <code>Intl.PluralRules</code>, <code>Intl.NumberFormat</code>, and types derived from the catalogue.</p>
+<ol class="steps">
+<li>Write the catalogue as one object per language. Plural messages are objects with one text per category.</li>
+<li>Give Arabic all six categories (<code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, <code>other</code>), and English two.</li>
+<li>In <code>translate</code>, pick the category with <code>new Intl.PluralRules(locale).select(count)</code>, falling back to <code>other</code>.</li>
+<li>Replace <code>{name}</code> placeholders with values, formatting numbers with <code>Intl.NumberFormat(locale)</code>.</li>
+<li>Derive the type of the keys from the English catalogue, so a misspelled key is a compile error.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> “zero” and “one” in Arabic are often whole phrases without a number at all (“لا عناصر”, “عنصر واحد”), which is why each category gets its own full text.</p>
+<pre data-out="translate.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>One app, two directions</h3>
+<p class="project-goal">A cart that switches between English and Arabic at runtime, mirrors its layout, and formats money and plurals correctly in both.</p>
+<p class="project-skills"><strong>You will practise:</strong> a language context, setting <code>lang</code> and <code>dir</code>, logical CSS, flipping directional icons, and <code>&lt;bdi&gt;</code>.</p>
+<ol class="steps">
+<li>Write a provider that keeps the locale, sets <code>document.documentElement.lang</code> and <code>dir</code> in an effect, and provides <code>t</code> and a money formatter.</li>
+<li>Write all spacing and borders with logical properties, and check that nothing needs a special RTL rule.</li>
+<li>Flip the arrow icon only, with <code>[dir="rtl"] .next::after { transform: scaleX(-1); }</code>.</li>
+<li>Wrap product names, which may be in either language, in <code>&lt;bdi&gt;</code>.</li>
+<li>Switch languages back and forth, and check every line: text, plural, prices, alignment, arrow.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> save the chosen language (in <code>localStorage</code> or the address, such as <code>/ar/cart</code>) and start from <code>navigator.languages</code> on the first visit. An address per language is also what search engines need.</p>
+<figure data-render="react/cart.html" data-width="560" data-actions="click:button"><figcaption><b>Project {{n}}.2:</b> the cart after switching language.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A translation checker</h3>
+<p class="project-goal">Compare two message catalogues and report keys that are missing, keys that are extra, and messages whose placeholders do not match, so broken translations cannot reach users.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading JSON, regular expressions with <code>matchAll</code>, set-like comparisons, and failing the build.</p>
+<ol class="steps">
+<li>Load <code>en.json</code> (the source of truth) and <code>ar.json</code>.</li>
+<li>For each English key, report it if Arabic lacks it.</li>
+<li>Extract the placeholders of both texts with <code>/\{(\w+)\}/g</code>, sort them, and compare. A translator who renamed <code>{total}</code> to <code>{sum}</code> would show an empty value to users.</li>
+<li>Report Arabic keys that English no longer has: old texts that should be deleted.</li>
+<li>Set a failing exit code when there is any problem, and add the script to <code>npm run check</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> real projects also check plural messages (every category the language needs is present) and keys used in the code but missing from the catalogue. Libraries such as i18next have tools for both.</p>
+<pre data-code="projects/check-messages.ts" data-title="check-messages.ts"></pre>
+<pre data-out="projects/check-messages.mjs"></pre>
+</div>

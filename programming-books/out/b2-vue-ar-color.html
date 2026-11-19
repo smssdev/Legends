@@ -23,6 +23,8 @@
 @page ch13:first { @top-center { content: none; } }
 @page ch14 { @top-center { content: "الفصل 14: أمان الواجهات"; } }
 @page ch14:first { @top-center { content: none; } }
+@page ch15 { @top-center { content: "الفصل 15: تعدد اللغات والاتجاه من اليمين"; } }
+@page ch15:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -3587,6 +3589,366 @@ server.close();</pre></div>
 <p>الفصل الأخير من هذا الجزء قريب من قلب كل مطور عربي: بناء واجهات بأكثر من لغة، بتخطيطات من اليمين إلى اليسار، وأرقام وتواريخ وصيغ جمع صحيحة بالعربية والإنجليزية.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch15" data-chapter="15" data-code="b2/i18n/ar">
+<div class="opener"><span class="opener-num">15</span><p class="chapter-kicker">الفصل 15</p><h1>تعدد اللغات والاتجاه من اليمين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تفصل كل نص يراه المستخدم عن الكود، في فهارس رسائل</li>
+<li>تنسّق الأرقام والمبالغ والتواريخ والقوائم صحيحة لكل لغة بـ <code>Intl</code></li>
+<li>تعالج صيغ الجمع الست في العربية</li>
+<li>تبني تخطيطات تنعكس للغات من اليمين إلى اليسار بـ CSS المنطقية</li>
+<li>تصلح مشكلات النص ثنائي الاتجاه حين تختلط العربية والإنجليزية</li>
+<li>تفحص فهارس الترجمة آلياً</li>
+</ul>
+</div>
+
+<p class="lead">يقرأ العربية أكثر من 400 مليون إنسان، ويقرأ مئات الملايين غيرهم العبرية والفارسية والأردية، وكلها من اليمين إلى اليسار. ومع ذلك تعامل تطبيقات كثيرة «دعم العربية» كأنه ترجمة الكلمات في النهاية. أما <dfn>التدويل</dfn> الحقيقي (internationalisation، ويُكتب كثيراً <strong>i18n</strong>: حرف i ثم 18 حرفاً ثم n) فقرار معماري: لا نص في الكود، وكل رقم وتاريخ يُنسّق بقواعد، وكل تخطيط قادر على الانعكاس. وإن بُني من البداية كان رخيصاً، وإن أُضيف لاحقاً صار من أغلى إعادات الكتابة التي قد يواجهها فريق.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>هذا فصلي المفضل، لأنه عن أناس مثلي ومثلك. فالواجهة العربية الجيدة ليست كلمات عربية فقط: الأرقام والتواريخ وصيغ الجمع والأسهم كلها تبدو طبيعية. ويلاحظ المستخدمون فوراً حين لا تكون كذلك.</p></div></div>
+
+<h2><span class="sec">15.1</span> <span>الأرقام والمبالغ والتواريخ بـ <code>Intl</code></span></h2>
+
+<p>تعرف واجهة <code>Intl</code> في JavaScript قواعد التنسيق لمئات <dfn>الإعدادات المحلية</dfn> (locales): لغة ومعها منطقة، تُكتب مثل <code>ar-EG</code> (العربية، مصر) أو <code>en-GB</code> (الإنجليزية، المملكة المتحدة). فلا تبنِ هذه الصيغ بيدك أبداً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">numbers.ts</div><pre class="code"><span class="c">// رقم واحد، وطرق صحيحة كثيرة لكتابته</span>
+<span class="k">const</span> price = <span class="n">1234567.5</span>;
+<span class="k">const</span> show = (locale: string, options: Intl.NumberFormatOptions = {}) =&gt;
+  console.log(locale.padEnd(<span class="n">18</span>), <span class="k">new</span> Intl.NumberFormat(locale, options).format(price));
+
+show(<span class="s">&quot;en-US&quot;</span>);
+show(<span class="s">&quot;de-DE&quot;</span>);
+show(<span class="s">&quot;ar-EG&quot;</span>);
+show(<span class="s">&quot;ar-EG-u-nu-latn&quot;</span>);
+show(<span class="s">&quot;ar-SA&quot;</span>, { style: <span class="s">&quot;currency&quot;</span>, currency: <span class="s">&quot;SAR&quot;</span> });
+show(<span class="s">&quot;en-EG&quot;</span>, { style: <span class="s">&quot;currency&quot;</span>, currency: <span class="s">&quot;EGP&quot;</span> });
+show(<span class="s">&quot;ar-EG&quot;</span>, { notation: <span class="s">&quot;compact&quot;</span> });</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>en-US              1,234,567.5
+de-DE              1.234.567,5
+ar-EG              ١٬٢٣٤٬٥٦٧٫٥
+ar-EG-u-nu-latn    1,234,567.5
+ar-SA              ‏١٬٢٣٤٬٥٦٧٫٥٠ ر.س.‏
+en-EG              EGP 1,234,567.50
+ar-EG              ١٫٢ مليون</pre></div>
+
+<p>للرقم نفسه صيغ صحيحة كثيرة: فواصل أو نقاط، وأرقام هندية (١٢٣) أو لاتينية (123)، والعملة قبل الرقم أو بعده. والامتداد <code>-u-nu-latn</code> يُبقي النص عربياً والأرقام لاتينية، وكثير من البلاد العربية تفضّل هذا. فاسأل مستخدميك أو اتبع منطقتهم، ولا تقرر بالتخمين.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">dates.ts</div><pre class="code"><span class="k">const</span> date = <span class="k">new</span> Date(Date.UTC(<span class="n">2026</span>, <span class="n">2</span>, <span class="n">20</span>, <span class="n">14</span>, <span class="n">30</span>));
+<span class="k">const</span> fmt = (locale: string, options: Intl.DateTimeFormatOptions) =&gt;
+  console.log(locale.padEnd(<span class="n">26</span>), <span class="k">new</span> Intl.DateTimeFormat(locale, { timeZone: <span class="s">&quot;Africa/Cairo&quot;</span>, ...options }).format(date));
+
+fmt(<span class="s">&quot;en-GB&quot;</span>, { dateStyle: <span class="s">&quot;full&quot;</span>, timeStyle: <span class="s">&quot;short&quot;</span> });
+fmt(<span class="s">&quot;en-US&quot;</span>, { dateStyle: <span class="s">&quot;full&quot;</span>, timeStyle: <span class="s">&quot;short&quot;</span> });
+fmt(<span class="s">&quot;ar-EG&quot;</span>, { dateStyle: <span class="s">&quot;full&quot;</span>, timeStyle: <span class="s">&quot;short&quot;</span> });
+fmt(<span class="s">&quot;ar-SA-u-ca-islamic-umalqura&quot;</span>, { dateStyle: <span class="s">&quot;long&quot;</span> });
+
+<span class="k">const</span> rtf = <span class="k">new</span> Intl.RelativeTimeFormat(<span class="s">&quot;ar&quot;</span>, { numeric: <span class="s">&quot;auto&quot;</span> });
+console.log([-<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">11</span>].map((d) =&gt; rtf.format(d, <span class="s">&quot;day&quot;</span>)).join(<span class="s">&quot; | &quot;</span>));
+console.log(<span class="k">new</span> Intl.ListFormat(<span class="s">&quot;ar&quot;</span>, { <span class="k">type</span>: <span class="s">&quot;conjunction&quot;</span> }).format([<span class="s">&quot;HTML&quot;</span>, <span class="s">&quot;CSS&quot;</span>, <span class="s">&quot;JavaScript&quot;</span>]));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>en-GB                      Friday, 20 March 2026 at 16:30
+en-US                      Friday, March 20, 2026 at 4:30 PM
+ar-EG                      الجمعة، ٢٠ مارس ٢٠٢٦ في ٤:٣٠ م
+ar-SA-u-ca-islamic-umalqura ١ شوال ١٤٤٧ هـ
+أمس | اليوم | غدًا | بعد الغد | خلال 3 أيام | خلال 11 يومًا
+HTML وCSS وJavaScript</pre></div>
+
+<p>والتواريخ تتبع الفكرة نفسها، بما فيها ترتيب اليوم والشهر، وأسماء الأيام، وتقاويم كاملة: فالامتداد <code>-u-ca-islamic-umalqura</code> يُظهر أن هذا اليوم، 20 مارس 2026، هو الأول من شوال 1447، أول أيام عيد الفطر. و<code>RelativeTimeFormat</code> تكتب «أمس» و«خلال 3 أيام» بالقواعد الصحيحة، و<code>ListFormat</code> تصل الكلمات بالواو الصحيحة. واحفظ التواريخ بتوقيت UTC، ونسّقها بالمنطقة الزمنية للمستخدم حين تعرضها فقط.</p>
+
+<h2><span class="sec">15.2</span> <span>صيغ الجمع</span></h2>
+
+<p>تحتاج الإنجليزية صيغتين: «1 item» و«2 items». أما العربية فتحتاج ستاً، وقواعدها تعتمد على العدد بطرق يسهل الخطأ فيها. و<code>Intl.PluralRules</code> تعرفها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">plurals.ts</div><pre class="code"><span class="c">// في العربية ست فئات للجمع، وفي الإنجليزية فئتان</span>
+<span class="k">const</span> ar = <span class="k">new</span> Intl.PluralRules(<span class="s">&quot;ar&quot;</span>);
+<span class="k">const</span> en = <span class="k">new</span> Intl.PluralRules(<span class="s">&quot;en&quot;</span>);
+
+<span class="k">for</span> (<span class="k">const</span> n <span class="k">of</span> [<span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">10</span>, <span class="n">11</span>, <span class="n">100</span>, <span class="n">101</span>]) {
+  console.log(String(n).padStart(<span class="n">3</span>), <span class="s">&quot;ar:&quot;</span>, ar.select(n).padEnd(<span class="n">5</span>), <span class="s">&quot; en:&quot;</span>, en.select(n));
+}
+console.log(<span class="s">&quot;ar categories:&quot;</span>, ar.resolvedOptions().pluralCategories.join(<span class="s">&quot;, &quot;</span>));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>  0 ar: zero   en: other
+  1 ar: one    en: one
+  2 ar: two    en: other
+  3 ar: few    en: other
+ 10 ar: few    en: other
+ 11 ar: many   en: other
+100 ar: other  en: other
+101 ar: other  en: other
+ar categories: few, many, one, two, zero, other</pre></div>
+
+<p>فيحفظ فهرس الرسائل رسالة الجمع نصاً لكل فئة، ويختار الكود النص الصحيح. وهذا فهرس صغير ودالة ترجمة، وهما لبّ ما تفعله مكتبات مثل i18next وFormatJS وvue-i18n:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">messages.ts</div><pre class="code"><span class="c">// لكل رسالة مفتاح، والأماكن الفارغة بين أقواس</span>
+<span class="k">export</span> <span class="k">const</span> messages = {
+  en: {
+    <span class="s">&quot;cart.title&quot;</span>: <span class="s">&quot;Your cart&quot;</span>,
+    <span class="s">&quot;cart.items&quot;</span>: { one: <span class="s">&quot;{count} item&quot;</span>, other: <span class="s">&quot;{count} items&quot;</span> },
+    <span class="s">&quot;cart.total&quot;</span>: <span class="s">&quot;Total: {total}&quot;</span>,
+    <span class="s">&quot;cart.empty&quot;</span>: <span class="s">&quot;Your cart is empty.&quot;</span>,
+  },
+  ar: {
+    <span class="s">&quot;cart.title&quot;</span>: <span class="s">&quot;سلتك&quot;</span>,
+    <span class="s">&quot;cart.items&quot;</span>: {
+      zero: <span class="s">&quot;لا عناصر&quot;</span>,
+      one: <span class="s">&quot;عنصر واحد&quot;</span>,
+      two: <span class="s">&quot;عنصران&quot;</span>,
+      few: <span class="s">&quot;{count} عناصر&quot;</span>,
+      many: <span class="s">&quot;{count} عنصراً&quot;</span>,
+      other: <span class="s">&quot;{count} عنصر&quot;</span>,
+    },
+    <span class="s">&quot;cart.total&quot;</span>: <span class="s">&quot;المجموع: {total}&quot;</span>,
+    <span class="s">&quot;cart.empty&quot;</span>: <span class="s">&quot;سلتك فارغة.&quot;</span>,
+  },
+} as <span class="k">const</span>;
+
+<span class="k">export</span> <span class="k">type</span> Locale = <span class="k">keyof</span> <span class="k">typeof</span> messages;
+<span class="k">type</span> Plural = Partial&lt;Record&lt;Intl.LDMLPluralRule, string&gt;&gt;;
+
+<span class="k">export</span> <span class="k">function</span> translate(locale: Locale, key: <span class="k">keyof</span> (<span class="k">typeof</span> messages)[<span class="s">&quot;en&quot;</span>], values: Record&lt;string, string | number&gt; = {}) {
+  <span class="k">const</span> entry = messages[locale][key] as string | Plural;
+  <span class="k">const</span> text =
+    <span class="k">typeof</span> entry === <span class="s">&quot;string&quot;</span>
+      ? entry
+      : (entry[<span class="k">new</span> Intl.PluralRules(locale).select(Number(values.count ?? <span class="n">0</span>))] ?? entry.other ?? <span class="s">&quot;&quot;</span>);
+  <span class="k">const</span> format = <span class="k">new</span> Intl.NumberFormat(locale);
+  <span class="k">return</span> text.replace(/\{(\w+)\}/g, (_, name: string) =&gt; {
+    <span class="k">const</span> value = values[name];
+    <span class="k">return</span> <span class="k">typeof</span> value === <span class="s">&quot;number&quot;</span> ? format.format(value) : String(value ?? <span class="s">&quot;&quot;</span>);
+  });
+}</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">translate.ts</div><pre class="code"><span class="k">import</span> { translate } <span class="k">from</span> <span class="s">&quot;./messages&quot;</span>;
+
+<span class="k">for</span> (<span class="k">const</span> n <span class="k">of</span> [<span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">5</span>, <span class="n">11</span>, <span class="n">100</span>]) {
+  console.log(String(n).padStart(<span class="n">3</span>), <span class="s">&quot;|&quot;</span>, translate(<span class="s">&quot;ar&quot;</span>, <span class="s">&quot;cart.items&quot;</span>, { count: n }).padEnd(<span class="n">12</span>), <span class="s">&quot;|&quot;</span>, translate(<span class="s">&quot;en&quot;</span>, <span class="s">&quot;cart.items&quot;</span>, { count: n }));
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>  0 | لا عناصر     | 0 items
+  1 | عنصر واحد    | 1 item
+  2 | عنصران       | 2 items
+  5 | 5 عناصر      | 5 items
+ 11 | 11 عنصراً    | 11 items
+100 | 100 عنصر     | 100 items</pre></div>
+
+<ul>
+<li>لكل نص <dfn>مفتاح</dfn> مثل <code>cart.items</code>. فلا يحتوي الكود كلمات يراها المستخدم، ويعمل المترجمون دون أن يلمسوه.</li>
+<li>تُمرَّر القيم إلى أماكن فارغة، ولا تُلصق بـ <code>+</code> أبداً. فترتيب الكلمات يختلف بين اللغات، والمترجم وحده يعرفه.</li>
+<li>والأرقام داخل الرسائل تُنسّق بقواعد الإعداد المحلي أيضاً.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: لا تبنِ الجمل من قطع أبداً</p><p><code>"You have " + n + " " + (n === 1 ? "item" : "items")</code> لا يمكن ترجمتها: فالعربية تحتاج ست صيغ، ولغات أخرى تغيّر ترتيب الكلمات أو الجنس. أعطِ المترجم الجملة كاملة مع مكان فارغ، ودع قواعد الجمع تختار.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>أي إعداد محلي يعرض نصاً عربياً بأرقام لاتينية في مصر؟</li><li>إلى أي فئة جمع عربية ينتمي العدد 11؟</li><li>لماذا تستخدم الترجمات الأماكن الفارغة بدل وصل النصوص بـ <code>+</code>؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">15.3</span> <span>تخطيطات تنعكس</span></h2>
+
+<p>في الصفحة من اليمين إلى اليسار ينعكس التخطيط كله تقريباً: تنتقل القائمة إلى اليمين، ويُحاذى النص يميناً، ويشير سهم «رجوع» إلى اليمين. فإن قالت CSS عندك <code>left</code> و<code>right</code> وجب أن تكتب كل قاعدة مرتين. و<dfn>الخصائص المنطقية</dfn> تصف المواضع نسبة إلى اتجاه النص بدلاً من ذلك، فتكتب كل قاعدة مرة واحدة:</p>
+
+<table>
+<thead><tr><th>مادية (تجنّبها)</th><th>منطقية (استخدمها)</th></tr></thead>
+<tbody>
+<tr><td><code>margin-left</code> و<code>padding-right</code></td><td><code>margin-inline-start</code> و<code>padding-inline-end</code></td></tr>
+<tr><td><code>left: 0</code> و<code>right: 0</code></td><td><code>inset-inline-start: 0</code> و<code>inset-inline-end: 0</code></td></tr>
+<tr><td><code>text-align: left</code></td><td><code>text-align: start</code></td></tr>
+<tr><td><code>border-left</code></td><td><code>border-inline-start</code></td></tr>
+<tr><td><code>width</code> و<code>height</code></td><td><code>inline-size</code> و<code>block-size</code> (اختيارياً)</td></tr>
+</tbody>
+</table>
+
+<p>وflexbox وgrid تتبعان الاتجاه أصلاً. ولا يحتاج عناية صريحة إلا أشياء قليلة: الأيقونات التي تدل على اتجاه، كالأسهم و«التالي» و«رجوع»، فتُقلب بـ <code>transform: scaleX(-1)</code> تحت <code>[dir="rtl"]</code>، والأشياء التي يجب <em>ألا</em> تنقلب، كزر التشغيل والساعة والشعار ومحور الزمن في الرسم البياني.</p>
+
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-react-cart.html-560.png" alt=""><figcaption><b>شكل 15.1:</b> السلة بالعربية: «عنصران» بصيغة المثنى، والأسعار بالصيغة المصرية العربية…</figcaption></figure>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-react-cart.html-560-c117d3.png" alt=""><figcaption>…وبعد ضغطة واحدة بالإنجليزية: انعكس التخطيط، وتغيّرت صيغة الجمع والأرقام، واستدار السهم. ولا يعرف أي مكوّن أي لغة يعرض.</figcaption></figure>
+
+<h2><span class="sec">15.4</span> <span>النص ثنائي الاتجاه</span></h2>
+
+<p>حين تختلط العربية والإنجليزية في سطر واحد يستخدم المتصفح <dfn>خوارزمية الاتجاه الثنائي</dfn> في Unicode ليقرر الترتيب. وهي تنجح عادة، لكن الأرقام وعلامات الترقيم والكلمات الإنجليزية عند أطراف الجملة كثيراً ما تقع في أماكن مفاجئة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">bidi.html</div><pre class="code">  ...
+  <span class="k">&lt;body</span><span class="k">&gt;</span>
+    <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;cards&quot;</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;card bad&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>طلب <span class="k">&lt;span</span><span class="k">&gt;</span>#1042<span class="k">&lt;/span</span><span class="k">&gt;</span> من <span class="k">&lt;span</span><span class="k">&gt;</span>Sara Khan<span class="k">&lt;/span</span><span class="k">&gt;</span> (3 items)<span class="k">&lt;/p</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>الهاتف: <span class="k">&lt;span</span><span class="k">&gt;</span>+20 100 123 4567<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>البريد: <span class="k">&lt;span</span><span class="k">&gt;</span>sara@example.com<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/div</span><span class="k">&gt;</span>
+      <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;card good&quot;</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>طلب <span class="k">&lt;bdi</span><span class="k">&gt;</span>#1042<span class="k">&lt;/bdi</span><span class="k">&gt;</span> من <span class="k">&lt;bdi</span><span class="k">&gt;</span>Sara Khan<span class="k">&lt;/bdi</span><span class="k">&gt;</span> (<span class="k">&lt;bdi</span><span class="k">&gt;</span>3 items<span class="k">&lt;/bdi</span><span class="k">&gt;</span>)<span class="k">&lt;/p</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>الهاتف: <span class="k">&lt;span</span> <span class="n">dir</span>=<span class="s">&quot;ltr&quot;</span><span class="k">&gt;</span>+20 100 123 4567<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+        <span class="k">&lt;p</span><span class="k">&gt;</span>البريد: <span class="k">&lt;span</span> <span class="n">dir</span>=<span class="s">&quot;ltr&quot;</span><span class="k">&gt;</span>sara@example.com<span class="k">&lt;/span</span><span class="k">&gt;</span><span class="k">&lt;/p</span><span class="k">&gt;</span>
+      <span class="k">&lt;/div</span><span class="k">&gt;</span>
+    <span class="k">&lt;/div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/body</span><span class="k">&gt;</span>
+  ...</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>bidi.html</span><b>560px</b></div><img src="img/b2-i18n-ar-bidi.html-560.png" alt=""><figcaption><b>شكل 15.2:</b> المحتوى نفسه مرتين. في البطاقة الأولى اختلط رقم الطلب والاسم، وانقلب رقم الهاتف. وفي الثانية عُزلت كل قيمة مُدرجة.</figcaption></figure>
+
+<ul>
+<li><code>&lt;bdi&gt;</code> (العزل ثنائي الاتجاه) تحيط بأي قيمة مُدرجة في جملة، كاسم أو رقم أو نص من المستخدم، فلا يُفسد اتجاهها باقي السطر. وفي React وVue أحط القيم المُدرجة بها كلما كانت لغة القيمة مجهولة.</li>
+<li><code>dir="ltr"</code> تفرض الاتجاه من اليسار إلى اليمين لما يُكتب هكذا دائماً: أرقام الهواتف، وعناوين البريد، والكود، والروابط.</li>
+<li><code>dir="auto"</code> على حقل إدخال أو تعليق تدع المتصفح يختار الاتجاه من أول حرف قوي يُكتب.</li>
+</ul>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: اختبر بعربية حقيقية، من أول شاشة</p><p>نص Lorem ipsum يخفي كل أخطاء الاتجاه من اليمين. ابنِ كل شاشة بنص عربي حقيقي، وكلمات عربية طويلة، وعربية مختلطة بالإنجليزية، وأرقام، وانظر إليها في الاتجاهين قبل أن تعدّها منتهية. والنص العربي كثيراً ما يكون أطول أو أعلى من الإنجليزي، فأعطِ التخطيطات مساحة.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>نصوص مكتوبة في المكونات</td><td>الترجمة تعني تعديل الكود</td><td>فهارس رسائل بمفاتيح</td></tr>
+<tr><td>جمل موصولة بـ <code>+</code></td><td>ترتيب كلمات وقواعد خاطئة في اللغات الأخرى</td><td>رسائل كاملة بأماكن فارغة</td></tr>
+<tr><td><code>n === 1 ? "item" : "items"</code></td><td>صيغ جمع عربية خاطئة</td><td><code>Intl.PluralRules</code></td></tr>
+<tr><td>تنسيق الأرقام والتواريخ باليد</td><td>فواصل وأرقام وترتيب خاطئة</td><td><code>Intl.NumberFormat</code> و<code>Intl.DateTimeFormat</code></td></tr>
+<tr><td><code>margin-left</code> و<code>left: 0</code></td><td>تخطيطات لا تنعكس</td><td>الخصائص المنطقية</td></tr>
+<tr><td>قيم مُدرجة بلا عزل</td><td>أسطر مختلطة، وأرقام هواتف مقلوبة</td><td><code>&lt;bdi&gt;</code> و<code>dir="ltr"</code></td></tr>
+<tr><td>قلب كل شيء</td><td>ساعات وأزرار تشغيل تشير إلى الاتجاه الخطأ</td><td>اقلب الأيقونات الدالة على اتجاه فقط</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>التدويل</strong> قرار معماري: لا نص في الكود، وكل تنسيق بقواعد، وكل تخطيط قادر على الانعكاس.</li>
+<li>تنسّق <code>Intl</code> الأرقام والمبالغ والتواريخ والأزمنة النسبية والقوائم حسب <strong>الإعداد المحلي</strong>، واختر الأرقام والتقاويم بامتدادات مثل <code>-u-nu-latn</code> و<code>-u-ca-islamic-umalqura</code>.</li>
+<li>للعربية <strong>ست فئات جمع</strong>، فدع <code>Intl.PluralRules</code> تختار النص الصحيح.</li>
+<li>احفظ النصوص في <strong>فهارس</strong> بمفاتيح وأماكن فارغة، لا في الكود ولا قطعاً موصولة.</li>
+<li><strong>خصائص CSS المنطقية</strong> تعكس التخطيطات تلقائياً، واقلب الأيقونات الدالة على اتجاه فقط.</li>
+<li>اعزل القيم المُدرجة بـ <code>&lt;bdi&gt;</code>، وافرض <code>dir="ltr"</code> لأرقام الهواتف والبريد والكود.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. <code>ar-EG-u-nu-latn</code>. 2. <code>many</code>. 3. لأن ترتيب الكلمات والقواعد يختلفان بين اللغات، والمترجم وحده، وهو يرى الجملة كاملة، يستطيع وضع القيمة في مكانها الصحيح.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">اختبر كل مشروع باللغتين، بنص عربي حقيقي، وبأرقام تصيب كل فئات الجمع: 0 و1 و2 و3 و11 و100.</p>
+
+<div class="project">
+<p class="project-label">مشروع 15.1 · سهل</p>
+<h3>فهرس بصيغ جمع عربية حقيقية</h3>
+<p class="project-goal">ابنِ فهرس رسائل صغيراً ودالة <code>translate</code> تختار صيغة الجمع الصحيحة وتنسّق الأرقام لكل لغة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المفاتيح، والأماكن الفارغة، و<code>Intl.PluralRules</code>، و<code>Intl.NumberFormat</code>، والأنواع المشتقة من الفهرس.</p>
+<ol class="steps">
+<li>اكتب الفهرس كائناً لكل لغة. ورسائل الجمع كائنات فيها نص لكل فئة.</li>
+<li>أعطِ العربية الفئات الست (<code>zero</code> و<code>one</code> و<code>two</code> و<code>few</code> و<code>many</code> و<code>other</code>)، والإنجليزية فئتين.</li>
+<li>في <code>translate</code> اختر الفئة بـ <code>new Intl.PluralRules(locale).select(count)</code>، والاحتياط <code>other</code>.</li>
+<li>استبدل الأماكن الفارغة <code>{name}</code> بالقيم، ونسّق الأرقام بـ <code>Intl.NumberFormat(locale)</code>.</li>
+<li>اشتق نوع المفاتيح من الفهرس الإنجليزي، فيصير المفتاح المكتوب خطأً خطأ بناء.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> فئتا «zero» و«one» في العربية كثيراً ما تكونان عبارتين كاملتين بلا رقم أصلاً («لا عناصر»، «عنصر واحد»)، ولهذا تأخذ كل فئة نصها الكامل.</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>  0 | لا عناصر     | 0 items
+  1 | عنصر واحد    | 1 item
+  2 | عنصران       | 2 items
+  5 | 5 عناصر      | 5 items
+ 11 | 11 عنصراً    | 11 items
+100 | 100 عنصر     | 100 items</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 15.2 · متوسط</p>
+<h3>تطبيق واحد واتجاهان</h3>
+<p class="project-goal">سلة تبدّل بين العربية والإنجليزية وقت التشغيل، وتعكس تخطيطها، وتنسّق المبالغ وصيغ الجمع صحيحة في اللغتين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سياق اللغة، وضبط <code>lang</code> و<code>dir</code>، وCSS المنطقية، وقلب الأيقونات الدالة على اتجاه، و<code>&lt;bdi&gt;</code>.</p>
+<ol class="steps">
+<li>اكتب مزوّداً يحفظ الإعداد المحلي، ويضبط <code>document.documentElement.lang</code> و<code>dir</code> في تأثير، ويقدم <code>t</code> ومنسّق مبالغ.</li>
+<li>اكتب كل المسافات والحدود بالخصائص المنطقية، وتحقق أن شيئاً لا يحتاج قاعدة خاصة للاتجاه من اليمين.</li>
+<li>اقلب أيقونة السهم فقط، بـ <code>[dir="rtl"] .next::after { transform: scaleX(-1); }</code>.</li>
+<li>أحط أسماء المنتجات، التي قد تكون بأي لغة، بـ <code>&lt;bdi&gt;</code>.</li>
+<li>بدّل اللغة ذهاباً وإياباً، وافحص كل سطر: النص، والجمع، والأسعار، والمحاذاة، والسهم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> احفظ اللغة المختارة (في <code>localStorage</code> أو في العنوان، مثل <code>/ar/cart</code>) وابدأ من <code>navigator.languages</code> في الزيارة الأولى. والعنوان الخاص بكل لغة هو أيضاً ما تحتاجه محركات البحث.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cart.html</span><b>560px</b></div><img src="img/b2-i18n-ar-react-cart.html-560-c117d3.png" alt=""><figcaption><b>مشروع 15.2:</b> السلة بعد تبديل اللغة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 15.3 · تحدٍّ</p>
+<h3>فاحص الترجمات</h3>
+<p class="project-goal">قارن فهرسي رسائل وبلّغ عن المفاتيح الناقصة، والزائدة، والرسائل التي لا تتطابق أماكنها الفارغة، فلا تصل ترجمات مكسورة إلى المستخدمين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة JSON، والتعابير النمطية مع <code>matchAll</code>، والمقارنات الشبيهة بالمجموعات، وإفشال البناء.</p>
+<ol class="steps">
+<li>حمّل <code>en.json</code> (مصدر الحقيقة) و<code>ar.json</code>.</li>
+<li>لكل مفتاح إنجليزي بلّغ عنه إن لم يوجد في العربية.</li>
+<li>استخرج الأماكن الفارغة من النصين بـ <code>/\{(\w+)\}/g</code>، ورتّبها، وقارن. فالمترجم الذي أعاد تسمية <code>{total}</code> إلى <code>{sum}</code> سيُظهر للمستخدمين قيمة فارغة.</li>
+<li>بلّغ عن المفاتيح العربية التي لم تعد في الإنجليزية: نصوص قديمة يجب حذفها.</li>
+<li>اضبط رمز خروج فاشلاً عند أي مشكلة، وأضف السكربت إلى <code>npm run check</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المشاريع الحقيقية تفحص أيضاً رسائل الجمع (وجود كل فئة تحتاجها اللغة)، والمفاتيح المستخدمة في الكود الناقصة من الفهرس. ولمكتبات مثل i18next أدوات للأمرين.</p>
+<div class="listing" dir="ltr"><div class="listing-title">check-messages.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+
+<span class="c">// قارن الفهرسين: المفاتيح الناقصة، والزائدة، والأماكن الفارغة غير المتطابقة</span>
+<span class="k">const</span> load = (file: string) =&gt; JSON.parse(readFileSync(<span class="k">new</span> URL(file, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Record&lt;string, string&gt;;
+<span class="k">const</span> en = load(<span class="s">&quot;./en.json&quot;</span>);
+<span class="k">const</span> ar = load(<span class="s">&quot;./ar.json&quot;</span>);
+<span class="k">const</span> placeholders = (text: string) =&gt; [...text.matchAll(/\{(\w+)\}/g)].map((m) =&gt; m[<span class="n">1</span>]).sort().join(<span class="s">&quot;,&quot;</span>);
+
+<span class="k">let</span> problems = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> key <span class="k">of</span> Object.keys(en)) {
+  <span class="k">if</span> (!(key <span class="k">in</span> ar)) {
+    console.log(<span class="s">`✗ ${key}: ناقص في ar`</span>);
+    problems++;
+  } <span class="k">else</span> <span class="k">if</span> (placeholders(en[key]!) !== placeholders(ar[key]!)) {
+    console.log(<span class="s">`✗ ${key}: الأماكن الفارغة مختلفة: en {${placeholders(en[key]!)}} ar {${placeholders(ar[key]!)}}`</span>);
+    problems++;
+  }
+}
+<span class="k">for</span> (<span class="k">const</span> key <span class="k">of</span> Object.keys(ar)) {
+  <span class="k">if</span> (!(key <span class="k">in</span> en)) {
+    console.log(<span class="s">`✗ ${key}: ليس في en`</span>);
+    problems++;
+  }
+}
+console.log(problems === <span class="n">0</span> ? <span class="s">&quot;كل المفاتيح متطابقة.&quot;</span> : <span class="s">`${problems} مشكلات`</span>);
+process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span>;</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>✗ nav.cart: ناقص في ar
+✗ cart.total: الأماكن الفارغة مختلفة: en {total} ar {sum}
+✗ profile.old: ليس في en
+3 مشكلات</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أضف <code>fr-FR</code> و<code>hi-IN</code> و<code>fa-IR</code> إلى <code>numbers.ts</code>. ما المميز في كل منها؟</li>
+<li><span class="level">سهل</span> اطبع تاريخ اليوم بالتقويمين الميلادي وأم القرى، في <code>ar-SA</code> و<code>en-US</code>.</li>
+<li><span class="level medium">متوسط</span> أضف رسالة جمع <code>"cart.days"</code> («يصل خلال 3 أيام») إلى اللغتين بكل الفئات التي تحتاجها كل منهما، واطبعها لـ 0 و1 و2 و3 و11 و100.</li>
+<li><span class="level medium">متوسط</span> جِد كل خاصية مادية (<code>left</code> و<code>right</code> و<code>margin-left</code>…) في CSS أحد مشاريعك، واستبدلها بنظيرتها المنطقية، وافحص الصفحة في الاتجاهين.</li>
+<li><span class="level hard">تحدٍّ</span> أضف <code>dir="auto"</code> إلى حقل تعليق وإلى كل تعليق معروض. اكتب تعليقاً إنجليزياً، وآخر عربياً، وثالثاً يبدأ برقم. أي اتجاه يأخذ كل منها، ولماذا؟</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 16</p>
+<p>تعرف الآن كيف تبني كل جزء من واجهة احترافية. والجزء الأخير من الكتاب عن عمل الخبير: تنظيم قاعدة كود كبيرة ليغيّرها كثيرون بأمان، والرسم على الخادم، ومراجعة الكود واتخاذ القرارات التقنية، وأخيراً مشروع ختامي يجمع ذلك كله.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -3683,6 +4045,16 @@ server.close();</pre></div>
 <li>في وضع التبليغ فقط ما زال Console يبلّغ عن المخالفة، لكن السكربت المضمّن <em>يعمل</em>: فتصير «عمل السكربت؟» نعم. ولهذا وُجد هذا الوضع: ترى كل ما كانت السياسة ستمنعه في موقع حي، فتصلحه، ثم تفرضها.</li>
 <li><code>function safeUrl(input: string): string { try { const url = new URL(input); return url.protocol === "https:" || url.protocol === "http:" ? url.href : "#"; } catch { return "#"; } }</code>. واختبر رابط https عادياً، ورابط http، و<code>javascript:alert(1)</code>، و<code>JavaScript:alert(1)</code> (بحروف كبيرة)، ونصاً ليس رابطاً أصلاً.</li>
 <li>يسمّي التنبيه الحزمة، والإصدارات المصابة والمصلحة، ودرجة الخطورة، وكيف تُستغل العلّة. وكثيراً ما تكون الدالة المصابة في أداة بناء لا تصل إلى المستخدمين، أو في كود لا تستدعيه أبداً، فيكون الرد الصحيح ترقية، أو ملاحظة تشرح لماذا لا ينطبق.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 15</h2>
+<ol class="exercises">
+<li><code>fr-FR</code> تجمع الأرقام بمسافة ضيقة وتستخدم الفاصلة للكسور، و<code>hi-IN</code> تجمع بالطريقة الهندية، باللاك والكرور (12,34,567.5)، و<code>fa-IR</code> تستخدم الأرقام الفارسية، وتختلف قليلاً عن الهندية العربية في الشكل.</li>
+<li><code>new Intl.DateTimeFormat("ar-SA-u-ca-gregory", { dateStyle: "full" })</code> و<code>new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura", { dateStyle: "full" })</code>، ثم الشيء نفسه مع <code>en-US</code>. فامتداد التقويم يغيّر التقويم، وجزء اللغة يغيّر الكلمات فقط.</li>
+<li>الإنجليزية: <code>{ one: "Arrives in {count} day", other: "Arrives in {count} days" }</code>. والعربية: <code>{ zero: "يصل اليوم", one: "يصل خلال يوم", two: "يصل خلال يومين", few: "يصل خلال {count} أيام", many: "يصل خلال {count} يوماً", other: "يصل خلال {count} يوم" }</code>. وقرّر مع فريقك ماذا تقول «صفر أيام»: فهذا قرار منتج لا قاعدة نحوية.</li>
+<li>من الاستبدالات المعتادة: <code>margin-left</code> ← <code>margin-inline-start</code>، و<code>padding-right</code> ← <code>padding-inline-end</code>، و<code>left: 0</code> ← <code>inset-inline-start: 0</code>، و<code>text-align: left</code> ← <code>text-align: start</code>، و<code>border-left</code> ← <code>border-inline-start</code>. واترك الأشياء المادية حقاً، كإزاحة الظل، كما هي.</li>
+<li>التعليق الإنجليزي من اليسار إلى اليمين، والعربي من اليمين إلى اليسار، والذي يبدأ برقم يأخذ اتجاه أول حرف <em>قوي</em> بعده، لأن الأرقام «ضعيفة» في خوارزمية الاتجاه الثنائي ولا تقرر الاتجاه.</li>
 </ol>
 
 </section>

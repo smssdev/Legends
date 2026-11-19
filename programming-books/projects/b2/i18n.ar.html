@@ -1,0 +1,52 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">اختبر كل مشروع باللغتين، بنص عربي حقيقي، وبأرقام تصيب كل فئات الجمع: 0 و1 و2 و3 و11 و100.</p>
+
+<div class="project">
+<p class="project-label">مشروع {{n}}.1 · سهل</p>
+<h3>فهرس بصيغ جمع عربية حقيقية</h3>
+<p class="project-goal">ابنِ فهرس رسائل صغيراً ودالة <code>translate</code> تختار صيغة الجمع الصحيحة وتنسّق الأرقام لكل لغة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المفاتيح، والأماكن الفارغة، و<code>Intl.PluralRules</code>، و<code>Intl.NumberFormat</code>، والأنواع المشتقة من الفهرس.</p>
+<ol class="steps">
+<li>اكتب الفهرس كائناً لكل لغة. ورسائل الجمع كائنات فيها نص لكل فئة.</li>
+<li>أعطِ العربية الفئات الست (<code>zero</code> و<code>one</code> و<code>two</code> و<code>few</code> و<code>many</code> و<code>other</code>)، والإنجليزية فئتين.</li>
+<li>في <code>translate</code> اختر الفئة بـ <code>new Intl.PluralRules(locale).select(count)</code>، والاحتياط <code>other</code>.</li>
+<li>استبدل الأماكن الفارغة <code>{name}</code> بالقيم، ونسّق الأرقام بـ <code>Intl.NumberFormat(locale)</code>.</li>
+<li>اشتق نوع المفاتيح من الفهرس الإنجليزي، فيصير المفتاح المكتوب خطأً خطأ بناء.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> فئتا «zero» و«one» في العربية كثيراً ما تكونان عبارتين كاملتين بلا رقم أصلاً («لا عناصر»، «عنصر واحد»)، ولهذا تأخذ كل فئة نصها الكامل.</p>
+<pre data-out="translate.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع {{n}}.2 · متوسط</p>
+<h3>تطبيق واحد واتجاهان</h3>
+<p class="project-goal">سلة تبدّل بين العربية والإنجليزية وقت التشغيل، وتعكس تخطيطها، وتنسّق المبالغ وصيغ الجمع صحيحة في اللغتين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> سياق اللغة، وضبط <code>lang</code> و<code>dir</code>، وCSS المنطقية، وقلب الأيقونات الدالة على اتجاه، و<code>&lt;bdi&gt;</code>.</p>
+<ol class="steps">
+<li>اكتب مزوّداً يحفظ الإعداد المحلي، ويضبط <code>document.documentElement.lang</code> و<code>dir</code> في تأثير، ويقدم <code>t</code> ومنسّق مبالغ.</li>
+<li>اكتب كل المسافات والحدود بالخصائص المنطقية، وتحقق أن شيئاً لا يحتاج قاعدة خاصة للاتجاه من اليمين.</li>
+<li>اقلب أيقونة السهم فقط، بـ <code>[dir="rtl"] .next::after { transform: scaleX(-1); }</code>.</li>
+<li>أحط أسماء المنتجات، التي قد تكون بأي لغة، بـ <code>&lt;bdi&gt;</code>.</li>
+<li>بدّل اللغة ذهاباً وإياباً، وافحص كل سطر: النص، والجمع، والأسعار، والمحاذاة، والسهم.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> احفظ اللغة المختارة (في <code>localStorage</code> أو في العنوان، مثل <code>/ar/cart</code>) وابدأ من <code>navigator.languages</code> في الزيارة الأولى. والعنوان الخاص بكل لغة هو أيضاً ما تحتاجه محركات البحث.</p>
+<figure data-render="react/cart.html" data-width="560" data-actions="click:button"><figcaption><b>مشروع {{n}}.2:</b> السلة بعد تبديل اللغة.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع {{n}}.3 · تحدٍّ</p>
+<h3>فاحص الترجمات</h3>
+<p class="project-goal">قارن فهرسي رسائل وبلّغ عن المفاتيح الناقصة، والزائدة، والرسائل التي لا تتطابق أماكنها الفارغة، فلا تصل ترجمات مكسورة إلى المستخدمين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة JSON، والتعابير النمطية مع <code>matchAll</code>، والمقارنات الشبيهة بالمجموعات، وإفشال البناء.</p>
+<ol class="steps">
+<li>حمّل <code>en.json</code> (مصدر الحقيقة) و<code>ar.json</code>.</li>
+<li>لكل مفتاح إنجليزي بلّغ عنه إن لم يوجد في العربية.</li>
+<li>استخرج الأماكن الفارغة من النصين بـ <code>/\{(\w+)\}/g</code>، ورتّبها، وقارن. فالمترجم الذي أعاد تسمية <code>{total}</code> إلى <code>{sum}</code> سيُظهر للمستخدمين قيمة فارغة.</li>
+<li>بلّغ عن المفاتيح العربية التي لم تعد في الإنجليزية: نصوص قديمة يجب حذفها.</li>
+<li>اضبط رمز خروج فاشلاً عند أي مشكلة، وأضف السكربت إلى <code>npm run check</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> المشاريع الحقيقية تفحص أيضاً رسائل الجمع (وجود كل فئة تحتاجها اللغة)، والمفاتيح المستخدمة في الكود الناقصة من الفهرس. ولمكتبات مثل i18next أدوات للأمرين.</p>
+<pre data-code="projects/check-messages.ts" data-title="check-messages.ts"></pre>
+<pre data-out="projects/check-messages.mjs"></pre>
+</div>
