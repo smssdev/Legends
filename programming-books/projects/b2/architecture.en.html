@@ -1,0 +1,53 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">These projects are about the code <em>around</em> features: the shape of folders, the door to the server, and the tools that keep both honest. Apply them to the biggest project you have built in this book.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>From folders by type to folders by feature</h3>
+<p class="project-goal">Reorganise one of your projects into <code>shared</code>, <code>features</code> and <code>app</code>, with a public <code>index.ts</code> for every feature.</p>
+<p class="project-skills"><strong>You will practise:</strong> deciding what is shared and what belongs to a feature, barrels, and moving files without breaking imports.</p>
+<ol class="steps">
+<li>List every file and write next to it the feature it belongs to, or “shared” if it knows nothing about the business.</li>
+<li>Create the new folders and move the files with your editor’s rename command, which updates imports for you.</li>
+<li>Give each feature an <code>index.ts</code> that exports only what other code needs.</li>
+<li>Change imports from other features to point at those <code>index.ts</code> files.</li>
+<li>Run <code>npm run check</code> and the tests: a reorganisation must not change behaviour.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> when you cannot decide whether something is shared, keep it in the feature. Moving code up to <code>shared</code> later, when a second feature needs it, is easy; untangling a “shared” folder full of business logic is not.</p>
+<pre data-out="tree.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A typed API layer</h3>
+<p class="project-goal">Write the one module that talks to the server: it validates every answer and turns every failure into a typed error the screens can handle.</p>
+<p class="project-skills"><strong>You will practise:</strong> Zod schemas, discriminated unions for errors, <code>AbortSignal.timeout</code>, dependency injection of <code>fetch</code>, and a local test server.</p>
+<ol class="steps">
+<li>Describe each resource with a schema, and derive its type with <code>z.infer</code>.</li>
+<li>Define <code>ApiError</code> as a union of <code>network</code>, <code>not-found</code>, <code>invalid</code> and <code>server</code>, and <code>Result&lt;T&gt;</code> as success or error.</li>
+<li>Write one private <code>get(path, schema)</code> that fetches with a timeout, checks the status, parses the JSON with the schema, and never throws.</li>
+<li>Export one small function per endpoint, such as <code>products()</code> and <code>product(id)</code>.</li>
+<li>Accept <code>fetch</code> as a parameter, so tests can pass a fake; and test against a local server that answers well, with 404, with bad data, and too slowly.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look at the third answer: the server sent the price as a string. Without validation, that would have shown up as “8EGP”, or as <code>NaN</code> in a total, far from its cause. With it, the error names the exact field.</p>
+<pre data-code="projects/api.ts" data-title="shared/api/api.ts"></pre>
+<pre data-out="projects/use-api.mjs"></pre>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>A boundary checker</h3>
+<p class="project-goal">Write a script that reads every import in the codebase, works out which layer and feature each file belongs to, and reports imports that break the dependency rules.</p>
+<p class="project-skills"><strong>You will practise:</strong> walking folders, regular expressions on source code, resolving relative paths, and turning rules into checks with exit codes.</p>
+<ol class="steps">
+<li>Walk <code>src</code> and collect every <code>.ts</code> and <code>.tsx</code> file.</li>
+<li>Write <code>where(path)</code>, which splits a path into its layer (<code>app</code>, <code>features</code>, <code>shared</code>), its feature, and the rest.</li>
+<li>For every relative import, resolve the target with <code>path.resolve</code> and compare the two locations against the three rules.</li>
+<li>Print each violation with the file, the import and the rule it breaks; exit with 1 if there are any.</li>
+<li>Run it on the sample: it finds the header that reaches into the cart store, and the account page that bypasses the cart’s <code>index.ts</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a regular expression is enough for a checker like this, but real tools use the TypeScript compiler to read imports exactly, including aliases such as <code>@/features/cart</code>. Start simple, and switch when the simple version stops being right.</p>
+<pre data-code="boundaries.ts" data-title="boundaries.ts"></pre>
+<pre data-out="boundaries.mjs"></pre>
+</div>

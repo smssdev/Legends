@@ -25,6 +25,8 @@
 @page ch14:first { @top-center { content: none; } }
 @page ch15 { @top-center { content: "Chapter 15: Internationalisation and RTL"; } }
 @page ch15:first { @top-center { content: none; } }
+@page ch16 { @top-center { content: "Chapter 16: Frontend Architecture at Scale"; } }
+@page ch16:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -3849,6 +3851,358 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <p>You now know how to build each part of a professional frontend. The last part of the book is about the work of a senior: organising a large codebase so that many people can change it safely, rendering on the server, reviewing code and making technical decisions, and finally a capstone project that brings it all together.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch16" data-chapter="16" data-code="b2/architecture/en">
+<div class="opener"><span class="opener-num">16</span><p class="chapter-kicker">Chapter 16</p><h1>Frontend Architecture at Scale</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain what architecture is for: keeping change cheap as the app and the team grow</li>
+<li>organise code by feature, with clear layers and public entry points</li>
+<li>enforce the rules automatically, instead of hoping people remember them</li>
+<li>separate pure logic from the code that talks to the world</li>
+<li>put all communication with the server behind one typed, validated layer</li>
+<li>know when monorepos, feature flags and micro-frontends help, and when they hurt</li>
+<li>record important decisions so the next person understands them</li>
+</ul>
+</div>
+
+<p class="lead">A small app can be organised any way at all, because one person holds it in their head. At fifty screens and ten developers, that stops working: every change touches files nobody understands, two people edit the same file every day, and fixing one bug creates two more. <dfn>Architecture</dfn> is the set of decisions that keeps change cheap and safe as the app grows: where code lives, what may depend on what, and how the pieces talk. It is less about clever patterns than about boundaries.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>A good test of an architecture: can a new team member add a small feature in their first week, touching only a few files, without breaking anything else? If yes, the boundaries are working.</p></div></div>
+
+<h2><span class="sec">16.1</span> <span>Organise by feature</span></h2>
+
+<p>Beginners often group files by <em>type</em>: all components in one folder, all hooks in another, all API calls in a third. That works until the app grows; then every feature is spread across five folders, and nothing tells you which files belong together. Mature codebases group by <dfn>feature</dfn>: everything about the cart lives in <code>features/cart</code>.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>src/
+├── app/
+│   ├── App.tsx
+│   └── routes.tsx
+├── features/
+│   ├── account/
+│   │   ├── AccountPage.tsx
+│   │   └── index.ts
+│   ├── cart/
+│   │   ├── CartBadge.tsx
+│   │   ├── index.ts
+│   │   └── store.ts
+│   └── catalog/
+│       ├── CatalogPage.tsx
+│       ├── index.ts
+│       └── useProducts.ts
+└── shared/
+    ├── api/
+    │   └── client.ts
+    ├── lib/
+    │   └── money.ts
+    └── ui/
+        ├── Button.tsx
+        ├── Header.tsx
+        └── Layout.tsx</pre></div>
+
+<p>Three layers, each with one job:</p>
+<ul>
+<li><code>shared/</code>: code with no knowledge of the business, usable anywhere: the design system components, the HTTP client, formatting helpers.</li>
+<li><code>features/</code>: one folder per piece of the product, each with its components, state, API calls and logic, and an <code>index.ts</code> that exports only what other code may use (the barrel of Chapter 3).</li>
+<li><code>app/</code>: the composition: routes, layouts and providers that put the features together.</li>
+</ul>
+
+<h3>Dependency rules</h3>
+
+<p>Folders alone do not make an architecture; the <em>rules between them</em> do. Each layer may import only from layers below it:</p>
+<ol>
+<li><strong>Shared code never imports a feature.</strong> Otherwise “shared” code is secretly tied to one feature, and cannot move or be reused.</li>
+<li><strong>A feature imports another feature only through its <code>index.ts</code>.</strong> The rest of the folder is private, so the cart team can reorganise it without breaking the catalogue.</li>
+<li><strong>Nothing imports from <code>app/</code>.</strong> It is the top; it uses everything, and nothing uses it.</li>
+</ol>
+
+<p>Rules that live only in a document are broken within weeks, by people in a hurry. So professional teams check them automatically, with ESLint rules such as <code>no-restricted-imports</code> or tools like <code>dependency-cruiser</code>. Project 16.3 builds such a checker from scratch: in this sample codebase it finds the two rule-breaking imports hidden in it.</p>
+
+<h2><span class="sec">16.2</span> <span>A functional core, an imperative shell</span></h2>
+
+<p>Inside a feature, the most useful line to draw is between <em>deciding</em> and <em>doing</em>. The <dfn>functional core</dfn> is pure logic: given data, it returns data, with no network, no storage and no React. The cart’s totals, the discount rules, the reducer of the state chapter. The <dfn>imperative shell</dfn> is everything that touches the world: components, effects, API calls, storage.</p>
+
+<p>Keep the core as large and the shell as thin as you can. The core is where the bugs that cost money live, and it is trivial to test with plain unit tests (Chapter 12); the shell then mostly passes data in and out. This is why the reducers and stores in this book were tested in Node before React ever saw them.</p>
+
+<h2><span class="sec">16.3</span> <span>One door to the server</span></h2>
+
+<p>When fifty components call <code>fetch</code> directly, every one of them invents its own error handling, and a change to the API means a search through the whole codebase. Put all communication with the server behind one <dfn>API layer</dfn>:</p>
+<ul>
+<li>It knows the base address, headers and authentication, in one place.</li>
+<li>It <strong>validates</strong> every response with a schema (the forms chapter), so wrong data stops at the door instead of crashing a screen later.</li>
+<li>It turns every failure into a small set of typed errors the screens can handle: not found, invalid, server error, network.</li>
+</ul>
+
+<p>Project 16.2 builds one, and shows it handling a good answer, a 404, a price sent as a string, and a server that never answers. Server-state libraries such as TanStack Query then call these functions; they cache, but the API layer decides what is valid.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>The account feature needs the cart badge. Which file should it import from?</li><li>Why should <code>shared/</code> never import from <code>features/</code>?</li><li>Where do discount calculations belong: in a component, or in the functional core?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">16.4</span> <span>Bigger structures</span></h2>
+
+<table>
+<thead><tr><th>Tool</th><th>What it is</th><th>When it helps</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td><dfn>Monorepo</dfn></td><td>Several apps and packages in one repository, with tools such as pnpm workspaces and Turborepo</td><td>A web app, an admin app and a design system that change together</td><td>Build tooling to learn and maintain</td></tr>
+<tr><td><dfn>Feature flags</dfn></td><td>Switches that turn features on for some users, decided at run time</td><td>Releasing unfinished work safely, gradual rollouts, A/B tests</td><td>Old flags must be removed, or the code fills with dead branches</td></tr>
+<tr><td><dfn>Micro-frontends</dfn></td><td>Separate apps by separate teams, combined in the browser</td><td>Very large organisations where teams must release independently</td><td>Duplicate libraries, inconsistent design, complex debugging; rarely worth it below dozens of developers</td></tr>
+</tbody>
+</table>
+
+<p>Choose the simplest structure that solves a problem you actually have. A well-organised single app with clear feature boundaries serves most teams for years.</p>
+
+<h2><span class="sec">16.5</span> <span>Record your decisions</span></h2>
+
+<p>Six months from now, someone will ask why the app uses Zustand and not Redux, or why dates are stored in UTC. If the answer is only in someone’s head, they may undo a good decision. An <dfn>Architecture Decision Record</dfn> (ADR) is a short file in the repository, written when a significant decision is made:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">docs/adr/0007-server-state-with-tanstack-query.md</div><pre class="code md"># 7. Server state with TanStack Query
+
+Date: 2026-03-12  ·  Status: accepted
+
+## Context
+Screens fetch data in effects. We have duplicate requests, no caching,
+and loading and error states handled differently on every screen.
+
+## Decision
+All server data is read through TanStack Query, calling the typed
+functions of shared/api. Effects no longer call fetch.
+
+## Consequences
++ Caching, deduplication and retries everywhere, for free.
++ One way to show loading and errors.
+- One more library to learn; existing screens migrate over two sprints.</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: make the right thing the easy thing</p><p>Good architecture is not enforced by reviews alone. Provide templates for new features, a lint rule for every boundary, and a clear example of each pattern in the codebase. People copy what they see; make sure what they see is right.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Folders by type in a large app</td><td>Every feature spread everywhere</td><td>Folders by feature</td></tr>
+<tr><td>Importing another feature’s internal files</td><td>Changing one feature breaks another</td><td>Public <code>index.ts</code>, enforced by a checker</td></tr>
+<tr><td>“Shared” code that imports features</td><td>Hidden coupling; nothing can move</td><td>Dependencies point down only</td></tr>
+<tr><td><code>fetch</code> in every component</td><td>Inconsistent errors; API changes everywhere</td><td>One typed, validated API layer</td></tr>
+<tr><td>Business rules inside components</td><td>Hard to test and to reuse</td><td>A pure functional core</td></tr>
+<tr><td>Adopting micro-frontends too early</td><td>Complexity without benefit</td><td>Start with one app and clear boundaries</td></tr>
+<tr><td>Decisions that live in someone’s head</td><td>Good choices get undone</td><td>Short ADRs in the repository</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li><strong>Architecture</strong> keeps change cheap and safe as the app and team grow; it is mostly about boundaries.</li>
+<li>Organise by <strong>feature</strong>, in three layers: <code>shared</code>, <code>features</code>, <code>app</code>. Dependencies point down; features talk through their public <code>index.ts</code>.</li>
+<li><strong>Enforce</strong> the rules with tools, not memory.</li>
+<li>Keep a large, pure <strong>functional core</strong> and a thin <strong>imperative shell</strong>.</li>
+<li>One <strong>API layer</strong> talks to the server, validates responses, and returns typed errors.</li>
+<li>Use monorepos, feature flags and micro-frontends only for problems you really have.</li>
+<li>Record significant decisions in short <strong>ADRs</strong>.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. From <code>features/cart/index.ts</code>, the cart’s public entry point, not from <code>features/cart/CartBadge.tsx</code>. 2. Because it would tie the “shared” code to one feature, so it could no longer be reused or moved, and changes to the feature would break unrelated screens. 3. In the functional core: it is pure logic that should be tested on its own.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">These projects are about the code <em>around</em> features: the shape of folders, the door to the server, and the tools that keep both honest. Apply them to the biggest project you have built in this book.</p>
+
+<div class="project">
+<p class="project-label">Project 16.1 · Easy</p>
+<h3>From folders by type to folders by feature</h3>
+<p class="project-goal">Reorganise one of your projects into <code>shared</code>, <code>features</code> and <code>app</code>, with a public <code>index.ts</code> for every feature.</p>
+<p class="project-skills"><strong>You will practise:</strong> deciding what is shared and what belongs to a feature, barrels, and moving files without breaking imports.</p>
+<ol class="steps">
+<li>List every file and write next to it the feature it belongs to, or “shared” if it knows nothing about the business.</li>
+<li>Create the new folders and move the files with your editor’s rename command, which updates imports for you.</li>
+<li>Give each feature an <code>index.ts</code> that exports only what other code needs.</li>
+<li>Change imports from other features to point at those <code>index.ts</code> files.</li>
+<li>Run <code>npm run check</code> and the tests: a reorganisation must not change behaviour.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> when you cannot decide whether something is shared, keep it in the feature. Moving code up to <code>shared</code> later, when a second feature needs it, is easy; untangling a “shared” folder full of business logic is not.</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>src/
+├── app/
+│   ├── App.tsx
+│   └── routes.tsx
+├── features/
+│   ├── account/
+│   │   ├── AccountPage.tsx
+│   │   └── index.ts
+│   ├── cart/
+│   │   ├── CartBadge.tsx
+│   │   ├── index.ts
+│   │   └── store.ts
+│   └── catalog/
+│       ├── CatalogPage.tsx
+│       ├── index.ts
+│       └── useProducts.ts
+└── shared/
+    ├── api/
+    │   └── client.ts
+    ├── lib/
+    │   └── money.ts
+    └── ui/
+        ├── Button.tsx
+        ├── Header.tsx
+        └── Layout.tsx</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 16.2 · Medium</p>
+<h3>A typed API layer</h3>
+<p class="project-goal">Write the one module that talks to the server: it validates every answer and turns every failure into a typed error the screens can handle.</p>
+<p class="project-skills"><strong>You will practise:</strong> Zod schemas, discriminated unions for errors, <code>AbortSignal.timeout</code>, dependency injection of <code>fetch</code>, and a local test server.</p>
+<ol class="steps">
+<li>Describe each resource with a schema, and derive its type with <code>z.infer</code>.</li>
+<li>Define <code>ApiError</code> as a union of <code>network</code>, <code>not-found</code>, <code>invalid</code> and <code>server</code>, and <code>Result&lt;T&gt;</code> as success or error.</li>
+<li>Write one private <code>get(path, schema)</code> that fetches with a timeout, checks the status, parses the JSON with the schema, and never throws.</li>
+<li>Export one small function per endpoint, such as <code>products()</code> and <code>product(id)</code>.</li>
+<li>Accept <code>fetch</code> as a parameter, so tests can pass a fake; and test against a local server that answers well, with 404, with bad data, and too slowly.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> look at the third answer: the server sent the price as a string. Without validation, that would have shown up as “8EGP”, or as <code>NaN</code> in a total, far from its cause. With it, the error names the exact field.</p>
+<div class="listing" dir="ltr"><div class="listing-title">shared/api/api.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c">// One place that talks to the server: typed, validated, and with errors the screens can understand</span>
+<span class="k">export</span> <span class="k">const</span> Product = z.object({ id: z.number(), name: z.string(), price: z.number().nonnegative() });
+<span class="k">export</span> <span class="k">type</span> Product = z.infer&lt;<span class="k">typeof</span> Product&gt;;
+
+<span class="k">export</span> <span class="k">type</span> ApiError =
+  | { kind: <span class="s">&quot;network&quot;</span>; message: string }
+  | { kind: <span class="s">&quot;not-found&quot;</span>; path: string }
+  | { kind: <span class="s">&quot;invalid&quot;</span>; issues: string[] }
+  | { kind: <span class="s">&quot;server&quot;</span>; status: number };
+
+<span class="k">export</span> <span class="k">type</span> Result&lt;T&gt; = { ok: <span class="k">true</span>; data: T } | { ok: <span class="k">false</span>; error: ApiError };
+
+<span class="k">export</span> <span class="k">function</span> createApi(base: string, fetcher: <span class="k">typeof</span> fetch = fetch) {
+  <span class="k">async</span> <span class="k">function</span> get&lt;T&gt;(path: string, schema: z.ZodType&lt;T&gt;): Promise&lt;Result&lt;T&gt;&gt; {
+    <span class="k">let</span> response: Response;
+    <span class="k">try</span> {
+      response = <span class="k">await</span> fetcher(base + path, { signal: AbortSignal.timeout(<span class="n">2000</span>) });
+    } <span class="k">catch</span> (e) {
+      <span class="k">return</span> { ok: <span class="k">false</span>, error: { kind: <span class="s">&quot;network&quot;</span>, message: (e as Error).name } };
+    }
+    <span class="k">if</span> (response.status === <span class="n">404</span>) <span class="k">return</span> { ok: <span class="k">false</span>, error: { kind: <span class="s">&quot;not-found&quot;</span>, path } };
+    <span class="k">if</span> (!response.ok) <span class="k">return</span> { ok: <span class="k">false</span>, error: { kind: <span class="s">&quot;server&quot;</span>, status: response.status } };
+    <span class="k">const</span> parsed = schema.safeParse(<span class="k">await</span> response.json());
+    <span class="k">if</span> (!parsed.success) {
+      <span class="k">return</span> { ok: <span class="k">false</span>, error: { kind: <span class="s">&quot;invalid&quot;</span>, issues: parsed.error.issues.map((i) =&gt; <span class="s">`${i.path.join(&quot;.&quot;)}: ${i.message}`</span>) } };
+    }
+    <span class="k">return</span> { ok: <span class="k">true</span>, data: parsed.data };
+  }
+
+  <span class="k">return</span> {
+    products: () =&gt; get(<span class="s">&quot;/products&quot;</span>, z.array(Product)),
+    product: (id: number) =&gt; get(<span class="s">`/products/${id}`</span>, Product),
+  };
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>✓ Products: [{&quot;id&quot;:1,&quot;name&quot;:&quot;Code from Zero&quot;,&quot;price&quot;:25}]
+✗ {&quot;kind&quot;:&quot;not-found&quot;,&quot;path&quot;:&quot;/products/9&quot;}
+✗ {&quot;kind&quot;:&quot;invalid&quot;,&quot;issues&quot;:[&quot;price: Invalid input: expected number, received string&quot;]}
+✗ {&quot;kind&quot;:&quot;network&quot;,&quot;message&quot;:&quot;TimeoutError&quot;}</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 16.3 · Challenge</p>
+<h3>A boundary checker</h3>
+<p class="project-goal">Write a script that reads every import in the codebase, works out which layer and feature each file belongs to, and reports imports that break the dependency rules.</p>
+<p class="project-skills"><strong>You will practise:</strong> walking folders, regular expressions on source code, resolving relative paths, and turning rules into checks with exit codes.</p>
+<ol class="steps">
+<li>Walk <code>src</code> and collect every <code>.ts</code> and <code>.tsx</code> file.</li>
+<li>Write <code>where(path)</code>, which splits a path into its layer (<code>app</code>, <code>features</code>, <code>shared</code>), its feature, and the rest.</li>
+<li>For every relative import, resolve the target with <code>path.resolve</code> and compare the two locations against the three rules.</li>
+<li>Print each violation with the file, the import and the rule it breaks; exit with 1 if there are any.</li>
+<li>Run it on the sample: it finds the header that reaches into the cart store, and the account page that bypasses the cart’s <code>index.ts</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a regular expression is enough for a checker like this, but real tools use the TypeScript compiler to read imports exactly, including aliases such as <code>@/features/cart</code>. Start simple, and switch when the simple version stops being right.</p>
+<div class="listing" dir="ltr"><div class="listing-title">boundaries.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { dirname, join, relative, resolve } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
+
+<span class="c">// The layers, from the bottom up: each may import only from layers below it: shared → features → app</span>
+<span class="k">const</span> root = resolve(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;sample/src&quot;</span>);
+
+<span class="k">function</span> files(dir: string): string[] {
+  <span class="k">return</span> readdirSync(dir).flatMap((name) =&gt; {
+    <span class="k">const</span> path = join(dir, name);
+    <span class="k">return</span> statSync(path).isDirectory() ? files(path) : /\.(ts|tsx)$/.test(name) ? [path] : [];
+  });
+}
+
+<span class="c">// &quot;features/cart/store.ts&quot; -&gt; { layer: &quot;features&quot;, feature: &quot;cart&quot;, rest: &quot;store.ts&quot; }</span>
+<span class="k">function</span> where(path: string) {
+  <span class="k">const</span> [layer = <span class="s">&quot;&quot;</span>, feature = <span class="s">&quot;&quot;</span>, ...rest] = relative(root, path).split(<span class="s">&quot;/&quot;</span>);
+  <span class="k">return</span> { layer, feature: layer === <span class="s">&quot;features&quot;</span> ? feature : <span class="s">&quot;&quot;</span>, rest: rest.join(<span class="s">&quot;/&quot;</span>) };
+}
+
+<span class="k">const</span> problems: string[] = [];
+<span class="k">for</span> (<span class="k">const</span> file <span class="k">of</span> files(root)) {
+  <span class="k">const</span> <span class="k">from</span> = where(file);
+  <span class="k">for</span> (<span class="k">const</span> [, target] <span class="k">of</span> readFileSync(file, <span class="s">&quot;utf8&quot;</span>).matchAll(/<span class="k">from</span>\s+<span class="s">&quot;(\.[^&quot;</span>]+)&quot;/g)) {
+    <span class="k">const</span> to = where(resolve(dirname(file), target!));
+    <span class="k">const</span> at = <span class="s">`${relative(root, file)} → ${target}`</span>;
+    <span class="k">if</span> (<span class="k">from</span>.layer === <span class="s">&quot;shared&quot;</span> &amp;&amp; to.layer === <span class="s">&quot;features&quot;</span>) problems.push(<span class="s">`${at}\n    shared code must not import a feature`</span>);
+    <span class="k">if</span> (to.layer === <span class="s">&quot;app&quot;</span> &amp;&amp; <span class="k">from</span>.layer !== <span class="s">&quot;app&quot;</span>) problems.push(<span class="s">`${at}\n    nothing imports from app/`</span>);
+    <span class="k">if</span> (<span class="k">from</span>.layer === <span class="s">&quot;features&quot;</span> &amp;&amp; to.layer === <span class="s">&quot;features&quot;</span> &amp;&amp; <span class="k">from</span>.feature !== to.feature &amp;&amp; to.rest !== <span class="s">&quot;&quot;</span>) {
+      problems.push(<span class="s">`${at}\n    import another feature only through its index.ts`</span>);
+    }
+  }
+}
+
+<span class="k">for</span> (<span class="k">const</span> p <span class="k">of</span> problems) console.log(<span class="s">&quot;✗ &quot;</span> + p);
+console.log(problems.length === <span class="n">0</span> ? <span class="s">&quot;No boundary violations.&quot;</span> : <span class="s">`${problems.length} violations`</span>);
+process.exitCode = problems.length ? <span class="n">1</span> : <span class="n">0</span>;</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>✗ features/account/AccountPage.tsx → ../cart/CartBadge
+    import another feature only through its index.ts
+✗ shared/ui/Header.tsx → ../../features/cart/store
+    shared code must not import a feature
+2 violations</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Draw the folder tree of one of your projects. Is it organised by type or by feature? Sketch the feature version.</li>
+<li><span class="level">Easy</span> Fix the two violations in the sample codebase, and run the checker until it reports none.</li>
+<li><span class="level medium">Medium</span> Add a fourth rule to the checker: features must not import from <code>app/</code> either, and code in <code>shared/ui</code> must not import from <code>shared/api</code>.</li>
+<li><span class="level medium">Medium</span> Write an ADR for a decision you made in one of your projects, such as the choice of a library, with context, decision and consequences.</li>
+<li><span class="level hard">Challenge</span> Express the same boundary rules as an ESLint configuration with <code>no-restricted-imports</code> patterns, and check that ESLint reports the same two problems in the sample.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 17</p>
+<p>Every app in this book so far has been drawn entirely in the browser. In the next chapter the server joins in: pages rendered before they reach the user, for speed and search engines, with a framework built on everything you have learned.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -3955,6 +4309,16 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <li>English: <code>{ one: "Arrives in {count} day", other: "Arrives in {count} days" }</code>. Arabic: <code>{ zero: "يصل اليوم", one: "يصل خلال يوم", two: "يصل خلال يومين", few: "يصل خلال {count} أيام", many: "يصل خلال {count} يوماً", other: "يصل خلال {count} يوم" }</code>. Decide with your team what “zero days” should say; that is a product decision, not a grammar rule.</li>
 <li>Typical replacements: <code>margin-left</code> → <code>margin-inline-start</code>, <code>padding-right</code> → <code>padding-inline-end</code>, <code>left: 0</code> → <code>inset-inline-start: 0</code>, <code>text-align: left</code> → <code>text-align: start</code>, <code>border-left</code> → <code>border-inline-start</code>. Leave genuinely physical things, such as a shadow’s offset, as they are.</li>
 <li>The English comment is left-to-right, the Arabic one right-to-left, and the one starting with a number takes the direction of the first <em>strong</em> letter after it, because digits are “weak” in the bidirectional algorithm and do not decide the direction.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 16</h2>
+<ol class="exercises">
+<li>A type-based tree has folders like <code>components/</code>, <code>hooks/</code> and <code>services/</code>; the feature version has <code>features/cart</code>, <code>features/catalog</code> and so on, each holding its own components, hooks and API calls, plus a small <code>shared/</code> for truly generic code.</li>
+<li>In <code>AccountPage.tsx</code> import <code>CartBadge</code> from <code>"../cart"</code>. For <code>Header.tsx</code>, the real fix is a design decision: either the header stops knowing about the cart and receives the badge as a prop or child from <code>app/</code>, or it moves into a feature. Shared code must not reach into a feature at all.</li>
+<li>Add <code>if (from.layer === "features" &amp;&amp; to.layer === "app")</code> (already covered by “nothing imports from app”, so the test proves it), and <code>if (relative(root, file).startsWith("shared/ui") &amp;&amp; relative(root, resolve(dirname(file), target)).startsWith("shared/api"))</code> with its own message.</li>
+<li>A good ADR is short: one paragraph of context (the problem and the forces), one of decision (what you chose), and a few lines of consequences, good and bad. Number it and never edit an accepted ADR: write a new one that supersedes it.</li>
+<li>In <code>eslint.config.js</code>, for files in <code>src/shared/**</code>, add <code>"no-restricted-imports": ["error", { patterns: ["**/features/**"] }]</code>; for <code>src/features/**</code>, a pattern such as <code>"../*/!(index)"</code> or a <code>group</code> for each other feature’s internal paths. ESLint then reports the same two imports in the editor, as you type.</li>
 </ol>
 
 </section>

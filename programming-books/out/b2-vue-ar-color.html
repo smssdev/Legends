@@ -25,6 +25,8 @@
 @page ch14:first { @top-center { content: none; } }
 @page ch15 { @top-center { content: "الفصل 15: تعدد اللغات والاتجاه من اليمين"; } }
 @page ch15:first { @top-center { content: none; } }
+@page ch16 { @top-center { content: "الفصل 16: معمارية الواجهات على نطاق واسع"; } }
+@page ch16:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -3949,6 +3951,358 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <p>تعرف الآن كيف تبني كل جزء من واجهة احترافية. والجزء الأخير من الكتاب عن عمل الخبير: تنظيم قاعدة كود كبيرة ليغيّرها كثيرون بأمان، والرسم على الخادم، ومراجعة الكود واتخاذ القرارات التقنية، وأخيراً مشروع ختامي يجمع ذلك كله.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch16" data-chapter="16" data-code="b2/architecture/ar">
+<div class="opener"><span class="opener-num">16</span><p class="chapter-kicker">الفصل 16</p><h1>معمارية الواجهات على نطاق واسع</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح الغاية من المعمارية: إبقاء التغيير رخيصاً كلما كبر التطبيق والفريق</li>
+<li>تنظّم الكود حسب الميزات، بطبقات واضحة ومداخل عامة</li>
+<li>تفرض القواعد آلياً، بدل أن ترجو أن يتذكرها الناس</li>
+<li>تفصل المنطق النقي عن الكود الذي يتحدث إلى العالم</li>
+<li>تضع كل تواصل مع الخادم خلف طبقة واحدة بالأنواع والتحقق</li>
+<li>تعرف متى تفيد المستودعات الموحّدة ومفاتيح الميزات والواجهات المصغّرة، ومتى تضر</li>
+<li>تسجّل القرارات المهمة ليفهمها من يأتي بعدك</li>
+</ul>
+</div>
+
+<p class="lead">التطبيق الصغير يمكن تنظيمه بأي طريقة، لأن شخصاً واحداً يحمله في رأسه. أما عند خمسين شاشة وعشرة مطورين فيتوقف ذلك عن العمل: كل تغيير يلمس ملفات لا يفهمها أحد، واثنان يعدّلان الملف نفسه كل يوم، وإصلاح علّة يصنع علّتين. و<dfn>المعمارية</dfn> مجموعة القرارات التي تبقي التغيير رخيصاً وآمناً وهو يكبر: أين يعيش الكود، وما الذي يعتمد على ماذا، وكيف تتحدث القطع. وهي تتعلق بالحدود أكثر مما تتعلق بالأنماط الذكية.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>اختبار جيد للمعمارية: هل يستطيع عضو جديد في الفريق إضافة ميزة صغيرة في أسبوعه الأول، يلمس فيها ملفات قليلة، دون أن يكسر شيئاً آخر؟ إن كان نعم فالحدود تعمل.</p></div></div>
+
+<h2><span class="sec">16.1</span> <span>نظّم حسب الميزة</span></h2>
+
+<p>كثيراً ما يجمع المبتدئون الملفات حسب <em>النوع</em>: كل المكونات في مجلد، وكل الخطافات في آخر، وكل استدعاءات الواجهة البرمجية في ثالث. وينجح ذلك حتى يكبر التطبيق، ثم تتوزع كل ميزة على خمسة مجلدات، ولا شيء يخبرك أي الملفات معاً. أما قواعد الكود الناضجة فتجمع حسب <dfn>الميزة</dfn>: كل ما يخص السلة يعيش في <code>features/cart</code>.</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>src/
+├── app/
+│   ├── App.tsx
+│   └── routes.tsx
+├── features/
+│   ├── account/
+│   │   ├── AccountPage.tsx
+│   │   └── index.ts
+│   ├── cart/
+│   │   ├── CartBadge.tsx
+│   │   ├── index.ts
+│   │   └── store.ts
+│   └── catalog/
+│       ├── CatalogPage.tsx
+│       ├── index.ts
+│       └── useProducts.ts
+└── shared/
+    ├── api/
+    │   └── client.ts
+    ├── lib/
+    │   └── money.ts
+    └── ui/
+        ├── Button.tsx
+        ├── Header.tsx
+        └── Layout.tsx</pre></div>
+
+<p>ثلاث طبقات، لكل منها وظيفة واحدة:</p>
+<ul>
+<li><code>shared/</code>: كود لا يعرف شيئاً عن العمل، يُستخدم في أي مكان: مكونات نظام التصميم، وعميل HTTP، وأدوات التنسيق.</li>
+<li><code>features/</code>: مجلد لكل قطعة من المنتج، فيه مكوناتها وحالتها واستدعاءاتها ومنطقها، و<code>index.ts</code> لا يصدّر إلا ما يحق للكود الآخر استخدامه (برميل الفصل 3).</li>
+<li><code>app/</code>: التركيب: المسارات والتخطيطات والمزوّدات التي تجمع الميزات.</li>
+</ul>
+
+<h3>قواعد الاعتماد</h3>
+
+<p>المجلدات وحدها لا تصنع معمارية، بل <em>القواعد بينها</em>. فكل طبقة تستورد مما تحتها فقط:</p>
+<ol>
+<li><strong>الكود المشترك لا يستورد ميزة أبداً.</strong> وإلا صار الكود «المشترك» مرتبطاً سراً بميزة واحدة، ولا يمكن نقله ولا إعادة استخدامه.</li>
+<li><strong>الميزة تستورد ميزة أخرى عبر <code>index.ts</code> الخاص بها فقط.</strong> وباقي المجلد خاص، فيعيد فريق السلة ترتيبه دون أن يكسر الكتالوج.</li>
+<li><strong>لا شيء يستورد من <code>app/</code>.</strong> فهي القمة: تستخدم كل شيء، ولا يستخدمها شيء.</li>
+</ol>
+
+<p>والقواعد التي تعيش في وثيقة فقط تُكسر خلال أسابيع على يد المستعجلين. لذلك تفحصها الفرق المحترفة آلياً، بقواعد ESLint مثل <code>no-restricted-imports</code> أو بأدوات مثل <code>dependency-cruiser</code>. ويبني المشروع 16.3 فاحصاً كهذا من الصفر: ويجد في قاعدة الكود النموذجية هذه الاستيرادين المخالفين المختبئين فيها.</p>
+
+<h2><span class="sec">16.2</span> <span>لبّ وظيفي وقشرة أمرية</span></h2>
+
+<p>داخل الميزة، أنفع خط يُرسم هو بين <em>التقرير</em> و<em>التنفيذ</em>. فـ<dfn>اللبّ الوظيفي</dfn> (functional core) منطق نقي: يأخذ بيانات ويُرجع بيانات، بلا شبكة ولا تخزين ولا React. مجاميع السلة، وقواعد الخصم، ودالة الاختزال من فصل الحالة. و<dfn>القشرة الأمرية</dfn> (imperative shell) كل ما يلمس العالم: المكونات، والتأثيرات، واستدعاءات الواجهة البرمجية، والتخزين.</p>
+
+<p>اجعل اللبّ أكبر ما يمكن والقشرة أرقّ ما يمكن. فاللبّ هو المكان الذي تعيش فيه الأخطاء التي تكلّف مالاً، واختباره سهل جداً باختبارات وحدات عادية (الفصل 12)، والقشرة بعدها تمرر البيانات دخولاً وخروجاً في الغالب. ولهذا اختُبرت دوال الاختزال والمخازن في هذا الكتاب في Node قبل أن تراها React.</p>
+
+<h2><span class="sec">16.3</span> <span>باب واحد إلى الخادم</span></h2>
+
+<p>حين تستدعي خمسون مكوّناً <code>fetch</code> مباشرة، يخترع كل منها معالجته للأخطاء، ويعني تغيير الواجهة البرمجية بحثاً في قاعدة الكود كلها. فضع كل تواصل مع الخادم خلف <dfn>طبقة واجهة برمجية</dfn> واحدة:</p>
+<ul>
+<li>تعرف العنوان الأساسي والترويسات والمصادقة، في مكان واحد.</li>
+<li>تتحقق من كل رد بمخطط (فصل النماذج)، فتتوقف البيانات الخاطئة عند الباب بدل أن تُسقط شاشة لاحقاً.</li>
+<li>تحوّل كل فشل إلى مجموعة صغيرة من الأخطاء ذات الأنواع تستطيع الشاشات معالجتها: غير موجود، وغير صالح، وخطأ الخادم، والشبكة.</li>
+</ul>
+
+<p>ويبني المشروع 16.2 واحدة، ويُريها تعالج رداً سليماً، و404، وسعراً مرسلاً نصاً، وخادماً لا يرد أبداً. ثم تستدعي مكتبات حالة الخادم مثل TanStack Query هذه الدوال: هي تحفظ في الذاكرة المؤقتة، وطبقة الواجهة البرمجية تقرر ما الصالح.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>تحتاج ميزة الحساب شارة السلة. من أي ملف تستوردها؟</li><li>لماذا لا ينبغي أن يستورد <code>shared/</code> من <code>features/</code> أبداً؟</li><li>أين مكان حسابات الخصم: في مكوّن، أم في اللبّ الوظيفي؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">16.4</span> <span>بنى أكبر</span></h2>
+
+<table>
+<thead><tr><th>الأداة</th><th>ما هي</th><th>متى تفيد</th><th>الكلفة</th></tr></thead>
+<tbody>
+<tr><td><dfn>المستودع الموحّد</dfn> (monorepo)</td><td>عدة تطبيقات وحزم في مستودع واحد، بأدوات مثل pnpm workspaces وTurborepo</td><td>تطبيق ويب وتطبيق إدارة ونظام تصميم تتغير معاً</td><td>أدوات بناء تُتعلم وتُصان</td></tr>
+<tr><td><dfn>مفاتيح الميزات</dfn> (feature flags)</td><td>مفاتيح تشغّل ميزات لبعض المستخدمين، تُقرر وقت التشغيل</td><td>إصدار عمل غير مكتمل بأمان، والإطلاق التدريجي، واختبارات A/B</td><td>يجب حذف المفاتيح القديمة، وإلا امتلأ الكود بفروع ميتة</td></tr>
+<tr><td><dfn>الواجهات المصغّرة</dfn> (micro-frontends)</td><td>تطبيقات منفصلة لفرق منفصلة، تُجمع في المتصفح</td><td>المؤسسات الكبيرة جداً التي يجب أن تصدر فرقها باستقلال</td><td>مكتبات مكررة، وتصميم غير متسق، وتصحيح معقد، ونادراً ما تستحق دون عشرات المطورين</td></tr>
+</tbody>
+</table>
+
+<p>اختر أبسط بنية تحل مشكلة عندك فعلاً. فالتطبيق الواحد المنظم جيداً بحدود ميزات واضحة يخدم معظم الفرق سنوات.</p>
+
+<h2><span class="sec">16.5</span> <span>سجّل قراراتك</span></h2>
+
+<p>بعد ستة أشهر سيسأل أحد لماذا يستخدم التطبيق Zustand لا Redux، أو لماذا تُحفظ التواريخ بتوقيت UTC. فإن كان الجواب في رأس أحدهم فقط فقد يلغي قراراً جيداً. و<dfn>سجل القرار المعماري</dfn> (ADR) ملف قصير في المستودع يُكتب حين يُتخذ قرار مهم:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">docs/adr/0007-server-state-with-tanstack-query.md</div><pre class="code md"># 7. حالة الخادم بـ TanStack Query
+
+التاريخ: 2026-03-12  ·  الحالة: مقبول
+
+## السياق
+تجلب الشاشات البيانات في التأثيرات. عندنا طلبات مكررة، ولا ذاكرة مؤقتة،
+وحالات التحميل والخطأ تُعالج بشكل مختلف في كل شاشة.
+
+## القرار
+تُقرأ كل بيانات الخادم عبر TanStack Query، باستدعاء الدوال ذات
+الأنواع في shared/api. ولا تستدعي التأثيرات fetch بعد الآن.
+
+## العواقب
++ ذاكرة مؤقتة ومنع تكرار وإعادة محاولة في كل مكان، مجاناً.
++ طريقة واحدة لعرض التحميل والأخطاء.
+- مكتبة أخرى تُتعلم، وتنتقل الشاشات الحالية خلال دورتين.</pre></div>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: اجعل الصواب هو الأسهل</p><p>المعمارية الجيدة لا تُفرض بالمراجعات وحدها. وفّر قوالب للميزات الجديدة، وقاعدة مدقق لكل حدّ، ومثالاً واضحاً لكل نمط في قاعدة الكود. فالناس ينسخون ما يرونه، فتأكد أن ما يرونه صحيح.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>الحل</th></tr></thead>
+<tbody>
+<tr><td>مجلدات حسب النوع في تطبيق كبير</td><td>كل ميزة موزعة في كل مكان</td><td>مجلدات حسب الميزة</td></tr>
+<tr><td>استيراد ملفات ميزة أخرى الداخلية</td><td>تغيير ميزة يكسر أخرى</td><td><code>index.ts</code> عام، يفرضه فاحص</td></tr>
+<tr><td>كود «مشترك» يستورد ميزات</td><td>ارتباط خفي، ولا شيء يتحرك</td><td>الاعتماديات تشير إلى الأسفل فقط</td></tr>
+<tr><td><code>fetch</code> في كل مكوّن</td><td>أخطاء غير متسقة، وتغيير الواجهة البرمجية في كل مكان</td><td>طبقة واجهة برمجية واحدة بالأنواع والتحقق</td></tr>
+<tr><td>قواعد العمل داخل المكونات</td><td>صعبة الاختبار وإعادة الاستخدام</td><td>لبّ وظيفي نقي</td></tr>
+<tr><td>تبنّي الواجهات المصغّرة مبكراً</td><td>تعقيد بلا فائدة</td><td>ابدأ بتطبيق واحد وحدود واضحة</td></tr>
+<tr><td>قرارات تعيش في رأس أحدهم</td><td>تُلغى الاختيارات الجيدة</td><td>سجلات ADR قصيرة في المستودع</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li><strong>المعمارية</strong> تبقي التغيير رخيصاً وآمناً وهو يكبر التطبيق والفريق، وهي في معظمها حدود.</li>
+<li>نظّم حسب <strong>الميزة</strong>، في ثلاث طبقات: <code>shared</code> و<code>features</code> و<code>app</code>. والاعتماديات تشير إلى الأسفل، والميزات تتحدث عبر <code>index.ts</code> العام.</li>
+<li><strong>افرض</strong> القواعد بالأدوات لا بالذاكرة.</li>
+<li>احتفظ بـ<strong>لبّ وظيفي</strong> نقي كبير و<strong>قشرة أمرية</strong> رقيقة.</li>
+<li><strong>طبقة واجهة برمجية</strong> واحدة تتحدث إلى الخادم، وتتحقق من الردود، وتُرجع أخطاء ذات أنواع.</li>
+<li>استخدم المستودعات الموحّدة ومفاتيح الميزات والواجهات المصغّرة لمشكلات عندك حقاً فقط.</li>
+<li>سجّل القرارات المهمة في <strong>ADR</strong> قصيرة.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. من <code>features/cart/index.ts</code>، المدخل العام للسلة، لا من <code>features/cart/CartBadge.tsx</code>. 2. لأنه يربط الكود «المشترك» بميزة واحدة، فلا يُعاد استخدامه ولا يُنقل، وتكسر تغييرات الميزة شاشات لا علاقة لها بها. 3. في اللبّ الوظيفي: فهو منطق نقي يجب أن يُختبر وحده.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">هذه المشاريع عن الكود <em>المحيط</em> بالميزات: شكل المجلدات، والباب إلى الخادم، والأدوات التي تُبقي الاثنين صادقين. فطبّقها على أكبر مشروع بنيته في هذا الكتاب.</p>
+
+<div class="project">
+<p class="project-label">مشروع 16.1 · سهل</p>
+<h3>من مجلدات النوع إلى مجلدات الميزات</h3>
+<p class="project-goal">أعد تنظيم أحد مشاريعك في <code>shared</code> و<code>features</code> و<code>app</code>، مع <code>index.ts</code> عام لكل ميزة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تقرير ما المشترك وما يخص ميزة، والبراميل، ونقل الملفات دون كسر الاستيرادات.</p>
+<ol class="steps">
+<li>اسرد كل ملف واكتب بجانبه الميزة التي يخصها، أو «مشترك» إن كان لا يعرف شيئاً عن العمل.</li>
+<li>أنشئ المجلدات الجديدة وانقل الملفات بأمر إعادة التسمية في محررك، فيحدّث الاستيرادات نيابة عنك.</li>
+<li>أعطِ كل ميزة <code>index.ts</code> لا يصدّر إلا ما يحتاجه الكود الآخر.</li>
+<li>غيّر الاستيرادات من الميزات الأخرى لتشير إلى ملفات <code>index.ts</code> هذه.</li>
+<li>شغّل <code>npm run check</code> والاختبارات: فإعادة التنظيم يجب ألا تغيّر السلوك.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> حين لا تستطيع أن تقرر هل الشيء مشترك، أبقِه في الميزة. فنقل الكود إلى <code>shared</code> لاحقاً، حين تحتاجه ميزة ثانية، سهل، أما فك مجلد «مشترك» مليء بمنطق العمل فليس كذلك.</p>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>src/
+├── app/
+│   ├── App.tsx
+│   └── routes.tsx
+├── features/
+│   ├── account/
+│   │   ├── AccountPage.tsx
+│   │   └── index.ts
+│   ├── cart/
+│   │   ├── CartBadge.tsx
+│   │   ├── index.ts
+│   │   └── store.ts
+│   └── catalog/
+│       ├── CatalogPage.tsx
+│       ├── index.ts
+│       └── useProducts.ts
+└── shared/
+    ├── api/
+    │   └── client.ts
+    ├── lib/
+    │   └── money.ts
+    └── ui/
+        ├── Button.tsx
+        ├── Header.tsx
+        └── Layout.tsx</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label medium">مشروع 16.2 · متوسط</p>
+<h3>طبقة واجهة برمجية بالأنواع</h3>
+<p class="project-goal">اكتب الوحدة الواحدة التي تتحدث إلى الخادم: تتحقق من كل رد، وتحوّل كل فشل إلى خطأ ذي نوع تعالجه الشاشات.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> مخططات Zod، والاتحادات المميَّزة للأخطاء، و<code>AbortSignal.timeout</code>، وحقن <code>fetch</code>، وخادم اختبار محلي.</p>
+<ol class="steps">
+<li>صِف كل مورد بمخطط، واشتق نوعه بـ <code>z.infer</code>.</li>
+<li>عرّف <code>ApiError</code> اتحاداً من <code>network</code> و<code>not-found</code> و<code>invalid</code> و<code>server</code>، و<code>Result&lt;T&gt;</code> نجاحاً أو خطأً.</li>
+<li>اكتب دالة خاصة واحدة <code>get(path, schema)</code> تجلب بمهلة زمنية، وتفحص الحالة، وتحلل JSON بالمخطط، ولا ترمي خطأً أبداً.</li>
+<li>صدّر دالة صغيرة لكل مسار، مثل <code>products()</code> و<code>product(id)</code>.</li>
+<li>اقبل <code>fetch</code> معاملاً، لتمرر الاختبارات بديلاً، واختبر على خادم محلي يرد جيداً، وبـ 404، وببيانات خاطئة، وببطء شديد.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> انظر إلى الرد الثالث: أرسل الخادم السعر نصاً. فدون التحقق كان سيظهر «8EGP»، أو <code>NaN</code> في مجموع، بعيداً عن سببه. ومعه يسمّي الخطأ الحقل بالضبط.</p>
+<div class="listing" dir="ltr"><div class="listing-title">shared/api/api.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c">// مكان واحد يتحدث إلى الخادم: بالأنواع، ومع التحقق، وبأخطاء تفهمها الشاشات</span>
+<span class="k">export</span> <span class="k">const</span> Product = z.object({ id: z.number(), name: z.string(), price: z.number().nonnegative() });
+<span class="k">export</span> <span class="k">type</span> Product = z.infer&lt;<span class="k">typeof</span> Product&gt;;
+
+<span class="k">export</span> <span class="k">type</span> ApiError =
+  | { kind: <span class="s">&quot;network&quot;</span>; message: string }
+  | { kind: <span class="s">&quot;not-found&quot;</span>; path: string }
+  | { kind: <span class="s">&quot;invalid&quot;</span>; issues: string[] }
+  | { kind: <span class="s">&quot;server&quot;</span>; status: number };
+
+<span class="k">export</span> <span class="k">type</span> Result&lt;T&gt; = { ok: <span class="k">true</span>; data: T } | { ok: <span class="k">false</span>; error: ApiError };
+
+<span class="k">export</span> <span class="k">function</span> createApi(base: string, fetcher: <span class="k">typeof</span> fetch = fetch) {
+  <span class="k">async</span> <span class="k">function</span> get&lt;T&gt;(path: string, schema: z.ZodType&lt;T&gt;): Promise&lt;Result&lt;T&gt;&gt; {
+    <span class="k">let</span> response: Response;
+    <span class="k">try</span> {
+      response = <span class="k">await</span> fetcher(base + path, { signal: AbortSignal.timeout(<span class="n">2000</span>) });
+    } <span class="k">catch</span> (e) {
+      <span class="k">return</span> { ok: <span class="k">false</span>, error: { kind: <span class="s">&quot;network&quot;</span>, message: (e as Error).name } };
+    }
+    <span class="k">if</span> (response.status === <span class="n">404</span>) <span class="k">return</span> { ok: <span class="k">false</span>, error: { kind: <span class="s">&quot;not-found&quot;</span>, path } };
+    <span class="k">if</span> (!response.ok) <span class="k">return</span> { ok: <span class="k">false</span>, error: { kind: <span class="s">&quot;server&quot;</span>, status: response.status } };
+    <span class="k">const</span> parsed = schema.safeParse(<span class="k">await</span> response.json());
+    <span class="k">if</span> (!parsed.success) {
+      <span class="k">return</span> { ok: <span class="k">false</span>, error: { kind: <span class="s">&quot;invalid&quot;</span>, issues: parsed.error.issues.map((i) =&gt; <span class="s">`${i.path.join(&quot;.&quot;)}: ${i.message}`</span>) } };
+    }
+    <span class="k">return</span> { ok: <span class="k">true</span>, data: parsed.data };
+  }
+
+  <span class="k">return</span> {
+    products: () =&gt; get(<span class="s">&quot;/products&quot;</span>, z.array(Product)),
+    product: (id: number) =&gt; get(<span class="s">`/products/${id}`</span>, Product),
+  };
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>✓ المنتجات: [{&quot;id&quot;:1,&quot;name&quot;:&quot;البرمجة من الصفر&quot;,&quot;price&quot;:25}]
+✗ {&quot;kind&quot;:&quot;not-found&quot;,&quot;path&quot;:&quot;/products/9&quot;}
+✗ {&quot;kind&quot;:&quot;invalid&quot;,&quot;issues&quot;:[&quot;price: Invalid input: expected number, received string&quot;]}
+✗ {&quot;kind&quot;:&quot;network&quot;,&quot;message&quot;:&quot;TimeoutError&quot;}</pre></div>
+</div>
+
+<div class="project">
+<p class="project-label hard">مشروع 16.3 · تحدٍّ</p>
+<h3>فاحص الحدود</h3>
+<p class="project-goal">اكتب سكربتاً يقرأ كل استيراد في قاعدة الكود، ويحدد الطبقة والميزة لكل ملف، ويبلّغ عن الاستيرادات التي تكسر قواعد الاعتماد.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> المرور على المجلدات، والتعابير النمطية على كود المصدر، وحل المسارات النسبية، وتحويل القواعد إلى فحوص برموز خروج.</p>
+<ol class="steps">
+<li>مرّ على <code>src</code> واجمع كل ملف <code>.ts</code> و<code>.tsx</code>.</li>
+<li>اكتب <code>where(path)</code>، التي تقسم المسار إلى طبقته (<code>app</code> و<code>features</code> و<code>shared</code>)، وميزته، والباقي.</li>
+<li>لكل استيراد نسبي حلّ الهدف بـ <code>path.resolve</code> وقارن الموضعين بالقواعد الثلاث.</li>
+<li>اطبع كل مخالفة مع الملف والاستيراد والقاعدة التي يكسرها، واخرج بـ 1 إن وُجدت أي مخالفة.</li>
+<li>شغّله على النموذج: يجد الترويسة التي تمد يدها إلى مخزن السلة، وصفحة الحساب التي تتجاوز <code>index.ts</code> الخاص بالسلة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> التعبير النمطي يكفي لفاحص كهذا، لكن الأدوات الحقيقية تستخدم مترجم TypeScript لقراءة الاستيرادات بدقة، بما فيها الأسماء المستعارة مثل <code>@/features/cart</code>. ابدأ بسيطاً، وانتقل حين يتوقف البسيط عن الصواب.</p>
+<div class="listing" dir="ltr"><div class="listing-title">boundaries.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { dirname, join, relative, resolve } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
+
+<span class="c">// الطبقات من الأسفل إلى الأعلى: كل طبقة تستورد مما تحتها فقط: shared → features → app</span>
+<span class="k">const</span> root = resolve(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;sample/src&quot;</span>);
+
+<span class="k">function</span> files(dir: string): string[] {
+  <span class="k">return</span> readdirSync(dir).flatMap((name) =&gt; {
+    <span class="k">const</span> path = join(dir, name);
+    <span class="k">return</span> statSync(path).isDirectory() ? files(path) : /\.(ts|tsx)$/.test(name) ? [path] : [];
+  });
+}
+
+<span class="c">// &quot;features/cart/store.ts&quot; -&gt; { layer: &quot;features&quot;, feature: &quot;cart&quot;, rest: &quot;store.ts&quot; }</span>
+<span class="k">function</span> where(path: string) {
+  <span class="k">const</span> [layer = <span class="s">&quot;&quot;</span>, feature = <span class="s">&quot;&quot;</span>, ...rest] = relative(root, path).split(<span class="s">&quot;/&quot;</span>);
+  <span class="k">return</span> { layer, feature: layer === <span class="s">&quot;features&quot;</span> ? feature : <span class="s">&quot;&quot;</span>, rest: rest.join(<span class="s">&quot;/&quot;</span>) };
+}
+
+<span class="k">const</span> problems: string[] = [];
+<span class="k">for</span> (<span class="k">const</span> file <span class="k">of</span> files(root)) {
+  <span class="k">const</span> <span class="k">from</span> = where(file);
+  <span class="k">for</span> (<span class="k">const</span> [, target] <span class="k">of</span> readFileSync(file, <span class="s">&quot;utf8&quot;</span>).matchAll(/<span class="k">from</span>\s+<span class="s">&quot;(\.[^&quot;</span>]+)&quot;/g)) {
+    <span class="k">const</span> to = where(resolve(dirname(file), target!));
+    <span class="k">const</span> at = <span class="s">`${relative(root, file)} → ${target}`</span>;
+    <span class="k">if</span> (<span class="k">from</span>.layer === <span class="s">&quot;shared&quot;</span> &amp;&amp; to.layer === <span class="s">&quot;features&quot;</span>) problems.push(<span class="s">`${at}\n    الكود المشترك لا يستورد ميزة`</span>);
+    <span class="k">if</span> (to.layer === <span class="s">&quot;app&quot;</span> &amp;&amp; <span class="k">from</span>.layer !== <span class="s">&quot;app&quot;</span>) problems.push(<span class="s">`${at}\n    لا شيء يستورد من app/`</span>);
+    <span class="k">if</span> (<span class="k">from</span>.layer === <span class="s">&quot;features&quot;</span> &amp;&amp; to.layer === <span class="s">&quot;features&quot;</span> &amp;&amp; <span class="k">from</span>.feature !== to.feature &amp;&amp; to.rest !== <span class="s">&quot;&quot;</span>) {
+      problems.push(<span class="s">`${at}\n    استورد ميزة أخرى عبر index.ts الخاص بها فقط`</span>);
+    }
+  }
+}
+
+<span class="k">for</span> (<span class="k">const</span> p <span class="k">of</span> problems) console.log(<span class="s">&quot;✗ &quot;</span> + p);
+console.log(problems.length === <span class="n">0</span> ? <span class="s">&quot;لا مخالفات للحدود.&quot;</span> : <span class="s">`${problems.length} مخالفات`</span>);
+process.exitCode = problems.length ? <span class="n">1</span> : <span class="n">0</span>;</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>✗ features/account/AccountPage.tsx → ../cart/CartBadge
+    استورد ميزة أخرى عبر index.ts الخاص بها فقط
+✗ shared/ui/Header.tsx → ../../features/cart/store
+    الكود المشترك لا يستورد ميزة
+2 مخالفات</pre></div>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> ارسم شجرة مجلدات أحد مشاريعك. هل هي منظمة حسب النوع أم حسب الميزة؟ ارسم نسخة الميزات.</li>
+<li><span class="level">سهل</span> أصلح المخالفتين في قاعدة الكود النموذجية، وشغّل الفاحص حتى لا يبلّغ عن شيء.</li>
+<li><span class="level medium">متوسط</span> أضف قاعدة رابعة إلى الفاحص: الميزات أيضاً لا تستورد من <code>app/</code>، والكود في <code>shared/ui</code> لا يستورد من <code>shared/api</code>.</li>
+<li><span class="level medium">متوسط</span> اكتب ADR لقرار اتخذته في أحد مشاريعك، كاختيار مكتبة، فيه السياق والقرار والعواقب.</li>
+<li><span class="level hard">تحدٍّ</span> عبّر عن قواعد الحدود نفسها إعداداتِ ESLint بأنماط <code>no-restricted-imports</code>، وتحقق أن ESLint يبلّغ عن المشكلتين نفسيهما في النموذج.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 17</p>
+<p>كل تطبيق في هذا الكتاب حتى الآن رُسم كاملاً في المتصفح. وفي الفصل التالي ينضم الخادم: صفحات تُرسم قبل أن تصل إلى المستخدم، للسرعة ولمحركات البحث، بإطار عمل مبني على كل ما تعلمته.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -4055,6 +4409,16 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <li>الإنجليزية: <code>{ one: "Arrives in {count} day", other: "Arrives in {count} days" }</code>. والعربية: <code>{ zero: "يصل اليوم", one: "يصل خلال يوم", two: "يصل خلال يومين", few: "يصل خلال {count} أيام", many: "يصل خلال {count} يوماً", other: "يصل خلال {count} يوم" }</code>. وقرّر مع فريقك ماذا تقول «صفر أيام»: فهذا قرار منتج لا قاعدة نحوية.</li>
 <li>من الاستبدالات المعتادة: <code>margin-left</code> ← <code>margin-inline-start</code>، و<code>padding-right</code> ← <code>padding-inline-end</code>، و<code>left: 0</code> ← <code>inset-inline-start: 0</code>، و<code>text-align: left</code> ← <code>text-align: start</code>، و<code>border-left</code> ← <code>border-inline-start</code>. واترك الأشياء المادية حقاً، كإزاحة الظل، كما هي.</li>
 <li>التعليق الإنجليزي من اليسار إلى اليمين، والعربي من اليمين إلى اليسار، والذي يبدأ برقم يأخذ اتجاه أول حرف <em>قوي</em> بعده، لأن الأرقام «ضعيفة» في خوارزمية الاتجاه الثنائي ولا تقرر الاتجاه.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 16</h2>
+<ol class="exercises">
+<li>في الشجرة حسب النوع مجلدات مثل <code>components/</code> و<code>hooks/</code> و<code>services/</code>، وفي نسخة الميزات <code>features/cart</code> و<code>features/catalog</code> وهكذا، في كل منها مكوناتها وخطافاتها واستدعاءاتها، ومعها <code>shared/</code> صغير للكود العام حقاً.</li>
+<li>في <code>AccountPage.tsx</code> استورد <code>CartBadge</code> من <code>"../cart"</code>. أما <code>Header.tsx</code> فإصلاحها الحقيقي قرار تصميم: إما أن تتوقف الترويسة عن معرفة السلة وتأخذ الشارة خاصيةً أو ابناً من <code>app/</code>، وإما أن تنتقل إلى ميزة. فالكود المشترك لا يمد يده إلى ميزة أصلاً.</li>
+<li>أضف <code>if (from.layer === "features" &amp;&amp; to.layer === "app")</code> (وهي مغطاة أصلاً بقاعدة «لا شيء يستورد من app»، فيثبت الاختبار ذلك)، و<code>if (relative(root, file).startsWith("shared/ui") &amp;&amp; relative(root, resolve(dirname(file), target)).startsWith("shared/api"))</code> برسالتها الخاصة.</li>
+<li>سجل ADR الجيد قصير: فقرة للسياق (المشكلة والضغوط)، وأخرى للقرار (ما اخترته)، وأسطر قليلة للعواقب، الحسنة والسيئة. رقّمه ولا تعدّل سجلاً مقبولاً أبداً: اكتب سجلاً جديداً يحل محله.</li>
+<li>في <code>eslint.config.js</code> أضف لملفات <code>src/shared/**</code>: <code>"no-restricted-imports": ["error", { patterns: ["**/features/**"] }]</code>، ولملفات <code>src/features/**</code> نمطاً مثل <code>"../*/!(index)"</code> أو <code>group</code> للمسارات الداخلية لكل ميزة أخرى. فيبلّغ ESLint عن الاستيرادين نفسيهما في المحرر، وأنت تكتب.</li>
 </ol>
 
 </section>
