@@ -375,7 +375,7 @@ def build(book, lang, edition):
             text = src.read_text()
             if key == "answers" and "<!-- chapters -->" in text:
                 text = text.replace("<!-- chapters -->", answers_by_chapter(book, lang))
-            text = decorate(fill_code(text, lang), lang, "")
+            text = decorate(fill_code(only_edition(text, book), lang), lang, "")
             text = text.replace('<section class="chapter', f'<section style="page: {key}" class="chapter', 1)
             if key == "preface":
                 chapters.insert(0, text)
