@@ -1,0 +1,1441 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<title>Senior Backend Engineering</title><link rel="stylesheet" href="../style/book.css"><link rel="stylesheet" href="../style/print-bw.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.625in 0.8in 0.875in;
+  @top-center { content: "Senior Backend Engineering"; font: 700 8pt 'Inter', sans-serif; color: #555; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Inter', sans-serif; color: #fff; background: #111;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.625in; margin-right: 0.875in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "Chapter 1: How Servers Work: HTTP in Depth"; } }
+@page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "Chapter 2: Modern PHP for JavaScript Developers"; } }
+@page ch02:first { @top-center { content: none; } }
+@page answers { @top-center { content: "Answers to the Exercises"; } }
+@page answers:first { @top-center { content: none; } }
+</style></head>
+<body><section class="front half-title"><p class="ht">Senior Backend Engineering</p></section><section class="front title-page">
+          <p class="tp-series">From Zero to Senior · Book 3</p>
+          <h1 class="tp-title">Senior Backend Engineering</h1>
+          <p class="tp-sub">APIs, Databases, Security and Scale with Laravel and PostgreSQL</p><p class="tp-edition">Laravel Edition</p>
+          <p class="tp-level">Junior → Senior</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">Soliman Maged Saeed Salah</p>
+        </section><section class="front copyright">
+          <p><strong>Senior Backend Engineering</strong><br>APIs, Databases, Security and Scale with Laravel and PostgreSQL</p>
+          <p>© 2026 Soliman Maged Saeed Salah. All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.</p>
+          <p>First edition, 2026</p>
+          <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
+          <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: Foundations</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Servers Work: HTTP in Depth</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Modern PHP for JavaScript Developers</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Laravel Essentials: Routes, Controllers and Requests</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Designing REST APIs with API Resources</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Data</li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">SQL and PostgreSQL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Eloquent, Relationships and Migrations</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Transactions, Locks and Consistency</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Caching with Redis</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Authentication with Sanctum and Policies</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Security: The OWASP Top 10 in Laravel</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Queues, Jobs and the Scheduler</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Real-Time with Laravel Reverb</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Testing with Pest</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Logging, Metrics and Tracing</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Performance and Scaling</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Architecture: Modules, Actions and Domains</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Docker and Deployment</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">Capstone: A Production API</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/en">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>How Servers Work: HTTP in Depth</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>follow a request from a URL to a response: name lookup, connection, request, answer</li>
+<li>read and write HTTP by hand, because it is plain text</li>
+<li>choose the right method and status code, and know which requests are safe to repeat</li>
+<li>use the headers that matter: content type and length, caching with ETags, CORS</li>
+<li>inspect any API with <code>curl</code>, the backend developer’s most used tool</li>
+<li>build a small JSON API with no framework, so that you know what every framework does for you</li>
+</ul>
+</div>
+
+<p class="lead">Every backend you will ever build, whatever the language or framework, does the same job: it waits for a message, works out what was asked, and sends a message back. The messages follow a protocol called HTTP. Frameworks hide it behind routes and controllers, which is useful until something goes wrong: a request that works in <code>curl</code> but not in the browser, a cache that never updates, a client that retries and charges a customer twice. Then you need to know what is really on the wire. This chapter shows it to you, byte by byte, with a small server we write ourselves.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The first API I wrote worked perfectly, as long as I was the only one calling it. Then a browser called it from another address, and nothing worked. I lost a day to a problem that two headers solved. Since then I read the raw request first, and guess second.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>From a URL to an answer</span></h2>
+
+<p>When a web app in Bit’s shop asks for <code>http://localhost:3000/products/2</code>, four things happen, in this order:</p>
+<ol>
+<li><strong>Name lookup.</strong> Computers talk to addresses, not names. The client asks the <dfn>Domain Name System</dfn> (DNS) for the address of the <dfn>host</dfn> (here <code>localhost</code>, which always means “this same computer”, at <code>127.0.0.1</code>). For a real site such as <code>shop.example</code>, a DNS server somewhere on the internet answers.</li>
+<li><strong>Connection.</strong> The client opens a <dfn>TCP connection</dfn> to that address and a <dfn>port</dfn>, a number that picks one program on the machine. Our server listens on port <code>3000</code>. TCP makes sure that bytes arrive complete and in order.</li>
+<li><strong>Security, for HTTPS.</strong> With <code>https://</code>, the two sides first agree on encryption keys (the <dfn>TLS handshake</dfn>), and the server proves who it is with a certificate. Everything after that is encrypted. The HTTP inside is the same.</li>
+<li><strong>Request and response.</strong> The client sends an HTTP <dfn>request</dfn> as text; the server sends back a <dfn>response</dfn>. The connection may then stay open for the next request.</li>
+</ol>
+
+<p>Everything in this chapter happens on your own computer, so you can see every step without a network in the way. We need a server to talk to. The book’s code folder has one for this chapter, a small API for Bit’s shop, with no framework at all. Start it in a terminal and leave that terminal open:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 1</div><pre class="code"><span class="c line-bidi"># Start the server (and leave it running in this terminal)</span>
+<span class="c">$ </span><span class="k">php -S localhost:8000 server.php</span>
+[Thu Nov 19 18:42:39 2026] PHP 8.5.13 Development Server (http://localhost:8000) started</pre></div>
+
+<p>PHP comes with a small web server for development: <code>php -S</code> listens on an address and sends every request to the script you name. The script is plain PHP; it reads like JavaScript with a <code>$</code> before every variable, and Chapter 2 explains the language properly. We will read the whole script in Section 1.9. First, we look at the server from the outside, the way every client does.</p>
+
+<h2><span class="sec">1.2</span> <span>HTTP is text</span></h2>
+
+<p>HTTP/1.1, the version every server understands, is plain text sent over the TCP connection. You can type a request yourself. The <code>nc</code> (netcat) tool opens a TCP connection and passes through whatever you give it; <code>printf</code> writes the request, with <code>\r\n</code> at the end of each line, as the protocol requires. Open a second terminal:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Type a request by hand: HTTP/1.1 is plain text over a TCP connection</span>
+<span class="c">$ </span><span class="k">printf &#x27;GET /products/1 HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n&#x27; | nc localhost 8000</span>
+HTTP/1.1 200 OK
+Host: localhost
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: close
+Content-Type: application/json; charset=utf-8
+Content-Length: 41
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000}</pre></div>
+
+<p>That is all an HTTP exchange is. Both messages have the same shape:</p>
+<ol>
+<li><strong>A first line.</strong> In the request, the <dfn>request line</dfn>: the <dfn>method</dfn> (<code>GET</code>), the <dfn>target</dfn> (<code>/products/1</code>) and the version. In the response, the <dfn>status line</dfn>: the version, a <dfn>status code</dfn> (<code>200</code>) and a short reason (<code>OK</code>).</li>
+<li><strong>Headers</strong>, one per line, <code>Name: value</code>. Names are not case sensitive: <code>content-type</code> and <code>Content-Type</code> are the same header.</li>
+<li><strong>An empty line.</strong> It says “the headers end here”. Forget it, and the server waits for more headers forever.</li>
+<li><strong>The body</strong>, if there is one. The receiver knows where it ends from <code>Content-Length</code>: here, 41 bytes.</li>
+</ol>
+
+<p>Our request had two headers. <code>Host</code> is required in HTTP/1.1, because one machine with one address often serves many sites, and the server needs to know which one you mean. <code>Connection: close</code> asks the server to close the connection after answering, so that <code>nc</code> stops; we will come back to connections in Section 1.7.</p>
+
+
+<p>The PHP development server adds a header you would not expect, <code>Host</code>, to its responses. It is a quirk of this tool, not part of HTTP, and one of several reasons it is for development only. In production, PHP runs behind a real web server, as you will see in Chapter 17.</p>
+
+<h3>Let curl show you both sides</h3>
+
+<p>Typing requests by hand teaches the format, but every day you will use <code>curl</code>. It comes with macOS, Linux and Windows 10 and later. With <code>-v</code> (verbose) it shows everything it does; <code>-s</code> (silent) hides its progress bar:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Let curl show both sides: * is curl&#x27;s own news, &gt; is sent, &lt; is received</span>
+<span class="c">$ </span><span class="k">curl -sv localhost:8000/products/2</span>
+* Host localhost:8000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying 127.0.0.1:8000...
+* Connected to localhost (127.0.0.1) port 8000
+<span class="c">&gt; </span><span class="k">GET /products/2 HTTP/1.1</span>
+<span class="c">&gt; </span><span class="k">Host: localhost:8000</span>
+<span class="c">&gt; </span><span class="k">User-Agent: curl/8.5.0</span>
+<span class="c">&gt; </span><span class="k">Accept: */*</span>
+<span class="c">&gt; </span><span class="k"></span>
+&lt; HTTP/1.1 200 OK
+&lt; Host: localhost:8000
+&lt; Date: Thu, 19 Nov 2026 18:42:39 GMT
+&lt; Connection: close
+&lt; Content-Type: application/json; charset=utf-8
+&lt; Content-Length: 43
+&lt; 
+{ [43 bytes data]
+* Closing connection
+{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000}</pre></div>
+
+<p>Read it from the top, and you see the four steps of 1.1. The lines with <code>*</code> are curl telling you what it does: it looked up <code>localhost</code>, found an IPv6 and an IPv4 address, and connected to port 8000. The lines with <code>&gt;</code> are the request it sent, including two headers we did not write: <code>User-Agent</code>, which names the client, and <code>Accept: */*</code>, which says that any type of answer is fine. The lines with <code>&lt;</code> are the response headers, and the last line is the body.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: the browser has the same view</p><p>In the browser’s developer tools, the Network panel shows the same thing for every request a page makes: method, address, status, request and response headers, and body. When a front end and a back end disagree, open it, find the request, and read it as you just read curl’s output. Most bugs are visible right there.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>Addresses: path and query string</span></h2>
+
+<p>The target of a request has two parts. The <dfn>path</dfn>, such as <code>/products</code>, names a <dfn>resource</dfn>: a thing the API knows about. The <dfn>query string</dfn>, after a <code>?</code>, holds <code>name=value</code> pairs joined with <code>&amp;</code>, usually to filter, sort or page through a list. Our server understands one, <code>max_price</code>:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># A list, filtered by a query string</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:8000/products?max_price=15000&#x27;</span>
+[{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000},{&quot;id&quot;:3,&quot;name&quot;:&quot;Battery pack&quot;,&quot;price&quot;:12500}]
+<span class="c line-bidi"># Only the headers (HEAD): the same answer without the body</span>
+<span class="c">$ </span><span class="k">curl -sI localhost:8000/products</span>
+HTTP/1.1 200 OK
+Host: localhost:8000
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: close
+Content-Type: application/json; charset=utf-8
+Content-Length: 132
+ETag: &quot;8f38510311e374f1&quot;
+Cache-Control: no-cache</pre></div>
+
+<p>The quotes around the first address matter: without them, the shell would treat <code>?</code> and <code>&amp;</code> as its own special characters. The second command uses <code>-I</code>, which sends <code>HEAD</code>: the same request as <code>GET</code>, but the server answers with the headers only. A client can learn the size or the version of a big resource without downloading it.</p>
+
+<p>Prices are whole numbers of piastres (45000 is 450.00), never fractions. Floating-point numbers cannot hold most decimal fractions exactly, and money that is off by a fraction of a piastre is still wrong money. This rule follows us through the whole book.</p>
+
+<h2><span class="sec">1.4</span> <span>Methods, and which requests can be repeated</span></h2>
+
+<p>The method says what the client wants to do with the resource. Two of its properties matter more than its name:</p>
+<ul>
+<li>A method is <dfn>safe</dfn> if it only reads: it changes nothing on the server. Anyone can send it, any number of times: browsers prefetch links, search engines crawl them.</li>
+<li>A method is <dfn>idempotent</dfn> if sending it twice has the same effect as sending it once. This matters because networks fail. When a request times out, the client cannot know whether the server received it. It can safely send an idempotent request again; a non-idempotent one might do the work twice.</li>
+</ul>
+
+<table>
+<thead><tr><th>Method</th><th>Meaning</th><th>Safe</th><th>Idempotent</th></tr></thead>
+<tbody>
+<tr><td><code>GET</code></td><td>Read a resource</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>HEAD</code></td><td>Like GET, headers only</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>OPTIONS</code></td><td>Ask what is allowed (used by CORS, 1.8)</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>POST</code></td><td>Create something, or run an action</td><td>No</td><td><strong>No</strong></td></tr>
+<tr><td><code>PUT</code></td><td>Replace a resource with the one sent</td><td>No</td><td>Yes</td></tr>
+<tr><td><code>PATCH</code></td><td>Change part of a resource</td><td>No</td><td>Not guaranteed</td></tr>
+<tr><td><code>DELETE</code></td><td>Remove a resource</td><td>No</td><td>Yes</td></tr>
+</tbody>
+</table>
+
+<p><code>PUT</code> is idempotent because it says “make it this”: doing it twice leaves the same result. <code>POST</code> says “add one”: doing it twice adds two. Here is a <code>POST</code> that creates a product. With <code>-d</code>, curl sends a body (and switches to <code>POST</code> by itself); <code>-H</code> adds a header, and <code>-i</code> shows the response headers:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Create a product: 201 Created, and Location says where it lives</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:8000/products -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;: &quot;USB cable&quot;, &quot;price&quot;: 2500}&#x27;</span>
+HTTP/1.1 201 Created
+Host: localhost:8000
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: close
+Content-Type: application/json; charset=utf-8
+Content-Length: 40
+Location: /products/4
+
+{&quot;id&quot;:4,&quot;name&quot;:&quot;USB cable&quot;,&quot;price&quot;:2500}
+<span class="c line-bidi"># It is there now</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/products/4</span>
+{&quot;id&quot;:4,&quot;name&quot;:&quot;USB cable&quot;,&quot;price&quot;:2500}</pre></div>
+
+<p>The answer is <code>201 Created</code>, not just <code>200 OK</code>, and the <code>Location</code> header gives the address of the new product. A client does not need to guess how addresses are built: the server tells it.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: a retried POST can charge twice</p><p>A phone on a weak network sends “pay 450.00”, the answer is lost, and the app tries again. With a plain <code>POST</code>, the customer pays twice. Serious APIs make such requests safe to repeat with an <dfn>idempotency key</dfn>: the client sends a unique value in a header, and the server remembers which keys it has already handled. We build this with a database in Chapter 7.</p></aside>
+
+<h2><span class="sec">1.5</span> <span>Status codes: the first thing a client reads</span></h2>
+
+<p>The status code is a three-digit number, and its first digit is its class:</p>
+<ul>
+<li><code>2xx</code>: it worked.</li>
+<li><code>3xx</code>: look somewhere else, or use what you already have.</li>
+<li><code>4xx</code>: the <em>client</em> made a mistake. Sending the same request again will fail again.</li>
+<li><code>5xx</code>: the <em>server</em> failed. The same request might work later.</li>
+</ul>
+
+<p>That difference between 4xx and 5xx is what clients, retry logic and monitoring tools rely on: a spike of 5xx wakes someone up at night, a spike of 4xx usually means a broken client. So each mistake gets the code that describes it. Here are the ones our server returns, with curl’s <code>-w</code> option printing the status after the body:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Each mistake has its own status code</span>
+<span class="c line-bidi"># No such product</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/products/99 -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;not_found&quot;,&quot;message&quot;:&quot;No product with this id&quot;}} 404
+<span class="c line-bidi"># A method this address does not allow</span>
+<span class="c">$ </span><span class="k">curl -s -X DELETE localhost:8000/products -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;method_not_allowed&quot;,&quot;message&quot;:&quot;Use GET or POST here&quot;}} 405
+<span class="c line-bidi"># A body that is not JSON</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/products -d &#x27;name=Cable&#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;unsupported_media_type&quot;,&quot;message&quot;:&quot;Send JSON&quot;}} 415
+<span class="c line-bidi"># Broken JSON</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/products -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;: &#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;bad_json&quot;,&quot;message&quot;:&quot;The body is not valid JSON&quot;}} 400
+<span class="c line-bidi"># JSON, but the fields are wrong</span>
+<span class="c">$ </span><span class="k">curl -s localhost:8000/products -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 9.5}&#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;invalid&quot;,&quot;message&quot;:&quot;Check the fields&quot;,&quot;fields&quot;:{&quot;name&quot;:&quot;Required&quot;,&quot;price&quot;:&quot;A whole number of piastres above 0&quot;}}} 422
+<span class="c line-bidi"># Too big</span>
+<span class="c">$ </span><span class="k">head -c 2000 /dev/zero | tr &#x27;\0&#x27; x | curl -s localhost:8000/products -H &#x27;Content-Type: application/json&#x27; --data-binary @- -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;too_large&quot;,&quot;message&quot;:&quot;At most 1 KB&quot;}} 413</pre></div>
+
+<table>
+<thead><tr><th>Code</th><th>Meaning</th><th>When to use it</th></tr></thead>
+<tbody>
+<tr><td><code>200 OK</code></td><td>Here is what you asked for</td><td>Successful reads, and changes that return a body</td></tr>
+<tr><td><code>201 Created</code></td><td>A new resource exists</td><td>After a POST that creates; add <code>Location</code></td></tr>
+<tr><td><code>204 No Content</code></td><td>Done, nothing to send</td><td>A DELETE, or a change with no body to return</td></tr>
+<tr><td><code>301</code> / <code>308</code></td><td>Moved for good</td><td>Old addresses; 308 keeps the method and body</td></tr>
+<tr><td><code>304 Not Modified</code></td><td>Your copy is still good</td><td>Conditional requests (1.6)</td></tr>
+<tr><td><code>400 Bad Request</code></td><td>I cannot read this</td><td>Broken JSON, a malformed request</td></tr>
+<tr><td><code>401 Unauthorized</code></td><td>Who are you?</td><td>No login, or an expired one</td></tr>
+<tr><td><code>403 Forbidden</code></td><td>I know you, and no</td><td>Logged in, but not allowed</td></tr>
+<tr><td><code>404 Not Found</code></td><td>No such resource</td><td>Also to hide resources a user may not know exist</td></tr>
+<tr><td><code>405 Method Not Allowed</code></td><td>Not with this method</td><td>Always with an <code>Allow</code> header</td></tr>
+<tr><td><code>409 Conflict</code></td><td>That clashes with the current state</td><td>A duplicate, or an edit to an old version</td></tr>
+<tr><td><code>413 Content Too Large</code></td><td>The body is too big</td><td>Above your limit</td></tr>
+<tr><td><code>415 Unsupported Media Type</code></td><td>I do not read that format</td><td>A body that is not JSON</td></tr>
+<tr><td><code>422 Unprocessable Content</code></td><td>I read it, and it is wrong</td><td>Validation errors, field by field</td></tr>
+<tr><td><code>429 Too Many Requests</code></td><td>Slow down</td><td>Rate limits; add <code>Retry-After</code></td></tr>
+<tr><td><code>500 Internal Server Error</code></td><td>Our bug</td><td>Anything unexpected; never leak the details</td></tr>
+<tr><td><code>503 Service Unavailable</code></td><td>Not now</td><td>Overload or maintenance; add <code>Retry-After</code></td></tr>
+</tbody>
+</table>
+
+<p>Look at the bodies, too. Every error has the same shape: <code>{"error": {"code", "message"}}</code>, plus <code>fields</code> for validation. The <code>code</code> is for programs: it never changes, so a client can write <code>if (error.code === "invalid")</code>. The <code>message</code> is for people, and it can be reworded or translated without breaking any client. And the 422 answer lists <em>every</em> wrong field at once, so a form can show all its mistakes in one go instead of one per attempt.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Where does an HTTP request’s list of headers end, and how does the receiver know where the body ends?</li><li>A client sends <code>DELETE /products/3</code> and the connection drops before the answer. Can it simply send the request again? And a <code>POST /orders</code>?</li><li>Which status code fits “the email field is empty”: 400 or 422?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">1.6</span> <span>Headers that do real work</span></h2>
+
+<p>Dozens of headers exist; a handful do most of the work in an API.</p>
+
+<h3>Content-Type and Content-Length</h3>
+
+<p><code>Content-Type</code> says what the body is: <code>application/json; charset=utf-8</code> for our answers. The client must send it too: our server answered <code>415</code> to <code>-d 'name=Cable'</code>, because curl labels such a body <code>application/x-www-form-urlencoded</code>, the format of an HTML form. <code>Content-Length</code> is the size of the body in <strong>bytes</strong>, not in characters. In UTF-8, an English letter takes one byte, but an Arabic letter takes two, and many emoji take four. A server that counts characters cuts Arabic text short.</p>
+
+<h3>Caching: ETag and 304</h3>
+
+<p>Most requests ask for something the client has already seen. The server can label each version of a resource with an <dfn>ETag</dfn>, a short fingerprint of its content. Our server makes one from a hash of the list. The client sends it back in <code>If-None-Match</code>, and if the list has not changed the server answers <code>304 Not Modified</code> with no body:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># The first visit: the server sends the list and its ETag</span>
+<span class="c">$ </span><span class="k">curl -si localhost:8000/products</span>
+HTTP/1.1 200 OK
+Host: localhost:8000
+Date: Thu, 19 Nov 2026 18:42:40 GMT
+Connection: close
+Content-Type: application/json; charset=utf-8
+Content-Length: 173
+ETag: &quot;c25b00ae213de631&quot;
+Cache-Control: no-cache
+
+[{&quot;id&quot;:1,&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000},{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000},{&quot;id&quot;:3,&quot;name&quot;:&quot;Battery pack&quot;,&quot;price&quot;:12500},{&quot;id&quot;:4,&quot;name&quot;:&quot;USB cable&quot;,&quot;price&quot;:2500}]
+<span class="c line-bidi"># The next visit sends the ETag back: nothing changed, so 304 and no body</span>
+<span class="c">$ </span><span class="k">curl -si localhost:8000/products -H &#x27;If-None-Match: &quot;c25b00ae213de631&quot;&#x27;</span>
+HTTP/1.1 304 Not Modified
+Host: localhost:8000
+Date: Thu, 19 Nov 2026 18:42:40 GMT
+Connection: close
+Content-Type:
+Content-Length: 0
+ETag: &quot;c25b00ae213de631&quot;</pre></div>
+
+<p>Browsers do this by themselves: they store the ETag and send it back on the next visit. <code>Cache-Control: no-cache</code> tells them to always ask first (it does not mean “do not store”; that is <code>no-store</code>). Other values let a client reuse a copy without asking at all, for a time: <code>max-age=60</code> means one minute, which is right for a product list that may change, and <code>max-age=31536000, immutable</code> means one year, which is right for files whose name changes with their content, such as the bundles from Book 2.</p>
+
+<h3>Authorization and cookies</h3>
+
+<p>A client proves who it is in one of two ways. Programs and mobile apps usually send a token in <code>Authorization: Bearer &lt;token&gt;</code>. Browsers usually rely on a <dfn>cookie</dfn>: the server sends <code>Set-Cookie: session=…; HttpOnly; Secure; SameSite=Lax</code>, and the browser sends <code>Cookie: session=…</code> with every later request to that site. <code>HttpOnly</code> hides the cookie from JavaScript, so an injected script cannot steal it; <code>Secure</code> sends it over HTTPS only; <code>SameSite</code> limits when other sites can make the browser send it. Chapter 9 builds both, properly.</p>
+
+<h2><span class="sec">1.7</span> <span>Connections, and the versions of HTTP</span></h2>
+
+<p>Opening a TCP connection costs a round trip to the server, and the TLS handshake costs one or two more. To a server on another continent, that is a few hundred milliseconds before the first byte of the answer. So HTTP/1.1 keeps connections open by default, and sends the next request on the same one. curl can show whether it was reused:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Two requests in one curl command: is the connection reused?</span>
+<span class="c">$ </span><span class="k">curl -sv localhost:8000/products/1 localhost:8000/products/2 -o /dev/null -o /dev/null 2&gt;&amp;1 | grep -E &#x27;Connected|Re-using|left intact|Closing|^&lt; HTTP&#x27;</span>
+* Connected to localhost (127.0.0.1) port 8000
+&lt; HTTP/1.1 200 OK
+* Closing connection
+* Connected to localhost (127.0.0.1) port 8000
+&lt; HTTP/1.1 200 OK
+* Closing connection</pre></div>
+
+<p>The PHP development server closes the connection after every answer (the <code>Connection: close</code> you saw in each response), and it handles one request at a time. That is fine on your laptop and far too slow for real users. In production, a web server such as Nginx or Caddy holds the connections, keeps them open, and hands each request to one of many PHP worker processes. PHP itself works the same way in both cases: each request starts with nothing in memory and ends by forgetting everything. This model is called <dfn>shared-nothing</dfn>, and it is why our script keeps its products in a file, as you will see in 1.9.</p>
+
+<p>HTTP/2 and HTTP/3 change how the messages travel, not what they mean. HTTP/2 sends them in a compact binary form and runs many requests at the same time over one connection. HTTP/3 does the same over QUIC, a newer transport that recovers faster from lost packets, which helps on mobile networks. Methods, headers, status codes and bodies are exactly what you have learned. In practice, the web server or load balancer in front of your application speaks HTTP/2 and HTTP/3 to browsers, and plain HTTP/1.1 to your application.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Good to know: HTTPS everywhere</p><p>Without TLS, anyone on the path (the café’s Wi-Fi, a provider) can read and change every request, passwords and tokens included. Every public API must use HTTPS, and certificates are free from Let’s Encrypt. You rarely write TLS code yourself: the web server or the hosting platform does it, which is how we set it up in Chapter 17.</p></aside>
+
+<h2><span class="sec">1.8</span> <span>CORS: when a browser calls your API</span></h2>
+
+<p>A browser protects its users with the <dfn>same-origin policy</dfn>. An <dfn>origin</dfn> is a scheme, a host and a port together: <code>http://localhost:5173</code>, where a Vite app runs, and <code>http://localhost:8000</code>, where our API runs, are different origins. By default, JavaScript on one origin may send a request to another, but may not read the answer. Otherwise any site you visit could read your bank’s pages with your cookies.</p>
+
+<p><dfn>CORS</dfn> (Cross-Origin Resource Sharing) lets a server say which other origins may read its answers. For a request that could change something, such as a POST with a JSON body, the browser first sends a <dfn>preflight</dfn>: an <code>OPTIONS</code> request asking whether the real one is allowed. We can play the browser with curl:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># A browser asks first (a preflight) before a POST from another site</span>
+<span class="c">$ </span><span class="k">curl -si -X OPTIONS localhost:8000/products -H &#x27;Origin: http://localhost:5173&#x27; -H &#x27;Access-Control-Request-Method: POST&#x27; -H &#x27;Access-Control-Request-Headers: content-type&#x27;</span>
+HTTP/1.1 204 No Content
+Host: localhost:8000
+Date: Thu, 19 Nov 2026 18:42:40 GMT
+Connection: close
+Access-Control-Allow-Origin: http://localhost:5173
+Vary: Origin
+Content-Type:
+Content-Length: 0
+Access-Control-Allow-Methods: GET, POST
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Max-Age: 600
+<span class="c line-bidi"># Another site is not on the list: no Access-Control header, so the browser blocks it</span>
+<span class="c">$ </span><span class="k">curl -si localhost:8000/products/1 -H &#x27;Origin: https://evil.example&#x27;</span>
+HTTP/1.1 200 OK
+Host: localhost:8000
+Date: Thu, 19 Nov 2026 18:42:40 GMT
+Connection: close
+Content-Type: application/json; charset=utf-8
+Content-Length: 41
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000}</pre></div>
+
+<p>For the web app’s origin, the server answers the preflight with what is allowed, and the browser remembers it for ten minutes (<code>Max-Age: 600</code>). For any other origin there is no <code>Access-Control-Allow-Origin</code> header, and the browser refuses to give the answer to the page’s JavaScript. The <code>Vary: Origin</code> header tells caches that the answer depends on the <code>Origin</code> header, so that one site is never served a copy made for another.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: CORS is not access control</p><p>Look again at the second command: the server still answered <code>200</code> with the product. CORS is enforced by the <em>browser</em>, to protect the browser’s user. curl, a script or an attacker’s server ignores it completely. Anything that must be private needs authentication and authorisation on the server. And never answer <code>Access-Control-Allow-Origin: *</code> together with cookies: list the origins you trust, as our server does.</p></aside>
+
+<h2><span class="sec">1.9</span> <span>Inside the server</span></h2>
+
+<p>Now that you know what goes over the wire, the server holds no surprises. We read it in five parts, from the top of the file.</p>
+
+
+<p><strong>The settings, and a log line for every request.</strong> <code>ORIGINS</code> lists the only web app allowed to read our answers from a browser (1.8), <code>MAX_BODY</code> is the largest body we accept, and the products live in a file next to the script. <code>header_remove('X-Powered-By')</code> stops PHP from announcing its exact version to anyone who asks, which saves attackers a step. <code>register_shutdown_function</code> runs a function when the request ends, however it ends; ours writes one line to the server’s log with the method, the address, the status and the time it took:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.php (1 of 5)</div><pre class="code">&lt;?php
+<span class="c line-bidi">// Bit&#x27;s shop API in plain PHP.</span>
+<span class="c line-bidi">// Run: php -S localhost:8000 server.php</span>
+
+<span class="c line-bidi">// the web app that may call this API from a browser</span>
+<span class="k">const</span> ORIGINS = [<span class="s">&#x27;http://localhost:5173&#x27;</span>];
+<span class="k">const</span> MAX_BODY = <span class="n">1024</span>; <span class="c line-bidi">// bytes</span>
+<span class="k">const</span> DATA = __DIR__ . <span class="s">&#x27;/products.json&#x27;</span>;
+
+<span class="c line-bidi">// do not tell attackers which PHP version runs here</span>
+header_remove(<span class="s">&#x27;X-Powered-By&#x27;</span>);
+$start = hrtime(<span class="k">true</span>);
+register_shutdown_function(<span class="k">function</span> () <span class="k">use</span> ($start) {
+    $ms = intdiv(hrtime(<span class="k">true</span>) - $start, 1_000_000);
+    $status = http_response_code();
+    $request = <span class="s">&quot;{$_SERVER[&#x27;REQUEST_METHOD&#x27;]} {$_SERVER[&#x27;REQUEST_URI&#x27;]}&quot;</span>;
+    error_log(<span class="s">&quot;$request $status {$ms}ms&quot;</span>);
+});</pre></div>
+
+<p><strong>One place sends answers.</strong> Every response in the file goes through <code>send</code>, which sets the type and the length. <code>strlen</code> counts bytes, which is what <code>Content-Length</code> needs, and <code>JSON_UNESCAPED_UNICODE</code> keeps Arabic text readable instead of turning every letter into <code>\u0639</code>. An empty body gets no type at all. <code>fail</code> gives every error the same shape. Because of these two functions, no route can forget a header or invent its own error format:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.php (2 of 5)</div><pre class="code"><span class="k">function</span> send(<span class="k">int</span> $status, <span class="k">mixed</span> $body = <span class="k">null</span>, <span class="k">array</span> $headers = []): <span class="k">void</span>
+{
+    $text = $body === <span class="k">null</span> ? <span class="s">&#x27;&#x27;</span> : json_encode($body, JSON_UNESCAPED_UNICODE);
+    http_response_code($status);
+    <span class="k">if</span> ($text === <span class="s">&#x27;&#x27;</span>) {
+        header(<span class="s">&#x27;Content-Type:&#x27;</span>); <span class="c line-bidi">// no body, so no type</span>
+    } <span class="k">else</span> {
+        header(<span class="s">&#x27;Content-Type: application/json; charset=utf-8&#x27;</span>);
+    }
+    <span class="c line-bidi">// strlen counts bytes, not characters</span>
+    header(<span class="s">&#x27;Content-Length: &#x27;</span> . strlen($text));
+    <span class="k">foreach</span> ($headers <span class="k">as</span> $name =&gt; $value) {
+        header(<span class="s">&quot;$name: $value&quot;</span>);
+    }
+    <span class="k">echo</span> $text;
+}
+
+<span class="k">function</span> fail(<span class="k">int</span> $status, <span class="k">string</span> $code, <span class="k">string</span> $message,
+              <span class="k">array</span> $extra = [], <span class="k">array</span> $headers = []): <span class="k">void</span>
+{
+    $error = [<span class="s">&#x27;code&#x27;</span> =&gt; $code, <span class="s">&#x27;message&#x27;</span> =&gt; $message] + $extra;
+    send($status, [<span class="s">&#x27;error&#x27;</span> =&gt; $error], $headers);
+}</pre></div>
+
+<p><strong>Routing.</strong> <code>handle</code> looks at the method and the path and decides what to do: the CORS headers first, for any request, then the preflight, then the list, then one product. Everything else is a 404. Notice that the 405 answer names the allowed methods, and that a <code>HEAD</code> is answered like a <code>GET</code>: PHP itself drops the body of an answer to <code>HEAD</code>. <code>products()</code> reads the file again for every request, because PHP keeps nothing in memory between requests.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.php (3 of 5)</div><pre class="code"><span class="k">function</span> products(): <span class="k">array</span>
+{
+    <span class="c line-bidi">// PHP forgets everything after each request: the products live in a file.</span>
+    <span class="k">return</span> json_decode(file_get_contents(DATA), <span class="k">true</span>);
+}
+
+<span class="k">function</span> handle(): <span class="k">void</span>
+{
+    $method = $_SERVER[<span class="s">&#x27;REQUEST_METHOD&#x27;</span>];
+    $path = parse_url($_SERVER[<span class="s">&#x27;REQUEST_URI&#x27;</span>], PHP_URL_PATH);
+    $origin = $_SERVER[<span class="s">&#x27;HTTP_ORIGIN&#x27;</span>] ?? <span class="k">null</span>;
+    <span class="k">if</span> ($origin &amp;&amp; in_array($origin, ORIGINS, <span class="k">true</span>)) {
+        header(<span class="s">&quot;Access-Control-Allow-Origin: $origin&quot;</span>);
+        header(<span class="s">&#x27;Vary: Origin&#x27;</span>);
+    }
+
+    <span class="k">if</span> ($method === <span class="s">&#x27;OPTIONS&#x27;</span>) {
+        send(<span class="n">204</span>, <span class="k">null</span>, [
+            <span class="s">&#x27;Access-Control-Allow-Methods&#x27;</span> =&gt; <span class="s">&#x27;GET, POST&#x27;</span>,
+            <span class="s">&#x27;Access-Control-Allow-Headers&#x27;</span> =&gt; <span class="s">&#x27;Content-Type&#x27;</span>,
+            <span class="s">&#x27;Access-Control-Max-Age&#x27;</span> =&gt; <span class="s">&#x27;600&#x27;</span>,
+        ]);
+        <span class="k">return</span>;
+    }
+
+    <span class="k">if</span> ($path === <span class="s">&#x27;/products&#x27;</span>) {
+        <span class="k">if</span> ($method === <span class="s">&#x27;GET&#x27;</span> || $method === <span class="s">&#x27;HEAD&#x27;</span>) {
+            $max = (<span class="k">int</span>) ($_GET[<span class="s">&#x27;max_price&#x27;</span>] ?? PHP_INT_MAX);
+            $cheap = array_filter(products(), <span class="k">fn</span> ($p) =&gt; $p[<span class="s">&#x27;price&#x27;</span>] &lt;= $max);
+            $<span class="k">list</span> = array_values($cheap);
+            $hash = md5(json_encode($<span class="k">list</span>, JSON_UNESCAPED_UNICODE));
+            $etag = <span class="s">&#x27;&quot;&#x27;</span> . substr($hash, <span class="n">0</span>, <span class="n">16</span>) . <span class="s">&#x27;&quot;&#x27;</span>;
+            <span class="k">if</span> (($_SERVER[<span class="s">&#x27;HTTP_IF_NONE_MATCH&#x27;</span>] ?? <span class="k">null</span>) === $etag) {
+                send(<span class="n">304</span>, <span class="k">null</span>, [<span class="s">&#x27;ETag&#x27;</span> =&gt; $etag]);
+                <span class="k">return</span>;
+            }
+            send(<span class="n">200</span>, $<span class="k">list</span>, [<span class="s">&#x27;ETag&#x27;</span> =&gt; $etag, <span class="s">&#x27;Cache-Control&#x27;</span> =&gt; <span class="s">&#x27;no-cache&#x27;</span>]);
+            <span class="k">return</span>;
+        }
+        <span class="k">if</span> ($method === <span class="s">&#x27;POST&#x27;</span>) {
+            create();
+            <span class="k">return</span>;
+        }
+        fail(<span class="n">405</span>, <span class="s">&#x27;method_not_allowed&#x27;</span>, <span class="s">&#x27;Use GET or POST here&#x27;</span>, [],
+             [<span class="s">&#x27;Allow&#x27;</span> =&gt; <span class="s">&#x27;GET, HEAD, POST&#x27;</span>]);
+        <span class="k">return</span>;
+    }
+
+    <span class="k">if</span> (preg_match(<span class="s">&#x27;#^/products/(\d+)$#&#x27;</span>, $path, $m) &amp;&amp; $method === <span class="s">&#x27;GET&#x27;</span>) {
+        <span class="k">foreach</span> (products() <span class="k">as</span> $product) {
+            <span class="k">if</span> ($product[<span class="s">&#x27;id&#x27;</span>] === (<span class="k">int</span>) $m[<span class="n">1</span>]) {
+                send(<span class="n">200</span>, $product);
+                <span class="k">return</span>;
+            }
+        }
+        fail(<span class="n">404</span>, <span class="s">&#x27;not_found&#x27;</span>, <span class="s">&#x27;No product with this id&#x27;</span>);
+        <span class="k">return</span>;
+    }
+    fail(<span class="n">404</span>, <span class="s">&#x27;not_found&#x27;</span>, <span class="s">&#x27;Nothing here&#x27;</span>);
+}</pre></div>
+
+<p><strong>Distrust the body.</strong> Creating a product checks everything a client could get wrong, in order: the type, the size (before reading a single byte of the body), the JSON, and then each field for its type and range, collecting every error before answering. Real APIs allow more than 1 KB, but they always have a limit. Then the new product is written to the file under a lock: <code>flock</code> makes a second request wait until the first has finished writing, so that two new products cannot overwrite each other. This is exactly the problem databases solve properly, with transactions, in Part 2.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.php (4 of 5)</div><pre class="code"><span class="k">function</span> create(): <span class="k">void</span>
+{
+    <span class="k">if</span> (!str_starts_with($_SERVER[<span class="s">&#x27;CONTENT_TYPE&#x27;</span>] ?? <span class="s">&#x27;&#x27;</span>, <span class="s">&#x27;application/json&#x27;</span>)) {
+        fail(<span class="n">415</span>, <span class="s">&#x27;unsupported_media_type&#x27;</span>, <span class="s">&#x27;Send JSON&#x27;</span>);
+        <span class="k">return</span>;
+    }
+    <span class="k">if</span> ((<span class="k">int</span>) ($_SERVER[<span class="s">&#x27;CONTENT_LENGTH&#x27;</span>] ?? <span class="n">0</span>) &gt; MAX_BODY) {
+        fail(<span class="n">413</span>, <span class="s">&#x27;too_large&#x27;</span>, <span class="s">&#x27;At most 1 KB&#x27;</span>);
+        <span class="k">return</span>;
+    }
+    $data = json_decode(file_get_contents(<span class="s">&#x27;php://input&#x27;</span>), <span class="k">true</span>);
+    <span class="k">if</span> (!is_array($data)) {
+        fail(<span class="n">400</span>, <span class="s">&#x27;bad_json&#x27;</span>, <span class="s">&#x27;The body is not valid JSON&#x27;</span>);
+        <span class="k">return</span>;
+    }
+
+    $name = $data[<span class="s">&#x27;name&#x27;</span>] ?? <span class="k">null</span>;
+    $price = $data[<span class="s">&#x27;price&#x27;</span>] ?? <span class="k">null</span>;
+    $errors = [];
+    <span class="k">if</span> (!is_string($name) || trim($name) === <span class="s">&#x27;&#x27;</span>) {
+        $errors[<span class="s">&#x27;name&#x27;</span>] = <span class="s">&#x27;Required&#x27;</span>;
+    }
+    <span class="k">if</span> (!is_int($price) || $price &lt;= <span class="n">0</span>) {
+        $errors[<span class="s">&#x27;price&#x27;</span>] = <span class="s">&#x27;A whole number of piastres above 0&#x27;</span>;
+    }
+    <span class="k">if</span> ($errors) {
+        fail(<span class="n">422</span>, <span class="s">&#x27;invalid&#x27;</span>, <span class="s">&#x27;Check the fields&#x27;</span>, [<span class="s">&#x27;fields&#x27;</span> =&gt; $errors]);
+        <span class="k">return</span>;
+    }
+
+    $file = fopen(DATA, <span class="s">&#x27;r+&#x27;</span>);
+    flock($file, LOCK_EX); <span class="c line-bidi">// two requests at once must not both write the file</span>
+    $<span class="k">list</span> = json_decode(stream_get_contents($file), <span class="k">true</span>);
+    $product = [
+        <span class="s">&#x27;id&#x27;</span> =&gt; count($<span class="k">list</span>) + <span class="n">1</span>,
+        <span class="s">&#x27;name&#x27;</span> =&gt; trim($name),
+        <span class="s">&#x27;price&#x27;</span> =&gt; $price,
+    ];
+    $<span class="k">list</span>[] = $product;
+    ftruncate($file, <span class="n">0</span>);
+    rewind($file);
+    fwrite($file, json_encode($<span class="k">list</span>, JSON_UNESCAPED_UNICODE));
+    flock($file, LOCK_UN);
+    fclose($file);
+    send(<span class="n">201</span>, $product, [<span class="s">&#x27;Location&#x27;</span> =&gt; <span class="s">&quot;/products/{$product[&#x27;id&#x27;]}&quot;</span>]);
+}</pre></div>
+
+<p><strong>Unexpected errors are caught once.</strong> Everything runs inside one <code>try</code>. The real error goes to the server’s log with <code>error_log</code>, and the client gets a plain 500 without stack traces or file paths that would help an attacker:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.php (5 of 5)</div><pre class="code"><span class="k">try</span> {
+    handle();
+} <span class="k">catch</span> (Throwable $error) {
+    error_log((<span class="k">string</span>) $error); <span class="c line-bidi">// the details stay in the server&#x27;s log</span>
+    <span class="k">if</span> (!headers_sent()) {
+        fail(<span class="n">500</span>, <span class="s">&#x27;server_error&#x27;</span>, <span class="s">&#x27;Something went wrong on our side&#x27;</span>);
+    }
+}</pre></div>
+
+<p>And this is the terminal where the server was running, after all of this chapter’s requests. Each request opens a connection (<code>Accepted</code>), runs the script once, and closes it (<code>Closing</code>):</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 1</div><pre class="code"><span class="c line-bidi"># Start the server (and leave it running in this terminal)</span>
+<span class="c">$ </span><span class="k">php -S localhost:8000 server.php</span>
+[Thu Nov 19 18:42:39 2026] PHP 8.5.13 Development Server (http://localhost:8000) started
+[Thu Nov 19 18:42:39 2026] 127.0.0.1:51706 Accepted
+[Thu Nov 19 18:42:39 2026] GET /products/1 200 0ms
+[Thu Nov 19 18:42:39 2026] 127.0.0.1:51706 Closing
+[Thu Nov 19 18:42:39 2026] 127.0.0.1:51710 Accepted
+[Thu Nov 19 18:42:39 2026] GET /products/2 200 0ms
+[Thu Nov 19 18:42:39 2026] 127.0.0.1:51710 Closing
+[Thu Nov 19 18:42:39 2026] 127.0.0.1:51722 Accepted
+[Thu Nov 19 18:42:39 2026] GET /products?max_price=15000 200 0ms
+[Thu Nov 19 18:42:39 2026] 127.0.0.1:51722 Closing
+[Thu Nov 19 18:42:39 2026] 127.0.0.1:51738 Accepted
+[Thu Nov 19 18:42:39 2026] HEAD /products 200 0ms
+[Thu Nov 19 18:42:39 2026] 127.0.0.1:51738 Closing
+...</pre></div>
+
+<p>Every framework in this book does what this one file does, and much more, and names the parts: a <dfn>router</dfn> matches the method and path, <dfn>middleware</dfn> runs for every request (logging, CORS, limits), <dfn>validation</dfn> checks the input, and an <dfn>error handler</dfn> turns exceptions into answers. When the framework surprises you, you now know what it is doing underneath.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: look at the wire first</p><p>When an API “does not work”, do not change code at random. Reproduce the request with <code>curl -v</code>, or copy it from the browser’s Network panel (“Copy as cURL”), and read the request and the answer line by line: the method, the address, the <code>Content-Type</code>, the status, the error body. Nine times out of ten the problem is in plain sight there. Keep the working curl command in the bug report or the pull request, so the next person can check it in one line.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Every answer is <code>200</code>, with <code>{"ok": false}</code> inside</td><td>Clients, caches and monitoring think everything worked</td><td>The status code that describes the result</td></tr>
+<tr><td>Validation errors as <code>500</code></td><td>Alarms ring for a user’s typo</td><td>4xx for the client’s mistakes, 5xx only for yours</td></tr>
+<tr><td>A <code>GET</code> that changes data</td><td>Prefetching and crawlers change it by themselves</td><td>Only safe actions with GET and HEAD</td></tr>
+<tr><td>Blind retries of <code>POST</code></td><td>Double orders and double payments</td><td>Idempotency keys</td></tr>
+<tr><td><code>Content-Length</code> counted in characters</td><td>Arabic and emoji bodies cut short</td><td>Count bytes</td></tr>
+<tr><td>No limit on body size or time</td><td>One client fills memory or holds every connection</td><td>A size cap (413) and timeouts</td></tr>
+<tr><td>Stack traces in error answers</td><td>Attackers learn paths and versions</td><td>Details in the log, a plain message to the client</td></tr>
+<tr><td>Fixing CORS errors with <code>*</code></td><td>Any site can read the answers</td><td>A list of trusted origins, and real authorisation</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A request goes through a <strong>name lookup</strong>, a <strong>TCP connection</strong>, <strong>TLS</strong> for HTTPS, and then the HTTP <strong>request and response</strong>.</li>
+<li>HTTP/1.1 is <strong>text</strong>: a first line, headers, an empty line, and a body whose size is in <code>Content-Length</code>, in bytes.</li>
+<li>The <strong>path</strong> names a resource; the <strong>query string</strong> filters and pages.</li>
+<li><strong>Safe</strong> methods only read; <strong>idempotent</strong> ones can be repeated. <code>POST</code> is neither, so retries need idempotency keys.</li>
+<li><strong>2xx</strong> worked, <strong>3xx</strong> look elsewhere, <strong>4xx</strong> the client’s mistake, <strong>5xx</strong> the server’s. Errors have one shape, with a stable <code>code</code> and a readable <code>message</code>.</li>
+<li><strong>ETag</strong> and <code>If-None-Match</code> turn repeated reads into empty <code>304</code> answers; <code>Cache-Control</code> says how long a copy may be reused.</li>
+<li>Connections are <strong>kept alive</strong> and reused; HTTP/2 and HTTP/3 change the transport, not the meaning.</li>
+<li><strong>CORS</strong> lets a browser page read answers from another origin. It protects browser users; it does not protect your server.</li>
+<li>Every server, with or without a framework, needs: one way to answer, distrust of input, limits, caught errors and a log line per request.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. At the first empty line; the body is exactly <code>Content-Length</code> bytes long. 2. Yes for <code>DELETE</code>: it is idempotent, so a second one leaves the same state (even though its answer may be <code>404</code>). No for <code>POST /orders</code>: it might create a second order, unless the API supports an idempotency key. 3. 422: the request was well-formed JSON that the server could read; its content failed validation.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project builds a small server with no framework, in the language of your edition. Test every one with curl, and keep the commands in a <code>requests.sh</code> file next to the code: it is your first test suite.</p>
+
+<div class="project">
+<p class="project-label">Project 1.1 · Easy</p>
+<h3>An echo server</h3>
+<p class="project-goal">Build a server that answers any request with a JSON description of the request itself: method, path, query, headers and body.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading every part of a request, query strings, headers, and setting the content type and length.</p>
+<ol class="steps">
+<li>Answer every method and every path with <code>200</code> and a JSON body.</li>
+<li>Put the query string in an object (<code>?a=1&amp;b=2</code> becomes <code>{"a": "1", "b": "2"}</code>) and the headers in another.</li>
+<li>Include the body as text, and its size in bytes.</li>
+<li>Call it with curl using <code>GET</code>, <code>POST</code> with <code>-d</code>, and <code>-H</code> with a header of your own. Then open it in a browser and compare the headers the browser sends with curl’s.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is a real tool. When you wonder what a front end, a webhook or a mobile app is actually sending, point it at your echo server for a minute.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 1.2 · Medium</p>
+<h3>A careful file server</h3>
+<p class="project-goal">Serve the files of a <code>public/</code> folder, with the right types, ETags and errors, and without ever leaving the folder.</p>
+<p class="project-skills"><strong>You will practise:</strong> content types, conditional requests and 304, HEAD, 404 and 405, and path traversal protection.</p>
+<ol class="steps">
+<li>Map the path to a file inside <code>public/</code>, and <code>/</code> to <code>index.html</code>. Answer <code>404</code> when there is no such file.</li>
+<li>Set <code>Content-Type</code> from the extension, for at least <code>.html</code>, <code>.css</code>, <code>.js</code>, <code>.png</code>, <code>.svg</code> and <code>.json</code>.</li>
+<li>Send an ETag built from the file’s size and modification time, and answer <code>304</code> when <code>If-None-Match</code> matches.</li>
+<li>Answer <code>HEAD</code> without a body, and <code>405</code> with an <code>Allow</code> header for any other method.</li>
+<li>Try <code>curl --path-as-is localhost:8000/../server.php</code>. If you get your own source code back, fix it: resolve the full path and check that it is still inside <code>public/</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> checking the path before resolving it is not enough: <code>%2e%2e%2f</code> is <code>../</code> in disguise. Decode and resolve the path first, and only then compare it with the folder.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 1.3 · Challenge</p>
+<h3>HTTP over a bare socket</h3>
+<p class="project-goal">Write a tiny HTTP/1.1 server directly on a TCP socket, without the language’s HTTP library: read requests, parse them yourself, and answer.</p>
+<p class="project-skills"><strong>You will practise:</strong> the message format byte by byte, <code>Content-Length</code>, keep-alive, and what HTTP libraries protect you from.</p>
+<ol class="steps">
+<li>Listen with <code>stream_socket_server("tcp://127.0.0.1:8001")</code> and accept connections in a loop with <code>stream_socket_accept</code>, running the script with <code>php</code>, not <code>php -S</code>. Collect bytes until you see the empty line (<code>\r\n\r\n</code>).</li>
+<li>Parse the request line and the headers. Answer <code>400</code> to anything that does not look like HTTP.</li>
+<li>If there is a <code>Content-Length</code>, read exactly that many bytes of body; refuse more than 1 KB with <code>413</code>.</li>
+<li>Answer with a correct status line, headers and body. Keep the connection open for the next request unless the client sent <code>Connection: close</code>, and check it with the two-request curl command from 1.7.</li>
+<li>Test the edge cases: a request that arrives in two pieces (send it with <code>nc</code>, typing slowly), and two requests in one piece.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> TCP delivers a stream of bytes, not messages. One read may hold half a request, or a request and a half. Keep a buffer, and only take a request out of it when it is complete. This is exactly the kind of work you should never do in production, and doing it once shows you why.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In the raw response of 1.2, name the status line, each header, the empty line and the body. Then send the same request with <code>nc</code> but without the <code>Host</code> header. What does the server answer, and why?</li>
+<li><span class="level">Easy</span> For each request, say whether it is safe and whether it is idempotent: <code>GET /products?max_price=100</code>, <code>PUT /products/2</code> with a full product, <code>POST /products/2/reviews</code>, <code>DELETE /cart/items/7</code>, <code>PATCH /products/2</code> with <code>{"stock_change": -1}</code>.</li>
+<li><span class="level medium">Medium</span> Add <code>DELETE /products/:id</code> to the server: <code>204</code> when it removes a product, <code>404</code> when there is none. Delete product 3 twice, then create a new product. What id does it get, and is that a problem?</li>
+<li><span class="level medium">Medium</span> The request from <code>https://evil.example</code> in 1.8 got a <code>200</code> with the product. Explain why that is not a security hole for this endpoint, and describe an endpoint where the same behaviour would be one, and what protects it.</li>
+<li><span class="level hard">Challenge</span> Make the server compress bodies of 100 bytes or more with gzip when the client sends <code>Accept-Encoding: gzip</code>. Which headers must the answer carry? Compare the sizes with and without compression using curl.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 2</p>
+
+<p>Before Laravel, the language under it. PHP has changed a great deal: types, enums, readonly classes, match, arrow functions. We learn modern PHP by comparing it with the JavaScript you already know.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b3/laravel/php/en">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">Chapter 2</p><h1>Modern PHP for JavaScript Developers</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>read and write PHP 8.5 by comparing it with the JavaScript you know</li>
+<li>use types strictly, and know exactly when PHP converts values on its own</li>
+<li>work with PHP’s arrays, closures and named arguments, and avoid their traps</li>
+<li>model a domain with readonly classes, enums, property hooks and exceptions</li>
+<li>organise code in namespaces, loaded automatically by Composer</li>
+<li>check types before running anything, with PHPStan</li>
+</ul>
+</div>
+
+<p class="lead">Many developers still picture the PHP of 2005: untyped, inconsistent, mixed into HTML. The language Laravel runs on today is a different one. It has types that are checked when your code runs, enums, readonly objects, first-class functions, and a static analyser as strict as TypeScript’s compiler. You already know most of the ideas from JavaScript and TypeScript. This chapter maps them onto PHP, and spends its time on the places where PHP behaves differently, because those are where bugs come from.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The first PHP bug I wrote was a closure that added to a total, and the total stayed zero. In JavaScript the same code worked. Nothing was wrong with PHP: it simply copies where JavaScript shares. Once I learned the handful of rules like that one, PHP stopped surprising me.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>A first script</span></h2>
+
+<p>Every PHP file starts with <code>&lt;?php</code>. (The tag exists because PHP began as a language mixed into HTML; in a file that holds only code, it appears once at the top and is never closed.) The <code>php</code> command runs a file, just as <code>node</code> does:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/hello.php</div><pre class="code">&lt;?php
+
+$name = <span class="s">&#x27;Sara&#x27;</span>;
+$items = <span class="n">3</span>;
+<span class="k">echo</span> <span class="s">&quot;Hello, $name! items: {$items}\n&quot;</span>;
+<span class="k">echo</span> <span class="s">&#x27;Hello, $name!&#x27;</span> . <span class="s">&quot;\n&quot;</span>; <span class="c line-bidi">// single quotes: no interpolation</span></pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Run a script</span>
+<span class="c">$ </span><span class="k">php demos/hello.php</span>
+Hello, Sara! items: 3
+Hello, $name!</pre></div>
+
+<p>The first differences are already visible:</p>
+<ul>
+<li>Every variable starts with <code>$</code>, and there is no <code>let</code> or <code>const</code> for local variables: the first assignment creates the variable.</li>
+<li>Strings are joined with a dot (<code>.</code>), not <code>+</code>. In PHP, <code>+</code> is only for numbers.</li>
+<li>Double quotes replace variables inside the string, like a JavaScript template literal: <code>"Hello, $name!"</code>, or <code>{$items}</code> with braces when the expression is more than a plain name. Single quotes take the text exactly as written.</li>
+<li><code>echo</code> prints, and statements end with a semicolon, always.</li>
+</ul>
+
+<p>All of this book’s PHP runs on PHP 8.5, the current version. Laravel 13 needs 8.3 or later; a few features in this chapter are marked with the version that introduced them.</p>
+
+<h2><span class="sec">2.2</span> <span>Types, and the strict mode</span></h2>
+
+<p>PHP checks types when the code runs. A function declares the types of its parameters and of its result, much as in TypeScript. But by default, PHP tries to <em>convert</em> a value of the wrong type before it gives up:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/loose.php</div><pre class="code">&lt;?php
+
+<span class="k">function</span> total(<span class="k">int</span> $price, <span class="k">int</span> $quantity): <span class="k">int</span>
+{
+    <span class="k">return</span> $price * $quantity;
+}
+
+var_dump(total(<span class="s">&quot;45000&quot;</span>, <span class="n">2</span>)); <span class="c line-bidi">// a string from a form, converted quietly</span>
+var_dump(total(<span class="n">45000</span>, <span class="k">true</span>)); <span class="c line-bidi">// even true becomes 1</span></pre></div>
+
+<p>A string <code>"45000"</code>, as it would arrive from an HTML form, became the number 45000; even <code>true</code> became 1. Both calls ran without a word. One line at the top of a file switches this off for every call made <em>from that file</em>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/strict.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>); <span class="c line-bidi">// strict types: no silent conversions in this file</span>
+
+<span class="k">function</span> total(<span class="k">int</span> $price, <span class="k">int</span> $quantity): <span class="k">int</span>
+{
+    <span class="k">return</span> $price * $quantity;
+}
+
+var_dump(total(<span class="n">45000</span>, <span class="n">2</span>));
+var_dump(total(<span class="s">&quot;45000&quot;</span>, <span class="n">2</span>));</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Without declare(strict_types=1), PHP converts the string quietly</span>
+<span class="c">$ </span><span class="k">php demos/loose.php</span>
+int(90000)
+int(45000)
+<span class="c line-bidi"># With it, the same call is an error</span>
+<span class="c">$ </span><span class="k">php demos/strict.php 2&gt;&amp;1 | head -n 3</span>
+int(90000)
+
+Fatal error: Uncaught TypeError: total(): Argument #1 ($price) must be of type int, string given, called in demos/strict.php on line 11 and defined in demos/strict.php:5</pre></div>
+
+<p>Now the wrong call is a <code>TypeError</code> that names the function, the argument, the expected type and the line. Start every PHP file with <code>declare(strict_types=1);</code>: you want to hear about a string where a number belongs, not have it guessed for you. (Laravel converts input from requests deliberately, in its validation layer, which is the right place for it.)</p>
+
+<p>The types you will write most often:</p>
+
+<table>
+<thead><tr><th>PHP</th><th>TypeScript</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>int</code>, <code>float</code></td><td><code>number</code></td><td>Two separate types; use <code>int</code> for money in minor units</td></tr>
+<tr><td><code>string</code>, <code>bool</code></td><td><code>string</code>, <code>boolean</code></td><td></td></tr>
+<tr><td><code>array</code></td><td>arrays and plain objects</td><td>One type for both; see 2.4</td></tr>
+<tr><td><code>?int</code></td><td><code>number | null</code></td><td>The <code>?</code> means “or null”</td></tr>
+<tr><td><code>int|string</code></td><td><code>number | string</code></td><td>Union types</td></tr>
+<tr><td><code>mixed</code></td><td><code>unknown</code></td><td>Anything; avoid it where you can</td></tr>
+<tr><td><code>void</code>, <code>never</code></td><td><code>void</code>, <code>never</code></td><td><code>never</code>: the function always throws or exits</td></tr>
+<tr><td><code>static</code></td><td><code>this</code></td><td>Returns an object of the class it was called on</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">2.3</span> <span>Comparison: always three equals signs</span></h2>
+
+<p>PHP has the same two comparisons as JavaScript. <code>===</code> compares the type and the value; <code>==</code> converts first. PHP’s conversion rules differ from JavaScript’s, and some of them are surprising:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/equality.php</div><pre class="code">&lt;?php
+
+<span class="c line-bidi">// PHP 8 compares a number and a non-numeric string as strings: 0 == &quot;a&quot; is false.</span>
+$pairs = [[<span class="n">0</span>, <span class="s">&quot;a&quot;</span>], [<span class="s">&quot;1&quot;</span>, <span class="s">&quot;01&quot;</span>], [<span class="s">&quot;10&quot;</span>, <span class="s">&quot;1e1&quot;</span>], [<span class="n">100</span>, <span class="s">&quot;100&quot;</span>], [<span class="k">null</span>, <span class="k">false</span>], [[], <span class="k">false</span>]];
+<span class="k">foreach</span> ($pairs <span class="k">as</span> [$a, $b]) {
+    printf(<span class="s">&quot;%-6s %-6s  ==  %-5s  ===  %s\n&quot;</span>,
+        json_encode($a), json_encode($b), json_encode($a == $b), json_encode($a === $b));
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c">$ </span><span class="k">php demos/equality.php</span>
+0      &quot;a&quot;     ==  false  ===  false
+&quot;1&quot;    &quot;01&quot;    ==  true   ===  false
+&quot;10&quot;   &quot;1e1&quot;   ==  true   ===  false
+100    &quot;100&quot;   ==  true   ===  false
+null   false   ==  true   ===  false
+[]     false   ==  true   ===  false</pre></div>
+
+<p>Two strings that both look like numbers are compared <em>as numbers</em>: <code>"10" == "1e1"</code> is true, because <code>1e1</code> is 10 in scientific notation. That has caused real security holes, in code that compared password hashes with <code>==</code>. And <code>null</code>, <code>false</code> and an empty array are all loosely equal. The rule is the same as in JavaScript, and even more important: use <code>===</code> and <code>!==</code>, and pass <code>true</code> as the last argument to functions such as <code>in_array</code>, which compare loosely unless you ask them not to.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What does <code>"Total: " + $total</code> do in PHP, and what should you write?</li><li>A file without <code>declare(strict_types=1)</code> calls <code>total("3 kits", 2)</code>. What happens?</li><li>Why is <code>"10" == "1e1"</code> true?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>Arrays: lists and maps in one</span></h2>
+
+<p>PHP has one <code>array</code> type for what JavaScript splits into arrays and plain objects. Its keys are integers or strings, and it keeps them in the order you add them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/arrays.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="c line-bidi">// One type, two uses: a list (keys 0, 1, 2...) and a map (keys you choose).</span>
+$prices = [<span class="n">45000</span>, <span class="n">6000</span>, <span class="n">12500</span>];
+$product = [<span class="s">&#x27;id&#x27;</span> =&gt; <span class="n">1</span>, <span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&#x27;Robot kit&#x27;</span>, <span class="s">&#x27;price&#x27;</span> =&gt; <span class="n">45000</span>];
+
+$prices[] = <span class="n">2500</span>; <span class="c line-bidi">// push</span>
+<span class="k">echo</span> count($prices), <span class="s">&#x27; &#x27;</span>, $product[<span class="s">&#x27;name&#x27;</span>], <span class="s">&#x27; &#x27;</span>, $product[<span class="s">&#x27;stock&#x27;</span>] ?? <span class="n">0</span>, <span class="s">&quot;\n&quot;</span>;
+
+<span class="c line-bidi">// Unlike JavaScript, assigning an array copies it</span>
+$copy = $prices;
+$copy[] = <span class="n">99</span>;
+<span class="k">echo</span> count($prices), <span class="s">&#x27; &#x27;</span>, count($copy), <span class="s">&quot;\n&quot;</span>;
+
+<span class="c line-bidi">// Destructuring, like JavaScript</span>
+[$first, $second] = $prices;
+[<span class="s">&#x27;name&#x27;</span> =&gt; $name, <span class="s">&#x27;price&#x27;</span> =&gt; $price] = $product;
+<span class="k">echo</span> <span class="s">&quot;$first $second $name $price\n&quot;</span>;
+
+<span class="c line-bidi">// map, filter, reduce: careful, the order of the arguments differs</span>
+$cheap = array_filter($prices, <span class="k">fn</span> (<span class="k">int</span> $p) =&gt; $p &lt; <span class="n">10000</span>);
+$doubled = array_map(<span class="k">fn</span> (<span class="k">int</span> $p) =&gt; $p * <span class="n">2</span>, $prices);
+$sum = array_reduce($prices, <span class="k">fn</span> (<span class="k">int</span> $carry, <span class="k">int</span> $p) =&gt; $carry + $p, <span class="n">0</span>);
+print_r($cheap); <span class="c line-bidi">// the keys are kept: 1 and 3, not 0 and 1</span>
+<span class="k">echo</span> json_encode(array_values($cheap)), <span class="s">&#x27; &#x27;</span>, json_encode($doubled), <span class="s">&quot; $sum\n&quot;</span>;
+
+<span class="c line-bidi">// PHP 8.4: find, any, all</span>
+$big = array_find($prices, <span class="k">fn</span> (<span class="k">int</span> $p) =&gt; $p &gt; <span class="n">10000</span>);
+$any = array_any($prices, <span class="k">fn</span> (<span class="k">int</span> $p) =&gt; $p &gt; <span class="n">40000</span>);
+$all = array_all($prices, <span class="k">fn</span> (<span class="k">int</span> $p) =&gt; $p &gt; <span class="n">0</span>);
+var_dump($big, $any, $all);
+
+<span class="c line-bidi">// PHP 8.5: the pipe operator passes the value on the left to the callable on the right</span>
+$label = <span class="s">&#x27;  Robot kit  &#x27;</span> |&gt; trim(...) |&gt; mb_strtoupper(...) |&gt; (<span class="k">fn</span> (<span class="k">string</span> $s) =&gt; <span class="s">&quot;[$s]&quot;</span>);
+<span class="k">echo</span> $label, <span class="s">&quot;\n&quot;</span>;</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c">$ </span><span class="k">php demos/arrays.php</span>
+4 Robot kit 0
+4 5
+45000 6000 Robot kit 45000
+Array
+(
+    [1] =&gt; 6000
+    [3] =&gt; 2500
+)
+[6000,2500] [90000,12000,25000,5000] 66000
+int(45000)
+bool(true)
+bool(true)
+[ROBOT KIT]</pre></div>
+
+<p>Line by line, the points that catch JavaScript developers:</p>
+<ul>
+<li><code>$prices[] = 2500</code> appends, like <code>push</code>. <code>??</code> gives a default when a key is missing (or null), exactly as in JavaScript.</li>
+<li><strong>Arrays are values.</strong> <code>$copy = $prices</code> makes a copy; adding to the copy left the original with 4 items. In JavaScript, both names would point to the same array. Objects, on the other hand, are shared in PHP as in JavaScript.</li>
+<li>Destructuring uses square brackets for both kinds: <code>[$first, $second]</code> by position, <code>['name' =&gt; $name]</code> by key.</li>
+<li>The array functions take their arguments in different orders: <code>array_map(callback, array)</code> but <code>array_filter(array, callback)</code>. Your editor will remind you; there is no logic to remember.</li>
+<li><code>array_filter</code> <strong>keeps the keys</strong>: the cheap prices are at keys 1 and 3. Encoded as JSON, an array with gaps in its keys becomes an <em>object</em>, not a list. Pass the result through <code>array_values</code>, as the next line does, whenever you need a list again.</li>
+<li>PHP 8.4 added <code>array_find</code>, <code>array_any</code> and <code>array_all</code>, the equivalents of <code>find</code>, <code>some</code> and <code>every</code>.</li>
+<li>PHP 8.5 added the <dfn>pipe operator</dfn> <code>|&gt;</code>: it passes the value on its left to the function on its right, so a chain of steps reads from left to right instead of from the inside out. <code>trim(...)</code> with three dots is a <dfn>first-class callable</dfn>: the function itself, like writing <code>trim</code> without calling it in JavaScript.</li>
+</ul>
+
+<h2><span class="sec">2.5</span> <span>Functions and closures</span></h2>
+
+<p>A function written inside another piece of code can use the variables around it. JavaScript simply shares them. PHP is more careful, and this is the rule from Bit’s story:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/closures.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+$discount = <span class="n">10</span>;
+<span class="c line-bidi">// fn captures by value, automatically</span>
+$apply = <span class="k">fn</span> (<span class="k">int</span> $price): <span class="k">int</span> =&gt; $price - intdiv($price * $discount, <span class="n">100</span>);
+$discount = <span class="n">50</span>; <span class="c line-bidi">// too late: fn already copied 10</span>
+<span class="k">echo</span> $apply(<span class="n">45000</span>), <span class="s">&quot;\n&quot;</span>;
+
+$count = <span class="n">0</span>;
+<span class="c line-bidi">// function () needs use to capture, also by value</span>
+$increment = <span class="k">function</span> () <span class="k">use</span> ($count): <span class="k">int</span> {
+    <span class="k">return</span> ++$count;
+};
+$increment();
+$increment();
+<span class="k">echo</span> $count, <span class="s">&quot;\n&quot;</span>; <span class="c line-bidi">// still 0: the closure changed its own copy</span>
+
+<span class="c line-bidi">// &amp;$count: by reference, the JavaScript way</span>
+$counter = <span class="k">function</span> () <span class="k">use</span> (&amp;$count): <span class="k">void</span> {
+    $count++;
+};
+$counter();
+$counter();
+<span class="k">echo</span> $count, <span class="s">&quot;\n&quot;</span>;
+
+<span class="c line-bidi">// Named arguments: skip to the one you need, in any order</span>
+<span class="k">echo</span> str_pad(<span class="k">string</span>: <span class="s">&#x27;7&#x27;</span>, length: <span class="n">3</span>, pad_string: <span class="s">&#x27;0&#x27;</span>, pad_type: STR_PAD_LEFT), <span class="s">&quot;\n&quot;</span>;
+<span class="k">echo</span> json_encode([<span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&#x27;Robot kit&#x27;</span>], flags: JSON_UNESCAPED_UNICODE), <span class="s">&quot;\n&quot;</span>;</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c">$ </span><span class="k">php demos/closures.php</span>
+40500
+0
+2
+007
+{&quot;name&quot;:&quot;Robot kit&quot;}</pre></div>
+
+<ul>
+<li>An <dfn>arrow function</dfn>, <code>fn (...) =&gt; expression</code>, captures the variables it uses automatically, <strong>by value</strong>, when it is created. Changing <code>$discount</code> afterwards changes nothing: the price is 40500, 10% off.</li>
+<li>A full <code>function () { ... }</code> captures nothing unless you list the variables in <code>use</code>, again by value. That is why <code>$count</code> stayed 0: each call increased the closure’s own copy.</li>
+<li>To share a variable the JavaScript way, capture it <strong>by reference</strong> with <code>&amp;</code>. Use this rarely; a function that returns a new value is easier to follow.</li>
+<li><dfn>Named arguments</dfn> let you pass arguments by name, in any order, skipping the optional ones you do not need. Laravel uses them often, and they make long calls readable.</li>
+</ul>
+
+<h2><span class="sec">2.6</span> <span>Classes for a real domain</span></h2>
+
+<p>Larger PHP code is organised in classes, one class per file, grouped by <dfn>namespaces</dfn>: the PHP version of folders for names. A class <code>Money</code> in the namespace <code>Shop</code> is <code>Shop\Money</code> in full, and other files bring it in with <code>use Shop\Money;</code>, like an <code>import</code>. Nobody writes <code>require</code> for every class file: <dfn>Composer</dfn>, PHP’s package manager (its npm), generates an <dfn>autoloader</dfn> that finds the file the first time a class is used. One rule in <code>composer.json</code> says that classes in the namespace <code>Shop</code> live in the folder <code>src/</code>; this convention is called <dfn>PSR-4</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">composer.json</div><pre class="code">{
+    <span class="s">&quot;name&quot;</span>: <span class="s">&quot;bit/shop&quot;</span>,
+    <span class="s">&quot;description&quot;</span>: <span class="s">&quot;Bit&#x27;s shop: the classes of chapter 2&quot;</span>,
+    <span class="s">&quot;type&quot;</span>: <span class="s">&quot;project&quot;</span>,
+    <span class="s">&quot;require&quot;</span>: {
+        <span class="s">&quot;php&quot;</span>: <span class="s">&quot;^8.5&quot;</span>
+    },
+    <span class="s">&quot;require-dev&quot;</span>: {
+        <span class="s">&quot;phpstan/phpstan&quot;</span>: <span class="s">&quot;^2.1&quot;</span>
+    },
+    <span class="s">&quot;autoload&quot;</span>: {
+        <span class="s">&quot;psr-4&quot;</span>: {
+            <span class="s">&quot;Shop\\&quot;</span>: <span class="s">&quot;src/&quot;</span>
+        }
+    }
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Composer writes the autoloader for the classes in src/</span>
+<span class="c">$ </span><span class="k">composer install --quiet &amp;&amp; composer dump-autoload</span>
+Generating autoload files
+Generated autoload files</pre></div>
+
+<p>Now the classes. Bit’s shop needs money that never loses a piastre, and currencies that cannot be mistyped. A currency is a fixed set of values, which is exactly what an <dfn>enum</dfn> is:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/Currency.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> Shop;
+
+<span class="k">enum</span> Currency: <span class="k">string</span>
+{
+    <span class="k">case</span> EGP = <span class="s">&#x27;EGP&#x27;</span>;
+    <span class="k">case</span> SAR = <span class="s">&#x27;SAR&#x27;</span>;
+    <span class="k">case</span> USD = <span class="s">&#x27;USD&#x27;</span>;
+
+    <span class="k">public</span> <span class="k">function</span> symbol(): <span class="k">string</span>
+    {
+        <span class="k">return</span> <span class="k">match</span> ($<span class="k">this</span>) {
+            <span class="k">self</span>::EGP =&gt; <span class="s">&#x27;E£&#x27;</span>,
+            <span class="k">self</span>::SAR =&gt; <span class="s">&#x27;SR&#x27;</span>,
+            <span class="k">self</span>::USD =&gt; <span class="s">&#x27;$&#x27;</span>,
+        };
+    }
+}</pre></div>
+
+<p>A <dfn>backed enum</dfn> has a value for each case (here the ISO code), so it can be stored in a database and read back. Enums can have methods. <code>match</code> is a stricter <code>switch</code>: it compares with <code>===</code>, returns a value, has no fall-through, and throws an error if no case matches, so a new currency cannot be forgotten silently.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/Money.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> Shop;
+
+<span class="k">use</span> InvalidArgumentException;
+
+<span class="c line-bidi">// readonly: set once, in the constructor, never again</span>
+<span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> Money
+{
+    <span class="c line-bidi">// constructor promotion: the parameters are the properties</span>
+    <span class="k">public</span> <span class="k">function</span> __construct(
+        <span class="k">public</span> <span class="k">int</span> $amount, <span class="c line-bidi">// minor units: piastres, halalas, cents</span>
+        <span class="k">public</span> Currency $currency,
+    ) {
+        <span class="k">if</span> ($amount &lt; <span class="n">0</span>) {
+            <span class="k">throw</span> <span class="k">new</span> InvalidArgumentException(<span class="s">&#x27;An amount cannot be negative&#x27;</span>);
+        }
+    }
+
+    <span class="k">public</span> <span class="k">function</span> plus(Money $other): Money
+    {
+        <span class="k">if</span> ($other-&gt;currency !== $<span class="k">this</span>-&gt;currency) {
+            <span class="k">throw</span> <span class="k">new</span> CurrencyMismatch($<span class="k">this</span>-&gt;currency, $other-&gt;currency);
+        }
+        <span class="k">return</span> <span class="k">new</span> Money($<span class="k">this</span>-&gt;amount + $other-&gt;amount, $<span class="k">this</span>-&gt;currency);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> times(<span class="k">int</span> $quantity): Money
+    {
+        <span class="k">return</span> <span class="k">new</span> Money($<span class="k">this</span>-&gt;amount * $quantity, $<span class="k">this</span>-&gt;currency);
+    }
+
+    <span class="k">public</span> <span class="k">function</span> format(): <span class="k">string</span>
+    {
+        $whole = intdiv($<span class="k">this</span>-&gt;amount, <span class="n">100</span>);
+        $cents = str_pad((<span class="k">string</span>) ($<span class="k">this</span>-&gt;amount % <span class="n">100</span>), <span class="n">2</span>, <span class="s">&#x27;0&#x27;</span>, STR_PAD_LEFT);
+        <span class="k">return</span> <span class="s">&quot;{$this-&gt;currency-&gt;symbol()} &quot;</span> . number_format($whole) . <span class="s">&quot;.$cents&quot;</span>;
+    }
+}</pre></div>
+
+<ul>
+<li><dfn>Constructor promotion</dfn>: parameters marked <code>public</code> in the constructor become properties. Six lines of boilerplate disappear.</li>
+<li><code>readonly class</code>: every property can be set once, in the constructor, and never again. A <code>Money</code> value never changes: <code>plus</code> and <code>times</code> return new objects. This is the same immutability you used in React and Vue state, and it removes a whole family of bugs.</li>
+<li><code>final</code>: nobody can extend the class. Make classes final unless they are designed to be extended.</li>
+<li>The constructor refuses a negative amount, and <code>plus</code> refuses to add different currencies. An object that checks its own rules can never exist in a broken state.</li>
+</ul>
+
+<p>The currency error is a class of its own, so that code can catch exactly this error and nothing else:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/CurrencyMismatch.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> Shop;
+
+<span class="k">use</span> DomainException;
+
+<span class="k">final</span> <span class="k">class</span> CurrencyMismatch <span class="k">extends</span> DomainException
+{
+    <span class="k">public</span> <span class="k">function</span> __construct(
+        <span class="k">public</span> <span class="k">readonly</span> Currency $left,
+        <span class="k">public</span> <span class="k">readonly</span> Currency $right,
+    ) {
+        $message = strtr(<span class="s">&#x27;Cannot add {a} to {b}&#x27;</span>, [
+            <span class="s">&#x27;{a}&#x27;</span> =&gt; $right-&gt;value,
+            <span class="s">&#x27;{b}&#x27;</span> =&gt; $left-&gt;value,
+        ]);
+        <span class="k">parent</span>::__construct($message);
+    }
+}</pre></div>
+
+<p>An order’s status is another enum, with a label for people and a rule of the business:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/OrderStatus.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> Shop;
+
+<span class="k">enum</span> OrderStatus: <span class="k">string</span>
+{
+    <span class="k">case</span> Pending = <span class="s">&#x27;pending&#x27;</span>;
+    <span class="k">case</span> Paid = <span class="s">&#x27;paid&#x27;</span>;
+    <span class="k">case</span> Shipped = <span class="s">&#x27;shipped&#x27;</span>;
+    <span class="k">case</span> Cancelled = <span class="s">&#x27;cancelled&#x27;</span>;
+
+    <span class="k">public</span> <span class="k">function</span> label(): <span class="k">string</span>
+    {
+        <span class="k">return</span> <span class="k">match</span> ($<span class="k">this</span>) {
+            <span class="k">self</span>::Pending =&gt; <span class="s">&#x27;Waiting for payment&#x27;</span>,
+            <span class="k">self</span>::Paid =&gt; <span class="s">&#x27;Paid, being packed&#x27;</span>,
+            <span class="k">self</span>::Shipped =&gt; <span class="s">&#x27;On its way&#x27;</span>,
+            <span class="k">self</span>::Cancelled =&gt; <span class="s">&#x27;Cancelled&#x27;</span>,
+        };
+    }
+
+    <span class="k">public</span> <span class="k">function</span> canCancel(): <span class="k">bool</span>
+    {
+        <span class="k">return</span> in_array($<span class="k">this</span>, [<span class="k">self</span>::Pending, <span class="k">self</span>::Paid], <span class="k">true</span>);
+    }
+}</pre></div>
+
+<p>The cart uses two features from PHP 8.4:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/Cart.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> Shop;
+
+<span class="k">use</span> InvalidArgumentException;
+
+<span class="k">final</span> <span class="k">class</span> Cart
+{
+    <span class="c line-bidi">// anyone can read it; only the class can change it</span>
+    /** @<span class="k">var</span> <span class="k">array</span>&lt;<span class="k">int</span>, <span class="k">array</span>{product: Product, quantity: <span class="k">int</span>}&gt; */
+    <span class="k">public</span> <span class="k">private</span>(set) <span class="k">array</span> $lines = [];
+
+    <span class="c line-bidi">// a property hook: read like a property, computed like a method</span>
+    <span class="k">public</span> Money $total {
+        get =&gt; array_reduce(
+            $<span class="k">this</span>-&gt;lines,
+            <span class="k">fn</span> (Money $sum, <span class="k">array</span> $line) =&gt; $sum-&gt;plus(
+                $line[<span class="s">&#x27;product&#x27;</span>]-&gt;price-&gt;times($line[<span class="s">&#x27;quantity&#x27;</span>]),
+            ),
+            <span class="k">new</span> Money(<span class="n">0</span>, $<span class="k">this</span>-&gt;currency),
+        );
+    }
+
+    <span class="k">public</span> <span class="k">int</span> $count {
+        get =&gt; array_sum(array_column($<span class="k">this</span>-&gt;lines, <span class="s">&#x27;quantity&#x27;</span>));
+    }
+
+    <span class="k">public</span> <span class="k">function</span> __construct(<span class="k">public</span> <span class="k">readonly</span> Currency $currency) {}
+
+    <span class="k">public</span> <span class="k">function</span> add(Product $product, <span class="k">int</span> $quantity = <span class="n">1</span>): <span class="k">static</span>
+    {
+        <span class="k">if</span> ($quantity &lt; <span class="n">1</span>) {
+            <span class="k">throw</span> <span class="k">new</span> InvalidArgumentException(<span class="s">&#x27;Quantity must be at least 1&#x27;</span>);
+        }
+        $current = $<span class="k">this</span>-&gt;lines[$product-&gt;id][<span class="s">&#x27;quantity&#x27;</span>] ?? <span class="n">0</span>;
+        $<span class="k">this</span>-&gt;lines[$product-&gt;id] = [
+            <span class="s">&#x27;product&#x27;</span> =&gt; $product,
+            <span class="s">&#x27;quantity&#x27;</span> =&gt; $current + $quantity,
+        ];
+        <span class="k">return</span> $<span class="k">this</span>;
+    }
+}</pre></div>
+
+<ul>
+<li><code>public private(set)</code> is <dfn>asymmetric visibility</dfn>: anyone may read <code>$lines</code>, only the class may change it. Before PHP 8.4 this needed a private property and a getter method.</li>
+<li><code>$total</code> and <code>$count</code> have <dfn>property hooks</dfn>: they are read like properties (<code>$cart-&gt;total</code>) but computed by the <code>get</code> code every time, like a getter in a JavaScript class. The total is always correct, because it is never stored.</li>
+<li><code>add</code> returns <code>static</code>, the cart itself, so calls can be chained.</li>
+</ul>
+
+<p>Finally, a product, with one more PHP 8.5 feature:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/Product.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">namespace</span> Shop;
+
+<span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> Product
+{
+    <span class="k">public</span> <span class="k">function</span> __construct(
+        <span class="k">public</span> <span class="k">int</span> $id,
+        <span class="k">public</span> <span class="k">string</span> $name,
+        <span class="k">public</span> Money $price,
+    ) {}
+
+    <span class="c line-bidi">// PHP 8.5: clone with new values. Nothing changes: you get a changed copy.</span>
+    <span class="k">public</span> <span class="k">function</span> onSale(<span class="k">int</span> $percent): <span class="k">static</span>
+    {
+        $amount = intdiv($<span class="k">this</span>-&gt;price-&gt;amount * (<span class="n">100</span> - $percent), <span class="n">100</span>);
+        <span class="k">return</span> <span class="k">clone</span>($<span class="k">this</span>, [
+            <span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&quot;{$this-&gt;name} (-{$percent}%)&quot;</span>,
+            <span class="s">&#x27;price&#x27;</span> =&gt; <span class="k">new</span> Money($amount, $<span class="k">this</span>-&gt;price-&gt;currency),
+        ]);
+    }
+}</pre></div>
+
+<p>A product is readonly, so a sale cannot change it. <code>clone($this, [...])</code> makes a copy with some properties changed, the PHP version of <code>{ ...product, price }</code>. Here is everything at work:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/shop.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">require</span> __DIR__ . <span class="s">&#x27;/../vendor/autoload.php&#x27;</span>;
+
+<span class="k">use</span> Shop\{Cart, Currency, CurrencyMismatch, Money, OrderStatus, Product};
+
+$kit = <span class="k">new</span> Product(<span class="n">1</span>, <span class="s">&#x27;Robot kit&#x27;</span>, <span class="k">new</span> Money(<span class="n">45000</span>, Currency::EGP));
+$wheels = <span class="k">new</span> Product(<span class="n">2</span>, <span class="s">&#x27;Spare wheels&#x27;</span>, <span class="k">new</span> Money(<span class="n">6000</span>, Currency::EGP));
+
+<span class="c line-bidi">// PHP 8.4: no parentheses needed around new before calling a method</span>
+$cart = <span class="k">new</span> Cart(Currency::EGP)-&gt;add($kit)-&gt;add($wheels, <span class="n">2</span>);
+<span class="k">echo</span> <span class="s">&quot;{$cart-&gt;count} items, total: {$cart-&gt;total-&gt;format()}\n&quot;</span>;
+
+$status = OrderStatus::<span class="k">from</span>(<span class="s">&#x27;paid&#x27;</span>);
+<span class="k">echo</span> $status-&gt;name, <span class="s">&#x27; / &#x27;</span>, $status-&gt;label(), <span class="s">&#x27; / &#x27;</span>, json_encode($status-&gt;canCancel()), <span class="s">&quot;\n&quot;</span>;
+var_dump(OrderStatus::tryFrom(<span class="s">&#x27;lost&#x27;</span>));
+<span class="k">echo</span> implode(<span class="s">&#x27;, &#x27;</span>, array_map(<span class="k">fn</span> (OrderStatus $s) =&gt; $s-&gt;value, OrderStatus::cases())), <span class="s">&quot;\n&quot;</span>;
+
+<span class="k">try</span> {
+    $kit-&gt;price-&gt;plus(<span class="k">new</span> Money(<span class="n">100</span>, Currency::USD));
+} <span class="k">catch</span> (CurrencyMismatch $e) {
+    <span class="k">echo</span> get_class($e), <span class="s">&#x27;: &#x27;</span>, $e-&gt;getMessage(), <span class="s">&quot;\n&quot;</span>;
+}
+
+<span class="k">try</span> {
+    $cart-&gt;lines = [];
+} <span class="k">catch</span> (Error $e) {
+    <span class="k">echo</span> get_class($e), <span class="s">&#x27;: &#x27;</span>, $e-&gt;getMessage(), <span class="s">&quot;\n&quot;</span>;
+}
+
+<span class="k">try</span> {
+    $kit-&gt;price-&gt;amount = <span class="n">1</span>;
+} <span class="k">catch</span> (Error $e) {
+    <span class="k">echo</span> get_class($e), <span class="s">&#x27;: &#x27;</span>, $e-&gt;getMessage(), <span class="s">&quot;\n&quot;</span>;
+}
+
+<span class="k">try</span> {
+    <span class="c line-bidi">// readonly properties can only be set from inside the class</span>
+    <span class="k">clone</span>($kit, [<span class="s">&#x27;name&#x27;</span> =&gt; <span class="s">&#x27;X&#x27;</span>]);
+} <span class="k">catch</span> (Error $e) {
+    <span class="k">echo</span> get_class($e), <span class="s">&#x27;: &#x27;</span>, $e-&gt;getMessage(), <span class="s">&quot;\n&quot;</span>;
+}
+
+$sale = $kit-&gt;onSale(<span class="n">10</span>);
+<span class="k">echo</span> $sale-&gt;name, <span class="s">&#x27; &#x27;</span>, $sale-&gt;price-&gt;format(), <span class="s">&#x27; / &#x27;</span>, $kit-&gt;price-&gt;format(), <span class="s">&quot;\n&quot;</span>;</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c">$ </span><span class="k">php demos/shop.php</span>
+3 items, total: E£ 570.00
+Paid / Paid, being packed / true
+NULL
+pending, paid, shipped, cancelled
+Shop\CurrencyMismatch: Cannot add USD to EGP
+Error: Cannot modify private(set) property Shop\Cart::$lines from global scope
+Error: Cannot modify readonly property Shop\Money::$amount
+Error: Cannot modify protected(set) readonly property Shop\Product::$name from global scope
+Robot kit (-10%) E£ 405.00 / E£ 450.00</pre></div>
+
+<p>Read the output against the code. The cart counts 3 items worth 570.00 (450 + 2 × 60). <code>from</code> turns a stored value into an enum case, and <code>tryFrom</code> returns <code>null</code> instead of throwing for an unknown one, which is what you want for input from outside. Then the three errors show the rules being enforced <em>by the language</em>: the cart’s lines cannot be replaced from outside, a money amount cannot be changed, and even <code>clone</code> with new values is refused from outside the class, because a readonly property may only be set from inside it. That is why <code>onSale</code> is a method of <code>Product</code>: the class decides how its copies are made.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: Exception and Error</p><p>Everything that can be thrown implements <code>Throwable</code>. <code>Exception</code> and its subclasses are for problems your program expects and can handle: an invalid argument, a missing record, a currency mismatch. <code>Error</code> and its subclasses (<code>TypeError</code>, <code>ValueError</code>, and the visibility errors above) mean the code itself is wrong. Catch exceptions where you can do something useful about them; let errors reach the framework, which logs them and answers 500, as our server did in Chapter 1.</p></aside>
+
+<h2><span class="sec">2.7</span> <span>Checking before running: PHPStan</span></h2>
+
+<p>PHP checks types when a line runs, so a bug in a branch that rarely runs stays hidden until the day it runs in production. <dfn>PHPStan</dfn> reads the code without running it and reports type errors, as <code>tsc</code> does for TypeScript. It was installed with the project, as a development dependency, and its configuration asks for the strictest level:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">phpstan.neon</div><pre class="code">parameters:
+    level: max
+    paths:
+        - src
+        - demos/bug.php</pre></div>
+
+<p>This function has two bugs, neither of which would show up in a quick manual test:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/bug.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+<span class="k">use</span> Shop\{Currency, Money, OrderStatus};
+
+<span class="c line-bidi">// a bug PHPStan finds without running anything</span>
+<span class="k">function</span> refund(Money $paid, ?OrderStatus $status): Money
+{
+    <span class="k">if</span> ($status-&gt;canCancel()) {
+        <span class="k">return</span> $paid;
+    }
+    <span class="k">return</span> <span class="k">new</span> Money(<span class="s">&#x27;0&#x27;</span>, Currency::EGP);
+}</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># php -l only checks the syntax</span>
+<span class="c">$ </span><span class="k">php -l demos/bug.php</span>
+No syntax errors detected in demos/bug.php
+<span class="c line-bidi"># PHPStan checks the types without running the code</span>
+<span class="c">$ </span><span class="k">vendor/bin/phpstan analyse --no-progress --error-format=raw</span>
+demos/bug.php:10:Cannot call method canCancel() on Shop\OrderStatus|null.
+demos/bug.php:13:Parameter #1 $amount of class Shop\Money constructor expects int, string given.
+Note: Using configuration file phpstan.neon.</pre></div>
+
+<p><code>php -l</code> checks only that the file is valid PHP, which it is. PHPStan found both bugs: <code>$status</code> may be <code>null</code>, so calling a method on it would crash, and <code>'0'</code> is a string where the constructor needs an <code>int</code>. Notice the PHPDoc comment in <code>Cart.php</code>, <code>@var array&lt;int, array{product: Product, quantity: int}&gt;</code>: PHP’s own types cannot describe what is inside an array, but PHPStan reads these comments and checks them too. For Laravel projects, the Larastan extension teaches PHPStan about the framework’s conventions.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: strict from the first line</p><p>Every file starts with <code>declare(strict_types=1);</code>. PHPStan runs at the highest level your project can pass, in CI, on every pull request, and the level only goes up. A formatter (Laravel Pint, which follows the community’s PER coding style) settles every question of layout automatically. With these three in place, reviews are about design, not about types and spaces.</p></aside>
+
+<h2><span class="sec">2.8</span> <span>How PHP runs on a server</span></h2>
+
+<p>You saw in Chapter 1 that PHP starts each request with an empty memory and forgets everything when it ends. Two details complete the picture. First, PHP does not parse your files again for every request: <dfn>OPcache</dfn> keeps the compiled code in shared memory, so only your code’s work is repeated, not the parsing. Second, servers such as FrankenPHP (with Laravel Octane) can run in <dfn>worker mode</dfn>, keeping the application in memory between requests for speed, like a Node server. Then static properties and singletons survive from one request to the next, and code that was safe under shared-nothing may leak one user’s data into another’s request. We return to this when we measure performance in Chapter 15.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>No <code>strict_types</code></td><td>Wrong types are converted silently</td><td><code>declare(strict_types=1);</code> in every file</td></tr>
+<tr><td><code>==</code> and loose <code>in_array</code></td><td><code>"10" == "1e1"</code>, <code>null == false</code></td><td><code>===</code>, and <code>true</code> as the last argument</td></tr>
+<tr><td><code>+</code> to join strings</td><td>A <code>TypeError</code>, or a number</td><td>The dot operator, or interpolation</td></tr>
+<tr><td>Expecting arrays to be shared</td><td>Changes to a copy are lost</td><td>Return the new array; objects for shared state</td></tr>
+<tr><td>Expecting closures to share variables</td><td>Totals that stay zero</td><td>Return values; <code>&amp;</code> only when needed</td></tr>
+<tr><td>Forgetting that <code>array_filter</code> keeps keys</td><td>JSON objects where lists were expected</td><td><code>array_values</code></td></tr>
+<tr><td>Strings for fixed sets of values</td><td>Typos stored in the database</td><td>Backed enums with <code>from</code> and <code>tryFrom</code></td></tr>
+<tr><td>Floats for money</td><td>Amounts off by fractions</td><td>Integers in minor units, in a value object</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Variables start with <code>$</code>; strings join with <strong><code>.</code></strong>; double quotes interpolate.</li>
+<li>Types are checked at run time. <strong><code>declare(strict_types=1)</code></strong> stops silent conversions in a file.</li>
+<li>Always compare with <strong><code>===</code></strong>; PHP’s loose rules differ from JavaScript’s.</li>
+<li>One <strong>array</strong> type for lists and maps. Arrays are <strong>copied</strong> on assignment; <code>array_filter</code> keeps keys. PHP 8.4 adds <code>array_find</code>, <code>array_any</code>, <code>array_all</code>; PHP 8.5 adds the pipe operator <strong><code>|&gt;</code></strong>.</li>
+<li><strong>Closures capture by value</strong>: <code>fn</code> automatically, <code>function</code> with <code>use</code>. Named arguments make long calls readable.</li>
+<li><strong>Namespaces</strong> and <strong>Composer</strong>’s PSR-4 autoloader replace <code>require</code>.</li>
+<li><strong>Readonly classes</strong>, <strong>constructor promotion</strong>, <strong>backed enums</strong> with <code>match</code>, <strong>asymmetric visibility</strong>, <strong>property hooks</strong> and <strong><code>clone</code> with</strong> model a domain that cannot get into a broken state.</li>
+<li><strong>Exceptions</strong> for expected problems, <strong>errors</strong> for broken code.</li>
+<li><strong>PHPStan</strong> checks types without running the code; run it in CI at the highest level.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. <code>+</code> is arithmetic only: with a string that is not a number it throws a <code>TypeError</code>, strict types or not (a string such as <code>"5"</code> would be added as a number). Write <code>"Total: " . $total</code>, or <code>"Total: $total"</code>. 2. PHP tries to convert <code>"3 kits"</code> to an int; because the string is not a whole number, it throws a <code>TypeError</code> anyway (a string such as <code>"3"</code> would have been converted silently). 3. Both strings look like numbers, so <code>==</code> compares them as numbers, and <code>1e1</code> is 10.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project is a small Composer project with PSR-4 autoloading, <code>strict_types</code> in every file, and PHPStan at level <code>max</code> with no errors. Run your code with <code>php</code>; Laravel comes in the next chapter.</p>
+
+<div class="project">
+<p class="project-label">Project 2.1 · Easy</p>
+<h3>A typed price list</h3>
+<p class="project-goal">Read products from a JSON file, turn them into <code>Product</code> objects with checked values, and print a sorted price list.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>json_decode</code>, arrays and their functions, value objects, exceptions, and the pipe operator.</p>
+<ol class="steps">
+<li>Write <code>products.json</code> with at least six products, including one with a negative price and one with an unknown currency.</li>
+<li>Decode it with <code>json_decode($text, true, flags: JSON_THROW_ON_ERROR)</code>, and turn each item into a <code>Product</code>, using <code>Currency::tryFrom</code>.</li>
+<li>Collect the invalid items with the reason each was refused, instead of stopping at the first one.</li>
+<li>Sort the valid products by price with <code>usort</code> and the spaceship operator <code>&lt;=&gt;</code>, and print them as aligned columns with <code>printf</code>.</li>
+<li>Write the final steps as a pipe: decode, validate, sort, format.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>usort</code> changes the array you pass it, and returns <code>true</code>, not the sorted array. In a pipe, wrap it in an arrow function that sorts a copy and returns it.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 2.2 · Medium</p>
+<h3>An order that follows the rules</h3>
+<p class="project-goal">Model an order whose status can only move along allowed paths, with a history of every change.</p>
+<p class="project-skills"><strong>You will practise:</strong> enums with methods, <code>match</code>, asymmetric visibility, custom exceptions, and PHPStan.</p>
+<ol class="steps">
+<li>Give <code>OrderStatus</code> a method <code>canMoveTo(OrderStatus $next): bool</code>, written with <code>match</code>: pending to paid or cancelled, paid to shipped or cancelled, nothing after shipped or cancelled.</li>
+<li>Write an <code>Order</code> class with <code>public private(set) OrderStatus $status</code> and a history array of status changes with their times (<code>new DateTimeImmutable()</code>).</li>
+<li>Add <code>moveTo(OrderStatus $next)</code>, which throws your own <code>InvalidTransition</code> exception, naming both statuses, when the move is not allowed.</li>
+<li>Write a script that walks an order through a valid path and then tries an invalid move, catching the exception.</li>
+<li>Add a property hook <code>$isFinished</code> that is true for shipped and cancelled orders.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> put the rule in the enum, not in the order. Then a status page, an API and a background job all ask the same method, and the rule lives in one place.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 2.3 · Challenge</p>
+<h3>Build a tiny service container</h3>
+<p class="project-goal">Write a small version of the container at the heart of Laravel: it builds objects and their dependencies automatically from constructor types.</p>
+<p class="project-skills"><strong>You will practise:</strong> reflection, closures, interfaces, recursion, and the idea behind dependency injection.</p>
+<ol class="steps">
+<li>Write a <code>Container</code> class with <code>bind(string $id, Closure $factory)</code> and <code>make(string $id): object</code>.</li>
+<li>When <code>make</code> is asked for a class with no binding, read its constructor with <code>new ReflectionClass($id)</code>, make each parameter’s class recursively, and create the object.</li>
+<li>Add <code>singleton</code>, which builds the object once and returns the same one every time after.</li>
+<li>Bind an interface (for example <code>PaymentGateway</code>) to a class, and check that a service whose constructor asks for the interface receives that class.</li>
+<li>Throw a clear exception for a parameter that cannot be built (a scalar with no default value), and detect a loop where A needs B and B needs A.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> to find a loop, keep a list of the classes being built right now. If <code>make</code> is asked for one that is already in the list, the chain has come back to where it started.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Predict the result of each loose comparison, then check it: <code>'abc' == 0</code>, <code>'1' == '1.0'</code>, <code>null == 0</code>, <code>'' == null</code>, <code>'0' == false</code>, <code>' 1' == 1</code>.</li>
+<li><span class="level">Easy</span> This code is meant to add up the prices. What does it print, why, and how would you fix it in two different ways?<br><code>$total = 0; array_walk($prices, function (int $p) use ($total): void { $total += $p; }); echo $total;</code></li>
+<li><span class="level medium">Medium</span> Add the Kuwaiti dinar to <code>Currency</code>. It has 1000 fils, not 100, so <code>Money::format</code> must show three decimals for it. Change the code so that each currency says how many decimals it has.</li>
+<li><span class="level medium">Medium</span> In <code>shop.sh</code>, three lines report errors. For each one, name the PHP feature that caused it, and explain why <code>$kit-&gt;onSale(10)</code> works when <code>clone($kit, [...])</code> in the script does not.</li>
+<li><span class="level hard">Challenge</span> Give <code>Cart</code> a <code>$discountPercent</code> property, from 0 to 100, whose <code>set</code> hook throws a <code>ValueError</code> for anything else, and a <code>$payable</code> property hook that applies the discount to the total.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 3</p>
+<p>With modern PHP in hand, we create a Laravel project and rebuild the shop API with routes, controllers, requests and validation, and see how much of Chapter 1’s hand-written server the framework does for us.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">Try every exercise yourself before you look here. When your answer differs from this one, that is not necessarily wrong: most problems have several good solutions. If yours handles normal and unusual cases, and you can explain your choices to a colleague, it is a good answer. The full, tested code for every answer is in the book’s code repository.</p>
+
+<h2 class="plain-h">Chapter 1</h2>
+<ol class="exercises">
+<li>The status line is <code>HTTP/1.1 200 OK</code>; the headers are <code>Content-Type</code>, <code>Content-Length</code>, <code>Date</code> and <code>Connection</code> (and the development server’s extra <code>Host</code>); then comes the empty line, and the body is the JSON object of 41 bytes. Without <code>Host</code>, the PHP development server answers <code>200</code> as if nothing were wrong: it is lenient because it is a development tool. Production web servers such as Nginx answer <code>400 Bad Request</code>, because HTTP/1.1 requires the header.</li>
+<li><code>GET /products?max_price=100</code>: safe and idempotent. <code>PUT /products/2</code> with a full product: not safe, idempotent (the product ends up the same however many times it is sent). <code>POST /products/2/reviews</code>: neither; two requests make two reviews. <code>DELETE /cart/items/7</code>: not safe, idempotent. <code>PATCH /products/2</code> with <code>{"stock_change": -1}</code>: neither, because each request takes one more item from the stock; a <code>PATCH</code> that sets a value (<code>{"stock": 4}</code>) would be idempotent.</li>
+<li>In <code>handle</code>, before the <code>GET</code> route for one product, add the same pattern for <code>DELETE</code>: open the file and lock it, as <code>create</code> does, keep every product whose id is not the one asked for, write the list back if it got shorter, and answer <code>204</code>, or <code>404</code> if nothing was removed. The first delete answers <code>204</code> and the second <code>404</code>; that is still idempotent, because the server is in the same state after both. The new product, though, gets id 3 again, because the id is “number of products + 1”. A client holding an old link to product 3 now gets a different product, and if you had deleted product 1 instead, the new product would get the id of product 3, which still exists. Ids must never be reused: keep a counter in a file, <code>next-id.txt</code>, and read and increase it while holding the lock. With that change, the run in the code repository creates product 4. A database does this for you, with a sequence.</li>
+<li>The product list is public: anyone can read it with curl, so a page on another site reading it in a visitor’s browser learns nothing secret. CORS only stops other sites’ JavaScript from reading answers <em>with the visitor’s browser</em>. The danger is an endpoint that answers with private data because of the visitor’s cookies, such as <code>GET /me/orders</code>: there, letting any origin read the answer would let any site read the visitor’s orders. What protects it is not CORS alone, but the server checking who is asking (authentication), what they may see (authorisation), and cookies with <code>SameSite</code>, together with a short list of trusted origins.</li>
+<li>The answer must carry <code>Content-Encoding: gzip</code>, so the client knows to decompress; <code>Content-Length</code> with the size of the <em>compressed</em> bytes; and <code>Vary: Accept-Encoding</code>, so a cache never gives a compressed copy to a client that cannot read it. In <code>send</code>, check <code>$_SERVER['HTTP_ACCEPT_ENCODING']</code>, and compress with <code>gzencode</code>. With the three products of the run, the list is 128 bytes plain and 103 bytes compressed. That is a small saving, because gzip needs repetition to work with; on a list of a hundred products, the same JSON shrinks to a fraction of its size. That is also why servers do not compress tiny bodies: below about 1 KB, the work costs more than it saves. <code>curl --compressed</code> sends the header and decompresses the answer for you.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 2</h2>
+<ol class="exercises">
+<li><code>'abc' == 0</code> is <code>false</code>: since PHP 8, a number and a non-numeric string are compared as strings. <code>'1' == '1.0'</code> is <code>true</code>: two numeric strings are compared as numbers. <code>null == 0</code>, <code>'' == null</code> and <code>'0' == false</code> are all <code>true</code>, because each side converts to the same “empty” value. <code>' 1' == 1</code> is <code>true</code>: leading spaces are allowed in a numeric string. The script <code>answers/equality.php</code> prints exactly these results. With <code>===</code>, all six would be <code>false</code>.</li>
+<li>It prints <code>0</code>. The closure captured <code>$total</code> by value when it was created, so each call added to its own copy, and the outer variable never changed. The simplest fix needs no closure at all: <code>array_sum($prices)</code>. If you need a callback, capture by reference with <code>use (&amp;$total)</code>, or use <code>array_reduce</code>, which returns the new total instead of changing a variable. Both fixes print 63500 in <code>answers/walk.php</code>.</li>
+<li>Add <code>case KWD = 'KWD'</code> with the symbol <code>KD</code>, and a method <code>decimals(): int</code> that returns 3 for KWD and 2 for the others, written with <code>match</code> and a <code>default</code> arm. In <code>format</code>, compute <code>$unit = 10 ** $decimals</code>, then the whole part with <code>intdiv($this-&gt;amount, $unit)</code> and the minor part with <code>$this-&gt;amount % $unit</code>, padded to <code>$decimals</code> digits. 123456 is then <code>KD 123.456</code> in dinars and <code>E£ 1,234.56</code> in pounds. The knowledge stays in the enum, so a fourth currency with its own decimals changes one file.</li>
+<li>The first line comes from <strong>asymmetric visibility</strong>: <code>$lines</code> is <code>private(set)</code>, so only <code>Cart</code> may assign it. The second from a <strong>readonly</strong> property: <code>Money::$amount</code> was set in the constructor and can never change. The third also from <strong>readonly</strong>: a readonly property may only be set from inside its class (it is <code>protected(set)</code> by default), and <code>clone</code> with new values follows the same rule. <code>onSale</code> works because it runs inside <code>Product</code>, so it is allowed to set the copy’s properties. That is deliberate: the class decides which copies of itself may exist.</li>
+<li>The setter: <code>public int $discountPercent = 0 { set(int $value) { if ($value &lt; 0 || $value &gt; 100) { throw new \ValueError('discountPercent must be from 0 to 100'); } $this-&gt;discountPercent = $value; } }</code>. Inside the hook, assigning to the property itself stores the value. The total after the discount: <code>public Money $payable { get =&gt; new Money(intdiv($this-&gt;total-&gt;amount * (100 - $this-&gt;discountPercent), 100), $this-&gt;currency); }</code>. Note the backslash in <code>\ValueError</code>: inside the namespace <code>Shop</code>, a plain <code>ValueError</code> would mean <code>Shop\ValueError</code>, which does not exist. In <code>answers/run.php</code>, two kits of 450.00 with 10% off cost 810.00, and setting 150 throws the <code>ValueError</code> and leaves the discount at 10.</li>
+</ol>
+
+</section>
+</body></html>

@@ -1,0 +1,1420 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<title>Senior Backend Engineering</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "Senior Backend Engineering"; font: 700 8pt 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "Chapter 1: How Servers Work: HTTP in Depth"; } }
+@page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "Chapter 2: Node.js and TypeScript on the Server"; } }
+@page ch02:first { @top-center { content: none; } }
+@page answers { @top-center { content: "Answers to the Exercises"; } }
+@page answers:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-edition { align-self: flex-start; font: 700 12pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 10pt 0 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">From Zero to Senior · Book 3</p>
+  <h1 class="cv-title">Senior Backend Engineering</h1>
+  <p class="cv-sub">APIs, Databases, Security and Scale with Node.js and PostgreSQL</p><p class="cv-edition">Node.js Edition</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
+<span class="k">let</span> price;
+
+<span class="k">if</span> (age &lt; <span class="n">13</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>Node.js</span><span>TypeScript</span><span>PostgreSQL</span><span>Redis</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">Junior → Senior</span><span class="cv-author">Soliman Maged Saeed Salah</span></div>
+</div></section><section class="front half-title"><p class="ht">Senior Backend Engineering</p></section><section class="front title-page">
+          <p class="tp-series">From Zero to Senior · Book 3</p>
+          <h1 class="tp-title">Senior Backend Engineering</h1>
+          <p class="tp-sub">APIs, Databases, Security and Scale with Node.js and PostgreSQL</p><p class="tp-edition">Node.js Edition</p>
+          <p class="tp-level">Junior → Senior</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">Soliman Maged Saeed Salah</p>
+        </section><section class="front copyright">
+          <p><strong>Senior Backend Engineering</strong><br>APIs, Databases, Security and Scale with Node.js and PostgreSQL</p>
+          <p>© 2026 Soliman Maged Saeed Salah. All rights reserved. No part of this book may be reproduced in any form without written permission from the publisher, except for brief quotations in reviews.</p>
+          <p>First edition, 2026</p>
+          <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
+          <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: Foundations</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">How Servers Work: HTTP in Depth</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Node.js and TypeScript on the Server</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Designing REST APIs</span><span class="toc-p"></span></li><li class="toc-part">Part 2: Data</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">SQL and PostgreSQL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">Data Modelling and Migrations</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Transactions, Locks and Consistency</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Caching with Redis</span><span class="toc-p"></span></li><li class="toc-part">Part 3: Production</li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Authentication and Authorisation</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Security: The OWASP Top 10</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Background Jobs and Queues</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Real-Time with WebSockets</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Testing the Backend</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Logging, Metrics and Tracing</span><span class="toc-p"></span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Performance and Scaling</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Architecture: Monolith, Modules and Services</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Docker and Deployment</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Capstone: A Production API</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/en">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>How Servers Work: HTTP in Depth</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>follow a request from a URL to a response: name lookup, connection, request, answer</li>
+<li>read and write HTTP by hand, because it is plain text</li>
+<li>choose the right method and status code, and know which requests are safe to repeat</li>
+<li>use the headers that matter: content type and length, caching with ETags, CORS</li>
+<li>inspect any API with <code>curl</code>, the backend developer’s most used tool</li>
+<li>build a small JSON API with no framework, so that you know what every framework does for you</li>
+</ul>
+</div>
+
+<p class="lead">Every backend you will ever build, whatever the language or framework, does the same job: it waits for a message, works out what was asked, and sends a message back. The messages follow a protocol called HTTP. Frameworks hide it behind routes and controllers, which is useful until something goes wrong: a request that works in <code>curl</code> but not in the browser, a cache that never updates, a client that retries and charges a customer twice. Then you need to know what is really on the wire. This chapter shows it to you, byte by byte, with a small server we write ourselves.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The first API I wrote worked perfectly, as long as I was the only one calling it. Then a browser called it from another address, and nothing worked. I lost a day to a problem that two headers solved. Since then I read the raw request first, and guess second.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>From a URL to an answer</span></h2>
+
+<p>When a web app in Bit’s shop asks for <code>http://localhost:3000/products/2</code>, four things happen, in this order:</p>
+<ol>
+<li><strong>Name lookup.</strong> Computers talk to addresses, not names. The client asks the <dfn>Domain Name System</dfn> (DNS) for the address of the <dfn>host</dfn> (here <code>localhost</code>, which always means “this same computer”, at <code>127.0.0.1</code>). For a real site such as <code>shop.example</code>, a DNS server somewhere on the internet answers.</li>
+<li><strong>Connection.</strong> The client opens a <dfn>TCP connection</dfn> to that address and a <dfn>port</dfn>, a number that picks one program on the machine. Our server listens on port <code>3000</code>. TCP makes sure that bytes arrive complete and in order.</li>
+<li><strong>Security, for HTTPS.</strong> With <code>https://</code>, the two sides first agree on encryption keys (the <dfn>TLS handshake</dfn>), and the server proves who it is with a certificate. Everything after that is encrypted. The HTTP inside is the same.</li>
+<li><strong>Request and response.</strong> The client sends an HTTP <dfn>request</dfn> as text; the server sends back a <dfn>response</dfn>. The connection may then stay open for the next request.</li>
+</ol>
+
+<p>Everything in this chapter happens on your own computer, so you can see every step without a network in the way. We need a server to talk to. The book’s code folder has one for this chapter, a small API for Bit’s shop, with no framework at all. Start it in a terminal and leave that terminal open:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 1</div><pre class="code"><span class="c line-bidi"># Start the server (and leave it running in this terminal)</span>
+<span class="c">$ </span><span class="k">node server.ts</span>
+Listening on http://localhost:3000</pre></div>
+
+<p>Node 22.18 and later run TypeScript files directly: they remove the types and run what is left. We will read the whole server in Section 1.9. First, we look at it from the outside, the way every client does.</p>
+
+<h2><span class="sec">1.2</span> <span>HTTP is text</span></h2>
+
+<p>HTTP/1.1, the version every server understands, is plain text sent over the TCP connection. You can type a request yourself. The <code>nc</code> (netcat) tool opens a TCP connection and passes through whatever you give it; <code>printf</code> writes the request, with <code>\r\n</code> at the end of each line, as the protocol requires. Open a second terminal:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Type a request by hand: HTTP/1.1 is plain text over a TCP connection</span>
+<span class="c">$ </span><span class="k">printf &#x27;GET /products/1 HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n&#x27; | nc localhost 3000</span>
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 41
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000}</pre></div>
+
+<p>That is all an HTTP exchange is. Both messages have the same shape:</p>
+<ol>
+<li><strong>A first line.</strong> In the request, the <dfn>request line</dfn>: the <dfn>method</dfn> (<code>GET</code>), the <dfn>target</dfn> (<code>/products/1</code>) and the version. In the response, the <dfn>status line</dfn>: the version, a <dfn>status code</dfn> (<code>200</code>) and a short reason (<code>OK</code>).</li>
+<li><strong>Headers</strong>, one per line, <code>Name: value</code>. Names are not case sensitive: <code>content-type</code> and <code>Content-Type</code> are the same header.</li>
+<li><strong>An empty line.</strong> It says “the headers end here”. Forget it, and the server waits for more headers forever.</li>
+<li><strong>The body</strong>, if there is one. The receiver knows where it ends from <code>Content-Length</code>: here, 41 bytes.</li>
+</ol>
+
+<p>Our request had two headers. <code>Host</code> is required in HTTP/1.1, because one machine with one address often serves many sites, and the server needs to know which one you mean. <code>Connection: close</code> asks the server to close the connection after answering, so that <code>nc</code> stops; we will come back to connections in Section 1.7.</p>
+
+
+<h3>Let curl show you both sides</h3>
+
+<p>Typing requests by hand teaches the format, but every day you will use <code>curl</code>. It comes with macOS, Linux and Windows 10 and later. With <code>-v</code> (verbose) it shows everything it does; <code>-s</code> (silent) hides its progress bar:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Let curl show both sides: * is curl&#x27;s own news, &gt; is sent, &lt; is received</span>
+<span class="c">$ </span><span class="k">curl -sv localhost:3000/products/2</span>
+* Host localhost:3000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying 127.0.0.1:3000...
+* Connected to localhost (127.0.0.1) port 3000
+<span class="c">&gt; </span><span class="k">GET /products/2 HTTP/1.1</span>
+<span class="c">&gt; </span><span class="k">Host: localhost:3000</span>
+<span class="c">&gt; </span><span class="k">User-Agent: curl/8.5.0</span>
+<span class="c">&gt; </span><span class="k">Accept: */*</span>
+<span class="c">&gt; </span><span class="k"></span>
+&lt; HTTP/1.1 200 OK
+&lt; Content-Type: application/json; charset=utf-8
+&lt; Content-Length: 43
+&lt; Date: Thu, 19 Nov 2026 18:42:39 GMT
+&lt; Connection: keep-alive
+&lt; Keep-Alive: timeout=5
+&lt; 
+{ [43 bytes data]
+* Connection #0 to host localhost left intact
+{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000}</pre></div>
+
+<p>Read it from the top, and you see the four steps of 1.1. The lines with <code>*</code> are curl telling you what it does: it looked up <code>localhost</code>, found an IPv6 and an IPv4 address, and connected to port 3000. The lines with <code>&gt;</code> are the request it sent, including two headers we did not write: <code>User-Agent</code>, which names the client, and <code>Accept: */*</code>, which says that any type of answer is fine. The lines with <code>&lt;</code> are the response headers, and the last line is the body.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: the browser has the same view</p><p>In the browser’s developer tools, the Network panel shows the same thing for every request a page makes: method, address, status, request and response headers, and body. When a front end and a back end disagree, open it, find the request, and read it as you just read curl’s output. Most bugs are visible right there.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>Addresses: path and query string</span></h2>
+
+<p>The target of a request has two parts. The <dfn>path</dfn>, such as <code>/products</code>, names a <dfn>resource</dfn>: a thing the API knows about. The <dfn>query string</dfn>, after a <code>?</code>, holds <code>name=value</code> pairs joined with <code>&amp;</code>, usually to filter, sort or page through a list. Our server understands one, <code>max_price</code>:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># A list, filtered by a query string</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/products?max_price=15000&#x27;</span>
+[{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000},{&quot;id&quot;:3,&quot;name&quot;:&quot;Battery pack&quot;,&quot;price&quot;:12500}]
+<span class="c line-bidi"># Only the headers (HEAD): the same answer without the body</span>
+<span class="c">$ </span><span class="k">curl -sI localhost:3000/products</span>
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 132
+ETag: &quot;8f38510311e374f1&quot;
+Cache-Control: no-cache
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5</pre></div>
+
+<p>The quotes around the first address matter: without them, the shell would treat <code>?</code> and <code>&amp;</code> as its own special characters. The second command uses <code>-I</code>, which sends <code>HEAD</code>: the same request as <code>GET</code>, but the server answers with the headers only. A client can learn the size or the version of a big resource without downloading it.</p>
+
+<p>Prices are whole numbers of piastres (45000 is 450.00), never fractions. Floating-point numbers cannot hold most decimal fractions exactly, and money that is off by a fraction of a piastre is still wrong money. This rule follows us through the whole book.</p>
+
+<h2><span class="sec">1.4</span> <span>Methods, and which requests can be repeated</span></h2>
+
+<p>The method says what the client wants to do with the resource. Two of its properties matter more than its name:</p>
+<ul>
+<li>A method is <dfn>safe</dfn> if it only reads: it changes nothing on the server. Anyone can send it, any number of times: browsers prefetch links, search engines crawl them.</li>
+<li>A method is <dfn>idempotent</dfn> if sending it twice has the same effect as sending it once. This matters because networks fail. When a request times out, the client cannot know whether the server received it. It can safely send an idempotent request again; a non-idempotent one might do the work twice.</li>
+</ul>
+
+<table>
+<thead><tr><th>Method</th><th>Meaning</th><th>Safe</th><th>Idempotent</th></tr></thead>
+<tbody>
+<tr><td><code>GET</code></td><td>Read a resource</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>HEAD</code></td><td>Like GET, headers only</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>OPTIONS</code></td><td>Ask what is allowed (used by CORS, 1.8)</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>POST</code></td><td>Create something, or run an action</td><td>No</td><td><strong>No</strong></td></tr>
+<tr><td><code>PUT</code></td><td>Replace a resource with the one sent</td><td>No</td><td>Yes</td></tr>
+<tr><td><code>PATCH</code></td><td>Change part of a resource</td><td>No</td><td>Not guaranteed</td></tr>
+<tr><td><code>DELETE</code></td><td>Remove a resource</td><td>No</td><td>Yes</td></tr>
+</tbody>
+</table>
+
+<p><code>PUT</code> is idempotent because it says “make it this”: doing it twice leaves the same result. <code>POST</code> says “add one”: doing it twice adds two. Here is a <code>POST</code> that creates a product. With <code>-d</code>, curl sends a body (and switches to <code>POST</code> by itself); <code>-H</code> adds a header, and <code>-i</code> shows the response headers:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Create a product: 201 Created, and Location says where it lives</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:3000/products -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;: &quot;USB cable&quot;, &quot;price&quot;: 2500}&#x27;</span>
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+Content-Length: 40
+Location: /products/4
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{&quot;id&quot;:4,&quot;name&quot;:&quot;USB cable&quot;,&quot;price&quot;:2500}
+<span class="c line-bidi"># It is there now</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products/4</span>
+{&quot;id&quot;:4,&quot;name&quot;:&quot;USB cable&quot;,&quot;price&quot;:2500}</pre></div>
+
+<p>The answer is <code>201 Created</code>, not just <code>200 OK</code>, and the <code>Location</code> header gives the address of the new product. A client does not need to guess how addresses are built: the server tells it.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: a retried POST can charge twice</p><p>A phone on a weak network sends “pay 450.00”, the answer is lost, and the app tries again. With a plain <code>POST</code>, the customer pays twice. Serious APIs make such requests safe to repeat with an <dfn>idempotency key</dfn>: the client sends a unique value in a header, and the server remembers which keys it has already handled. We build this with a database in Chapter 6.</p></aside>
+
+<h2><span class="sec">1.5</span> <span>Status codes: the first thing a client reads</span></h2>
+
+<p>The status code is a three-digit number, and its first digit is its class:</p>
+<ul>
+<li><code>2xx</code>: it worked.</li>
+<li><code>3xx</code>: look somewhere else, or use what you already have.</li>
+<li><code>4xx</code>: the <em>client</em> made a mistake. Sending the same request again will fail again.</li>
+<li><code>5xx</code>: the <em>server</em> failed. The same request might work later.</li>
+</ul>
+
+<p>That difference between 4xx and 5xx is what clients, retry logic and monitoring tools rely on: a spike of 5xx wakes someone up at night, a spike of 4xx usually means a broken client. So each mistake gets the code that describes it. Here are the ones our server returns, with curl’s <code>-w</code> option printing the status after the body:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Each mistake has its own status code</span>
+<span class="c line-bidi"># No such product</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products/99 -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;not_found&quot;,&quot;message&quot;:&quot;No product with this id&quot;}} 404
+<span class="c line-bidi"># A method this address does not allow</span>
+<span class="c">$ </span><span class="k">curl -s -X DELETE localhost:3000/products -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;method_not_allowed&quot;,&quot;message&quot;:&quot;Use GET or POST here&quot;}} 405
+<span class="c line-bidi"># A body that is not JSON</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products -d &#x27;name=Cable&#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;unsupported_media_type&quot;,&quot;message&quot;:&quot;Send JSON&quot;}} 415
+<span class="c line-bidi"># Broken JSON</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;: &#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;bad_json&quot;,&quot;message&quot;:&quot;The body is not valid JSON&quot;}} 400
+<span class="c line-bidi"># JSON, but the fields are wrong</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 9.5}&#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;invalid&quot;,&quot;message&quot;:&quot;Check the fields&quot;,&quot;fields&quot;:{&quot;name&quot;:&quot;Required&quot;,&quot;price&quot;:&quot;A whole number of piastres above 0&quot;}}} 422
+<span class="c line-bidi"># Too big</span>
+<span class="c">$ </span><span class="k">head -c 2000 /dev/zero | tr &#x27;\0&#x27; x | curl -s localhost:3000/products -H &#x27;Content-Type: application/json&#x27; --data-binary @- -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;too_large&quot;,&quot;message&quot;:&quot;At most 1 KB&quot;}} 413</pre></div>
+
+<table>
+<thead><tr><th>Code</th><th>Meaning</th><th>When to use it</th></tr></thead>
+<tbody>
+<tr><td><code>200 OK</code></td><td>Here is what you asked for</td><td>Successful reads, and changes that return a body</td></tr>
+<tr><td><code>201 Created</code></td><td>A new resource exists</td><td>After a POST that creates; add <code>Location</code></td></tr>
+<tr><td><code>204 No Content</code></td><td>Done, nothing to send</td><td>A DELETE, or a change with no body to return</td></tr>
+<tr><td><code>301</code> / <code>308</code></td><td>Moved for good</td><td>Old addresses; 308 keeps the method and body</td></tr>
+<tr><td><code>304 Not Modified</code></td><td>Your copy is still good</td><td>Conditional requests (1.6)</td></tr>
+<tr><td><code>400 Bad Request</code></td><td>I cannot read this</td><td>Broken JSON, a malformed request</td></tr>
+<tr><td><code>401 Unauthorized</code></td><td>Who are you?</td><td>No login, or an expired one</td></tr>
+<tr><td><code>403 Forbidden</code></td><td>I know you, and no</td><td>Logged in, but not allowed</td></tr>
+<tr><td><code>404 Not Found</code></td><td>No such resource</td><td>Also to hide resources a user may not know exist</td></tr>
+<tr><td><code>405 Method Not Allowed</code></td><td>Not with this method</td><td>Always with an <code>Allow</code> header</td></tr>
+<tr><td><code>409 Conflict</code></td><td>That clashes with the current state</td><td>A duplicate, or an edit to an old version</td></tr>
+<tr><td><code>413 Content Too Large</code></td><td>The body is too big</td><td>Above your limit</td></tr>
+<tr><td><code>415 Unsupported Media Type</code></td><td>I do not read that format</td><td>A body that is not JSON</td></tr>
+<tr><td><code>422 Unprocessable Content</code></td><td>I read it, and it is wrong</td><td>Validation errors, field by field</td></tr>
+<tr><td><code>429 Too Many Requests</code></td><td>Slow down</td><td>Rate limits; add <code>Retry-After</code></td></tr>
+<tr><td><code>500 Internal Server Error</code></td><td>Our bug</td><td>Anything unexpected; never leak the details</td></tr>
+<tr><td><code>503 Service Unavailable</code></td><td>Not now</td><td>Overload or maintenance; add <code>Retry-After</code></td></tr>
+</tbody>
+</table>
+
+<p>Look at the bodies, too. Every error has the same shape: <code>{"error": {"code", "message"}}</code>, plus <code>fields</code> for validation. The <code>code</code> is for programs: it never changes, so a client can write <code>if (error.code === "invalid")</code>. The <code>message</code> is for people, and it can be reworded or translated without breaking any client. And the 422 answer lists <em>every</em> wrong field at once, so a form can show all its mistakes in one go instead of one per attempt.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Where does an HTTP request’s list of headers end, and how does the receiver know where the body ends?</li><li>A client sends <code>DELETE /products/3</code> and the connection drops before the answer. Can it simply send the request again? And a <code>POST /orders</code>?</li><li>Which status code fits “the email field is empty”: 400 or 422?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">1.6</span> <span>Headers that do real work</span></h2>
+
+<p>Dozens of headers exist; a handful do most of the work in an API.</p>
+
+<h3>Content-Type and Content-Length</h3>
+
+<p><code>Content-Type</code> says what the body is: <code>application/json; charset=utf-8</code> for our answers. The client must send it too: our server answered <code>415</code> to <code>-d 'name=Cable'</code>, because curl labels such a body <code>application/x-www-form-urlencoded</code>, the format of an HTML form. <code>Content-Length</code> is the size of the body in <strong>bytes</strong>, not in characters. In UTF-8, an English letter takes one byte, but an Arabic letter takes two, and many emoji take four. A server that counts characters cuts Arabic text short.</p>
+
+<h3>Caching: ETag and 304</h3>
+
+<p>Most requests ask for something the client has already seen. The server can label each version of a resource with an <dfn>ETag</dfn>, a short fingerprint of its content. Our server makes one from a hash of the list. The client sends it back in <code>If-None-Match</code>, and if the list has not changed the server answers <code>304 Not Modified</code> with no body:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># The first visit: the server sends the list and its ETag</span>
+<span class="c">$ </span><span class="k">curl -si localhost:3000/products</span>
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 173
+ETag: &quot;c25b00ae213de631&quot;
+Cache-Control: no-cache
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{&quot;id&quot;:1,&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000},{&quot;id&quot;:2,&quot;name&quot;:&quot;Spare wheels&quot;,&quot;price&quot;:6000},{&quot;id&quot;:3,&quot;name&quot;:&quot;Battery pack&quot;,&quot;price&quot;:12500},{&quot;id&quot;:4,&quot;name&quot;:&quot;USB cable&quot;,&quot;price&quot;:2500}]
+<span class="c line-bidi"># The next visit sends the ETag back: nothing changed, so 304 and no body</span>
+<span class="c">$ </span><span class="k">curl -si localhost:3000/products -H &#x27;If-None-Match: &quot;c25b00ae213de631&quot;&#x27;</span>
+HTTP/1.1 304 Not Modified
+Content-Length: 0
+ETag: &quot;c25b00ae213de631&quot;
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5</pre></div>
+
+<p>Browsers do this by themselves: they store the ETag and send it back on the next visit. <code>Cache-Control: no-cache</code> tells them to always ask first (it does not mean “do not store”; that is <code>no-store</code>). Other values let a client reuse a copy without asking at all, for a time: <code>max-age=60</code> means one minute, which is right for a product list that may change, and <code>max-age=31536000, immutable</code> means one year, which is right for files whose name changes with their content, such as the bundles from Book 2.</p>
+
+<h3>Authorization and cookies</h3>
+
+<p>A client proves who it is in one of two ways. Programs and mobile apps usually send a token in <code>Authorization: Bearer &lt;token&gt;</code>. Browsers usually rely on a <dfn>cookie</dfn>: the server sends <code>Set-Cookie: session=…; HttpOnly; Secure; SameSite=Lax</code>, and the browser sends <code>Cookie: session=…</code> with every later request to that site. <code>HttpOnly</code> hides the cookie from JavaScript, so an injected script cannot steal it; <code>Secure</code> sends it over HTTPS only; <code>SameSite</code> limits when other sites can make the browser send it. Chapter 8 builds both, properly.</p>
+
+<h2><span class="sec">1.7</span> <span>Connections, and the versions of HTTP</span></h2>
+
+<p>Opening a TCP connection costs a round trip to the server, and the TLS handshake costs one or two more. To a server on another continent, that is a few hundred milliseconds before the first byte of the answer. So HTTP/1.1 keeps connections open by default, and sends the next request on the same one. curl can show whether it was reused:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Two requests in one curl command: is the connection reused?</span>
+<span class="c">$ </span><span class="k">curl -sv localhost:3000/products/1 localhost:3000/products/2 -o /dev/null -o /dev/null 2&gt;&amp;1 | grep -E &#x27;Connected|Re-using|left intact|Closing|^&lt; HTTP&#x27;</span>
+* Connected to localhost (127.0.0.1) port 3000
+&lt; HTTP/1.1 200 OK
+* Connection #0 to host localhost left intact
+* Re-using existing connection with host localhost
+&lt; HTTP/1.1 200 OK
+* Connection #0 to host localhost left intact</pre></div>
+
+<p>For the second request, curl says <code>Re-using existing connection</code>. Node keeps an idle connection for five seconds (the <code>Keep-Alive: timeout=5</code> header you saw in every answer), and one Node process can hold thousands of them at once, because it never waits: while one request waits for a file or a database, the same thread works on the others. Chapter 2 looks at this <dfn>event loop</dfn> closely.</p>
+
+<p>HTTP/2 and HTTP/3 change how the messages travel, not what they mean. HTTP/2 sends them in a compact binary form and runs many requests at the same time over one connection. HTTP/3 does the same over QUIC, a newer transport that recovers faster from lost packets, which helps on mobile networks. Methods, headers, status codes and bodies are exactly what you have learned. In practice, the web server or load balancer in front of your application speaks HTTP/2 and HTTP/3 to browsers, and plain HTTP/1.1 to your application.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Good to know: HTTPS everywhere</p><p>Without TLS, anyone on the path (the café’s Wi-Fi, a provider) can read and change every request, passwords and tokens included. Every public API must use HTTPS, and certificates are free from Let’s Encrypt. You rarely write TLS code yourself: the web server or the hosting platform does it, which is how we set it up in Chapter 16.</p></aside>
+
+<h2><span class="sec">1.8</span> <span>CORS: when a browser calls your API</span></h2>
+
+<p>A browser protects its users with the <dfn>same-origin policy</dfn>. An <dfn>origin</dfn> is a scheme, a host and a port together: <code>http://localhost:5173</code>, where a Vite app runs, and <code>http://localhost:3000</code>, where our API runs, are different origins. By default, JavaScript on one origin may send a request to another, but may not read the answer. Otherwise any site you visit could read your bank’s pages with your cookies.</p>
+
+<p><dfn>CORS</dfn> (Cross-Origin Resource Sharing) lets a server say which other origins may read its answers. For a request that could change something, such as a POST with a JSON body, the browser first sends a <dfn>preflight</dfn>: an <code>OPTIONS</code> request asking whether the real one is allowed. We can play the browser with curl:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># A browser asks first (a preflight) before a POST from another site</span>
+<span class="c">$ </span><span class="k">curl -si -X OPTIONS localhost:3000/products -H &#x27;Origin: http://localhost:5173&#x27; -H &#x27;Access-Control-Request-Method: POST&#x27; -H &#x27;Access-Control-Request-Headers: content-type&#x27;</span>
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: http://localhost:5173
+Vary: Origin
+Content-Length: 0
+Access-Control-Allow-Methods: GET, POST
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Max-Age: 600
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+<span class="c line-bidi"># Another site is not on the list: no Access-Control header, so the browser blocks it</span>
+<span class="c">$ </span><span class="k">curl -si localhost:3000/products/1 -H &#x27;Origin: https://evil.example&#x27;</span>
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 41
+Date: Thu, 19 Nov 2026 18:42:39 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Robot kit&quot;,&quot;price&quot;:45000}</pre></div>
+
+<p>For the web app’s origin, the server answers the preflight with what is allowed, and the browser remembers it for ten minutes (<code>Max-Age: 600</code>). For any other origin there is no <code>Access-Control-Allow-Origin</code> header, and the browser refuses to give the answer to the page’s JavaScript. The <code>Vary: Origin</code> header tells caches that the answer depends on the <code>Origin</code> header, so that one site is never served a copy made for another.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: CORS is not access control</p><p>Look again at the second command: the server still answered <code>200</code> with the product. CORS is enforced by the <em>browser</em>, to protect the browser’s user. curl, a script or an attacker’s server ignores it completely. Anything that must be private needs authentication and authorisation on the server. And never answer <code>Access-Control-Allow-Origin: *</code> together with cookies: list the origins you trust, as our server does.</p></aside>
+
+<h2><span class="sec">1.9</span> <span>Inside the server</span></h2>
+
+<p>Now that you know what goes over the wire, the server holds no surprises. We read it in five parts, from the top of the file.</p>
+
+
+<p><strong>The data and the settings.</strong> The products live in an array, with prices in piastres. <code>ORIGINS</code> lists the only web app allowed to read our answers from a browser (1.8), and <code>MAX_BODY</code> is the largest body we accept:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (1 of 5)</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { IncomingMessage, ServerResponse } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> { createHash } <span class="k">from</span> <span class="s">&quot;node:crypto&quot;</span>;
+
+<span class="k">type</span> Product = { id: number; name: string; price: number };
+<span class="k">type</span> Headers = Record&lt;string, string&gt;;
+
+<span class="k">const</span> products: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;Robot kit&quot;</span>, price: <span class="n">45000</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;Spare wheels&quot;</span>, price: <span class="n">6000</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;Battery pack&quot;</span>, price: <span class="n">12500</span> },
+];
+<span class="c line-bidi">// the web app that may call this API from a browser</span>
+<span class="k">const</span> ORIGINS = [<span class="s">&quot;http://localhost:5173&quot;</span>];
+<span class="k">const</span> MAX_BODY = <span class="n">1024</span>; <span class="c line-bidi">// bytes</span></pre></div>
+
+<p><strong>One place sends answers.</strong> Every response in the file goes through <code>send</code>, which sets the type and the length, counted in bytes with <code>Buffer.byteLength</code>. An empty body gets no type at all. <code>fail</code> gives every error the same shape. Because of these two functions, no route can forget a header or invent its own error format:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (2 of 5)</div><pre class="code"><span class="k">function</span> send(res: ServerResponse, status: number, body?: unknown,
+              headers: Headers = {}) {
+  <span class="k">const</span> text = body === <span class="k">undefined</span> ? <span class="s">&quot;&quot;</span> : JSON.stringify(body);
+  res.writeHead(status, {
+    ...(text &amp;&amp; { <span class="s">&quot;Content-Type&quot;</span>: <span class="s">&quot;application/json; charset=utf-8&quot;</span> }),
+    <span class="s">&quot;Content-Length&quot;</span>: String(Buffer.byteLength(text)), <span class="c line-bidi">// bytes, not characters</span>
+    ...headers,
+  });
+  res.end(text);
+}
+
+<span class="k">function</span> fail(res: ServerResponse, status: number, code: string,
+              message: string, extra = {}, headers: Headers = {}) {
+  send(res, status, { error: { code, message, ...extra } }, headers);
+}</pre></div>
+
+<p><strong>Routing.</strong> <code>handle</code> looks at the method and the path and decides what to do: the CORS headers first, for any request, then the preflight, then the list, then one product. Everything else is a 404. Notice that the 405 answer names the allowed methods, and that a <code>HEAD</code> is answered like a <code>GET</code>: Node itself drops the body of an answer to <code>HEAD</code>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (3 of 5)</div><pre class="code"><span class="k">async</span> <span class="k">function</span> handle(req: IncomingMessage, res: ServerResponse) {
+  <span class="k">const</span> url = <span class="k">new</span> URL(req.url ?? <span class="s">&quot;/&quot;</span>, <span class="s">&quot;http://localhost&quot;</span>);
+  <span class="k">const</span> origin = req.headers.origin;
+  <span class="k">if</span> (origin &amp;&amp; ORIGINS.includes(origin)) {
+    res.setHeader(<span class="s">&quot;Access-Control-Allow-Origin&quot;</span>, origin);
+    res.setHeader(<span class="s">&quot;Vary&quot;</span>, <span class="s">&quot;Origin&quot;</span>);
+  }
+
+  <span class="k">if</span> (req.method === <span class="s">&quot;OPTIONS&quot;</span>) {
+    <span class="k">return</span> send(res, <span class="n">204</span>, <span class="k">undefined</span>, {
+      <span class="s">&quot;Access-Control-Allow-Methods&quot;</span>: <span class="s">&quot;GET, POST&quot;</span>,
+      <span class="s">&quot;Access-Control-Allow-Headers&quot;</span>: <span class="s">&quot;Content-Type&quot;</span>,
+      <span class="s">&quot;Access-Control-Max-Age&quot;</span>: <span class="s">&quot;600&quot;</span>,
+    });
+  }
+
+  <span class="k">if</span> (url.pathname === <span class="s">&quot;/products&quot;</span>) {
+    <span class="k">if</span> (req.method === <span class="s">&quot;GET&quot;</span> || req.method === <span class="s">&quot;HEAD&quot;</span>) {
+      <span class="k">const</span> max = Number(url.searchParams.get(<span class="s">&quot;max_price&quot;</span>) ?? Infinity);
+      <span class="k">const</span> list = products.filter((p) =&gt; p.price &lt;= max);
+      <span class="k">const</span> hash = createHash(<span class="s">&quot;md5&quot;</span>).update(JSON.stringify(list)).digest(<span class="s">&quot;hex&quot;</span>);
+      <span class="k">const</span> etag = <span class="s">`&quot;${hash.slice(0, 16)}&quot;`</span>;
+      <span class="k">if</span> (req.headers[<span class="s">&quot;if-none-match&quot;</span>] === etag) {
+        <span class="k">return</span> send(res, <span class="n">304</span>, <span class="k">undefined</span>, { ETag: etag });
+      }
+      <span class="k">return</span> send(res, <span class="n">200</span>, list, { ETag: etag, <span class="s">&quot;Cache-Control&quot;</span>: <span class="s">&quot;no-cache&quot;</span> });
+    }
+    <span class="k">if</span> (req.method === <span class="s">&quot;POST&quot;</span>) <span class="k">return</span> create(req, res);
+    <span class="k">return</span> fail(res, <span class="n">405</span>, <span class="s">&quot;method_not_allowed&quot;</span>, <span class="s">&quot;Use GET or POST here&quot;</span>, {},
+                { Allow: <span class="s">&quot;GET, HEAD, POST&quot;</span> });
+  }
+
+  <span class="k">const</span> one = url.pathname.match(/^\/products\/(\d+)$/);
+  <span class="k">if</span> (one &amp;&amp; req.method === <span class="s">&quot;GET&quot;</span>) {
+    <span class="k">const</span> product = products.find((p) =&gt; p.id === Number(one[<span class="n">1</span>]));
+    <span class="k">if</span> (!product) <span class="k">return</span> fail(res, <span class="n">404</span>, <span class="s">&quot;not_found&quot;</span>, <span class="s">&quot;No product with this id&quot;</span>);
+    <span class="k">return</span> send(res, <span class="n">200</span>, product);
+  }
+  <span class="k">return</span> fail(res, <span class="n">404</span>, <span class="s">&quot;not_found&quot;</span>, <span class="s">&quot;Nothing here&quot;</span>);
+}</pre></div>
+
+<p><strong>Distrust the body.</strong> Creating a product checks everything a client could get wrong, in order: the type before reading, the size while reading (<code>readBody</code> stops at 1 KB, so a huge body never reaches memory), the JSON in a <code>try</code>, and then each field for its type and range, collecting every error before answering. Real APIs allow more than 1 KB, but they always have a limit; without one, a single client can fill the server’s memory.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (4 of 5)</div><pre class="code"><span class="k">async</span> <span class="k">function</span> readBody(req: IncomingMessage): Promise&lt;string&gt; {
+  <span class="k">let</span> size = <span class="n">0</span>;
+  <span class="k">const</span> parts: Buffer[] = [];
+  <span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> chunk <span class="k">of</span> req) {
+    size += chunk.length;
+    <span class="k">if</span> (size &gt; MAX_BODY) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;too_large&quot;</span>);
+    parts.push(chunk);
+  }
+  <span class="k">return</span> Buffer.concat(parts).toString(<span class="s">&quot;utf8&quot;</span>);
+}
+
+<span class="k">async</span> <span class="k">function</span> create(req: IncomingMessage, res: ServerResponse) {
+  <span class="k">if</span> (!req.headers[<span class="s">&quot;content-type&quot;</span>]?.startsWith(<span class="s">&quot;application/json&quot;</span>)) {
+    <span class="k">return</span> fail(res, <span class="n">415</span>, <span class="s">&quot;unsupported_media_type&quot;</span>, <span class="s">&quot;Send JSON&quot;</span>);
+  }
+  <span class="k">let</span> data: { name?: unknown; price?: unknown };
+  <span class="k">try</span> {
+    data = JSON.parse(<span class="k">await</span> readBody(req));
+  } <span class="k">catch</span> (e) {
+    <span class="k">if</span> (e <span class="k">instanceof</span> Error &amp;&amp; e.message === <span class="s">&quot;too_large&quot;</span>) {
+      <span class="k">return</span> fail(res, <span class="n">413</span>, <span class="s">&quot;too_large&quot;</span>, <span class="s">&quot;At most 1 KB&quot;</span>);
+    }
+    <span class="k">return</span> fail(res, <span class="n">400</span>, <span class="s">&quot;bad_json&quot;</span>, <span class="s">&quot;The body is not valid JSON&quot;</span>);
+  }
+
+  <span class="k">const</span> { name, price } = data;
+  <span class="k">const</span> errors: Record&lt;string, string&gt; = {};
+  <span class="k">if</span> (<span class="k">typeof</span> name !== <span class="s">&quot;string&quot;</span> || !name.trim()) errors.name = <span class="s">&quot;Required&quot;</span>;
+  <span class="k">if</span> (<span class="k">typeof</span> price !== <span class="s">&quot;number&quot;</span> || !Number.isInteger(price) || price &lt;= <span class="n">0</span>) {
+    errors.price = <span class="s">&quot;A whole number of piastres above 0&quot;</span>;
+  }
+  <span class="k">if</span> (Object.keys(errors).length) {
+    <span class="k">return</span> fail(res, <span class="n">422</span>, <span class="s">&quot;invalid&quot;</span>, <span class="s">&quot;Check the fields&quot;</span>, { fields: errors });
+  }
+
+  <span class="k">const</span> product = {
+    id: products.length + <span class="n">1</span>,
+    name: (name as string).trim(),
+    price: price as number,
+  };
+  products.push(product);
+  send(res, <span class="n">201</span>, product, { Location: <span class="s">`/products/${product.id}`</span> });
+}</pre></div>
+
+<p><strong>The server itself.</strong> <code>createServer</code> calls our function for every request. When the response is finished, one line goes to the log with the method, the address, the status and the time it took. Any unexpected error is caught here, once: the real error goes to the log, and the client gets a plain 500 without stack traces or file paths that would help an attacker. <code>requestTimeout</code> cuts off a client that sends too slowly, so a few slow clients cannot hold every connection:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (5 of 5)</div><pre class="code"><span class="k">const</span> server = createServer((req, res) =&gt; {
+  <span class="k">const</span> start = performance.now();
+  res.on(<span class="s">&quot;finish&quot;</span>, () =&gt; {
+    <span class="k">const</span> ms = Math.round(performance.now() - start);
+    console.log(<span class="s">`${req.method} ${req.url} ${res.statusCode} ${ms}ms`</span>);
+  });
+  handle(req, res).<span class="k">catch</span>((error) =&gt; {
+    console.error(error); <span class="c line-bidi">// the details stay in the server&#x27;s log</span>
+    <span class="k">if</span> (!res.headersSent) {
+      fail(res, <span class="n">500</span>, <span class="s">&quot;server_error&quot;</span>, <span class="s">&quot;Something went wrong on our side&quot;</span>);
+    }
+  });
+});
+server.requestTimeout = 10_000; <span class="c line-bidi">// a client that sends too slowly is cut off</span>
+server.listen(<span class="n">3000</span>, () =&gt; console.log(<span class="s">&quot;Listening on http://localhost:3000&quot;</span>));</pre></div>
+
+<p>One thing is deliberately missing: the products live in an array, so a restart loses everything we created. A real API keeps them in a database, which is where Part 2 starts. And this is the terminal where the server was running, after all of this chapter’s requests:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 1</div><pre class="code"><span class="c line-bidi"># Start the server (and leave it running in this terminal)</span>
+<span class="c">$ </span><span class="k">node server.ts</span>
+Listening on http://localhost:3000
+GET /products/1 200 1ms
+GET /products/2 200 0ms
+GET /products?max_price=15000 200 1ms
+HEAD /products 200 1ms
+POST /products 201 2ms
+GET /products/4 200 0ms
+GET /products/99 404 0ms
+DELETE /products 405 1ms
+...</pre></div>
+
+<p>Every framework in this book does what this one file does, and much more, and names the parts: a <dfn>router</dfn> matches the method and path, <dfn>middleware</dfn> runs for every request (logging, CORS, limits), <dfn>validation</dfn> checks the input, and an <dfn>error handler</dfn> turns exceptions into answers. When the framework surprises you, you now know what it is doing underneath.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: look at the wire first</p><p>When an API “does not work”, do not change code at random. Reproduce the request with <code>curl -v</code>, or copy it from the browser’s Network panel (“Copy as cURL”), and read the request and the answer line by line: the method, the address, the <code>Content-Type</code>, the status, the error body. Nine times out of ten the problem is in plain sight there. Keep the working curl command in the bug report or the pull request, so the next person can check it in one line.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Every answer is <code>200</code>, with <code>{"ok": false}</code> inside</td><td>Clients, caches and monitoring think everything worked</td><td>The status code that describes the result</td></tr>
+<tr><td>Validation errors as <code>500</code></td><td>Alarms ring for a user’s typo</td><td>4xx for the client’s mistakes, 5xx only for yours</td></tr>
+<tr><td>A <code>GET</code> that changes data</td><td>Prefetching and crawlers change it by themselves</td><td>Only safe actions with GET and HEAD</td></tr>
+<tr><td>Blind retries of <code>POST</code></td><td>Double orders and double payments</td><td>Idempotency keys</td></tr>
+<tr><td><code>Content-Length</code> counted in characters</td><td>Arabic and emoji bodies cut short</td><td>Count bytes</td></tr>
+<tr><td>No limit on body size or time</td><td>One client fills memory or holds every connection</td><td>A size cap (413) and timeouts</td></tr>
+<tr><td>Stack traces in error answers</td><td>Attackers learn paths and versions</td><td>Details in the log, a plain message to the client</td></tr>
+<tr><td>Fixing CORS errors with <code>*</code></td><td>Any site can read the answers</td><td>A list of trusted origins, and real authorisation</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>A request goes through a <strong>name lookup</strong>, a <strong>TCP connection</strong>, <strong>TLS</strong> for HTTPS, and then the HTTP <strong>request and response</strong>.</li>
+<li>HTTP/1.1 is <strong>text</strong>: a first line, headers, an empty line, and a body whose size is in <code>Content-Length</code>, in bytes.</li>
+<li>The <strong>path</strong> names a resource; the <strong>query string</strong> filters and pages.</li>
+<li><strong>Safe</strong> methods only read; <strong>idempotent</strong> ones can be repeated. <code>POST</code> is neither, so retries need idempotency keys.</li>
+<li><strong>2xx</strong> worked, <strong>3xx</strong> look elsewhere, <strong>4xx</strong> the client’s mistake, <strong>5xx</strong> the server’s. Errors have one shape, with a stable <code>code</code> and a readable <code>message</code>.</li>
+<li><strong>ETag</strong> and <code>If-None-Match</code> turn repeated reads into empty <code>304</code> answers; <code>Cache-Control</code> says how long a copy may be reused.</li>
+<li>Connections are <strong>kept alive</strong> and reused; HTTP/2 and HTTP/3 change the transport, not the meaning.</li>
+<li><strong>CORS</strong> lets a browser page read answers from another origin. It protects browser users; it does not protect your server.</li>
+<li>Every server, with or without a framework, needs: one way to answer, distrust of input, limits, caught errors and a log line per request.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. At the first empty line; the body is exactly <code>Content-Length</code> bytes long. 2. Yes for <code>DELETE</code>: it is idempotent, so a second one leaves the same state (even though its answer may be <code>404</code>). No for <code>POST /orders</code>: it might create a second order, unless the API supports an idempotency key. 3. 422: the request was well-formed JSON that the server could read; its content failed validation.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project builds a small server with no framework, in the language of your edition. Test every one with curl, and keep the commands in a <code>requests.sh</code> file next to the code: it is your first test suite.</p>
+
+<div class="project">
+<p class="project-label">Project 1.1 · Easy</p>
+<h3>An echo server</h3>
+<p class="project-goal">Build a server that answers any request with a JSON description of the request itself: method, path, query, headers and body.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading every part of a request, query strings, headers, and setting the content type and length.</p>
+<ol class="steps">
+<li>Answer every method and every path with <code>200</code> and a JSON body.</li>
+<li>Put the query string in an object (<code>?a=1&amp;b=2</code> becomes <code>{"a": "1", "b": "2"}</code>) and the headers in another.</li>
+<li>Include the body as text, and its size in bytes.</li>
+<li>Call it with curl using <code>GET</code>, <code>POST</code> with <code>-d</code>, and <code>-H</code> with a header of your own. Then open it in a browser and compare the headers the browser sends with curl’s.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is a real tool. When you wonder what a front end, a webhook or a mobile app is actually sending, point it at your echo server for a minute.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 1.2 · Medium</p>
+<h3>A careful file server</h3>
+<p class="project-goal">Serve the files of a <code>public/</code> folder, with the right types, ETags and errors, and without ever leaving the folder.</p>
+<p class="project-skills"><strong>You will practise:</strong> content types, conditional requests and 304, HEAD, 404 and 405, and path traversal protection.</p>
+<ol class="steps">
+<li>Map the path to a file inside <code>public/</code>, and <code>/</code> to <code>index.html</code>. Answer <code>404</code> when there is no such file.</li>
+<li>Set <code>Content-Type</code> from the extension, for at least <code>.html</code>, <code>.css</code>, <code>.js</code>, <code>.png</code>, <code>.svg</code> and <code>.json</code>.</li>
+<li>Send an ETag built from the file’s size and modification time, and answer <code>304</code> when <code>If-None-Match</code> matches.</li>
+<li>Answer <code>HEAD</code> without a body, and <code>405</code> with an <code>Allow</code> header for any other method.</li>
+<li>Try <code>curl --path-as-is localhost:3000/../server.ts</code>. If you get your own source code back, fix it: resolve the full path and check that it is still inside <code>public/</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> checking the path before resolving it is not enough: <code>%2e%2e%2f</code> is <code>../</code> in disguise. Decode and resolve the path first, and only then compare it with the folder.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 1.3 · Challenge</p>
+<h3>HTTP over a bare socket</h3>
+<p class="project-goal">Write a tiny HTTP/1.1 server directly on a TCP socket, without the language’s HTTP library: read requests, parse them yourself, and answer.</p>
+<p class="project-skills"><strong>You will practise:</strong> the message format byte by byte, <code>Content-Length</code>, keep-alive, and what HTTP libraries protect you from.</p>
+<ol class="steps">
+<li>Listen with <code>net.createServer</code> from <code>node:net</code>. Collect bytes until you see the empty line (<code>\r\n\r\n</code>).</li>
+<li>Parse the request line and the headers. Answer <code>400</code> to anything that does not look like HTTP.</li>
+<li>If there is a <code>Content-Length</code>, read exactly that many bytes of body; refuse more than 1 KB with <code>413</code>.</li>
+<li>Answer with a correct status line, headers and body. Keep the connection open for the next request unless the client sent <code>Connection: close</code>, and check it with the two-request curl command from 1.7.</li>
+<li>Test the edge cases: a request that arrives in two pieces (send it with <code>nc</code>, typing slowly), and two requests in one piece.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> TCP delivers a stream of bytes, not messages. One read may hold half a request, or a request and a half. Keep a buffer, and only take a request out of it when it is complete. This is exactly the kind of work you should never do in production, and doing it once shows you why.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In the raw response of 1.2, name the status line, each header, the empty line and the body. Then send the same request with <code>nc</code> but without the <code>Host</code> header. What does the server answer, and why?</li>
+<li><span class="level">Easy</span> For each request, say whether it is safe and whether it is idempotent: <code>GET /products?max_price=100</code>, <code>PUT /products/2</code> with a full product, <code>POST /products/2/reviews</code>, <code>DELETE /cart/items/7</code>, <code>PATCH /products/2</code> with <code>{"stock_change": -1}</code>.</li>
+<li><span class="level medium">Medium</span> Add <code>DELETE /products/:id</code> to the server: <code>204</code> when it removes a product, <code>404</code> when there is none. Delete product 3 twice, then create a new product. What id does it get, and is that a problem?</li>
+<li><span class="level medium">Medium</span> The request from <code>https://evil.example</code> in 1.8 got a <code>200</code> with the product. Explain why that is not a security hole for this endpoint, and describe an endpoint where the same behaviour would be one, and what protects it.</li>
+<li><span class="level hard">Challenge</span> Make the server compress bodies of 100 bytes or more with gzip when the client sends <code>Accept-Encoding: gzip</code>. Which headers must the answer carry? Compare the sizes with and without compression using curl.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 2</p>
+
+<p>We move from one file to a real Node.js project in TypeScript: the event loop that let one process hold all those connections, streams, configuration and errors, and the tools that make a server pleasant to work on.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b3/node/runtime/en">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">Chapter 2</p><h1>Node.js and TypeScript on the Server</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>set up a server project in TypeScript that Node runs directly, and that <code>tsc</code> checks</li>
+<li>explain the event loop, and predict the order in which code runs</li>
+<li>keep the event loop free, moving heavy CPU work to worker threads</li>
+<li>wait for several things at once with promises, with failures and time limits</li>
+<li>process big data with streams, in constant memory</li>
+<li>load and check configuration, shut down gracefully, and test with Node’s own test runner</li>
+</ul>
+</div>
+
+<p class="lead">In Chapter 1 our server was one file. Real servers are projects: configuration that changes between your laptop and production, tests, code split into modules, and a process that must stay up for months. They also share one property that surprises developers who come from the browser or from PHP: a Node server runs all its JavaScript on a single thread, for every user at once. This chapter shows why that is fast, how one careless loop can freeze every user, and the tools that keep a Node server healthy.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>My first Node server resized photos inside the request handler. It worked beautifully on my laptop. The day ten people uploaded at once, every page of the site stopped answering, including the ones that had nothing to do with photos. That was how I met the event loop.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>What Node is</span></h2>
+
+<p>Node is three things put together. <strong>V8</strong>, the JavaScript engine from Chrome, runs your code. <strong>libuv</strong>, a library written in C, talks to the operating system: it opens files and network connections, and tells Node when something is ready. And a <strong>standard library</strong> (<code>node:http</code>, <code>node:fs</code>, <code>node:stream</code>, <code>node:test</code> and many more) wraps it all for JavaScript.</p>
+
+<p>The important design choice is that your JavaScript runs on one thread, and <dfn>I/O</dfn> (input and output: the network, the disk, a database) never makes it wait. When a request handler asks the database for a list, Node hands the work to the operating system and moves on to the next request. When the list arrives, Node calls your code back. One process can serve thousands of connections at once this way, because most of a server’s time is spent waiting for I/O, and waiting costs Node nothing.</p>
+
+<p>The cost of the design is just as important: while your JavaScript is <em>computing</em>, nothing else runs. We will see both sides for real in this chapter.</p>
+
+<h2><span class="sec">2.2</span> <span>A project, not a file</span></h2>
+
+<p>Here is the project for this chapter: Bit’s shop again, with a few new routes. Its <code>package.json</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">package.json</div><pre class="code">{
+  <span class="s">&quot;name&quot;</span>: <span class="s">&quot;bit-shop&quot;</span>,
+  <span class="s">&quot;version&quot;</span>: <span class="s">&quot;1.0.0&quot;</span>,
+  <span class="s">&quot;private&quot;</span>: <span class="k">true</span>,
+  <span class="s">&quot;type&quot;</span>: <span class="s">&quot;module&quot;</span>,
+  <span class="s">&quot;engines&quot;</span>: { <span class="s">&quot;node&quot;</span>: <span class="s">&quot;&gt;=22.18&quot;</span> },
+  <span class="s">&quot;scripts&quot;</span>: {
+    <span class="s">&quot;dev&quot;</span>: <span class="s">&quot;node --watch --env-file=.env src/server.ts&quot;</span>,
+    <span class="s">&quot;start&quot;</span>: <span class="s">&quot;node --env-file=.env src/server.ts&quot;</span>,
+    <span class="s">&quot;check&quot;</span>: <span class="s">&quot;tsc&quot;</span>,
+    <span class="s">&quot;test&quot;</span>: <span class="s">&quot;node --env-file=.env.test --test --test-reporter=spec&quot;</span>
+  },
+  <span class="s">&quot;dependencies&quot;</span>: {
+    <span class="s">&quot;zod&quot;</span>: <span class="s">&quot;^4.6.7&quot;</span>
+  },
+  <span class="s">&quot;devDependencies&quot;</span>: {
+    <span class="s">&quot;@types/node&quot;</span>: <span class="s">&quot;^22.20.5&quot;</span>,
+    <span class="s">&quot;typescript&quot;</span>: <span class="s">&quot;^7.0.2&quot;</span>
+  }
+}</pre></div>
+
+<ul>
+<li><code>"type": "module"</code> makes every <code>.ts</code> and <code>.js</code> file an ES module, with <code>import</code> and <code>export</code>, as in the browser.</li>
+<li><code>engines</code> says which Node versions the project needs. 22.18 is the first one that runs TypeScript without any extra tool.</li>
+<li>The <code>scripts</code> are the project’s commands, the same on every machine: <code>npm run dev</code> restarts the server when a file changes (<code>--watch</code>), <code>npm start</code> runs it, <code>npm run check</code> checks the types, and <code>npm test</code> runs the tests. <code>--env-file</code> loads settings from a file; we come to it in 2.7.</li>
+<li>Only <code>zod</code> is needed to run; TypeScript and the type definitions for Node are only needed while developing.</li>
+</ul>
+
+<h3>Node runs it, tsc checks it</h3>
+
+<p>Node runs a <code>.ts</code> file by <dfn>type stripping</dfn>: it removes the type annotations and runs what is left, without looking at them. That is fast, but it means Node never checks your types. Checking is the job of the TypeScript compiler, <code>tsc</code>, configured in <code>tsconfig.json</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tsconfig.json</div><pre class="code">{
+  <span class="s">&quot;compilerOptions&quot;</span>: {
+    <span class="s">&quot;target&quot;</span>: <span class="s">&quot;es2024&quot;</span>,
+    <span class="s">&quot;module&quot;</span>: <span class="s">&quot;nodenext&quot;</span>,
+    <span class="s">&quot;strict&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;noUncheckedIndexedAccess&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;noEmit&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;allowImportingTsExtensions&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;erasableSyntaxOnly&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;verbatimModuleSyntax&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;types&quot;</span>: [<span class="s">&quot;node&quot;</span>]
+  },
+  <span class="s">&quot;include&quot;</span>: [<span class="s">&quot;src&quot;</span>, <span class="s">&quot;demos&quot;</span>]
+}</pre></div>
+
+<p><code>strict</code> and <code>noUncheckedIndexedAccess</code> are the checks from Book 2. <code>noEmit</code> tells <code>tsc</code> to check only, because Node runs the source as it is. The other three options make the source safe for type stripping: imports name the real file (<code>./config.ts</code>, as Node needs), <code>import type</code> marks imports that disappear, and <code>erasableSyntaxOnly</code> forbids the few TypeScript features that are not just types. See all of this happen:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Node runs the TypeScript file: the types are removed, nothing is checked</span>
+<span class="c">$ </span><span class="k">node demos/strip.ts</span>
+45050
+<span class="c line-bidi"># An enum is not just a type: it needs code, so plain Node refuses it</span>
+<span class="c">$ </span><span class="k">node demos/enum.ts 2&gt;&amp;1 | grep SyntaxError</span>
+SyntaxError [ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX]: TypeScript enum is not supported in strip-only mode
+<span class="c line-bidi"># tsc checks the types (and, with erasableSyntaxOnly, refuses the enum too)</span>
+<span class="c">$ </span><span class="k">npx tsc</span>
+demos/enum.ts(1,6): error TS1294: This syntax is not allowed when &#x27;erasableSyntaxOnly&#x27; is enabled.
+demos/strip.ts(4,31): error TS2322: Type &#x27;string&#x27; is not assignable to type &#x27;number&#x27;.</pre></div>
+
+<p>Node happily ran <code>strip.ts</code>, where a string sits in a number field, and printed <code>45050</code> instead of 500. It refused <code>enum.ts</code>, because an <code>enum</code> creates a real object at run time, and stripping cannot write code. <code>tsc</code> reported both. Instead of an enum, use an object with <code>as const</code>, or a union of strings such as <code>"pending" | "paid"</code>: they are plain JavaScript plus types.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: the checks run on every change</p><p>Because Node does not check types, a type error can reach production unless something stops it. Run <code>npm run check</code> and <code>npm test</code> in CI on every pull request, and make them required to merge. Locally, let your editor show <code>tsc</code>’s errors as you type. Fast running and strict checking are two separate jobs, done by two separate tools.</p></aside>
+
+<h2><span class="sec">2.3</span> <span>The event loop</span></h2>
+
+<p>The <dfn>event loop</dfn> is Node’s main loop. In each turn, it runs whatever is ready: timers whose time has come, I/O that has finished, callbacks scheduled with <code>setImmediate</code>. Between any two of these, it empties two smaller queues of <dfn>microtasks</dfn>: callbacks of promises, and callbacks given to <code>process.nextTick</code>. This program schedules one of each, and then keeps the thread busy:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/event-loop.ts</div><pre class="code"><span class="k">import</span> { readFile } <span class="k">from</span> <span class="s">&quot;node:fs/promises&quot;</span>;
+
+console.log(<span class="s">&quot;script starts&quot;</span>);
+setTimeout(() =&gt; console.log(<span class="s">&quot;timer (0 ms)&quot;</span>), <span class="n">0</span>);
+Promise.resolve().then(() =&gt; console.log(<span class="s">&quot;promise callback&quot;</span>));
+process.nextTick(() =&gt; console.log(<span class="s">&quot;process.nextTick&quot;</span>));
+console.log(<span class="s">&quot;script ends&quot;</span>);
+
+<span class="c line-bidi">// wait for some I/O, then a second experiment</span>
+<span class="k">await</span> readFile(<span class="k">import</span>.meta.filename);
+<span class="k">const</span> asked = performance.now();
+setTimeout(() =&gt; {
+  <span class="k">const</span> late = Math.round(performance.now() - asked);
+  console.log(<span class="s">`timer asked for 10 ms, ran after ${late} ms`</span>);
+}, <span class="n">10</span>);
+<span class="k">const</span> until = performance.now() + <span class="n">200</span>;
+<span class="k">while</span> (performance.now() &lt; until); <span class="c line-bidi">// busy for 200 ms</span></pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The order things run in</span>
+<span class="c">$ </span><span class="k">node demos/event-loop.ts</span>
+script starts
+script ends
+promise callback
+process.nextTick
+timer (0 ms)
+timer asked for 10 ms, ran after 200 ms</pre></div>
+
+<p>Three rules explain the output:</p>
+<ol>
+<li><strong>The code that is running always finishes first.</strong> Nothing interrupts it: “script ends” comes before every callback.</li>
+<li><strong>Microtasks run before the loop moves on.</strong> Both the promise callback and the <code>nextTick</code> callback run before the timer, even though the timer asked for 0 ms. (In an ES module, promise callbacks happen to run before <code>nextTick</code> ones; in an old CommonJS file it is the other way round. Code that depends on that order is fragile.)</li>
+<li><strong>A timer’s delay is a minimum, not a promise.</strong> The second timer asked for 10 ms and ran after 200, because the loop was busy and could not check its timers.</li>
+</ol>
+
+<p>The third rule is the one that matters on a server. Every request, every timer and every database answer waits for the same thread. If one piece of code keeps it for a second, every user waits a second.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why can Node serve thousands of connections with one thread?</li><li>Node ran a file with a type error without complaining. Which tool should have caught it, and when?</li><li>A timer is set for 100 ms, and then the code computes for 300 ms. When does the timer’s callback run?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>Never block the loop</span></h2>
+
+<p>Here is a server with two routes. <code>/primes</code> counts the prime numbers up to a limit, which is pure computation; <code>/hello</code> answers at once:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/blocking.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> { countPrimes } <span class="k">from</span> <span class="s">&quot;../src/primes.ts&quot;</span>;
+
+createServer((req, res) =&gt; {
+  <span class="k">const</span> url = <span class="k">new</span> URL(req.url ?? <span class="s">&quot;/&quot;</span>, <span class="s">&quot;http://localhost&quot;</span>);
+  <span class="k">if</span> (url.pathname === <span class="s">&quot;/primes&quot;</span>) {
+    <span class="k">const</span> primes = countPrimes(Number(url.searchParams.get(<span class="s">&quot;limit&quot;</span>))); <span class="c line-bidi">// blocks!</span>
+    <span class="k">return</span> res.end(JSON.stringify({ primes }));
+  }
+  res.end(JSON.stringify({ message: <span class="s">&quot;hello&quot;</span> }));
+}).listen(<span class="n">3001</span>);</pre></div>
+
+<p>We send a slow request and, a moment later, a quick one. curl’s <code>-w</code> prints how long each one took:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># One slow request (a CPU count) and one quick one, sent at the same moment</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3001/primes?limit=5000000&#x27; -w &#x27; %{time_total}s\n&#x27; &amp; sleep 0.05; curl -s localhost:3001/hello -w &#x27; %{time_total}s\n&#x27;; wait</span>
+{&quot;primes&quot;:348513} 1.394915s
+{&quot;message&quot;:&quot;hello&quot;} 1.343057s</pre></div>
+
+<p>The quick request, which needs a fraction of a millisecond, waited more than a second, because the thread was counting primes for someone else. With a hundred users, each would wait behind every count in front of them. Typical culprits are image resizing, PDF generation, password hashing with a synchronous function, compressing big files, and <code>JSON.parse</code> on huge bodies.</p>
+
+<p>The fix is to do heavy computation on another thread. Node’s <dfn>worker threads</dfn> run a separate JavaScript file with its own event loop, and exchange messages with the main thread:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/primes-worker.ts</div><pre class="code"><span class="c line-bidi">// Runs in its own thread, so a long count never blocks the event loop.</span>
+<span class="k">import</span> { parentPort, workerData } <span class="k">from</span> <span class="s">&quot;node:worker_threads&quot;</span>;
+<span class="k">import</span> { countPrimes } <span class="k">from</span> <span class="s">&quot;./primes.ts&quot;</span>;
+
+parentPort?.postMessage(countPrimes(workerData as number));</pre></div>
+
+<p>The worker receives its input in <code>workerData</code> and posts its result back. In the app, a small function wraps it in a promise, so the handler simply awaits it:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code"><span class="k">function</span> countInWorker(limit: number): Promise&lt;number&gt; {
+  <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
+    <span class="k">const</span> worker = <span class="k">new</span> Worker(<span class="k">new</span> URL(<span class="s">&quot;./primes-worker.ts&quot;</span>, <span class="k">import</span>.meta.url), {
+      workerData: limit,
+    });
+    worker.once(<span class="s">&quot;message&quot;</span>, resolve);
+    worker.once(<span class="s">&quot;error&quot;</span>, reject);
+  });
+}</pre></div>
+
+<p>The same two requests against the real server:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># The same two requests, with the count in a worker thread</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/primes?limit=5000000&#x27; -w &#x27; %{time_total}s\n&#x27; &amp; sleep 0.05; curl -s localhost:3000/hello -w &#x27; %{time_total}s\n&#x27;; wait</span>
+{&quot;message&quot;:&quot;Hello from Bit&#x27;s shop&quot;} 0.001101s
+{&quot;limit&quot;:5000000,&quot;primes&quot;:348513,&quot;ms&quot;:1347} 1.348983s</pre></div>
+
+<p>The quick request now answers in about a millisecond, before the count has finished, because the main thread was free. Starting a thread costs a few tens of milliseconds, which is nothing next to a one-second job but too much for many small ones. For those, keep a <dfn>pool</dfn> of threads started once and reused; you build one in Exercise 5, and the Piscina library is a well-tested one.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: most libraries already do this</p><p>Many slow operations in Node’s standard library have an asynchronous version that runs on libuv’s own thread pool: <code>crypto.scrypt</code> instead of <code>crypto.scryptSync</code>, <code>zlib.gzip</code> instead of <code>zlib.gzipSync</code>, <code>fs.promises.readFile</code> instead of <code>fs.readFileSync</code>. On a server, any function whose name ends in <code>Sync</code> is a warning sign inside a request handler. At start-up, before the server listens, it is fine.</p></aside>
+
+<h2><span class="sec">2.5</span> <span>Waiting for several things at once</span></h2>
+
+<p>A product page might need the stock, the price and the reviews, each from a different service. This demo stands in for three network calls, of 300, 200 and 400 ms:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/concurrency.ts</div><pre class="code"><span class="k">import</span> { setTimeout as sleep } <span class="k">from</span> <span class="s">&quot;node:timers/promises&quot;</span>;
+
+<span class="c line-bidi">// Three slow services, as a real API would call over the network.</span>
+<span class="k">const</span> stock = (signal?: AbortSignal) =&gt; sleep(<span class="n">300</span>, <span class="n">7</span>, { signal });
+<span class="k">const</span> price = (signal?: AbortSignal) =&gt; sleep(<span class="n">200</span>, <span class="n">45000</span>, { signal });
+<span class="k">const</span> reviews = (signal?: AbortSignal) =&gt; sleep(<span class="n">400</span>, <span class="n">4.5</span>, { signal });
+
+<span class="k">async</span> <span class="k">function</span> timed(label: string, work: () =&gt; Promise&lt;unknown&gt;) {
+  <span class="k">const</span> start = performance.now();
+  <span class="k">const</span> result = <span class="k">await</span> work();
+  console.log(<span class="s">`${label}: ${Math.round(performance.now() - start)} ms`</span>, result);
+}
+
+<span class="k">await</span> timed(<span class="s">&quot;one after another&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">return</span> [<span class="k">await</span> stock(), <span class="k">await</span> price(), <span class="k">await</span> reviews()];
+});
+
+<span class="k">await</span> timed(<span class="s">&quot;all at once&quot;</span>, () =&gt; Promise.all([stock(), price(), reviews()]));
+
+<span class="k">const</span> down = () =&gt; Promise.reject(<span class="k">new</span> Error(<span class="s">&quot;the reviews service is down&quot;</span>));
+<span class="k">await</span> timed(<span class="s">&quot;one fails, the others still count&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> results = <span class="k">await</span> Promise.allSettled([stock(), price(), down()]);
+  <span class="k">return</span> results.map((r) =&gt; (r.status === <span class="s">&quot;fulfilled&quot;</span> ? r.value : <span class="s">&quot;failed&quot;</span>));
+});
+
+<span class="k">await</span> timed(<span class="s">&quot;with a time limit of 250 ms&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> limit = AbortSignal.timeout(<span class="n">250</span>);
+  <span class="k">const</span> results = <span class="k">await</span> Promise.allSettled([stock(), price(), reviews(limit)]);
+  <span class="k">return</span> results.map((r) =&gt;
+    r.status === <span class="s">&quot;fulfilled&quot;</span> ? r.value : <span class="s">&quot;skipped (too slow)&quot;</span>,
+  );
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Waiting for three services</span>
+<span class="c">$ </span><span class="k">node demos/concurrency.ts</span>
+one after another: 903 ms [ 7, 45000, 4.5 ]
+all at once: 401 ms [ 7, 45000, 4.5 ]
+one fails, the others still count: 301 ms [ 7, 45000, &#x27;failed&#x27; ]
+with a time limit of 250 ms: 301 ms [ 7, 45000, &#x27;skipped (too slow)&#x27; ]</pre></div>
+
+<ul>
+<li><strong>One after another</strong>, the waits add up: 300 + 200 + 400 = 900 ms. Writing <code>await</code> three times in a row is the most common accidental slowness in Node code.</li>
+<li><strong><code>Promise.all</code></strong> starts all three, then waits for the slowest: 400 ms. Use it when the calls do not depend on each other.</li>
+<li><strong><code>Promise.allSettled</code></strong> waits for all of them and reports each one as fulfilled or rejected. A page can still show the stock and the price when the reviews service is down. <code>Promise.all</code> would reject as a whole on the first failure.</li>
+<li><strong><code>AbortSignal.timeout(250)</code></strong> gives a call a time limit. Most modern APIs accept a <code>signal</code>, including <code>fetch</code> and Node’s timers, and give up when it fires. Every call to another service needs a limit; without one, a slow service makes your server slow too.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: “all at once” has limits</p><p><code>Promise.all</code> over ten thousand items starts ten thousand database queries at the same moment, and the database falls over. For large lists, run a few at a time (in batches, or with a small helper such as <code>p-limit</code>). And remember that a rejected <code>Promise.all</code> does not stop the other promises: they keep running, and their results are simply ignored.</p></aside>
+
+<h2><span class="sec">2.6</span> <span>Streams: big data in small memory</span></h2>
+
+<p>Suppose Bit’s shop must add up a million orders from a CSV file. The direct way reads the whole file into memory first:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/total-read.ts</div><pre class="code"><span class="k">import</span> { readFile } <span class="k">from</span> <span class="s">&quot;node:fs/promises&quot;</span>;
+
+<span class="k">const</span> text = <span class="k">await</span> readFile(<span class="s">&quot;orders.csv&quot;</span>, <span class="s">&quot;utf8&quot;</span>); <span class="c line-bidi">// the whole file in memory</span>
+<span class="k">let</span> total = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> line <span class="k">of</span> text.split(<span class="s">&quot;\n&quot;</span>).slice(<span class="n">1</span>)) {
+  <span class="k">if</span> (line) total += Number(line.split(<span class="s">&quot;,&quot;</span>)[<span class="n">2</span>]);
+}
+<span class="k">const</span> peak = Math.round(process.resourceUsage().maxRSS / <span class="n">1024</span>);
+console.log(<span class="s">`total: ${total}, peak memory: ${peak} MB`</span>);</pre></div>
+
+<p>A <dfn>stream</dfn> delivers the data in pieces as it arrives, so the program only ever holds a small part of it. <code>readline</code> turns a file stream into lines, and <code>for await</code> reads them one by one:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/total-stream.ts</div><pre class="code"><span class="k">import</span> { createReadStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { createInterface } <span class="k">from</span> <span class="s">&quot;node:readline&quot;</span>;
+
+<span class="k">const</span> lines = createInterface({ input: createReadStream(<span class="s">&quot;orders.csv&quot;</span>) });
+<span class="k">let</span> total = <span class="n">0</span>;
+<span class="k">let</span> first = <span class="k">true</span>;
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> line <span class="k">of</span> lines) {
+  <span class="k">if</span> (first) {
+    first = <span class="k">false</span>; <span class="c line-bidi">// the header</span>
+    continue;
+  }
+  total += Number(line.split(<span class="s">&quot;,&quot;</span>)[<span class="n">2</span>]);
+}
+<span class="k">const</span> peak = Math.round(process.resourceUsage().maxRSS / <span class="n">1024</span>);
+console.log(<span class="s">`total: ${total}, peak memory: ${peak} MB`</span>);</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A million orders, about 24 MB</span>
+<span class="c">$ </span><span class="k">node demos/make-orders.ts</span>
+1000000 orders written to orders.csv
+<span class="c">$ </span><span class="k">ls -lh orders.csv | awk &#x27;{print $5, $9}&#x27;</span>
+24M orders.csv
+<span class="c line-bidi"># Read the whole file, then add up</span>
+<span class="c">$ </span><span class="k">node demos/total-read.ts</span>
+total: 49999500000, peak memory: 204 MB
+<span class="c line-bidi"># Read it as a stream, line by line</span>
+<span class="c">$ </span><span class="k">node demos/total-stream.ts</span>
+total: 49999500000, peak memory: 84 MB</pre></div>
+
+<p>The same total, with less than half the memory. More importantly, the streaming version uses the same memory for a file ten times bigger, while the first one would need ten times more and eventually crash. On a server that handles many requests at once, the difference is multiplied by the number of users.</p>
+
+<h3>Backpressure</h3>
+
+<p>Streams also work the other way. When you write faster than the destination can take (a slow disk, a slow client), data piles up in memory. A writable stream says so: <code>write()</code> returns <code>false</code> when its buffer is full. The program that made the CSV file waits for the <code>drain</code> event before writing more:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/make-orders.ts</div><pre class="code"><span class="k">import</span> { createWriteStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { once } <span class="k">from</span> <span class="s">&quot;node:events&quot;</span>;
+
+<span class="k">const</span> file = createWriteStream(<span class="s">&quot;orders.csv&quot;</span>);
+file.write(<span class="s">&quot;id,customer,total\n&quot;</span>);
+<span class="k">for</span> (<span class="k">let</span> id = <span class="n">1</span>; id &lt;= 1_000_000; id++) {
+  <span class="k">const</span> line = <span class="s">`${id},customer-${id % 97},${(id * 7919) % 100000}\n`</span>;
+  <span class="c line-bidi">// write() returns false when the buffer is full: wait until it drains</span>
+  <span class="k">if</span> (!file.write(line)) <span class="k">await</span> once(file, <span class="s">&quot;drain&quot;</span>);
+}
+file.end();
+<span class="k">await</span> once(file, <span class="s">&quot;finish&quot;</span>);
+console.log(<span class="s">&quot;1000000 orders written to orders.csv&quot;</span>);</pre></div>
+
+<p>This is called <dfn>backpressure</dfn>: the slow side slows down the fast side, instead of letting memory fill up. You rarely handle it by hand, because <code>pipeline</code> does it for you. The shop’s export route makes its CSV rows with an async generator and pipes them into the response:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code"><span class="k">async</span> <span class="k">function</span>* orderRows(count: number) {
+  <span class="k">yield</span> <span class="s">&quot;id,customer,total\n&quot;</span>;
+  <span class="k">for</span> (<span class="k">let</span> id = <span class="n">1</span>; id &lt;= count; id++) {
+    <span class="k">yield</span> <span class="s">`${id},customer-${id % 97},${(id * 7919) % 100000}\n`</span>;
+  }
+}</pre></div>
+
+<p>In the handler, <code>await pipeline(Readable.from(orderRows(100_000)), res)</code> sends the rows as the client reads them. If the client disconnects halfway, <code>pipeline</code> stops the generator and cleans up; with the older <code>.pipe()</code> method, that cleanup is your job, and it is often forgotten. Because the total size is not known in advance, Node sends the body in chunks instead of with a <code>Content-Length</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># An export streamed as it is made: no Content-Length, chunked instead</span>
+<span class="c">$ </span><span class="k">curl -s -D - localhost:3000/export | head -n 12</span>
+HTTP/1.1 200 OK
+Content-Type: text/csv; charset=utf-8
+Date: Thu, 19 Nov 2026 18:31:43 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+id,customer,total
+1,customer-1,7919
+2,customer-2,15838
+3,customer-3,23757
+4,customer-4,31676</pre></div>
+
+<h2><span class="sec">2.7</span> <span>Configuration</span></h2>
+
+<p>The port, the database address, the allowed origins and the API keys differ between your laptop, the test server and production. They must not be written in the code. The common rule is to read them from <dfn>environment variables</dfn>, which every hosting platform can set. But <code>process.env</code> holds only strings, any of which may be missing or mistyped. So the project reads them in one place, once, and checks them with zod:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c line-bidi">// process.env holds strings only: coerce and check them once, at start-up</span>
+<span class="k">const</span> Env = z.object({
+  PORT: z.coerce.number().int().min(<span class="n">1</span>).max(<span class="n">65535</span>).<span class="k">default</span>(<span class="n">3000</span>),
+  LOG_LEVEL: z.enum([<span class="s">&quot;debug&quot;</span>, <span class="s">&quot;info&quot;</span>, <span class="s">&quot;warn&quot;</span>, <span class="s">&quot;error&quot;</span>]).<span class="k">default</span>(<span class="s">&quot;info&quot;</span>),
+  ALLOWED_ORIGINS: z
+    .string()
+    .transform((list) =&gt; list.split(<span class="s">&quot;,&quot;</span>).map((origin) =&gt; origin.trim()))
+    .pipe(z.array(z.url())),
+});
+
+<span class="k">const</span> parsed = Env.safeParse(process.env);
+<span class="k">if</span> (!parsed.success) {
+  console.error(<span class="s">&quot;Invalid configuration:\n&quot;</span> + z.prettifyError(parsed.error));
+  process.exit(<span class="n">1</span>);
+}
+
+<span class="c line-bidi">// read-only: nothing can change the configuration later</span>
+<span class="k">export</span> <span class="k">const</span> config = Object.freeze(parsed.data);
+<span class="k">export</span> <span class="k">type</span> Config = <span class="k">typeof</span> config;</pre></div>
+
+<p>Everywhere else, the code imports <code>config</code> and gets real types: <code>config.PORT</code> is a number, <code>config.ALLOWED_ORIGINS</code> an array of URLs. And a wrong setting stops the server at once, with a clear message, instead of failing an hour later in the middle of a request:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Started without its settings: it refuses to start, and says why</span>
+<span class="c">$ </span><span class="k">PORT=abc ALLOWED_ORIGINS=localhost node src/server.ts</span>
+Invalid configuration:
+✖ Invalid input: expected number, received NaN
+  → at PORT
+✖ Invalid URL
+  → at ALLOWED_ORIGINS[0]</pre></div>
+
+<p>On your machine, the settings live in a <code>.env</code> file, which <code>node --env-file=.env</code> loads before your code runs:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.env</div><pre class="code">PORT=3000
+LOG_LEVEL=info
+ALLOWED_ORIGINS=http://localhost:5173</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: .env files hold secrets</p><p>Add <code>.env</code> to <code>.gitignore</code> on the first day, and commit a <code>.env.example</code> with the names and harmless values instead. A key pushed to a public repository is found by bots within minutes. Once it has been pushed, deleting it is not enough: change the key. In production, the platform’s secret settings fill the environment, and there is no <code>.env</code> file at all.</p></aside>
+
+<h2><span class="sec">2.8</span> <span>Errors and graceful shutdown</span></h2>
+
+<p>Servers stop all the time: for every deployment, when a machine is replaced, when the platform scales down. The platform sends the process a <code>SIGTERM</code> signal (Ctrl+C in a terminal sends <code>SIGINT</code>) and, after a grace period, kills it. A server that simply exits on the signal cuts off every request in progress: a payment half processed, an upload lost. A <dfn>graceful shutdown</dfn> stops accepting new connections, lets the running requests finish, and only then exits:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/server.ts</div><pre class="code"><span class="k">import</span> { config } <span class="k">from</span> <span class="s">&quot;./config.ts&quot;</span>;
+<span class="k">import</span> { createApp } <span class="k">from</span> <span class="s">&quot;./app.ts&quot;</span>;
+<span class="k">import</span> { log } <span class="k">from</span> <span class="s">&quot;./log.ts&quot;</span>;
+
+<span class="k">const</span> server = createApp();
+server.requestTimeout = 30_000;
+server.listen(config.PORT, () =&gt; {
+  log(<span class="s">&quot;info&quot;</span>, <span class="s">`Listening on http://localhost:${config.PORT}`</span>);
+});
+
+<span class="k">function</span> shutdown(signal: string): void {
+  log(<span class="s">&quot;info&quot;</span>, <span class="s">`${signal}: no new connections, finishing requests in progress`</span>);
+  server.close(() =&gt; {
+    <span class="c line-bidi">// stop accepting, let running requests finish</span>
+    log(<span class="s">&quot;info&quot;</span>, <span class="s">&quot;all requests finished, bye&quot;</span>);
+    process.exit(<span class="n">0</span>);
+  });
+  <span class="c line-bidi">// close kept-alive connections that are doing nothing</span>
+  server.closeIdleConnections();
+  setTimeout(() =&gt; {
+    log(<span class="s">&quot;error&quot;</span>, <span class="s">&quot;requests still running after 10 s, stopping anyway&quot;</span>);
+    process.exit(<span class="n">1</span>);
+  }, 10_000).unref(); <span class="c line-bidi">// never hang forever</span>
+}
+process.once(<span class="s">&quot;SIGTERM&quot;</span>, () =&gt; shutdown(<span class="s">&quot;SIGTERM&quot;</span>));
+process.once(<span class="s">&quot;SIGINT&quot;</span>, () =&gt; shutdown(<span class="s">&quot;SIGINT&quot;</span>));
+
+<span class="c line-bidi">// the process is in an unknown state: log and stop; the supervisor restarts it</span>
+process.on(<span class="s">&quot;unhandledRejection&quot;</span>, (error) =&gt; {
+  log(<span class="s">&quot;error&quot;</span>, <span class="s">`unexpected error, stopping: ${String(error)}`</span>);
+  process.exit(<span class="n">1</span>);
+});</pre></div>
+
+<p>Here a long count is running when Ctrl+C arrives:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 1</div><pre class="code"><span class="c line-bidi"># A long request is running when the server is told to stop (Ctrl+C)</span>
+<span class="c">$ </span><span class="k">npm start</span>
+<span class="c">&gt; </span><span class="k">bit-shop@1.0.0 start</span>
+<span class="c">&gt; </span><span class="k">node --env-file=.env src/server.ts</span>
+
+info  Listening on http://localhost:3000
+^C
+info  SIGINT: no new connections, finishing requests in progress
+info  GET /primes?limit=5000000 200 1375ms
+info  all requests finished, bye</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal 2</div><pre class="code"><span class="c line-bidi"># Terminal 2: the request still gets its answer</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/primes?limit=5000000&#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;limit&quot;:5000000,&quot;primes&quot;:348513,&quot;ms&quot;:1375} 200</pre></div>
+
+<p>The server stopped listening at once, finished the count, answered <code>200</code>, and then exited. The ten-second timer guarantees that a stuck request cannot keep the process alive forever, and <code>.unref()</code> stops the timer itself from keeping it alive.</p>
+
+<p>The last handler is about a different kind of error. Errors you expect, such as a missing product or a timeout, are handled where they happen and become answers. An <em>unhandled rejection</em> means a promise failed and no code was waiting for the failure: a bug. After a bug, the process may be in a state nobody planned for, with half-updated data in memory. The safe reaction is to log it and exit, and let a supervisor (Docker, systemd or the hosting platform, Chapter 16) start a fresh process. Never keep a damaged process running just to look available.</p>
+
+<h2><span class="sec">2.9</span> <span>Testing with node:test</span></h2>
+
+<p>Node includes a test runner, so a project needs no extra tool to start testing. It finds files ending in <code>.test.ts</code>, runs every <code>test</code> in them, and reports. Chapter 12 goes much deeper; for now, two kinds of test cover this project: a pure function, and the whole server through real HTTP:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.test.ts</div><pre class="code"><span class="k">import</span> { after, before, test } <span class="k">from</span> <span class="s">&quot;node:test&quot;</span>;
+<span class="k">import</span> assert <span class="k">from</span> <span class="s">&quot;node:assert/strict&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
+<span class="k">import</span> { createApp } <span class="k">from</span> <span class="s">&quot;./app.ts&quot;</span>;
+<span class="k">import</span> { countPrimes } <span class="k">from</span> <span class="s">&quot;./primes.ts&quot;</span>;
+
+<span class="k">const</span> server = createApp();
+<span class="k">let</span> base = <span class="s">&quot;&quot;</span>;
+before(<span class="k">async</span> () =&gt; {
+  <span class="c line-bidi">// port 0: the system picks a free port, so tests never clash</span>
+  <span class="k">await</span> <span class="k">new</span> Promise&lt;void&gt;((resolve) =&gt; server.listen(<span class="n">0</span>, resolve));
+  base = <span class="s">`http://localhost:${(server.address() as AddressInfo).port}`</span>;
+});
+after(() =&gt; server.close());
+
+test(<span class="s">&quot;counts the primes&quot;</span>, () =&gt; {
+  assert.equal(countPrimes(<span class="n">10</span>), <span class="n">4</span>);
+  assert.equal(countPrimes(<span class="n">1</span>), <span class="n">0</span>);
+});
+
+test(<span class="s">&quot;answers /hello&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">`${base}/hello`</span>);
+  assert.equal(res.status, <span class="n">200</span>);
+  assert.deepEqual(<span class="k">await</span> res.json(), { message: <span class="s">&quot;Hello from Bit&#x27;s shop&quot;</span> });
+});
+
+test(<span class="s">&quot;refuses a bad limit&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">for</span> (<span class="k">const</span> limit <span class="k">of</span> [<span class="s">&quot;0&quot;</span>, <span class="s">&quot;abc&quot;</span>, <span class="s">&quot;20000000&quot;</span>]) {
+    <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">`${base}/primes?limit=${limit}`</span>);
+    assert.equal(res.status, <span class="n">422</span>);
+  }
+});
+
+test(<span class="s">&quot;streams the export as CSV&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> text = <span class="k">await</span> (<span class="k">await</span> fetch(<span class="s">`${base}/export`</span>)).text();
+  <span class="k">const</span> lines = text.trim().split(<span class="s">&quot;\n&quot;</span>);
+  assert.equal(lines[<span class="n">0</span>], <span class="s">&quot;id,customer,total&quot;</span>);
+  assert.equal(lines.length, 100_001);
+});</pre></div>
+
+<p>The server listens on port 0, so the operating system picks a free port and tests never clash with a running server or with each other. The tests load <code>.env.test</code>, whose <code>LOG_LEVEL=warn</code> keeps the request logs out of the report:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Node&#x27;s own test runner finds the *.test.ts files and runs them</span>
+<span class="c">$ </span><span class="k">npm test</span>
+
+<span class="c">&gt; </span><span class="k">bit-shop@1.0.0 test</span>
+<span class="c">&gt; </span><span class="k">node --env-file=.env.test --test --test-reporter=spec</span>
+
+✔ counts the primes (1.837999ms)
+✔ answers /hello (22.565385ms)
+✔ refuses a bad limit (6.428715ms)
+✔ streams the export as CSV (657.913744ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 890.42946</pre></div>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Heavy computation in a handler</td><td>Every user waits behind it</td><td>A worker thread or a pool; async versions of slow APIs</td></tr>
+<tr><td><code>readFileSync</code> and friends in handlers</td><td>The loop stops during each read</td><td>The promise versions; <code>Sync</code> only at start-up</td></tr>
+<tr><td>Three <code>await</code>s in a row for independent calls</td><td>The waits add up</td><td><code>Promise.all</code> or <code>allSettled</code></td></tr>
+<tr><td>Calls to other services without a time limit</td><td>A slow service makes you slow</td><td><code>AbortSignal.timeout</code> on every call</td></tr>
+<tr><td>Reading big files or results whole</td><td>Memory grows with the data, then a crash</td><td>Streams and <code>pipeline</code></td></tr>
+<tr><td>Trusting Node to check types</td><td>Type errors reach production</td><td><code>tsc</code> in CI, required to merge</td></tr>
+<tr><td><code>process.env</code> read all over the code</td><td>Typos and missing settings found late</td><td>One checked config module, at start-up</td></tr>
+<tr><td>Exiting at once on SIGTERM</td><td>Requests cut off at every deployment</td><td>Close, finish, then exit, with a deadline</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Node is <strong>V8</strong>, <strong>libuv</strong> and a standard library. Your JavaScript runs on <strong>one thread</strong>; I/O never makes it wait.</li>
+<li>Node runs TypeScript by <strong>stripping types</strong>; <strong>tsc</strong> checks them. <code>erasableSyntaxOnly</code> keeps the source strippable: no enums.</li>
+<li>The <strong>event loop</strong> runs current code to the end, then microtasks, then timers and I/O. Timer delays are minimums.</li>
+<li><strong>Never block the loop</strong>: CPU work goes to <strong>worker threads</strong>, slow APIs are used in their async versions.</li>
+<li><strong><code>Promise.all</code></strong> waits for independent calls at once, <strong><code>allSettled</code></strong> survives failures, and <strong><code>AbortSignal.timeout</code></strong> limits every call.</li>
+<li><strong>Streams</strong> process big data in constant memory; <strong>backpressure</strong> slows the fast side; <strong><code>pipeline</code></strong> handles both and cleans up.</li>
+<li><strong>Configuration</strong> comes from the environment, checked once with a schema; secrets never enter the repository.</li>
+<li>A <strong>graceful shutdown</strong> closes, finishes, then exits. After an unhandled error, log and exit, and let a supervisor restart.</li>
+<li><strong><code>node:test</code></strong> runs tests with no extra tool; servers in tests listen on port 0.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because a server mostly waits for I/O, and Node hands that waiting to the operating system and serves other connections meanwhile; the thread is only busy while JavaScript is actually computing. 2. <code>tsc</code>, through <code>npm run check</code>, in the editor while writing and in CI before the change is merged. 3. After the 300 ms of computation have finished: at about 300 ms, never at 100.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Each project is a small Node program in TypeScript, set up like this chapter’s: run by Node, checked by <code>tsc</code>, with at least one test in <code>node:test</code>.</p>
+
+<div class="project">
+<p class="project-label">Project 2.1 · Easy</p>
+<h3>A sales report from the command line</h3>
+<p class="project-goal">Write a command-line tool that streams the orders file and prints the five customers who spent the most.</p>
+<p class="project-skills"><strong>You will practise:</strong> streams and <code>readline</code>, command-line arguments, exit codes, and testing a pure function.</p>
+<ol class="steps">
+<li>Generate <code>orders.csv</code> with this chapter’s <code>make-orders.ts</code>.</li>
+<li>Read the file name and the number of customers to show from the command line with <code>parseArgs</code> from <code>node:util</code>: <code>node report.ts --file orders.csv --top 5</code>.</li>
+<li>Stream the file line by line, adding each total into a <code>Map</code> by customer. Print the top customers, with totals formatted as money.</li>
+<li>When the file does not exist, print a clear message to <code>stderr</code> and exit with code 1, so scripts can tell it failed.</li>
+<li>Move the line parsing into a pure function and test it, including an empty line and a line with a missing field.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> check the peak memory with <code>process.resourceUsage().maxRSS</code>, as the chapter did. It should stay about the same when you run the tool on a file ten times bigger.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 2.2 · Medium</p>
+<h3>Hash passwords without blocking</h3>
+<p class="project-goal">Build a <code>POST /hash</code> route that hashes a password with scrypt, first the blocking way and then the right way, and measure the difference under load.</p>
+<p class="project-skills"><strong>You will practise:</strong> spotting blocking code, libuv’s thread pool, measuring with concurrent requests, and reading timings.</p>
+<ol class="steps">
+<li>Hash the password from the JSON body with <code>crypto.scryptSync(password, salt, 64)</code> and a random salt from <code>crypto.randomBytes(16)</code>. Return the salt and the hash in hex.</li>
+<li>Send twenty requests at the same time from a small script with <code>Promise.all</code> and <code>fetch</code>, and send a request to <code>/hello</code> in the middle. Record how long <code>/hello</code> takes.</li>
+<li>Switch to the callback version, <code>crypto.scrypt</code>, wrapped with <code>promisify</code> from <code>node:util</code>, and measure again.</li>
+<li>Run the test again with the environment variable <code>UV_THREADPOOL_SIZE=8</code> (the default is 4) and explain what changes in the total time.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the async version does not make one hash faster. It moves the work off the main thread, so <code>/hello</code> stays quick, and several hashes run in parallel on libuv’s threads.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 2.3 · Challenge</p>
+<h3>Ready, live, and leaving gracefully</h3>
+<p class="project-goal">Give the server the health endpoints that load balancers and orchestrators use, and prove the graceful shutdown with an automatic test.</p>
+<p class="project-skills"><strong>You will practise:</strong> server state, signals, child processes, and testing shutdown behaviour.</p>
+<ol class="steps">
+<li>Add <code>GET /livez</code>, which answers <code>200</code> while the process is running, and <code>GET /readyz</code>, which answers <code>200</code> only when the server should receive traffic.</li>
+<li>Count the requests in progress. On <code>SIGTERM</code>, make <code>/readyz</code> answer <code>503</code> at once, wait two seconds so the load balancer notices, and then close as in the chapter.</li>
+<li>Log how many requests were still running when the shutdown started, and how long it took.</li>
+<li>Write a test that starts the server as a child process with <code>spawn</code>, starts a slow request, sends <code>SIGTERM</code> with <code>child.kill("SIGTERM")</code>, and checks that the request still gets <code>200</code>, that new connections are refused, and that the process exits with code 0.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in the test, wait for the line “Listening on” in the child’s output before sending anything; otherwise the test races the server’s start-up and fails at random.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In <code>event-loop.ts</code>, change the busy loop from 200 ms to 50 ms. After how long will the 10 ms timer run? And if the busy loop is removed?</li>
+<li><span class="level">Easy</span> Add a <code>HOST</code> setting to <code>config.ts</code>: a non-empty string with the default <code>127.0.0.1</code>. Use it in <code>server.listen</code>. What does <code>0.0.0.0</code> mean, and when do you need it?</li>
+<li><span class="level medium">Medium</span> In the concurrency demo, imagine that the price service fails after 200 ms and you used <code>Promise.all</code>. When does <code>Promise.all</code> reject, and what happens to the stock request that is still running? Write a program that shows it.</li>
+<li><span class="level medium">Medium</span> Let <code>/export</code> take a <code>rows</code> query parameter, from 1 to 1,000,000, with <code>422</code> for anything else. Why does memory stay flat even with a million rows, and what happens to the generator when the client disconnects halfway?</li>
+<li><span class="level hard">Challenge</span> Write a <code>WorkerPool</code> class that starts a fixed number of workers once and reuses them, with a queue of waiting jobs. Compare 100 small counts (limit 20,000) done with a new thread each, and with a pool of four.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 3</p>
+<p>With a solid project under us, we design the API itself: resources and URLs, versions, pagination, filtering, errors, idempotency and documentation, so that other developers can use it without asking you.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">Try every exercise yourself before you look here. When your answer differs from this one, that is not necessarily wrong: most problems have several good solutions. If yours handles normal and unusual cases, and you can explain your choices to a colleague, it is a good answer. The full, tested code for every answer is in the book’s code repository.</p>
+
+<h2 class="plain-h">Chapter 1</h2>
+<ol class="exercises">
+<li>The status line is <code>HTTP/1.1 200 OK</code>; the headers are <code>Content-Type</code>, <code>Content-Length</code>, <code>Date</code> and <code>Connection</code>; then comes the empty line, and the body is the JSON object of 41 bytes. Without <code>Host</code>, Node answers <code>400 Bad Request</code> by itself, before our code runs, so not even our log line appears: HTTP/1.1 requires the header, and Node enforces it.</li>
+<li><code>GET /products?max_price=100</code>: safe and idempotent. <code>PUT /products/2</code> with a full product: not safe, idempotent (the product ends up the same however many times it is sent). <code>POST /products/2/reviews</code>: neither; two requests make two reviews. <code>DELETE /cart/items/7</code>: not safe, idempotent. <code>PATCH /products/2</code> with <code>{"stock_change": -1}</code>: neither, because each request takes one more item from the stock; a <code>PATCH</code> that sets a value (<code>{"stock": 4}</code>) would be idempotent.</li>
+<li>In <code>handle</code>, after the line that matches <code>/products/:id</code>, add: if the method is <code>DELETE</code>, find the product’s index with <code>findIndex</code>; answer <code>404</code> if it is <code>-1</code>, otherwise remove it with <code>splice</code> and answer <code>send(res, 204)</code>. The first delete answers <code>204</code> and the second <code>404</code>; that is still idempotent, because the server is in the same state after both. The new product, though, gets id 3 again, because the id is “number of products + 1”. A client holding an old link to product 3 now gets a different product, and if you had deleted product 1 instead, the new product would get the id of product 3, which still exists. Ids must never be reused: keep a counter, <code>let nextId = products.length + 1</code>, and use <code>nextId++</code>. With that change, the run in the code repository creates product 4. A database does this for you, with a sequence.</li>
+<li>The product list is public: anyone can read it with curl, so a page on another site reading it in a visitor’s browser learns nothing secret. CORS only stops other sites’ JavaScript from reading answers <em>with the visitor’s browser</em>. The danger is an endpoint that answers with private data because of the visitor’s cookies, such as <code>GET /me/orders</code>: there, letting any origin read the answer would let any site read the visitor’s orders. What protects it is not CORS alone, but the server checking who is asking (authentication), what they may see (authorisation), and cookies with <code>SameSite</code>, together with a short list of trusted origins.</li>
+<li>The answer must carry <code>Content-Encoding: gzip</code>, so the client knows to decompress; <code>Content-Length</code> with the size of the <em>compressed</em> bytes; and <code>Vary: Accept-Encoding</code>, so a cache never gives a compressed copy to a client that cannot read it. In <code>send</code>, check <code>res.req.headers["accept-encoding"]</code>, compress with <code>gzipSync</code> from <code>node:zlib</code>, and send the buffer. With the three products of the run, the list is 128 bytes plain and 105 bytes compressed. That is a small saving, because gzip needs repetition to work with; on a list of a hundred products, the same JSON shrinks to a fraction of its size. That is also why servers do not compress tiny bodies: below about 1 KB, the work costs more than it saves. <code>curl --compressed</code> sends the header and decompresses the answer for you.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 2</h2>
+<ol class="exercises">
+<li>After about 50 ms: the timer cannot run before the busy loop ends, and the loop then finds it overdue. Without the busy loop it runs after about 10 ms, never earlier, and often a millisecond or two later.</li>
+<li>Add <code>HOST: z.string().min(1).default("127.0.0.1")</code> to the schema and call <code>server.listen(config.PORT, config.HOST, ...)</code>. <code>127.0.0.1</code> accepts connections from the same machine only. <code>0.0.0.0</code> means “every network interface”: you need it inside a Docker container or on a server that must be reached from outside, and it is exactly what you do not want on a laptop in a café.</li>
+<li><code>Promise.all</code> rejects as soon as the first promise rejects, at about 200 ms, with that error. The stock request is not cancelled: it keeps running and finishes at about 300 ms, and its result is ignored. The program in the code repository (<code>answers/all-fails.ts</code>) prints “Promise.all rejected at 201 ms: price service down” and then “stock finished anyway at 301 ms”. To really stop the other calls, give them an <code>AbortController</code>’s signal and call <code>abort()</code> in the <code>catch</code>.</li>
+<li>Read <code>Number(url.searchParams.get("rows") ?? 100000)</code>, answer <code>422</code> unless it is a whole number from 1 to 1,000,000, and pass it to <code>orderRows</code>. Memory stays flat because the generator makes one row at a time, and <code>pipeline</code> only asks for the next row when the response can take more: at no moment do all rows exist together. When the client disconnects, the response is destroyed, <code>pipeline</code> rejects, and it calls the generator’s <code>return()</code>, so the generator stops at its current <code>yield</code> (any <code>finally</code> block in it runs). The handler’s <code>catch</code> sees the error and, since the headers were already sent, destroys the response instead of writing a 500.</li>
+<li>The pool in <code>answers/pool.ts</code> keeps a list of idle workers and a queue of jobs. <code>run</code> puts a job in the queue and calls <code>#next</code>, which gives the first job to an idle worker; when the worker answers, it goes back to the idle list and <code>#next</code> runs again. A worker that crashes is replaced with a new one, because a crashed thread cannot be reused. The worker file listens with <code>parentPort.on("message", ...)</code> instead of reading <code>workerData</code> once. In the run in the code repository, 100 counts with a new thread each took about 6 seconds, and with a pool of four about 150 ms: starting a thread costs far more than these small counts.</li>
+</ol>
+
+</section>
+</body></html>

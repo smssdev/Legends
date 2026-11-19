@@ -1,0 +1,1422 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>هندسة الخوادم باحتراف</title><link rel="stylesheet" href="../style/book.css"><style>
+@page { size: 7in 10in; margin: 0.8in 0.75in 0.8in 0.75in;
+  @top-center { content: "هندسة الخوادم باحتراف"; font: 700 8pt 'Cairo', 'Inter', sans-serif; color: #7c3aed; }
+  @bottom-center { content: counter(page); font: 700 9pt 'Cairo', 'Inter', sans-serif; color: #fff; background: #4338ca;
+    border-radius: 9pt; height: 16pt; width: 26pt; margin-top: 18pt; } }
+@page :left { margin-left: 0.75in; margin-right: 0.75in; }
+@page front { @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page cover { margin: 0; @top-center { content: none; } @bottom-center { content: none; background: none; } }
+@page ch01 { @top-center { content: "الفصل 1: كيف تعمل الخوادم: HTTP بعمق"; } }
+@page ch01:first { @top-center { content: none; } }
+@page ch02 { @top-center { content: "الفصل 2: Node.js وTypeScript على الخادم"; } }
+@page ch02:first { @top-center { content: none; } }
+@page answers { @top-center { content: "حلول التمارين"; } }
+@page answers:first { @top-center { content: none; } }
+
+.cv { position: relative; overflow: hidden; color: #fff; font-family: var(--head);
+  background: radial-gradient(circle at 80% 18%, #8b5cf6 0, transparent 45%),
+              linear-gradient(150deg, #312e81 0%, #4338ca 38%, #7c3aed 72%, #db2777 120%); }
+.cv * { text-align: start; }
+.cv .bgcode { position: absolute; inset: 0.35in; font: 400 11pt/1.7 var(--mono); color: rgba(255,255,255,0.08); white-space: pre; direction: ltr; text-align: left; overflow: hidden; }
+.cv .ring { position: absolute; border-radius: 50%; border: 18pt solid rgba(255,255,255,0.07); }
+.front-in { position: absolute; inset: 0.5in 0.5in 0.45in; display: flex; flex-direction: column; }
+.cv-series { align-self: flex-start; font: 700 9pt var(--head); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(255,255,255,0.16); border-radius: 20pt; padding: 4pt 12pt; }
+:root:lang(ar) .cv-series { letter-spacing: 0; font-size: 10pt; }
+.cv-title { font: 700 50pt/1.04 var(--head); margin: 0.3in 0 0.12in; color: #fff; }
+:root:lang(ar) .cv-title { font-size: 46pt; line-height: 1.3; }
+.cv-sub { font: 600 14pt/1.45 var(--head); color: #e0e7ff; max-width: 5.2in; margin: 0; }
+.cv-edition { align-self: flex-start; font: 700 12pt var(--head); color: #312e81; background: #fde68a; border-radius: 6pt; padding: 3pt 12pt; margin: 10pt 0 0; }
+.cv-mid { flex: 1; position: relative; }
+.cv-bit { position: absolute; inset-inline-end: -0.05in; bottom: 0.05in; width: 2.6in; z-index: 1; }
+.cv-card { position: absolute; inset-inline-start: 0; top: 0.5in; background: #16142a; border-radius: 10pt; padding: 0 0 10pt;
+  width: 3.05in; box-shadow: 0 10pt 24pt rgba(0,0,0,0.35); direction: ltr; }
+.cv-card .bar { display: flex; gap: 5pt; padding: 7pt 10pt; background: #2a2745; border-radius: 10pt 10pt 0 0; }
+.cv-card .bar i { width: 7pt; height: 7pt; border-radius: 50%; background: #f87171; display: block; }
+.cv-card .bar i:nth-child(2) { background: #fbbf24; } .cv-card .bar i:nth-child(3) { background: #34d399; }
+.cv-card pre { margin: 0; padding: 9pt 12pt 0; font: 400 10.5pt/1.6 var(--mono); color: #e7e5ff; white-space: pre; text-align: left; }
+.cv-card .k { color: #c4b5fd; font-weight: 700; } .cv-card .s { color: #86efac; } .cv-card .n { color: #fdba74; }
+.cv-tracks { position: absolute; z-index: 2; inset-inline-start: 0; bottom: 0.25in; display: flex; gap: 7pt; direction: ltr; }
+:root:lang(ar) .cv-tracks { flex-direction: row-reverse; }
+.cv-tracks span { font: 700 10pt var(--mono); background: #fff; color: #4338ca; border-radius: 8pt; padding: 5pt 10pt; }
+.cv-tracks span:nth-child(2) { color: #db2777; } .cv-tracks span:nth-child(3) { color: #ca8a04; } .cv-tracks span:nth-child(4) { color: #0f766e; }
+.cv-foot { display: flex; align-items: center; justify-content: space-between; gap: 10pt; }
+.cv-level { font: 700 11pt var(--head); background: #f97316; color: #fff; border-radius: 20pt; padding: 5pt 14pt; }
+.cv-author { font: 700 15pt var(--head); color: #fff; }
+
+.back-in { position: absolute; inset: 0.55in 0.5in 0.45in; display: flex; flex-direction: column; gap: 12pt; }
+.back-in p.blurb { font: 400 12pt/1.6 var(--body); color: #fff; margin: 0; text-align: justify; }
+:root:lang(ar) .back-in p.blurb { font-size: 12.5pt; line-height: 1.9; }
+.back-in h3 { font: 700 13pt var(--head); color: #fde68a; margin: 6pt 0 0; }
+.back-in ul { list-style: none; margin: 0; padding: 0; }
+.back-in li { font: 600 11pt/1.5 var(--head); padding: 4pt 0; padding-inline-start: 20pt; position: relative; }
+.back-in li::before { content: "✓"; position: absolute; inset-inline-start: 0; color: #34d399; font-weight: 700; }
+.back-in .note { font: 400 9.5pt/1.5 var(--head); color: #e0e7ff; margin: 0; }
+.back-bit { width: 1.15in; }
+.barcode { position: absolute; right: 0.5in; bottom: 0.45in; width: 2in; height: 1.2in; background: #fff; border-radius: 4pt; }
+:root:lang(ar) .cv-sub, :root:lang(ar) .back-in li { font-family: var(--body); font-weight: 700; }
+.spine { position: relative; display: flex; align-items: center; justify-content: center; background: #1e1b4b; }
+.spine-text { transform: rotate(90deg); white-space: nowrap; font: 700 11pt var(--head); color: #fff; display: flex; gap: 18pt; }
+</style></head>
+<body><section class="cv" style="page: cover; width: 7in; height: 10in; break-after: page"><div class="bgcode">const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}
+const age = 9;
+let price;
+if (age < 4) {
+  price = 0;
+} else if (age < 13) {
+  price = 6;
+} else {
+  price = 10;
+}
+console.log(`Pay $${price}`);
+const isMember = true;
+const day = "Tuesday";
+if (isMember && day === "Tuesday") {
+  price = price / 2;
+}</div><div class="ring" style="width:4.2in;height:4.2in;right:-1.4in;top:-1.2in"></div><div class="ring" style="width:3in;height:3in;left:-1.2in;bottom:1.2in"></div><div class="front-in">
+  <p class="cv-series">من الصفر إلى الاحتراف · الكتاب الثالث</p>
+  <h1 class="cv-title">هندسة الخوادم باحتراف</h1>
+  <p class="cv-sub">الواجهات البرمجية وقواعد البيانات والأمان والتوسع بـ Node.js وPostgreSQL</p><p class="cv-edition">إصدار Node.js</p>
+  <div class="cv-mid"><div class="cv-card"><div class="bar"><i></i><i></i><i></i></div><pre><span class="k">const</span> age = <span class="n">9</span>;
+<span class="k">let</span> price;
+
+<span class="k">if</span> (age &lt; <span class="n">13</span>) {
+  price = <span class="n">6</span>;
+} <span class="k">else</span> {
+  price = <span class="n">10</span>;
+}
+
+console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-tracks"><span>Node.js</span><span>TypeScript</span><span>PostgreSQL</span><span>Redis</span></div><div class="cv-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+  <div class="cv-foot"><span class="cv-level">مبتدئ محترف ← خبير</span><span class="cv-author">سليمان ماجد سعيد صلاح</span></div>
+</div></section><section class="front half-title"><p class="ht">هندسة الخوادم باحتراف</p></section><section class="front title-page">
+          <p class="tp-series">من الصفر إلى الاحتراف · الكتاب الثالث</p>
+          <h1 class="tp-title">هندسة الخوادم باحتراف</h1>
+          <p class="tp-sub">الواجهات البرمجية وقواعد البيانات والأمان والتوسع بـ Node.js وPostgreSQL</p><p class="tp-edition">إصدار Node.js</p>
+          <p class="tp-level">مبتدئ محترف ← خبير</p>
+          <div class="tp-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div>
+          <p class="tp-author">سليمان ماجد سعيد صلاح</p>
+        </section><section class="front copyright">
+          <p><strong>هندسة الخوادم باحتراف</strong><br>الواجهات البرمجية وقواعد البيانات والأمان والتوسع بـ Node.js وPostgreSQL</p>
+          <p>© 2026 سليمان ماجد سعيد صلاح. جميع الحقوق محفوظة. لا يجوز نسخ أي جزء من هذا الكتاب بأي شكل دون إذن كتابي من الناشر، إلا الاقتباسات القصيرة في المراجعات.</p>
+          <p>الطبعة الأولى, 2026</p>
+          <p>اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.</p>
+          <p>JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
+          <p>ISBN: ———</p>
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: الأساسيات</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">كيف تعمل الخوادم: HTTP بعمق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">Node.js وTypeScript على الخادم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">تصميم واجهات REST</span><span class="toc-p"></span></li><li class="toc-part">الجزء 2: البيانات</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">SQL وPostgreSQL</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">نمذجة البيانات والترحيلات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">المعاملات والأقفال والاتساق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">التخزين المؤقت بـ Redis</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الإنتاج</li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">التحقق من الهوية والصلاحيات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الأمان: أخطر عشر ثغرات (OWASP)</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">المهام الخلفية والطوابير</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الزمن الحقيقي بـ WebSockets</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">اختبار الخادم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">السجلات والمقاييس والتتبع</span><span class="toc-p"></span></li><li class="toc-part">الجزء 4: عمل الخبير</li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">الأداء والتوسع</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">المعمارية: الكتلة الواحدة والوحدات والخدمات</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Docker والنشر</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">المشروع الختامي: واجهة برمجية للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p"></span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b3/http/ar">
+<div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>كيف تعمل الخوادم: HTTP بعمق</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تتبع الطلب من العنوان إلى الجواب: البحث عن الاسم، والاتصال، والطلب، والرد</li>
+<li>تقرأ HTTP وتكتبه بيدك، لأنه نص عادي</li>
+<li>تختار الطريقة ورمز الحالة الصحيحين، وتعرف أي الطلبات يجوز تكرارها</li>
+<li>تستخدم الترويسات المهمة: نوع المحتوى وطوله، والتخزين المؤقت بـ ETag، وCORS</li>
+<li>تفحص أي واجهة برمجية بـ <code>curl</code>، أكثر أداة يستخدمها مطور الخوادم</li>
+<li>تبني واجهة JSON صغيرة دون أي إطار عمل، فتعرف ما يفعله كل إطار عمل نيابة عنك</li>
+</ul>
+</div>
+
+<p class="lead">كل خادم ستبنيه، مهما كانت اللغة أو إطار العمل، يؤدي العمل نفسه: ينتظر رسالة، ويفهم المطلوب، ثم يرسل رسالة رداً عليها. وتتبع هذه الرسائل بروتوكولاً اسمه HTTP. وأطر العمل تخفيه خلف المسارات والمتحكمات، وهذا مفيد حتى يقع خطأ: طلب ينجح في <code>curl</code> ويفشل في المتصفح، أو ذاكرة مؤقتة لا تتحدث أبداً، أو عميل يعيد المحاولة فيدفع الزبون مرتين. عندها تحتاج أن تعرف ما يمر فعلاً على السلك. وهذا الفصل يريك إياه بايتاً بايتاً، بخادم صغير نكتبه بأنفسنا.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أول واجهة برمجية كتبتها كانت تعمل تماماً، ما دمت أنا وحدي من يستدعيها. ثم استدعاها متصفح من عنوان آخر، فتوقف كل شيء. وضاع مني يوم كامل في مشكلة حلّتها ترويستان. ومنذ ذلك اليوم أقرأ الطلب الخام أولاً، ثم أخمّن.</p></div></div>
+
+<h2><span class="sec">1.1</span> <span>من العنوان إلى الجواب</span></h2>
+
+<p>حين يطلب تطبيق ويب في متجر Bit العنوان <code>http://localhost:3000/products/2</code>، تحدث أربعة أشياء بهذا الترتيب:</p>
+<ol>
+<li><strong>البحث عن الاسم.</strong> الحواسيب تتخاطب بالعناوين لا بالأسماء. فيسأل العميل <dfn>نظام أسماء النطاقات</dfn> (DNS) عن عنوان <dfn>المضيف</dfn> (وهو هنا <code>localhost</code>، الذي يعني دائماً «هذا الحاسوب نفسه»، وعنوانه <code>127.0.0.1</code>). أما الموقع الحقيقي مثل <code>shop.example</code> فيجيب عنه خادم DNS في مكان ما على الإنترنت.</li>
+<li><strong>الاتصال.</strong> يفتح العميل <dfn>اتصال TCP</dfn> بذلك العنوان وبـ<dfn>منفذ</dfn>، وهو رقم يختار برنامجاً واحداً على الجهاز. وخادمنا يستمع على المنفذ <code>3000</code>. ويضمن TCP أن تصل البايتات كاملة وبترتيبها.</li>
+<li><strong>الأمان، مع HTTPS.</strong> مع <code>https://</code> يتفق الطرفان أولاً على مفاتيح التشفير (<dfn>مصافحة TLS</dfn>)، ويثبت الخادم هويته بشهادة. وكل ما بعد ذلك مشفّر، أما HTTP الذي بداخله فهو نفسه.</li>
+<li><strong>الطلب والجواب.</strong> يرسل العميل <dfn>طلب</dfn> HTTP نصاً، ويرد الخادم بـ<dfn>جواب</dfn>. وقد يبقى الاتصال مفتوحاً بعد ذلك للطلب التالي.</li>
+</ol>
+
+<p>كل ما في هذا الفصل يجري على حاسوبك أنت، فترى كل خطوة دون شبكة تعترض الطريق. ونحتاج خادماً نتحدث إليه. وفي مجلد الكود الخاص بالكتاب خادم لهذا الفصل: واجهة برمجية صغيرة لمتجر Bit، بلا أي إطار عمل. شغّله في نافذة طرفية واتركها مفتوحة:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 1</div><pre class="code"><span class="c line-bidi"># شغّل الخادم (واتركه يعمل في هذه النافذة)</span>
+<span class="c">$ </span><span class="k">node server.ts</span>
+Listening on http://localhost:3000</pre></div>
+
+<p>الإصدار 22.18 من Node وما بعده يشغّل ملفات TypeScript مباشرة: يحذف الأنواع ويشغّل الباقي. وسنقرأ الخادم كله في القسم 1.9. أما الآن فننظر إليه من الخارج، كما يراه كل عميل.</p>
+
+<h2><span class="sec">1.2</span> <span>HTTP نص عادي</span></h2>
+
+<p>HTTP/1.1، الإصدار الذي يفهمه كل خادم، نص عادي يُرسل عبر اتصال TCP. وتستطيع أن تكتب الطلب بنفسك. فالأداة <code>nc</code> (netcat) تفتح اتصال TCP وتمرر فيه كل ما تعطيها، و<code>printf</code> يكتب الطلب، مع <code>\r\n</code> في آخر كل سطر كما يشترط البروتوكول. افتح نافذة طرفية ثانية:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 2</div><pre class="code"><span class="c line-bidi"># اكتب طلباً بيدك: HTTP/1.1 نص عادي فوق اتصال TCP</span>
+<span class="c">$ </span><span class="k">printf &#x27;GET /products/1 HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n&#x27; | nc localhost 3000</span>
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 53
+Date: Thu, 19 Nov 2026 18:42:41 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;عدة الروبوت&quot;,&quot;price&quot;:45000}</pre></div>
+
+<p>هذا كل ما في تبادل HTTP. وللرسالتين الشكل نفسه:</p>
+<ol>
+<li><strong>سطر أول.</strong> في الطلب هو <dfn>سطر الطلب</dfn>: <dfn>الطريقة</dfn> (<code>GET</code>) و<dfn>الهدف</dfn> (<code>/products/1</code>) والإصدار. وفي الجواب هو <dfn>سطر الحالة</dfn>: الإصدار و<dfn>رمز الحالة</dfn> (<code>200</code>) وسبب قصير (<code>OK</code>).</li>
+<li><strong>الترويسات</strong>، واحدة في كل سطر بالشكل <code>Name: value</code>. وأسماؤها لا تفرّق بين الحروف الكبيرة والصغيرة: <code>content-type</code> و<code>Content-Type</code> ترويسة واحدة.</li>
+<li><strong>سطر فارغ.</strong> يقول «انتهت الترويسات هنا». انسَه، فيظل الخادم ينتظر مزيداً من الترويسات إلى الأبد.</li>
+<li><strong>المحتوى</strong>، إن وُجد. ويعرف المستقبِل أين ينتهي من <code>Content-Length</code>: وهو هنا 53 بايتاً.</li>
+</ol>
+
+<p>عدّ حروف المحتوى: إنها 43 حرفاً فقط، لكنها 53 بايتاً. ففي ترميز UTF-8 يأخذ الحرف الإنجليزي بايتاً واحداً والحرف العربي بايتين، وفي «عدة الروبوت» عشرة حروف عربية. ولهذا يُحسب <code>Content-Length</code> بالبايت لا بالحروف، وسنعود إلى ذلك في القسم 1.6.</p>
+
+<p>وكان في طلبنا ترويستان. <code>Host</code> إلزامية في HTTP/1.1، لأن جهازاً واحداً بعنوان واحد يخدم مواقع كثيرة غالباً، فيحتاج الخادم أن يعرف أيها تقصد. و<code>Connection: close</code> تطلب من الخادم أن يغلق الاتصال بعد الرد، فيتوقف <code>nc</code>. وسنعود إلى الاتصالات في القسم 1.7.</p>
+
+
+<h3>اجعل curl يريك الجهتين</h3>
+
+<p>كتابة الطلبات باليد تعلّمك الشكل، لكنك ستستخدم <code>curl</code> كل يوم. وهو يأتي مع macOS وLinux وWindows 10 وما بعده. ومع <code>-v</code> (مفصّل) يُظهر كل ما يفعله، و<code>-s</code> (صامت) يخفي شريط التقدم:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 2</div><pre class="code"><span class="c line-bidi"># اجعل curl يُظهر الجهتين: * أخبار curl نفسه، و&gt; ما يُرسَل، و&lt; ما يصل</span>
+<span class="c">$ </span><span class="k">curl -sv localhost:3000/products/2</span>
+* Host localhost:3000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying 127.0.0.1:3000...
+* Connected to localhost (127.0.0.1) port 3000
+<span class="c">&gt; </span><span class="k">GET /products/2 HTTP/1.1</span>
+<span class="c">&gt; </span><span class="k">Host: localhost:3000</span>
+<span class="c">&gt; </span><span class="k">User-Agent: curl/8.5.0</span>
+<span class="c">&gt; </span><span class="k">Accept: */*</span>
+<span class="c">&gt; </span><span class="k"></span>
+&lt; HTTP/1.1 200 OK
+&lt; Content-Type: application/json; charset=utf-8
+&lt; Content-Length: 58
+&lt; Date: Thu, 19 Nov 2026 18:42:41 GMT
+&lt; Connection: keep-alive
+&lt; Keep-Alive: timeout=5
+&lt; 
+{ [58 bytes data]
+* Connection #0 to host localhost left intact
+{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:6000}</pre></div>
+
+<p>اقرأه من أعلى، فترى خطوات القسم 1.1 الأربع. الأسطر التي تبدأ بـ <code>*</code> هي curl يخبرك بما يفعل: بحث عن <code>localhost</code>، فوجد عنوان IPv6 وعنوان IPv4، واتصل بالمنفذ 3000. والأسطر التي تبدأ بـ <code>&gt;</code> هي الطلب الذي أرسله، ومعه ترويستان لم نكتبهما: <code>User-Agent</code> التي تسمّي العميل، و<code>Accept: */*</code> التي تقول إن أي نوع من الأجوبة مقبول. والأسطر التي تبدأ بـ <code>&lt;</code> هي ترويسات الجواب، والسطر الأخير هو المحتوى.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: للمتصفح المنظر نفسه</p><p>في أدوات المطور في المتصفح، تُظهر لوحة Network الشيء نفسه لكل طلب ترسله الصفحة: الطريقة والعنوان والحالة وترويسات الطلب والجواب والمحتوى. فإن اختلفت الواجهة الأمامية والخادم، افتحها وابحث عن الطلب واقرأه كما قرأت ناتج curl الآن. ومعظم الأخطاء ظاهرة هناك.</p></aside>
+
+<h2><span class="sec">1.3</span> <span>العناوين: المسار ونص الاستعلام</span></h2>
+
+<p>لهدف الطلب جزءان. <dfn>المسار</dfn>، مثل <code>/products</code>، يسمّي <dfn>موْرداً</dfn>: شيئاً تعرفه الواجهة البرمجية. و<dfn>نص الاستعلام</dfn>، بعد <code>?</code>، يحمل أزواجاً بالشكل <code>name=value</code> تفصل بينها <code>&amp;</code>، وغالباً ما يكون للتصفية أو الترتيب أو تقسيم القائمة إلى صفحات. وخادمنا يفهم واحداً منها، هو <code>max_price</code>:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 2</div><pre class="code"><span class="c line-bidi"># قائمة مصفّاة بنص الاستعلام</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/products?max_price=15000&#x27;</span>
+[{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:6000},{&quot;id&quot;:3,&quot;name&quot;:&quot;حزمة بطارية&quot;,&quot;price&quot;:12500}]
+<span class="c line-bidi"># الترويسات وحدها (HEAD): الجواب نفسه بلا محتوى</span>
+<span class="c">$ </span><span class="k">curl -sI localhost:3000/products</span>
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 168
+ETag: &quot;25b59567250630bf&quot;
+Cache-Control: no-cache
+Date: Thu, 19 Nov 2026 18:42:41 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5</pre></div>
+
+<p>علامتا التنصيص حول العنوان الأول مهمتان: فبدونهما تعامل الطرفية <code>?</code> و<code>&amp;</code> كأنهما من رموزها الخاصة. والأمر الثاني يستخدم <code>-I</code>، فيرسل <code>HEAD</code>: الطلب نفسه مثل <code>GET</code>، لكن الخادم يرد بالترويسات وحدها. فيعرف العميل حجم مورد كبير أو إصداره دون أن ينزّله.</p>
+
+<p>الأسعار أعداد صحيحة من القروش (45000 تعني 450.00)، ولا كسور أبداً. فالأعداد العشرية لا تحمل معظم الكسور العشرية بدقة، والمال الذي ينقص كسراً من القرش يبقى مالاً خاطئاً. وهذه القاعدة ترافقنا في الكتاب كله.</p>
+
+<h2><span class="sec">1.4</span> <span>الطرق، وأي الطلبات يجوز تكرارها</span></h2>
+
+<p>الطريقة تقول ماذا يريد العميل أن يفعل بالمورد. ولها صفتان أهم من اسمها:</p>
+<ul>
+<li>الطريقة <dfn>آمنة</dfn> إن كانت تقرأ فقط ولا تغيّر شيئاً على الخادم. فيجوز لأي أحد أن يرسلها أي عدد من المرات: المتصفحات تجلب الروابط مسبقاً، ومحركات البحث تزحف عليها.</li>
+<li>والطريقة <dfn>متساوية الأثر</dfn> (idempotent) إن كان إرسالها مرتين له أثر إرسالها مرة واحدة. وهذا مهم لأن الشبكات تفشل. فحين ينتهي وقت الطلب دون جواب، لا يستطيع العميل أن يعرف هل وصل الخادم أم لا. ويجوز له أن يعيد الطلب متساوي الأثر بأمان، أما غيره فقد يؤدي العمل مرتين.</li>
+</ul>
+
+<table>
+<thead><tr><th>الطريقة</th><th>معناها</th><th>آمنة</th><th>متساوية الأثر</th></tr></thead>
+<tbody>
+<tr><td><code>GET</code></td><td>قراءة مورد</td><td>نعم</td><td>نعم</td></tr>
+<tr><td><code>HEAD</code></td><td>مثل GET، بالترويسات وحدها</td><td>نعم</td><td>نعم</td></tr>
+<tr><td><code>OPTIONS</code></td><td>السؤال عما هو مسموح (تستخدمها CORS، القسم 1.8)</td><td>نعم</td><td>نعم</td></tr>
+<tr><td><code>POST</code></td><td>إنشاء شيء، أو تنفيذ فعل</td><td>لا</td><td><strong>لا</strong></td></tr>
+<tr><td><code>PUT</code></td><td>استبدال المورد بالمرسَل</td><td>لا</td><td>نعم</td></tr>
+<tr><td><code>PATCH</code></td><td>تغيير جزء من المورد</td><td>لا</td><td>غير مضمونة</td></tr>
+<tr><td><code>DELETE</code></td><td>حذف مورد</td><td>لا</td><td>نعم</td></tr>
+</tbody>
+</table>
+
+<p><code>PUT</code> متساوية الأثر لأنها تقول «اجعله هكذا»: تنفيذها مرتين يترك النتيجة نفسها. أما <code>POST</code> فتقول «أضف واحداً»: وتنفيذها مرتين يضيف اثنين. وهذا طلب <code>POST</code> ينشئ منتجاً. مع <code>-d</code> يرسل curl محتوى (وينتقل إلى <code>POST</code> وحده)، و<code>-H</code> تضيف ترويسة، و<code>-i</code> تُظهر ترويسات الجواب:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 2</div><pre class="code"><span class="c line-bidi"># أنشئ منتجاً: 201 Created، وLocation يقول أين يعيش</span>
+<span class="c">$ </span><span class="k">curl -si -X POST localhost:3000/products -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;: &quot;كابل USB&quot;, &quot;price&quot;: 2500}&#x27;</span>
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+Content-Length: 43
+Location: /products/4
+Date: Thu, 19 Nov 2026 18:42:41 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{&quot;id&quot;:4,&quot;name&quot;:&quot;كابل USB&quot;,&quot;price&quot;:2500}
+<span class="c line-bidi"># صار موجوداً الآن</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products/4</span>
+{&quot;id&quot;:4,&quot;name&quot;:&quot;كابل USB&quot;,&quot;price&quot;:2500}</pre></div>
+
+<p>الجواب <code>201 Created</code> لا مجرد <code>200 OK</code>، والترويسة <code>Location</code> تعطي عنوان المنتج الجديد. فالعميل لا يحتاج أن يخمّن كيف تُبنى العناوين: الخادم يخبره.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: إعادة POST قد تخصم المبلغ مرتين</p><p>جوال على شبكة ضعيفة يرسل «ادفع 450.00»، فيضيع الجواب، ويحاول التطبيق مرة أخرى. ومع <code>POST</code> عادية يدفع الزبون مرتين. والواجهات البرمجية الجادة تجعل هذه الطلبات آمنة التكرار بـ<dfn>مفتاح عدم التكرار</dfn> (idempotency key): يرسل العميل قيمة فريدة في ترويسة، ويتذكر الخادم المفاتيح التي عالجها من قبل. وسنبني ذلك بقاعدة بيانات في الفصل 6.</p></aside>
+
+<h2><span class="sec">1.5</span> <span>رموز الحالة: أول ما يقرؤه العميل</span></h2>
+
+<p>رمز الحالة عدد من ثلاثة أرقام، ورقمه الأول هو فئته:</p>
+<ul>
+<li><code>2xx</code>: نجح الطلب.</li>
+<li><code>3xx</code>: ابحث في مكان آخر، أو استخدم ما عندك.</li>
+<li><code>4xx</code>: أخطأ <em>العميل</em>. وإعادة الطلب نفسه ستفشل مرة أخرى.</li>
+<li><code>5xx</code>: فشل <em>الخادم</em>. وقد ينجح الطلب نفسه لاحقاً.</li>
+</ul>
+
+<p>وهذا الفرق بين 4xx و5xx هو ما يعتمد عليه العملاء ومنطق إعادة المحاولة وأدوات المراقبة: فقفزة في 5xx توقظ أحداً من نومه ليلاً، وقفزة في 4xx تعني غالباً عميلاً معطوباً. لذلك يأخذ كل خطأ الرمز الذي يصفه. وهذه الرموز التي يرد بها خادمنا، والخيار <code>-w</code> في curl يطبع الحالة بعد المحتوى:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 2</div><pre class="code"><span class="c line-bidi"># لكل خطأ رمز حالة خاص به</span>
+<span class="c line-bidi"># لا يوجد منتج كهذا</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products/99 -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;not_found&quot;,&quot;message&quot;:&quot;لا يوجد منتج بهذا الرقم&quot;}} 404
+<span class="c line-bidi"># طريقة لا يسمح بها هذا العنوان</span>
+<span class="c">$ </span><span class="k">curl -s -X DELETE localhost:3000/products -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;method_not_allowed&quot;,&quot;message&quot;:&quot;استخدم GET أو POST هنا&quot;}} 405
+<span class="c line-bidi"># محتوى ليس JSON</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products -d &#x27;name=Cable&#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;unsupported_media_type&quot;,&quot;message&quot;:&quot;أرسل JSON&quot;}} 415
+<span class="c line-bidi"># JSON مكسور</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;name&quot;: &#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;bad_json&quot;,&quot;message&quot;:&quot;المحتوى ليس JSON صالحاً&quot;}} 400
+<span class="c line-bidi"># JSON، لكن الحقول خاطئة</span>
+<span class="c">$ </span><span class="k">curl -s localhost:3000/products -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;price&quot;: 9.5}&#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;invalid&quot;,&quot;message&quot;:&quot;راجع الحقول&quot;,&quot;fields&quot;:{&quot;name&quot;:&quot;مطلوب&quot;,&quot;price&quot;:&quot;عدد صحيح من القروش أكبر من 0&quot;}}} 422
+<span class="c line-bidi"># كبير جداً</span>
+<span class="c">$ </span><span class="k">head -c 2000 /dev/zero | tr &#x27;\0&#x27; x | curl -s localhost:3000/products -H &#x27;Content-Type: application/json&#x27; --data-binary @- -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;error&quot;:{&quot;code&quot;:&quot;too_large&quot;,&quot;message&quot;:&quot;الحد الأقصى 1 KB&quot;}} 413</pre></div>
+
+<table>
+<thead><tr><th>الرمز</th><th>معناه</th><th>متى تستخدمه</th></tr></thead>
+<tbody>
+<tr><td><code>200 OK</code></td><td>هذا ما طلبت</td><td>القراءة الناجحة، والتغيير الذي يُرجع محتوى</td></tr>
+<tr><td><code>201 Created</code></td><td>صار للمورد الجديد وجود</td><td>بعد POST التي تُنشئ، ومعها <code>Location</code></td></tr>
+<tr><td><code>204 No Content</code></td><td>تم، ولا شيء أرسله</td><td>الحذف، أو تغيير لا محتوى يُرجعه</td></tr>
+<tr><td><code>301</code> / <code>308</code></td><td>انتقل نهائياً</td><td>العناوين القديمة، و308 تحفظ الطريقة والمحتوى</td></tr>
+<tr><td><code>304 Not Modified</code></td><td>نسختك ما زالت صالحة</td><td>الطلبات المشروطة (القسم 1.6)</td></tr>
+<tr><td><code>400 Bad Request</code></td><td>لا أستطيع قراءة هذا</td><td>JSON مكسور، أو طلب مشوّه</td></tr>
+<tr><td><code>401 Unauthorized</code></td><td>من أنت؟</td><td>لا دخول، أو دخول انتهت صلاحيته</td></tr>
+<tr><td><code>403 Forbidden</code></td><td>أعرفك، والجواب لا</td><td>داخل الحساب، لكن غير مسموح له</td></tr>
+<tr><td><code>404 Not Found</code></td><td>لا مورد كهذا</td><td>وأيضاً لإخفاء موارد لا يجوز أن يعرف المستخدم بوجودها</td></tr>
+<tr><td><code>405 Method Not Allowed</code></td><td>ليس بهذه الطريقة</td><td>ودائماً مع الترويسة <code>Allow</code></td></tr>
+<tr><td><code>409 Conflict</code></td><td>يتعارض مع الحال الآن</td><td>تكرار، أو تعديل على نسخة قديمة</td></tr>
+<tr><td><code>413 Content Too Large</code></td><td>المحتوى أكبر من اللازم</td><td>فوق الحد الذي وضعته</td></tr>
+<tr><td><code>415 Unsupported Media Type</code></td><td>لا أقرأ هذه الصيغة</td><td>محتوى ليس JSON</td></tr>
+<tr><td><code>422 Unprocessable Content</code></td><td>قرأته، وهو خاطئ</td><td>أخطاء التحقق، حقلاً حقلاً</td></tr>
+<tr><td><code>429 Too Many Requests</code></td><td>تمهّل</td><td>حدود عدد الطلبات، ومعها <code>Retry-After</code></td></tr>
+<tr><td><code>500 Internal Server Error</code></td><td>خطأ عندنا</td><td>كل ما هو غير متوقع، ولا تكشف تفاصيله أبداً</td></tr>
+<tr><td><code>503 Service Unavailable</code></td><td>ليس الآن</td><td>ضغط زائد أو صيانة، ومعها <code>Retry-After</code></td></tr>
+</tbody>
+</table>
+
+<p>وانظر إلى المحتوى أيضاً. فلكل خطأ الشكل نفسه: <code>{"error": {"code", "message"}}</code>، ومعه <code>fields</code> في أخطاء التحقق. و<code>code</code> للبرامج: لا يتغير أبداً، فيستطيع العميل أن يكتب <code>if (error.code === "invalid")</code>. أما <code>message</code> فللناس، ويجوز أن تُعاد صياغتها أو ترجمتها دون أن ينكسر أي عميل، ولهذا رسائل هذا الإصدار عربية ورموزه إنجليزية. وجواب 422 يذكر <em>كل</em> حقل خاطئ دفعة واحدة، فيُظهر النموذج كل أخطائه مرة واحدة بدل خطأ في كل محاولة.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر فهمك</p><ol><li>أين تنتهي قائمة ترويسات طلب HTTP، وكيف يعرف المستقبِل أين ينتهي المحتوى؟</li><li>أرسل عميل <code>DELETE /products/3</code> فانقطع الاتصال قبل الجواب. هل يجوز له أن يعيد الطلب ببساطة؟ وماذا عن <code>POST /orders</code>؟</li><li>أي رمز حالة يناسب «حقل البريد فارغ»: 400 أم 422؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">1.6</span> <span>ترويسات تؤدي عملاً حقيقياً</span></h2>
+
+<p>هناك عشرات الترويسات، وقليل منها يؤدي معظم العمل في الواجهات البرمجية.</p>
+
+<h3>Content-Type وContent-Length</h3>
+
+<p><code>Content-Type</code> تقول ما المحتوى: <code>application/json; charset=utf-8</code> في أجوبتنا. وعلى العميل أن يرسلها أيضاً: فقد رد خادمنا بـ <code>415</code> على <code>-d 'name=Cable'</code>، لأن curl يصف هذا المحتوى بـ <code>application/x-www-form-urlencoded</code>، وهي صيغة نماذج HTML. أما <code>Content-Length</code> فحجم المحتوى <strong>بالبايت</strong> لا بالحروف، كما رأيت في القسم 1.2: الحرف العربي بايتان، وكثير من الرموز التعبيرية أربعة. والخادم الذي يعدّ الحروف يقطع النص العربي قبل نهايته.</p>
+
+<h3>التخزين المؤقت: ETag و304</h3>
+
+<p>معظم الطلبات تسأل عن شيء رآه العميل من قبل. فيستطيع الخادم أن يضع على كل نسخة من المورد وسماً هو <dfn>ETag</dfn>، بصمة قصيرة لمحتواه. وخادمنا يصنعها من بصمة (hash) للقائمة. ويعيدها العميل في <code>If-None-Match</code>، فإن لم تتغير القائمة رد الخادم بـ <code>304 Not Modified</code> بلا محتوى:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 2</div><pre class="code"><span class="c line-bidi"># الزيارة الأولى: يرسل الخادم القائمة ووسمها ETag</span>
+<span class="c">$ </span><span class="k">curl -si localhost:3000/products</span>
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 212
+ETag: &quot;82bbd06582b2c190&quot;
+Cache-Control: no-cache
+Date: Thu, 19 Nov 2026 18:42:42 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{&quot;id&quot;:1,&quot;name&quot;:&quot;عدة الروبوت&quot;,&quot;price&quot;:45000},{&quot;id&quot;:2,&quot;name&quot;:&quot;عجلات احتياطية&quot;,&quot;price&quot;:6000},{&quot;id&quot;:3,&quot;name&quot;:&quot;حزمة بطارية&quot;,&quot;price&quot;:12500},{&quot;id&quot;:4,&quot;name&quot;:&quot;كابل USB&quot;,&quot;price&quot;:2500}]
+<span class="c line-bidi"># الزيارة التالية تعيد الوسم: لم يتغير شيء، فالجواب 304 بلا محتوى</span>
+<span class="c">$ </span><span class="k">curl -si localhost:3000/products -H &#x27;If-None-Match: &quot;82bbd06582b2c190&quot;&#x27;</span>
+HTTP/1.1 304 Not Modified
+Content-Length: 0
+ETag: &quot;82bbd06582b2c190&quot;
+Date: Thu, 19 Nov 2026 18:42:42 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5</pre></div>
+
+<p>والمتصفحات تفعل هذا وحدها: تحفظ الوسم وتعيده في الزيارة التالية. و<code>Cache-Control: no-cache</code> تطلب منها أن تسأل أولاً دائماً (ولا تعني «لا تحفظ»، فتلك <code>no-store</code>). وقيم أخرى تسمح للعميل أن يعيد استخدام نسخته دون أن يسأل أصلاً، لمدة: <code>max-age=60</code> تعني دقيقة، وتناسب قائمة منتجات قد تتغير، و<code>max-age=31536000, immutable</code> تعني سنة، وتناسب الملفات التي يتغير اسمها مع محتواها، مثل حِزم الكتاب الثاني.</p>
+
+<h3>Authorization والكوكيز</h3>
+
+<p>يثبت العميل هويته بإحدى طريقتين. البرامج وتطبيقات الجوال ترسل غالباً رمزاً (token) في <code>Authorization: Bearer &lt;token&gt;</code>. أما المتصفحات فتعتمد غالباً على <dfn>كوكي</dfn>: يرسل الخادم <code>Set-Cookie: session=…; HttpOnly; Secure; SameSite=Lax</code>، فيرسل المتصفح <code>Cookie: session=…</code> مع كل طلب لاحق إلى ذلك الموقع. و<code>HttpOnly</code> تخفي الكوكي عن JavaScript فلا يسرقه سكربت مدسوس، و<code>Secure</code> لا ترسله إلا عبر HTTPS، و<code>SameSite</code> تحدّ من الحالات التي تجعل فيها مواقع أخرى المتصفح يرسله. والفصل 8 يبني الطريقتين كما ينبغي.</p>
+
+<h2><span class="sec">1.7</span> <span>الاتصالات، وإصدارات HTTP</span></h2>
+
+<p>فتح اتصال TCP يكلف رحلة ذهاب وإياب إلى الخادم، ومصافحة TLS تكلف رحلة أو اثنتين أخريين. ومع خادم في قارة أخرى، هذه بضع مئات من الأجزاء من الثانية قبل أول بايت من الجواب. لذلك يُبقي HTTP/1.1 الاتصالات مفتوحة افتراضياً، ويرسل الطلب التالي عبر الاتصال نفسه. وcurl يستطيع أن يُظهر هل أُعيد استخدامه:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 2</div><pre class="code"><span class="c line-bidi"># طلبان في أمر curl واحد: هل يُعاد استخدام الاتصال؟</span>
+<span class="c">$ </span><span class="k">curl -sv localhost:3000/products/1 localhost:3000/products/2 -o /dev/null -o /dev/null 2&gt;&amp;1 | grep -E &#x27;Connected|Re-using|left intact|Closing|^&lt; HTTP&#x27;</span>
+* Connected to localhost (127.0.0.1) port 3000
+&lt; HTTP/1.1 200 OK
+* Connection #0 to host localhost left intact
+* Re-using existing connection with host localhost
+&lt; HTTP/1.1 200 OK
+* Connection #0 to host localhost left intact</pre></div>
+
+<p>في الطلب الثاني يقول curl: <code>Re-using existing connection</code>، أي أعاد استخدام الاتصال نفسه. ويحتفظ Node بالاتصال الخامل خمس ثوانٍ (الترويسة <code>Keep-Alive: timeout=5</code> التي رأيتها في كل جواب). وتستطيع عملية Node واحدة أن تمسك آلاف الاتصالات في وقت واحد، لأنها لا تنتظر أبداً: فبينما ينتظر طلب ملفاً أو قاعدة بيانات، يعمل الخيط نفسه على الطلبات الأخرى. والفصل 2 ينظر في <dfn>حلقة الأحداث</dfn> هذه عن قرب.</p>
+
+<p>يغيّر HTTP/2 وHTTP/3 طريقة انتقال الرسائل لا معناها. فـHTTP/2 يرسلها بصيغة ثنائية مختصرة، ويُجري طلبات كثيرة في وقت واحد عبر اتصال واحد. وHTTP/3 يفعل ذلك فوق QUIC، وهو ناقل أحدث يتعافى أسرع من ضياع الحِزم، وهذا يفيد شبكات الجوال. أما الطرق والترويسات ورموز الحالة والمحتوى فهي تماماً ما تعلمته. وفي الواقع، يتحدث خادم الويب أو موزّع الحمل الذي يقف أمام تطبيقك HTTP/2 وHTTP/3 مع المتصفحات، وHTTP/1.1 العادي مع تطبيقك.</p>
+
+<aside class="box fact"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>معلومة: HTTPS في كل مكان</p><p>بدون TLS يستطيع أي أحد على الطريق (شبكة Wi-Fi في المقهى، أو مزود الخدمة) أن يقرأ كل طلب ويغيّره، ومعها كلمات المرور والرموز. فكل واجهة برمجية عامة يجب أن تستخدم HTTPS، والشهادات مجانية من Let’s Encrypt. ونادراً ما تكتب كود TLS بنفسك: يتولاه خادم الويب أو منصة الاستضافة، وهكذا نُعدّه في الفصل 16.</p></aside>
+
+<h2><span class="sec">1.8</span> <span>CORS: حين يستدعي المتصفح واجهتك</span></h2>
+
+<p>يحمي المتصفح مستخدميه بـ<dfn>سياسة المصدر الواحد</dfn>. و<dfn>المصدر</dfn> (origin) هو البروتوكول والمضيف والمنفذ معاً: <code>http://localhost:5173</code>، حيث يعمل تطبيق Vite، و<code>http://localhost:3000</code>، حيث تعمل واجهتنا، مصدران مختلفان. وافتراضياً يجوز لكود JavaScript في مصدر أن يرسل طلباً إلى مصدر آخر، لكن لا يجوز له أن يقرأ الجواب. وإلا لاستطاع أي موقع تزوره أن يقرأ صفحات مصرفك بكوكيزك.</p>
+
+<p><dfn>CORS</dfn> (مشاركة الموارد بين المصادر) تسمح للخادم أن يقول أي مصادر أخرى يجوز لها قراءة أجوبته. ومع طلب قد يغيّر شيئاً، مثل POST بمحتوى JSON، يرسل المتصفح أولاً <dfn>طلباً تمهيدياً</dfn> (preflight): طلب <code>OPTIONS</code> يسأل هل الطلب الحقيقي مسموح. ونستطيع أن نؤدي دور المتصفح بـ curl:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 2</div><pre class="code"><span class="c line-bidi"># المتصفح يسأل أولاً (طلب تمهيدي) قبل POST من موقع آخر</span>
+<span class="c">$ </span><span class="k">curl -si -X OPTIONS localhost:3000/products -H &#x27;Origin: http://localhost:5173&#x27; -H &#x27;Access-Control-Request-Method: POST&#x27; -H &#x27;Access-Control-Request-Headers: content-type&#x27;</span>
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: http://localhost:5173
+Vary: Origin
+Content-Length: 0
+Access-Control-Allow-Methods: GET, POST
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Max-Age: 600
+Date: Thu, 19 Nov 2026 18:42:42 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+<span class="c line-bidi"># موقع آخر ليس في القائمة: لا ترويسة Access-Control، فيمنعه المتصفح</span>
+<span class="c">$ </span><span class="k">curl -si localhost:3000/products/1 -H &#x27;Origin: https://evil.example&#x27;</span>
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 53
+Date: Thu, 19 Nov 2026 18:42:42 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;عدة الروبوت&quot;,&quot;price&quot;:45000}</pre></div>
+
+<p>لمصدر تطبيق الويب يرد الخادم على الطلب التمهيدي بما هو مسموح، ويتذكر المتصفح ذلك عشر دقائق (<code>Max-Age: 600</code>). أما لأي مصدر آخر فلا توجد ترويسة <code>Access-Control-Allow-Origin</code>، فيرفض المتصفح أن يعطي الجواب لكود JavaScript في الصفحة. والترويسة <code>Vary: Origin</code> تخبر الذاكرات المؤقتة أن الجواب يتوقف على ترويسة <code>Origin</code>، فلا يُعطى موقعٌ نسخةً صُنعت لموقع آخر.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: CORS ليست تحكماً في الوصول</p><p>انظر مرة أخرى إلى الأمر الثاني: رد الخادم بـ <code>200</code> ومعها المنتج. فـCORS يفرضها <em>المتصفح</em> ليحمي مستخدمه. أما curl أو سكربت أو خادم المهاجم فيتجاهلها تماماً. وكل ما يجب أن يبقى خاصاً يحتاج تحققاً من الهوية والصلاحيات على الخادم. ولا تجمع أبداً <code>Access-Control-Allow-Origin: *</code> مع الكوكيز: اذكر المصادر التي تثق بها بأسمائها، كما يفعل خادمنا.</p></aside>
+
+<h2><span class="sec">1.9</span> <span>داخل الخادم</span></h2>
+
+<p>الآن وقد عرفت ما يمر على السلك، فلن يفاجئك الخادم. وسنقرؤه على خمسة أجزاء من أعلى الملف.</p>
+
+
+<p><strong>البيانات والإعدادات.</strong> تعيش المنتجات في مصفوفة، وأسعارها بالقروش. و<code>ORIGINS</code> تذكر تطبيق الويب الوحيد المسموح له بقراءة أجوبتنا من المتصفح (القسم 1.8)، و<code>MAX_BODY</code> أكبر محتوى نقبله:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (1 من 5)</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { IncomingMessage, ServerResponse } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> { createHash } <span class="k">from</span> <span class="s">&quot;node:crypto&quot;</span>;
+
+<span class="k">type</span> Product = { id: number; name: string; price: number };
+<span class="k">type</span> Headers = Record&lt;string, string&gt;;
+
+<span class="k">const</span> products: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;عدة الروبوت&quot;</span>, price: <span class="n">45000</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;عجلات احتياطية&quot;</span>, price: <span class="n">6000</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;حزمة بطارية&quot;</span>, price: <span class="n">12500</span> },
+];
+<span class="c line-bidi">// تطبيق الويب المسموح له باستدعاء هذه الواجهة من المتصفح</span>
+<span class="k">const</span> ORIGINS = [<span class="s">&quot;http://localhost:5173&quot;</span>];
+<span class="k">const</span> MAX_BODY = <span class="n">1024</span>; <span class="c line-bidi">// bytes</span></pre></div>
+
+<p><strong>مكان واحد يرسل الأجوبة.</strong> كل جواب في الملف يمر من <code>send</code>، التي تضع النوع والطول محسوباً بالبايت بـ <code>Buffer.byteLength</code>. والمحتوى الفارغ لا يأخذ نوعاً أصلاً. و<code>fail</code> تعطي كل خطأ الشكل نفسه. وبفضل هاتين الدالتين لا يستطيع أي مسار أن ينسى ترويسة أو يخترع شكلاً خاصاً به للأخطاء:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (2 من 5)</div><pre class="code"><span class="k">function</span> send(res: ServerResponse, status: number, body?: unknown,
+              headers: Headers = {}) {
+  <span class="k">const</span> text = body === <span class="k">undefined</span> ? <span class="s">&quot;&quot;</span> : JSON.stringify(body);
+  res.writeHead(status, {
+    ...(text &amp;&amp; { <span class="s">&quot;Content-Type&quot;</span>: <span class="s">&quot;application/json; charset=utf-8&quot;</span> }),
+    <span class="s">&quot;Content-Length&quot;</span>: String(Buffer.byteLength(text)), <span class="c line-bidi">// بالبايت لا بالحروف</span>
+    ...headers,
+  });
+  res.end(text);
+}
+
+<span class="k">function</span> fail(res: ServerResponse, status: number, code: string,
+              message: string, extra = {}, headers: Headers = {}) {
+  send(res, status, { error: { code, message, ...extra } }, headers);
+}</pre></div>
+
+<p><strong>توجيه الطلبات.</strong> تنظر <code>handle</code> إلى الطريقة والمسار وتقرر ماذا تفعل: ترويسات CORS أولاً لأي طلب، ثم الطلب التمهيدي، ثم القائمة، ثم المنتج الواحد. وكل ما عدا ذلك 404. ولاحظ أن جواب 405 يذكر الطرق المسموحة، وأن <code>HEAD</code> يُجاب مثل <code>GET</code>: فـNode نفسه يحذف المحتوى من جواب <code>HEAD</code>.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (3 من 5)</div><pre class="code"><span class="k">async</span> <span class="k">function</span> handle(req: IncomingMessage, res: ServerResponse) {
+  <span class="k">const</span> url = <span class="k">new</span> URL(req.url ?? <span class="s">&quot;/&quot;</span>, <span class="s">&quot;http://localhost&quot;</span>);
+  <span class="k">const</span> origin = req.headers.origin;
+  <span class="k">if</span> (origin &amp;&amp; ORIGINS.includes(origin)) {
+    res.setHeader(<span class="s">&quot;Access-Control-Allow-Origin&quot;</span>, origin);
+    res.setHeader(<span class="s">&quot;Vary&quot;</span>, <span class="s">&quot;Origin&quot;</span>);
+  }
+
+  <span class="k">if</span> (req.method === <span class="s">&quot;OPTIONS&quot;</span>) {
+    <span class="k">return</span> send(res, <span class="n">204</span>, <span class="k">undefined</span>, {
+      <span class="s">&quot;Access-Control-Allow-Methods&quot;</span>: <span class="s">&quot;GET, POST&quot;</span>,
+      <span class="s">&quot;Access-Control-Allow-Headers&quot;</span>: <span class="s">&quot;Content-Type&quot;</span>,
+      <span class="s">&quot;Access-Control-Max-Age&quot;</span>: <span class="s">&quot;600&quot;</span>,
+    });
+  }
+
+  <span class="k">if</span> (url.pathname === <span class="s">&quot;/products&quot;</span>) {
+    <span class="k">if</span> (req.method === <span class="s">&quot;GET&quot;</span> || req.method === <span class="s">&quot;HEAD&quot;</span>) {
+      <span class="k">const</span> max = Number(url.searchParams.get(<span class="s">&quot;max_price&quot;</span>) ?? Infinity);
+      <span class="k">const</span> list = products.filter((p) =&gt; p.price &lt;= max);
+      <span class="k">const</span> hash = createHash(<span class="s">&quot;md5&quot;</span>).update(JSON.stringify(list)).digest(<span class="s">&quot;hex&quot;</span>);
+      <span class="k">const</span> etag = <span class="s">`&quot;${hash.slice(0, 16)}&quot;`</span>;
+      <span class="k">if</span> (req.headers[<span class="s">&quot;if-none-match&quot;</span>] === etag) {
+        <span class="k">return</span> send(res, <span class="n">304</span>, <span class="k">undefined</span>, { ETag: etag });
+      }
+      <span class="k">return</span> send(res, <span class="n">200</span>, list, { ETag: etag, <span class="s">&quot;Cache-Control&quot;</span>: <span class="s">&quot;no-cache&quot;</span> });
+    }
+    <span class="k">if</span> (req.method === <span class="s">&quot;POST&quot;</span>) <span class="k">return</span> create(req, res);
+    <span class="k">return</span> fail(res, <span class="n">405</span>, <span class="s">&quot;method_not_allowed&quot;</span>, <span class="s">&quot;استخدم GET أو POST هنا&quot;</span>, {},
+                { Allow: <span class="s">&quot;GET, HEAD, POST&quot;</span> });
+  }
+
+  <span class="k">const</span> one = url.pathname.match(/^\/products\/(\d+)$/);
+  <span class="k">if</span> (one &amp;&amp; req.method === <span class="s">&quot;GET&quot;</span>) {
+    <span class="k">const</span> product = products.find((p) =&gt; p.id === Number(one[<span class="n">1</span>]));
+    <span class="k">if</span> (!product) <span class="k">return</span> fail(res, <span class="n">404</span>, <span class="s">&quot;not_found&quot;</span>, <span class="s">&quot;لا يوجد منتج بهذا الرقم&quot;</span>);
+    <span class="k">return</span> send(res, <span class="n">200</span>, product);
+  }
+  <span class="k">return</span> fail(res, <span class="n">404</span>, <span class="s">&quot;not_found&quot;</span>, <span class="s">&quot;لا شيء هنا&quot;</span>);
+}</pre></div>
+
+<p><strong>لا تثق بالمحتوى.</strong> إنشاء منتج يفحص كل ما قد يخطئ فيه العميل، بالترتيب: النوع قبل القراءة، والحجم أثناء القراءة (تتوقف <code>readBody</code> عند 1 KB، فلا يصل محتوى ضخم إلى الذاكرة أبداً)، وJSON داخل <code>try</code>، ثم كل حقل بنوعه ومداه، مع جمع كل الأخطاء قبل الرد. والواجهات الحقيقية تقبل أكثر من 1 KB، لكن لها دائماً حد، وبدونه يستطيع عميل واحد أن يملأ ذاكرة الخادم.</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (4 من 5)</div><pre class="code"><span class="k">async</span> <span class="k">function</span> readBody(req: IncomingMessage): Promise&lt;string&gt; {
+  <span class="k">let</span> size = <span class="n">0</span>;
+  <span class="k">const</span> parts: Buffer[] = [];
+  <span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> chunk <span class="k">of</span> req) {
+    size += chunk.length;
+    <span class="k">if</span> (size &gt; MAX_BODY) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;too_large&quot;</span>);
+    parts.push(chunk);
+  }
+  <span class="k">return</span> Buffer.concat(parts).toString(<span class="s">&quot;utf8&quot;</span>);
+}
+
+<span class="k">async</span> <span class="k">function</span> create(req: IncomingMessage, res: ServerResponse) {
+  <span class="k">if</span> (!req.headers[<span class="s">&quot;content-type&quot;</span>]?.startsWith(<span class="s">&quot;application/json&quot;</span>)) {
+    <span class="k">return</span> fail(res, <span class="n">415</span>, <span class="s">&quot;unsupported_media_type&quot;</span>, <span class="s">&quot;أرسل JSON&quot;</span>);
+  }
+  <span class="k">let</span> data: { name?: unknown; price?: unknown };
+  <span class="k">try</span> {
+    data = JSON.parse(<span class="k">await</span> readBody(req));
+  } <span class="k">catch</span> (e) {
+    <span class="k">if</span> (e <span class="k">instanceof</span> Error &amp;&amp; e.message === <span class="s">&quot;too_large&quot;</span>) {
+      <span class="k">return</span> fail(res, <span class="n">413</span>, <span class="s">&quot;too_large&quot;</span>, <span class="s">&quot;الحد الأقصى 1 KB&quot;</span>);
+    }
+    <span class="k">return</span> fail(res, <span class="n">400</span>, <span class="s">&quot;bad_json&quot;</span>, <span class="s">&quot;المحتوى ليس JSON صالحاً&quot;</span>);
+  }
+
+  <span class="k">const</span> { name, price } = data;
+  <span class="k">const</span> errors: Record&lt;string, string&gt; = {};
+  <span class="k">if</span> (<span class="k">typeof</span> name !== <span class="s">&quot;string&quot;</span> || !name.trim()) errors.name = <span class="s">&quot;مطلوب&quot;</span>;
+  <span class="k">if</span> (<span class="k">typeof</span> price !== <span class="s">&quot;number&quot;</span> || !Number.isInteger(price) || price &lt;= <span class="n">0</span>) {
+    errors.price = <span class="s">&quot;عدد صحيح من القروش أكبر من 0&quot;</span>;
+  }
+  <span class="k">if</span> (Object.keys(errors).length) {
+    <span class="k">return</span> fail(res, <span class="n">422</span>, <span class="s">&quot;invalid&quot;</span>, <span class="s">&quot;راجع الحقول&quot;</span>, { fields: errors });
+  }
+
+  <span class="k">const</span> product = {
+    id: products.length + <span class="n">1</span>,
+    name: (name as string).trim(),
+    price: price as number,
+  };
+  products.push(product);
+  send(res, <span class="n">201</span>, product, { Location: <span class="s">`/products/${product.id}`</span> });
+}</pre></div>
+
+<p><strong>الخادم نفسه.</strong> تستدعي <code>createServer</code> دالتنا مع كل طلب. وحين ينتهي الجواب يُكتب سطر واحد في السجل فيه الطريقة والعنوان والحالة والوقت الذي استغرقه. وأي خطأ غير متوقع يُلتقط هنا مرة واحدة: الخطأ الحقيقي يذهب إلى السجل، والعميل يأخذ 500 بسيطة بلا تتبع للأخطاء ولا مسارات ملفات تساعد المهاجم. و<code>requestTimeout</code> تقطع العميل البطيء جداً في الإرسال، فلا يستطيع بضعة عملاء بطيئين أن يمسكوا كل اتصالات الخادم:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">server.ts (5 من 5)</div><pre class="code"><span class="k">const</span> server = createServer((req, res) =&gt; {
+  <span class="k">const</span> start = performance.now();
+  res.on(<span class="s">&quot;finish&quot;</span>, () =&gt; {
+    <span class="k">const</span> ms = Math.round(performance.now() - start);
+    console.log(<span class="s">`${req.method} ${req.url} ${res.statusCode} ${ms}ms`</span>);
+  });
+  handle(req, res).<span class="k">catch</span>((error) =&gt; {
+    console.error(error); <span class="c line-bidi">// التفاصيل تبقى في سجل الخادم</span>
+    <span class="k">if</span> (!res.headersSent) {
+      fail(res, <span class="n">500</span>, <span class="s">&quot;server_error&quot;</span>, <span class="s">&quot;حدث خطأ عندنا&quot;</span>);
+    }
+  });
+});
+server.requestTimeout = 10_000; <span class="c line-bidi">// العميل البطيء جداً في الإرسال يُقطع</span>
+server.listen(<span class="n">3000</span>, () =&gt; console.log(<span class="s">&quot;Listening on http://localhost:3000&quot;</span>));</pre></div>
+
+<p>وهناك شيء ناقص عن قصد: المنتجات تعيش في مصفوفة، فإعادة التشغيل تُضيع كل ما أنشأناه. والواجهة الحقيقية تحفظها في قاعدة بيانات، ومن هنا يبدأ الجزء الثاني. وهذه نافذة الطرفية التي كان الخادم يعمل فيها، بعد كل طلبات هذا الفصل:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 1</div><pre class="code"><span class="c line-bidi"># شغّل الخادم (واتركه يعمل في هذه النافذة)</span>
+<span class="c">$ </span><span class="k">node server.ts</span>
+Listening on http://localhost:3000
+GET /products/1 200 1ms
+GET /products/2 200 1ms
+GET /products?max_price=15000 200 1ms
+HEAD /products 200 1ms
+POST /products 201 2ms
+GET /products/4 200 1ms
+GET /products/99 404 0ms
+DELETE /products 405 1ms
+...</pre></div>
+
+<p>كل إطار عمل في هذا الكتاب يفعل ما يفعله هذا الملف الواحد، وأكثر بكثير، ويسمّي أجزاءه: <dfn>الموجّه</dfn> (router) يطابق الطريقة والمسار، و<dfn>الوسيط</dfn> (middleware) يعمل مع كل طلب (السجلات وCORS والحدود)، و<dfn>التحقق</dfn> (validation) يفحص المدخلات، و<dfn>معالج الأخطاء</dfn> يحوّل الاستثناءات إلى أجوبة. فإذا فاجأك إطار العمل، صرت تعرف ما يفعله من تحت.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: انظر إلى السلك أولاً</p><p>حين «لا تعمل» الواجهة البرمجية، لا تغيّر الكود عشوائياً. أعد إنتاج الطلب بـ <code>curl -v</code>، أو انسخه من لوحة Network في المتصفح («Copy as cURL»)، واقرأ الطلب والجواب سطراً سطراً: الطريقة، والعنوان، و<code>Content-Type</code>، والحالة، ومحتوى الخطأ. وفي تسع مرات من عشر تجد المشكلة أمام عينيك هناك. واحفظ أمر curl الذي يعمل في تقرير الخطأ أو في طلب الدمج، فيتحقق منه من يأتي بعدك بسطر واحد.</p></aside>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>كل جواب <code>200</code> وفي داخله <code>{"ok": false}</code></td><td>يظن العملاء والذاكرات المؤقتة والمراقبة أن كل شيء نجح</td><td>رمز الحالة الذي يصف النتيجة</td></tr>
+<tr><td>أخطاء التحقق بالرمز <code>500</code></td><td>تدق الإنذارات بسبب خطأ إملائي من مستخدم</td><td>4xx لأخطاء العميل، و5xx لأخطائك وحدها</td></tr>
+<tr><td><code>GET</code> تغيّر البيانات</td><td>الجلب المسبق والزواحف تغيّرها وحدها</td><td>الأفعال الآمنة وحدها مع GET وHEAD</td></tr>
+<tr><td>إعادة <code>POST</code> دون تفكير</td><td>طلبات مكررة ودفع مكرر</td><td>مفاتيح عدم التكرار</td></tr>
+<tr><td><code>Content-Length</code> بعدد الحروف</td><td>يُقطع المحتوى العربي والرموز التعبيرية</td><td>عُدّ البايتات</td></tr>
+<tr><td>لا حد لحجم المحتوى ولا للوقت</td><td>عميل واحد يملأ الذاكرة أو يمسك كل الاتصالات</td><td>حد للحجم (413) ومهلات زمنية</td></tr>
+<tr><td>تتبع الأخطاء في أجوبة الخطأ</td><td>يعرف المهاجمون المسارات والإصدارات</td><td>التفاصيل في السجل، ورسالة بسيطة للعميل</td></tr>
+<tr><td>إصلاح أخطاء CORS بـ <code>*</code></td><td>يستطيع أي موقع أن يقرأ الأجوبة</td><td>قائمة مصادر موثوقة، وصلاحيات حقيقية</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>يمر الطلب بـ<strong>البحث عن الاسم</strong>، ثم <strong>اتصال TCP</strong>، ثم <strong>TLS</strong> مع HTTPS، ثم <strong>الطلب والجواب</strong> بـHTTP.</li>
+<li>HTTP/1.1 <strong>نص</strong>: سطر أول، وترويسات، وسطر فارغ، ومحتوى حجمه في <code>Content-Length</code> بالبايت.</li>
+<li><strong>المسار</strong> يسمّي المورد، و<strong>نص الاستعلام</strong> يصفّي ويقسّم إلى صفحات.</li>
+<li>الطرق <strong>الآمنة</strong> تقرأ فقط، و<strong>متساوية الأثر</strong> يجوز تكرارها. و<code>POST</code> ليست هذه ولا تلك، فإعادتها تحتاج مفاتيح عدم التكرار.</li>
+<li><strong>2xx</strong> نجح، و<strong>3xx</strong> ابحث في مكان آخر، و<strong>4xx</strong> خطأ العميل، و<strong>5xx</strong> خطأ الخادم. وللأخطاء شكل واحد، فيه <code>code</code> ثابت و<code>message</code> مقروءة.</li>
+<li><strong>ETag</strong> و<code>If-None-Match</code> تحوّلان القراءات المتكررة إلى أجوبة <code>304</code> فارغة، و<code>Cache-Control</code> تقول كم يجوز إعادة استخدام النسخة.</li>
+<li>تُبقى الاتصالات <strong>مفتوحة</strong> ويُعاد استخدامها، وHTTP/2 وHTTP/3 يغيّران الناقل لا المعنى.</li>
+<li><strong>CORS</strong> تسمح لصفحة في المتصفح أن تقرأ أجوبة من مصدر آخر. إنها تحمي مستخدمي المتصفح، ولا تحمي خادمك.</li>
+<li>كل خادم، بإطار عمل أو بدونه، يحتاج: طريقة واحدة للرد، وعدم الثقة بالمدخلات، وحدوداً، والتقاطاً للأخطاء، وسطراً في السجل لكل طلب.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. عند أول سطر فارغ، والمحتوى طوله <code>Content-Length</code> بايتاً بالضبط. 2. نعم مع <code>DELETE</code>: إنها متساوية الأثر، فالطلب الثاني يترك الحال نفسه (وإن كان جوابه <code>404</code>). ولا مع <code>POST /orders</code>: فقد تُنشئ طلباً ثانياً، إلا إن دعمت الواجهة مفتاح عدم التكرار. 3. 422: فالطلب JSON سليم قرأه الخادم، لكن محتواه لم يجتز التحقق.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع يبني خادماً صغيراً بلا إطار عمل، بلغة إصدارك من الكتاب. اختبر كل واحد بـ curl، واحفظ الأوامر في ملف <code>requests.sh</code> بجوار الكود: إنه أول مجموعة اختبارات لك.</p>
+
+<div class="project">
+<p class="project-label">المشروع 1.1 · سهل</p>
+<h3>خادم الصدى</h3>
+<p class="project-goal">ابنِ خادماً يرد على أي طلب بوصف JSON للطلب نفسه: الطريقة والمسار والاستعلام والترويسات والمحتوى.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة كل جزء من الطلب، ونصوص الاستعلام، والترويسات، وضبط نوع المحتوى وطوله.</p>
+<ol class="steps">
+<li>رد على كل طريقة وكل مسار بـ <code>200</code> ومحتوى JSON.</li>
+<li>ضع نص الاستعلام في كائن (<code>?a=1&amp;b=2</code> يصبح <code>{"a": "1", "b": "2"}</code>)، والترويسات في كائن آخر.</li>
+<li>أضف المحتوى نصاً، وحجمه بالبايت.</li>
+<li>استدعه بـ curl بـ <code>GET</code>، وبـ <code>POST</code> مع <code>-d</code>، وبـ <code>-H</code> مع ترويسة من عندك. ثم افتحه في المتصفح وقارن الترويسات التي يرسلها المتصفح بترويسات curl.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذه أداة حقيقية. حين تتساءل ماذا ترسل واجهة أمامية أو خدمة webhook أو تطبيق جوال فعلاً، وجّهها إلى خادم الصدى دقيقة واحدة.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 1.2 · متوسط</p>
+<h3>خادم ملفات حريص</h3>
+<p class="project-goal">قدّم ملفات المجلد <code>public/</code> بالأنواع الصحيحة ووسوم ETag والأخطاء المناسبة، دون أن تخرج من المجلد أبداً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> أنواع المحتوى، والطلبات المشروطة و304، وHEAD، و404 و405، والحماية من تجاوز المسار.</p>
+<ol class="steps">
+<li>حوّل المسار إلى ملف داخل <code>public/</code>، و<code>/</code> إلى <code>index.html</code>. ورد بـ <code>404</code> حين لا يوجد الملف.</li>
+<li>اضبط <code>Content-Type</code> من الامتداد، على الأقل لـ <code>.html</code> و<code>.css</code> و<code>.js</code> و<code>.png</code> و<code>.svg</code> و<code>.json</code>.</li>
+<li>أرسل ETag مبنياً من حجم الملف ووقت تعديله، ورد بـ <code>304</code> حين يطابقه <code>If-None-Match</code>.</li>
+<li>رد على <code>HEAD</code> بلا محتوى، وعلى أي طريقة أخرى بـ <code>405</code> مع الترويسة <code>Allow</code>.</li>
+<li>جرّب <code>curl --path-as-is localhost:3000/../server.ts</code>. فإن عاد إليك كود الخادم نفسه فأصلحه: احسب المسار الكامل وتأكد أنه ما زال داخل <code>public/</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> فحص المسار قبل حسابه لا يكفي: فـ <code>%2e%2e%2f</code> هي <code>../</code> متنكرة. فكّ ترميز المسار واحسبه أولاً، ثم قارنه بالمجلد.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 1.3 · تحدٍّ</p>
+<h3>HTTP على مقبس عارٍ</h3>
+<p class="project-goal">اكتب خادم HTTP/1.1 صغيراً مباشرة على مقبس TCP، دون مكتبة HTTP الخاصة باللغة: اقرأ الطلبات، وحلّلها بنفسك، ورد عليها.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> شكل الرسالة بايتاً بايتاً، و<code>Content-Length</code>، وإبقاء الاتصال مفتوحاً، وما تحميك منه مكتبات HTTP.</p>
+<ol class="steps">
+<li>استمع بـ <code>net.createServer</code> من <code>node:net</code>. واجمع البايتات حتى ترى السطر الفارغ (<code>\r\n\r\n</code>).</li>
+<li>حلّل سطر الطلب والترويسات. ورد بـ <code>400</code> على كل ما لا يشبه HTTP.</li>
+<li>إن وُجدت <code>Content-Length</code> فاقرأ ذلك العدد من بايتات المحتوى بالضبط، وارفض ما فوق 1 KB بـ <code>413</code>.</li>
+<li>رد بسطر حالة وترويسات ومحتوى صحيحة. وأبقِ الاتصال مفتوحاً للطلب التالي إلا إن أرسل العميل <code>Connection: close</code>، وتحقق من ذلك بأمر curl ذي الطلبين من القسم 1.7.</li>
+<li>اختبر الحالات الحدية: طلباً يصل على قطعتين (أرسله بـ <code>nc</code> وأنت تكتب ببطء)، وطلبين في قطعة واحدة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> يوصل TCP سيلاً من البايتات لا رسائل. فقد تحمل القراءة الواحدة نصف طلب، أو طلباً ونصفاً. احتفظ بمخزن، ولا تُخرج منه طلباً إلا حين يكتمل. وهذا بالضبط نوع العمل الذي لا ينبغي أن تؤديه في الإنتاج أبداً، وأداؤه مرة واحدة يريك السبب.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> في الجواب الخام في القسم 1.2، سمِّ سطر الحالة وكل ترويسة والسطر الفارغ والمحتوى. ثم أرسل الطلب نفسه بـ <code>nc</code> لكن دون الترويسة <code>Host</code>. بماذا يرد الخادم، ولماذا؟</li>
+<li><span class="level">سهل</span> لكل طلب، قل هل هو آمن وهل هو متساوي الأثر: <code>GET /products?max_price=100</code>، و<code>PUT /products/2</code> مع منتج كامل، و<code>POST /products/2/reviews</code>، و<code>DELETE /cart/items/7</code>، و<code>PATCH /products/2</code> مع <code>{"stock_change": -1}</code>.</li>
+<li><span class="level medium">متوسط</span> أضف <code>DELETE /products/:id</code> إلى الخادم: <code>204</code> حين يحذف منتجاً، و<code>404</code> حين لا يوجد. احذف المنتج 3 مرتين، ثم أنشئ منتجاً جديداً. ما الرقم الذي يأخذه، وهل في ذلك مشكلة؟</li>
+<li><span class="level medium">متوسط</span> الطلب القادم من <code>https://evil.example</code> في القسم 1.8 أخذ <code>200</code> ومعها المنتج. اشرح لماذا ليس هذا ثغرة في هذا المسار، وصِف مساراً يكون فيه السلوك نفسه ثغرة، وما الذي يحميه.</li>
+<li><span class="level hard">تحدٍّ</span> اجعل الخادم يضغط المحتوى الذي حجمه 100 بايت أو أكثر بـ gzip حين يرسل العميل <code>Accept-Encoding: gzip</code>. ما الترويسات التي يجب أن يحملها الجواب؟ وقارن الحجم مع الضغط وبدونه بـ curl.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 2</p>
+
+<p>ننتقل من ملف واحد إلى مشروع Node.js حقيقي بـ TypeScript: حلقة الأحداث التي سمحت لعملية واحدة أن تمسك كل تلك الاتصالات، والتدفقات، والإعدادات، والأخطاء، والأدوات التي تجعل العمل على الخادم ممتعاً.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch02" data-chapter="2" data-code="b3/node/runtime/ar">
+<div class="opener"><span class="opener-num">2</span><p class="chapter-kicker">الفصل 2</p><h1>Node.js وTypeScript على الخادم</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تُعدّ مشروع خادم بـ TypeScript يشغّله Node مباشرة ويفحصه <code>tsc</code></li>
+<li>تشرح حلقة الأحداث، وتتوقع الترتيب الذي يعمل به الكود</li>
+<li>تُبقي حلقة الأحداث حرة، فتنقل العمل الثقيل على المعالج إلى خيوط عاملة</li>
+<li>تنتظر أشياء كثيرة معاً بالوعود، مع الفشل والمهل الزمنية</li>
+<li>تعالج البيانات الكبيرة بالتدفقات، بذاكرة ثابتة</li>
+<li>تحمّل الإعدادات وتفحصها، وتُوقف الخادم بلطف، وتختبر بمشغّل الاختبارات في Node نفسه</li>
+</ul>
+</div>
+
+<p class="lead">كان خادمنا في الفصل 1 ملفاً واحداً. أما الخوادم الحقيقية فمشاريع: إعدادات تختلف بين حاسوبك والإنتاج، واختبارات، وكود مقسّم إلى وحدات، وعملية يجب أن تبقى تعمل شهوراً. ويجمعها أيضاً أمر يفاجئ المطورين القادمين من المتصفح أو من PHP: خادم Node يشغّل كل كود JavaScript الخاص به على خيط واحد، لكل المستخدمين معاً. وهذا الفصل يريك لماذا هذا سريع، وكيف تجمّد حلقة واحدة مهملة كل المستخدمين، والأدوات التي تُبقي خادم Node سليماً.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أول خادم Node كتبته كان يصغّر الصور داخل معالج الطلب. وعمل بجمال على حاسوبي. ويوم رفع عشرة أشخاص صورهم معاً توقفت كل صفحات الموقع عن الرد، حتى التي لا علاقة لها بالصور. هكذا تعرّفت إلى حلقة الأحداث.</p></div></div>
+
+<h2><span class="sec">2.1</span> <span>ما هو Node</span></h2>
+
+<p>Node ثلاثة أشياء مجتمعة. <strong>V8</strong>، محرك JavaScript من Chrome، يشغّل كودك. و<strong>libuv</strong>، مكتبة مكتوبة بلغة C، تتحدث إلى نظام التشغيل: تفتح الملفات واتصالات الشبكة، وتخبر Node حين يصبح شيء جاهزاً. و<strong>مكتبة قياسية</strong> (<code>node:http</code> و<code>node:fs</code> و<code>node:stream</code> و<code>node:test</code> وكثير غيرها) تغلّف ذلك كله لـ JavaScript.</p>
+
+<p>والقرار المهم في التصميم أن كود JavaScript يعمل على خيط واحد، وأن <dfn>الإدخال والإخراج</dfn> (I/O: الشبكة والقرص وقاعدة البيانات) لا يجعله ينتظر أبداً. فحين يطلب معالج الطلب قائمة من قاعدة البيانات، يسلّم Node العمل لنظام التشغيل وينتقل إلى الطلب التالي. وحين تصل القائمة يستدعي Node كودك من جديد. وهكذا تخدم عملية واحدة آلاف الاتصالات معاً، لأن معظم وقت الخادم يمضي في انتظار I/O، والانتظار لا يكلّف Node شيئاً.</p>
+
+<p>وثمن هذا التصميم مهم بالقدر نفسه: ما دام كود JavaScript <em>يحسب</em>، فلا شيء آخر يعمل. وسنرى الجهتين فعلاً في هذا الفصل.</p>
+
+<h2><span class="sec">2.2</span> <span>مشروع لا ملف</span></h2>
+
+<p>هذا مشروع الفصل: متجر Bit مرة أخرى، مع مسارات جديدة قليلة. وهذا ملفه <code>package.json</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">package.json</div><pre class="code">{
+  <span class="s">&quot;name&quot;</span>: <span class="s">&quot;bit-shop&quot;</span>,
+  <span class="s">&quot;version&quot;</span>: <span class="s">&quot;1.0.0&quot;</span>,
+  <span class="s">&quot;private&quot;</span>: <span class="k">true</span>,
+  <span class="s">&quot;type&quot;</span>: <span class="s">&quot;module&quot;</span>,
+  <span class="s">&quot;engines&quot;</span>: { <span class="s">&quot;node&quot;</span>: <span class="s">&quot;&gt;=22.18&quot;</span> },
+  <span class="s">&quot;scripts&quot;</span>: {
+    <span class="s">&quot;dev&quot;</span>: <span class="s">&quot;node --watch --env-file=.env src/server.ts&quot;</span>,
+    <span class="s">&quot;start&quot;</span>: <span class="s">&quot;node --env-file=.env src/server.ts&quot;</span>,
+    <span class="s">&quot;check&quot;</span>: <span class="s">&quot;tsc&quot;</span>,
+    <span class="s">&quot;test&quot;</span>: <span class="s">&quot;node --env-file=.env.test --test --test-reporter=spec&quot;</span>
+  },
+  <span class="s">&quot;dependencies&quot;</span>: {
+    <span class="s">&quot;zod&quot;</span>: <span class="s">&quot;^4.6.7&quot;</span>
+  },
+  <span class="s">&quot;devDependencies&quot;</span>: {
+    <span class="s">&quot;@types/node&quot;</span>: <span class="s">&quot;^22.20.5&quot;</span>,
+    <span class="s">&quot;typescript&quot;</span>: <span class="s">&quot;^7.0.2&quot;</span>
+  }
+}</pre></div>
+
+<ul>
+<li><code>"type": "module"</code> تجعل كل ملف <code>.ts</code> و<code>.js</code> وحدة ES، بـ <code>import</code> و<code>export</code> كما في المتصفح.</li>
+<li><code>engines</code> تقول أي إصدارات Node يحتاجها المشروع. و22.18 أول إصدار يشغّل TypeScript دون أي أداة إضافية.</li>
+<li>و<code>scripts</code> أوامر المشروع، وهي نفسها على كل جهاز: <code>npm run dev</code> يعيد تشغيل الخادم حين يتغير ملف (<code>--watch</code>)، و<code>npm start</code> يشغّله، و<code>npm run check</code> يفحص الأنواع، و<code>npm test</code> يشغّل الاختبارات. و<code>--env-file</code> تحمّل الإعدادات من ملف، وسنصل إليها في القسم 2.7.</li>
+<li>لا يحتاج التشغيل إلا <code>zod</code>، أما TypeScript وتعريفات أنواع Node فلا حاجة إليها إلا أثناء التطوير.</li>
+</ul>
+
+<h3>Node يشغّل، وtsc يفحص</h3>
+
+<p>يشغّل Node ملف <code>.ts</code> بـ<dfn>حذف الأنواع</dfn> (type stripping): يزيل تعليقات الأنواع ويشغّل الباقي دون أن ينظر فيها. وهذا سريع، لكنه يعني أن Node لا يفحص أنواعك أبداً. فالفحص عمل مترجم TypeScript، أي <code>tsc</code>، وإعداده في <code>tsconfig.json</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">tsconfig.json</div><pre class="code">{
+  <span class="s">&quot;compilerOptions&quot;</span>: {
+    <span class="s">&quot;target&quot;</span>: <span class="s">&quot;es2024&quot;</span>,
+    <span class="s">&quot;module&quot;</span>: <span class="s">&quot;nodenext&quot;</span>,
+    <span class="s">&quot;strict&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;noUncheckedIndexedAccess&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;noEmit&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;allowImportingTsExtensions&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;erasableSyntaxOnly&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;verbatimModuleSyntax&quot;</span>: <span class="k">true</span>,
+    <span class="s">&quot;types&quot;</span>: [<span class="s">&quot;node&quot;</span>]
+  },
+  <span class="s">&quot;include&quot;</span>: [<span class="s">&quot;src&quot;</span>, <span class="s">&quot;demos&quot;</span>]
+}</pre></div>
+
+<p><code>strict</code> و<code>noUncheckedIndexedAccess</code> هما فحوص الكتاب الثاني. و<code>noEmit</code> تطلب من <code>tsc</code> أن يفحص فقط، لأن Node يشغّل المصدر كما هو. والخيارات الثلاثة الأخرى تجعل المصدر صالحاً لحذف الأنواع: الاستيراد يذكر الملف الحقيقي (<code>./config.ts</code>، كما يحتاج Node)، و<code>import type</code> تميّز الاستيراد الذي يختفي، و<code>erasableSyntaxOnly</code> تمنع ميزات TypeScript القليلة التي ليست أنواعاً فقط. شاهد هذا كله يحدث:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># يشغّل Node ملف TypeScript: تُحذف الأنواع، ولا يُفحص شيء</span>
+<span class="c">$ </span><span class="k">node demos/strip.ts</span>
+45050
+<span class="c line-bidi"># التعداد enum ليس نوعاً فقط: يحتاج كوداً، فيرفضه Node وحده</span>
+<span class="c">$ </span><span class="k">node demos/enum.ts 2&gt;&amp;1 | grep SyntaxError</span>
+SyntaxError [ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX]: TypeScript enum is not supported in strip-only mode
+<span class="c line-bidi"># يفحص tsc الأنواع (ومع erasableSyntaxOnly يرفض التعداد أيضاً)</span>
+<span class="c">$ </span><span class="k">npx tsc</span>
+demos/enum.ts(1,6): error TS1294: This syntax is not allowed when &#x27;erasableSyntaxOnly&#x27; is enabled.
+demos/strip.ts(4,31): error TS2322: Type &#x27;string&#x27; is not assignable to type &#x27;number&#x27;.</pre></div>
+
+<p>شغّل Node الملف <code>strip.ts</code> راضياً، مع أن فيه نصاً في حقل رقمي، فطبع <code>45050</code> بدل 500. ورفض <code>enum.ts</code>، لأن التعداد <code>enum</code> يصنع كائناً حقيقياً وقت التشغيل، وحذف الأنواع لا يستطيع أن يكتب كوداً. أما <code>tsc</code> فأبلغ عن الاثنين. وبدل التعداد استخدم كائناً مع <code>as const</code>، أو اتحاداً من النصوص مثل <code>"pending" | "paid"</code>: فهي JavaScript عادية ومعها أنواع.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: الفحوص تعمل مع كل تغيير</p><p>لأن Node لا يفحص الأنواع، قد يصل خطأ في الأنواع إلى الإنتاج ما لم يوقفه شيء. فشغّل <code>npm run check</code> و<code>npm test</code> في CI مع كل طلب دمج، واجعل نجاحهما شرطاً للدمج. وعلى جهازك دع المحرر يُظهر أخطاء <code>tsc</code> وأنت تكتب. فالتشغيل السريع والفحص الصارم عملان منفصلان، تؤديهما أداتان منفصلتان.</p></aside>
+
+<h2><span class="sec">2.3</span> <span>حلقة الأحداث</span></h2>
+
+<p><dfn>حلقة الأحداث</dfn> هي الحلقة الرئيسية في Node. وفي كل دورة تشغّل كل ما هو جاهز: المؤقتات التي حان وقتها، وI/O الذي انتهى، والدوال المجدولة بـ <code>setImmediate</code>. وبين أي اثنين من هذه تُفرغ طابورين أصغر من <dfn>المهام الصغيرة</dfn> (microtasks): دوال الوعود، والدوال المعطاة لـ <code>process.nextTick</code>. وهذا البرنامج يجدول واحدة من كل نوع، ثم يُبقي الخيط مشغولاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/event-loop.ts</div><pre class="code"><span class="k">import</span> { readFile } <span class="k">from</span> <span class="s">&quot;node:fs/promises&quot;</span>;
+
+console.log(<span class="s">&quot;يبدأ السكربت&quot;</span>);
+setTimeout(() =&gt; console.log(<span class="s">&quot;المؤقت (0 ms)&quot;</span>), <span class="n">0</span>);
+Promise.resolve().then(() =&gt; console.log(<span class="s">&quot;دالة الوعد&quot;</span>));
+process.nextTick(() =&gt; console.log(<span class="s">&quot;process.nextTick&quot;</span>));
+console.log(<span class="s">&quot;ينتهي السكربت&quot;</span>);
+
+<span class="c line-bidi">// wait for some I/O, then a second experiment</span>
+<span class="k">await</span> readFile(<span class="k">import</span>.meta.filename);
+<span class="k">const</span> asked = performance.now();
+setTimeout(() =&gt; {
+  <span class="k">const</span> late = Math.round(performance.now() - asked);
+  console.log(<span class="s">`مؤقت طلب 10 ms، فعمل بعد ${late} ms`</span>);
+}, <span class="n">10</span>);
+<span class="k">const</span> until = performance.now() + <span class="n">200</span>;
+<span class="k">while</span> (performance.now() &lt; until); <span class="c line-bidi">// مشغول 200 ms</span></pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الترتيب الذي تعمل به الأشياء</span>
+<span class="c">$ </span><span class="k">node demos/event-loop.ts</span>
+يبدأ السكربت
+ينتهي السكربت
+دالة الوعد
+process.nextTick
+المؤقت (0 ms)
+مؤقت طلب 10 ms، فعمل بعد 200 ms</pre></div>
+
+<p>ثلاث قواعد تشرح الناتج:</p>
+<ol>
+<li><strong>الكود الذي يعمل ينتهي أولاً دائماً.</strong> لا شيء يقاطعه: «ينتهي السكربت» تأتي قبل كل دالة مؤجلة.</li>
+<li><strong>المهام الصغيرة تعمل قبل أن تنتقل الحلقة.</strong> دالة الوعد ودالة <code>nextTick</code> كلتاهما تعملان قبل المؤقت، مع أن المؤقت طلب 0 ms. (في وحدة ES تعمل دوال الوعود قبل دوال <code>nextTick</code>، وفي ملف CommonJS قديم يحدث العكس. والكود الذي يعتمد على هذا الترتيب هش.)</li>
+<li><strong>مهلة المؤقت حد أدنى لا وعد.</strong> المؤقت الثاني طلب 10 ms وعمل بعد 200، لأن الحلقة كانت مشغولة فلم تستطع أن تتفقد مؤقتاتها.</li>
+</ol>
+
+<p>والقاعدة الثالثة هي المهمة على الخادم. فكل طلب وكل مؤقت وكل جواب من قاعدة البيانات ينتظر الخيط نفسه. فإن أمسكه جزء من الكود ثانية، انتظر كل مستخدم ثانية.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر فهمك</p><ol><li>لماذا يستطيع Node أن يخدم آلاف الاتصالات بخيط واحد؟</li><li>شغّل Node ملفاً فيه خطأ في الأنواع دون أن يعترض. أي أداة كان يجب أن تكتشفه، ومتى؟</li><li>ضُبط مؤقت على 100 ms، ثم حسب الكود 300 ms. متى تعمل دالة المؤقت؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">2.4</span> <span>لا توقف الحلقة أبداً</span></h2>
+
+<p>هذا خادم بمسارين. <code>/primes</code> يعدّ الأعداد الأولية حتى حد معين، وهذا حساب خالص، و<code>/hello</code> يرد فوراً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/blocking.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
+<span class="k">import</span> { countPrimes } <span class="k">from</span> <span class="s">&quot;../src/primes.ts&quot;</span>;
+
+createServer((req, res) =&gt; {
+  <span class="k">const</span> url = <span class="k">new</span> URL(req.url ?? <span class="s">&quot;/&quot;</span>, <span class="s">&quot;http://localhost&quot;</span>);
+  <span class="k">if</span> (url.pathname === <span class="s">&quot;/primes&quot;</span>) {
+    <span class="k">const</span> primes = countPrimes(Number(url.searchParams.get(<span class="s">&quot;limit&quot;</span>))); <span class="c line-bidi">// blocks!</span>
+    <span class="k">return</span> res.end(JSON.stringify({ primes }));
+  }
+  res.end(JSON.stringify({ message: <span class="s">&quot;hello&quot;</span> }));
+}).listen(<span class="n">3001</span>);</pre></div>
+
+<p>نرسل طلباً بطيئاً، وبعده بلحظة طلباً سريعاً. ويطبع <code>-w</code> في curl كم استغرق كل منهما:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># طلب بطيء (عدّ على المعالج) وطلب سريع، يُرسلان في اللحظة نفسها</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3001/primes?limit=5000000&#x27; -w &#x27; %{time_total}s\n&#x27; &amp; sleep 0.05; curl -s localhost:3001/hello -w &#x27; %{time_total}s\n&#x27;; wait</span>
+{&quot;primes&quot;:348513} 1.386142s
+{&quot;message&quot;:&quot;hello&quot;} 1.331990s</pre></div>
+
+<p>الطلب السريع، الذي يحتاج جزءاً من الملّي ثانية، انتظر أكثر من ثانية، لأن الخيط كان يعدّ الأعداد الأولية لشخص آخر. ومع مئة مستخدم ينتظر كل واحد خلف كل عدّ أمامه. والمتهمون المعتادون: تصغير الصور، وصنع ملفات PDF، وتشفير كلمات المرور بدالة متزامنة، وضغط الملفات الكبيرة، و<code>JSON.parse</code> على محتوى ضخم.</p>
+
+<p>والعلاج أن يجري الحساب الثقيل على خيط آخر. فـ<dfn>الخيوط العاملة</dfn> (worker threads) في Node تشغّل ملف JavaScript منفصلاً بحلقة أحداث خاصة به، وتتبادل الرسائل مع الخيط الرئيسي:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/primes-worker.ts</div><pre class="code"><span class="c line-bidi">// يعمل في خيط خاص به، فلا يوقف العدّ الطويل حلقة الأحداث أبداً.</span>
+<span class="k">import</span> { parentPort, workerData } <span class="k">from</span> <span class="s">&quot;node:worker_threads&quot;</span>;
+<span class="k">import</span> { countPrimes } <span class="k">from</span> <span class="s">&quot;./primes.ts&quot;</span>;
+
+parentPort?.postMessage(countPrimes(workerData as number));</pre></div>
+
+<p>يستلم العامل مدخلاته في <code>workerData</code> ويرسل نتيجته عائدة. وفي التطبيق تغلّفه دالة صغيرة بوعد، فينتظره المعالج ببساطة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code"><span class="k">function</span> countInWorker(limit: number): Promise&lt;number&gt; {
+  <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
+    <span class="k">const</span> worker = <span class="k">new</span> Worker(<span class="k">new</span> URL(<span class="s">&quot;./primes-worker.ts&quot;</span>, <span class="k">import</span>.meta.url), {
+      workerData: limit,
+    });
+    worker.once(<span class="s">&quot;message&quot;</span>, resolve);
+    worker.once(<span class="s">&quot;error&quot;</span>, reject);
+  });
+}</pre></div>
+
+<p>والطلبان نفسهما على الخادم الحقيقي:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># الطلبان نفسهما، والعدّ في خيط عامل</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/primes?limit=5000000&#x27; -w &#x27; %{time_total}s\n&#x27; &amp; sleep 0.05; curl -s localhost:3000/hello -w &#x27; %{time_total}s\n&#x27;; wait</span>
+{&quot;message&quot;:&quot;أهلاً من متجر Bit&quot;} 0.001484s
+{&quot;limit&quot;:5000000,&quot;primes&quot;:348513,&quot;ms&quot;:1372} 1.373946s</pre></div>
+
+<p>يرد الطلب السريع الآن في نحو ملّي ثانية، قبل أن ينتهي العدّ، لأن الخيط الرئيسي كان حراً. وبدء خيط يكلف بضع عشرات من الملّي ثانية، وهذا لا شيء بجوار عمل يستغرق ثانية، لكنه كثير لأعمال صغيرة كثيرة. ولها احتفظ بـ<dfn>مجمّع</dfn> (pool) من الخيوط يبدأ مرة ويُعاد استخدامه، وستبني واحداً في التمرين 5، ومكتبة Piscina مجمّع مجرَّب جيداً.</p>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: معظم المكتبات تفعل هذا أصلاً</p><p>لكثير من العمليات البطيئة في مكتبة Node القياسية نسخة غير متزامنة تعمل على مجمّع خيوط libuv نفسها: <code>crypto.scrypt</code> بدل <code>crypto.scryptSync</code>، و<code>zlib.gzip</code> بدل <code>zlib.gzipSync</code>، و<code>fs.promises.readFile</code> بدل <code>fs.readFileSync</code>. وعلى الخادم، كل دالة ينتهي اسمها بـ <code>Sync</code> داخل معالج طلب علامة إنذار. أما عند البدء، قبل أن يستمع الخادم، فلا بأس بها.</p></aside>
+
+<h2><span class="sec">2.5</span> <span>انتظار أشياء كثيرة معاً</span></h2>
+
+<p>قد تحتاج صفحة المنتج إلى المخزون والسعر والمراجعات، كل منها من خدمة مختلفة. وهذا العرض يمثّل ثلاثة استدعاءات عبر الشبكة، مدتها 300 و200 و400 ms:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/concurrency.ts</div><pre class="code"><span class="k">import</span> { setTimeout as sleep } <span class="k">from</span> <span class="s">&quot;node:timers/promises&quot;</span>;
+
+<span class="c line-bidi">// Three slow services, as a real API would call over the network.</span>
+<span class="k">const</span> stock = (signal?: AbortSignal) =&gt; sleep(<span class="n">300</span>, <span class="n">7</span>, { signal });
+<span class="k">const</span> price = (signal?: AbortSignal) =&gt; sleep(<span class="n">200</span>, <span class="n">45000</span>, { signal });
+<span class="k">const</span> reviews = (signal?: AbortSignal) =&gt; sleep(<span class="n">400</span>, <span class="n">4.5</span>, { signal });
+
+<span class="k">async</span> <span class="k">function</span> timed(label: string, work: () =&gt; Promise&lt;unknown&gt;) {
+  <span class="k">const</span> start = performance.now();
+  <span class="k">const</span> result = <span class="k">await</span> work();
+  console.log(<span class="s">`${label}: ${Math.round(performance.now() - start)} ms`</span>, result);
+}
+
+<span class="k">await</span> timed(<span class="s">&quot;واحداً بعد الآخر&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">return</span> [<span class="k">await</span> stock(), <span class="k">await</span> price(), <span class="k">await</span> reviews()];
+});
+
+<span class="k">await</span> timed(<span class="s">&quot;كلها معاً&quot;</span>, () =&gt; Promise.all([stock(), price(), reviews()]));
+
+<span class="k">const</span> down = () =&gt; Promise.reject(<span class="k">new</span> Error(<span class="s">&quot;خدمة المراجعات متوقفة&quot;</span>));
+<span class="k">await</span> timed(<span class="s">&quot;يفشل واحد، ويبقى الباقي&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> results = <span class="k">await</span> Promise.allSettled([stock(), price(), down()]);
+  <span class="k">return</span> results.map((r) =&gt; (r.status === <span class="s">&quot;fulfilled&quot;</span> ? r.value : <span class="s">&quot;فشل&quot;</span>));
+});
+
+<span class="k">await</span> timed(<span class="s">&quot;بمهلة 250 ms&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> limit = AbortSignal.timeout(<span class="n">250</span>);
+  <span class="k">const</span> results = <span class="k">await</span> Promise.allSettled([stock(), price(), reviews(limit)]);
+  <span class="k">return</span> results.map((r) =&gt;
+    r.status === <span class="s">&quot;fulfilled&quot;</span> ? r.value : <span class="s">&quot;تُخطّيت (بطيئة جداً)&quot;</span>,
+  );
+});</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># انتظار ثلاث خدمات</span>
+<span class="c">$ </span><span class="k">node demos/concurrency.ts</span>
+واحداً بعد الآخر: 903 ms [ 7, 45000, 4.5 ]
+كلها معاً: 401 ms [ 7, 45000, 4.5 ]
+يفشل واحد، ويبقى الباقي: 301 ms [ 7, 45000, &#x27;فشل&#x27; ]
+بمهلة 250 ms: 300 ms [ 7, 45000, &#x27;تُخطّيت (بطيئة جداً)&#x27; ]</pre></div>
+
+<ul>
+<li><strong>واحداً بعد الآخر</strong> تتراكم الانتظارات: 300 + 200 + 400 = 900 ms. وكتابة <code>await</code> ثلاث مرات متتالية أشيع بطء غير مقصود في كود Node.</li>
+<li><strong><code>Promise.all</code></strong> تبدأ الثلاثة معاً ثم تنتظر أبطأها: 400 ms. استخدمها حين لا يعتمد استدعاء على آخر.</li>
+<li><strong><code>Promise.allSettled</code></strong> تنتظرها كلها وتخبر عن كل واحد هل نجح أم رُفض. فتستطيع الصفحة أن تعرض المخزون والسعر حتى حين تتوقف خدمة المراجعات. أما <code>Promise.all</code> فتُرفض كلها عند أول فشل.</li>
+<li><strong><code>AbortSignal.timeout(250)</code></strong> تعطي الاستدعاء مهلة زمنية. ومعظم الواجهات الحديثة تقبل <code>signal</code>، ومنها <code>fetch</code> ومؤقتات Node، وتتوقف حين تنطلق. وكل استدعاء لخدمة أخرى يحتاج مهلة: فبدونها تجعل الخدمة البطيئة خادمك بطيئاً أيضاً.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: «كلها معاً» لها حدود</p><p><code>Promise.all</code> على عشرة آلاف عنصر تبدأ عشرة آلاف استعلام على قاعدة البيانات في اللحظة نفسها، فتسقط قاعدة البيانات. وللقوائم الكبيرة شغّل القليل في كل مرة (على دفعات، أو بأداة صغيرة مثل <code>p-limit</code>). وتذكّر أن رفض <code>Promise.all</code> لا يوقف الوعود الأخرى: تستمر في العمل، وتُتجاهل نتائجها فقط.</p></aside>
+
+<h2><span class="sec">2.6</span> <span>التدفقات: بيانات كبيرة في ذاكرة صغيرة</span></h2>
+
+<p>افترض أن على متجر Bit أن يجمع مليون طلب من ملف CSV. الطريقة المباشرة تقرأ الملف كله إلى الذاكرة أولاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/total-read.ts</div><pre class="code"><span class="k">import</span> { readFile } <span class="k">from</span> <span class="s">&quot;node:fs/promises&quot;</span>;
+
+<span class="k">const</span> text = <span class="k">await</span> readFile(<span class="s">&quot;orders.csv&quot;</span>, <span class="s">&quot;utf8&quot;</span>); <span class="c line-bidi">// the whole file in memory</span>
+<span class="k">let</span> total = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">const</span> line <span class="k">of</span> text.split(<span class="s">&quot;\n&quot;</span>).slice(<span class="n">1</span>)) {
+  <span class="k">if</span> (line) total += Number(line.split(<span class="s">&quot;,&quot;</span>)[<span class="n">2</span>]);
+}
+<span class="k">const</span> peak = Math.round(process.resourceUsage().maxRSS / <span class="n">1024</span>);
+console.log(<span class="s">`الإجمالي: ${total}, أقصى ذاكرة: ${peak} MB`</span>);</pre></div>
+
+<p>أما <dfn>التدفق</dfn> (stream) فيوصل البيانات قطعاً كلما وصلت، فلا يمسك البرنامج إلا جزءاً صغيراً منها في أي لحظة. و<code>readline</code> يحوّل تدفق الملف إلى أسطر، و<code>for await</code> تقرؤها واحداً واحداً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/total-stream.ts</div><pre class="code"><span class="k">import</span> { createReadStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { createInterface } <span class="k">from</span> <span class="s">&quot;node:readline&quot;</span>;
+
+<span class="k">const</span> lines = createInterface({ input: createReadStream(<span class="s">&quot;orders.csv&quot;</span>) });
+<span class="k">let</span> total = <span class="n">0</span>;
+<span class="k">let</span> first = <span class="k">true</span>;
+<span class="k">for</span> <span class="k">await</span> (<span class="k">const</span> line <span class="k">of</span> lines) {
+  <span class="k">if</span> (first) {
+    first = <span class="k">false</span>; <span class="c line-bidi">// the header</span>
+    continue;
+  }
+  total += Number(line.split(<span class="s">&quot;,&quot;</span>)[<span class="n">2</span>]);
+}
+<span class="k">const</span> peak = Math.round(process.resourceUsage().maxRSS / <span class="n">1024</span>);
+console.log(<span class="s">`الإجمالي: ${total}, أقصى ذاكرة: ${peak} MB`</span>);</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># مليون طلب، نحو 24 MB</span>
+<span class="c">$ </span><span class="k">node demos/make-orders.ts</span>
+1000000 طلب في الملف orders.csv
+<span class="c">$ </span><span class="k">ls -lh orders.csv | awk &#x27;{print $5, $9}&#x27;</span>
+24M orders.csv
+<span class="c line-bidi"># اقرأ الملف كله، ثم اجمع</span>
+<span class="c">$ </span><span class="k">node demos/total-read.ts</span>
+الإجمالي: 49999500000, أقصى ذاكرة: 202 MB
+<span class="c line-bidi"># اقرأه تدفقاً، سطراً سطراً</span>
+<span class="c">$ </span><span class="k">node demos/total-stream.ts</span>
+الإجمالي: 49999500000, أقصى ذاكرة: 84 MB</pre></div>
+
+<p>الإجمالي نفسه بأقل من نصف الذاكرة. والأهم أن نسخة التدفق تستخدم الذاكرة نفسها لملف أكبر بعشر مرات، بينما تحتاج الأولى عشرة أضعافها ثم تنهار في النهاية. وعلى خادم يعالج طلبات كثيرة معاً يتضاعف الفرق بعدد المستخدمين.</p>
+
+<h3>الضغط العكسي</h3>
+
+<p>وتعمل التدفقات في الاتجاه الآخر أيضاً. فحين تكتب أسرع مما تستطيع الوجهة أن تستقبل (قرص بطيء، عميل بطيء)، تتكدس البيانات في الذاكرة. والتدفق القابل للكتابة يخبرك بذلك: تُرجع <code>write()</code> القيمة <code>false</code> حين يمتلئ مخزنه. والبرنامج الذي صنع ملف CSV ينتظر الحدث <code>drain</code> قبل أن يكتب المزيد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">demos/make-orders.ts</div><pre class="code"><span class="k">import</span> { createWriteStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+<span class="k">import</span> { once } <span class="k">from</span> <span class="s">&quot;node:events&quot;</span>;
+
+<span class="k">const</span> file = createWriteStream(<span class="s">&quot;orders.csv&quot;</span>);
+file.write(<span class="s">&quot;id,customer,total\n&quot;</span>);
+<span class="k">for</span> (<span class="k">let</span> id = <span class="n">1</span>; id &lt;= 1_000_000; id++) {
+  <span class="k">const</span> line = <span class="s">`${id},customer-${id % 97},${(id * 7919) % 100000}\n`</span>;
+  <span class="c line-bidi">// write() returns false when the buffer is full: wait until it drains</span>
+  <span class="k">if</span> (!file.write(line)) <span class="k">await</span> once(file, <span class="s">&quot;drain&quot;</span>);
+}
+file.end();
+<span class="k">await</span> once(file, <span class="s">&quot;finish&quot;</span>);
+console.log(<span class="s">&quot;1000000 طلب في الملف orders.csv&quot;</span>);</pre></div>
+
+<p>ويسمى هذا <dfn>الضغط العكسي</dfn> (backpressure): الجهة البطيئة تبطئ الجهة السريعة، بدل أن تمتلئ الذاكرة. ونادراً ما تعالجه بيدك، لأن <code>pipeline</code> تفعل ذلك نيابة عنك. ومسار التصدير في المتجر يصنع صفوف CSV بمولّد غير متزامن ويمررها إلى الجواب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.ts</div><pre class="code"><span class="k">async</span> <span class="k">function</span>* orderRows(count: number) {
+  <span class="k">yield</span> <span class="s">&quot;id,customer,total\n&quot;</span>;
+  <span class="k">for</span> (<span class="k">let</span> id = <span class="n">1</span>; id &lt;= count; id++) {
+    <span class="k">yield</span> <span class="s">`${id},customer-${id % 97},${(id * 7919) % 100000}\n`</span>;
+  }
+}</pre></div>
+
+<p>وفي المعالج، ترسل <code>await pipeline(Readable.from(orderRows(100_000)), res)</code> الصفوف كلما قرأها العميل. فإن انقطع العميل في المنتصف أوقفت <code>pipeline</code> المولّد ونظّفت ما خلفه، أما مع الطريقة الأقدم <code>.pipe()</code> فهذا التنظيف عملك أنت، وكثيراً ما يُنسى. ولأن الحجم الكلي غير معروف مسبقاً، يرسل Node المحتوى قطعاً بدل <code>Content-Length</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># تصدير يُبث وهو يُصنع: لا Content-Length، بل chunked</span>
+<span class="c">$ </span><span class="k">curl -s -D - localhost:3000/export | head -n 12</span>
+HTTP/1.1 200 OK
+Content-Type: text/csv; charset=utf-8
+Date: Thu, 19 Nov 2026 18:32:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+id,customer,total
+1,customer-1,7919
+2,customer-2,15838
+3,customer-3,23757
+4,customer-4,31676</pre></div>
+
+<h2><span class="sec">2.7</span> <span>الإعدادات</span></h2>
+
+<p>المنفذ، وعنوان قاعدة البيانات، والمصادر المسموحة، ومفاتيح الخدمات، كلها تختلف بين حاسوبك وخادم الاختبار والإنتاج. فلا يجوز أن تُكتب في الكود. والقاعدة الشائعة أن تُقرأ من <dfn>متغيرات البيئة</dfn>، التي تستطيع كل منصة استضافة أن تضبطها. لكن <code>process.env</code> لا تحمل إلا نصوصاً، وقد يغيب أي منها أو يُكتب خطأ. لذلك يقرؤها المشروع في مكان واحد، مرة واحدة، ويفحصها بـ zod:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
+
+<span class="c line-bidi">// لا يحمل process.env إلا نصوصاً: حوّلها وافحصها مرة واحدة عند البدء</span>
+<span class="k">const</span> Env = z.object({
+  PORT: z.coerce.number().int().min(<span class="n">1</span>).max(<span class="n">65535</span>).<span class="k">default</span>(<span class="n">3000</span>),
+  LOG_LEVEL: z.enum([<span class="s">&quot;debug&quot;</span>, <span class="s">&quot;info&quot;</span>, <span class="s">&quot;warn&quot;</span>, <span class="s">&quot;error&quot;</span>]).<span class="k">default</span>(<span class="s">&quot;info&quot;</span>),
+  ALLOWED_ORIGINS: z
+    .string()
+    .transform((list) =&gt; list.split(<span class="s">&quot;,&quot;</span>).map((origin) =&gt; origin.trim()))
+    .pipe(z.array(z.url())),
+});
+
+<span class="k">const</span> parsed = Env.safeParse(process.env);
+<span class="k">if</span> (!parsed.success) {
+  console.error(<span class="s">&quot;الإعدادات غير صالحة:\n&quot;</span> + z.prettifyError(parsed.error));
+  process.exit(<span class="n">1</span>);
+}
+
+<span class="c line-bidi">// للقراءة فقط: لا شيء يستطيع تغيير الإعدادات لاحقاً</span>
+<span class="k">export</span> <span class="k">const</span> config = Object.freeze(parsed.data);
+<span class="k">export</span> <span class="k">type</span> Config = <span class="k">typeof</span> config;</pre></div>
+
+<p>وفي كل مكان آخر يستورد الكود <code>config</code> فيحصل على أنواع حقيقية: <code>config.PORT</code> عدد، و<code>config.ALLOWED_ORIGINS</code> مصفوفة عناوين. والإعداد الخاطئ يوقف الخادم فوراً برسالة واضحة، بدل أن يفشل بعد ساعة في منتصف طلب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># بدأ دون إعداداته: يرفض أن يبدأ، ويقول لماذا</span>
+<span class="c">$ </span><span class="k">PORT=abc ALLOWED_ORIGINS=localhost node src/server.ts</span>
+الإعدادات غير صالحة:
+✖ Invalid input: expected number, received NaN
+  → at PORT
+✖ Invalid URL
+  → at ALLOWED_ORIGINS[0]</pre></div>
+
+<p>وعلى جهازك تعيش الإعدادات في ملف <code>.env</code>، تحمّله <code>node --env-file=.env</code> قبل أن يعمل كودك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">.env</div><pre class="code">PORT=3000
+LOG_LEVEL=info
+ALLOWED_ORIGINS=http://localhost:5173</pre></div>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: ملفات ‎.env تحمل أسراراً</p><p>أضف <code>.env</code> إلى <code>.gitignore</code> من اليوم الأول، واحفظ في المستودع ملف <code>.env.example</code> بالأسماء وقيم غير ضارة بدلاً منه. فالمفتاح المرفوع إلى مستودع عام تجده الروبوتات في دقائق. وإن رُفع مرة فلا يكفي حذفه: غيّر المفتاح. وفي الإنتاج تملأ إعدادات الأسرار في المنصة البيئةَ، ولا يوجد ملف <code>.env</code> أصلاً.</p></aside>
+
+<h2><span class="sec">2.8</span> <span>الأخطاء والإيقاف اللطيف</span></h2>
+
+<p>تتوقف الخوادم طوال الوقت: مع كل نشر، وحين يُستبدل جهاز، وحين تقلّص المنصة عدد النسخ. فترسل المنصة إلى العملية الإشارة <code>SIGTERM</code> (وCtrl+C في الطرفية ترسل <code>SIGINT</code>)، ثم تقتلها بعد مهلة. والخادم الذي يخرج فوراً مع الإشارة يقطع كل طلب جارٍ: دفعاً عولج نصفه، أو ملفاً مرفوعاً يضيع. أما <dfn>الإيقاف اللطيف</dfn> (graceful shutdown) فيتوقف عن قبول اتصالات جديدة، ويدع الطلبات الجارية تنتهي، ثم يخرج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/server.ts</div><pre class="code"><span class="k">import</span> { config } <span class="k">from</span> <span class="s">&quot;./config.ts&quot;</span>;
+<span class="k">import</span> { createApp } <span class="k">from</span> <span class="s">&quot;./app.ts&quot;</span>;
+<span class="k">import</span> { log } <span class="k">from</span> <span class="s">&quot;./log.ts&quot;</span>;
+
+<span class="k">const</span> server = createApp();
+server.requestTimeout = 30_000;
+server.listen(config.PORT, () =&gt; {
+  log(<span class="s">&quot;info&quot;</span>, <span class="s">`يستمع على http://localhost:${config.PORT}`</span>);
+});
+
+<span class="k">function</span> shutdown(signal: string): void {
+  log(<span class="s">&quot;info&quot;</span>, <span class="s">`${signal}: لا اتصالات جديدة، وننهي الطلبات الجارية`</span>);
+  server.close(() =&gt; {
+    <span class="c line-bidi">// توقف عن قبول الاتصالات، ودع الطلبات الجارية تنتهي</span>
+    log(<span class="s">&quot;info&quot;</span>, <span class="s">&quot;انتهت كل الطلبات، إلى اللقاء&quot;</span>);
+    process.exit(<span class="n">0</span>);
+  });
+  <span class="c line-bidi">// أغلق الاتصالات المفتوحة التي لا تفعل شيئاً</span>
+  server.closeIdleConnections();
+  setTimeout(() =&gt; {
+    log(<span class="s">&quot;error&quot;</span>, <span class="s">&quot;ما زالت طلبات تعمل بعد 10 ثوانٍ، نتوقف على أي حال&quot;</span>);
+    process.exit(<span class="n">1</span>);
+  }, 10_000).unref(); <span class="c line-bidi">// لا تعلق إلى الأبد</span>
+}
+process.once(<span class="s">&quot;SIGTERM&quot;</span>, () =&gt; shutdown(<span class="s">&quot;SIGTERM&quot;</span>));
+process.once(<span class="s">&quot;SIGINT&quot;</span>, () =&gt; shutdown(<span class="s">&quot;SIGINT&quot;</span>));
+
+<span class="c line-bidi">// العملية في حال مجهولة: سجّل وتوقف، والمشرف يعيد تشغيلها</span>
+process.on(<span class="s">&quot;unhandledRejection&quot;</span>, (error) =&gt; {
+  log(<span class="s">&quot;error&quot;</span>, <span class="s">`خطأ غير متوقع، نتوقف: ${String(error)}`</span>);
+  process.exit(<span class="n">1</span>);
+});</pre></div>
+
+<p>وهنا عدّ طويل يعمل حين يصل Ctrl+C:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 1</div><pre class="code"><span class="c line-bidi"># طلب طويل يعمل حين يُطلب من الخادم أن يتوقف (Ctrl+C)</span>
+<span class="c">$ </span><span class="k">npm start</span>
+<span class="c">&gt; </span><span class="k">bit-shop@1.0.0 start</span>
+<span class="c">&gt; </span><span class="k">node --env-file=.env src/server.ts</span>
+
+info  يستمع على http://localhost:3000
+^C
+info  SIGINT: لا اتصالات جديدة، وننهي الطلبات الجارية
+info  GET /primes?limit=5000000 200 1309ms
+info  انتهت كل الطلبات، إلى اللقاء</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">النافذة 2</div><pre class="code"><span class="c line-bidi"># النافذة 2: الطلب يأخذ جوابه رغم ذلك</span>
+<span class="c">$ </span><span class="k">curl -s &#x27;localhost:3000/primes?limit=5000000&#x27; -w &#x27; %{http_code}\n&#x27;</span>
+{&quot;limit&quot;:5000000,&quot;primes&quot;:348513,&quot;ms&quot;:1309} 200</pre></div>
+
+<p>توقف الخادم عن الاستماع فوراً، وأنهى العدّ، ورد بـ <code>200</code>، ثم خرج. ومؤقت الثواني العشر يضمن ألا يُبقي طلب عالق العملية حية إلى الأبد، و<code>.unref()</code> تمنع المؤقت نفسه من إبقائها حية.</p>
+
+<p>والمعالج الأخير لنوع آخر من الأخطاء. فالأخطاء المتوقعة، مثل منتج غير موجود أو انتهاء مهلة، تُعالج حيث تحدث وتصير أجوبة. أما <em>الرفض غير المعالج</em> (unhandled rejection) فيعني أن وعداً فشل ولم يكن هناك كود ينتظر فشله: خطأ برمجي. وبعد الخطأ البرمجي قد تكون العملية في حال لم يخطط لها أحد، وفي ذاكرتها بيانات عُدّل نصفها. والتصرف الآمن أن تسجّله وتخرج، وتدع مشرفاً (Docker أو systemd أو منصة الاستضافة، الفصل 16) يبدأ عملية جديدة. ولا تُبقِ أبداً عملية معطوبة تعمل لمجرد أن تبدو متاحة.</p>
+
+<h2><span class="sec">2.9</span> <span>الاختبار بـ node:test</span></h2>
+
+<p>يأتي Node بمشغّل اختبارات، فلا يحتاج المشروع أي أداة إضافية ليبدأ الاختبار. فهو يجد الملفات التي تنتهي بـ <code>.test.ts</code>، ويشغّل كل <code>test</code> فيها، ويكتب تقريراً. والفصل 12 يتعمق أكثر بكثير، أما الآن فنوعان من الاختبارات يغطيان هذا المشروع: دالة نقية، والخادم كله عبر HTTP حقيقي:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/app.test.ts</div><pre class="code"><span class="k">import</span> { after, before, test } <span class="k">from</span> <span class="s">&quot;node:test&quot;</span>;
+<span class="k">import</span> assert <span class="k">from</span> <span class="s">&quot;node:assert/strict&quot;</span>;
+<span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
+<span class="k">import</span> { createApp } <span class="k">from</span> <span class="s">&quot;./app.ts&quot;</span>;
+<span class="k">import</span> { countPrimes } <span class="k">from</span> <span class="s">&quot;./primes.ts&quot;</span>;
+
+<span class="k">const</span> server = createApp();
+<span class="k">let</span> base = <span class="s">&quot;&quot;</span>;
+before(<span class="k">async</span> () =&gt; {
+  <span class="c line-bidi">// المنفذ 0: يختار النظام منفذاً حراً، فلا تتصادم الاختبارات أبداً</span>
+  <span class="k">await</span> <span class="k">new</span> Promise&lt;void&gt;((resolve) =&gt; server.listen(<span class="n">0</span>, resolve));
+  base = <span class="s">`http://localhost:${(server.address() as AddressInfo).port}`</span>;
+});
+after(() =&gt; server.close());
+
+test(<span class="s">&quot;يعدّ الأعداد الأولية&quot;</span>, () =&gt; {
+  assert.equal(countPrimes(<span class="n">10</span>), <span class="n">4</span>);
+  assert.equal(countPrimes(<span class="n">1</span>), <span class="n">0</span>);
+});
+
+test(<span class="s">&quot;يرد على /hello&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">`${base}/hello`</span>);
+  assert.equal(res.status, <span class="n">200</span>);
+  assert.deepEqual(<span class="k">await</span> res.json(), { message: <span class="s">&quot;أهلاً من متجر Bit&quot;</span> });
+});
+
+test(<span class="s">&quot;يرفض limit غير الصالح&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">for</span> (<span class="k">const</span> limit <span class="k">of</span> [<span class="s">&quot;0&quot;</span>, <span class="s">&quot;abc&quot;</span>, <span class="s">&quot;20000000&quot;</span>]) {
+    <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">`${base}/primes?limit=${limit}`</span>);
+    assert.equal(res.status, <span class="n">422</span>);
+  }
+});
+
+test(<span class="s">&quot;يبث التصدير بصيغة CSV&quot;</span>, <span class="k">async</span> () =&gt; {
+  <span class="k">const</span> text = <span class="k">await</span> (<span class="k">await</span> fetch(<span class="s">`${base}/export`</span>)).text();
+  <span class="k">const</span> lines = text.trim().split(<span class="s">&quot;\n&quot;</span>);
+  assert.equal(lines[<span class="n">0</span>], <span class="s">&quot;id,customer,total&quot;</span>);
+  assert.equal(lines.length, 100_001);
+});</pre></div>
+
+<p>يستمع الخادم على المنفذ 0، فيختار نظام التشغيل منفذاً حراً، ولا تتصادم الاختبارات أبداً مع خادم يعمل ولا مع بعضها. وتحمّل الاختبارات <code>.env.test</code>، الذي فيه <code>LOG_LEVEL=warn</code> فيُبقي سجلات الطلبات خارج التقرير:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># مشغّل الاختبارات في Node يجد ملفات ‎*.test.ts ويشغّلها</span>
+<span class="c">$ </span><span class="k">npm test</span>
+
+<span class="c">&gt; </span><span class="k">bit-shop@1.0.0 test</span>
+<span class="c">&gt; </span><span class="k">node --env-file=.env.test --test --test-reporter=spec</span>
+
+✔ يعدّ الأعداد الأولية (1.510008ms)
+✔ يرد على /hello (21.072719ms)
+✔ يرفض limit غير الصالح (7.515115ms)
+✔ يبث التصدير بصيغة CSV (580.30739ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 807.74761</pre></div>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>حساب ثقيل داخل المعالج</td><td>ينتظر كل مستخدم خلفه</td><td>خيط عامل أو مجمّع، والنسخ غير المتزامنة من الواجهات البطيئة</td></tr>
+<tr><td><code>readFileSync</code> وأخواتها في المعالجات</td><td>تتوقف الحلقة مع كل قراءة</td><td>نسخ الوعود، و<code>Sync</code> عند البدء فقط</td></tr>
+<tr><td>ثلاثة <code>await</code> متتالية لاستدعاءات مستقلة</td><td>تتراكم الانتظارات</td><td><code>Promise.all</code> أو <code>allSettled</code></td></tr>
+<tr><td>استدعاء خدمات أخرى بلا مهلة</td><td>الخدمة البطيئة تبطئك</td><td><code>AbortSignal.timeout</code> مع كل استدعاء</td></tr>
+<tr><td>قراءة الملفات أو النتائج الكبيرة كاملة</td><td>تكبر الذاكرة مع البيانات، ثم انهيار</td><td>التدفقات و<code>pipeline</code></td></tr>
+<tr><td>الاعتماد على Node لفحص الأنواع</td><td>تصل أخطاء الأنواع إلى الإنتاج</td><td><code>tsc</code> في CI، شرطاً للدمج</td></tr>
+<tr><td>قراءة <code>process.env</code> في كل مكان</td><td>تُكتشف الأخطاء الإملائية والإعدادات الناقصة متأخرة</td><td>وحدة إعدادات واحدة مفحوصة عند البدء</td></tr>
+<tr><td>الخروج فوراً مع SIGTERM</td><td>تُقطع الطلبات مع كل نشر</td><td>أغلق، وأنهِ، ثم اخرج، مع مهلة قصوى</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>Node هو <strong>V8</strong> و<strong>libuv</strong> ومكتبة قياسية. وكود JavaScript يعمل على <strong>خيط واحد</strong>، وI/O لا يجعله ينتظر أبداً.</li>
+<li>يشغّل Node لغة TypeScript بـ<strong>حذف الأنواع</strong>، و<strong>tsc</strong> يفحصها. و<code>erasableSyntaxOnly</code> تُبقي المصدر قابلاً للحذف: لا تعدادات.</li>
+<li><strong>حلقة الأحداث</strong> تُنهي الكود الجاري، ثم المهام الصغيرة، ثم المؤقتات وI/O. ومهل المؤقتات حدود دنيا.</li>
+<li><strong>لا توقف الحلقة أبداً</strong>: العمل على المعالج يذهب إلى <strong>الخيوط العاملة</strong>، والواجهات البطيئة تُستخدم بنسخها غير المتزامنة.</li>
+<li><strong><code>Promise.all</code></strong> تنتظر الاستدعاءات المستقلة معاً، و<strong><code>allSettled</code></strong> تصمد أمام الفشل، و<strong><code>AbortSignal.timeout</code></strong> تحدّ كل استدعاء.</li>
+<li><strong>التدفقات</strong> تعالج البيانات الكبيرة بذاكرة ثابتة، و<strong>الضغط العكسي</strong> يبطئ الجهة السريعة، و<strong><code>pipeline</code></strong> تتولى الأمرين وتنظّف.</li>
+<li><strong>الإعدادات</strong> تأتي من البيئة وتُفحص مرة واحدة بمخطط، والأسرار لا تدخل المستودع أبداً.</li>
+<li><strong>الإيقاف اللطيف</strong> يغلق، ثم يُنهي، ثم يخرج. وبعد خطأ غير معالج: سجّل واخرج، ودع مشرفاً يعيد التشغيل.</li>
+<li><strong><code>node:test</code></strong> يشغّل الاختبارات بلا أداة إضافية، والخوادم في الاختبارات تستمع على المنفذ 0.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. لأن الخادم ينتظر I/O في معظم وقته، وNode يسلّم هذا الانتظار لنظام التشغيل ويخدم اتصالات أخرى في الأثناء، فلا ينشغل الخيط إلا حين يحسب كود JavaScript فعلاً. 2. <code>tsc</code> عبر <code>npm run check</code>، في المحرر أثناء الكتابة، وفي CI قبل دمج التغيير. 3. بعد انتهاء الحساب الذي يستغرق 300 ms: عند نحو 300 ms، ولا عند 100 أبداً.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">كل مشروع برنامج Node صغير بـ TypeScript، مُعدّ مثل مشروع هذا الفصل: يشغّله Node ويفحصه <code>tsc</code>، ومعه اختبار واحد على الأقل بـ <code>node:test</code>.</p>
+
+<div class="project">
+<p class="project-label">المشروع 2.1 · سهل</p>
+<h3>تقرير مبيعات من سطر الأوامر</h3>
+<p class="project-goal">اكتب أداة لسطر الأوامر تقرأ ملف الطلبات تدفقاً، وتطبع العملاء الخمسة الأكثر إنفاقاً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> التدفقات و<code>readline</code>، ومعطيات سطر الأوامر، ورموز الخروج، واختبار دالة نقية.</p>
+<ol class="steps">
+<li>أنشئ <code>orders.csv</code> بالبرنامج <code>make-orders.ts</code> من هذا الفصل.</li>
+<li>اقرأ اسم الملف وعدد العملاء من سطر الأوامر بـ <code>parseArgs</code> من <code>node:util</code>: <code>node report.ts --file orders.csv --top 5</code>.</li>
+<li>اقرأ الملف سطراً سطراً، واجمع كل إجمالي في <code>Map</code> حسب العميل. واطبع أكثر العملاء إنفاقاً، والمبالغ منسّقة كالمال.</li>
+<li>حين لا يوجد الملف، اطبع رسالة واضحة إلى <code>stderr</code> واخرج بالرمز 1، لتعرف السكربتات أنه فشل.</li>
+<li>انقل تحليل السطر إلى دالة نقية واختبرها، ومن الحالات سطر فارغ وسطر ينقصه حقل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> افحص أقصى ذاكرة بـ <code>process.resourceUsage().maxRSS</code> كما فعل الفصل. يجب أن تبقى تقريباً كما هي حين تشغّل الأداة على ملف أكبر بعشر مرات.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 2.2 · متوسط</p>
+<h3>شفّر كلمات المرور دون إيقاف الحلقة</h3>
+<p class="project-goal">ابنِ مساراً <code>POST /hash</code> يشفّر كلمة المرور بـ scrypt، بالطريقة الموقِفة أولاً ثم بالطريقة الصحيحة، وقس الفرق تحت الضغط.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> اكتشاف الكود الموقِف، ومجمّع خيوط libuv، والقياس بطلبات متزامنة، وقراءة الأزمنة.</p>
+<ol class="steps">
+<li>شفّر كلمة المرور من محتوى JSON بـ <code>crypto.scryptSync(password, salt, 64)</code> وملح عشوائي من <code>crypto.randomBytes(16)</code>. وأرجع الملح والناتج بالست عشري.</li>
+<li>أرسل عشرين طلباً في وقت واحد من سكربت صغير بـ <code>Promise.all</code> و<code>fetch</code>، وأرسل طلباً إلى <code>/hello</code> في وسطها. وسجّل كم يستغرق <code>/hello</code>.</li>
+<li>انتقل إلى نسخة الاستدعاء الراجع <code>crypto.scrypt</code> مغلّفة بـ <code>promisify</code> من <code>node:util</code>، وقس مرة أخرى.</li>
+<li>أعد القياس مع متغير البيئة <code>UV_THREADPOOL_SIZE=8</code> (الافتراضي 4)، واشرح ما يتغير في الزمن الكلي.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> النسخة غير المتزامنة لا تجعل التشفير الواحد أسرع. إنها تنقل العمل بعيداً عن الخيط الرئيسي فيبقى <code>/hello</code> سريعاً، وتشغّل عمليات تشفير عدة بالتوازي على خيوط libuv.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 2.3 · تحدٍّ</p>
+<h3>جاهز، وحي، ويغادر بلطف</h3>
+<p class="project-goal">أعطِ الخادم مسارات الصحة التي تستخدمها موزّعات الحمل وأنظمة التشغيل المنسَّق، وأثبت الإيقاف اللطيف باختبار آلي.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> حال الخادم، والإشارات، والعمليات الفرعية، واختبار سلوك الإيقاف.</p>
+<ol class="steps">
+<li>أضف <code>GET /livez</code> الذي يرد بـ <code>200</code> ما دامت العملية تعمل، و<code>GET /readyz</code> الذي لا يرد بـ <code>200</code> إلا حين يجب أن يستقبل الخادم حركة.</li>
+<li>عُدّ الطلبات الجارية. ومع <code>SIGTERM</code> اجعل <code>/readyz</code> ترد بـ <code>503</code> فوراً، وانتظر ثانيتين ليلاحظ موزّع الحمل، ثم أغلق كما في الفصل.</li>
+<li>سجّل كم طلباً كان ما زال يعمل حين بدأ الإيقاف، وكم استغرق.</li>
+<li>اكتب اختباراً يبدأ الخادم عملية فرعية بـ <code>spawn</code>، ويبدأ طلباً بطيئاً، ويرسل <code>SIGTERM</code> بـ <code>child.kill("SIGTERM")</code>، ويتحقق أن الطلب يأخذ <code>200</code>، وأن الاتصالات الجديدة تُرفض، وأن العملية تخرج بالرمز 0.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في الاختبار انتظر ظهور سطر «يستمع على» في ناتج العملية الفرعية قبل أن ترسل أي شيء، وإلا سابق الاختبارُ بدءَ الخادم وفشل عشوائياً.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> في <code>event-loop.ts</code> غيّر حلقة الانشغال من 200 ms إلى 50 ms. بعد كم سيعمل مؤقت الـ 10 ms؟ وماذا لو حُذفت حلقة الانشغال؟</li>
+<li><span class="level">سهل</span> أضف إعداد <code>HOST</code> إلى <code>config.ts</code>: نصاً غير فارغ قيمته الافتراضية <code>127.0.0.1</code>. واستخدمه في <code>server.listen</code>. ماذا يعني <code>0.0.0.0</code>، ومتى تحتاجه؟</li>
+<li><span class="level medium">متوسط</span> في عرض الانتظار المتزامن، تخيّل أن خدمة السعر تفشل بعد 200 ms وأنك استخدمت <code>Promise.all</code>. متى تُرفض <code>Promise.all</code>، وماذا يحدث لطلب المخزون الذي ما زال يعمل؟ اكتب برنامجاً يُظهر ذلك.</li>
+<li><span class="level medium">متوسط</span> اجعل <code>/export</code> يقبل معامل الاستعلام <code>rows</code> من 1 إلى 1,000,000، و<code>422</code> لأي شيء آخر. لماذا تبقى الذاكرة ثابتة حتى مع مليون صف، وماذا يحدث للمولّد حين ينقطع العميل في المنتصف؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب صنفاً <code>WorkerPool</code> يبدأ عدداً ثابتاً من العمال مرة واحدة ويعيد استخدامهم، مع طابور للأعمال المنتظرة. وقارن 100 عدّ صغير (حتى 20,000) بخيط جديد لكل واحد، وبمجمّع من أربعة.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 3</p>
+<p>بعد أن صار تحتنا مشروع متين، نصمم الواجهة البرمجية نفسها: الموارد والعناوين، والإصدارات، وتقسيم القوائم إلى صفحات، والتصفية، والأخطاء، وعدم التكرار، والتوثيق، حتى يستخدمها مطورون آخرون دون أن يسألوك.</p>
+</div>
+</section>
+<section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
+<div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<p class="lead">جرّب كل تمرين بنفسك قبل أن تنظر هنا. وإن اختلف جوابك عن هذا فليس بالضرورة خاطئاً: فلمعظم المسائل أكثر من حل جيد. فإن عالج حلك الحالات العادية وغير المعتادة، واستطعت أن تشرح اختياراتك لزميل، فهو جواب جيد. والكود الكامل المختبر لكل حل في مستودع الكود الخاص بالكتاب.</p>
+
+<h2 class="plain-h">الفصل 1</h2>
+<ol class="exercises">
+<li>سطر الحالة هو <code>HTTP/1.1 200 OK</code>، والترويسات <code>Content-Type</code> و<code>Content-Length</code> و<code>Date</code> و<code>Connection</code>، ثم السطر الفارغ، والمحتوى هو كائن JSON في 53 بايتاً. وبدون <code>Host</code> يرد Node وحده بـ <code>400 Bad Request</code> قبل أن يعمل كودنا، فلا يظهر حتى سطر السجل الخاص بنا: HTTP/1.1 يشترط هذه الترويسة، وNode يفرضها.</li>
+<li><code>GET /products?max_price=100</code>: آمنة ومتساوية الأثر. و<code>PUT /products/2</code> مع منتج كامل: غير آمنة، ومتساوية الأثر (المنتج يصير هو نفسه مهما تكرر الإرسال). و<code>POST /products/2/reviews</code>: ليست هذه ولا تلك، فطلبان يصنعان مراجعتين. و<code>DELETE /cart/items/7</code>: غير آمنة، ومتساوية الأثر. و<code>PATCH /products/2</code> مع <code>{"stock_change": -1}</code>: ليست هذه ولا تلك، لأن كل طلب ينقص المخزون قطعة أخرى. أما <code>PATCH</code> التي تضع قيمة (<code>{"stock": 4}</code>) فمتساوية الأثر.</li>
+<li>في <code>handle</code>، بعد السطر الذي يطابق <code>/products/:id</code>، أضف: إن كانت الطريقة <code>DELETE</code> فابحث عن موضع المنتج بـ <code>findIndex</code>، ورد بـ <code>404</code> إن كان <code>-1</code>، وإلا فاحذفه بـ <code>splice</code> ورد بـ <code>send(res, 204)</code>. الحذف الأول يرد بـ <code>204</code> والثاني بـ <code>404</code>، وهذا ما زال متساوي الأثر، لأن الخادم في الحال نفسها بعد الاثنين. لكن المنتج الجديد يأخذ الرقم 3 مرة أخرى، لأن الرقم «عدد المنتجات + 1». فالعميل الذي يحمل رابطاً قديماً للمنتج 3 يحصل الآن على منتج مختلف، ولو حذفت المنتج 1 بدلاً منه لأخذ المنتج الجديد رقم المنتج 3 الذي ما زال موجوداً. والأرقام لا يجوز أن يُعاد استخدامها أبداً: احتفظ بعدّاد، <code>let nextId = products.length + 1</code>، واستخدم <code>nextId++</code>. ومع هذا التغيير يُنشئ التشغيل في مستودع الكود المنتج رقم 4. وقاعدة البيانات تفعل هذا نيابة عنك، بالتسلسل (sequence).</li>
+<li>قائمة المنتجات عامة: يستطيع أي أحد أن يقرأها بـ curl، فالصفحة في موقع آخر التي تقرؤها في متصفح الزائر لا تعرف سراً. وCORS لا تمنع إلا كود JavaScript في المواقع الأخرى من قراءة الأجوبة <em>بمتصفح الزائر</em>. والخطر في مسار يرد ببيانات خاصة بسبب كوكيز الزائر، مثل <code>GET /me/orders</code>: فلو سُمح هناك لأي مصدر بقراءة الجواب لقرأ أي موقع طلبات الزائر. وما يحميه ليس CORS وحدها، بل أن يتحقق الخادم ممن يسأل (الهوية)، ومما يجوز له أن يراه (الصلاحيات)، مع كوكيز فيها <code>SameSite</code>، وقائمة قصيرة من المصادر الموثوقة.</li>
+<li>يجب أن يحمل الجواب <code>Content-Encoding: gzip</code> ليعرف العميل أن عليه فك الضغط، و<code>Content-Length</code> بحجم البايتات <em>المضغوطة</em>، و<code>Vary: Accept-Encoding</code> كي لا تعطي ذاكرة مؤقتة نسخة مضغوطة لعميل لا يستطيع قراءتها. في <code>send</code> افحص <code>res.req.headers["accept-encoding"]</code>، واضغط بـ <code>gzipSync</code> من <code>node:zlib</code>، وأرسل المخزن الناتج. ومع المنتجات الثلاثة في التشغيل، القائمة 158 بايتاً بلا ضغط و137 بايتاً مضغوطة. والتوفير صغير لأن gzip يحتاج إلى تكرار ليعمل، أما قائمة من مئة منتج فيتقلص JSON نفسه إلى جزء صغير من حجمه. ولهذا أيضاً لا تضغط الخوادم المحتوى الصغير جداً: فتحت 1 KB تقريباً يكلف العمل أكثر مما يوفر. و<code>curl --compressed</code> يرسل الترويسة ويفك ضغط الجواب نيابة عنك.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 2</h2>
+<ol class="exercises">
+<li>بعد نحو 50 ms: فالمؤقت لا يستطيع أن يعمل قبل انتهاء حلقة الانشغال، ثم تجده الحلقة متأخراً. وبدون حلقة الانشغال يعمل بعد نحو 10 ms، ولا قبلها أبداً، وكثيراً ما يتأخر ملّي ثانية أو اثنتين.</li>
+<li>أضف <code>HOST: z.string().min(1).default("127.0.0.1")</code> إلى المخطط، واستدعِ <code>server.listen(config.PORT, config.HOST, ...)</code>. العنوان <code>127.0.0.1</code> لا يقبل إلا اتصالات من الجهاز نفسه. أما <code>0.0.0.0</code> فيعني «كل واجهات الشبكة»: تحتاجه داخل حاوية Docker أو على خادم يجب الوصول إليه من الخارج، وهو بالضبط ما لا تريده على حاسوب محمول في مقهى.</li>
+<li>تُرفض <code>Promise.all</code> بمجرد أن يُرفض أول وعد، عند نحو 200 ms، بذلك الخطأ. أما طلب المخزون فلا يُلغى: يستمر في العمل وينتهي عند نحو 300 ms، وتُتجاهل نتيجته. والبرنامج في مستودع الكود (<code>answers/all-fails.ts</code>) يطبع «Promise.all rejected at 201 ms: price service down» ثم «stock finished anyway at 301 ms». ولإيقاف الاستدعاءات الأخرى فعلاً أعطها إشارة <code>AbortController</code> واستدعِ <code>abort()</code> في <code>catch</code>.</li>
+<li>اقرأ <code>Number(url.searchParams.get("rows") ?? 100000)</code>، ورد بـ <code>422</code> ما لم يكن عدداً صحيحاً من 1 إلى 1,000,000، ومرّره إلى <code>orderRows</code>. وتبقى الذاكرة ثابتة لأن المولّد يصنع صفاً واحداً في كل مرة، و<code>pipeline</code> لا تطلب الصف التالي إلا حين يستطيع الجواب أن يأخذ المزيد: فلا توجد كل الصفوف معاً في أي لحظة. وحين ينقطع العميل يُدمَّر الجواب، فتُرفض <code>pipeline</code> وتستدعي <code>return()</code> على المولّد، فيتوقف عند <code>yield</code> الحالية (وتعمل أي كتلة <code>finally</code> فيه). ويرى <code>catch</code> في المعالج الخطأ، ولأن الترويسات أُرسلت من قبل، يدمّر الجواب بدل أن يكتب 500.</li>
+<li>المجمّع في <code>answers/pool.ts</code> يحتفظ بقائمة من العمال المتفرغين وطابور من الأعمال. تضع <code>run</code> العمل في الطابور وتستدعي <code>#next</code>، التي تعطي أول عمل لعامل متفرغ، وحين يجيب العامل يعود إلى قائمة المتفرغين وتعمل <code>#next</code> من جديد. والعامل الذي ينهار يُستبدل بعامل جديد، لأن الخيط المنهار لا يُعاد استخدامه. وملف العامل يستمع بـ <code>parentPort.on("message", ...)</code> بدل أن يقرأ <code>workerData</code> مرة واحدة. وفي التشغيل في مستودع الكود استغرق 100 عدّ بخيط جديد لكل واحد نحو 6 ثوانٍ، وبمجمّع من أربعة نحو 150 ms: فبدء الخيط يكلف أكثر بكثير من هذه الأعداد الصغيرة.</li>
+</ol>
+
+</section>
+</body></html>

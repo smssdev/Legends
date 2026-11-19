@@ -585,7 +585,7 @@ Bit
 
 <p>وهذا برنامج بسيط لا يستخدم إلا التسلسل، يحسب متوسط ثلاث درجات اختبار:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">average.js</div><pre class="code"><span class="c">// التسلسل: كل خطوة تُنفَّذ مرة واحدة بالترتيب.</span>
+<div class="listing" dir="ltr"><div class="listing-title">average.js</div><pre class="code"><span class="c line-bidi">// التسلسل: كل خطوة تُنفَّذ مرة واحدة بالترتيب.</span>
 <span class="k">const</span> first = <span class="n">8</span>;
 <span class="k">const</span> second = <span class="n">6</span>;
 <span class="k">const</span> third = <span class="n">10</span>;
@@ -967,7 +967,7 @@ v22.12.0
 
 <p>المطورون يحفظون كل مشروع في مجلد خاص به. فلننشئ المجلد الذي ستستخدمه في كل أمثلة هذا الكتاب:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># أنشئ مجلداً للكتاب، وادخل إليه، وافتحه في VS Code</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># أنشئ مجلداً للكتاب، وادخل إليه، وافتحه في VS Code</span>
 <span class="c">$ </span><span class="k">mkdir code-from-zero</span>
 <span class="c">$ </span><span class="k">cd code-from-zero</span>
 <span class="c">$ </span><span class="k">code .</span></pre></div>
@@ -1403,7 +1403,7 @@ Cache-Control: max-age=600
 
 <div class="listing" dir="ltr"><div class="listing-title">server.js</div><pre class="code"><span class="k">const</span> http = require(<span class="s">&quot;node:http&quot;</span>);
 
-<span class="c">// الخادم: يجيب كل طلب بصفحة HTML صغيرة.</span>
+<span class="c line-bidi">// الخادم: يجيب كل طلب بصفحة HTML صغيرة.</span>
 <span class="k">const</span> server = http.createServer((request, response) =&gt; {
   console.log(<span class="s">`طلب: ${request.method} ${request.url}`</span>);
   response.writeHead(<span class="n">200</span>, { <span class="s">&quot;Content-Type&quot;</span>: <span class="s">&quot;text/html; charset=utf-8&quot;</span> });
@@ -1413,7 +1413,7 @@ Cache-Control: max-age=600
 server.listen(<span class="n">3000</span>, <span class="k">async</span> () =&gt; {
   console.log(<span class="s">&quot;الخادم جاهز على http://localhost:3000&quot;</span>);
 
-  <span class="c">// العميل: نطلب صفحة من خادمنا نفسه كما يفعل المتصفح.</span>
+  <span class="c line-bidi">// العميل: نطلب صفحة من خادمنا نفسه كما يفعل المتصفح.</span>
   <span class="k">const</span> reply = <span class="k">await</span> fetch(<span class="s">&quot;http://localhost:3000/hello&quot;</span>);
   console.log(reply.status, reply.statusText);
   console.log(reply.headers.get(<span class="s">&quot;content-type&quot;</span>));
@@ -2278,7 +2278,7 @@ margin: 0 auto;              /* centred horizontally */</pre>
 
 <p>هذا ملف التنسيق كاملاً للصفحة في الشكل 6.1، مقسماً إلى خمسة أجزاء بتعليقات، مثل ملفات التنسيق التي يكتبها المحترفون. اكتبه جزءاً جزءاً، وأعد تحميل الصفحة بعد كل جزء لترى ما يفعله.</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">style.css</div><pre class="code"><span class="c">/* 1. ألوان الصفحة كلها وخطوطها */</span>
+<div class="listing" dir="ltr"><div class="listing-title">style.css</div><pre class="code"><span class="c line-bidi">/* 1. ألوان الصفحة كلها وخطوطها */</span>
 <span class="s">:root </span>{
   <span class="n">--brand</span><span class="s">: #2b2b2b</span>;
   <span class="n">--accent</span><span class="s">: #2b2b2b</span>;
@@ -2293,7 +2293,7 @@ margin: 0 auto;              /* centred horizontally */</pre>
   <span class="n">background-color</span><span class="s">: #f5f5fb</span>;
 }
 
-<span class="c">/* 2. الترويسة: شريط ملون فيه الصورة */</span>
+<span class="c line-bidi">/* 2. الترويسة: شريط ملون فيه الصورة */</span>
 <span class="k">header</span> {
   <span class="n">text-align</span><span class="s">: center</span>;
   <span class="n">padding</span><span class="s">: 32px 16px 24px</span>;
@@ -2317,7 +2317,7 @@ header <span class="k">p</span> {
   <span class="n">opacity</span><span class="s">: 0.85</span>;
 }
 
-<span class="c">/* 3. القائمة: روابط تبدو أزراراً */</span>
+<span class="c line-bidi">/* 3. القائمة: روابط تبدو أزراراً */</span>
 nav <span class="k">a</span> {
   <span class="n">display</span><span class="s">: inline-block</span>;
   <span class="n">padding</span><span class="s">: 6px 16px</span>;
@@ -2329,7 +2329,7 @@ nav <span class="k">a</span> {
   <span class="n">font-weight</span><span class="s">: 700</span>;
 }
 
-<span class="c">/* 4. المحتوى: بطاقات بيضاء في المنتصف */</span>
+<span class="c line-bidi">/* 4. المحتوى: بطاقات بيضاء في المنتصف */</span>
 <span class="k">main</span> {
   <span class="n">max-width</span><span class="s">: 640px</span>;
   <span class="n">margin</span><span class="s">: 24px auto</span>;
@@ -2350,7 +2350,7 @@ nav <span class="k">a</span> {
   <span class="n">padding-bottom</span><span class="s">: 4px</span>;
 }
 
-<span class="c">/* 5. المهارات وسوماً ملونة */</span>
+<span class="c line-bidi">/* 5. المهارات وسوماً ملونة */</span>
 <span class="k">ul</span> {
   <span class="n">padding</span><span class="s">: 0</span>;
 }
@@ -2753,7 +2753,7 @@ footer { grid-area: foot; }</pre>
 
 <p>صفحتك التعريفية جميلة، لكنها ما زالت عموداً واحداً طويلاً. فلنضف جزءاً سادساً إلى <code>style.css</code> فيه تخطيط حقيقي، دون أن يتغير شيء في HTML.</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">style.css (الجزء 6، أضفه في الآخر)</div><pre class="code"><span class="c">/* 6. الفصل 7: التخطيط بـ Flexbox وGrid */</span>
+<div class="listing" dir="ltr"><div class="listing-title">style.css (الجزء 6، أضفه في الآخر)</div><pre class="code"><span class="c line-bidi">/* 6. الفصل 7: التخطيط بـ Flexbox وGrid */</span>
 *,
 *<span class="s">::before,</span>
 *<span class="s">::after </span>{
@@ -2792,7 +2792,7 @@ header <span class="k">nav</span> {
   <span class="n">margin</span><span class="s">: 0</span>;
 }
 
-<span class="c">/* الشاشات العريضة: الصورة بجانب الاسم، والبطاقات في عمودين */</span>
+<span class="c line-bidi">/* الشاشات العريضة: الصورة بجانب الاسم، والبطاقات في عمودين */</span>
 <span class="k">@media</span> (<span class="n">min-width</span><span class="s">: 700px) </span>{
   <span class="k">header</span> {
     <span class="n">justify-content</span><span class="s">: flex-start</span>;
@@ -3318,11 +3318,11 @@ console.log(<span class="s">`المشروب: ${drink}$`</span>);</pre></div>
 <circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
 </svg><div class="bubble"><p class="bubble-name">بِت</p><p>هذا أول برنامج لك يتخذ قرارات حقيقية وحده. اقرأه مرة، وشغّله، ثم غيّر القيم والعب به!</p></div></div>
 
-<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c">// شبّاك التذاكر: غيّر هذه القيم وشغّل البرنامج من جديد.</span>
+<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c line-bidi">// شبّاك التذاكر: غيّر هذه القيم وشغّل البرنامج من جديد.</span>
 <span class="k">const</span> age = <span class="n">34</span>;
 <span class="k">const</span> isMember = <span class="k">true</span>;
 <span class="k">const</span> day = <span class="s">&quot;الثلاثاء&quot;</span>;
-<span class="k">const</span> showTime = <span class="n">22</span>; <span class="c">// بنظام 24 ساعة</span>
+<span class="k">const</span> showTime = <span class="n">22</span>; <span class="c line-bidi">// بنظام 24 ساعة</span>
 
 <span class="k">let</span> price;
 <span class="k">if</span> (age &lt; <span class="n">4</span>) {
@@ -3568,7 +3568,7 @@ true
   console.log(<span class="s">`الخطوة ${i}`</span>);
 }
 
-<span class="c">// العد التنازلي</span>
+<span class="c line-bidi">// العد التنازلي</span>
 <span class="k">for</span> (<span class="k">let</span> n = <span class="n">3</span>; n &gt; <span class="n">0</span>; n--) {
   console.log(n);
 }
@@ -3660,7 +3660,7 @@ console.log(<span class="s">`وصلت إلى ${savings} بعد ${week} أساب�
 
 <p>هذا شبّاك التذاكر من الفصل 8، يخدم الآن طابوراً كاملاً من الزوار. كل رقم في <code>queue</code> عمر زائر. قواعد التسعير كما هي، والجديد هو الحلقة حولها، وثلاثة مجمِّعات تبني المجموع والعدد والإيصال:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">queue.js</div><pre class="code"><span class="c">// أعمار الزوار في الطابور</span>
+<div class="listing" dir="ltr"><div class="listing-title">queue.js</div><pre class="code"><span class="c line-bidi">// أعمار الزوار في الطابور</span>
 <span class="k">const</span> queue = [<span class="n">34</span>, <span class="n">9</span>, <span class="n">2</span>, <span class="n">70</span>, <span class="n">16</span>, <span class="n">41</span>, <span class="n">3</span>];
 
 <span class="k">let</span> total = <span class="n">0</span>;
@@ -4034,7 +4034,7 @@ console.log(total);</pre></div>
 
 <p>لنعد بناء الشبّاك كما يفعل المحترف: من دوال صغيرة، لكل واحدة وظيفة واحدة. دالة تعرف السعر الأساسي، ودالة تطبق يوم الأعضاء، ودالة تبني سطر الإيصال من بيانات الزائر:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c">// دوال صغيرة، لكل واحدة وظيفة واحدة</span>
+<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c line-bidi">// دوال صغيرة، لكل واحدة وظيفة واحدة</span>
 <span class="k">function</span> ticketPrice(age) {
   <span class="k">if</span> (age &lt; <span class="n">4</span>) <span class="k">return</span> <span class="n">0</span>;
   <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) <span class="k">return</span> <span class="n">6</span>;
@@ -4054,7 +4054,7 @@ console.log(total);</pre></div>
   <span class="k">return</span> <span class="s">`${visitor.name}: ${price}`</span>;
 }
 
-<span class="c">// كل زائر كائن، وستتعلم الكائنات في الفصل 11.</span>
+<span class="c line-bidi">// كل زائر كائن، وستتعلم الكائنات في الفصل 11.</span>
 <span class="k">const</span> visitors = [
   { name: <span class="s">&quot;سارة&quot;</span>, age: <span class="n">34</span>, member: <span class="k">true</span> },
   { name: <span class="s">&quot;آدم&quot;</span>, age: <span class="n">9</span>, member: <span class="k">false</span> },
@@ -4400,7 +4400,7 @@ addToCart(<span class="n">1</span>);
 }
 console.log(<span class="s">`المجموع: ${cartTotal()}`</span>);
 
-<span class="c">// جاهزة للحفظ أو الإرسال إلى خادم</span>
+<span class="c line-bidi">// جاهزة للحفظ أو الإرسال إلى خادم</span>
 console.log(JSON.stringify(cart));</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>البرمجة من الصفر × 2 = 50
 ملصق بِت × 4 = 12
@@ -4629,14 +4629,14 @@ rating: 5
     <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;change.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<div class="listing" dir="ltr"><div class="listing-title">change.js</div><pre class="code"><span class="c">// 1. تغيير النص</span>
+<div class="listing" dir="ltr"><div class="listing-title">change.js</div><pre class="code"><span class="c line-bidi">// 1. تغيير النص</span>
 <span class="k">const</span> title = document.querySelector(<span class="s">&quot;h1&quot;</span>);
 title.textContent = <span class="s">&quot;عنوان جديد كتبته JavaScript!&quot;</span>;
 
-<span class="c">// 2. إضافة صنف (وCSS تتولى التنسيق)</span>
+<span class="c line-bidi">// 2. إضافة صنف (وCSS تتولى التنسيق)</span>
 document.querySelector(<span class="s">&quot;.note&quot;</span>).classList.add(<span class="s">&quot;highlight&quot;</span>);
 
-<span class="c">// 3. إنشاء عنصر جديد وإضافته إلى الصفحة</span>
+<span class="c line-bidi">// 3. إنشاء عنصر جديد وإضافته إلى الصفحة</span>
 <span class="k">const</span> item = document.createElement(<span class="s">&quot;li&quot;</span>);
 item.textContent = <span class="s">&quot;JavaScript&quot;</span>;
 document.querySelector(<span class="s">&quot;#skills&quot;</span>).append(item);</pre></div>
@@ -4774,7 +4774,7 @@ form.addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
 
 <span class="k">const</span> cart = [];
 
-<span class="c">// ارسم بطاقة لكل منتج</span>
+<span class="c line-bidi">// ارسم بطاقة لكل منتج</span>
 <span class="k">function</span> renderProducts() {
   <span class="k">const</span> container = document.querySelector(<span class="s">&quot;#products&quot;</span>);
   <span class="k">for</span> (<span class="k">const</span> product <span class="k">of</span> catalog) {
@@ -4806,7 +4806,7 @@ form.addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
   renderCart();
 }
 
-<span class="c">// أعد رسم السلة من البيانات كلما تغيرت</span>
+<span class="c line-bidi">// أعد رسم السلة من البيانات كلما تغيرت</span>
 <span class="k">function</span> renderCart() {
   <span class="k">const</span> list = document.querySelector(<span class="s">&quot;#cart-lines&quot;</span>);
   list.replaceChildren();
@@ -5057,7 +5057,7 @@ console.log(<span class="s">&quot;في الأثناء، أجهّز المائد�
 
 <div class="listing" dir="ltr"><div class="listing-title">fetch.js</div><pre class="code"><span class="k">const</span> http = require(<span class="s">&quot;node:http&quot;</span>);
 
-<span class="c">// خادم واجهة برمجية صغير له عنوان واحد: /api/products</span>
+<span class="c line-bidi">// خادم واجهة برمجية صغير له عنوان واحد: /api/products</span>
 <span class="k">const</span> products = [
   { id: <span class="n">1</span>, name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span> },
   { id: <span class="n">2</span>, name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span> },
@@ -5073,7 +5073,7 @@ console.log(<span class="s">&quot;في الأثناء، أجهّز المائد�
   }
 });
 
-<span class="c">// كود العميل: هذا ما يعمل في التطبيق الحقيقي</span>
+<span class="c line-bidi">// كود العميل: هذا ما يعمل في التطبيق الحقيقي</span>
 <span class="k">async</span> <span class="k">function</span> getJson(url) {
   <span class="k">const</span> response = <span class="k">await</span> fetch(url);
   <span class="k">if</span> (!response.ok) {
@@ -5435,7 +5435,7 @@ TypeError: Cannot read properties of undefined (reading &#x27;city&#x27;)
 
 <p>أصعب العلل لا تُظهر أي خطأ: يعمل البرنامج ويعطي جواباً خاطئاً:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">average-bug.js</div><pre class="code"><span class="c">// متوسط 10 و20 و30 يجب أن يكون 20…</span>
+<div class="listing" dir="ltr"><div class="listing-title">average-bug.js</div><pre class="code"><span class="c line-bidi">// متوسط 10 و20 و30 يجب أن يكون 20…</span>
 <span class="k">function</span> average(numbers) {
   <span class="k">let</span> total = <span class="n">0</span>;
   <span class="k">for</span> (<span class="k">let</span> i = <span class="n">1</span>; i &lt; numbers.length; i++) {
@@ -5602,7 +5602,7 @@ ReferenceError: firstname is not defined</pre></div>
 <h3>سلة الشراء التي لا تعرف الجمع</h3>
 <p class="project-goal">لا رسالة خطأ أبداً، لكن المجموع بلا معنى. جِد الخطأين <em>الاثنين</em> المختبئين في خمسة أسطر.</p>
 <p class="project-skills"><strong>ستتدرب على:</strong> الأخطاء الصامتة، وتتبّع القيم بـ <code>console.log</code>، والفرق بين النص والرقم، والحلقة التي تزيد دورة.</p>
-<div class="listing" dir="ltr"><div class="listing-title">cart-bug.js</div><pre class="code"><span class="c">// الأسعار تصل نصوصاً، كما تصل من نموذج أو ملف</span>
+<div class="listing" dir="ltr"><div class="listing-title">cart-bug.js</div><pre class="code"><span class="c line-bidi">// الأسعار تصل نصوصاً، كما تصل من نموذج أو ملف</span>
 <span class="k">const</span> prices = [<span class="s">&quot;120&quot;</span>, <span class="s">&quot;45&quot;</span>, <span class="s">&quot;35&quot;</span>];
 <span class="k">const</span> discount = <span class="n">20</span>;
 
@@ -5754,7 +5754,7 @@ TypeError: Cannot read properties of undefined (reading &#x27;name&#x27;)
 
 <p>نزّل Git من <code>git-scm.com</code> وثبّته بالخيارات الافتراضية (وعلى الماك قد يكون مثبتاً أصلاً: جرّب <code>git --version</code>). ثم أخبر Git باسمك وبريدك، فهو يكتبهما على كل لقطة تحفظها:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># عرّف Git بنفسك (مرة واحدة لكل حاسوب)</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># عرّف Git بنفسك (مرة واحدة لكل حاسوب)</span>
 <span class="c">$ </span><span class="k">git config --global user.name &quot;Sara Khan&quot;</span>
 <span class="c">$ </span><span class="k">git config --global user.email &quot;sara@example.com&quot;</span>
 <span class="c">$ </span><span class="k">git config --global init.defaultBranch main</span></pre></div>
@@ -5781,18 +5781,18 @@ TypeError: Cannot read properties of undefined (reading &#x27;name&#x27;)
 
 <p>وهذه العملية كاملة لموقع الفصل 7 التعريفي، منفّذة في مجلده:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># ابدأ تتبّع هذا المجلد</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># ابدأ تتبّع هذا المجلد</span>
 <span class="c">$ </span><span class="k">git init</span>
 Initialized empty Git repository in /Users/sara/code-from-zero/profile/.git/
 <span class="c">$ </span><span class="k">git status --short</span>
 ?? index.html
 ?? style.css
-<span class="c"># اختر ما يدخل اللقطة التالية</span>
+<span class="c line-bidi"># اختر ما يدخل اللقطة التالية</span>
 <span class="c">$ </span><span class="k">git add index.html style.css</span>
 <span class="c">$ </span><span class="k">git status --short</span>
 A  index.html
 A  style.css
-<span class="c"># احفظ اللقطة مع رسالة</span>
+<span class="c line-bidi"># احفظ اللقطة مع رسالة</span>
 <span class="c">$ </span><span class="k">git commit -m &quot;إضافة الصفحة التعريفية&quot;</span>
 [main (root-commit) 166f9d5] إضافة الصفحة التعريفية
  2 files changed, 2 insertions(+)
@@ -5812,8 +5812,8 @@ A  style.css
 
 <p>عدّل الآن <code>index.html</code> وأضف سطراً، واسأل Git عما تغيّر:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># عدّل index.html في VS Code، ثم:</span>
-<span class="c"># ما الذي تغيّر منذ آخر commit؟</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># عدّل index.html في VS Code، ثم:</span>
+<span class="c line-bidi"># ما الذي تغيّر منذ آخر commit؟</span>
 <span class="c">$ </span><span class="k">git diff</span>
 diff --git a/index.html b/index.html
 index 6732327..0525cbc 100644
@@ -5825,7 +5825,7 @@ index 6732327..0525cbc 100644
 <span class="c">$ </span><span class="k">git commit -am &quot;إضافة الوصف&quot;</span>
 [main f42d185] إضافة الوصف
  1 file changed, 1 insertion(+)
-<span class="c"># التاريخ، الأحدث أولاً</span>
+<span class="c line-bidi"># التاريخ، الأحدث أولاً</span>
 <span class="c">$ </span><span class="k">git log --oneline</span>
 f42d185 إضافة الوصف
 166f9d5 إضافة الصفحة التعريفية</pre></div>
@@ -5861,19 +5861,19 @@ f42d185 إضافة الوصف
 <figcaption><b>الشكل 15.2:</b> فرع الميزة يخرج من <code>main</code>، وتكون له لقطاته، ثم يُدمج فيه.</figcaption>
 </figure>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># فرع جديد لميزة جديدة</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># فرع جديد لميزة جديدة</span>
 <span class="c">$ </span><span class="k">git switch -c contact</span>
 Switched to a new branch &#x27;contact&#x27;
-<span class="c"># أنشئ contact.html، ثم:</span>
+<span class="c line-bidi"># أنشئ contact.html، ثم:</span>
 <span class="c">$ </span><span class="k">git add contact.html</span>
 <span class="c">$ </span><span class="k">git commit -m &quot;إضافة قسم التواصل&quot;</span>
 [contact 6090844] إضافة قسم التواصل
  1 file changed, 1 insertion(+)
  create mode 100644 contact.html
-<span class="c"># العودة إلى الفرع الرئيسي: يختفي contact.html من المجلد</span>
+<span class="c line-bidi"># العودة إلى الفرع الرئيسي: يختفي contact.html من المجلد</span>
 <span class="c">$ </span><span class="k">git switch main</span>
 Switched to branch &#x27;main&#x27;
-<span class="c"># ادمج الميزة</span>
+<span class="c line-bidi"># ادمج الميزة</span>
 <span class="c">$ </span><span class="k">git merge contact</span>
 Updating f42d185..6090844
 Fast-forward
@@ -5893,7 +5893,7 @@ Fast-forward
 
 <p>أنشئ حساباً مجانياً على <code>github.com</code>، واضغط <strong>New repository</strong>، وأعطه اسماً، واتركه فارغاً. فيعرض لك GitHub عنوانه. اربط مستودعك المحلي به وأرسل إليه لقطاتك:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># اربط المجلد بمستودع فارغ أنشأته على github.com</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># اربط المجلد بمستودع فارغ أنشأته على github.com</span>
 <span class="c">$ </span><span class="k">git remote add origin https://github.com/sara-khan/profile.git</span>
 <span class="c">$ </span><span class="k">git push -u origin main</span>
 Enumerating objects: 11, done.
@@ -5901,7 +5901,7 @@ Writing objects: 100% (11/11), 1.02 KiB | 1.02 MiB/s, done.
 To https://github.com/sara-khan/profile.git
  * [new branch]      main -&gt; main
 branch &#x27;main&#x27; set up to track &#x27;origin/main&#x27;.
-<span class="c"># لاحقاً، على أي حاسوب:</span>
+<span class="c line-bidi"># لاحقاً، على أي حاسوب:</span>
 <span class="c">$ </span><span class="k">git clone https://github.com/sara-khan/profile.git</span>
 <span class="c">$ </span><span class="k">git pull</span></pre></div>
 
@@ -5918,7 +5918,7 @@ branch &#x27;main&#x27; set up to track &#x27;origin/main&#x27;.
 
 <p>بعض الملفات لا تنتمي إلى المستودع: الحزم المنزّلة التي يمكن إعادة تثبيتها، وملفات النظام، والسجلات، وقبل كل شيء <strong>الأسرار</strong> مثل كلمات المرور ومفاتيح الواجهات البرمجية. اكتبها في ملف اسمه <code>.gitignore</code> فلن يتتبعها Git أبداً:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">.gitignore</div><pre class="code"><span class="c"># ملفات لا يتتبعها Git أبداً</span>
+<div class="listing" dir="ltr"><div class="listing-title">.gitignore</div><pre class="code"><span class="c line-bidi"># ملفات لا يتتبعها Git أبداً</span>
 node_modules/
 .env
 .DS_Store
@@ -5976,22 +5976,22 @@ node_modules/
 <li>انظر داخل آخر commit بـ <code>git show --stat</code>. ثم جرّب <code>git show</code> وحدها لترى السطر الذي أضفته بالضبط.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> احتفظ بهذا الدفتر حتى آخر الكتاب. بعد أسابيع سيصير <code>git log</code> يوميات تقدّمك، وعادة الـ commit الصغير المتكرر هي بالضبط ما تتوقعه الفرق منك.</p>
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># مجلد جديد لدفترك</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># مجلد جديد لدفترك</span>
 <span class="c">$ </span><span class="k">git init</span>
 Initialized empty Git repository in /Users/sara/code/journal/.git/
-<span class="c"># أنشئ journal.md بعنوان، ثم:</span>
+<span class="c line-bidi"># أنشئ journal.md بعنوان، ثم:</span>
 <span class="c">$ </span><span class="k">git add journal.md</span>
 <span class="c">$ </span><span class="k">git commit -q -m &quot;بداية الدفتر&quot;</span>
-<span class="c"># أضف سطر اليوم 1، ثم:</span>
+<span class="c line-bidi"># أضف سطر اليوم 1، ثم:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;اليوم 1&quot;</span>
-<span class="c"># أضف سطر اليوم 2، ثم:</span>
+<span class="c line-bidi"># أضف سطر اليوم 2، ثم:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;اليوم 2&quot;</span>
-<span class="c"># ثلاث لقطات، الأحدث أولاً</span>
+<span class="c line-bidi"># ثلاث لقطات، الأحدث أولاً</span>
 <span class="c">$ </span><span class="k">git log --oneline</span>
 b9d7cf2 اليوم 2
 bf34050 اليوم 1
 eb4e70b بداية الدفتر
-<span class="c"># ما الذي تغيّر بالضبط في آخر commit؟</span>
+<span class="c line-bidi"># ما الذي تغيّر بالضبط في آخر commit؟</span>
 <span class="c">$ </span><span class="k">git show --stat --format=%s HEAD</span>
 اليوم 2
 
@@ -6013,18 +6013,18 @@ eb4e70b بداية الدفتر
 <li>اقرأ <code>git log --oneline</code>: الخطأ والتراجع عنه كلاهما في التاريخ، فلا يُفاجأ أحد.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> <code>restore</code> تتخلص من عمل لم يُحفظ أبداً، فلا رجعة فيه، فاستخدمها بحذر. أما <code>revert</code> فآمنة دائماً، حتى بعد الرفع، لأنها تضيف إلى التاريخ ولا تمحو منه.</p>
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># عذراً: تعديل لم تقصده</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># عذراً: تعديل لم تقصده</span>
 <span class="c">$ </span><span class="k">git status --short</span>
  M journal.md
-<span class="c"># تخلّص من التغيير في هذا الملف</span>
+<span class="c line-bidi"># تخلّص من التغيير في هذا الملف</span>
 <span class="c">$ </span><span class="k">git restore journal.md</span>
 <span class="c">$ </span><span class="k">git status --short</span>
-<span class="c"># الآن اكتب اليوم 3 كما يجب، ثم:</span>
+<span class="c line-bidi"># الآن اكتب اليوم 3 كما يجب، ثم:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;اليوم 3&quot;</span>
-<span class="c"># commit تندم عليه، وقد حُفظ</span>
+<span class="c line-bidi"># commit تندم عليه، وقد حُفظ</span>
 <span class="c">$ </span><span class="k">git add quote.md</span>
 <span class="c">$ </span><span class="k">git commit -q -m &quot;إضافة اقتباس عشوائي&quot;</span>
-<span class="c"># ألغِه بـ commit جديد، فيبقى التاريخ صادقاً</span>
+<span class="c line-bidi"># ألغِه بـ commit جديد، فيبقى التاريخ صادقاً</span>
 <span class="c">$ </span><span class="k">git revert --no-edit HEAD</span>
 [main c089223] Revert &quot;إضافة اقتباس عشوائي&quot;
  1 file changed, 1 deletion(-)
@@ -6052,15 +6052,15 @@ eb4e70b بداية الدفتر</pre></div>
 <li>اكتب السطر الذي تريده فعلاً، واحذف أسطر العلامات الثلاثة، ثم <code>git add</code> و<code>git commit</code>. ويُظهر الرسم التقاء الفرعين.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> التعارض ليس خطأ، بل Git يطلب بأدب أن يقرر إنسان. ويعرض VS Code أزراراً فوق كل تعارض («Accept Current» و«Accept Incoming» و«Accept Both»)، لكن اقرأ النتيجة دائماً قبل الحفظ.</p>
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># أضف سطر عنوان في الأعلى، ثم:</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أضف سطر عنوان في الأعلى، ثم:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;إضافة عنوان&quot;</span>
-<span class="c"># فرعان يغيّران السطر نفسه</span>
+<span class="c line-bidi"># فرعان يغيّران السطر نفسه</span>
 <span class="c">$ </span><span class="k">git switch -q -c personal</span>
-<span class="c"># غيّر العنوان في هذا الفرع، ثم:</span>
+<span class="c line-bidi"># غيّر العنوان في هذا الفرع، ثم:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;عنوان شخصي&quot;</span>
 <span class="c">$ </span><span class="k">git switch -q main</span>
 <span class="c">$ </span><span class="k">git switch -q -c ambitious</span>
-<span class="c"># غيّر السطر نفسه بشكل آخر هنا، ثم:</span>
+<span class="c line-bidi"># غيّر السطر نفسه بشكل آخر هنا، ثم:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;عنوان طموح&quot;</span>
 <span class="c">$ </span><span class="k">git switch -q main</span>
 <span class="c">$ </span><span class="k">git merge personal</span>
@@ -6068,19 +6068,19 @@ Updating f59166c..4390b4a
 Fast-forward
  journal.md | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
-<span class="c"># دمج الثاني يسبب تعارضاً</span>
+<span class="c line-bidi"># دمج الثاني يسبب تعارضاً</span>
 <span class="c">$ </span><span class="k">git merge ambitious</span>
 Auto-merging journal.md
 CONFLICT (content): Merge conflict in journal.md
 Automatic merge failed; fix conflicts and then commit the result.
-<span class="c"># Git يضع النسختين داخل الملف</span>
+<span class="c line-bidi"># Git يضع النسختين داخل الملف</span>
 <span class="c">$ </span><span class="k">head -5 journal.md</span>
 &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
 العنوان: دفتر تعلّم سارة
 =======
 العنوان: طريقي إلى الاحتراف
 &gt;&gt;&gt;&gt;&gt;&gt;&gt; ambitious
-<span class="c"># أبقِ السطر الذي تريده، واحذف العلامات، ثم:</span>
+<span class="c line-bidi"># أبقِ السطر الذي تريده، واحذف العلامات، ثم:</span>
 <span class="c">$ </span><span class="k">git add journal.md</span>
 <span class="c">$ </span><span class="k">git commit -q -m &quot;اختيار العنوان النهائي&quot;</span>
 <span class="c">$ </span><span class="k">git log --oneline --graph -4</span>
@@ -6176,9 +6176,9 @@ Automatic merge failed; fix conflicts and then commit the result.
 <div class="listing" dir="ltr"><div class="listing-title">buttons.html</div><pre class="code">  ...
   <span class="k">&lt;body</span><span class="k">&gt;</span>
     <span class="k">&lt;h1</span><span class="k">&gt;</span>زرّان<span class="k">&lt;/h1</span><span class="k">&gt;</span>
-    <span class="c">&lt;!-- سيئ: يبدو زراً لكنه صندوق فقط --&gt;</span>
+    <span class="c line-bidi">&lt;!-- سيئ: يبدو زراً لكنه صندوق فقط --&gt;</span>
     <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;fake&quot;</span> <span class="n">onclick</span>=<span class="s">&quot;alert(&#x27;Hi&#x27;)&quot;</span><span class="k">&gt;</span>أنا div<span class="k">&lt;/div</span><span class="k">&gt;</span>
-    <span class="c">&lt;!-- جيد: زر حقيقي --&gt;</span>
+    <span class="c line-bidi">&lt;!-- جيد: زر حقيقي --&gt;</span>
     <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">onclick</span>=<span class="s">&quot;alert(&#x27;Hi&#x27;)&quot;</span><span class="k">&gt;</span>أنا زر<span class="k">&lt;/button</span><span class="k">&gt;</span>
     <span class="k">&lt;p</span><span class="k">&gt;</span>يبدوان متشابهين، لكن واحداً منهما فقط يعمل بلوحة المفاتيح وقارئ الشاشة.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
@@ -6293,7 +6293,7 @@ Automatic merge failed; fix conflicts and then commit the result.
 
 <p>تطلب WCAG <dfn>نسبة تباين</dfn> لا تقل عن 4.5 إلى 1 بين النص العادي وخلفيته، و3 إلى 1 للنص الكبير. والنسبة من 1 (اللون نفسه) إلى 21 (أسود على أبيض). ورأيت أدوات المطورين تعرضها في الفصل 6. والآن، تمريناً أخيراً على JavaScript، لنحسبها بأنفسنا بالمعادلة الرسمية:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">contrast.js</div><pre class="code"><span class="c">// نسبة التباين بين لونين بمعادلة WCAG</span>
+<div class="listing" dir="ltr"><div class="listing-title">contrast.js</div><pre class="code"><span class="c line-bidi">// نسبة التباين بين لونين بمعادلة WCAG</span>
 <span class="k">function</span> luminance(hex) {
   <span class="k">const</span> channels = [<span class="n">1</span>, <span class="n">3</span>, <span class="n">5</span>].map((i) =&gt; parseInt(hex.slice(i, i + <span class="n">2</span>), <span class="n">16</span>) / <span class="n">255</span>);
   <span class="k">const</span> linear = channels.map((c) =&gt; (c &lt;= <span class="n">0.03928</span> ? c / <span class="n">12.92</span> : ((c + <span class="n">0.055</span>) / <span class="n">1.055</span>) ** <span class="n">2.4</span>));
@@ -6598,7 +6598,7 @@ li.done label {
 
 <p>البرنامج يتبع نمط الفصل 12: البيانات، والتغييرات، والعرض، والأحداث. اقرأه قسماً قسماً:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">app.js</div><pre class="code"><span class="c">// ---------- البيانات ----------</span>
+<div class="listing" dir="ltr"><div class="listing-title">app.js</div><pre class="code"><span class="c line-bidi">// ---------- البيانات ----------</span>
 <span class="k">const</span> STORAGE_KEY = <span class="s">&quot;my-tasks&quot;</span>;
 <span class="k">let</span> tasks = load();
 <span class="k">let</span> filter = <span class="s">&quot;all&quot;</span>;
@@ -6612,7 +6612,7 @@ li.done label {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
-<span class="c">// ---------- التغييرات ----------</span>
+<span class="c line-bidi">// ---------- التغييرات ----------</span>
 <span class="k">function</span> addTask(text) {
   tasks.push({ id: Date.now(), text, done: <span class="k">false</span> });
   update();
@@ -6639,7 +6639,7 @@ li.done label {
   render();
 }
 
-<span class="c">// ---------- العرض ----------</span>
+<span class="c line-bidi">// ---------- العرض ----------</span>
 <span class="k">function</span> visibleTasks() {
   <span class="k">if</span> (filter === <span class="s">&quot;active&quot;</span>) <span class="k">return</span> tasks.filter((t) =&gt; !t.done);
   <span class="k">if</span> (filter === <span class="s">&quot;done&quot;</span>) <span class="k">return</span> tasks.filter((t) =&gt; t.done);
@@ -6671,7 +6671,7 @@ li.done label {
   <span class="k">return</span> li;
 }
 
-<span class="c">// العربية تغيّر صيغة الكلمة مع العدد</span>
+<span class="c line-bidi">// العربية تغيّر صيغة الكلمة مع العدد</span>
 <span class="k">function</span> leftText(count) {
   <span class="k">if</span> (count === <span class="n">0</span>) <span class="k">return</span> <span class="s">&quot;أنجزت كل مهامك!&quot;</span>;
   <span class="k">if</span> (count === <span class="n">1</span>) <span class="k">return</span> <span class="s">&quot;بقيت مهمة واحدة&quot;</span>;
@@ -6694,7 +6694,7 @@ li.done label {
   }
 }
 
-<span class="c">// ---------- الأحداث ----------</span>
+<span class="c line-bidi">// ---------- الأحداث ----------</span>
 document.querySelector(<span class="s">&quot;#new-task&quot;</span>).addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
   event.preventDefault();
   <span class="k">const</span> input = document.querySelector(<span class="s">&quot;#task-text&quot;</span>);

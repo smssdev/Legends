@@ -583,7 +583,7 @@ show LARGEST</div>
 
 <p>A simple program that uses only sequence looks like this. It works out the average of three test scores:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">average.js</div><pre class="code"><span class="c">// Sequence: each step runs once, in order.</span>
+<div class="listing" dir="ltr"><div class="listing-title">average.js</div><pre class="code"><span class="c line-bidi">// Sequence: each step runs once, in order.</span>
 <span class="k">const</span> first = <span class="n">8</span>;
 <span class="k">const</span> second = <span class="n">6</span>;
 <span class="k">const</span> third = <span class="n">10</span>;
@@ -965,7 +965,7 @@ v22.12.0
 
 <p>Developers keep each project in its own folder. Let us create the folder you will use for every example in this book:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Make a folder for the book, go into it, and open it in VS Code</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Make a folder for the book, go into it, and open it in VS Code</span>
 <span class="c">$ </span><span class="k">mkdir code-from-zero</span>
 <span class="c">$ </span><span class="k">cd code-from-zero</span>
 <span class="c">$ </span><span class="k">code .</span></pre></div>
@@ -1399,7 +1399,7 @@ Cache-Control: max-age=600
 
 <div class="listing" dir="ltr"><div class="listing-title">server.js</div><pre class="code"><span class="k">const</span> http = require(<span class="s">&quot;node:http&quot;</span>);
 
-<span class="c">// The server: answers every request with a small HTML page.</span>
+<span class="c line-bidi">// The server: answers every request with a small HTML page.</span>
 <span class="k">const</span> server = http.createServer((request, response) =&gt; {
   console.log(<span class="s">`Request: ${request.method} ${request.url}`</span>);
   response.writeHead(<span class="n">200</span>, { <span class="s">&quot;Content-Type&quot;</span>: <span class="s">&quot;text/html; charset=utf-8&quot;</span> });
@@ -1409,7 +1409,7 @@ Cache-Control: max-age=600
 server.listen(<span class="n">3000</span>, <span class="k">async</span> () =&gt; {
   console.log(<span class="s">&quot;Server ready at http://localhost:3000&quot;</span>);
 
-  <span class="c">// The client: ask our own server for a page, like a browser would.</span>
+  <span class="c line-bidi">// The client: ask our own server for a page, like a browser would.</span>
   <span class="k">const</span> reply = <span class="k">await</span> fetch(<span class="s">&quot;http://localhost:3000/hello&quot;</span>);
   console.log(reply.status, reply.statusText);
   console.log(reply.headers.get(<span class="s">&quot;content-type&quot;</span>));
@@ -2257,7 +2257,7 @@ margin: 0 auto;              /* no vertical margin, centred horizontally */</pre
 
 <p>Here is the complete stylesheet for the page in Figure 6.1. It is organised in five commented parts, like the stylesheets professionals write. Type it part by part, and reload the page after each part to see what it does.</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">style.css</div><pre class="code"><span class="c">/* 1. Colours and fonts for the whole page */</span>
+<div class="listing" dir="ltr"><div class="listing-title">style.css</div><pre class="code"><span class="c line-bidi">/* 1. Colours and fonts for the whole page */</span>
 <span class="s">:root </span>{
   <span class="n">--brand</span><span class="s">: #2b2b2b</span>;
   <span class="n">--accent</span><span class="s">: #2b2b2b</span>;
@@ -2272,7 +2272,7 @@ margin: 0 auto;              /* no vertical margin, centred horizontally */</pre
   <span class="n">background-color</span><span class="s">: #f5f5fb</span>;
 }
 
-<span class="c">/* 2. The header: a coloured band with the avatar */</span>
+<span class="c line-bidi">/* 2. The header: a coloured band with the avatar */</span>
 <span class="k">header</span> {
   <span class="n">text-align</span><span class="s">: center</span>;
   <span class="n">padding</span><span class="s">: 32px 16px 24px</span>;
@@ -2296,7 +2296,7 @@ header <span class="k">p</span> {
   <span class="n">opacity</span><span class="s">: 0.85</span>;
 }
 
-<span class="c">/* 3. The menu: links that look like buttons */</span>
+<span class="c line-bidi">/* 3. The menu: links that look like buttons */</span>
 nav <span class="k">a</span> {
   <span class="n">display</span><span class="s">: inline-block</span>;
   <span class="n">padding</span><span class="s">: 6px 16px</span>;
@@ -2308,7 +2308,7 @@ nav <span class="k">a</span> {
   <span class="n">font-weight</span><span class="s">: 700</span>;
 }
 
-<span class="c">/* 4. The content: white cards, centred */</span>
+<span class="c line-bidi">/* 4. The content: white cards, centred */</span>
 <span class="k">main</span> {
   <span class="n">max-width</span><span class="s">: 640px</span>;
   <span class="n">margin</span><span class="s">: 24px auto</span>;
@@ -2329,7 +2329,7 @@ nav <span class="k">a</span> {
   <span class="n">padding-bottom</span><span class="s">: 4px</span>;
 }
 
-<span class="c">/* 5. Skills as coloured tags */</span>
+<span class="c line-bidi">/* 5. Skills as coloured tags */</span>
 <span class="k">ul</span> {
   <span class="n">padding</span><span class="s">: 0</span>;
 }
@@ -2732,7 +2732,7 @@ footer { grid-area: foot; }</pre>
 
 <p>Your profile page is beautiful but still a single tall column. Let us add a sixth part to <code>style.css</code> with a real layout. Nothing in the HTML changes.</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">style.css (part 6, add at the end)</div><pre class="code"><span class="c">/* 6. Chapter 7: layout with Flexbox and Grid */</span>
+<div class="listing" dir="ltr"><div class="listing-title">style.css (part 6, add at the end)</div><pre class="code"><span class="c line-bidi">/* 6. Chapter 7: layout with Flexbox and Grid */</span>
 *,
 *<span class="s">::before,</span>
 *<span class="s">::after </span>{
@@ -2771,7 +2771,7 @@ header <span class="k">nav</span> {
   <span class="n">margin</span><span class="s">: 0</span>;
 }
 
-<span class="c">/* Wide screens: avatar beside the name, cards in two columns */</span>
+<span class="c line-bidi">/* Wide screens: avatar beside the name, cards in two columns */</span>
 <span class="k">@media</span> (<span class="n">min-width</span><span class="s">: 700px) </span>{
   <span class="k">header</span> {
     <span class="n">justify-content</span><span class="s">: flex-start</span>;
@@ -3297,11 +3297,11 @@ console.log(<span class="s">`Drink: $${drink}`</span>);</pre></div>
 <circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
 </svg><div class="bubble"><p class="bubble-name">Bit</p><p>This is your first program that makes real decisions on its own. Read it once, run it, then change the values and play!</p></div></div>
 
-<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c">// Ticket kiosk: change these values and run again.</span>
+<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c line-bidi">// Ticket kiosk: change these values and run again.</span>
 <span class="k">const</span> age = <span class="n">34</span>;
 <span class="k">const</span> isMember = <span class="k">true</span>;
 <span class="k">const</span> day = <span class="s">&quot;Tuesday&quot;</span>;
-<span class="k">const</span> showTime = <span class="n">22</span>; <span class="c">// 24-hour clock</span>
+<span class="k">const</span> showTime = <span class="n">22</span>; <span class="c line-bidi">// 24-hour clock</span>
 
 <span class="k">let</span> price;
 <span class="k">if</span> (age &lt; <span class="n">4</span>) {
@@ -3547,7 +3547,7 @@ true
   console.log(<span class="s">`Step ${i}`</span>);
 }
 
-<span class="c">// Counting down</span>
+<span class="c line-bidi">// Counting down</span>
 <span class="k">for</span> (<span class="k">let</span> n = <span class="n">3</span>; n &gt; <span class="n">0</span>; n--) {
   console.log(n);
 }
@@ -3639,7 +3639,7 @@ Invalid score, stopping.</pre></div>
 
 <p>Here is the kiosk from Chapter 8, now serving a whole line of visitors. Each number in <code>queue</code> is the age of one visitor. The pricing rules are the same; what is new is the loop around them, and three accumulators that build a total, a count and a receipt:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">queue.js</div><pre class="code"><span class="c">// Ages of the visitors waiting in line</span>
+<div class="listing" dir="ltr"><div class="listing-title">queue.js</div><pre class="code"><span class="c line-bidi">// Ages of the visitors waiting in line</span>
 <span class="k">const</span> queue = [<span class="n">34</span>, <span class="n">9</span>, <span class="n">2</span>, <span class="n">70</span>, <span class="n">16</span>, <span class="n">41</span>, <span class="n">3</span>];
 
 <span class="k">let</span> total = <span class="n">0</span>;
@@ -4013,7 +4013,7 @@ console.log(total);</pre></div>
 
 <p>Let us rebuild the kiosk the way a professional would: from small functions, each with one job. One function knows the base price, one applies the members’ day, and one builds a receipt line from a visitor:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c">// Small functions, each with one job</span>
+<div class="listing" dir="ltr"><div class="listing-title">kiosk.js</div><pre class="code"><span class="c line-bidi">// Small functions, each with one job</span>
 <span class="k">function</span> ticketPrice(age) {
   <span class="k">if</span> (age &lt; <span class="n">4</span>) <span class="k">return</span> <span class="n">0</span>;
   <span class="k">if</span> (age &lt; <span class="n">13</span> || age &gt;= <span class="n">65</span>) <span class="k">return</span> <span class="n">6</span>;
@@ -4033,7 +4033,7 @@ console.log(total);</pre></div>
   <span class="k">return</span> <span class="s">`${visitor.name}: ${price}`</span>;
 }
 
-<span class="c">// Each visitor is an object; you will learn objects in Chapter 11.</span>
+<span class="c line-bidi">// Each visitor is an object; you will learn objects in Chapter 11.</span>
 <span class="k">const</span> visitors = [
   { name: <span class="s">&quot;Sara&quot;</span>, age: <span class="n">34</span>, member: <span class="k">true</span> },
   { name: <span class="s">&quot;Adam&quot;</span>, age: <span class="n">9</span>, member: <span class="k">false</span> },
@@ -4379,7 +4379,7 @@ addToCart(<span class="n">1</span>);
 }
 console.log(<span class="s">`Total: ${cartTotal()}`</span>);
 
-<span class="c">// Ready to save or send to a server</span>
+<span class="c line-bidi">// Ready to save or send to a server</span>
 console.log(JSON.stringify(cart));</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Code from Zero × 2 = 50
 Bit sticker × 4 = 12
@@ -4608,14 +4608,14 @@ Before: 18 after: 20
     <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;change.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
   ...</pre></div>
-<div class="listing" dir="ltr"><div class="listing-title">change.js</div><pre class="code"><span class="c">// 1. Change text</span>
+<div class="listing" dir="ltr"><div class="listing-title">change.js</div><pre class="code"><span class="c line-bidi">// 1. Change text</span>
 <span class="k">const</span> title = document.querySelector(<span class="s">&quot;h1&quot;</span>);
 title.textContent = <span class="s">&quot;New title, set by JavaScript!&quot;</span>;
 
-<span class="c">// 2. Add a class (the CSS does the styling)</span>
+<span class="c line-bidi">// 2. Add a class (the CSS does the styling)</span>
 document.querySelector(<span class="s">&quot;.note&quot;</span>).classList.add(<span class="s">&quot;highlight&quot;</span>);
 
-<span class="c">// 3. Create a new element and add it to the page</span>
+<span class="c line-bidi">// 3. Create a new element and add it to the page</span>
 <span class="k">const</span> item = document.createElement(<span class="s">&quot;li&quot;</span>);
 item.textContent = <span class="s">&quot;JavaScript&quot;</span>;
 document.querySelector(<span class="s">&quot;#skills&quot;</span>).append(item);</pre></div>
@@ -4753,7 +4753,7 @@ form.addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
 
 <span class="k">const</span> cart = [];
 
-<span class="c">// Draw one card per product</span>
+<span class="c line-bidi">// Draw one card per product</span>
 <span class="k">function</span> renderProducts() {
   <span class="k">const</span> container = document.querySelector(<span class="s">&quot;#products&quot;</span>);
   <span class="k">for</span> (<span class="k">const</span> product <span class="k">of</span> catalog) {
@@ -4785,7 +4785,7 @@ form.addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
   renderCart();
 }
 
-<span class="c">// Redraw the cart from the data every time it changes</span>
+<span class="c line-bidi">// Redraw the cart from the data every time it changes</span>
 <span class="k">function</span> renderCart() {
   <span class="k">const</span> list = document.querySelector(<span class="s">&quot;#cart-lines&quot;</span>);
   list.replaceChildren();
@@ -5036,7 +5036,7 @@ A cup of tea</pre></div>
 
 <div class="listing" dir="ltr"><div class="listing-title">fetch.js</div><pre class="code"><span class="k">const</span> http = require(<span class="s">&quot;node:http&quot;</span>);
 
-<span class="c">// A tiny API server with one address, /api/products</span>
+<span class="c line-bidi">// A tiny API server with one address, /api/products</span>
 <span class="k">const</span> products = [
   { id: <span class="n">1</span>, name: <span class="s">&quot;Code from Zero&quot;</span>, price: <span class="n">25</span> },
   { id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8</span> },
@@ -5052,7 +5052,7 @@ A cup of tea</pre></div>
   }
 });
 
-<span class="c">// The client code: this is what runs in a real app</span>
+<span class="c line-bidi">// The client code: this is what runs in a real app</span>
 <span class="k">async</span> <span class="k">function</span> getJson(url) {
   <span class="k">const</span> response = <span class="k">await</span> fetch(url);
   <span class="k">if</span> (!response.ok) {
@@ -5414,7 +5414,7 @@ TypeError: Cannot read properties of undefined (reading &#x27;city&#x27;)
 
 <p>The hardest bugs do not produce any error. The program runs and gives the wrong answer:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">average-bug.js</div><pre class="code"><span class="c">// The average of 10, 20 and 30 should be 20…</span>
+<div class="listing" dir="ltr"><div class="listing-title">average-bug.js</div><pre class="code"><span class="c line-bidi">// The average of 10, 20 and 30 should be 20…</span>
 <span class="k">function</span> average(numbers) {
   <span class="k">let</span> total = <span class="n">0</span>;
   <span class="k">for</span> (<span class="k">let</span> i = <span class="n">1</span>; i &lt; numbers.length; i++) {
@@ -5581,7 +5581,7 @@ ReferenceError: firstname is not defined</pre></div>
 <h3>The checkout that cannot add</h3>
 <p class="project-goal">No error at all, but the total is nonsense. Find the <em>two</em> bugs hiding in five lines.</p>
 <p class="project-skills"><strong>You will practise:</strong> bugs without errors, tracing values with <code>console.log</code>, the difference between text and numbers, and off-by-one loops.</p>
-<div class="listing" dir="ltr"><div class="listing-title">cart-bug.js</div><pre class="code"><span class="c">// Prices arrive as text, as they do from a form or a file</span>
+<div class="listing" dir="ltr"><div class="listing-title">cart-bug.js</div><pre class="code"><span class="c line-bidi">// Prices arrive as text, as they do from a form or a file</span>
 <span class="k">const</span> prices = [<span class="s">&quot;120&quot;</span>, <span class="s">&quot;45&quot;</span>, <span class="s">&quot;35&quot;</span>];
 <span class="k">const</span> discount = <span class="n">20</span>;
 
@@ -5733,7 +5733,7 @@ TypeError: Cannot read properties of undefined (reading &#x27;name&#x27;)
 
 <p>Download Git from <code>git-scm.com</code> and install it with the default options (on a Mac, it may already be installed: try <code>git --version</code>). Then tell Git your name and email, which it writes on every snapshot you make:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Tell Git who you are (once per computer)</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Tell Git who you are (once per computer)</span>
 <span class="c">$ </span><span class="k">git config --global user.name &quot;Sara Khan&quot;</span>
 <span class="c">$ </span><span class="k">git config --global user.email &quot;sara@example.com&quot;</span>
 <span class="c">$ </span><span class="k">git config --global init.defaultBranch main</span></pre></div>
@@ -5760,18 +5760,18 @@ TypeError: Cannot read properties of undefined (reading &#x27;name&#x27;)
 
 <p>Here is the whole process for the profile site from Chapter 7, run in its folder:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Start tracking this folder</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Start tracking this folder</span>
 <span class="c">$ </span><span class="k">git init</span>
 Initialized empty Git repository in /Users/sara/code-from-zero/profile/.git/
 <span class="c">$ </span><span class="k">git status --short</span>
 ?? index.html
 ?? style.css
-<span class="c"># Choose what goes into the next snapshot</span>
+<span class="c line-bidi"># Choose what goes into the next snapshot</span>
 <span class="c">$ </span><span class="k">git add index.html style.css</span>
 <span class="c">$ </span><span class="k">git status --short</span>
 A  index.html
 A  style.css
-<span class="c"># Save the snapshot with a message</span>
+<span class="c line-bidi"># Save the snapshot with a message</span>
 <span class="c">$ </span><span class="k">git commit -m &quot;Add profile page&quot;</span>
 [main (root-commit) 96c0a17] Add profile page
  2 files changed, 2 insertions(+)
@@ -5789,8 +5789,8 @@ A  style.css
 
 <p>Now edit <code>index.html</code>, add a line, and ask Git what changed:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Edit index.html in VS Code, then:</span>
-<span class="c"># What changed since the last commit?</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Edit index.html in VS Code, then:</span>
+<span class="c line-bidi"># What changed since the last commit?</span>
 <span class="c">$ </span><span class="k">git diff</span>
 diff --git a/index.html b/index.html
 index 5ab23b1..96fec82 100644
@@ -5802,7 +5802,7 @@ index 5ab23b1..96fec82 100644
 <span class="c">$ </span><span class="k">git commit -am &quot;Add tagline&quot;</span>
 [main 8be4da4] Add tagline
  1 file changed, 1 insertion(+)
-<span class="c"># The history, newest first</span>
+<span class="c line-bidi"># The history, newest first</span>
 <span class="c">$ </span><span class="k">git log --oneline</span>
 8be4da4 Add tagline
 96c0a17 Add profile page</pre></div>
@@ -5838,19 +5838,19 @@ index 5ab23b1..96fec82 100644
 <figcaption><b>Figure 15.2:</b> A feature branch leaves <code>main</code>, gets its own commits, and is merged back.</figcaption>
 </figure>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># A new branch for a new feature</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># A new branch for a new feature</span>
 <span class="c">$ </span><span class="k">git switch -c contact</span>
 Switched to a new branch &#x27;contact&#x27;
-<span class="c"># Create contact.html, then:</span>
+<span class="c line-bidi"># Create contact.html, then:</span>
 <span class="c">$ </span><span class="k">git add contact.html</span>
 <span class="c">$ </span><span class="k">git commit -m &quot;Add contact section&quot;</span>
 [contact 857eb74] Add contact section
  1 file changed, 1 insertion(+)
  create mode 100644 contact.html
-<span class="c"># Back to the main branch: contact.html disappears from the folder</span>
+<span class="c line-bidi"># Back to the main branch: contact.html disappears from the folder</span>
 <span class="c">$ </span><span class="k">git switch main</span>
 Switched to branch &#x27;main&#x27;
-<span class="c"># Bring the feature in</span>
+<span class="c line-bidi"># Bring the feature in</span>
 <span class="c">$ </span><span class="k">git merge contact</span>
 Updating 8be4da4..857eb74
 Fast-forward
@@ -5870,7 +5870,7 @@ Fast-forward
 
 <p>Create a free account on <code>github.com</code>, click <strong>New repository</strong>, give it a name, and leave it empty. GitHub then shows you its address. Connect your local repository to it and send your commits:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Connect the folder to an empty repository you created on github.com</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Connect the folder to an empty repository you created on github.com</span>
 <span class="c">$ </span><span class="k">git remote add origin https://github.com/sara-khan/profile.git</span>
 <span class="c">$ </span><span class="k">git push -u origin main</span>
 Enumerating objects: 11, done.
@@ -5878,7 +5878,7 @@ Writing objects: 100% (11/11), 1.02 KiB | 1.02 MiB/s, done.
 To https://github.com/sara-khan/profile.git
  * [new branch]      main -&gt; main
 branch &#x27;main&#x27; set up to track &#x27;origin/main&#x27;.
-<span class="c"># Later, on any computer:</span>
+<span class="c line-bidi"># Later, on any computer:</span>
 <span class="c">$ </span><span class="k">git clone https://github.com/sara-khan/profile.git</span>
 <span class="c">$ </span><span class="k">git pull</span></pre></div>
 
@@ -5895,7 +5895,7 @@ branch &#x27;main&#x27; set up to track &#x27;origin/main&#x27;.
 
 <p>Some files do not belong in a repository: downloaded packages that can be reinstalled, system files, logs, and above all <strong>secrets</strong> such as passwords and API keys. List them in a file called <code>.gitignore</code> and Git will never track them:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">.gitignore</div><pre class="code"><span class="c"># Files Git should never track</span>
+<div class="listing" dir="ltr"><div class="listing-title">.gitignore</div><pre class="code"><span class="c line-bidi"># Files Git should never track</span>
 node_modules/
 .env
 .DS_Store
@@ -5953,22 +5953,22 @@ node_modules/
 <li>Look inside the last commit with <code>git show --stat</code>. Then try plain <code>git show</code> to see the exact line you added.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> keep this journal for the rest of the book. In a few weeks, <code>git log</code> will be a diary of your progress, and the habit of small, frequent commits is exactly what teams expect.</p>
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># A new folder for your journal</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># A new folder for your journal</span>
 <span class="c">$ </span><span class="k">git init</span>
 Initialized empty Git repository in /Users/sara/code/journal/.git/
-<span class="c"># Create journal.md with a heading, then:</span>
+<span class="c line-bidi"># Create journal.md with a heading, then:</span>
 <span class="c">$ </span><span class="k">git add journal.md</span>
 <span class="c">$ </span><span class="k">git commit -q -m &quot;Start the journal&quot;</span>
-<span class="c"># Add the Day 1 line, then:</span>
+<span class="c line-bidi"># Add the Day 1 line, then:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;Day 1&quot;</span>
-<span class="c"># Add the Day 2 line, then:</span>
+<span class="c line-bidi"># Add the Day 2 line, then:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;Day 2&quot;</span>
-<span class="c"># Three snapshots, newest first</span>
+<span class="c line-bidi"># Three snapshots, newest first</span>
 <span class="c">$ </span><span class="k">git log --oneline</span>
 31670a5 Day 2
 62eacf9 Day 1
 b7c860c Start the journal
-<span class="c"># What exactly changed in the last commit?</span>
+<span class="c line-bidi"># What exactly changed in the last commit?</span>
 <span class="c">$ </span><span class="k">git show --stat --format=%s HEAD</span>
 Day 2
 
@@ -5990,18 +5990,18 @@ Day 2
 <li>Read <code>git log --oneline</code>: the mistake and its undo are both in the history, so nobody is surprised.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> <code>restore</code> throws away work that was never saved, so there is no way back; use it with care. <code>revert</code> is always safe, even after you have pushed, because it adds history instead of erasing it.</p>
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Oops: an edit you did not mean to make</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Oops: an edit you did not mean to make</span>
 <span class="c">$ </span><span class="k">git status --short</span>
  M journal.md
-<span class="c"># Throw away the change in this file</span>
+<span class="c line-bidi"># Throw away the change in this file</span>
 <span class="c">$ </span><span class="k">git restore journal.md</span>
 <span class="c">$ </span><span class="k">git status --short</span>
-<span class="c"># Now write Day 3 properly, then:</span>
+<span class="c line-bidi"># Now write Day 3 properly, then:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;Day 3&quot;</span>
-<span class="c"># A commit you regret, already saved</span>
+<span class="c line-bidi"># A commit you regret, already saved</span>
 <span class="c">$ </span><span class="k">git add quote.md</span>
 <span class="c">$ </span><span class="k">git commit -q -m &quot;Add a random quote&quot;</span>
-<span class="c"># Undo it with a new commit, keeping the history honest</span>
+<span class="c line-bidi"># Undo it with a new commit, keeping the history honest</span>
 <span class="c">$ </span><span class="k">git revert --no-edit HEAD</span>
 [main 8a28f85] Revert &quot;Add a random quote&quot;
  1 file changed, 1 deletion(-)
@@ -6029,15 +6029,15 @@ b7c860c Start the journal</pre></div>
 <li>Write the line you really want, delete all three marker lines, then <code>git add</code> and <code>git commit</code>. The graph shows the two branches joining.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> a conflict is not an error. It is Git politely asking a human to decide. VS Code shows buttons above each conflict (“Accept Current”, “Accept Incoming”, “Accept Both”), but always read the result before you commit.</p>
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Add a title line at the top, then:</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Add a title line at the top, then:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;Add a title&quot;</span>
-<span class="c"># Two branches change the same line</span>
+<span class="c line-bidi"># Two branches change the same line</span>
 <span class="c">$ </span><span class="k">git switch -q -c personal</span>
-<span class="c"># Change the title on this branch, then:</span>
+<span class="c line-bidi"># Change the title on this branch, then:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;Personal title&quot;</span>
 <span class="c">$ </span><span class="k">git switch -q main</span>
 <span class="c">$ </span><span class="k">git switch -q -c ambitious</span>
-<span class="c"># Change the same line differently here, then:</span>
+<span class="c line-bidi"># Change the same line differently here, then:</span>
 <span class="c">$ </span><span class="k">git commit -q -am &quot;Ambitious title&quot;</span>
 <span class="c">$ </span><span class="k">git switch -q main</span>
 <span class="c">$ </span><span class="k">git merge personal</span>
@@ -6045,19 +6045,19 @@ Updating 5ffca6e..d5dc855
 Fast-forward
  journal.md | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
-<span class="c"># Merging the second one causes a conflict</span>
+<span class="c line-bidi"># Merging the second one causes a conflict</span>
 <span class="c">$ </span><span class="k">git merge ambitious</span>
 Auto-merging journal.md
 CONFLICT (content): Merge conflict in journal.md
 Automatic merge failed; fix conflicts and then commit the result.
-<span class="c"># Git marks both versions inside the file</span>
+<span class="c line-bidi"># Git marks both versions inside the file</span>
 <span class="c">$ </span><span class="k">head -5 journal.md</span>
 &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
 Title: Sara’s learning journal
 =======
 Title: My road to senior
 &gt;&gt;&gt;&gt;&gt;&gt;&gt; ambitious
-<span class="c"># Keep the line you want, delete the markers, then:</span>
+<span class="c line-bidi"># Keep the line you want, delete the markers, then:</span>
 <span class="c">$ </span><span class="k">git add journal.md</span>
 <span class="c">$ </span><span class="k">git commit -q -m &quot;Choose the final title&quot;</span>
 <span class="c">$ </span><span class="k">git log --oneline --graph -4</span>
@@ -6153,9 +6153,9 @@ Title: My road to senior
 <div class="listing" dir="ltr"><div class="listing-title">buttons.html</div><pre class="code">  ...
   <span class="k">&lt;body</span><span class="k">&gt;</span>
     <span class="k">&lt;h1</span><span class="k">&gt;</span>Two buttons<span class="k">&lt;/h1</span><span class="k">&gt;</span>
-    <span class="c">&lt;!-- Bad: looks like a button, but is only a box --&gt;</span>
+    <span class="c line-bidi">&lt;!-- Bad: looks like a button, but is only a box --&gt;</span>
     <span class="k">&lt;div</span> <span class="n">class</span>=<span class="s">&quot;fake&quot;</span> <span class="n">onclick</span>=<span class="s">&quot;alert(&#x27;Hi&#x27;)&quot;</span><span class="k">&gt;</span>I am a div<span class="k">&lt;/div</span><span class="k">&gt;</span>
-    <span class="c">&lt;!-- Good: a real button --&gt;</span>
+    <span class="c line-bidi">&lt;!-- Good: a real button --&gt;</span>
     <span class="k">&lt;button</span> <span class="n">type</span>=<span class="s">&quot;button&quot;</span> <span class="n">onclick</span>=<span class="s">&quot;alert(&#x27;Hi&#x27;)&quot;</span><span class="k">&gt;</span>I am a button<span class="k">&lt;/button</span><span class="k">&gt;</span>
     <span class="k">&lt;p</span><span class="k">&gt;</span>Both look the same. Only one works with a keyboard and a screen reader.<span class="k">&lt;/p</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
@@ -6270,7 +6270,7 @@ Title: My road to senior
 
 <p>WCAG asks for a <dfn>contrast ratio</dfn> of at least 4.5 to 1 between normal text and its background, and 3 to 1 for large text. The ratio goes from 1 (the same colour) to 21 (black on white). You saw DevTools show it in Chapter 6. Now, as a final JavaScript exercise, let us compute it ourselves with the official formula:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">contrast.js</div><pre class="code"><span class="c">// Contrast ratio between two colours, using the WCAG formula</span>
+<div class="listing" dir="ltr"><div class="listing-title">contrast.js</div><pre class="code"><span class="c line-bidi">// Contrast ratio between two colours, using the WCAG formula</span>
 <span class="k">function</span> luminance(hex) {
   <span class="k">const</span> channels = [<span class="n">1</span>, <span class="n">3</span>, <span class="n">5</span>].map((i) =&gt; parseInt(hex.slice(i, i + <span class="n">2</span>), <span class="n">16</span>) / <span class="n">255</span>);
   <span class="k">const</span> linear = channels.map((c) =&gt; (c &lt;= <span class="n">0.03928</span> ? c / <span class="n">12.92</span> : ((c + <span class="n">0.055</span>) / <span class="n">1.055</span>) ** <span class="n">2.4</span>));
@@ -6575,7 +6575,7 @@ li.done label {
 
 <p>The program follows the pattern from Chapter 12: data, changes, display, and events. Read it section by section:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">app.js</div><pre class="code"><span class="c">// ---------- Data ----------</span>
+<div class="listing" dir="ltr"><div class="listing-title">app.js</div><pre class="code"><span class="c line-bidi">// ---------- Data ----------</span>
 <span class="k">const</span> STORAGE_KEY = <span class="s">&quot;my-tasks&quot;</span>;
 <span class="k">let</span> tasks = load();
 <span class="k">let</span> filter = <span class="s">&quot;all&quot;</span>;
@@ -6589,7 +6589,7 @@ li.done label {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
-<span class="c">// ---------- Changes ----------</span>
+<span class="c line-bidi">// ---------- Changes ----------</span>
 <span class="k">function</span> addTask(text) {
   tasks.push({ id: Date.now(), text, done: <span class="k">false</span> });
   update();
@@ -6616,7 +6616,7 @@ li.done label {
   render();
 }
 
-<span class="c">// ---------- Display ----------</span>
+<span class="c line-bidi">// ---------- Display ----------</span>
 <span class="k">function</span> visibleTasks() {
   <span class="k">if</span> (filter === <span class="s">&quot;active&quot;</span>) <span class="k">return</span> tasks.filter((t) =&gt; !t.done);
   <span class="k">if</span> (filter === <span class="s">&quot;done&quot;</span>) <span class="k">return</span> tasks.filter((t) =&gt; t.done);
@@ -6668,7 +6668,7 @@ li.done label {
   }
 }
 
-<span class="c">// ---------- Events ----------</span>
+<span class="c line-bidi">// ---------- Events ----------</span>
 document.querySelector(<span class="s">&quot;#new-task&quot;</span>).addEventListener(<span class="s">&quot;submit&quot;</span>, (event) =&gt; {
   event.preventDefault();
   <span class="k">const</span> input = document.querySelector(<span class="s">&quot;#task-text&quot;</span>);

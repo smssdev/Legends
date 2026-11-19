@@ -200,24 +200,24 @@
 
 <p>في JavaScript نوعان من القيم. <dfn>القيم البسيطة</dfn> (الأرقام والنصوص والقيم المنطقية و<code>null</code> و<code>undefined</code> و<code>bigint</code> و<code>symbol</code>) تُنسخ حين تُسندها. أما <dfn>الكائنات</dfn>، ومنها المصفوفات والدوال، فلا تُنسخ: المتغير يحمل <dfn>مرجعاً</dfn>، أي عنواناً يشير إلى الكائن.</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">values.js</div><pre class="code"><span class="c">// القيم البسيطة تُنسخ</span>
+<div class="listing" dir="ltr"><div class="listing-title">values.js</div><pre class="code"><span class="c line-bidi">// القيم البسيطة تُنسخ</span>
 <span class="k">let</span> a = <span class="n">10</span>;
 <span class="k">let</span> b = a;
 b = <span class="n">20</span>;
 console.log(a, b);
 
-<span class="c">// الكائنات مشتركة: اسمان لكائن واحد</span>
+<span class="c line-bidi">// الكائنات مشتركة: اسمان لكائن واحد</span>
 <span class="k">const</span> original = { name: <span class="s">&quot;سارة&quot;</span>, tags: [<span class="s">&quot;js&quot;</span>] };
 <span class="k">const</span> same = original;
 same.name = <span class="s">&quot;هدى&quot;</span>;
 console.log(original.name);
 
-<span class="c">// النشر ينسخ المستوى الأول فقط</span>
+<span class="c line-bidi">// النشر ينسخ المستوى الأول فقط</span>
 <span class="k">const</span> shallow = { ...original };
 shallow.tags.push(<span class="s">&quot;ts&quot;</span>);
 console.log(original.tags);
 
-<span class="c">// structuredClone ينسخ كل المستويات</span>
+<span class="c line-bidi">// structuredClone ينسخ كل المستويات</span>
 <span class="k">const</span> deep = structuredClone(original);
 deep.tags.push(<span class="s">&quot;react&quot;</span>);
 console.log(original.tags, deep.tags);</pre></div>
@@ -239,7 +239,7 @@ console.log(original.tags, deep.tags);</pre></div>
 
 <div class="listing" dir="ltr"><div class="listing-title">immutable.js</div><pre class="code"><span class="k">const</span> cart = { items: [{ id: <span class="n">1</span>, qty: <span class="n">1</span> }], coupon: <span class="k">null</span> };
 
-<span class="c">// أرجع كائناً جديداً بدل تغيير القديم</span>
+<span class="c line-bidi">// أرجع كائناً جديداً بدل تغيير القديم</span>
 <span class="k">function</span> addOne(cart, id) {
   <span class="k">return</span> {
     ...cart,
@@ -264,7 +264,7 @@ false false</pre></div>
 <p><dfn>النطاق</dfn> (scope) هو المنطقة من الكود التي يوجد فيها اسم ما. والمتغيرات المعرّفة بـ <code>let</code> و<code>const</code> تعيش في أقرب كتلة <code>{ … }</code>. وتستطيع الدالة أن ترى متغيرات النطاقات المحيطة بها، حتى <em>بعد</em> أن تنتهي تلك الدوال الخارجية. والدالة مع المتغيرات التي تتذكرها تسمى <dfn>إغلاقاً</dfn> (closure).</p>
 
 <div class="listing" dir="ltr"><div class="listing-title">closures.js</div><pre class="code"><span class="k">function</span> makeCounter(start = <span class="n">0</span>) {
-  <span class="k">let</span> count = start; <span class="c">// خاص: لا تراه إلا الدوال الثلاث</span>
+  <span class="k">let</span> count = start; <span class="c line-bidi">// خاص: لا تراه إلا الدوال الثلاث</span>
   <span class="k">return</span> {
     up: () =&gt; ++count,
     down: () =&gt; --count,
@@ -278,7 +278,7 @@ likes.up();
 likes.up();
 stock.down();
 console.log(likes.value(), stock.value());
-console.log(likes.count); <span class="c">// undefined: لا طريق إليه من الخارج</span></pre></div>
+console.log(likes.count); <span class="c line-bidi">// undefined: لا طريق إليه من الخارج</span></pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>2 9
 undefined</pre></div>
 
@@ -333,7 +333,7 @@ let: 3</pre></div>
 <p><dfn>الصنف</dfn> (class) قالب لكائنات تتشارك الدوال نفسها. ويمكن للأصناف الحديثة أن تحمل <dfn>حقولاً خاصة</dfn> تبدأ أسماؤها بـ <code>#</code>، وأعضاء <dfn>ثابتة</dfn> (static) تخص الصنف نفسه، و<dfn>دوال قراءة</dfn> (getters) تبدو كخصائص لكنها تشغّل كوداً:</p>
 
 <div class="listing" dir="ltr"><div class="listing-title">classes.js</div><pre class="code"><span class="k">class</span> Account {
-  #balance = <span class="n">0</span>; <span class="c">// حقل خاص: لا يُرى خارج الصنف</span>
+  #balance = <span class="n">0</span>; <span class="c line-bidi">// حقل خاص: لا يُرى خارج الصنف</span>
   <span class="k">static</span> count = <span class="n">0</span>;
 
   constructor(owner) {
@@ -348,7 +348,7 @@ let: 3</pre></div>
   deposit(amount) {
     <span class="k">if</span> (amount &lt;= <span class="n">0</span>) <span class="k">throw</span> <span class="k">new</span> RangeError(<span class="s">&quot;يجب أن يكون المبلغ موجباً&quot;</span>);
     <span class="k">this</span>.#balance += amount;
-    <span class="k">return</span> <span class="k">this</span>; <span class="c">// إرجاع this يسمح بسلسلة الاستدعاءات</span>
+    <span class="k">return</span> <span class="k">this</span>; <span class="c line-bidi">// إرجاع this يسمح بسلسلة الاستدعاءات</span>
   }
 }
 
@@ -399,14 +399,14 @@ RangeError: يجب أن يكون المبلغ موجباً</pre></div>
 <span class="k">const</span> run = (callback) =&gt; callback();
 
 <span class="k">try</span> {
-  run(timer.tick); <span class="c">// مُررت الدالة دون كائنها</span>
+  run(timer.tick); <span class="c line-bidi">// مُررت الدالة دون كائنها</span>
 } <span class="k">catch</span> (error) {
   console.log(<span class="s">&quot;ضاع this:&quot;</span>, error.message);
 }
 
-run(() =&gt; timer.tick()); <span class="c">// الحل 1: استدعها داخل دالة سهمية</span>
-run(timer.tick.bind(timer)); <span class="c">// الحل 2: اربطها بالكائن بـ bind</span>
-run(timer.tickArrow); <span class="c">// الحل 3: حقل بدالة سهمية يحفظ this</span>
+run(() =&gt; timer.tick()); <span class="c line-bidi">// الحل 1: استدعها داخل دالة سهمية</span>
+run(timer.tick.bind(timer)); <span class="c line-bidi">// الحل 2: اربطها بالكائن بـ bind</span>
+run(timer.tickArrow); <span class="c line-bidi">// الحل 3: حقل بدالة سهمية يحفظ this</span>
 console.log(timer.seconds);</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>ضاع this: Cannot read properties of undefined (reading &#x27;seconds&#x27;)
 3</pre></div>
@@ -434,20 +434,20 @@ console.log(timer.seconds);</pre></div>
 
 <div class="listing" dir="ltr"><div class="listing-title">modern.js</div><pre class="code"><span class="k">const</span> user = { name: <span class="s">&quot;عمر&quot;</span>, address: <span class="k">null</span>, settings: { theme: <span class="s">&quot;&quot;</span> } };
 
-<span class="c">// ?. تتوقف عند null أو undefined بدل الانهيار</span>
+<span class="c line-bidi">// ?. تتوقف عند null أو undefined بدل الانهيار</span>
 console.log(user.address?.city);
 console.log(user.address?.city ?? <span class="s">&quot;غير معروف&quot;</span>);
 
-<span class="c">// || تستبدل كل قيمة كاذبة، و?? تستبدل null وundefined فقط</span>
+<span class="c line-bidi">// || تستبدل كل قيمة كاذبة، و?? تستبدل null وundefined فقط</span>
 console.log(user.settings.theme || <span class="s">&quot;light&quot;</span>, user.settings.theme ?? <span class="s">&quot;light&quot;</span>);
 
-<span class="c">// ??= تُسند فقط حين تكون القيمة ناقصة</span>
+<span class="c line-bidi">// ??= تُسند فقط حين تكون القيمة ناقصة</span>
 user.settings.fontSize ??= <span class="n">16</span>;
 console.log(user.settings);
 
 <span class="k">const</span> scores = [<span class="n">72</span>, <span class="n">95</span>, <span class="n">88</span>, <span class="n">61</span>];
 console.log(scores.at(-<span class="n">1</span>), scores.findLast((s) =&gt; s &gt; <span class="n">80</span>));
-console.log(scores.toSorted((a, b) =&gt; b - a), scores); <span class="c">// toSorted تُرجع نسخة: يبقى الأصل بترتيبه</span></pre></div>
+console.log(scores.toSorted((a, b) =&gt; b - a), scores); <span class="c line-bidi">// toSorted تُرجع نسخة: يبقى الأصل بترتيبه</span></pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>undefined
 غير معروف
 light 
@@ -498,7 +498,7 @@ console.log(totals);</pre></div>
 
 <p>الكائن مناسب لمجموعة ثابتة من الحقول المسماة. أما <em>المجموعة</em> التي تكبر وتصغر فلها في JavaScript أداتان أفضل. <dfn>Map</dfn> تحفظ أزواج مفتاح وقيمة، بمفاتيح من أي نوع، بترتيب إضافتها. و<dfn>Set</dfn> تحفظ كل قيمة مرة واحدة:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">collections.js</div><pre class="code"><span class="c">// Map: مفاتيح من أي نوع، بترتيب الإضافة</span>
+<div class="listing" dir="ltr"><div class="listing-title">collections.js</div><pre class="code"><span class="c line-bidi">// Map: مفاتيح من أي نوع، بترتيب الإضافة</span>
 <span class="k">const</span> visits = <span class="k">new</span> Map();
 <span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> [<span class="s">&quot;/home&quot;</span>, <span class="s">&quot;/shop&quot;</span>, <span class="s">&quot;/home&quot;</span>, <span class="s">&quot;/cart&quot;</span>, <span class="s">&quot;/home&quot;</span>]) {
   visits.set(page, (visits.get(page) ?? <span class="n">0</span>) + <span class="n">1</span>);
@@ -506,7 +506,7 @@ console.log(totals);</pre></div>
 console.log(visits);
 console.log([...visits].toSorted((a, b) =&gt; b[<span class="n">1</span>] - a[<span class="n">1</span>])[<span class="n">0</span>]);
 
-<span class="c">// Set: كل قيمة مرة واحدة</span>
+<span class="c line-bidi">// Set: كل قيمة مرة واحدة</span>
 <span class="k">const</span> tags = <span class="k">new</span> Set([<span class="s">&quot;js&quot;</span>, <span class="s">&quot;css&quot;</span>, <span class="s">&quot;js&quot;</span>, <span class="s">&quot;html&quot;</span>, <span class="s">&quot;css&quot;</span>]);
 console.log(tags.size, tags.has(<span class="s">&quot;css&quot;</span>), [...tags]);</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>Map(3) { &#x27;/home&#x27; =&gt; 3, &#x27;/shop&#x27; =&gt; 1, &#x27;/cart&#x27; =&gt; 1 }
@@ -521,13 +521,13 @@ console.log(tags.size, tags.has(<span class="s">&quot;css&quot;</span>), [...tag
 
 <div class="listing" dir="ltr"><div class="listing-title">generators.js</div><pre class="code"><span class="k">function</span>* range(<span class="k">from</span>, to, step = <span class="n">1</span>) {
   <span class="k">for</span> (<span class="k">let</span> n = <span class="k">from</span>; n &lt;= to; n += step) {
-    <span class="k">yield</span> n; <span class="c">// توقف هنا وسلّم n للمستدعي</span>
+    <span class="k">yield</span> n; <span class="c line-bidi">// توقف هنا وسلّم n للمستدعي</span>
   }
 }
 
 console.log([...range(<span class="n">1</span>, <span class="n">10</span>, <span class="n">3</span>)]);
 
-<span class="c">// مولّد يقسم القائمة إلى صفحات</span>
+<span class="c line-bidi">// مولّد يقسم القائمة إلى صفحات</span>
 <span class="k">function</span>* pages(items, size) {
   <span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; items.length; i += size) {
     <span class="k">yield</span> items.slice(i, i + size);
@@ -589,11 +589,11 @@ console.log(<span class="s">&quot;2 ما زال متزامناً&quot;</span>);<
   console.log(r.status, r.value ?? r.reason.message);
 }
 
-<span class="c">// any: أول من ينجح</span>
+<span class="c line-bidi">// any: أول من ينجح</span>
 <span class="k">const</span> fastest = <span class="k">await</span> Promise.any([wait(<span class="n">40</span>, <span class="s">&quot;النسخة أ&quot;</span>), wait(<span class="n">15</span>, <span class="s">&quot;النسخة ب&quot;</span>)]);
 console.log(<span class="s">&quot;الأسرع:&quot;</span>, fastest);
 
-<span class="c">// race: أول من ينتهي، نجاحاً أو فشلاً</span>
+<span class="c line-bidi">// race: أول من ينتهي، نجاحاً أو فشلاً</span>
 <span class="k">const</span> timeout = (ms) =&gt; wait(ms, <span class="s">&quot;انتهت المهلة بعد 50 ملي ثانية&quot;</span>, <span class="k">true</span>);
 <span class="k">try</span> {
   <span class="k">await</span> Promise.race([wait(<span class="n">100</span>, <span class="s">&quot;رد بطيء&quot;</span>), timeout(<span class="n">50</span>)]);
@@ -640,7 +640,7 @@ fulfilled الرسائل
   <span class="k">try</span> {
     <span class="k">return</span> findUser(id);
   } <span class="k">catch</span> (error) {
-    <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;تعذّر تحميل الملف الشخصي&quot;</span>, { cause: error }); <span class="c">// احتفظ بالخطأ الأصلي سبباً</span>
+    <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;تعذّر تحميل الملف الشخصي&quot;</span>, { cause: error }); <span class="c line-bidi">// احتفظ بالخطأ الأصلي سبباً</span>
   }
 }
 
@@ -850,12 +850,12 @@ why.ts(9,11): error TS2741: Property &#x27;quantity&#x27; is missing in type &#x
 
 <p>تكتب النوع بعد نقطتين: <code>name: string</code>. لكنك تكتب أنواعاً أقل بكثير مما تتوقع، لأن TypeScript <dfn>تستنتجها</dfn> من القيم:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">basics.ts</div><pre class="code"><span class="c">// مستنتجة: تعرف TypeScript هذه الأنواع دون أن تُخبَر</span>
+<div class="listing" dir="ltr"><div class="listing-title">basics.ts</div><pre class="code"><span class="c line-bidi">// مستنتجة: تعرف TypeScript هذه الأنواع دون أن تُخبَر</span>
 <span class="k">let</span> city = <span class="s">&quot;القاهرة&quot;</span>;
 <span class="k">const</span> year = <span class="n">2026</span>;
 <span class="k">const</span> scores = [<span class="n">72</span>, <span class="n">95</span>, <span class="n">88</span>];
 
-<span class="c">// اكتب أنواع معاملات الدالة ونوع ما تُرجعه</span>
+<span class="c line-bidi">// اكتب أنواع معاملات الدالة ونوع ما تُرجعه</span>
 <span class="k">function</span> average(values: number[]): number {
   <span class="k">return</span> values.reduce((sum, v) =&gt; sum + v, <span class="n">0</span>) / values.length;
 }
@@ -886,7 +886,7 @@ console.log(greet(<span class="s">&quot;سارة&quot;</span>), <span class="s">
   <span class="k">readonly</span> id: number;
   name: string;
   email: string;
-  phone?: string; <span class="c">// اختياري: نص أو undefined</span>
+  phone?: string; <span class="c line-bidi">// اختياري: نص أو undefined</span>
   roles: <span class="k">readonly</span> string[];
 };
 
@@ -911,8 +911,8 @@ objects.ts(14,13): error TS18048: &#x27;user.phone&#x27; is possibly &#x27;undef
 
 <div class="listing" dir="ltr"><div class="listing-title">narrowing.ts</div><pre class="code"><span class="k">function</span> formatPrice(value: number | string | <span class="k">null</span>): string {
   <span class="k">if</span> (value === <span class="k">null</span>) <span class="k">return</span> <span class="s">&quot;مجاناً&quot;</span>;
-  <span class="k">if</span> (<span class="k">typeof</span> value === <span class="s">&quot;string&quot;</span>) <span class="k">return</span> value; <span class="c">// هنا value نص</span>
-  <span class="k">return</span> <span class="s">`${value.toFixed(2)} جنيهاً`</span>; <span class="c">// وهنا لا يمكن أن تكون إلا رقماً</span>
+  <span class="k">if</span> (<span class="k">typeof</span> value === <span class="s">&quot;string&quot;</span>) <span class="k">return</span> value; <span class="c line-bidi">// هنا value نص</span>
+  <span class="k">return</span> <span class="s">`${value.toFixed(2)} جنيهاً`</span>; <span class="c line-bidi">// وهنا لا يمكن أن تكون إلا رقماً</span>
 }
 
 <span class="k">type</span> Cat = { kind: <span class="s">&quot;cat&quot;</span>; meows: boolean };
@@ -951,11 +951,11 @@ console.log(describe({ kind: <span class="s">&quot;cat&quot;</span>, meows: <spa
     <span class="k">case</span> <span class="s">&quot;loading&quot;</span>:
       <span class="k">return</span> <span class="s">&quot;جارٍ التحميل…&quot;</span>;
     <span class="k">case</span> <span class="s">&quot;success&quot;</span>:
-      <span class="k">return</span> <span class="s">`${state.data.length} منتجات: ${state.data.join(&quot;, &quot;)}`</span>; <span class="c">// data موجودة في هذه الحالة فقط</span>
+      <span class="k">return</span> <span class="s">`${state.data.length} منتجات: ${state.data.join(&quot;, &quot;)}`</span>; <span class="c line-bidi">// data موجودة في هذه الحالة فقط</span>
     <span class="k">case</span> <span class="s">&quot;error&quot;</span>:
       <span class="k">return</span> <span class="s">`تعذّر التحميل: ${state.message}`</span>;
     <span class="k">default</span>:
-      <span class="k">return</span> assertNever(state); <span class="c">// إن نقصت حالة فلن تكون state من نوع never هنا، ويفشل البناء</span>
+      <span class="k">return</span> assertNever(state); <span class="c line-bidi">// إن نقصت حالة فلن تكون state من نوع never هنا، ويفشل البناء</span>
   }
 }
 
@@ -1030,7 +1030,7 @@ console.log(byId(products).get(<span class="n">2</span>)?.price);
 
 <div class="listing" dir="ltr"><div class="listing-title">utility.ts</div><pre class="code"><span class="k">type</span> Product = { id: number; name: string; price: number; stock: number };
 
-<span class="c">// أنواع جديدة مصنوعة من نوع موجود</span>
+<span class="c line-bidi">// أنواع جديدة مصنوعة من نوع موجود</span>
 <span class="k">type</span> ProductUpdate = Partial&lt;Omit&lt;Product, <span class="s">&quot;id&quot;</span>&gt;&gt;;
 <span class="k">type</span> ProductCard = Pick&lt;Product, <span class="s">&quot;name&quot;</span> | <span class="s">&quot;price&quot;</span>&gt;;
 
@@ -1042,7 +1042,7 @@ console.log(byId(products).get(<span class="n">2</span>)?.price);
 <span class="k">const</span> card: ProductCard = { name: mug.name, price: mug.price };
 console.log(update(mug, { price: <span class="n">7</span> }), card);
 
-<span class="c">// قائمة قيم واحدة، والنوع يأتي منها</span>
+<span class="c line-bidi">// قائمة قيم واحدة، والنوع يأتي منها</span>
 <span class="k">const</span> ROLES = [<span class="s">&quot;viewer&quot;</span>, <span class="s">&quot;editor&quot;</span>, <span class="s">&quot;admin&quot;</span>] as <span class="k">const</span>;
 <span class="k">type</span> Role = (<span class="k">typeof</span> ROLES)[number];
 <span class="k">const</span> labels = {
@@ -1083,7 +1083,7 @@ console.log(ROLES.length, labels[role]);</pre></div>
 
 <div class="listing" dir="ltr"><div class="listing-title">boundary.ts</div><pre class="code"><span class="k">type</span> User = { id: number; name: string };
 
-<span class="c">// حارس نوع: إن أرجع true عاملت TypeScript القيمة كـ User</span>
+<span class="c line-bidi">// حارس نوع: إن أرجع true عاملت TypeScript القيمة كـ User</span>
 <span class="k">function</span> isUser(value: unknown): value is User {
   <span class="k">return</span> (
     <span class="k">typeof</span> value === <span class="s">&quot;object&quot;</span> &amp;&amp;
@@ -1306,16 +1306,16 @@ typed-emitter-bad.ts(29,18): error TS2345: Argument of type &#x27;(id: string) =
 
 <p><dfn>الوحدة</dfn> (module) ملف له نطاقه الخاص. لا يُرى شيء بداخله من الملفات الأخرى إلا إن <dfn>صُدّر</dfn>، ولا يُرى شيء من الخارج بداخله إلا إن <dfn>استُورد</dfn>. وهذا نظام الوحدات القياسي في JavaScript، ويسمى <dfn>وحدات ES</dfn> (ES modules)، ويعمل بالطريقة نفسها في المتصفحات وNode وكل أدوات البناء.</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">prices.mjs</div><pre class="code"><span class="c">// هذا السطر يعمل مرة واحدة، مهما كان عدد الوحدات التي تستورد هذا الملف</span>
+<div class="listing" dir="ltr"><div class="listing-title">prices.mjs</div><pre class="code"><span class="c line-bidi">// هذا السطر يعمل مرة واحدة، مهما كان عدد الوحدات التي تستورد هذا الملف</span>
 globalThis.priceLoads = (globalThis.priceLoads ?? <span class="n">0</span>) + <span class="n">1</span>;
 
-<span class="c">// تصديرات مسماة: أي عدد في الوحدة</span>
+<span class="c line-bidi">// تصديرات مسماة: أي عدد في الوحدة</span>
 <span class="k">export</span> <span class="k">const</span> VAT = <span class="n">0.14</span>;
 <span class="k">export</span> <span class="k">function</span> withVat(price) {
   <span class="k">return</span> Math.round(price * (<span class="n">1</span> + VAT) * <span class="n">100</span>) / <span class="n">100</span>;
 }
 
-<span class="c">// تصدير افتراضي واحد في الوحدة على الأكثر</span>
+<span class="c line-bidi">// تصدير افتراضي واحد في الوحدة على الأكثر</span>
 <span class="k">export</span> <span class="k">default</span> <span class="k">function</span> formatPrice(value) {
   <span class="k">return</span> <span class="s">`${value.toFixed(2)} جنيهاً`</span>;
 }</pre></div>
@@ -1333,7 +1333,7 @@ globalThis.priceLoads = (globalThis.priceLoads ?? <span class="n">0</span>) + <s
 
 <p>وكثيراً ما يكون في المجلدات الكبيرة ملف <code>index</code> يعيد تصدير أجزائها العامة، فيستورد الكود الآخر من مكان واحد، ويستطيع المجلد ترتيب داخله بحرية:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">index.mjs</div><pre class="code"><span class="c">// «برميل»: مدخل واحد يعيد تصدير الأجزاء العامة</span>
+<div class="listing" dir="ltr"><div class="listing-title">index.mjs</div><pre class="code"><span class="c line-bidi">// «برميل»: مدخل واحد يعيد تصدير الأجزاء العامة</span>
 <span class="k">export</span> { cartTotal } <span class="k">from</span> <span class="s">&quot;./cart.mjs&quot;</span>;
 <span class="k">export</span> { <span class="k">default</span> as formatPrice, VAT } <span class="k">from</span> <span class="s">&quot;./prices.mjs&quot;</span>;</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">main.mjs</div><pre class="code"><span class="k">import</span> { cartTotal, formatPrice, VAT } <span class="k">from</span> <span class="s">&quot;./index.mjs&quot;</span>;
@@ -1356,15 +1356,15 @@ console.log(<span class="s">&quot;عدد مرات تحميل وحدة الأسع
 
 <p>تستطيع المتصفحات تحميل وحدات ES مباشرة، لكن التطبيق الحقيقي يحتاج أكثر: يجب أن تفقد TypeScript أنواعها، وأن تصير مئات الملفات قليلة، وأن تأخذ الصور أسماء فريدة لتبقى الذاكرة المؤقتة صحيحة، وأثناء عملك يجب أن تتحدث الصفحة لحظة تحفظ. و<strong>Vite</strong> (تعني «سريع» بالفرنسية) تفعل هذا كله، وصارت نقطة البداية القياسية لمشاريع React وVue وTypeScript البسيطة. أنشئ مشروعاً بأمر واحد:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># أنشئ مشروعاً من قالب TypeScript البسيط</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أنشئ مشروعاً من قالب TypeScript البسيط</span>
 <span class="c">$ </span><span class="k">npm create vite@latest my-shop -- --template vanilla-ts --no-interactive</span>
 create-vite v9.3.4
 Scaffolding project in ~/code/my-shop...
 <span class="c">$ </span><span class="k">cd my-shop</span>
-<span class="c"># نزّل الحزم التي يحتاجها</span>
+<span class="c line-bidi"># نزّل الحزم التي يحتاجها</span>
 <span class="c">$ </span><span class="k">npm install</span>
 added 17 packages, and audited 18 packages in 3s
-<span class="c"># ما أنشأه القالب</span>
+<span class="c line-bidi"># ما أنشأه القالب</span>
 <span class="c">$ </span><span class="k">find . -path ./node_modules -prune -o -type f -print | sort</span>
 ./.gitignore
 ./index.html
@@ -1412,7 +1412,7 @@ added 17 packages, and audited 18 packages in 3s
 
 <p>للزوار الحقيقيين تهم السرعة أكثر من الراحة. و<code>npm run build</code> تنشئ مجلد <code>dist</code>، جاهزاً للرفع إلى أي استضافة ثابتة:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># ابنِ الموقع للإنتاج</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ابنِ الموقع للإنتاج</span>
 <span class="c">$ </span><span class="k">npm run build</span>
 ✓ 7 modules transformed.
 dist/index.html                 0.41 kB │ gzip: 0.28 kB
@@ -1456,7 +1456,7 @@ button.addEventListener(<span class="s">&quot;click&quot;</span>, <span class="k
   button.remove();
 });
 app.append(button);</pre></div>
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># ابنِ من جديد بعد إضافة استيراد كسول</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ابنِ من جديد بعد إضافة استيراد كسول</span>
 <span class="c">$ </span><span class="k">npm run build</span>
 ✓ 9 modules transformed.
 dist/index.html                 0.41 kB │ gzip: 0.28 kB
@@ -1475,17 +1475,17 @@ dist/assets/index-C9nd_bJF.js   3.01 kB │ gzip: 1.44 kB
 
 <p>أداتان أخريان مكانهما في كل مشروع. <dfn>المدقق</dfn> (linter) يقرأ كودك ويبلّغ عن الأخطاء المحتملة والأنماط السيئة. و<dfn>المنسّق</dfn> (formatter) يعيد كتابة شكل الكود، المسافات وعلامات التنصيص وفواصل الأسطر، بأسلوب واحد متسق، فلا يتجادل أحد فيه في مراجعات الكود. والخياران القياسيان <strong>ESLint</strong> و<strong>Prettier</strong>. وتثبيتهما جاء بمفاجأة:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># أضف مدققاً للكود ومنسّقاً له</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أضف مدققاً للكود ومنسّقاً له</span>
 <span class="c">$ </span><span class="k">npm install -D eslint @eslint/js typescript-eslint prettier</span>
 npm error code ERESOLVE
 npm error ERESOLVE unable to resolve dependency tree
 npm error Found: typescript@7.0.2
 npm error Could not resolve dependency:
 npm error peer typescript@&quot;&gt;=4.8.4 &lt;6.1.0&quot; from typescript-eslint@8.73.0
-<span class="c"># اختر نسخة TypeScript يدعمها typescript-eslint</span>
+<span class="c line-bidi"># اختر نسخة TypeScript يدعمها typescript-eslint</span>
 <span class="c">$ </span><span class="k">npm install -D typescript@~6.0.0 eslint @eslint/js typescript-eslint prettier</span>
 added 96 packages, removed 1 package, changed 1 package, and audited 113 packages in 6s
-<span class="c"># الاعتماديات المباشرة، ونسخها بالضبط</span>
+<span class="c line-bidi"># الاعتماديات المباشرة، ونسخها بالضبط</span>
 <span class="c">$ </span><span class="k">npm ls --depth=0</span>
 ├── @eslint/js@10.0.1
 ├── eslint@10.15.0
@@ -1493,7 +1493,7 @@ added 96 packages, removed 1 package, changed 1 package, and audited 113 package
 ├── typescript-eslint@8.73.0
 ├── typescript@6.0.3
 └── vite@8.3.8
-<span class="c"># سمِّ الأوامر التي سيشغّلها الفريق</span>
+<span class="c line-bidi"># سمِّ الأوامر التي سيشغّلها الفريق</span>
 <span class="c">$ </span><span class="k">npm pkg set scripts.lint=&quot;eslint src&quot; scripts.format=&quot;prettier --write src&quot; scripts.check=&quot;tsc &amp;&amp; eslint src &amp;&amp; prettier --check src&quot;</span></pre></div>
 
 <h3>قراءة تعارض الاعتماديات</h3>
@@ -1555,7 +1555,7 @@ added 96 packages, removed 1 package, changed 1 package, and audited 113 package
   }
   <span class="k">return</span> sum;
 }</pre></div>
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># افحص الكود</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># افحص الكود</span>
 <span class="c">$ </span><span class="k">npx eslint src</span>
 ~/code/my-shop/src/total.ts
   1:7   error  &#x27;greeting&#x27; is assigned a value but never used  @typescript-eslint/no-unused-vars
@@ -1567,13 +1567,13 @@ added 96 packages, removed 1 package, changed 1 package, and audited 113 package
 
 <h3>Prettier</h3>
 
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># هل الكود منسّق؟</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># هل الكود منسّق؟</span>
 <span class="c">$ </span><span class="k">npx prettier --check src</span>
 Checking formatting...
 [warn] src/format.ts
 [warn] src/style.css
 [warn] Code style issues found in 2 files. Run Prettier with --write to fix.
-<span class="c"># نسّق كل الملفات</span>
+<span class="c line-bidi"># نسّق كل الملفات</span>
 <span class="c">$ </span><span class="k">npx prettier --write src</span>
 src/format.ts 54ms
 src/main.ts 15ms (unchanged)
@@ -1665,13 +1665,13 @@ export function formatPrice(value: number): string {
 </ol>
 <p class="hint"><strong>تلميح:</strong> <code>&amp;&amp;</code> تشغّل الأمر التالي فقط إن نجح الذي قبله. فضع الفحوص الأسرع أولاً لتعرف المشكلات أبكر. وكثير من الفرق تشغّل هذا السكربت تلقائياً بخطاف Git (Git hook).</p>
 <p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># شغّل كل الفحوص قبل الـ commit</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># شغّل كل الفحوص قبل الـ commit</span>
 <span class="c">$ </span><span class="k">npm run check</span>
 ~/code/my-shop/src/discount.ts
   2:3  error  Unexpected var, use let or const instead  no-var
 ✖ 1 problem (1 error, 0 warnings)
   1 error and 0 warnings potentially fixable with the `--fix` option.
-<span class="c"># بعد إصلاح المشكلة</span>
+<span class="c line-bidi"># بعد إصلاح المشكلة</span>
 <span class="c">$ </span><span class="k">npm run check</span>
 All matched files use Prettier code style!</pre></div>
 </div>
@@ -1689,7 +1689,7 @@ All matched files use Prettier code style!</pre></div>
 <li>ابحث في JavaScript المبنية بـ <code>grep</code> لتتأكد أن عنوان الإنتاج، وهو وحده، دخلها.</li>
 </ol>
 <p class="hint"><strong>تلميح:</strong> الخطوة 5 هي طريقتك لإثبات ما في بنائك حقاً. واستخدم الحيلة نفسها لتتأكد أن سراً لم يتسلل: فإن وجدته بـ <code>grep</code> فسيجده أي أحد.</p>
-<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="c">// كل الإعدادات تُقرأ وتُفحص في مكان واحد</span>
+<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="c line-bidi">// كل الإعدادات تُقرأ وتُفحص في مكان واحد</span>
 <span class="k">const</span> apiUrl = <span class="k">import</span>.meta.env.VITE_API_URL;
 <span class="k">if</span> (!apiUrl) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;VITE_API_URL غير مضبوط: أضفه إلى ملف .env&quot;</span>);
 
@@ -1698,14 +1698,14 @@ All matched files use Prettier code style!</pre></div>
   isProduction: <span class="k">import</span>.meta.env.PROD,
 } as <span class="k">const</span>;</pre></div>
 <p><strong>يجب أن تبدو نتيجتك هكذا:</strong></p>
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># ملفا إعدادات</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ملفا إعدادات</span>
 <span class="c">$ </span><span class="k">cat .env.development .env.production</span>
 VITE_API_URL=http://localhost:8000
 VITE_API_URL=https://api.bits-shop.example
-<span class="c"># ابنِ الموقع للإنتاج</span>
+<span class="c line-bidi"># ابنِ الموقع للإنتاج</span>
 <span class="c">$ </span><span class="k">npm run build</span>
 ✓ built in 72ms
-<span class="c"># أي عنوان دخل الملف المبني؟</span>
+<span class="c line-bidi"># أي عنوان دخل الملف المبني؟</span>
 <span class="c">$ </span><span class="k">grep -o &#x27;https://[a-z.-]*example&#x27; dist/assets/index-*.js</span>
 https://api.bits-shop.example</pre></div>
 </div>
@@ -2274,13 +2274,13 @@ function onKeydown(event: KeyboardEvent) {
 });
 <span class="k">const</span> total = computed(() =&gt; cart.lines.reduce((sum, l) =&gt; sum + l.price * l.quantity, <span class="n">0</span>));
 
-<span class="c">// تعمل الآن، ومن جديد كلما تغير شيء قرأته</span>
+<span class="c line-bidi">// تعمل الآن، ومن جديد كلما تغير شيء قرأته</span>
 effect(() =&gt; console.log(<span class="s">`المجموع: ${total.value}`</span>));
 
 cart.lines.push({ name: <span class="s">&quot;كوب بِت&quot;</span>, price: <span class="n">8</span>, quantity: <span class="n">1</span> });
 cart.lines.push({ name: <span class="s">&quot;البرمجة من الصفر&quot;</span>, price: <span class="n">25</span>, quantity: <span class="n">1</span> });
 cart.lines[<span class="n">0</span>]!.quantity = <span class="n">3</span>;
-cart.coupon = <span class="s">&quot;BIT10&quot;</span>; <span class="c">// لا شيء يُطبع: المجموع لم يقرأ الكوبون أبداً</span></pre></div>
+cart.coupon = <span class="s">&quot;BIT10&quot;</span>; <span class="c line-bidi">// لا شيء يُطبع: المجموع لم يقرأ الكوبون أبداً</span></pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>المجموع: 0
 المجموع: 8
 المجموع: 33
@@ -2307,7 +2307,7 @@ cart.coupon = <span class="s">&quot;BIT10&quot;</span>; <span class="c">// لا 
 
 <span class="k">const</span> product = reactive({ name: <span class="s">&quot;كوب بِت&quot;</span>, stock: <span class="n">3</span> });
 
-<span class="c">// التفكيك ينسخ العدد مرة واحدة، وtoRefs تحفظ رابطاً بالكائن</span>
+<span class="c line-bidi">// التفكيك ينسخ العدد مرة واحدة، وtoRefs تحفظ رابطاً بالكائن</span>
 <span class="k">const</span> { stock } = product;
 <span class="k">const</span> { stock: stockRef } = toRefs(product);
 
@@ -2326,7 +2326,7 @@ console.log(<span class="s">&quot;المرجع المرتبط:&quot;</span>, sto
 <div class="listing" dir="ltr"><div class="listing-title">batching.ts</div><pre class="code"><span class="k">import</span> { nextTick, ref, watch } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
 
 <span class="k">const</span> count = ref(<span class="n">0</span>);
-<span class="c">// ثلاثة تغييرات، ومرة واحدة للمراقب، بالقيمتين الأولى والأخيرة</span>
+<span class="c line-bidi">// ثلاثة تغييرات، ومرة واحدة للمراقب، بالقيمتين الأولى والأخيرة</span>
 watch(count, (now, before) =&gt; console.log(<span class="s">`watch: ${before} → ${now}`</span>));
 
 count.value++;
@@ -2594,7 +2594,7 @@ function undo() {
 <p class="hint"><strong>تلميح:</strong> اكتب «بِت» بسرعة مع سطر التنظيف ودونه. فبدونه سترى أحياناً نتائج «ب» تحل محل نتائج «بِت»: <dfn>حالة سباق</dfn> (race condition)، من أشهر الأخطاء في التطبيقات الحقيقية.</p>
 <div class="listing" dir="ltr"><div class="listing-title">fake-api.ts</div><pre class="code"><span class="k">import</span> { catalogue, <span class="k">type</span> Product } <span class="k">from</span> <span class="s">&quot;./cart-model&quot;</span>;
 
-<span class="c">// A pretend server: answers after a delay, slower for short queries, like a real search.</span>
+<span class="c line-bidi">// A pretend server: answers after a delay, slower for short queries, like a real search.</span>
 <span class="k">export</span> <span class="k">function</span> searchProducts(query: string, signal: AbortSignal): Promise&lt;Product[]&gt; {
   <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
     <span class="k">const</span> timer = setTimeout(() =&gt; {
@@ -2717,9 +2717,9 @@ watch(query, async (q) =&gt; {
 
 <div class="listing" dir="ltr"><div class="listing-title">composables/useStopwatch.ts</div><pre class="code"><span class="k">import</span> { onScopeDispose, <span class="k">readonly</span>, ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
 
-<span class="c">// composable: دالة تستخدم واجهة التركيب وتُرجع حالة تفاعلية</span>
+<span class="c line-bidi">// composable: دالة تستخدم واجهة التركيب وتُرجع حالة تفاعلية</span>
 <span class="k">export</span> <span class="k">function</span> useStopwatch() {
-  <span class="c">// كل استدعاء يصنع مراجع جديدة: فلا يتشارك مكونان مؤقتاً بالصدفة أبداً</span>
+  <span class="c line-bidi">// كل استدعاء يصنع مراجع جديدة: فلا يتشارك مكونان مؤقتاً بالصدفة أبداً</span>
   <span class="k">const</span> seconds = ref(<span class="n">0</span>);
   <span class="k">const</span> running = ref(<span class="k">false</span>);
   <span class="k">let</span> timer: ReturnType&lt;<span class="k">typeof</span> setInterval&gt; | <span class="k">undefined</span>;
@@ -2771,11 +2771,11 @@ const { seconds, running, start, stop, reset } = useStopwatch();
 <div class="listing" dir="ltr"><div class="listing-title">composables/counters.ts</div><pre class="code"><span class="k">import</span> { ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
 
 <span class="k">export</span> <span class="k">function</span> useCounter() {
-  <span class="k">const</span> count = ref(<span class="n">0</span>); <span class="c">// كل استدعاء يصنع مراجع جديدة: فلا يتشارك مكونان مؤقتاً بالصدفة أبداً</span>
+  <span class="k">const</span> count = ref(<span class="n">0</span>); <span class="c line-bidi">// كل استدعاء يصنع مراجع جديدة: فلا يتشارك مكونان مؤقتاً بالصدفة أبداً</span>
   <span class="k">return</span> { count, add: () =&gt; count.value++ };
 }
 
-<span class="k">const</span> visitors = ref(<span class="n">0</span>); <span class="c">// يُنشأ مرة واحدة خارج الدالة: فكل من يستدعيها يتشارك القيمة نفسها</span>
+<span class="k">const</span> visitors = ref(<span class="n">0</span>); <span class="c line-bidi">// يُنشأ مرة واحدة خارج الدالة: فكل من يستدعيها يتشارك القيمة نفسها</span>
 <span class="k">export</span> <span class="k">function</span> useVisitors() {
   <span class="k">return</span> { visitors, arrive: () =&gt; visitors.value++ };
 }</pre></div>
@@ -2804,7 +2804,7 @@ console.log(<span class="s">&quot;مشترك بين كل الاستدعاءات:
 
 <div class="listing" dir="ltr"><div class="listing-title">composables/useDebounced.ts</div><pre class="code"><span class="k">import</span> { ref, toValue, watch, <span class="k">type</span> MaybeRefOrGetter, <span class="k">type</span> Ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
 
-<span class="c">// تقبل قيمة أو مرجعاً أو دالة قراءة، فيمرر المستدعي ما لديه</span>
+<span class="c line-bidi">// تقبل قيمة أو مرجعاً أو دالة قراءة، فيمرر المستدعي ما لديه</span>
 <span class="k">export</span> <span class="k">function</span> useDebounced&lt;T&gt;(source: MaybeRefOrGetter&lt;T&gt;, ms = <span class="n">300</span>): Readonly&lt;Ref&lt;T&gt;&gt; {
   <span class="k">const</span> value = ref(toValue(source)) as Ref&lt;T&gt;;
   watch(
@@ -2832,7 +2832,7 @@ console.log(<span class="s">&quot;مشترك بين كل الاستدعاءات:
   { id: <span class="n">4</span>, name: <span class="s">&quot;ملصق بِت&quot;</span>, price: <span class="n">3</span> },
 ];
 
-<span class="c">// A pretend server: answers after a delay, and can be cancelled like fetch</span>
+<span class="c line-bidi">// A pretend server: answers after a delay, and can be cancelled like fetch</span>
 <span class="k">export</span> <span class="k">function</span> searchProducts(query: string, signal: AbortSignal): Promise&lt;Product[]&gt; {
   <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
     <span class="k">const</span> timer = setTimeout(() =&gt; {
@@ -2861,7 +2861,7 @@ console.log(<span class="s">&quot;مشترك بين كل الاستدعاءات:
         results.value = [];
         <span class="k">return</span>;
       }
-      <span class="c">// الاستعلام الجديد يلغي طلب القديم</span>
+      <span class="c line-bidi">// الاستعلام الجديد يلغي طلب القديم</span>
       <span class="k">const</span> controller = <span class="k">new</span> AbortController();
       onCleanup(() =&gt; controller.abort());
       loading.value = <span class="k">true</span>;
@@ -2913,7 +2913,7 @@ const { results, loading, error } = useSearch(useDebounced(query, 250));
 
 <div class="listing" dir="ltr"><div class="listing-title">composables/useEventListener.ts</div><pre class="code"><span class="k">import</span> { onScopeDispose } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
 
-<span class="c">// يُزال حين يذهب المكوّن (أو أي نطاق آثار) الذي استدعاه</span>
+<span class="c line-bidi">// يُزال حين يذهب المكوّن (أو أي نطاق آثار) الذي استدعاه</span>
 <span class="k">export</span> <span class="k">function</span> useEventListener&lt;K <span class="k">extends</span> <span class="k">keyof</span> WindowEventMap&gt;(
   target: Window,
   event: K,
@@ -3234,7 +3234,7 @@ it(<span class="s">&quot;لا يتجاوز الصفحة الأخيرة أبدا�
 <span class="k">import</span> Product <span class="k">from</span> <span class="s">&quot;./views/Product.vue&quot;</span>;
 <span class="k">import</span> NotFound <span class="k">from</span> <span class="s">&quot;./views/NotFound.vue&quot;</span>;
 
-<span class="c">// كل مسار يربط عنواناً بمكوّن، والأبناء يُرسمون داخل RouterView الخاص بأبيهم</span>
+<span class="c line-bidi">// كل مسار يربط عنواناً بمكوّن، والأبناء يُرسمون داخل RouterView الخاص بأبيهم</span>
 <span class="k">export</span> <span class="k">const</span> routes: RouteRecordRaw[] = [
   {
     path: <span class="s">&quot;/&quot;</span>,
@@ -3245,7 +3245,7 @@ it(<span class="s">&quot;لا يتجاوز الصفحة الأخيرة أبدا�
         path: <span class="s">&quot;products&quot;</span>,
         children: [
           { path: <span class="s">&quot;&quot;</span>, component: Products },
-          <span class="c">// مرّر المعرّف خاصيةً بنوعها، فلا يحتاج المكوّن أن يعرف شيئاً عن الموجّه</span>
+          <span class="c line-bidi">// مرّر المعرّف خاصيةً بنوعها، فلا يحتاج المكوّن أن يعرف شيئاً عن الموجّه</span>
           { path: <span class="s">&quot;:id(\\d+)&quot;</span>, component: Product, props: (route) =&gt; ({ id: Number(route.params.id) }) },
         ],
       },
@@ -3648,7 +3648,7 @@ const mutation = useMutation({
 
 <div class="listing" dir="ltr"><div class="listing-title">contact-schema.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
 
-<span class="c">// مخطط واحد: القواعد، ورسائل الخطأ، ونوع TypeScript (مع z.infer)</span>
+<span class="c line-bidi">// مخطط واحد: القواعد، ورسائل الخطأ، ونوع TypeScript (مع z.infer)</span>
 <span class="k">export</span> <span class="k">const</span> contactSchema = z.object({
   name: z.string().trim().min(<span class="n">3</span>, <span class="s">&quot;اكتب اسمك الكامل (3 أحرف على الأقل).&quot;</span>),
   email: z.email(<span class="s">&quot;اكتب بريداً مثل name@example.com&quot;</span>),
@@ -3668,7 +3668,7 @@ const mutation = useMutation({
 
 <div class="listing" dir="ltr"><div class="listing-title">validate.ts</div><pre class="code"><span class="k">import</span> { contactSchema } <span class="k">from</span> <span class="s">&quot;./contact-schema&quot;</span>;
 
-<span class="c">// والمخطط نفسه يفحص البيانات التي تصل إلى الخادم</span>
+<span class="c line-bidi">// والمخطط نفسه يفحص البيانات التي تصل إلى الخادم</span>
 <span class="k">const</span> good = contactSchema.safeParse({
   name: <span class="s">&quot;  سارة خان &quot;</span>,
   email: <span class="s">&quot;sara@example.com&quot;</span>,
@@ -3703,7 +3703,7 @@ console.log(<span class="s">&quot;غير سليم:&quot;</span>, bad.success);
 
 <span class="k">type</span> Errors&lt;K <span class="k">extends</span> PropertyKey&gt; = Partial&lt;Record&lt;K, string&gt;&gt;;
 
-<span class="c">// composable صغير للنماذج: القيم والأخطاء والحقول الملموسة والإرسال، حول مخطط واحد</span>
+<span class="c line-bidi">// composable صغير للنماذج: القيم والأخطاء والحقول الملموسة والإرسال، حول مخطط واحد</span>
 <span class="k">export</span> <span class="k">function</span> useForm&lt;S <span class="k">extends</span> z.ZodObject&gt;(schema: S, initial: z.input&lt;S&gt;) {
   <span class="k">type</span> Key = <span class="k">keyof</span> z.input&lt;S&gt; &amp; string;
   <span class="k">const</span> values = reactive({ ...initial }) as z.input&lt;S&gt;;
@@ -3721,7 +3721,7 @@ console.log(<span class="s">&quot;غير سليم:&quot;</span>, bad.success);
   }
   watch(values, check, { deep: <span class="k">true</span> });
 
-  <span class="c">// اعرض خطأ الحقل فقط بعد أن يغادره المستخدم مرة، أو يحاول الإرسال</span>
+  <span class="c line-bidi">// اعرض خطأ الحقل فقط بعد أن يغادره المستخدم مرة، أو يحاول الإرسال</span>
   <span class="k">const</span> errors = computed(() =&gt; {
     <span class="k">const</span> shown: Errors&lt;Key&gt; = {};
     <span class="k">for</span> (<span class="k">const</span> [key, message] <span class="k">of</span> Object.entries(allErrors.value) as [Key, string][]) {
@@ -3752,7 +3752,7 @@ console.log(<span class="s">&quot;غير سليم:&quot;</span>, bad.success);
       submitting.value = <span class="k">true</span>;
       <span class="k">try</span> {
         <span class="k">const</span> fromServer = <span class="k">await</span> send(data);
-        <span class="c">// الأخطاء التي لا يعرفها إلا الخادم تذهب تحت الحقل الصحيح، كغيرها</span>
+        <span class="c line-bidi">// الأخطاء التي لا يعرفها إلا الخادم تذهب تحت الحقل الصحيح، كغيرها</span>
         <span class="k">if</span> (fromServer) {
           allErrors.value = fromServer;
           void focusFirstError();
@@ -3952,7 +3952,7 @@ const submit = handleSubmit(async (contact) =&gt; {
   method: z.enum([<span class="s">&quot;card&quot;</span>, <span class="s">&quot;cash&quot;</span>]),
 });
 
-<span class="c">// Each step lists the fields it is responsible for</span>
+<span class="c line-bidi">// Each step lists the fields it is responsible for</span>
 <span class="k">export</span> <span class="k">const</span> STEPS = [
   { title: <span class="s">&quot;التوصيل&quot;</span>, fields: [<span class="s">&quot;city&quot;</span>, <span class="s">&quot;street&quot;</span>, <span class="s">&quot;phone&quot;</span>] },
   { title: <span class="s">&quot;الدفع&quot;</span>, fields: [<span class="s">&quot;method&quot;</span>] },
@@ -4047,7 +4047,7 @@ const submit = handleSubmit(async (contact) =&gt; {
 <span class="k">type</span> User = { name: string };
 <span class="k">type</span> Auth = { user: Readonly&lt;Ref&lt;User | <span class="k">null</span>&gt;&gt;; signIn: (name: string) =&gt; void; signOut: () =&gt; void };
 
-<span class="c">// مفتاح بنوعه: تعرف inject() نوع ما قُدِّم</span>
+<span class="c line-bidi">// مفتاح بنوعه: تعرف inject() نوع ما قُدِّم</span>
 <span class="k">const</span> AuthKey: InjectionKey&lt;Auth&gt; = Symbol(<span class="s">&quot;auth&quot;</span>);
 
 <span class="k">export</span> <span class="k">function</span> provideAuth() {
@@ -4059,7 +4059,7 @@ const submit = handleSubmit(async (contact) =&gt; {
   });
 }
 
-<span class="c">// composable يخفي inject()، ويفشل بوضوح إن غاب المزوِّد</span>
+<span class="c line-bidi">// composable يخفي inject()، ويفشل بوضوح إن غاب المزوِّد</span>
 <span class="k">export</span> <span class="k">function</span> useAuth(): Auth {
   <span class="k">const</span> auth = inject(AuthKey);
   <span class="k">if</span> (!auth) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;useAuth() must be used inside a component that called provideAuth()&quot;</span>);
@@ -4121,9 +4121,9 @@ const { user, signIn, signOut } = useAuth();
 <span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; price: number };
 <span class="k">type</span> Line = { product: Product; quantity: number };
 
-<span class="c">// مخزن إعداد: المراجع حالة، والمحسوبة قيم مشتقة، والدوال أفعال</span>
+<span class="c line-bidi">// مخزن إعداد: المراجع حالة، والمحسوبة قيم مشتقة، والدوال أفعال</span>
 <span class="k">export</span> <span class="k">const</span> useCart = defineStore(<span class="s">&quot;cart&quot;</span>, () =&gt; {
-  <span class="c">// useLocalStorage تحفظ السطور في المتصفح وتحمّلها في الزيارة التالية</span>
+  <span class="c line-bidi">// useLocalStorage تحفظ السطور في المتصفح وتحمّلها في الزيارة التالية</span>
   <span class="k">const</span> lines = useLocalStorage&lt;Record&lt;number, Line&gt;&gt;(<span class="s">&quot;cart&quot;</span>, {});
 
   <span class="k">const</span> count = computed(() =&gt; Object.values(lines.value).reduce((n, l) =&gt; n + l.quantity, <span class="n">0</span>));
@@ -4221,7 +4221,7 @@ const { lines, total } = storeToRefs(cart);
 <div class="listing" dir="ltr"><div class="listing-title">store-node.ts</div><pre class="code"><span class="k">import</span> { computed, ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
 <span class="k">import</span> { createPinia, defineStore, setActivePinia } <span class="k">from</span> <span class="s">&quot;pinia&quot;</span>;
 
-<span class="c">// المخزن يعمل دون أي مكوّن: الكود نفسه يعمل في Node وفي الاختبارات</span>
+<span class="c line-bidi">// المخزن يعمل دون أي مكوّن: الكود نفسه يعمل في Node وفي الاختبارات</span>
 <span class="k">const</span> useCounter = defineStore(<span class="s">&quot;counter&quot;</span>, () =&gt; {
   <span class="k">const</span> count = ref(<span class="n">0</span>);
   <span class="k">const</span> double = computed(() =&gt; count.value * <span class="n">2</span>);
@@ -4474,7 +4474,7 @@ console.log(<span class="s">&quot;بعد ‎$dispose:&quot;</span>, counter.coun
 
 <div class="listing" dir="ltr"><div class="listing-title">build-tokens.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 
-<span class="c">// يقرأ tokens.json ويكتب متغيرات CSS للمظهرين الفاتح والداكن</span>
+<span class="c line-bidi">// يقرأ tokens.json ويكتب متغيرات CSS للمظهرين الفاتح والداكن</span>
 <span class="k">type</span> Tokens = {
   primitive: Record&lt;string, string&gt;;
   semantic: Record&lt;<span class="s">&quot;light&quot;</span> | <span class="s">&quot;dark&quot;</span>, Record&lt;string, string&gt;&gt;;
@@ -4726,7 +4726,7 @@ defineProps&lt;{ label: string }&gt;();
 <span class="k">type</span> Tokens = { primitive: Record&lt;string, string&gt;; semantic: Record&lt;string, Record&lt;string, string&gt;&gt; };
 <span class="k">const</span> tokens = JSON.parse(readFileSync(<span class="k">new</span> URL(<span class="s">&quot;../tokens.json&quot;</span>, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Tokens;
 
-<span class="c">// The WCAG formula from Book 1</span>
+<span class="c line-bidi">// The WCAG formula from Book 1</span>
 <span class="k">function</span> luminance(hex: string): number {
   <span class="k">const</span> [r, g, b] = [<span class="n">1</span>, <span class="n">3</span>, <span class="n">5</span>].map((i) =&gt; {
     <span class="k">const</span> c = parseInt(hex.slice(i, i + <span class="n">2</span>), <span class="n">16</span>) / <span class="n">255</span>;
@@ -4740,7 +4740,7 @@ defineProps&lt;{ label: string }&gt;();
   <span class="k">return</span> (hi + <span class="n">0.05</span>) / (lo + <span class="n">0.05</span>);
 }
 
-<span class="c">// يُفحص كل لون نص على الخلفية التي يُستخدم عليها</span>
+<span class="c line-bidi">// يُفحص كل لون نص على الخلفية التي يُستخدم عليها</span>
 <span class="k">const</span> PAIRS: [string, string][] = [
   [<span class="s">&quot;text&quot;</span>, <span class="s">&quot;surface&quot;</span>],
   [<span class="s">&quot;text-muted&quot;</span>, <span class="s">&quot;surface&quot;</span>],
@@ -4868,7 +4868,7 @@ dark  warning / warning-soft            6.84 ✓
 <span class="k">import</span> { pathToFileURL } <span class="k">from</span> <span class="s">&quot;node:url&quot;</span>;
 
 <span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
-<span class="c">// Only the few Playwright functions this script uses</span>
+<span class="c line-bidi">// Only the few Playwright functions this script uses</span>
 <span class="k">type</span> Page = {
   goto(url: string): Promise&lt;unknown&gt;;
   addScriptTag(options: { path: string }): Promise&lt;unknown&gt;;
@@ -4880,14 +4880,14 @@ dark  warning / warning-soft            6.84 ✓
 
 <span class="k">type</span> Violation = { id: string; impact: string; help: string; nodes: unknown[] };
 
-<span class="c">// Opens a page (a path from the current folder) in a real browser, runs axe-core, and prints what fails</span>
+<span class="c line-bidi">// Opens a page (a path from the current folder) in a real browser, runs axe-core, and prints what fails</span>
 <span class="k">export</span> <span class="k">async</span> <span class="k">function</span> audit(page: string): Promise&lt;number&gt; {
   <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
   <span class="k">const</span> tab = <span class="k">await</span> browser.newPage();
   <span class="k">await</span> tab.goto(pathToFileURL(resolve(page)).href);
   <span class="k">await</span> tab.addScriptTag({ path: axePath });
   <span class="k">const</span> violations = (<span class="k">await</span> tab.evaluate(() =&gt;
-    <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+    <span class="c line-bidi">// @ts-expect-error axe is added to the page by the script tag above</span>
     axe.run({ runOnly: [<span class="s">&quot;wcag2a&quot;</span>, <span class="s">&quot;wcag2aa&quot;</span>, <span class="s">&quot;wcag21aa&quot;</span>, <span class="s">&quot;wcag22aa&quot;</span>, <span class="s">&quot;best-practice&quot;</span>] }).then((r) =&gt; r.violations),
   )) as Violation[];
   <span class="k">await</span> browser.close();
@@ -5109,7 +5109,7 @@ watchEffect(() =&gt; {
 <p class="hint"><strong>تلميح:</strong> ابدأ بالقواعد الخطيرة والحرجة فقط إن كان في مشروع قديم مئات المشكلات، وشدّد البوابة كلما أصلحتها. فالبوابة التي تفشل إلى الأبد سرعان ما تُطفأ.</p>
 <div class="listing" dir="ltr"><div class="listing-title">audit-all.ts</div><pre class="code"><span class="k">import</span> { audit } <span class="k">from</span> <span class="s">&quot;../audit-lib&quot;</span>;
 
-<span class="c">// افحص كل صفحة، وأفشل البناء إن كانت في أي منها مخالفة</span>
+<span class="c line-bidi">// افحص كل صفحة، وأفشل البناء إن كانت في أي منها مخالفة</span>
 <span class="k">const</span> pages = [<span class="s">&quot;../before.html&quot;</span>, <span class="s">&quot;../after.html&quot;</span>];
 <span class="k">let</span> total = <span class="n">0</span>;
 <span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> pages) {
@@ -5240,13 +5240,13 @@ function onMenuKey(event: KeyboardEvent) {
 <div class="listing" dir="ltr"><div class="listing-title">routeFocus.ts</div><pre class="code"><span class="k">import</span> { nextTick, ref } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
 <span class="k">import</span> <span class="k">type</span> { Router } <span class="k">from</span> <span class="s">&quot;vue-router&quot;</span>;
 
-<span class="c">// After every navigation: update the title, move the focus to the new h1, and announce the page</span>
+<span class="c line-bidi">// After every navigation: update the title, move the focus to the new h1, and announce the page</span>
 <span class="k">export</span> <span class="k">const</span> announcement = ref(<span class="s">&quot;&quot;</span>);
 
 <span class="k">export</span> <span class="k">function</span> routeFocus(router: Router, appName: string) {
   router.afterEach(<span class="k">async</span> (_to, <span class="k">from</span>) =&gt; {
-    <span class="k">if</span> (<span class="k">from</span>.matched.length === <span class="n">0</span>) <span class="k">return</span>; <span class="c">// the first page load is announced by the browser itself</span>
-    <span class="k">await</span> nextTick(); <span class="c">// wait for the new page to be drawn</span>
+    <span class="k">if</span> (<span class="k">from</span>.matched.length === <span class="n">0</span>) <span class="k">return</span>; <span class="c line-bidi">// the first page load is announced by the browser itself</span>
+    <span class="k">await</span> nextTick(); <span class="c line-bidi">// wait for the new page to be drawn</span>
     <span class="k">const</span> heading = document.querySelector&lt;HTMLElement&gt;(<span class="s">&quot;main h1&quot;</span>);
     <span class="k">if</span> (!heading) <span class="k">return</span>;
     document.title = <span class="s">`${heading.textContent} · ${appName}`</span>;
@@ -5422,8 +5422,8 @@ describe(<span class="s">&quot;cartTotal&quot;</span>, () =&gt; {
 <span class="k">import</span> { debounce } <span class="k">from</span> <span class="s">&quot;./debounce&quot;</span>;
 
 it(<span class="s">&quot;يستدعي الدالة مرة واحدة، بعد أن يتوقف المستخدم عن الكتابة&quot;</span>, () =&gt; {
-  vi.useFakeTimers(); <span class="c">// the test controls the clock: no real waiting</span>
-  <span class="k">const</span> search = vi.fn(); <span class="c">// a fake function that records its calls</span>
+  vi.useFakeTimers(); <span class="c line-bidi">// the test controls the clock: no real waiting</span>
+  <span class="k">const</span> search = vi.fn(); <span class="c line-bidi">// a fake function that records its calls</span>
   <span class="k">const</span> debounced = debounce(search, <span class="n">300</span>);
 
   debounced(<span class="s">&quot;b&quot;</span>);
@@ -5453,9 +5453,9 @@ it(<span class="s">&quot;يستدعي الدالة مرة واحدة، بعد أ
 <span class="k">import</span> vue <span class="k">from</span> <span class="s">&quot;@vitejs/plugin-vue&quot;</span>;
 
 <span class="k">export</span> <span class="k">default</span> defineConfig({
-  plugins: [vue()], <span class="c">// compiles .vue files, as in the app</span>
+  plugins: [vue()], <span class="c line-bidi">// compiles .vue files, as in the app</span>
   test: {
-    environment: <span class="s">&quot;jsdom&quot;</span>, <span class="c">// a pretend browser, so components can render</span>
+    environment: <span class="s">&quot;jsdom&quot;</span>, <span class="c line-bidi">// a pretend browser, so components can render</span>
     setupFiles: [<span class="s">&quot;./vitest.setup.ts&quot;</span>],
     include: [<span class="s">&quot;**/*.test.ts&quot;</span>],
   },
@@ -5464,7 +5464,7 @@ it(<span class="s">&quot;يستدعي الدالة مرة واحدة، بعد أ
 <span class="k">import</span> { cleanup } <span class="k">from</span> <span class="s">&quot;@testing-library/vue&quot;</span>;
 <span class="k">import</span> { afterEach } <span class="k">from</span> <span class="s">&quot;vitest&quot;</span>;
 
-afterEach(cleanup); <span class="c">// remove what each test rendered, so the next test starts empty</span></pre></div>
+afterEach(cleanup); <span class="c line-bidi">// remove what each test rendered, so the next test starts empty</span></pre></div>
 
 <div class="listing" dir="ltr"><div class="listing-title">LoginForm.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
 import { ref } from &quot;vue&quot;;
@@ -5510,7 +5510,7 @@ describe(<span class="s">&quot;LoginForm&quot;</span>, () =&gt; {
   it(<span class="s">&quot;يعرض خطأً حين يكون البريد فارغاً&quot;</span>, <span class="k">async</span> () =&gt; {
     <span class="k">const</span> user = userEvent.setup();
     render(LoginForm);
-    <span class="c">// جِد الأشياء كما يجدها المستخدمون: بالدور وبالاسم</span>
+    <span class="c line-bidi">// جِد الأشياء كما يجدها المستخدمون: بالدور وبالاسم</span>
     <span class="k">await</span> user.click(screen.getByRole(<span class="s">&quot;button&quot;</span>, { name: <span class="s">&quot;سجّل الدخول&quot;</span> }));
     expect(screen.getByRole(<span class="s">&quot;alert&quot;</span>)).toHaveTextContent(<span class="s">&quot;اكتب بريدك الإلكتروني.&quot;</span>);
   });
@@ -5567,13 +5567,13 @@ describe(<span class="s">&quot;LoginForm&quot;</span>, () =&gt; {
 <span class="k">export</span> <span class="k">default</span> defineConfig({
   testDir: <span class="s">&quot;./e2e&quot;</span>,
   reporter: <span class="s">&quot;list&quot;</span>,
-  <span class="c">// Start the site before the tests, and stop it after. In a Vite project: &quot;npm run build &amp;&amp; npm run preview&quot;.</span>
+  <span class="c line-bidi">// Start the site before the tests, and stop it after. In a Vite project: &quot;npm run build &amp;&amp; npm run preview&quot;.</span>
   webServer: { command: <span class="s">&quot;node ../../../serve.mjs 4174&quot;</span>, url: <span class="s">&quot;http://localhost:4174/vendor-vue/vue.js&quot;</span>, reuseExistingServer: <span class="k">true</span> },
   use: { baseURL: <span class="s">&quot;http://localhost:4174/testing/ar/vue/&quot;</span>, browserName: <span class="s">&quot;chromium&quot;</span> },
 });</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">e2e/login.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
 
-<span class="k">const</span> page_url = <span class="s">&quot;login.html&quot;</span>; <span class="c">// relative to baseURL in playwright.config.ts</span>
+<span class="k">const</span> page_url = <span class="s">&quot;login.html&quot;</span>; <span class="c line-bidi">// relative to baseURL in playwright.config.ts</span>
 
 test(<span class="s">&quot;يستطيع المستخدم تسجيل الدخول&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
   <span class="k">await</span> page.goto(page_url);
@@ -5763,7 +5763,7 @@ it(<span class="s">&quot;لا يضيف مهمة فارغة&quot;</span>, <span c
 test(<span class="s">&quot;صفحة الدخول بلا مخالفات إتاحة&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
   <span class="k">await</span> page.goto(page_url);
   <span class="k">await</span> page.addScriptTag({ path: require.resolve(<span class="s">&quot;axe-core/axe.min.js&quot;</span>) });
-  <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+  <span class="c line-bidi">// @ts-expect-error axe is added to the page by the script tag above</span>
   <span class="k">const</span> violations = <span class="k">await</span> page.evaluate(() =&gt; axe.run().then((r) =&gt; r.violations.map((v) =&gt; v.id)));
   expect(violations).toEqual([]);
 });
@@ -5889,7 +5889,7 @@ Running 4 tests using 2 workers
 
 <span class="k">export</span> <span class="k">type</span> Vitals = { lcp: number; cls: number };
 
-<span class="c">// Throttling only works over HTTP, so the pages are served like a real site</span>
+<span class="c line-bidi">// Throttling only works over HTTP, so the pages are served like a real site</span>
 <span class="k">function</span> serve(): Promise&lt;{ url: string; close: () =&gt; void }&gt; {
   <span class="k">const</span> types: Record&lt;string, string&gt; = { <span class="s">&quot;.html&quot;</span>: <span class="s">&quot;text/html&quot;</span>, <span class="s">&quot;.js&quot;</span>: <span class="s">&quot;text/javascript&quot;</span>, <span class="s">&quot;.png&quot;</span>: <span class="s">&quot;image/png&quot;</span> };
   <span class="k">const</span> server = createServer((req, res) =&gt; {
@@ -5906,7 +5906,7 @@ Running 4 tests using 2 workers
   <span class="k">const</span> site = <span class="k">await</span> serve();
   <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
   <span class="k">const</span> tab = <span class="k">await</span> browser.newPage();
-  <span class="c">// أبطئ الشبكة والمعالج، كجوال متوسط على اتصال 4G</span>
+  <span class="c line-bidi">// أبطئ الشبكة والمعالج، كجوال متوسط على اتصال 4G</span>
   <span class="k">const</span> cdp = <span class="k">await</span> tab.context().newCDPSession(tab);
   <span class="k">await</span> cdp.send(<span class="s">&quot;Network.enable&quot;</span>);
   <span class="k">await</span> cdp.send(<span class="s">&quot;Network.emulateNetworkConditions&quot;</span>, {
@@ -5914,7 +5914,7 @@ Running 4 tests using 2 workers
   });
   <span class="k">await</span> cdp.send(<span class="s">&quot;Emulation.setCPUThrottlingRate&quot;</span>, { rate: <span class="n">4</span> });
 
-  <span class="k">await</span> tab.goto(site.url + page); <span class="c">// waits for the load event, pictures included</span>
+  <span class="k">await</span> tab.goto(site.url + page); <span class="c line-bidi">// waits for the load event, pictures included</span>
   <span class="k">await</span> tab.waitForTimeout(<span class="n">1000</span>);
   <span class="k">const</span> vitals = <span class="k">await</span> tab.evaluate(
     () =&gt;
@@ -6007,7 +6007,7 @@ Running 4 tests using 2 workers
 
 <span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> [<span class="s">&quot;slow.html&quot;</span>, <span class="s">&quot;fast.html&quot;</span>]) {
   <span class="k">const</span> { lcp, cls } = <span class="k">await</span> measure(page);
-  <span class="c">// Rounded, because each run differs by a few milliseconds</span>
+  <span class="c line-bidi">// Rounded, because each run differs by a few milliseconds</span>
   <span class="k">const</span> seconds = (Math.round(lcp / <span class="n">100</span>) / <span class="n">10</span>).toFixed(<span class="n">1</span>);
   console.log(<span class="s">`${page.padEnd(10)} LCP ${seconds} s (${rate(lcp, 2500, 4000)})   CLS ${cls.toFixed(2)} (${rate(cls, 0.1, 0.25)})`</span>);
 }</pre></div>
@@ -6203,7 +6203,7 @@ desktop   الصورة الرئيسية: hero-small.png   هل حُمّلت ال
 <span class="k">import</span> { join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 <span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
 
-<span class="c">// يُفشل البناء حين تكبر JavaScript أو CSS المرسلة للمستخدمين فوق الميزانية</span>
+<span class="c line-bidi">// يُفشل البناء حين تكبر JavaScript أو CSS المرسلة للمستخدمين فوق الميزانية</span>
 <span class="k">const</span> BUDGET = { js: <span class="n">60</span> * <span class="n">1024</span>, css: <span class="n">15</span> * <span class="n">1024</span> };
 
 <span class="k">function</span> files(dir: string): string[] {
@@ -6300,7 +6300,7 @@ CSS     0.0 KB  الميزانية  15.0 KB  ✓ ضمن الميزانية</pre>
 
 <p><dfn>البرمجة عبر المواقع</dfn> (Cross-site scripting) تحدث حين يُعامل نص من مستخدم ككود في متصفح شخص آخر. فيعمل سكربت المهاجم بهوية الضحية: يقرأ الصفحة، ويرسل طلبات باسم الضحية، أو يعرض نموذج دخول مزيفاً. حذّر الكتاب الأول من <code>innerHTML</code>، وهذا الهجوم حقيقياً. يقدّم مختبر صغير الصفحات ويفتحها في Chromium:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">lab.ts</div><pre class="code"><span class="c">// A small lab: serves pages from this folder with chosen headers, and opens them in Chromium.</span>
+<div class="listing" dir="ltr"><div class="listing-title">lab.ts</div><pre class="code"><span class="c line-bidi">// A small lab: serves pages from this folder with chosen headers, and opens them in Chromium.</span>
 <span class="k">import</span> { createReadStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { createServer, <span class="k">type</span> IncomingMessage, <span class="k">type</span> ServerResponse } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
 <span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
@@ -6338,7 +6338,7 @@ CSS     0.0 KB  الميزانية  15.0 KB  ✓ ضمن الميزانية</pre>
 }</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">xss.ts</div><pre class="code"><span class="k">import</span> { withLab } <span class="k">from</span> <span class="s">&quot;./lab&quot;</span>;
 
-<span class="c">// What an attacker types into the comment box</span>
+<span class="c line-bidi">// What an attacker types into the comment box</span>
 <span class="k">const</span> comment = <span class="s">`&lt;img src=&quot;x&quot; onerror=&quot;window.hacked = true&quot;&gt; كتاب جميل!`</span>;
 
 <span class="k">await</span> withLab({}, <span class="k">async</span> (page, base) =&gt; {
@@ -6347,10 +6347,10 @@ CSS     0.0 KB  الميزانية  15.0 KB  ✓ ضمن الميزانية</pre>
     <span class="k">const</span> result = <span class="k">await</span> page.evaluate(
       <span class="k">async</span> ({ way, comment }) =&gt; {
         <span class="k">const</span> li = document.createElement(<span class="s">&quot;li&quot;</span>);
-        <span class="k">if</span> (way === <span class="s">&quot;innerHTML&quot;</span>) li.innerHTML = comment; <span class="c">// dangerous</span>
-        <span class="k">else</span> li.textContent = comment; <span class="c">// safe</span>
+        <span class="k">if</span> (way === <span class="s">&quot;innerHTML&quot;</span>) li.innerHTML = comment; <span class="c line-bidi">// dangerous</span>
+        <span class="k">else</span> li.textContent = comment; <span class="c line-bidi">// safe</span>
         document.querySelector(<span class="s">&quot;#list&quot;</span>)!.append(li);
-        <span class="k">await</span> <span class="k">new</span> Promise((r) =&gt; setTimeout(r, <span class="n">100</span>)); <span class="c">// give the broken image time to fire onerror</span>
+        <span class="k">await</span> <span class="k">new</span> Promise((r) =&gt; setTimeout(r, <span class="n">100</span>)); <span class="c line-bidi">// give the broken image time to fire onerror</span>
         <span class="k">return</span> { ran: (window as { hacked?: boolean }).hacked === <span class="k">true</span>, html: li.innerHTML };
       },
       { way, comment },
@@ -6406,15 +6406,15 @@ const safe = /^https?:\/\//.test(link) ? link : &quot;#&quot;;
   <span class="k">&lt;head</span><span class="k">&gt;</span><span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span><span class="k">&lt;title</span><span class="k">&gt;</span>CSP<span class="k">&lt;/title</span><span class="k">&gt;</span><span class="k">&lt;/head</span><span class="k">&gt;</span>
   <span class="k">&lt;body</span><span class="k">&gt;</span>
     <span class="k">&lt;h1</span> <span class="n">id</span>=<span class="s">&quot;title&quot;</span><span class="k">&gt;</span>…<span class="k">&lt;/h1</span><span class="k">&gt;</span>
-    <span class="c">&lt;!-- An inline script, as an attacker might manage to inject --&gt;</span>
+    <span class="c line-bidi">&lt;!-- An inline script, as an attacker might manage to inject --&gt;</span>
     <span class="k">&lt;script</span><span class="k">&gt;</span>document.title = <span class="s">&quot;pwned&quot;</span>; window.hacked = true;<span class="k">&lt;/script</span><span class="k">&gt;</span>
-    <span class="c">&lt;!-- The app&#x27;s own script, from a file on the same site --&gt;</span>
+    <span class="c line-bidi">&lt;!-- The app&#x27;s own script, from a file on the same site --&gt;</span>
     <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;app.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
 <span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">csp.ts</div><pre class="code"><span class="k">import</span> { withLab } <span class="k">from</span> <span class="s">&quot;./lab&quot;</span>;
 
-<span class="c">// تُقدَّم بسياسة أمان محتوى صارمة</span>
+<span class="c line-bidi">// تُقدَّم بسياسة أمان محتوى صارمة</span>
 <span class="k">const</span> policy = <span class="s">&quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; frame-ancestors &#x27;none&#x27;&quot;</span>;
 
 <span class="k">await</span> withLab({ <span class="s">&quot;Content-Security-Policy&quot;</span>: policy }, <span class="k">async</span> (page, base) =&gt; {
@@ -6563,7 +6563,7 @@ const safe = /^https?:\/\//.test(link) ? link : &quot;#&quot;;
 <div class="listing" dir="ltr"><div class="listing-title">headers.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
 <span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
 
-<span class="c">// يفحص ترويسات الأمان التي يرسلها الخادم، كالأدوات التي تستخدمها فرق الأمان</span>
+<span class="c line-bidi">// يفحص ترويسات الأمان التي يرسلها الخادم، كالأدوات التي تستخدمها فرق الأمان</span>
 <span class="k">const</span> RECOMMENDED: Record&lt;string, string&gt; = {
   <span class="s">&quot;content-security-policy&quot;</span>: <span class="s">&quot;توقف السكربتات المحقونة&quot;</span>,
   <span class="s">&quot;strict-transport-security&quot;</span>: <span class="s">&quot;تفرض HTTPS&quot;</span>,
@@ -6584,7 +6584,7 @@ const safe = /^https?:\/\//.test(link) ? link : &quot;#&quot;;
   <span class="k">return</span> score;
 }
 
-<span class="c">// A local server that sends only some of the headers, to check against</span>
+<span class="c line-bidi">// A local server that sends only some of the headers, to check against</span>
 <span class="k">const</span> server = createServer((_req, res) =&gt; {
   res.setHeader(<span class="s">&quot;Content-Security-Policy&quot;</span>, <span class="s">&quot;default-src &#x27;self&#x27;&quot;</span>);
   res.setHeader(<span class="s">&quot;X-Content-Type-Options&quot;</span>, <span class="s">&quot;nosniff&quot;</span>);
@@ -6669,7 +6669,7 @@ server.close();</pre></div>
 
 <p>تعرف واجهة <code>Intl</code> في JavaScript قواعد التنسيق لمئات <dfn>الإعدادات المحلية</dfn> (locales): لغة ومعها منطقة، تُكتب مثل <code>ar-EG</code> (العربية، مصر) أو <code>en-GB</code> (الإنجليزية، المملكة المتحدة). فلا تبنِ هذه الصيغ بيدك أبداً:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">numbers.ts</div><pre class="code"><span class="c">// رقم واحد، وطرق صحيحة كثيرة لكتابته</span>
+<div class="listing" dir="ltr"><div class="listing-title">numbers.ts</div><pre class="code"><span class="c line-bidi">// رقم واحد، وطرق صحيحة كثيرة لكتابته</span>
 <span class="k">const</span> price = <span class="n">1234567.5</span>;
 <span class="k">const</span> show = (locale: string, options: Intl.NumberFormatOptions = {}) =&gt;
   console.log(locale.padEnd(<span class="n">18</span>), <span class="k">new</span> Intl.NumberFormat(locale, options).format(price));
@@ -6716,7 +6716,7 @@ HTML وCSS وJavaScript</pre></div>
 
 <p>تحتاج الإنجليزية صيغتين: «1 item» و«2 items». أما العربية فتحتاج ستاً، وقواعدها تعتمد على العدد بطرق يسهل الخطأ فيها. و<code>Intl.PluralRules</code> تعرفها:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">plurals.ts</div><pre class="code"><span class="c">// في العربية ست فئات للجمع، وفي الإنجليزية فئتان</span>
+<div class="listing" dir="ltr"><div class="listing-title">plurals.ts</div><pre class="code"><span class="c line-bidi">// في العربية ست فئات للجمع، وفي الإنجليزية فئتان</span>
 <span class="k">const</span> ar = <span class="k">new</span> Intl.PluralRules(<span class="s">&quot;ar&quot;</span>);
 <span class="k">const</span> en = <span class="k">new</span> Intl.PluralRules(<span class="s">&quot;en&quot;</span>);
 
@@ -6736,7 +6736,7 @@ ar categories: few, many, one, two, zero, other</pre></div>
 
 <p>فيحفظ فهرس الرسائل رسالة الجمع نصاً لكل فئة، ويختار الكود النص الصحيح. وهذا فهرس صغير ودالة ترجمة، وهما لبّ ما تفعله مكتبات مثل i18next وFormatJS وvue-i18n:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">messages.ts</div><pre class="code"><span class="c">// لكل رسالة مفتاح، والأماكن الفارغة بين أقواس</span>
+<div class="listing" dir="ltr"><div class="listing-title">messages.ts</div><pre class="code"><span class="c line-bidi">// لكل رسالة مفتاح، والأماكن الفارغة بين أقواس</span>
 <span class="k">export</span> <span class="k">const</span> messages = {
   en: {
     <span class="s">&quot;cart.title&quot;</span>: <span class="s">&quot;Your cart&quot;</span>,
@@ -6999,7 +6999,7 @@ const total = LINES.reduce((sum, l) =&gt; sum + l.price, 0);
 <p class="hint"><strong>تلميح:</strong> المشاريع الحقيقية تفحص أيضاً رسائل الجمع (وجود كل فئة تحتاجها اللغة)، والمفاتيح المستخدمة في الكود الناقصة من الفهرس. ولمكتبات مثل i18next أدوات للأمرين.</p>
 <div class="listing" dir="ltr"><div class="listing-title">check-messages.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 
-<span class="c">// قارن الفهرسين: المفاتيح الناقصة، والزائدة، والأماكن الفارغة غير المتطابقة</span>
+<span class="c line-bidi">// قارن الفهرسين: المفاتيح الناقصة، والزائدة، والأماكن الفارغة غير المتطابقة</span>
 <span class="k">const</span> load = (file: string) =&gt; JSON.parse(readFileSync(<span class="k">new</span> URL(file, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Record&lt;string, string&gt;;
 <span class="k">const</span> en = load(<span class="s">&quot;./en.json&quot;</span>);
 <span class="k">const</span> ar = load(<span class="s">&quot;./ar.json&quot;</span>);
@@ -7283,7 +7283,7 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <p class="hint"><strong>تلميح:</strong> انظر إلى الرد الثالث: أرسل الخادم السعر نصاً. فدون التحقق كان سيظهر «8EGP»، أو <code>NaN</code> في مجموع، بعيداً عن سببه. ومعه يسمّي الخطأ الحقل بالضبط.</p>
 <div class="listing" dir="ltr"><div class="listing-title">shared/api/api.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
 
-<span class="c">// مكان واحد يتحدث إلى الخادم: بالأنواع، ومع التحقق، وبأخطاء تفهمها الشاشات</span>
+<span class="c line-bidi">// مكان واحد يتحدث إلى الخادم: بالأنواع، ومع التحقق، وبأخطاء تفهمها الشاشات</span>
 <span class="k">export</span> <span class="k">const</span> Product = z.object({ id: z.number(), name: z.string(), price: z.number().nonnegative() });
 <span class="k">export</span> <span class="k">type</span> Product = z.infer&lt;<span class="k">typeof</span> Product&gt;;
 
@@ -7340,7 +7340,7 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
 <div class="listing" dir="ltr"><div class="listing-title">boundaries.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { dirname, join, relative, resolve } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 
-<span class="c">// الطبقات من الأسفل إلى الأعلى: كل طبقة تستورد مما تحتها فقط: shared → features → app</span>
+<span class="c line-bidi">// الطبقات من الأسفل إلى الأعلى: كل طبقة تستورد مما تحتها فقط: shared → features → app</span>
 <span class="k">const</span> root = resolve(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;sample/src&quot;</span>);
 
 <span class="k">function</span> files(dir: string): string[] {
@@ -7350,7 +7350,7 @@ process.exitCode = problems ? <span class="n">1</span> : <span class="n">0</span
   });
 }
 
-<span class="c">// &quot;features/cart/store.ts&quot; -&gt; { layer: &quot;features&quot;, feature: &quot;cart&quot;, rest: &quot;store.ts&quot; }</span>
+<span class="c line-bidi">// &quot;features/cart/store.ts&quot; -&gt; { layer: &quot;features&quot;, feature: &quot;cart&quot;, rest: &quot;store.ts&quot; }</span>
 <span class="k">function</span> where(path: string) {
   <span class="k">const</span> [layer = <span class="s">&quot;&quot;</span>, feature = <span class="s">&quot;&quot;</span>, ...rest] = relative(root, path).split(<span class="s">&quot;/&quot;</span>);
   <span class="k">return</span> { layer, feature: layer === <span class="s">&quot;features&quot;</span> ? feature : <span class="s">&quot;&quot;</span>, rest: rest.join(<span class="s">&quot;/&quot;</span>) };
@@ -7461,13 +7461,13 @@ process.exitCode = problems.length ? <span class="n">1</span> : <span class="n">
 
 <p>سنبني متجر بِت الصغير نفسه الذي في إصدار React: صفحة رئيسية، وقائمة منتجات، وصفحة لكل منتج، ونموذج تواصل، وواجهة برمجية صغيرة. وتنشئ أداة البدء الرسمية المشروع:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># أنشئ المشروع</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أنشئ المشروع</span>
 <span class="c">$ </span><span class="k">npm create nuxt@latest bit-shop -- --template minimal</span>
 Creating project in bit-shop
 Created your project from the minimal template
 <span class="c">$ </span><span class="k">cd bit-shop</span>
 <span class="c">$ </span><span class="k">npm install zod</span>
-<span class="c"># ابنِ للإنتاج</span>
+<span class="c line-bidi"># ابنِ للإنتاج</span>
 <span class="c">$ </span><span class="k">npm run build</span>
 Prerendering 2 routes
   ├─ /contact
@@ -7528,7 +7528,7 @@ useHead({
 
 <p>لـ Nuxt نصفان يعملان في مكانين مختلفين. مجلد <code>server/</code> خادم صغير اسمه <dfn>Nitro</dfn> يعمل على الخادم فقط: يستطيع قراءة قاعدة بيانات أو استخدام أسرار. ومجلد <code>app/</code> تطبيق Vue الخاص بك، يعمل على الخادم في الزيارة الأولى وفي المتصفح بعدها. أولاً قاعدة بيانات وهمية ومسار واجهة يقدمها:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">server/utils/products.ts</div><pre class="code"><span class="c">// قاعدة بيانات وهمية: في تطبيق حقيقي، استعلام إلى PostgreSQL أو استدعاء خدمة أخرى</span>
+<div class="listing" dir="ltr"><div class="listing-title">server/utils/products.ts</div><pre class="code"><span class="c line-bidi">// قاعدة بيانات وهمية: في تطبيق حقيقي، استعلام إلى PostgreSQL أو استدعاء خدمة أخرى</span>
 <span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; description: string; price: number };
 
 <span class="k">const</span> products: Product[] = [
@@ -7548,7 +7548,7 @@ useHead({
   <span class="k">await</span> wait(<span class="n">300</span>);
   <span class="k">return</span> products.find((p) =&gt; p.id === id);
 }</pre></div>
-<div class="listing" dir="ltr"><div class="listing-title">server/api/products.get.ts</div><pre class="code"><span class="c">// مسار خادم: هذا الكود يعمل على الخادم فقط، ويجيب /api/products</span>
+<div class="listing" dir="ltr"><div class="listing-title">server/api/products.get.ts</div><pre class="code"><span class="c line-bidi">// مسار خادم: هذا الكود يعمل على الخادم فقط، ويجيب /api/products</span>
 <span class="k">export</span> <span class="k">default</span> defineEventHandler(() =&gt; getProducts());</pre></div>
 
 <p>اسم الملف يقول الطريقة والعنوان: <code>products.get.ts</code> يجيب <code>GET /api/products</code>. ثم الصفحة:</p>
@@ -7579,15 +7579,15 @@ useSeoMeta({ title: &quot;المنتجات&quot;, description: &quot;كتب وأ
 
 <p>فماذا يستلم المتصفح؟ <code>curl</code> ينزّل الصفحة دون تشغيل أي JavaScript:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># ماذا يرسل الخادم؟ (دون أي JavaScript)</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># ماذا يرسل الخادم؟ (دون أي JavaScript)</span>
 <span class="c">$ </span><span class="k">curl -s localhost:3000/products | grep -oE &#x27;&lt;a href=&quot;/products/[0-9]+&quot;[^&gt;]*&gt;[^&lt;]+&#x27;</span>
 &lt;a href=&quot;/products/1&quot; class=&quot;&quot;&gt;البرمجة من الصفر
 &lt;a href=&quot;/products/2&quot; class=&quot;&quot;&gt;كوب بِت
 &lt;a href=&quot;/products/3&quot; class=&quot;&quot;&gt;قبعة بِت
-<span class="c"># قائمة المنتجات مخزنة دقيقة</span>
+<span class="c line-bidi"># قائمة المنتجات مخزنة دقيقة</span>
 <span class="c">$ </span><span class="k">curl -sI localhost:3000/products | grep -i cache-control</span>
 cache-control: s-maxage=60, stale-while-revalidate
-<span class="c"># مسار الخادم يُرجع JSON</span>
+<span class="c line-bidi"># مسار الخادم يُرجع JSON</span>
 <span class="c">$ </span><span class="k">curl -s localhost:3000/api/products</span>
 [{&quot;id&quot;:1,&quot;name&quot;:&quot;البرمجة من الصفر&quot;,&quot;description&quot;:&quot;الكتاب الأول الودود في السلسلة.&quot;,&quot;price&quot;:250},{&quot;id&quot;:2,&quot;name&quot;:&quot;كوب بِت&quot;,&quot;description&quot;:&quot;كوب كبير لليالي البرمجة الطويلة.&quot;,&quot;price&quot;:85},{&quot;id&quot;:3,&quot;name&quot;:&quot;قبعة بِت&quot;,&quot;description&quot;:&quot;تحمي عينيك من الشمس.&quot;,&quot;price&quot;:120}]</pre></div>
 
@@ -7676,7 +7676,7 @@ defineProps&lt;{ error: NuxtError }&gt;();
   compatibilityDate: <span class="s">&quot;2025-07-15&quot;</span>,
   devtools: { enabled: <span class="k">false</span> },
   css: [<span class="s">&quot;~/assets/main.css&quot;</span>],
-  <span class="c">// كيف يُصنع كل عنوان: يُرسم مسبقاً وقت البناء، أو يُخزَّن ويُحدَّث في الخلفية</span>
+  <span class="c line-bidi">// كيف يُصنع كل عنوان: يُرسم مسبقاً وقت البناء، أو يُخزَّن ويُحدَّث في الخلفية</span>
   routeRules: {
     <span class="s">&quot;/&quot;</span>: { prerender: <span class="k">true</span> },
     <span class="s">&quot;/contact&quot;</span>: { prerender: <span class="k">true</span> },
@@ -7707,14 +7707,14 @@ defineProps&lt;{ error: NuxtError }&gt;();
 });
 
 <span class="k">export</span> <span class="k">default</span> defineEventHandler(<span class="k">async</span> (event) =&gt; {
-  <span class="c">// الخادم يتحقق من كل حقل: ففحوص المتصفح يستطيع أي أحد إطفاءها</span>
+  <span class="c line-bidi">// الخادم يتحقق من كل حقل: ففحوص المتصفح يستطيع أي أحد إطفاءها</span>
   <span class="k">const</span> result = schema.safeParse(<span class="k">await</span> readBody(event));
   <span class="k">if</span> (!result.success) {
     <span class="k">const</span> errors: Record&lt;string, string&gt; = {};
     <span class="k">for</span> (<span class="k">const</span> issue <span class="k">of</span> result.error.issues) errors[String(issue.path[<span class="n">0</span>])] ??= issue.message;
     <span class="k">throw</span> createError({ statusCode: <span class="n">422</span>, data: { errors } });
   }
-  <span class="c">// احفظ الرسالة، وأرسل بريداً… على الخادم، بأسرار لا تصل إلى المتصفح أبداً</span>
+  <span class="c line-bidi">// احفظ الرسالة، وأرسل بريداً… على الخادم، بأسرار لا تصل إلى المتصفح أبداً</span>
   <span class="k">return</span> { message: <span class="s">&quot;شكراً يا {name}! سنرد قريباً.&quot;</span>.replace(<span class="s">&quot;{name}&quot;</span>, result.data.name) };
 });</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">app/pages/contact.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
@@ -7929,10 +7929,10 @@ async function send() {
 
 <p>أفضل مراجعة تبدأ قبل أن يراجع أحد: بتغيير سهل القراءة. هذه سارة تضيف أكواد الخصم إلى متجر بِت، وأثناء عملها أعاد محررها تنسيق ملف أنماط أيضاً. ويُظهر Git ما في طلب الدمج:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># فرع جديد للميزة</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># فرع جديد للميزة</span>
 <span class="c">$ </span><span class="k">git switch -c feature/discount-codes</span>
 Switched to a new branch &#x27;feature/discount-codes&#x27;
-<span class="c"># ما الذي تغيّر، ملفاً ملفاً</span>
+<span class="c line-bidi"># ما الذي تغيّر، ملفاً ملفاً</span>
 <span class="c">$ </span><span class="k">git diff --stat main</span>
  src/cart/discount.ts |  11 ++
  src/ui/styles.css    | 300 ++++++++++++++++++++++++++++++++++++++++-----------
@@ -7940,7 +7940,7 @@ Switched to a new branch &#x27;feature/discount-codes&#x27;
 
 <p>أحد عشر سطراً من الميزة الجديدة مختبئة بين ثلاثمئة سطر من التنسيق. فإما أن يقرأ المراجع كل شيء ويتعب قبل أن يصل إلى ما يهم، وإما أن يمر سريعاً فيفوته. وكلاهما سيئ. والعلاج دقيقة واحدة: انقل التنسيق إلى طلب دمج مستقل، يُوافَق عليه بنظرة لأنه لا يغيّر أي سلوك:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># انقل التنسيق إلى طلب دمج مستقل</span>
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># انقل التنسيق إلى طلب دمج مستقل</span>
 <span class="c">$ </span><span class="k">git switch -c chore/format-styles main</span>
 Switched to a new branch &#x27;chore/format-styles&#x27;
 <span class="c">$ </span><span class="k">git checkout feature/discount-codes -- src/ui/styles.css</span>
@@ -7949,7 +7949,7 @@ Switched to a new branch &#x27;chore/format-styles&#x27;
 Switched to branch &#x27;feature/discount-codes&#x27;
 <span class="c">$ </span><span class="k">git checkout main -- src/ui/styles.css</span>
 <span class="c">$ </span><span class="k">git commit -qm &quot;أبقِ أكواد الخصم وحدها&quot;</span>
-<span class="c"># طلب دمج الميزة بعد التقسيم</span>
+<span class="c line-bidi"># طلب دمج الميزة بعد التقسيم</span>
 <span class="c">$ </span><span class="k">git diff --stat main</span>
  src/cart/discount.ts | 11 +++++++++++
  1 file changed, 11 insertions(+)</pre></div>
@@ -7990,7 +7990,7 @@ Switched to branch &#x27;feature/discount-codes&#x27;
 
 <div class="listing" dir="ltr"><div class="listing-title">review-bot.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 
-<span class="c">// يقرأ فروق طلب الدمج ويعلّق على الأسطر التي تستطيع الآلة الحكم عليها</span>
+<span class="c line-bidi">// يقرأ فروق طلب الدمج ويعلّق على الأسطر التي تستطيع الآلة الحكم عليها</span>
 <span class="k">type</span> Finding = { file: string; line: number; message: string };
 
 <span class="k">const</span> diff = readFileSync(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;pr.diff&quot;</span>, <span class="s">&quot;utf8&quot;</span>).split(<span class="s">&quot;\n&quot;</span>);
@@ -8002,13 +8002,13 @@ Switched to branch &#x27;feature/discount-codes&#x27;
 
 <span class="k">for</span> (<span class="k">const</span> text <span class="k">of</span> diff) {
   <span class="k">if</span> (text.startsWith(<span class="s">&quot;+++ &quot;</span>)) {
-    file = text.slice(<span class="n">6</span>); <span class="c">// &quot;+++ b/src/cart/discount.ts&quot;</span>
+    file = text.slice(<span class="n">6</span>); <span class="c line-bidi">// &quot;+++ b/src/cart/discount.ts&quot;</span>
     changedFiles.add(file);
     continue;
   }
   <span class="k">const</span> hunk = /^@@ -\d+(?:,\d+)? \+(\d+)/.exec(text);
   <span class="k">if</span> (hunk) {
-    line = Number(hunk[<span class="n">1</span>]); <span class="c">// أرقام الأسطر في الملف الجديد تبدأ من ترويسة @@ لكل جزء من الفروق</span>
+    line = Number(hunk[<span class="n">1</span>]); <span class="c line-bidi">// أرقام الأسطر في الملف الجديد تبدأ من ترويسة @@ لكل جزء من الفروق</span>
     continue;
   }
   <span class="k">if</span> (text.startsWith(<span class="s">&quot;-&quot;</span>) &amp;&amp; !text.startsWith(<span class="s">&quot;---&quot;</span>)) {
@@ -8121,19 +8121,19 @@ index 0000000..6f3f5dc
 
 <div class="listing" dir="ltr"><div class="listing-title">src/cart/discount.ts</div><pre class="code"><span class="k">import</span> { subtotal, <span class="k">type</span> Line } <span class="k">from</span> <span class="s">&quot;./cart&quot;</span>;
 
-<span class="c">// الأسعار بالقروش أعداداً صحيحة: لا أموال بأعداد عشرية</span>
-<span class="c">// الأكواد في جدول واحد، وإضافة كود لا تحتاج if جديدة</span>
+<span class="c line-bidi">// الأسعار بالقروش أعداداً صحيحة: لا أموال بأعداد عشرية</span>
+<span class="c line-bidi">// الأكواد في جدول واحد، وإضافة كود لا تحتاج if جديدة</span>
 <span class="k">const</span> codes: Record&lt;string, { percent: number }&gt; = {
   BIT10: { percent: <span class="n">10</span> },
   HALF: { percent: <span class="n">50</span> },
 };
 
-<span class="c">// الكود المجهول جواب، لا سعر كامل صامت</span>
+<span class="c line-bidi">// الكود المجهول جواب، لا سعر كامل صامت</span>
 <span class="k">export</span> <span class="k">type</span> Priced =
   | { ok: <span class="k">true</span>; subtotal: number; discount: number; total: number }
   | { ok: <span class="k">false</span>; reason: <span class="s">&quot;unknown-code&quot;</span> };
 
-<span class="c">// السلة لا تتغير: الدالة تُرجع نتيجة جديدة</span>
+<span class="c line-bidi">// السلة لا تتغير: الدالة تُرجع نتيجة جديدة</span>
 <span class="k">export</span> <span class="k">function</span> price(lines: <span class="k">readonly</span> Line[], code?: string): Priced {
   <span class="k">const</span> sum = subtotal(lines);
   <span class="k">const</span> key = code?.trim().toUpperCase();
@@ -8162,7 +8162,7 @@ index 0000000..6f3f5dc
   <span class="k">else</span> console.log(<span class="s">`${label} → المجموع ${egp(result.subtotal)}  الخصم ${egp(result.discount)}  الإجمالي ${egp(result.total)}`</span>);
 }
 
-<span class="c">// The cases that matter, as checks that fail loudly</span>
+<span class="c line-bidi">// The cases that matter, as checks that fail loudly</span>
 assert.deepEqual(price([], <span class="s">&quot;BIT10&quot;</span>), { ok: <span class="k">true</span>, subtotal: <span class="n">0</span>, discount: <span class="n">0</span>, total: <span class="n">0</span> });
 assert.equal(price(cart, <span class="s">&quot;bit10&quot;</span>).ok, <span class="k">true</span>);
 assert.deepEqual(price(cart, <span class="s">&quot;FREE&quot;</span>), { ok: <span class="k">false</span>, reason: <span class="s">&quot;unknown-code&quot;</span> });
@@ -8224,7 +8224,7 @@ console.log(<span class="s">&quot;✓ نجحت 4 فحوص&quot;</span>);</pre></
 
 <p>لاختيار حقيقي اكتب <strong>المعايير</strong> أولاً، وأعطِ كلاً منها <strong>وزناً</strong> بقدر أهميته لـ<em>هذا</em> الفريق، وبعدها فقط قيّم الخيارات. فاختيار المعايير قبل النظر في الخيارات يُبقي الجميع صادقين. هذا الفريق يختار أداة لاختبارات من الطرف إلى الطرف:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">decide.ts</div><pre class="code"><span class="c">// كل درجة من 1 (ضعيف) إلى 5 (ممتاز)، والأوزان تقول ما يهم هذا الفريق</span>
+<div class="listing" dir="ltr"><div class="listing-title">decide.ts</div><pre class="code"><span class="c line-bidi">// كل درجة من 1 (ضعيف) إلى 5 (ممتاز)، والأوزان تقول ما يهم هذا الفريق</span>
 <span class="k">const</span> criteria = { fit: <span class="n">5</span>, learn: <span class="n">3</span>, speed: <span class="n">3</span>, community: <span class="n">2</span>, cost: <span class="n">2</span> } as <span class="k">const</span>;
 <span class="k">type</span> Criterion = <span class="k">keyof</span> <span class="k">typeof</span> criteria;
 
@@ -8250,7 +8250,7 @@ console.log(<span class="s">&quot;الخيار&quot;</span>.padEnd(<span class="
 <span class="k">for</span> (<span class="k">const</span> [name, scores] <span class="k">of</span> Object.entries(options)) console.log(name.padEnd(<span class="n">22</span>) + total(scores, criteria));
 console.log(<span class="s">`الفائز: ${winner(criteria)}`</span>);
 
-<span class="c">// أي خيار يفوز لو كان معيار واحد أهم بمرتين؟</span>
+<span class="c line-bidi">// أي خيار يفوز لو كان معيار واحد أهم بمرتين؟</span>
 <span class="k">for</span> (<span class="k">const</span> c <span class="k">of</span> Object.keys(criteria) as Criterion[]) {
   console.log(<span class="s">`  إذا &quot;${names[c]}&quot; حُسب مرتين → ${winner({ ...criteria, [c]: criteria[c] * 2 })}`</span>);
 }</pre></div>
@@ -8538,7 +8538,7 @@ src/ui/StatusBadge.vue</pre></div>
   id: z.number().int(),
   customer: z.string(),
   city: z.string(),
-  total: z.number().int().nonnegative(), <span class="c">// piastres</span>
+  total: z.number().int().nonnegative(), <span class="c line-bidi">// piastres</span>
   status: OrderStatus,
   createdAt: z.iso.datetime(),
 });
@@ -8547,7 +8547,7 @@ src/ui/StatusBadge.vue</pre></div>
 <span class="k">export</span> <span class="k">const</span> Product = z.object({
   id: z.number().int(),
   name: z.string(),
-  price: z.number().int().positive(), <span class="c">// piastres</span>
+  price: z.number().int().positive(), <span class="c line-bidi">// piastres</span>
   stock: z.number().int().nonnegative(),
 });
 <span class="k">export</span> <span class="k">type</span> Product = z.infer&lt;<span class="k">typeof</span> Product&gt;;</pre></div>
@@ -8557,7 +8557,7 @@ src/ui/StatusBadge.vue</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">src/api/client.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
 <span class="k">import</span> { Order, Product, <span class="k">type</span> OrderStatus } <span class="k">from</span> <span class="s">&quot;./schemas&quot;</span>;
 
-<span class="c">// المكان الوحيد الذي يستدعي fetch، وكل رد يُفحص بمخططه</span>
+<span class="c line-bidi">// المكان الوحيد الذي يستدعي fetch، وكل رد يُفحص بمخططه</span>
 <span class="k">export</span> <span class="k">class</span> ApiError <span class="k">extends</span> Error {
   constructor(
     <span class="k">readonly</span> status: number,
@@ -8595,7 +8595,7 @@ src/ui/StatusBadge.vue</pre></div>
 <span class="k">import</span> { api } <span class="k">from</span> <span class="s">&quot;./client&quot;</span>;
 <span class="k">import</span> <span class="k">type</span> { Order, OrderStatus, Product } <span class="k">from</span> <span class="s">&quot;./schemas&quot;</span>;
 
-<span class="c">// مكان واحد لمفاتيح الاستعلامات، فالقراءة والإبطال يستخدمان الأسماء نفسها دائماً</span>
+<span class="c line-bidi">// مكان واحد لمفاتيح الاستعلامات، فالقراءة والإبطال يستخدمان الأسماء نفسها دائماً</span>
 <span class="k">export</span> <span class="k">const</span> keys = {
   orders: [<span class="s">&quot;orders&quot;</span>] as <span class="k">const</span>,
   order: (id: number) =&gt; [<span class="s">&quot;orders&quot;</span>, id] as <span class="k">const</span>,
@@ -8618,7 +8618,7 @@ src/ui/StatusBadge.vue</pre></div>
   <span class="k">const</span> client = useQueryClient();
   <span class="k">return</span> useMutation({
     mutationFn: (status: OrderStatus) =&gt; api.setStatus(toValue(id), status),
-    <span class="c">// اعرض الحالة الجديدة فوراً، وأعد القديمة إن رفض الخادم</span>
+    <span class="c line-bidi">// اعرض الحالة الجديدة فوراً، وأعد القديمة إن رفض الخادم</span>
     onMutate: <span class="k">async</span> (status) =&gt; {
       <span class="k">const</span> key = keys.order(toValue(id));
       <span class="k">await</span> client.cancelQueries({ queryKey: key });
@@ -8646,7 +8646,7 @@ src/ui/StatusBadge.vue</pre></div>
 
 <p>وأثناء التطوير، ولصور هذا الكتاب واختبارات الطرف إلى الطرف، يجيب خادم وهمي صغير على العناوين نفسها بالأشكال نفسها. تضعه صفحة اختبار مكان <code>fetch</code>، ولا يعرف باقي التطبيق شيئاً. والمشاريع الحقيقية تفعل ذلك بمكتبة Mock Service Worker.</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">page.ts</div><pre class="code"><span class="c">// للصور واختبارات الطرف إلى الطرف فقط</span>
+<div class="listing" dir="ltr"><div class="listing-title">page.ts</div><pre class="code"><span class="c line-bidi">// للصور واختبارات الطرف إلى الطرف فقط</span>
 <span class="k">import</span> { createApp } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
 <span class="k">import</span> { createPinia } <span class="k">from</span> <span class="s">&quot;pinia&quot;</span>;
 <span class="k">import</span> { createMemoryHistory, createRouter } <span class="k">from</span> <span class="s">&quot;vue-router&quot;</span>;
@@ -8656,8 +8656,8 @@ src/ui/StatusBadge.vue</pre></div>
 <span class="k">import</span> { routes } <span class="k">from</span> <span class="s">&quot;./src/app/routes&quot;</span>;
 
 window.fetch = fakeFetch;
-Object.assign(window, { server }); <span class="c">// so a test can say: server.failNextChange = true</span>
-localStorage.clear(); <span class="c">// start from the page&#x27;s own language and the light theme</span>
+Object.assign(window, { server }); <span class="c line-bidi">// so a test can say: server.failNextChange = true</span>
+localStorage.clear(); <span class="c line-bidi">// start from the page&#x27;s own language and the light theme</span>
 
 <span class="k">const</span> router = createRouter({ history: createMemoryHistory(), routes });
 <span class="k">await</span> router.push(<span class="s">&quot;/&quot;</span>);
@@ -8702,7 +8702,7 @@ createApp(App)
 <span class="k">import</span> { makeT } <span class="k">from</span> <span class="s">&quot;./i18n/format&quot;</span>;
 <span class="k">import</span> <span class="k">type</span> { Lang } <span class="k">from</span> <span class="s">&quot;./i18n/messages&quot;</span>;
 
-<span class="c">// إعدادات التطبيق في مخزن Pinia، وuseLocalStorage تتذكرها</span>
+<span class="c line-bidi">// إعدادات التطبيق في مخزن Pinia، وuseLocalStorage تتذكرها</span>
 <span class="k">export</span> <span class="k">const</span> useSettings = defineStore(<span class="s">&quot;settings&quot;</span>, () =&gt; {
   <span class="k">const</span> lang = useLocalStorage&lt;Lang&gt;(<span class="s">&quot;admin-lang&quot;</span>, globalThis.document?.documentElement.lang === <span class="s">&quot;ar&quot;</span> ? <span class="s">&quot;ar&quot;</span> : <span class="s">&quot;en&quot;</span>);
   <span class="k">const</span> dark = useLocalStorage(<span class="s">&quot;admin-dark&quot;</span>, <span class="k">false</span>);
@@ -8738,7 +8738,7 @@ createApp(App)
   },
   {
     path: <span class="s">&quot;/products&quot;</span>,
-    <span class="c">// يُحمَّل حين يُفتح فقط: كود النموذج ليس في التنزيل الأول</span>
+    <span class="c line-bidi">// يُحمَّل حين يُفتح فقط: كود النموذج ليس في التنزيل الأول</span>
     children: [
       { path: <span class="s">&quot;&quot;</span>, component: () =&gt; <span class="k">import</span>(<span class="s">&quot;../features/products/ProductsPage.vue&quot;</span>) },
       { path: <span class="s">&quot;:id(\\d+)&quot;</span>, component: () =&gt; <span class="k">import</span>(<span class="s">&quot;../features/products/ProductPage.vue&quot;</span>), props: id },
@@ -8791,7 +8791,7 @@ watchEffect(() =&gt; {
 
 <div class="listing" dir="ltr"><div class="listing-title">src/lib/orders.ts</div><pre class="code"><span class="k">import</span> <span class="k">type</span> { Order, OrderStatus } <span class="k">from</span> <span class="s">&quot;../api/schemas&quot;</span>;
 
-<span class="c">// دوال نقية: لا React ولا fetch، فتُختبر في أجزاء من الثانية</span>
+<span class="c line-bidi">// دوال نقية: لا React ولا fetch، فتُختبر في أجزاء من الثانية</span>
 <span class="k">export</span> <span class="k">const</span> PAGE_SIZE = <span class="n">8</span>;
 <span class="k">export</span> <span class="k">const</span> STATUSES: OrderStatus[] = [<span class="s">&quot;new&quot;</span>, <span class="s">&quot;paid&quot;</span>, <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;cancelled&quot;</span>];
 
@@ -9208,7 +9208,7 @@ describe(<span class="s">&quot;ProductForm&quot;</span>, () =&gt; {
 
 <span class="k">async</span> <span class="k">function</span> noViolations(page: Page) {
   <span class="k">await</span> page.addScriptTag({ path: require.resolve(<span class="s">&quot;axe-core/axe.min.js&quot;</span>) });
-  <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+  <span class="c line-bidi">// @ts-expect-error axe is added to the page by the script tag above</span>
   <span class="k">const</span> found: string[] = <span class="k">await</span> page.evaluate(() =&gt; axe.run().then((r) =&gt; r.violations.map((v) =&gt; v.id)));
   expect(found).toEqual([]);
 }
@@ -9255,7 +9255,7 @@ Running 3 tests using 1 worker
 <span class="k">import</span> vue <span class="k">from</span> <span class="s">&quot;@vitejs/plugin-vue&quot;</span>;
 <span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
 
-<span class="c">// يحزم التطبيق كما في الإنتاج، ويقارنه بالميزانية</span>
+<span class="c line-bidi">// يحزم التطبيق كما في الإنتاج، ويقارنه بالميزانية</span>
 <span class="k">const</span> BUDGET_KB = <span class="n">150</span>;
 
 <span class="k">const</span> output = (<span class="k">await</span> build({
@@ -9268,7 +9268,7 @@ Running 3 tests using 1 worker
 <span class="k">const</span> gzipKB = (code: string) =&gt; gzipSync(code).length / <span class="n">1024</span>;
 <span class="k">const</span> packageOf = (id: string) =&gt; /node_modules\/((?:@[^/]+\/)?[^/]+)/.exec(id)?.[<span class="n">1</span>] ?? <span class="s">&quot;كودنا&quot;</span>;
 
-<span class="c">// The first load: the entry and every chunk it imports directly</span>
+<span class="c line-bidi">// The first load: the entry and every chunk it imports directly</span>
 <span class="k">const</span> first = <span class="k">new</span> Set&lt;string&gt;();
 <span class="k">const</span> visit = (fileName: string) =&gt; {
   <span class="k">if</span> (first.has(fileName)) <span class="k">return</span>;

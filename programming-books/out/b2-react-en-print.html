@@ -197,24 +197,24 @@ You are reading the <strong>React edition</strong>.If your team uses the other f
 
 <p>JavaScript has two kinds of values. <dfn>Primitives</dfn> (numbers, strings, booleans, <code>null</code>, <code>undefined</code>, <code>bigint</code> and <code>symbol</code>) are copied when you assign them. <dfn>Objects</dfn>, which include arrays and functions, are not copied: the variable holds a <dfn>reference</dfn>, an address that points to the object.</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">values.js</div><pre class="code"><span class="c">// Primitives are copied</span>
+<div class="listing" dir="ltr"><div class="listing-title">values.js</div><pre class="code"><span class="c line-bidi">// Primitives are copied</span>
 <span class="k">let</span> a = <span class="n">10</span>;
 <span class="k">let</span> b = a;
 b = <span class="n">20</span>;
 console.log(a, b);
 
-<span class="c">// Objects are shared: two names, one object</span>
+<span class="c line-bidi">// Objects are shared: two names, one object</span>
 <span class="k">const</span> original = { name: <span class="s">&quot;Sara&quot;</span>, tags: [<span class="s">&quot;js&quot;</span>] };
 <span class="k">const</span> same = original;
 same.name = <span class="s">&quot;Huda&quot;</span>;
 console.log(original.name);
 
-<span class="c">// Spread copies only the first level</span>
+<span class="c line-bidi">// Spread copies only the first level</span>
 <span class="k">const</span> shallow = { ...original };
 shallow.tags.push(<span class="s">&quot;ts&quot;</span>);
 console.log(original.tags);
 
-<span class="c">// structuredClone copies every level</span>
+<span class="c line-bidi">// structuredClone copies every level</span>
 <span class="k">const</span> deep = structuredClone(original);
 deep.tags.push(<span class="s">&quot;react&quot;</span>);
 console.log(original.tags, deep.tags);</pre></div>
@@ -236,7 +236,7 @@ Huda
 
 <div class="listing" dir="ltr"><div class="listing-title">immutable.js</div><pre class="code"><span class="k">const</span> cart = { items: [{ id: <span class="n">1</span>, qty: <span class="n">1</span> }], coupon: <span class="k">null</span> };
 
-<span class="c">// Return a new object instead of changing the old one</span>
+<span class="c line-bidi">// Return a new object instead of changing the old one</span>
 <span class="k">function</span> addOne(cart, id) {
   <span class="k">return</span> {
     ...cart,
@@ -261,7 +261,7 @@ false false</pre></div>
 <p>A <dfn>scope</dfn> is the region of code where a name exists. Variables declared with <code>let</code> and <code>const</code> live in the nearest block <code>{ … }</code>. A function can see the variables of the scopes around it, even <em>after</em> those outer functions have finished. A function together with the variables it remembers is called a <dfn>closure</dfn>.</p>
 
 <div class="listing" dir="ltr"><div class="listing-title">closures.js</div><pre class="code"><span class="k">function</span> makeCounter(start = <span class="n">0</span>) {
-  <span class="k">let</span> count = start; <span class="c">// private: only the three functions can see it</span>
+  <span class="k">let</span> count = start; <span class="c line-bidi">// private: only the three functions can see it</span>
   <span class="k">return</span> {
     up: () =&gt; ++count,
     down: () =&gt; --count,
@@ -275,7 +275,7 @@ likes.up();
 likes.up();
 stock.down();
 console.log(likes.value(), stock.value());
-console.log(likes.count); <span class="c">// undefined: there is no way in from outside</span></pre></div>
+console.log(likes.count); <span class="c line-bidi">// undefined: there is no way in from outside</span></pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>2 9
 undefined</pre></div>
 
@@ -330,7 +330,7 @@ let: 3</pre></div>
 <p>A <dfn>class</dfn> is a template for objects that share the same methods. Modern classes can have <dfn>private fields</dfn>, whose names start with <code>#</code>, <dfn>static</dfn> members that belong to the class itself, and <dfn>getters</dfn> that look like properties but run code:</p>
 
 <div class="listing" dir="ltr"><div class="listing-title">classes.js</div><pre class="code"><span class="k">class</span> Account {
-  #balance = <span class="n">0</span>; <span class="c">// private field: invisible outside the class</span>
+  #balance = <span class="n">0</span>; <span class="c line-bidi">// private field: invisible outside the class</span>
   <span class="k">static</span> count = <span class="n">0</span>;
 
   constructor(owner) {
@@ -345,7 +345,7 @@ let: 3</pre></div>
   deposit(amount) {
     <span class="k">if</span> (amount &lt;= <span class="n">0</span>) <span class="k">throw</span> <span class="k">new</span> RangeError(<span class="s">&quot;Amount must be positive&quot;</span>);
     <span class="k">this</span>.#balance += amount;
-    <span class="k">return</span> <span class="k">this</span>; <span class="c">// returning this lets calls be chained</span>
+    <span class="k">return</span> <span class="k">this</span>; <span class="c line-bidi">// returning this lets calls be chained</span>
   }
 }
 
@@ -396,14 +396,14 @@ RangeError: Amount must be positive</pre></div>
 <span class="k">const</span> run = (callback) =&gt; callback();
 
 <span class="k">try</span> {
-  run(timer.tick); <span class="c">// the method is passed without its object</span>
+  run(timer.tick); <span class="c line-bidi">// the method is passed without its object</span>
 } <span class="k">catch</span> (error) {
   console.log(<span class="s">&quot;Lost this:&quot;</span>, error.message);
 }
 
-run(() =&gt; timer.tick()); <span class="c">// fix 1: call it inside an arrow function</span>
-run(timer.tick.bind(timer)); <span class="c">// fix 2: bind it to the object</span>
-run(timer.tickArrow); <span class="c">// fix 3: an arrow-function field keeps this</span>
+run(() =&gt; timer.tick()); <span class="c line-bidi">// fix 1: call it inside an arrow function</span>
+run(timer.tick.bind(timer)); <span class="c line-bidi">// fix 2: bind it to the object</span>
+run(timer.tickArrow); <span class="c line-bidi">// fix 3: an arrow-function field keeps this</span>
 console.log(timer.seconds);</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Lost this: Cannot read properties of undefined (reading &#x27;seconds&#x27;)
 3</pre></div>
@@ -431,20 +431,20 @@ console.log(timer.seconds);</pre></div>
 
 <div class="listing" dir="ltr"><div class="listing-title">modern.js</div><pre class="code"><span class="k">const</span> user = { name: <span class="s">&quot;Omar&quot;</span>, address: <span class="k">null</span>, settings: { theme: <span class="s">&quot;&quot;</span> } };
 
-<span class="c">// ?. stops at null or undefined instead of crashing</span>
+<span class="c line-bidi">// ?. stops at null or undefined instead of crashing</span>
 console.log(user.address?.city);
 console.log(user.address?.city ?? <span class="s">&quot;unknown&quot;</span>);
 
-<span class="c">// || replaces every falsy value; ?? only null and undefined</span>
+<span class="c line-bidi">// || replaces every falsy value; ?? only null and undefined</span>
 console.log(user.settings.theme || <span class="s">&quot;light&quot;</span>, user.settings.theme ?? <span class="s">&quot;light&quot;</span>);
 
-<span class="c">// ??= assigns only when the value is missing</span>
+<span class="c line-bidi">// ??= assigns only when the value is missing</span>
 user.settings.fontSize ??= <span class="n">16</span>;
 console.log(user.settings);
 
 <span class="k">const</span> scores = [<span class="n">72</span>, <span class="n">95</span>, <span class="n">88</span>, <span class="n">61</span>];
 console.log(scores.at(-<span class="n">1</span>), scores.findLast((s) =&gt; s &gt; <span class="n">80</span>));
-console.log(scores.toSorted((a, b) =&gt; b - a), scores); <span class="c">// toSorted returns a copy: the original keeps its order</span></pre></div>
+console.log(scores.toSorted((a, b) =&gt; b - a), scores); <span class="c line-bidi">// toSorted returns a copy: the original keeps its order</span></pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>undefined
 unknown
 light 
@@ -495,7 +495,7 @@ console.log(totals);</pre></div>
 
 <p>An object is fine for a fixed set of named fields. For a <em>collection</em> that grows and shrinks, JavaScript has two better tools. A <dfn>Map</dfn> stores key–value pairs, with keys of any type, in the order they were added. A <dfn>Set</dfn> stores each value once:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">collections.js</div><pre class="code"><span class="c">// Map: keys of any type, kept in insertion order</span>
+<div class="listing" dir="ltr"><div class="listing-title">collections.js</div><pre class="code"><span class="c line-bidi">// Map: keys of any type, kept in insertion order</span>
 <span class="k">const</span> visits = <span class="k">new</span> Map();
 <span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> [<span class="s">&quot;/home&quot;</span>, <span class="s">&quot;/shop&quot;</span>, <span class="s">&quot;/home&quot;</span>, <span class="s">&quot;/cart&quot;</span>, <span class="s">&quot;/home&quot;</span>]) {
   visits.set(page, (visits.get(page) ?? <span class="n">0</span>) + <span class="n">1</span>);
@@ -503,7 +503,7 @@ console.log(totals);</pre></div>
 console.log(visits);
 console.log([...visits].toSorted((a, b) =&gt; b[<span class="n">1</span>] - a[<span class="n">1</span>])[<span class="n">0</span>]);
 
-<span class="c">// Set: each value once</span>
+<span class="c line-bidi">// Set: each value once</span>
 <span class="k">const</span> tags = <span class="k">new</span> Set([<span class="s">&quot;js&quot;</span>, <span class="s">&quot;css&quot;</span>, <span class="s">&quot;js&quot;</span>, <span class="s">&quot;html&quot;</span>, <span class="s">&quot;css&quot;</span>]);
 console.log(tags.size, tags.has(<span class="s">&quot;css&quot;</span>), [...tags]);</pre></div>
 <div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Map(3) { &#x27;/home&#x27; =&gt; 3, &#x27;/shop&#x27; =&gt; 1, &#x27;/cart&#x27; =&gt; 1 }
@@ -518,13 +518,13 @@ console.log(tags.size, tags.has(<span class="s">&quot;css&quot;</span>), [...tag
 
 <div class="listing" dir="ltr"><div class="listing-title">generators.js</div><pre class="code"><span class="k">function</span>* range(<span class="k">from</span>, to, step = <span class="n">1</span>) {
   <span class="k">for</span> (<span class="k">let</span> n = <span class="k">from</span>; n &lt;= to; n += step) {
-    <span class="k">yield</span> n; <span class="c">// pause here and hand n to the caller</span>
+    <span class="k">yield</span> n; <span class="c line-bidi">// pause here and hand n to the caller</span>
   }
 }
 
 console.log([...range(<span class="n">1</span>, <span class="n">10</span>, <span class="n">3</span>)]);
 
-<span class="c">// A generator that splits a list into pages</span>
+<span class="c line-bidi">// A generator that splits a list into pages</span>
 <span class="k">function</span>* pages(items, size) {
   <span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; items.length; i += size) {
     <span class="k">yield</span> items.slice(i, i + size);
@@ -586,11 +586,11 @@ console.log(<span class="s">&quot;2 still synchronous&quot;</span>);</pre></div>
   console.log(r.status, r.value ?? r.reason.message);
 }
 
-<span class="c">// any: the first one to succeed</span>
+<span class="c line-bidi">// any: the first one to succeed</span>
 <span class="k">const</span> fastest = <span class="k">await</span> Promise.any([wait(<span class="n">40</span>, <span class="s">&quot;mirror A&quot;</span>), wait(<span class="n">15</span>, <span class="s">&quot;mirror B&quot;</span>)]);
 console.log(<span class="s">&quot;Fastest:&quot;</span>, fastest);
 
-<span class="c">// race: the first one to finish, success or failure</span>
+<span class="c line-bidi">// race: the first one to finish, success or failure</span>
 <span class="k">const</span> timeout = (ms) =&gt; wait(ms, <span class="s">&quot;Timed out after 50 ms&quot;</span>, <span class="k">true</span>);
 <span class="k">try</span> {
   <span class="k">await</span> Promise.race([wait(<span class="n">100</span>, <span class="s">&quot;slow answer&quot;</span>), timeout(<span class="n">50</span>)]);
@@ -637,7 +637,7 @@ Timed out after 50 ms</pre></div>
   <span class="k">try</span> {
     <span class="k">return</span> findUser(id);
   } <span class="k">catch</span> (error) {
-    <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;Could not load the profile&quot;</span>, { cause: error }); <span class="c">// keep the original error as the cause</span>
+    <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;Could not load the profile&quot;</span>, { cause: error }); <span class="c line-bidi">// keep the original error as the cause</span>
   }
 }
 
@@ -847,12 +847,12 @@ why.ts(9,11): error TS2741: Property &#x27;quantity&#x27; is missing in type &#x
 
 <p>You write a type after a colon: <code>name: string</code>. But you need to write far fewer types than you might expect, because TypeScript <dfn>infers</dfn> them from the values:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">basics.ts</div><pre class="code"><span class="c">// Inferred: TypeScript knows these types without being told</span>
+<div class="listing" dir="ltr"><div class="listing-title">basics.ts</div><pre class="code"><span class="c line-bidi">// Inferred: TypeScript knows these types without being told</span>
 <span class="k">let</span> city = <span class="s">&quot;Cairo&quot;</span>;
 <span class="k">const</span> year = <span class="n">2026</span>;
 <span class="k">const</span> scores = [<span class="n">72</span>, <span class="n">95</span>, <span class="n">88</span>];
 
-<span class="c">// Annotate function parameters and the return type</span>
+<span class="c line-bidi">// Annotate function parameters and the return type</span>
 <span class="k">function</span> average(values: number[]): number {
   <span class="k">return</span> values.reduce((sum, v) =&gt; sum + v, <span class="n">0</span>) / values.length;
 }
@@ -883,7 +883,7 @@ Sara | Dr. Sara</pre></div>
   <span class="k">readonly</span> id: number;
   name: string;
   email: string;
-  phone?: string; <span class="c">// optional: string or undefined</span>
+  phone?: string; <span class="c line-bidi">// optional: string or undefined</span>
   roles: <span class="k">readonly</span> string[];
 };
 
@@ -908,8 +908,8 @@ objects.ts(14,13): error TS18048: &#x27;user.phone&#x27; is possibly &#x27;undef
 
 <div class="listing" dir="ltr"><div class="listing-title">narrowing.ts</div><pre class="code"><span class="k">function</span> formatPrice(value: number | string | <span class="k">null</span>): string {
   <span class="k">if</span> (value === <span class="k">null</span>) <span class="k">return</span> <span class="s">&quot;Free&quot;</span>;
-  <span class="k">if</span> (<span class="k">typeof</span> value === <span class="s">&quot;string&quot;</span>) <span class="k">return</span> value; <span class="c">// here value is a string</span>
-  <span class="k">return</span> <span class="s">`${value.toFixed(2)} EGP`</span>; <span class="c">// here it can only be a number</span>
+  <span class="k">if</span> (<span class="k">typeof</span> value === <span class="s">&quot;string&quot;</span>) <span class="k">return</span> value; <span class="c line-bidi">// here value is a string</span>
+  <span class="k">return</span> <span class="s">`${value.toFixed(2)} EGP`</span>; <span class="c line-bidi">// here it can only be a number</span>
 }
 
 <span class="k">type</span> Cat = { kind: <span class="s">&quot;cat&quot;</span>; meows: boolean };
@@ -948,11 +948,11 @@ A talkative cat | A calm dog</pre></div>
     <span class="k">case</span> <span class="s">&quot;loading&quot;</span>:
       <span class="k">return</span> <span class="s">&quot;Loading…&quot;</span>;
     <span class="k">case</span> <span class="s">&quot;success&quot;</span>:
-      <span class="k">return</span> <span class="s">`${state.data.length} products: ${state.data.join(&quot;, &quot;)}`</span>; <span class="c">// data exists only in this case</span>
+      <span class="k">return</span> <span class="s">`${state.data.length} products: ${state.data.join(&quot;, &quot;)}`</span>; <span class="c line-bidi">// data exists only in this case</span>
     <span class="k">case</span> <span class="s">&quot;error&quot;</span>:
       <span class="k">return</span> <span class="s">`Could not load: ${state.message}`</span>;
     <span class="k">default</span>:
-      <span class="k">return</span> assertNever(state); <span class="c">// if a case is missing, state is not never here, and the build fails</span>
+      <span class="k">return</span> assertNever(state); <span class="c line-bidi">// if a case is missing, state is not never here, and the build fails</span>
   }
 }
 
@@ -1027,7 +1027,7 @@ Age: 34
 
 <div class="listing" dir="ltr"><div class="listing-title">utility.ts</div><pre class="code"><span class="k">type</span> Product = { id: number; name: string; price: number; stock: number };
 
-<span class="c">// New types made from an existing one</span>
+<span class="c line-bidi">// New types made from an existing one</span>
 <span class="k">type</span> ProductUpdate = Partial&lt;Omit&lt;Product, <span class="s">&quot;id&quot;</span>&gt;&gt;;
 <span class="k">type</span> ProductCard = Pick&lt;Product, <span class="s">&quot;name&quot;</span> | <span class="s">&quot;price&quot;</span>&gt;;
 
@@ -1039,7 +1039,7 @@ Age: 34
 <span class="k">const</span> card: ProductCard = { name: mug.name, price: mug.price };
 console.log(update(mug, { price: <span class="n">7</span> }), card);
 
-<span class="c">// One list of values, and the type comes from it</span>
+<span class="c line-bidi">// One list of values, and the type comes from it</span>
 <span class="k">const</span> ROLES = [<span class="s">&quot;viewer&quot;</span>, <span class="s">&quot;editor&quot;</span>, <span class="s">&quot;admin&quot;</span>] as <span class="k">const</span>;
 <span class="k">type</span> Role = (<span class="k">typeof</span> ROLES)[number];
 <span class="k">const</span> labels = {
@@ -1080,7 +1080,7 @@ console.log(ROLES.length, labels[role]);</pre></div>
 
 <div class="listing" dir="ltr"><div class="listing-title">boundary.ts</div><pre class="code"><span class="k">type</span> User = { id: number; name: string };
 
-<span class="c">// A type guard: if it returns true, TypeScript treats value as a User</span>
+<span class="c line-bidi">// A type guard: if it returns true, TypeScript treats value as a User</span>
 <span class="k">function</span> isUser(value: unknown): value is User {
   <span class="k">return</span> (
     <span class="k">typeof</span> value === <span class="s">&quot;object&quot;</span> &amp;&amp;
@@ -1303,16 +1303,16 @@ typed-emitter-bad.ts(29,18): error TS2345: Argument of type &#x27;(id: string) =
 
 <p>A <dfn>module</dfn> is a file with its own scope. Nothing inside it is visible to other files unless it is <dfn>exported</dfn>, and nothing outside is visible inside unless it is <dfn>imported</dfn>. This is the standard module system of JavaScript, called <dfn>ES modules</dfn> (ESM), and it works the same way in browsers, in Node and in every build tool.</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">prices.mjs</div><pre class="code"><span class="c">// This line runs once, however many modules import this file</span>
+<div class="listing" dir="ltr"><div class="listing-title">prices.mjs</div><pre class="code"><span class="c line-bidi">// This line runs once, however many modules import this file</span>
 globalThis.priceLoads = (globalThis.priceLoads ?? <span class="n">0</span>) + <span class="n">1</span>;
 
-<span class="c">// Named exports: any number per module</span>
+<span class="c line-bidi">// Named exports: any number per module</span>
 <span class="k">export</span> <span class="k">const</span> VAT = <span class="n">0.14</span>;
 <span class="k">export</span> <span class="k">function</span> withVat(price) {
   <span class="k">return</span> Math.round(price * (<span class="n">1</span> + VAT) * <span class="n">100</span>) / <span class="n">100</span>;
 }
 
-<span class="c">// One default export per module, at most</span>
+<span class="c line-bidi">// One default export per module, at most</span>
 <span class="k">export</span> <span class="k">default</span> <span class="k">function</span> formatPrice(value) {
   <span class="k">return</span> <span class="s">`${value.toFixed(2)} EGP`</span>;
 }</pre></div>
@@ -1330,7 +1330,7 @@ globalThis.priceLoads = (globalThis.priceLoads ?? <span class="n">0</span>) + <s
 
 <p>Big folders often have an <code>index</code> file that re-exports their public parts, so other code imports from one place and the folder can reorganise its insides freely:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">index.mjs</div><pre class="code"><span class="c">// A &quot;barrel&quot;: one entry point that re-exports the public parts</span>
+<div class="listing" dir="ltr"><div class="listing-title">index.mjs</div><pre class="code"><span class="c line-bidi">// A &quot;barrel&quot;: one entry point that re-exports the public parts</span>
 <span class="k">export</span> { cartTotal } <span class="k">from</span> <span class="s">&quot;./cart.mjs&quot;</span>;
 <span class="k">export</span> { <span class="k">default</span> as formatPrice, VAT } <span class="k">from</span> <span class="s">&quot;./prices.mjs&quot;</span>;</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">main.mjs</div><pre class="code"><span class="k">import</span> { cartTotal, formatPrice, VAT } <span class="k">from</span> <span class="s">&quot;./index.mjs&quot;</span>;
@@ -1353,15 +1353,15 @@ Times the price module was loaded: 1</pre></div>
 
 <p>Browsers can load ES modules directly, but a real app needs more: TypeScript must lose its types, hundreds of files should become a few, images need unique names so caches stay correct, and while you work, the page should update the moment you save. <strong>Vite</strong> (French for “fast”) does all of this and has become the standard starting point for React, Vue and plain TypeScript projects. Create a project with one command:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Create a project from the vanilla TypeScript template</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Create a project from the vanilla TypeScript template</span>
 <span class="c">$ </span><span class="k">npm create vite@latest my-shop -- --template vanilla-ts --no-interactive</span>
 create-vite v9.3.4
 Scaffolding project in ~/code/my-shop...
 <span class="c">$ </span><span class="k">cd my-shop</span>
-<span class="c"># Download the packages it needs</span>
+<span class="c line-bidi"># Download the packages it needs</span>
 <span class="c">$ </span><span class="k">npm install</span>
 added 17 packages, and audited 18 packages in 5s
-<span class="c"># What the template created</span>
+<span class="c line-bidi"># What the template created</span>
 <span class="c">$ </span><span class="k">find . -path ./node_modules -prune -o -type f -print | sort</span>
 ./.gitignore
 ./index.html
@@ -1409,7 +1409,7 @@ added 17 packages, and audited 18 packages in 5s
 
 <p>For real visitors, speed matters more than convenience. <code>npm run build</code> creates the <code>dist</code> folder, ready to upload to any static host:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Build the site for production</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Build the site for production</span>
 <span class="c">$ </span><span class="k">npm run build</span>
 ✓ 7 modules transformed.
 dist/index.html                 0.39 kB │ gzip: 0.26 kB
@@ -1453,7 +1453,7 @@ button.addEventListener(<span class="s">&quot;click&quot;</span>, <span class="k
   button.remove();
 });
 app.append(button);</pre></div>
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Build again after adding a lazy import</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Build again after adding a lazy import</span>
 <span class="c">$ </span><span class="k">npm run build</span>
 ✓ 9 modules transformed.
 dist/index.html                 0.39 kB │ gzip: 0.26 kB
@@ -1472,17 +1472,17 @@ dist/assets/index-Bu7zpKrj.js   2.96 kB │ gzip: 1.36 kB
 
 <p>Two more tools belong in every project. A <dfn>linter</dfn> reads your code and reports likely bugs and bad patterns. A <dfn>formatter</dfn> rewrites the layout of your code, spaces, quotes and line breaks, in one consistent style, so that nobody argues about it in code reviews. The standard choices are <strong>ESLint</strong> and <strong>Prettier</strong>. Installing them gave a surprise:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Add a linter and a formatter</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Add a linter and a formatter</span>
 <span class="c">$ </span><span class="k">npm install -D eslint @eslint/js typescript-eslint prettier</span>
 npm error code ERESOLVE
 npm error ERESOLVE unable to resolve dependency tree
 npm error Found: typescript@7.0.2
 npm error Could not resolve dependency:
 npm error peer typescript@&quot;&gt;=4.8.4 &lt;6.1.0&quot; from typescript-eslint@8.73.0
-<span class="c"># Choose a TypeScript that typescript-eslint supports</span>
+<span class="c line-bidi"># Choose a TypeScript that typescript-eslint supports</span>
 <span class="c">$ </span><span class="k">npm install -D typescript@~6.0.0 eslint @eslint/js typescript-eslint prettier</span>
 added 96 packages, removed 1 package, changed 1 package, and audited 113 packages in 4s
-<span class="c"># The direct dependencies, and their exact versions</span>
+<span class="c line-bidi"># The direct dependencies, and their exact versions</span>
 <span class="c">$ </span><span class="k">npm ls --depth=0</span>
 ├── @eslint/js@10.0.1
 ├── eslint@10.15.0
@@ -1490,7 +1490,7 @@ added 96 packages, removed 1 package, changed 1 package, and audited 113 package
 ├── typescript-eslint@8.73.0
 ├── typescript@6.0.3
 └── vite@8.3.8
-<span class="c"># Name the commands the team will run</span>
+<span class="c line-bidi"># Name the commands the team will run</span>
 <span class="c">$ </span><span class="k">npm pkg set scripts.lint=&quot;eslint src&quot; scripts.format=&quot;prettier --write src&quot; scripts.check=&quot;tsc &amp;&amp; eslint src &amp;&amp; prettier --check src&quot;</span></pre></div>
 
 <h3>Reading a dependency conflict</h3>
@@ -1552,7 +1552,7 @@ added 96 packages, removed 1 package, changed 1 package, and audited 113 package
   }
   <span class="k">return</span> sum;
 }</pre></div>
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Check the code</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Check the code</span>
 <span class="c">$ </span><span class="k">npx eslint src</span>
 ~/code/my-shop/src/total.ts
   1:7   error  &#x27;greeting&#x27; is assigned a value but never used  @typescript-eslint/no-unused-vars
@@ -1564,13 +1564,13 @@ added 96 packages, removed 1 package, changed 1 package, and audited 113 package
 
 <h3>Prettier</h3>
 
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Is the code formatted?</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Is the code formatted?</span>
 <span class="c">$ </span><span class="k">npx prettier --check src</span>
 Checking formatting...
 [warn] src/format.ts
 [warn] src/style.css
 [warn] Code style issues found in 2 files. Run Prettier with --write to fix.
-<span class="c"># Format every file</span>
+<span class="c line-bidi"># Format every file</span>
 <span class="c">$ </span><span class="k">npx prettier --write src</span>
 src/format.ts 67ms
 src/main.ts 22ms (unchanged)
@@ -1662,13 +1662,13 @@ Modern JavaScript…
 </ol>
 <p class="hint"><strong>Hint:</strong> <code>&amp;&amp;</code> runs the next command only if the previous one succeeded. Put the fastest checks first, so you hear about problems sooner. Many teams also run this script automatically with a Git hook.</p>
 <p><strong>Your result should look like this:</strong></p>
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Run every check before committing</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Run every check before committing</span>
 <span class="c">$ </span><span class="k">npm run check</span>
 ~/code/my-shop/src/discount.ts
   2:3  error  Unexpected var, use let or const instead  no-var
 ✖ 1 problem (1 error, 0 warnings)
   1 error and 0 warnings potentially fixable with the `--fix` option.
-<span class="c"># After fixing the problem</span>
+<span class="c line-bidi"># After fixing the problem</span>
 <span class="c">$ </span><span class="k">npm run check</span>
 All matched files use Prettier code style!</pre></div>
 </div>
@@ -1686,7 +1686,7 @@ All matched files use Prettier code style!</pre></div>
 <li>Search the built JavaScript with <code>grep</code> to confirm that the production address, and only that one, went in.</li>
 </ol>
 <p class="hint"><strong>Hint:</strong> step 5 is how you prove what is really inside your build. Use the same trick to check that no secret slipped in: if you can find it with <code>grep</code>, so can anyone.</p>
-<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="c">// All settings are read and checked in one place</span>
+<div class="listing" dir="ltr"><div class="listing-title">src/config.ts</div><pre class="code"><span class="c line-bidi">// All settings are read and checked in one place</span>
 <span class="k">const</span> apiUrl = <span class="k">import</span>.meta.env.VITE_API_URL;
 <span class="k">if</span> (!apiUrl) <span class="k">throw</span> <span class="k">new</span> Error(<span class="s">&quot;VITE_API_URL is not set: add it to a .env file&quot;</span>);
 
@@ -1695,14 +1695,14 @@ All matched files use Prettier code style!</pre></div>
   isProduction: <span class="k">import</span>.meta.env.PROD,
 } as <span class="k">const</span>;</pre></div>
 <p><strong>Your result should look like this:</strong></p>
-<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c"># Two settings files</span>
+<div class="listing" dir="ltr"><div class="listing-title">terminal</div><pre class="code"><span class="c line-bidi"># Two settings files</span>
 <span class="c">$ </span><span class="k">cat .env.development .env.production</span>
 VITE_API_URL=http://localhost:8000
 VITE_API_URL=https://api.bits-shop.example
-<span class="c"># Build the site for production</span>
+<span class="c line-bidi"># Build the site for production</span>
 <span class="c">$ </span><span class="k">npm run build</span>
 ✓ built in 78ms
-<span class="c"># Which address went into the built file?</span>
+<span class="c line-bidi"># Which address went into the built file?</span>
 <span class="c">$ </span><span class="k">grep -o &#x27;https://[a-z.-]*example&#x27; dist/assets/index-*.js</span>
 https://api.bits-shop.example</pre></div>
 </div>
@@ -2345,7 +2345,7 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Cart /&gt;);</
   | { <span class="k">type</span>: <span class="s">&quot;toggled&quot;</span>; id: number }
   | { <span class="k">type</span>: <span class="s">&quot;cleared&quot;</span> };
 
-<span class="c">// The reducer is a pure function: it can run anywhere, even without React</span>
+<span class="c line-bidi">// The reducer is a pure function: it can run anywhere, even without React</span>
 <span class="k">export</span> <span class="k">function</span> tasksReducer(tasks: Task[], action: Action): Task[] {
   <span class="k">switch</span> (action.<span class="k">type</span>) {
     <span class="k">case</span> <span class="s">&quot;added&quot;</span>:
@@ -2526,7 +2526,7 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;Timer /&gt;);<
 <p class="hint"><strong>Hint:</strong> a custom hook is just a function whose name starts with <code>use</code> and which calls other hooks. It is the React way to reuse stateful logic, as the next chapters will show again and again.</p>
 <div class="listing" dir="ltr"><div class="listing-title">fake-api.ts</div><pre class="code"><span class="k">import</span> { catalogue, <span class="k">type</span> Product } <span class="k">from</span> <span class="s">&quot;./cart-model&quot;</span>;
 
-<span class="c">// A pretend server: answers after a delay, slower for short queries, like a real search.</span>
+<span class="c line-bidi">// A pretend server: answers after a delay, slower for short queries, like a real search.</span>
 <span class="k">export</span> <span class="k">function</span> searchProducts(query: string, signal: AbortSignal): Promise&lt;Product[]&gt; {
   <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
     <span class="k">const</span> timer = setTimeout(() =&gt; {
@@ -3095,7 +3095,7 @@ export function FavouriteButton({ id }: { id: number }) {
 
 <div class="listing" dir="ltr"><div class="listing-title">contact-schema.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
 
-<span class="c">// One schema: the rules, the error messages, and (with z.infer) the TypeScript type</span>
+<span class="c line-bidi">// One schema: the rules, the error messages, and (with z.infer) the TypeScript type</span>
 <span class="k">export</span> <span class="k">const</span> contactSchema = z.object({
   name: z.string().trim().min(<span class="n">3</span>, <span class="s">&quot;Please write your full name (at least 3 letters).&quot;</span>),
   email: z.email(<span class="s">&quot;Please enter an email like name@example.com.&quot;</span>),
@@ -3116,7 +3116,7 @@ export function FavouriteButton({ id }: { id: number }) {
 
 <div class="listing" dir="ltr"><div class="listing-title">validate.ts</div><pre class="code"><span class="k">import</span> { contactSchema } <span class="k">from</span> <span class="s">&quot;./contact-schema&quot;</span>;
 
-<span class="c">// The same schema checks data that arrives at the server</span>
+<span class="c line-bidi">// The same schema checks data that arrives at the server</span>
 <span class="k">const</span> good = contactSchema.safeParse({
   name: <span class="s">&quot;  Sara Khan &quot;</span>,
   email: <span class="s">&quot;sara@example.com&quot;</span>,
@@ -3362,7 +3362,7 @@ export function Field({ id, label, error, children }: FieldProps) {
 <span class="k">export</span> <span class="k">const</span> checkoutSchema = delivery.extend(payment.shape);
 <span class="k">export</span> <span class="k">type</span> Checkout = z.infer&lt;<span class="k">typeof</span> checkoutSchema&gt;;
 
-<span class="c">// Each step lists the fields it is responsible for</span>
+<span class="c line-bidi">// Each step lists the fields it is responsible for</span>
 <span class="k">export</span> <span class="k">const</span> STEPS = [
   { title: <span class="s">&quot;Delivery&quot;</span>, fields: [<span class="s">&quot;city&quot;</span>, <span class="s">&quot;street&quot;</span>, <span class="s">&quot;phone&quot;</span>] },
   { title: <span class="s">&quot;Payment&quot;</span>, fields: [<span class="s">&quot;method&quot;</span>] },
@@ -3539,7 +3539,7 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(
 
 <div class="listing" dir="ltr"><div class="listing-title">store-node.ts</div><pre class="code"><span class="k">import</span> { createStore } <span class="k">from</span> <span class="s">&quot;zustand/vanilla&quot;</span>;
 
-<span class="c">// The store works without React: the same code runs in Node</span>
+<span class="c line-bidi">// The store works without React: the same code runs in Node</span>
 <span class="k">type</span> Counter = { count: number; increase: () =&gt; void };
 
 <span class="k">const</span> store = createStore&lt;Counter&gt;()((set) =&gt; ({
@@ -3574,7 +3574,7 @@ after stop(): 3</pre></div>
 };
 
 <span class="k">export</span> <span class="k">const</span> useCart = create&lt;CartState&gt;()(
-  <span class="c">// persist saves the store in localStorage and loads it on the next visit</span>
+  <span class="c line-bidi">// persist saves the store in localStorage and loads it on the next visit</span>
   persist(
     (set) =&gt; ({
       lines: {},
@@ -3589,7 +3589,7 @@ after stop(): 3</pre></div>
   ),
 );
 
-<span class="c">// Derived values, calculated from the state</span>
+<span class="c line-bidi">// Derived values, calculated from the state</span>
 <span class="k">export</span> <span class="k">const</span> selectCount = (s: CartState) =&gt; Object.values(s.lines).reduce((n, l) =&gt; n + l.quantity, <span class="n">0</span>);
 <span class="k">export</span> <span class="k">const</span> selectTotal = (s: CartState) =&gt;
   Object.values(s.lines).reduce((n, l) =&gt; n + l.quantity * l.product.price, <span class="n">0</span>);</pre></div>
@@ -3892,7 +3892,7 @@ export function useTheme() {
 
 <div class="listing" dir="ltr"><div class="listing-title">build-tokens.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 
-<span class="c">// Reads tokens.json and writes CSS variables for the light and dark themes</span>
+<span class="c line-bidi">// Reads tokens.json and writes CSS variables for the light and dark themes</span>
 <span class="k">type</span> Tokens = {
   primitive: Record&lt;string, string&gt;;
   semantic: Record&lt;<span class="s">&quot;light&quot;</span> | <span class="s">&quot;dark&quot;</span>, Record&lt;string, string&gt;&gt;;
@@ -4163,7 +4163,7 @@ export function Switch({ label, checked, defaultChecked = false, onChange }: Swi
 <span class="k">type</span> Tokens = { primitive: Record&lt;string, string&gt;; semantic: Record&lt;string, Record&lt;string, string&gt;&gt; };
 <span class="k">const</span> tokens = JSON.parse(readFileSync(<span class="k">new</span> URL(<span class="s">&quot;../tokens.json&quot;</span>, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Tokens;
 
-<span class="c">// The WCAG formula from Book 1</span>
+<span class="c line-bidi">// The WCAG formula from Book 1</span>
 <span class="k">function</span> luminance(hex: string): number {
   <span class="k">const</span> [r, g, b] = [<span class="n">1</span>, <span class="n">3</span>, <span class="n">5</span>].map((i) =&gt; {
     <span class="k">const</span> c = parseInt(hex.slice(i, i + <span class="n">2</span>), <span class="n">16</span>) / <span class="n">255</span>;
@@ -4177,7 +4177,7 @@ export function Switch({ label, checked, defaultChecked = false, onChange }: Swi
   <span class="k">return</span> (hi + <span class="n">0.05</span>) / (lo + <span class="n">0.05</span>);
 }
 
-<span class="c">// Each text colour is checked on the background it is used on</span>
+<span class="c line-bidi">// Each text colour is checked on the background it is used on</span>
 <span class="k">const</span> PAIRS: [string, string][] = [
   [<span class="s">&quot;text&quot;</span>, <span class="s">&quot;surface&quot;</span>],
   [<span class="s">&quot;text-muted&quot;</span>, <span class="s">&quot;surface&quot;</span>],
@@ -4305,7 +4305,7 @@ All pairs pass WCAG AA.</pre></div>
 <span class="k">import</span> { pathToFileURL } <span class="k">from</span> <span class="s">&quot;node:url&quot;</span>;
 
 <span class="k">const</span> require = createRequire(<span class="k">import</span>.meta.url);
-<span class="c">// Only the few Playwright functions this script uses</span>
+<span class="c line-bidi">// Only the few Playwright functions this script uses</span>
 <span class="k">type</span> Page = {
   goto(url: string): Promise&lt;unknown&gt;;
   addScriptTag(options: { path: string }): Promise&lt;unknown&gt;;
@@ -4317,14 +4317,14 @@ All pairs pass WCAG AA.</pre></div>
 
 <span class="k">type</span> Violation = { id: string; impact: string; help: string; nodes: unknown[] };
 
-<span class="c">// Opens a page (a path from the current folder) in a real browser, runs axe-core, and prints what fails</span>
+<span class="c line-bidi">// Opens a page (a path from the current folder) in a real browser, runs axe-core, and prints what fails</span>
 <span class="k">export</span> <span class="k">async</span> <span class="k">function</span> audit(page: string): Promise&lt;number&gt; {
   <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
   <span class="k">const</span> tab = <span class="k">await</span> browser.newPage();
   <span class="k">await</span> tab.goto(pathToFileURL(resolve(page)).href);
   <span class="k">await</span> tab.addScriptTag({ path: axePath });
   <span class="k">const</span> violations = (<span class="k">await</span> tab.evaluate(() =&gt;
-    <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+    <span class="c line-bidi">// @ts-expect-error axe is added to the page by the script tag above</span>
     axe.run({ runOnly: [<span class="s">&quot;wcag2a&quot;</span>, <span class="s">&quot;wcag2aa&quot;</span>, <span class="s">&quot;wcag21aa&quot;</span>, <span class="s">&quot;wcag22aa&quot;</span>, <span class="s">&quot;best-practice&quot;</span>] }).then((r) =&gt; r.violations),
   )) as Violation[];
   <span class="k">await</span> browser.close();
@@ -4558,7 +4558,7 @@ export function ConfirmDialog({ open, title, children, confirmLabel, cancelLabel
 <p class="hint"><strong>Hint:</strong> start with only the serious and critical rules if an old project has hundreds of problems, and tighten the gate as you fix them. A gate that fails forever is soon switched off.</p>
 <div class="listing" dir="ltr"><div class="listing-title">audit-all.ts</div><pre class="code"><span class="k">import</span> { audit } <span class="k">from</span> <span class="s">&quot;../audit-lib&quot;</span>;
 
-<span class="c">// Audit every page, and fail the build if any has a violation</span>
+<span class="c line-bidi">// Audit every page, and fail the build if any has a violation</span>
 <span class="k">const</span> pages = [<span class="s">&quot;../before.html&quot;</span>, <span class="s">&quot;../after.html&quot;</span>];
 <span class="k">let</span> total = <span class="n">0</span>;
 <span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> pages) {
@@ -4892,8 +4892,8 @@ describe(<span class="s">&quot;cartTotal&quot;</span>, () =&gt; {
 <span class="k">import</span> { debounce } <span class="k">from</span> <span class="s">&quot;./debounce&quot;</span>;
 
 it(<span class="s">&quot;calls the function once, after the user stops typing&quot;</span>, () =&gt; {
-  vi.useFakeTimers(); <span class="c">// the test controls the clock: no real waiting</span>
-  <span class="k">const</span> search = vi.fn(); <span class="c">// a fake function that records its calls</span>
+  vi.useFakeTimers(); <span class="c line-bidi">// the test controls the clock: no real waiting</span>
+  <span class="k">const</span> search = vi.fn(); <span class="c line-bidi">// a fake function that records its calls</span>
   <span class="k">const</span> debounced = debounce(search, <span class="n">300</span>);
 
   debounced(<span class="s">&quot;b&quot;</span>);
@@ -4923,7 +4923,7 @@ it(<span class="s">&quot;calls the function once, after the user stops typing&qu
 
 <span class="k">export</span> <span class="k">default</span> defineConfig({
   test: {
-    environment: <span class="s">&quot;jsdom&quot;</span>, <span class="c">// a pretend browser, so components can render</span>
+    environment: <span class="s">&quot;jsdom&quot;</span>, <span class="c line-bidi">// a pretend browser, so components can render</span>
     setupFiles: [<span class="s">&quot;./vitest.setup.ts&quot;</span>],
     include: [<span class="s">&quot;**/*.test.{ts,tsx}&quot;</span>],
   },
@@ -5040,13 +5040,13 @@ describe(&quot;LoginForm&quot;, () =&gt; {
 <span class="k">export</span> <span class="k">default</span> defineConfig({
   testDir: <span class="s">&quot;./e2e&quot;</span>,
   reporter: <span class="s">&quot;list&quot;</span>,
-  <span class="c">// Start the site before the tests, and stop it after. In a Vite project: &quot;npm run build &amp;&amp; npm run preview&quot;.</span>
+  <span class="c line-bidi">// Start the site before the tests, and stop it after. In a Vite project: &quot;npm run build &amp;&amp; npm run preview&quot;.</span>
   webServer: { command: <span class="s">&quot;node ../../serve.mjs 4173&quot;</span>, url: <span class="s">&quot;http://localhost:4173/vendor/react.js&quot;</span>, reuseExistingServer: <span class="k">true</span> },
   use: { baseURL: <span class="s">&quot;http://localhost:4173/testing/en/&quot;</span>, browserName: <span class="s">&quot;chromium&quot;</span> },
 });</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">e2e/login.spec.ts</div><pre class="code"><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">&quot;@playwright/test&quot;</span>;
 
-<span class="k">const</span> page_url = <span class="s">&quot;react/login.html&quot;</span>; <span class="c">// relative to baseURL in playwright.config.ts</span>
+<span class="k">const</span> page_url = <span class="s">&quot;react/login.html&quot;</span>; <span class="c line-bidi">// relative to baseURL in playwright.config.ts</span>
 
 test(<span class="s">&quot;a user can sign in&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
   <span class="k">await</span> page.goto(page_url);
@@ -5232,7 +5232,7 @@ it(&quot;does not add an empty task&quot;, async () =&gt; {
 test(<span class="s">&quot;the sign-in page has no accessibility violations&quot;</span>, <span class="k">async</span> ({ page }) =&gt; {
   <span class="k">await</span> page.goto(page_url);
   <span class="k">await</span> page.addScriptTag({ path: require.resolve(<span class="s">&quot;axe-core/axe.min.js&quot;</span>) });
-  <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+  <span class="c line-bidi">// @ts-expect-error axe is added to the page by the script tag above</span>
   <span class="k">const</span> violations = <span class="k">await</span> page.evaluate(() =&gt; axe.run().then((r) =&gt; r.violations.map((v) =&gt; v.id)));
   expect(violations).toEqual([]);
 });
@@ -5358,7 +5358,7 @@ Running 4 tests using 2 workers
 
 <span class="k">export</span> <span class="k">type</span> Vitals = { lcp: number; cls: number };
 
-<span class="c">// Throttling only works over HTTP, so the pages are served like a real site</span>
+<span class="c line-bidi">// Throttling only works over HTTP, so the pages are served like a real site</span>
 <span class="k">function</span> serve(): Promise&lt;{ url: string; close: () =&gt; void }&gt; {
   <span class="k">const</span> types: Record&lt;string, string&gt; = { <span class="s">&quot;.html&quot;</span>: <span class="s">&quot;text/html&quot;</span>, <span class="s">&quot;.js&quot;</span>: <span class="s">&quot;text/javascript&quot;</span>, <span class="s">&quot;.png&quot;</span>: <span class="s">&quot;image/png&quot;</span> };
   <span class="k">const</span> server = createServer((req, res) =&gt; {
@@ -5375,7 +5375,7 @@ Running 4 tests using 2 workers
   <span class="k">const</span> site = <span class="k">await</span> serve();
   <span class="k">const</span> browser = <span class="k">await</span> chromium.launch();
   <span class="k">const</span> tab = <span class="k">await</span> browser.newPage();
-  <span class="c">// Slow down the network and the CPU, like a mid-range phone on a 4G connection</span>
+  <span class="c line-bidi">// Slow down the network and the CPU, like a mid-range phone on a 4G connection</span>
   <span class="k">const</span> cdp = <span class="k">await</span> tab.context().newCDPSession(tab);
   <span class="k">await</span> cdp.send(<span class="s">&quot;Network.enable&quot;</span>);
   <span class="k">await</span> cdp.send(<span class="s">&quot;Network.emulateNetworkConditions&quot;</span>, {
@@ -5383,7 +5383,7 @@ Running 4 tests using 2 workers
   });
   <span class="k">await</span> cdp.send(<span class="s">&quot;Emulation.setCPUThrottlingRate&quot;</span>, { rate: <span class="n">4</span> });
 
-  <span class="k">await</span> tab.goto(site.url + page); <span class="c">// waits for the load event, pictures included</span>
+  <span class="k">await</span> tab.goto(site.url + page); <span class="c line-bidi">// waits for the load event, pictures included</span>
   <span class="k">await</span> tab.waitForTimeout(<span class="n">1000</span>);
   <span class="k">const</span> vitals = <span class="k">await</span> tab.evaluate(
     () =&gt;
@@ -5476,7 +5476,7 @@ Running 4 tests using 2 workers
 
 <span class="k">for</span> (<span class="k">const</span> page <span class="k">of</span> [<span class="s">&quot;slow.html&quot;</span>, <span class="s">&quot;fast.html&quot;</span>]) {
   <span class="k">const</span> { lcp, cls } = <span class="k">await</span> measure(page);
-  <span class="c">// Rounded, because each run differs by a few milliseconds</span>
+  <span class="c line-bidi">// Rounded, because each run differs by a few milliseconds</span>
   <span class="k">const</span> seconds = (Math.round(lcp / <span class="n">100</span>) / <span class="n">10</span>).toFixed(<span class="n">1</span>);
   console.log(<span class="s">`${page.padEnd(10)} LCP ${seconds} s (${rate(lcp, 2500, 4000)})   CLS ${cls.toFixed(2)} (${rate(cls, 0.1, 0.25)})`</span>);
 }</pre></div>
@@ -5677,7 +5677,7 @@ desktop   hero image: hero-small.png   picture far below loaded? no (lazy)</pre>
 <span class="k">import</span> { join } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 <span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
 
-<span class="c">// Fails the build when the JavaScript or CSS sent to users grows past the budget</span>
+<span class="c line-bidi">// Fails the build when the JavaScript or CSS sent to users grows past the budget</span>
 <span class="k">const</span> BUDGET = { js: <span class="n">60</span> * <span class="n">1024</span>, css: <span class="n">15</span> * <span class="n">1024</span> };
 
 <span class="k">function</span> files(dir: string): string[] {
@@ -5774,7 +5774,7 @@ CSS     0.0 KB  Budget  15.0 KB  ✓ within budget</pre></div>
 
 <p><dfn>Cross-site scripting</dfn> happens when text from a user is treated as code in someone else’s browser. The attacker’s script then runs with the victim’s identity: it can read the page, send requests as the victim, or show a fake sign-in form. Book 1 warned about <code>innerHTML</code>; here is the attack, for real. A small lab serves pages and opens them in Chromium:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">lab.ts</div><pre class="code"><span class="c">// A small lab: serves pages from this folder with chosen headers, and opens them in Chromium.</span>
+<div class="listing" dir="ltr"><div class="listing-title">lab.ts</div><pre class="code"><span class="c line-bidi">// A small lab: serves pages from this folder with chosen headers, and opens them in Chromium.</span>
 <span class="k">import</span> { createReadStream } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { createServer, <span class="k">type</span> IncomingMessage, <span class="k">type</span> ServerResponse } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
 <span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
@@ -5812,7 +5812,7 @@ CSS     0.0 KB  Budget  15.0 KB  ✓ within budget</pre></div>
 }</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">xss.ts</div><pre class="code"><span class="k">import</span> { withLab } <span class="k">from</span> <span class="s">&quot;./lab&quot;</span>;
 
-<span class="c">// What an attacker types into the comment box</span>
+<span class="c line-bidi">// What an attacker types into the comment box</span>
 <span class="k">const</span> comment = <span class="s">`&lt;img src=&quot;x&quot; onerror=&quot;window.hacked = true&quot;&gt; Nice book!`</span>;
 
 <span class="k">await</span> withLab({}, <span class="k">async</span> (page, base) =&gt; {
@@ -5821,10 +5821,10 @@ CSS     0.0 KB  Budget  15.0 KB  ✓ within budget</pre></div>
     <span class="k">const</span> result = <span class="k">await</span> page.evaluate(
       <span class="k">async</span> ({ way, comment }) =&gt; {
         <span class="k">const</span> li = document.createElement(<span class="s">&quot;li&quot;</span>);
-        <span class="k">if</span> (way === <span class="s">&quot;innerHTML&quot;</span>) li.innerHTML = comment; <span class="c">// dangerous</span>
-        <span class="k">else</span> li.textContent = comment; <span class="c">// safe</span>
+        <span class="k">if</span> (way === <span class="s">&quot;innerHTML&quot;</span>) li.innerHTML = comment; <span class="c line-bidi">// dangerous</span>
+        <span class="k">else</span> li.textContent = comment; <span class="c line-bidi">// safe</span>
         document.querySelector(<span class="s">&quot;#list&quot;</span>)!.append(li);
-        <span class="k">await</span> <span class="k">new</span> Promise((r) =&gt; setTimeout(r, <span class="n">100</span>)); <span class="c">// give the broken image time to fire onerror</span>
+        <span class="k">await</span> <span class="k">new</span> Promise((r) =&gt; setTimeout(r, <span class="n">100</span>)); <span class="c line-bidi">// give the broken image time to fire onerror</span>
         <span class="k">return</span> { ran: (window as { hacked?: boolean }).hacked === <span class="k">true</span>, html: li.innerHTML };
       },
       { way, comment },
@@ -5875,15 +5875,15 @@ console.log(renderToStaticMarkup(&lt;a href={safe}&gt;Profile&lt;/a&gt;));</pre>
   <span class="k">&lt;head</span><span class="k">&gt;</span><span class="k">&lt;meta</span> <span class="n">charset</span>=<span class="s">&quot;utf-8&quot;</span><span class="k">&gt;</span><span class="k">&lt;title</span><span class="k">&gt;</span>CSP<span class="k">&lt;/title</span><span class="k">&gt;</span><span class="k">&lt;/head</span><span class="k">&gt;</span>
   <span class="k">&lt;body</span><span class="k">&gt;</span>
     <span class="k">&lt;h1</span> <span class="n">id</span>=<span class="s">&quot;title&quot;</span><span class="k">&gt;</span>…<span class="k">&lt;/h1</span><span class="k">&gt;</span>
-    <span class="c">&lt;!-- An inline script, as an attacker might manage to inject --&gt;</span>
+    <span class="c line-bidi">&lt;!-- An inline script, as an attacker might manage to inject --&gt;</span>
     <span class="k">&lt;script</span><span class="k">&gt;</span>document.title = <span class="s">&quot;pwned&quot;</span>; window.hacked = true;<span class="k">&lt;/script</span><span class="k">&gt;</span>
-    <span class="c">&lt;!-- The app&#x27;s own script, from a file on the same site --&gt;</span>
+    <span class="c line-bidi">&lt;!-- The app&#x27;s own script, from a file on the same site --&gt;</span>
     <span class="k">&lt;script</span> <span class="n">src</span>=<span class="s">&quot;app.js&quot;</span><span class="k">&gt;</span><span class="k">&lt;/script</span><span class="k">&gt;</span>
   <span class="k">&lt;/body</span><span class="k">&gt;</span>
 <span class="k">&lt;/html</span><span class="k">&gt;</span></pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">csp.ts</div><pre class="code"><span class="k">import</span> { withLab } <span class="k">from</span> <span class="s">&quot;./lab&quot;</span>;
 
-<span class="c">// Served with a strict Content Security Policy</span>
+<span class="c line-bidi">// Served with a strict Content Security Policy</span>
 <span class="k">const</span> policy = <span class="s">&quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; frame-ancestors &#x27;none&#x27;&quot;</span>;
 
 <span class="k">await</span> withLab({ <span class="s">&quot;Content-Security-Policy&quot;</span>: policy }, <span class="k">async</span> (page, base) =&gt; {
@@ -6032,7 +6032,7 @@ The app still works: OK</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">headers.ts</div><pre class="code"><span class="k">import</span> { createServer } <span class="k">from</span> <span class="s">&quot;node:http&quot;</span>;
 <span class="k">import</span> <span class="k">type</span> { AddressInfo } <span class="k">from</span> <span class="s">&quot;node:net&quot;</span>;
 
-<span class="c">// Checks the security headers a server sends, like the tools security teams use</span>
+<span class="c line-bidi">// Checks the security headers a server sends, like the tools security teams use</span>
 <span class="k">const</span> RECOMMENDED: Record&lt;string, string&gt; = {
   <span class="s">&quot;content-security-policy&quot;</span>: <span class="s">&quot;stops injected scripts&quot;</span>,
   <span class="s">&quot;strict-transport-security&quot;</span>: <span class="s">&quot;forces HTTPS&quot;</span>,
@@ -6053,7 +6053,7 @@ The app still works: OK</pre></div>
   <span class="k">return</span> score;
 }
 
-<span class="c">// A local server that sends only some of the headers, to check against</span>
+<span class="c line-bidi">// A local server that sends only some of the headers, to check against</span>
 <span class="k">const</span> server = createServer((_req, res) =&gt; {
   res.setHeader(<span class="s">&quot;Content-Security-Policy&quot;</span>, <span class="s">&quot;default-src &#x27;self&#x27;&quot;</span>);
   res.setHeader(<span class="s">&quot;X-Content-Type-Options&quot;</span>, <span class="s">&quot;nosniff&quot;</span>);
@@ -6138,7 +6138,7 @@ Score: 3/5</pre></div>
 
 <p>The JavaScript <code>Intl</code> API knows the formatting rules of hundreds of <dfn>locales</dfn>: a language plus a region, written like <code>ar-EG</code> (Arabic, Egypt) or <code>en-GB</code> (English, United Kingdom). Never build these formats by hand:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">numbers.ts</div><pre class="code"><span class="c">// One number, many correct ways to write it</span>
+<div class="listing" dir="ltr"><div class="listing-title">numbers.ts</div><pre class="code"><span class="c line-bidi">// One number, many correct ways to write it</span>
 <span class="k">const</span> price = <span class="n">1234567.5</span>;
 <span class="k">const</span> show = (locale: string, options: Intl.NumberFormatOptions = {}) =&gt;
   console.log(locale.padEnd(<span class="n">18</span>), <span class="k">new</span> Intl.NumberFormat(locale, options).format(price));
@@ -6185,7 +6185,7 @@ HTML وCSS وJavaScript</pre></div>
 
 <p>English needs two forms: “1 item”, “2 items”. Arabic needs six, and the rules depend on the number in ways that are easy to get wrong. <code>Intl.PluralRules</code> knows them:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">plurals.ts</div><pre class="code"><span class="c">// Arabic has six plural categories; English has two</span>
+<div class="listing" dir="ltr"><div class="listing-title">plurals.ts</div><pre class="code"><span class="c line-bidi">// Arabic has six plural categories; English has two</span>
 <span class="k">const</span> ar = <span class="k">new</span> Intl.PluralRules(<span class="s">&quot;ar&quot;</span>);
 <span class="k">const</span> en = <span class="k">new</span> Intl.PluralRules(<span class="s">&quot;en&quot;</span>);
 
@@ -6205,7 +6205,7 @@ ar categories: few, many, one, two, zero, other</pre></div>
 
 <p>A message catalogue therefore stores a plural message as one text per category, and the code picks the right one. Here is a small catalogue and translation function, the core of what libraries such as i18next, FormatJS and vue-i18n do:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">messages.ts</div><pre class="code"><span class="c">// Every message has a key, and placeholders in braces</span>
+<div class="listing" dir="ltr"><div class="listing-title">messages.ts</div><pre class="code"><span class="c line-bidi">// Every message has a key, and placeholders in braces</span>
 <span class="k">export</span> <span class="k">const</span> messages = {
   en: {
     <span class="s">&quot;cart.title&quot;</span>: <span class="s">&quot;Your cart&quot;</span>,
@@ -6482,7 +6482,7 @@ createRoot(document.getElementById(&quot;root&quot;)!).render(
 <p class="hint"><strong>Hint:</strong> real projects also check plural messages (every category the language needs is present) and keys used in the code but missing from the catalogue. Libraries such as i18next have tools for both.</p>
 <div class="listing" dir="ltr"><div class="listing-title">check-messages.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 
-<span class="c">// Compare the two catalogues: missing keys, extra keys, and placeholders that do not match</span>
+<span class="c line-bidi">// Compare the two catalogues: missing keys, extra keys, and placeholders that do not match</span>
 <span class="k">const</span> load = (file: string) =&gt; JSON.parse(readFileSync(<span class="k">new</span> URL(file, <span class="k">import</span>.meta.url), <span class="s">&quot;utf8&quot;</span>)) as Record&lt;string, string&gt;;
 <span class="k">const</span> en = load(<span class="s">&quot;./en.json&quot;</span>);
 <span class="k">const</span> ar = load(<span class="s">&quot;./ar.json&quot;</span>);
@@ -6766,7 +6766,7 @@ functions of shared/api. Effects no longer call fetch.
 <p class="hint"><strong>Hint:</strong> look at the third answer: the server sent the price as a string. Without validation, that would have shown up as “8EGP”, or as <code>NaN</code> in a total, far from its cause. With it, the error names the exact field.</p>
 <div class="listing" dir="ltr"><div class="listing-title">shared/api/api.ts</div><pre class="code"><span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
 
-<span class="c">// One place that talks to the server: typed, validated, and with errors the screens can understand</span>
+<span class="c line-bidi">// One place that talks to the server: typed, validated, and with errors the screens can understand</span>
 <span class="k">export</span> <span class="k">const</span> Product = z.object({ id: z.number(), name: z.string(), price: z.number().nonnegative() });
 <span class="k">export</span> <span class="k">type</span> Product = z.infer&lt;<span class="k">typeof</span> Product&gt;;
 
@@ -6823,7 +6823,7 @@ functions of shared/api. Effects no longer call fetch.
 <div class="listing" dir="ltr"><div class="listing-title">boundaries.ts</div><pre class="code"><span class="k">import</span> { readdirSync, readFileSync, statSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 <span class="k">import</span> { dirname, join, relative, resolve } <span class="k">from</span> <span class="s">&quot;node:path&quot;</span>;
 
-<span class="c">// The layers, from the bottom up: each may import only from layers below it: shared → features → app</span>
+<span class="c line-bidi">// The layers, from the bottom up: each may import only from layers below it: shared → features → app</span>
 <span class="k">const</span> root = resolve(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;sample/src&quot;</span>);
 
 <span class="k">function</span> files(dir: string): string[] {
@@ -6833,7 +6833,7 @@ functions of shared/api. Effects no longer call fetch.
   });
 }
 
-<span class="c">// &quot;features/cart/store.ts&quot; -&gt; { layer: &quot;features&quot;, feature: &quot;cart&quot;, rest: &quot;store.ts&quot; }</span>
+<span class="c line-bidi">// &quot;features/cart/store.ts&quot; -&gt; { layer: &quot;features&quot;, feature: &quot;cart&quot;, rest: &quot;store.ts&quot; }</span>
 <span class="k">function</span> where(path: string) {
   <span class="k">const</span> [layer = <span class="s">&quot;&quot;</span>, feature = <span class="s">&quot;&quot;</span>, ...rest] = relative(root, path).split(<span class="s">&quot;/&quot;</span>);
   <span class="k">return</span> { layer, feature: layer === <span class="s">&quot;features&quot;</span> ? feature : <span class="s">&quot;&quot;</span>, rest: rest.join(<span class="s">&quot;/&quot;</span>) };
@@ -6944,10 +6944,10 @@ process.exitCode = problems.length ? <span class="n">1</span> : <span class="n">
 
 <p>We will build a small shop for Bit: a home page, a product list, a page per product, a contact form and a tiny API. <code>create-next-app</code> writes the project, with TypeScript and ESLint already set up:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c"># Create the project</span>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Create the project</span>
 <span class="c">$ </span><span class="k">npx create-next-app@latest bit-shop --ts --app --eslint --no-tailwind --no-src-dir --use-npm</span>
 Success! Created bit-shop at ~/code/bit-shop
-<span class="c"># Build for production</span>
+<span class="c line-bidi"># Build for production</span>
 <span class="c">$ </span><span class="k">npm run build</span>
 Route (app)           Revalidate  Expire
 ┌ ○ /
@@ -7019,7 +7019,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 <p>Here is the heart of the chapter. In the <code>app/</code> folder, <strong>every component is a Server Component unless you say otherwise</strong>. A <dfn>Server Component</dfn> runs only on the server. It can be <code>async</code>, it can <code>await</code> data directly, and its code is never sent to the browser. First, a pretend database:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">lib/products.ts</div><pre class="code"><span class="c">// A pretend database: in a real app, a query to PostgreSQL or a call to another service</span>
+<div class="listing" dir="ltr"><div class="listing-title">lib/products.ts</div><pre class="code"><span class="c line-bidi">// A pretend database: in a real app, a query to PostgreSQL or a call to another service</span>
 <span class="k">export</span> <span class="k">type</span> Product = { id: number; name: string; description: string; price: number };
 
 <span class="k">const</span> products: Product[] = [
@@ -7076,12 +7076,12 @@ export default async function ProductsPage() {
 
 <p>Compare it with Chapter 6: no <code>useQuery</code>, no loading state, no error state, no API to call. The component asks for the data and returns JSX that uses it. Leave aside the two lines with <code>"use cache"</code> until section 16.6. What does the browser receive? Let us ask the running server with <code>curl</code>, which downloads a page without running any JavaScript:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c"># What does the server send? (no JavaScript involved)</span>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># What does the server send? (no JavaScript involved)</span>
 <span class="c">$ </span><span class="k">curl -s localhost:3000/products | grep -oE &#x27;&lt;li&gt;&lt;a href=&quot;[^&quot;]+&quot;&gt;[^&lt;]+&#x27;</span>
 &lt;li&gt;&lt;a href=&quot;/products/1&quot;&gt;Code from Zero
 &lt;li&gt;&lt;a href=&quot;/products/2&quot;&gt;Bit mug
 &lt;li&gt;&lt;a href=&quot;/products/3&quot;&gt;Bit cap
-<span class="c"># The route handler returns JSON</span>
+<span class="c line-bidi"># The route handler returns JSON</span>
 <span class="c">$ </span><span class="k">curl -s localhost:3000/api/products</span>
 [{&quot;id&quot;:1,&quot;name&quot;:&quot;Code from Zero&quot;,&quot;description&quot;:&quot;The friendly first book of the series.&quot;,&quot;price&quot;:250},{&quot;id&quot;:2,&quot;name&quot;:&quot;Bit mug&quot;,&quot;description&quot;:&quot;A big mug for long coding nights.&quot;,&quot;price&quot;:85},{&quot;id&quot;:3,&quot;name&quot;:&quot;Bit cap&quot;,&quot;description&quot;:&quot;Keeps the sun out of your eyes.&quot;,&quot;price&quot;:120}]</pre></div>
 
@@ -7223,7 +7223,7 @@ export default async function ProductPage({ params }: Props) {
 
 <p>A <dfn>Server Action</dfn> is an async function that runs on the server and can be called from the browser, usually by a form. A file that starts with <code>"use server"</code> makes every function it exports a Server Action:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">app/contact/actions.ts</div><pre class="code"><span class="s">&quot;use server&quot;</span>; <span class="c">// A Server Action: a function that runs on the server, called by a form</span>
+<div class="listing" dir="ltr"><div class="listing-title">app/contact/actions.ts</div><pre class="code"><span class="s">&quot;use server&quot;</span>; <span class="c line-bidi">// A Server Action: a function that runs on the server, called by a form</span>
 
 <span class="k">import</span> { z } <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
 
@@ -7241,7 +7241,7 @@ export default async function ProductPage({ params }: Props) {
     <span class="k">for</span> (<span class="k">const</span> issue <span class="k">of</span> parsed.error.issues) errors[issue.path[<span class="n">0</span>] as <span class="s">&quot;name&quot;</span> | <span class="s">&quot;message&quot;</span>] ??= issue.message;
     <span class="k">return</span> { errors };
   }
-  <span class="c">// Save the message, send an email… on the server, with secrets that never reach the browser</span>
+  <span class="c line-bidi">// Save the message, send an email… on the server, with secrets that never reach the browser</span>
   <span class="k">return</span> { done: <span class="s">`Thank you, {name}! We will reply soon.`</span>.replace(<span class="s">&quot;{name}&quot;</span>, parsed.data.name) };
 }</pre></div>
 
@@ -7456,10 +7456,10 @@ export default function ContactPage() {
 
 <p>The best review starts before anyone reviews: with a change that is easy to read. Here is Sara, adding discount codes to Bit’s shop. While she was there, her editor also reformatted a stylesheet. Git shows what the pull request contains:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c"># A new branch for the feature</span>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># A new branch for the feature</span>
 <span class="c">$ </span><span class="k">git switch -c feature/discount-codes</span>
 Switched to a new branch &#x27;feature/discount-codes&#x27;
-<span class="c"># What changed, file by file</span>
+<span class="c line-bidi"># What changed, file by file</span>
 <span class="c">$ </span><span class="k">git diff --stat main</span>
  src/cart/discount.ts |  11 ++
  src/ui/styles.css    | 300 ++++++++++++++++++++++++++++++++++++++++-----------
@@ -7467,7 +7467,7 @@ Switched to a new branch &#x27;feature/discount-codes&#x27;
 
 <p>Eleven lines of new feature are hidden among three hundred lines of formatting. A reviewer will either read everything and get tired before reaching the part that matters, or skim and miss it. Both are bad. The fix takes a minute: move the formatting into a pull request of its own, which can be approved at a glance because it changes no behaviour:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c"># Move the formatting into its own pull request</span>
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Move the formatting into its own pull request</span>
 <span class="c">$ </span><span class="k">git switch -c chore/format-styles main</span>
 Switched to a new branch &#x27;chore/format-styles&#x27;
 <span class="c">$ </span><span class="k">git checkout feature/discount-codes -- src/ui/styles.css</span>
@@ -7476,7 +7476,7 @@ Switched to a new branch &#x27;chore/format-styles&#x27;
 Switched to branch &#x27;feature/discount-codes&#x27;
 <span class="c">$ </span><span class="k">git checkout main -- src/ui/styles.css</span>
 <span class="c">$ </span><span class="k">git commit -qm &quot;Keep only the discount codes&quot;</span>
-<span class="c"># The feature’s pull request, after the split</span>
+<span class="c line-bidi"># The feature’s pull request, after the split</span>
 <span class="c">$ </span><span class="k">git diff --stat main</span>
  src/cart/discount.ts | 11 +++++++++++
  1 file changed, 11 insertions(+)</pre></div>
@@ -7517,7 +7517,7 @@ Switched to branch &#x27;feature/discount-codes&#x27;
 
 <div class="listing" dir="ltr"><div class="listing-title">review-bot.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
 
-<span class="c">// Reads the pull request&#x27;s diff and comments on the lines a machine can judge</span>
+<span class="c line-bidi">// Reads the pull request&#x27;s diff and comments on the lines a machine can judge</span>
 <span class="k">type</span> Finding = { file: string; line: number; message: string };
 
 <span class="k">const</span> diff = readFileSync(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;pr.diff&quot;</span>, <span class="s">&quot;utf8&quot;</span>).split(<span class="s">&quot;\n&quot;</span>);
@@ -7529,13 +7529,13 @@ Switched to branch &#x27;feature/discount-codes&#x27;
 
 <span class="k">for</span> (<span class="k">const</span> text <span class="k">of</span> diff) {
   <span class="k">if</span> (text.startsWith(<span class="s">&quot;+++ &quot;</span>)) {
-    file = text.slice(<span class="n">6</span>); <span class="c">// &quot;+++ b/src/cart/discount.ts&quot;</span>
+    file = text.slice(<span class="n">6</span>); <span class="c line-bidi">// &quot;+++ b/src/cart/discount.ts&quot;</span>
     changedFiles.add(file);
     continue;
   }
   <span class="k">const</span> hunk = /^@@ -\d+(?:,\d+)? \+(\d+)/.exec(text);
   <span class="k">if</span> (hunk) {
-    line = Number(hunk[<span class="n">1</span>]); <span class="c">// Line numbers in the new file start from the @@ header of each part of the diff</span>
+    line = Number(hunk[<span class="n">1</span>]); <span class="c line-bidi">// Line numbers in the new file start from the @@ header of each part of the diff</span>
     continue;
   }
   <span class="k">if</span> (text.startsWith(<span class="s">&quot;-&quot;</span>) &amp;&amp; !text.startsWith(<span class="s">&quot;---&quot;</span>)) {
@@ -7648,19 +7648,19 @@ index 0000000..36b91e1
 
 <div class="listing" dir="ltr"><div class="listing-title">src/cart/discount.ts</div><pre class="code"><span class="k">import</span> { subtotal, <span class="k">type</span> Line } <span class="k">from</span> <span class="s">&quot;./cart&quot;</span>;
 
-<span class="c">// Prices are whole piastres: no floating-point money</span>
-<span class="c">// The codes live in one table; adding a code needs no new if</span>
+<span class="c line-bidi">// Prices are whole piastres: no floating-point money</span>
+<span class="c line-bidi">// The codes live in one table; adding a code needs no new if</span>
 <span class="k">const</span> codes: Record&lt;string, { percent: number }&gt; = {
   BIT10: { percent: <span class="n">10</span> },
   HALF: { percent: <span class="n">50</span> },
 };
 
-<span class="c">// Unknown codes are an answer, not a silent full price</span>
+<span class="c line-bidi">// Unknown codes are an answer, not a silent full price</span>
 <span class="k">export</span> <span class="k">type</span> Priced =
   | { ok: <span class="k">true</span>; subtotal: number; discount: number; total: number }
   | { ok: <span class="k">false</span>; reason: <span class="s">&quot;unknown-code&quot;</span> };
 
-<span class="c">// The cart is not changed: the function returns a new result</span>
+<span class="c line-bidi">// The cart is not changed: the function returns a new result</span>
 <span class="k">export</span> <span class="k">function</span> price(lines: <span class="k">readonly</span> Line[], code?: string): Priced {
   <span class="k">const</span> sum = subtotal(lines);
   <span class="k">const</span> key = code?.trim().toUpperCase();
@@ -7689,7 +7689,7 @@ index 0000000..36b91e1
   <span class="k">else</span> console.log(<span class="s">`${label} → subtotal ${egp(result.subtotal)}  discount ${egp(result.discount)}  total ${egp(result.total)}`</span>);
 }
 
-<span class="c">// The cases that matter, as checks that fail loudly</span>
+<span class="c line-bidi">// The cases that matter, as checks that fail loudly</span>
 assert.deepEqual(price([], <span class="s">&quot;BIT10&quot;</span>), { ok: <span class="k">true</span>, subtotal: <span class="n">0</span>, discount: <span class="n">0</span>, total: <span class="n">0</span> });
 assert.equal(price(cart, <span class="s">&quot;bit10&quot;</span>).ok, <span class="k">true</span>);
 assert.deepEqual(price(cart, <span class="s">&quot;FREE&quot;</span>), { ok: <span class="k">false</span>, reason: <span class="s">&quot;unknown-code&quot;</span> });
@@ -7751,7 +7751,7 @@ console.log(<span class="s">&quot;✓ 4 checks passed&quot;</span>);</pre></div>
 
 <p>For a real choice, list the <strong>criteria</strong> first, give each a <strong>weight</strong> for how much it matters to <em>this</em> team, and only then score the options. Choosing the criteria before looking at the options keeps everyone honest. Here is the team choosing a tool for end-to-end tests:</p>
 
-<div class="listing" dir="ltr"><div class="listing-title">decide.ts</div><pre class="code"><span class="c">// Every score is from 1 (poor) to 5 (excellent); the weights say what matters to this team</span>
+<div class="listing" dir="ltr"><div class="listing-title">decide.ts</div><pre class="code"><span class="c line-bidi">// Every score is from 1 (poor) to 5 (excellent); the weights say what matters to this team</span>
 <span class="k">const</span> criteria = { fit: <span class="n">5</span>, learn: <span class="n">3</span>, speed: <span class="n">3</span>, community: <span class="n">2</span>, cost: <span class="n">2</span> } as <span class="k">const</span>;
 <span class="k">type</span> Criterion = <span class="k">keyof</span> <span class="k">typeof</span> criteria;
 
@@ -7777,7 +7777,7 @@ console.log(<span class="s">&quot;Option&quot;</span>.padEnd(<span class="n">22<
 <span class="k">for</span> (<span class="k">const</span> [name, scores] <span class="k">of</span> Object.entries(options)) console.log(name.padEnd(<span class="n">22</span>) + total(scores, criteria));
 console.log(<span class="s">`Winner: ${winner(criteria)}`</span>);
 
-<span class="c">// Which option would win if one criterion mattered twice as much?</span>
+<span class="c line-bidi">// Which option would win if one criterion mattered twice as much?</span>
 <span class="k">for</span> (<span class="k">const</span> c <span class="k">of</span> Object.keys(criteria) as Criterion[]) {
   console.log(<span class="s">`  If &quot;${names[c]}&quot; counted twice → ${winner({ ...criteria, [c]: criteria[c] * 2 })}`</span>);
 }</pre></div>
@@ -8057,7 +8057,7 @@ src/ui/ui.tsx</pre></div>
   id: z.number().int(),
   customer: z.string(),
   city: z.string(),
-  total: z.number().int().nonnegative(), <span class="c">// piastres</span>
+  total: z.number().int().nonnegative(), <span class="c line-bidi">// piastres</span>
   status: OrderStatus,
   createdAt: z.iso.datetime(),
 });
@@ -8066,7 +8066,7 @@ src/ui/ui.tsx</pre></div>
 <span class="k">export</span> <span class="k">const</span> Product = z.object({
   id: z.number().int(),
   name: z.string(),
-  price: z.number().int().positive(), <span class="c">// piastres</span>
+  price: z.number().int().positive(), <span class="c line-bidi">// piastres</span>
   stock: z.number().int().nonnegative(),
 });
 <span class="k">export</span> <span class="k">type</span> Product = z.infer&lt;<span class="k">typeof</span> Product&gt;;</pre></div>
@@ -8076,7 +8076,7 @@ src/ui/ui.tsx</pre></div>
 <div class="listing" dir="ltr"><div class="listing-title">src/api/client.ts</div><pre class="code"><span class="k">import</span> * as z <span class="k">from</span> <span class="s">&quot;zod&quot;</span>;
 <span class="k">import</span> { Order, Product, <span class="k">type</span> OrderStatus } <span class="k">from</span> <span class="s">&quot;./schemas&quot;</span>;
 
-<span class="c">// The only place that calls fetch: every answer is checked against its schema</span>
+<span class="c line-bidi">// The only place that calls fetch: every answer is checked against its schema</span>
 <span class="k">export</span> <span class="k">class</span> ApiError <span class="k">extends</span> Error {
   constructor(
     <span class="k">readonly</span> status: number,
@@ -8113,7 +8113,7 @@ src/ui/ui.tsx</pre></div>
 <span class="k">import</span> { api } <span class="k">from</span> <span class="s">&quot;./client&quot;</span>;
 <span class="k">import</span> <span class="k">type</span> { Order, OrderStatus, Product } <span class="k">from</span> <span class="s">&quot;./schemas&quot;</span>;
 
-<span class="c">// One place for query keys, so reading and invalidating always use the same names</span>
+<span class="c line-bidi">// One place for query keys, so reading and invalidating always use the same names</span>
 <span class="k">export</span> <span class="k">const</span> keys = {
   orders: [<span class="s">&quot;orders&quot;</span>] as <span class="k">const</span>,
   order: (id: number) =&gt; [<span class="s">&quot;orders&quot;</span>, id] as <span class="k">const</span>,
@@ -8130,7 +8130,7 @@ src/ui/ui.tsx</pre></div>
   <span class="k">const</span> client = useQueryClient();
   <span class="k">return</span> useMutation({
     mutationFn: (status: OrderStatus) =&gt; api.setStatus(id, status),
-    <span class="c">// Show the new status at once; put the old one back if the server refuses</span>
+    <span class="c line-bidi">// Show the new status at once; put the old one back if the server refuses</span>
     onMutate: <span class="k">async</span> (status) =&gt; {
       <span class="k">await</span> client.cancelQueries({ queryKey: keys.order(id) });
       <span class="k">const</span> before = client.getQueryData&lt;Order&gt;(keys.order(id));
@@ -8309,7 +8309,7 @@ export const routes: RouteObject[] = [
 
 <div class="listing" dir="ltr"><div class="listing-title">src/lib/orders.ts</div><pre class="code"><span class="k">import</span> <span class="k">type</span> { Order, OrderStatus } <span class="k">from</span> <span class="s">&quot;../api/schemas&quot;</span>;
 
-<span class="c">// Pure functions: no React, no fetch, so they are tested in milliseconds</span>
+<span class="c line-bidi">// Pure functions: no React, no fetch, so they are tested in milliseconds</span>
 <span class="k">export</span> <span class="k">const</span> PAGE_SIZE = <span class="n">8</span>;
 <span class="k">export</span> <span class="k">const</span> STATUSES: OrderStatus[] = [<span class="s">&quot;new&quot;</span>, <span class="s">&quot;paid&quot;</span>, <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;cancelled&quot;</span>];
 
@@ -8772,7 +8772,7 @@ describe(&quot;ProductForm&quot;, () =&gt; {
 
 <span class="k">async</span> <span class="k">function</span> noViolations(page: Page) {
   <span class="k">await</span> page.addScriptTag({ path: require.resolve(<span class="s">&quot;axe-core/axe.min.js&quot;</span>) });
-  <span class="c">// @ts-expect-error axe is added to the page by the script tag above</span>
+  <span class="c line-bidi">// @ts-expect-error axe is added to the page by the script tag above</span>
   <span class="k">const</span> found: string[] = <span class="k">await</span> page.evaluate(() =&gt; axe.run().then((r) =&gt; r.violations.map((v) =&gt; v.id)));
   expect(found).toEqual([]);
 }
@@ -8818,14 +8818,14 @@ Running 3 tests using 1 worker
 <div class="listing" dir="ltr"><div class="listing-title">size.ts</div><pre class="code"><span class="k">import</span> { build } <span class="k">from</span> <span class="s">&quot;esbuild&quot;</span>;
 <span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">&quot;node:zlib&quot;</span>;
 
-<span class="c">// Bundles the app as production would, and checks it against the budget</span>
+<span class="c line-bidi">// Bundles the app as production would, and checks it against the budget</span>
 <span class="k">const</span> BUDGET_KB = <span class="n">150</span>;
 
 <span class="k">const</span> result = <span class="k">await</span> build({
   entryPoints: [<span class="s">&quot;src/main.tsx&quot;</span>],
   bundle: <span class="k">true</span>,
   minify: <span class="k">true</span>,
-  splitting: <span class="k">true</span>, <span class="c">// lazy routes become separate files</span>
+  splitting: <span class="k">true</span>, <span class="c line-bidi">// lazy routes become separate files</span>
   format: <span class="s">&quot;esm&quot;</span>,
   write: <span class="k">false</span>,
   metafile: <span class="k">true</span>,
@@ -8837,7 +8837,7 @@ Running 3 tests using 1 worker
 <span class="k">const</span> gzipKB = (path: string) =&gt; gzipSync(result.outputFiles.find((f) =&gt; f.path.endsWith(path))!.contents).length / <span class="n">1024</span>;
 <span class="k">const</span> packageOf = (file: string) =&gt; /node_modules\/((?:@[^/]+\/)?[^/]+)/.exec(file)?.[<span class="n">1</span>] ?? <span class="s">&quot;our code&quot;</span>;
 
-<span class="c">// The first load: the entry file and every file it imports directly</span>
+<span class="c line-bidi">// The first load: the entry file and every file it imports directly</span>
 <span class="k">const</span> first = <span class="k">new</span> Set&lt;string&gt;();
 <span class="k">const</span> visit = (path: string) =&gt; {
   <span class="k">if</span> (first.has(path)) <span class="k">return</span>;
