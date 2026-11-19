@@ -15,6 +15,8 @@
 @page ch03:first { @top-center { content: none; } }
 @page ch04 { @top-center { content: "Chapter 4: Designing REST APIs with API Resources"; } }
 @page ch04:first { @top-center { content: none; } }
+@page ch05 { @top-center { content: "Chapter 5: SQL and PostgreSQL"; } }
+@page ch05:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -2878,6 +2880,559 @@ PUT /v1/products/{product}</pre></div>
 <p>Part 2 begins. We used a database in this chapter without looking inside it. Next we learn SQL properly, on PostgreSQL: tables, joins, grouping, indexes, and how to read a query plan.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch05" data-chapter="5" data-code="b3/sql/en">
+<div class="opener"><span class="opener-num">5</span><p class="chapter-kicker">Chapter 5</p><h1>SQL and PostgreSQL</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>design tables with the right types, and let the database enforce your rules</li>
+<li>read data with <code>SELECT</code>, filters, sorting, and the strange logic of <code>NULL</code></li>
+<li>combine tables with joins, and summarise them with <code>GROUP BY</code></li>
+<li>write CTEs and window functions for questions that plain queries cannot answer</li>
+<li>change data with <code>RETURNING</code> and upserts</li>
+<li>read a query plan, and add the index that turns a scan into a lookup</li>
+<li>send values to SQL safely from your code, so that SQL injection cannot happen</li>
+</ul>
+</div>
+
+<p class="lead">Until now the shop kept its data in memory, in a file, or in a database we did not look inside. Part 2 opens the database. Almost every backend you will work on keeps its important data in a relational database, and almost every serious performance problem you will meet ends in a query. SQL is fifty years old and will outlive the frameworks in this book; learning it well is one of the best investments a backend developer can make. We use PostgreSQL, the most capable free database, and run every query for real on a shop with a hundred thousand orders.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>For years I treated the database as a place to put things, and wrote everything else in code: loops over rows, checks before every insert, totals summed in JavaScript. Then a colleague replaced two hundred lines of my code with one query that ran fifty times faster. That was the day I started learning SQL properly.</p></div></div>
+
+<h2><span class="sec">5.1</span> <span>Tables, types and rules</span></h2>
+
+<p>A relational database stores data in <dfn>tables</dfn>. Each table has fixed <dfn>columns</dfn>, each with a type, and any number of <dfn>rows</dfn>. Tables refer to each other through ids. Here is the shop:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> customers (
+  id         bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>, <span class="c line-bidi">-- the database numbers the rows itself; nobody sends an id</span>
+  name       text <span class="k">NOT</span> <span class="k">NULL</span>,
+  email      text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">UNIQUE</span>,
+  city       text,
+  created_at timestamptz <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> now()
+);
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> products (
+  id    bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  name  text <span class="k">NOT</span> <span class="k">NULL</span>,
+  price integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (price &gt; <span class="n">0</span>), <span class="c line-bidi">-- piastres: whole numbers, never fractions</span>
+  stock integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="n">0</span> <span class="k">CHECK</span> (stock &gt;= <span class="n">0</span>) <span class="c line-bidi">-- the database refuses negative stock, whatever the application does</span>
+);
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> orders (
+  id          bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  customer_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> customers (id),
+  status      text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s">&#x27;pending&#x27;</span>
+              <span class="k">CHECK</span> (status <span class="k">IN</span> (<span class="s">&#x27;pending&#x27;</span>, <span class="s">&#x27;paid&#x27;</span>, <span class="s">&#x27;shipped&#x27;</span>, <span class="s">&#x27;cancelled&#x27;</span>)), <span class="c line-bidi">-- only these four values can ever be stored</span>
+  created_at  timestamptz <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> now()
+);
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> order_items (
+  order_id   bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> orders (id) <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">CASCADE</span>,
+  product_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> products (id),
+  quantity   integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (quantity <span class="k">BETWEEN</span> <span class="n">1</span> <span class="k">AND</span> <span class="n">99</span>),
+  price      integer <span class="k">NOT</span> <span class="k">NULL</span>, <span class="c line-bidi">-- the price when the order was made: prices change, orders must not</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> (order_id, product_id) <span class="c line-bidi">-- a product appears once per order</span>
+);</pre></div>
+
+<p>Read it slowly, because every word is a decision:</p>
+<ul>
+<li><strong>Types.</strong> <code>bigint</code> for ids, because <code>integer</code> stops at about two billion. <code>text</code> for strings, with no arbitrary length limit (PostgreSQL stores <code>text</code> and <code>varchar</code> the same way). <code>integer</code> for money in piastres. <code>timestamptz</code> for moments in time: it stores an exact instant, in UTC, and never confuses time zones. Never use <code>timestamp</code> without a time zone for events.</li>
+<li><strong><code>GENERATED ALWAYS AS IDENTITY</code></strong> numbers rows automatically. It is the standard way; the older <code>serial</code> works too.</li>
+<li><strong><code>PRIMARY KEY</code></strong> identifies each row: unique, never null, and indexed.</li>
+<li><strong><code>NOT NULL</code></strong>, <strong><code>UNIQUE</code></strong> and <strong><code>CHECK</code></strong> are rules the database enforces on every write.</li>
+<li><strong><code>REFERENCES</code></strong> is a <dfn>foreign key</dfn>: an order cannot point to a customer who does not exist. <code>ON DELETE CASCADE</code> deletes an order’s items with the order.</li>
+<li><strong><code>order_items</code></strong> has a <em>composite</em> primary key: one row per product per order. It also copies the price, because product prices change and an order must not.</li>
+</ul>
+
+<p>Start PostgreSQL (the book’s code repository has a one-line script for Docker, or install it from postgresql.org), create the tables, and fill them with seven named customers, two thousand generated ones, and a hundred thousand orders:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># Create the tables, then fill them</span>
+<span class="c">$ </span><span class="k">psql shop -f schema.sql</span>
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+<span class="c">$ </span><span class="k">psql shop -q -f seed.sql &gt; /dev/null</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT (SELECT count(*) FROM customers) AS customers, (SELECT count(*) FROM orders) AS orders, (SELECT count(*) FROM order_items) AS items;&#x27;</span>
+ customers | orders | items  
+-----------+--------+--------
+      2007 | 100006 | 200009
+(1 row)</pre></div>
+
+<p><code>psql</code> is PostgreSQL’s command line. Typed alone, <code>psql shop</code> opens a session with the prompt <code>shop=#</code>, where you type SQL ending with a semicolon. Its backslash commands describe the database:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># psql describes a table: columns, types, defaults, indexes and rules</span>
+<span class="c">shop=# </span><span class="k">\d products</span>
+                        Table &quot;public.products&quot;
+ Column |  Type   | Collation | Nullable |           Default            
+--------+---------+-----------+----------+------------------------------
+ id     | bigint  |           | not null | generated always as identity
+ name   | text    |           | not null | 
+ price  | integer |           | not null | 
+ stock  | integer |           | not null | 0
+Indexes:
+    &quot;products_pkey&quot; PRIMARY KEY, btree (id)
+Check constraints:
+    &quot;products_price_check&quot; CHECK (price &gt; 0)
+    &quot;products_stock_check&quot; CHECK (stock &gt;= 0)
+Referenced by:
+    TABLE &quot;order_items&quot; CONSTRAINT &quot;order_items_product_id_fkey&quot; FOREIGN KEY (product_id) REFERENCES products(id)</pre></div>
+
+<h3>Let the database say no</h3>
+
+<p>Every rule in the schema is enforced, whichever program writes the data: your API, a script someone runs at midnight, or a colleague in <code>psql</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># The database enforces its rules on every write</span>
+<span class="c">shop=# </span><span class="k">INSERT INTO products (name, price) VALUES (&#x27;Free sample&#x27;, 0);</span>
+ERROR:  new row for relation &quot;products&quot; violates check constraint &quot;products_price_check&quot;
+DETAIL:  Failing row contains (13, Free sample, 0, 0).
+<span class="c">shop=# </span><span class="k">INSERT INTO orders (customer_id) VALUES (999999);</span>
+ERROR:  insert or update on table &quot;orders&quot; violates foreign key constraint &quot;orders_customer_id_fkey&quot;
+DETAIL:  Key (customer_id)=(999999) is not present in table &quot;customers&quot;.
+<span class="c">shop=# </span><span class="k">INSERT INTO customers (name, email) VALUES (&#x27;Sara 2&#x27;, &#x27;sara@example.com&#x27;);</span>
+ERROR:  duplicate key value violates unique constraint &quot;customers_email_key&quot;
+DETAIL:  Key (email)=(sara@example.com) already exists.
+<span class="c">shop=# </span><span class="k">UPDATE products SET stock = stock - 5 WHERE id = 3;</span>
+ERROR:  new row for relation &quot;products&quot; violates check constraint &quot;products_stock_check&quot;
+DETAIL:  Failing row contains (3, Battery pack, 12500, -5).</pre></div>
+
+<p>A price of zero, an order for a customer who does not exist, a second account with the same email, stock below zero: each is refused, with a message that names the rule. Validation in the application gives users friendly messages; constraints in the database guarantee the data stays correct when the application has a bug. You want both.</p>
+
+<h2><span class="sec">5.2</span> <span>Reading: SELECT</span></h2>
+
+<p>A query names the columns it wants, the table, the rows (<code>WHERE</code>), the order, and how many:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># Choose rows and columns, sort, keep the first few</span>
+<span class="c">shop=# </span><span class="k">SELECT name, price, stock</span>
+<span class="c">shop-# </span><span class="k">FROM products</span>
+<span class="c">shop-# </span><span class="k">WHERE price &lt; 10000</span>
+<span class="c">shop-# </span><span class="k">ORDER BY price DESC</span>
+<span class="c">shop-# </span><span class="k">LIMIT 3;</span>
+      name      | price | stock 
+----------------+-------+-------
+ Servo motor    |  9000 |    14
+ Remote control |  8000 |     9
+ Speaker        |  7500 |    18
+(3 rows)
+<span class="c">shop=# </span><span class="k">SELECT count(*) AS products, sum(stock) AS units, min(price), max(price)</span>
+<span class="c">shop-# </span><span class="k">FROM products;</span>
+ products | units | min  |  max  
+----------+-------+------+-------
+       12 |   222 | 2500 | 45000
+(1 row)</pre></div>
+
+<p>Write SQL keywords in capitals and names in lower case, one clause per line. SQL does not care, but readers do. The second query uses <dfn>aggregate functions</dfn>, which turn many rows into one: <code>count</code>, <code>sum</code>, <code>min</code>, <code>max</code> and <code>avg</code>.</p>
+
+<h3>NULL: the missing value</h3>
+
+<p><code>NULL</code> means “unknown” or “missing”. Karim has no city. That sounds simple, until you compare:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># NULL is not a value: = NULL is never true</span>
+<span class="c">shop=# </span><span class="k">SELECT name, city FROM customers WHERE city = NULL;</span>
+ name | city 
+------+------
+(0 rows)
+<span class="c">shop=# </span><span class="k">SELECT name, city FROM customers WHERE city IS NULL;</span>
+ name  | city 
+-------+------
+ Karim | 
+(1 row)
+<span class="c">shop=# </span><span class="k">SELECT NULL = NULL AS equal, NULL IS NULL AS is_null, 1 + NULL AS sum;</span>
+ equal | is_null | sum 
+-------+---------+-----
+       | t       |    
+(1 row)</pre></div>
+
+<p>Is an unknown city equal to an unknown city? SQL’s answer is “unknown”: <code>NULL = NULL</code> is <code>NULL</code>, not true. A <code>WHERE</code> keeps only rows where the condition is <em>true</em>, so <code>city = NULL</code> keeps nothing, ever. Use <code>IS NULL</code> and <code>IS NOT NULL</code>. Arithmetic with <code>NULL</code> gives <code>NULL</code> too, and aggregates such as <code>sum</code> skip <code>NULL</code> values. The best defence is <code>NOT NULL</code> on every column that has no good reason to be empty.</p>
+
+<h2><span class="sec">5.3</span> <span>Joins: combining tables</span></h2>
+
+<p>A <dfn>join</dfn> puts together rows from several tables that belong together. To list each named customer’s orders with their totals, the query joins customers to their orders and orders to their items, then groups the items of each order:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># Join the tables: each named customer&#x27;s orders with their totals</span>
+<span class="c">shop=# </span><span class="k">SELECT c.name, o.id, o.status, sum(i.quantity * i.price) AS total</span>
+<span class="c">shop-# </span><span class="k">FROM customers c</span>
+<span class="c">shop-# </span><span class="k">JOIN orders o ON o.customer_id = c.id</span>
+<span class="c">shop-# </span><span class="k">JOIN order_items i ON i.order_id = o.id</span>
+<span class="c">shop-# </span><span class="k">WHERE c.id &lt;= 7</span>
+<span class="c">shop-# </span><span class="k">GROUP BY c.name, o.id, o.status</span>
+<span class="c">shop-# </span><span class="k">ORDER BY o.id;</span>
+  name   |   id   |  status   | total 
+---------+--------+-----------+-------
+ Sara    | 100001 | shipped   | 50000
+ Sara    | 100002 | paid      | 24000
+ Omar    | 100003 | shipped   | 42000
+ Lina    | 100004 | cancelled |  9000
+ Mona    | 100005 | pending   | 21000
+ Youssef | 100006 | paid      | 97500
+(6 rows)</pre></div>
+
+<p><code>JOIN … ON</code> (an <dfn>inner join</dfn>) keeps only the combinations that match. That is why Karim and Hana, who have no orders, are missing. To keep every customer, use a <dfn>left join</dfn>: every row of the left table, with <code>NULL</code> where the right table has nothing:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># LEFT JOIN keeps customers without orders</span>
+<span class="c">shop=# </span><span class="k">SELECT c.name, count(o.id) AS orders</span>
+<span class="c">shop-# </span><span class="k">FROM customers c</span>
+<span class="c">shop-# </span><span class="k">LEFT JOIN orders o ON o.customer_id = c.id</span>
+<span class="c">shop-# </span><span class="k">WHERE c.id &lt;= 7</span>
+<span class="c">shop-# </span><span class="k">GROUP BY c.id, c.name</span>
+<span class="c">shop-# </span><span class="k">ORDER BY c.id;</span>
+  name   | orders 
+---------+--------
+ Sara    |      2
+ Omar    |      1
+ Lina    |      1
+ Karim   |      0
+ Mona    |      1
+ Youssef |      1
+ Hana    |      0
+(7 rows)</pre></div>
+
+<p>Notice <code>count(o.id)</code>, not <code>count(*)</code>. <code>count(*)</code> counts rows, and Karim’s row exists (with <code>NULL</code> for the order), so it would say 1. <code>count(o.id)</code> counts the values that are not <code>NULL</code>, so it says 0. This small difference hides in many reports.</p>
+
+<h2><span class="sec">5.4</span> <span>Grouping and summarising</span></h2>
+
+<p><code>GROUP BY</code> makes one result row per group, and aggregates summarise each group. <code>HAVING</code> filters the groups, as <code>WHERE</code> filters rows:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># The products that bring in the most money</span>
+<span class="c">shop=# </span><span class="k">SELECT p.name, sum(i.quantity) AS units, sum(i.quantity * i.price) / 100 AS revenue</span>
+<span class="c">shop-# </span><span class="k">FROM order_items i</span>
+<span class="c">shop-# </span><span class="k">JOIN orders o ON o.id = i.order_id</span>
+<span class="c">shop-# </span><span class="k">JOIN products p ON p.id = i.product_id</span>
+<span class="c">shop-# </span><span class="k">WHERE o.status &lt;&gt; &#x27;cancelled&#x27;</span>
+<span class="c">shop-# </span><span class="k">GROUP BY p.name</span>
+<span class="c">shop-# </span><span class="k">HAVING sum(i.quantity) &gt; 26600</span>
+<span class="c">shop-# </span><span class="k">ORDER BY revenue DESC;</span>
+      name      | units | revenue 
+----------------+-------+---------
+ Battery pack   | 26878 | 3359750
+ Gear box       | 26694 | 2936340
+ Remote control | 26673 | 2133840
+ Speaker        | 26676 | 2000700
+ LED strip      | 27350 | 1094000
+ USB cable      | 26699 |  667475
+(6 rows)</pre></div>
+
+<p>Read the order in which the database works, which is not the order in which the query is written: <code>FROM</code> and the joins first, then <code>WHERE</code> (cancelled orders go), then <code>GROUP BY</code>, then <code>HAVING</code> (products that sold 26,600 units or fewer go), then <code>SELECT</code>, then <code>ORDER BY</code>. That is why <code>WHERE</code> cannot use <code>sum(...)</code>: when it runs, there are no groups yet.</p>
+
+<p>Money is still in piastres in the sums, and divided by 100 only at the end, for display. Integer division would be wrong for an amount like 12,550 piastres; here every revenue happens to be whole pounds. In an API, send piastres and let the client format them.</p>
+
+<h2><span class="sec">5.5</span> <span>CTEs and window functions</span></h2>
+
+<p>Some questions need a result to build on. “Rank the named customers by what they spent, and show each one’s share” needs the totals first, then a ranking over them:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># A CTE and a window function: rank the named customers by what they spent</span>
+<span class="c">shop=# </span><span class="k">WITH spent AS (</span>
+<span class="c">shop-# </span><span class="k">  SELECT o.customer_id, sum(i.quantity * i.price) AS total</span>
+<span class="c">shop-# </span><span class="k">  FROM orders o</span>
+<span class="c">shop-# </span><span class="k">  JOIN order_items i ON i.order_id = o.id</span>
+<span class="c">shop-# </span><span class="k">  WHERE o.status &lt;&gt; &#x27;cancelled&#x27;</span>
+<span class="c">shop-# </span><span class="k">  GROUP BY o.customer_id</span>
+<span class="c">shop-# </span><span class="k">)</span>
+<span class="c">shop-# </span><span class="k">SELECT c.name, s.total,</span>
+<span class="c">shop-# </span><span class="k">       rank() OVER (ORDER BY s.total DESC) AS place,</span>
+<span class="c">shop-# </span><span class="k">       round(s.total * 100.0 / sum(s.total) OVER (), 1) AS percent</span>
+<span class="c">shop-# </span><span class="k">FROM spent s</span>
+<span class="c">shop-# </span><span class="k">JOIN customers c ON c.id = s.customer_id</span>
+<span class="c">shop-# </span><span class="k">WHERE c.id &lt;= 7</span>
+<span class="c">shop-# </span><span class="k">ORDER BY place;</span>
+  name   | total | place | percent 
+---------+-------+-------+---------
+ Youssef | 97500 |     1 |    41.6
+ Sara    | 74000 |     2 |    31.6
+ Omar    | 42000 |     3 |    17.9
+ Mona    | 21000 |     4 |     9.0
+(4 rows)</pre></div>
+
+<ul>
+<li><code>WITH spent AS (…)</code> is a <dfn>common table expression</dfn> (CTE): a named query used by the next one. It reads like a variable, and keeps long queries understandable.</li>
+<li><code>rank() OVER (ORDER BY …)</code> is a <dfn>window function</dfn>: it computes over a set of rows <em>without collapsing them</em>, unlike <code>GROUP BY</code>. Each customer keeps their row and gets a rank.</li>
+<li><code>sum(s.total) OVER ()</code> is an aggregate used as a window over all rows: the grand total, next to every row, so each row can compute its share.</li>
+</ul>
+
+<p>Window functions answer the questions reports always ask: rankings, running totals, the previous month for comparison (<code>lag</code>), the top three per category. Without them, you would write loops in code over thousands of rows.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why does <code>WHERE city = NULL</code> return no rows, even for customers without a city?</li><li>A report counts each customer’s orders with a <code>LEFT JOIN</code> and <code>count(*)</code>. What is wrong with it?</li><li>Why can’t <code>WHERE sum(quantity) &gt; 100</code> work, and what do you write instead?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">5.6</span> <span>Writing: INSERT, UPDATE, DELETE</span></h2>
+
+<p>Writes can answer too. <code>RETURNING</code> gives back columns of the rows that were written, so the application gets the new id and the defaults without a second query. <code>ON CONFLICT</code> turns an insert that would break a unique rule into an update, an <dfn>upsert</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># Writes that answer: RETURNING, and an upsert with ON CONFLICT</span>
+<span class="c">shop=# </span><span class="k">INSERT INTO customers (name, email, city)</span>
+<span class="c">shop-# </span><span class="k">VALUES (&#x27;Nour&#x27;, &#x27;nour@example.com&#x27;, &#x27;Giza&#x27;)</span>
+<span class="c">shop-# </span><span class="k">RETURNING id, created_at;</span>
+  id  |          created_at           
+------+-------------------------------
+ 2009 | 2026-11-19 20:42:29.499252+00
+(1 row)
+
+INSERT 0 1
+<span class="c">shop=# </span><span class="k">INSERT INTO customers (name, email, city)</span>
+<span class="c">shop-# </span><span class="k">VALUES (&#x27;Nour&#x27;, &#x27;nour@example.com&#x27;, &#x27;Aswan&#x27;)</span>
+<span class="c">shop-# </span><span class="k">ON CONFLICT (email) DO UPDATE SET city = excluded.city</span>
+<span class="c">shop-# </span><span class="k">RETURNING id, name, city;</span>
+  id  | name | city  
+------+------+-------
+ 2009 | Nour | Aswan
+(1 row)
+
+INSERT 0 1
+<span class="c">shop=# </span><span class="k">UPDATE products SET stock = stock + 5</span>
+<span class="c">shop-# </span><span class="k">WHERE id = 3</span>
+<span class="c">shop-# </span><span class="k">RETURNING name, stock;</span>
+     name     | stock 
+--------------+-------
+ Battery pack |     5
+(1 row)
+
+UPDATE 1</pre></div>
+
+<p>The upsert is one statement, so two requests that register the same email at the same moment cannot both insert: the database decides. Doing the same in code (“check whether it exists, then insert”) leaves a gap between the check and the insert in which another request can slip through. Chapter 7 is about exactly these gaps.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: UPDATE and DELETE without WHERE</p><p><code>DELETE FROM orders;</code> deletes every order, instantly, without asking. Before running an <code>UPDATE</code> or a <code>DELETE</code> by hand, run the same <code>WHERE</code> as a <code>SELECT</code> and check the rows. Better still, start a transaction with <code>BEGIN;</code>, run the change, look at the result, and only then <code>COMMIT;</code> (or <code>ROLLBACK;</code>). Chapter 7 explains transactions.</p></aside>
+
+<h2><span class="sec">5.7</span> <span>Indexes and query plans</span></h2>
+
+<p>The <code>orders</code> table has a hundred thousand rows. How does PostgreSQL find the orders of customer 1234? <code>EXPLAIN</code> shows the <dfn>plan</dfn> the database chose; with <code>ANALYZE</code>, it also runs the query and reports what really happened:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># How does PostgreSQL find one customer&#x27;s orders?</span>
+<span class="c">shop=# </span><span class="k">EXPLAIN (ANALYZE, COSTS OFF, BUFFERS OFF)</span>
+<span class="c">shop-# </span><span class="k">SELECT count(*) FROM orders WHERE customer_id = 1234;</span>
+                               QUERY PLAN                               
+------------------------------------------------------------------------
+ Aggregate (actual time=5.177..5.178 rows=1.00 loops=1)
+   -&gt;  Seq Scan on orders (actual time=0.067..5.166 rows=44.00 loops=1)
+         Filter: (customer_id = 1234)
+         Rows Removed by Filter: 99962
+ Planning Time: 0.293 ms
+ Execution Time: 5.231 ms
+(6 rows)</pre></div>
+
+<p>A <dfn>sequential scan</dfn>: PostgreSQL read all 100,006 rows and threw away 99,962 to find 44. Five milliseconds sounds small, but it grows with the table, and the API does it on every request for every user. An <dfn>index</dfn> is a separate, sorted structure (a B-tree) that maps values to rows, like the index at the back of this book:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># Add an index on the foreign key, and ask again</span>
+<span class="c">shop=# </span><span class="k">CREATE INDEX orders_customer_id_idx ON orders (customer_id);</span>
+CREATE INDEX
+<span class="c">shop=# </span><span class="k">EXPLAIN (ANALYZE, COSTS OFF, BUFFERS OFF)</span>
+<span class="c">shop-# </span><span class="k">SELECT count(*) FROM orders WHERE customer_id = 1234;</span>
+                                              QUERY PLAN                                               
+-------------------------------------------------------------------------------------------------------
+ Aggregate (actual time=0.240..0.241 rows=1.00 loops=1)
+   -&gt;  Bitmap Heap Scan on orders (actual time=0.057..0.232 rows=44.00 loops=1)
+         Recheck Cond: (customer_id = 1234)
+         Heap Blocks: exact=44
+         -&gt;  Bitmap Index Scan on orders_customer_id_idx (actual time=0.042..0.042 rows=44.00 loops=1)
+               Index Cond: (customer_id = 1234)
+               Index Searches: 1
+ Planning Time: 0.474 ms
+ Execution Time: 0.307 ms
+(9 rows)</pre></div>
+
+<p>Now the database goes straight to the 44 rows through the index: several times faster here, and the gap widens as the table grows, because a B-tree lookup takes about the same time for a million rows as for a thousand. Three rules about indexes:</p>
+<ul>
+<li><strong>PostgreSQL does not index foreign keys for you.</strong> <code>orders.customer_id</code> had no index until we added one. Index the foreign keys you search or join by.</li>
+<li><strong>An index serves the queries that match it.</strong> A query that wraps the column in a function cannot use a plain index on the column. You can index the expression itself:</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># An index on an expression, for case-insensitive email lookups</span>
+<span class="c">shop=# </span><span class="k">EXPLAIN (COSTS OFF)</span>
+<span class="c">shop-# </span><span class="k">SELECT id FROM customers WHERE lower(email) = &#x27;sara@example.com&#x27;;</span>
+                     QUERY PLAN                      
+-----------------------------------------------------
+ Seq Scan on customers
+   Filter: (lower(email) = &#x27;sara@example.com&#x27;::text)
+(2 rows)
+<span class="c">shop=# </span><span class="k">CREATE INDEX customers_lower_email_idx ON customers (lower(email));</span>
+CREATE INDEX
+<span class="c">shop=# </span><span class="k">EXPLAIN (COSTS OFF)</span>
+<span class="c">shop-# </span><span class="k">SELECT id FROM customers WHERE lower(email) = &#x27;sara@example.com&#x27;;</span>
+                          QUERY PLAN                           
+---------------------------------------------------------------
+ Bitmap Heap Scan on customers
+   Recheck Cond: (lower(email) = &#x27;sara@example.com&#x27;::text)
+   -&gt;  Bitmap Index Scan on customers_lower_email_idx
+         Index Cond: (lower(email) = &#x27;sara@example.com&#x27;::text)
+(4 rows)</pre></div>
+
+<ul>
+<li><strong>Indexes are not free.</strong> Each one takes space and slows every insert and update, which must update the index too. Add them for the queries you actually run, as shown by <code>EXPLAIN</code> and by the slow query log, not “just in case”.</li>
+</ul>
+
+<p>For a column pair such as <code>(price, id)</code>, the order matters: the index is sorted by price first, so it serves <code>WHERE price = …</code> and <code>ORDER BY price, id</code>, but not a search by <code>id</code> alone. Chapter 15 goes deeper into plans and tuning.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: EXPLAIN before you ship</p><p>For every new query that will run on a large or growing table, run <code>EXPLAIN ANALYZE</code> on realistic data before the code is merged, and paste the plan in the pull request. A <code>Seq Scan</code> on a big table in a request path is a bug waiting for traffic. Testing on a table with twelve rows proves nothing: generate data, as <code>seed.sql</code> does with <code>generate_series</code>.</p></aside>
+
+<h2><span class="sec">5.8</span> <span>SQL from code, safely</span></h2>
+
+<p>Applications send SQL to the database through a driver. The single most important rule: <strong>never build SQL by joining strings with input</strong>. Here is why, with an input that a form could send as an email address:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">php/query.php</div><pre class="code">&lt;?php
+
+<span class="k">declare</span>(strict_types=<span class="n">1</span>);
+
+$db = <span class="k">new</span> PDO(<span class="s">&#x27;pgsql:host=localhost;dbname=shop&#x27;</span>, <span class="s">&#x27;bit&#x27;</span>, <span class="s">&#x27;secret&#x27;</span>, [
+    PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION, <span class="c line-bidi">// errors become exceptions, not silent false</span>
+    PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+]);
+
+<span class="c line-bidi">// What a form might send as an email: it closes the quote and adds a condition.</span>
+$input = <span class="s">&quot;x&#x27; OR &#x27;1&#x27;=&#x27;1&quot;</span>;
+
+<span class="c line-bidi">// WRONG: the input becomes part of the SQL</span>
+$unsafe = $db-&gt;query(<span class="s">&quot;SELECT id, email FROM customers WHERE email = &#x27;$input&#x27;&quot;</span>);
+<span class="k">echo</span> <span class="s">&#x27;string concatenation: &#x27;</span>, count($unsafe-&gt;fetchAll()), <span class="s">&quot; rows\n&quot;</span>;
+
+<span class="c line-bidi">// Right: the SQL and the value travel separately; ? is only ever a value</span>
+$safe = $db-&gt;prepare(<span class="s">&#x27;SELECT id, email FROM customers WHERE email = ?&#x27;</span>);
+$safe-&gt;execute([$input]);
+<span class="k">echo</span> <span class="s">&#x27;parameter: &#x27;</span>, count($safe-&gt;fetchAll()), <span class="s">&quot; rows\n&quot;</span>;
+
+$sara = $db-&gt;prepare(&#x27;SELECT c.name, count(o.id) AS orders FROM customers c
+    LEFT JOIN orders o ON o.customer_id = c.id WHERE c.email = ? GROUP BY c.name&#x27;);
+$sara-&gt;execute([<span class="s">&#x27;sara@example.com&#x27;</span>]);
+var_dump($sara-&gt;fetch());</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c line-bidi"># From PHP, with PDO</span>
+<span class="c">$ </span><span class="k">php php/query.php</span>
+string concatenation: 2008 rows
+parameter: 0 rows
+array(2) {
+  [&quot;name&quot;]=&gt;
+  string(4) &quot;Sara&quot;
+  [&quot;orders&quot;]=&gt;
+  int(2)
+}</pre></div>
+
+<p>Glued into the SQL, the input closed the quote and added <code>OR '1'='1'</code>, which is always true: the query returned every customer, 2008 rows, instead of none. This is <dfn>SQL injection</dfn>, still one of the most common and most damaging attacks on the web: with a slightly different input, an attacker can read any table, or delete them. With a <dfn>prepared statement</dfn> and a <code>?</code> placeholder, the SQL and the value are sent to the database separately; the value can never become SQL, whatever it contains, and the same query found no customer with that strange email.</p>
+
+<p>PDO is PHP’s database layer, and it is what Laravel uses underneath: <code>DB::select('… where email = ?', [$email])</code>, the query builder and Eloquent all send parameters this way. They are only unsafe when you put input into the SQL text yourself, for example in <code>DB::raw()</code> or <code>whereRaw()</code> with string concatenation. Notice also that <code>count</code> arrived as a PHP <code>int</code>: PDO for PostgreSQL converts integer columns to PHP integers. Chapter 6 puts Eloquent on top of this.</p>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Strings concatenated into SQL</td><td>SQL injection</td><td>Parameters, always</td></tr>
+<tr><td>Rules only in application code</td><td>Bad data from bugs, scripts and other apps</td><td><code>NOT NULL</code>, <code>CHECK</code>, <code>UNIQUE</code>, foreign keys</td></tr>
+<tr><td><code>= NULL</code></td><td>Matches nothing, ever</td><td><code>IS NULL</code></td></tr>
+<tr><td><code>count(*)</code> with a left join</td><td>Zero counted as one</td><td>Count a column of the right table</td></tr>
+<tr><td>Floats or <code>numeric</code> for money without thought</td><td>Rounding errors, mixed units</td><td>Integers in minor units</td></tr>
+<tr><td><code>timestamp</code> without time zone</td><td>Times that shift with servers and seasons</td><td><code>timestamptz</code>, UTC</td></tr>
+<tr><td>Foreign keys without indexes</td><td>Full scans on every join and lookup</td><td>Index the keys you search by</td></tr>
+<tr><td>Check, then insert</td><td>Duplicates when two requests race</td><td>A unique rule and <code>ON CONFLICT</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Tables have typed columns: <code>bigint</code> ids, <code>text</code>, <code>integer</code> money, <code>timestamptz</code> times. <strong>Constraints</strong> (<code>PRIMARY KEY</code>, <code>NOT NULL</code>, <code>UNIQUE</code>, <code>CHECK</code>, <code>REFERENCES</code>) keep data correct whatever writes it.</li>
+<li><code>SELECT … FROM … WHERE … ORDER BY … LIMIT</code> reads rows; aggregates summarise them.</li>
+<li><strong><code>NULL</code></strong> is unknown: compare it with <code>IS NULL</code>; it spreads through arithmetic.</li>
+<li><strong>Inner joins</strong> keep matches; <strong>left joins</strong> keep every left row. Count a right-table column, not <code>*</code>.</li>
+<li><strong><code>GROUP BY</code></strong> makes groups, <strong><code>HAVING</code></strong> filters them; the database runs <code>FROM</code>, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>SELECT</code>, <code>ORDER BY</code> in that order.</li>
+<li><strong>CTEs</strong> name intermediate results; <strong>window functions</strong> compute across rows without collapsing them.</li>
+<li><strong><code>RETURNING</code></strong> and <strong><code>ON CONFLICT</code></strong> make writes answer and upserts atomic.</li>
+<li><strong><code>EXPLAIN ANALYZE</code></strong> shows the plan; <strong>indexes</strong> turn scans into lookups. Index foreign keys and real query patterns, including expressions.</li>
+<li><strong>Parameters</strong>, never string concatenation, between code and SQL.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Comparing anything with <code>NULL</code> gives <code>NULL</code> (unknown), never true, and <code>WHERE</code> keeps only rows where the condition is true; use <code>IS NULL</code>. 2. <code>count(*)</code> counts rows, and a customer with no orders still has one row in a left join (with <code>NULL</code>s), so they get 1 instead of 0; count a column from the orders table, such as <code>count(o.id)</code>. 3. <code>WHERE</code> runs before the rows are grouped, so there is no sum yet; filter groups with <code>HAVING sum(quantity) &gt; 100</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Use the shop database from this chapter (or your own copy, loaded with <code>schema.sql</code> and <code>seed.sql</code>). Save each project’s SQL in a file, and run it with <code>psql shop -f</code>.</p>
+
+<div class="project">
+<p class="project-label">Project 5.1 · Easy</p>
+<h3>A sales report in SQL</h3>
+<p class="project-goal">Write the queries behind a monthly sales report, without a single loop in application code.</p>
+<p class="project-skills"><strong>You will practise:</strong> joins, grouping, date functions, <code>HAVING</code>, and formatting results.</p>
+<ol class="steps">
+<li>Revenue and number of orders per month for the last six months, cancelled orders excluded (use <code>date_trunc('month', created_at)</code>).</li>
+<li>The five best-selling products of the last 30 days by units, with their share of all units sold.</li>
+<li>Customers who ordered more than ten times but not in the last 60 days: people the shop might email.</li>
+<li>For each city, the number of customers and the average order total, cities with fewer than 100 customers left out.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> write each query in small steps with CTEs, checking each step’s result before adding the next. A long query written in one go is almost always wrong somewhere.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 5.2 · Medium</p>
+<h3>Reviews, with rules in the database</h3>
+<p class="project-goal">Add product reviews to the schema with every rule enforced by PostgreSQL, and prove each rule with a failing insert.</p>
+<p class="project-skills"><strong>You will practise:</strong> table design, constraints, composite keys, indexes, and testing rules.</p>
+<ol class="steps">
+<li>Create <code>reviews</code>: a product, a customer, a rating from 1 to 5, a text of 10 to 2000 characters, and a creation time.</li>
+<li>A customer may review a product only once: enforce it with a unique rule. Decide what happens to reviews when a product or a customer is deleted, and write it in the foreign keys.</li>
+<li>Write one insert per rule that must fail, and check each error message names the rule you expect.</li>
+<li>Add the index needed to list a product’s reviews newest first, and confirm it with <code>EXPLAIN</code> after generating 50,000 reviews.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> name your constraints (<code>CONSTRAINT reviews_rating_range CHECK (…)</code>). The name appears in error messages and logs, and a good name tells the next developer exactly which rule was broken.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 5.3 · Challenge</p>
+<h3>Find and fix the slow queries</h3>
+<p class="project-goal">Make a set of realistic shop queries fast on a million orders, proving each improvement with <code>EXPLAIN ANALYZE</code>.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading plans, composite and partial indexes, and judging when an index is worth it.</p>
+<ol class="steps">
+<li>Grow the data to a million orders by changing <code>generate_series</code> in <code>seed.sql</code>.</li>
+<li>Measure these queries before any new index: one customer’s last 10 orders; all pending orders older than a day; orders containing a given product in the last month; customers by email ignoring case.</li>
+<li>Add one index at a time, measure again, and record the time and the plan before and after in a table.</li>
+<li>Measure how much slower inserting 10,000 orders becomes with all your indexes, and decide which index is not worth keeping.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the order of columns in a composite index follows the query: columns compared with <code>=</code> first, then the column you sort or range over. For “one customer’s latest orders”, that is <code>(customer_id, created_at DESC)</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> List the named customers (ids 1 to 7) who live in Cairo, with their emails, sorted by name.</li>
+<li><span class="level">Easy</span> A colleague writes <code>WHERE city != 'Cairo'</code> to find customers outside Cairo, and Karim is missing from the result. Explain why, and fix the query.</li>
+<li><span class="level medium">Medium</span> Find the products that none of the named customers’ orders (ids above 100000) contain, with a <code>LEFT JOIN</code>.</li>
+<li><span class="level medium">Medium</span> The admin page lists pending orders from the last week, many times a minute. Design an index for <code>WHERE status = 'pending' AND created_at &gt; …</code> that stays small, and show that PostgreSQL uses it.</li>
+<li><span class="level hard">Challenge</span> Show the revenue of each month, a running total since the first month, and the change from the previous month, in one query, for the first four months of the data.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 6</p>
+
+<p>Writing SQL by hand for every table gets repetitive. Next comes Eloquent, Laravel’s ORM, properly: models, relationships, migrations on PostgreSQL, and the N+1 problem that every ORM user must learn to see.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -2933,6 +3488,16 @@ PUT /v1/products/{product}</pre></div>
 <li>Add <code>'q' =&gt; ['sometimes', 'string', 'min:2', 'max:50']</code> to <code>ListProductsRequest</code>, and one more condition to the query: <code>-&gt;when($request-&gt;validated('q'), fn ($query, $q) =&gt; $query-&gt;whereLike('name', "%$q%"))</code>. <code>whereLike</code> ignores case and writes the right SQL for each database. The cursor still works: it records a position in the sorted order, and <code>withQueryString</code> keeps <code>q</code> in the next link, so the next page continues among the matching products. The answer test checks a search that matches two products with <code>limit=1</code>, follows <code>links.next</code> to the second one, and checks that a one-letter search is refused with <code>422</code>. On a large table, a search like this needs a suitable index, which Chapter 5 covers.</li>
 <li>One way: make cancel idempotent in its result. If the order is already cancelled, answer <code>200</code> with the order, because the client’s goal (a cancelled order) is reached. Another way: put the <code>Idempotent</code> middleware on the cancel route too, so a retry replays the first answer. The first is simpler and right here, because a second cancel changes nothing; keep <code>409</code> for orders that can no longer be cancelled because they were shipped. The general lesson: design actions so that repeating them is harmless, whenever the domain allows it.</li>
 <li>In the middleware, read <code>$client = (string) $request-&gt;header('X-Client-Id', 'anonymous')</code> and build the cache key from both: <code>'idempotency:'.$client.':'.$key</code>. The expiry is already there: <code>Cache::put(..., now()-&gt;addDay())</code>. The answer test sends the same key and body for clients <code>a</code> and <code>b</code> and gets two different orders, then moves time forward with <code>$this-&gt;travel(25)-&gt;hours()</code> and checks that client <code>a</code>’s key creates a new order instead of a replay. Laravel’s time travel moves the clock the cache reads, so a test checks a day of expiry in milliseconds. In Chapter 9, the client becomes the authenticated user, and the header goes away.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 5</h2>
+<ol class="exercises">
+<li><code>SELECT name, email FROM customers WHERE city = 'Cairo' AND id &lt;= 7 ORDER BY name;</code> returns Lina, Sara and Youssef. Both conditions must be true, so <code>AND</code>; the <code>ORDER BY</code> makes the order part of the answer instead of an accident of storage.</li>
+<li>Karim’s city is <code>NULL</code>, and <code>NULL != 'Cairo'</code> is <code>NULL</code>, not true, so his row is dropped. Write <code>WHERE city IS DISTINCT FROM 'Cairo'</code>, which treats <code>NULL</code> as a value that is simply different, or <code>WHERE city &lt;&gt; 'Cairo' OR city IS NULL</code>. For the named customers, the result is Omar, Karim, Mona and Hana. Whether Karim belongs in the answer is a business question; the query must answer it on purpose, not by accident.</li>
+<li><code>SELECT p.name FROM products p LEFT JOIN order_items i ON i.product_id = p.id AND i.order_id &gt; 100000 GROUP BY p.id, p.name HAVING count(i.order_id) = 0;</code> gives Battery pack, Sensor set, Remote control and Gear box. The condition on <code>order_id</code> belongs in the <code>ON</code> clause: in the <code>WHERE</code> clause, it would remove the rows with <code>NULL</code> and turn the left join back into an inner join. <code>WHERE NOT EXISTS (SELECT 1 FROM order_items i WHERE i.product_id = p.id AND i.order_id &gt; 100000)</code> says the same more directly.</li>
+<li>A <dfn>partial index</dfn> contains only the rows that match its <code>WHERE</code>: <code>CREATE INDEX orders_pending_recent_idx ON orders (created_at) WHERE status = 'pending';</code>. Since few orders are pending at any time, the index stays tiny however large <code>orders</code> grows, and <code>EXPLAIN</code> shows <code>Index Scan using orders_pending_recent_idx</code>. The query must include <code>status = 'pending'</code> for PostgreSQL to use it.</li>
+<li>Group by month in a CTE, then use two window functions over the months in order: <code>sum(revenue) OVER (ORDER BY month)</code> for the running total, and <code>revenue - lag(revenue) OVER (ORDER BY month)</code> for the change. <code>lag</code> reads the previous row, so the first month’s change is <code>NULL</code>. The query in the code repository shows the first months of the generated data; the first is small because the data starts on 19 November, part of the way through the month.</li>
 </ol>
 
 </section>

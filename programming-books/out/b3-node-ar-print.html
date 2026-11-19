@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "الفصل 3: تصميم واجهات REST"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "الفصل 4: SQL وPostgreSQL"; } }
+@page ch04:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -1941,6 +1943,553 @@ retry-after: 60
 <p>يبدأ الجزء الثاني. ما زالت منتجاتنا وطلباتنا تعيش في الذاكرة، وستنتقل الآن إلى PostgreSQL. ونتعلم SQL كما ينبغي: الجداول، والربط، والتجميع، والفهارس، وكيف نقرأ خطة الاستعلام.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b3/sql/ar">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">الفصل 4</p><h1>SQL وPostgreSQL</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تصمم الجداول بالأنواع الصحيحة، وتدع قاعدة البيانات تفرض قواعدك</li>
+<li>تقرأ البيانات بـ <code>SELECT</code> والتصفية والترتيب، ومنطق <code>NULL</code> الغريب</li>
+<li>تجمع الجداول بالربط (joins)، وتلخصها بـ <code>GROUP BY</code></li>
+<li>تكتب CTEs ودوال النوافذ لأسئلة لا تجيبها الاستعلامات العادية</li>
+<li>تغيّر البيانات بـ <code>RETURNING</code> والإدراج أو التحديث (upsert)</li>
+<li>تقرأ خطة الاستعلام، وتضيف الفهرس الذي يحوّل المرور الكامل إلى بحث مباشر</li>
+<li>ترسل القيم إلى SQL بأمان من كودك، فلا يمكن أن يحدث حقن SQL</li>
+</ul>
+</div>
+
+<p class="lead">حتى الآن حفظ المتجر بياناته في الذاكرة، أو في ملف، أو في قاعدة بيانات لم ننظر داخلها. والجزء الثاني يفتح قاعدة البيانات. فكل خادم تقريباً ستعمل عليه يحفظ بياناته المهمة في قاعدة بيانات علائقية، وكل مشكلة أداء جادة تقريباً ستقابلها تنتهي باستعلام. ولغة SQL عمرها خمسون عاماً، وستعيش أطول من أطر العمل في هذا الكتاب، وتعلّمها جيداً من أفضل ما يستثمر فيه مطور الخوادم. ونستخدم PostgreSQL، أقدر قاعدة بيانات مجانية، ونشغّل كل استعلام فعلاً على متجر فيه مئة ألف طلب.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>لسنوات عاملت قاعدة البيانات مكاناً أضع فيه الأشياء، وكتبت كل ما عدا ذلك بالكود: حلقات على الصفوف، وفحوص قبل كل إدراج، وإجماليات أجمعها بـ JavaScript. ثم استبدل زميل مئتي سطر من كودي باستعلام واحد يعمل أسرع بخمسين مرة. وفي ذلك اليوم بدأت أتعلم SQL كما ينبغي.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>الجداول والأنواع والقواعد</span></h2>
+
+<p>تحفظ قاعدة البيانات العلائقية البيانات في <dfn>جداول</dfn>. ولكل جدول <dfn>أعمدة</dfn> ثابتة، لكل منها نوع، وأي عدد من <dfn>الصفوف</dfn>. وتشير الجداول بعضها إلى بعض بالأرقام. وهذا هو المتجر:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">schema.sql</div><pre class="code"><span class="k">CREATE</span> <span class="k">TABLE</span> customers (
+  id         bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>, <span class="c line-bidi">-- تُرقّم قاعدة البيانات الصفوف بنفسها، ولا أحد يرسل رقماً</span>
+  name       text <span class="k">NOT</span> <span class="k">NULL</span>,
+  email      text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">UNIQUE</span>,
+  city       text,
+  created_at timestamptz <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> now()
+);
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> products (
+  id    bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  name  text <span class="k">NOT</span> <span class="k">NULL</span>,
+  price integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (price &gt; <span class="n">0</span>), <span class="c line-bidi">-- بالقروش: أعداد صحيحة، لا كسور أبداً</span>
+  stock integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="n">0</span> <span class="k">CHECK</span> (stock &gt;= <span class="n">0</span>) <span class="c line-bidi">-- ترفض قاعدة البيانات المخزون السالب، مهما فعل التطبيق</span>
+);
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> orders (
+  id          bigint GENERATED ALWAYS <span class="k">AS</span> IDENTITY <span class="k">PRIMARY</span> <span class="k">KEY</span>,
+  customer_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> customers (id),
+  status      text <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s">&#x27;pending&#x27;</span>
+              <span class="k">CHECK</span> (status <span class="k">IN</span> (<span class="s">&#x27;pending&#x27;</span>, <span class="s">&#x27;paid&#x27;</span>, <span class="s">&#x27;shipped&#x27;</span>, <span class="s">&#x27;cancelled&#x27;</span>)), <span class="c line-bidi">-- لا يمكن أن تُخزَّن إلا هذه القيم الأربع</span>
+  created_at  timestamptz <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> now()
+);
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> order_items (
+  order_id   bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> orders (id) <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">CASCADE</span>,
+  product_id bigint <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> products (id),
+  quantity   integer <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">CHECK</span> (quantity <span class="k">BETWEEN</span> <span class="n">1</span> <span class="k">AND</span> <span class="n">99</span>),
+  price      integer <span class="k">NOT</span> <span class="k">NULL</span>, <span class="c line-bidi">-- السعر عند الطلب: الأسعار تتغير، والطلبات يجب ألا تتغير</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> (order_id, product_id) <span class="c line-bidi">-- يظهر المنتج مرة واحدة في كل طلب</span>
+);</pre></div>
+
+<p>اقرأه ببطء، لأن كل كلمة فيه قرار:</p>
+<ul>
+<li><strong>الأنواع.</strong> <code>bigint</code> للأرقام التعريفية، لأن <code>integer</code> يتوقف عند نحو ملياري. و<code>text</code> للنصوص بلا حد طول اعتباطي (وPostgreSQL تحفظ <code>text</code> و<code>varchar</code> بالطريقة نفسها). و<code>integer</code> للمال بالقروش. و<code>timestamptz</code> للحظات الزمنية: يحفظ لحظة دقيقة بتوقيت UTC، ولا يخلط بين المناطق الزمنية أبداً. ولا تستخدم <code>timestamp</code> بلا منطقة زمنية للأحداث أبداً.</li>
+<li><strong><code>GENERATED ALWAYS AS IDENTITY</code></strong> ترقّم الصفوف تلقائياً. وهي الطريقة القياسية، و<code>serial</code> الأقدم تعمل أيضاً.</li>
+<li><strong><code>PRIMARY KEY</code></strong> يحدد كل صف: فريد، ولا يكون null أبداً، ومفهرس.</li>
+<li><strong><code>NOT NULL</code></strong> و<strong><code>UNIQUE</code></strong> و<strong><code>CHECK</code></strong> قواعد تفرضها قاعدة البيانات مع كل كتابة.</li>
+<li><strong><code>REFERENCES</code></strong> <dfn>مفتاح أجنبي</dfn>: لا يمكن أن يشير طلب إلى عميل غير موجود. و<code>ON DELETE CASCADE</code> تحذف عناصر الطلب مع الطلب.</li>
+<li><strong><code>order_items</code></strong> له مفتاح أساسي <em>مركّب</em>: صف واحد لكل منتج في كل طلب. ويحفظ نسخة من السعر أيضاً، لأن أسعار المنتجات تتغير، والطلب يجب ألا يتغير.</li>
+</ul>
+
+<p>شغّل PostgreSQL (في مستودع الكود الخاص بالكتاب سكربت من سطر واحد لـ Docker، أو ثبّتها من postgresql.org)، وأنشئ الجداول، واملأها بسبعة عملاء مسمّين، وألفي عميل مولَّدين، ومئة ألف طلب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># أنشئ الجداول، ثم املأها</span>
+<span class="c">$ </span><span class="k">psql shop -f schema.sql</span>
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+<span class="c">$ </span><span class="k">psql shop -q -f seed.sql &gt; /dev/null</span>
+<span class="c">$ </span><span class="k">psql shop -c &#x27;SELECT (SELECT count(*) FROM customers) AS customers, (SELECT count(*) FROM orders) AS orders, (SELECT count(*) FROM order_items) AS items;&#x27;</span>
+ customers | orders | items  
+-----------+--------+--------
+      2007 | 100006 | 200009
+(1 row)</pre></div>
+
+<p><code>psql</code> هو سطر أوامر PostgreSQL. وحين تكتب <code>psql shop</code> وحدها تفتح جلسة بالمحث <code>shop=#</code>، تكتب فيها SQL تنتهي بفاصلة منقوطة. وأوامره التي تبدأ بشرطة مائلة عكسية تصف قاعدة البيانات:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># يصف psql الجدول: الأعمدة والأنواع والقيم الافتراضية والفهارس والقواعد</span>
+<span class="c">shop=# </span><span class="k">\d products</span>
+                        Table &quot;public.products&quot;
+ Column |  Type   | Collation | Nullable |           Default            
+--------+---------+-----------+----------+------------------------------
+ id     | bigint  |           | not null | generated always as identity
+ name   | text    |           | not null | 
+ price  | integer |           | not null | 
+ stock  | integer |           | not null | 0
+Indexes:
+    &quot;products_pkey&quot; PRIMARY KEY, btree (id)
+Check constraints:
+    &quot;products_price_check&quot; CHECK (price &gt; 0)
+    &quot;products_stock_check&quot; CHECK (stock &gt;= 0)
+Referenced by:
+    TABLE &quot;order_items&quot; CONSTRAINT &quot;order_items_product_id_fkey&quot; FOREIGN KEY (product_id) REFERENCES products(id)</pre></div>
+
+<h3>دع قاعدة البيانات تقول لا</h3>
+
+<p>كل قاعدة في المخطط مفروضة، أياً كان البرنامج الذي يكتب البيانات: واجهتك البرمجية، أو سكربت يشغّله أحد في منتصف الليل، أو زميل في <code>psql</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># تفرض قاعدة البيانات قواعدها مع كل كتابة</span>
+<span class="c">shop=# </span><span class="k">INSERT INTO products (name, price) VALUES (&#x27;Free sample&#x27;, 0);</span>
+ERROR:  new row for relation &quot;products&quot; violates check constraint &quot;products_price_check&quot;
+DETAIL:  Failing row contains (13, Free sample, 0, 0).
+<span class="c">shop=# </span><span class="k">INSERT INTO orders (customer_id) VALUES (999999);</span>
+ERROR:  insert or update on table &quot;orders&quot; violates foreign key constraint &quot;orders_customer_id_fkey&quot;
+DETAIL:  Key (customer_id)=(999999) is not present in table &quot;customers&quot;.
+<span class="c">shop=# </span><span class="k">INSERT INTO customers (name, email) VALUES (&#x27;Sara 2&#x27;, &#x27;sara@example.com&#x27;);</span>
+ERROR:  duplicate key value violates unique constraint &quot;customers_email_key&quot;
+DETAIL:  Key (email)=(sara@example.com) already exists.
+<span class="c">shop=# </span><span class="k">UPDATE products SET stock = stock - 5 WHERE id = 3;</span>
+ERROR:  new row for relation &quot;products&quot; violates check constraint &quot;products_stock_check&quot;
+DETAIL:  Failing row contains (3, حزمة بطارية, 12500, -5).</pre></div>
+
+<p>سعر صفر، وطلب لعميل غير موجود، وحساب ثانٍ بالبريد نفسه، ومخزون تحت الصفر: كل منها مرفوض، برسالة تسمّي القاعدة. فالتحقق في التطبيق يعطي المستخدمين رسائل ودودة، والقيود في قاعدة البيانات تضمن أن تبقى البيانات صحيحة حين يكون في التطبيق خطأ. وأنت تريد الاثنين.</p>
+
+<h2><span class="sec">4.2</span> <span>القراءة: SELECT</span></h2>
+
+<p>يسمّي الاستعلام الأعمدة التي يريدها، والجدول، والصفوف (<code>WHERE</code>)، والترتيب، والعدد:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># اختر الصفوف والأعمدة، ورتّب، واحتفظ بالأوائل</span>
+<span class="c">shop=# </span><span class="k">SELECT name, price, stock</span>
+<span class="c">shop-# </span><span class="k">FROM products</span>
+<span class="c">shop-# </span><span class="k">WHERE price &lt; 10000</span>
+<span class="c">shop-# </span><span class="k">ORDER BY price DESC</span>
+<span class="c">shop-# </span><span class="k">LIMIT 3;</span>
+    name    | price | stock 
+------------+-------+-------
+ محرك سيرفو |  9000 |    14
+ جهاز تحكم  |  8000 |     9
+ سماعة      |  7500 |    18
+(3 rows)
+<span class="c">shop=# </span><span class="k">SELECT count(*) AS products, sum(stock) AS units, min(price), max(price)</span>
+<span class="c">shop-# </span><span class="k">FROM products;</span>
+ products | units | min  |  max  
+----------+-------+------+-------
+       12 |   222 | 2500 | 45000
+(1 row)</pre></div>
+
+<p>اكتب كلمات SQL بحروف كبيرة والأسماء بحروف صغيرة، وجزءاً واحداً في كل سطر. فـSQL لا تهتم، لكن القراء يهتمون. ويستخدم الاستعلام الثاني <dfn>دوال التجميع</dfn>، التي تحوّل صفوفاً كثيرة إلى صف واحد: <code>count</code> و<code>sum</code> و<code>min</code> و<code>max</code> و<code>avg</code>.</p>
+
+<h3>NULL: القيمة المفقودة</h3>
+
+<p><code>NULL</code> تعني «مجهول» أو «مفقود». فكريم بلا مدينة. ويبدو هذا بسيطاً حتى تقارن:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># NULL ليست قيمة: = NULL لا تصدق أبداً</span>
+<span class="c">shop=# </span><span class="k">SELECT name, city FROM customers WHERE city = NULL;</span>
+ name | city 
+------+------
+(0 rows)
+<span class="c">shop=# </span><span class="k">SELECT name, city FROM customers WHERE city IS NULL;</span>
+ name | city 
+------+------
+ كريم | 
+(1 row)
+<span class="c">shop=# </span><span class="k">SELECT NULL = NULL AS equal, NULL IS NULL AS is_null, 1 + NULL AS sum;</span>
+ equal | is_null | sum 
+-------+---------+-----
+       | t       |    
+(1 row)</pre></div>
+
+<p>هل المدينة المجهولة تساوي مدينة مجهولة؟ جواب SQL هو «مجهول»: <code>NULL = NULL</code> قيمتها <code>NULL</code> لا صح. و<code>WHERE</code> لا تُبقي إلا الصفوف التي يكون الشرط فيها <em>صحيحاً</em>، فلا تُبقي <code>city = NULL</code> شيئاً أبداً. استخدم <code>IS NULL</code> و<code>IS NOT NULL</code>. والحساب مع <code>NULL</code> يعطي <code>NULL</code> أيضاً، ودوال التجميع مثل <code>sum</code> تتخطى قيم <code>NULL</code>. وأفضل وقاية <code>NOT NULL</code> على كل عمود ليس له سبب وجيه ليكون فارغاً.</p>
+
+<h2><span class="sec">4.3</span> <span>الربط: جمع الجداول</span></h2>
+
+<p><dfn>الربط</dfn> (join) يضع معاً صفوفاً من جداول عدة يجمعها شيء. ولنعرض طلبات كل عميل مسمّى بإجمالياتها، يربط الاستعلام العملاء بطلباتهم، والطلبات بعناصرها، ثم يجمّع عناصر كل طلب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># اربط الجداول: طلبات كل عميل مسمّى بإجمالياتها</span>
+<span class="c">shop=# </span><span class="k">SELECT c.name, o.id, o.status, sum(i.quantity * i.price) AS total</span>
+<span class="c">shop-# </span><span class="k">FROM customers c</span>
+<span class="c">shop-# </span><span class="k">JOIN orders o ON o.customer_id = c.id</span>
+<span class="c">shop-# </span><span class="k">JOIN order_items i ON i.order_id = o.id</span>
+<span class="c">shop-# </span><span class="k">WHERE c.id &lt;= 7</span>
+<span class="c">shop-# </span><span class="k">GROUP BY c.name, o.id, o.status</span>
+<span class="c">shop-# </span><span class="k">ORDER BY o.id;</span>
+ name |   id   |  status   | total 
+------+--------+-----------+-------
+ سارة | 100001 | shipped   | 50000
+ سارة | 100002 | paid      | 24000
+ عمر  | 100003 | shipped   | 42000
+ لينا | 100004 | cancelled |  9000
+ منى  | 100005 | pending   | 21000
+ يوسف | 100006 | paid      | 97500
+(6 rows)</pre></div>
+
+<p><code>JOIN … ON</code> (<dfn>الربط الداخلي</dfn>) لا يُبقي إلا التركيبات المتطابقة. ولهذا غاب كريم وهناء، فلا طلبات لهما. ولتُبقي كل العملاء استخدم <dfn>الربط الأيسر</dfn> (left join): كل صف من الجدول الأيسر، مع <code>NULL</code> حيث لا يجد الجدول الأيمن شيئاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># LEFT JOIN تُبقي العملاء الذين لا طلبات لهم</span>
+<span class="c">shop=# </span><span class="k">SELECT c.name, count(o.id) AS orders</span>
+<span class="c">shop-# </span><span class="k">FROM customers c</span>
+<span class="c">shop-# </span><span class="k">LEFT JOIN orders o ON o.customer_id = c.id</span>
+<span class="c">shop-# </span><span class="k">WHERE c.id &lt;= 7</span>
+<span class="c">shop-# </span><span class="k">GROUP BY c.id, c.name</span>
+<span class="c">shop-# </span><span class="k">ORDER BY c.id;</span>
+ name | orders 
+------+--------
+ سارة |      2
+ عمر  |      1
+ لينا |      1
+ كريم |      0
+ منى  |      1
+ يوسف |      1
+ هناء |      0
+(7 rows)</pre></div>
+
+<p>لاحظ <code>count(o.id)</code> لا <code>count(*)</code>. فـ<code>count(*)</code> تعدّ الصفوف، وصف كريم موجود (مع <code>NULL</code> للطلب)، فستقول 1. أما <code>count(o.id)</code> فتعدّ القيم التي ليست <code>NULL</code>، فتقول 0. وهذا الفرق الصغير يختبئ في تقارير كثيرة.</p>
+
+<h2><span class="sec">4.4</span> <span>التجميع والتلخيص</span></h2>
+
+<p>يصنع <code>GROUP BY</code> صفاً واحداً في النتيجة لكل مجموعة، وتلخص دوال التجميع كل مجموعة. و<code>HAVING</code> تصفّي المجموعات، كما تصفّي <code>WHERE</code> الصفوف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># المنتجات التي تجلب أكثر المال</span>
+<span class="c">shop=# </span><span class="k">SELECT p.name, sum(i.quantity) AS units, sum(i.quantity * i.price) / 100 AS revenue</span>
+<span class="c">shop-# </span><span class="k">FROM order_items i</span>
+<span class="c">shop-# </span><span class="k">JOIN orders o ON o.id = i.order_id</span>
+<span class="c">shop-# </span><span class="k">JOIN products p ON p.id = i.product_id</span>
+<span class="c">shop-# </span><span class="k">WHERE o.status &lt;&gt; &#x27;cancelled&#x27;</span>
+<span class="c">shop-# </span><span class="k">GROUP BY p.name</span>
+<span class="c">shop-# </span><span class="k">HAVING sum(i.quantity) &gt; 26600</span>
+<span class="c">shop-# </span><span class="k">ORDER BY revenue DESC;</span>
+    name     | units | revenue 
+-------------+-------+---------
+ حزمة بطارية | 26878 | 3359750
+ صندوق تروس  | 26694 | 2936340
+ جهاز تحكم   | 26673 | 2133840
+ سماعة       | 26676 | 2000700
+ شريط LED    | 27350 | 1094000
+ كابل USB    | 26699 |  667475
+(6 rows)</pre></div>
+
+<p>اقرأ الترتيب الذي تعمل به قاعدة البيانات، وهو غير الترتيب الذي يُكتب به الاستعلام: <code>FROM</code> والربط أولاً، ثم <code>WHERE</code> (تذهب الطلبات الملغاة)، ثم <code>GROUP BY</code>، ثم <code>HAVING</code> (تذهب المنتجات التي باعت 26,600 قطعة أو أقل)، ثم <code>SELECT</code>، ثم <code>ORDER BY</code>. ولهذا لا تستطيع <code>WHERE</code> أن تستخدم <code>sum(...)</code>: فحين تعمل لا توجد مجموعات بعد.</p>
+
+<p>المال ما زال بالقروش في المجاميع، ولا يُقسم على 100 إلا في النهاية للعرض. والقسمة الصحيحة ستكون خاطئة لمبلغ مثل 12,550 قرشاً، وهنا تصادف أن كل الإيرادات جنيهات كاملة. وفي الواجهة البرمجية أرسل القروش، ودع العميل ينسّقها.</p>
+
+<h2><span class="sec">4.5</span> <span>CTEs ودوال النوافذ</span></h2>
+
+<p>بعض الأسئلة يحتاج نتيجة يبني عليها. فسؤال «رتّب العملاء المسمّين بما أنفقوه، وأظهر حصة كل منهم» يحتاج الإجماليات أولاً، ثم ترتيباً فوقها:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># CTE ودالة نافذة: رتّب العملاء المسمّين بما أنفقوه</span>
+<span class="c">shop=# </span><span class="k">WITH spent AS (</span>
+<span class="c">shop-# </span><span class="k">  SELECT o.customer_id, sum(i.quantity * i.price) AS total</span>
+<span class="c">shop-# </span><span class="k">  FROM orders o</span>
+<span class="c">shop-# </span><span class="k">  JOIN order_items i ON i.order_id = o.id</span>
+<span class="c">shop-# </span><span class="k">  WHERE o.status &lt;&gt; &#x27;cancelled&#x27;</span>
+<span class="c">shop-# </span><span class="k">  GROUP BY o.customer_id</span>
+<span class="c">shop-# </span><span class="k">)</span>
+<span class="c">shop-# </span><span class="k">SELECT c.name, s.total,</span>
+<span class="c">shop-# </span><span class="k">       rank() OVER (ORDER BY s.total DESC) AS place,</span>
+<span class="c">shop-# </span><span class="k">       round(s.total * 100.0 / sum(s.total) OVER (), 1) AS percent</span>
+<span class="c">shop-# </span><span class="k">FROM spent s</span>
+<span class="c">shop-# </span><span class="k">JOIN customers c ON c.id = s.customer_id</span>
+<span class="c">shop-# </span><span class="k">WHERE c.id &lt;= 7</span>
+<span class="c">shop-# </span><span class="k">ORDER BY place;</span>
+ name | total | place | percent 
+------+-------+-------+---------
+ يوسف | 97500 |     1 |    41.6
+ سارة | 74000 |     2 |    31.6
+ عمر  | 42000 |     3 |    17.9
+ منى  | 21000 |     4 |     9.0
+(4 rows)</pre></div>
+
+<ul>
+<li><code>WITH spent AS (…)</code> هي <dfn>تعبير جدول مشترك</dfn> (CTE): استعلام مسمّى يستخدمه الذي يليه. يُقرأ كمتغير، ويُبقي الاستعلامات الطويلة مفهومة.</li>
+<li><code>rank() OVER (ORDER BY …)</code> <dfn>دالة نافذة</dfn> (window function): تحسب على مجموعة من الصفوف <em>دون أن تطويها</em>، بخلاف <code>GROUP BY</code>. فيحتفظ كل عميل بصفه ويأخذ ترتيبه.</li>
+<li><code>sum(s.total) OVER ()</code> دالة تجميع مستخدمة نافذةً على كل الصفوف: الإجمالي الكلي بجوار كل صف، فيستطيع كل صف أن يحسب حصته.</li>
+</ul>
+
+<p>دوال النوافذ تجيب الأسئلة التي تسألها التقارير دائماً: الترتيب، والإجماليات المتراكمة، والشهر السابق للمقارنة (<code>lag</code>)، والثلاثة الأوائل في كل فئة. وبدونها ستكتب حلقات في الكود على آلاف الصفوف.</p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر فهمك</p><ol><li>لماذا لا تُرجع <code>WHERE city = NULL</code> أي صف، حتى للعملاء الذين بلا مدينة؟</li><li>تقرير يعدّ طلبات كل عميل بـ <code>LEFT JOIN</code> و<code>count(*)</code>. ما الخطأ فيه؟</li><li>لماذا لا يمكن أن تعمل <code>WHERE sum(quantity) &gt; 100</code>، وماذا تكتب بدلاً منها؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">4.6</span> <span>الكتابة: INSERT وUPDATE وDELETE</span></h2>
+
+<p>الكتابات تستطيع أن تجيب أيضاً. فـ<code>RETURNING</code> تُرجع أعمدة من الصفوف التي كُتبت، فيأخذ التطبيق الرقم الجديد والقيم الافتراضية دون استعلام ثانٍ. و<code>ON CONFLICT</code> تحوّل الإدراج الذي سيكسر قاعدة التفرد إلى تحديث، أي <dfn>upsert</dfn>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># كتابات تجيب: RETURNING، والإدراج أو التحديث بـ ON CONFLICT</span>
+<span class="c">shop=# </span><span class="k">INSERT INTO customers (name, email, city)</span>
+<span class="c">shop-# </span><span class="k">VALUES (&#x27;Nour&#x27;, &#x27;nour@example.com&#x27;, &#x27;Giza&#x27;)</span>
+<span class="c">shop-# </span><span class="k">RETURNING id, created_at;</span>
+  id  |          created_at           
+------+-------------------------------
+ 2009 | 2026-11-19 20:42:40.095471+00
+(1 row)
+
+INSERT 0 1
+<span class="c">shop=# </span><span class="k">INSERT INTO customers (name, email, city)</span>
+<span class="c">shop-# </span><span class="k">VALUES (&#x27;Nour&#x27;, &#x27;nour@example.com&#x27;, &#x27;Aswan&#x27;)</span>
+<span class="c">shop-# </span><span class="k">ON CONFLICT (email) DO UPDATE SET city = excluded.city</span>
+<span class="c">shop-# </span><span class="k">RETURNING id, name, city;</span>
+  id  | name | city  
+------+------+-------
+ 2009 | Nour | Aswan
+(1 row)
+
+INSERT 0 1
+<span class="c">shop=# </span><span class="k">UPDATE products SET stock = stock + 5</span>
+<span class="c">shop-# </span><span class="k">WHERE id = 3</span>
+<span class="c">shop-# </span><span class="k">RETURNING name, stock;</span>
+    name     | stock 
+-------------+-------
+ حزمة بطارية |     5
+(1 row)
+
+UPDATE 1</pre></div>
+
+<p>الـ upsert جملة واحدة، فلا يستطيع طلبان يسجّلان البريد نفسه في اللحظة نفسها أن يُدرجا معاً: قاعدة البيانات هي التي تقرر. أما فعل الشيء نفسه بالكود («تحقق هل هو موجود، ثم أدرج») فيترك فجوة بين التحقق والإدراج يتسلل منها طلب آخر. والفصل 6 عن هذه الفجوات بالضبط.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>انتبه: UPDATE وDELETE بلا WHERE</p><p><code>DELETE FROM orders;</code> تحذف كل الطلبات، فوراً، دون أن تسأل. فقبل أن تشغّل <code>UPDATE</code> أو <code>DELETE</code> بيدك، شغّل <code>WHERE</code> نفسها في <code>SELECT</code> وتحقق من الصفوف. والأفضل أن تبدأ معاملة بـ <code>BEGIN;</code>، وتشغّل التغيير، وتنظر في النتيجة، ثم <code>COMMIT;</code> (أو <code>ROLLBACK;</code>). ويشرح الفصل 6 المعاملات.</p></aside>
+
+<h2><span class="sec">4.7</span> <span>الفهارس وخطط الاستعلام</span></h2>
+
+<p>في الجدول <code>orders</code> مئة ألف صف. فكيف تجد PostgreSQL طلبات العميل 1234؟ يُظهر <code>EXPLAIN</code> <dfn>الخطة</dfn> التي اختارتها قاعدة البيانات، ومع <code>ANALYZE</code> يشغّل الاستعلام أيضاً ويخبر بما حدث فعلاً:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># كيف تجد PostgreSQL طلبات عميل واحد؟</span>
+<span class="c">shop=# </span><span class="k">EXPLAIN (ANALYZE, COSTS OFF, BUFFERS OFF)</span>
+<span class="c">shop-# </span><span class="k">SELECT count(*) FROM orders WHERE customer_id = 1234;</span>
+                               QUERY PLAN                               
+------------------------------------------------------------------------
+ Aggregate (actual time=5.218..5.219 rows=1.00 loops=1)
+   -&gt;  Seq Scan on orders (actual time=0.069..5.205 rows=44.00 loops=1)
+         Filter: (customer_id = 1234)
+         Rows Removed by Filter: 99962
+ Planning Time: 0.272 ms
+ Execution Time: 5.271 ms
+(6 rows)</pre></div>
+
+<p><dfn>مرور تسلسلي</dfn> (sequential scan): قرأت PostgreSQL كل الصفوف المئة ألف وستة، ورمت 99,962 منها لتجد 44. وخمسة أجزاء من الألف من الثانية تبدو قليلة، لكنها تكبر مع الجدول، والواجهة تفعلها مع كل طلب لكل مستخدم. أما <dfn>الفهرس</dfn> (index) فبنية منفصلة مرتبة (شجرة B-tree) تربط القيم بالصفوف، مثل الفهرس في آخر هذا الكتاب:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># أضف فهرساً على المفتاح الأجنبي، واسأل مرة أخرى</span>
+<span class="c">shop=# </span><span class="k">CREATE INDEX orders_customer_id_idx ON orders (customer_id);</span>
+CREATE INDEX
+<span class="c">shop=# </span><span class="k">EXPLAIN (ANALYZE, COSTS OFF, BUFFERS OFF)</span>
+<span class="c">shop-# </span><span class="k">SELECT count(*) FROM orders WHERE customer_id = 1234;</span>
+                                              QUERY PLAN                                               
+-------------------------------------------------------------------------------------------------------
+ Aggregate (actual time=0.235..0.236 rows=1.00 loops=1)
+   -&gt;  Bitmap Heap Scan on orders (actual time=0.054..0.226 rows=44.00 loops=1)
+         Recheck Cond: (customer_id = 1234)
+         Heap Blocks: exact=44
+         -&gt;  Bitmap Index Scan on orders_customer_id_idx (actual time=0.039..0.039 rows=44.00 loops=1)
+               Index Cond: (customer_id = 1234)
+               Index Searches: 1
+ Planning Time: 0.401 ms
+ Execution Time: 0.292 ms
+(9 rows)</pre></div>
+
+<p>الآن تذهب قاعدة البيانات مباشرة إلى الصفوف الأربعة والأربعين عبر الفهرس: أسرع بعدة مرات هنا، والفرق يتسع مع نمو الجدول، لأن البحث في B-tree يستغرق تقريباً الوقت نفسه لمليون صف كما لألف. وثلاث قواعد للفهارس:</p>
+<ul>
+<li><strong>PostgreSQL لا تفهرس المفاتيح الأجنبية نيابة عنك.</strong> لم يكن للعمود <code>orders.customer_id</code> فهرس حتى أضفناه. ففهرس المفاتيح الأجنبية التي تبحث بها أو تربط بها.</li>
+<li><strong>الفهرس يخدم الاستعلامات التي تطابقه.</strong> فالاستعلام الذي يلف العمود بدالة لا يستطيع أن يستخدم فهرساً عادياً على العمود. وتستطيع أن تفهرس التعبير نفسه:</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">psql</div><pre class="code"><span class="c line-bidi"># فهرس على تعبير، للبحث عن البريد دون اعتبار لحالة الحروف</span>
+<span class="c">shop=# </span><span class="k">EXPLAIN (COSTS OFF)</span>
+<span class="c">shop-# </span><span class="k">SELECT id FROM customers WHERE lower(email) = &#x27;sara@example.com&#x27;;</span>
+                     QUERY PLAN                      
+-----------------------------------------------------
+ Seq Scan on customers
+   Filter: (lower(email) = &#x27;sara@example.com&#x27;::text)
+(2 rows)
+<span class="c">shop=# </span><span class="k">CREATE INDEX customers_lower_email_idx ON customers (lower(email));</span>
+CREATE INDEX
+<span class="c">shop=# </span><span class="k">EXPLAIN (COSTS OFF)</span>
+<span class="c">shop-# </span><span class="k">SELECT id FROM customers WHERE lower(email) = &#x27;sara@example.com&#x27;;</span>
+                          QUERY PLAN                           
+---------------------------------------------------------------
+ Bitmap Heap Scan on customers
+   Recheck Cond: (lower(email) = &#x27;sara@example.com&#x27;::text)
+   -&gt;  Bitmap Index Scan on customers_lower_email_idx
+         Index Cond: (lower(email) = &#x27;sara@example.com&#x27;::text)
+(4 rows)</pre></div>
+
+<ul>
+<li><strong>الفهارس ليست مجانية.</strong> كل فهرس يأخذ مساحة ويبطئ كل إدراج وتحديث، لأنه يجب أن يحدّث الفهرس أيضاً. فأضفها للاستعلامات التي تشغّلها فعلاً، كما يُظهرها <code>EXPLAIN</code> وسجل الاستعلامات البطيئة، لا «للاحتياط».</li>
+</ul>
+
+<p>ولزوج أعمدة مثل <code>(price, id)</code> يهم الترتيب: فالفهرس مرتب بالسعر أولاً، فيخدم <code>WHERE price = …</code> و<code>ORDER BY price, id</code>، لكنه لا يخدم بحثاً بـ <code>id</code> وحده. ويتعمق الفصل 14 أكثر في الخطط والضبط.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>عادة المحترفين: EXPLAIN قبل الشحن</p><p>لكل استعلام جديد سيعمل على جدول كبير أو متنامٍ، شغّل <code>EXPLAIN ANALYZE</code> على بيانات واقعية قبل دمج الكود، والصق الخطة في طلب الدمج. فـ<code>Seq Scan</code> على جدول كبير في مسار طلب خطأ ينتظر الزحام. والاختبار على جدول فيه اثنا عشر صفاً لا يثبت شيئاً: ولّد بيانات، كما يفعل <code>seed.sql</code> بـ <code>generate_series</code>.</p></aside>
+
+<h2><span class="sec">4.8</span> <span>SQL من الكود، بأمان</span></h2>
+
+<p>ترسل التطبيقات SQL إلى قاعدة البيانات عبر مشغّل (driver). وأهم قاعدة على الإطلاق: <strong>لا تبنِ SQL بوصل النصوص بالمدخلات أبداً</strong>. وهذا السبب، مع مدخل قد يرسله نموذج على أنه بريد:</p>
+
+
+<div class="listing" dir="ltr"><div class="listing-title">node/query.ts</div><pre class="code"><span class="k">import</span> pg <span class="k">from</span> <span class="s">&quot;pg&quot;</span>;
+
+<span class="k">const</span> pool = <span class="k">new</span> pg.Pool({ connectionString: <span class="s">&quot;postgres://bit:secret@localhost:5432/shop&quot;</span> });
+
+<span class="c line-bidi">// ما قد يرسله نموذج على أنه بريد: يغلق علامة التنصيص ويضيف شرطاً.</span>
+<span class="k">const</span> input = <span class="s">&quot;x&#x27; OR &#x27;1&#x27;=&#x27;1&quot;</span>;
+
+<span class="c line-bidi">// خطأ: المدخل يصير جزءاً من SQL</span>
+<span class="k">const</span> unsafe = <span class="k">await</span> pool.query(<span class="s">`SELECT id, email FROM customers WHERE email = &#x27;${input}&#x27;`</span>);
+console.log(<span class="s">&quot;وصل النصوص:&quot;</span>, unsafe.rowCount, <span class="s">&quot;صفوف&quot;</span>);
+
+<span class="c line-bidi">// صحيح: SQL والقيمة يسافران منفصلين، و$1 قيمة دائماً لا غير</span>
+<span class="k">const</span> safe = <span class="k">await</span> pool.query(<span class="s">&quot;SELECT id, email FROM customers WHERE email = $1&quot;</span>, [input]);
+console.log(<span class="s">&quot;معامل:&quot;</span>, safe.rowCount, <span class="s">&quot;صفوف&quot;</span>);
+
+<span class="k">const</span> sara = <span class="k">await</span> pool.query(
+  <span class="s">&quot;SELECT c.name, count(o.id) AS orders FROM customers c &quot;</span> +
+    <span class="s">&quot;LEFT JOIN orders o ON o.customer_id = c.id WHERE c.email = $1 GROUP BY c.name&quot;</span>,
+  [<span class="s">&quot;sara@example.com&quot;</span>],
+);
+<span class="c line-bidi">// count(*) من النوع bigint، ويُرجعه pg نصاً لأن أعداد JavaScript لا تتسع لكل bigint</span>
+console.log(sara.rows[<span class="n">0</span>], <span class="k">typeof</span> sara.rows[<span class="n">0</span>].orders);
+
+<span class="k">await</span> pool.end();</pre></div>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c line-bidi"># من Node، بالمشغّل pg</span>
+<span class="c">$ </span><span class="k">node node/query.ts</span>
+وصل النصوص: 2008 صفوف
+معامل: 0 صفوف
+{ name: &#x27;سارة&#x27;, orders: &#x27;2&#x27; } string</pre></div>
+
+<p>حين لُصق المدخل في SQL أغلق علامة التنصيص وأضاف <code>OR '1'='1'</code>، وهي صحيحة دائماً: فأرجع الاستعلام كل العملاء، 2008 صفوف، بدل لا شيء. وهذا هو <dfn>حقن SQL</dfn> (SQL injection)، وما زال من أشيع الهجمات على الويب وأشدها ضرراً: فبمدخل مختلف قليلاً يستطيع المهاجم أن يقرأ أي جدول، أو أن يحذفه. أما مع <dfn>المعامل</dfn> <code>$1</code> فيُرسل SQL والقيمة إلى قاعدة البيانات منفصلين، ولا يمكن أن تصير القيمة SQL أبداً مهما احتوت، ولم يجد الاستعلام نفسه أي عميل بهذا البريد الغريب.</p>
+
+<p>لاحظ السطر الأخير: وصل <code>orders</code> نصاً <code>'2'</code>. فـ<code>count(*)</code> تُرجع <code>bigint</code>، وعدد JavaScript لا يتسع لكل <code>bigint</code> بدقة، فيحتاط المشغّل <code>pg</code> ويُرجع نصاً. حوّله حين تعرف أن القيمة صغيرة (<code>Number(row.orders)</code>)، أو حوّل النوع في SQL (<code>count(*)::int</code>). ويضيف الفصل 5 طبقة بأنواع تفعل ذلك مرة واحدة.</p>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>نصوص موصولة داخل SQL</td><td>حقن SQL</td><td>المعاملات، دائماً</td></tr>
+<tr><td>القواعد في كود التطبيق وحده</td><td>بيانات خاطئة من الأخطاء والسكربتات والتطبيقات الأخرى</td><td><code>NOT NULL</code> و<code>CHECK</code> و<code>UNIQUE</code> والمفاتيح الأجنبية</td></tr>
+<tr><td><code>= NULL</code></td><td>لا تطابق شيئاً أبداً</td><td><code>IS NULL</code></td></tr>
+<tr><td><code>count(*)</code> مع ربط أيسر</td><td>الصفر يُعد واحداً</td><td>عُدّ عموداً من الجدول الأيمن</td></tr>
+<tr><td>أعداد عشرية أو <code>numeric</code> للمال دون تفكير</td><td>أخطاء تقريب، ووحدات مختلطة</td><td>أعداد صحيحة بالوحدات الصغرى</td></tr>
+<tr><td><code>timestamp</code> بلا منطقة زمنية</td><td>أوقات تنزاح مع الخوادم والفصول</td><td><code>timestamptz</code>، بتوقيت UTC</td></tr>
+<tr><td>مفاتيح أجنبية بلا فهارس</td><td>مرور كامل مع كل ربط وبحث</td><td>فهرس المفاتيح التي تبحث بها</td></tr>
+<tr><td>التحقق ثم الإدراج</td><td>تكرار حين يتسابق طلبان</td><td>قاعدة تفرد و<code>ON CONFLICT</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>للجداول أعمدة بأنواع: أرقام <code>bigint</code>، و<code>text</code>، ومال <code>integer</code>، وأوقات <code>timestamptz</code>. و<strong>القيود</strong> (<code>PRIMARY KEY</code> و<code>NOT NULL</code> و<code>UNIQUE</code> و<code>CHECK</code> و<code>REFERENCES</code>) تُبقي البيانات صحيحة أياً كان من يكتبها.</li>
+<li><code>SELECT … FROM … WHERE … ORDER BY … LIMIT</code> تقرأ الصفوف، ودوال التجميع تلخصها.</li>
+<li><strong><code>NULL</code></strong> مجهول: قارنه بـ <code>IS NULL</code>، وهو ينتشر في الحساب.</li>
+<li><strong>الربط الداخلي</strong> يُبقي المتطابق، و<strong>الربط الأيسر</strong> يُبقي كل صف أيسر. وعُدّ عموداً من الجدول الأيمن لا <code>*</code>.</li>
+<li><strong><code>GROUP BY</code></strong> تصنع المجموعات و<strong><code>HAVING</code></strong> تصفّيها، وقاعدة البيانات تشغّل <code>FROM</code> ثم <code>WHERE</code> ثم <code>GROUP BY</code> ثم <code>HAVING</code> ثم <code>SELECT</code> ثم <code>ORDER BY</code>.</li>
+<li><strong>CTEs</strong> تسمّي النتائج الوسيطة، و<strong>دوال النوافذ</strong> تحسب عبر الصفوف دون أن تطويها.</li>
+<li><strong><code>RETURNING</code></strong> و<strong><code>ON CONFLICT</code></strong> تجعلان الكتابات تجيب، والـ upsert ذرياً.</li>
+<li><strong><code>EXPLAIN ANALYZE</code></strong> يُظهر الخطة، و<strong>الفهارس</strong> تحوّل المرور الكامل إلى بحث مباشر. ففهرس المفاتيح الأجنبية وأنماط الاستعلام الحقيقية، ومنها التعابير.</li>
+<li><strong>المعاملات</strong> بين الكود وSQL، لا وصل النصوص أبداً.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر فهمك»:</strong> 1. مقارنة أي شيء بـ <code>NULL</code> تعطي <code>NULL</code> (مجهول) لا صح أبداً، و<code>WHERE</code> لا تُبقي إلا الصفوف التي يصدق فيها الشرط، فاستخدم <code>IS NULL</code>. 2. <code>count(*)</code> تعدّ الصفوف، والعميل الذي بلا طلبات له صف واحد في الربط الأيسر (مع قيم <code>NULL</code>)، فيأخذ 1 بدل 0، فعُدّ عموداً من جدول الطلبات مثل <code>count(o.id)</code>. 3. <code>WHERE</code> تعمل قبل تجميع الصفوف، فلا يوجد مجموع بعد، فصفِّ المجموعات بـ <code>HAVING sum(quantity) &gt; 100</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">استخدم قاعدة بيانات المتجر من هذا الفصل (أو نسختك منها، محمّلة بـ <code>schema.sql</code> و<code>seed.sql</code>). واحفظ SQL كل مشروع في ملف، وشغّله بـ <code>psql shop -f</code>.</p>
+
+<div class="project">
+<p class="project-label">المشروع 4.1 · سهل</p>
+<h3>تقرير مبيعات بـ SQL</h3>
+<p class="project-goal">اكتب الاستعلامات التي وراء تقرير مبيعات شهري، دون حلقة واحدة في كود التطبيق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الربط، والتجميع، ودوال التاريخ، و<code>HAVING</code>، وتنسيق النتائج.</p>
+<ol class="steps">
+<li>الإيراد وعدد الطلبات لكل شهر من الأشهر الستة الأخيرة، دون الطلبات الملغاة (استخدم <code>date_trunc('month', created_at)</code>).</li>
+<li>المنتجات الخمسة الأكثر مبيعاً في آخر 30 يوماً بالقطع، مع حصة كل منها من كل القطع المبيعة.</li>
+<li>العملاء الذين طلبوا أكثر من عشر مرات لكن ليس في آخر 60 يوماً: أناس قد يراسلهم المتجر بالبريد.</li>
+<li>لكل مدينة عدد العملاء ومتوسط إجمالي الطلب، وتُستبعد المدن التي فيها أقل من 100 عميل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> اكتب كل استعلام بخطوات صغيرة بـ CTEs، وتحقق من نتيجة كل خطوة قبل أن تضيف التالية. فالاستعلام الطويل المكتوب دفعة واحدة خاطئ في مكان ما في الغالب.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 4.2 · متوسط</p>
+<h3>المراجعات، والقواعد في قاعدة البيانات</h3>
+<p class="project-goal">أضف مراجعات المنتجات إلى المخطط بكل قاعدة تفرضها PostgreSQL، وأثبت كل قاعدة بإدراج يفشل.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> تصميم الجداول، والقيود، والمفاتيح المركبة، والفهارس، واختبار القواعد.</p>
+<ol class="steps">
+<li>أنشئ <code>reviews</code>: منتج، وعميل، وتقييم من 1 إلى 5، ونص من 10 إلى 2000 حرف، ووقت إنشاء.</li>
+<li>لا يجوز للعميل أن يراجع المنتج إلا مرة واحدة: افرضها بقاعدة تفرد. وقرر ماذا يحدث للمراجعات حين يُحذف منتج أو عميل، واكتبه في المفاتيح الأجنبية.</li>
+<li>اكتب إدراجاً لكل قاعدة يجب أن يفشل، وتحقق أن كل رسالة خطأ تسمّي القاعدة التي تتوقعها.</li>
+<li>أضف الفهرس اللازم لعرض مراجعات المنتج الأحدث أولاً، وأكّده بـ <code>EXPLAIN</code> بعد توليد 50,000 مراجعة.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> سمِّ قيودك (<code>CONSTRAINT reviews_rating_range CHECK (…)</code>). فالاسم يظهر في رسائل الخطأ والسجلات، والاسم الجيد يخبر المطور التالي بالضبط أي قاعدة كُسرت.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 4.3 · تحدٍّ</p>
+<h3>جِد الاستعلامات البطيئة وأصلحها</h3>
+<p class="project-goal">اجعل مجموعة من استعلامات المتجر الواقعية سريعة على مليون طلب، وأثبت كل تحسين بـ <code>EXPLAIN ANALYZE</code>.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة الخطط، والفهارس المركبة والجزئية، والحكم على متى يستحق الفهرس.</p>
+<ol class="steps">
+<li>كبّر البيانات إلى مليون طلب بتغيير <code>generate_series</code> في <code>seed.sql</code>.</li>
+<li>قس هذه الاستعلامات قبل أي فهرس جديد: آخر 10 طلبات لعميل واحد، وكل الطلبات المنتظرة الأقدم من يوم، والطلبات التي فيها منتج معين في الشهر الأخير، والعملاء بالبريد دون اعتبار لحالة الحروف.</li>
+<li>أضف فهرساً واحداً في كل مرة، وقس من جديد، وسجّل الوقت والخطة قبل وبعد في جدول.</li>
+<li>قس كم يصير إدراج 10,000 طلب أبطأ مع كل فهارسك، وقرر أي فهرس لا يستحق البقاء.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> ترتيب الأعمدة في الفهرس المركب يتبع الاستعلام: الأعمدة المقارنة بـ <code>=</code> أولاً، ثم العمود الذي ترتّب به أو تبحث في مداه. ولسؤال «أحدث طلبات العميل» هو <code>(customer_id, created_at DESC)</code>.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اعرض العملاء المسمّين (الأرقام من 1 إلى 7) الذين يسكنون القاهرة، مع بريدهم، مرتبين بالاسم.</li>
+<li><span class="level">سهل</span> كتب زميل <code>WHERE city != 'القاهرة'</code> ليجد العملاء خارج القاهرة، فغاب كريم عن النتيجة. اشرح لماذا، وأصلح الاستعلام.</li>
+<li><span class="level medium">متوسط</span> جِد المنتجات التي لا تحتويها أي من طلبات العملاء المسمّين (الأرقام فوق 100000)، بـ <code>LEFT JOIN</code>.</li>
+<li><span class="level medium">متوسط</span> تعرض صفحة الإدارة الطلبات المنتظرة من الأسبوع الأخير مرات كثيرة في الدقيقة. صمّم فهرساً لـ <code>WHERE status = 'pending' AND created_at &gt; …</code> يبقى صغيراً، وأظهر أن PostgreSQL تستخدمه.</li>
+<li><span class="level hard">تحدٍّ</span> أظهر إيراد كل شهر، وإجمالياً متراكماً منذ الشهر الأول، والتغير عن الشهر السابق، في استعلام واحد، للأشهر الأربعة الأولى في البيانات.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 5</p>
+
+<p>كتابة SQL باليد لكل جدول تصير مكررة، والمخططات تتغير مع الوقت. ونمذج البيانات تالياً بـ TypeScript، ونغيّر المخطط بأمان بالترحيلات، ونختار بين منشئ الاستعلامات وORM.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b3/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -1986,6 +2535,16 @@ retry-after: 60
 <li>أضف <code>q: z.string().trim().min(2).max(50).optional()</code> إلى مخطط الاستعلام، واقرأه مع القيم الأخرى، وأضف تصفية واحدة: <code>.filter((p) =&gt; !q || p.name.toLowerCase().includes(q.toLowerCase()))</code>. ويبقى المؤشر يعمل، لأنه يسجل موضعاً في الترتيب لا في القائمة المصفّاة: يرسل العميل <code>q</code> نفسها مع المؤشر، فتتابع الصفحة التالية بعد ذلك الموضع بين المنتجات المطابقة. وفي التشغيل في مستودع الكود (بالإنجليزية) يُرجع <code>q=se</code> مع <code>limit=1</code> «Servo motor»، ثم «Sensor set» مع المؤشر، ويُرفض <code>q=x</code> بمشكلة <code>400</code>. وفي قاعدة البيانات يحتاج بحث كهذا فهرساً مناسباً، يتناوله الفصل 4.</li>
 <li>طريقة: اجعل الإلغاء متساوي الأثر في نتيجته. فإن كان الطلب ملغى من قبل فرد بـ <code>200</code> مع الطلب، لأن هدف العميل (طلب ملغى) تحقق. وطريقة أخرى: اقبل <code>Idempotency-Key</code> في الإلغاء أيضاً وأعد الجواب الأول. والأولى أبسط وأصح هنا، لأن الإلغاء الثاني لا يغيّر شيئاً، وأبقِ <code>409</code> للطلبات التي لم يعد إلغاؤها ممكناً لأنها شُحنت. والدرس العام: صمّم الأفعال بحيث لا يضر تكرارها، كلما سمح مجال العمل بذلك.</li>
 <li>الصنف في <code>answers/idempotency.ts</code> يحفظ المدخلات في <code>Map</code> تحت المفتاح <code>client:key</code>، فالمفتاح نفسه من عميلين مدخلان مختلفان. وكل مدخل يحفظ وقت تخزينه، مقروءاً من دالة <code>now</code> تُعطى للمُنشئ (وهي افتراضياً <code>Date.now</code>)، و<code>get</code> تحذف المدخل الأقدم من مدة الحياة وتتجاهله. وتمرر الاختبارات ساعة مزيفة، <code>() =&gt; now</code>، وتقدّم <code>now</code> بدل أن تنتظر يوماً: فالمفتاح ما زال موجوداً بعد 999 ms من حياة مدتها 1000 ms، ويختفي عند 1000 ms. وفي الإنتاج يأتي العميل من التحقق من الهوية (الفصل 8)، والمخزن جدول في قاعدة البيانات أو مفاتيح Redis بوقت انتهاء، فتُمسح المدخلات القديمة وحدها أيضاً.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 4</h2>
+<ol class="exercises">
+<li><code>SELECT name, email FROM customers WHERE city = 'القاهرة' AND id &lt;= 7 ORDER BY name;</code> تُرجع سارة ولينا ويوسف. يجب أن يصدق الشرطان معاً، فهي <code>AND</code>، و<code>ORDER BY</code> تجعل الترتيب جزءاً من الجواب لا مصادفة من طريقة التخزين.</li>
+<li>مدينة كريم <code>NULL</code>، و<code>NULL != 'القاهرة'</code> قيمتها <code>NULL</code> لا صح، فيُسقط صفه. اكتب <code>WHERE city IS DISTINCT FROM 'القاهرة'</code>، التي تعامل <code>NULL</code> قيمة مختلفة ببساطة، أو <code>WHERE city &lt;&gt; 'القاهرة' OR city IS NULL</code>. وللعملاء المسمّين تكون النتيجة عمر وكريم ومنى وهناء. وهل ينتمي كريم إلى الجواب؟ هذا سؤال عمل، ويجب أن يجيبه الاستعلام عن قصد، لا مصادفة.</li>
+<li><code>SELECT p.name FROM products p LEFT JOIN order_items i ON i.product_id = p.id AND i.order_id &gt; 100000 GROUP BY p.id, p.name HAVING count(i.order_id) = 0;</code> تعطي حزمة البطارية وطقم الحساسات وجهاز التحكم وصندوق التروس. والشرط على <code>order_id</code> مكانه في <code>ON</code>: ففي <code>WHERE</code> سيحذف الصفوف التي فيها <code>NULL</code>، فيعود الربط الأيسر ربطاً داخلياً. و<code>WHERE NOT EXISTS (SELECT 1 FROM order_items i WHERE i.product_id = p.id AND i.order_id &gt; 100000)</code> تقول الشيء نفسه بطريقة أوضح.</li>
+<li><dfn>الفهرس الجزئي</dfn> لا يحتوي إلا الصفوف التي تطابق <code>WHERE</code> الخاصة به: <code>CREATE INDEX orders_pending_recent_idx ON orders (created_at) WHERE status = 'pending';</code>. ولأن الطلبات المنتظرة قليلة في أي وقت، يبقى الفهرس صغيراً جداً مهما كبر <code>orders</code>، ويُظهر <code>EXPLAIN</code> عبارة <code>Index Scan using orders_pending_recent_idx</code>. ويجب أن يحتوي الاستعلام <code>status = 'pending'</code> لتستخدمه PostgreSQL.</li>
+<li>جمّع بالشهر في CTE، ثم استخدم دالتي نافذة على الأشهر بترتيبها: <code>sum(revenue) OVER (ORDER BY month)</code> للإجمالي المتراكم، و<code>revenue - lag(revenue) OVER (ORDER BY month)</code> للتغير. و<code>lag</code> تقرأ الصف السابق، فيكون تغير الشهر الأول <code>NULL</code>. والاستعلام في مستودع الكود يُظهر أول الأشهر في البيانات المولَّدة، وأولها صغير لأن البيانات تبدأ في 19 نوفمبر، في منتصف الشهر.</li>
 </ol>
 
 </section>
