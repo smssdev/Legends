@@ -1,0 +1,53 @@
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ابنِ كل مشروع في مشروع Vite منشأ بقالب <code>vue-ts</code>: <code>npm create vite@latest my-vue -- --template vue-ts</code>. وقبل كتابة الكود ارسم الشاشة على ورقة، وضع دائرة حول كل مكوّن، ثم ابنِ من أصغر مكوّن صعوداً.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>بطاقة ملف شخصي</h3>
+<p class="project-goal">ابنِ بطاقة ملف شخصي فيها فتحة للنبذة، وزر متابعة يغيّر عدد المتابعين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الخصائص ذات الأنواع، والفتحة الافتراضية، وتصدير نوع من مكوّن، و<code>ref</code> و<code>computed</code>.</p>
+<ol class="steps">
+<li>اكتب نوعاً <code>Person</code> فيه الاسم والدور والمدينة وعدد المشاريع وعدد المتابعين، وصدّره من <code>ProfileCard.vue</code> لتستورده الصفحات مع المكوّن.</li>
+<li>اعرض أول حرف من الاسم في دائرة معلَّمة بـ <code>aria-hidden="true"</code>، فالاسم مكتوب بجانبها أصلاً.</li>
+<li>ضع <code>&lt;slot /&gt;</code> تحت الدور والمدينة، لتضع كل صفحة نصها داخل البطاقة.</li>
+<li>أضف <code>const following = ref(false)</code>، وعدد متابعين <code>computed</code> يزيد واحداً أثناء المتابعة، ولا تغيّر الخاصية.</li>
+<li>أعطِ الزر <code>:aria-pressed="following"</code>، ليعلن قارئ الشاشة هل هو مفعَّل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في القالب تكفي <code>@click="following = !following"</code>، فـ Vue يفتح المرجع حين تُسند إليه هناك أيضاً. أما في السكربت فتكتب <code>following.value = !following.value</code>.</p>
+<pre data-code="projects/ProfileCard.vue" data-title="ProfileCard.vue"></pre>
+<figure data-render="projects/profile.html" data-width="560" data-actions="click:button"><figcaption><b>المشروع {{n}}.1:</b> البطاقة بعد الضغط على «تابِع».</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>كتالوج بمرشحات</h3>
+<p class="project-goal">اعرض شبكة منتجات مع أزرار ترشيح لكل فئة، وسطراً يقول كم منتجاً ظاهراً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> القوائم والمفاتيح، ومرجعاً نوعه اتحاد، وقائمة مرشحة محسوبة، وأزراراً بـ <code>aria-pressed</code>.</p>
+<ol class="steps">
+<li>أعد استخدام <code>products.ts</code>، وأنشئ النوع <code>Filter = "all" | Product["category"]</code>: فهو يحدّث نفسه إن أُضيفت فئة.</li>
+<li>احفظ أزرار الترشيح بيانات، مصفوفة من <code>{ value, label }</code>، واعرضها بـ <code>v-for</code>.</li>
+<li>احفظ المرشح المختار وحده في <code>ref</code>، واجعل <code>visible</code> قيمة <code>computed</code>.</li>
+<li>اعرض «يظهر 3 من 4 منتجات» باستخدام <code>visible.length</code> و<code>products.length</code>.</li>
+<li>جمّع الأزرار بـ <code>role="group"</code> مع عنوان، وعلّم الفعال منها بـ <code>:aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> خطأ شائع أن تحفظ <code>visible</code> في مرجع أيضاً، ثم تنسى تحديثها حين تتغير المنتجات. فإن أمكن حساب قيمة من حالة أخرى، فاحسبها.</p>
+<figure data-render="projects/catalogue.html" data-width="560" data-actions="click:.filters button:nth-child(3)"><figcaption><b>المشروع {{n}}.2:</b> الكتالوج مرشَّحاً على الهدايا.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>ألسنة سهلة الوصول</h3>
+<p class="project-goal">ابنِ مكوّن ألسنة قابلاً لإعادة الاستخدام يعمل بالفأرة ولوحة المفاتيح وقارئ الشاشة، في الصفحات من اليسار إلى اليمين ومن اليمين إلى اليسار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الفتحات المسماة والمتغيرة، وأدوار ARIA، و<code>useId</code> للمعرّفات الفريدة، ومراجع القالب لنقل التركيز، وأحداث لوحة المفاتيح.</p>
+<ol class="steps">
+<li>اجعل <code>TabList</code> يأخذ <code>labels: string[]</code> و<code>label</code> للمجموعة. ومحتوى كل لسان من فتحة مسماة: <code>#tab-0</code> و<code>#tab-1</code>…</li>
+<li>اعرض <code>role="tablist"</code> فيه زر <code>role="tab"</code> لكل لسان، ولوحة <code>role="tabpanel"</code> لكل لسان، مخفية إلا الفعالة.</li>
+<li>اربط كل لسان بلوحته بـ <code>aria-controls</code> و<code>aria-labelledby</code>، واصنع المعرّفات بـ <code>useId()</code> فلا تتصادم مجموعتا ألسنة في صفحة واحدة أبداً.</li>
+<li>اللسان الفعال وحده في ترتيب Tab (<code>:tabindex="0"</code>)، والباقية <code>-1</code>. والأسهم تتنقل بين الألسنة، وHome وEnd تقفزان إلى الطرفين.</li>
+<li>اجمع الأزرار بـ <code>ref="tab"</code> داخل <code>v-for</code> و<code>useTemplateRef("tab")</code> التي تعطي مصفوفة، واستدعِ <code>focus()</code> على اللسان الجديد. وفي صفحة من اليمين إلى اليسار ينقل السهم الأيمن إلى اللسان <em>السابق</em>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذا نمط لوحة المفاتيح الموصوف في WAI-ARIA Authoring Practices، مرجع العناصر التفاعلية سهلة الوصول. فحين تبني أي عنصر تفاعلي ابحث عنه هناك أولاً: سلوك لوحة المفاتيح الذي يتوقعه المستخدمون محسوم سلفاً.</p>
+<pre data-code="projects/TabList.vue" data-title="TabList.vue"></pre>
+<figure data-render="projects/tabs.html" data-width="560" data-actions="click:[role=tab]:nth-child(1);press:[role=tab]:nth-child(1)|ArrowLeft"><figcaption><b>المشروع {{n}}.3:</b> بعد الضغط على السهم الأيسر في اللسان الأول: اللسان التالي (إلى اليسار) مختار وعليه التركيز.</figcaption></figure>
+</div>

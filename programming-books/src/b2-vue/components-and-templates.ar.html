@@ -1,0 +1,233 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b2/vue/components/ar">
+<p class="chapter-kicker">الفصل {{n}}</p>
+<h1>المكونات والقوالب</h1>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تشرح فكرة Vue الأساسية: الشاشة تتبع البيانات من تلقاء نفسها</li>
+<li>تكتب مكونات الملف الواحد، بسكربت وقالب وأنماط محصورة</li>
+<li>تستخدم صياغة القوالب: النصوص والربط والأصناف والأنماط والتوجيهات</li>
+<li>تمرر البيانات إلى الأسفل بخصائص لها أنواع، والمحتوى بالفتحات، والأحداث إلى الأعلى بالإطلاق</li>
+<li>تعرض القوائم بالمفاتيح، وتختار ما يظهر بـ <code>v-if</code></li>
+<li>تعطي المكوّن أول قطعة حالة له، وتحسب القيم بـ <code>computed</code></li>
+</ul>
+</div>
+
+<p class="lead">بنيت في الكتاب الأول تطبيق مهام بـ DOM: جد العنصر، واستمع إلى الحدث، وغيّر العنصر. نجح ذلك، لكن كل ميزة جديدة كانت تعني كوداً إضافياً يغيّر الصفحة باليد، وفرصاً أكثر لنسيان تحديث جزء منها. و<strong>Vue</strong> يقلب الأمر: تكتب <em>قالباً</em> يصف الشاشة للبيانات الحالية، ويُبقي Vue الصفحة مطابقة له. وحين تتغير البيانات يعرف Vue بالضبط أي أجزاء الصفحة استخدمتها، فيحدّثها هي وحدها.</p>
+
+<aside class="bit" data-mood="wow"><p>أتذكر النصيحة في آخر مشروع الاختبار في الكتاب الأول؟ «البيانات هي الحقيقة، و<code>show()</code> ترسمها على الصفحة.» هذا هو Vue بالضبط، إلا أنك لا تستدعي <code>show()</code> أبداً: يلاحظ Vue التغيير ويعيد الرسم عنك.</p></aside>
+
+<h2>{{n}}.1 المكوّن ملف</h2>
+
+<p>يُبنى تطبيق Vue من <dfn>مكونات</dfn>: قطع من الشاشة لها بياناتها وسلوكها، كبطاقة منتج أو زر إعجاب. ويعيش كل منها عادة في <dfn>مكوّن ملف واحد</dfn> (single-file component)، ملف ينتهي بـ <code>.vue</code>، فيه حتى ثلاثة أجزاء:</p>
+
+<pre data-code="Greeting.vue" data-title="Greeting.vue"></pre>
+
+<ul>
+<li><code>&lt;script setup lang="ts"&gt;</code> يحمل كود TypeScript الخاص بالمكوّن، وكل ما يُعرَّف هنا متاح للقالب.</li>
+<li><code>&lt;template&gt;</code> يصف HTML. والأقواس المزدوجة <code>{{ }}</code> تُدرج قيمة تعبير نصاً.</li>
+<li><code>&lt;style scoped&gt;</code>، الذي سنلقاه بعد قليل، يحمل CSS ينطبق على هذا المكوّن وحده.</li>
+</ul>
+
+<p>لا يستطيع المتصفح قراءة ملفات <code>.vue</code>. فأداة بناء مثل Vite، مع مترجم Vue، تحوّل كل ملف إلى وحدة JavaScript تصدّر المكوّن. ولنرى HTML الذي يصنعه مكوّن، نطلب من Vue أن يرسمه نصاً، كما يفعل الخادم:</p>
+
+<pre data-code="first.ts" data-title="first.ts"></pre>
+<pre data-out="first.mjs"></pre>
+
+<p>وفي التطبيق الحقيقي تركّب المكوّن الجذري مرة واحدة في عنصر من الصفحة: <code>createApp(App).mount("#app")</code>، ومن بعدها يملك Vue كل ما داخل ذلك العنصر.</p>
+
+<h2>{{n}}.2 صياغة القوالب</h2>
+
+<p>القالب يشبه HTML، مع إضافات قليلة للبيانات:</p>
+
+<pre data-code="CartSummary.vue" data-title="CartSummary.vue"></pre>
+<pre data-code="template.ts" data-title="template.ts"></pre>
+<pre data-out="template.mjs"></pre>
+
+<ul>
+<li><strong>النص:</strong> <code>{{ count }}</code> تُدرج قيمة. ويصلح أي <em>تعبير</em> في JavaScript، مثل <code>{{ total.toFixed(2) }}</code>، لكن لا تصلح الجمل مثل <code>if</code> و<code>for</code>.</li>
+<li><strong>السمات:</strong> <code>v-bind:disabled="isEmpty"</code>، واختصارها <code>:disabled</code>، تضبط سمة من تعبير. ولاحظ المخرجات: حين تكون القيمة <code>false</code> يحذف Vue السمة تماماً.</li>
+<li><strong>الأصناف والأنماط:</strong> <code>:class</code> تأخذ كائناً تُضاف مفاتيحه حين تكون قيمها صحيحة، وتندمج مع <code>class</code> العادية. و<code>:style</code> تأخذ كائناً من خصائص CSS.</li>
+<li><strong>الأمان:</strong> النص في <code>{{ }}</code> يُهرَّب دائماً، فالمنتج المسمى <code>&lt;script&gt;</code> يُعرض ولا يُشغَّل. أما التوجيه <code>v-html</code> فيُدرج HTML خاماً، فلا تستخدمه أبداً مع بيانات كتبها المستخدمون (الفصل {{n+10}}).</li>
+</ul>
+
+<h2>{{n}}.3 الخصائص والفتحات والأحداث</h2>
+
+<p>تصير المكونات مفيدة حين يمكن إعادة استخدامها ببيانات مختلفة. و<dfn>الخصائص</dfn> (props) مدخلات المكوّن، تُعرَّف بـ <code>defineProps</code> مع نوع TypeScript. أولاً بيانات المتجر:</p>
+
+<pre data-code="products.ts" data-title="products.ts"></pre>
+
+<p>بطاقة لمنتج واحد، تستلم المنتج خاصيةً، وتخبر أباها حين يُضغط الزر <dfn>بإطلاق</dfn> حدث (emit)، يُعرَّف بـ <code>defineEmits</code>:</p>
+
+<pre data-code="ProductCard.vue" data-title="ProductCard.vue"></pre>
+
+<p>قسم له عنوان، و<code>&lt;slot&gt;</code>: فتحة يملؤها الأب بأي محتوى يريد:</p>
+
+<pre data-code="ShopSection.vue" data-title="ShopSection.vue"></pre>
+
+<p>والمتجر الذي يجمعهما:</p>
+
+<pre data-code="Shop.vue" data-title="Shop.vue"></pre>
+
+<figure data-render="cards.html" data-width="560"><figcaption><b>الشكل {{n}}.1:</b> أربع بطاقات <code>ProductCard</code> داخل <code>ShopSection</code>. الملصق نفدت كميته، فزره معطَّل.</figcaption></figure>
+
+<p>وثلاث قواعد تجعل المكونات تعمل معاً جيداً:</p>
+<ul>
+<li><strong>البيانات تنزل، والأحداث تصعد.</strong> يمرر الأب خصائص إلى الابن، والابن لا يغيّرها أبداً. وحين يحتاج الابن أن يتغير شيء يطلق حدثاً، فيقرر الأب، مالك البيانات. ويستمع الأب بـ <code>@add="…"</code>، تماماً كما يستمع إلى <code>@click</code>.</li>
+<li><strong>النقطتان تعنيان JavaScript.</strong> <code>title="متجر بِت"</code> تمرر نصاً، و<code>:product="product"</code> تمرر قيمة التعبير <code>product</code>. ونسيان النقطتين يمرر الكلمة نفسها.</li>
+<li><strong>الفتحات تُركِّب.</strong> لا يعرف <code>ShopSection</code> ما بداخله ولا يهتم. فالقسم نفسه يحمل شبكة منتجات أو نموذجاً أو رسالة.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title">نصيحة: مكونات صغيرة بأسماء جيدة</p><p>حين يكبر القالب أكثر مما تتسع له شاشة واحدة، أو حين تريد أن تعطي جزءاً منه اسماً، فقد حان وقت مكوّن جديد. فملف اسمه <code>ProductCard.vue</code> يشرح نفسه، أما <code>&lt;div&gt;</code> على عمق أربعين سطراً فلا.</p></aside>
+
+<h2>{{n}}.4 القوائم والمفاتيح</h2>
+
+<p><code>v-for="product in products"</code> يكرر عنصراً لكل عنصر في المصفوفة. ويحتاج كل عنصر مكرر <code>:key</code>، قيمة فريدة بين إخوته وثابتة للعنصر نفسه، وهي عادة معرّفه.</p>
+
+<p>المفاتيح تخبر Vue أي عنصر هو أيّه بين تحديثين. فبدونها، حين تحذف المنتج الأول يرى Vue «عنصراً أقل» ويحدّث العناصر الباقية في أماكنها، فينتهي كل ما تتذكره تلك العناصر، كنص مكتوب في حقل أو حركة جارية، بجانب المنتج الخطأ. ومع المفاتيح يعرف Vue أن المنتج 1 قد ذهب، فيحذف عنصره هو بالضبط.</p>
+
+<aside class="box warn"><p class="box-title">انتبه: الترتيب ليس مفتاحاً</p><p><code>v-for="(p, i) in products" :key="i"</code> يوقف التحذير لا المشكلة: فبعد الحذف يصير العنصر الثاني أولاً ويأخذ المفتاح <code>0</code>. استخدم معرّفاً من البيانات. والترتيب آمن فقط لقائمة لا يتغير ترتيبها ولا طولها أبداً.</p></aside>
+
+<h2>{{n}}.5 اختيار ما يظهر</h2>
+
+<p><code>v-if</code> و<code>v-else-if</code> و<code>v-else</code> تختار بين العناصر. والمكوّن الذي يعرض قائمة طلبات يجب أن يعالج أربع حالات، والواجهات الجيدة تصمم الأربع:</p>
+
+<pre data-code="orders.ts" data-title="orders.ts"></pre>
+<pre data-code="OrderList.vue" data-title="OrderList.vue"></pre>
+
+<p>ولأن <code>state</code> اتحاد مميَّز (الفصل 2)، يتتبع TypeScript سلسلة <code>v-if</code> في القالب: داخل فرع الخطأ يعرف أن <code>state.message</code> موجودة، وداخل الفرع الأخير يعرف أن <code>state.orders</code> موجودة.</p>
+
+<figure data-render="status.html" data-width="560"><figcaption><b>الشكل {{n}}.2:</b> المكوّن نفسه في حالاته الأربع. لكل حالة رسالتها، والخطأ يقدم مخرجاً.</figcaption></figure>
+
+<aside class="box tip"><p class="box-title">نصيحة: <code>v-if</code> أم <code>v-show</code>؟</p><p><code>v-if</code> يضيف العنصر ويحذفه، و<code>v-show</code> يُبقيه في الصفحة ويبدّل <code>display: none</code> فقط. استخدم <code>v-show</code> لشيء يتبدّل كثيراً جداً، كقائمة منسدلة، و<code>v-if</code> لكل ما عداه، فلا تكلف الأجزاء المخفية شيئاً.</p></aside>
+
+<aside class="box quiz"><p class="box-title">اختبر نفسك</p><ol><li>ما الفرق بين <code>title="product"</code> و<code>:title="product"</code>؟</li><li>لماذا الترتيب مفتاح سيئ لقائمة يمكن حذف عناصرها؟</li><li>كيف يخبر المكوّن الابن أباه أن زراً ضُغط؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2>{{n}}.6 الأحداث وأول قطعة حالة</h2>
+
+<p><code>@click</code> (اختصار <code>v-on:click</code>) تشغّل كوداً حين يقع حدث. ولكي يتذكر المكوّن شيئاً بين التحديثات، كأن يكون معجَباً به، أعطه <dfn>حالة</dfn> بـ <code>ref</code>:</p>
+
+<pre data-code="LikeButton.vue" data-title="LikeButton.vue"></pre>
+<pre data-code="Likes.vue" data-title="Likes.vue"></pre>
+
+<figure data-render="like.html" data-width="560" data-actions="click:button"><figcaption><b>الشكل {{n}}.3:</b> زرا إعجاب مستقلان بعد الضغط على الأول. لكل مكوّن حالته.</figcaption></figure>
+
+<p><code>ref(41)</code> تُرجع صندوقاً صغيراً، <dfn>مرجعاً تفاعلياً</dfn>، قيمته الحالية في <code>.value</code>. في السكربت تكتب <code>likes.value</code>، وفي القالب يفتحه Vue عنك، فتكتب <code>likes</code>. وتغيير <code>.value</code> هو كل ما يلزم: يعرف Vue أي أجزاء القالب تقرأ <code>likes</code> فيحدّثها. والفصل التالي يشرح كيف يعمل هذا.</p>
+
+<p>ولكل نسخة من المكوّن حالتها. فالزران أعلاه يتشاركان الكود، لا صندوقي <code>liked</code> و<code>likes</code>.</p>
+
+<h2>{{n}}.7 القيم المحسوبة والقوالب النقية</h2>
+
+<p>حين تُحسب قيمة من قيم أخرى فاحسبها: المتابعون المعروضون هم المتابعون زائد واحد إن كنت تتابع، والمنتجات الظاهرة هي المنتجات المطابقة للمرشح. ويقدم Vue طريقتين، والفرق بينهما مهم:</p>
+
+<pre data-code="CartTotal.vue" data-title="CartTotal.vue"></pre>
+<pre data-code="computed.ts" data-title="computed.ts"></pre>
+<pre data-out="computed.mjs"></pre>
+
+<p>الدالة المستدعاة في القالب تعمل في كل مرة يُرسم فيها القالب، مرة لكل مكان تظهر فيه. أما القيمة <code>computed</code> فتعمل مرة واحدة، وتتذكر نتيجتها، ولا تعمل من جديد إلا حين يتغير شيء قرأته. استخدم <code>computed</code> لكل ما يُشتق من الحالة.</p>
+
+<p>العدّادان في هذا المثال موجودان لإظهار الفرق فقط، أما في الكود الحقيقي فيجب ألا يكون للقالب ولا للقيمة المحسوبة أي أثر جانبي: عليهما أن <em>يحسبا</em> فقط. فـ Vue يقرر متى يرسم وكم مرة، والكود الذي يغيّر الأشياء أثناء الرسم يعطي نتائج مختلفة كل مرة. والتغييرات مكانها معالجات الأحداث.</p>
+
+<aside class="box rule"><p class="box-title">عادة المحترفين: أبقِ المنطق في السكربت</p><p>القالب الذي يقرأ <code>{{ items.filter((i) =&gt; i.inStock).length }}</code> يعمل، لكنه يخفي منطقاً حيث يصعب اختباره وتسميته. أعطه اسماً في السكربت، <code>const inStock = computed(…)</code>، فيبقى القالب وصفاً بسيطاً للشاشة.</p></aside>
+
+<h2>أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>كتابة <code>price="25"</code> بدل <code>:price="25"</code></td><td>تستلم الخاصية النص <code>"25"</code> لا عدداً</td><td>استخدم النقطتين لكل ما ليس نصاً ثابتاً</td></tr>
+<tr><td>الخلط بين <code>@click="add()"</code> و<code>:onclick</code></td><td>كود يعمل في وقت خطأ</td><td><code>@click="add"</code> أو <code>@click="add(product.id)"</code></td></tr>
+<tr><td>قائمة بلا مفاتيح، أو بمفاتيح من الترتيب</td><td>تحذير، وعناصر مختلطة بعد التغييرات</td><td><code>:key="item.id"</code></td></tr>
+<tr><td><code>likes++</code> في السكربت، و<code>likes</code> مرجع</td><td>خطأ في الأنواع، أو مرجع يُستبدل بعدد</td><td><code>likes.value++</code> في السكربت، و<code>likes</code> في القالب</td></tr>
+<tr><td>تغيير خاصية داخل الابن</td><td>تحذير، وقيمة يكتب الأب فوقها</td><td>أطلق حدثاً، ودع الأب يغيّرها</td></tr>
+<tr><td><code>v-if</code> و<code>v-for</code> على العنصر نفسه</td><td>أولوية مربكة وعمل ضائع</td><td>رشّح في <code>computed</code>، أو ضع <code>v-if</code> على <code>&lt;template&gt;</code> مغلِّف</td></tr>
+</tbody>
+</table>
+
+<h2>الخلاصة</h2>
+
+<ul class="summary">
+<li>في Vue <strong>الشاشة تتبع البيانات</strong>: تصفها في قالب، ويُبقي Vue الصفحة مطابقة له.</li>
+<li><strong>مكوّن الملف الواحد</strong> فيه <code>&lt;script setup&gt;</code> و<code>&lt;template&gt;</code>، و<code>&lt;style scoped&gt;</code> اختيارياً.</li>
+<li>تستخدم القوالب <code>{{ }}</code> للنص، و<code>:</code> للربط، و<code>@</code> للأحداث، وكائنات <code>:class</code> و<code>:style</code>. والنص يُهرَّب.</li>
+<li><strong>الخصائص</strong> تمرر البيانات إلى الأسفل بأنواع من <code>defineProps</code>، و<strong>الفتحات</strong> تمرر المحتوى، و<strong>الإطلاق</strong> يرفع الأحداث إلى الأعلى.</li>
+<li><code>v-for</code> يعرض القوائم، دائماً مع <strong>مفتاح</strong> ثابت. و<code>v-if</code> يختار ما يظهر، فصمّم الحالات الأربع.</li>
+<li><code>ref</code> تعطي المكوّن <strong>حالة</strong>، و<code>computed</code> تشتق القيم وتتذكرها. والقوالب تحسب فقط.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. الأولى تمرر كلمة «product» نصاً، والثانية تمرر قيمة تعبير JavaScript المسمى <code>product</code>. 2. بعد الحذف تنتقل العناصر التالية إلى ترتيب جديد، فيطابق Vue العناصر الخطأ وقد يُبقي الحالة الخطأ على الشاشة. 3. يطلق حدثاً معرَّفاً بـ <code>defineEmits</code>، ويستمع الأب بـ <code>@الاسم</code>.</p>
+
+<!-- projects -->
+<h2>مشاريع تطبيقية</h2>
+
+<p class="projects-intro">ابنِ كل مشروع في مشروع Vite منشأ بقالب <code>vue-ts</code>: <code>npm create vite@latest my-vue -- --template vue-ts</code>. وقبل كتابة الكود ارسم الشاشة على ورقة، وضع دائرة حول كل مكوّن، ثم ابنِ من أصغر مكوّن صعوداً.</p>
+
+<div class="project">
+<p class="project-label">المشروع {{n}}.1 · سهل</p>
+<h3>بطاقة ملف شخصي</h3>
+<p class="project-goal">ابنِ بطاقة ملف شخصي فيها فتحة للنبذة، وزر متابعة يغيّر عدد المتابعين.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الخصائص ذات الأنواع، والفتحة الافتراضية، وتصدير نوع من مكوّن، و<code>ref</code> و<code>computed</code>.</p>
+<ol class="steps">
+<li>اكتب نوعاً <code>Person</code> فيه الاسم والدور والمدينة وعدد المشاريع وعدد المتابعين، وصدّره من <code>ProfileCard.vue</code> لتستورده الصفحات مع المكوّن.</li>
+<li>اعرض أول حرف من الاسم في دائرة معلَّمة بـ <code>aria-hidden="true"</code>، فالاسم مكتوب بجانبها أصلاً.</li>
+<li>ضع <code>&lt;slot /&gt;</code> تحت الدور والمدينة، لتضع كل صفحة نصها داخل البطاقة.</li>
+<li>أضف <code>const following = ref(false)</code>، وعدد متابعين <code>computed</code> يزيد واحداً أثناء المتابعة، ولا تغيّر الخاصية.</li>
+<li>أعطِ الزر <code>:aria-pressed="following"</code>، ليعلن قارئ الشاشة هل هو مفعَّل.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> في القالب تكفي <code>@click="following = !following"</code>، فـ Vue يفتح المرجع حين تُسند إليه هناك أيضاً. أما في السكربت فتكتب <code>following.value = !following.value</code>.</p>
+<pre data-code="projects/ProfileCard.vue" data-title="ProfileCard.vue"></pre>
+<figure data-render="projects/profile.html" data-width="560" data-actions="click:button"><figcaption><b>المشروع {{n}}.1:</b> البطاقة بعد الضغط على «تابِع».</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع {{n}}.2 · متوسط</p>
+<h3>كتالوج بمرشحات</h3>
+<p class="project-goal">اعرض شبكة منتجات مع أزرار ترشيح لكل فئة، وسطراً يقول كم منتجاً ظاهراً.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> القوائم والمفاتيح، ومرجعاً نوعه اتحاد، وقائمة مرشحة محسوبة، وأزراراً بـ <code>aria-pressed</code>.</p>
+<ol class="steps">
+<li>أعد استخدام <code>products.ts</code>، وأنشئ النوع <code>Filter = "all" | Product["category"]</code>: فهو يحدّث نفسه إن أُضيفت فئة.</li>
+<li>احفظ أزرار الترشيح بيانات، مصفوفة من <code>{ value, label }</code>، واعرضها بـ <code>v-for</code>.</li>
+<li>احفظ المرشح المختار وحده في <code>ref</code>، واجعل <code>visible</code> قيمة <code>computed</code>.</li>
+<li>اعرض «يظهر 3 من 4 منتجات» باستخدام <code>visible.length</code> و<code>products.length</code>.</li>
+<li>جمّع الأزرار بـ <code>role="group"</code> مع عنوان، وعلّم الفعال منها بـ <code>:aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> خطأ شائع أن تحفظ <code>visible</code> في مرجع أيضاً، ثم تنسى تحديثها حين تتغير المنتجات. فإن أمكن حساب قيمة من حالة أخرى، فاحسبها.</p>
+<figure data-render="projects/catalogue.html" data-width="560" data-actions="click:.filters button:nth-child(3)"><figcaption><b>المشروع {{n}}.2:</b> الكتالوج مرشَّحاً على الهدايا.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع {{n}}.3 · تحدٍّ</p>
+<h3>ألسنة سهلة الوصول</h3>
+<p class="project-goal">ابنِ مكوّن ألسنة قابلاً لإعادة الاستخدام يعمل بالفأرة ولوحة المفاتيح وقارئ الشاشة، في الصفحات من اليسار إلى اليمين ومن اليمين إلى اليسار.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> الفتحات المسماة والمتغيرة، وأدوار ARIA، و<code>useId</code> للمعرّفات الفريدة، ومراجع القالب لنقل التركيز، وأحداث لوحة المفاتيح.</p>
+<ol class="steps">
+<li>اجعل <code>TabList</code> يأخذ <code>labels: string[]</code> و<code>label</code> للمجموعة. ومحتوى كل لسان من فتحة مسماة: <code>#tab-0</code> و<code>#tab-1</code>…</li>
+<li>اعرض <code>role="tablist"</code> فيه زر <code>role="tab"</code> لكل لسان، ولوحة <code>role="tabpanel"</code> لكل لسان، مخفية إلا الفعالة.</li>
+<li>اربط كل لسان بلوحته بـ <code>aria-controls</code> و<code>aria-labelledby</code>، واصنع المعرّفات بـ <code>useId()</code> فلا تتصادم مجموعتا ألسنة في صفحة واحدة أبداً.</li>
+<li>اللسان الفعال وحده في ترتيب Tab (<code>:tabindex="0"</code>)، والباقية <code>-1</code>. والأسهم تتنقل بين الألسنة، وHome وEnd تقفزان إلى الطرفين.</li>
+<li>اجمع الأزرار بـ <code>ref="tab"</code> داخل <code>v-for</code> و<code>useTemplateRef("tab")</code> التي تعطي مصفوفة، واستدعِ <code>focus()</code> على اللسان الجديد. وفي صفحة من اليمين إلى اليسار ينقل السهم الأيمن إلى اللسان <em>السابق</em>.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> هذا نمط لوحة المفاتيح الموصوف في WAI-ARIA Authoring Practices، مرجع العناصر التفاعلية سهلة الوصول. فحين تبني أي عنصر تفاعلي ابحث عنه هناك أولاً: سلوك لوحة المفاتيح الذي يتوقعه المستخدمون محسوم سلفاً.</p>
+<pre data-code="projects/TabList.vue" data-title="TabList.vue"></pre>
+<figure data-render="projects/tabs.html" data-width="560" data-actions="click:[role=tab]:nth-child(1);press:[role=tab]:nth-child(1)|ArrowLeft"><figcaption><b>المشروع {{n}}.3:</b> بعد الضغط على السهم الأيسر في اللسان الأول: اللسان التالي (إلى اليسار) مختار وعليه التركيز.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2>تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> اكتب مكوّن <code>Price.vue</code> بالخاصيتين <code>value</code> و<code>currency</code> يعرض القيمة برقمين عشريين، واستخدمه في <code>ProductCard</code>.</li>
+<li><span class="level">سهل</span> أعطِ <code>ProductCard</code> شارة <code>"-20%"</code> للمنتجات التي لها الخاصية <code>discount</code>، دون أن يظهر شيء للباقية.</li>
+<li><span class="level">متوسط</span> في <code>Shop.vue</code> احفظ عدد السلة في <code>ref</code>، وزده حين تطلق بطاقة الحدث <code>add</code>، واعرض «3 عناصر في سلتك» فوق الشبكة.</li>
+<li><span class="level">متوسط</span> أضف حالة رابعة إلى <code>Orders</code> هي <code>{ status: "offline" }</code>، وعالجها في <code>OrderList.vue</code>. أين يساعدك TypeScript، وأين لا؟</li>
+<li><span class="level">تحدٍّ</span> أعطِ <code>ShopSection</code> فتحة ثانية مسماة <code>#actions</code> تظهر بجانب العنوان، واستخدمها في <code>Shop.vue</code> لرابط «عرض الكل». واجعلها اختيارية: إن لم تُعطَ لا يُرسم شيء إضافي.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل {{n+1}}</p>
+<p>استخدمت <code>ref</code> و<code>computed</code>. وفي الفصل التالي سترى كيف تعمل تفاعلية Vue حقاً، وتتعلم واجهة التركيب (Composition API) كلها: الكائنات التفاعلية، والمراقبين، وحياة المكوّن، والربط في الاتجاهين بـ <code>v-model</code>.</p>
+</div>
+</section>

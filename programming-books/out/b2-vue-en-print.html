@@ -13,6 +13,8 @@
 @page ch02:first { @top-center { content: none; } }
 @page ch03 { @top-center { content: "Chapter 3: Modules, Tooling and Build Systems"; } }
 @page ch03:first { @top-center { content: none; } }
+@page ch04 { @top-center { content: "Chapter 4: Components and Templates"; } }
+@page ch04:first { @top-center { content: none; } }
 @page ch10 { @top-center { content: "Chapter 10: Design Systems and Component Libraries"; } }
 @page ch10:first { @top-center { content: none; } }
 @page ch11 { @top-center { content: "Chapter 11: Accessibility (WCAG) in Practice"; } }
@@ -1704,6 +1706,496 @@ https://api.bits-shop.example</pre></div>
 <div class="next">
 <p class="next-title">Coming up in Chapter 4</p>
 <p>The toolchain is ready, and the language foundations are in place. In the next chapter the framework arrives: you will build your first components, and see how a whole page can be described as a function of its data.</p>
+</div>
+</section>
+<section class="chapter" style="page: ch04" data-chapter="4" data-code="b2/vue/components/en">
+<div class="opener"><span class="opener-num">4</span><p class="chapter-kicker">Chapter 4</p><h1>Components and Templates</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>explain the core idea of Vue: the screen follows the data, by itself</li>
+<li>write single-file components, with a script, a template and scoped styles</li>
+<li>use the template syntax: text, bindings, classes, styles and directives</li>
+<li>pass data down with typed props, content with slots, and events up with emits</li>
+<li>render lists with keys, and choose what to show with <code>v-if</code></li>
+<li>give a component its first piece of state, and calculate values with <code>computed</code></li>
+</ul>
+</div>
+
+<p class="lead">In Book 1 you built a tasks app with the DOM: find an element, listen for an event, change the element. It worked, but every new feature meant more code that changed the page by hand, and more chances to forget to update one part of it. <strong>Vue</strong> turns this around. You write a <em>template</em> that describes the screen for the current data, and Vue keeps the page matching it. When the data changes, Vue knows exactly which parts of the page used it, and updates only those.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<circle cx="46" cy="55" r="8.5" fill="#111111"/><circle cx="74" cy="55" r="8.5" fill="#111111"/><circle cx="49" cy="52" r="3" fill="#fff"/><circle cx="77" cy="52" r="3" fill="#fff"/><ellipse cx="60" cy="72" rx="5" ry="6" fill="#111111"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>Remember the tip at the end of the quiz project in Book 1? “The data is the truth, and <code>show()</code> draws it on the page.” That is exactly Vue, except that you never call <code>show()</code>: Vue notices the change and redraws for you.</p></div></div>
+
+<h2><span class="sec">4.1</span> <span>A component is a file</span></h2>
+
+<p>A Vue app is built from <dfn>components</dfn>: pieces of the screen with their own data and behaviour, such as a product card or a like button. Each one usually lives in its own <dfn>single-file component</dfn>, a file ending in <code>.vue</code>, with up to three parts:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Greeting.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+const name = &quot;Sara&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;h1&gt;Hello, {{ name }}!&lt;/h1&gt;
+&lt;/template&gt;</pre></div>
+
+<ul>
+<li><code>&lt;script setup lang="ts"&gt;</code> holds the component’s TypeScript. Everything declared here is available to the template.</li>
+<li><code>&lt;template&gt;</code> describes the HTML. Double braces, <code>{{ }}</code>, insert the value of an expression as text.</li>
+<li><code>&lt;style scoped&gt;</code>, which we will meet below, holds CSS that applies only to this component.</li>
+</ul>
+
+<p>A browser cannot read <code>.vue</code> files. A build tool such as Vite, with Vue’s compiler, turns each one into a JavaScript module that exports the component. To see the HTML a component makes, we can ask Vue to render it to a string, as a server would:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">first.ts</div><pre class="code"><span class="k">import</span> { createSSRApp } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { renderToString } <span class="k">from</span> <span class="s">&quot;vue/server-renderer&quot;</span>;
+<span class="k">import</span> Greeting <span class="k">from</span> <span class="s">&quot;./Greeting.vue&quot;</span>;
+
+console.log(<span class="k">await</span> renderToString(createSSRApp(Greeting)));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>&lt;h1&gt;Hello, Sara!&lt;/h1&gt;</pre></div>
+
+<p>In a real app you mount the root component once, into an element of the page: <code>createApp(App).mount("#app")</code>. From then on, Vue owns everything inside that element.</p>
+
+<h2><span class="sec">4.2</span> <span>Template syntax</span></h2>
+
+<p>A template looks like HTML, with a few additions for data:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">CartSummary.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+const props = defineProps&lt;{ count: number; total: number }&gt;();
+const isEmpty = props.count === 0;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p class=&quot;summary&quot; :class=&quot;{ empty: isEmpty }&quot;&gt;
+    {{ count }} items in your cart: {{ total.toFixed(2) }} EGP
+  &lt;/p&gt;
+  &lt;button type=&quot;button&quot; :disabled=&quot;isEmpty&quot; :style=&quot;{ fontWeight: 700 }&quot;&gt;Add to cart&lt;/button&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">template.ts</div><pre class="code"><span class="k">import</span> { createSSRApp, h } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { renderToString } <span class="k">from</span> <span class="s">&quot;vue/server-renderer&quot;</span>;
+<span class="k">import</span> CartSummary <span class="k">from</span> <span class="s">&quot;./CartSummary.vue&quot;</span>;
+
+console.log(<span class="k">await</span> renderToString(createSSRApp({ render: () =&gt; h(CartSummary, { count: <span class="n">3</span>, total: <span class="n">41</span> }) })));
+console.log(<span class="k">await</span> renderToString(createSSRApp({ render: () =&gt; h(CartSummary, { count: <span class="n">0</span>, total: <span class="n">0</span> }) })));</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>&lt;!--[--&gt;&lt;p class=&quot;summary&quot;&gt;3 items in your cart: 41.00 EGP &lt;/p&gt;&lt;button type=&quot;button&quot; style=&quot;font-weight:700;&quot;&gt;Add to cart&lt;/button&gt;&lt;!--]--&gt;
+&lt;!--[--&gt;&lt;p class=&quot;summary empty&quot;&gt;0 items in your cart: 0.00 EGP &lt;/p&gt;&lt;button type=&quot;button&quot; disabled style=&quot;font-weight:700;&quot;&gt;Add to cart&lt;/button&gt;&lt;!--]--&gt;</pre></div>
+
+<ul>
+<li><strong>Text:</strong> <code>{{ count }}</code> inserts a value. Any JavaScript <em>expression</em> works, such as <code>{{ total.toFixed(2) }}</code>, but not statements like <code>if</code> or <code>for</code>.</li>
+<li><strong>Attributes:</strong> <code>v-bind:disabled="isEmpty"</code>, shortened to <code>:disabled</code>, sets an attribute from an expression. Notice the output: when the value is <code>false</code>, Vue leaves the attribute out completely.</li>
+<li><strong>Classes and styles:</strong> <code>:class</code> takes an object whose keys are added when their values are true, and merges with a plain <code>class</code>. <code>:style</code> takes an object of CSS properties.</li>
+<li><strong>Safety:</strong> text in <code>{{ }}</code> is always escaped, so a product named <code>&lt;script&gt;</code> is shown, not run. The directive <code>v-html</code> inserts raw HTML; never use it with data that users wrote (Chapter 14).</li>
+</ul>
+
+<h2><span class="sec">4.3</span> <span>Props, slots and emits</span></h2>
+
+<p>Components become useful when they can be reused with different data. <dfn>Props</dfn> are the inputs of a component, declared with <code>defineProps</code> and a TypeScript type. First, the shop’s data:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">products.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Product = {
+  id: number;
+  name: string;
+  price: number;
+  category: <span class="s">&quot;books&quot;</span> | <span class="s">&quot;gifts&quot;</span>;
+  isNew?: boolean;
+  inStock: boolean;
+};
+
+<span class="k">export</span> <span class="k">const</span> products: Product[] = [
+  { id: <span class="n">1</span>, name: <span class="s">&quot;Code from Zero&quot;</span>, price: <span class="n">25</span>, category: <span class="s">&quot;books&quot;</span>, isNew: <span class="k">true</span>, inStock: <span class="k">true</span> },
+  { id: <span class="n">2</span>, name: <span class="s">&quot;Bit mug&quot;</span>, price: <span class="n">8</span>, category: <span class="s">&quot;gifts&quot;</span>, inStock: <span class="k">true</span> },
+  { id: <span class="n">3</span>, name: <span class="s">&quot;Bit sticker&quot;</span>, price: <span class="n">3</span>, category: <span class="s">&quot;gifts&quot;</span>, inStock: <span class="k">false</span> },
+  { id: <span class="n">4</span>, name: <span class="s">&quot;Bit cap&quot;</span>, price: <span class="n">12</span>, category: <span class="s">&quot;gifts&quot;</span>, isNew: <span class="k">true</span>, inStock: <span class="k">true</span> },
+];</pre></div>
+
+<p>A card for one product. It receives the product as a prop, and tells its parent when the button is pressed by <dfn>emitting</dfn> an event, declared with <code>defineEmits</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ProductCard.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import type { Product } from &quot;./products&quot;;
+
+defineProps&lt;{ product: Product }&gt;();
+const emit = defineEmits&lt;{ add: [id: number] }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;article class=&quot;card&quot;&gt;
+    &lt;span v-if=&quot;product.isNew&quot; class=&quot;badge&quot;&gt;New&lt;/span&gt;
+    &lt;h3&gt;{{ product.name }}&lt;/h3&gt;
+    &lt;p class=&quot;price&quot;&gt;{{ product.price.toFixed(2) }} EGP&lt;/p&gt;
+    &lt;button type=&quot;button&quot; :disabled=&quot;!product.inStock&quot; @click=&quot;emit(&#x27;add&#x27;, product.id)&quot;&gt;
+      {{ product.inStock ? &quot;Add to cart&quot; : &quot;Sold out&quot; }}
+    &lt;/button&gt;
+  &lt;/article&gt;
+&lt;/template&gt;</pre></div>
+
+<p>A section with a title, and a <code>&lt;slot&gt;</code>: a hole that the parent fills with any content it likes:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">ShopSection.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+defineProps&lt;{ title: string }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section&gt;
+    &lt;h2&gt;{{ title }}&lt;/h2&gt;
+    &lt;slot /&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</pre></div>
+
+<p>And the shop, which puts them together:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Shop.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import ProductCard from &quot;./ProductCard.vue&quot;;
+import ShopSection from &quot;./ShopSection.vue&quot;;
+import { products } from &quot;./products&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;ShopSection title=&quot;Bit&#x27;s shop&quot;&gt;
+    &lt;div class=&quot;grid&quot;&gt;
+      &lt;ProductCard v-for=&quot;product in products&quot; :key=&quot;product.id&quot; :product=&quot;product&quot; /&gt;
+    &lt;/div&gt;
+  &lt;/ShopSection&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>cards.html</span><b>560px</b></div><img src="img/vue-components-en-cards.html-560.png" alt=""><figcaption><b>Figure 4.1:</b> Four <code>ProductCard</code>s inside a <code>ShopSection</code>. The sticker is out of stock, so its button is disabled.</figcaption></figure>
+
+<p>Three rules make components work well together:</p>
+<ul>
+<li><strong>Data flows down, events flow up.</strong> A parent passes props to a child; the child never changes them. When the child needs something to change, it emits an event, and the parent, which owns the data, decides. The parent listens with <code>@add="…"</code>, exactly as it would listen to <code>@click</code>.</li>
+<li><strong>A colon means JavaScript.</strong> <code>title="Bit's shop"</code> passes a string; <code>:product="product"</code> passes the value of the expression <code>product</code>. Forgetting the colon passes the word itself.</li>
+<li><strong>Slots compose.</strong> <code>ShopSection</code> does not know or care what is inside it. The same section can hold a grid of products, a form, or a message.</li>
+</ul>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: small components with good names</p><p>When a template grows past what fits on one screen, or when you want to give a part of it a name, it is time for a new component. A file called <code>ProductCard.vue</code> explains itself; a <code>&lt;div&gt;</code> forty lines deep does not.</p></aside>
+
+<h2><span class="sec">4.4</span> <span>Lists and keys</span></h2>
+
+<p><code>v-for="product in products"</code> repeats an element for every item of an array. Each repeated element needs a <code>:key</code>, a value that is unique among its siblings and stays the same for the same item, usually its id.</p>
+
+<p>Keys tell Vue which item is which between two updates. Without them, when you delete the first product, Vue sees “one item fewer” and updates the remaining elements in place, so anything those elements remember, such as the text typed in an input or a running animation, ends up next to the wrong product. With keys, Vue knows that product 1 is gone, and removes exactly its element.</p>
+
+<aside class="box warn"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg>Watch out: the index is not a key</p><p><code>v-for="(p, i) in products" :key="i"</code> stops the warning but not the problem: after a deletion, the item that was second becomes first and takes key <code>0</code>. Use an id from the data. An index is only safe for a list that never changes order or length.</p></aside>
+
+<h2><span class="sec">4.5</span> <span>Choosing what to show</span></h2>
+
+<p><code>v-if</code>, <code>v-else-if</code> and <code>v-else</code> choose between elements. A component that shows a list of orders must handle four situations, and good interfaces design all four:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">orders.ts</div><pre class="code"><span class="k">export</span> <span class="k">type</span> Orders =
+  | { status: <span class="s">&quot;loading&quot;</span> }
+  | { status: <span class="s">&quot;error&quot;</span>; message: string }
+  | { status: <span class="s">&quot;success&quot;</span>; orders: string[] };</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">OrderList.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import type { Orders } from &quot;./orders&quot;;
+
+defineProps&lt;{ state: Orders }&gt;();
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p v-if=&quot;state.status === &#x27;loading&#x27;&quot; class=&quot;muted&quot;&gt;&lt;span class=&quot;spinner&quot; /&gt;Loading your orders…&lt;/p&gt;
+  &lt;p v-else-if=&quot;state.status === &#x27;error&#x27;&quot; class=&quot;error&quot;&gt;
+    Could not load your orders: {{ state.message }}
+    &lt;button type=&quot;button&quot; class=&quot;secondary&quot;&gt;Try again&lt;/button&gt;
+  &lt;/p&gt;
+  &lt;p v-else-if=&quot;state.orders.length === 0&quot; class=&quot;muted&quot;&gt;You have no orders yet.&lt;/p&gt;
+  &lt;ul v-else&gt;
+    &lt;li v-for=&quot;order in state.orders&quot; :key=&quot;order&quot;&gt;{{ order }}&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/template&gt;</pre></div>
+
+<p>Because <code>state</code> is a discriminated union (Chapter 2), TypeScript follows the <code>v-if</code> chain in the template: inside the error branch, <code>state.message</code> is known to exist, and inside the last branch, <code>state.orders</code> does.</p>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>status.html</span><b>560px</b></div><img src="img/vue-components-en-status.html-560.png" alt=""><figcaption><b>Figure 4.2:</b> The same component in all four states. Each state has its own message, and the error offers a way out.</figcaption></figure>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: <code>v-if</code> or <code>v-show</code>?</p><p><code>v-if</code> adds and removes the element. <code>v-show</code> keeps it in the page and only toggles <code>display: none</code>. Use <code>v-show</code> for something that switches very often, such as a dropdown, and <code>v-if</code> for everything else, so hidden parts cost nothing.</p></aside>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>What is the difference between <code>title="product"</code> and <code>:title="product"</code>?</li><li>Why is the index a bad key for a list where items can be deleted?</li><li>How does a child component tell its parent that a button was pressed?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">4.6</span> <span>Events and a first piece of state</span></h2>
+
+<p><code>@click</code> (short for <code>v-on:click</code>) runs code when an event happens. To make a component remember something between updates, such as whether it is liked, give it <dfn>state</dfn> with <code>ref</code>:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">LikeButton.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+
+const props = defineProps&lt;{ initial: number }&gt;();
+const likes = ref(props.initial);
+const liked = ref(false);
+
+function toggle() {
+  liked.value = !liked.value;
+  likes.value += liked.value ? 1 : -1;
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;button type=&quot;button&quot; :class=&quot;{ secondary: !liked }&quot; :aria-pressed=&quot;liked&quot; @click=&quot;toggle&quot;&gt;
+    {{ liked ? &quot;♥ Liked&quot; : &quot;♡ Like&quot; }} · {{ likes }} likes
+  &lt;/button&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">Likes.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import LikeButton from &quot;./LikeButton.vue&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p style=&quot;display: flex; gap: 8px&quot;&gt;
+    &lt;LikeButton :initial=&quot;41&quot; /&gt;
+    &lt;LikeButton :initial=&quot;7&quot; /&gt;
+  &lt;/p&gt;
+&lt;/template&gt;</pre></div>
+
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>like.html</span><b>560px</b></div><img src="img/vue-components-en-like.html-560-c117d3.png" alt=""><figcaption><b>Figure 4.3:</b> Two independent like buttons after the first was pressed. Each component has its own state.</figcaption></figure>
+
+<p><code>ref(41)</code> returns a small box, a <dfn>reactive reference</dfn>, whose current value is in <code>.value</code>. In the script you write <code>likes.value</code>; in the template Vue unwraps it for you, so you write <code>likes</code>. Changing <code>.value</code> is all it takes: Vue knows which parts of the template read <code>likes</code>, and updates them. The next chapter explains how this works.</p>
+
+<p>Every instance of a component gets its own state. The two buttons above share the code, but not the <code>liked</code> and <code>likes</code> boxes.</p>
+
+<h2><span class="sec">4.7</span> <span>Computed values, and pure templates</span></h2>
+
+<p>When a value can be calculated from other values, calculate it: the followers shown are the followers plus one if you follow; the visible products are the products that match the filter. Vue offers two ways, and the difference matters:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">CartTotal.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed } from &quot;vue&quot;;
+import { counts } from &quot;./counts&quot;;
+
+const props = defineProps&lt;{ prices: number[] }&gt;();
+
+// Runs again every time the template is drawn, for every place it is used
+function totalMethod() {
+  counts.method++;
+  return props.prices.reduce((sum, p) =&gt; sum + p, 0);
+}
+
+// Runs once, and again only when the cart changes
+const total = computed(() =&gt; {
+  counts.computed++;
+  return props.prices.reduce((sum, p) =&gt; sum + p, 0);
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p&gt;{{ totalMethod() }} = {{ totalMethod() }} = {{ totalMethod() }}&lt;/p&gt;
+  &lt;p&gt;{{ total }} = {{ total }} = {{ total }}&lt;/p&gt;
+&lt;/template&gt;</pre></div>
+<div class="listing" dir="ltr"><div class="listing-title">computed.ts</div><pre class="code"><span class="k">import</span> { createSSRApp, h } <span class="k">from</span> <span class="s">&quot;vue&quot;</span>;
+<span class="k">import</span> { renderToString } <span class="k">from</span> <span class="s">&quot;vue/server-renderer&quot;</span>;
+<span class="k">import</span> CartTotal <span class="k">from</span> <span class="s">&quot;./CartTotal.vue&quot;</span>;
+<span class="k">import</span> { counts } <span class="k">from</span> <span class="s">&quot;./counts&quot;</span>;
+
+console.log(<span class="k">await</span> renderToString(createSSRApp({ render: () =&gt; h(CartTotal, { prices: [<span class="n">25</span>, <span class="n">8</span>, <span class="n">12</span>] }) })));
+console.log(<span class="s">&quot;Calls to the method:&quot;</span>, counts.method);
+console.log(<span class="s">&quot;Calls to the computed value:&quot;</span>, counts.computed);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>&lt;!--[--&gt;&lt;p&gt;45 = 45 = 45&lt;/p&gt;&lt;p&gt;45 = 45 = 45&lt;/p&gt;&lt;!--]--&gt;
+Calls to the method: 3
+Calls to the computed value: 1</pre></div>
+
+<p>A function called in the template runs every time the template is drawn, once for every place it appears. A <code>computed</code> value runs once, remembers its result, and runs again only when something it read changes. Use <code>computed</code> for anything derived from state.</p>
+
+<p>The counters in this example are there to show the difference; in real code, a template and a computed value must have no side effects. They should only <em>calculate</em>. Vue decides when and how often to draw, and code that changes things while drawing gives different results each time. Changes belong in event handlers.</p>
+
+<aside class="box rule"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 14 7 22l5-2.5L17 22l-1.5-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Professional habit: keep the logic in the script</p><p>A template that reads <code>{{ items.filter((i) =&gt; i.inStock).length }}</code> works, but it hides logic where it is hard to test and to name. Give it a name in the script, <code>const inStock = computed(…)</code>, and the template stays a simple description of the screen.</p></aside>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>:price="25"</code> forgotten as <code>price="25"</code></td><td>The prop receives the string <code>"25"</code>, not a number</td><td>Use the colon for anything that is not a fixed string</td></tr>
+<tr><td><code>@click="add()"</code> confused with <code>:onclick</code></td><td>Code that runs at the wrong time</td><td><code>@click="add"</code> or <code>@click="add(product.id)"</code></td></tr>
+<tr><td>A list without keys, or with index keys</td><td>A warning, and items mixed up after changes</td><td><code>:key="item.id"</code></td></tr>
+<tr><td><code>likes++</code> in the script, where <code>likes</code> is a ref</td><td>A type error, or a ref replaced by a number</td><td><code>likes.value++</code> in the script; <code>likes</code> in the template</td></tr>
+<tr><td>Changing a prop in the child</td><td>A warning, and a value the parent overwrites</td><td>Emit an event; let the parent change it</td></tr>
+<tr><td><code>v-if</code> and <code>v-for</code> on the same element</td><td>Confusing priority and wasted work</td><td>Filter in a <code>computed</code>, or put <code>v-if</code> on a wrapping <code>&lt;template&gt;</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>In Vue, <strong>the screen follows the data</strong>: you describe it in a template, and Vue keeps the page matching it.</li>
+<li>A <strong>single-file component</strong> has a <code>&lt;script setup&gt;</code>, a <code>&lt;template&gt;</code> and optional <code>&lt;style scoped&gt;</code>.</li>
+<li>Templates use <code>{{ }}</code> for text, <code>:</code> for bindings, <code>@</code> for events, and <code>:class</code> and <code>:style</code> objects. Text is escaped.</li>
+<li><strong>Props</strong> pass data down, typed with <code>defineProps</code>; <strong>slots</strong> pass content; <strong>emits</strong> pass events up.</li>
+<li><code>v-for</code> renders lists, always with a stable <strong>key</strong>. <code>v-if</code> chooses what to show; design all four states.</li>
+<li><code>ref</code> gives a component <strong>state</strong>; <code>computed</code> derives values and remembers them. Templates only calculate.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. The first passes the word “product” as a string; the second passes the value of the JavaScript expression <code>product</code>. 2. After a deletion, the following items move to new indexes, so Vue matches the wrong elements and may keep the wrong state on screen. 3. It emits an event, declared with <code>defineEmits</code>, and the parent listens with <code>@name</code>.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">Build each project in a Vite project created with the <code>vue-ts</code> template: <code>npm create vite@latest my-vue -- --template vue-ts</code>. Before writing code, draw the screen on paper and circle the components. Then build from the smallest component upwards.</p>
+
+<div class="project">
+<p class="project-label">Project 4.1 · Easy</p>
+<h3>A profile card</h3>
+<p class="project-goal">Build a profile card with a slot for the biography, and a follow button that changes the number of followers.</p>
+<p class="project-skills"><strong>You will practise:</strong> typed props, a default slot, exporting a type from a component, <code>ref</code> and <code>computed</code>.</p>
+<ol class="steps">
+<li>Write a type <code>Person</code> with a name, role, city, number of projects and number of followers. Export it from <code>ProfileCard.vue</code>, so pages can import it with the component.</li>
+<li>Show the first letter of the name in a circle, marked <code>aria-hidden="true"</code>: the name is already written next to it.</li>
+<li>Put a <code>&lt;slot /&gt;</code> under the role and city, so each page can put its own text inside the card.</li>
+<li>Add <code>const following = ref(false)</code>, and a <code>computed</code> number of followers that adds one while following. Do not change the prop.</li>
+<li>Give the button <code>:aria-pressed="following"</code>, so screen readers announce whether it is on.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in the template, <code>@click="following = !following"</code> is enough: Vue unwraps the ref when you assign to it there too. In the script you would write <code>following.value = !following.value</code>.</p>
+<div class="listing" dir="ltr"><div class="listing-title">ProfileCard.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+
+export type Person = { name: string; role: string; city: string; projects: number; followers: number };
+
+const props = defineProps&lt;{ person: Person }&gt;();
+const following = ref(false);
+const followers = computed(() =&gt; props.person.followers + (following.value ? 1 : 0));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;article class=&quot;profile&quot;&gt;
+    &lt;div class=&quot;cover&quot; /&gt;
+    &lt;div class=&quot;body&quot;&gt;
+      &lt;div class=&quot;avatar&quot; aria-hidden=&quot;true&quot;&gt;{{ person.name[0] }}&lt;/div&gt;
+      &lt;h2&gt;{{ person.name }}&lt;/h2&gt;
+      &lt;p class=&quot;meta&quot;&gt;{{ person.role }} · {{ person.city }}&lt;/p&gt;
+      &lt;slot /&gt;
+      &lt;div class=&quot;stats&quot;&gt;
+        &lt;span&gt;&lt;b&gt;{{ person.projects }}&lt;/b&gt;projects&lt;/span&gt;
+        &lt;span&gt;&lt;b&gt;{{ followers }}&lt;/b&gt;followers&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;button type=&quot;button&quot; :class=&quot;{ secondary: following }&quot; :aria-pressed=&quot;following&quot; @click=&quot;following = !following&quot;&gt;
+        {{ following ? &quot;Following&quot; : &quot;Follow&quot; }}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/template&gt;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>profile.html</span><b>560px</b></div><img src="img/vue-components-en-projects-profile.html-560-c117d3.png" alt=""><figcaption><b>Project 4.1:</b> the profile card after pressing “Follow”.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 4.2 · Medium</p>
+<h3>A catalogue with filters</h3>
+<p class="project-goal">Show a grid of products with filter buttons for each category and a line that says how many products are visible.</p>
+<p class="project-skills"><strong>You will practise:</strong> lists and keys, a ref typed with a union, a computed filtered list, and buttons with <code>aria-pressed</code>.</p>
+<ol class="steps">
+<li>Reuse <code>products.ts</code>. Create the type <code>Filter = "all" | Product["category"]</code>: it updates itself if a category is added.</li>
+<li>Keep the filter buttons as data, an array of <code>{ value, label }</code>, and render them with <code>v-for</code>.</li>
+<li>Store only the chosen filter in a <code>ref</code>. Make <code>visible</code> a <code>computed</code>.</li>
+<li>Show “Showing 3 of 4 products” using <code>visible.length</code> and <code>products.length</code>.</li>
+<li>Group the buttons with <code>role="group"</code> and a label, and mark the active one with <code>:aria-pressed</code>.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a common mistake is to keep <code>visible</code> in a ref too, and then forget to update it when the products change. If a value can be calculated from other state, compute it.</p>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>catalogue.html</span><b>560px</b></div><img src="img/vue-components-en-projects-catalogue.html-560-d95291.png" alt=""><figcaption><b>Project 4.2:</b> the catalogue filtered to gifts.</figcaption></figure>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 4.3 · Challenge</p>
+<h3>Accessible tabs</h3>
+<p class="project-goal">Build a reusable tabs component that works with the mouse, the keyboard and screen readers, in both left-to-right and right-to-left pages.</p>
+<p class="project-skills"><strong>You will practise:</strong> named and dynamic slots, ARIA roles, <code>useId</code> for unique ids, template refs to move the focus, and keyboard events.</p>
+<ol class="steps">
+<li>Make <code>TabList</code> take <code>labels: string[]</code> and a <code>label</code> for the group. The content of each tab comes from a named slot: <code>#tab-0</code>, <code>#tab-1</code>…</li>
+<li>Render a <code>role="tablist"</code> with one <code>role="tab"</code> button per tab, and one <code>role="tabpanel"</code> per tab, hidden unless active.</li>
+<li>Link each tab and panel with <code>aria-controls</code> and <code>aria-labelledby</code>. Make the ids with <code>useId()</code>, so two tab lists on one page never clash.</li>
+<li>Only the active tab is in the Tab order (<code>:tabindex="0"</code>); the others get <code>-1</code>. The arrow keys move between tabs, and Home and End jump to the ends.</li>
+<li>Collect the buttons with <code>ref="tab"</code> inside the <code>v-for</code> and <code>useTemplateRef("tab")</code>, which gives an array, and call <code>focus()</code> on the new tab. In a right-to-left page, the right arrow moves to the <em>previous</em> tab.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> this is the keyboard pattern described in the WAI-ARIA Authoring Practices, the reference for accessible widgets. When you build any widget, look it up there first: the keyboard behaviour users expect is already decided.</p>
+<div class="listing" dir="ltr"><div class="listing-title">TabList.vue</div><pre class="code">&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref, useId, useTemplateRef } from &quot;vue&quot;;
+
+const props = defineProps&lt;{ labels: string[]; label: string }&gt;();
+const active = ref(0);
+const id = useId();
+const buttons = useTemplateRef&lt;HTMLButtonElement[]&gt;(&quot;tab&quot;);
+
+function select(index: number) {
+  const next = (index + props.labels.length) % props.labels.length;
+  active.value = next;
+  buttons.value?.[next]?.focus();
+}
+
+function onKeydown(event: KeyboardEvent) {
+  const rtl = document.dir === &quot;rtl&quot;;
+  if (event.key === &quot;ArrowRight&quot;) select(active.value + (rtl ? -1 : 1));
+  if (event.key === &quot;ArrowLeft&quot;) select(active.value + (rtl ? 1 : -1));
+  if (event.key === &quot;Home&quot;) select(0);
+  if (event.key === &quot;End&quot;) select(props.labels.length - 1);
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div class=&quot;tabs&quot;&gt;
+    &lt;div role=&quot;tablist&quot; :aria-label=&quot;label&quot; @keydown=&quot;onKeydown&quot;&gt;
+      &lt;button
+        v-for=&quot;(text, i) in labels&quot;
+        :id=&quot;`${id}-tab-${i}`&quot;
+        ref=&quot;tab&quot;
+        :key=&quot;text&quot;
+        type=&quot;button&quot;
+        role=&quot;tab&quot;
+        :aria-selected=&quot;i === active&quot;
+        :aria-controls=&quot;`${id}-panel-${i}`&quot;
+        :tabindex=&quot;i === active ? 0 : -1&quot;
+        @click=&quot;select(i)&quot;
+      &gt;
+        {{ text }}
+      &lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div
+      v-for=&quot;(text, i) in labels&quot;
+      :id=&quot;`${id}-panel-${i}`&quot;
+      :key=&quot;text&quot;
+      role=&quot;tabpanel&quot;
+      :aria-labelledby=&quot;`${id}-tab-${i}`&quot;
+      :hidden=&quot;i !== active&quot;
+    &gt;
+      &lt;slot :name=&quot;`tab-${i}`&quot; /&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+<figure class="browser"><div class="browser-bar" dir="ltr"><i></i><i></i><i></i><span>tabs.html</span><b>560px</b></div><img src="img/vue-components-en-projects-tabs.html-560-f448da.png" alt=""><figcaption><b>Project 4.3:</b> after pressing the right arrow on the first tab: the next tab is selected and has the focus.</figcaption></figure>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Write a <code>Price.vue</code> component with the props <code>value</code> and <code>currency</code> that shows the value with two decimals, and use it in <code>ProductCard</code>.</li>
+<li><span class="level">Easy</span> Give <code>ProductCard</code> a <code>"-20%"</code> badge for products with a <code>discount</code> property, without showing anything for the others.</li>
+<li><span class="level medium">Medium</span> In <code>Shop.vue</code>, keep a cart count in a <code>ref</code>, increase it when a card emits <code>add</code>, and show “3 items in your cart” above the grid.</li>
+<li><span class="level medium">Medium</span> Add a fourth status to <code>Orders</code>, <code>{ status: "offline" }</code>, and handle it in <code>OrderList.vue</code>. Where does TypeScript help you, and where does it not?</li>
+<li><span class="level hard">Challenge</span> Give <code>ShopSection</code> a second, named slot, <code>#actions</code>, shown next to the title, and use it in <code>Shop.vue</code> for a “See all” link. Make the slot optional: when it is not given, nothing extra is drawn.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 5</p>
+<p>You have used <code>ref</code> and <code>computed</code>. In the next chapter you will see how Vue’s reactivity really works, and learn the whole Composition API: reactive objects, watchers, the life of a component, and two-way binding with <code>v-model</code>.</p>
 </div>
 </section>
 <section class="chapter" style="page: ch10" data-chapter="10" data-code="b2/design/en">
@@ -4858,6 +5350,16 @@ on the team will pair with the others on the first tests.
 <li><code>^1.4.2</code> allows 1.4.9 and 1.9.0, but not 1.4.1 (older) or 2.0.0 (a new major version). <code>~1.4.2</code> allows only 1.4.9 from the list: it accepts patch updates within 1.4.</li>
 <li>ESLint reports <code>'x' is never reassigned. Use 'const' instead</code>. Change <code>let</code> to <code>const</code>, or run <code>npx eslint src --fix</code>, which makes this change by itself.</li>
 <li>Add a second button whose handler runs <code>const { showHelp } = await import("./help.ts")</code>. The build then lists <code>report-….js</code> and <code>help-….js</code> next to <code>index-….js</code>: one extra file per dynamic import.</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 4</h2>
+<ol class="exercises">
+<li><code>Price.vue</code>: <code>defineProps&lt;{ value: number; currency: string }&gt;()</code> and the template <code>&lt;p class="price"&gt;{{ value.toFixed(2) }} {{ currency }}&lt;/p&gt;</code>. In <code>ProductCard</code>: <code>&lt;Price :value="product.price" currency="EGP" /&gt;</code>. Notice the colon on <code>:value</code> but not on <code>currency</code>, which is a fixed string.</li>
+<li>Add <code>discount?: number</code> to <code>Product</code>, and in the card <code>&lt;span v-if="product.discount !== undefined" class="badge"&gt;-{{ product.discount * 100 }}%&lt;/span&gt;</code>.</li>
+<li>In <code>Shop.vue</code>: <code>const count = ref(0)</code>; on each card <code>@add="count++"</code>; and above the grid <code>&lt;p&gt;{{ count }} items in your cart&lt;/p&gt;</code>. The state lives in <code>Shop</code> because the cards only report the click; the shop owns the cart.</li>
+<li>Add <code>| { status: "offline" }</code> to the type, and a branch <code>&lt;p v-else-if="state.status === 'offline'" class="muted"&gt;You are offline.&lt;/p&gt;</code> before the last one. <code>vue-tsc</code> helps: until you add the branch, <code>state.orders</code> in the last branch is an error, because <code>state</code> might be offline there. It cannot tell you that the new state needs a <em>nice message</em>; that is still your job.</li>
+<li>In <code>ShopSection.vue</code>: <code>&lt;header&gt;&lt;h2&gt;{{ title }}&lt;/h2&gt;&lt;slot name="actions" /&gt;&lt;/header&gt;</code>. An empty named slot draws nothing, so the slot is optional already. In <code>Shop.vue</code>: <code>&lt;template #actions&gt;&lt;a href="/products"&gt;See all&lt;/a&gt;&lt;/template&gt;</code>. To avoid an empty wrapper when it is missing, use <code>v-if="$slots.actions"</code>.</li>
 </ol>
 
 
