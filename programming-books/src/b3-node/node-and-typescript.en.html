@@ -1,0 +1,287 @@
+<section class="chapter" data-chapter="{{n}}" data-code="b3/node/runtime/en">
+<p class="chapter-kicker">Chapter {{n}}</p>
+<h1>Node.js and TypeScript on the Server</h1>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>set up a server project in TypeScript that Node runs directly, and that <code>tsc</code> checks</li>
+<li>explain the event loop, and predict the order in which code runs</li>
+<li>keep the event loop free, moving heavy CPU work to worker threads</li>
+<li>wait for several things at once with promises, with failures and time limits</li>
+<li>process big data with streams, in constant memory</li>
+<li>load and check configuration, shut down gracefully, and test with Node’s own test runner</li>
+</ul>
+</div>
+
+<p class="lead">In Chapter {{n-1}} our server was one file. Real servers are projects: configuration that changes between your laptop and production, tests, code split into modules, and a process that must stay up for months. They also share one property that surprises developers who come from the browser or from PHP: a Node server runs all its JavaScript on a single thread, for every user at once. This chapter shows why that is fast, how one careless loop can freeze every user, and the tools that keep a Node server healthy.</p>
+
+<aside class="bit" data-mood="think"><p>My first Node server resized photos inside the request handler. It worked beautifully on my laptop. The day ten people uploaded at once, every page of the site stopped answering, including the ones that had nothing to do with photos. That was how I met the event loop.</p></aside>
+
+<h2>{{n}}.1 What Node is</h2>
+
+<p>Node is three things put together. <strong>V8</strong>, the JavaScript engine from Chrome, runs your code. <strong>libuv</strong>, a library written in C, talks to the operating system: it opens files and network connections, and tells Node when something is ready. And a <strong>standard library</strong> (<code>node:http</code>, <code>node:fs</code>, <code>node:stream</code>, <code>node:test</code> and many more) wraps it all for JavaScript.</p>
+
+<p>The important design choice is that your JavaScript runs on one thread, and <dfn>I/O</dfn> (input and output: the network, the disk, a database) never makes it wait. When a request handler asks the database for a list, Node hands the work to the operating system and moves on to the next request. When the list arrives, Node calls your code back. One process can serve thousands of connections at once this way, because most of a server’s time is spent waiting for I/O, and waiting costs Node nothing.</p>
+
+<p>The cost of the design is just as important: while your JavaScript is <em>computing</em>, nothing else runs. We will see both sides for real in this chapter.</p>
+
+<h2>{{n}}.2 A project, not a file</h2>
+
+<p>Here is the project for this chapter: Bit’s shop again, with a few new routes. Its <code>package.json</code>:</p>
+
+<pre data-code="package.json" data-title="package.json"></pre>
+
+<ul>
+<li><code>"type": "module"</code> makes every <code>.ts</code> and <code>.js</code> file an ES module, with <code>import</code> and <code>export</code>, as in the browser.</li>
+<li><code>engines</code> says which Node versions the project needs. 22.18 is the first one that runs TypeScript without any extra tool.</li>
+<li>The <code>scripts</code> are the project’s commands, the same on every machine: <code>npm run dev</code> restarts the server when a file changes (<code>--watch</code>), <code>npm start</code> runs it, <code>npm run check</code> checks the types, and <code>npm test</code> runs the tests. <code>--env-file</code> loads settings from a file; we come to it in {{n}}.7.</li>
+<li>Only <code>zod</code> is needed to run; TypeScript and the type definitions for Node are only needed while developing.</li>
+</ul>
+
+<h3>Node runs it, tsc checks it</h3>
+
+<p>Node runs a <code>.ts</code> file by <dfn>type stripping</dfn>: it removes the type annotations and runs what is left, without looking at them. That is fast, but it means Node never checks your types. Checking is the job of the TypeScript compiler, <code>tsc</code>, configured in <code>tsconfig.json</code>:</p>
+
+<pre data-code="tsconfig.json" data-title="tsconfig.json"></pre>
+
+<p><code>strict</code> and <code>noUncheckedIndexedAccess</code> are the checks from Book 2. <code>noEmit</code> tells <code>tsc</code> to check only, because Node runs the source as it is. The other three options make the source safe for type stripping: imports name the real file (<code>./config.ts</code>, as Node needs), <code>import type</code> marks imports that disappear, and <code>erasableSyntaxOnly</code> forbids the few TypeScript features that are not just types. See all of this happen:</p>
+
+<pre data-code="types.sh" data-title="Terminal"></pre>
+
+<p>Node happily ran <code>strip.ts</code>, where a string sits in a number field, and printed <code>45050</code> instead of 500. It refused <code>enum.ts</code>, because an <code>enum</code> creates a real object at run time, and stripping cannot write code. <code>tsc</code> reported both. Instead of an enum, use an object with <code>as const</code>, or a union of strings such as <code>"pending" | "paid"</code>: they are plain JavaScript plus types.</p>
+
+<aside class="box rule"><p class="box-title">Professional habit: the checks run on every change</p><p>Because Node does not check types, a type error can reach production unless something stops it. Run <code>npm run check</code> and <code>npm test</code> in CI on every pull request, and make them required to merge. Locally, let your editor show <code>tsc</code>’s errors as you type. Fast running and strict checking are two separate jobs, done by two separate tools.</p></aside>
+
+<h2>{{n}}.3 The event loop</h2>
+
+<p>The <dfn>event loop</dfn> is Node’s main loop. In each turn, it runs whatever is ready: timers whose time has come, I/O that has finished, callbacks scheduled with <code>setImmediate</code>. Between any two of these, it empties two smaller queues of <dfn>microtasks</dfn>: callbacks of promises, and callbacks given to <code>process.nextTick</code>. This program schedules one of each, and then keeps the thread busy:</p>
+
+<pre data-code="demos/event-loop.ts" data-title="demos/event-loop.ts"></pre>
+
+<pre data-code="event-loop.sh" data-title="Terminal"></pre>
+
+<p>Three rules explain the output:</p>
+<ol>
+<li><strong>The code that is running always finishes first.</strong> Nothing interrupts it: “script ends” comes before every callback.</li>
+<li><strong>Microtasks run before the loop moves on.</strong> Both the promise callback and the <code>nextTick</code> callback run before the timer, even though the timer asked for 0 ms. (In an ES module, promise callbacks happen to run before <code>nextTick</code> ones; in an old CommonJS file it is the other way round. Code that depends on that order is fragile.)</li>
+<li><strong>A timer’s delay is a minimum, not a promise.</strong> The second timer asked for 10 ms and ran after 200, because the loop was busy and could not check its timers.</li>
+</ol>
+
+<p>The third rule is the one that matters on a server. Every request, every timer and every database answer waits for the same thread. If one piece of code keeps it for a second, every user waits a second.</p>
+
+<aside class="box quiz"><p class="box-title">Quick check</p><ol><li>Why can Node serve thousands of connections with one thread?</li><li>Node ran a file with a type error without complaining. Which tool should have caught it, and when?</li><li>A timer is set for 100 ms, and then the code computes for 300 ms. When does the timer’s callback run?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2>{{n}}.4 Never block the loop</h2>
+
+<p>Here is a server with two routes. <code>/primes</code> counts the prime numbers up to a limit, which is pure computation; <code>/hello</code> answers at once:</p>
+
+<pre data-code="demos/blocking.ts" data-title="demos/blocking.ts"></pre>
+
+<p>We send a slow request and, a moment later, a quick one. curl’s <code>-w</code> prints how long each one took:</p>
+
+<pre data-code="blocking.sh" data-title="Terminal"></pre>
+
+<p>The quick request, which needs a fraction of a millisecond, waited more than a second, because the thread was counting primes for someone else. With a hundred users, each would wait behind every count in front of them. Typical culprits are image resizing, PDF generation, password hashing with a synchronous function, compressing big files, and <code>JSON.parse</code> on huge bodies.</p>
+
+<p>The fix is to do heavy computation on another thread. Node’s <dfn>worker threads</dfn> run a separate JavaScript file with its own event loop, and exchange messages with the main thread:</p>
+
+<pre data-code="src/primes-worker.ts" data-title="src/primes-worker.ts"></pre>
+
+<p>The worker receives its input in <code>workerData</code> and posts its result back. In the app, a small function wraps it in a promise, so the handler simply awaits it:</p>
+
+<pre data-code="src/app.ts" data-from="function countInWorker" data-to="^}" data-title="src/app.ts"></pre>
+
+<p>The same two requests against the real server:</p>
+
+<pre data-code="worker.sh" data-title="Terminal"></pre>
+
+<p>The quick request now answers in about a millisecond, before the count has finished, because the main thread was free. Starting a thread costs a few tens of milliseconds, which is nothing next to a one-second job but too much for many small ones. For those, keep a <dfn>pool</dfn> of threads started once and reused; you build one in Exercise 5, and the Piscina library is a well-tested one.</p>
+
+<aside class="box tip"><p class="box-title">Tip: most libraries already do this</p><p>Many slow operations in Node’s standard library have an asynchronous version that runs on libuv’s own thread pool: <code>crypto.scrypt</code> instead of <code>crypto.scryptSync</code>, <code>zlib.gzip</code> instead of <code>zlib.gzipSync</code>, <code>fs.promises.readFile</code> instead of <code>fs.readFileSync</code>. On a server, any function whose name ends in <code>Sync</code> is a warning sign inside a request handler. At start-up, before the server listens, it is fine.</p></aside>
+
+<h2>{{n}}.5 Waiting for several things at once</h2>
+
+<p>A product page might need the stock, the price and the reviews, each from a different service. This demo stands in for three network calls, of 300, 200 and 400 ms:</p>
+
+<pre data-code="demos/concurrency.ts" data-title="demos/concurrency.ts"></pre>
+
+<pre data-code="concurrency.sh" data-title="Terminal"></pre>
+
+<ul>
+<li><strong>One after another</strong>, the waits add up: 300 + 200 + 400 = 900 ms. Writing <code>await</code> three times in a row is the most common accidental slowness in Node code.</li>
+<li><strong><code>Promise.all</code></strong> starts all three, then waits for the slowest: 400 ms. Use it when the calls do not depend on each other.</li>
+<li><strong><code>Promise.allSettled</code></strong> waits for all of them and reports each one as fulfilled or rejected. A page can still show the stock and the price when the reviews service is down. <code>Promise.all</code> would reject as a whole on the first failure.</li>
+<li><strong><code>AbortSignal.timeout(250)</code></strong> gives a call a time limit. Most modern APIs accept a <code>signal</code>, including <code>fetch</code> and Node’s timers, and give up when it fires. Every call to another service needs a limit; without one, a slow service makes your server slow too.</li>
+</ul>
+
+<aside class="box warn"><p class="box-title">Watch out: “all at once” has limits</p><p><code>Promise.all</code> over ten thousand items starts ten thousand database queries at the same moment, and the database falls over. For large lists, run a few at a time (in batches, or with a small helper such as <code>p-limit</code>). And remember that a rejected <code>Promise.all</code> does not stop the other promises: they keep running, and their results are simply ignored.</p></aside>
+
+<h2>{{n}}.6 Streams: big data in small memory</h2>
+
+<p>Suppose Bit’s shop must add up a million orders from a CSV file. The direct way reads the whole file into memory first:</p>
+
+<pre data-code="demos/total-read.ts" data-title="demos/total-read.ts"></pre>
+
+<p>A <dfn>stream</dfn> delivers the data in pieces as it arrives, so the program only ever holds a small part of it. <code>readline</code> turns a file stream into lines, and <code>for await</code> reads them one by one:</p>
+
+<pre data-code="demos/total-stream.ts" data-title="demos/total-stream.ts"></pre>
+
+<pre data-code="streams.sh" data-title="Terminal"></pre>
+
+<p>The same total, with less than half the memory. More importantly, the streaming version uses the same memory for a file ten times bigger, while the first one would need ten times more and eventually crash. On a server that handles many requests at once, the difference is multiplied by the number of users.</p>
+
+<h3>Backpressure</h3>
+
+<p>Streams also work the other way. When you write faster than the destination can take (a slow disk, a slow client), data piles up in memory. A writable stream says so: <code>write()</code> returns <code>false</code> when its buffer is full. The program that made the CSV file waits for the <code>drain</code> event before writing more:</p>
+
+<pre data-code="demos/make-orders.ts" data-title="demos/make-orders.ts"></pre>
+
+<p>This is called <dfn>backpressure</dfn>: the slow side slows down the fast side, instead of letting memory fill up. You rarely handle it by hand, because <code>pipeline</code> does it for you. The shop’s export route makes its CSV rows with an async generator and pipes them into the response:</p>
+
+<pre data-code="src/app.ts" data-from="async function* orderRows" data-to="^}" data-title="src/app.ts"></pre>
+
+<p>In the handler, <code>await pipeline(Readable.from(orderRows(100_000)), res)</code> sends the rows as the client reads them. If the client disconnects halfway, <code>pipeline</code> stops the generator and cleans up; with the older <code>.pipe()</code> method, that cleanup is your job, and it is often forgotten. Because the total size is not known in advance, Node sends the body in chunks instead of with a <code>Content-Length</code>:</p>
+
+<pre data-code="export.sh" data-title="Terminal"></pre>
+
+<h2>{{n}}.7 Configuration</h2>
+
+<p>The port, the database address, the allowed origins and the API keys differ between your laptop, the test server and production. They must not be written in the code. The common rule is to read them from <dfn>environment variables</dfn>, which every hosting platform can set. But <code>process.env</code> holds only strings, any of which may be missing or mistyped. So the project reads them in one place, once, and checks them with zod:</p>
+
+<pre data-code="src/config.ts" data-title="src/config.ts"></pre>
+
+<p>Everywhere else, the code imports <code>config</code> and gets real types: <code>config.PORT</code> is a number, <code>config.ALLOWED_ORIGINS</code> an array of URLs. And a wrong setting stops the server at once, with a clear message, instead of failing an hour later in the middle of a request:</p>
+
+<pre data-code="config.sh" data-title="Terminal"></pre>
+
+<p>On your machine, the settings live in a <code>.env</code> file, which <code>node --env-file=.env</code> loads before your code runs:</p>
+
+<pre data-code=".env" data-title=".env"></pre>
+
+<aside class="box warn"><p class="box-title">Watch out: .env files hold secrets</p><p>Add <code>.env</code> to <code>.gitignore</code> on the first day, and commit a <code>.env.example</code> with the names and harmless values instead. A key pushed to a public repository is found by bots within minutes. Once it has been pushed, deleting it is not enough: change the key. In production, the platform’s secret settings fill the environment, and there is no <code>.env</code> file at all.</p></aside>
+
+<h2>{{n}}.8 Errors and graceful shutdown</h2>
+
+<p>Servers stop all the time: for every deployment, when a machine is replaced, when the platform scales down. The platform sends the process a <code>SIGTERM</code> signal (Ctrl+C in a terminal sends <code>SIGINT</code>) and, after a grace period, kills it. A server that simply exits on the signal cuts off every request in progress: a payment half processed, an upload lost. A <dfn>graceful shutdown</dfn> stops accepting new connections, lets the running requests finish, and only then exits:</p>
+
+<pre data-code="src/server.ts" data-title="src/server.ts"></pre>
+
+<p>Here a long count is running when Ctrl+C arrives:</p>
+
+<pre data-code="shutdown.sh" data-title="Terminal 1"></pre>
+
+<pre data-code="shutdown-client.sh" data-title="Terminal 2"></pre>
+
+<p>The server stopped listening at once, finished the count, answered <code>200</code>, and then exited. The ten-second timer guarantees that a stuck request cannot keep the process alive forever, and <code>.unref()</code> stops the timer itself from keeping it alive.</p>
+
+<p>The last handler is about a different kind of error. Errors you expect, such as a missing product or a timeout, are handled where they happen and become answers. An <em>unhandled rejection</em> means a promise failed and no code was waiting for the failure: a bug. After a bug, the process may be in a state nobody planned for, with half-updated data in memory. The safe reaction is to log it and exit, and let a supervisor (Docker, systemd or the hosting platform, Chapter {{n+14}}) start a fresh process. Never keep a damaged process running just to look available.</p>
+
+<h2>{{n}}.9 Testing with node:test</h2>
+
+<p>Node includes a test runner, so a project needs no extra tool to start testing. It finds files ending in <code>.test.ts</code>, runs every <code>test</code> in them, and reports. Chapter {{n+10}} goes much deeper; for now, two kinds of test cover this project: a pure function, and the whole server through real HTTP:</p>
+
+<pre data-code="src/app.test.ts" data-title="src/app.test.ts"></pre>
+
+<p>The server listens on port 0, so the operating system picks a free port and tests never clash with a running server or with each other. The tests load <code>.env.test</code>, whose <code>LOG_LEVEL=warn</code> keeps the request logs out of the report:</p>
+
+<pre data-code="test.sh" data-title="Terminal"></pre>
+
+<h2>Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Heavy computation in a handler</td><td>Every user waits behind it</td><td>A worker thread or a pool; async versions of slow APIs</td></tr>
+<tr><td><code>readFileSync</code> and friends in handlers</td><td>The loop stops during each read</td><td>The promise versions; <code>Sync</code> only at start-up</td></tr>
+<tr><td>Three <code>await</code>s in a row for independent calls</td><td>The waits add up</td><td><code>Promise.all</code> or <code>allSettled</code></td></tr>
+<tr><td>Calls to other services without a time limit</td><td>A slow service makes you slow</td><td><code>AbortSignal.timeout</code> on every call</td></tr>
+<tr><td>Reading big files or results whole</td><td>Memory grows with the data, then a crash</td><td>Streams and <code>pipeline</code></td></tr>
+<tr><td>Trusting Node to check types</td><td>Type errors reach production</td><td><code>tsc</code> in CI, required to merge</td></tr>
+<tr><td><code>process.env</code> read all over the code</td><td>Typos and missing settings found late</td><td>One checked config module, at start-up</td></tr>
+<tr><td>Exiting at once on SIGTERM</td><td>Requests cut off at every deployment</td><td>Close, finish, then exit, with a deadline</td></tr>
+</tbody>
+</table>
+
+<h2>Summary</h2>
+
+<ul class="summary">
+<li>Node is <strong>V8</strong>, <strong>libuv</strong> and a standard library. Your JavaScript runs on <strong>one thread</strong>; I/O never makes it wait.</li>
+<li>Node runs TypeScript by <strong>stripping types</strong>; <strong>tsc</strong> checks them. <code>erasableSyntaxOnly</code> keeps the source strippable: no enums.</li>
+<li>The <strong>event loop</strong> runs current code to the end, then microtasks, then timers and I/O. Timer delays are minimums.</li>
+<li><strong>Never block the loop</strong>: CPU work goes to <strong>worker threads</strong>, slow APIs are used in their async versions.</li>
+<li><strong><code>Promise.all</code></strong> waits for independent calls at once, <strong><code>allSettled</code></strong> survives failures, and <strong><code>AbortSignal.timeout</code></strong> limits every call.</li>
+<li><strong>Streams</strong> process big data in constant memory; <strong>backpressure</strong> slows the fast side; <strong><code>pipeline</code></strong> handles both and cleans up.</li>
+<li><strong>Configuration</strong> comes from the environment, checked once with a schema; secrets never enter the repository.</li>
+<li>A <strong>graceful shutdown</strong> closes, finishes, then exits. After an unhandled error, log and exit, and let a supervisor restart.</li>
+<li><strong><code>node:test</code></strong> runs tests with no extra tool; servers in tests listen on port 0.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because a server mostly waits for I/O, and Node hands that waiting to the operating system and serves other connections meanwhile; the thread is only busy while JavaScript is actually computing. 2. <code>tsc</code>, through <code>npm run check</code>, in the editor while writing and in CI before the change is merged. 3. After the 300 ms of computation have finished: at about 300 ms, never at 100.</p>
+
+<!-- projects -->
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Each project is a small Node program in TypeScript, set up like this chapter’s: run by Node, checked by <code>tsc</code>, with at least one test in <code>node:test</code>.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A sales report from the command line</h3>
+<p class="project-goal">Write a command-line tool that streams the orders file and prints the five customers who spent the most.</p>
+<p class="project-skills"><strong>You will practise:</strong> streams and <code>readline</code>, command-line arguments, exit codes, and testing a pure function.</p>
+<ol class="steps">
+<li>Generate <code>orders.csv</code> with this chapter’s <code>make-orders.ts</code>.</li>
+<li>Read the file name and the number of customers to show from the command line with <code>parseArgs</code> from <code>node:util</code>: <code>node report.ts --file orders.csv --top 5</code>.</li>
+<li>Stream the file line by line, adding each total into a <code>Map</code> by customer. Print the top customers, with totals formatted as money.</li>
+<li>When the file does not exist, print a clear message to <code>stderr</code> and exit with code 1, so scripts can tell it failed.</li>
+<li>Move the line parsing into a pure function and test it, including an empty line and a line with a missing field.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> check the peak memory with <code>process.resourceUsage().maxRSS</code>, as the chapter did. It should stay about the same when you run the tool on a file ten times bigger.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>Hash passwords without blocking</h3>
+<p class="project-goal">Build a <code>POST /hash</code> route that hashes a password with scrypt, first the blocking way and then the right way, and measure the difference under load.</p>
+<p class="project-skills"><strong>You will practise:</strong> spotting blocking code, libuv’s thread pool, measuring with concurrent requests, and reading timings.</p>
+<ol class="steps">
+<li>Hash the password from the JSON body with <code>crypto.scryptSync(password, salt, 64)</code> and a random salt from <code>crypto.randomBytes(16)</code>. Return the salt and the hash in hex.</li>
+<li>Send twenty requests at the same time from a small script with <code>Promise.all</code> and <code>fetch</code>, and send a request to <code>/hello</code> in the middle. Record how long <code>/hello</code> takes.</li>
+<li>Switch to the callback version, <code>crypto.scrypt</code>, wrapped with <code>promisify</code> from <code>node:util</code>, and measure again.</li>
+<li>Run the test again with the environment variable <code>UV_THREADPOOL_SIZE=8</code> (the default is 4) and explain what changes in the total time.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the async version does not make one hash faster. It moves the work off the main thread, so <code>/hello</code> stays quick, and several hashes run in parallel on libuv’s threads.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Ready, live, and leaving gracefully</h3>
+<p class="project-goal">Give the server the health endpoints that load balancers and orchestrators use, and prove the graceful shutdown with an automatic test.</p>
+<p class="project-skills"><strong>You will practise:</strong> server state, signals, child processes, and testing shutdown behaviour.</p>
+<ol class="steps">
+<li>Add <code>GET /livez</code>, which answers <code>200</code> while the process is running, and <code>GET /readyz</code>, which answers <code>200</code> only when the server should receive traffic.</li>
+<li>Count the requests in progress. On <code>SIGTERM</code>, make <code>/readyz</code> answer <code>503</code> at once, wait two seconds so the load balancer notices, and then close as in the chapter.</li>
+<li>Log how many requests were still running when the shutdown started, and how long it took.</li>
+<li>Write a test that starts the server as a child process with <code>spawn</code>, starts a slow request, sends <code>SIGTERM</code> with <code>child.kill("SIGTERM")</code>, and checks that the request still gets <code>200</code>, that new connections are refused, and that the process exits with code 0.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> in the test, wait for the line “Listening on” in the child’s output before sending anything; otherwise the test races the server’s start-up and fails at random.</p>
+</div>
+<!-- /projects -->
+
+<h2>Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> In <code>event-loop.ts</code>, change the busy loop from 200 ms to 50 ms. After how long will the 10 ms timer run? And if the busy loop is removed?</li>
+<li><span class="level">Easy</span> Add a <code>HOST</code> setting to <code>config.ts</code>: a non-empty string with the default <code>127.0.0.1</code>. Use it in <code>server.listen</code>. What does <code>0.0.0.0</code> mean, and when do you need it?</li>
+<li><span class="level">Medium</span> In the concurrency demo, imagine that the price service fails after 200 ms and you used <code>Promise.all</code>. When does <code>Promise.all</code> reject, and what happens to the stock request that is still running? Write a program that shows it.</li>
+<li><span class="level">Medium</span> Let <code>/export</code> take a <code>rows</code> query parameter, from 1 to 1,000,000, with <code>422</code> for anything else. Why does memory stay flat even with a million rows, and what happens to the generator when the client disconnects halfway?</li>
+<li><span class="level">Challenge</span> Write a <code>WorkerPool</code> class that starts a fixed number of workers once and reuses them, with a queue of waiting jobs. Compare 100 small counts (limit 20,000) done with a new thread each, and with a pool of four.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter {{n+1}}</p>
+<p>With a solid project under us, we design the API itself: resources and URLs, versions, pagination, filtering, errors, idempotency and documentation, so that other developers can use it without asking you.</p>
+</div>
+</section>

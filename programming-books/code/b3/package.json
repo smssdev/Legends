@@ -1,0 +1,11 @@
+{
+  "name": "from-zero-to-senior-book-3",
+  "private": true,
+  "description": "The code of Book 3. Run `npm ci` once; each chapter's make.py runs its examples.",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "7.0.2",
+    "zod": "4.6.7"
+  }
+}
