@@ -1,0 +1,17 @@
+diff --git a/src/cart/discount.ts b/src/cart/discount.ts
+new file mode 100644
+index 0000000..36b91e1
+--- /dev/null
++++ b/src/cart/discount.ts
+@@ -0,0 +1,11 @@
++import { subtotal } from "./cart";
++
++export function applyDiscount(cart: any, code: string) {
++  console.log("applying", code);
++  let total = subtotal(cart.lines);
++  if (code == "BIT10") total = total * 0.9;
++  if (code == "HALF") total = total / 2;
++  // TODO make the codes configurable
++  cart.total = total;
++  return cart;
++}

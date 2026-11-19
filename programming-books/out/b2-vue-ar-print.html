@@ -27,6 +27,8 @@
 @page ch15:first { @top-center { content: none; } }
 @page ch16 { @top-center { content: "الفصل 16: معمارية الواجهات على نطاق واسع"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch18 { @top-center { content: "الفصل 18: مراجعة الكود والتوجيه والقرارات التقنية"; } }
+@page ch18:first { @top-center { content: none; } }
 @page answers { @top-center { content: "حلول التمارين"; } }
 @page answers:first { @top-center { content: none; } }
 </style></head>
@@ -57,7 +59,7 @@
           <p>اختُبر الكود في هذا الكتاب على Node.js 22، وكل مثال ومخرجاته منسوخ من ملفات مستودع الكود الخاص بالكتاب.</p>
           <p>JavaScript وNode.js وغيرها من الأسماء الواردة في هذا الكتاب علامات تجارية لأصحابها، وتُذكر للتعريف فقط.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: اللغة</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">JavaScript الحديثة بعمق</span><span class="toc-p">6</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">TypeScript في المشاريع الحقيقية</span><span class="toc-p">30</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">الوحدات والأدوات وأنظمة البناء</span><span class="toc-p">51</span></li><li class="toc-part">الجزء 2: Vue</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">المكونات والقوالب</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">التفاعلية وComposition API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Composables: إعادة استخدام المنطق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Vue Router وبيانات الخادم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">النماذج والتحقق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الحالة العامة بـ Pinia</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الجودة</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">أنظمة التصميم ومكتبات المكونات</span><span class="toc-p">69</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول (WCAG) عملياً</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الاختبار: الوحدات والمكونات ومن الطرف للطرف</span><span class="toc-p">104</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">الأداء وCore Web Vitals</span><span class="toc-p">122</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">أمان الواجهات</span><span class="toc-p">139</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">تعدد اللغات والاتجاه من اليمين</span><span class="toc-p">154</span></li><li class="toc-part">الجزء 4: عمل الخبير</li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">معمارية الواجهات على نطاق واسع</span><span class="toc-p">170</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">الرسم على الخادم بـ Nuxt</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">مراجعة الكود والتوجيه والقرارات التقنية</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">19</span><span class="toc-t">المشروع الختامي: لوحة تحكم للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">187</span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b2/js/ar">
+        </section><section class="front toc"><h1>المحتويات</h1><ol><li class="toc-part">الجزء 1: اللغة</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">JavaScript الحديثة بعمق</span><span class="toc-p">6</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">TypeScript في المشاريع الحقيقية</span><span class="toc-p">30</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">الوحدات والأدوات وأنظمة البناء</span><span class="toc-p">51</span></li><li class="toc-part">الجزء 2: Vue</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">المكونات والقوالب</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">التفاعلية وComposition API</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Composables: إعادة استخدام المنطق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Vue Router وبيانات الخادم</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">النماذج والتحقق</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">الحالة العامة بـ Pinia</span><span class="toc-p"></span></li><li class="toc-part">الجزء 3: الجودة</li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">أنظمة التصميم ومكتبات المكونات</span><span class="toc-p">69</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">الوصول (WCAG) عملياً</span><span class="toc-p">87</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">الاختبار: الوحدات والمكونات ومن الطرف للطرف</span><span class="toc-p">104</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">الأداء وCore Web Vitals</span><span class="toc-p">122</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">أمان الواجهات</span><span class="toc-p">139</span></li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">تعدد اللغات والاتجاه من اليمين</span><span class="toc-p">154</span></li><li class="toc-part">الجزء 4: عمل الخبير</li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">معمارية الواجهات على نطاق واسع</span><span class="toc-p">170</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">الرسم على الخادم بـ Nuxt</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">مراجعة الكود والتوجيه والقرارات التقنية</span><span class="toc-p">187</span></li><li class="toc-ch"><span class="toc-n">19</span><span class="toc-t">المشروع الختامي: لوحة تحكم للإنتاج</span><span class="toc-p"></span></li><li class="toc-part">ملحق</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">حلول التمارين</span><span class="toc-p">208</span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b2/js/ar">
 <div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">الفصل 1</p><h1>JavaScript الحديثة بعمق</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
@@ -4201,6 +4203,551 @@ process.exitCode = problems.length ? <span class="n">1</span> : <span class="n">
 <p>كل تطبيق في هذا الكتاب حتى الآن رُسم كاملاً في المتصفح. وفي الفصل التالي ينضم الخادم: صفحات تُرسم قبل أن تصل إلى المستخدم، للسرعة ولمحركات البحث، بإطار عمل مبني على كل ما تعلمته.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch18" data-chapter="18" data-code="b2/review/ar">
+<div class="opener"><span class="opener-num">18</span><p class="chapter-kicker">الفصل 18</p><h1>مراجعة الكود والتوجيه والقرارات التقنية</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#111111"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#111111"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">ستتعلم في هذا الفصل أن</p>
+<ul>
+<li>تفتح طلبات دمج صغيرة، لها غرض واحد، وسهلة المراجعة</li>
+<li>تترك للآلات فحص كل ما تستطيع فحصه، قبل أن ينظر إنسان</li>
+<li>تراجع الكود بترتيب مفيد، وتكتب تعليقات واضحة ولطيفة</li>
+<li>تتلقى المراجعات دون أن تأخذها على محمل شخصي</li>
+<li>تساعد المطورين الأقل خبرة على النمو، بالبرمجة الثنائية والأسئلة والملاحظات</li>
+<li>تتخذ القرارات التقنية بمصفوفة، وتدوّنها سجلات قرار، وتدير الدَّين التقني</li>
+</ul>
+</div>
+
+<p class="lead">كان هذا الكتاب حتى الآن عن الكود الذي تكتبه أنت. أما المطور الخبير فيقضي جزءاً كبيراً من أسبوعه في كود يكتبه <em>غيره</em>: يقرأ طلبات دمجهم، ويجيب أسئلتهم، ويساعد الفريق على الاختيار بين الأدوات والتصاميم. وليس شيء من هذا إضافة لطيفة: الفريق الذي مراجعاته بطيئة وقاسية، ومبتدئوه عالقون، وقراراته منسية، يُطلق ببطء مهما بلغت مهارة كل فرد فيه. وهذا الفصل يحوّل هذه المهام الإنسانية إلى عادات محددة كعادات الكود.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#8c8c8c" stroke="#1a1a1a" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#1a1a1a" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#e0e0e0" stroke="#1a1a1a" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#a3a3a3" stroke="#1a1a1a" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#f2f2f2"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#d4d4d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#d4d4d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#111111"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#111111"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">بِت</p><p>أول مرة ترك أحدهم أربعين تعليقاً على طلب دمجي ظننته لا يحبني. ثم فهمت أن التعليقات كانت عن الكود، وأن سكربتاً كان يستطيع كتابة معظمها. هذا هو الفصل الذي تمنيت لو قرأته يومها.</p></div></div>
+
+<h2><span class="sec">18.1</span> <span>لماذا نراجع</span></h2>
+
+<p><dfn>مراجعة الكود</dfn> أن يقرأ مطور آخر التغيير قبل أن ينضم إلى الفرع الرئيسي. ولها أربعة أهداف، بهذا الترتيب:</p>
+<ol>
+<li><strong>اكتشاف المشكلات مبكراً</strong>، حين يكون إصلاحها أرخص: الأخطاء، وثغرات الأمان، والحالات المنسية.</li>
+<li><strong>نشر المعرفة.</strong> بعد المراجعة يعرف شخصان كيف يعمل كود الخصم، لا شخص واحد. ويتعلم المبتدئون حين تُراجَع أعمالهم، وحين يراجعون أيضاً.</li>
+<li><strong>إبقاء الكود متسقاً</strong>، فيُقرأ المشروع كأن شخصاً واحداً حريصاً كتبه.</li>
+<li><strong>إبقاء التصميم سليماً</strong>: قد يعمل التغيير اليوم ويجعل التغييرات العشرة التالية أصعب.</li>
+</ol>
+
+<p>ولاحظ ما ليس في القائمة: أن يثبت المراجع ذكاءه، أو أن يصير الكود كما كان المراجع سيكتبه بالضبط. فالمراجعة التي توقف تغييراً أسابيع من أجل ذوق شخصي تكلف أكثر مما تكشف.</p>
+
+<h2><span class="sec">18.2</span> <span>طلب دمج سهل المراجعة</span></h2>
+
+<p>أفضل مراجعة تبدأ قبل أن يراجع أحد: بتغيير سهل القراءة. هذه سارة تضيف أكواد الخصم إلى متجر بِت، وأثناء عملها أعاد محررها تنسيق ملف أنماط أيضاً. ويُظهر Git ما في طلب الدمج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># فرع جديد للميزة</span>
+<span class="c">$ </span><span class="k">git switch -c feature/discount-codes</span>
+Switched to a new branch &#x27;feature/discount-codes&#x27;
+<span class="c"># ما الذي تغيّر، ملفاً ملفاً</span>
+<span class="c">$ </span><span class="k">git diff --stat main</span>
+ src/cart/discount.ts |  11 ++
+ src/ui/styles.css    | 300 ++++++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 251 insertions(+), 60 deletions(-)</pre></div>
+
+<p>أحد عشر سطراً من الميزة الجديدة مختبئة بين ثلاثمئة سطر من التنسيق. فإما أن يقرأ المراجع كل شيء ويتعب قبل أن يصل إلى ما يهم، وإما أن يمر سريعاً فيفوته. وكلاهما سيئ. والعلاج دقيقة واحدة: انقل التنسيق إلى طلب دمج مستقل، يُوافَق عليه بنظرة لأنه لا يغيّر أي سلوك:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">الطرفية</div><pre class="code"><span class="c"># انقل التنسيق إلى طلب دمج مستقل</span>
+<span class="c">$ </span><span class="k">git switch -c chore/format-styles main</span>
+Switched to a new branch &#x27;chore/format-styles&#x27;
+<span class="c">$ </span><span class="k">git checkout feature/discount-codes -- src/ui/styles.css</span>
+<span class="c">$ </span><span class="k">git commit -qm &quot;نسّق ملف الأنماط&quot;</span>
+<span class="c">$ </span><span class="k">git switch feature/discount-codes</span>
+Switched to branch &#x27;feature/discount-codes&#x27;
+<span class="c">$ </span><span class="k">git checkout main -- src/ui/styles.css</span>
+<span class="c">$ </span><span class="k">git commit -qm &quot;أبقِ أكواد الخصم وحدها&quot;</span>
+<span class="c"># طلب دمج الميزة بعد التقسيم</span>
+<span class="c">$ </span><span class="k">git diff --stat main</span>
+ src/cart/discount.ts | 11 +++++++++++
+ 1 file changed, 11 insertions(+)</pre></div>
+
+<p>صارت الميزة أحد عشر سطراً، ويذهب إليها انتباه المراجع كله. وثلاث عادات تُبقي طلبات الدمج هكذا:</p>
+<ul>
+<li><strong>غرض واحد لكل طلب دمج.</strong> الميزة والإصلاح وإعادة الهيكلة وتغيير التنسيق أربعة طلبات دمج. فالتغييرات المختلطة صعبة المراجعة وصعبة التراجع عنها.</li>
+<li><strong>صغير.</strong> تحت نحو 300 سطر متغير يظل المراجع قادراً على حمل التغيير كله في ذهنه. والميزة الكبيرة تُدمج خطوات صغيرة خلف <dfn>مفتاح ميزة</dfn> (feature flag)، وهو إعداد يُبقي الجزء غير المكتمل مخفياً عن المستخدمين.</li>
+<li><strong>موصوف.</strong> قل ماذا يفعل التغيير، ولماذا، وكيف يُختبر. وقالب في المستودع يطلب ذلك كل مرة:</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">.github/pull_request_template.md</div><pre class="code md"><b>## ماذا ولماذا</b>
+
+&lt;!-- جملة أو جملتان، واربط المهمة: Closes #123 --&gt;
+
+<b>## كيف تختبره</b>
+
+1.
+2.
+
+<b>## صور</b>
+
+&lt;!-- قبل وبعد لأي تغيير يراه الناس، بالفاتح والداكن، ومن اليسار ومن اليمين --&gt;
+
+<b>## قائمة التحقق</b>
+
+- [ ] أُضيفت اختبارات أو تغيّرت، وتفشل بدون هذا التغيير
+- [ ] يعمل بلوحة المفاتيح وقارئ الشاشة
+- [ ] النصوص باللغتين
+- [ ] لا أسرار، ولا console.log
+- [ ] أقل من 300 سطر متغير، أو سبب تعذر ذلك</pre></div>
+
+<p>يضع GitHub وGitLab محتوى هذا الملف في كل طلب دمج جديد تلقائياً. وقائمة التحقق ليست بيروقراطية: كل سطر فيها خطأ وقع فيه الفريق مرة.</p>
+
+<h2><span class="sec">18.3</span> <span>دع الآلات تبدأ</span></h2>
+
+<p>انتباه الإنسان أغلى ما في المراجعة، فلا يُصرف على فاصلة منقوطة ناقصة. كل ما تستطيع الآلة فحصه يعمل في CI مع كل طلب دمج قبل أن يُطلب من إنسان النظر: أداة التنسيق، والمدقق، وفاحص الأنواع، والاختبارات من الفصل 12. ويستطيع الفريق أن يضيف قواعده أيضاً. هذا روبوت مراجعة صغير يقرأ فروق طلب الدمج:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">review-bot.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+
+<span class="c">// يقرأ فروق طلب الدمج ويعلّق على الأسطر التي تستطيع الآلة الحكم عليها</span>
+<span class="k">type</span> Finding = { file: string; line: number; message: string };
+
+<span class="k">const</span> diff = readFileSync(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;pr.diff&quot;</span>, <span class="s">&quot;utf8&quot;</span>).split(<span class="s">&quot;\n&quot;</span>);
+<span class="k">const</span> findings: Finding[] = [];
+<span class="k">const</span> changedFiles = <span class="k">new</span> Set&lt;string&gt;();
+<span class="k">let</span> file = <span class="s">&quot;&quot;</span>;
+<span class="k">let</span> line = <span class="n">0</span>;
+<span class="k">let</span> changed = <span class="n">0</span>;
+
+<span class="k">for</span> (<span class="k">const</span> text <span class="k">of</span> diff) {
+  <span class="k">if</span> (text.startsWith(<span class="s">&quot;+++ &quot;</span>)) {
+    file = text.slice(<span class="n">6</span>); <span class="c">// &quot;+++ b/src/cart/discount.ts&quot;</span>
+    changedFiles.add(file);
+    continue;
+  }
+  <span class="k">const</span> hunk = /^@@ -\d+(?:,\d+)? \+(\d+)/.exec(text);
+  <span class="k">if</span> (hunk) {
+    line = Number(hunk[<span class="n">1</span>]); <span class="c">// أرقام الأسطر في الملف الجديد تبدأ من ترويسة @@ لكل جزء من الفروق</span>
+    continue;
+  }
+  <span class="k">if</span> (text.startsWith(<span class="s">&quot;-&quot;</span>) &amp;&amp; !text.startsWith(<span class="s">&quot;---&quot;</span>)) {
+    changed++;
+    continue;
+  }
+  <span class="k">if</span> (!text.startsWith(<span class="s">&quot;+&quot;</span>) || text.startsWith(<span class="s">&quot;+++&quot;</span>)) {
+    <span class="k">if</span> (text.startsWith(<span class="s">&quot; &quot;</span>)) line++;
+    continue;
+  }
+  changed++;
+  <span class="k">const</span> code = text.slice(<span class="n">1</span>);
+  <span class="k">const</span> say = (message: string) =&gt; findings.push({ file, line, message });
+  <span class="k">if</span> (/console\.log\(/.test(code)) say(<span class="s">&quot;console.log متروك: احذفه، أو استخدم أداة السجلات في التطبيق&quot;</span>);
+  <span class="k">if</span> (/:\s*any\b/.test(code)) say(<span class="s">&quot;“any” يطفئ فحص الأنواع هنا: اكتب النوع الحقيقي&quot;</span>);
+  <span class="k">if</span> (/[^=!]==[^=]/.test(code)) say(<span class="s">&quot;“==” يحوّل الأنواع قبل المقارنة: استخدم “===”&quot;</span>);
+  <span class="k">if</span> (/TODO(?!.*#\d+)/.test(code)) say(<span class="s">&quot;TODO بلا رقم مهمة: اربطه بواحدة (#123)، أو أنجزه الآن&quot;</span>);
+  line++;
+}
+
+<span class="k">const</span> isTest = (f: string) =&gt; /\.test\.ts$/.test(f);
+<span class="k">const</span> code = [...changedFiles].filter((f) =&gt; f.endsWith(<span class="s">&quot;.ts&quot;</span>) &amp;&amp; !isTest(f));
+<span class="k">if</span> (code.length &gt; <span class="n">0</span> &amp;&amp; ![...changedFiles].some(isTest)) findings.push({ file: code[<span class="n">0</span>]!, line: <span class="n">1</span>, message: <span class="s">&quot;تغيّر الكود، ولم يتغير أي اختبار&quot;</span> });
+<span class="k">if</span> (changed &gt; <span class="n">300</span>) findings.push({ file: <span class="s">&quot;*&quot;</span>, line: <span class="n">0</span>, message: <span class="s">&quot;{n} سطراً متغيراً: يصعب مراجعتها جيداً، قسّمه (أقل من 300)&quot;</span>.replace(<span class="s">&quot;{n}&quot;</span>, String(changed)) });
+
+<span class="k">for</span> (<span class="k">const</span> f <span class="k">of</span> findings) console.log(<span class="s">`${f.file}:${f.line}  ${f.message}`</span>);
+console.log(findings.length ? <span class="s">`${findings.length} ملاحظات`</span> : <span class="s">&quot;لا شيء يقوله الروبوت. الكلمة للبشر.&quot;</span>);</pre></div>
+
+<p>تعلّم الفروقُ الأسطرَ المضافة بـ <code>+</code> والمحذوفة بـ <code>-</code>، ويبدأ كل جزء منها بترويسة مثل <code>@@ -0,0 +1,11 @@</code> تقول أين يبدأ الجزء في الملف الجديد. فيتتبع الروبوت أرقام الأسطر ويطبق قواعده على الأسطر المضافة وحدها. وعلى طلب دمج سارة الأول:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>src/cart/discount.ts:3  “any” يطفئ فحص الأنواع هنا: اكتب النوع الحقيقي
+src/cart/discount.ts:4  console.log متروك: احذفه، أو استخدم أداة السجلات في التطبيق
+src/cart/discount.ts:6  “==” يحوّل الأنواع قبل المقارنة: استخدم “===”
+src/cart/discount.ts:7  “==” يحوّل الأنواع قبل المقارنة: استخدم “===”
+src/cart/discount.ts:8  TODO بلا رقم مهمة: اربطه بواحدة (#123)، أو أنجزه الآن
+src/cart/discount.ts:1  تغيّر الكود، ولم يتغير أي اختبار
+*:0  311 سطراً متغيراً: يصعب مراجعتها جيداً، قسّمه (أقل من 300)
+7 ملاحظات</pre></div>
+
+<p>سبعة تعليقات لم يكتبها إنسان، كل منها يشير إلى سطر بعينه. والفرق الحقيقية تصل إلى الأثر نفسه بقواعد ESLint (<code>no-console</code> و<code>eqeqeq</code> و<code>@typescript-eslint/no-explicit-any</code>) وفحوص للحجم في CI، وتجعل الفحوص <em>إلزامية</em>، فلا يُدمج طلب ما دام فحص يفشل. والقاعدة العملية: <strong>إن كتبت تعليق المراجعة نفسه ثلاث مرات، فاجعل آلة تكتبه.</strong></p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>اختبر نفسك</p><ol><li>لماذا لا يشارك تغيير التنسيق ميزةً في طلب دمج واحد أبداً؟</li><li>ماذا تخبر <code>@@ -0,0 +1,11 @@</code> الروبوت؟</li><li>ماذا تفعل بتعليق مراجعة كتبته ثلاث مرات؟</li></ol><p>الإجابات في آخر الفصل، بعد الخلاصة.</p></aside>
+
+<h2><span class="sec">18.4</span> <span>المراجعة كخبير</span></h2>
+
+<p>الآن يقرأ إنسان ما بقي. هذا جزء الميزة من تغيير سارة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/cart/discount.ts</div><pre class="code">diff --git a/src/cart/discount.ts b/src/cart/discount.ts
+new file mode 100644
+index 0000000..6f3f5dc
+--- /dev/null
++++ b/src/cart/discount.ts
+@@ -0,0 +1,11 @@
++import { subtotal } from &quot;./cart&quot;;
++
++export function applyDiscount(cart: any, code: string) {
++  console.log(&quot;applying&quot;, code);
++  let total = subtotal(cart.lines);
++  if (code == &quot;BIT10&quot;) total = total * 0.9;
++  if (code == &quot;HALF&quot;) total = total / 2;
++  // TODO اجعل الأكواد قابلة للضبط
++  cart.total = total;
++  return cart;
++}</pre></div>
+
+<p>أشار الروبوت إلى الأشياء الصغيرة. والمراجعة المفيدة تنزل من الأسئلة الكبيرة إلى الصغيرة، وتتوقف عن التعمق حين يفشل سؤال كبير:</p>
+<ol>
+<li><strong>الغرض.</strong> هل يفعل التغيير ما يقوله الوصف، وهل هو الشيء الصحيح الذي يُبنى؟</li>
+<li><strong>التصميم.</strong> هل يناسب الكود من حوله؟ وهل سيكون التغيير التالي سهلاً؟</li>
+<li><strong>الصحة.</strong> الحالات الحدية، والأخطاء، والأمان، والأموال، والمناطق الزمنية، واللغات.</li>
+<li><strong>الاختبارات.</strong> هل تفشل الاختبارات لو كان الكود خطأ؟</li>
+<li><strong>الوضوح.</strong> الأسماء، والبنية، والتعليقات حيث <em>السبب</em> غير ظاهر.</li>
+</ol>
+
+<p>وبهذه القراءة يجد المراجع مشكلات لا يجدها أي مدقق: <code>total * 0.9</code> يحوّل القروش الصحيحة إلى كسور، والكود المجهول يعطي السعر الكامل بصمت، فالعميل الذي كتب <code>bit10</code> يدفع أكثر مما توقع ولا يعرف أحد السبب، وإضافة كود تعني تعديل سلسلة <code>if</code>، والدالة تغيّر السلة التي أُعطيت لها، فتفاجئ كل من يستدعيها.</p>
+
+<h3>كتابة التعليقات</h3>
+
+<p>يجب أن يقول التعليق ثلاثة أشياء: ما المشكلة، ولماذا تهم، وما أهميتها. وفرق كثيرة تبدأ كل تعليق بوسم، بأسلوب يسمى <dfn>التعليقات الاصطلاحية</dfn> (Conventional Comments)، فلا يحتاج الكاتب أن يخمّن ما المطلوب:</p>
+
+<table>
+<thead><tr><th>الوسم</th><th>معناه</th><th>مثال على تغيير سارة</th></tr></thead>
+<tbody>
+<tr><td><strong>issue (blocking)</strong></td><td>يجب تغييره قبل الدمج</td><td>«<code>total * 0.9</code> يحوّل 12997 قرشاً إلى 11697.3. نحفظ الأموال قروشاً صحيحة، فهل نحسب الخصم ونقرّبه مرة واحدة؟»</td></tr>
+<tr><td><strong>issue (blocking)</strong></td><td>يجب تغييره قبل الدمج</td><td>«الكود المجهول يُرجع السعر الكامل بلا أي رسالة، فمن يخطئ في الكتابة سيظن أن الخصم لم يعمل. هل تقول النتيجة إن الكود مجهول؟»</td></tr>
+<tr><td><strong>suggestion</strong></td><td>أفضل، والقرار للكاتب</td><td>«جدول للأكواد بدل سلسلة <code>if</code> يتيح لفريق التسويق إضافة أكواد دون لمس المنطق.»</td></tr>
+<tr><td><strong>question</strong></td><td>المراجع يريد أن يفهم</td><td>«هل تتجاهل الأكواد حالة الأحرف والمسافات؟ كثيرون يلصقونها بمسافة في آخرها.»</td></tr>
+<tr><td><strong>nit</strong></td><td>صغير، لا يوقف الدمج أبداً</td><td>«<code>applyDiscount</code> تُرجع السعر، فلعل <code>price</code> أوضح.»</td></tr>
+<tr><td><strong>praise</strong></td><td>شيء أُحسن صنعه</td><td>«إعادة استخدام <code>subtotal</code> بدل حلقة ثانية: جميل.»</td></tr>
+</tbody>
+</table>
+
+<p>لاحظ كيف كُتبت التعليقات: عن الكود لا عن الشخص («هذا يُرجع» لا «نسيتَ»)، وتشرح الأثر على المستخدمين، وهذا ما يجعل المراجع مقنعاً، وتسأل حين لا يكون المراجع متأكداً، وفيها ثناء: فالمراجعات التي لا تسرد إلا المشكلات تعلّم الناس أن يخشوها. قارن:</p>
+
+<table>
+<thead><tr><th>بدل</th><th>اكتب</th></tr></thead>
+<tbody>
+<tr><td>«هذا خطأ.»</td><td>«هذا يعطي كسراً من القرش في بعض السلال. هل نقرّب الخصم مرة واحدة؟»</td></tr>
+<tr><td>«لماذا لم تستخدم جدولاً؟»</td><td>«suggestion: جدول للأكواد يجعل إضافة كود تغيير سطر واحد.»</td></tr>
+<tr><td>«استخدم ===.»</td><td>(لا شيء: المدقق يقولها)</td></tr>
+<tr><td>ثلاثون تعليقاً على طلب دمج واحد</td><td>الثلاثة المهمة، ودعوة إلى الحديث عن التصميم</td></tr>
+</tbody>
+</table>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>نصيحة: راجع بسرعة</p><p>طلب الدمج الذي ينتظر يومين يوقف كاتبه، فيبدأ شيئاً آخر ثم يضطر إلى العودة لاحقاً. وفرق كثيرة تتفق على مراجعة أولى خلال يوم عمل واحد. ومراجعة سريعة للنقاط المهمة خير من مراجعة كاملة الأسبوع القادم.</p></aside>
+
+<h3>التغيير بعد المراجعة</h3>
+
+<p>ترد سارة على كل تعليق، وترسل نسخة جديدة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/cart/discount.ts</div><pre class="code"><span class="k">import</span> { subtotal, <span class="k">type</span> Line } <span class="k">from</span> <span class="s">&quot;./cart&quot;</span>;
+
+<span class="c">// الأسعار بالقروش أعداداً صحيحة: لا أموال بأعداد عشرية</span>
+<span class="c">// الأكواد في جدول واحد، وإضافة كود لا تحتاج if جديدة</span>
+<span class="k">const</span> codes: Record&lt;string, { percent: number }&gt; = {
+  BIT10: { percent: <span class="n">10</span> },
+  HALF: { percent: <span class="n">50</span> },
+};
+
+<span class="c">// الكود المجهول جواب، لا سعر كامل صامت</span>
+<span class="k">export</span> <span class="k">type</span> Priced =
+  | { ok: <span class="k">true</span>; subtotal: number; discount: number; total: number }
+  | { ok: <span class="k">false</span>; reason: <span class="s">&quot;unknown-code&quot;</span> };
+
+<span class="c">// السلة لا تتغير: الدالة تُرجع نتيجة جديدة</span>
+<span class="k">export</span> <span class="k">function</span> price(lines: <span class="k">readonly</span> Line[], code?: string): Priced {
+  <span class="k">const</span> sum = subtotal(lines);
+  <span class="k">const</span> key = code?.trim().toUpperCase();
+  <span class="k">if</span> (!key) <span class="k">return</span> { ok: <span class="k">true</span>, subtotal: sum, discount: <span class="n">0</span>, total: sum };
+  <span class="k">const</span> found = codes[key];
+  <span class="k">if</span> (!found) <span class="k">return</span> { ok: <span class="k">false</span>, reason: <span class="s">&quot;unknown-code&quot;</span> };
+  <span class="k">const</span> discount = Math.round((sum * found.percent) / <span class="n">100</span>);
+  <span class="k">return</span> { ok: <span class="k">true</span>, subtotal: sum, discount, total: sum - discount };
+}</pre></div>
+
+<p>ومعها اختبار كان سيكتشف كل مشكلة، ومنها تغيير السلة:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/cart/discount.test.ts</div><pre class="code"><span class="k">import</span> { strict as assert } <span class="k">from</span> <span class="s">&quot;node:assert&quot;</span>;
+<span class="k">import</span> { price } <span class="k">from</span> <span class="s">&quot;./discount&quot;</span>;
+
+<span class="k">const</span> cart = [
+  { name: <span class="s">&quot;mug&quot;</span>, price: <span class="n">8500</span>, qty: <span class="n">1</span> },
+  { name: <span class="s">&quot;sticker&quot;</span>, price: <span class="n">1499</span>, qty: <span class="n">3</span> },
+];
+<span class="k">const</span> egp = (piastres: number) =&gt; (piastres / <span class="n">100</span>).toFixed(<span class="n">2</span>);
+
+<span class="k">for</span> (<span class="k">const</span> code <span class="k">of</span> [<span class="k">undefined</span>, <span class="s">&quot;BIT10&quot;</span>, <span class="s">&quot; half &quot;</span>, <span class="s">&quot;NOPE&quot;</span>]) {
+  <span class="k">const</span> result = price(cart, code);
+  <span class="k">const</span> label = (code === <span class="k">undefined</span> ? <span class="s">&quot;(بلا كود)&quot;</span> : JSON.stringify(code)).padEnd(<span class="n">10</span>);
+  <span class="k">if</span> (!result.ok) console.log(<span class="s">`${label} → كود مجهول`</span>);
+  <span class="k">else</span> console.log(<span class="s">`${label} → المجموع ${egp(result.subtotal)}  الخصم ${egp(result.discount)}  الإجمالي ${egp(result.total)}`</span>);
+}
+
+<span class="c">// The cases that matter, as checks that fail loudly</span>
+assert.deepEqual(price([], <span class="s">&quot;BIT10&quot;</span>), { ok: <span class="k">true</span>, subtotal: <span class="n">0</span>, discount: <span class="n">0</span>, total: <span class="n">0</span> });
+assert.equal(price(cart, <span class="s">&quot;bit10&quot;</span>).ok, <span class="k">true</span>);
+assert.deepEqual(price(cart, <span class="s">&quot;FREE&quot;</span>), { ok: <span class="k">false</span>, reason: <span class="s">&quot;unknown-code&quot;</span> });
+<span class="k">const</span> before = structuredClone(cart);
+price(cart, <span class="s">&quot;HALF&quot;</span>);
+assert.deepEqual(cart, before);
+console.log(<span class="s">&quot;✓ نجحت 4 فحوص&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>(بلا كود)  → المجموع 129.97  الخصم 0.00  الإجمالي 129.97
+&quot;BIT10&quot;    → المجموع 129.97  الخصم 13.00  الإجمالي 116.97
+&quot; half &quot;   → المجموع 129.97  الخصم 64.99  الإجمالي 64.98
+&quot;NOPE&quot;     → كود مجهول
+✓ نجحت 4 فحوص</pre></div>
+
+<p>صار كل تعليق موقِف سطراً في الكود وفحصاً في الاختبار. وهذه أفضل نهاية للمراجعة: لا تعود المشكلة دون أن يفشل اختبار.</p>
+
+<h2><span class="sec">18.5</span> <span>حين تُراجَع</span></h2>
+
+<p>نصف مهارة المراجعة في الجهة الأخرى. وبضع عادات تسهّلها على الجميع:</p>
+<ul>
+<li><strong>راجع طلب دمجك أولاً.</strong> اقرأ الفروق على GitHub قبل أن تطلب من أحد، فستجد <code>console.log</code> المتروك بنفسك.</li>
+<li><strong>رد على كل تعليق</strong>، ولو بـ «تم في 3f2a91c» أو «نقطة جيدة، فتحت لها #148». فلا يحتاج المراجع أبداً أن يتحقق هل رأيت تعليقه.</li>
+<li><strong>اعترض بأسباب</strong>، بأدب وكتابةً. وإن لم تحسمها جولتان من التعليقات، فتحدثا خمس دقائق بدلها.</li>
+<li><strong>افصل نفسك عن كودك.</strong> التعليق على سطر ليس تعليقاً عليك، وكل مطور خبير تلقى آلاف التعليقات.</li>
+</ul>
+
+<h2><span class="sec">18.6</span> <span>التوجيه</span></h2>
+
+<p><dfn>التوجيه</dfn> (mentoring) أن تساعد مطوراً أقل خبرة على النمو أسرع مما لو كان وحده. وهو جزء من كل دور خبير، ويُتعلم كأي مهارة أخرى:</p>
+
+<ul>
+<li><strong>اسأل قبل أن تخبر.</strong> «ماذا تظن يحدث حين يكون الكود مجهولاً؟» تعلّم أكثر من الجواب، لأن المبتدئ يجده بنفسه. وأعطه الجواب حين يعلق، لا قبل ذلك.</li>
+<li><strong>برمجا معاً.</strong> في <dfn>البرمجة الثنائية</dfn> (pair programming) يعمل شخصان على مهمة واحدة: <em>السائق</em> يكتب، و<em>الملاح</em> يفكر في الخطوة التالية. دع المبتدئ يقود، وتبادلا كل نصف ساعة تقريباً.</li>
+<li><strong>أعطه مهاماً أكبر منه قليلاً.</strong> مهمة يستطيعها ببعض المساعدة، لا مهمة يتقنها، ولا مهمة تُغرقه. واتفقا مسبقاً متى يطلب المساعدة: بعد ساعة عالقاً مثلاً.</li>
+<li><strong>أعطِ ملاحظاتك على السلوك، سريعاً وبالتحديد.</strong> وشكل بسيط لها <dfn>الموقف، والسلوك، والأثر</dfn>: «في طلب الدمج أمس (الموقف) أضفت اختبارات للكود المجهول (السلوك)، فأوقفت خطأً كان سيصل إلى العملاء (الأثر).» وتصلح للثناء وللمشكلات، ولا تقول أبداً «أنت دائماً».</li>
+<li><strong>اجعل عدم المعرفة آمناً.</strong> قل أنت «لا أعرف، لنكتشف معاً». فالمبتدئ الذي يخاف أن يسأل يضيّع أياماً في صمت.</li>
+</ul>
+
+<p>وهذه خطة أسبوع أول لعضو جديد في الفريق، مبنية على هذه العادات:</p>
+
+<table>
+<thead><tr><th>اليوم</th><th>الهدف</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>التطبيق يعمل على جهازه، ويعرف من يسأل عن ماذا</td></tr>
+<tr><td>2</td><td>تغيير حقيقي صغير جداً (نص أو لون) يمر بالمسار كله: فرع، وطلب دمج، ومراجعة، ودمج، وإصدار</td></tr>
+<tr><td>3–4</td><td>خطأ صغير، تبرمجان فيه معاً في الساعة الأولى</td></tr>
+<tr><td>5</td><td>يراجع طلب دمج لزميل، وتراجع أنت مراجعته</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">18.7</span> <span>القرارات التقنية</span></h2>
+
+<p>تقرر الفرق أشياء طوال الوقت: أي مكتبة، وأي بنية، وهل نعيد الكتابة. وليس عمل الخبير أن يقرر وحده، بل أن يتأكد أن القرارات تُتخذ عن قصد، ومن الأشخاص المناسبين، وأنها تُذكر.</p>
+
+<h3>نوعان من الأبواب</h3>
+
+<p>اسأل أولاً: ما صعوبة التراجع عن القرار؟ <em>الباب ذو الاتجاهين</em>، كمكتبة مساعدة تُستخدم في شاشة واحدة، يُتراجع عنه في ساعات: قرر بسرعة، ودع من يقوم بالعمل يختار. أما <em>باب الاتجاه الواحد</em>، كإطار العمل الرئيسي أو قاعدة البيانات أو شكل واجهة برمجية عامة، فالرجوع عنه مكلف: تمهّل، وقارن الخيارات، ودوّن القرار. ومعظم القرارات أبواب ذات اتجاهين، ومعاملتها كأبواب الاتجاه الواحد هي ما يُغرق الفرق في الاجتماعات.</p>
+
+<h3>مصفوفة القرار</h3>
+
+<p>لاختيار حقيقي اكتب <strong>المعايير</strong> أولاً، وأعطِ كلاً منها <strong>وزناً</strong> بقدر أهميته لـ<em>هذا</em> الفريق، وبعدها فقط قيّم الخيارات. فاختيار المعايير قبل النظر في الخيارات يُبقي الجميع صادقين. هذا الفريق يختار أداة لاختبارات من الطرف إلى الطرف:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">decide.ts</div><pre class="code"><span class="c">// كل درجة من 1 (ضعيف) إلى 5 (ممتاز)، والأوزان تقول ما يهم هذا الفريق</span>
+<span class="k">const</span> criteria = { fit: <span class="n">5</span>, learn: <span class="n">3</span>, speed: <span class="n">3</span>, community: <span class="n">2</span>, cost: <span class="n">2</span> } as <span class="k">const</span>;
+<span class="k">type</span> Criterion = <span class="k">keyof</span> <span class="k">typeof</span> criteria;
+
+<span class="k">const</span> names: Record&lt;Criterion, string&gt; = {
+  fit: <span class="s">&quot;يناسب أدواتنا&quot;</span>, learn: <span class="s">&quot;سهل التعلم&quot;</span>, speed: <span class="s">&quot;سرعة الاختبارات&quot;</span>, community: <span class="s">&quot;المجتمع والتوثيق&quot;</span>, cost: <span class="s">&quot;الكلفة&quot;</span>,
+};
+
+<span class="k">const</span> options: Record&lt;string, Record&lt;Criterion, number&gt;&gt; = {
+  Playwright: { fit: <span class="n">5</span>, learn: <span class="n">3</span>, speed: <span class="n">4</span>, community: <span class="n">4</span>, cost: <span class="n">5</span> },
+  Cypress: { fit: <span class="n">4</span>, learn: <span class="n">5</span>, speed: <span class="n">3</span>, community: <span class="n">5</span>, cost: <span class="n">4</span> },
+  <span class="s">&quot;الاختبار اليدوي وحده&quot;</span>: { fit: <span class="n">2</span>, learn: <span class="n">5</span>, speed: <span class="n">1</span>, community: <span class="n">3</span>, cost: <span class="n">2</span> },
+};
+
+<span class="k">function</span> total(scores: Record&lt;Criterion, number&gt;, weights: Record&lt;Criterion, number&gt;): number {
+  <span class="k">return</span> (Object.keys(weights) as Criterion[]).reduce((sum, c) =&gt; sum + scores[c] * weights[c], <span class="n">0</span>);
+}
+
+<span class="k">function</span> winner(weights: Record&lt;Criterion, number&gt;): string {
+  <span class="k">return</span> Object.entries(options).sort(([, a], [, b]) =&gt; total(b, weights) - total(a, weights))[<span class="n">0</span>]![<span class="n">0</span>];
+}
+
+console.log(<span class="s">&quot;الخيار&quot;</span>.padEnd(<span class="n">22</span>) + <span class="s">&quot;النتيجة&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> [name, scores] <span class="k">of</span> Object.entries(options)) console.log(name.padEnd(<span class="n">22</span>) + total(scores, criteria));
+console.log(<span class="s">`الفائز: ${winner(criteria)}`</span>);
+
+<span class="c">// أي خيار يفوز لو كان معيار واحد أهم بمرتين؟</span>
+<span class="k">for</span> (<span class="k">const</span> c <span class="k">of</span> Object.keys(criteria) as Criterion[]) {
+  console.log(<span class="s">`  إذا &quot;${names[c]}&quot; حُسب مرتين → ${winner({ ...criteria, [c]: criteria[c] * 2 })}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">الطرفية</span></div><pre>الخيار                النتيجة
+Playwright            64
+Cypress               62
+الاختبار اليدوي وحده  38
+الفائز: Playwright
+  إذا &quot;يناسب أدواتنا&quot; حُسب مرتين → Playwright
+  إذا &quot;سهل التعلم&quot; حُسب مرتين → Cypress
+  إذا &quot;سرعة الاختبارات&quot; حُسب مرتين → Playwright
+  إذا &quot;المجتمع والتوثيق&quot; حُسب مرتين → Playwright
+  إذا &quot;الكلفة&quot; حُسب مرتين → Playwright</pre></div>
+
+<p>يفوز Playwright بفارق نقطتين فقط، والأسطر الأخيرة تُظهر شيئاً أنفع من الفائز: لو كانت سرعة التعلم أهم بمرتين لفاز Cypress. فالسؤال الحقيقي للفريق صار: «ما أهمية البداية السريعة لنا؟». المصفوفة لا تتخذ القرار، بل تُظهر أي خلاف يستحق النقاش.</p>
+
+<p>وحين تكون الدرجات تخمينات، اشترِ المعلومة بـ<dfn>تجربة استكشافية</dfn> (spike): تجربة قصيرة محددة المدة، كيوم لكتابة الاختبارات الثلاثة نفسها بكل أداة. يُرمى كود التجربة، وتدخل دروسها في الدرجات.</p>
+
+<h3>سجلات القرار</h3>
+
+<p>بعد ستة أشهر سيسأل شخص جديد: «لماذا Playwright؟». فإن كان الجواب يعيش في اجتماع فقط، فقد ضاع. و<dfn>سجل القرار المعماري</dfn> (ADR) ملف قصير، يُحفظ في المستودع بجانب الكود، ويسجل قراراً واحداً: سياقه، وخياراته، والاختيار، وعواقبه:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">docs/decisions/0007-e2e-tests.md</div><pre class="code md"><b># 7. نستخدم Playwright لاختبارات من الطرف إلى الطرف</b>
+
+التاريخ: 2026-03-04
+الحالة: مقبول
+
+<b>## السياق</b>
+
+وصلت أخطاء إلى المستخدمين مرتين الشهر الماضي عبر صفحة الدفع، ولا يغطيها
+أي اختبار من أولها إلى آخرها. نحتاج اختبارات تضغط في التطبيق الحقيقي داخل
+متصفح حقيقي، وتعمل مع كل طلب دمج في أقل من خمس دقائق.
+
+<b>## الخيارات</b>
+
+- Playwright: ‏64 نقطة في مصفوفتنا (decide.ts)
+- Cypress: ‏62 نقطة، أسهل في التعلم، ويفوز لو حُسب ذلك مرتين
+- الاختبار اليدوي قبل كل إصدار: ‏38 نقطة
+
+<b>## القرار</b>
+
+نستخدم Playwright لأنه الأنسب لأدواتنا (TypeScript، وعدة متصفحات، ويعمل
+بالتوازي) ومجاني. كان الفارق صغيراً، فسيعمل اثنان من الفريق بالتناوب مع
+الباقين على الاختبارات الأولى.
+
+<b>## العواقب</b>
+
+- الجيد: صفحة الدفع تُختبر مع كل طلب دمج، في ثلاثة متصفحات.
+- السيئ: أداة أخرى للتعلم، والاختبارات تحتاج تطبيقاً يعمل في CI.
+- سنعيد النظر إن تجاوزت الاختبارات خمس دقائق.</pre></div>
+
+<p>تُرقّم السجلات ولا تُعدّل بعد قبولها. وحين يتغير قرار، يقول ذلك سجل جديد، ويُعلَّم القديم «استُبدل بالسجل 12». فيصير المجلد تاريخ سبب كون الكود على ما هو عليه، ويُراجَع في طلبات الدمج كأي كود.</p>
+
+<h2><span class="sec">18.8</span> <span>الدَّين التقني</span></h2>
+
+<p><dfn>الدَّين التقني</dfn> العمل الإضافي الذي يكلفه كل تغيير مستقبلي بسبب اختصار أُخذ سابقاً. وكالمال، ليس الدَّين سيئاً دائماً: إطلاق ميزة يوم الجمعة مع اختصار معروف قد يكون القرار الصحيح، <em>إن كان قراراً</em>. والمشكلة في الدَّين الذي لم يختره أحد ولم يدوّنه.</p>
+
+<ul>
+<li><strong>اجعله مرئياً.</strong> لكل اختصار مهمة، و<code>TODO</code> في الكود تشير إليها، وهذا بالضبط ما يفحصه الروبوت.</li>
+<li><strong>سدده باستمرار.</strong> فرق كثيرة تحجز نصيباً ثابتاً من كل دورة عمل للدَّين، كثيراً ما يكون نحو الخُمس. وانتظار «شهر التنظيف» انتظار إلى الأبد.</li>
+<li><strong>سدده حيث تعمل.</strong> حسّن قليلاً الكود الذي تغيّره أصلاً، في كل مرة. والدَّين في كود لا يلمسه أحد لا يكلف شيئاً ويستطيع الانتظار.</li>
+<li><strong>اشرحه بلغة العمل.</strong> لا «كود السلة قبيح»، بل «كل تغيير في الأسعار يأخذ ثلاثة أيام بدل يوم، وكسر صفحة الدفع مرتين هذا العام».</li>
+</ul>
+
+<h2 class="plain-h">أخطاء شائعة</h2>
+
+<table>
+<thead><tr><th>الخطأ</th><th>ما يحدث</th><th>العلاج</th></tr></thead>
+<tbody>
+<tr><td>طلبات دمج ضخمة</td><td>يوافق المراجعون المتعبون دون قراءة</td><td>غرض واحد، وأقل من نحو 300 سطر، ومفاتيح ميزات للأعمال الكبيرة</td></tr>
+<tr><td>بشر يفحصون التنسيق باليد</td><td>مراجعات بطيئة مليئة بالتعليقات الصغيرة</td><td>أداة التنسيق والمدقق وقواعد الروبوت في CI، ونجاحها إلزامي</td></tr>
+<tr><td>تعليقات بلا درجة</td><td>يعامل الكاتب كل ملاحظة صغيرة كأمر</td><td>الوسوم: issue وsuggestion وquestion وnit وpraise</td></tr>
+<tr><td>تعليقات عن الشخص</td><td>كاتب يدافع عن نفسه، وكود أسوأ</td><td>اكتب عن الكود وأثره على المستخدمين</td></tr>
+<tr><td>مراجعات تنتظر أياماً</td><td>كتّاب متوقفون، وتبديل مكلف بين المهام</td><td>مراجعة أولى خلال يوم عمل</td></tr>
+<tr><td>إعطاء المبتدئين الأجوبة</td><td>يبقون معتمدين عليك</td><td>اسأل أولاً، وبرمجا معاً وهم يقودون</td></tr>
+<tr><td>قرارات تُتخذ في اجتماعات وتُنسى</td><td>النقاش نفسه كل ستة أشهر</td><td>سجل قرار في المستودع</td></tr>
+<tr><td>اختصارات غير مدوّنة</td><td>دَين يكبر دون أن يُرى</td><td>مهمة لكل اختصار، ونصيب من كل دورة لسداده</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">الخلاصة</h2>
+
+<ul class="summary">
+<li>المراجعة تكشف المشكلات، وتنشر المعرفة، وتُبقي الكود متسقاً والتصميم سليماً. وليست مسألة ذوق.</li>
+<li>لطلب الدمج <strong>غرض واحد</strong>، ويبقى <strong>صغيراً</strong>، و<strong>يوصف</strong> بقالب.</li>
+<li><strong>الآلات تبدأ</strong>: التنسيق والتدقيق والأنواع والاختبارات وقواعد الفريق تعمل في CI. وأي تعليق كُتب ثلاث مرات يُحوَّل إلى آلة.</li>
+<li>راجع من <strong>الغرض</strong> و<strong>التصميم</strong> نزولاً إلى <strong>الصحة</strong> و<strong>الاختبارات</strong> و<strong>الوضوح</strong>. وسِم كل تعليق، واكتب عن الكود، واشرح الأثر، وأثنِ على الجيد.</li>
+<li>حين تُراجَع: راجع نفسك أولاً، ورد على كل تعليق، واعترض بأسباب.</li>
+<li><strong>وجّه</strong> بالسؤال قبل الإخبار، والبرمجة الثنائية، والمهام الأكبر قليلاً، والملاحظات المحددة.</li>
+<li>قرر بسرعة في <strong>الأبواب ذات الاتجاهين</strong>، ولأبواب الاتجاه الواحد استخدم <strong>مصفوفة موزونة</strong> وتجارب استكشافية و<strong>سجل قرار</strong>.</li>
+<li><strong>الدَّين التقني</strong> مقبول حين يُختار ويُدوّن، ويُسدد باستمرار حيث تعمل.</li>
+</ul>
+
+<p class="answers-note"><strong>إجابات «اختبر نفسك»:</strong> 1. لأن التنسيق يخفي الميزة: فإما أن يتعب المراجع قبل أن يصل إليها أو يمر عليها سريعاً، ولا يمكن التراجع عن أحدهما دون الآخر. 2. أن الأسطر التالية بداية الملف الجديد (السطر 1، وأحد عشر سطراً)، فيستطيع الروبوت ترقيم كل سطر مضاف. 3. اجعل آلة تكتبه: قاعدة مدقق، أو فحصاً في CI، أو سطراً في الروبوت.</p>
+
+<!-- projects -->
+<h2 class="plain-h">مشاريع تطبيقية</h2>
+
+<p class="projects-intro">هذه المشاريع عن العادات أكثر منها عن الكود. فنفّذ كلاً منها مع شخص آخر إن استطعت: زميل دراسة، أو زميل عمل، أو صديق من مجتمع على الإنترنت. فالمراجعة والتوجيه يُتعلمان ومعك أحد في الجهة الأخرى.</p>
+
+<div class="project">
+<p class="project-label">المشروع 18.1 · سهل</p>
+<h3>راجع كودك القديم</h3>
+<p class="project-goal">خذ مشروعاً كتبته قبل بضعة أشهر، وافتح طلب دمج يحسّن شيئاً واحداً، وراجعه كأن زميلاً كتبه.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> طلبات الدمج الصغيرة ذات الغرض الواحد، وترتيب المراجعة، والتعليقات الموسومة، والرد على كل تعليق.</p>
+<ol class="steps">
+<li>اختر تحسيناً واحداً فقط: دالة بلا اختبارات، أو اسماً مربكاً، أو حالة خطأ ناقصة. ونفّذه في فرع، بأقل من 100 سطر متغير.</li>
+<li>املأ قالب طلب الدمج من هذا الفصل، ومعه طريقة الاختبار.</li>
+<li>انتظر يوماً، ثم راجع طلب الدمج على GitHub بترتيب الغرض والتصميم والصحة والاختبارات والوضوح، واترك خمسة تعليقات موسومة على الأقل، منها <strong>ثناء</strong> واحد.</li>
+<li>رد على كل تعليق بصفتك الكاتب: أصلحه، أو افتح له مهمة، أو اعترض بسبب.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> مراجعة كودك بعد يوم فعالة على نحو مفاجئ، لأنك نسيت ما قصدته ولا تستطيع إلا قراءة ما كتبته. وهذا بالضبط موقف كل مراجع.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">المشروع 18.2 · متوسط</p>
+<h3>روبوت مراجعة في CI</h3>
+<p class="project-goal">شغّل روبوت المراجعة من هذا الفصل مع كل طلب دمج في GitHub Actions، واجعله يُفشل الفحص حين يجد مشكلة.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> قراءة الفروق، ورموز الخروج، ومسارات عمل GitHub Actions، والفحوص الإلزامية.</p>
+<ol class="steps">
+<li>انسخ <code>review-bot.ts</code> إلى مستودع لك، واجعله ينتهي بـ <code>process.exitCode = findings.length ? 1 : 0</code>.</li>
+<li>اكتب <code>.github/workflows/review.yml</code>: عند <code>pull_request</code> اسحب الكود مع <code>fetch-depth: 0</code>، وشغّل <code>git diff origin/${{ github.base_ref }}...HEAD &gt; pr.diff</code>، ثم شغّل الروبوت.</li>
+<li>افتح طلب دمج فيه <code>console.log</code> وتأكد أن الروبوت يفشل. ثم احذفه وتأكد أنه ينجح.</li>
+<li>من إعدادات المستودع اجعل الفحص إلزامياً للدمج في الفرع الرئيسي.</li>
+<li>أضف قاعدة واحدة ينساها فريقك (أو تنساها أنت) دائماً.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> النقاط الثلاث في <code>main...HEAD</code> مهمة: فهي تقارن بالنقطة التي بدأ منها فرعك، فلا تُحسب عليك التغييرات التي دُمجت في <code>main</code> بعدها.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">المشروع 18.3 · تحدٍّ</p>
+<h3>قرار تستطيع الدفاع عنه</h3>
+<p class="project-goal">اختر بين مكتبتين حقيقيتين لمشروعك بتجربة استكشافية محددة المدة ومصفوفة موزونة، واكتب سجل القرار، واعرضه في عشر دقائق.</p>
+<p class="project-skills"><strong>ستتدرب على:</strong> أبواب الاتجاه الواحد، والمعايير والأوزان، والتجارب الاستكشافية، والحساسية، وسجلات القرار.</p>
+<ol class="steps">
+<li>اختر قراراً حقيقياً، كالتواريخ (<code>date-fns</code> أو <code>Intl</code> و<code>Temporal</code> المدمجتين)، أو الرسوم البيانية (مكتبتان للرسوم). وحدّد هل هو باب اتجاه واحد أم اتجاهين.</li>
+<li>اكتب المعايير وأوزانها <em>قبل</em> أن تجرب أي شيء، ومنها حجم الحزمة مقيساً كما في الفصل 13.</li>
+<li>اصرف نصف يوم على الأكثر لكل خيار، تبني فيه الشاشة الصغيرة نفسها، ودوّن المفاجآت أولاً بأول.</li>
+<li>قيّم الخيارات في نسخة من <code>decide.ts</code> وشغّل فحص الحساسية، وجد المعيار الذي يغيّر الفائز.</li>
+<li>اكتب سجل القرار، ومعه العواقب السيئة لاختيارك، واعرضه على أحد في عشر دقائق. ودوّن أسئلته: فكل سؤال شيء كان على السجل أن يجيب عنه.</li>
+</ol>
+<p class="hint"><strong>تلميح:</strong> إن لم يقلب أي تغيير في الأوزان الفائز، فالقرار سهل ولم تكن المصفوفة لازمة. وإن قلبه تغييرات كثيرة، فالدرجات تخمينات غالباً: وهذه لحظة التجربة الاستكشافية، لا الاجتماع الأطول.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">تمارين</h2>
+
+<ol class="exercises">
+<li><span class="level">سهل</span> أعد كتابة هذه التعليقات بوسم وأثر: «اسم سيئ.»، «لماذا هذا هنا؟؟»، «نسيت الاختبارات مرة أخرى.»</li>
+<li><span class="level">سهل</span> أضف إلى <code>review-bot.ts</code> قاعدة تشير إلى عبارات <code>debugger</code>، وشغّله على <code>pr.diff</code> بعد أن تضيف إليه سطر <code>debugger</code>.</li>
+<li><span class="level medium">متوسط</span> يعدّ الروبوت الملف اختباراً إن انتهى بـ <code>.test.ts</code> فقط. غيّره حتى يحتاج طلب الدمج الذي يلمس <code>src/cart/discount.ts</code> تغييراً في <code>src/cart/discount.test.ts</code> بالذات، لا في أي ملف اختبار.</li>
+<li><span class="level medium">متوسط</span> في <code>decide.ts</code> أضف معيار «أدوات تتبع الأخطاء» بوزن 3 (Playwright ‏5، وCypress ‏5، واليدوي 1). هل يتغير الفائز؟ وهل يتغير فحص الحساسية؟</li>
+<li><span class="level hard">تحدٍّ</span> اكتب سجل قرار لقرار اتخذه مشروعك دون سجل (إطار عمل، أو طريقة CSS، أو مزود استضافة). وضمّنه خيارين رفضتموهما على الأقل، وعاقبة سيئة واحدة للاختيار.</li>
+</ol>
+
+<p class="answers-note">حلول التمارين في آخر الكتاب، وفي مستودع الكود الخاص بالكتاب.</p>
+
+<div class="next">
+<p class="next-title">في الفصل 19</p>
+<p>يجتمع كل ما في هذا الكتاب في مشروع أخير: لوحة تحكم للإنتاج، تُبنى وتُختبر وتُراجَع وتُطلق كما يفعل فريق محترف.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/ar">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">ملحق</p><h1>حلول التمارين</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
@@ -4317,6 +4864,16 @@ process.exitCode = problems.length ? <span class="n">1</span> : <span class="n">
 <li>أضف <code>if (from.layer === "features" &amp;&amp; to.layer === "app")</code> (وهي مغطاة أصلاً بقاعدة «لا شيء يستورد من app»، فيثبت الاختبار ذلك)، و<code>if (relative(root, file).startsWith("shared/ui") &amp;&amp; relative(root, resolve(dirname(file), target)).startsWith("shared/api"))</code> برسالتها الخاصة.</li>
 <li>سجل ADR الجيد قصير: فقرة للسياق (المشكلة والضغوط)، وأخرى للقرار (ما اخترته)، وأسطر قليلة للعواقب، الحسنة والسيئة. رقّمه ولا تعدّل سجلاً مقبولاً أبداً: اكتب سجلاً جديداً يحل محله.</li>
 <li>في <code>eslint.config.js</code> أضف لملفات <code>src/shared/**</code>: <code>"no-restricted-imports": ["error", { patterns: ["**/features/**"] }]</code>، ولملفات <code>src/features/**</code> نمطاً مثل <code>"../*/!(index)"</code> أو <code>group</code> للمسارات الداخلية لكل ميزة أخرى. فيبلّغ ESLint عن الاستيرادين نفسيهما في المحرر، وأنت تكتب.</li>
+</ol>
+
+
+<h2 class="plain-h">الفصل 18</h2>
+<ol class="exercises">
+<li>«nit: الاسم <code>data</code> لا يقول ماذا يحمل، و<code>unpaidOrders</code> يجعل التصفية التي تحته واضحة.» «question: لماذا هذا الفحص؟ إن كان يحمي من خطأ قديم فتعليق برقم المهمة يساعد القارئ التالي.» «issue (blocking): فرع الاسترداد الجديد بلا اختبار، فلن يخبرنا شيء إن انكسر. هل نضيف اختباراً لاسترداد أكبر من الطلب؟»</li>
+<li>أضف <code>if (/\bdebugger\b/.test(code)) say("debugger متروك: احذفه");</code> بجانب القواعد الأخرى. ومع سطر <code>+  debugger;</code> مضاف داخل جزء <code>discount.ts</code> في <code>pr.diff</code> (وزيادة عدد ترويسة <code>@@</code> واحداً) يذكره الروبوت برقم سطره، وتزيد الملاحظات واحدة.</li>
+<li>لكل ملف كود متغير، ابنِ اسم اختباره بـ <code>f.replace(/\.ts$/, ".test.ts")</code>، وأبلغ «تغيّر الكود ولم يتغير اختباره» لكل ملف ليس اسم اختباره في <code>changedFiles</code>. فلا يعود تغيير <code>cart.test.ts</code> عذراً لـ <code>discount.ts</code> بلا اختبار.</li>
+<li>Playwright ‏79، وCypress ‏77، واليدوي 41: لا يتغير الفائز. وما زال فحص الحساسية يُظهر فوز Cypress لو حُسب التعلم مرتين (88 مقابل 92)، أما مضاعفة «المجتمع والتوثيق» فتعطي الآن تعادلاً (87 لكل منهما)، يتركه الترتيب لـ Playwright لأنه أول خيار في القائمة. والتعادل علامة للبحث عن معيار آخر، لا للثقة بترتيب القائمة.</li>
+<li>السجل الجيد فيه سياق يفهمه القادم الجديد دون أن يسأل (المشكلة، والتاريخ، والقيود)، وبديلان حقيقيان على الأقل مع سبب خسارة كل منهما، والقرار في جملة واحدة، وعواقب صادقة، ومنها ما يجعل الفريق يعيد النظر.</li>
 </ol>
 
 </section>

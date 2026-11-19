@@ -39,6 +39,8 @@
 @page ch15:first { @top-center { content: none; } }
 @page ch16 { @top-center { content: "Chapter 16: Server Rendering with Next.js"; } }
 @page ch16:first { @top-center { content: none; } }
+@page ch17 { @top-center { content: "Chapter 17: Code Review, Mentoring and Technical Decisions"; } }
+@page ch17:first { @top-center { content: none; } }
 @page answers { @top-center { content: "Answers to the Exercises"; } }
 @page answers:first { @top-center { content: none; } }
 
@@ -171,7 +173,7 @@ console.log(<span class="s">"Hello, coder!"</span>);</pre></div><div class="cv-t
           <p>The code in this book is tested with Node.js 22. Every listing and its output is produced from the files in the book’s code repository.</p>
           <p>JavaScript, Node.js and other names mentioned in this book are trademarks of their owners and are used for identification only.</p>
           <p>ISBN: ———</p>
-        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: The Language</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Modern JavaScript in Depth</span><span class="toc-p">6</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">TypeScript for Real Projects</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Modules, Tooling and Build Systems</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: React</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Components and Rendering</span><span class="toc-p">59</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">State, Effects and Data Flow</span><span class="toc-p">77</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Routing and Server Data</span><span class="toc-p">94</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Forms and Validation</span><span class="toc-p">115</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Global State without Pain</span><span class="toc-p">130</span></li><li class="toc-part">Part 3: Quality</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Design Systems and Component Libraries</span><span class="toc-p">147</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Accessibility (WCAG) in Practice</span><span class="toc-p">166</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Testing: Unit, Component and End-to-End</span><span class="toc-p">186</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Performance and Core Web Vitals</span><span class="toc-p">205</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Frontend Security</span><span class="toc-p">222</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Internationalisation and RTL</span><span class="toc-p">235</span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Frontend Architecture at Scale</span><span class="toc-p">252</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Server Rendering with Next.js</span><span class="toc-p">267</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Code Review, Mentoring and Technical Decisions</span><span class="toc-p"></span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">Capstone: A Production Dashboard</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">290</span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b2/js/en">
+        </section><section class="front toc"><h1>Contents</h1><ol><li class="toc-part">Part 1: The Language</li><li class="toc-ch"><span class="toc-n">1</span><span class="toc-t">Modern JavaScript in Depth</span><span class="toc-p">6</span></li><li class="toc-ch"><span class="toc-n">2</span><span class="toc-t">TypeScript for Real Projects</span><span class="toc-p">26</span></li><li class="toc-ch"><span class="toc-n">3</span><span class="toc-t">Modules, Tooling and Build Systems</span><span class="toc-p">43</span></li><li class="toc-part">Part 2: React</li><li class="toc-ch"><span class="toc-n">4</span><span class="toc-t">Components and Rendering</span><span class="toc-p">59</span></li><li class="toc-ch"><span class="toc-n">5</span><span class="toc-t">State, Effects and Data Flow</span><span class="toc-p">77</span></li><li class="toc-ch"><span class="toc-n">6</span><span class="toc-t">Routing and Server Data</span><span class="toc-p">94</span></li><li class="toc-ch"><span class="toc-n">7</span><span class="toc-t">Forms and Validation</span><span class="toc-p">115</span></li><li class="toc-ch"><span class="toc-n">8</span><span class="toc-t">Global State without Pain</span><span class="toc-p">130</span></li><li class="toc-part">Part 3: Quality</li><li class="toc-ch"><span class="toc-n">9</span><span class="toc-t">Design Systems and Component Libraries</span><span class="toc-p">147</span></li><li class="toc-ch"><span class="toc-n">10</span><span class="toc-t">Accessibility (WCAG) in Practice</span><span class="toc-p">166</span></li><li class="toc-ch"><span class="toc-n">11</span><span class="toc-t">Testing: Unit, Component and End-to-End</span><span class="toc-p">186</span></li><li class="toc-ch"><span class="toc-n">12</span><span class="toc-t">Performance and Core Web Vitals</span><span class="toc-p">205</span></li><li class="toc-ch"><span class="toc-n">13</span><span class="toc-t">Frontend Security</span><span class="toc-p">222</span></li><li class="toc-ch"><span class="toc-n">14</span><span class="toc-t">Internationalisation and RTL</span><span class="toc-p">235</span></li><li class="toc-part">Part 4: Senior Work</li><li class="toc-ch"><span class="toc-n">15</span><span class="toc-t">Frontend Architecture at Scale</span><span class="toc-p">252</span></li><li class="toc-ch"><span class="toc-n">16</span><span class="toc-t">Server Rendering with Next.js</span><span class="toc-p">267</span></li><li class="toc-ch"><span class="toc-n">17</span><span class="toc-t">Code Review, Mentoring and Technical Decisions</span><span class="toc-p">290</span></li><li class="toc-ch"><span class="toc-n">18</span><span class="toc-t">Capstone: A Production Dashboard</span><span class="toc-p"></span></li><li class="toc-part">Appendix</li><li class="toc-ch"><span class="toc-n"></span><span class="toc-t">Answers to the Exercises</span><span class="toc-p">309</span></li></ol></section><section class="chapter" style="page: ch01" data-chapter="1" data-code="b2/js/en">
 <div class="opener"><span class="opener-num">1</span><p class="chapter-kicker">Chapter 1</p><h1>Modern JavaScript in Depth</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
 <path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
@@ -7424,6 +7426,551 @@ export default function ContactPage() {
 <p>You can now build, test, secure and ship a complete React application. The next chapter is about the work around the code that makes someone senior: reviewing other people’s changes, helping juniors grow, and making technical decisions that a team can live with.</p>
 </div>
 </section>
+<section class="chapter" style="page: ch17" data-chapter="17" data-code="b2/review/en">
+<div class="opener"><span class="opener-num">17</span><p class="chapter-kicker">Chapter 17</p><h1>Code Review, Mentoring and Technical Decisions</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q104,96 106,80" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/><circle cx="106" cy="76" r="7" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="46" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><ellipse cx="74" cy="55" rx="6" ry="7.5" fill="#1e1b4b"/><circle cx="48" cy="52" r="2.2" fill="#fff"/><circle cx="76" cy="52" r="2.2" fill="#fff"/><path d="M48,68 Q60,78 72,68" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg></div></div>
+
+<div class="goals">
+<p class="goals-title">In this chapter you will learn to</p>
+<ul>
+<li>open pull requests that are small, focused and easy to review</li>
+<li>let machines check everything a machine can, before a person looks</li>
+<li>review code in a useful order, and write comments that are clear and kind</li>
+<li>receive reviews without taking them personally</li>
+<li>help less experienced developers grow, through pairing, questions and feedback</li>
+<li>make technical decisions with a matrix, write them down as decision records, and manage technical debt</li>
+</ul>
+</div>
+
+<p class="lead">Up to now this book has been about the code you write. A senior developer spends a large part of the week on the code <em>other people</em> write: reading their pull requests, answering their questions, and helping the team choose between tools and designs. None of this is a soft extra. A team where reviews are slow and harsh, juniors are stuck and decisions are forgotten ships slowly, whatever the skill of each person. This chapter turns these human tasks into habits as concrete as the code ones.</p>
+
+<div class="bit"><svg viewBox="0 0 120 140" aria-hidden="true">
+<path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<path d="M88,104 Q100,112 100,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
+<rect x="34" y="90" width="52" height="40" rx="13" fill="#818cf8" stroke="#312e81" stroke-width="3"/>
+<circle cx="60" cy="108" r="7" fill="#f472b6" stroke="#312e81" stroke-width="2.5"/>
+<line x1="60" y1="10" x2="60" y2="24" stroke="#312e81" stroke-width="3.5"/>
+<circle cx="60" cy="8" r="6.5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="6" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="102" y="46" width="12" height="24" rx="5" fill="#fbbf24" stroke="#312e81" stroke-width="3"/>
+<rect x="14" y="22" width="92" height="72" rx="24" fill="#6366f1" stroke="#312e81" stroke-width="3.5"/>
+<rect x="24" y="33" width="72" height="50" rx="16" fill="#e0e7ff"/>
+<ellipse cx="33" cy="70" rx="5" ry="3" fill="#f9a8d4"/><ellipse cx="87" cy="70" rx="5" ry="3" fill="#f9a8d4"/>
+<ellipse cx="49" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><ellipse cx="77" cy="52" rx="5.5" ry="7" fill="#1e1b4b"/><circle cx="51" cy="49" r="2" fill="#fff"/><circle cx="79" cy="49" r="2" fill="#fff"/><path d="M50,71 L66,69" fill="none" stroke="#1e1b4b" stroke-width="3.5" stroke-linecap="round"/>
+</svg><div class="bubble"><p class="bubble-name">Bit</p><p>The first time someone left forty comments on my pull request, I thought they disliked me. Later I understood that the comments were about the code, and that most of them a script could have written. This chapter is the one I wish I had read then.</p></div></div>
+
+<h2><span class="sec">17.1</span> <span>What review is for</span></h2>
+
+<p>A <dfn>code review</dfn> is another developer reading a change before it joins the main branch. It has four goals, in this order:</p>
+<ol>
+<li><strong>Catch problems early</strong>, when they are cheapest to fix: bugs, security holes, missing cases.</li>
+<li><strong>Share knowledge.</strong> After a review, two people know how the discount code works, not one. Juniors learn by being reviewed, and also by reviewing.</li>
+<li><strong>Keep the code consistent</strong>, so the codebase reads as if one careful person wrote it.</li>
+<li><strong>Keep the design healthy</strong>: a change can work today and still make the next ten changes harder.</li>
+</ol>
+
+<p>Notice what is not on the list: proving that the reviewer is clever, or making the code look exactly as the reviewer would have written it. A review that blocks a change for weeks over taste costs more than the problems it finds.</p>
+
+<h2><span class="sec">17.2</span> <span>A pull request that is easy to review</span></h2>
+
+<p>The best review starts before anyone reviews: with a change that is easy to read. Here is Sara, adding discount codes to Bit’s shop. While she was there, her editor also reformatted a stylesheet. Git shows what the pull request contains:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c"># A new branch for the feature</span>
+<span class="c">$ </span><span class="k">git switch -c feature/discount-codes</span>
+Switched to a new branch &#x27;feature/discount-codes&#x27;
+<span class="c"># What changed, file by file</span>
+<span class="c">$ </span><span class="k">git diff --stat main</span>
+ src/cart/discount.ts |  11 ++
+ src/ui/styles.css    | 300 ++++++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 251 insertions(+), 60 deletions(-)</pre></div>
+
+<p>Eleven lines of new feature are hidden among three hundred lines of formatting. A reviewer will either read everything and get tired before reaching the part that matters, or skim and miss it. Both are bad. The fix takes a minute: move the formatting into a pull request of its own, which can be approved at a glance because it changes no behaviour:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">Terminal</div><pre class="code"><span class="c"># Move the formatting into its own pull request</span>
+<span class="c">$ </span><span class="k">git switch -c chore/format-styles main</span>
+Switched to a new branch &#x27;chore/format-styles&#x27;
+<span class="c">$ </span><span class="k">git checkout feature/discount-codes -- src/ui/styles.css</span>
+<span class="c">$ </span><span class="k">git commit -qm &quot;Format the styles&quot;</span>
+<span class="c">$ </span><span class="k">git switch feature/discount-codes</span>
+Switched to branch &#x27;feature/discount-codes&#x27;
+<span class="c">$ </span><span class="k">git checkout main -- src/ui/styles.css</span>
+<span class="c">$ </span><span class="k">git commit -qm &quot;Keep only the discount codes&quot;</span>
+<span class="c"># The feature’s pull request, after the split</span>
+<span class="c">$ </span><span class="k">git diff --stat main</span>
+ src/cart/discount.ts | 11 +++++++++++
+ 1 file changed, 11 insertions(+)</pre></div>
+
+<p>Now the feature is eleven lines, and the reviewer’s full attention goes to them. Three habits keep pull requests like this:</p>
+<ul>
+<li><strong>One purpose per pull request.</strong> A feature, a fix, a refactoring and a formatting change are four pull requests. Mixed changes are hard to review and hard to undo.</li>
+<li><strong>Small.</strong> Under about 300 changed lines, a reviewer can still hold the whole change in their head. A big feature can be merged in small steps behind a <dfn>feature flag</dfn>, a setting that keeps the unfinished part hidden from users.</li>
+<li><strong>Described.</strong> Say what the change does, why, and how to test it. A template in the repository asks for this every time:</li>
+</ul>
+
+<div class="listing" dir="ltr"><div class="listing-title">.github/pull_request_template.md</div><pre class="code md"><b>## What and why</b>
+
+&lt;!-- One or two sentences. Link the issue: Closes #123 --&gt;
+
+<b>## How to test it</b>
+
+1.
+2.
+
+<b>## Screenshots</b>
+
+&lt;!-- Before and after, for any change people can see. Light and dark, LTR and RTL. --&gt;
+
+<b>## Checklist</b>
+
+- [ ] Tests added or changed, and they fail without this change
+- [ ] Works with the keyboard and a screen reader
+- [ ] Texts in both languages
+- [ ] No secrets, no console.log
+- [ ] Under 300 changed lines, or the reason it cannot be</pre></div>
+
+<p>GitHub and GitLab put the contents of this file into every new pull request automatically. The checklist is not bureaucracy: each line is a mistake the team has already made once.</p>
+
+<h2><span class="sec">17.3</span> <span>Let the machines go first</span></h2>
+
+<p>A person’s attention is the most expensive thing in a review. It should not be spent on a missing semicolon. Everything a machine can check runs in CI on every pull request before a person is asked to look: the formatter, the linter, the type checker and the tests from Chapter 11. A team can add its own rules too. Here is a small robot reviewer that reads a pull request’s diff:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">review-bot.ts</div><pre class="code"><span class="k">import</span> { readFileSync } <span class="k">from</span> <span class="s">&quot;node:fs&quot;</span>;
+
+<span class="c">// Reads the pull request&#x27;s diff and comments on the lines a machine can judge</span>
+<span class="k">type</span> Finding = { file: string; line: number; message: string };
+
+<span class="k">const</span> diff = readFileSync(process.argv[<span class="n">2</span>] ?? <span class="s">&quot;pr.diff&quot;</span>, <span class="s">&quot;utf8&quot;</span>).split(<span class="s">&quot;\n&quot;</span>);
+<span class="k">const</span> findings: Finding[] = [];
+<span class="k">const</span> changedFiles = <span class="k">new</span> Set&lt;string&gt;();
+<span class="k">let</span> file = <span class="s">&quot;&quot;</span>;
+<span class="k">let</span> line = <span class="n">0</span>;
+<span class="k">let</span> changed = <span class="n">0</span>;
+
+<span class="k">for</span> (<span class="k">const</span> text <span class="k">of</span> diff) {
+  <span class="k">if</span> (text.startsWith(<span class="s">&quot;+++ &quot;</span>)) {
+    file = text.slice(<span class="n">6</span>); <span class="c">// &quot;+++ b/src/cart/discount.ts&quot;</span>
+    changedFiles.add(file);
+    continue;
+  }
+  <span class="k">const</span> hunk = /^@@ -\d+(?:,\d+)? \+(\d+)/.exec(text);
+  <span class="k">if</span> (hunk) {
+    line = Number(hunk[<span class="n">1</span>]); <span class="c">// Line numbers in the new file start from the @@ header of each part of the diff</span>
+    continue;
+  }
+  <span class="k">if</span> (text.startsWith(<span class="s">&quot;-&quot;</span>) &amp;&amp; !text.startsWith(<span class="s">&quot;---&quot;</span>)) {
+    changed++;
+    continue;
+  }
+  <span class="k">if</span> (!text.startsWith(<span class="s">&quot;+&quot;</span>) || text.startsWith(<span class="s">&quot;+++&quot;</span>)) {
+    <span class="k">if</span> (text.startsWith(<span class="s">&quot; &quot;</span>)) line++;
+    continue;
+  }
+  changed++;
+  <span class="k">const</span> code = text.slice(<span class="n">1</span>);
+  <span class="k">const</span> say = (message: string) =&gt; findings.push({ file, line, message });
+  <span class="k">if</span> (/console\.log\(/.test(code)) say(<span class="s">&quot;console.log left in: remove it, or use the app&#x27;s logger&quot;</span>);
+  <span class="k">if</span> (/:\s*any\b/.test(code)) say(<span class="s">&quot;“any” switches the type checker off here: write the real type&quot;</span>);
+  <span class="k">if</span> (/[^=!]==[^=]/.test(code)) say(<span class="s">&quot;“==” converts types before comparing: use “===”&quot;</span>);
+  <span class="k">if</span> (/TODO(?!.*#\d+)/.test(code)) say(<span class="s">&quot;TODO without an issue number: link one (#123), or do it now&quot;</span>);
+  line++;
+}
+
+<span class="k">const</span> isTest = (f: string) =&gt; /\.test\.ts$/.test(f);
+<span class="k">const</span> code = [...changedFiles].filter((f) =&gt; f.endsWith(<span class="s">&quot;.ts&quot;</span>) &amp;&amp; !isTest(f));
+<span class="k">if</span> (code.length &gt; <span class="n">0</span> &amp;&amp; ![...changedFiles].some(isTest)) findings.push({ file: code[<span class="n">0</span>]!, line: <span class="n">1</span>, message: <span class="s">&quot;code changed, but no test changed&quot;</span> });
+<span class="k">if</span> (changed &gt; <span class="n">300</span>) findings.push({ file: <span class="s">&quot;*&quot;</span>, line: <span class="n">0</span>, message: <span class="s">&quot;{n} changed lines: hard to review well; split it (under 300)&quot;</span>.replace(<span class="s">&quot;{n}&quot;</span>, String(changed)) });
+
+<span class="k">for</span> (<span class="k">const</span> f <span class="k">of</span> findings) console.log(<span class="s">`${f.file}:${f.line}  ${f.message}`</span>);
+console.log(findings.length ? <span class="s">`${findings.length} findings`</span> : <span class="s">&quot;Nothing for the robot to say. Over to the humans.&quot;</span>);</pre></div>
+
+<p>A diff marks added lines with <code>+</code> and removed lines with <code>-</code>, and each part starts with a header like <code>@@ -0,0 +1,11 @@</code>, which says where the part begins in the new file. The robot follows the line numbers and applies its rules to the added lines only. On Sara’s first pull request:</p>
+
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>src/cart/discount.ts:3  “any” switches the type checker off here: write the real type
+src/cart/discount.ts:4  console.log left in: remove it, or use the app&#x27;s logger
+src/cart/discount.ts:6  “==” converts types before comparing: use “===”
+src/cart/discount.ts:7  “==” converts types before comparing: use “===”
+src/cart/discount.ts:8  TODO without an issue number: link one (#123), or do it now
+src/cart/discount.ts:1  code changed, but no test changed
+*:0  311 changed lines: hard to review well; split it (under 300)
+7 findings</pre></div>
+
+<p>Seven comments that no person had to write, each pointing at an exact line. Real teams get the same effect with ESLint rules (<code>no-console</code>, <code>eqeqeq</code>, <code>@typescript-eslint/no-explicit-any</code>) and size checks in CI, and they make the checks <em>required</em>, so a pull request cannot be merged while one fails. The rule of thumb: <strong>if you write the same review comment three times, automate it.</strong></p>
+
+<aside class="box quiz"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>Quick check</p><ol><li>Why should a formatting change never share a pull request with a feature?</li><li>What does <code>@@ -0,0 +1,11 @@</code> tell the robot?</li><li>What should you do with a review comment you have written three times?</li></ol><p>The answers are at the end of the chapter, after the summary.</p></aside>
+
+<h2><span class="sec">17.4</span> <span>Reviewing like a senior</span></h2>
+
+<p>Now a person reads what is left. Here is the feature part of Sara’s change:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/cart/discount.ts</div><pre class="code">diff --git a/src/cart/discount.ts b/src/cart/discount.ts
+new file mode 100644
+index 0000000..36b91e1
+--- /dev/null
++++ b/src/cart/discount.ts
+@@ -0,0 +1,11 @@
++import { subtotal } from &quot;./cart&quot;;
++
++export function applyDiscount(cart: any, code: string) {
++  console.log(&quot;applying&quot;, code);
++  let total = subtotal(cart.lines);
++  if (code == &quot;BIT10&quot;) total = total * 0.9;
++  if (code == &quot;HALF&quot;) total = total / 2;
++  // TODO make the codes configurable
++  cart.total = total;
++  return cart;
++}</pre></div>
+
+<p>The robot already flagged the small things. A useful review goes from the big questions to the small ones, and stops going deeper when a big question fails:</p>
+<ol>
+<li><strong>Purpose.</strong> Does the change do what the description says, and is it the right thing to build?</li>
+<li><strong>Design.</strong> Does it fit the code around it? Will the next change be easy?</li>
+<li><strong>Correctness.</strong> Edge cases, errors, security, money, time zones, languages.</li>
+<li><strong>Tests.</strong> Would the tests fail if the code were wrong?</li>
+<li><strong>Readability.</strong> Names, structure, comments where the <em>why</em> is not obvious.</li>
+</ol>
+
+<p>Reading this way, a reviewer finds problems no linter can: <code>total * 0.9</code> turns whole piastres into fractions; an unknown code silently gives the full price, so a customer who typed <code>bit10</code> pays more than they expected and nobody knows why; adding a code means editing an <code>if</code> chain; and the function changes the cart it was given, which surprises every caller.</p>
+
+<h3>Writing the comments</h3>
+
+<p>A comment must say three things: what the problem is, why it matters, and how important it is. Many teams start each comment with a label, in a style called <dfn>Conventional Comments</dfn>, so the author never has to guess what is required:</p>
+
+<table>
+<thead><tr><th>Label</th><th>Means</th><th>Example on Sara’s change</th></tr></thead>
+<tbody>
+<tr><td><strong>issue (blocking)</strong></td><td>Must change before merging</td><td>“<code>total * 0.9</code> turns 12997 piastres into 11697.3. We keep money in whole piastres; can we compute the discount and round it once?”</td></tr>
+<tr><td><strong>issue (blocking)</strong></td><td>Must change before merging</td><td>“An unknown code returns the full price with no message. Customers who mistype will think the discount did not work. Could the result say that the code is unknown?”</td></tr>
+<tr><td><strong>suggestion</strong></td><td>Better, but the author decides</td><td>“A table of codes instead of the <code>if</code> chain would let marketing add codes without touching the logic.”</td></tr>
+<tr><td><strong>question</strong></td><td>The reviewer wants to understand</td><td>“Should codes ignore case and spaces? People often paste them with a space at the end.”</td></tr>
+<tr><td><strong>nit</strong></td><td>Small, never blocking</td><td>“<code>applyDiscount</code> returns the price, so <code>price</code> might say it better.”</td></tr>
+<tr><td><strong>praise</strong></td><td>Something done well</td><td>“Reusing <code>subtotal</code> instead of a second loop: nice.”</td></tr>
+</tbody>
+</table>
+
+<p>Notice how the comments are written. They are about the code, never the person (“this returns”, not “you forgot”). They explain the consequence for users, which is what makes a reviewer convincing. They ask when the reviewer is not sure. And there is praise: reviews that only ever list problems teach people to dread them. Compare:</p>
+
+<table>
+<thead><tr><th>Instead of</th><th>Write</th></tr></thead>
+<tbody>
+<tr><td>“This is wrong.”</td><td>“This gives a fraction of a piastre for some carts. Could we round the discount once?”</td></tr>
+<tr><td>“Why didn’t you use a table?”</td><td>“suggestion: a table of codes would make adding one a one-line change.”</td></tr>
+<tr><td>“Use ===.”</td><td>(nothing: the linter says it)</td></tr>
+<tr><td>Thirty comments on one pull request</td><td>The three that matter, and a call to talk about the design</td></tr>
+</tbody>
+</table>
+
+<aside class="box tip"><p class="box-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 19h5M10.5 21.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Tip: review fast</p><p>A pull request waiting two days blocks its author, who starts something else and has to switch back later. Many teams agree to give a first review within one working day. A quick review of the important points beats a perfect review next week.</p></aside>
+
+<h3>The change after the review</h3>
+
+<p>Sara answers every comment and pushes a new version:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/cart/discount.ts</div><pre class="code"><span class="k">import</span> { subtotal, <span class="k">type</span> Line } <span class="k">from</span> <span class="s">&quot;./cart&quot;</span>;
+
+<span class="c">// Prices are whole piastres: no floating-point money</span>
+<span class="c">// The codes live in one table; adding a code needs no new if</span>
+<span class="k">const</span> codes: Record&lt;string, { percent: number }&gt; = {
+  BIT10: { percent: <span class="n">10</span> },
+  HALF: { percent: <span class="n">50</span> },
+};
+
+<span class="c">// Unknown codes are an answer, not a silent full price</span>
+<span class="k">export</span> <span class="k">type</span> Priced =
+  | { ok: <span class="k">true</span>; subtotal: number; discount: number; total: number }
+  | { ok: <span class="k">false</span>; reason: <span class="s">&quot;unknown-code&quot;</span> };
+
+<span class="c">// The cart is not changed: the function returns a new result</span>
+<span class="k">export</span> <span class="k">function</span> price(lines: <span class="k">readonly</span> Line[], code?: string): Priced {
+  <span class="k">const</span> sum = subtotal(lines);
+  <span class="k">const</span> key = code?.trim().toUpperCase();
+  <span class="k">if</span> (!key) <span class="k">return</span> { ok: <span class="k">true</span>, subtotal: sum, discount: <span class="n">0</span>, total: sum };
+  <span class="k">const</span> found = codes[key];
+  <span class="k">if</span> (!found) <span class="k">return</span> { ok: <span class="k">false</span>, reason: <span class="s">&quot;unknown-code&quot;</span> };
+  <span class="k">const</span> discount = Math.round((sum * found.percent) / <span class="n">100</span>);
+  <span class="k">return</span> { ok: <span class="k">true</span>, subtotal: sum, discount, total: sum - discount };
+}</pre></div>
+
+<p>And a test that would have caught each of the problems, including the one about changing the cart:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">src/cart/discount.test.ts</div><pre class="code"><span class="k">import</span> { strict as assert } <span class="k">from</span> <span class="s">&quot;node:assert&quot;</span>;
+<span class="k">import</span> { price } <span class="k">from</span> <span class="s">&quot;./discount&quot;</span>;
+
+<span class="k">const</span> cart = [
+  { name: <span class="s">&quot;mug&quot;</span>, price: <span class="n">8500</span>, qty: <span class="n">1</span> },
+  { name: <span class="s">&quot;sticker&quot;</span>, price: <span class="n">1499</span>, qty: <span class="n">3</span> },
+];
+<span class="k">const</span> egp = (piastres: number) =&gt; (piastres / <span class="n">100</span>).toFixed(<span class="n">2</span>);
+
+<span class="k">for</span> (<span class="k">const</span> code <span class="k">of</span> [<span class="k">undefined</span>, <span class="s">&quot;BIT10&quot;</span>, <span class="s">&quot; half &quot;</span>, <span class="s">&quot;NOPE&quot;</span>]) {
+  <span class="k">const</span> result = price(cart, code);
+  <span class="k">const</span> label = (code === <span class="k">undefined</span> ? <span class="s">&quot;(no code)&quot;</span> : JSON.stringify(code)).padEnd(<span class="n">10</span>);
+  <span class="k">if</span> (!result.ok) console.log(<span class="s">`${label} → unknown code`</span>);
+  <span class="k">else</span> console.log(<span class="s">`${label} → subtotal ${egp(result.subtotal)}  discount ${egp(result.discount)}  total ${egp(result.total)}`</span>);
+}
+
+<span class="c">// The cases that matter, as checks that fail loudly</span>
+assert.deepEqual(price([], <span class="s">&quot;BIT10&quot;</span>), { ok: <span class="k">true</span>, subtotal: <span class="n">0</span>, discount: <span class="n">0</span>, total: <span class="n">0</span> });
+assert.equal(price(cart, <span class="s">&quot;bit10&quot;</span>).ok, <span class="k">true</span>);
+assert.deepEqual(price(cart, <span class="s">&quot;FREE&quot;</span>), { ok: <span class="k">false</span>, reason: <span class="s">&quot;unknown-code&quot;</span> });
+<span class="k">const</span> before = structuredClone(cart);
+price(cart, <span class="s">&quot;HALF&quot;</span>);
+assert.deepEqual(cart, before);
+console.log(<span class="s">&quot;✓ 4 checks passed&quot;</span>);</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>(no code)  → subtotal 129.97  discount 0.00  total 129.97
+&quot;BIT10&quot;    → subtotal 129.97  discount 13.00  total 116.97
+&quot; half &quot;   → subtotal 129.97  discount 64.99  total 64.98
+&quot;NOPE&quot;     → unknown code
+✓ 4 checks passed</pre></div>
+
+<p>Every blocking comment is now a line in the code and a check in the test. That is the best ending a review can have: the problem cannot come back without a test failing.</p>
+
+<h2><span class="sec">17.5</span> <span>Being reviewed</span></h2>
+
+<p>Half of review skill is on the other side. A few habits make it easier for everyone:</p>
+<ul>
+<li><strong>Review your own pull request first.</strong> Read the diff on GitHub before asking anyone. You will find the leftover <code>console.log</code> yourself.</li>
+<li><strong>Answer every comment</strong>, even with “Done in 3f2a91c” or “Good point, I opened #148 for it”. The reviewer should never have to check whether a comment was seen.</li>
+<li><strong>Disagree with reasons</strong>, politely, and in writing. If two rounds of comments do not settle it, talk for five minutes instead.</li>
+<li><strong>Separate yourself from your code.</strong> A comment on a line is not a comment on you. Every senior developer has received thousands.</li>
+</ul>
+
+<h2><span class="sec">17.6</span> <span>Mentoring</span></h2>
+
+<p><dfn>Mentoring</dfn> is helping a less experienced developer grow faster than they would alone. It is part of every senior role, and it is learned like any other skill:</p>
+
+<ul>
+<li><strong>Ask before you tell.</strong> “What do you think happens when the code is unknown?” teaches more than the answer, because the junior finds it. Give the answer when they are stuck, not before.</li>
+<li><strong>Pair.</strong> In <dfn>pair programming</dfn> two people work on one task: the <em>driver</em> types, the <em>navigator</em> thinks ahead. Let the junior drive. Switch every half hour or so.</li>
+<li><strong>Give tasks slightly too big.</strong> A task they can do with some help, not one they can already do, nor one that will drown them. Agree in advance when they should ask for help: for example, after an hour stuck.</li>
+<li><strong>Give feedback on behaviour, soon and specifically.</strong> A simple shape is <dfn>situation, behaviour, impact</dfn>: “In yesterday’s pull request (situation), you added tests for the unknown code (behaviour); it stopped a bug that would have reached customers (impact).” It works for praise and for problems, and it never says “you always”.</li>
+<li><strong>Make it safe to not know.</strong> Say “I don’t know, let’s find out” yourself. Juniors who are afraid to ask lose days in silence.</li>
+</ul>
+
+<p>A first week plan for a new team member, built on these habits:</p>
+
+<table>
+<thead><tr><th>Day</th><th>Goal</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>The app runs on their computer; they know who to ask about what</td></tr>
+<tr><td>2</td><td>A tiny real change (a text, a colour) goes through the whole flow: branch, pull request, review, merge, release</td></tr>
+<tr><td>3–4</td><td>A small bug, paired with you for the first hour</td></tr>
+<tr><td>5</td><td>They review someone else’s pull request, and you review their review</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec">17.7</span> <span>Technical decisions</span></h2>
+
+<p>Teams decide things all the time: which library, which structure, whether to rewrite. A senior’s job is not to decide alone, but to make sure decisions are made deliberately, by the right people, and remembered.</p>
+
+<h3>Two kinds of doors</h3>
+
+<p>First ask how hard the decision is to undo. A <em>two-way door</em>, such as a helper library used in one screen, can be reversed in an afternoon: decide quickly, and let the person doing the work choose. A <em>one-way door</em>, such as the main framework, the database, or the shape of a public API, is expensive to reverse: slow down, compare options, and write it down. Most decisions are two-way doors, and treating them like one-way doors is how teams get stuck in meetings.</p>
+
+<h3>A decision matrix</h3>
+
+<p>For a real choice, list the <strong>criteria</strong> first, give each a <strong>weight</strong> for how much it matters to <em>this</em> team, and only then score the options. Choosing the criteria before looking at the options keeps everyone honest. Here is the team choosing a tool for end-to-end tests:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">decide.ts</div><pre class="code"><span class="c">// Every score is from 1 (poor) to 5 (excellent); the weights say what matters to this team</span>
+<span class="k">const</span> criteria = { fit: <span class="n">5</span>, learn: <span class="n">3</span>, speed: <span class="n">3</span>, community: <span class="n">2</span>, cost: <span class="n">2</span> } as <span class="k">const</span>;
+<span class="k">type</span> Criterion = <span class="k">keyof</span> <span class="k">typeof</span> criteria;
+
+<span class="k">const</span> names: Record&lt;Criterion, string&gt; = {
+  fit: <span class="s">&quot;Fits our stack&quot;</span>, learn: <span class="s">&quot;Easy to learn&quot;</span>, speed: <span class="s">&quot;Speed of the tests&quot;</span>, community: <span class="s">&quot;Community and docs&quot;</span>, cost: <span class="s">&quot;Cost&quot;</span>,
+};
+
+<span class="k">const</span> options: Record&lt;string, Record&lt;Criterion, number&gt;&gt; = {
+  Playwright: { fit: <span class="n">5</span>, learn: <span class="n">3</span>, speed: <span class="n">4</span>, community: <span class="n">4</span>, cost: <span class="n">5</span> },
+  Cypress: { fit: <span class="n">4</span>, learn: <span class="n">5</span>, speed: <span class="n">3</span>, community: <span class="n">5</span>, cost: <span class="n">4</span> },
+  <span class="s">&quot;Manual testing only&quot;</span>: { fit: <span class="n">2</span>, learn: <span class="n">5</span>, speed: <span class="n">1</span>, community: <span class="n">3</span>, cost: <span class="n">2</span> },
+};
+
+<span class="k">function</span> total(scores: Record&lt;Criterion, number&gt;, weights: Record&lt;Criterion, number&gt;): number {
+  <span class="k">return</span> (Object.keys(weights) as Criterion[]).reduce((sum, c) =&gt; sum + scores[c] * weights[c], <span class="n">0</span>);
+}
+
+<span class="k">function</span> winner(weights: Record&lt;Criterion, number&gt;): string {
+  <span class="k">return</span> Object.entries(options).sort(([, a], [, b]) =&gt; total(b, weights) - total(a, weights))[<span class="n">0</span>]![<span class="n">0</span>];
+}
+
+console.log(<span class="s">&quot;Option&quot;</span>.padEnd(<span class="n">22</span>) + <span class="s">&quot;score&quot;</span>);
+<span class="k">for</span> (<span class="k">const</span> [name, scores] <span class="k">of</span> Object.entries(options)) console.log(name.padEnd(<span class="n">22</span>) + total(scores, criteria));
+console.log(<span class="s">`Winner: ${winner(criteria)}`</span>);
+
+<span class="c">// Which option would win if one criterion mattered twice as much?</span>
+<span class="k">for</span> (<span class="k">const</span> c <span class="k">of</span> Object.keys(criteria) as Criterion[]) {
+  console.log(<span class="s">`  If &quot;${names[c]}&quot; counted twice → ${winner({ ...criteria, [c]: criteria[c] * 2 })}`</span>);
+}</pre></div>
+<div class="output" dir="ltr"><div class="output-bar"><i></i><i></i><i></i><span class="output-title">Terminal</span></div><pre>Option                score
+Playwright            64
+Cypress               62
+Manual testing only   38
+Winner: Playwright
+  If &quot;Fits our stack&quot; counted twice → Playwright
+  If &quot;Easy to learn&quot; counted twice → Cypress
+  If &quot;Speed of the tests&quot; counted twice → Playwright
+  If &quot;Community and docs&quot; counted twice → Playwright
+  If &quot;Cost&quot; counted twice → Playwright</pre></div>
+
+<p>Playwright wins, but only by two points, and the last lines show something more useful than the winner: if learning speed mattered twice as much, Cypress would win. So the real question for the team is “how much does a quick start matter to us?”. A matrix does not make the decision; it shows which disagreement is worth having.</p>
+
+<p>When the scores are guesses, buy information with a <dfn>spike</dfn>: a short, time-boxed experiment, such as a day to write the same three tests with each tool. The spike’s code is thrown away; its lessons go into the scores.</p>
+
+<h3>Decision records</h3>
+
+<p>Six months later, someone new will ask “why Playwright?”. If the answer lives only in a meeting, it is lost. An <dfn>architecture decision record</dfn> (ADR) is a short file, kept in the repository next to the code, that records one decision: its context, the options, the choice and its consequences:</p>
+
+<div class="listing" dir="ltr"><div class="listing-title">docs/decisions/0007-e2e-tests.md</div><pre class="code md"><b># 7. Use Playwright for end-to-end tests</b>
+
+Date: 2026-03-04
+Status: Accepted
+
+<b>## Context</b>
+
+Bugs reached users twice last month through the checkout, which no test covers
+end to end. We need tests that click through the real app in a real browser,
+and run on every pull request in under five minutes.
+
+<b>## Options</b>
+
+- Playwright: 64 points in our matrix (decide.ts)
+- Cypress: 62 points; easier to learn, and wins if that counts double
+- Manual testing before each release: 38 points
+
+<b>## Decision</b>
+
+We use Playwright, because it fits our tools best (TypeScript, several
+browsers, runs in parallel) and is free. The vote was close: two people
+on the team will pair with the others on the first tests.
+
+<b>## Consequences</b>
+
+- Good: the checkout is tested on every pull request, in three browsers.
+- Bad: one more tool to learn; the tests need a running app in CI.
+- We will look again if the suite takes more than five minutes.</pre></div>
+
+<p>Records are numbered and never edited after they are accepted. When a decision changes, a new record says so and marks the old one “Replaced by 12”. The folder becomes the history of why the code is the way it is, and it is reviewed in pull requests like any code.</p>
+
+<h2><span class="sec">17.8</span> <span>Technical debt</span></h2>
+
+<p><dfn>Technical debt</dfn> is the extra work that every future change costs because of a shortcut taken earlier. Like money, debt is not always bad: shipping a feature by Friday with a known shortcut can be the right decision, <em>if it is a decision</em>. The trouble is debt nobody chose or recorded.</p>
+
+<ul>
+<li><strong>Make it visible.</strong> Every shortcut gets an issue, and the <code>TODO</code> in the code links to it, which is exactly what the robot checks.</li>
+<li><strong>Pay it continuously.</strong> Many teams reserve a fixed share of every sprint, often around a fifth, for debt. Waiting for a “cleanup month” means waiting forever.</li>
+<li><strong>Pay where you work.</strong> Improve the code you are already changing, a little, every time. Debt in code nobody touches costs nothing and can wait.</li>
+<li><strong>Explain it in the business’s words.</strong> Not “the cart code is ugly”, but “every change to prices takes three days instead of one, and broke checkout twice this year”.</li>
+</ul>
+
+<h2 class="plain-h">Common mistakes</h2>
+
+<table>
+<thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Huge pull requests</td><td>Tired reviewers approve without reading</td><td>One purpose, under about 300 lines; feature flags for big work</td></tr>
+<tr><td>People checking style by hand</td><td>Slow reviews full of small comments</td><td>Formatter, linter and robot rules in CI, required to pass</td></tr>
+<tr><td>Comments without a level</td><td>Authors treat every nit as an order</td><td>Labels: issue, suggestion, question, nit, praise</td></tr>
+<tr><td>Comments about the person</td><td>Defensive authors, worse code</td><td>Write about the code and its effect on users</td></tr>
+<tr><td>Reviews that wait for days</td><td>Blocked authors and costly context switches</td><td>A first review within a working day</td></tr>
+<tr><td>Giving juniors the answers</td><td>They stay dependent on you</td><td>Ask questions first; pair with them driving</td></tr>
+<tr><td>Decisions made in meetings and forgotten</td><td>The same debate every six months</td><td>A decision record in the repository</td></tr>
+<tr><td>Unrecorded shortcuts</td><td>Debt that grows unseen</td><td>An issue for every shortcut, a share of every sprint to pay it</td></tr>
+</tbody>
+</table>
+
+<h2 class="plain-h">Summary</h2>
+
+<ul class="summary">
+<li>Review catches problems, shares knowledge, keeps code consistent and the design healthy. It is not about taste.</li>
+<li>Pull requests have <strong>one purpose</strong>, stay <strong>small</strong>, and are <strong>described</strong> with a template.</li>
+<li><strong>Machines go first</strong>: formatting, linting, types, tests and team rules run in CI. Automate any comment written three times.</li>
+<li>Review from <strong>purpose</strong> and <strong>design</strong> down to <strong>correctness</strong>, <strong>tests</strong> and <strong>readability</strong>. Label each comment, write about the code, explain the impact, and praise what is good.</li>
+<li>When reviewed: review yourself first, answer every comment, and disagree with reasons.</li>
+<li><strong>Mentor</strong> by asking before telling, pairing, stretching tasks and specific feedback.</li>
+<li>Decide fast on <strong>two-way doors</strong>; for one-way doors use a <strong>weighted matrix</strong>, spikes, and an <strong>ADR</strong>.</li>
+<li><strong>Technical debt</strong> is fine when chosen and recorded; pay it continuously where you work.</li>
+</ul>
+
+<p class="answers-note"><strong>Quick check answers:</strong> 1. Because the formatting hides the feature: the reviewer either tires before reaching it or skims past it, and the two cannot be undone separately. 2. That the next lines are the start of the new file (line 1, eleven lines), so the robot can number each added line. 3. Automate it: a lint rule, a CI check, or a line in the robot.</p>
+
+<!-- projects -->
+<h2 class="plain-h">Practice projects</h2>
+
+<p class="projects-intro">These projects are about habits more than code. Do each one with another person if you can: a classmate, a colleague, or a friend from an online community. Review and mentoring are learned with someone on the other side.</p>
+
+<div class="project">
+<p class="project-label">Project 17.1 · Easy</p>
+<h3>Review your own old code</h3>
+<p class="project-goal">Take a project you wrote a few months ago, open a pull request that improves one thing, and review it as if a colleague had written it.</p>
+<p class="project-skills"><strong>You will practise:</strong> small focused pull requests, the review order, labelled comments, and answering every comment.</p>
+<ol class="steps">
+<li>Choose one improvement only: a function without tests, a confusing name, a missing error state. Make it on a branch, under 100 changed lines.</li>
+<li>Fill in the pull request template from this chapter, including how to test it.</li>
+<li>Wait a day. Then review the pull request on GitHub in the order purpose, design, correctness, tests, readability, and leave at least five labelled comments, including one <strong>praise</strong>.</li>
+<li>Answer every comment as the author: fix it, open an issue for it, or disagree with a reason.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> reviewing your own code after a day is surprisingly effective, because you have forgotten what you meant and can only read what you wrote. That is exactly the position of every reviewer.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project 17.2 · Medium</p>
+<h3>A robot reviewer in CI</h3>
+<p class="project-goal">Run the chapter’s review robot on every pull request in GitHub Actions, and make it fail the check when it finds a problem.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading diffs, exit codes, GitHub Actions workflows, and required checks.</p>
+<ol class="steps">
+<li>Copy <code>review-bot.ts</code> into a repository of yours, and make it end with <code>process.exitCode = findings.length ? 1 : 0</code>.</li>
+<li>Write <code>.github/workflows/review.yml</code>: on <code>pull_request</code>, check out the code with <code>fetch-depth: 0</code>, run <code>git diff origin/${{ github.base_ref }}...HEAD &gt; pr.diff</code>, then run the robot.</li>
+<li>Open a pull request with a <code>console.log</code> in it and check that the robot fails. Remove it and check that it passes.</li>
+<li>In the repository settings, make the check required for merging into the main branch.</li>
+<li>Add one rule that your own team (or you) keeps forgetting.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the three dots in <code>main...HEAD</code> matter. They compare against the point where your branch started, so changes merged into <code>main</code> since then are not counted as yours.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project 17.3 · Challenge</p>
+<h3>A decision you can defend</h3>
+<p class="project-goal">Choose between two real libraries for your project with a time-boxed spike and a weighted matrix, write the decision record, and present it in ten minutes.</p>
+<p class="project-skills"><strong>You will practise:</strong> one-way doors, criteria and weights, spikes, sensitivity, and decision records.</p>
+<ol class="steps">
+<li>Pick a real choice, for example dates (<code>date-fns</code> or the built-in <code>Intl</code> and <code>Temporal</code>), or charts (two chart libraries). Decide whether it is a one-way or two-way door.</li>
+<li>Write the criteria and their weights <em>before</em> you try anything. Include bundle size, measured as in Chapter 12.</li>
+<li>Spend at most half a day per option building the same small screen. Write down surprises as you go.</li>
+<li>Score the options in a copy of <code>decide.ts</code> and run the sensitivity check. Find the criterion that would change the winner.</li>
+<li>Write the decision record, including the bad consequences of your choice, and present it to someone in ten minutes. Note their questions: each one is something the record should have answered.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> if no weight change can flip the winner, the decision was easy and the matrix was not needed. If many can, the scores are probably guesses: that is the moment for a spike, not a longer meeting.</p>
+</div>
+<!-- /projects -->
+
+<h2 class="plain-h">Exercises</h2>
+
+<ol class="exercises">
+<li><span class="level">Easy</span> Rewrite these comments using a label and the impact: “Bad name.”, “Why is this here??”, “You forgot the tests again.”</li>
+<li><span class="level">Easy</span> Add a rule to <code>review-bot.ts</code> that flags <code>debugger</code> statements, and run it on <code>pr.diff</code> after adding a <code>debugger</code> line to it.</li>
+<li><span class="level medium">Medium</span> The robot counts a file as a test only if it ends in <code>.test.ts</code>. Change it so that a pull request touching <code>src/cart/discount.ts</code> needs a change to <code>src/cart/discount.test.ts</code> in particular, not to any test file.</li>
+<li><span class="level medium">Medium</span> In <code>decide.ts</code>, add a criterion “Debugging tools” with weight 3 (Playwright 5, Cypress 5, manual 1). Does the winner change? Does the sensitivity check change?</li>
+<li><span class="level hard">Challenge</span> Write a decision record for a decision your own project made without one (a framework, a CSS approach, a hosting provider). Include at least two options you rejected and one bad consequence of the choice.</li>
+</ol>
+
+<p class="answers-note">Answers to the exercises are at the end of the book and in the book’s code repository.</p>
+
+<div class="next">
+<p class="next-title">Coming up in Chapter 18</p>
+<p>Everything in this book comes together in one last project: a production dashboard, built, tested, reviewed and shipped the way a professional team would do it.</p>
+</div>
+</section>
 <section style="page: answers" class="chapter answers" data-chapter="99" data-code="b2/answers/en">
 <div class="opener"><span class="opener-num"></span><p class="chapter-kicker">Appendix</p><h1>Answers to the Exercises</h1><div class="opener-bit"><svg viewBox="0 0 120 140" aria-hidden="true">
 <path d="M32,104 Q20,112 20,122" fill="none" stroke="#312e81" stroke-width="6" stroke-linecap="round"/>
@@ -7600,6 +8147,16 @@ export default function ContactPage() {
 <li>The page takes <code>{ searchParams }: { searchParams: Promise&lt;{ sort?: string }&gt; }</code>, awaits it, and sorts a copy: <code>[...products].sort((a, b) =&gt; a.price - b.price)</code> when <code>sort === "price"</code>. The links are <code>&lt;Link href="/products?sort=price"&gt;</code> and <code>&lt;Link href="/products"&gt;</code>. Reading <code>searchParams</code> makes the page depend on the request, so the cached part must move into a function that receives the sort order as an argument.</li>
 <li>The file starts with <code>"use client"</code> and exports <code>function ErrorPage({ error, reset }: { error: Error &amp; { digest?: string }; reset: () =&gt; void })</code>, which shows a message and <code>&lt;button onClick={() =&gt; reset()}&gt;</code>. In <code>getProduct</code>, <code>if (id === 3) throw new Error("broken")</code>. It must be a Client Component because it has an event handler and must work even when the server part failed.</li>
 <li><code>function SubmitButton() { const { pending } = useFormStatus(); return &lt;button disabled={pending}&gt;…&lt;/button&gt;; }</code> in a <code>"use client"</code> file, rendered inside the form. In the action: <code>const ip = (await headers()).get("x-forwarded-for") ?? "unknown"</code>; keep a <code>Map</code> from address to an array of times, drop times older than 60 seconds, and return <code>{ errors: { message: "…" } }</code> when three remain. (A real app keeps this in Redis, because a server can run several copies.)</li>
+</ol>
+
+
+<h2 class="plain-h">Chapter 17</h2>
+<ol class="exercises">
+<li>“nit: <code>data</code> does not say what it holds; <code>unpaidOrders</code> would make the filter below obvious.” “question: what is this check for? If it guards against an old bug, a comment with the issue number would help the next reader.” “issue (blocking): the new branch for refunds has no test, so nothing would tell us if it broke. Could we add one for a refund larger than the order?”</li>
+<li>Add <code>if (/\bdebugger\b/.test(code)) say("debugger left in: remove it");</code> next to the other rules. With a line <code>+  debugger;</code> added inside the <code>discount.ts</code> part of <code>pr.diff</code> (and the <code>@@</code> count increased by one), the robot reports it with its line number, and one more finding in the total.</li>
+<li>For each changed file that is code, build its test name with <code>f.replace(/\.ts$/, ".test.ts")</code>, and report “code changed, but its test did not” for each one whose test name is not in <code>changedFiles</code>. Now a change to <code>cart.test.ts</code> no longer excuses an untested <code>discount.ts</code>.</li>
+<li>Playwright 79, Cypress 77, manual 41: the winner is unchanged. The sensitivity check still shows Cypress winning if learning counts twice (88 against 92), and doubling “Community and docs” now gives a tie (87 each), which the sort leaves to Playwright, the first option in the list. A tie is a sign to look for another criterion, not to trust the order of the list.</li>
+<li>A good record has a context a newcomer understands without asking (the problem, the date, the constraints), at least two real alternatives with why each lost, the decision in one sentence, and honest consequences, including what would make the team look again.</li>
 </ol>
 
 </section>
