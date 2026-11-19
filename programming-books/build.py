@@ -228,6 +228,24 @@ def fill_code(chapter, lang):
         style = f' style="width: {pct}%; margin-inline: auto"' if pct < 100 else ""
         return f'<figure class="browser"{style}>{bar}<img src="img/{name}" alt="">'
 
+    def image(m):
+        # <figure data-img="shots/products.png" data-url="/products" data-width="560">: a screenshot taken by the
+        # example's own script (for apps that need a running server, such as Next.js), in a browser frame.
+        attrs = m.group(1)
+        f = re.search(r'data-img="([^"]+)"', attrs).group(1)
+        width = int((re.search(r'data-width="(\d+)"', attrs) or re.match("(.*)", "560")).group(1))
+        url = (re.search(r'data-url="([^"]+)"', attrs) or re.match("(.*)", f)).group(1)
+        src = code_dir / f
+        name = f"{code_dir.parent.parent.name}-{code_dir.parent.name}-{lang}-{f.replace('/', '-')}"
+        target = OUT / "img" / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if not target.exists() or target.read_bytes() != src.read_bytes():
+            target.write_bytes(src.read_bytes())
+        bar = (f'<div class="browser-bar" dir="ltr"><i></i><i></i><i></i>'
+               f'<span>{html.escape(url)}</span><b>{width}px</b></div>')
+        return f'<figure class="browser">{bar}<img src="img/{name}" alt="">'
+
+    chapter = re.sub(r'<figure (data-img="[^"]+"[^>]*)>', image, chapter)
     chapter = re.sub(r'<figure (data-render="[^"]+"[^>]*)>', page, chapter)
     chapter = re.sub(r'<pre (data-code="[^"]+"[^>]*)></pre>', code, chapter)
     chapter = re.sub(r'<pre (data-out="[^"]+"[^>]*)></pre>', out, chapter)
@@ -316,7 +334,7 @@ def answers_by_chapter(book, lang):
             k += 1
             src = ROOT / "src" / f'{ch.get("src") or book["id"] + "/" + f"ch{k:02d}"}.answers.{lang}.html'
             if src.exists():
-                body = re.sub(r"\{\{n(?:([+-]\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
+                body = re.sub(r"\{\{n(?:([+-]\d+))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
                 body = only_edition(body, book)
                 out.append(f'<h2>{TEXT[lang]["chapter"]} {k}</h2>\n{body}')
     return "\n\n".join(out)
@@ -338,7 +356,7 @@ def build(book, lang, edition):
             if not src.exists():
                 continue
             cid = f"ch{k:02d}"
-            text = re.sub(r"\{\{n(?:([+-]\d))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
+            text = re.sub(r"\{\{n(?:([+-]\d+))?\}\}", lambda m: str(k + int(m.group(1) or 0)), src.read_text())
             text = only_edition(text, book)
             text = decorate(fill_code(text, lang), lang, k)
             text = text.replace('<section class="chapter"', f'<section class="chapter" style="page: {cid}"', 1)

@@ -1,0 +1,47 @@
+<h2>Practice projects</h2>
+
+<p class="projects-intro">Run <code>npm run build</code> at the end of every project and read the route table. Before you build, write down the symbol you expect for each address; every surprise in the table is something you can learn from.</p>
+
+<div class="project">
+<p class="project-label">Project {{n}}.1 · Easy</p>
+<h3>A shop that fails gracefully</h3>
+<p class="project-goal">Give Bit’s shop a page for errors, a better 404 for missing products, and a loading state for each slow part, so that nothing ever shows the user a blank screen or a stack trace.</p>
+<p class="project-skills"><strong>You will practise:</strong> <code>error.tsx</code>, <code>not-found.tsx</code> at different levels, <code>loading.tsx</code>, and <code>&lt;Suspense&gt;</code> around one slow part.</p>
+<ol class="steps">
+<li>Write <code>app/error.tsx</code> as a Client Component that receives <code>{ error, reset }</code>, shows a friendly message, and offers a “Try again” button that calls <code>reset()</code>.</li>
+<li>Make <code>getProduct</code> throw for one id, and check that only the content area is replaced, while the nav stays.</li>
+<li>Add <code>app/products/[id]/not-found.tsx</code>, which says that the <em>product</em> was not found and links back to the list. Unknown addresses elsewhere still use the general 404.</li>
+<li>Add a slow “Reviews” part to the product page (await a 1.5 s delay), and wrap it alone in <code>&lt;Suspense&gt;</code> with a small skeleton, so the rest of the page appears at once.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> <code>error.tsx</code> catches errors from the pages <em>below</em> it, not from the layout in the same folder. To catch errors in the root layout too, Next.js has a special <code>global-error.tsx</code>, which must write its own <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code>.</p>
+</div>
+
+<div class="project">
+<p class="project-label medium">Project {{n}}.2 · Medium</p>
+<h3>A static blog that search engines love</h3>
+<p class="project-goal">A blog whose articles are Markdown files in the project, built entirely at build time, with a title and description per article, a sitemap and a robots file.</p>
+<p class="project-skills"><strong>You will practise:</strong> reading files in a Server Component, <code>generateStaticParams</code>, <code>generateMetadata</code>, <code>sitemap.ts</code> and <code>robots.ts</code>.</p>
+<ol class="steps">
+<li>Put three articles in <code>content/</code>, each starting with a title and a date on its first lines. Write <code>lib/posts.ts</code> with <code>getPosts()</code> and <code>getPost(slug)</code>, using <code>node:fs/promises</code>.</li>
+<li>Make <code>app/blog/page.tsx</code> list the articles, newest first, and <code>app/blog/[slug]/page.tsx</code> show one. Turn Markdown into HTML with a library such as <code>marked</code>, on the server.</li>
+<li>Add <code>generateStaticParams</code> and <code>generateMetadata</code>, and call <code>notFound()</code> for unknown slugs.</li>
+<li>Add <code>app/sitemap.ts</code>, which returns the address of every article, and <code>app/robots.ts</code>, which points to the sitemap. Open <code>/sitemap.xml</code> to check.</li>
+<li>Build, and check that every article is ○ or ◐ in the route table. Then use <code>curl</code> to check that an article’s title is in the HTML.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> the Markdown library runs only on the server, so it adds nothing to the browser’s JavaScript. That is a quiet advantage of Server Components: heavy libraries for formatting, dates or syntax highlighting are free for your users.</p>
+</div>
+
+<div class="project">
+<p class="project-label hard">Project {{n}}.3 · Challenge</p>
+<h3>Prices an admin can change</h3>
+<p class="project-goal">A protected admin page where the shop owner changes a product’s price. The cached product pages show the new price at once, and nobody else can change anything.</p>
+<p class="project-skills"><strong>You will practise:</strong> cookies, <code>redirect</code>, Server Actions with permission checks, <code>cacheTag</code> and <code>updateTag</code>.</p>
+<ol class="steps">
+<li>Mark <code>getProducts</code> and <code>getProduct</code> with <code>"use cache"</code> and <code>cacheTag("products")</code>, and keep the prices in a module-level <code>Map</code> that an <code>updatePrice(id, price)</code> function can change.</li>
+<li>Write a sign-in Server Action that compares a password with <code>process.env.ADMIN_PASSWORD</code>, and on success sets an <code>httpOnly</code>, <code>secure</code>, <code>sameSite</code> cookie with <code>cookies()</code> from <code>next/headers</code>.</li>
+<li>Make <code>app/admin/page.tsx</code> read the cookie and call <code>redirect("/admin/sign-in")</code> if it is missing.</li>
+<li>Write the <code>changePrice</code> action. It checks the cookie <em>again</em> (the page check does not protect the action), validates the price with zod as a positive whole number, calls <code>updatePrice</code>, then <code>updateTag("products")</code>.</li>
+<li>Change a price, open the product page, and check that the new price is there without a new build.</li>
+</ol>
+<p class="hint"><strong>Hint:</strong> a real app would keep prices in a database and signed sessions in a library, but the shape is the same: the permission check lives inside every action, never only in the page that shows the form.</p>
+</div>
